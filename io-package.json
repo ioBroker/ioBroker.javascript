@@ -1,0 +1,28 @@
+{
+    "common": {
+        "name":                     "javascript",
+        "version":                  "0.0.1",
+        "title":                    "Javascript Script Engine",
+        "authors": [
+            "hobbyquaker <hq@ccu.io>"
+        ],
+        "desc":                     "Javascript Script Engine",
+        "platform":                 "Javascript/Node.js",
+        "mode":                     "daemon",
+        "loglevel":                 "info"
+    },
+    "native": {
+
+    },
+    "objects": [
+        {
+            "_id":        "_design/script",
+            "language":   "javascript",
+            "views": {
+                "javascript": {
+                    "map": "function(doc) { if (doc.type=='script' && doc.common.platform.match(/^[jJ]avascript/)) emit(doc.common.name, doc) }"
+                }
+            }
+        }
+    ]
+}
