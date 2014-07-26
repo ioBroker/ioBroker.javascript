@@ -13,4 +13,6 @@ executes Javascripts
 
 * complete patternMatching (channels, devices, enums)
 * complete eventObj (enums)
+* email?
+* pushover?
 * global script?
