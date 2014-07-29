@@ -285,7 +285,7 @@ function patternMatching(event, pattern) {
     // change matching
     if (pattern.change) {
         switch (pattern.change) {
-            case "eq": {
+            case "eq":
                 if (event.newState.val === event.oldState.val) {
                     if (pattern.logic === "or") return true;
                     matched = true;
@@ -293,8 +293,7 @@ function patternMatching(event, pattern) {
                     if (pattern.logic === "and") return false;
                 }
                 break;
-            }
-            case "ne": {
+            case "ne":
                 if (event.newState.val !== event.oldState.val) {
                     if (pattern.logic === "or") return true;
                     matched = true;
@@ -302,8 +301,7 @@ function patternMatching(event, pattern) {
                     if (pattern.logic === "and") return false;
                 }
                 break;
-            }
-            case "gt": {
+            case "gt":
                 if (event.newState.val > event.oldState.val) {
                     if (pattern.logic === "or") return true;
                     matched = true;
@@ -311,8 +309,7 @@ function patternMatching(event, pattern) {
                     if (pattern.logic === "and") return false;
                 }
                 break;
-            }
-            case "ge": {
+            case "ge":
                 if (event.newState.val >= event.oldState.val) {
                     if (pattern.logic === "or") return true;
                     matched = true;
@@ -320,8 +317,7 @@ function patternMatching(event, pattern) {
                     if (pattern.logic === "and") return false;
                 }
                 break;
-            }
-            case "lt": {
+            case "lt":
                 if (event.newState.val < event.oldState.val) {
                     if (pattern.logic === "or") return true;
                     matched = true;
@@ -329,8 +325,7 @@ function patternMatching(event, pattern) {
                     if (pattern.logic === "and") return false;
                 }
                 break;
-            }
-            case "le": {
+            case "le":
                 if (event.newState.val <= event.oldState.val) {
                     if (pattern.logic === "or") return true;
                     matched = true;
@@ -338,7 +333,7 @@ function patternMatching(event, pattern) {
                     if (pattern.logic === "and") return false;
                 }
                 break;
-            }
+            default:
         }
     }
 
