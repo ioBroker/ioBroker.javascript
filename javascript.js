@@ -259,7 +259,7 @@ function execute(script, name) {
 function load(name) {
 
     adapter.getForeignObject(name, function (err, obj) {
-        if (!err && obj.common.enabled && obj.common.engine === adapter.namespace && obj.common.source && obj.common.platform.match(/[jJ]avascript/)) {
+        if (!err && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.platform.match(/[jJ]avascript/)) {
             scripts[name] = compile(obj.common.source, name);
             if (scripts[name]) execute(scripts[name], name);
         }
