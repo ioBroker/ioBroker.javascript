@@ -618,7 +618,7 @@ function getObjectEnums(idObj, callback, enumIds, enumNames) {
     if (objects[idObj].parent) {
         getObjectEnums(objects[idObj].parent, callback, enumIds, enumNames);
     } else {
-        if (typeof callback === 'function') callback(res);
+        if (typeof callback === 'function') callback(enumIds, enumNames);
     }
 }
 
