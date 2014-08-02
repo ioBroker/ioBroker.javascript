@@ -1,10 +1,11 @@
 var vm =        require('vm');
+var fs =        require('fs');
+var cp =        require('child_process');
+
 var scheduler = require('node-schedule');
 var suncalc =   require('suncalc');
 var request =   require('request');
-var fs =        require('fs');
 var wol =       require('wake_on_lan');
-var cp =        require('child_process');
 
 var adapter =   require(__dirname + '/../../lib/adapter.js')({
 
@@ -40,8 +41,8 @@ var adapter =   require(__dirname + '/../../lib/adapter.js')({
             if (objects[channelId]) {
                 channelName = objects[channelId].common ? objects[channelId].common.name : null;
                 if (objects[channelId].parent) {
-                    deviceId = objects[channelId].parent;
-                    deviceName = objects[deviceId].common ? objects[deviceId].common.name : null;
+                    deviceId = objects[channelId] ? objects[channelId].parent : null;
+                    deviceName = objects[channelId] && objects[deviceId].common ? objects[deviceId].common.name : null;
                 }
             }
         }
@@ -148,11 +149,11 @@ function execute(script, name) {
 
             sandbox.engine.subscriptions += 1;
 
-            if (typeof pattern != "object") {
-                pattern = {id: pattern, change: "ne"};
+            if (typeof pattern !== 'object') {
+                pattern = {id: pattern, change: 'ne'};
             }
 
-            if (typeof callbackOrId === "function") {
+            if (typeof callbackOrId === 'function') {
                 callback = callbackOrId;
             } else {
                 var that = this;
@@ -268,6 +269,9 @@ function load(name) {
 }
 
 function patternMatching(event, pattern) {
+
+
+
     if (!pattern.logic) {
         pattern.logic = "and";
     }
