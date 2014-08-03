@@ -300,6 +300,25 @@ function patternMatching(event, pattern) {
         }
     }
 
+    // state name matching
+    if (pattern.name) {
+        if (pattern.name instanceof RegExp) {
+            if (event.common.name && event.common.name.match(pattern.id)) {
+                if (pattern.logic === "or") return true;
+                matched = true;
+            } else {
+                if (pattern.logic === "and") return false;
+            }
+        } else {
+            if (event.common.name && pattern.name === event.common.name) {
+                if (pattern.logic === "or") return true;
+                matched = true;
+            } else {
+                if (pattern.logic === "and") return false;
+            }
+        }
+    }
+
     // change matching
     if (pattern.change) {
         switch (pattern.change) {
