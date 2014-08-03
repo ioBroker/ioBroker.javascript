@@ -587,8 +587,9 @@ function getData(callback) {
         objects = {};
         for (var i = 0; i < res.length; i++) {
             objects[res[i].doc._id] = res[i].doc;
-            if (objects[res[i].doc.type] === 'enum') enums.push(res[i].doc._id);
+            if (res[i].doc.type === 'enum') enums.push(res[i].doc._id);
         }
+
         objectsReady = true;
         adapter.log.info('received all objects');
         if (statesReady && typeof callback === 'function') callback();
@@ -610,8 +611,9 @@ function getObjectEnums(idObj, callback, enumIds, enumNames) {
         enumNames = [];
     }
     for (var i = 0, l = enums.length; i < l; i++) {
-        if (objects[enums[i]] && objects[enums[i]].common.members.indexOf(idObj) !== -1) {
-            enumIds.push(obj);
+        if (objects[enums[i]] && objects[enums[i]].common && objects[enums[i]].common.members && objects[enums[i]].common.members.indexOf(idObj) !== -1) {
+            console.log(enums[i]);
+            enumIds.push(enums[i]);
             enumNames.push(objects[enums[i]].common.name);
         }
     }
