@@ -282,11 +282,22 @@ function patternMatching(event, pattern) {
     var matched = false;
 
     // state id matching
-    if (pattern.id && pattern.id === event.id) {
-        if (pattern.logic == "or") return true;
-        matched = true;
-    } else if (pattern.id) {
-        if (pattern.logic == "and") return false;
+    if (pattern.id) {
+        if (pattern.id instanceof RegExp) {
+            if (event.id && event.id.match(pattern.id)) {
+                if (pattern.logic === "or") { return true; }
+                matched = true;
+            } else {
+                if (pattern.logic === "and") { return false; }
+            }
+        } else {
+            if (event.id && pattern.id === event.id) {
+                if (pattern.logic === "or") { return true; }
+                matched = true;
+            } else {
+                if (pattern.logic === "and") { return false; }
+            }
+        }
     }
 
     // change matching
