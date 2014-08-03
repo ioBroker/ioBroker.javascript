@@ -549,8 +549,34 @@ function patternMatching(event, pattern) {
     }
 
     // newState.from matching
+    if (pattern.from && pattern.from === event.newState.from) {
+        if (pattern.logic == "or") return true;
+        matched = true;
+    } else if (pattern.from) {
+        if (pattern.logic == "and") return false;
+    }
+
+    if (pattern.fromNe && pattern.fromNe !== event.newState.from) {
+        if (pattern.logic == "or") return true;
+        matched = true;
+    } else if (pattern.fromNe) {
+        if (pattern.logic == "and") return false;
+    }
 
     // oldState.from matching
+    if (pattern.oldFrom && pattern.oldFrom === event.oldState.from) {
+        if (pattern.logic == "or") return true;
+        matched = true;
+    } else if (pattern.oldFrom) {
+        if (pattern.logic == "and") return false;
+    }
+
+    if (pattern.oldFromNe && pattern.oldFromNe !== event.oldState.from) {
+        if (pattern.logic == "or") return true;
+        matched = true;
+    } else if (pattern.oldFromNe) {
+        if (pattern.logic == "and") return false;
+    }
 
     // channelId matching
 
