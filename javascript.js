@@ -108,11 +108,12 @@ var adapter =   require(__dirname + '/../../lib/adapter.js')({
 
 });
 
-var objects =       {};
-var states =        {};
-var scripts =       {};
-var subscriptions = [];
-var enums =         [];
+var objects =           {};
+var states =            {};
+var scripts =           {};
+var subscriptions =     [];
+var enums =             [];
+var cacheObjectEnums =  {};
 
 function compile(source, name) {
     source += "\n;\nlog('registered ' + engine.subscriptions + ' subscription' + (engine.subscriptions === 1 ? '' : 's' ) + ' and ' + engine.schedules + ' schedule' + (engine.schedules === 1 ? '' : 's' ));\n";
@@ -777,6 +778,10 @@ function isMemberRecursive(idObj, idEnum) {
 }
 
 function getObjectEnums(idObj, callback, enumIds, enumNames) {
+    if (cacheObjectEnums[idObj]) {
+        if (typeof callback === 'function') callback(cacheObjectEnums[idObj].enumIds, cacheObjectEnums[idObj].enumNames);
+        return;
+    }
     if (!enumIds) {
         enumIds = [];
         enumNames = [];
@@ -790,6 +795,7 @@ function getObjectEnums(idObj, callback, enumIds, enumNames) {
     if (objects[idObj].parent) {
         getObjectEnums(objects[idObj].parent, callback, enumIds, enumNames);
     } else {
+        cacheObjectEnums[idObj] = {enumIds: enumIds, enumNames: enumNames};
         if (typeof callback === 'function') callback(enumIds, enumNames);
     }
 }
