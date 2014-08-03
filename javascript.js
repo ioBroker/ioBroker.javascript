@@ -608,8 +608,24 @@ function patternMatching(event, pattern) {
         }
     }
 
-
     // channelName matching
+    if (pattern.channelName) {
+        if (pattern.channelName instanceof RegExp) {
+            if (event.channelName && event.channelName.match(pattern.channelName)) {
+                if (pattern.logic === "or") return true;
+                matched = true;
+            } else {
+                if (pattern.logic === "and") return false;
+            }
+        } else {
+            if (event.channelName && pattern.channelName === event.channelName) {
+                if (pattern.logic === "or") return true;
+                matched = true;
+            } else {
+                if (pattern.logic === "and") return false;
+            }
+        }
+    }
 
     // deviceId matching
     if (pattern.deviceId) {
@@ -631,6 +647,23 @@ function patternMatching(event, pattern) {
     }
 
     // deviceName matching
+    if (pattern.deviceName) {
+        if (pattern.deviceName instanceof RegExp) {
+            if (event.deviceName && event.deviceName.match(pattern.deviceName)) {
+                if (pattern.logic === "or") return true;
+                matched = true;
+            } else {
+                if (pattern.logic === "and") return false;
+            }
+        } else {
+            if (event.deviceName && pattern.deviceName === event.deviceName) {
+                if (pattern.logic === "or") return true;
+                matched = true;
+            } else {
+                if (pattern.logic === "and") return false;
+            }
+        }
+    }
 
     // enumIds matching
     if (pattern.enumId) {
@@ -659,7 +692,30 @@ function patternMatching(event, pattern) {
     }
 
     // enumNames matching
-
+    if (pattern.enumName) {
+        if (pattern.enumName instanceof RegExp) {
+            var subMatched = false;
+            for (var i = 0; i < event.enumNames.length; i++) {
+                if (event.enumNames[i].match(pattern.enumName)) {
+                    subMatched = true;
+                    break;
+                }
+            }
+            if (subMatched) {
+                if (pattern.logic === "or") return true;
+                matched = true;
+            } else {
+                if (pattern.logic === "and") return false;
+            }
+        } else {
+            if (event.enumNames && event.enumNames.indexOf(pattern.enumName) !== -1) {
+                if (pattern.logic === "or") return true;
+                matched = true;
+            } else {
+                if (pattern.logic === "and") return false;
+            }
+        }
+    }
 
 
     return matched;
@@ -708,7 +764,6 @@ function getObjectEnums(idObj, callback, enumIds, enumNames) {
     }
     for (var i = 0, l = enums.length; i < l; i++) {
         if (objects[enums[i]] && objects[enums[i]].common && objects[enums[i]].common.members && objects[enums[i]].common.members.indexOf(idObj) !== -1) {
-            console.log(enums[i]);
             enumIds.push(enums[i]);
             enumNames.push(objects[enums[i]].common.name);
         }
