@@ -684,11 +684,12 @@ function patternMatching(event, pattern) {
             }
         }
     }
+    var subMatched;
 
     // enumIds matching
     if (pattern.enumId) {
         if (pattern.enumId instanceof RegExp) {
-            var subMatched = false;
+            subMatched = false;
             for (var i = 0; i < event.enumIds.length; i++) {
                 if (event.enumIds[i].match(pattern.enumId)) {
                     subMatched = true;
@@ -714,9 +715,9 @@ function patternMatching(event, pattern) {
     // enumNames matching
     if (pattern.enumName) {
         if (pattern.enumName instanceof RegExp) {
-            var subMatched = false;
-            for (var i = 0; i < event.enumNames.length; i++) {
-                if (event.enumNames[i].match(pattern.enumName)) {
+            subMatched = false;
+            for (var j = 0; j < event.enumNames.length; j++) {
+                if (event.enumNames[j].match(pattern.enumName)) {
                     subMatched = true;
                     break;
                 }
