@@ -9,6 +9,7 @@
         "desc":                     "Javascript Script Engine",
         "platform":                 "Javascript/Node.js",
         "mode":                     "daemon",
+        "noRepository":             true,
         "loglevel":                 "info"
     },
     "native": {
