@@ -148,31 +148,7 @@ function execute(script, name) {
             that.sendTo('pushover', msg);
         },
         sendTo: function (adapter, command, message, callback) {
-            if (typeof message == 'undefined') {
-                message = command;
-                command = 'send';
-            }
-            if (adapter.indexOf('.') == -1) {
-                // Send to all instances of adapter
-                adapter.getForeignObject('system.adapter.' + adapter, function (err, obj) {
-                    if (!err && obj.common.children && obj.common.children.length) {
-                        
-                        for (var i = 0; i < obj.common.children.length; i++) {
-                            // Send to specific instance of adapter
-                            that.setForeignState(obj.common.children + '.common.messagebox', {
-                                    command: command,
-                                    message: message
-                                }, (i == obj.common.children.length - 1) ? callback: null); // callback only by last instance
-                        }
-                    }
-                });                
-            } else {
-                // Send to specific instance of adapter
-                that.setForeignState('system.adapter.' + adapter + '.common.messagebox', {
-                        command: command,
-                        message: message
-                    }, callback);
-            }
+            adapter.sendTo(adapter, command, message, callback);
         },
         subscribe: function (pattern, callbackOrId, value) {
 
