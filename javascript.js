@@ -159,7 +159,7 @@ function execute(script, name) {
                         
                         for (var i = 0; i < obj.common.children.length; i++) {
                             // Send to specific instance of adapter
-                            that.setForeignState(obj.common.children + '.messagebox', {
+                            that.setForeignState(obj.common.children + '.common.messagebox', {
                                     command: command,
                                     message: message
                                 }, (i == obj.common.children.length - 1) ? callback: null); // callback only by last instance
@@ -168,7 +168,7 @@ function execute(script, name) {
                 });                
             } else {
                 // Send to specific instance of adapter
-                that.setForeignState('system.adapter.' + adapter + '.messagebox', {
+                that.setForeignState('system.adapter.' + adapter + '.common.messagebox', {
                         command: command,
                         message: message
                     }, callback);
