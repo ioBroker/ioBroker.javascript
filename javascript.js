@@ -141,11 +141,38 @@ function execute(script, name) {
         exec: function (cmd, callback) {
             return cp.exec(cmd, callback);
         },
-        email: function () {
-
+        email: function (msg) {
+            that.sendTo("email", msg);
         },
-        pushover: function () {
-
+        pushover: function (msg) {
+            that.sendTo('pushover', msg);
+        },
+        sendTo: function (adapter, command, message, callback) {
+            if (typeof message == 'undefined') {
+                message = command;
+                command = 'send';
+            }
+            if (adapter.indexOf('.') == -1) {
+                // Send to all instances of adapter
+                adapter.getForeignObject('system.adapter.' + adapter, function (err, obj) {
+                    if (!err && obj.common.children && obj.common.children.length) {
+                        
+                        for (var i = 0; i < obj.common.children.length; i++) {
+                            // Send to specific instance of adapter
+                            that.setForeignState(obj.common.children + '.messagebox', {
+                                    command: command,
+                                    message: message
+                                }, (i == obj.common.children.length - 1) ? callback: null); // callback only by last instance
+                        }
+                    }
+                });                
+            } else {
+                // Send to specific instance of adapter
+                that.setForeignState('system.adapter.' + adapter + '.messagebox', {
+                        command: command,
+                        message: message
+                    }, callback);
+            }
         },
         subscribe: function (pattern, callbackOrId, value) {
 
@@ -178,6 +205,7 @@ function execute(script, name) {
             });
 
         },
+        to: this.sendTo,
         on: this.subscribe,
         schedule: function (pattern, callback) {
 
