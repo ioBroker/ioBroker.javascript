@@ -10,7 +10,8 @@
         "platform":                 "Javascript/Node.js",
         "mode":                     "daemon",
         "noRepository":             true,
-        "loglevel":                 "info"
+        "loglevel":                 "info",
+        "keywords":                 ['script', 'js', 'automate']
     },
     "native": {
 
