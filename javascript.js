@@ -2,6 +2,8 @@ var vm =        require('vm');
 var fs =        require('fs');
 var cp =        require('child_process');
 
+var coffee = require('coffee-compiler');
+
 var scheduler = require('node-schedule');
 var suncalc =   require('suncalc');
 var request =   require('request');
@@ -23,7 +25,7 @@ var adapter =   require(__dirname + '/../../lib/adapter.js')({
         var name;
 
         var common = {};
-        var native = {};
+        var nativeObj = {};
 
         var channelId =     null;
         var channelName =   null;
@@ -33,7 +35,7 @@ var adapter =   require(__dirname + '/../../lib/adapter.js')({
         if (objects[id]) {
             name =      objects[id].common ? objects[id].common.name : null;
             common =    objects[id].common;
-            native =    objects[id].native;
+            nativeObj = objects[id].native;
             channelId = objects[id].parent;
         }
 
@@ -52,7 +54,7 @@ var adapter =   require(__dirname + '/../../lib/adapter.js')({
                 id:             id,
                 name:           name,
                 common:         common,
-                native:         native,
+                native:         nativeObj,
                 channelId:      channelId,
                 channelName:    channelName,
                 deviceId:       deviceId,
@@ -141,14 +143,11 @@ function execute(script, name) {
         exec: function (cmd, callback) {
             return cp.exec(cmd, callback);
         },
-        email: function (msg) {
-            that.sendTo("email", msg);
+        email: function () {
+
         },
-        pushover: function (msg) {
-            that.sendTo('pushover', msg);
-        },
-        sendTo: function (adapter, command, message, callback) {
-            adapter.sendTo(adapter, command, message, callback);
+        pushover: function () {
+
         },
         subscribe: function (pattern, callbackOrId, value) {
 
@@ -181,7 +180,6 @@ function execute(script, name) {
             });
 
         },
-        to: this.sendTo,
         on: this.subscribe,
         schedule: function (pattern, callback) {
 
@@ -268,17 +266,26 @@ function execute(script, name) {
 function load(name) {
 
     adapter.getForeignObject(name, function (err, obj) {
-        if (!err && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.platform.match(/[jJ]avascript/)) {
+        if (!err && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.platform.match(/^[jJ]ava[sS]cript/)) {
+            // Javascript
             scripts[name] = compile(obj.common.source, name);
             if (scripts[name]) execute(scripts[name], name);
+        } else if (!err && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.platform.match(/^[cC]offee/)) {
+            // CoffeeScript
+            coffee.fromSource(obj.common.source, {sourceMap: false, bare: true}, function (err, js) {
+                if (err) {
+                    adapter.log.error(name + ' coffee compile ' + err);
+                    return;
+                }
+                scripts[name] = compile(js, name);
+                if (scripts[name]) execute(scripts[name], name);
+            });
         }
     });
 
 }
 
 function patternMatching(event, pattern) {
-
-
 
     if (!pattern.logic) {
         pattern.logic = "and";

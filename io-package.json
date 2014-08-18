@@ -11,7 +11,7 @@
         "mode":                     "daemon",
         "noRepository":             true,
         "loglevel":                 "info",
-        "keywords":                 ['script', 'js', 'automate']
+        "keywords":                 ["script", "js", "automate"]
     },
     "native": {
 
@@ -22,7 +22,7 @@
             "language":   "javascript",
             "views": {
                 "javascript": {
-                    "map": "function(doc) { if (doc.type=='script' && doc.common.platform.match(/^[jJ]avascript/)) emit(doc.common.name, doc) }"
+                    "map": "function(doc) { if (doc.type=='script' && doc.common.platform.match(/^[jJ]ava[sS]cript|^[cC]offee[sS]cript/)) emit(doc.common.name, doc) }"
                 }
             }
         }

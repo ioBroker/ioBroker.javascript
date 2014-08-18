@@ -3,6 +3,8 @@
     "node-schedule": "https://github.com/hobbyquaker/node-schedule/tarball/master",
     "request": "^2.39.0",
     "suncalc": "^1.5.2",
-    "wake_on_lan": "0.0.3"
+    "wake_on_lan": "0.0.3",
+    "coffee-script": "~1.7.1",
+    "coffee-compiler": "~0.3.2"
   }
 }
