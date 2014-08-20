@@ -5,6 +5,11 @@ executes Javascripts
 
 # Changelog
 
+## 0.0.2
+
+(hobbyquaker) CoffeeScript support
+(hobbyquaker) fixes
+
 ## 0.0.1
 
 (hobbyquaker) first release
