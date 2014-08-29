@@ -10,6 +10,7 @@
         "platform":                 "Javascript/Node.js",
         "mode":                     "daemon",
         "loglevel":                 "info",
+        "icon":                     "javascript.png",
         "keywords":                 ["script", "js", "automate"]
     },
     "native": {

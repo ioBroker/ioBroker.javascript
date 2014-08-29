@@ -1,3 +1,4 @@
+![Logo](admin/javascript.png)
 # Javascript Script Engine
 
 executes Javascripts
