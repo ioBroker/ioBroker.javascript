@@ -10,7 +10,9 @@
         "platform":                 "Javascript/Node.js",
         "mode":                     "daemon",
         "loglevel":                 "info",
-        "keywords":                 ["script", "js", "automate"]
+        "icon":                     "js.jpeg",
+        "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin/js.jpeg",
+        "keywords":                 ["script", "js", "javascript", "coffeescript", "rules", "automate", "scriptengine"]
     },
     "native": {
 
