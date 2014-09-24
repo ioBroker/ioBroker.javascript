@@ -2,7 +2,7 @@ var vm =        require('vm');
 var fs =        require('fs');
 var cp =        require('child_process');
 
-var coffee = require('coffee-compiler');
+var coffee =    require('coffee-compiler');
 
 var scheduler = require('node-schedule');
 var suncalc =   require('suncalc');
@@ -129,12 +129,14 @@ function compile(source, name) {
 
 function execute(script, name) {
     var sandbox = {
+        require:    require,
+        Buffer:     Buffer,
         fs:         fs,
         request:    request,
         wol:        wol,
         engine: {
-            subscriptions: 0,
-            schedules: 0
+                    subscriptions: 0,
+                    schedules: 0
         },
         log: function (msg, sev) {
             if (!sev) sev = 'info';
