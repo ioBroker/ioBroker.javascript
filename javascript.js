@@ -188,7 +188,7 @@
 
                 var callback;
 
-                sanbox.__engine.__subscriptions += 1;
+                sandbox.__engine.__subscriptions += 1;
 
                 if (typeof pattern !== 'object') {
                     pattern = {id: pattern, change: 'ne'};
