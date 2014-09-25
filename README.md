@@ -6,6 +6,9 @@ executes Javascript and Coffescript Scripts
 
 # Changelog
 
+## 0.1.1
+* (hobbyquaker) fixed typo
+
 ## 0.1.0
 
 * (hobbyquaker) require() in scripts works now
