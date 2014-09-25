@@ -1,18 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "0.0.2",
-        "title":                    "Javascript Script Engine",
+        "version":                  "0.1.0",
+        "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "hobbyquaker <hq@ccu.io>"
         ],
-        "desc":                     "Javascript Script Engine",
+        "desc":                     "Javascript/Coffeescript Script Engine",
         "platform":                 "Javascript/Node.js",
         "mode":                     "daemon",
         "loglevel":                 "info",
         "icon":                     "js.jpeg",
         "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin/js.jpeg",
-        "keywords":                 ["script", "js", "javascript", "coffeescript", "rules", "automate", "scriptengine"],
+        "keywords":                 ["js", "javascript", "coffeescript", "rules", "automate", "scriptengine"],
         "readme":                   "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
         "license":                  "MIT"
 
