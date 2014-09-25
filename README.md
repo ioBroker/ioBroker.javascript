@@ -1,4 +1,4 @@
-![Logo](admin/js.png)
+![Logo](admin/js.jpeg)
 # Javascript Script Engine
 
 executes Javascript and Coffescript Scripts
