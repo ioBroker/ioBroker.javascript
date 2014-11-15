@@ -28,10 +28,63 @@
         name:               'javascript',
 
         objectChange: function (id, obj) {
-            objects[id] = obj;
+            if (!obj) {
+                if (!objects[id]) return;
+
+                // Script deleted => remove it
+                if (objects[id].common.engine == 'system.adapter.' + adapter.namespace) stop(id);
+
+                delete objects[id];
+            } else if (!objects[id]) {
+                objects[id] = obj;
+
+                if (obj.type != 'script' || obj.common.engine != 'system.adapter.' + adapter.namespace || !obj.common.enabled) return;
+                // added new script to this engine
+
+            } else {
+                // Object just changed
+                if (obj.type != 'script') {
+                    objects[id] = obj;
+                    return;
+                }
+
+                if ((objects[id].common.enabled && !obj.common.enabled) ||
+                    (objects[id].common.engine == 'system.adapter.' + adapter.namespace && obj.common.engine != 'system.adapter.' + adapter.namespace)) {
+                    // Script disabled
+                    if (objects[id].common.enabled && objects[id].common.engine == 'system.adapter.' + adapter.namespace) {
+                        // Remove it from executing
+                        objects[id] = obj;
+                        stop(id);
+                    } else {
+                        objects[id] = obj;
+                    }
+                } else
+                if ((!objects[id].common.enabled && obj.common.enabled) ||
+                    (objects[id].common.engine != 'system.adapter.' + adapter.namespace && obj.common.engine == 'system.adapter.' + adapter.namespace)) {
+                    // Script enabled
+                    objects[id] = obj;
+
+                    if (objects[id].common.enabled && objects[id].common.engine == 'system.adapter.' + adapter.namespace) {
+                        // Start script
+                        load(id);
+                    }
+                } else if (obj.common.source != objects[id].common.source) {
+                    objects[id] = obj;
+
+                    // Source changed => restart it
+                    stop(id, function (res, _id) {
+                        load(_id);
+                    });
+                } else {
+                    // Something changed or not for us
+                    objects[id] = obj;
+                }
+            }
         },
 
         stateChange: function (id, state) {
+
+            if (id.match(/.messagebox$/) || id.match(/.log$/)) return;
 
             var oldState = states[id] || {};
             states[id] = state;
@@ -92,15 +145,17 @@
 
                 };
 
+                if (id == 'io.sonos.0.root.192_168_1_55.state') {
+                    console.log('A');
+                }
+
                 for (var i = 0, l = subscriptions.length; i < l; i++) {
+
                     if (patternMatching(eventObj, subscriptions[i].pattern)) {
                         subscriptions[i].callback(eventObj);
                     }
                 }
             });
-
-
-
         },
 
         unload: function (callback) {
@@ -115,13 +170,10 @@
                 adapter.objects.getObjectView('script', 'javascript', {}, function (err, doc) {
                     for (var i = 0; i < doc.rows.length; i++) {
                         load(doc.rows[i].id);
-
                     }
                 });
 
             });
-
-
 
         }
 
@@ -145,9 +197,14 @@
     }
 
     function execute(script, name) {
+        script.intervals = [];
+        script.timeouts  = [];
+        script.schedules = [];
+        script.name      = name;
+
         var sandbox = {
-            mods:       mods,
-            require:    function (md) {
+            mods:      mods,
+            require:   function (md) {
                 if (mods[md]) return mods[md];
                 try {
                     mods[md] = require(__dirname + '/node_modules/' + md);
@@ -163,26 +220,26 @@
 
                 }
             },
-            Buffer:     Buffer,
-            __engine: {
+            Buffer:    Buffer,
+            __engine:  {
                         __subscriptions: 0,
                         __schedules: 0
             },
-            $: function() {
+            $:         function () {
 
             },
-            log: function (msg, sev) {
+            log:       function (msg, sev) {
                 if (!sev) sev = 'info';
                 adapter.log[sev](name + ': ' + msg);
             },
-            exec: function (cmd, callback) {
+            exec:      function (cmd, callback) {
                 return mods.child_process.exec(cmd, callback);
             },
-            email: function () {
-
+            email:     function (msg) {
+                adapter.sendTo('email', msg);
             },
-            pushover: function () {
-
+            pushover:  function (msg) {
+                adapter.sendTo('email', msg);
             },
             subscribe: function (pattern, callbackOrId, value) {
 
@@ -211,12 +268,43 @@
 
                 subscriptions.push({
                     pattern:    pattern,
-                    callback:   callback
+                    callback:   callback,
+                    name:       name
                 });
-
             },
-            on: this.subscribe,
-            schedule: function (pattern, callback) {
+            // Why "on: this.subscribe" does not work?
+            on:        function (pattern, callbackOrId, value) {
+
+                var callback;
+
+                sandbox.__engine.__subscriptions += 1;
+
+                if (typeof pattern !== 'object') {
+                    pattern = {id: pattern, change: 'ne'};
+                }
+
+                if (typeof callbackOrId === 'function') {
+                    callback = callbackOrId;
+                } else {
+                    var that = this;
+                    if (typeof value === 'undefined') {
+                        callback = function (obj) {
+                            that.setState(callbackOrId, adapter.getForeignState(obj.id));
+                        };
+                    } else {
+                        callback = function (obj) {
+                            that.setState(callbackOrId, value);
+                        };
+                    }
+                }
+
+                subscriptions.push({
+                    pattern:    pattern,
+                    callback:   callback,
+                    name:       name
+                });
+            },
+            schedule:  function (pattern, callback) {
 
                 if (typeof callback !== 'function') {
                     adapter.log.error(name + ': schedule callback missing');
@@ -224,60 +312,87 @@
                 }
 
                 sandbox.__engine.__schedules += 1;
-                var sch;
 
                 if (pattern.astro) {
 
-                    var date = new Date();
+                    var date    = new Date();
+                    var nowdate = new Date();
+
                     var ts = mods.suncalc.getTimes(date, adapter.config.latitude, adapter.config.longitude)[pattern.astro];
 
-                    if (!ts) {
-                        // Event doesn't occur - try again tomorrow
-                        sch = mods['node-schedule'].scheduleJob(ts, function () {
-                            setTimeout(function () {
-                                sch = schedule(pattern, callback);
-                            }, 86400000);
-                        });
-                        return sch;
-                    }
-
-                    if (pattern.shift) {
+                    if (ts && pattern.shift) {
                         ts = new Date(ts.getTime() + (pattern.shift * 60000));
                     }
 
-                    if (ts < date) {
-                        // Event is in the past - schedule for tomorrow
-                        date = new Date(date.getTime() + 86400000);
-                        ts = suncalc.getTimes(date, adapter.config.latitude, adapter.config.longitude)[pattern.astro];
-                        if (pattern.shift) {
-                            ts = new Date(ts.getTime() + (pattern.shift * 60000));
-                        }
+                    if (!ts || ts < date) {
+                        // Event doesn't occur today - try again tomorrow
+                        // Calculate time till 24:00 and set timeout
+                        date.setDate(date.getDate() + 1);
+                        date.setMinutes(0);
+                        date.setHours(0);
+                        date.setSeconds(0);
+                        date.setMilliseconds(0);
+
+                        // Calculate new schedule in the next day
+                        sandbox.setTimeout(function () {
+                            if (sandbox.__engine.__schedules > 0) sandbox.__engine.__schedules--;
+
+                            sandbox.schedule(pattern, callback);
+                        }, date.getTime() - nowdate.getTime());
+
+                        return;
                     }
 
-                    sch = scheduler.scheduleJob(ts, function () {
-                        // Astro-Event triggered - schedule again for next day
-                        setTimeout(function (sch) {
-                            sch = schedule(pattern, callback);
-                        }, 1000);
+                    sandbox.setTimeout(function () {
                         callback();
-                    });
 
+                        sandbox.setTimeout(function () {
+                            if (sandbox.__engine.__schedules > 0) sandbox.__engine.__schedules--;
+                            sandbox.schedule(pattern, callback);
+                        }, 1000);
+
+                    }, ts.getTime() - nowdate.getTime());
                 } else {
-
-                    sch = mods['node-schedule'].scheduleJob(pattern, callback);
-
+                    script.schedules.push(mods['node-schedule'].scheduleJob(pattern, callback));
                 }
-
-                return sch;
-
             },
-            setState: function (id, state, callback) {
+            setState:  function (id, state, callback) {
                 adapter.setState(id, state, function () {
                     if (typeof callback === 'function') callback();
                 });
             },
-            getState: function (id) {
+            getState:  function (id) {
                 return states[id];
+            },
+            sendTo:    function (adapter, cmd, msg, callback) {
+                adapter.sendTo(adapter, cmd, msg, callback);
+            },
+            setInterval: function (callback, ms, arg1, arg2, arg3, arg4) {
+                script.intervals.push(setInterval(callback, ms, arg1, arg2, arg3, arg4));
+            },
+            clearInterval: function (id) {
+                var pos = script.intervals.indexOf(id);
+                if (pos != -1) {
+                    clearInterval(id);
+                    script.intervals.splice(pos, 1);
+                }
+            },
+            setTimeout: function (callback, ms, arg1, arg2, arg3, arg4) {
+                var to = setTimeout(function (_a1, _a2, _a3, _a4) {
+                    // Remove timeout from the list
+                    var pos = script.timeouts.indexOf(to);
+                    if (pos != -1) script.timeouts.splice(pos, 1);
+
+                    if (callback) callback(_a1, _a2, _a3, _a4);
+                }, ms, arg1, arg2, arg3, arg4);
+                script.timeouts.push(to);
+            },
+            clearTimeout: function (id) {
+                var pos = script.timeouts.indexOf(id);
+                if (pos != -1) {
+                    clearTimeout(id);
+                    script.timeouts.splice(pos, 1);
+                }
             }
         };
 
@@ -294,23 +409,58 @@
         }
     }
 
-    function load(name) {
+    function stop(name, callback) {
+        if (scripts[name]) {
+            // Remove from subscriptions
+            for (var i = subscriptions.length - 1; i >= 0 ; i--) {
+                if (subscriptions[i].name == name) {
+                    subscriptions.splice(i, 1);
+                }
+            }
+            // Stop all timeouts
+            for (i = 0; i < scripts[name].timeouts.length; i++) {
+                clearTimeout(scripts[name].timeouts[i]);
+            }
+            // Stop all intervals
+            for (i = 0; i < scripts[name].intervals.length; i++) {
+                clearInterval(scripts[name].intervals[i]);
+            }
+            // Stop all scheduled jobs
+            for (i = 0; i < scripts[name].schedules.length; i++) {
+                var _name = scripts[name].schedules[i].name;
+                if (!mods['node-schedule'].cancelJob(scripts[name].schedules[i])) {
+                    adapter.log.error('Error by canceling scheduled job "' + _name + '"');
+                }
+            }
+            delete scripts[name];
+            if (callback) callback(true, name);
+        } else {
+            if (callback) callback(false, name);
+        }
+    }
+
+    function load(name, callback) {
 
         adapter.getForeignObject(name, function (err, obj) {
             if (!err && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.platform.match(/^[jJ]ava[sS]cript/)) {
                 // Javascript
                 scripts[name] = compile(obj.common.source, name);
                 if (scripts[name]) execute(scripts[name], name);
+                if (callback) callback(true, name);
             } else if (!err && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.platform.match(/^[cC]offee/)) {
                 // CoffeeScript
                 mods['coffee-compiler'].fromSource(obj.common.source, {sourceMap: false, bare: true}, function (err, js) {
                     if (err) {
                         adapter.log.error(name + ' coffee compile ' + err);
+                        if (callback) callback(false, name);
                         return;
                     }
                     scripts[name] = compile(js, name);
                     if (scripts[name]) execute(scripts[name], name);
+                    if (callback) callback(true, name);
                 });
+            } else {
+                if (callback) callback(false, name);
             }
         });
 
@@ -799,6 +949,7 @@
             if (objectsReady && typeof callback === 'function') callback();
         });
         adapter.log.info('requesting all objects');
+
         adapter.objects.getObjectList({include_docs: true}, function (err, res) {
             res = res.rows;
             objects = {};
@@ -837,7 +988,7 @@
                 enumNames.push(objects[enums[i]].common.name);
             }
         }
-        if (objects[idObj].parent) {
+        if (objects[idObj] && objects[idObj].parent) {
             getObjectEnums(objects[idObj].parent, callback, enumIds, enumNames);
         } else {
             cacheObjectEnums[idObj] = {enumIds: enumIds, enumNames: enumNames};
