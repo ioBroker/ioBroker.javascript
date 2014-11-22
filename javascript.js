@@ -25,7 +25,7 @@
 
     var adapter =           require(__dirname + '/../../lib/adapter.js')({
 
-        name:               'javascript',
+        name: 'javascript',
 
         objectChange: function (id, obj) {
             if (!obj) {
@@ -68,23 +68,23 @@
                         // Start script
                         load(id);
                     }
-                } else if (obj.common.source != objects[id].common.source) {
+                } else { //if (obj.common.source != objects[id].common.source) {
                     objects[id] = obj;
 
                     // Source changed => restart it
                     stop(id, function (res, _id) {
                         load(_id);
                     });
-                } else {
+                } /*else {
                     // Something changed or not for us
                     objects[id] = obj;
-                }
+                }*/
             }
         },
 
         stateChange: function (id, state) {
 
-            if (id.match(/.messagebox$/) || id.match(/.log$/)) return;
+            if (id.match(/^messagebox./) || id.match(/^log./)) return;
 
             var oldState = states[id] || {};
             states[id] = state;
@@ -181,6 +181,8 @@
     var subscriptions =     [];
     var enums =             [];
     var cacheObjectEnums =  {};
+    var channels =          null;
+    var devices =           null;
 
     function compile(source, name) {
         source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + ' and ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ));\n";
@@ -223,8 +225,428 @@
                         __subscriptions: 0,
                         __schedules: 0
             },
-            $:         function () {
+            $:         function (selector) {
+                // following is supported
+                // 'type[commonAttr=something]', 'id[commonAttr=something]', id(enumName="something")', id{nativeName="something"}
+                // Type can be state, channel or device
+                // Attr can be any of the common attributes and can have wildcards *
+                // E.g. "state[id='hm-rpc.0.*]" or "hm-rpc.0.*" returns all states of adapter instance hm-rpc.0
+                // channel(room="Living room") => all states in room "Living room"
+                // channel{TYPE=BLIND}[state.id=*.LEVEL]
+                // Switch all states with .STATE of channels with role "switch" in "Wohnzimmer" to false
+                // $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').setState(false);
+                //
+                // Following functions are possible, setValue, getValue (only from first), on, each
 
+                // Todo CACHE!!!
+
+                var name      = '';
+                var commons   = [];
+                var _enums    = [];
+                var natives   = [];
+                var isName    = true;
+                var isCommons = false;
+                var isEnums   = false;
+                var isNatives = false;
+                var common    = '';
+                var native    = '';
+                var _enum     = '';
+                var parts;
+                var len;
+
+                // parse string
+                for (var i = 0; i < selector.length; i++) {
+                    if (selector[i] == '{') {
+                        isName = false;
+                        if (isCommons || isEnums || isNatives) {
+                            // Error
+                            return [];
+                        }
+                        isNatives = true;
+                    } else
+                    if (selector[i] == '}') {
+                        isNatives = false;
+                        natives.push(native);
+                        native = '';
+                    } else
+                    if (selector[i] == '[') {
+                        isName = false;
+                        if (isCommons || isEnums || isNatives) {
+                            // Error
+                            return [];
+                        }
+                        isCommons = true;
+                    } else
+                    if (selector[i] == ']') {
+                        isCommons = false;
+                        commons.push(common);
+                        common = '';
+                    }else
+                    if (selector[i] == '(') {
+                        isName = false;
+                        if (isCommons || isEnums || isNatives) {
+                            // Error
+                            return [];
+                        }
+                        isEnums = true;
+                    } else
+                    if (selector[i] == ')') {
+                        isEnums = false;
+                        _enums.push(_enum);
+                        _enum = '';
+                    } else
+                    if (isName)    {
+                        name    += selector[i];
+                    } else
+                    if (isCommons) {
+                        common  += selector[i];
+                    } else
+                    if (isEnums)  {
+                        _enum += selector[i];
+                    } else
+                    if (isNatives) {
+                        native  += selector[i];
+                    } else {
+                        // some error
+                    }
+                }
+
+                var filterStates = [];
+
+                for (i = 0; i < commons.length; i++) {
+                    parts = commons[i].split('=', 2);
+                    if (parts[1] && parts[1][0] == '"') {
+                        parts[1] = parts[1].substring(1);
+                        len = parts[1].length;
+                        if (parts[1] && parts[1][len - 1] == '"') parts[1] = parts[1].substring(0, len - 1);
+                    }
+                    if (parts[1] && parts[1][0] == "'") {
+                        parts[1] = parts[1].substring(1);
+                        len = parts[1].length;
+                        if (parts[1] && parts[1][len - 1] == "'") parts[1] = parts[1].substring(0, len - 1);
+                    }
+
+                    if (parts[1]) parts[1] = parts[1].trim();
+                    parts[0] = parts[0].trim();
+
+                    if (parts[0] == 'state.id') {
+                        filterStates.push({attr: parts[0], value: parts[1].trim()});
+                        commons[i] = null;
+                    } else {
+                        commons[i] = {attr: parts[0], value: parts[1].trim()};
+                    }
+                }
+
+                for (i = 0; i < natives.length; i++) {
+                    parts = natives[i].split('=', 2);
+                    if (parts[1] && parts[1][0] == '"') {
+                        parts[1] = parts[1].substring(1);
+                        len = parts[1].length;
+                        if (parts[1] && parts[1][len - 1] == '"') parts[1] = parts[1].substring(0, len - 1);
+                    }
+                    if (parts[1] && parts[1][0] == "'") {
+                        parts[1] = parts[1].substring(1);
+                        len = parts[1].length;
+                        if (parts[1] && parts[1][len - 1] == "'") parts[1] = parts[1].substring(0, len - 1);
+                    }
+
+                    if (parts[1]) parts[1] = parts[1].trim();
+                    parts[0] = parts[0].trim();
+                    if (parts[0] == 'state.id') {
+                        filterStates.push({attr: parts[0], value: parts[1].trim()});
+                        natives[i] = null;
+                    } else {
+                        natives[i] = {attr: parts[0].trim(), value: parts[1].trim()};
+                    }
+                }
+
+                for (i = 0; i < _enums.length; i++) {
+                    parts = _enums[i].split('=', 2);
+                    if (parts[1] && parts[1][0] == '"') {
+                        parts[1] = parts[1].substring(1);
+                        len = parts[1].length;
+                        if (parts[1] && parts[1][len - 1] == '"') parts[1] = parts[1].substring(0, len - 1);
+                    }
+                    if (parts[1] && parts[1][0] == "'") {
+                        parts[1] = parts[1].substring(1);
+                        len = parts[1].length;
+                        if (parts[1] && parts[1][len - 1] == "'") parts[1] = parts[1].substring(0, len - 1);
+                    }
+
+                    if (parts[1]) parts[1] = parts[1].trim();
+                    parts[0] = parts[0].trim();
+                    if (parts[0] == 'state.id') {
+                        filterStates.push({attr: parts[0], value: parts[1].trim()});
+                        _enums[i] = null;
+                    } else {
+                        _enums[i] = 'enum.' + parts[0].trim() + '.' + parts[1].trim();
+                    }
+                }
+
+                name = name.trim();
+                if (name == 'channel' || name == 'device') {
+                    // Fill channels
+                    if (!channels || !devices) {
+                        channels = [];
+                        devices  = [];
+                        for (var id in objects) {
+                            if (objects[id].type == 'state') {
+                                parts = id.split('.');
+                                parts.pop();
+                                var chn = parts.join('.');
+
+                                parts.pop();
+                                var dev =  parts.join('.');
+
+                                devices[dev] = devices[dev] || [];
+                                devices[dev].push(id);
+
+                                channels[chn] = channels[chn] || [];
+                                channels[chn].push(id);
+                            }
+                        }
+                    }
+                }
+
+                var res = [];
+                var resIndex = 0;
+                var id;
+                var s;
+                var pass;
+                if (name == 'channel') {
+                    for (id in channels) {
+                        if (!objects[id]) {
+                            console.log(id);
+                            continue;
+                        }
+                        pass = true;
+                        for (var c = 0; c < commons.length; c++) {
+                            if (!commons[c]) continue;
+                            if (commons[c].attr == 'id') {
+                                if (!commons[c].r && commons[c].value) commons[c].r = new RegExp('^' + commons[c].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+                                if (!commons[c].r || commons[c].r.test(id)) continue;
+                            } else if (objects[id].common) {
+                                if (commons[c].value === undefined && objects[id].common[commons[c].attr] !== undefined) continue;
+                                if (objects[id].common[commons[c].attr] == commons[c].value) continue;
+                            }
+                            pass = false;
+                            break;
+                        }
+                        if (!pass) continue;
+                        for (var n = 0; n < natives.length; n++) {
+                            if (!natives[n]) continue;
+                            if (natives[n].attr == 'id') {
+                                if (!natives[n].r && natives[n].value) natives[n].r = new RegExp('^' + natives[n].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+                                if (!natives[n].r || natives[n].r.test(id)) continue;
+                            } else if (objects[id].native) {
+                                if (natives[n].value === undefined && objects[id].native[natives[n].attr] !== undefined) continue;
+                                if (objects[id].native[natives[n].attr] == natives[n].value) continue;
+                            }
+                            pass = false;
+                            break;
+                        }
+                        if (!pass) continue;
+
+                        if (_enums.length) {
+                            var _e = getObjectEnumsSync(id);
+
+                            for (var n = 0; n < _enums.length; n++) {
+                                if (!_enums[n]) continue;
+                                if (_e.enumIds.indexOf(_enums[n]) != -1) continue;
+                                pass = false;
+                                break;
+                            }
+                            if (!pass) continue;
+                        }
+
+                        // Add all states of this channel to list
+                        for (s = 0; s < channels[id].length; s++) {
+                            if (filterStates.length) {
+                                pass = true;
+                                for (var st = 0; st < filterStates.length; st++) {
+                                    if (!filterStates[st].r && filterStates[st].value) filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
+                                    if (!filterStates[st].r || filterStates[st].r.test(channels[id][s])) continue;
+                                    pass = false;
+                                    break;
+                                }
+                                if (!pass) continue;
+                            }
+                            res.push(channels[id][s]);
+                        }
+                    }
+                } else if (name == 'device') {
+                    for (id in devices) {
+                        if (!objects[id]) {
+                            console.log(id);
+                            continue;
+                        }
+                        pass = true;
+                        for (var c = 0; c < commons.length; c++) {
+                            if (!commons[c]) continue;
+                            if (commons[c].attr == 'id') {
+                                if (!commons[c].r && commons[c].value) commons[c].r = new RegExp('^' + commons[c].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+                                if (!commons[c].r || commons[c].r.test(id)) continue;
+                            } else if (objects[id].common) {
+                                if (commons[c].value === undefined && objects[id].common[commons[c].attr] !== undefined) continue;
+                                if (objects[id].common[commons[c].attr] == commons[c].value) continue;
+                            }
+                            pass = false;
+                            break;
+                        }
+                        if (!pass) continue;
+                        for (var n = 0; n < natives.length; n++) {
+                            if (!natives[n]) continue;
+                            if (natives[n].attr == 'id') {
+                                if (!natives[n].r && natives[n].value) natives[n].r = new RegExp('^' + natives[n].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+                                if (!natives[n].r || natives[n].r.test(id)) continue;
+                            } else if (objects[id].native) {
+                                if (natives[n].value === undefined && objects[id].native[natives[n].attr] !== undefined) continue;
+                                if (objects[i].native[natives[n].attr] == natives[n].value) continue;
+                            }
+                            pass = false;
+                            break;
+                        }
+                        if (!pass) continue;
+
+                        if (_enums.length) {
+                            var _e = getObjectEnumsSync(id);
+
+                            for (var n = 0; n < _enums.length; n++) {
+                                if (!_enums[n]) continue;
+                                if (_e.enumIds.indexOf(_enums[n]) != -1) continue;
+                                pass = false;
+                                break;
+                            }
+                            if (!pass) continue;
+                        }
+
+                        // Add all states of this channel to list
+                        for (s = 0; s < devices[id].length; s++) {
+                            if (filterStates.length) {
+                                pass = true;
+                                for (var st = 0; st < filterStates.length; st++) {
+                                    if (!filterStates[st].r && filterStates[st].value) filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
+                                    if (!filterStates[st].r || filterStates[st].r.test(devices[id][s])) continue;
+                                    pass = false;
+                                    break;
+                                }
+                                if (!pass) continue;
+                            }
+                            res.push(devices[id][s]);
+                        }
+                    }
+                } else {
+                    var r = (name && name != 'state') ? new RegExp('^' + name.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$') : null;
+
+                    // state
+                    for (id in states) {
+                        if (r && !r.test(id)) continue;
+                        pass = true;
+
+                        if (commons.length) {
+                            for (var c = 0; c < commons.length; c++) {
+                                if (!commons[c]) continue;
+                                if (commons[c].attr == 'id') {
+                                    if (!commons[c].r && commons[c].value) commons[c].r = new RegExp(commons[c].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
+                                    if (!commons[c].r || commons[c].r.test(id)) continue;
+                                } else if (objects[id].common) {
+                                    if (commons[c].value === undefined && objects[id].common[commons[c].attr] !== undefined) continue;
+                                    if (objects[id].common[commons[c].attr] == commons[c].value) continue;
+                                }
+                                pass = false;
+                                break;
+                            }
+                            if (!pass) continue;
+                        }
+                        if (natives.length) {
+                            for (var n = 0; n < natives.length; n++) {
+                                if (!natives[n]) continue;
+                                if (natives[n].attr == 'id') {
+                                    if (!natives[n].r && natives[n].value) natives[id].r = new RegExp(natives[n].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
+                                    if (!natives[n].r || natives[n].r.test(id)) continue;
+                                } else if (objects[id].native) {
+                                    if (natives[n].value === undefined && objects[id].native[natives[n].attr] !== undefined) continue;
+                                    if (objects[id].native[natives[n].attr] == natives[n].value) continue;
+                                }
+                                pass = false;
+                                break;
+                            }
+                            if (!pass) continue;
+                        }
+
+                        if (filterStates.length) {
+                            for (var st = 0; st < filterStates.length; st++) {
+                                if (!filterStates[st].r && filterStates[st].value) filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
+                                if (!filterStates[st].r || filterStates[st].r.test(id)) continue;
+                                pass = false;
+                                break;
+                            }
+                            if (!pass) continue;
+                        }
+
+                        if (_enums.length) {
+                            var _e = getObjectEnumsSync(id);
+
+                            for (var n = 0; n < _enums.length; n++) {
+                                if (!_enums[n]) continue;
+                                if (_e.enumIds.indexOf(_enums[n]) != -1) continue;
+                                pass = false;
+                                break;
+                            }
+                            if (!pass) continue;
+                        }
+                        // Add all states of this channel to list
+                        res.push(id);
+                    }
+
+                    // Now filter away by name
+                }
+
+                var result = {};
+                for (i = 0; i < res.length; i++) {
+                    result[i] = res[i];
+                }
+                result.length = res.length;
+                result.each = function (callback) {
+                    for (var i = 0; i < this.length; i++) {
+                        if (typeof callback == 'function') callback(result[i], i);
+                    }
+                    return this;
+                };
+                result.getState = function () {
+                    if (this[0]) return states[this[0]];
+                    return this;
+                };
+                result.setState = function (state, isAck, callback) {
+                    if (typeof isAck == 'function') {
+                        callback = isAck;
+                        isAck = undefined;
+                    }
+
+                    if (isAck === true || isAck === false || isAck === 'true' || isAck === 'false') {
+                        if (typeof state == 'object') {
+                            state.ack = isAck;
+                        } else {
+                            state = {val: state, ack: isAck};
+                        }
+                    }
+                    var cnt = 0;
+                    for (var i = 0; i < this.length; i++) {
+                        cnt++;
+                        adapter.setForeignState(this[i], state, function () {
+                            cnt--;
+                            if (!cnt && typeof callback === 'function') callback();
+                        });
+                    }
+                    return this;
+                };
+                result.on = function (callbackOrId, value) {
+                    for (var i = 0; i < this.length; i++) {
+                        sandbox.subscribe(this[i], callbackOrId, value);
+                    }
+                    return this;
+                };
+                return result;
             },
             log:       function (msg, sev) {
                 if (!sev) sev = 'info';
@@ -237,7 +659,7 @@
                 adapter.sendTo('email', msg);
             },
             pushover:  function (msg) {
-                adapter.sendTo('email', msg);
+                adapter.sendTo('pushover', msg);
             },
             subscribe: function (pattern, callbackOrId, value) {
 
@@ -265,42 +687,13 @@
                 }
 
                 subscriptions.push({
-                    pattern:    pattern,
-                    callback:   callback,
-                    name:       name
+                    pattern:  pattern,
+                    callback: callback,
+                    name:     name
                 });
             },
-            // Why "on: this.subscribe" does not work?
             on:        function (pattern, callbackOrId, value) {
-
-                var callback;
-
-                sandbox.__engine.__subscriptions += 1;
-
-                if (typeof pattern !== 'object') {
-                    pattern = {id: pattern, change: 'ne'};
-                }
-
-                if (typeof callbackOrId === 'function') {
-                    callback = callbackOrId;
-                } else {
-                    var that = this;
-                    if (typeof value === 'undefined') {
-                        callback = function (obj) {
-                            that.setState(callbackOrId, adapter.getForeignState(obj.id));
-                        };
-                    } else {
-                        callback = function (obj) {
-                            that.setState(callbackOrId, value);
-                        };
-                    }
-                }
-
-                subscriptions.push({
-                    pattern:    pattern,
-                    callback:   callback,
-                    name:       name
-                });
+                return sandbox.subscribe(pattern, callbackOrId, value);
             },
             schedule:  function (pattern, callback) {
 
@@ -359,6 +752,7 @@
                     callback = isAck;
                     isAck = undefined;
                 }
+
                 if (isAck === true || isAck === false || isAck === 'true' || isAck === 'false') {
                     if (typeof state == 'object') {
                         state.ack = isAck;
@@ -367,12 +761,45 @@
                     }
                 }
 
-                adapter.setState(id, state, function () {
-                    if (typeof callback === 'function') callback();
-                });
+                if (states[id]) {
+                    adapter.setForeignState(id, state, function () {
+                        if (typeof callback === 'function') callback();
+                    });
+                } else if (states[adapter.namespace + '.' + id]) {
+                    adapter.setState(id, state, function () {
+                        if (typeof callback === 'function') callback();
+                    });
+                } else {
+                    adapter.log.warn('State "' + id + '" not found')
+                    if (typeof callback === 'function') callback('State "' + id + '" not found');
+                }
             },
             getState:  function (id) {
-                return states[id];
+                if (states[id]) return states[id];
+                if (states[adapter.namespace + '.' + id]) return states[adapter.namespace + '.' + id];
+                adapter.log.warn('State "' + id + '" not found')
+                return null;
+            },
+            getObject: function (id) {
+                return objects[id];
+            },
+            createState: function (name, initValue, callback) {
+                if (typeof initValue == 'function') {
+                    callback = initValue;
+                    initValue = undefined;
+                }
+                adapter.setObject(name, {
+                    common: {
+                        name: name
+                    },
+                    type: 'state'
+                }, function() {
+                    if (initValue !== undefined) {
+                        adapter.setState(id, initValue, callback);
+                    } else {
+                        if (callback) callback(id);
+                    }
+                })
             },
             sendTo:    function (adapter, cmd, msg, callback) {
                 adapter.sendTo(adapter, cmd, msg, callback);
@@ -461,12 +888,12 @@
     function load(name, callback) {
 
         adapter.getForeignObject(name, function (err, obj) {
-            if (!err && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.platform.match(/^[jJ]ava[sS]cript/)) {
+            if (!err && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
                 // Javascript
                 scripts[name] = compile(obj.common.source, name);
                 if (scripts[name]) execute(scripts[name], name);
                 if (callback) callback(true, name);
-            } else if (!err && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.platform.match(/^[cC]offee/)) {
+            } else if (!err && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[cC]offee/)) {
                 // CoffeeScript
                 mods['coffee-compiler'].fromSource(obj.common.source, {sourceMap: false, bare: true}, function (err, js) {
                     if (err) {
@@ -1012,6 +1439,27 @@
         } else {
             cacheObjectEnums[idObj] = {enumIds: enumIds, enumNames: enumNames};
             if (typeof callback === 'function') callback(enumIds, enumNames);
+        }
+    }
+    function getObjectEnumsSync(idObj, enumIds, enumNames) {
+        if (cacheObjectEnums[idObj]) {
+            return cacheObjectEnums[idObj];
+        }
+        if (!enumIds) {
+            enumIds = [];
+            enumNames = [];
+        }
+        for (var i = 0, l = enums.length; i < l; i++) {
+            if (objects[enums[i]] && objects[enums[i]].common && objects[enums[i]].common.members && objects[enums[i]].common.members.indexOf(idObj) !== -1) {
+                enumIds.push(enums[i]);
+                enumNames.push(objects[enums[i]].common.name);
+            }
+        }
+        if (objects[idObj] && objects[idObj].parent) {
+            return getObjectEnumsSync(objects[idObj].parent, callback, enumIds, enumNames);
+        } else {
+            cacheObjectEnums[idObj] = {enumIds: enumIds, enumNames: enumNames};
+            return cacheObjectEnums[idObj];
         }
     }
 
