@@ -688,7 +688,9 @@
 
                 subscriptions.push({
                     pattern:  pattern,
-                    callback: callback,
+                    callback: function (obj) {
+                        if (callback) callback.call(sandbox, obj);
+                    },
                     name:     name
                 });
             },
@@ -735,16 +737,20 @@
                     }
 
                     sandbox.setTimeout(function () {
-                        callback();
+                        callback.call(sandbox);
 
                         sandbox.setTimeout(function () {
                             if (sandbox.__engine.__schedules > 0) sandbox.__engine.__schedules--;
-                            sandbox.schedule(pattern, callback);
+                            sandbox.schedule(pattern, function () {
+                                callback.call(sandbox);
+                            });
                         }, 1000);
 
                     }, ts.getTime() - nowdate.getTime());
                 } else {
-                    script.schedules.push(mods['node-schedule'].scheduleJob(pattern, callback));
+                    script.schedules.push(mods['node-schedule'].scheduleJob(pattern, function () {
+                        callback.call(sandbox);
+                    }));
                 }
             },
             setState:  function (id, state, isAck, callback) {
@@ -805,7 +811,11 @@
                 adapter.sendTo(adapter, cmd, msg, callback);
             },
             setInterval:   function (callback, ms, arg1, arg2, arg3, arg4) {
-                script.intervals.push(setInterval(callback, ms, arg1, arg2, arg3, arg4));
+                var int = setInterval(function (_arg1, _arg2, _arg3, _arg4) {
+                    if (callback) callback.call(sandbox, _arg1, _arg2, _arg3, _arg4);
+                }, ms, arg1, arg2, arg3, arg4)
+                script.intervals.push(int);
+                return int;
             },
             clearInterval: function (id) {
                 var pos = script.intervals.indexOf(id);
@@ -815,14 +825,15 @@
                 }
             },
             setTimeout:    function (callback, ms, arg1, arg2, arg3, arg4) {
-                var to = setTimeout(function (_a1, _a2, _a3, _a4) {
+                var to = setTimeout(function (_arg1, _arg2, _arg3, _arg4) {
                     // Remove timeout from the list
                     var pos = script.timeouts.indexOf(to);
                     if (pos != -1) script.timeouts.splice(pos, 1);
 
-                    if (callback) callback(_a1, _a2, _a3, _a4);
+                    if (callback) callback.call(sandbox, _arg1, _arg2, _arg3, _arg4);
                 }, ms, arg1, arg2, arg3, arg4);
                 script.timeouts.push(to);
+                return to;
             },
             clearTimeout:  function (id) {
                 var pos = script.timeouts.indexOf(id);

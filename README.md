@@ -199,6 +199,9 @@ If some of these states changes the callback will be called like for "on" functi
 
 Following functions are possible, setValue, getValue (only from first), on, each
 ## Changelog
+### 0.1.5 (2014-11-26)
+* (bluefox) fix context of all callbacks.
+
 ### 0.1.4 (2014-11-22)
 * (bluefox) Support of jquery like selector $. See above for details.
 
