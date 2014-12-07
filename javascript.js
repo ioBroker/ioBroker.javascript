@@ -165,7 +165,7 @@
 
                 adapter.objects.getObjectView('script', 'javascript', {}, function (err, doc) {
                     for (var i = 0; i < doc.rows.length; i++) {
-                        load(doc.rows[i].id);
+                        load(doc.rows[i].value._id);
                     }
                 });
 
@@ -867,6 +867,7 @@
     }
 
     function stop(name, callback) {
+        adapter.log.info('Stop script ' + name);
         if (scripts[name]) {
             // Remove from subscriptions
             for (var i = subscriptions.length - 1; i >= 0 ; i--) {
@@ -901,6 +902,7 @@
         adapter.getForeignObject(name, function (err, obj) {
             if (!err && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
                 // Javascript
+                adapter.log.info('Start javascript ' + name);
                 scripts[name] = compile(obj.common.source, name);
                 if (scripts[name]) execute(scripts[name], name);
                 if (callback) callback(true, name);
@@ -912,6 +914,7 @@
                         if (callback) callback(false, name);
                         return;
                     }
+                    adapter.log.info('Start coffescript ' + name);
                     scripts[name] = compile(js, name);
                     if (scripts[name]) execute(scripts[name], name);
                     if (callback) callback(true, name);

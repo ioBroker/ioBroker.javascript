@@ -172,9 +172,14 @@ Same as javascript ***clearTimeout***.
 
 Format of selector:
     '''name[commonAttr=something1](enumName=something2){nativeName=something3}[id=idfilter][state.id=idfilter]'''
-    
+
 name can be: state, channel or device
 "idfilter" can have wildcards '*'
+
+Prefixes ***(not implemented - should be discussed)*** :
+ # - take by name and not by id
+ . - filter by role
+ § - filter by room
 
 ***Example***: 
 
@@ -183,6 +188,8 @@ name can be: state, channel or device
 - $('channel(room=Living room)' - all states in room "Living room"
 - $('channel{TYPE=BLIND}[state.id=*.LEVEL]') - Get all shutter of Homematic 
 - $('channel[role=switch](rooms=Living room)[state.id=*.STATE]').setState(false) - Switch all states with .STATE of channels with role "switch" in "Living room" to false
+- $('.switch §"Living room") - Take states with all switches in 'Living room' ***(not implemented - should be discussed)***
+- $('channel .switch §"Living room") - Take states with all switches in 'Living room' ***(not implemented - should be discussed)***
 
 *** Explanation ***
 Lets take a look at:
@@ -199,6 +206,9 @@ If some of these states changes the callback will be called like for "on" functi
 
 Following functions are possible, setValue, getValue (only from first), on, each
 ## Changelog
+### 0.1.6 (2014-12-08)
+* (bluefox) add some log outputs.
+
 ### 0.1.5 (2014-11-26)
 * (bluefox) fix context of all callbacks.
 
