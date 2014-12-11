@@ -1,5 +1,25 @@
 {
-    "private": true,
+    "name": "iobroker.javascript",
+    "version": "0.1.6",
+    "description": "Javascript/Coffescript Script Engine for ioBroker",
+    "author": "hobbyquaker <hq@ccu.io>",
+    "contributors": [
+        "hobbyquaker <hq@ccu.io>",
+        "bluefox <bluefox@ccu.io>"
+    ],
+    "homepage": "https://github.com/ioBroker/ioBroker.javascript",
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://github.com/ioBroker/ioBroker.javascript/blob/master/LICENSE"
+        }
+    ],
+    "keywords":  ["ioBroker", "javascript", "script", "engine", "home automation"],
+    "readmeFilename": "README.md",
+    "repository" : {
+        "type" : "git",
+        "url" : "https://github.com/ioBroker/ioBroker.javascript"
+    },
     "dependencies": {
         "node-schedule": "https://github.com/hobbyquaker/node-schedule/tarball/master",
         "request": "^2.39.0",

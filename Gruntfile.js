@@ -11,25 +11,26 @@ module.exports = function (grunt) {
     var dstDir    = srcDir + '.build/';
     var pkg       = grunt.file.readJSON('package.json');
     var iopackage = grunt.file.readJSON('io-package.json');
+    var version   = (pkg && pkg.version) ? pkg.version : iopackage.common.version;
 
     // Project configuration.
     grunt.initConfig({
         pkg: pkg,
         clean: {
             all: ['tmp/*.json', 'tmp/*.zip', 'tmp/*.jpg', 'tmp/*.jpeg', 'tmp/*.png',
-                  dstDir + '*.json', dstDir + '*.zip', dstDir + '*.jpg', dstDir + '*.jpeg', dstDir + '*.png']
+                    dstDir + '*.json', dstDir + '*.zip', dstDir + '*.jpg', dstDir + '*.jpeg', dstDir + '*.png']
         },
         replace: {
             core: {
                 options: {
                     patterns: [
                         {
-                            match: /var version = '[\.0-9]*';/g,
-                            replacement: "var version = '" + iopackage.common.version + "';"
+                            match: /var version = *'[\.0-9]*';/g,
+                            replacement: "var version = '" + version + "';"
                         },
                         {
-                            match: /"version"\: "[\.0-9]*",/g,
-                            replacement: '"version": "' + iopackage.common.version + '",'
+                            match: /"version"\: *"[\.0-9]*",/g,
+                            replacement: '"version": "' + version + '",'
                         }
                     ]
                 },
@@ -39,7 +40,8 @@ module.exports = function (grunt) {
                         flatten: true,
                         src:     [
                                 srcDir + 'controller.js',
-                                srcDir + 'package.json'
+                                srcDir + 'package.json',
+                                srcDir + 'io-package.json'
                         ],
                         dest:    srcDir
                     }
@@ -62,6 +64,12 @@ module.exports = function (grunt) {
                     url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jshint.js'
                 },
                 dest: 'tasks/jshint.js'
+            },
+            get_gruntfile: {
+                options: {
+                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.build/master/adapters/Gruntfile.js'
+                },
+                dest: 'Gruntfile.js'
             },
             get_jscsRules: {
                 options: {
@@ -153,18 +161,10 @@ module.exports = function (grunt) {
 
     grunt.registerTask('updateReadme', function () {
         var readme = grunt.file.read('README.md');
-        var crlf = '\r\n';
-        var chglog = '## Changelog' + crlf;
-        var pos = readme.indexOf(chglog);
-        if (pos == -1) {
-            crlf   = '\n';
-            chglog = '## Changelog' + crlf;
-            pos = readme.indexOf(chglog);
-        }
-
+        var pos = readme.indexOf('## Changelog\r\n');
         if (pos != -1) {
-            var readmeStart = readme.substring(0, pos + chglog.length);
-            var readmeEnd   = readme.substring(pos + chglog.length);
+            var readmeStart = readme.substring(0, pos + '## Changelog\r\n'.length);
+            var readmeEnd   = readme.substring(pos + '## Changelog\r\n'.length);
 
             if (iopackage.common && readme.indexOf(iopackage.common.version) == -1) {
                 var timestamp = new Date();
@@ -176,13 +176,14 @@ module.exports = function (grunt) {
                 if (iopackage.common.whatsNew) {
                     for (var i = 0; i < iopackage.common.whatsNew.length; i++) {
                         if (typeof iopackage.common.whatsNew[i] == 'string') {
-                            news += '* ' + iopackage.common.whatsNew[i] + crlf;
+                            news += '* ' + iopackage.common.whatsNew[i] + '\r\n';
                         } else {
-                            news += '* ' + iopackage.common.whatsNew[i].en + crlf;
+                            news += '* ' + iopackage.common.whatsNew[i].en + '\r\n';
                         }
                     }
                 }
-                grunt.file.write('README.md', readmeStart + '### ' + iopackage.common.version + ' (' + date + ')' + crlf + (news ? news + crlf + crlf : crlf) + readmeEnd);
+
+                grunt.file.write('README.md', readmeStart + '### ' + iopackage.common.version + ' (' + date + ')\r\n' + (news ? news + '\r\n\r\n' : '\r\n') + readmeEnd);
             }
         }
     });
