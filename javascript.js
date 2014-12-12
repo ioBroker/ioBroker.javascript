@@ -900,13 +900,13 @@
     function load(name, callback) {
 
         adapter.getForeignObject(name, function (err, obj) {
-            if (!err && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
+            if (!err && obj && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
                 // Javascript
                 adapter.log.info('Start javascript ' + name);
                 scripts[name] = compile(obj.common.source, name);
                 if (scripts[name]) execute(scripts[name], name);
                 if (callback) callback(true, name);
-            } else if (!err && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[cC]offee/)) {
+            } else if (!err && obj && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[cC]offee/)) {
                 // CoffeeScript
                 mods['coffee-compiler'].fromSource(obj.common.source, {sourceMap: false, bare: true}, function (err, js) {
                     if (err) {
