@@ -18,7 +18,7 @@ module.exports = function (grunt) {
         pkg: pkg,
         clean: {
             all: ['tmp/*.json', 'tmp/*.zip', 'tmp/*.jpg', 'tmp/*.jpeg', 'tmp/*.png',
-                    dstDir + '*.json', dstDir + '*.zip', dstDir + '*.jpg', dstDir + '*.jpeg', dstDir + '*.png']
+                  dstDir + '*.json', dstDir + '*.zip', dstDir + '*.jpg', dstDir + '*.jpeg', dstDir + '*.png']
         },
         replace: {
             core: {
@@ -70,6 +70,12 @@ module.exports = function (grunt) {
                     url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.build/master/adapters/Gruntfile.js'
                 },
                 dest: 'Gruntfile.js'
+            },
+            get_utilsfile: {
+                options: {
+                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.build/master/adapters/utils.js'
+                },
+                dest: 'lib/utils.js'
             },
             get_jscsRules: {
                 options: {

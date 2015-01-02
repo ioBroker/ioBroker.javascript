@@ -206,6 +206,9 @@ If some of these states changes the callback will be called like for "on" functi
 
 Following functions are possible, setValue, getValue (only from first), on, each
 ## Changelog
+### 0.1.8 (2015-01-03)
+* (bluefox) enable npm install
+
 ### 0.1.7 (2014-12-12)
 * (bluefox) check errors if invalid object.
 

@@ -1,3 +1,7 @@
+/* jshint -W097 */// jshint strict:false
+/*jslint node: true */
+"use strict";
+
 (function () {
 
     var mods = {
@@ -22,8 +26,9 @@
         'request':          require('request'),
         'wake_on_lan':      require('wake_on_lan')
     };
+    var utils =   require(__dirname + '/lib/utils'); // Get common adapter utils
 
-    var adapter =           require(__dirname + '/../../lib/adapter.js')({
+    var adapter = utils.adapter({
 
         name: 'javascript',
 

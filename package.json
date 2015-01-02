@@ -1,41 +1,48 @@
 {
-    "name": "iobroker.javascript",
-    "version": "0.1.7",
-    "description": "Javascript/Coffescript Script Engine for ioBroker",
-    "author": "hobbyquaker <hq@ccu.io>",
-    "contributors": [
-        "hobbyquaker <hq@ccu.io>",
-        "bluefox <bluefox@ccu.io>"
-    ],
-    "homepage": "https://github.com/ioBroker/ioBroker.javascript",
-    "licenses": [
-        {
-            "type": "MIT",
-            "url": "https://github.com/ioBroker/ioBroker.javascript/blob/master/LICENSE"
-        }
-    ],
-    "keywords":  ["ioBroker", "javascript", "script", "engine", "home automation"],
-    "readmeFilename": "README.md",
-    "repository" : {
-        "type" : "git",
-        "url" : "https://github.com/ioBroker/ioBroker.javascript"
-    },
-    "dependencies": {
-        "node-schedule": "https://github.com/hobbyquaker/node-schedule/tarball/master",
-        "request": "^2.39.0",
-        "suncalc": "^1.5.2",
-        "wake_on_lan": "0.0.3",
-        "coffee-compiler": "~0.3.2"
-    },
-	"devDependencies": {
-		"grunt": "~0.4.4",
-		"grunt-replace": "~0.7.6",
-		"grunt-contrib-jshint": "~0.10.0",
-		"grunt-jscs": "~0.6.1",
-		"grunt-http": "~1.4.1",
-		"grunt-contrib-clean": "~0.5.0",
-		"grunt-contrib-compress": "~0.8.0",
-		"grunt-contrib-copy": "~0.5.0",
-		"grunt-exec": "~0.4.5"
-	}
+  "name": "iobroker.javascript",
+  "version": "0.1.8",
+  "description": "Javascript/Coffescript Script Engine for ioBroker",
+  "author": "hobbyquaker <hq@ccu.io>",
+  "contributors": [
+    "hobbyquaker <hq@ccu.io>",
+    "bluefox <bluefox@ccu.io>"
+  ],
+  "homepage": "https://github.com/ioBroker/ioBroker.javascript",
+  "license": "MIT",
+  "keywords": [
+    "ioBroker",
+    "javascript",
+    "script",
+    "engine",
+    "home automation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ioBroker/ioBroker.javascript"
+  },
+  "dependencies": {
+    "node-schedule": "https://github.com/hobbyquaker/node-schedule/tarball/master",
+    "request": "^2.39.0",
+    "suncalc": "^1.5.2",
+    "wake_on_lan": "0.0.3",
+    "coffee-compiler": "~0.3.2"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "grunt-replace": "~0.7.6",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-jscs": "~0.6.1",
+    "grunt-http": "~1.4.1",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-compress": "~0.8.0",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-exec": "~0.4.5"
+  },
+  "bugs": {
+    "url": "https://github.com/ioBroker/ioBroker.javascript/issues"
+  },
+  "main": "javascript.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
 }
