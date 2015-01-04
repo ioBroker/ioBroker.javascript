@@ -92,7 +92,12 @@
             if (id.match(/^messagebox./) || id.match(/^log./)) return;
 
             var oldState = states[id] || {};
-            states[id] = state;
+            if (state) {
+                states[id] = state;
+            } else {
+                delete states[id];
+                state = {};
+            }
 
             var name;
 
