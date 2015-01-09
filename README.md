@@ -206,6 +206,9 @@ If some of these states changes the callback will be called like for "on" functi
 
 Following functions are possible, setValue, getValue (only from first), on, each
 ## Changelog
+### 0.1.11 (2015-01-10)
+* (bluefox) fix "on('state1', 'state2');"
+
 ### 0.1.10 (2015-01-04)
 * (bluefox) catch errors if states deleted
 

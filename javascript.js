@@ -687,7 +687,7 @@
                     var that = this;
                     if (typeof value === 'undefined') {
                         callback = function (obj) {
-                            that.setState(callbackOrId, adapter.getForeignState(obj.id));
+                            that.setState(callbackOrId, obj.newState.val);
                         };
                     } else {
                         callback = function (obj) {
