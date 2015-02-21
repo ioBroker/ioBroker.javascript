@@ -143,7 +143,15 @@ Returns state of id in form {val: value, ack: true/false, ts: timestamp, lc: las
 Get description of object id as stored in DB.
 
 ### createState
-    createState(name, initialValue, callback)
+    createState(name, initialValue, forceCreation, callback)
+Create state and object in javascript space if does not exist, e.g. "javascript.0.mystate".
+Parameters:
+
+- **name**: name of the state without namespace, e.g. "mystate"
+- **initialValue**: variable can be initialized after created. Value "undefined" means do not initialize value.
+- **forceCreation**: create state independent of if state yet exists or not.
+- **callback**: called after state is created and initialized.
+
     
 ### sendTo:    
     sendTo (adapter, cmd, msg, callback)
@@ -206,6 +214,9 @@ If some of these states changes the callback will be called like for "on" functi
 
 Following functions are possible, setValue, getValue (only from first), on, each
 ## Changelog
+### 0.1.12 (2015-02-21)
+* (bluefox) fix createState and expand it.
+
 ### 0.1.11 (2015-01-10)
 * (bluefox) fix "on('state1', 'state2');"
 

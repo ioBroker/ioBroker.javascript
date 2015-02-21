@@ -23,10 +23,23 @@
 </style>
 <!-- you have to define 2 functions in the global scope: -->
 <script type="text/javascript">
+
+    systemDictionary = {
+        "Javascript scripts adapter settings": {
+            "en": "Javascript scripts adapter settings",
+            "de": "Javascript Skripte Einstellungen",
+            "ru": "Настройки скриптов Javascript"
+        },
+        "There is nothing to setup": {
+            "en": "There is nothing to setup",
+            "de": "Es gibt nichts einzustellen",
+            "ru": "Ничего настраивать не надо"
+        }
+    };
+
     // the function loadSettings has to exist ...
-    function load(settings) {
-        changed = false;
-        $('#save').button("disable");
+    function load(settings, onChange) {
+        onChange(false);
     }
 
     // ... and the function save has to exist.

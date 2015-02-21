@@ -316,9 +316,9 @@
                     } else
                     if (isNatives) {
                         native  += selector[i];
-                    } else {
+                    } //else {
                         // some error
-                    }
+                    //}
                 }
 
                 var filterStates = [];
@@ -399,9 +399,9 @@
                     if (!channels || !devices) {
                         channels = [];
                         devices  = [];
-                        for (var id in objects) {
-                            if (objects[id].type == 'state') {
-                                parts = id.split('.');
+                        for (var _id in objects) {
+                            if (objects[_id].type == 'state') {
+                                parts = _id.split('.');
                                 parts.pop();
                                 var chn = parts.join('.');
 
@@ -409,10 +409,10 @@
                                 var dev =  parts.join('.');
 
                                 devices[dev] = devices[dev] || [];
-                                devices[dev].push(id);
+                                devices[dev].push(_id);
 
                                 channels[chn] = channels[chn] || [];
-                                channels[chn].push(id);
+                                channels[chn].push(_id);
                             }
                         }
                     }
@@ -460,9 +460,9 @@
                         if (_enums.length) {
                             var _e = getObjectEnumsSync(id);
 
-                            for (var n = 0; n < _enums.length; n++) {
-                                if (!_enums[n]) continue;
-                                if (_e.enumIds.indexOf(_enums[n]) != -1) continue;
+                            for (var m = 0; m < _enums.length; m++) {
+                                if (!_enums[m]) continue;
+                                if (_e.enumIds.indexOf(_enums[m]) != -1) continue;
                                 pass = false;
                                 break;
                             }
@@ -491,14 +491,14 @@
                             continue;
                         }
                         pass = true;
-                        for (var c = 0; c < commons.length; c++) {
-                            if (!commons[c]) continue;
-                            if (commons[c].attr == 'id') {
-                                if (!commons[c].r && commons[c].value) commons[c].r = new RegExp('^' + commons[c].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
-                                if (!commons[c].r || commons[c].r.test(id)) continue;
+                        for (var _c = 0; _c < commons.length; _c++) {
+                            if (!commons[_c]) continue;
+                            if (commons[_c].attr == 'id') {
+                                if (!commons[_c].r && commons[_c].value) commons[_c].r = new RegExp('^' + commons[_c].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+                                if (!commons[_c].r || commons[_c].r.test(id)) continue;
                             } else if (objects[id].common) {
-                                if (commons[c].value === undefined && objects[id].common[commons[c].attr] !== undefined) continue;
-                                if (objects[id].common[commons[c].attr] == commons[c].value) continue;
+                                if (commons[_c].value === undefined && objects[id].common[commons[_c].attr] !== undefined) continue;
+                                if (objects[id].common[commons[_c].attr] == commons[_c].value) continue;
                             }
                             pass = false;
                             break;
@@ -786,36 +786,66 @@
                         if (typeof callback === 'function') callback();
                     });
                 } else {
-                    adapter.log.warn('State "' + id + '" not found')
+                    adapter.log.warn('State "' + id + '" not found');
                     if (typeof callback === 'function') callback('State "' + id + '" not found');
                 }
             },
             getState:  function (id) {
                 if (states[id]) return states[id];
                 if (states[adapter.namespace + '.' + id]) return states[adapter.namespace + '.' + id];
-                adapter.log.warn('State "' + id + '" not found')
+                adapter.log.warn('State "' + id + '" not found');
                 return null;
             },
             getObject: function (id) {
                 return objects[id];
             },
-            createState: function (name, initValue, callback) {
+            createState: function (name, initValue, forceCreation, callback) {
                 if (typeof initValue == 'function') {
-                    callback = initValue;
+                    callback  = initValue;
                     initValue = undefined;
                 }
-                adapter.setObject(name, {
-                    common: {
-                        name: name
-                    },
-                    type: 'state'
-                }, function() {
-                    if (initValue !== undefined) {
-                        adapter.setState(id, initValue, callback);
-                    } else {
-                        if (callback) callback(id);
-                    }
-                })
+                if (typeof forceCreation == 'function') {
+                    callback  = forceCreation;
+                    forceCreation = undefined;
+                }
+                if (forceCreation) {
+                    adapter.setObject(name, {
+                        common: {
+                            name: name,
+                            role: 'javascript'
+                        },
+                        native: {},
+                        type: 'state'
+                    }, function () {
+                        if (initValue !== undefined) {
+                            adapter.setState(name, initValue, callback);
+                        } else {
+                            if (callback) callback(name);
+                        }
+                    });
+                } else {
+                    adapter.getObject(name, function (err, obj) {
+                        if (err || !obj) {
+                            adapter.setObject(name, {
+                                common: {
+                                    name: name,
+                                    role: 'javascript'
+                                },
+                                native: {},
+                                type: 'state'
+                            }, function () {
+                                if (initValue !== undefined) {
+                                    adapter.setState(name, initValue, callback);
+                                } else {
+                                    if (callback) callback(name);
+                                }
+                            });
+                        } else {
+                            // state yet exists
+                            if (callback) callback(name);
+                        }
+                    });
+                }
             },
             sendTo:    function (adapter, cmd, msg, callback) {
                 adapter.sendTo(adapter, cmd, msg, callback);
@@ -823,7 +853,7 @@
             setInterval:   function (callback, ms, arg1, arg2, arg3, arg4) {
                 var int = setInterval(function (_arg1, _arg2, _arg3, _arg4) {
                     if (callback) callback.call(sandbox, _arg1, _arg2, _arg3, _arg4);
-                }, ms, arg1, arg2, arg3, arg4)
+                }, ms, arg1, arg2, arg3, arg4);
                 script.intervals.push(int);
                 return int;
             },
@@ -1480,7 +1510,7 @@
             }
         }
         if (objects[idObj] && objects[idObj].parent) {
-            return getObjectEnumsSync(objects[idObj].parent, callback, enumIds, enumNames);
+            return getObjectEnumsSync(objects[idObj].parent, enumIds, enumNames);
         } else {
             cacheObjectEnums[idObj] = {enumIds: enumIds, enumNames: enumNames};
             return cacheObjectEnums[idObj];
