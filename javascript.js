@@ -890,6 +890,24 @@
                         adapter.log.warn('Callback for old version of script: ' + name);
                     }
                 };
+            },
+            formatDate: function (date, format, isDataObject) {
+                if (typeof format == 'boolean') {
+                    isDataObject = format;
+                    format = null;
+                }
+
+                if (!format) {
+                    format = objects['system.config'] ? (objects['system.config'].common.dateFormat || 'DD.MM.YYYY') : 'DD.MM.YYYY';
+                }
+
+                return adapter.formatDate(date, !isDataObject, format);
+            },
+            writeFile: function (fileName, data, callback) {
+                adapter.writeFile(null, fileName, data, callback);
+            },
+            readFile: function (fileName, callback) {
+                adapter.readFile(null, fileName, callback);
             }
         };
 
@@ -1437,7 +1455,6 @@
 
     }
 
-
     function getData(callback) {
         var statesReady;
         var objectsReady;
@@ -1463,7 +1480,6 @@
             if (statesReady && typeof callback === 'function') callback();
         });
     }
-
 
     function isMember(idObj, idEnum) {
 
@@ -1495,6 +1511,7 @@
             if (typeof callback === 'function') callback(enumIds, enumNames);
         }
     }
+
     function getObjectEnumsSync(idObj, enumIds, enumNames) {
         if (cacheObjectEnums[idObj]) {
             return cacheObjectEnums[idObj];
@@ -1520,7 +1537,4 @@
     function getObjectEnumsRecursive(idObj, callback, enumIds, enumNames) {
 
     }
-
-
-
 })();

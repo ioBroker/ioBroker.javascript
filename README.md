@@ -145,14 +145,14 @@ Get description of object id as stored in DB.
 ### createState
     createState(name, initialValue, forceCreation, callback)
 Create state and object in javascript space if does not exist, e.g. "javascript.0.mystate".
-Parameters:
+
+####Parameters:
 
 - **name**: name of the state without namespace, e.g. "mystate"
 - **initialValue**: variable can be initialized after created. Value "undefined" means do not initialize value.
 - **forceCreation**: create state independent of if state yet exists or not.
 - **callback**: called after state is created and initialized.
-
-    
+   
 ### sendTo:    
     sendTo (adapter, cmd, msg, callback)
     
@@ -169,8 +169,38 @@ Same as javascript ***clearInterval***.
 Same as javascript ***setTimeout***.
     
 ### clearTimeout
-     clearTimeout (id)
+    clearTimeout (id)
 Same as javascript ***clearTimeout***.
+
+### formatDate
+    formatDate (secondsOrDate, format, isSeconds)
+    
+####Parameters:
+
+- **date**: number of seconds from state.ts or state.lc (Number seconds from 1970.01.01 00:00:00) or javascript *new Date()* object or number of milliseconds from *(new Date().getTime())*
+- **format**: Can be "null", so the system time format will be used, elsewise 
+
+       * YYYY, JJJJ, ГГГГ - full year, e.g 2015
+       * YY, JJ, ГГ - short year, e.g 15
+       * MM, ММ(cyrillic) - full month, e.g. 01
+       * M, М(cyrillic) - short month, e.g. 1
+       * DD, TT, ДД - full day, e.g. 02
+       * D, T, Д - short day, e.g. 2
+       * hh, SS, чч - full hours, e.g. 03
+       * h, S, ч - short hours, e.g. 3
+       * mm, мм(cyrillic) - full minutes, e.g. 04
+       * m, м(cyrillic) - short minutes, e.g. 4
+       * ss, сс(cyrillic) - full seconds, e.g. 05
+       * s, с(cyrillic) - short seconds, e.g. 5
+  
+- **isSeconds**: If *date* seconds from state.ts ot state.lc or milliseconds from *(new Date().getTime())*
+
+#### Example
+  formatDate(new Date(), "YYYY-MM-DD") => Date "2015-02-24"
+  formatDate(new Date(), "hh:mm") => Hours and minutes "17:41"
+  formatDate(state.ts) => "24.02.2015"
+  formatDate(state.ts, "JJJJ.MM.TT SS:mm:ss) => "2015.02.15 17:41:98"
+  
 
 ### $ - Selector
     $(selector).on(function(obj) {});
@@ -213,7 +243,28 @@ If some of these states changes the callback will be called like for "on" functi
 
 
 Following functions are possible, setValue, getValue (only from first), on, each
+
+<pre><code>
+// Switch on all switches in "Wohnzimmer"
+$('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').setValue(true);
+</code></pre>
+
+### readFile
+    readFile (fileName, function (error, bytes) {})
+    
+The result will be given in callback.
+File will be stored in the DB and can be accessed from any host under name javascript.X.fileName
+
+### writeFile
+    writeFile (fileName, bytes, function (error) {})
+
+The optional error code will be given in callback.
+
+
 ## Changelog
+### 0.2.0 (2015-02-24)
+* (bluefox) add functions to sandbox: formatDate, writeFile, readFile
+
 ### 0.1.12 (2015-02-21)
 * (bluefox) fix createState and expand it.
 
