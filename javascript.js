@@ -847,8 +847,8 @@
                     });
                 }
             },
-            sendTo:    function (adapter, cmd, msg, callback) {
-                adapter.sendTo(adapter, cmd, msg, callback);
+            sendTo:    function (_adapter, cmd, msg, callback) {
+                adapter.sendTo(_adapter, cmd, msg, callback);
             },
             setInterval:   function (callback, ms, arg1, arg2, arg3, arg4) {
                 var int = setInterval(function (_arg1, _arg2, _arg3, _arg4) {

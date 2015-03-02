@@ -262,6 +262,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.2.1 (2015-03-02)
+* (bluefox) fix sendTo function
+
 ### 0.2.0 (2015-02-24)
 * (bluefox) add functions to sandbox: formatDate, writeFile, readFile
 
