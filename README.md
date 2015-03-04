@@ -262,6 +262,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.2.2 (2015-03-04)
+* (bluefox) fix log function
+
 ### 0.2.1 (2015-03-02)
 * (bluefox) fix sendTo function
 

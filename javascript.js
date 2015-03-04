@@ -660,6 +660,10 @@
             },
             log:       function (msg, sev) {
                 if (!sev) sev = 'info';
+                if (!adapter.log[sev]) {
+                    msg = 'Unknown severity level "' + sev + '" by log of [' + msg + ']';
+                    sev = 'warn';
+                }
                 adapter.log[sev](name + ': ' + msg);
             },
             exec:      function (cmd, callback) {
@@ -849,6 +853,9 @@
             },
             sendTo:    function (_adapter, cmd, msg, callback) {
                 adapter.sendTo(_adapter, cmd, msg, callback);
+            },
+            sendto:    function (_adapter, cmd, msg, callback) {
+                return sandbox.sendTo(_adapter, cmd, msg, callback);
             },
             setInterval:   function (callback, ms, arg1, arg2, arg3, arg4) {
                 var int = setInterval(function (_arg1, _arg2, _arg3, _arg4) {
