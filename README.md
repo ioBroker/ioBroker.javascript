@@ -126,6 +126,103 @@ on('adapter.0.device.channel.sensor', function (obj) {
     }
 });
 </code></pre>
+You can use following parameters to specify the trigger:
+<pre><code>
+    logic       string          "and" or "or" logic to combine the conditions (default: "and")
+
+    id          string          name ist equal to given one
+                RegExp          name matched to regular expression
+
+    name        string          name ist equal to given one
+                RegExp          name matched to regular expression
+
+    change      string          "eq", "ne", "gt", "ge", "lt", "le", "any"
+            "eq"    (equal)            New value must be euqal to old one (newState.val == oldState.val)
+            "ne"    (not equal)        New value must be not equal to the old one (newState.val != oldState.val)
+            "gt"    (greater)          New value must be greater than old value (newState.val > oldState.val)
+            "ge"    (greater or equal) New value must be greater or euqal to old one (newState.val >= oldState.val)
+            "lt"    (smaller)          New value must be smaller than old one (newState.val < oldState.val)
+            "le"    (smaller or equal) New value must be smaller or euqal to old value (newState.val <= oldState.val)
+            "any"   Trigger will be rised if just the new value comes
+
+    val         mixed           New value must be euqal to given one
+    valNe       mixed           New value must be not equal to given one
+    valGt       mixed           New value must be greater than given one
+    valGe       mixed           New value must be greater or euqal to given one
+    valLt       mixed           New value must be smaller than given one
+    valLe       mixed           New value must be smaller or euqal to given one
+
+    ack         boolean         Acknowledged state of new value is equal to given one
+
+    oldVal      mixed           Previous value must be euqal to given one
+    oldValNe    mixed           Previous value must be not equal to given one
+    oldValGt    mixed           Previous value must be greater than given one
+    oldValGe    mixed           Previous value must be greater or euqal to given one
+    oldValLt    mixed           Previous value must be smaller than given one
+    oldValLe    mixed           Previous value must be smaller or euqal to given one
+
+    oldAck      bool            Acknowledged state of previous value is equal to given one
+
+    ts          string          New value time stamp must be euqal to given one (newState.ts == ts)
+    tsGt        string          New value time stamp must be not equal to the given one (newState.ts != ts)
+    tsGe        string          New value time stamp must be greater than given value (newState.ts > ts)
+    tsLt        string          New value time stamp must be greater or euqal to given one (newState.ts >= ts)
+    tsLe        string          New value time stamp must be smaller than given one (newState.ts < ts)
+
+    oldTs       string          Previous time stamp must be euqal to given one (oldState.ts == ts)
+    oldTsGt     string          Previous time stamp must be not equal to the given one (oldState.ts != ts)
+    oldTsGe     string          Previous time stamp must be greater than given value (oldState.ts > ts)
+    oldTsLt     string          Previous time stamp must be greater or euqal to given one (oldState.ts >= ts)
+    oldTsLe     string          Previous time stamp must be smaller than given one (oldState.ts < ts)
+
+    lc          string          Last change time stamp must be euqal to given one (newState.lc == lc)
+    lcGt        string          Last change time stamp must be not equal to the given one (newState.lc != lc)
+    lcGe        string          Last change time stamp must be greater than given value (newState.lc > lc)
+    lcLt        string          Last change time stamp must be greater or euqal to given one (newState.lc >= lc)
+    lcLe        string          Last change time stamp must be smaller than given one (newState.lc < lc)
+
+    oldLc       string          Previous last change time stamp must be euqal to given one (oldState.lc == lc)
+    oldLcGt     string          Previous last change time stamp must be not equal to the given one (oldState.lc != lc)
+    oldLcGe     string          Previous last change time stamp must be greater than given value (oldState.lc > lc)
+    oldLcLt     string          Previous last change time stamp must be greater or euqal to given one (oldState.lc >= lc)
+    oldLcLe     string          Previous last change time stamp must be smaller than given one (oldState.lc < lc)
+
+    channelId   string          Channel ID must be equal to given one
+                RegExp          Channel ID matched to regular expression
+
+    channelName string          Channel name must be equal to given one
+                RegExp          Channel name matched to regular expression
+
+    deviceId    string          Device ID must be equal to given one
+                RegExp          Device ID matched to regular expression
+
+    deviceName  string          Device name must be equal to given one
+                RegExp          Device name matched to regular expression
+
+    enumId      string          State belongs to given enum
+                RegExp          One enum ID of state satisfy the given regular expression
+
+    enumName    string          State belongs to given enum
+                RegExp          One enum name of state satisfy the given regular expression
+
+    from        string          New value is from defined adapter
+    fromNe      string          New value is not from defined adapter
+    oldFrom     string          Old value is from defined adapter
+    oldFromNe   string          Old value is not from defined adapter
+
+</code></pre>
+
+Examples:
+Trigger on all states with ID '*.STATE' if they are acknowledged and have new value "true".
+<code><pre>
+{
+    id: /\.STATE$/,
+    val: true,
+    ack: true,
+    logic: "and"
+}
+</code></pre>
+
 ### subscribe - same as **on**
     
 ### schedule
@@ -262,6 +359,10 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.2.3 (2015-03-06)
+* (bluefox) extend readme
+* (bluefox) add "change: 'any'" condition to trigger on updated value
+
 ### 0.2.2 (2015-03-04)
 * (bluefox) fix log function
 

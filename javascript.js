@@ -137,7 +137,7 @@
                     deviceId:       deviceId,
                     deviceName:     deviceName,
                     enumIds:        enumIds,       // Array of Strings
-                    enumNames:      enumNames,       // Array of Strings
+                    enumNames:      enumNames,     // Array of Strings
                     newState: {
                         val:        state.val,
                         ts:         state.ts,
@@ -152,11 +152,9 @@
                         lc:         oldState.lc,
                         from:       oldState.from
                     }
-
                 };
 
                 for (var i = 0, l = subscriptions.length; i < l; i++) {
-
                     if (patternMatching(eventObj, subscriptions[i].pattern)) {
                         subscriptions[i].callback(eventObj);
                     }
@@ -1091,6 +1089,32 @@
                     }
                     break;
                 default:
+                    // on any other logic, just signal about message
+                    if (pattern.logic === "or") return true;
+                    matched = true;
+                    break;
+            }
+        }
+
+        // Ack Matching
+        if (pattern.ack !== undefined) {
+            if (((pattern.ack === 'true'  || pattern.ack === true)  && (event.newState.ack === true  || event.newState.ack === 'true')) ||
+                ((pattern.ack === 'false' || pattern.ack === false) && (event.newState.ack === false || event.newState.ack === 'false'))) {
+                if (pattern.logic === "or") return true;
+                matched = true;
+            } else {
+                if (pattern.logic === "and") return false;
+            }
+        }
+
+        // oldAck Matching
+        if (pattern.oldAck !== undefined) {
+            if (((pattern.oldAck === 'true'  || pattern.oldAck === true)  && (event.oldState.ack === true  || event.oldState.ack === 'true')) ||
+                ((pattern.oldAck === 'false' || pattern.oldAck === false) && (event.oldState.ack === false || event.oldState.ack === 'false'))) {
+                if (pattern.logic === "or") return true;
+                matched = true;
+            } else {
+                if (pattern.logic === "and") return false;
             }
         }
 
