@@ -126,9 +126,10 @@ on('adapter.0.device.channel.sensor', function (obj) {
     }
 });
 </code></pre>
+
 You can use following parameters to specify the trigger:
 <pre><code>
-    logic       string          "and" or "or" logic to combine the conditions (default: "and")
+    logic       string          "and" or "or" logic to combine the conditions \(default: "and"\)
 
     id          string          name ist equal to given one
                 RegExp          name matched to regular expression
@@ -227,7 +228,62 @@ Trigger on all states with ID '*.STATE' if they are acknowledged and have new va
     
 ### schedule
     schedule (pattern, callback)
-    
+
+Time scheduler with astro-funktion.
+
+####Time schedule
+Pattern can be a string with [Cron-Syntax](http://en.wikipedia.org/wiki/Cron), e.G.:
+
+<code><pre>
+schedule("*/2 * * * *", function () {
+    log("Will be triggered every 2 minutes!");
+});
+</code></pre>
+Pattern can be an object, it is used especially if seconds are required:
+
+<code><pre>
+schedule({second: [20, 25]}, function () {
+    log(Will be triggered at xx:xx:20 and xx:xx:25 of every minute!");
+});
+
+schedule({hour: 12, minute: 30}, function () {
+    log(Will be triggered at 12:30!");
+});
+</code></pre>
+Pattern can be a Javascript Date object (some specific time point) - in this case only it will be triggered only one time.
+
+####Astro- funktion
+
+Astro-function can be used via "astro" attribute:
+
+<code><pre>
+schedule({astro: "sunrise"}, function () {
+    log("Sunrise!");
+});
+
+schedule({astro: "sunset", shift: 10}, function () {
+    log("10 minutes after Sunrise!");
+});
+</code></pre>
+Das Attribut shift ist eine Verschiebung in Minuten, kann auch negativ sein um die Events vorzuziehen.
+
+Following values can be used as attribut in astro-function:
+
+- sunrise: sunrise (top edge of the sun appears on the horizon)
+- sunriseEnd: sunrise ends (bottom edge of the sun touches the horizon)
+- goldenHourEnd: morning golden hour (soft light, best time for photography) ends
+- solarNoon: solar noon (sun is in the highest position)
+- goldenHour: evening golden hour starts
+- sunsetStart: sunset starts (bottom edge of the sun touches the horizon)
+- sunset: sunset (sun disappears below the horizon, evening civil twilight starts)
+- dusk: dusk (evening nautical twilight starts)
+- nauticalDusk: nautical dusk (evening astronomical twilight starts)
+- night: night starts (dark enough for astronomical observations)
+- nightEnd: night ends (morning astronomical twilight starts)
+- nauticalDawn: nautical dawn (morning nautical twilight starts)
+- dawn: dawn (morning nautical twilight ends, morning civil twilight starts)
+- nadir: nadir (darkest moment of the night, sun is in the lowest position)
+
 ### setState 
     setState (id, state, callback)
     
