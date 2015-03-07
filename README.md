@@ -224,7 +224,7 @@ Trigger on all states with ID '*.STATE' if they are acknowledged and have new va
 }
 </code></pre>
 
-### subscribe - same as **on**
+### subscribe - same as **[on](#on---subscribe-on-changes-or-updates-of-some-state)**
     
 ### schedule
     schedule (pattern, callback)
@@ -233,6 +233,15 @@ Time scheduler with astro-funktion.
 
 ####Time schedule
 Pattern can be a string with [Cron-Syntax](http://en.wikipedia.org/wiki/Cron), e.G.:
+
+     # *  *  * *  *  command to execute
+     # │ │ │ │ │
+     # │ │ │ │ │
+     # │ │ │ │ └───── day of week (0 - 6) (0 to 6 are Sunday to Saturday, or use names; 7 is Sunday, the same as 0)
+     # │ │ │ └────────── month (1 - 12)
+     # │ │ └─────────────── day of month (1 - 31)
+     # │ └──────────────────── hour (0 - 23)
+     # └───────────────────────── min (0 - 59)
 
 ```
 schedule("*/2 * * * *", function () {
