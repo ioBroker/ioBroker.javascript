@@ -64,7 +64,7 @@ Default severity is ***'info'***
     on(pattern, callbackOrId, value)
 
 The callback function will return the object as parameter with following content:
-<pre><code>
+```
     {
     	'id' : 'io.state.id',
     	'name' : 'state',
@@ -100,11 +100,11 @@ The callback function will return the object as parameter with following content
     		'from' : 'system.adapter.sonos.0'
     	}
     }
-</code></pre>
+```
 
 
 Example:
-<pre><code>
+```
 var timer;
 
 // Create state "javascript.0.counter"
@@ -125,93 +125,93 @@ on('adapter.0.device.channel.sensor', function (obj) {
         setState('adapter.0.device.channel.actor', true);
     }
 });
-</code></pre>
+```
 
 You can use following parameters to specify the trigger:
-<pre><code>
-    logic       string          "and" or "or" logic to combine the conditions \(default: "and"\)
 
-    id          string          name ist equal to given one
-                RegExp          name matched to regular expression
-
-    name        string          name ist equal to given one
-                RegExp          name matched to regular expression
-
-    change      string          "eq", "ne", "gt", "ge", "lt", "le", "any"
-            "eq"    (equal)            New value must be euqal to old one (newState.val == oldState.val)
-            "ne"    (not equal)        New value must be not equal to the old one (newState.val != oldState.val)
-            "gt"    (greater)          New value must be greater than old value (newState.val > oldState.val)
-            "ge"    (greater or equal) New value must be greater or euqal to old one (newState.val >= oldState.val)
-            "lt"    (smaller)          New value must be smaller than old one (newState.val < oldState.val)
-            "le"    (smaller or equal) New value must be smaller or euqal to old value (newState.val <= oldState.val)
-            "any"   Trigger will be rised if just the new value comes
-
-    val         mixed           New value must be euqal to given one
-    valNe       mixed           New value must be not equal to given one
-    valGt       mixed           New value must be greater than given one
-    valGe       mixed           New value must be greater or euqal to given one
-    valLt       mixed           New value must be smaller than given one
-    valLe       mixed           New value must be smaller or euqal to given one
-
-    ack         boolean         Acknowledged state of new value is equal to given one
-
-    oldVal      mixed           Previous value must be euqal to given one
-    oldValNe    mixed           Previous value must be not equal to given one
-    oldValGt    mixed           Previous value must be greater than given one
-    oldValGe    mixed           Previous value must be greater or euqal to given one
-    oldValLt    mixed           Previous value must be smaller than given one
-    oldValLe    mixed           Previous value must be smaller or euqal to given one
-
-    oldAck      bool            Acknowledged state of previous value is equal to given one
-
-    ts          string          New value time stamp must be euqal to given one (newState.ts == ts)
-    tsGt        string          New value time stamp must be not equal to the given one (newState.ts != ts)
-    tsGe        string          New value time stamp must be greater than given value (newState.ts > ts)
-    tsLt        string          New value time stamp must be greater or euqal to given one (newState.ts >= ts)
-    tsLe        string          New value time stamp must be smaller than given one (newState.ts < ts)
-
-    oldTs       string          Previous time stamp must be euqal to given one (oldState.ts == ts)
-    oldTsGt     string          Previous time stamp must be not equal to the given one (oldState.ts != ts)
-    oldTsGe     string          Previous time stamp must be greater than given value (oldState.ts > ts)
-    oldTsLt     string          Previous time stamp must be greater or euqal to given one (oldState.ts >= ts)
-    oldTsLe     string          Previous time stamp must be smaller than given one (oldState.ts < ts)
-
-    lc          string          Last change time stamp must be euqal to given one (newState.lc == lc)
-    lcGt        string          Last change time stamp must be not equal to the given one (newState.lc != lc)
-    lcGe        string          Last change time stamp must be greater than given value (newState.lc > lc)
-    lcLt        string          Last change time stamp must be greater or euqal to given one (newState.lc >= lc)
-    lcLe        string          Last change time stamp must be smaller than given one (newState.lc < lc)
-
-    oldLc       string          Previous last change time stamp must be euqal to given one (oldState.lc == lc)
-    oldLcGt     string          Previous last change time stamp must be not equal to the given one (oldState.lc != lc)
-    oldLcGe     string          Previous last change time stamp must be greater than given value (oldState.lc > lc)
-    oldLcLt     string          Previous last change time stamp must be greater or euqal to given one (oldState.lc >= lc)
-    oldLcLe     string          Previous last change time stamp must be smaller than given one (oldState.lc < lc)
-
-    channelId   string          Channel ID must be equal to given one
-                RegExp          Channel ID matched to regular expression
-
-    channelName string          Channel name must be equal to given one
-                RegExp          Channel name matched to regular expression
-
-    deviceId    string          Device ID must be equal to given one
-                RegExp          Device ID matched to regular expression
-
-    deviceName  string          Device name must be equal to given one
-                RegExp          Device name matched to regular expression
-
-    enumId      string          State belongs to given enum
-                RegExp          One enum ID of state satisfy the given regular expression
-
-    enumName    string          State belongs to given enum
-                RegExp          One enum name of state satisfy the given regular expression
-
-    from        string          New value is from defined adapter
-    fromNe      string          New value is not from defined adapter
-    oldFrom     string          Old value is from defined adapter
-    oldFromNe   string          Old value is not from defined adapter
-
-</code></pre>
+| parameter   | type/value | description                                                                                            |
+|-----------  |-------     |-------------------                                                                                     |
+| logic       | string     |       "and" or "or" logic to combine the conditions \(default: "and"\)                                 |
+|             |            |                                                                                                        |
+| id          | string     |       name ist equal to given one                                                                      |
+|             | RegExp     |       name matched to regular expression                                                               |
+|             |            |                                                                                                        |
+| name        | string     |       name ist equal to given one                                                                      |
+|             | RegExp     |       name matched to regular expression                                                               |
+|             |            |                                                                                                        |
+| change      | string     |       "eq", "ne", "gt", "ge", "lt", "le", "any"                                                        |
+|             |   "eq"     |       (equal)            New value must be euqal to old one (newState.val == oldState.val)             |
+|             |   "ne"     |       (not equal)        New value must be not equal to the old one (newState.val != oldState.val)     |
+|             |   "gt"     |       (greater)          New value must be greater than old value (newState.val > oldState.val)        |
+|             |   "ge"     |       (greater or equal) New value must be greater or euqal to old one (newState.val >= oldState.val)  |
+|             |   "lt"     |       (smaller)          New value must be smaller than old one (newState.val < oldState.val)          |
+|             |   "le"     |       (smaller or equal) New value must be smaller or euqal to old value (newState.val <= oldState.val)|
+|             |  "any"     |       Trigger will be rised if just the new value comes                                                |
+|             |            |                                                                                                        |
+| val         | mixed      |       New value must be euqal to given one                                                             |
+| valNe       | mixed      |       New value must be not equal to given one                                                         |
+| valGt       | mixed      |       New value must be greater than given one                                                         |
+| valGe       | mixed      |       New value must be greater or euqal to given one                                                  |
+| valLt       | mixed      |       New value must be smaller than given one                                                         |
+| valLe       | mixed      |       New value must be smaller or euqal to given one                                                  |
+|             |            |                                                                                                        |
+| ack         | boolean    |       Acknowledged state of new value is equal to given one                                            |
+|             |            |                                                                                                        |
+| oldVal      | mixed      |       Previous value must be euqal to given one                                                        |
+| oldValNe    | mixed      |       Previous value must be not equal to given one                                                    |
+| oldValGt    | mixed      |       Previous value must be greater than given one                                                    |
+| oldValGe    | mixed      |       Previous value must be greater or euqal to given one                                             |
+| oldValLt    | mixed      |       Previous value must be smaller than given one                                                    |
+| oldValLe    | mixed      |       Previous value must be smaller or euqal to given one                                             |
+|             |            |                                                                                                        |
+| oldAck      | bool       |       Acknowledged state of previous value is equal to given one                                       |
+|             |            |                                                                                                        |
+| ts          | string     |       New value time stamp must be euqal to given one (newState.ts == ts)                              |
+| tsGt        | string     |       New value time stamp must be not equal to the given one (newState.ts != ts)                      |
+| tsGe        | string     |       New value time stamp must be greater than given value (newState.ts > ts)                         |
+| tsLt        | string     |       New value time stamp must be greater or euqal to given one (newState.ts >= ts)                   |
+| tsLe        | string     |       New value time stamp must be smaller than given one (newState.ts < ts)                           |
+|             |            |                                                                                                        |
+| oldTs       | string     |       Previous time stamp must be euqal to given one (oldState.ts == ts)                               |
+| oldTsGt     | string     |       Previous time stamp must be not equal to the given one (oldState.ts != ts)                       |
+| oldTsGe     | string     |       Previous time stamp must be greater than given value (oldState.ts > ts)                          |
+| oldTsLt     | string     |       Previous time stamp must be greater or euqal to given one (oldState.ts >= ts)                    |
+| oldTsLe     | string     |       Previous time stamp must be smaller than given one (oldState.ts < ts)                            |
+|             |            |                                                                                                        |
+| lc          | string     |       Last change time stamp must be euqal to given one (newState.lc == lc)                            |
+| lcGt        | string     |       Last change time stamp must be not equal to the given one (newState.lc != lc)                    |
+| lcGe        | string     |       Last change time stamp must be greater than given value (newState.lc > lc)                       |
+| lcLt        | string     |       Last change time stamp must be greater or euqal to given one (newState.lc >= lc)                 |
+| lcLe        | string     |       Last change time stamp must be smaller than given one (newState.lc < lc)                         |
+|             |            |                                                                                                        |
+| oldLc       | string     |       Previous last change time stamp must be euqal to given one (oldState.lc == lc)                   |
+| oldLcGt     | string     |       Previous last change time stamp must be not equal to the given one (oldState.lc != lc)           |
+| oldLcGe     | string     |       Previous last change time stamp must be greater than given value (oldState.lc > lc)              |
+| oldLcLt     | string     |       Previous last change time stamp must be greater or euqal to given one (oldState.lc >= lc)        |
+| oldLcLe     | string     |       Previous last change time stamp must be smaller than given one (oldState.lc < lc)                |
+|             |            |                                                                                                        |
+| channelId   | string     |       Channel ID must be equal to given one                                                            |
+|             | RegExp     |       Channel ID matched to regular expression                                                         |
+|             |            |                                                                                                        |
+| channelName | string     |       Channel name must be equal to given one                                                          |
+|             | RegExp     |       Channel name matched to regular expression                                                       |
+|             |            |                                                                                                        |
+| deviceId    | string     |       Device ID must be equal to given one                                                             |
+|             | RegExp     |       Device ID matched to regular expression                                                          |
+|             |            |                                                                                                        |
+| deviceName  | string     |       Device name must be equal to given one                                                           |
+|             | RegExp     |       Device name matched to regular expression                                                        |
+|             |            |                                                                                                        |
+| enumId      | string     |       State belongs to given enum                                                                      |
+|             | RegExp     |       One enum ID of state satisfy the given regular expression                                        |
+|             |            |                                                                                                        |
+| enumName    | string     |       State belongs to given enum                                                                      |
+|             | RegExp     |       One enum name of state satisfy the given regular expression                                      |
+|             |            |                                                                                                        |
+| from        | string     |       New value is from defined adapter                                                                |
+| fromNe      | string     |       New value is not from defined adapter                                                            |
+| oldFrom     | string     |       Old value is from defined adapter                                                                |
+| oldFromNe   | string     |       Old value is not from defined adapter                                                            |
 
 Examples:
 Trigger on all states with ID '*.STATE' if they are acknowledged and have new value "true".
@@ -234,14 +234,14 @@ Time scheduler with astro-funktion.
 ####Time schedule
 Pattern can be a string with [Cron-Syntax](http://en.wikipedia.org/wiki/Cron), e.G.:
 
-<code><pre>
+```
 schedule("*/2 * * * *", function () {
     log("Will be triggered every 2 minutes!");
 });
-</code></pre>
+```
 Pattern can be an object, it is used especially if seconds are required:
 
-<code><pre>
+```
 schedule({second: [20, 25]}, function () {
     log(Will be triggered at xx:xx:20 and xx:xx:25 of every minute!");
 });
@@ -249,14 +249,14 @@ schedule({second: [20, 25]}, function () {
 schedule({hour: 12, minute: 30}, function () {
     log(Will be triggered at 12:30!");
 });
-</code></pre>
+```
 Pattern can be a Javascript Date object (some specific time point) - in this case only it will be triggered only one time.
 
 ####Astro- funktion
 
 Astro-function can be used via "astro" attribute:
 
-<code><pre>
+```
 schedule({astro: "sunrise"}, function () {
     log("Sunrise!");
 });
@@ -264,7 +264,7 @@ schedule({astro: "sunrise"}, function () {
 schedule({astro: "sunset", shift: 10}, function () {
     log("10 minutes after Sunrise!");
 });
-</code></pre>
+```
 Das Attribut shift ist eine Verschiebung in Minuten, kann auch negativ sein um die Events vorzuziehen.
 
 Following values can be used as attribut in astro-function:
@@ -397,10 +397,10 @@ If some of these states changes the callback will be called like for "on" functi
 
 Following functions are possible, setValue, getValue (only from first), on, each
 
-<pre><code>
+```
 // Switch on all switches in "Wohnzimmer"
 $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').setValue(true);
-</code></pre>
+```
 
 ### readFile
     readFile (fileName, function (error, bytes) {})
