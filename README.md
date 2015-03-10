@@ -371,7 +371,7 @@ Same as javascript ***clearTimeout***.
     $(selector).getState();
 
 Format of selector:
-    '''name[commonAttr=something1](enumName=something2){nativeName=something3}[id=idfilter][state.id=idfilter]'''
+    '''name\[commonAttr=something1\]\(enumName=something2\){nativeName=something3}\[id=idfilter\]\[state.id=idfilter\]'''
 
 name can be: state, channel or device
 "idfilter" can have wildcards '*'
@@ -388,6 +388,7 @@ Prefixes ***(not implemented - should be discussed)*** :
 - $('channel(room=Living room)' - all states in room "Living room"
 - $('channel{TYPE=BLIND}[state.id=*.LEVEL]') - Get all shutter of Homematic 
 - $('channel[role=switch](rooms=Living room)[state.id=*.STATE]').setState(false) - Switch all states with .STATE of channels with role "switch" in "Living room" to false
+- $('channel[state.id=*.STATE](functions=Windows').each(function (id, i) {log(id);}); - print all states of enum "windows" in log 
 - $('.switch §"Living room") - Take states with all switches in 'Living room' ***(not implemented - should be discussed)***
 - $('channel .switch §"Living room") - Take states with all switches in 'Living room' ***(not implemented - should be discussed)***
 
