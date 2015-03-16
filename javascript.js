@@ -721,6 +721,11 @@
                     pattern = {id: pattern, change: 'ne'};
                 }
 
+                // add adapter namespace if nothing given
+                if (pattern.id && pattern.id.indexOf('.') == -1) {
+                    pattern.id = adapter.namespace + '.' + pattern.id;
+                }
+
                 if (typeof callbackOrId === 'function') {
                     callback = callbackOrId;
                 } else {

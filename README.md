@@ -444,6 +444,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.2.5 (2015-03-16)
+* (bluefox) enable on('localVar', function ()...)
+
 ### 0.2.4 (2015-03-16)
 * (bluefox) fix error with astro. Add longitude and latitude to settings.
 * (bluefox) fix selector if brackets are wrong
