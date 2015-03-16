@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "0.2.3",
+        "version":                  "0.2.4",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "hobbyquaker <hq@ccu.io>, bluefox <bluefox@ccu.io>"
@@ -18,7 +18,8 @@
         "engineTypes":              ["Javascript/js", "Coffeescript/coffee"]
     },
     "native": {
-
+        "latitude" : "",
+        "longitude" : ""
     },
     "objects": [
         {

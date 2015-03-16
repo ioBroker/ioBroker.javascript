@@ -30,22 +30,56 @@
             "de": "Javascript Skripte Einstellungen",
             "ru": "Настройки скриптов Javascript"
         },
-        "There is nothing to setup": {
-            "en": "There is nothing to setup",
-            "de": "Es gibt nichts einzustellen",
-            "ru": "Ничего настраивать не надо"
+        "Latitude °:": {
+            "en": "Latitude °:",
+            "de": "Breite °:",
+            "ru": "Широта °:"
+        },
+        "Longitude °:": {
+            "en": "Longitude °:",
+            "de": "Länge °:",
+            "ru": "Долгота °:"
         }
     };
 
+    function setValue(id, value, onChange) {
+        if ($('#' + id + '.value').attr('type') == 'checkbox') {
+            $('#' + id + '.value').prop('checked', value).change(function() {
+                onChange();
+            });
+        } else {
+            $('#' + id + '.value').val(value).change(function() {
+                onChange();
+            }).keyup(function() {
+                onChange();
+            });
+        }
+    }
+
     // the function loadSettings has to exist ...
     function load(settings, onChange) {
+        $('.value').each(function () {
+            var id = $(this).attr('id');
+            setValue(id, settings[id] || '', onChange);
+        });
+
         onChange(false);
     }
 
     // ... and the function save has to exist.
     // you have to make sure the callback is called with the settings object as first param!
     function save(callback) {
-        callback(null);
+        var obj = {};
+        $('.value').each(function () {
+            var $this = $(this);
+            if ($this.attr('type') == 'checkbox') {
+                obj[$this.attr('id')] = $this.prop('checked');
+            } else {
+                obj[$this.attr('id')] = $this.val();
+            }
+        });
+
+        callback(obj);
     }
 </script>
 
@@ -57,6 +91,15 @@
         <td style="padding-top: 20px;padding-left: 10px"><h3 class="translate">Javascript scripts adapter settings</h3></td>
     </tr></table>
 
-    <div class="translate">There is nothing to setup</div>
+    <table>
+        <tr>
+            <td colspan='3'><h4 class="translate"Astro settings</h4></td>
+        </tr>
+        <tr>
+            <td class="translate">Latitude °:</td><td><input id="latitude" class="value" /></td>
+            <td class="translate">Longitude °:</td><td><input id="longitude" class="value" /></td>
+        </tr>
+        <tr>
+
 </div>
 </html>
