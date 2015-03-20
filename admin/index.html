@@ -34,18 +34,101 @@
             "en": "There is nothing to setup",
             "de": "Es gibt nichts einzustellen",
             "ru": "Ничего настраивать не надо"
+        },
+        "Help": {
+            "en": "Use form with 49.1245 and <b>not</b> 49°34'0\". Elsewise it will be converted automatically.",
+            "de": "Benutze das Format mit 49.1245 und <b>nicht</b> 49°34'0\", sonst es wird automatisch umgerechnet",
+            "ru": "Используйте формат 49.1245, а <b>не</b> 49°34'0\", иначе градусы автоматически переведутся в нужный формат"
         }
     };
 
+    function setValue(id, value, onChange) {
+        // example: select elements with id=key and class=value and insert value
+        if ($('#' + id + '.value').attr('type') == 'checkbox') {
+            $('#' + id + '.value').prop('checked', value).change(function() {
+                onChange();
+            });
+        } else {
+            $('#' + id + '.value').val(value).change(function() {
+                onChange();
+            }).keyup(function() {
+                onChange();
+            });
+        }
+    }
+
     // the function loadSettings has to exist ...
     function load(settings, onChange) {
+        $('.value').each(function () {
+            var id = $(this).attr('id');
+            setValue(id, settings[id] || '', onChange);
+        });
+
         onChange(false);
     }
 
+    function convertGrad(obj, attr) {
+        // Extract ° " and '
+        var m = obj[attr].match(/([0-9]+)°(\s*)(([0-9]+)')?(\s*)(([0-9]+)")?(\s*)([A-Z]+)?/);
+        if (m) {
+            var grad = m[1];
+            var min  = m[4];
+            var sec  = m[7];
+            var dir  = m[9];
+
+            if (grad !== undefined && grad !== null) {
+                // Graddez = Grad + ( Minuten * 60 + Sekunden ) / 3600
+                var result = parseInt(grad, 10);
+                if (min !== undefined && min !== null) {
+                    result += parseInt(min, 10) / 60;
+                    if (sec !== undefined && sec !== null) {
+                        result += parseInt(sec, 10) / 3600;
+                    }
+                }
+                if (dir) {
+                    dir = dir.toLowerCase();
+                    if (dir == 's' || dir == 'w') {
+                        result = (-1) * result;
+                    }
+                }
+                obj[attr] = result.toFixed(6);
+                return true;
+            } else {
+                return false;
+            }
+            return true;
+        } else {
+            showMessage(_('Invalid format. Use A°B\'C"D'));
+            return false;
+        }
+
+    }
     // ... and the function save has to exist.
     // you have to make sure the callback is called with the settings object as first param!
     function save(callback) {
-        callback(null);
+        var obj = {};
+        $('.value').each(function () {
+            var $this = $(this);
+            if ($this.attr('type') == 'checkbox') {
+                obj[$this.attr('id')] = $this.prop('checked');
+            } else {
+                obj[$this.attr('id')] = $this.val();
+            }
+        });
+        if (obj.latitude.indexOf('°') != -1) {
+            if (!convertGrad(obj, 'latitude')) {
+                return;
+            }
+            $('#latitude').val(obj.latitude);
+        }
+        if (obj.longitude.indexOf('°') != -1) {
+            if (!convertGrad(obj, 'longitude')) {
+                return;
+            }
+            $('#longitude').val(obj.longitude);
+        }
+
+        callback(obj);
     }
 </script>
 
@@ -57,6 +140,16 @@
         <td style="padding-top: 20px;padding-left: 10px"><h3 class="translate">Javascript scripts adapter settings</h3></td>
     </tr></table>
 
-    <div class="translate">There is nothing to setup</div>
+    <div id="settings">
+        <table>
+            <tr>
+                <td class="translate">Latitude</td><td><input type="text" id="latitude" class="value"></td>
+            </tr>
+            <tr>
+                <td class="translate">Longitude</td><td><input type="text" id="longitude" class="value"></td>
+            </tr>
+        </table>
+        <p class="translate">Help</p>
+    </div>
 </div>
 </html>

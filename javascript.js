@@ -472,7 +472,15 @@
                             if (filterStates.length) {
                                 pass = true;
                                 for (var st = 0; st < filterStates.length; st++) {
-                                    if (!filterStates[st].r && filterStates[st].value) filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
+                                    if (!filterStates[st].r && filterStates[st].value) {
+                                        if (filterStates[st].value[0] == '*') {
+                                            filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+                                        } else if (filterStates[st].value[filterStates[st].value - 1] == '*'){
+                                            filterStates[st].r = new RegExp('^' + filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
+                                        } else {
+                                            filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
+                                        }
+                                    }
                                     if (!filterStates[st].r || filterStates[st].r.test(channels[id][s])) continue;
                                     pass = false;
                                     break;
@@ -533,7 +541,15 @@
                             if (filterStates.length) {
                                 pass = true;
                                 for (var st = 0; st < filterStates.length; st++) {
-                                    if (!filterStates[st].r && filterStates[st].value) filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
+                                    if (!filterStates[st].r && filterStates[st].value) {
+                                        if (filterStates[st].value[0] == '*') {
+                                            filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+                                        } else if (filterStates[st].value[filterStates[st].value - 1] == '*'){
+                                            filterStates[st].r = new RegExp('^' + filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
+                                        } else {
+                                            filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
+                                        }
+                                    }
                                     if (!filterStates[st].r || filterStates[st].r.test(devices[id][s])) continue;
                                     pass = false;
                                     break;
@@ -584,7 +600,15 @@
 
                         if (filterStates.length) {
                             for (var st = 0; st < filterStates.length; st++) {
-                                if (!filterStates[st].r && filterStates[st].value) filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
+                                if (!filterStates[st].r && filterStates[st].value) {
+                                    if (filterStates[st].value[0] == '*') {
+                                        filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+                                    } else if (filterStates[st].value[filterStates[st].value - 1] == '*'){
+                                        filterStates[st].r = new RegExp('^' + filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
+                                    } else {
+                                        filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
+                                    }
+                                }
                                 if (!filterStates[st].r || filterStates[st].r.test(id)) continue;
                                 pass = false;
                                 break;
@@ -722,6 +746,11 @@
 
                     var date    = new Date();
                     var nowdate = new Date();
+
+                    if (adapter.config.latitude === undefined || adapter.config.longitude === undefined) {
+                        adapter.log.error('No latitude, longitude set. Astro is not possible.');
+                        return;
+                    }
 
                     var ts = mods.suncalc.getTimes(date, adapter.config.latitude, adapter.config.longitude)[pattern.astro];
 
