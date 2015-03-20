@@ -30,10 +30,20 @@
             "de": "Javascript Skripte Einstellungen",
             "ru": "Настройки скриптов Javascript"
         },
-        "There is nothing to setup": {
-            "en": "There is nothing to setup",
-            "de": "Es gibt nichts einzustellen",
-            "ru": "Ничего настраивать не надо"
+        "Latitude °:": {
+            "en": "Latitude °:",
+            "de": "Breite °:",
+            "ru": "Широта °:"
+        },
+        "Longitude °:": {
+            "en": "Longitude °:",
+            "de": "Länge °:",
+            "ru": "Долгота °:"
+        },
+        "Invalid format. Use A°B'C\"D": {
+            "en": "Invalid format. Use A°B'C\"D",
+            "de": "Invalid Format. Benutze A°B'C\"D",
+            "ru": "Неправильный формат. Используется г°м'с\"Н"
         },
         "Help": {
             "en": "Use form with 49.1245 and <b>not</b> 49°34'0\". Elsewise it will be converted automatically.",
@@ -140,16 +150,15 @@
         <td style="padding-top: 20px;padding-left: 10px"><h3 class="translate">Javascript scripts adapter settings</h3></td>
     </tr></table>
 
-    <div id="settings">
-        <table>
-            <tr>
-                <td class="translate">Latitude</td><td><input type="text" id="latitude" class="value"></td>
-            </tr>
-            <tr>
-                <td class="translate">Longitude</td><td><input type="text" id="longitude" class="value"></td>
-            </tr>
-        </table>
-        <p class="translate">Help</p>
-    </div>
+    <table>
+        <tr>
+            <td colspan='2'><h4 class="translate">Astro settings</h4></td>
+        </tr>
+        <tr>
+            <td class="translate">Latitude °:</td><td><input id="latitude" class="value" /></td>
+            <td class="translate">Longitude °:</td><td><input id="longitude" class="value" /></td>
+        </tr>
+    </table>
+    <p class="translate">Help</p>
 </div>
 </html>

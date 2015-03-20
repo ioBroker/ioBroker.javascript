@@ -252,11 +252,11 @@ Pattern can be an object, it is used especially if seconds are required:
 
 ```
 schedule({second: [20, 25]}, function () {
-    log(Will be triggered at xx:xx:20 and xx:xx:25 of every minute!");
+    log("Will be triggered at xx:xx:20 and xx:xx:25 of every minute!");
 });
 
 schedule({hour: 12, minute: 30}, function () {
-    log(Will be triggered at 12:30!");
+    log("Will be triggered at 12:30!");
 });
 ```
 Pattern can be a Javascript Date object (some specific time point) - in this case only it will be triggered only one time.
@@ -271,10 +271,10 @@ schedule({astro: "sunrise"}, function () {
 });
 
 schedule({astro: "sunset", shift: 10}, function () {
-    log("10 minutes after Sunrise!");
+    log("10 minutes after sunset!");
 });
 ```
-Das Attribut shift ist eine Verschiebung in Minuten, kann auch negativ sein um die Events vorzuziehen.
+The attribute "shift" is the offset in minutes. It can be negative too, to define time before astro event.
 
 Following values can be used as attribut in astro-function:
 
@@ -292,6 +292,23 @@ Following values can be used as attribut in astro-function:
 - nauticalDawn: nautical dawn (morning nautical twilight starts)
 - dawn: dawn (morning nautical twilight ends, morning civil twilight starts)
 - nadir: nadir (darkest moment of the night, sun is in the lowest position)
+
+**Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
+
+**Note:** you can use "on" function for schedule with small modification: 
+```
+on({time: "*/2 * * * *"}, function () {
+    log((new Date()).toString() + " - Will be triggered every 2 minutes!");
+});
+
+on({time: {hour: 12, minute: 30}}, function () {
+    log((new Date()).toString() + " - Will be triggered at 12:30!");
+});
+
+on({astro: "sunset", shift: 10}, function () {
+    log((new Date()).toString() + " - 10 minutes after sunset!");
+});
+```
 
 ### setState 
     setState (id, state, callback)
@@ -388,7 +405,9 @@ Prefixes ***(not implemented - should be discussed)*** :
 - $('channel(room=Living room)' - all states in room "Living room"
 - $('channel{TYPE=BLIND}[state.id=*.LEVEL]') - Get all shutter of Homematic 
 - $('channel[role=switch](rooms=Living room)[state.id=*.STATE]').setState(false) - Switch all states with .STATE of channels with role "switch" in "Living room" to false
-- $('channel[state.id=*.STATE](functions=Windows').each(function (id, i) {log(id);}); - print all states of enum "windows" in log 
+- $('channel[state.id=*.STATE](functions=Windows)').each(function (id, i) {log(id);}); - print all states of enum "windows" in log 
+
+
 - $('.switch §"Living room") - Take states with all switches in 'Living room' ***(not implemented - should be discussed)***
 - $('channel .switch §"Living room") - Take states with all switches in 'Living room' ***(not implemented - should be discussed)***
 
@@ -425,6 +444,18 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.2.6 (2015-03-16)
+* (bluefox) convert automatical grad to decimal grad
+* (bluefox) fix some errors
+
+### 0.2.5 (2015-03-16)
+* (bluefox) enable on('localVar', function ()...)
+
+### 0.2.4 (2015-03-16)
+* (bluefox) fix error with astro. Add longitude and latitude to settings.
+* (bluefox) fix selector if brackets are wrong
+* (bluefox) make possible use "on" instead schedule
+
 ### 0.2.3 (2015-03-06)
 * (bluefox) extend readme
 * (bluefox) add "change: 'any'" condition to trigger on updated value

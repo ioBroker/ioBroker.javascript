@@ -248,6 +248,8 @@
 
                 // Todo CACHE!!!
 
+                var result    = {};
+
                 var name      = '';
                 var commons   = [];
                 var _enums    = [];
@@ -317,6 +319,36 @@
                     } //else {
                         // some error
                     //}
+                }
+
+                // If some error in the selector
+                if (isEnums || isCommons || isNatives) {
+                    result.length = 0;
+                    result.each = function () {
+                        return this;
+                    };
+                    result.getState = function () {
+                        return null;
+                    };
+                    result.setState = function () {
+                        return this;
+                    };
+                    result.on = function () {
+                    };
+                }
+
+                if (isEnums) {
+                    adapter.log.warn('Invalid selector: enum close bracket cannot be found in "' + selector + '"');
+                    result.error = 'Invalid selector: enum close bracket cannot be found';
+                    return result;
+                } else if (isCommons) {
+                    adapter.log.warn('Invalid selector: common close bracket cannot be found in "' + selector + '"');
+                    result.error = 'Invalid selector: common close bracket cannot be found';
+                    return result;
+                } else if (isNatives) {
+                    adapter.log.warn('Invalid selector: native close bracket cannot be found in "' + selector + '"');
+                    result.error = 'Invalid selector: native close bracket cannot be found';
+                    return result;
                 }
 
                 var filterStates = [];
@@ -395,8 +427,8 @@
                 if (name == 'channel' || name == 'device') {
                     // Fill channels
                     if (!channels || !devices) {
-                        channels = [];
-                        devices  = [];
+                        channels = {};
+                        devices  = {};
                         for (var _id in objects) {
                             if (objects[_id].type == 'state') {
                                 parts = _id.split('.');
@@ -634,7 +666,6 @@
                     // Now filter away by name
                 }
 
-                var result = {};
                 for (i = 0; i < res.length; i++) {
                     result[i] = res[i];
                 }
@@ -647,7 +678,8 @@
                 };
                 result.getState = function () {
                     if (this[0]) return states[this[0]];
-                    return this;
+                    
+                    return null;
                 };
                 result.setState = function (state, isAck, callback) {
                     if (typeof isAck == 'function') {
@@ -698,6 +730,13 @@
                 adapter.sendTo('pushover', msg);
             },
             subscribe: function (pattern, callbackOrId, value) {
+                if (typeof pattern == 'object') {
+                    if (pattern.astro) {
+                        return sandbox.schedule(pattern, callbackOrId, value);
+                    } else if (pattern.time) {
+                        return sandbox.schedule(pattern.time, callbackOrId, value);
+                    }
+                }
 
                 var callback;
 
@@ -705,6 +744,11 @@
 
                 if (typeof pattern !== 'object') {
                     pattern = {id: pattern, change: 'ne'};
+                }
+
+                // add adapter namespace if nothing given
+                if (pattern.id && pattern.id.indexOf('.') == -1) {
+                    pattern.id = adapter.namespace + '.' + pattern.id;
                 }
 
                 if (typeof callbackOrId === 'function') {
@@ -748,7 +792,7 @@
                     var nowdate = new Date();
 
                     if (adapter.config.latitude === undefined || adapter.config.longitude === undefined) {
-                        adapter.log.error('No latitude, longitude set. Astro is not possible.');
+                        adapter.log.error('Longitude or latitude does not set. Cannot use astro.');
                         return;
                     }
 
