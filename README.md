@@ -322,7 +322,7 @@ Returns state of id in form {val: value, ack: true/false, ts: timestamp, lc: las
 Get description of object id as stored in DB.
 
 ### createState
-    createState(name, initialValue, forceCreation, callback)
+    createState(name, initialValue, forceCreation, common, native, callback)
 Create state and object in javascript space if does not exist, e.g. "javascript.0.mystate".
 
 ####Parameters:
@@ -330,8 +330,17 @@ Create state and object in javascript space if does not exist, e.g. "javascript.
 - **name**: name of the state without namespace, e.g. "mystate"
 - **initialValue**: variable can be initialized after created. Value "undefined" means do not initialize value.
 - **forceCreation**: create state independent of if state yet exists or not.
+- **common**: common description of object see description [here](https://github.com/ioBroker/ioBroker/blob/master/doc/SCHEMA.md#state)
+- **native**: native description of object. Any specific information.
 - **callback**: called after state is created and initialized.
-   
+
+It is possible short type of createState:
+
+- _createState('myVariable')_ - simply create variable if does not exist
+- _createState('myVariable', 1)_ - create variable if does not exist and initialize it with value 1
+- _createState('myVariable', {name: 'My own variable, unit: '°C'}, function () {log('created');});_
+- _createState('myVariable', 1, {name: 'My own variable, unit: '°C'})_ - create variable if does not exist with specific name and units
+
 ### sendTo:    
     sendTo (adapter, cmd, msg, callback)
     
@@ -402,10 +411,10 @@ Prefixes ***(not implemented - should be discussed)*** :
 
 - $('state[id=*.STATE]') or $('state[state.id=*.STATE]') or $('*.STATE') - select all states where id ends with ".STATE".
 - $('state[id='hm-rpc.0.*]') or $('hm-rpc.0.*') - returns all states of adapter instance hm-rpc.0
-- $('channel(room=Living room)' - all states in room "Living room"
+- $('channel(rooms=Living room)') - all states in room "Living room"
 - $('channel{TYPE=BLIND}[state.id=*.LEVEL]') - Get all shutter of Homematic 
-- $('channel[role=switch](rooms=Living room)[state.id=*.STATE]').setState(false) - Switch all states with .STATE of channels with role "switch" in "Living room" to false
-- $('channel[state.id=*.STATE](functions=Windows)').each(function (id, i) {log(id);}); - print all states of enum "windows" in log 
+- $('channel\[role=switch\]\(rooms=Living room\)\[state.id=*.STATE\]').setState(false) - Switch all states with .STATE of channels with role "switch" in "Living room" to false
+- $('channel\[state.id=*.STATE\]\(functions=Windows\)').each(function (id, i) {log(id);}); - print all states of enum "windows" in log
 
 
 - $('.switch §"Living room") - Take states with all switches in 'Living room' ***(not implemented - should be discussed)***
@@ -444,6 +453,10 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.3.0 (2015-03-22)
+* (bluefox) extend createState with native and common
+* (bluefox) add new convert functions: toInt, toFloat, toBool
+
 ### 0.2.6 (2015-03-16)
 * (bluefox) convert automatical grad to decimal grad
 * (bluefox) fix some errors

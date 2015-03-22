@@ -874,7 +874,15 @@
             getObject: function (id) {
                 return objects[id];
             },
-            createState: function (name, initValue, forceCreation, callback) {
+            createState: function (name, initValue, forceCreation, common, native, callback) {
+                if (typeof native == 'function') {
+                    callback  = native;
+                    native = {};
+                }
+                if (typeof common == 'function') {
+                    callback  = common;
+                    common = undefined;
+                }
                 if (typeof initValue == 'function') {
                     callback  = initValue;
                     initValue = undefined;
@@ -883,14 +891,27 @@
                     callback  = forceCreation;
                     forceCreation = undefined;
                 }
+                if (typeof initValue == 'object') {
+                    common = initValue;
+                    native = forceCreation
+                    forceCreation = undefined;
+                    initValue = undefined;
+                }
+                if (typeof forceCreation == 'object') {
+                    common = forceCreation;
+                    native = common
+                    forceCreation = undefined;
+                }
+                common = common || {};
+                common.name = common.name || name;
+                common.role = common.role || 'javascript';
+                native = native || {}
+
                 if (forceCreation) {
                     adapter.setObject(name, {
-                        common: {
-                            name: name,
-                            role: 'javascript'
-                        },
-                        native: {},
-                        type: 'state'
+                        common: common,
+                        native: native,
+                        type:   'state'
                     }, function () {
                         if (initValue !== undefined) {
                             adapter.setState(name, initValue, callback);
@@ -902,11 +923,8 @@
                     adapter.getObject(name, function (err, obj) {
                         if (err || !obj) {
                             adapter.setObject(name, {
-                                common: {
-                                    name: name,
-                                    role: 'javascript'
-                                },
-                                native: {},
+                                common: common,
+                                native: native,
                                 type: 'state'
                             }, function () {
                                 if (initValue !== undefined) {
@@ -986,6 +1004,23 @@
             },
             readFile: function (fileName, callback) {
                 adapter.readFile(null, fileName, callback);
+            },
+            toInt: function (val) {
+                if (val === true  || val === 'true')  val = 1;
+                if (val === false || val === 'false') val = 0;
+                val = parseInt(val) || 0;
+                return val;
+            },
+            toFloat: function (val) {
+                if (val === true  || val === 'true')  val = 1;
+                if (val === false || val === 'false') val = 0;
+                val = parseFloat(val) || 0;
+                return val;
+            },
+            toBoolean: function (val) {
+                if (val === '1' || val === 'true')  val = true;
+                if (val === '0' || val === 'false') val = false;
+                return !!val;
             }
         };
 
