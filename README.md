@@ -453,6 +453,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.3.1 (2015-04-29)
+* (bluefox) fix astro function
+
 ### 0.3.0 (2015-03-22)
 * (bluefox) extend createState with native and common
 * (bluefox) add new convert functions: toInt, toFloat, toBool

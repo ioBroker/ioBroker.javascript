@@ -788,7 +788,6 @@
 
                 if (pattern.astro) {
 
-                    var date    = new Date();
                     var nowdate = new Date();
 
                     if (adapter.config.latitude === undefined || adapter.config.longitude === undefined) {
@@ -796,24 +795,27 @@
                         return;
                     }
 
-                    var ts = mods.suncalc.getTimes(date, adapter.config.latitude, adapter.config.longitude)[pattern.astro];
+                    var ts = mods.suncalc.getTimes(nowdate, adapter.config.latitude, adapter.config.longitude)[pattern.astro];
 
                     if (ts && pattern.shift) {
                         ts = new Date(ts.getTime() + (pattern.shift * 60000));
                     }
 
-                    if (!ts || ts < date) {
+                    if (!ts || ts < nowdate) {
+                        var date = new Date(nowdate);
                         // Event doesn't occur today - try again tomorrow
                         // Calculate time till 24:00 and set timeout
                         date.setDate(date.getDate() + 1);
-                        date.setMinutes(0);
+                        date.setMinutes(1); // Somtimes timer fires at 23:59:59
                         date.setHours(0);
                         date.setSeconds(0);
                         date.setMilliseconds(0);
+                        date.setMinutes(-date.getTimezoneOffset());
+
 
                         // Calculate new schedule in the next day
                         sandbox.setTimeout(function () {
-                            if (sandbox.__engine.__schedules > 0) sandbox.__engine.__schedules--;
+                             if (sandbox.__engine.__schedules > 0) sandbox.__engine.__schedules--;
 
                             sandbox.schedule(pattern, callback);
                         }, date.getTime() - nowdate.getTime());
@@ -823,13 +825,11 @@
 
                     sandbox.setTimeout(function () {
                         callback.call(sandbox);
-
+                        // Reschedule in 2 seconds
                         sandbox.setTimeout(function () {
                             if (sandbox.__engine.__schedules > 0) sandbox.__engine.__schedules--;
-                            sandbox.schedule(pattern, function () {
-                                callback.call(sandbox);
-                            });
-                        }, 1000);
+                            sandbox.schedule(pattern, callback);
+                        }, 2000);
 
                     }, ts.getTime() - nowdate.getTime());
                 } else {
