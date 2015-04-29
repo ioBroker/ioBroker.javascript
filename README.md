@@ -44,7 +44,7 @@ After the script is tested in the "test" instance, it can be moved to "productio
 ##Following functions can be used in scripts:
 
 ### require - load some module
-    var mod = require(module_name);
+    var mod = require('module_name');
 Following modules are pre-loaded: fs, crypto, wake_on_lan, request, suncalc, util, path, os, net, events, dns.
 
 To use other modules go to iobroker/adapter/javascript folder and run in console npm install <modulename>. After npm successfully finished it can be used in script engine. 
