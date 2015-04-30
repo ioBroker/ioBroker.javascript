@@ -905,6 +905,7 @@
                 common = common || {};
                 common.name = common.name || name;
                 common.role = common.role || 'javascript';
+                common.type = common.type || 'variable';
                 native = native || {}
 
                 if (forceCreation) {
