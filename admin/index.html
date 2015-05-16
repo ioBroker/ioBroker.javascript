@@ -85,10 +85,13 @@
         });
 
         if (common.npmLibs){
-            $('#libraries').val(common.npmLibs.join(', ')).change(function () {
-                onChange();
-            });
+            $('#libraries').val(common.npmLibs.join(', '));
         }
+        $('#libraries').change(function () {
+            onChange();
+        }).keyup(function () {
+            $(this).trigger('change');
+        });
 
         onChange(false);
     }
