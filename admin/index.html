@@ -84,10 +84,11 @@
             setValue(id, settings[id] || '', onChange);
         });
 
-        if (common.npmLibs)
-        $('#libraries').val(common.npmLibs.join(', ')).change(function () {
-            onChange();
-        });
+        if (common.npmLibs){
+            $('#libraries').val(common.npmLibs.join(', ')).change(function () {
+                onChange();
+            });
+        }
 
         onChange(false);
     }
