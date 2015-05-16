@@ -167,20 +167,20 @@
         },
 
         ready: function () {
-            getData(function () {
-                adapter.subscribeForeignObjects('*');
-                adapter.subscribeForeignStates('*');
+            installLibraries(function () {
+                getData(function () {
+                    adapter.subscribeForeignObjects('*');
+                    adapter.subscribeForeignStates('*');
 
-                adapter.objects.getObjectView('script', 'javascript', {}, function (err, doc) {
-                    for (var i = 0; i < doc.rows.length; i++) {
-                        load(doc.rows[i].value._id);
-                    }
+                    adapter.objects.getObjectView('script', 'javascript', {}, function (err, doc) {
+                        for (var i = 0; i < doc.rows.length; i++) {
+                            load(doc.rows[i].value._id);
+                        }
+                    });
+
                 });
-
             });
-
         }
-
     });
 
     var objects =           {};
@@ -191,6 +191,49 @@
     var cacheObjectEnums =  {};
     var channels =          null;
     var devices =           null;
+    var fs =                null;
+
+    function installNpm(npmLib, callback) {
+        var path = __dirname;
+        if (typeof npmLib == 'function') {
+            callback = npmLib;
+            npmLib = undefined;
+        }
+
+        var cmd = 'npm install ' + npmLib + ' --production --prefix "' + path + '"';
+        adapter.log.info(cmd + ' (System call)');
+        // Install node modules as system call
+
+        // System call used for update of js-controller itself,
+        // because during installation npm packet will be deleted too, but some files must be loaded even during the install process.
+        var exec = require('child_process').exec;
+        var child = exec(cmd);
+        child.stderr.pipe(process.stdout);
+        child.on('exit', function (code, signal) {
+            if (code) {
+                adapter.log.error('Cannot install ' + npmLib + ': ' + code);
+            }
+            // command succeeded
+            if (callback) callback(npmLib);
+        });
+    }
+
+    function installLibraries(callback) {
+        var allInstalled = true;
+        if (adapter.common && adapter.common.npmLibs) {
+            for (var lib = 0; lib < adapter.common.npmLibs.length; lib++) {
+                fs = fs || require('fs');
+
+                if (!fs.existsSync(__dirname + '/node_modules/' + adapter.common.npmLibs[lib] + '/package.json')) {
+                    installNpm(adapter.common.npmLibs[lib], function () {
+                        installLibraries(callback);
+                    });
+                    allInstalled = false;
+                }
+            }
+        }
+        if (allInstalled) callback();
+    }
 
     function compile(source, name) {
         source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + ' and ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ));\n";
@@ -905,7 +948,6 @@
                 common = common || {};
                 common.name = common.name || name;
                 common.role = common.role || 'javascript';
-                common.type = common.type || 'variable';
                 native = native || {}
 
                 if (forceCreation) {

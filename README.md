@@ -453,8 +453,8 @@ The optional error code will be given in callback.
 
 
 ## Changelog
-### 0.3.2 (2015-04-30)
-* (bluefox) fix warning with createState
+### 0.4.0 (2015-05-16)
+* (bluefox) allow additionally install other npm packages for javascript
 
 ### 0.3.1 (2015-04-29)
 * (bluefox) fix astro function

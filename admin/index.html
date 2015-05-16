@@ -49,6 +49,16 @@
             "en": "Use form with 49.1245 and <b>not</b> 49°34'0\". Elsewise it will be converted automatically.",
             "de": "Benutze das Format mit 49.1245 und <b>nicht</b> 49°34'0\", sonst es wird automatisch umgerechnet",
             "ru": "Используйте формат 49.1245, а <b>не</b> 49°34'0\", иначе градусы автоматически переведутся в нужный формат"
+        },
+        "Divided by comma": {
+            "en": "Divided by comma",
+            "de": "Getrennt mit Komma",
+            "ru": "Через запятую"
+        },
+        "Additional npm modules:": {
+            "en": "Additional npm modules:",
+            "de": "Zusätzliche NPM-Module",
+            "ru": "Дополнительные NPM Модули:"
         }
     };
 
@@ -72,6 +82,11 @@
         $('.value').each(function () {
             var id = $(this).attr('id');
             setValue(id, settings[id] || '', onChange);
+        });
+
+        if (common.npmLibs)
+        $('#libraries').val(common.npmLibs.join(', ')).change(function () {
+            onChange();
         });
 
         onChange(false);
@@ -138,7 +153,13 @@
             $('#longitude').val(obj.longitude);
         }
 
-        callback(obj);
+        var libs = $('#libraries').val().split(',');
+        var common = {npmLibs: []};
+        for (var l = 0; l < libs.length; l++) {
+            common.npmLibs.push(libs[l].trim());
+        }
+
+        callback(obj, common);
     }
 </script>
 
@@ -157,6 +178,9 @@
         <tr>
             <td class="translate">Latitude °:</td><td><input id="latitude" class="value" /></td>
             <td class="translate">Longitude °:</td><td><input id="longitude" class="value" /></td>
+        </tr>
+        <tr>
+            <td class="translate">Additional npm modules:</td><td colspan="2"><input id="libraries" class="value" style="width: 100%"/></td><td class="translate">Divided by comma</td>
         </tr>
     </table>
     <p class="translate">Help</p>
