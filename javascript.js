@@ -209,7 +209,14 @@
         // because during installation npm packet will be deleted too, but some files must be loaded even during the install process.
         var exec = require('child_process').exec;
         var child = exec(cmd);
-        child.stderr.pipe(process.stdout);
+
+        child.stdout.on('data', function(buf) {
+            adapter.log.info(buf.toString('utf8'));
+        });
+        child.stderr.on('data', function(buf) {
+            adapter.log.error(buf.toString('utf8'));
+        });
+        
         child.on('exit', function (code, signal) {
             if (code) {
                 adapter.log.error('Cannot install ' + npmLib + ': ' + code);
