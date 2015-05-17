@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Javascript/Coffescript Script Engine for ioBroker",
   "author": "hobbyquaker <hq@ccu.io>",
   "contributors": [

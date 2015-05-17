@@ -453,6 +453,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.4.2 (2015-05-16)
+* (bluefox) fix error with invalid additional packages
+
 ### 0.4.0 (2015-05-16)
 * (bluefox) allow additionally install other npm packages for javascript
 
