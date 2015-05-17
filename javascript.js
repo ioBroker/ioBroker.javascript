@@ -192,7 +192,7 @@
     var channels =          null;
     var devices =           null;
     var fs =                null;
-    var attempts =          [];
+    var attempts =          {};
 
     function installNpm(npmLib, callback) {
         var path = __dirname;
