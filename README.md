@@ -453,6 +453,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.4.3 (2015-06-01)
+* (bluefox) show error if suncalc cannot calculate time
+
 ### 0.4.2 (2015-05-16)
 * (bluefox) fix error with invalid additional packages
 

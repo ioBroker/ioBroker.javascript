@@ -862,11 +862,15 @@
 
                     var ts = mods.suncalc.getTimes(nowdate, adapter.config.latitude, adapter.config.longitude)[pattern.astro];
 
-                    if (ts && pattern.shift) {
+                    if (ts && ts.getTime().toString() !== 'NaN' && pattern.shift) {
                         ts = new Date(ts.getTime() + (pattern.shift * 60000));
                     }
 
-                    if (!ts || ts < nowdate) {
+                    if (ts.getTime().toString() === 'NaN') {
+                        adapter.log.error('Cannot calculate "' + pattern.astro + '" for ' + adapter.config.latitude + ', ' + adapter.config.longitude);
+                    }
+
+                    if (!ts || ts < nowdate || ts.getTime().toString() === 'NaN') {
                         var date = new Date(nowdate);
                         // Event doesn't occur today - try again tomorrow
                         // Calculate time till 24:00 and set timeout
@@ -970,6 +974,8 @@
                 common = common || {};
                 common.name = common.name || name;
                 common.role = common.role || 'javascript';
+                common.type = common.type || 'mixed';
+
                 native = native || {}
 
                 if (forceCreation) {
