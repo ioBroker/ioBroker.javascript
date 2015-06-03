@@ -862,15 +862,30 @@
 
                     var ts = mods.suncalc.getTimes(nowdate, adapter.config.latitude, adapter.config.longitude)[pattern.astro];
 
-                    if (ts && ts.getTime().toString() !== 'NaN' && pattern.shift) {
+                    if (ts.getTime().toString() === 'NaN') {
+                        adapter.log.error('Cannot calculate "' + pattern.astro + '" for ' + adapter.config.latitude + ', ' + adapter.config.longitude);
+                        ts = new Date(nowdate.getTime());
+
+                        if (pattern.astro == 'sunriseEnd'       ||
+                            pattern.astro == 'goldenHourEnd'    ||
+                            pattern.astro == 'sunset'           ||
+                            pattern.astro == 'nightEnd'         ||
+                            pattern.astro == 'nauticalDusk') {
+                            ts.setMinutes(59);
+                            ts.setHours(23);
+                            ts.setSeconds(59);
+                        } else {
+                            ts.setMinutes(59);
+                            ts.setHours(23);
+                            ts.setSeconds(58);
+                        }
+                    }
+
+                    if (ts && pattern.shift) {
                         ts = new Date(ts.getTime() + (pattern.shift * 60000));
                     }
 
-                    if (ts.getTime().toString() === 'NaN') {
-                        adapter.log.error('Cannot calculate "' + pattern.astro + '" for ' + adapter.config.latitude + ', ' + adapter.config.longitude);
-                    }
-
-                    if (!ts || ts < nowdate || ts.getTime().toString() === 'NaN') {
+                    if (!ts || ts < nowdate) {
                         var date = new Date(nowdate);
                         // Event doesn't occur today - try again tomorrow
                         // Calculate time till 24:00 and set timeout
@@ -902,6 +917,11 @@
 
                     }, ts.getTime() - nowdate.getTime());
                 } else {
+                    // fix problem with sunday and 7
+                    var parts = pattern.replace(/\s+/g, ' ').split(' ');
+                    if (parts.length >= 5 && parts[5] >= 7) parts[5] = 0;
+                    pattern = parts.join(' ');
+
                     script.schedules.push(mods['node-schedule'].scheduleJob(pattern, function () {
                         callback.call(sandbox);
                     }));

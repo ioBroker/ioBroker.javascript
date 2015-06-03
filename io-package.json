@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "0.4.3",
+        "version":                  "0.4.4",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "hobbyquaker <hq@ccu.io>, bluefox <bluefox@ccu.io>"
