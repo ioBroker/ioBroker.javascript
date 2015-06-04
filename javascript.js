@@ -863,7 +863,7 @@
                     var ts = mods.suncalc.getTimes(nowdate, adapter.config.latitude, adapter.config.longitude)[pattern.astro];
 
                     if (ts.getTime().toString() === 'NaN') {
-                        adapter.log.error('Cannot calculate "' + pattern.astro + '" for ' + adapter.config.latitude + ', ' + adapter.config.longitude);
+                        adapter.log.warn('Cannot calculate "' + pattern.astro + '" for ' + adapter.config.latitude + ', ' + adapter.config.longitude);
                         ts = new Date(nowdate.getTime());
 
                         if (pattern.astro == 'sunriseEnd'       ||
@@ -918,9 +918,11 @@
                     }, ts.getTime() - nowdate.getTime());
                 } else {
                     // fix problem with sunday and 7
-                    var parts = pattern.replace(/\s+/g, ' ').split(' ');
-                    if (parts.length >= 5 && parts[5] >= 7) parts[5] = 0;
-                    pattern = parts.join(' ');
+                    if (typeof pattern == 'string') {
+                        var parts = pattern.replace(/\s+/g, ' ').split(' ');
+                        if (parts.length >= 5 && parts[5] >= 7) parts[5] = 0;
+                        pattern = parts.join(' ');
+                    }
 
                     script.schedules.push(mods['node-schedule'].scheduleJob(pattern, function () {
                         callback.call(sandbox);

@@ -453,6 +453,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.4.5 (2015-06-04)
+* (bluefox) fix error with schedule and sunday
+
 ### 0.4.4 (2015-06-03)
 * (bluefox) show error if suncalc cannot calculate time and set time to 23:59:59
 
