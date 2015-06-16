@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "0.4.5",
+        "version":                  "0.4.6",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "hobbyquaker <hq@ccu.io>, bluefox <bluefox@ccu.io>"
@@ -16,7 +16,11 @@
         "readme":                   "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
         "license":                  "MIT",
         "engineTypes":              ["Javascript/js", "Coffeescript/coffee"],
-        "npmLibs": []
+        "npmLibs": [],
+        "adminTab": {
+            "singleton":            true,
+            "name":                 "Scripts"
+        }
     },
     "native": {
         "latitude" : "",

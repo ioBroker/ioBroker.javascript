@@ -37,6 +37,11 @@ http.request('www.google.com', cb(function(res) {
 ```
 to be sure, that no callback will be called if script is deleted or modified.
 
+## Global functions
+You can define the global scripts with suffux name "_global", like "MyGlobalFunctions_global".
+All global scripts are available on all instances. If global script is disabled, it will not be used.
+Global script will be just prepend to the normal script and compiled, so you cannot share data between scripts via global scrips. Use states for it.
+
 ####Best practice: 
 Create two instances of javascript adapter: one "test" and one "production".
 After the script is tested in the "test" instance, it can be moved to "production". By that you can restart the "test" instance as you want.
@@ -453,6 +458,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.4.6 (2015-06-16)
+* (bluefox) global scripts
+
 ### 0.4.5 (2015-06-04)
 * (bluefox) fix error with schedule and sunday
 
@@ -467,6 +475,9 @@ The optional error code will be given in callback.
 
 ### 0.4.0 (2015-05-16)
 * (bluefox) allow additionally install other npm packages for javascript
+
+### 0.3.2 (2015-04-30)
+* (bluefox) fix warning with createState
 
 ### 0.3.1 (2015-04-29)
 * (bluefox) fix astro function

@@ -52,6 +52,15 @@
                     objects[id] = obj;
                     return;
                 }
+                if (objects[id].common.name.indexOf('_global') != -1) {
+                    // restart adapter
+                    adapter.getForeignObject('system.adapter.' + adapter.namespace, function (err, obj) {
+                        if (obj) {
+                            adapter.setForeignObject('system.adapter.' + adapter.namespace, obj);
+                        }
+                    });
+                    return;
+                }
 
                 if ((objects[id].common.enabled && !obj.common.enabled) ||
                     (objects[id].common.engine == 'system.adapter.' + adapter.namespace && obj.common.engine != 'system.adapter.' + adapter.namespace)) {
@@ -173,26 +182,68 @@
                     adapter.subscribeForeignStates('*');
 
                     adapter.objects.getObjectView('script', 'javascript', {}, function (err, doc) {
-                        for (var i = 0; i < doc.rows.length; i++) {
-                            load(doc.rows[i].value._id);
+                        globalScript = '';
+                        var count = 0;
+
+                        // assemble global script
+                        for (var g = 0; g < doc.rows.length; g++) {
+                            if (doc.rows[g].value.common.name.indexOf('_global') != -1) {
+                                var obj = doc.rows[g].value;
+
+                                if (obj && obj.common.enabled) {
+                                    if (obj.common.engineType.match(/^[cC]offee/)) {
+                                        count++;
+                                        mods['coffee-compiler'].fromSource(obj.common.source, {
+                                            sourceMap: false,
+                                            bare: true
+                                        }, function (err, js) {
+                                            if (err) {
+                                                adapter.log.error(obj.common.name + ' coffee compile ' + err);
+                                                return;
+                                            }
+                                            globalScript += js + '\n';
+                                            if (!(--count)) {
+                                                // load all scripts
+                                                for (var i = 0; i < doc.rows.length; i++) {
+                                                    if (doc.rows[i].value.common.name.indexOf('_global') == -1) {
+                                                        load(doc.rows[i].value._id);
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        globalScript += doc.rows[g].value.common.source + '\n';
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!count) {
+                            // load all scripts
+                            for (var i = 0; i < doc.rows.length; i++) {
+                                if (doc.rows[i].value.common.name.indexOf('_global') == -1) {
+                                    load(doc.rows[i].value._id);
+                                }
+                            }
                         }
                     });
-
                 });
             });
         }
     });
 
-    var objects =           {};
-    var states =            {};
-    var scripts =           {};
-    var subscriptions =     [];
-    var enums =             [];
-    var cacheObjectEnums =  {};
-    var channels =          null;
-    var devices =           null;
-    var fs =                null;
-    var attempts =          {};
+    var objects =          {};
+    var states =           {};
+    var scripts =          {};
+    var subscriptions =    [];
+    var enums =            [];
+    var cacheObjectEnums = {};
+    var channels =         null;
+    var devices =          null;
+    var fs =               null;
+    var attempts =         {};
+    var globalScript =     '';
+
 
     function installNpm(npmLib, callback) {
         var path = __dirname;
@@ -1167,7 +1218,7 @@
             if (!err && obj && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
                 // Javascript
                 adapter.log.info('Start javascript ' + name);
-                scripts[name] = compile(obj.common.source, name);
+                scripts[name] = compile(globalScript + obj.common.source, name);
                 if (scripts[name]) execute(scripts[name], name);
                 if (callback) callback(true, name);
             } else if (!err && obj && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[cC]offee/)) {
@@ -1179,7 +1230,7 @@
                         return;
                     }
                     adapter.log.info('Start coffescript ' + name);
-                    scripts[name] = compile(js, name);
+                    scripts[name] = compile(globalScript + js, name);
                     if (scripts[name]) execute(scripts[name], name);
                     if (callback) callback(true, name);
                 });
@@ -1713,14 +1764,6 @@
         });
     }
 
-    function isMember(idObj, idEnum) {
-
-    }
-
-    function isMemberRecursive(idObj, idEnum) {
-
-    }
-
     function getObjectEnums(idObj, callback, enumIds, enumNames) {
         if (cacheObjectEnums[idObj]) {
             if (typeof callback === 'function') callback(cacheObjectEnums[idObj].enumIds, cacheObjectEnums[idObj].enumNames);
@@ -1764,9 +1807,5 @@
             cacheObjectEnums[idObj] = {enumIds: enumIds, enumNames: enumNames};
             return cacheObjectEnums[idObj];
         }
-    }
-
-    function getObjectEnumsRecursive(idObj, callback, enumIds, enumNames) {
-
     }
 })();
