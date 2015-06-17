@@ -1,0 +1,104 @@
+<html>
+<header>
+    <!-- these 4 files always have to be included -->
+    <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../lib/css/jqGrid/ui.jqgrid-4.5.4.css"/>
+    <!--link rel="stylesheet" type="text/css" href="../../css/admin.css"/-->
+
+    <script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../lib/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="../../lib/js/loStorage.js"></script>
+    <script type="text/javascript" src="../../lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js"></script>
+    <script type="text/javascript" src="../../lib/js/jqGrid/grid.locale-all.js"></script>
+    <script type="text/javascript" src="../../lib/js/ace-1.1.6/ace.js"></script>
+    <script type="text/javascript" src="../../js/translate.js"></script>
+    <script type="text/javascript" src="words.js"></script>
+
+    <style>
+        body {
+            font-size: 11px;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        #script-editor {
+            position: absolute;
+            top: 80px;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+        .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited, .ui-state-hover a, .ui-state-hover a:link, .ui-state-hover a:visited  {
+             outline: none;
+        }
+
+        .ui-jqgrid tr.jqgrow td {
+            font-size: 12px;
+        }
+
+        .ui-jqgrid .ui-pg-input {
+            height: 20px !important;
+        }
+        .ui-jqgrid-titlebar-close {
+            display: none !important;
+        }
+        #edit-script-source {
+            font-size: 12px;
+            width: 600px;
+            height: 240px;
+            padding:0;
+            margin:0;
+            border: 1px solid grey;
+            outline: none;
+            box-shadow: none;
+            resize:none;
+        }
+
+    </style>
+
+</header>
+<body>
+    <table id="grid-scripts"></table>
+    <div id="pager-scripts"></div>
+
+    <div id="dialog-script" style="display:none">
+        <table style="width: 100%">
+            <tr>
+                <td class="translate" style="width:100">name</td>
+                <td><input size="60" id="edit-script-name"></td>
+                <td><input type="checkbox" id="edit-script-global"><label for="edit-script-global"class="translate">global</label></td>
+            </tr>
+            <tr>
+                <td class="translate">engine type</td>
+                <td style="width:100">
+                    <select id="edit-script-engine-type"></select>
+                </td>
+                <td style="text-align:right">
+                    <button id="edit-insert-id" class="translate">Insert</button>
+                </td>
+            </tr>
+        </table><br/>
+        <div id="script-editor"></div>
+        <input type="hidden" id="edit-script-id">
+    </div>
+    <div id="dialog-message" title="Message" style="display: none">
+        <p>
+            <span id="dialog-message-icon" class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
+            <span id="dialog-message-text"></span>
+        </p>
+    </div>
+    <div id="dialog-confirm" title="Question" style="display: none">
+        <p>
+            <span id="dialog-confirm-icon" class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
+            <span id="dialog-confirm-text"></span>
+        </p>
+    </div>
+    <div id="dialog-select-member" style="display:none">
+        <!--div id="tree-select-member" style="width:100%; height:100%"></div-->
+    </div>
+
+
+    <script type="text/javascript" src="tab.js"></script>
+</body>
+</html>
