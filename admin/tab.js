@@ -193,6 +193,7 @@ function Scripts(main) {
         $('.script-edit-file-submit').hide();
         $('.script-delete-submit').hide();
         $('.script-reload-submit').hide();
+        $('.script-copy-submit').hide();
         $('.script-ok-submit[data-script-id="' + id + '"]').show();
         $('.script-cancel-submit[data-script-id="' + id + '"]').show();
 
@@ -367,6 +368,7 @@ function Scripts(main) {
                         '<button data-script-id="' + id + '" class="script-edit-submit">'      + _('edit')   + '</button>' +
                         '<button data-script-id="' + id + '" class="script-edit-file-submit">' + _('edit file') + '</button>' +
                         '<button data-script-id="' + id + '" class="script-reload-submit">'    + _('restart script') + '</button>' +
+                        '<button data-script-id="' + id + '" class="script-copy-submit">'      + _('copy') + '</button>' +
                         '<button data-script-id="' + id + '" class="script-delete-submit">'    + _('delete') + '</button>' +
                         '<button data-script-id="' + id + '" class="script-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
                         '<button data-script-id="' + id + '" class="script-cancel-submit" style="display:none">' + _('cancel') + '</button>'
@@ -393,6 +395,41 @@ function Scripts(main) {
             var id = $(this).attr('data-script-id');
             var objSelected = that.$grid.jqGrid('getRowData', 'script_' + id);
             if (objSelected) that.editScript(objSelected._obj_id);
+        });
+
+        $('.script-copy-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-copy'},
+            text:  false
+        }).click(function () {
+            var id = $(this).attr('data-script-id');
+            var objSelected = that.$grid.jqGrid('getRowData', 'script_' + id);
+            that.main.socket.emit('getObject', objSelected._obj_id, function (err, obj) {
+                if (err) {
+                    that.main.showError(err);
+                    return;
+                }
+                // find new name
+                var i = 0;
+                //build name
+                var newId;
+                do {
+                    i++;
+                    if (obj._id.match(/\(\d+\)/)) {
+                        newId = obj._id.replace(/\(\d+\)/, '(' + i + ')');
+                    } else {
+                        newId = obj._id + '(' + i + ')';
+                    }
+                } while (that.list.indexOf(newId) != -1);
+
+                var newObject = JSON.parse(JSON.stringify(obj));
+                obj._id = newId;
+                that.main.socket.emit('setObject', newId, obj, function (err, obj) {
+                    if (err) {
+                        that.main.showError(err);
+                        return;
+                    }
+                });
+            });
         });
 
         $('.script-reload-submit').unbind('click').button({
@@ -427,6 +464,7 @@ function Scripts(main) {
             $('.script-edit-file-submit').show();
             $('.script-delete-submit').show();
             $('.script-reload-submit').show();
+            $('.script-copy-submit').show();
             $('.script-ok-submit').hide();
             $('.script-cancel-submit').hide();
             $('#add-script').removeClass('ui-state-disabled');
@@ -491,6 +529,7 @@ function Scripts(main) {
             $('.script-edit-file-submit').show();
             $('.script-reload-submit').show();
             $('.script-delete-submit').show();
+            $('.script-copy-submit').show();
             $('.script-ok-submit').hide();
             $('.script-cancel-submit').hide();
             $('#add-script').removeClass('ui-state-disabled');
