@@ -25,7 +25,8 @@
     "request": "^2.39.0",
     "suncalc": "^1.5.2",
     "wake_on_lan": "0.0.3",
-    "coffee-compiler": "~0.3.2"
+    "coffee-compiler": "~0.3.2",
+    "coffee-script": ">=1.6.2"
   },
   "devDependencies": {
     "grunt": "~0.4.4",
