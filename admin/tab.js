@@ -3,6 +3,7 @@ function Scripts(main) {
     this.list     = [];
     this.$grid    = $('#grid-scripts');
     this.$dialog  = $('#dialog-script');
+    this.$dialogCron = $('#dialog-cron');
     this.editor   = null;
     this.changed  = false;
 
@@ -119,8 +120,8 @@ function Scripts(main) {
         this.$dialog.dialog({
             autoOpen:   false,
             modal:      true,
-            width: 800,
-            height: 540,
+            width:      800,
+            height:     540,
             buttons: [
                 {
                     id: 'script-edit-button-save',
@@ -152,6 +153,57 @@ function Scripts(main) {
                 that.main.saveConfig('scripts-edit-height', $(this).parent().height() + 10);
                 that.editor.resize();
             }
+        });
+
+        this.$dialogCron.dialog({
+            autoOpen:   false,
+            modal:      true,
+            width:      500,
+            height:     150,
+            resizable:  false,
+            title:      _('Cron expression'),
+            buttons: [
+                {
+                    text: _('Insert'),
+                    click: function () {
+                        var val = $('#div-cron').cron('value');
+                        that.$dialogCron.dialog('close');
+                        that.editor.insert('"' + val + '"');
+                        that.editor.focus();
+                    }
+                },
+                {
+                    text: _('Cancel'),
+                    click: function () {
+                        that.$dialogCron.dialog('close');
+                    }
+                }
+            ]
+        });
+
+        $('#div-cron').cron({
+            initial: '* * * * *',
+            dom: _('daysofmonth'),
+            months:  _('months'),
+            days:    _('daysofweek'),
+            periods: _('periods'),
+            minuteOpts : {
+                title     : _('Minutes Past the Hour')
+            },
+            timeHourOpts : {
+                title     : _('Time: Hour')
+            },
+            domOpts : {
+                title     : _('Day of Month')
+            },
+            timeMinuteOpts : {
+                title     : _('Time: Minute')
+            },
+            every: _('Every'),
+            onThe: _('on the'),
+            at: _('at'),
+            of: _('of'),
+            on: _('on')
         });
 
         $("#load_grid-scripts").show();
@@ -309,6 +361,7 @@ function Scripts(main) {
             this.editor = ace.edit("script-editor");
             //this.editor.setTheme("ace/theme/monokai");
             this.editor.getSession().setMode("ace/mode/javascript");
+
             $('#edit-insert-id').button({
                 icons: {primary: 'ui-icon-note'}
             }).css('height', '30px').click(function () {
@@ -318,6 +371,25 @@ function Scripts(main) {
                     that.editor.focus();
                 });
             });
+
+            $('#edit-cron-id').button({
+                icons: {primary: 'ui-icon-clock'}
+            }).css('height', '30px').click(function () {
+                var text = that.editor.getSession().doc.getTextRange(that.editor.selection.getRange());
+                if (text) {
+                    text = text.replace(/\"/g, '').replace(/\'/g, '');
+                    if (text) {
+                        try {
+                            $('#div-cron').cron('value', text);
+                        } catch (e) {
+                            alert(_('Cannot parse text as cron message'));
+                        }
+                    }
+                }
+
+                that.$dialogCron.dialog('open');
+            });
+
             this.editor.on('input', function() {
                 that.changed = true;
                 $('#script-edit-button-save').button('enable');
@@ -377,6 +449,19 @@ function Scripts(main) {
             }
             this.$grid.trigger('reloadGrid');
             this.initButtons();
+
+            // Show add button
+            if (!this.list.length) {
+                setTimeout(function () {
+                    var w = $('#add-script').width();
+                    var b = $('#add-script').css('backgroundColor');
+                    $('#add-script').css({width: 150, opacity: 0.5, backgroundColor: "#aa0000"});
+                    $('#add-script').animate({
+                        opacitiy: 1, width: w, backgroundColor: b
+                    }, 1000);
+                }, 500);
+            }
+
         }
     };
 
