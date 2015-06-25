@@ -724,7 +724,7 @@ function Scripts(main) {
                 that.init(true);
             }, 200);
         }
-    }
+    };
 }
 
 var main = {
