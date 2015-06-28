@@ -458,6 +458,10 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.4.7 (2015-06-16)
+* (bluefox) own tab in admin
+* (bluefox) cron editor (limited)
+
 ### 0.4.6 (2015-06-16)
 * (bluefox) global scripts
 
