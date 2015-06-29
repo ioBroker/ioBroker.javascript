@@ -458,7 +458,10 @@ The optional error code will be given in callback.
 
 
 ## Changelog
-### 0.4.7 (2015-06-16)
+### 0.4.8 (2015-06-29)
+* (bluefox) fix select dialog
+
+### 0.4.7 (2015-06-28)
 * (bluefox) own tab in admin
 * (bluefox) cron editor (limited)
 

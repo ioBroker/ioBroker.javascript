@@ -737,7 +737,7 @@ var main = {
             storage.set('adminConfig', JSON.stringify(main.config));
         }
     },
-    showError:    function (error) {
+    showError:      function (error) {
         main.showMessage(_(error),  _('Error'), 'alert');
     },
     showMessage:    function (message, title, icon) {
@@ -765,11 +765,13 @@ var main = {
         $dialogConfirm.data('callback', callback);
         $dialogConfirm.dialog('open');
     },
-    initSelectId: function () {
+    initSelectId:   function () {
         if (main.selectId) return main.selectId;
         main.selectId = $('#dialog-select-member').selectId('init',  {
             objects: main.objects,
             states:  main.states,
+            noMultiselect: true,
+            imgPath: '../../lib/css/fancytree/',
             filter: {type: 'state'},
             texts: {
                 select:   _('Select'),
@@ -792,6 +794,7 @@ var main = {
         return main.selectId;
     },
     objects:        {},
+    states:         {},
     currentHost:    '',
     instances:      [],
     objectsLoaded:  false,
@@ -822,22 +825,31 @@ if (typeof storage != 'undefined') {
 var firstConnect = true;
 var scripts  = new Scripts(main);
 
+function getStates(callback) {
+    main.socket.emit('getStates', function (err, res) {
+        main.states = res;
+        if (typeof callback === 'function') {
+            setTimeout(function () {
+                callback();
+            }, 0);
+        }
+    });
+}
+
 function getObjects(callback) {
     main.socket.emit('getObjects', function (err, res) {
         setTimeout(function () {
             var obj;
-            main.objects = {};
-            for (var id in res) {
+            main.objects = res;
+            for (var id in main.objects) {
                 if (id.slice(0, 7) === '_design') continue;
 
                 obj = res[id];
-                if (obj.type === 'instance'){
+                if (obj.type === 'instance') {
                     main.instances.push(id);
-                    main.objects[id] = obj;
                 }
                 if (obj.type === 'script') {
                     scripts.list.push(id);
-                    main.objects[id] = obj;
                 }
             }
             main.objectsLoaded = true;
@@ -865,6 +877,7 @@ function getObjects(callback) {
         }, 0);
     });
 }
+
 function objectChange(id, obj) {
     var changed = false;
     var i;
@@ -875,10 +888,6 @@ function objectChange(id, obj) {
 
     // update main.objects cache
     if (obj) {
-        if (obj.type !== 'instance' && obj.type !== 'script') {
-            return;
-        }
-
         if (obj._rev && main.objects[id]) main.objects[id]._rev = obj._rev;
         if (!main.objects[id]) {
             isNew = true;
@@ -896,7 +905,6 @@ function objectChange(id, obj) {
 
     if (main.selectId) main.selectId.selectId('object', id, obj);
 
-
     if (id.match(/^system\.adapter\.[-\w]+\.[0-9]+$/)) {
         // Disable scripts tab if no one script engine instance found
         var engines = scripts.fillEngines();
@@ -906,11 +914,23 @@ function objectChange(id, obj) {
     scripts.objectChange(id, obj);
 }
 
+function stateChange(id, state) {
+    var rowData;
+    id = id ? id.replace(/ /g, '_') : '';
+
+    if (!id || !id.match(/\.messagebox$/)) {
+        if (main.selectId) main.selectId.selectId('state', id, state);
+    }
+}
+
 main.socket.on('permissionError', function (err) {
     main.showMessage(_('Has no permission to %s %s %s', err.operation, err.type, (err.id || '')));
 });
 main.socket.on('objectChange', function (id, obj) {
     setTimeout(objectChange, 0, id, obj);
+});
+main.socket.on('stateChange', function (id, obj) {
+    setTimeout(stateChange, 0, id, obj);
 });
 main.socket.on('connect', function () {
     $('#connecting').hide();
@@ -973,7 +993,7 @@ main.socket.on('connect', function () {
                     ]
                 });
 
-                getObjects();
+                getStates(getObjects);
             });
         });
     }

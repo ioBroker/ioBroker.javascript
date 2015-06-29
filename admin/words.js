@@ -69,4 +69,17 @@ systemDictionary = {
                 '20го', '21го', '22го', '23го', '24го', '25го', '26го', '27го', '28го', '29го',
                 '30го', '31го'],
     },
+    "Name":                 {"en": "Name",                  "de": "Name",                   "ru": "Имя"},
+    "Select ID":            {"en": "Select ID",             "de": "ID Auswählen",           "ru": "Выбрать ID"},
+    "Select":               {"en": "Select",                "de": "Auswählen",              "ru": "Выбрать"},
+    "All":                  {"en": "All",                   "de": "Alle",                   "ru": "все"},
+    "ID":                   {"en": "ID",                    "de": "ID",                     "ru": "ID"},
+    "Role":                 {"en": "Role",                  "de": "Rolle",                  "ru": "Роль"},
+    "Room":                 {"en": "Room",                  "de": "Raum",                   "ru": "Комната"},
+    "Value":                {"en": "Value",                 "de": "Wert",                   "ru": "Значение"},
+    "From":                 {"en": "From: ",                "de": "Von",                    "ru": "От"},
+    "Last changed":         {"en": "Last changed",          "de": "Lätze Änderung",         "ru": "Изменён"},
+    "Time stamp":           {"en": "Time stamp",            "de": "Zeitstempel",            "ru": "Время"},
+    "Acknowledged":         {"en": "Acknowledged",          "de": "Bestätigt",              "ru": "Подтверждён"},
+    "Processing...":        {"en": "Processing...",         "de": "Bearbeite...",           "ru": "Обработка..."}
 };
