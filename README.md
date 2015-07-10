@@ -458,6 +458,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.4.9 (2015-07-11)
+* (bluefox) fix channelName and channelId and optimize matching
+
 ### 0.4.8 (2015-06-29)
 * (bluefox) fix select dialog
 

@@ -108,67 +108,42 @@
                 state = {};
             }
 
-            var name;
-
-            var common =        {};
-            var nativeObj =     {};
-
-            var channelId =     null;
-            var channelName =   null;
-            var deviceId =      null;
-            var deviceName =    null;
-
-            if (objects[id]) {
-                name =          objects[id].common ? objects[id].common.name : null;
-                common =        objects[id].common;
-                nativeObj =     objects[id].native;
-                channelId =     objects[id].parent;
-            }
-
-            if (channelId) {
-                if (objects[channelId]) {
-                    channelName = objects[channelId].common ? objects[channelId].common.name : null;
-                    if (objects[channelId].parent) {
-                        deviceId = objects[channelId] ? objects[channelId].parent : null;
-                        deviceName = objects[channelId] && objects[deviceId].common ? objects[deviceId].common.name : null;
-                    }
+            var eventObj = {
+                id: id,
+                //name: name,
+                //common: common,
+                //native: nativeObj,
+                //channelId: channelId,
+                //channelName: channelName,
+                //deviceId: deviceId,
+                //deviceName: deviceName,
+                //enumIds: enumIds,       // Array of Strings
+                //enumNames: enumNames,     // Array of Strings
+                newState: {
+                    val: state.val,
+                    ts: state.ts,
+                    ack: state.ack,
+                    lc: state.lc,
+                    from: state.from
+                },
+                oldState: {
+                    val: oldState.val,
+                    ts: oldState.ts,
+                    ack: oldState.ack,
+                    lc: oldState.lc,
+                    from: oldState.from
                 }
+            };
+
+            if (isEnums) {
+                getObjectEnums(id, function (enumIds, enumNames) {
+                    eventObj.enumIds   = enumIds;
+                    eventObj.enumNames = enumNames;
+                    checkPatterns(eventObj);
+                });
+            } else {
+                checkPatterns(eventObj);
             }
-
-            getObjectEnums(id, function (enumIds, enumNames) {
-                var eventObj = {
-                    id:             id,
-                    name:           name,
-                    common:         common,
-                    native:         nativeObj,
-                    channelId:      channelId,
-                    channelName:    channelName,
-                    deviceId:       deviceId,
-                    deviceName:     deviceName,
-                    enumIds:        enumIds,       // Array of Strings
-                    enumNames:      enumNames,     // Array of Strings
-                    newState: {
-                        val:        state.val,
-                        ts:         state.ts,
-                        ack:        state.ack,
-                        lc:         state.lc,
-                        from:       state.from
-                    },
-                    oldState: {
-                        val:        oldState.val,
-                        ts:         oldState.ts,
-                        ack:        oldState.ack,
-                        lc:         oldState.lc,
-                        from:       oldState.from
-                    }
-                };
-
-                for (var i = 0, l = subscriptions.length; i < l; i++) {
-                    if (patternMatching(eventObj, subscriptions[i].pattern)) {
-                        subscriptions[i].callback(eventObj);
-                    }
-                }
-            });
         },
 
         unload: function (callback) {
@@ -236,6 +211,7 @@
     var states =           {};
     var scripts =          {};
     var subscriptions =    [];
+    var isEnums =          false; // If some subscription wants enum
     var enums =            [];
     var cacheObjectEnums = {};
     var channels =         null;
@@ -244,6 +220,123 @@
     var attempts =         {};
     var globalScript =     '';
 
+    function checkPatterns(eventObj) {
+        // if this state matchs any subscriptions
+        var matched = false;
+        var subs = [];
+        for (var i = 0, l = subscriptions.length; i < l; i++) {
+            var pattern = subscriptions[i].pattern;
+            // possible matches
+            //    pattern.name
+            //    pattern.channelId
+            //    pattern.channelName
+            //    pattern.deviceId
+            //    pattern.deviceName
+            //    pattern.enumId
+            //    pattern.enumName
+            if (!matched) {
+                if (eventObj.name === undefined && pattern.name) {
+                    eventObj.common = objects[eventObj.id] ? objects[eventObj.id].common : {};
+                    eventObj.native = objects[eventObj.id] ? objects[eventObj.id].native : {};
+                    eventObj.name   = eventObj.common ? eventObj.common.name : null;
+                }
+
+                if (eventObj.channelId === undefined && (pattern.deviceId || pattern.deviceName || pattern.channelId || pattern.channelName)) {
+                    var pos = eventObj.id.lastIndexOf('.');
+                    if (pos != -1) eventObj.channelId = eventObj.id.substring(0, pos);
+                    if (!objects[eventObj.channelId]) eventObj.channelId = null;
+                }
+
+                if (eventObj.channelName === undefined && pattern.channelName) {
+                    if (eventObj.channelId && objects[eventObj.channelId]) {
+                        eventObj.channelName = objects[eventObj.channelId].common ? objects[eventObj.channelId].common.name : null;
+                    } else {
+                        eventObj.channelName = null;
+                    }
+                }
+
+                if (eventObj.deviceId === undefined && (pattern.deviceId || pattern.deviceName)) {
+                    if (!eventObj.channelId) {
+                        eventObj.deviceId   = null;
+                        eventObj.deviceName = null;
+                    } else {
+                        var pos = eventObj.channelId.lastIndexOf('.');
+                        if (pos != -1) {
+                            eventObj.deviceId = eventObj.channelId.substring(0, pos);
+                            if (!objects[eventObj.deviceId]) {
+                                eventObj.deviceId   = null;
+                                eventObj.deviceName = null;
+                            }
+                        }
+                    }
+                }
+                if (eventObj.deviceName === undefined && pattern.deviceName) {
+                    eventObj.deviceName = objects[eventObj.deviceId] && objects[eventObj.deviceId].common ? objects[eventObj.deviceId].common.name : null;
+                }
+            }
+
+            if (patternMatching(eventObj, subscriptions[i].pattern)) {
+                if (!matched) {
+                    matched = true;
+                    if (eventObj.name === undefined) {
+                        eventObj.common = objects[eventObj.id] ? objects[eventObj.id].common : {};
+                        eventObj.native = objects[eventObj.id] ? objects[eventObj.id].native : {};
+                        eventObj.name   = eventObj.common ? eventObj.common.name : null;
+                    }
+
+                    if (eventObj.channelId === undefined) {
+                        var pos = eventObj.id.lastIndexOf('.');
+                        if (pos != -1) eventObj.channelId = eventObj.id.substring(0, pos);
+                        if (!objects[eventObj.channelId]) eventObj.channelId = null;
+                    }
+
+                    if (eventObj.channelName === undefined) {
+                        if (eventObj.channelId && objects[eventObj.channelId]) {
+                            eventObj.channelName = objects[eventObj.channelId].common ? objects[eventObj.channelId].common.name : null;
+                        } else {
+                            eventObj.channelName = null;
+                        }
+                    }
+
+                    if (eventObj.deviceId === undefined) {
+                        if (!eventObj.channelId) {
+                            eventObj.deviceId   = null;
+                            eventObj.deviceName = null;
+                        } else {
+                            var pos = eventObj.channelId.lastIndexOf('.');
+                            if (pos != -1) {
+                                eventObj.deviceId = eventObj.channelId.substring(0, pos);
+                                if (!objects[eventObj.deviceId]) {
+                                    eventObj.deviceId   = null;
+                                    eventObj.deviceName = null;
+                                }
+                            }
+                        }
+                    }
+                    if (eventObj.deviceName === undefined) {
+                        eventObj.deviceName = objects[eventObj.deviceId] && objects[eventObj.deviceId].common ? objects[eventObj.deviceId].common.name : null;
+                    }
+                }
+                subs.push(i);
+            }
+        }
+
+        if (matched) {
+            if (eventObj.enumIds === undefined) {
+                getObjectEnums(eventObj.id, function (enumIds, enumNames) {
+                    eventObj.enumIds   = enumIds;
+                    eventObj.enumNames = enumNames;
+                    for (var i = 0, l = subs.length; i < l; i++) {
+                        subscriptions[subs[i]].callback(eventObj);
+                    }
+                });
+            } else {
+                for (var i = 0, l = subs.length; i < l; i++) {
+                    subscriptions[subs[i]].callback(eventObj);
+                }
+            }
+        }
+   }
 
     function installNpm(npmLib, callback) {
         var path = __dirname;
@@ -889,6 +982,7 @@
                     },
                     name:     name
                 });
+                if (pattern.enumName || pattern.enumId) isEnums = true;
             },
             on:        function (pattern, callbackOrId, value) {
                 return sandbox.subscribe(pattern, callbackOrId, value);
@@ -1185,9 +1279,12 @@
         adapter.log.info('Stop script ' + name);
         if (scripts[name]) {
             // Remove from subscriptions
+            isEnums = false;
             for (var i = subscriptions.length - 1; i >= 0 ; i--) {
                 if (subscriptions[i].name == name) {
                     subscriptions.splice(i, 1);
+                } else {
+                    if (!isEnums && subscriptions[i].pattern.enumName || subscriptions[i].pattern.enumId) isEnums = true;
                 }
             }
             // Stop all timeouts
@@ -1774,17 +1871,26 @@
             enumNames = [];
         }
         for (var i = 0, l = enums.length; i < l; i++) {
-            if (objects[enums[i]] && objects[enums[i]].common && objects[enums[i]].common.members && objects[enums[i]].common.members.indexOf(idObj) !== -1) {
+            if (objects[enums[i]] &&
+                objects[enums[i]].common &&
+                objects[enums[i]].common.members &&
+                objects[enums[i]].common.members.indexOf(idObj) !== -1) {
                 enumIds.push(enums[i]);
                 enumNames.push(objects[enums[i]].common.name);
             }
         }
-        if (objects[idObj] && objects[idObj].parent) {
-            getObjectEnums(objects[idObj].parent, callback, enumIds, enumNames);
-        } else {
-            cacheObjectEnums[idObj] = {enumIds: enumIds, enumNames: enumNames};
-            if (typeof callback === 'function') callback(enumIds, enumNames);
+        if (objects[idObj]) {
+            var pos = idObj.lastIndexOf('.');
+            if (pos != -1) {
+                var parent = idObj.substring(0, pos);
+                if (parent && objects[parent]) {
+                    return getObjectEnums(parent, callback, enumIds, enumNames);
+                }
+            }
         }
+
+        cacheObjectEnums[idObj] = {enumIds: enumIds, enumNames: enumNames};
+        if (typeof callback === 'function') callback(enumIds, enumNames);
     }
 
     function getObjectEnumsSync(idObj, enumIds, enumNames) {
@@ -1801,11 +1907,17 @@
                 enumNames.push(objects[enums[i]].common.name);
             }
         }
-        if (objects[idObj] && objects[idObj].parent) {
-            return getObjectEnumsSync(objects[idObj].parent, enumIds, enumNames);
-        } else {
-            cacheObjectEnums[idObj] = {enumIds: enumIds, enumNames: enumNames};
-            return cacheObjectEnums[idObj];
+        if (objects[idObj]) {
+            var pos = idObj.lastIndexOf('.');
+            if (pos != -1) {
+                var parent = idObj.substring(0, pos);
+                if (parent && objects[parent]) {
+                    return getObjectEnumsSync(parent, enumIds, enumNames);
+                }
+            }
         }
+
+        cacheObjectEnums[idObj] = {enumIds: enumIds, enumNames: enumNames};
+        return cacheObjectEnums[idObj];
     }
 })();
