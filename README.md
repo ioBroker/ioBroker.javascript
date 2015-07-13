@@ -458,7 +458,7 @@ The optional error code will be given in callback.
 
 
 ## Changelog
-### 0.4.10 (2015-07-13)
+### 0.4.11 (2015-07-13)
 * (bluefox) fix error with selector and enums
 
 ### 0.4.9 (2015-07-11)

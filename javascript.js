@@ -1865,20 +1865,28 @@
 
     function getObjectEnums(idObj, callback, enumIds, enumNames) {
         if (cacheObjectEnums[idObj]) {
-            if (typeof callback === 'function') callback(cacheObjectEnums[idObj].enumIds, cacheObjectEnums[idObj].enumNames);
+            if (typeof callback === 'function') {
+                for (var j = 0; j < cacheObjectEnums[idObj].enumIds.length; j++) {
+                    if (enumIds.indexOf(cacheObjectEnums[idObj].enumIds[j]) == -1) enumIds.push(cacheObjectEnums[idObj].enumIds[j]);
+                }
+                for (j = 0; j < cacheObjectEnums[idObj].enumNames.length; j++) {
+                    if (enumNames.indexOf(cacheObjectEnums[idObj].enumNames[j]) == -1) enumNames.push(cacheObjectEnums[idObj].enumNames[j]);
+                }
+
+                callback(cacheObjectEnums[idObj].enumIds, cacheObjectEnums[idObj].enumNames);
+            }
             return;
         }
-        if (!enumIds) {
-            enumIds = [];
-            enumNames = [];
-        }
+        if (!enumIds)   enumIds = [];
+        if (!enumNames) enumNames = [];
+
         for (var i = 0, l = enums.length; i < l; i++) {
             if (objects[enums[i]] &&
                 objects[enums[i]].common &&
                 objects[enums[i]].common.members &&
                 objects[enums[i]].common.members.indexOf(idObj) !== -1) {
-                enumIds.push(enums[i]);
-                enumNames.push(objects[enums[i]].common.name);
+                if (enumIds.indexOf(enums[i]) == -1) enumIds.push(enums[i]);
+                if (enumNames.indexOf(objects[enums[i]].common.name) == -1) enumNames.push(objects[enums[i]].common.name);
             }
         }
         if (objects[idObj]) {
