@@ -665,7 +665,6 @@
                 if (name == 'channel') {
                     for (id in channels) {
                         if (!objects[id]) {
-                            console.log(id);
                             continue;
                         }
                         pass = true;
@@ -697,11 +696,12 @@
                         if (!pass) continue;
 
                         if (_enums.length) {
-                            var _e = getObjectEnumsSync(id);
+                            var enumIds = [];
+                            getObjectEnumsSync(id, enumIds);
 
                             for (var m = 0; m < _enums.length; m++) {
                                 if (!_enums[m]) continue;
-                                if (_e.enumIds.indexOf(_enums[m]) != -1) continue;
+                                if (enumIds.indexOf(_enums[m]) != -1) continue;
                                 pass = false;
                                 break;
                             }
@@ -766,11 +766,12 @@
                         if (!pass) continue;
 
                         if (_enums.length) {
-                            var _e = getObjectEnumsSync(id);
+                            var enumIds = [];
+                            getObjectEnumsSync(id, enumIds);
 
                             for (var n = 0; n < _enums.length; n++) {
                                 if (!_enums[n]) continue;
-                                if (_e.enumIds.indexOf(_enums[n]) != -1) continue;
+                                if (enumIds.indexOf(_enums[n]) != -1) continue;
                                 pass = false;
                                 break;
                             }
@@ -858,11 +859,12 @@
                         }
 
                         if (_enums.length) {
-                            var _e = getObjectEnumsSync(id);
+                            var enumIds = [];
+                            getObjectEnumsSync(id, enumIds);
 
                             for (var n = 0; n < _enums.length; n++) {
                                 if (!_enums[n]) continue;
-                                if (_e.enumIds.indexOf(_enums[n]) != -1) continue;
+                                if (enumIds.indexOf(_enums[n]) != -1) continue;
                                 pass = false;
                                 break;
                             }
@@ -1895,18 +1897,28 @@
 
     function getObjectEnumsSync(idObj, enumIds, enumNames) {
         if (cacheObjectEnums[idObj]) {
-            return cacheObjectEnums[idObj];
+            for (var j = 0; j < cacheObjectEnums[idObj].enumIds.length; j++) {
+                if (enumIds.indexOf(cacheObjectEnums[idObj].enumIds[j]) == -1) enumIds.push(cacheObjectEnums[idObj].enumIds[j]);
+            }
+            for (j = 0; j < cacheObjectEnums[idObj].enumNames.length; j++) {
+                if (enumNames.indexOf(cacheObjectEnums[idObj].enumNames[j]) == -1) enumNames.push(cacheObjectEnums[idObj].enumNames[j]);
+            }
+            return;
         }
-        if (!enumIds) {
-            enumIds = [];
-            enumNames = [];
-        }
+
+        if (!enumIds)   enumIds = [];
+        if (!enumNames) enumNames = [];
+
         for (var i = 0, l = enums.length; i < l; i++) {
-            if (objects[enums[i]] && objects[enums[i]].common && objects[enums[i]].common.members && objects[enums[i]].common.members.indexOf(idObj) !== -1) {
-                enumIds.push(enums[i]);
-                enumNames.push(objects[enums[i]].common.name);
+            if (objects[enums[i]] &&
+                objects[enums[i]].common &&
+                objects[enums[i]].common.members &&
+                objects[enums[i]].common.members.indexOf(idObj) !== -1) {
+                if (enumIds.indexOf(enums[i]) == -1) enumIds.push(enums[i]);
+                if (enumNames.indexOf(objects[enums[i]].common.name) == -1) enumNames.push(objects[enums[i]].common.name);
             }
         }
+
         if (objects[idObj]) {
             var pos = idObj.lastIndexOf('.');
             if (pos != -1) {
