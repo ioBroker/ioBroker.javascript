@@ -343,8 +343,8 @@ It is possible short type of createState:
 
 - _createState('myVariable')_ - simply create variable if does not exist
 - _createState('myVariable', 1)_ - create variable if does not exist and initialize it with value 1
-- _createState('myVariable', {name: 'My own variable, unit: '°C'}, function () {log('created');});_
-- _createState('myVariable', 1, {name: 'My own variable, unit: '°C'})_ - create variable if does not exist with specific name and units
+- _createState('myVariable', {name: 'My own variable', unit: '°C'}, function () {log('created');});_
+- _createState('myVariable', 1, {name: 'My own variable', unit: '°C'})_ - create variable if does not exist with specific name and units
 
 ### sendTo:    
     sendTo (adapter, cmd, msg, callback)
