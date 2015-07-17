@@ -1864,6 +1864,9 @@
     }
 
     function getObjectEnums(idObj, callback, enumIds, enumNames) {
+        if (!enumIds)   enumIds   = [];
+        if (!enumNames) enumNames = [];
+
         if (cacheObjectEnums[idObj]) {
             if (typeof callback === 'function') {
                 for (var j = 0; j < cacheObjectEnums[idObj].enumIds.length; j++) {
@@ -1877,8 +1880,6 @@
             }
             return;
         }
-        if (!enumIds)   enumIds = [];
-        if (!enumNames) enumNames = [];
 
         for (var i = 0, l = enums.length; i < l; i++) {
             if (objects[enums[i]] &&
@@ -1904,6 +1905,9 @@
     }
 
     function getObjectEnumsSync(idObj, enumIds, enumNames) {
+        if (!enumIds)   enumIds   = [];
+        if (!enumNames) enumNames = [];
+
         if (cacheObjectEnums[idObj]) {
             for (var j = 0; j < cacheObjectEnums[idObj].enumIds.length; j++) {
                 if (enumIds.indexOf(cacheObjectEnums[idObj].enumIds[j]) == -1) enumIds.push(cacheObjectEnums[idObj].enumIds[j]);
@@ -1914,8 +1918,6 @@
             return;
         }
 
-        if (!enumIds)   enumIds = [];
-        if (!enumNames) enumNames = [];
 
         for (var i = 0, l = enums.length; i < l; i++) {
             if (objects[enums[i]] &&

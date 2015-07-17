@@ -458,6 +458,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.4.12 (2015-07-17)
+* (bluefox) fix error in getObjectEnums
+
 ### 0.4.11 (2015-07-13)
 * (bluefox) fix error with selector and enums
 
