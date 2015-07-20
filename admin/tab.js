@@ -407,7 +407,7 @@ function Scripts(main) {
                 var name = $('#edit-script-name').val();
                 if ($(this).prop('checked')) {
                     if (name.indexOf('_global') == -1) {
-                        $('#edit-script-name').val(name + '_global').tigger('change');
+                        $('#edit-script-name').val(name + '_global').trigger('change');
                     }
                 } else {
                     if (name.indexOf('_global') != -1) {
@@ -424,7 +424,20 @@ function Scripts(main) {
             var htmlTrue  = that.htmlBoolean(true);
             var htmlFalse = that.htmlBoolean(false);
 
+            var globals = [];
+            for (var h = this.list.length - 1; h >= 0; h--) {
+                if (this.list[h].indexOf('_global') != -1) {
+                    globals.push(this.list[h]);
+                    this.list.splice(h, 1);
+                }
+            }
+            globals.sort();
             this.list.sort();
+
+            for (var h = globals.length - 1; h >= 0; h--) {
+                this.list.unshift(globals[h]);
+            }
+
             for (var i = 0; i < this.list.length; i++) {
                 var obj = main.objects[this.list[i]];
                 if (!obj) continue;
@@ -432,7 +445,7 @@ function Scripts(main) {
                 this.$grid.jqGrid('addRowData', 'script_' + id, {
                     _id:        id,
                     _obj_id:    obj._id,
-                    name:       obj.common ? obj.common.name     : '',
+                    name:       obj.common ? obj.common.name : '',
                     engineType: obj.common ? obj.common.engineType : '',
                     enabled:    obj.common ? (obj.common.enabled ? htmlTrue : htmlFalse) : '',
                     engine:     obj.common ? obj.common.engine   : '',
@@ -633,6 +646,22 @@ function Scripts(main) {
                     $(this).html(htmlFalse);
                 }
             });
+        });
+
+        $('td[aria-describedby="grid-scripts_name"]').each(function () {
+            if ($(this).html().indexOf('_global') != -1) {
+                $(this).css({'font-weight': 'bold'});
+            } else {
+                $(this).css({'font-weight': 'normal'});
+            }
+        });
+
+        $('td[aria-describedby="grid-scripts__obj_id"]').each(function () {
+            if ($(this).html().indexOf('_global') != -1) {
+                $(this).css({'font-weight': 'bold'});
+            } else {
+                $(this).css({'font-weight': 'normal'});
+            }
         });
     };
 

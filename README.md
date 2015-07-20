@@ -458,6 +458,10 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+
+### 0.4.13 (2015-07-20)
+* (bluefox) sort scripts alphabetically and globals at begin
+
 ### 0.4.12 (2015-07-17)
 * (bluefox) fix error in getObjectEnums
 
