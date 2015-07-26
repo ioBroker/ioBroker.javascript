@@ -398,7 +398,7 @@ function Scripts(main) {
                 that.changed = true;
                 $('#script-edit-button-save').button('enable');
 
-                $('#edit-script-global').prop('checked', $('#edit-script-name').val().indexOf('_global') != -1);
+                $('#edit-script-global').prop('checked', $('#edit-script-name').val().match(/_global$/));
             }).keyup(function () {
                 $(this).trigger('change');
             });
@@ -406,11 +406,11 @@ function Scripts(main) {
             $('#edit-script-global').change(function () {
                 var name = $('#edit-script-name').val();
                 if ($(this).prop('checked')) {
-                    if (name.indexOf('_global') == -1) {
+                    if (!name.match(/_global$/)) {
                         $('#edit-script-name').val(name + '_global').trigger('change');
                     }
                 } else {
-                    if (name.indexOf('_global') != -1) {
+                    if (name.match(/_global$/)) {
                         $('#edit-script-name').val(name.replace('_global', '')).trigger('change');
                     }
                 }
@@ -426,7 +426,7 @@ function Scripts(main) {
 
             var globals = [];
             for (var h = this.list.length - 1; h >= 0; h--) {
-                if (this.list[h].indexOf('_global') != -1) {
+                if (this.list[h].match(/_global$/)) {
                     globals.push(this.list[h]);
                     this.list.splice(h, 1);
                 }
@@ -649,7 +649,7 @@ function Scripts(main) {
         });
 
         $('td[aria-describedby="grid-scripts_name"]').each(function () {
-            if ($(this).html().indexOf('_global') != -1) {
+            if ($(this).html().match(/_global$/)) {
                 $(this).css({'font-weight': 'bold'});
             } else {
                 $(this).css({'font-weight': 'normal'});
@@ -657,7 +657,7 @@ function Scripts(main) {
         });
 
         $('td[aria-describedby="grid-scripts__obj_id"]').each(function () {
-            if ($(this).html().indexOf('_global') != -1) {
+            if ($(this).html().match(/_global$/)) {
                 $(this).css({'font-weight': 'bold'});
             } else {
                 $(this).css({'font-weight': 'normal'});
@@ -681,7 +681,7 @@ function Scripts(main) {
             $('#edit-script-id').val(obj._id);
             $('#edit-script-name').val(obj.common.name);
 
-            $('#edit-script-global').prop('checked', (obj.common.name.indexOf('_global') != -1));
+            $('#edit-script-global').prop('checked', obj.common.name.match(/_global$/));
 
             // Add engine even if it is not installed
             if (engines.indexOf(obj.common.engineType) == -1) $('#edit-script-engine-type').append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
