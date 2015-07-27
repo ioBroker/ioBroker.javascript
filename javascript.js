@@ -120,17 +120,17 @@
                 //enumIds: enumIds,       // Array of Strings
                 //enumNames: enumNames,     // Array of Strings
                 newState: {
-                    val: state.val,
-                    ts: state.ts,
-                    ack: state.ack,
-                    lc: state.lc,
+                    val:  state.val,
+                    ts:   state.ts,
+                    ack:  state.ack,
+                    lc:   state.lc,
                     from: state.from
                 },
                 oldState: {
-                    val: oldState.val,
-                    ts: oldState.ts,
-                    ack: oldState.ack,
-                    lc: oldState.lc,
+                    val:  oldState.val,
+                    ts:   oldState.ts,
+                    ack:  oldState.ack,
+                    lc:   oldState.lc,
                     from: oldState.from
                 }
             };
@@ -1110,7 +1110,7 @@
                 return null;
             },
             getObject: function (id, enumName) {
-                if (withEnums) {
+                if (enumName) {
                     var e = getObjectEnumsSync(id);
                     var obj = JSON.parse(JSON.stringify(objects[id]));
                     obj.enumIds   = JSON.parse(JSON.stringify(e.enumIds));

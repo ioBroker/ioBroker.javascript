@@ -330,7 +330,7 @@ These arrays has all enumerations, where ID is member of. E.g:
 
 ``` getObject ('adapter.N.objectName', 'rooms') ```
  
-gives back in enumIds all rooms, where the requested object is a member. You can define "true" as enumName to get back all enumerations.
+gives back in enumIds all rooms, where the requested object is a member. You can define "true" as enumName to get back *all* enumerations.
  
 ### getEnums
     getEnums(enumName)
@@ -485,6 +485,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.5.1 (2015-07-27)
+* (bluefox) fix error with enums
+
 ### 0.5.0 (2015-07-27)
 * (bluefox) extend getObject with enum names and add new function getEnums
 
