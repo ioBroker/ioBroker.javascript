@@ -1109,8 +1109,40 @@
                 adapter.log.warn('State "' + id + '" not found');
                 return null;
             },
-            getObject: function (id) {
-                return objects[id];
+            getObject: function (id, enumName) {
+                if (withEnums) {
+                    var e = getObjectEnumsSync(id);
+                    var obj = JSON.parse(JSON.stringify(objects[id]));
+                    obj.enumIds   = JSON.parse(JSON.stringify(e.enumIds));
+                    obj.enumNames = JSON.parse(JSON.stringify(e.enumNames));
+                    if (typeof enumName == 'string') {
+                        var r = new RegExp('^enum\.' + enumName + '\.');
+                        for (var i = obj.enumIds.length - 1; i >= 0; i--) {
+                            if (!r.test(obj.enumIds[i])) {
+                                obj.enumIds.splice(i, 1);
+                                obj.enumNames.splice(i, 1);
+                            }
+                        }
+                    }
+
+                    return obj;
+                } else {
+                    return JSON.parse(JSON.stringify(objects[id]));
+                }
+            },
+            getEnums: function (enumName) {
+                var result = [];
+                var r = enumName ? new RegExp('^enum\.' + enumName + '\.') : false;
+                for (var i = 0; i < enums.length; i++) {
+                    if (!r || r.test(enums[i])) {
+                        result.push({
+                            id:      enums[i],
+                            members: (objects[enums[i]].common) ? objects[enums[i]].common.members : [],
+                            name:    objects[enums[i]].common.name
+                        });
+                    }
+                }
+                return JSON.parse(JSON.stringify(result));
             },
             createState: function (name, initValue, forceCreation, common, native, callback) {
                 if (typeof native == 'function') {
@@ -1915,7 +1947,7 @@
             for (j = 0; j < cacheObjectEnums[idObj].enumNames.length; j++) {
                 if (enumNames.indexOf(cacheObjectEnums[idObj].enumNames[j]) == -1) enumNames.push(cacheObjectEnums[idObj].enumNames[j]);
             }
-            return;
+            return {enumIds: enumIds, enumNames: enumNames};
         }
 
 

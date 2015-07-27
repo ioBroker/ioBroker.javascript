@@ -323,8 +323,35 @@ on({astro: "sunset", shift: 10}, function () {
 Returns state of id in form {val: value, ack: true/false, ts: timestamp, lc: lastchanged, from: origin}    
     
 ### getObject
-    getObject (id)
-Get description of object id as stored in DB.
+    getObject (id, enumName)
+Get description of object id as stored in system.
+You can specify the enumeration name. If this is defined, two additional attributes will be added to result: enumIds and enumNames.
+These arrays has all enumerations, where ID is member of. E.g:
+
+``` getObject ('adapter.N.objectName', 'rooms') ```
+ 
+gives back in enumIds all rooms, where the requested object is a member. You can define "true" as enumName to get back all enumerations.
+ 
+### getEnums
+    getEnums(enumName)
+    
+Get the list of existing enumerations with members, like: 
+
+```
+getEnums('rooms') =>
+[
+    {
+        "id":"enum.rooms.LivingRoom",
+        "members":["hm-rpc.0.JEQ0024123.1","hm-rpc.0.BidCoS-RF.4"],
+        "name": "Living room"
+    },
+    {
+        "id":"enum.rooms.Bath",
+        "members":["hm-rpc.0.JEQ0024124.1","hm-rpc.0.BidCoS-RF.5"],
+        "name": "Bath"
+    }
+]
+```
 
 ### createState
     createState(name, initialValue, forceCreation, common, native, callback)
@@ -458,6 +485,8 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.5.0 (2015-07-27)
+* (bluefox) extend getObject with enum names and add new function getEnums
 
 ### 0.4.13 (2015-07-20)
 * (bluefox) sort scripts alphabetically and globals at begin
