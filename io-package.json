@@ -20,7 +20,8 @@
         "adminTab": {
             "singleton":            true,
             "name":                 "Scripts"
-        }
+        },
+        "type":                     "script"
     },
     "native": {
         "latitude" : "",
