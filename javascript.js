@@ -1293,6 +1293,20 @@
                 if (val === '1' || val === 'true')  val = true;
                 if (val === '0' || val === 'false') val = false;
                 return !!val;
+            },
+            console: {
+                log:  function (msg) {
+                    sandbox.log(msg, 'info');
+                },
+                error:  function (msg) {
+                    sandbox.log(msg, 'error');
+                },
+                warn:  function (msg) {
+                    sandbox.log(msg, 'warn');
+                },
+                debug:  function (msg) {
+                    sandbox.log(msg, 'debug');
+                }
             }
         };
 

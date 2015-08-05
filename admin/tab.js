@@ -20,7 +20,7 @@ function Scripts(main) {
                 {name: 'engineType', index: 'engineType'},
                 {name: 'enabled',    index: 'enabled',  editable: true, edittype: 'checkbox', editoptions: {value: _('true') + ':' + _('false')}},
                 {name: 'engine',     index: 'engine',   editable: true, edittype: 'select',   editoptions: ''},
-                {name: 'commands',   index: 'commands', editable: false, width: 80, align: 'center'}
+                {name: 'commands',   index: 'commands', editable: false, minWidth: 190, align: 'center'}
             ],
             pager: $('#pager-scripts'),
             rowNum: 100,
@@ -449,14 +449,15 @@ function Scripts(main) {
                     engineType: obj.common ? obj.common.engineType : '',
                     enabled:    obj.common ? (obj.common.enabled ? htmlTrue : htmlFalse) : '',
                     engine:     obj.common ? obj.common.engine   : '',
-                    commands:
-                        '<button data-script-id="' + id + '" class="script-edit-submit">'      + _('edit')   + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-edit-file-submit">' + _('edit file') + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-reload-submit">'    + _('restart script') + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-copy-submit">'      + _('copy') + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-delete-submit">'    + _('delete') + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-cancel-submit" style="display:none">' + _('cancel') + '</button>'
+                    commands:   '<table class="no-space"><tr class="no-space">' +
+                        '<td class="no-space"><button data-script-id="' + id + '" class="script-edit-submit">'      + _('edit')   + '</button></td>' +
+                        '<td class="no-space"><button data-script-id="' + id + '" class="script-edit-file-submit">' + _('edit file') + '</button></td>' +
+                        '<td class="no-space"><button data-script-id="' + id + '" class="script-reload-submit">'    + _('restart script') + '</button></td>' +
+                        '<td class="no-space"><button data-script-id="' + id + '" class="script-copy-submit">'      + _('copy') + '</button></td>' +
+                        '<td class="no-space"><button data-script-id="' + id + '" class="script-delete-submit">'    + _('delete') + '</button></td>' +
+                        '<td class="no-space"><button data-script-id="' + id + '" class="script-ok-submit"     style="display:none">' + _('ok')     + '</button></td>' +
+                        '<td class="no-space"><button data-script-id="' + id + '" class="script-cancel-submit" style="display:none">' + _('cancel') + '</button></td>'+
+                        '</tr></table>'
                 });
                 id++;
             }

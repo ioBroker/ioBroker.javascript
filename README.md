@@ -485,6 +485,11 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.5.2 (2015-08-05)
+* (bluefox) make edit buttons (in admin tab) visible
+* (bluefox) add console.log, console.warn, console.error commands
+* (bluefox) update packets
+
 ### 0.5.1 (2015-07-27)
 * (bluefox) fix error with enums
 

@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Javascript/Coffescript Script Engine for ioBroker",
   "author": "hobbyquaker <hq@ccu.io>",
   "contributors": [
@@ -21,10 +21,10 @@
     "url": "https://github.com/ioBroker/ioBroker.javascript"
   },
   "dependencies": {
-    "node-schedule": "https://github.com/hobbyquaker/node-schedule/tarball/master",
-    "request": "^2.39.0",
-    "suncalc": "^1.5.2",
-    "wake_on_lan": "0.0.3",
+    "node-schedule": "^0.2.9",
+    "request": "^2.60.0",
+    "suncalc": "^1.6.0",
+    "wake_on_lan": "0.0.4",
     "coffee-compiler": "~0.3.2",
     "coffee-script": ">=1.6.2"
   },
