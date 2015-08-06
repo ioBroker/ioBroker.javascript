@@ -953,12 +953,12 @@
 
                 sandbox.__engine.__subscriptions += 1;
 
-                if (typeof pattern !== 'object') {
+                if (typeof pattern !== 'object' || pattern instanceof RegExp || pattern.source) {
                     pattern = {id: pattern, change: 'ne'};
                 }
 
                 // add adapter namespace if nothing given
-                if (pattern.id && pattern.id.indexOf('.') == -1) {
+                if (pattern.id && typeof pattern.id == 'string' && pattern.id.indexOf('.') == -1) {
                     pattern.id = adapter.namespace + '.' + pattern.id;
                 }
 
@@ -1396,7 +1396,7 @@
 
         // state id matching
         if (pattern.id) {
-            if (pattern.id instanceof RegExp) {
+            if (pattern.id instanceof RegExp || pattern.id.source) {
                 if (event.id && event.id.match(pattern.id)) {
                     if (pattern.logic === "or") return true;
                     matched = true;
