@@ -228,6 +228,15 @@ Trigger on all states with ID '*.STATE' if they are acknowledged and have new va
     logic: "and"
 }
 </code></pre>
+**Note:** you can use RegExp directly:
+```
+on(/^system\.adapter\..*\.\d+\.memRss$/, function (obj) {
+});
+
+// same as
+on({id: /^system\.adapter\..*\.\d+\.memRss$/, "change": "ne"}, function (obj) {
+});
+```
 
 ### subscribe - same as **[on](#on---subscribe-on-changes-or-updates-of-some-state)**
     
@@ -485,6 +494,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 0.5.3 (2015-08-15)
+* (bluefox) fix error with regexp
+
 ### 0.5.2 (2015-08-05)
 * (bluefox) make edit buttons (in admin tab) visible
 * (bluefox) add console.log, console.warn, console.error commands
