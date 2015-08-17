@@ -340,7 +340,11 @@ These arrays has all enumerations, where ID is member of. E.g:
 ``` getObject ('adapter.N.objectName', 'rooms') ```
  
 gives back in enumIds all rooms, where the requested object is a member. You can define "true" as enumName to get back *all* enumerations.
- 
+
+### getIdByName 
+    getIdByName(name, alwaysArray)
+
+returns id of the object with given name. If there are more than one object with this name the result will be an array. If _alwaysArray_ flag is set, the result will be always an array if some ID found.
 ### getEnums
     getEnums(enumName)
     
@@ -494,6 +498,10 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+
+### 0.5.4 (2015-08-17)
+* (bluefox) new function getIdByName
+
 ### 0.5.3 (2015-08-15)
 * (bluefox) fix error with regexp
 

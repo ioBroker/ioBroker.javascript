@@ -39,14 +39,22 @@
                 // Script deleted => remove it
                 if (objects[id].common.engine == 'system.adapter.' + adapter.namespace) stop(id);
 
+                removeFromNames(id);
                 delete objects[id];
             } else if (!objects[id]) {
                 objects[id] = obj;
 
+                addToNames(obj);
                 if (obj.type != 'script' || obj.common.engine != 'system.adapter.' + adapter.namespace || !obj.common.enabled) return;
                 // added new script to this engine
-
             } else {
+                var n = getName(id);
+
+                if (n != objects[id].common.name) {
+                    if (n) removeFromNames(id);
+                    if (objects[id].common.name) addToNames(obj);
+                }
+
                 // Object just changed
                 if (obj.type != 'script') {
                     objects[id] = obj;
@@ -219,6 +227,51 @@
     var fs =               null;
     var attempts =         {};
     var globalScript =     '';
+    var names =            {};
+
+    function addToNames(obj) {
+        var id = obj._id;
+        if (obj.common && obj.common.name) {
+            var name = obj.common.name;
+
+            if (!names[names]) {
+                names[name] = id;
+            } else {
+                if (typeof names[name] === 'string') names[name] = [names[name]];
+                names[name].push(id);
+            }
+        }
+    }
+
+    function removeFromNames(id) {
+        var n = getName(id);
+
+        if (n) {
+            var pos;
+            if (names[n] === 'object') {
+                pos = names[n].indexOf(id);
+                if (pos != -1) {
+                    names[n].splice(pos, 1);
+                    if (names[n].length) names[n] = names[n][0];
+                }
+            } else {
+                delete names[n];
+            }
+        }
+    }
+
+    function getName(id) {
+        var pos;
+        for (var n in names) {
+            if (typeof names[n] === 'object') {
+                pos = names[n].indexOf(id);
+                if (pos != -1) return n;
+            } else if (names[n] == id) {
+                return n;
+            }
+        }
+        return null;
+    }
 
     function checkPatterns(eventObj) {
         // if this state matchs any subscriptions
@@ -1109,6 +1162,14 @@
                 adapter.log.warn('State "' + id + '" not found');
                 return null;
             },
+            getIdByName: function (name, alwaysArray) {
+                if (alwaysArray) {
+                    if (typeof names[name] === 'string') return [names[name]];
+                    return names[name];
+                } else {
+                    return names[name];
+                }
+            },
             getObject: function (id, enumName) {
                 if (enumName) {
                     var e = getObjectEnumsSync(id);
@@ -1130,7 +1191,7 @@
                     return JSON.parse(JSON.stringify(objects[id]));
                 }
             },
-            getEnums: function (enumName) {
+            getEnums:  function (enumName) {
                 var result = [];
                 var r = enumName ? new RegExp('^enum\.' + enumName + '\.') : false;
                 for (var i = 0; i < enums.length; i++) {
@@ -1274,16 +1335,16 @@
             writeFile: function (fileName, data, callback) {
                 adapter.writeFile(null, fileName, data, callback);
             },
-            readFile: function (fileName, callback) {
+            readFile:  function (fileName, callback) {
                 adapter.readFile(null, fileName, callback);
             },
-            toInt: function (val) {
+            toInt:     function (val) {
                 if (val === true  || val === 'true')  val = 1;
                 if (val === false || val === 'false') val = 0;
                 val = parseInt(val) || 0;
                 return val;
             },
-            toFloat: function (val) {
+            toFloat:   function (val) {
                 if (val === true  || val === 'true')  val = 1;
                 if (val === false || val === 'false') val = 0;
                 val = parseFloat(val) || 0;
@@ -1295,13 +1356,13 @@
                 return !!val;
             },
             console: {
-                log:  function (msg) {
+                log:    function (msg) {
                     sandbox.log(msg, 'info');
                 },
                 error:  function (msg) {
                     sandbox.log(msg, 'error');
                 },
-                warn:  function (msg) {
+                warn:   function (msg) {
                     sandbox.log(msg, 'warn');
                 },
                 debug:  function (msg) {
@@ -1901,6 +1962,9 @@
             for (var i = 0; i < res.length; i++) {
                 objects[res[i].doc._id] = res[i].doc;
                 if (res[i].doc.type === 'enum') enums.push(res[i].doc._id);
+
+                // Collect all names
+                addToNames(objects[res[i].doc._id]);
             }
 
             objectsReady = true;
