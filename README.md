@@ -71,17 +71,19 @@ Default severity is ***'info'***
 The callback function will return the object as parameter with following content:
 ```
     {
-    	'id' : 'io.state.id',
+    	'_id' : 'javascript.0.myplayer',
     	'name' : 'state',
     	'common' : {
-    		'def' :    'stop',
-    		'type' :   'string',
+    		'def' :    '0',
+            'min'  :   '0',
+            'max'  :   '6',
+    		'type' :   'number',
     		'read' :   'true',
     		'write' :  'true',
-    		'values' : 'stop,play,pause,next,previous,mute,unmute',
+    		'states' : '0:stop;1:play;2:pause;3:next;4:previous;5:mute;6:unmute',
     		'role' :   'media.state',
-    		'desc' :   'Play, stop, or pause, next, previous, mute, unmute',
-    		'name' :   'state'
+    		'desc' :   'Player handling',
+    		'name' :   'MyPlayer'
     	},
     	'native' : {},
     	'channelId' :   'channelID',
