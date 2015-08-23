@@ -447,6 +447,7 @@
                             installLibraries(callback);
                         });
                         allInstalled = false;
+                        break;
                     }
                 }
             }

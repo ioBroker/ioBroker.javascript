@@ -72,7 +72,7 @@ The callback function will return the object as parameter with following content
 ```
     {
     	'_id' : 'javascript.0.myplayer',
-    	'name' : 'state',
+    	'type' : 'state',
     	'common' : {
     		'def' :    '0',
             'min'  :   '0',
@@ -500,6 +500,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+
+### 0.5.5 (2015-08-23)
+* (bluefox) fix error if many additional npm packets
 
 ### 0.5.4 (2015-08-17)
 * (bluefox) new function getIdByName
