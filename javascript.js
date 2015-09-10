@@ -1153,8 +1153,28 @@
                         if (typeof callback === 'function') callback();
                     });
                 } else {
-                    adapter.log.warn('State "' + id + '" not found');
-                    if (typeof callback === 'function') callback('State "' + id + '" not found');
+                    if (objects[id]) {
+                        if (objects[id].type == 'state') {
+                            adapter.setForeignState(id, state, function () {
+                                if (typeof callback === 'function') callback();
+                            });
+                        } else {
+                            adapter.log.warn('Cannot set value of non-state object "' + id + '"');
+                            if (typeof callback === 'function') callback('Cannot set value of non-state object "' + id + '"');
+                        }
+                    } else if (objects[adapter.namespace + '.' + id]) {
+                        if (objects[adapter.namespace + '.' + id].type == 'state') {
+                            adapter.setState(id, state, function () {
+                                if (typeof callback === 'function') callback();
+                            });
+                        } else {
+                            adapter.log.warn('Cannot set value of non-state object "' + adapter.namespace + '.' + id + '"');
+                            if (typeof callback === 'function') callback('Cannot set value of non-state object "' + adapter.namespace + '.' + id + '"');
+                        }
+                    } else {
+                        adapter.log.warn('State "' + id + '" not found');
+                        if (typeof callback === 'function') callback('State "' + id + '" not found');
+                    }
                 }
             },
             getState:  function (id) {

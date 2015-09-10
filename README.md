@@ -501,6 +501,9 @@ The optional error code will be given in callback.
 
 ## Changelog
 
+### 0.5.6 (2015-09-10)
+* (bluefox) allow set state of object if value was never set
+
 ### 0.5.5 (2015-08-23)
 * (bluefox) fix error if many additional npm packets
 
