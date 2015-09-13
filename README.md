@@ -501,6 +501,9 @@ The optional error code will be given in callback.
 
 ## Changelog
 
+### 0.5.7 (2015-09-13)
+* (bluefox) change createState: if "def" exists, the state will be created with "def" value.
+
 ### 0.5.6 (2015-09-10)
 * (bluefox) allow set state of object if value was never set
 

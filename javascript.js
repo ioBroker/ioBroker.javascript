@@ -1258,6 +1258,7 @@
                 common.name = common.name || name;
                 common.role = common.role || 'javascript';
                 common.type = common.type || 'mixed';
+                if (initValue === undefined) initValue = common.def;
 
                 native = native || {}
 
@@ -1279,12 +1280,12 @@
                             adapter.setObject(name, {
                                 common: common,
                                 native: native,
-                                type: 'state'
+                                type:   'state'
                             }, function () {
                                 if (initValue !== undefined) {
                                     adapter.setState(name, initValue, callback);
                                 } else {
-                                    if (callback) callback(name);
+                                    adapter.setState(name, null,      callback);
                                 }
                             });
                         } else {
