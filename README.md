@@ -222,15 +222,18 @@ You can use following parameters to specify the trigger:
 
 Examples:
 Trigger on all states with ID '*.STATE' if they are acknowledged and have new value "true".
-<code><pre>
+
+```
 {
     id: /\.STATE$/,
     val: true,
     ack: true,
     logic: "and"
 }
-</code></pre>
+```
+
 **Note:** you can use RegExp directly:
+
 ```
 on(/^system\.adapter\..*\.\d+\.memRss$/, function (obj) {
 });
@@ -239,6 +242,13 @@ on(/^system\.adapter\..*\.\d+\.memRss$/, function (obj) {
 on({id: /^system\.adapter\..*\.\d+\.memRss$/, "change": "ne"}, function (obj) {
 });
 ```
+To simply connect two states with each other, write:
+```
+on('stateId1', 'stateId2');
+```
+
+All changes of *stateId1* will be written to *stateId2*.
+
 
 ### subscribe - same as **[on](#on---subscribe-on-changes-or-updates-of-some-state)**
     
