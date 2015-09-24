@@ -228,6 +228,8 @@
     var attempts =         {};
     var globalScript =     '';
     var names =            {};
+    var timers =           {};
+    var timerId =          0;
 
     function addToNames(obj) {
         var id = obj._id;
@@ -1175,6 +1177,64 @@
                         adapter.log.warn('State "' + id + '" not found');
                         if (typeof callback === 'function') callback('State "' + id + '" not found');
                     }
+                }
+            },
+            setStateDelayed: function(id, state, isAck, delay, clearRunning, callback) {
+                // find arguments
+                if (typeof isAck != 'boolean') {
+                    callback = clearRunning;
+                    clearRunning = delay;
+                    delay = isAck;
+                    isAck = false;
+                }
+                if (typeof delay != 'number') {
+                    callback = clearRunning;
+                    clearRunning = delay;
+                    delay = 0
+                }
+                if (typeof clearRunning != 'boolean') {
+                    callback = clearRunning;
+                    clearRunning = true;
+                }
+
+                if (clearRunning === undefined) clearRunning = true;
+
+                if (clearRunning) {
+                    if (timers[id]) {
+                        for (var i = 0; i < timers[id].length; i++) {
+                            clearTimeout(timers[id][i]);
+                        }
+                        delete timers[id];
+                    }
+                }
+                // If no delay => start immediately
+                if (!delay) {
+                    sandbox.setState(id, state, isAck, callback);
+                } else {
+                    // If delay
+                    timers[id] = timers[id] || [];
+
+                    // calculate timerId
+                    timerId++;
+                    if (timerId > 0xFFFFFFFE) timerId = 0;
+
+                    // Start timeout
+                    var timer = setTimeout(function (_timerId) {
+                        sandbox.setState(id, state, isAck, callback);
+                        // delete timer handler
+                        if (timers[id]) {
+                            for (var t = 0; t < timers[id].length; t++) {
+                                if (timers[id][t].id == _timerId) {
+                                    timers[id].splice(t, 1);
+                                    break;
+                                }
+                            }
+                            if (!timers[id].length) delete timers[id];
+                        }
+                    }, delay, timerId);
+
+                    // add timer handler
+                    timers[id].push({t: timer, id: timerId});
                 }
             },
             getState:  function (id) {

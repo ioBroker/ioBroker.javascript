@@ -337,7 +337,19 @@ on({astro: "sunset", shift: 10}, function () {
 ```
 
 ### setState 
-    setState (id, state, callback)
+    setState (id, state, ack, callback)
+    
+### setStateDelayed
+    setStateDelayed (id, state, isAck, delay, clearRunning, callback)
+    
+Same as setState but with delay in milliseconds. You can clear all running delay for this ID (by default). E.g.
+
+```
+    setStateDelayed('Kitchen.Light.Lamp', true,  1000);// Switch ON the light in the kitchen in one second
+    setStateDelayed('Kitchen.Light.Lamp', false, 5000, false, function () { // Switch OFF the light in the kitchen in 5 seconds and let first timeout run. 
+        log('Lamp is OFF');
+    });
+``` 
     
 ### getState 
     getState (id)
@@ -510,6 +522,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+
+### 0.5.8 (2015-09-23)
+* (bluefox) add new function "setStateDelayed"
 
 ### 0.5.7 (2015-09-13)
 * (bluefox) change createState: if "def" exists, the state will be created with "def" value.
