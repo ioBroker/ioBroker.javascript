@@ -523,6 +523,9 @@ The optional error code will be given in callback.
 
 ## Changelog
 
+### 0.5.9 (2015-09-26)
+* (bluefox) update ace editor
+
 ### 0.5.8 (2015-09-23)
 * (bluefox) add new function "setStateDelayed"
 
