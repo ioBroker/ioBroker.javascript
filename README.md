@@ -522,6 +522,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 1.0.0 (2015-10-05)
+* (bluefox) fix error with regex and name
+* (bluefox) adapter is stable => make 1.0.0
 
 ### 0.5.9 (2015-09-26)
 * (bluefox) update ace editor
