@@ -475,7 +475,8 @@ function Scripts(main) {
                     }, 1000);
                 }, 500);
             }
-
+            // set cursor
+            $('.ui-jqgrid-resize').css('cursor', 'e-resize');
         }
     };
 

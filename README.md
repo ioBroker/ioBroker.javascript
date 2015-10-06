@@ -522,6 +522,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 1.0.1 (2015-10-06)
+* (bluefox) enable resize of columns in select ID dialog
+
 ### 1.0.0 (2015-10-05)
 * (bluefox) fix error with regex and name
 * (bluefox) adapter is stable => make 1.0.0
