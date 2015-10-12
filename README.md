@@ -509,6 +509,15 @@ Following functions are possible, setValue, getValue (only from first), on, each
 $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').setValue(true);
 ```
 
+You can interrupt the "each" loop by returning the false value, like: 
+```
+// print two first IDs of on all switches in "Wohnzimmer"
+$('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').each(function (id, i) {
+    console.log(id);
+    if (i == 1) return false;
+});
+```
+
 ### readFile
     readFile (fileName, function (error, bytes) {})
     
@@ -522,6 +531,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 1.0.2 (2015-10-12)
+* (bluefox) allow break the "each" by returning of false value.
+
 ### 1.0.1 (2015-10-06)
 * (bluefox) enable resize of columns in select ID dialog
 

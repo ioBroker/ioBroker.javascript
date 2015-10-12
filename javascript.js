@@ -938,8 +938,12 @@
                 }
                 result.length = res.length;
                 result.each = function (callback) {
-                    for (var i = 0; i < this.length; i++) {
-                        if (typeof callback == 'function') callback(result[i], i);
+                    if (typeof callback == 'function') {
+                        var r;
+                        for (var i = 0; i < this.length; i++) {
+                            r = callback(result[i], i);
+                            if (r === false) break;
+                        }
                     }
                     return this;
                 };
