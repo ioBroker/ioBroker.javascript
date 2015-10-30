@@ -1130,11 +1130,26 @@
                         if (parts.length >= 5 && parts[5] >= 7) parts[5] = 0;
                         pattern = parts.join(' ');
                     }
-
-                    script.schedules.push(mods['node-schedule'].scheduleJob(pattern, function () {
+                    var schedule = mods['node-schedule'].scheduleJob(pattern, function () {
                         callback.call(sandbox);
-                    }));
+                    });
+
+                    script.schedules.push(schedule);
+                    return schedule;
                 }
+            },
+            clearSchedule: function (schedule) {
+                for (var i = 0; i < script.schedules.length; i++) {
+                    if (script.schedules[i]) {
+                        if (!mods['node-schedule'].cancelJob(script.schedules[i])) {
+                            adapter.log.error('Error by canceling scheduled job');
+                        }
+                        delete script.schedules[i];
+                        script.schedules.slice(i, 1);
+                        return true;
+                    }
+                }
+                return false;
             },
             setState:  function (id, state, isAck, callback) {
                 if (typeof isAck == 'function') {

@@ -336,6 +336,16 @@ on({astro: "sunset", shift: 10}, function () {
 });
 ```
 
+### clearSchedule
+If **no** "astro" function used you can cancel the schedule later. To allow this the schedule object must be saved:
+
+```
+var sch = schedule("*/2 * * * *", function () {...});
+
+clearSchedule(sch);
+```
+
+
 ### setState 
     setState (id, state, ack, callback)
     
@@ -531,6 +541,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 1.0.3 (2015-10-30)
+* (bluefox) add clearSchedule function (only for non astro function)
+
 ### 1.0.2 (2015-10-12)
 * (bluefox) allow break the "each" by returning of false value.
 
