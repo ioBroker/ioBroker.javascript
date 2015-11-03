@@ -1165,7 +1165,7 @@
             },
             clearSchedule: function (schedule) {
                 for (var i = 0; i < script.schedules.length; i++) {
-                    if (script.schedules[i]) {
+                    if (script.schedules[i] == schedule) {
                         if (!mods['node-schedule'].cancelJob(script.schedules[i])) {
                             adapter.log.error('Error by canceling scheduled job');
                         }
