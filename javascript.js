@@ -1037,14 +1037,39 @@
                     }
                 }
 
-                subscriptions.push({
+                var subs = {
                     pattern:  pattern,
                     callback: function (obj) {
                         if (callback) callback.call(sandbox, obj);
                     },
                     name:     name
-                });
+                };
+
+                subscriptions.push(subs);
                 if (pattern.enumName || pattern.enumId) isEnums = true;
+                return subs;
+            },
+            unsubscribe: function (idOrObject) {
+                var i;
+                if (typeof idOrObject === 'object') {
+                    for (i = subscriptions.length - 1; i >= 0 ; i--) {
+                        if (subscriptions[i] == idOrObject) {
+                            subscriptions.splice(i, 1);
+                            sandbox.__engine.__subscriptions -= 1;
+                            return true;
+                        }
+                    }
+                } else {
+                    var deleted = 0;
+                    for (i = subscriptions.length - 1; i >= 0 ; i--) {
+                        if (subscriptions[i].name == name && subscriptions[i].pattern.id == idOrObject) {
+                            deleted++;
+                            subscriptions.splice(i, 1);
+                            sandbox.__engine.__subscriptions -= 1;
+                        }
+                    }
+                    return !!deleted;
+                }
             },
             on:        function (pattern, callbackOrId, value) {
                 return sandbox.subscribe(pattern, callbackOrId, value);
@@ -1145,7 +1170,7 @@
                             adapter.log.error('Error by canceling scheduled job');
                         }
                         delete script.schedules[i];
-                        script.schedules.slice(i, 1);
+                        script.schedules.splice(i, 1);
                         return true;
                     }
                 }

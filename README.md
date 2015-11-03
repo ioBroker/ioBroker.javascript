@@ -249,8 +249,37 @@ on('stateId1', 'stateId2');
 
 All changes of *stateId1* will be written to *stateId2*.
 
+Function "on" returns handler back. This handler can be used by unsubscribe. 
 
 ### subscribe - same as **[on](#on---subscribe-on-changes-or-updates-of-some-state)**
+    
+### unsubscribe 
+    unsubscribe(id or handler)
+    
+Remove all subscriptions for given object ID or for given handler.
+
+```
+// By handler
+var mySubscription = on({id: "javascript.0.myState", change: 'any'}, function (data) {
+    // unsubscribe after first trigger
+    if (unsubscribe(mySubscription)) {
+        log('Subscription deleted');
+    }
+});
+
+// by Object ID
+on({id: "javascript.0.myState1", change: 'ne'}, function (data) {
+    log('Some event');
+});
+
+on({id: "javascript.0.myState1", change: 'any'}, function (data) {
+    // unsubscribe 
+    if (unsubscribe("javascript.0.myState1")) {
+        log('All subscriptions deleted');
+    }
+});
+```
+       
     
 ### schedule
     schedule (pattern, callback)
@@ -344,7 +373,6 @@ var sch = schedule("*/2 * * * *", function () {...});
 
 clearSchedule(sch);
 ```
-
 
 ### setState 
     setState (id, state, ack, callback)
@@ -541,6 +569,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 1.0.4 (2015-10-30)
+* (bluefox) add unsubscribe
+
 ### 1.0.3 (2015-10-30)
 * (bluefox) add clearSchedule function (only for non astro function)
 
