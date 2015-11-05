@@ -710,9 +710,10 @@ function Scripts(main) {
             setTimeout(function () {
                 that.changed = false;
                 $('#script-edit-button-save').button('disable');
+                that.editor.focus();
             }, 100);
         } else {
-            that.main.showMessage(_('This should never come!'), '', 'alert');
+            this.main.showMessage(_('This should never come!'), '', 'alert');
             /*// Should never come
              that.$dialog.dialog('option', 'title', 'new script');
              $('#edit-script-id').val('');
