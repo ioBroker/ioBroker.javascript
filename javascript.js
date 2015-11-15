@@ -1163,6 +1163,35 @@
                     return schedule;
                 }
             },
+
+            getAstroDate: function(pattern, date){
+                if (date === undefined)
+                    date = new Date();
+
+                if (adapter.config.latitude === undefined || adapter.config.longitude === undefined) {
+                    adapter.log.error('Longitude or latitude does not set. Cannot use astro.');
+                    return;
+                }
+
+                var ts = mods.suncalc.getTimes(date, adapter.config.latitude, adapter.config.longitude)[pattern];
+
+                if (ts === undefined || ts.getTime().toString() === 'NaN') {
+                    adapter.log.error('Cannot get astro date for '+pattern);
+                }
+
+                return ts;
+            },
+
+            isAstroDay: function(){
+                var nowdate  = new Date();
+                var dayBegin = sandbox.getAstroDate("sunrise");
+                var dayEnd   = sandbox.getAstroDate("sunset");
+                if (dayBegin === undefined || dayEnd === undefined)
+                    return;
+
+                return (nowdate >= dayBegin && nowdate <= dayEnd);    
+            },
+
             clearSchedule: function (schedule) {
                 for (var i = 0; i < script.schedules.length; i++) {
                     if (script.schedules[i] == schedule) {
