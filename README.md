@@ -588,6 +588,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 1.0.6 (2015-11-15)
+* (angelnu) Add getAstroDay and isAstroDay functions.
+
 ### 1.0.5 (2015-11-03)
 * (bluefox) fix clearSchedule
 
