@@ -422,6 +422,19 @@ These arrays has all enumerations, where ID is member of. E.g:
  
 gives back in enumIds all rooms, where the requested object is a member. You can define "true" as enumName to get back *all* enumerations.
 
+### setObject
+    setObject(id, obj, callback)
+Write object into DB. This command can be disabled in adapter's settings. Use this function carefully, while the global settings can be damaged.
+
+Use it like this:
+``` 
+var obj = getObject ('adapter.N.objectName'); 
+obj.native.settings = 1;
+setObject('adapter.N.objectName',obj, function (err) {
+    if (err) log('Cannot write object: ' + err);
+});
+```
+    
 ### getIdByName 
     getIdByName(name, alwaysArray)
 
@@ -588,6 +601,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 1.0.7 (2015-11-16)
+* (bluefox) Add setObject function
+
 ### 1.0.6 (2015-11-15)
 * (angelnu) Add getAstroDay and isAstroDay functions.
 

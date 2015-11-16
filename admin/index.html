@@ -60,7 +60,15 @@
             "en": "Additional npm modules:",
             "de": "Zusätzliche NPM-Module",
             "ru": "Дополнительные NPM Модули:"
-        }
+        },
+        "Settings":             {"en": "Settings",          "de": "Einstellungen",          "ru": "Настройки"},
+        'Enable command "setObject":': {
+            "en": 'Enable command "setObject":',
+            "de": 'Erlaube das Kommando "setObject":',
+            "ru": 'Разрешить команду "setObject":'
+        },
+        "Security relevant":    {"en": "Security relevant", "de": "Sicherheits relevant",   "ru": "Безопасность уменшена"},
+        "Astro settings":       {"en": "Astro settings",    "de": "Astro-Einstellungen",    "ru": "Настройки астро-функций"}
     };
 
     function setValue(id, value, onChange) {
@@ -179,14 +187,27 @@
 
     <table>
         <tr>
-            <td colspan='2'><h4 class="translate">Astro settings</h4></td>
+            <td colspan="2"><h4 class="translate" style="width: 100%">Settings</h4></td>
         </tr>
         <tr>
-            <td class="translate">Latitude °:</td><td><input id="latitude" class="value" /></td>
-            <td class="translate">Longitude °:</td><td><input id="longitude" class="value" /></td>
+            <td class="translate">Additional npm modules:</td>
+            <td><input id="libraries" class="value" style="width: 100%"/></td>
+            <td class="translate" style="color: gray; font-style: italic; font-size: smaller">Divided by comma</td>
         </tr>
         <tr>
-            <td class="translate">Additional npm modules:</td><td colspan="2"><input id="libraries" class="value" style="width: 100%"/></td><td class="translate">Divided by comma</td>
+            <td class="translate">Enable command "setObject":</td>
+            <td><input id="enableSetObject" class="value" type="checkbox"/></td>
+            <td class="translate" style="color: gray; font-style: italic; font-size: smaller">Security relevant</td>
+        </tr>
+        <tr><td colspan="3" style="height:10px"></td></tr>
+        <tr>
+            <td colspan="3"><h4 class="translate" style="width: 100%">Astro settings</h4></td>
+        </tr>
+        <tr>
+            <td class="translate">Latitude °:</td><td><input id="latitude" class="value" /></td><td></td>
+        </tr>
+        <tr>
+            <td class="translate">Longitude °:</td><td><input id="longitude" class="value" /></td><td></td>
         </tr>
     </table>
     <p class="translate">Help</p>
