@@ -265,7 +265,7 @@
     function getName(id) {
         var pos;
         for (var n in names) {
-            if (typeof names[n] === 'object') {
+            if (names[n] && typeof names[n] === 'object') {
                 pos = names[n].indexOf(id);
                 if (pos != -1) return n;
             } else if (names[n] == id) {

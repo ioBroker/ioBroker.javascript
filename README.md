@@ -601,6 +601,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 1.0.8 (2015-11-30)
+* (bluefox) fix error if name is null
+
 ### 1.0.7 (2015-11-16)
 * (bluefox) Add setObject function
 
