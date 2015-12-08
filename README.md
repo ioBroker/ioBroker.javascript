@@ -295,7 +295,8 @@ Example of result:
 			}
 		}
 	]
-}```
+}
+```
     
 ### schedule
     schedule (pattern, callback)
