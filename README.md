@@ -283,6 +283,20 @@ on({id: "javascript.0.myState1", change: 'any'}, function (data) {
 ### getSubscriptions
 Get the list of subscriptions.    
     
+Example of result:
+```
+{
+	"megad.0.dataPointName" : [
+		{
+			"name" : "script.js.NameOfScript",
+			"pattern" : {
+				"id" : "megad.0.dataPointName",
+				"change" : "ne"
+			}
+		}
+	]
+}```
+    
 ### schedule
     schedule (pattern, callback)
 
