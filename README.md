@@ -279,7 +279,9 @@ on({id: "javascript.0.myState1", change: 'any'}, function (data) {
     }
 });
 ```
-       
+
+### getSubscriptions
+Get the list of subscriptions.    
     
 ### schedule
     schedule (pattern, callback)
@@ -601,6 +603,10 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 1.0.9 (2015-12-08)
+* (bluefox) clear enums cache if some enum changed
+* (bluefox) add getSubscriptions function
+
 ### 1.0.8 (2015-11-30)
 * (bluefox) fix error if name is null
 

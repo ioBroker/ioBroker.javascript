@@ -32,7 +32,14 @@
 
         name: 'javascript',
 
+        regExEnum: /^enum\./,
+
         objectChange: function (id, obj) {
+            if (this.regExEnum.test(id)) {
+                // clear cache
+                cacheObjectEnums = {};
+            }
+
             if (!obj) {
                 if (!objects[id]) return;
 
@@ -1047,6 +1054,14 @@
                 subscriptions.push(subs);
                 if (pattern.enumName || pattern.enumId) isEnums = true;
                 return subs;
+            },
+            getSubscriptions: function () {
+                var result = {};
+                for (var s = 0; s < subscriptions.length; s++) {
+                    result[subscriptions[s].pattern.id] = result[subscriptions[s].pattern.id] || [];
+                    result[subscriptions[s].pattern.id].push({name: subscriptions[s].name, pattern: subscriptions[s].pattern});
+                }
+                return result;
             },
             unsubscribe: function (idOrObject) {
                 var i;
