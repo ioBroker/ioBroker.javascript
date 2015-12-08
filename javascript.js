@@ -45,7 +45,7 @@
                 objects[id] = obj;
 
                 addToNames(obj);
-                if (obj.type != 'script' || obj.common.engine != 'system.adapter.' + adapter.namespace || !obj.common.enabled) return;
+                //if (obj.type != 'script' || obj.common.engine != 'system.adapter.' + adapter.namespace || !obj.common.enabled) return;
                 // added new script to this engine
             } else {
                 var n = getName(id);
@@ -181,7 +181,7 @@
                                             bare: true
                                         }, function (err, js) {
                                             if (err) {
-                                                adapter.log.error(obj.common.name + ' coffee compile ' + err);
+                                                adapter.log.error('coffee compile ' + err);
                                                 return;
                                             }
                                             globalScript += js + '\n';
@@ -386,7 +386,7 @@
                     }
                 });
             } else {
-                for (var i = 0, l = subs.length; i < l; i++) {
+                for (var i = 0, ll = subs.length; i < ll; i++) {
                     subscriptions[subs[i]].callback(eventObj);
                 }
             }
@@ -969,8 +969,7 @@
                     for (var i = 0; i < this.length; i++) {
                         cnt++;
                         adapter.setForeignState(this[i], state, function () {
-                            cnt--;
-                            if (!cnt && typeof callback === 'function') callback();
+                            if (!--cnt && typeof callback === 'function') callback();
                         });
                     }
                     return this;
@@ -1362,31 +1361,31 @@
                 return JSON.parse(JSON.stringify(result));
             },
             createState: function (name, initValue, forceCreation, common, native, callback) {
-                if (typeof native == 'function') {
+                if (typeof native === 'function') {
                     callback  = native;
                     native = {};
                 }
-                if (typeof common == 'function') {
+                if (typeof common === 'function') {
                     callback  = common;
                     common = undefined;
                 }
-                if (typeof initValue == 'function') {
+                if (typeof initValue === 'function') {
                     callback  = initValue;
                     initValue = undefined;
                 }
-                if (typeof forceCreation == 'function') {
+                if (typeof forceCreation === 'function') {
                     callback  = forceCreation;
                     forceCreation = undefined;
                 }
-                if (typeof initValue == 'object') {
+                if (typeof initValue === 'object') {
                     common = initValue;
-                    native = forceCreation
+                    native = forceCreation;
                     forceCreation = undefined;
                     initValue = undefined;
                 }
-                if (typeof forceCreation == 'object') {
+                if (typeof forceCreation === 'object') {
                     common = forceCreation;
-                    native = common
+                    native = common;
                     forceCreation = undefined;
                 }
                 common = common || {};
@@ -1395,7 +1394,7 @@
                 common.type = common.type || 'mixed';
                 if (initValue === undefined) initValue = common.def;
 
-                native = native || {}
+                native = native || {};
 
                 if (forceCreation) {
                     adapter.setObject(name, {
