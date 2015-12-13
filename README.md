@@ -519,6 +519,14 @@ Same as javascript ***clearTimeout***.
 ### formatDate
     formatDate (secondsOrDate, format, isSeconds)
     
+### adapterSubscribe
+    adapterSubscribe(id)
+Sends to adapter message "subscribe" to inform adapter. If adapter has common flag "subscribable" in case of function "subscribe" this function will be called automatically.
+
+### adapterUnsubscribe
+    adapterUnsubscribe(id)
+Sends to adapter message "unsubscribe" to inform adapter to not poll the values.
+
 ####Parameters:
 
 - **date**: number of seconds from state.ts or state.lc (Number seconds from 1970.01.01 00:00:00) or javascript *new Date()* object or number of milliseconds from *(new Date().getTime())*

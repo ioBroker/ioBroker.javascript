@@ -149,6 +149,7 @@
                     from: oldState.from
                 }
             };
+            eventObj.state = eventObj.newState;
 
             if (isEnums) {
                 getObjectEnums(id, function (enumIds, enumNames) {
@@ -1051,6 +1052,13 @@
                     name:     name
                 };
 
+                // try to extract adapter
+                var parts = pattern.id.split('.');
+                var _adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
+                if (objects[_adapter] && objects[_adapter].common && objects[_adapter].common.subscribable) {
+                    adapter.sendTo(parts[0] + '.' + parts[1], 'subscribe', pattern.id);
+                }
+
                 subscriptions.push(subs);
                 if (pattern.enumName || pattern.enumId) isEnums = true;
                 return subs;
@@ -1063,7 +1071,21 @@
                 }
                 return result;
             },
-            unsubscribe: function (idOrObject) {
+            adapterSubscribe: function (id) {
+                var parts = pattern.id.split('.');
+                var adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
+                if (objects[adapter] && objects[adapter].common && objects[adapter].common.subscribable) {
+                    adapter.sendTo(parts[0] + '.' + parts[1], 'subscribe', pattern.id);
+                }
+            },
+            adapterUnsubscribe: function (id) {
+                var parts = pattern.id.split('.');
+                var adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
+                if (objects[adapter] && objects[adapter].common && objects[adapter].common.subscribable) {
+                    adapter.sendTo(parts[0] + '.' + parts[1], 'unsubscribe', pattern.id);
+                }
+            },
+            unsubscribe:    function (idOrObject) {
                 var i;
                 if (typeof idOrObject === 'object') {
                     for (i = subscriptions.length - 1; i >= 0 ; i--) {
@@ -1085,10 +1107,10 @@
                     return !!deleted;
                 }
             },
-            on:        function (pattern, callbackOrId, value) {
+            on:             function (pattern, callbackOrId, value) {
                 return sandbox.subscribe(pattern, callbackOrId, value);
             },
-            schedule:  function (pattern, callback) {
+            schedule:       function (pattern, callback) {
 
                 if (typeof callback !== 'function') {
                     adapter.log.error(name + ': schedule callback missing');
@@ -1177,7 +1199,7 @@
                     return schedule;
                 }
             },
-            getAstroDate: function (pattern, date) {
+            getAstroDate:   function (pattern, date) {
                 if (date === undefined)
                     date = new Date();
 
@@ -1194,7 +1216,7 @@
 
                 return ts;
             },
-            isAstroDay: function () {
+            isAstroDay:     function () {
                 var nowDate  = new Date();
                 var dayBegin = sandbox.getAstroDate('sunrise');
                 var dayEnd   = sandbox.getAstroDate('sunset');
@@ -1204,7 +1226,7 @@
 
                 return (nowDate >= dayBegin && nowDate <= dayEnd);
             },
-            clearSchedule: function (schedule) {
+            clearSchedule:  function (schedule) {
                 for (var i = 0; i < script.schedules.length; i++) {
                     if (script.schedules[i] == schedule) {
                         if (!mods['node-schedule'].cancelJob(script.schedules[i])) {
@@ -1217,7 +1239,7 @@
                 }
                 return false;
             },
-            setState:  function (id, state, isAck, callback) {
+            setState:       function (id, state, isAck, callback) {
                 if (typeof isAck == 'function') {
                     callback = isAck;
                     isAck = undefined;
@@ -1322,13 +1344,13 @@
                     timers[id].push({t: timer, id: timerId});
                 }
             },
-            getState:  function (id) {
+            getState:       function (id) {
                 if (states[id]) return states[id];
                 if (states[adapter.namespace + '.' + id]) return states[adapter.namespace + '.' + id];
                 adapter.log.warn('State "' + id + '" not found');
                 return null;
             },
-            getIdByName: function (name, alwaysArray) {
+            getIdByName:    function (name, alwaysArray) {
                 if (alwaysArray) {
                     if (typeof names[name] === 'string') return [names[name]];
                     return names[name];
@@ -1336,7 +1358,7 @@
                     return names[name];
                 }
             },
-            getObject: function (id, enumName) {
+            getObject:      function (id, enumName) {
                 if (enumName) {
                     var e = getObjectEnumsSync(id);
                     var obj = JSON.parse(JSON.stringify(objects[id]));
@@ -1357,7 +1379,7 @@
                     return JSON.parse(JSON.stringify(objects[id]));
                 }
             },
-            setObject: function (id, obj, callback) {
+            setObject:      function (id, obj, callback) {
                 adapter.log.error('Function "setObject" is not allowed. Use adapter settings to allow it.');
                 if (callback) callback('Function "setObject" is not allowed. Use adapter settings to allow it.');
             },
@@ -1544,7 +1566,7 @@
 
         if (adapter.config.enableSetObject) {
             sandbox.setObject = function (id, obj, callback) {
-                adapter.setObject(id, obj, callback);
+                adapter.setForeignObject(id, obj, callback);
             };
         }
 
