@@ -626,6 +626,10 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 1.1.0 (2015-12-14)
+* (bluefox) fix setObject
+* (bluefox) implement adapterSubscribe/adapterUnsubscribe
+
 ### 1.0.9 (2015-12-08)
 * (bluefox) clear enums cache if some enum changed
 * (bluefox) add getSubscriptions function
