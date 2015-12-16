@@ -626,6 +626,9 @@ The optional error code will be given in callback.
 
 
 ## Changelog
+### 1.1.1 (2015-12-16)
+* (bluefox) fix error if id is regExp
+
 ### 1.1.0 (2015-12-14)
 * (bluefox) fix setObject
 * (bluefox) implement adapterSubscribe/adapterUnsubscribe

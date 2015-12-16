@@ -1053,10 +1053,12 @@
                 };
 
                 // try to extract adapter
-                var parts = pattern.id.split('.');
-                var _adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
-                if (objects[_adapter] && objects[_adapter].common && objects[_adapter].common.subscribable) {
-                    adapter.sendTo(parts[0] + '.' + parts[1], 'subscribe', pattern.id);
+                if (pattern.id && typeof pattern.id === 'string') {
+                    var parts = pattern.id.split('.');
+                    var _adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
+                    if (objects[_adapter] && objects[_adapter].common && objects[_adapter].common.subscribable) {
+                        adapter.sendTo(parts[0] + '.' + parts[1], 'subscribe', pattern.id);
+                    }
                 }
 
                 subscriptions.push(subs);
