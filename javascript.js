@@ -113,10 +113,22 @@
 
         stateChange: function (id, state) {
 
-            if (id.match(/^messagebox./) || id.match(/^log./)) return;
+            if (id.match(/^messagebox\./) || id.match(/^log\./)) return;
 
             var oldState = states[id] || {};
             if (state) {
+
+                // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
+                if (states[id] && states[id].val === false && id.match(/\.alive$/) && states.val) {
+                    if (adapterSubs[id]) {
+                        var parts = id.split('.');
+                        var a = parts[0] + '.' + parts[1];
+                        for (var t = 0; t < adapterSubs[id].length; t++) {
+                            adapter.sendTo(a, 'subscribe', adapterSubs[id]);
+                        }
+                    }
+                }
+                
                 states[id] = state;
             } else {
                 delete states[id];
@@ -227,6 +239,7 @@
     var states =           {};
     var scripts =          {};
     var subscriptions =    [];
+    var adapterSubs =      {};
     var isEnums =          false; // If some subscription wants enum
     var enums =            [];
     var cacheObjectEnums = {};
@@ -1055,9 +1068,13 @@
                 // try to extract adapter
                 if (pattern.id && typeof pattern.id === 'string') {
                     var parts = pattern.id.split('.');
-                    var _adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
+                    var a = parts[0] + '.' + parts[1];
+                    var _adapter = 'system.adapter.' + a;
                     if (objects[_adapter] && objects[_adapter].common && objects[_adapter].common.subscribable) {
-                        adapter.sendTo(parts[0] + '.' + parts[1], 'subscribe', pattern.id);
+                        var alive = 'system.adapter.' + a + '.alive';
+                        adapterSubs[alive] = adapterSubs[alive] || [];
+                        adapterSubs[alive].push(pattern.id);
+                        adapter.sendTo(a, 'subscribe', pattern.id);
                     }
                 }
 
@@ -1074,17 +1091,36 @@
                 return result;
             },
             adapterSubscribe: function (id) {
-                var parts = pattern.id.split('.');
+                if (typeof id !== 'string') {
+                    adapter.log.error('adapterSubscribe: invalid type of id' + typeof id);
+                    return;
+                }
+                var parts = id.split('.');
                 var adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
                 if (objects[adapter] && objects[adapter].common && objects[adapter].common.subscribable) {
-                    adapter.sendTo(parts[0] + '.' + parts[1], 'subscribe', pattern.id);
+                    var a = parts[0] + '.' + parts[1];
+                    var alive = 'system.adapter.' + a + '.alive';
+                    adapterSubs[alive] = adapterSubs[alive] || [];
+                    adapterSubs[alive].push(id);
+                    adapter.sendTo(a, 'subscribe', id);
                 }
             },
             adapterUnsubscribe: function (id) {
-                var parts = pattern.id.split('.');
+                if (typeof id !== 'string') {
+                    adapter.log.error('adapterSubscribe: invalid type of id' + typeof id);
+                    return;
+                }
+                var parts = id.split('.');
                 var adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
                 if (objects[adapter] && objects[adapter].common && objects[adapter].common.subscribable) {
-                    adapter.sendTo(parts[0] + '.' + parts[1], 'unsubscribe', pattern.id);
+                    var a     = parts[0] + '.' + parts[1];
+                    var alive = 'system.adapter.' + a + '.alive';
+                    if (adapterSubs[alive]) {
+                        var pos = adapterSubs[alive].indexOf(id);
+                        if (pos != -1) adapterSubs[alive].splice(pos, 1);
+                        if (!adapterSubs[alive].length) delete adapterSubs[alive];
+                    }
+                    adapter.sendTo(a, 'unsubscribe', id);
                 }
             },
             unsubscribe:    function (idOrObject) {
