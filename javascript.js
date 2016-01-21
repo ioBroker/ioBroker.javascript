@@ -274,13 +274,13 @@
     var activeRegEx =      null;
 
     function createActiveObject(id, enabled) {
-        var idActive = 'scriptEnabled.' + id.substring('script.js.'.length);
+        var idActive = adapter.namespace + '.scriptEnabled.' + id.substring('script.js.'.length);
 
-        if (!objects[adapter.namespace + '.' + idActive]) {
+        if (!objects[idActive]) {
             objects[idActive] = {
-                _id:    adapter.namespace + '.' + idActive,
+                _id:    idActive,
                 common: {
-                    name: idActive,
+                    name: 'scriptEnabled.' + id.substring('script.js.'.length),
                     desc: 'controls script activity',
                     type: 'boolean',
                     role: 'switch.active'
@@ -290,13 +290,13 @@
                 },
                 type: 'state'
             };
-            adapter.setObject(idActive, objects[adapter.namespace + '.' + idActive], function (err) {
+            adapter.setForeignObject(idActive, objects[adapter.namespace + '.' + idActive], function (err) {
                 if (!err) {
-                    adapter.setState(idActive, enabled, true);
+                    adapter.setForeignState(idActive, enabled, true);
                 }
             });
         } else {
-            adapter.setState(idActive, enabled, true);
+            adapter.setForeignState(idActive, enabled, true);
         }
     }
 

@@ -643,6 +643,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 1.1.3 (2016-01-21)
+* (bluefox) fix error by states to control activity of scripts
+
 ### 1.1.2 (2016-01-21)
 * (bluefox) fix error by setStateDelayed
 * (bluefox) add clearStateDelayed
