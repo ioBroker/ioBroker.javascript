@@ -44,7 +44,13 @@
                 if (!objects[id]) return;
 
                 // Script deleted => remove it
-                if (objects[id].common.engine == 'system.adapter.' + adapter.namespace) stop(id);
+                if (objects[id].type === 'script' && objects[id].common.engine == 'system.adapter.' + adapter.namespace) {
+                    stop(id);
+
+                    var idActive = 'scriptEnabled.' + id.substring('script.js.'.length);
+                    adapter.delObject(idActive);
+                    adapter.delState(idActive);
+                }
 
                 removeFromNames(id);
                 delete objects[id];
@@ -52,7 +58,11 @@
                 objects[id] = obj;
 
                 addToNames(obj);
-                //if (obj.type != 'script' || obj.common.engine != 'system.adapter.' + adapter.namespace || !obj.common.enabled) return;
+
+                if (obj.type === 'script' && obj.common.engine === 'system.adapter.' + adapter.namespace) {
+                    // create states for scripts
+                    createActiveObject(id, obj.common.enabled);
+                }
                 // added new script to this engine
             } else {
                 var n = getName(id);
@@ -67,6 +77,7 @@
                     objects[id] = obj;
                     return;
                 }
+
                 if (objects[id].common.name.indexOf('_global') != -1) {
                     // restart adapter
                     adapter.getForeignObject('system.adapter.' + adapter.namespace, function (err, obj) {
@@ -79,6 +90,7 @@
 
                 if ((objects[id].common.enabled && !obj.common.enabled) ||
                     (objects[id].common.engine == 'system.adapter.' + adapter.namespace && obj.common.engine != 'system.adapter.' + adapter.namespace)) {
+
                     // Script disabled
                     if (objects[id].common.enabled && objects[id].common.engine == 'system.adapter.' + adapter.namespace) {
                         // Remove it from executing
@@ -117,6 +129,11 @@
 
             var oldState = states[id] || {};
             if (state) {
+
+                // enable or disable script
+                if (!state.ack && activeRegEx.test(id)) {
+                    adapter.extendForeignObject(objects[id].native.script, {common: {enabled: state.val}});
+                }
 
                 // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
                 if (states[id] && states[id].val === false && id.match(/\.alive$/) && states.val) {
@@ -179,6 +196,9 @@
         },
 
         ready: function () {
+
+            activeRegEx = new RegExp('^' + adapter.namespace.replace('.', '\\.') + '\\.scriptEnabled\\.');
+
             installLibraries(function () {
                 getData(function () {
                     adapter.subscribeForeignObjects('*');
@@ -251,6 +271,34 @@
     var names =            {};
     var timers =           {};
     var timerId =          0;
+    var activeRegEx =      null;
+
+    function createActiveObject(id, enabled) {
+        var idActive = 'scriptEnabled.' + id.substring('script.js.'.length);
+
+        if (!objects[adapter.namespace + '.' + idActive]) {
+            objects[idActive] = {
+                _id:    adapter.namespace + '.' + idActive,
+                common: {
+                    name: idActive,
+                    desc: 'controls script activity',
+                    type: 'boolean',
+                    role: 'switch.active'
+                },
+                native: {
+                    script: id
+                },
+                type: 'state'
+            };
+            adapter.setObject(idActive, objects[adapter.namespace + '.' + idActive], function (err) {
+                if (!err) {
+                    adapter.setState(idActive, enabled, true);
+                }
+            });
+        } else {
+            adapter.setState(idActive, enabled, true);
+        }
+    }
 
     function addToNames(obj) {
         var id = obj._id;
@@ -1347,7 +1395,7 @@
                 if (clearRunning) {
                     if (timers[id]) {
                         for (var i = 0; i < timers[id].length; i++) {
-                            clearTimeout(timers[id][i]);
+                            clearTimeout(timers[id][i].t);
                         }
                         delete timers[id];
                     }
@@ -1355,6 +1403,7 @@
                 // If no delay => start immediately
                 if (!delay) {
                     sandbox.setState(id, state, isAck, callback);
+                    return null;
                 } else {
                     // If delay
                     timers[id] = timers[id] || [];
@@ -1380,7 +1429,27 @@
 
                     // add timer handler
                     timers[id].push({t: timer, id: timerId});
+                    return timerId;
                 }
+            },
+            clearStateDelayed: function (id, timerId) {
+                if (timers[id]) {
+                    for (var i = timers[id].length - 1; i >= 0; i--) {
+                        if (timerId === undefined || timers[id][i].id == timerId) {
+                            clearTimeout(timers[id][i].t);
+                            if (timerId !== undefined) {
+                                timers[id].splice(i, 1);
+                            }
+                        }
+                    }
+                    if (timerId === undefined) {
+                        delete timers[id];
+                    } else {
+                        if (!timers[id].length) delete timers[id];
+                    }
+                    return true;
+                }
+                return false;
             },
             getState:       function (id) {
                 if (states[id]) return states[id];
@@ -1623,6 +1692,9 @@
 
     function stop(name, callback) {
         adapter.log.info('Stop script ' + name);
+
+        adapter.setState('scriptEnabled.' + name.substring('script.js.'.length), false, true);
+
         if (scripts[name]) {
             // Remove from subscriptions
             isEnums = false;
@@ -1658,6 +1730,12 @@
     function load(name, callback) {
 
         adapter.getForeignObject(name, function (err, obj) {
+            // create states for scripts
+            if (obj && obj.common.engine === 'system.adapter.' + adapter.namespace) {
+                createActiveObject(obj._id, obj.common.enabled);
+            }
+            // todo delete non existing scripts
+
             if (!err && obj && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
                 // Javascript
                 adapter.log.info('Start javascript ' + name);

@@ -148,7 +148,7 @@ You can use following parameters to specify the trigger:
 |             |            |                                                                                                        |
 | change      | string     |       "eq", "ne", "gt", "ge", "lt", "le", "any"                                                        |
 |             |   "eq"     |       (equal)            New value must be euqal to old one (newState.val == oldState.val)             |
-|             |   "ne"     |       (not equal)        New value must be not equal to the old one (newState.val != oldState.val) ** If "change" is not specified this value is used by default**    |
+|             |   "ne"     |       (not equal)        New value must be not equal to the old one (newState.val != oldState.val) **If "change" is not specified this value is used by default**    |
 |             |   "gt"     |       (greater)          New value must be greater than old value (newState.val > oldState.val)        |
 |             |   "ge"     |       (greater or equal) New value must be greater or euqal to old one (newState.val >= oldState.val)  |
 |             |   "lt"     |       (smaller)          New value must be smaller than old one (newState.val < oldState.val)          |
@@ -424,7 +424,19 @@ Same as setState but with delay in milliseconds. You can clear all running delay
         log('Lamp is OFF');
     });
 ``` 
+This function returns handler of the timer and this timer can be indiviually stopped by clearStateDelayed
+
+### clearStateDelayed
+    clearStateDelayed (id)
     
+Clears all delayed tasks for specified state ID or some specific delayed task.
+
+```
+    setStateDelayed('Kitchen.Light.Lamp', false,  10000); // Switch OFF the light in the kitchen in ten second
+    var timer = setStateDelayed('Kitchen.Light.Lamp', true,  5000, false); // Switch ON the light in the kitchen in five second
+    clearStateDelayed('Kitchen.Light.Lamp', timer); // Nothing will be switched on
+    clearStateDelayed('Kitchen.Light.Lamp'); // Clear all running delayed tasks for this ID
+```     
 ### getState 
     getState (id)
 Returns state of id in form {val: value, ack: true/false, ts: timestamp, lc: lastchanged, from: origin}    
@@ -624,8 +636,18 @@ File will be stored in the DB and can be accessed from any host under name javas
 
 The optional error code will be given in callback.
 
+## Scripts activity
+
+There is a possibility to enabled and disable scripts via states. For every script the state will be created with name **javascript.INSTANCE.scriptEnabled.SCRIPT_NAME**.
+Scripts can be activated and deactivated by controlling of this state with ack=false.
+
 
 ## Changelog
+### 1.1.2 (2016-01-21)
+* (bluefox) fix error by setStateDelayed
+* (bluefox) add clearStateDelayed
+* (bluefox) add javascript.INSTANCE.scriptEnabled.SCRIPT_NAME state to control activity of scripts
+
 ### 1.1.1 (2015-12-16)
 * (bluefox) fix error if id is regExp
 
