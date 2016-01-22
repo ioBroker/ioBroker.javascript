@@ -643,7 +643,7 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
-### 1.1.3 (2016-01-21)
+### 1.1.4 (2016-01-22)
 * (bluefox) fix error by states to control activity of scripts
 
 ### 1.1.2 (2016-01-21)

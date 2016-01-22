@@ -290,7 +290,7 @@
                 },
                 type: 'state'
             };
-            adapter.setForeignObject(idActive, objects[adapter.namespace + '.' + idActive], function (err) {
+            adapter.setForeignObject(idActive, objects[idActive], function (err) {
                 if (!err) {
                     adapter.setForeignState(idActive, enabled, true);
                 }
