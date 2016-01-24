@@ -1620,6 +1620,14 @@
                     }
                 };
             },
+            
+            formatValue: function (value, decimals, format) {
+                if (!format && objects['system.config']) {
+                    format = objects['system.config'].common.isFloatComma ?  '.,' : ',.';
+                }
+                return adapter.formatValue(value, decimals, format);
+            },
+
             formatDate: function (date, format, isDataObject) {
                 if (typeof format == 'boolean') {
                     isDataObject = format;
