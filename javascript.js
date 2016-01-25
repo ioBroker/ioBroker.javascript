@@ -1144,8 +1144,8 @@
                     return;
                 }
                 var parts = id.split('.');
-                var adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
-                if (objects[adapter] && objects[adapter].common && objects[adapter].common.subscribable) {
+                var _adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
+                if (objects[_adapter] && objects[_adapter].common && objects[_adapter].common.subscribable) {
                     var a = parts[0] + '.' + parts[1];
                     var alive = 'system.adapter.' + a + '.alive';
                     adapterSubs[alive] = adapterSubs[alive] || [];
@@ -1159,8 +1159,8 @@
                     return;
                 }
                 var parts = id.split('.');
-                var adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
-                if (objects[adapter] && objects[adapter].common && objects[adapter].common.subscribable) {
+                var _adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
+                if (objects[_adapter] && objects[_adapter].common && objects[_adapter].common.subscribable) {
                     var a     = parts[0] + '.' + parts[1];
                     var alive = 'system.adapter.' + a + '.alive';
                     if (adapterSubs[alive]) {

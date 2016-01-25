@@ -643,6 +643,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 1.1.5 (2016-01-25)
+* (bluefox) fix adapterSubscribe and adapterUnsubscribe
+
 ### 1.1.4 (2016-01-22)
 * (bluefox) fix error by states to control activity of scripts
 
