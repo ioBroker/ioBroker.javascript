@@ -531,6 +531,15 @@ Same as javascript ***clearTimeout***.
 ### formatDate
     formatDate (secondsOrDate, format, isSeconds)
     
+### formatValue 
+	formatValue (value, decimals, format)
+Formats any value (strings too) to number. Replaces point with comma if configured in system. 
+Decimals specify digits after comma. Default value is 2.
+Format is optional: 
+ - '.,': 1234.567 => 1.234,56
+ - ',.': 1234.567 => 1,234.56
+ - ' .': 1234.567 => 1 234.56
+	
 ### adapterSubscribe
     adapterSubscribe(id)
 Sends to adapter message "subscribe" to inform adapter. If adapter has common flag "subscribable" in case of function "subscribe" this function will be called automatically.

@@ -33,6 +33,8 @@
         name: 'javascript',
 
         regExEnum: /^enum\./,
+		
+		useFormatDate: true, // load float formatting
 
         objectChange: function (id, obj) {
             if (this.regExEnum.test(id)) {
