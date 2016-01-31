@@ -652,6 +652,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 1.1.6 (2016-01-31)
+* (bluefox) update node-schedule version
+
 ### 1.1.5 (2016-01-25)
 * (bluefox) fix adapterSubscribe and adapterUnsubscribe
 

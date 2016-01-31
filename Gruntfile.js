@@ -16,10 +16,6 @@ module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: pkg,
-        clean: {
-            all: ['tmp/*.json', 'tmp/*.zip', 'tmp/*.jpg', 'tmp/*.jpeg', 'tmp/*.png',
-                  dstDir + '*.json', dstDir + '*.zip', dstDir + '*.jpg', dstDir + '*.jpeg', dstDir + '*.png']
-        },
         replace: {
             core: {
                 options: {
@@ -82,97 +78,18 @@ module.exports = function (grunt) {
                     url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jscsRules.js'
                 },
                 dest: 'tasks/jscsRules.js'
-            },
-            get_iconOnline: {
-                options: {
-                    encoding: null,
-                    url: iopackage.common.extIcon || 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png'
-                },
-                dest: dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.png'
-
-            },
-            get_iconOffline: {
-                options: {
-                    encoding: null,
-                    url: iopackage.common.extIcon || 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png'
-                },
-                dest: dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.png'
-
-            }
-        },
-        compress: {
-            adapter: {
-                options: {
-                    archive: dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.zip'
-                },
-                files: [
-                    {
-                        expand: true,
-                        src: ['**', '!tasks/*', '!Gruntfile.js', '!node_modules/**/*', '!build/**/*'],
-                        dest: '/',
-                        cwd: srcDir
-                    }
-                ]
-            },
-            adapterOffline: {
-                options: {
-                    archive: dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.zip'
-                },
-                files: [
-                    {
-                        expand: true,
-                        src: ['**',
-                            '!tasks/*',
-                            '!Gruntfile.js',
-                            '!build/**/*',
-                            '!node_modules/grunt/**/*',
-                            '!node_modules/grunt*/**/*'
-                        ],
-                        dest: '/',
-                        cwd: srcDir
-                    }
-                ]
-            }
-        },
-        exec: {
-            npm: {
-                cmd: 'npm install'
-            }
-        },
-        copy: {
-            json: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: srcDir,
-                        src: ['io-package.json'],
-                        dest: dstDir,
-                        rename: function (dest, src) {
-                            return dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.json';
-                        }
-                    },
-                    {
-                        expand: true,
-                        cwd: srcDir,
-                        src: ['io-package.json'],
-                        dest: dstDir,
-                        rename: function (dest, src) {
-                            return dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.json';
-                        }
-                    }
-                ]
             }
         }
     });
 
     grunt.registerTask('updateReadme', function () {
         var readme = grunt.file.read('README.md');
-        var pos = readme.indexOf('## Changelog\r\n');
+        var pos = readme.indexOf('## Changelog\n');
         if (pos != -1) {
-            var readmeStart = readme.substring(0, pos + '## Changelog\r\n'.length);
-            var readmeEnd   = readme.substring(pos + '## Changelog\r\n'.length);
+            var readmeStart = readme.substring(0, pos + '## Changelog\n'.length);
+            var readmeEnd   = readme.substring(pos + '## Changelog\n'.length);
 
-            if (iopackage.common && readme.indexOf(iopackage.common.version) == -1) {
+            if (readme.indexOf(version) == -1) {
                 var timestamp = new Date();
                 var date = timestamp.getFullYear() + '-' +
                     ("0" + (timestamp.getMonth() + 1).toString(10)).slice(-2) + '-' +
@@ -182,14 +99,14 @@ module.exports = function (grunt) {
                 if (iopackage.common.whatsNew) {
                     for (var i = 0; i < iopackage.common.whatsNew.length; i++) {
                         if (typeof iopackage.common.whatsNew[i] == 'string') {
-                            news += '* ' + iopackage.common.whatsNew[i] + '\r\n';
+                            news += '* ' + iopackage.common.whatsNew[i] + '\n';
                         } else {
-                            news += '* ' + iopackage.common.whatsNew[i].en + '\r\n';
+                            news += '* ' + iopackage.common.whatsNew[i].en + '\n';
                         }
                     }
                 }
 
-                grunt.file.write('README.md', readmeStart + '### ' + iopackage.common.version + ' (' + date + ')\r\n' + (news ? news + '\r\n\r\n' : '\r\n') + readmeEnd);
+                grunt.file.write('README.md', readmeStart + '### ' + version + ' (' + date + ')\n' + (news ? news + '\n\n' : '\n') + readmeEnd);
             }
         }
     });
@@ -204,14 +121,14 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
 
     grunt.registerTask('default', [
-        'exec',
         'http',
-        'clean',
         'replace',
         'updateReadme',
-        'compress',
-        'copy',
         'jshint',
         'jscs'
+    ]);
+    grunt.registerTask('p', [
+        'replace',
+        'updateReadme'
     ]);
 };
