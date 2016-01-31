@@ -658,6 +658,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 1.1.8 (2016-01-31)
+* (bluefox) try another version of node-schedule
+
 ### 1.1.7 (2016-01-31)
 * (bluefox) use older node-schedule version 0.5.1
 
@@ -855,22 +858,12 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 * (hobbyquaker) fixed typo
 
 ### 0.1.0
-
 * (hobbyquaker) require() in scripts works now
 * (hobbyquaker) fixes
 
 ### 0.0.2
-
 * (hobbyquaker) CoffeeScript support
 * (hobbyquaker) fixes
 
 ### 0.0.1
-
 * (hobbyquaker) first release
-
-## Todo
-
-* $() 
-* complete patternMatching 
-* complete eventObj 
-* global script?
