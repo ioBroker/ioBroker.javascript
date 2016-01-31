@@ -1725,9 +1725,11 @@
             }
             // Stop all scheduled jobs
             for (i = 0; i < scripts[name].schedules.length; i++) {
-                var _name = scripts[name].schedules[i].name;
-                if (!mods['node-schedule'].cancelJob(scripts[name].schedules[i])) {
-                    adapter.log.error('Error by canceling scheduled job "' + _name + '"');
+                if (scripts[name].schedules[i]) {
+                    var _name = scripts[name].schedules[i].name;
+                    if (!mods['node-schedule'].cancelJob(scripts[name].schedules[i])) {
+                        adapter.log.error('Error by canceling scheduled job "' + _name + '"');
+                    }
                 }
             }
             delete scripts[name];

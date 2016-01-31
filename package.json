@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Javascript/Coffescript Script Engine for ioBroker",
   "author": "hobbyquaker <hq@ccu.io>",
   "contributors": [
@@ -21,7 +21,7 @@
     "url": "https://github.com/ioBroker/ioBroker.javascript"
   },
   "dependencies": {
-    "node-schedule": "^0.6.0",
+    "node-schedule": "0.5.1",
     "request": "^2.69.0",
     "suncalc": "^1.7.0",
     "wake_on_lan": "0.0.4",

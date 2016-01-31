@@ -1,7 +1,13 @@
 ![Logo](admin/js.jpeg)
 # Javascript Script Engine
+==================
 
-executes Javascript and Coffescript Scripts.
+[![NPM version](http://img.shields.io/npm/v/iobroker.javascript.svg)](https://www.npmjs.com/package/iobroker.javascript)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.javascript.svg)](https://www.npmjs.com/package/iobroker.javascript)
+
+[![NPM](https://nodei.co/npm/iobroker.javascript.png?downloads=true)](https://nodei.co/npm/iobroker.javascript/)
+
+Executes Javascript and Coffescript Scripts.
 
 
 ##Note
@@ -652,6 +658,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 1.1.7 (2016-01-31)
+* (bluefox) use older node-schedule version 0.5.1
+
 ### 1.1.6 (2016-01-31)
 * (bluefox) update node-schedule version
 
