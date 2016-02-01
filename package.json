@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "Javascript/Coffescript Script Engine for ioBroker",
   "author": "hobbyquaker <hq@ccu.io>",
   "contributors": [
@@ -21,7 +21,7 @@
     "url": "https://github.com/ioBroker/ioBroker.javascript"
   },
   "dependencies": {
-    "node-schedule": "https://github.com/albertdatui/node-schedule/tarball/bugFixLeapYear",
+    "node-schedule": "https://github.com/node-schedule/node-schedule/tarball/v1.0-pre",
     "request": "^2.69.0",
     "suncalc": "^1.7.0",
     "wake_on_lan": "0.0.4",

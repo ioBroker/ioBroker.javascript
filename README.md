@@ -658,6 +658,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 1.1.9 (2016-02-01)
+* (bluefox) use v1.0-pre version of node-schedule
+
 ### 1.1.8 (2016-01-31)
 * (bluefox) try another version of node-schedule
 
