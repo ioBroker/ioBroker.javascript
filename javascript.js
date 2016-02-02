@@ -480,10 +480,10 @@
         var exec = require('child_process').exec;
         var child = exec(cmd);
 
-        child.stdout.on('data', function(buf) {
+        child.stdout.on('data', function (buf) {
             adapter.log.info(buf.toString('utf8'));
         });
-        child.stderr.on('data', function(buf) {
+        child.stderr.on('data', function (buf) {
             adapter.log.error(buf.toString('utf8'));
         });
         
@@ -843,7 +843,7 @@
                                     if (!filterStates[st].r && filterStates[st].value) {
                                         if (filterStates[st].value[0] == '*') {
                                             filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
-                                        } else if (filterStates[st].value[filterStates[st].value - 1] == '*'){
+                                        } else if (filterStates[st].value[filterStates[st].value - 1] == '*') {
                                             filterStates[st].r = new RegExp('^' + filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
                                         } else {
                                             filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
@@ -913,7 +913,7 @@
                                     if (!filterStates[st].r && filterStates[st].value) {
                                         if (filterStates[st].value[0] == '*') {
                                             filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
-                                        } else if (filterStates[st].value[filterStates[st].value - 1] == '*'){
+                                        } else if (filterStates[st].value[filterStates[st].value - 1] == '*') {
                                             filterStates[st].r = new RegExp('^' + filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
                                         } else {
                                             filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
@@ -972,7 +972,7 @@
                                 if (!filterStates[st].r && filterStates[st].value) {
                                     if (filterStates[st].value[0] == '*') {
                                         filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
-                                    } else if (filterStates[st].value[filterStates[st].value - 1] == '*'){
+                                    } else if (filterStates[st].value[filterStates[st].value - 1] == '*') {
                                         filterStates[st].r = new RegExp('^' + filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
                                     } else {
                                         filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
@@ -1374,22 +1374,22 @@
                     }
                 }
             },
-            setStateDelayed: function(id, state, isAck, delay, clearRunning, callback) {
+            setStateDelayed: function (id, state, isAck, delay, clearRunning, callback) {
                 // find arguments
                 if (typeof isAck != 'boolean') {
-                    callback = clearRunning;
-                    clearRunning = delay;
-                    delay = isAck;
-                    isAck = false;
+                    callback        = clearRunning;
+                    clearRunning    = delay;
+                    delay           = isAck;
+                    isAck           = false;
                 }
                 if (typeof delay != 'number') {
-                    callback = clearRunning;
-                    clearRunning = delay;
-                    delay = 0
+                    callback        = clearRunning;
+                    clearRunning    = delay;
+                    delay           = 0;
                 }
                 if (typeof clearRunning != 'boolean') {
-                    callback = clearRunning;
-                    clearRunning = true;
+                    callback        = clearRunning;
+                    clearRunning    = true;
                 }
 
                 if (clearRunning === undefined) clearRunning = true;
@@ -1468,7 +1468,10 @@
                 }
             },
             getObject:      function (id, enumName) {
-                if (enumName) {
+                if (!objects[id]) {
+                    adapter.log.warn('Object "' + id + '" does not exist');
+                    return null;
+                } else if (enumName) {
                     var e = getObjectEnumsSync(id);
                     var obj = JSON.parse(JSON.stringify(objects[id]));
                     obj.enumIds   = JSON.parse(JSON.stringify(e.enumIds));
@@ -1485,7 +1488,14 @@
 
                     return obj;
                 } else {
-                    return JSON.parse(JSON.stringify(objects[id]));
+                    var result;
+                    try {
+                        result = JSON.parse(JSON.stringify(objects[id]));
+                    } catch (err) {
+                        adapter.log.error('Object "' + id + '" can\'t be copied');
+                        return null;
+                    }
+                    return result;
                 }
             },
             setObject:      function (id, obj, callback) {
