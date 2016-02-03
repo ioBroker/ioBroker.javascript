@@ -1087,6 +1087,11 @@
                     pattern = {id: pattern, change: 'ne'};
                 }
 
+                if (pattern.id !== undefined && !pattern.id) {
+                    adapter.log.error('Error by subscription: empty ID defined. All states matched.');
+                    return;
+                }
+
                 // add adapter namespace if nothing given
                 if (pattern.id && typeof pattern.id == 'string' && pattern.id.indexOf('.') == -1) {
                     pattern.id = adapter.namespace + '.' + pattern.id;
