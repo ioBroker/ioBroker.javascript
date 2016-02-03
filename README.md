@@ -98,7 +98,7 @@ The callback function will return the object as parameter with following content
     	'deviceName' :  'deviceName',
     	'enumIds' : [],
     	'enumNames' : [],
-    	'newState' : {
+    	'state' : {
     		'val' :  'new state',
     		'ts' :   1416149118,
     		'ack' :  true,
@@ -114,7 +114,7 @@ The callback function will return the object as parameter with following content
     	}
     }
 ```
-
+**Note:** early was *newState* instead of *state*. It is still working.
 
 Example:
 ```
@@ -153,12 +153,12 @@ You can use following parameters to specify the trigger:
 |             | RegExp     |       name matched to regular expression                                                               |
 |             |            |                                                                                                        |
 | change      | string     |       "eq", "ne", "gt", "ge", "lt", "le", "any"                                                        |
-|             |   "eq"     |       (equal)            New value must be euqal to old one (newState.val == oldState.val)             |
-|             |   "ne"     |       (not equal)        New value must be not equal to the old one (newState.val != oldState.val) **If "change" is not specified this value is used by default**    |
-|             |   "gt"     |       (greater)          New value must be greater than old value (newState.val > oldState.val)        |
-|             |   "ge"     |       (greater or equal) New value must be greater or euqal to old one (newState.val >= oldState.val)  |
-|             |   "lt"     |       (smaller)          New value must be smaller than old one (newState.val < oldState.val)          |
-|             |   "le"     |       (smaller or equal) New value must be smaller or euqal to old value (newState.val <= oldState.val)|
+|             |   "eq"     |       (equal)            New value must be euqal to old one (state.val == oldState.val)             |
+|             |   "ne"     |       (not equal)        New value must be not equal to the old one (state.val != oldState.val) **If "change" is not specified this value is used by default**    |
+|             |   "gt"     |       (greater)          New value must be greater than old value (state.val > oldState.val)        |
+|             |   "ge"     |       (greater or equal) New value must be greater or euqal to old one (state.val >= oldState.val)  |
+|             |   "lt"     |       (smaller)          New value must be smaller than old one (state.val < oldState.val)          |
+|             |   "le"     |       (smaller or equal) New value must be smaller or euqal to old value (state.val <= oldState.val)|
 |             |  "any"     |       Trigger will be rised if just the new value comes                                                |
 |             |            |                                                                                                        |
 | val         | mixed      |       New value must be euqal to given one                                                             |
@@ -179,11 +179,11 @@ You can use following parameters to specify the trigger:
 |             |            |                                                                                                        |
 | oldAck      | bool       |       Acknowledged state of previous value is equal to given one                                       |
 |             |            |                                                                                                        |
-| ts          | string     |       New value time stamp must be euqal to given one (newState.ts == ts)                              |
-| tsGt        | string     |       New value time stamp must be not equal to the given one (newState.ts != ts)                      |
-| tsGe        | string     |       New value time stamp must be greater than given value (newState.ts > ts)                         |
-| tsLt        | string     |       New value time stamp must be greater or euqal to given one (newState.ts >= ts)                   |
-| tsLe        | string     |       New value time stamp must be smaller than given one (newState.ts < ts)                           |
+| ts          | string     |       New value time stamp must be euqal to given one (state.ts == ts)                              |
+| tsGt        | string     |       New value time stamp must be not equal to the given one (state.ts != ts)                      |
+| tsGe        | string     |       New value time stamp must be greater than given value (state.ts > ts)                         |
+| tsLt        | string     |       New value time stamp must be greater or euqal to given one (state.ts >= ts)                   |
+| tsLe        | string     |       New value time stamp must be smaller than given one (state.ts < ts)                           |
 |             |            |                                                                                                        |
 | oldTs       | string     |       Previous time stamp must be euqal to given one (oldState.ts == ts)                               |
 | oldTsGt     | string     |       Previous time stamp must be not equal to the given one (oldState.ts != ts)                       |
@@ -191,11 +191,11 @@ You can use following parameters to specify the trigger:
 | oldTsLt     | string     |       Previous time stamp must be greater or euqal to given one (oldState.ts >= ts)                    |
 | oldTsLe     | string     |       Previous time stamp must be smaller than given one (oldState.ts < ts)                            |
 |             |            |                                                                                                        |
-| lc          | string     |       Last change time stamp must be euqal to given one (newState.lc == lc)                            |
-| lcGt        | string     |       Last change time stamp must be not equal to the given one (newState.lc != lc)                    |
-| lcGe        | string     |       Last change time stamp must be greater than given value (newState.lc > lc)                       |
-| lcLt        | string     |       Last change time stamp must be greater or euqal to given one (newState.lc >= lc)                 |
-| lcLe        | string     |       Last change time stamp must be smaller than given one (newState.lc < lc)                         |
+| lc          | string     |       Last change time stamp must be euqal to given one (state.lc == lc)                            |
+| lcGt        | string     |       Last change time stamp must be not equal to the given one (state.lc != lc)                    |
+| lcGe        | string     |       Last change time stamp must be greater than given value (state.lc > lc)                       |
+| lcLt        | string     |       Last change time stamp must be greater or euqal to given one (state.lc >= lc)                 |
+| lcLe        | string     |       Last change time stamp must be smaller than given one (state.lc < lc)                         |
 |             |            |                                                                                                        |
 | oldLc       | string     |       Previous last change time stamp must be euqal to given one (oldState.lc == lc)                   |
 | oldLcGt     | string     |       Previous last change time stamp must be not equal to the given one (oldState.lc != lc)           |
@@ -615,7 +615,7 @@ Prefixes ***(not implemented - should be discussed)*** :
 Lets take a look at:
 <pre><code>
 $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').on(function (obj) {
-   log('New state ' + obj.id + ' = ' + obj.newState.val);
+   log('New state ' + obj.id + ' = ' + obj.state.val);
 }
 </code></pre>
 This code searches in channels. 
