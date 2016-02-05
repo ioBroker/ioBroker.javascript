@@ -138,12 +138,13 @@
                 }
 
                 // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
-                if (states[id] && states[id].val === false && id.match(/\.alive$/) && states.val) {
+                if (states[id] && states[id].val === false && id.match(/\.alive$/) && state.val) {
                     if (adapterSubs[id]) {
                         var parts = id.split('.');
-                        var a = parts[0] + '.' + parts[1];
+                        var a = parts[2] + '.' + parts[3];
                         for (var t = 0; t < adapterSubs[id].length; t++) {
-                            adapter.sendTo(a, 'subscribe', adapterSubs[id]);
+                            adapter.log.info('Detected coming adapter "' + a + '". Send subscribe: ' + adapterSubs[id][t]);
+                            adapter.sendTo(a, 'subscribe', adapterSubs[id][t]);
                         }
                     }
                 }

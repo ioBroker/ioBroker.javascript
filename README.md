@@ -658,6 +658,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 1.1.12 (2016-02-05)
+* (bluefox) fix adapterSubscribe
+
 ### 1.1.11 (2016-02-03)
 * (bluefox) do not allow empty IDs in pattern by subscription
 
