@@ -26,7 +26,14 @@
         'request':          require('request'),
         'wake_on_lan':      require('wake_on_lan')
     };
+
     var utils =   require(__dirname + '/lib/utils'); // Get common adapter utils
+
+    // modify fs to protect important information
+    mods.fs._readFile      = mods.fs.readFile;
+    mods.fs._readFileSync  = mods.fs.readFileSync;
+    mods.fs._writeFile     = mods.fs.writeFile;
+    mods.fs._writeFileSync = mods.fs.writeFileSync;
 
     var adapter = utils.adapter({
 
@@ -43,6 +50,7 @@
             }
 
             if (!obj) {
+                // object deleted
                 if (!objects[id]) return;
 
                 // Script deleted => remove it
@@ -57,6 +65,7 @@
                 removeFromNames(id);
                 delete objects[id];
             } else if (!objects[id]) {
+                // New object
                 objects[id] = obj;
 
                 addToNames(obj);
@@ -64,6 +73,19 @@
                 if (obj.type === 'script' && obj.common.engine === 'system.adapter.' + adapter.namespace) {
                     // create states for scripts
                     createActiveObject(id, obj.common.enabled);
+
+                    if (obj.common.enabled) {
+                        if (obj.common.name.indexOf('_global') != -1) {
+                            // restart adapter
+                            adapter.getForeignObject('system.adapter.' + adapter.namespace, function (err, _obj) {
+                                if (_obj) adapter.setForeignObject('system.adapter.' + adapter.namespace, _obj);
+                            });
+                            return;
+                        }
+
+                        // Start script
+                        load(id);
+                    }
                 }
                 // added new script to this engine
             } else {
@@ -257,6 +279,55 @@
             });
         }
     });
+
+    mods.fs.readFile = function () {
+        if (arguments[0].indexOf('-data/objects.json') !== -1) {
+            if (adapter) {
+                adapter.log.error('May not read ' + arguments[0]);
+            } else {
+                console.error('May not read ' + arguments[0]);
+            }
+            throw new Error('Permission denied');
+        }
+
+        return mods.fs._readFile.apply(this, arguments);
+    };
+
+    mods.fs.readFileSync = function () {
+        if (arguments[0].indexOf('-data/objects.json') !== -1) {
+            if (adapter) {
+                adapter.log.error('May not read ' + arguments[0]);
+            } else {
+                console.error('May not read ' + arguments[0]);
+            }
+            throw new Error('Permission denied');
+        }
+        return mods.fs._readFileSync.apply(this, arguments);
+    };
+
+    mods.fs.writeFile = function () {
+        if (arguments[0].indexOf('-data/objects.json') !== -1) {
+            if (adapter) {
+                adapter.log.error('May not write ' + arguments[0]);
+            } else {
+                console.error('May not write ' + arguments[0]);
+            }
+            throw new Error('Permission denied');
+        }
+        return mods.fs._writeFile.apply(this, arguments);
+    };
+
+    mods.fs.writeFileSync = function () {
+        if (arguments[0].indexOf('-data/objects.json') !== -1) {
+            if (adapter) {
+                adapter.log.error('May not write ' + arguments[0]);
+            } else {
+                console.error('May not write ' + arguments[0]);
+            }
+            throw new Error('Permission denied');
+        }
+        return mods.fs._writeFileSync.apply(this, arguments);
+    };
 
     var objects =          {};
     var states =           {};
@@ -1591,6 +1662,18 @@
                     });
                 }
             },
+            deleteState:      function (id, callback) {
+                adapter.delObject(id, function (err) {
+                    if (!err) {
+                        adapter.delState(id, function (err) {
+                            if (err) adapter.log.error('Cannot delete state "' + id + '": ' + err);
+                            if (typeof callback === 'function') callback(err);
+                        });
+                    } else {
+                        adapter.log.error('Cannot delete state "' + id + '": ' + err);
+                    }
+                });
+            },
             sendTo:    function (_adapter, cmd, msg, callback) {
                 adapter.sendTo(_adapter, cmd, msg, callback);
             },
@@ -1793,7 +1876,7 @@
     function patternMatching(event, pattern) {
 
         if (!pattern.logic) {
-            pattern.logic = "and";
+            pattern.logic = 'and';
         }
 
         var matched = false;

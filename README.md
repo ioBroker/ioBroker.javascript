@@ -515,6 +515,12 @@ It is possible short type of createState:
 - _createState('myVariable', {name: 'My own variable', unit: '°C'}, function () {log('created');});_
 - _createState('myVariable', 1, {name: 'My own variable', unit: '°C'})_ - create variable if does not exist with specific name and units
 
+### deleteState
+    deleteState(name, callback)
+    Delete state and object in javascript space, e.g. "javascript.0.mystate".
+    
+``` deleteState('myVariable')_ - simply delete variable if exists```
+
 ### sendTo:    
     sendTo (adapter, cmd, msg, callback)
     
@@ -658,6 +664,10 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 1.2.0 (2016-02-11)
+* (bluefox) start creation of tests
+* (bluefox) add deleteState function
+
 ### 1.1.12 (2016-02-05)
 * (bluefox) fix adapterSubscribe
 
