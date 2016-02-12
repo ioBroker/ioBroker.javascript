@@ -7,13 +7,12 @@
 
 function getAppName() {
     var parts = __dirname.replace(/\\/g, '/').split('/');
-    return parts[parts.length - 1].split('.')[0];
+    return parts[parts.length - 1].split('.')[0].toLowerCase();
 }
 
 module.exports = function (grunt) {
 
     var srcDir    = __dirname + '/';
-    var dstDir    = srcDir + '.build/';
     var pkg       = grunt.file.readJSON('package.json');
     var iopackage = grunt.file.readJSON('io-package.json');
     var version   = (pkg && pkg.version) ? pkg.version : iopackage.common.version;
@@ -54,11 +53,7 @@ module.exports = function (grunt) {
                     patterns: [
                         {
                             match:       /iobroker/gi,
-                            replacement: 'appName'
-                        },
-                        {
-                            match:       /iobroker/gi,
-                            replacement: 'appName'
+                            replacement: appName
                         }
                     ]
                 },
@@ -67,7 +62,8 @@ module.exports = function (grunt) {
                         expand:  true,
                         flatten: true,
                         src:     [
-                            srcDir + '*/**'
+                            srcDir + '*',
+                            srcDir + '.travis.yml'
                         ],
                         dest:    srcDir
                     }
