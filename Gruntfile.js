@@ -144,14 +144,18 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', [
         'http',
-        'replace',
+        'replace:core',
         'updateReadme',
         'jshint',
         'jscs'
     ]);
 
     grunt.registerTask('p', [
-        'replace',
+        'replace:core',
+        'updateReadme'
+    ]);
+    grunt.registerTask('rename', [
+        'replace:name',
         'updateReadme'
     ]);
 };
