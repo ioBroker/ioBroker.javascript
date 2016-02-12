@@ -281,7 +281,7 @@
     });
 
     mods.fs.readFile = function () {
-        if (arguments[0].indexOf('-data/objects.json') !== -1) {
+        if (mods.path.normalize(arguments[0]).replace(/\\/g, '/').indexOf('-data/objects.json') !== -1) {
             if (adapter) {
                 adapter.log.error('May not read ' + arguments[0]);
             } else {
@@ -294,7 +294,7 @@
     };
 
     mods.fs.readFileSync = function () {
-        if (arguments[0].indexOf('-data/objects.json') !== -1) {
+        if (mods.path.normalize(arguments[0]).replace(/\\/g, '/').indexOf('-data/objects.json') !== -1) {
             if (adapter) {
                 adapter.log.error('May not read ' + arguments[0]);
             } else {
@@ -306,7 +306,7 @@
     };
 
     mods.fs.writeFile = function () {
-        if (arguments[0].indexOf('-data/objects.json') !== -1) {
+        if (mods.path.normalize(arguments[0]).replace(/\\/g, '/').indexOf('-data/objects.json') !== -1) {
             if (adapter) {
                 adapter.log.error('May not write ' + arguments[0]);
             } else {
@@ -318,7 +318,7 @@
     };
 
     mods.fs.writeFileSync = function () {
-        if (arguments[0].indexOf('-data/objects.json') !== -1) {
+        if (mods.path.normalize(arguments[0]).replace(/\\/g, '/').indexOf('-data/objects.json') !== -1) {
             if (adapter) {
                 adapter.log.error('May not write ' + arguments[0]);
             } else {
@@ -1365,10 +1365,10 @@
                 }
             },
             getAstroDate:   function (pattern, date) {
-                if (date === undefined)
-                    date = new Date();
+                if (date === undefined) date = new Date();
 
-                if (typeof adapter.config.latitude === 'undefined' || typeof adapter.config.longitude === 'undefined') {
+                if ((!adapter.config.latitude  && adapter.config.latitude  !== 0 && adapter.config.latitude  !== '0') ||
+                    (!adapter.config.longitude && adapter.config.longitude !== 0 && adapter.config.longitude !== '0')) {
                     adapter.log.error('Longitude or latitude does not set. Cannot use astro.');
                     return;
                 }

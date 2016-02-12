@@ -24,10 +24,10 @@ systemDictionary = {
     "on":                   {"en": "on",                    "de": "am",                     "ru": " "},
     "at":                   {"en": "at",                    "de": "um",                     "ru": "в"},
     "of":                   {"en": "of",                    "de": "",                       "ru": " "},
-    "ioBroker adapter scripts": {
-        "en": "ioBroker adapter scripts",
-        "de": "ioBroker adapter scripts",
-        "ru": "ioBroker adapter scripts"
+    "Scripts": {
+        "en": "Scripts",
+        "de": "Skripte",
+        "ru": "Скрипты"
     },
     "delete script":        {"en": "delete script",         "de": "Script löschen",         "ru": "Удалить скрипт"},
     "edit script":          {"en": "edit script",           "de": "Script bearbeiten",      "ru": "Редактироветь скрипт"},

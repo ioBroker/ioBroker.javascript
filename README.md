@@ -340,7 +340,7 @@ schedule({hour: 12, minute: 30}, function () {
 ```
 Pattern can be a Javascript Date object (some specific time point) - in this case only it will be triggered only one time.
 
-####Astro- funktion
+####Astro- function
 
 Astro-function can be used via "astro" attribute:
 
@@ -409,7 +409,7 @@ var sunriseEnd = getAstroDate("sunriseEnd");
 log("Sunrise ends today at " + sunriseEnd.toLocaleTimeString());
 
 var today = new Date();
-var tomorrow = today.setDate(today.getDate()+1);
+var tomorrow = today.setDate(today.getDate() + 1);
 var tomorrowNigh = getAstroDate("night", tomorrow);
 ```
 

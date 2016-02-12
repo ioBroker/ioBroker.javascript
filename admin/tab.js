@@ -25,10 +25,10 @@ function Scripts(main) {
             pager: $('#pager-scripts'),
             rowNum: 100,
             rowList: [20, 50, 100],
-            sortname: "id",
-            sortorder: "desc",
+            sortname: 'id',
+            sortorder: 'desc',
             viewrecords: true,
-            caption: _('ioBroker adapter scripts'),
+            caption: _('Scripts'),
             ignoreCase: true,
             ondblClickRow: function (rowid) {
                 that.onEditLine(rowid.substring('script_'.length));

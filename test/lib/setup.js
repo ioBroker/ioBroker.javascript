@@ -614,4 +614,5 @@ if (typeof module !== undefined && module.parent) {
     module.exports.startController  = startController;
     module.exports.stopController   = stopController;
     module.exports.setupController  = setupController;
+    module.exports.appName          = appName;
 }
