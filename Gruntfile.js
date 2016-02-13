@@ -155,7 +155,6 @@ module.exports = function (grunt) {
         'updateReadme'
     ]);
     grunt.registerTask('rename', [
-        'replace:name',
-        'updateReadme'
+        'replace:name'
     ]);
 };
