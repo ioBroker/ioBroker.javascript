@@ -4,7 +4,7 @@
 systemDictionary = {
     "name":                 {"en": "name",                  "de": "Name",                   "ru": "Имя"},
     "engine type":          {"en": "engine type",           "de": "Enginetyp",              "ru": "Тип движка"},
-    "Insert ID":            {"en": "Insert ID",             "de": "ID Einfügen",            "ru": "Вставить ID"},
+    "Insert ID":            {"en": "Insert&nbsp;ID",             "de": "ID&nbsp;Einfügen",            "ru": "Вставить&nbsp;ID"},
     "Ok":                   {"en": "Ok",                    "de": "Ok",                     "ru": "Ok"},
     "Cron":                 {"en": "Cron",                  "de": "Cron",                   "ru": "Cron"},
     "Cron expression":      {"en": "Cron expression",       "de": "Cron-Ausdruck",          "ru": "Cron-Выражение"},
@@ -67,10 +67,10 @@ systemDictionary = {
         "ru": [  '0',   '1го',   '2го',  '3го',  '4го',  '5го',  '6го',  '7го',  '8го',  '9го',
                 '10го', '11го', '12го', '13го', '14го', '15го', '16го', '17го', '18го', '19го',
                 '20го', '21го', '22го', '23го', '24го', '25го', '26го', '27го', '28го', '29го',
-                '30го', '31го'],
+                '30го', '31го']
     },
     "Name":                 {"en": "Name",                  "de": "Name",                   "ru": "Имя"},
-    "Select ID":            {"en": "Select ID",             "de": "ID Auswählen",           "ru": "Выбрать ID"},
+    "Select ID":            {"en": "Select&nbsp;ID",        "de": "ID&nbsp;Auswählen",      "ru": "Выбрать&nbsp;ID"},
     "Select":               {"en": "Select",                "de": "Auswählen",              "ru": "Выбрать"},
     "All":                  {"en": "All",                   "de": "Alle",                   "ru": "все"},
     "ID":                   {"en": "ID",                    "de": "ID",                     "ru": "ID"},

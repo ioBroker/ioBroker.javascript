@@ -75,7 +75,7 @@
                     createActiveObject(id, obj.common.enabled);
 
                     if (obj.common.enabled) {
-                        if (obj.common.name.indexOf('_global') != -1) {
+                        if (obj.common.name.indexOf('global.') != -1) {
                             // restart adapter
                             adapter.getForeignObject('system.adapter.' + adapter.namespace, function (err, _obj) {
                                 if (_obj) adapter.setForeignObject('system.adapter.' + adapter.namespace, _obj);
@@ -102,7 +102,7 @@
                     return;
                 }
 
-                if (objects[id].common.name.indexOf('_global') != -1) {
+                if (objects[id].common.name.indexOf('global.') != -1) {
                     // restart adapter
                     adapter.getForeignObject('system.adapter.' + adapter.namespace, function (err, obj) {
                         if (obj) {
@@ -235,7 +235,7 @@
 
                         // assemble global script
                         for (var g = 0; g < doc.rows.length; g++) {
-                            if (doc.rows[g].value.common.name.indexOf('_global') != -1) {
+                            if (doc.rows[g].value.common.name.indexOf('global.') != -1) {
                                 var obj = doc.rows[g].value;
 
                                 if (obj && obj.common.enabled) {
@@ -253,7 +253,7 @@
                                             if (!(--count)) {
                                                 // load all scripts
                                                 for (var i = 0; i < doc.rows.length; i++) {
-                                                    if (doc.rows[i].value.common.name.indexOf('_global') == -1) {
+                                                    if (doc.rows[i].value.common.name.indexOf('global.') == -1) {
                                                         load(doc.rows[i].value._id);
                                                     }
                                                 }
@@ -269,7 +269,7 @@
                         if (!count) {
                             // load all scripts
                             for (var i = 0; i < doc.rows.length; i++) {
-                                if (doc.rows[i].value.common.name.indexOf('_global') == -1) {
+                                if (doc.rows[i].value.common.name.indexOf('global.') == -1) {
                                     load(doc.rows[i].value._id);
                                 }
                             }

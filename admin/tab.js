@@ -1,16 +1,61 @@
 function Scripts(main) {
-    var that      = this;
-    this.list     = [];
-    this.$grid    = $('#grid-scripts');
-    this.$dialog  = $('#dialog-script');
-    this.$dialogCron = $('#dialog-cron');
-    this.editor   = null;
-    this.changed  = false;
+    var that            = this;
+    this.list           = [];
+    this.$grid          = $('#grid-scripts');
+    this.$dialog        = $('#dialog-script');
+    this.$dialogCron    = $('#dialog-cron');
+    this.editor         = null;
+    this.changed        = false;
+    this.main           = main;
+    this.currentScript  = null;
 
-    this.main     = main;
+    function addScript() {
+        // Find new unique name
+        var found;
+        var newText = _('Script');
+        var idx = 1;
+        do {
+            found = true;
+            for (var _id = 0; _id < that.list.length; _id++) {
+                var obj = that.main.objects[that.list[_id]];
+                if (obj && obj._id == 'script.js.common' + newText + idx)  {
+                    idx++;
+                    found = false;
+                    break;
+                }
+            }
+        } while (!found);
+        var name = 'common.' + newText + idx;
+        var instance = '';
+        var engineType = '';
+
+        // find first instance
+        for (var i = 0; i < that.main.instances.length; i++) {
+            if (that.main.objects[that.main.instances[i]] && that.main.objects[that.main.instances[i]] && that.main.objects[that.main.instances[i]].common.engineTypes) {
+                instance = that.main.instances[i];
+                if (typeof that.main.objects[main.instances[i]].common.engineTypes == 'string') {
+                    engineType = that.main.objects[that.main.instances[i]].common.engineTypes;
+                } else {
+                    engineType = that.main.objects[that.main.instances[i]].common.engineTypes[0];
+                }
+                break;
+            }
+        }
+
+        that.main.socket.emit('setObject', 'script.js.' + name.replace(/ /g, '_'), {
+            common: {
+                name:       name,
+                engineType: engineType,
+                source:     '',
+                enabled:    false,
+                engine:     instance
+            },
+            type: 'script'
+        });
+    }
 
     this.prepare = function () {
-        this.$grid.jqGrid({
+        /*this.$grid.jqGrid({
             datatype: 'local',
             colNames: ['_id', 'id', _('name'), _('engine type'), _('enabled'), _('engine'), ''],
             colModel: [
@@ -34,8 +79,8 @@ function Scripts(main) {
                 that.onEditLine(rowid.substring('script_'.length));
             },
             gridComplete: function () {
-                /*$('#del-script').addClass('ui-state-disabled');
-                 $('#edit-script').addClass('ui-state-disabled');*/
+                //$('#del-script').addClass('ui-state-disabled');
+                // $('#edit-script').addClass('ui-state-disabled');
             },
             loadComplete: function () {
                 that.initButtons();
@@ -115,7 +160,7 @@ function Scripts(main) {
             id:       'add-script',
             title:    _('new script'),
             cursor:   'pointer'
-        });
+        });*/
 
         this.$dialog.dialog({
             autoOpen:   false,
@@ -206,12 +251,11 @@ function Scripts(main) {
             on: _('on')
         });
 
-        $("#load_grid-scripts").show();
+        //$("#load_grid-scripts").show();
     };
 
     this.resize = function (width, height) {
-        //if (this.$grid) this.$grid.height(height - 150).width(width - 20);
-        if (this.$grid) this.$grid.setGridHeight(height - 100).setGridWidth(width - 20);
+
     };
 
     // Find all script engines
@@ -334,10 +378,11 @@ function Scripts(main) {
                     } else {
                         _obj = obj;
                     }
+
                     // Name must always exist
                     _obj.common.name = newCommon.name;
 
-                    _obj._id = prefix + newCommon.name.replace(/ /g, '_').replace(/\./g, '_');
+                    _obj._id = prefix + newCommon.name.replace(/ /g, '_');
                     that.main.socket.emit('setObject', _obj._id, _obj, function (err) {
                         if (err) {
                             that.main.showError(err);
@@ -355,6 +400,169 @@ function Scripts(main) {
                 that.init(update);
             }, 250);
             return;
+        }
+
+        if (typeof this.$grid !== 'undefined' && (!this.$grid.data('inited') || update)) {
+            this.$grid.data('inited', true);
+
+            this.$grid.selectId('init', {
+                objects: main.objects,
+                noDialog: true,
+                texts: {
+                    select:   _('Select'),
+                    cancel:   _('Cancel'),
+                    all:      _('All'),
+                    id:       _('ID'),
+                    name:     _('Name'),
+                    role:     _('Role'),
+                    room:     _('Room'),
+                    value:    _('Value'),
+                    type:     _('Type'),
+                    selectid: _('Select ID'),
+                    from:     _('From'),
+                    lc:       _('Last changed'),
+                    ts:       _('Time stamp'),
+                    wait:     _('Processing...'),
+                    ack:      _('Acknowledged'),
+                    edit:     _('Edit'),
+                    ok:       _('Ok'),
+                    enum:     _('Members')
+                },
+                noCopyToClipboard: true,
+                filter: {type: 'script'},
+                columns: ['name', 'script', 'button'],
+                widths:  ['150', '*', '120'],
+                buttons: [
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-pencil'
+                        },
+                        click: function (id) {
+                            that.editScript(id);
+                        },
+                        match: function (id) {
+                            if (id.split('.').length <= 2) this.hide();
+                        },
+                        width: 26,
+                        height: 20
+                    },
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-trash'
+                        },
+                        click: function (id) {
+                            that.main.confirmMessage(_('Are you sure to delete script %s?', that.main.objects[id].common.name), null, 'help', function (result) {
+                                if (result) that.main.socket.emit('delObject', id);
+                            });
+                        },
+                        match: function (id) {
+                            if (!main.objects[id] || !main.objects[id].common || main.objects[id].common.nondeletable) this.hide();
+                        },
+                        width: 26,
+                        height: 20
+                    },
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-copy'
+                        },
+                        click: function (id) {
+                            that.main.socket.emit('getObject', id, function (err, obj) {
+                                if (err) {
+                                    that.main.showError(err);
+                                    return;
+                                }
+                                // find new name
+                                var i = 0;
+                                //build name
+                                var newId;
+                                do {
+                                    i++;
+                                    if (obj._id.match(/\(\d+\)/)) {
+                                        newId = obj._id.replace(/\(\d+\)/, '(' + i + ')');
+                                    } else {
+                                        newId = obj._id + '(' + i + ')';
+                                    }
+                                } while (that.list.indexOf(newId) != -1);
+
+                                obj._id = newId;
+                                that.main.socket.emit('setObject', newId, obj, function (err, obj) {
+                                    if (err) {
+                                        that.main.showError(err);
+                                        return;
+                                    }
+                                });
+                            });
+                        },
+                        match: function (id) {
+                            if (!main.objects[id] || !main.objects[id].common || main.objects[id].common.nondeletable) this.hide();
+                        },
+                        width: 26,
+                        height: 20
+                    },
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-refresh'
+                        },
+                        click: function (id) {
+                            that.main.socket.emit('extendObject', id, {});
+                        },
+                        match: function (id) {
+                            if (!main.objects[id] || !main.objects[id].common || main.objects[id].common.nondeletable) this.hide();
+                        },
+                        width: 26,
+                        height: 20
+                    }
+                ],
+                /*editEnd: function (id, newValues) {
+                    var pos = id.lastIndexOf('.');
+                    if (pos != -1) {
+                        var original = id.substring(0, pos);
+                        // rename all children
+                        enumRename(id, original + '.' + newValues.id.replace(/ /g, '_').toLowerCase(), newValues.name);
+                    }
+                },
+                editStart: function (id, inputs) {
+                    var pos = id.lastIndexOf('.');
+                    if (pos != -1) inputs.id.val(id.substring(pos + 1));
+                },*/
+                panelButtons: [
+                    {
+                        text: false,
+                        title: _('New script'),
+                        icons: {
+                            primary:'ui-icon-plus'
+                        },
+                        click: function () {
+                            addScript();
+                        }
+                    }
+                ],
+                onChange: function (id) {
+                    that.currentScript = id;
+                    //fillScript(id);
+
+                }
+            }).selectId('show');
+
+            // Show add button
+            setTimeout(function () {
+                // show blink on start
+                var $addNew = $('#btn_custom_0_0');
+                var background = $addNew.css('background-color');
+                $addNew
+                    .css({
+                        'background-color': 'red'
+                    }, 'red')
+                    .animate({'background-color': background}, 500, function () {
+                        $addNew.animate({'background-color': 'red'}, 500, function () {
+                            $addNew.animate({'background-color': background}, 3000);
+                        });
+                    });
+            }, 500);
         }
 
         if (!this.editor) {
@@ -398,7 +606,7 @@ function Scripts(main) {
                 that.changed = true;
                 $('#script-edit-button-save').button('enable');
 
-                $('#edit-script-global').prop('checked', $('#edit-script-name').val().match(/_global$/));
+                $('#edit-script-global').prop('checked', $('#edit-script-name').val().match(/^global\./));
             }).keyup(function () {
                 $(this).trigger('change');
             });
@@ -406,18 +614,18 @@ function Scripts(main) {
             $('#edit-script-global').change(function () {
                 var name = $('#edit-script-name').val();
                 if ($(this).prop('checked')) {
-                    if (!name.match(/_global$/)) {
-                        $('#edit-script-name').val(name + '_global').trigger('change');
+                    if (!name.match(/^global\./)) {
+                        $('#edit-script-name').val('global.' + name).trigger('change');
                     }
                 } else {
-                    if (name.match(/_global$/)) {
-                        $('#edit-script-name').val(name.replace('_global', '')).trigger('change');
+                    if (name.match(/^global\./)) {
+                        $('#edit-script-name').val(name.replace('global.', '')).trigger('change');
                     }
                 }
             });
         }
 
-        if (update || typeof this.$grid != 'undefined' && !this.$grid[0]._isInited) {
+        /*if (update || typeof this.$grid != 'undefined' && !this.$grid[0]._isInited) {
             this.$grid[0]._isInited = true;
             this.$grid.jqGrid('clearGridData');
             var id = 1;
@@ -477,7 +685,7 @@ function Scripts(main) {
             }
             // set cursor
             $('.ui-jqgrid-resize').css('cursor', 'e-resize');
-        }
+        }*/
     };
 
     this.initButtons = function () {
@@ -651,7 +859,7 @@ function Scripts(main) {
         });
 
         $('td[aria-describedby="grid-scripts_name"]').each(function () {
-            if ($(this).html().match(/_global$/)) {
+            if ($(this).html().match(/^global\./)) {
                 $(this).css({'font-weight': 'bold'});
             } else {
                 $(this).css({'font-weight': 'normal'});
@@ -659,7 +867,7 @@ function Scripts(main) {
         });
 
         $('td[aria-describedby="grid-scripts__obj_id"]').each(function () {
-            if ($(this).html().match(/_global$/)) {
+            if ($(this).html().match(/^global\./)) {
                 $(this).css({'font-weight': 'bold'});
             } else {
                 $(this).css({'font-weight': 'normal'});
@@ -683,7 +891,7 @@ function Scripts(main) {
             $('#edit-script-id').val(obj._id);
             $('#edit-script-name').val(obj.common.name);
 
-            $('#edit-script-global').prop('checked', obj.common.name.match(/_global$/));
+            $('#edit-script-global').prop('checked', obj.common.name.match(/^global\./));
 
             // Add engine even if it is not installed
             if (engines.indexOf(obj.common.engineType) == -1) $('#edit-script-engine-type').append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
@@ -755,8 +963,16 @@ function Scripts(main) {
                 that.updateTimer = null;
                 that.init(true);
             }, 200);
+            if (this.$grid) this.$grid.selectId('object', id, obj);
         }
     };
+
+    this.onLog = function (message) {
+        //{"message":"javascript.0 Stop script script.js.Script4","severity":"info","from":"javascript.0","ts":1455490697111,"_id":364}
+        if (message.message.indexOf(that.currentScript) !== -1) {
+            $('#output').append(JSON.stringify(message));
+        }
+    }
 }
 
 var main = {
@@ -955,6 +1171,9 @@ function stateChange(id, state) {
     }
 }
 
+function onLog(message) {
+    scripts.onLog(message);
+}
 main.socket.on('permissionError', function (err) {
     main.showMessage(_('Has no permission to %s %s %s', err.operation, err.type, (err.id || '')));
 });
@@ -984,7 +1203,7 @@ main.socket.on('connect', function () {
                         systemLang = 'en';
                     }
                 }
-                initGridLanguage(main.systemConfig.common.language);
+                //initGridLanguage(main.systemConfig.common.language);
 
                 translateAll();
 
@@ -1044,4 +1263,7 @@ main.socket.on('reconnect', function () {
 });
 main.socket.on('reauthenticate', function () {
     location.reload();
+});
+main.socket.on('log', function (message) {
+    setTimeout(onLog, 0, message);
 });
