@@ -81,8 +81,8 @@
     <div style="display: flex; flex-direction: row; flex-wrap: nowrap">
         <div id="grid-scripts" style="height: 100%; width: 50%"><span class="translate">Loading...</span></div>
         <div style="border: 1px solid red; height: calc(100% - 5px); width: 50%; display: flex; flex-direction: column; flex-wrap: nowrap">
-            <div id="editor-scripts" style="height: 80%; width: 100%;">
-                <table style="width: 100%;">
+            <div id="editor-scripts" style="height: 80%; width: 100%; display: none;" class="ui-widget">
+                <table style="width: 100%; height: 100%">
                     <tr>
                         <td class="translate" style="width:100">name</td>
                         <td><input size="50" id="edit-script-name-constant"></td>
@@ -100,14 +100,16 @@
                             </tr></table>
                         </td>
                     </tr>
-                </table><br/>
-                <div id="script-editor-constant"></div>
+                    <tr>
+                        <td colspan="3" style="height: 100%; width: 100%">
+                            <div id="script-editor-constant" style="height: 100%; width: 100%"></div>
+                        </td>
+                    </tr>
+                </table>
                 <input type="hidden" id="edit-script-id-constant">
             </div>
             <div style="height: 20%; width: 100%;">
-                <textarea id="output" style="width: 100%; height: 100%;">
-
-                </textarea>
+                <textarea readonly id="output" style="width: 100%; height: 100%; overflow-x: auto; overflow-y: auto;white-space: nowrap;resize: none;"></textarea>
             </div>
         </div>
     </div>

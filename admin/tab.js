@@ -5,9 +5,11 @@ function Scripts(main) {
     this.$dialog        = $('#dialog-script');
     this.$dialogCron    = $('#dialog-cron');
     this.editor         = null;
+    this.editorConstant = null;
     this.changed        = false;
     this.main           = main;
     this.currentScript  = null;
+    this.engines        = [];
 
     function addScript() {
         // Find new unique name
@@ -255,32 +257,76 @@ function Scripts(main) {
     };
 
     this.resize = function (width, height) {
-
+        if (this.editorConstant) this.editorConstant.resize();
+        if (this.editor) this.editor.resize();
     };
 
+    function displayScript(id) {
+        that.initEditor('editorConstant', 'script-editor-constant');
+        that.currentScript = id;
+
+        if (id && main.objects[id]) {
+            $('#editor-scripts').show();
+            var obj = main.objects[id];
+
+            $('#edit-script-id-constant').val(obj._id);
+            $('#edit-script-name-constant').val(obj.common.name);
+
+            $('#edit-script-global-constant').prop('checked', obj.common.name.match(/^global\./));
+
+            // Add engine even if it is not installed
+            if (that.engines.indexOf(obj.common.engineType) == -1) {
+                $('#edit-script-engine-type-constant').append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
+                $('#edit-script-engine-type').append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
+            }
+            $('#edit-script-engine-type-constant').val(obj.common.engineType);
+
+            if (obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
+                that.editorConstant.getSession().setMode("ace/mode/javascript");
+            } else if (obj.common.engineType.match(/^[cC]offee[sS]cript/)) {
+                that.editorConstant.getSession().setMode("ace/mode/coffee");
+            }
+
+            that.changed = false;
+
+            //$('#edit-script-source').val(obj.common.source);
+            that.editorConstant.setValue(obj.common.source);
+
+            //this.editorConstant.resize();
+
+            setTimeout(function () {
+                that.changed = false;
+                $('#script-edit-button-save-constant').button('disable');
+                //that.editorConstant.focus();
+            }, 100);
+        } else {
+            $('#editor-scripts').hide();
+        }
+    }
+
     // Find all script engines
-    this.fillEngines = function (id) {
-        var engines = [];
+    this.fillEngines = function (elemName) {
+        var _engines = [];
         for (var t = 0; t < main.instances.length; t++) {
             if (main.objects[main.instances[t]] && main.objects[main.instances[t]].common && main.objects[main.instances[t]].common.engineTypes) {
                 var engineTypes = main.objects[main.instances[t]].common.engineTypes;
                 if (typeof engineTypes == 'string') {
-                    if (engines.indexOf(engineTypes) == -1) engines.push(engineTypes);
+                    if (_engines.indexOf(engineTypes) == -1) _engines.push(engineTypes);
                 } else {
                     for (var z = 0; z < engineTypes.length; z++) {
-                        if (engines.indexOf(engineTypes[z]) == -1) engines.push(engineTypes[z]);
+                        if (_engines.indexOf(engineTypes[z]) == -1) _engines.push(engineTypes[z]);
                     }
                 }
             }
         }
-        if (id) {
+        if (elemName) {
             var text = '';
-            for (var u = 0; u < engines.length; u++) {
-                text += '<option value="' + engines[u] + '">' + engines[u] + '</option>';
+            for (var u = 0; u < _engines.length; u++) {
+                text += '<option value="' + _engines[u] + '">' + _engines[u] + '</option>';
             }
-            $('#' + id).html(text);
+            $('#' + elemName).html(text);
         }
-        return engines;
+        return _engines;
     };
 
     this.onEditLine = function (id) {
@@ -394,6 +440,70 @@ function Scripts(main) {
         });
     };
 
+    this.initEditor = function (editorName, divName) {
+        if (!this[editorName]) {
+            this[editorName] = ace.edit(divName);
+            //this[editorName].setTheme("ace/theme/monokai");
+            this[editorName].getSession().setMode("ace/mode/javascript");
+
+            $('#edit-insert-id').button({
+                icons: {primary: 'ui-icon-note'}
+            }).css('height', '30px').click(function () {
+                var sid = that.main.initSelectId();
+                sid.selectId('show', function (newId) {
+                    that[editorName].insert('"' + newId + '"' + ((that.main.objects[newId] && that.main.objects[newId].common && that.main.objects[newId].common.name) ? ('/*' + that.main.objects[newId].common.name + '*/') : ''));
+                    that[editorName].focus();
+                });
+            });
+
+            $('#edit-cron-id').button({
+                icons: {primary: 'ui-icon-clock'}
+            }).css('height', '30px').click(function () {
+                var text = that[editorName].getSession().doc.getTextRange(that[editorName].selection.getRange());
+                if (text) {
+                    text = text.replace(/\"/g, '').replace(/\'/g, '');
+                    if (text) {
+                        try {
+                            $('#div-cron').cron('value', text);
+                        } catch (e) {
+                            alert(_('Cannot parse text as cron message'));
+                        }
+                    }
+                }
+
+                that.$dialogCron.dialog('open');
+            });
+
+            this[editorName].on('input', function() {
+                that.changed = true;
+                $('#script-edit-button-save').button('enable');
+            });
+
+            $('#edit-script-name').change(function () {
+                that.changed = true;
+                $('#script-edit-button-save').button('enable');
+
+                $('#edit-script-global').prop('checked', $('#edit-script-name').val().match(/^global\./));
+            }).keyup(function () {
+                $(this).trigger('change');
+            });
+
+            $('#edit-script-global').change(function () {
+                var name = $('#edit-script-name').val();
+                if ($(this).prop('checked')) {
+                    if (!name.match(/^global\./)) {
+                        $('#edit-script-name').val('global.' + name).trigger('change');
+                    }
+                } else {
+                    if (name.match(/^global\./)) {
+                        $('#edit-script-name').val(name.replace('global.', '')).trigger('change');
+                    }
+                }
+            });
+        }
+
+    };
+
     this.init = function (update) {
         if (!this.main.objectsLoaded) {
             setTimeout(function () {
@@ -404,6 +514,9 @@ function Scripts(main) {
 
         if (typeof this.$grid !== 'undefined' && (!this.$grid.data('inited') || update)) {
             this.$grid.data('inited', true);
+
+            that.engines = this.fillEngines('edit-script-engine-type');
+            this.fillEngines('edit-script-engine-type-constant');
 
             this.$grid.selectId('init', {
                 objects: main.objects,
@@ -542,9 +655,7 @@ function Scripts(main) {
                     }
                 ],
                 onChange: function (id) {
-                    that.currentScript = id;
-                    //fillScript(id);
-
+                    displayScript(id);
                 }
             }).selectId('show');
 
@@ -563,66 +674,6 @@ function Scripts(main) {
                         });
                     });
             }, 500);
-        }
-
-        if (!this.editor) {
-            this.editor = ace.edit("script-editor");
-            //this.editor.setTheme("ace/theme/monokai");
-            this.editor.getSession().setMode("ace/mode/javascript");
-
-            $('#edit-insert-id').button({
-                icons: {primary: 'ui-icon-note'}
-            }).css('height', '30px').click(function () {
-                var sid = that.main.initSelectId();
-                sid.selectId('show', function (newId) {
-                    that.editor.insert('"' + newId + '"' + ((that.main.objects[newId] && that.main.objects[newId].common && that.main.objects[newId].common.name) ? ('/*' + that.main.objects[newId].common.name + '*/') : ''));
-                    that.editor.focus();
-                });
-            });
-
-            $('#edit-cron-id').button({
-                icons: {primary: 'ui-icon-clock'}
-            }).css('height', '30px').click(function () {
-                var text = that.editor.getSession().doc.getTextRange(that.editor.selection.getRange());
-                if (text) {
-                    text = text.replace(/\"/g, '').replace(/\'/g, '');
-                    if (text) {
-                        try {
-                            $('#div-cron').cron('value', text);
-                        } catch (e) {
-                            alert(_('Cannot parse text as cron message'));
-                        }
-                    }
-                }
-
-                that.$dialogCron.dialog('open');
-            });
-
-            this.editor.on('input', function() {
-                that.changed = true;
-                $('#script-edit-button-save').button('enable');
-            });
-            $('#edit-script-name').change(function () {
-                that.changed = true;
-                $('#script-edit-button-save').button('enable');
-
-                $('#edit-script-global').prop('checked', $('#edit-script-name').val().match(/^global\./));
-            }).keyup(function () {
-                $(this).trigger('change');
-            });
-
-            $('#edit-script-global').change(function () {
-                var name = $('#edit-script-name').val();
-                if ($(this).prop('checked')) {
-                    if (!name.match(/^global\./)) {
-                        $('#edit-script-name').val('global.' + name).trigger('change');
-                    }
-                } else {
-                    if (name.match(/^global\./)) {
-                        $('#edit-script-name').val(name.replace('global.', '')).trigger('change');
-                    }
-                }
-            });
         }
 
         /*if (update || typeof this.$grid != 'undefined' && !this.$grid[0]._isInited) {
@@ -876,12 +927,12 @@ function Scripts(main) {
     };
 
     this.editScript = function (id) {
-
-        var engines = this.fillEngines('edit-script-engine-type');
+        this.initEditor('editor', 'script-editor');
+        that.currentScript = id;
 
         if (id) {
-            var obj = main.objects[id];
-            var width = 800;
+            var obj    = main.objects[id];
+            var width  = 800;
             var height = 540;
 
             if (this.main.config['scripts-edit-width'])  width  = this.main.config['scripts-edit-width'];
@@ -894,7 +945,10 @@ function Scripts(main) {
             $('#edit-script-global').prop('checked', obj.common.name.match(/^global\./));
 
             // Add engine even if it is not installed
-            if (engines.indexOf(obj.common.engineType) == -1) $('#edit-script-engine-type').append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
+            if (that.engines.indexOf(obj.common.engineType) == -1) {
+                $('#edit-script-engine-type').append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
+                $('#edit-script-engine-type-constant').append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
+            }
             $('#edit-script-engine-type').val(obj.common.engineType);
 
             if (obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
@@ -928,7 +982,7 @@ function Scripts(main) {
              $('#edit-script-name').val('');
              $('#edit-script-engine-type').val('Javascript');
              //$('#edit-script-source').val('');
-             this.editor.setValue('');
+             this[editorName].setValue('');
              that.$dialog.dialog('open');*/
         }
     };
@@ -964,13 +1018,24 @@ function Scripts(main) {
                 that.init(true);
             }, 200);
             if (this.$grid) this.$grid.selectId('object', id, obj);
+        } else
+        if (id.match(/^system\.adapter\.[-\w]+\.[0-9]+$/)) {
+            var val = $('#edit-script-engine-type').val();
+            that.engines = that.fillEngines('edit-script-engine-type');
+            $('#edit-script-engine-type').val(val);
+
+            val = $('#edit-script-engine-type-constant').val();
+            that.fillEngines('edit-script-engine-type-constant');
+            $('#edit-script-engine-type-constant').val(val);
         }
     };
 
     this.onLog = function (message) {
         //{"message":"javascript.0 Stop script script.js.Script4","severity":"info","from":"javascript.0","ts":1455490697111,"_id":364}
-        if (message.message.indexOf(that.currentScript) !== -1) {
-            $('#output').append(JSON.stringify(message));
+        if (that.currentScript && message.message.indexOf(that.currentScript) !== -1) {
+            var text = new Date(message.ts).toString()  + '[' + message.severity + ']' + message.message;
+
+            $('#output').append(text + '\n');
         }
     }
 }
@@ -1105,7 +1170,7 @@ function getObjects(callback) {
             scripts.prepare();
             scripts.init();
 
-            var engines = scripts.fillEngines();
+            //var engines = scripts.fillEngines();
 
             $(window).resize(function () {
                 var x = $(window).width();
@@ -1155,7 +1220,6 @@ function objectChange(id, obj) {
 
     if (id.match(/^system\.adapter\.[-\w]+\.[0-9]+$/)) {
         // Disable scripts tab if no one script engine instance found
-        var engines = scripts.fillEngines();
         $('#tabs').tabs('option', 'disabled', (engines && engines.length) ? [] : [4]);
     }
 
