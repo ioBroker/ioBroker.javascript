@@ -60,10 +60,43 @@ describe('Test JS', function() {
 
             setup.setAdapterConfig(config.common, config.native);
 
-            setup.startController(function (_objects, _states) {
+            setup.startController(false, function (_objects, _states) {
                 objects = _objects;
                 states  = _states;
-                _done();
+
+                var script = {
+                    "common": {
+                        "name":         "new script global",
+                        "engineType":   "Javascript/js",
+                        "source":       "function setTestState(val) {\ncreateState('testGlobal', val, function () {\nsetState('testGlobal', val);\n});\n}",
+                        "enabled":      true,
+                        "engine":       "system.adapter.javascript.0"
+                    },
+                    "type":             "script",
+                    "_id":              "script.js.global.TestGlobalNew.Script",
+                    "native": {}
+                };
+                objects.setObject(script._id, script, function (err) {
+                    expect(err).to.be.not.ok;
+                    script = {
+                        "common": {
+                            "name": "Old script global",
+                            "engineType": "Javascript/js",
+                            "source": "function setTestStateOld(val) {\ncreateState('testGlobalOld', val, function () {\nsetState('testGlobalOld', val);\n});\n}",
+                            "enabled": true,
+                            "engine": "system.adapter.javascript.0"
+                        },
+                        "type": "script",
+                        "_id": "script.js.global.TestGlobalOld.Script",
+                        "native": {}
+                    };
+                    objects.setObject(script._id, script, function (err) {
+                        expect(err).to.be.not.ok;
+                        setup.startAdapter(objects, states, function () {
+                            _done();
+                        });
+                    });
+                });
             });
         });
     });
@@ -418,88 +451,58 @@ describe('Test JS', function() {
         // add script
         var script = {
             "common": {
-                "name":         "new script global",
+                "name":         "new script non global",
                 "engineType":   "Javascript/js",
-                "source":       "function setTestState() {createState('testGlobal', 15, function () {setState('testGlobal', 15);});",
+                "source":       "setTestState(16);",
                 "enabled":      true,
                 "engine":       "system.adapter.javascript.0"
             },
             "type":             "script",
-            "_id":              "script.js.global.TestGlobalNew.Script",
+            "_id":              "script.js.TestGlobalNew.Script",
             "native": {}
         };
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
-            script = {
-                "common": {
-                    "name":         "new script non global",
-                    "engineType":   "Javascript/js",
-                    "source":       "setTestState();",
-                    "enabled":      true,
-                    "engine":       "system.adapter.javascript.0"
-                },
-                "type":             "script",
-                "_id":              "script.js.TestGlobalNew.Script",
-                "native": {}
-            };
-            objects.setObject(script._id, script, function (err) {
+            checkValueOfState('javascript.0.testGlobal', 16, function (err) {
                 expect(err).to.be.not.ok;
-                checkValueOfState('javascript.0.testGlobal', 15, function (err) {
-                    expect(err).to.be.ok;
 
-                    states.getState('javascript.0.testGlobal', function (err, state) {
-                        expect(err).to.be.not.ok;
-                        expect(state).to.be.ok;
-                        expect(state.val).to.be.not.equal(15);
-                        done();
-                    });
-                }, 18);
-            });
+                states.getState('javascript.0.testGlobal', function (err, state) {
+                    expect(err).to.be.not.ok;
+                    expect(state).to.be.ok;
+                    expect(state.val).to.be.equal(16);
+                    done();
+                });
+            }, 18);
         });
     });
 
     it('Test JS: test global scripts Old', function (done) {
         this.timeout(5000);
         // add script
-        var script = {
+         var script = {
             "common": {
-                "name":         "old_script_global",
+                "name":         "Old script non global",
                 "engineType":   "Javascript/js",
-                "source":       "function setTestStateOld() {createState('testGlobalOld', 16, function () {setState('testGlobalOld', 16);});",
+                "source":       "setTestStateOld(17);",
                 "enabled":      true,
                 "engine":       "system.adapter.javascript.0"
             },
             "type":             "script",
-            "_id":              "script.js.old_script_global",
+            "_id":              "script.js.TestGlobalOld.Script",
             "native": {}
         };
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
-            script = {
-                "common": {
-                    "name":         "Old script non global",
-                    "engineType":   "Javascript/js",
-                    "source":       "setTestStateOld();",
-                    "enabled":      true,
-                    "engine":       "system.adapter.javascript.0"
-                },
-                "type":             "script",
-                "_id":              "script.js.TestGlobalOld.Script",
-                "native": {}
-            };
-            objects.setObject(script._id, script, function (err) {
+            checkValueOfState('javascript.0.testGlobalOld', 17, function (err) {
                 expect(err).to.be.not.ok;
-                checkValueOfState('javascript.0.testGlobalOld', 16, function (err) {
-                    expect(err).to.be.ok;
 
-                    states.getState('javascript.0.testGlobalOld', function (err, stateStart) {
-                        expect(err).to.be.not.ok;
-                        expect(state).to.be.ok;
-                        expect(stateStart.val).to.be.not.equal(16);
-                        done();
-                    });
-                }, 18);
-            });
+                states.getState('javascript.0.testGlobalOld', function (err, state) {
+                    expect(err).to.be.not.ok;
+                    expect(state).to.be.ok;
+                    expect(stateStart.val).to.be.equal(17);
+                    done();
+                });
+            }, 18);
         });
     });
 

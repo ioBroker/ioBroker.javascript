@@ -250,7 +250,8 @@
                                                 return;
                                             }
                                             globalScript += js + '\n';
-                                            if (!(--count)) {
+                                            if (!--count) {
+                                                globalScriptLines = globalScript.split(/[\r\n|\n|\r]/g).length;
                                                 // load all scripts
                                                 for (var i = 0; i < doc.rows.length; i++) {
                                                     if (adapter.checkIsGlobal(doc.rows[i].value)) {
@@ -267,6 +268,8 @@
                         }
 
                         if (!count) {
+                            globalScriptLines = globalScript.split(/[\r\n|\n|\r]/g).length;
+
                             // load all scripts
                             for (var i = 0; i < doc.rows.length; i++) {
                                 if (adapter.checkIsGlobal(doc.rows[i].value)) {
@@ -351,6 +354,7 @@
     var fs =               null;
     var attempts =         {};
     var globalScript =     '';
+    var globalScriptLines = 0;
     var names =            {};
     var timers =           {};
     var timerId =          0;
@@ -614,6 +618,7 @@
         try {
             return mods.vm.createScript(source, name);
         } catch (e) {
+            // todo 
             adapter.log.error(name + ' compile failed: ' + e);
             return false;
         }
@@ -1859,7 +1864,7 @@
             if (!err && obj && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
                 // Javascript
                 adapter.log.info('Start javascript ' + name);
-                scripts[name] = compile(obj.common.source + '\n' + globalScript, name);
+                scripts[name] = compile(globalScript + obj.common.source, name);
                 if (scripts[name]) execute(scripts[name], name);
                 if (callback) callback(true, name);
             } else if (!err && obj && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[cC]offee/)) {
@@ -1871,7 +1876,7 @@
                         return;
                     }
                     adapter.log.info('Start coffescript ' + name);
-                    scripts[name] = compile(js + '\n' + globalScript, name);
+                    scripts[name] = compile(globalScript + '\n' + js, name);
                     if (scripts[name]) execute(scripts[name], name);
                     if (callback) callback(true, name);
                 });

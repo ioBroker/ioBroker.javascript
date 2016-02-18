@@ -891,7 +891,7 @@ function Scripts(main) {
         obj.source     = this.editor.getValue();
         obj.engineType = $('#edit-script-engine-type').val() || '';
 
-        if (that.main.objects[newId]) {
+        if (this.currentId != newId && that.main.objects[newId]) {
             that.main.showError(_('Duplicate name'));
             return;
         }

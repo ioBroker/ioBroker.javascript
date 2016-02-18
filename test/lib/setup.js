@@ -423,7 +423,13 @@ function startAdapter(objects, states, callback) {
     if (callback) callback(objects, states);
 }
 
-function startController(callback) {
+function startController(isStartAdapter, callback) {
+    if (typeof isStartAdapter === 'function') {
+        callback = isStartAdapter;
+        isStartAdapter = true;
+    }
+    if (isStartAdapter === undefined) isStartAdapter = true;
+
     if (pid) {
         console.error('Controller is already started!');
     } else {
@@ -460,7 +466,11 @@ function startController(callback) {
                 isObjectConnected = true;
                 if (isStatesConnected) {
                     console.log('startController: started!');
-                    startAdapter(objects, states, callback);
+                    if (isStartAdapter) {
+                        startAdapter(objects, states, callback);
+                    } else {
+                        callback && callback(objects, states);
+                    }
                 }
             }
         });
@@ -500,7 +510,7 @@ function startController(callback) {
     }
 }
 
-function stopController(cb) {
+function stopAdapter(cb) {
     if (!pid) {
         console.error('Controller is not running!');
         if (cb) {
@@ -509,87 +519,73 @@ function stopController(cb) {
             }, 0);
         }
     } else {
-        var timeout;
-        if (objects) {
-            console.log('Set system.adapter.' + pkg.name + '.0');
-            objects.setObject('system.adapter.' + pkg.name + '.0', {
-                common:{
-                    enabled: false
-                }
-            });
-        }
-
         pid.on('exit', function (code, signal) {
             if (pid) {
                 console.log('child process terminated due to receipt of signal ' + signal);
-                if (timeout) {
-                    clearTimeout(timeout);
-                    timeout = null;
-                }
-                if (objects) {
-                    objects.destroy();
-                    objects = null;
-                }
-                if (states) {
-                    states.destroy();
-                    states = null;
-                }
-
-                if (cb) {
-                    cb(true);
-                    cb = null;
-                }
+                cb && cb();
                 pid = null;
             }
         });
 
         pid.on('close', function (code, signal) {
             if (pid) {
-                if (timeout) {
-                    clearTimeout(timeout);
-                    timeout = null;
-                }
-                console.log('child process terminated due to receipt of signal ' + signal);
-
-                if (objects) {
-                    objects.destroy();
-                    objects = null;
-                }
-                if (states) {
-                    states.destroy();
-                    states = null;
-                }
-
-                if (cb) {
-                    cb(true);
-                    cb = null;
-                }
+                cb && cb();
                 pid = null;
             }
         });
 
         pid.kill('SIGTERM');
-
-        timeout = setTimeout(function () {
-            timeout = null;
-            console.log('child process NOT terminated');
-
-            if (objects) {
-                objects.destroy();
-                objects = null;
-            }
-            if (states) {
-                states.destroy();
-                states = null;
-            }
-
-            if (cb) {
-                cb(false);
-                cb = null;
-            }
-            pid = null;
-        }, 5000);
     }
+}
+
+function _stopController() {
+    if (objects) {
+        objects.destroy();
+        objects = null;
+    }
+    if (states) {
+        states.destroy();
+        states = null;
+    }
+}
+
+function stopController(cb) {
+    var timeout;
+    if (objects) {
+        console.log('Set system.adapter.' + pkg.name + '.0');
+        objects.setObject('system.adapter.' + pkg.name + '.0', {
+            common:{
+                enabled: false
+            }
+        });
+    }
+
+    stopAdapter(function () {
+        if (timeout) {
+            clearTimeout(timeout);
+            timeout = null;
+        }
+
+        _stopController();
+
+        if (cb) {
+            cb(true);
+            cb = null;
+        }
+    });
+
+    timeout = setTimeout(function () {
+        timeout = null;
+        console.log('child process NOT terminated');
+
+        _stopController();
+
+        if (cb) {
+            cb(false);
+            cb = null;
+        }
+        pid = null;
+    }, 5000);
 }
 
 // Setup the adapter
@@ -614,5 +610,7 @@ if (typeof module !== undefined && module.parent) {
     module.exports.startController  = startController;
     module.exports.stopController   = stopController;
     module.exports.setupController  = setupController;
+    module.exports.stopAdapter      = stopAdapter;
+    module.exports.startAdapter     = startAdapter;
     module.exports.appName          = appName;
 }
