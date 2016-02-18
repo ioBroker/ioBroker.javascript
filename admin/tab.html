@@ -34,13 +34,6 @@
             padding: 0;
             height: 100%;
         }
-        #script-editor {
-            position: absolute;
-            top: 80px;
-            right: 0;
-            bottom: 0;
-            left: 0;
-        }
         .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited, .ui-state-hover a, .ui-state-hover a:link, .ui-state-hover a:visited  {
              outline: none;
         }
@@ -73,48 +66,97 @@
              border-spacing: 0px;
              border-image-width: 0px;
          }
+        #script-main .ui-resizable-e {
+            cursor: e-resize;
+            width: 8px;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background-color: gray;
+        }
+        #script-main .ui-resizable-s {
+            cursor: s-resize;
+            height: 8px;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            background-color: gray;
+        }
+        .warn, .error, .info, .debug {
+            font-size: small;
+            font-family: Arial;
+        }
+        .info {
+            color: black;
+        }
+        .warn {
+            color: orange;
+        }
+        .error {
+            color: red;
+        }
+        .debug {
+            color: darkgray;
+        }
 
     </style>
 
 </header>
 <body>
-    <div style="display: flex; flex-direction: row; flex-wrap: nowrap">
-        <div id="grid-scripts" style="height: 100%; width: 50%"><span class="translate">Loading...</span></div>
-        <div style="border: 1px solid red; height: calc(100% - 5px); width: 50%; display: flex; flex-direction: column; flex-wrap: nowrap">
-            <div id="editor-scripts" style="height: 80%; width: 100%; display: none;" class="ui-widget">
+    <div id="script-main" style="width: 100%; height: 100%; display: flex; flex-direction: row; flex-wrap: nowrap">
+        <div id="grid-scripts"   style="height: 100%;             width: 30%; padding-right: 8px"><span class="translate">Loading...</span></div>
+        <div id="editor-scripts" style="height: calc(100% - 8px); width: calc(70% - 15px); display: flex; flex-direction: column; flex-wrap: nowrap; display: none">
+            <div style="height: 80%; width: 100%; padding-bottom: 8px" class="ui-widget" id="editor-scripts-textarea">
                 <table style="width: 100%; height: 100%">
                     <tr>
-                        <td class="translate" style="width:100">name</td>
-                        <td><input size="50" id="edit-script-name-constant"></td>
-                        <td><input type="checkbox" id="edit-script-global-constant"><label for="edit-script-global" class="translate">global</label></td>
+                        <td style="width: calc(100% - 200px)">
+                            <span   style="display: inline-block; padding-right: 5px" class="translate">name</span>
+                            <select style="display: inline-block" id="edit-script-group"></select>
+                            <input  style="display: inline-block; width: 200px" id="edit-script-name">
+                        </td>
+                        <td style="width: 200px" class="script-edit"><span style="display: inline-block; padding-right: 5px" class="translate">engine type</span><select style="display: inline-block" id="edit-script-engine-type"></select></td>
                     </tr>
                     <tr>
-                        <td class="translate">engine type</td>
-                        <td style="width:100">
-                            <select id="edit-script-engine-type-constant"></select>
-                        </td>
-                        <td style="text-align:right">
-                            <table><tr>
-                                <td><button id="edit-cron-id-constant"   class="translate">Cron</button></td>
-                                <td><button id="edit-insert-id-constant" class="translate">Insert ID</button></td>
+                        <td colspan="2">
+                            <table style="width: 100%"><tr>
+                                <td><button id="script-edit-button-save"></button></td>
+                                <td><button id="script-edit-button-cancel"></button></td>
+                                <td style="width: 100%"></td>
+                                <td><button id="edit-cron-id"   class="translate script-edit">Cron</button></td>
+                                <td><button id="edit-insert-id" class="translate script-edit">Insert ID</button></td>
                             </tr></table>
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan="3" style="height: 100%; width: 100%">
-                            <div id="script-editor-constant" style="height: 100%; width: 100%"></div>
+                    <tr style="height: 100%;" class="script-edit">
+                        <td colspan="2" style="height: 100%; width: 100%">
+                            <div id="script-editor" style="height: 100%; width: 100%"></div>
                         </td>
                     </tr>
                 </table>
-                <input type="hidden" id="edit-script-id-constant">
             </div>
-            <div style="height: 20%; width: 100%;">
-                <textarea readonly id="output" style="width: 100%; height: 100%; overflow-x: auto; overflow-y: auto;white-space: nowrap;resize: none;"></textarea>
+            <div style="height: 20%; width: 100%; display: flex; flex-direction: row; flex-wrap: nowrap" id="script-output-tab" class="script-edit">
+                <div style="width: 30px">
+                    <table>
+                        <tr><td class="translate" style="font-family: arial, sans-serif; font-weight: bold">Log</td></tr>
+                        <tr><td><button id="script-output-clear"></button></td></tr>
+                        <tr><td><button id="script-output-down"></button></td></tr>
+                    </table>
+                </div>
+                <div style="overflow-x: auto; overflow-y: auto; width: calc(100% - 30px)">
+                    <table style="width: 100%">
+                        <thead>
+                            <col width="80px"/>
+                            <col width="50px"/>
+                            <col width="*"/>
+                        </thead>
+                        <tbody id="script-output" ></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="dialog-script" style="display:none">
+    <!--div id="dialog-script" style="display:none">
         <table style="width: 100%">
             <tr>
                 <td class="translate" style="width:100">name</td>
@@ -136,7 +178,21 @@
         </table><br/>
         <div id="script-editor"></div>
         <input type="hidden" id="edit-script-id">
+    </div-->
+
+    <div id="dialog-new-group" style="display: none">
+        <table style="width: 100%">
+            <tr>
+                <td class="translate">new group name</td>
+                <td><input style="display: inline-block; width: 200px" id="edit-new-group-name"></td>
+            </tr>
+            <tr>
+                <td class="translate">Create in:</td>
+                <td><select id="edit-new-group-group"></select></td>
+            </tr>
+        </table>
     </div>
+
     <div id="dialog-message" title="Message" style="display: none">
         <p>
             <span id="dialog-message-icon" class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>

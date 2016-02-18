@@ -40,7 +40,7 @@
         name: 'javascript',
 
         regExEnum: /^enum\./,
-		
+
 		useFormatDate: true, // load float formatting
 
         objectChange: function (id, obj) {
@@ -75,7 +75,7 @@
                     createActiveObject(id, obj.common.enabled);
 
                     if (obj.common.enabled) {
-                        if (obj.common.name.indexOf('global.') != -1) {
+                        if (adapter.checkIsGlobal(obj)) {
                             // restart adapter
                             adapter.getForeignObject('system.adapter.' + adapter.namespace, function (err, _obj) {
                                 if (_obj) adapter.setForeignObject('system.adapter.' + adapter.namespace, _obj);
@@ -102,7 +102,7 @@
                     return;
                 }
 
-                if (objects[id].common.name.indexOf('global.') != -1) {
+                if (adapter.checkIsGlobal(objects[id])) {
                     // restart adapter
                     adapter.getForeignObject('system.adapter.' + adapter.namespace, function (err, obj) {
                         if (obj) {
@@ -235,7 +235,7 @@
 
                         // assemble global script
                         for (var g = 0; g < doc.rows.length; g++) {
-                            if (doc.rows[g].value.common.name.indexOf('global.') != -1) {
+                            if (adapter.checkIsGlobal(doc.rows[g].value)) {
                                 var obj = doc.rows[g].value;
 
                                 if (obj && obj.common.enabled) {
@@ -253,7 +253,7 @@
                                             if (!(--count)) {
                                                 // load all scripts
                                                 for (var i = 0; i < doc.rows.length; i++) {
-                                                    if (doc.rows[i].value.common.name.indexOf('global.') == -1) {
+                                                    if (adapter.checkIsGlobal(doc.rows[i].value)) {
                                                         load(doc.rows[i].value._id);
                                                     }
                                                 }
@@ -269,7 +269,7 @@
                         if (!count) {
                             // load all scripts
                             for (var i = 0; i < doc.rows.length; i++) {
-                                if (doc.rows[i].value.common.name.indexOf('global.') == -1) {
+                                if (adapter.checkIsGlobal(doc.rows[i].value)) {
                                     load(doc.rows[i].value._id);
                                 }
                             }
@@ -279,6 +279,15 @@
             });
         }
     });
+
+    adapter.regExGlobalOld = /_global$/;
+
+    adapter.regExGlobalNew = /script\.js\.global\./;
+
+    adapter.checkIsGlobal = function (obj) {
+        return this.regExGlobalOld.test(obj.common.name) ||
+            this.regExGlobalNew.test(obj._id);
+    };
 
     mods.fs.readFile = function () {
         if (mods.path.normalize(arguments[0]).replace(/\\/g, '/').indexOf('-data/objects.json') !== -1) {
@@ -1850,7 +1859,7 @@
             if (!err && obj && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
                 // Javascript
                 adapter.log.info('Start javascript ' + name);
-                scripts[name] = compile(globalScript + obj.common.source, name);
+                scripts[name] = compile(obj.common.source + '\n' + globalScript, name);
                 if (scripts[name]) execute(scripts[name], name);
                 if (callback) callback(true, name);
             } else if (!err && obj && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[cC]offee/)) {
@@ -1862,7 +1871,7 @@
                         return;
                     }
                     adapter.log.info('Start coffescript ' + name);
-                    scripts[name] = compile(globalScript + js, name);
+                    scripts[name] = compile(js + '\n' + globalScript, name);
                     if (scripts[name]) execute(scripts[name], name);
                     if (callback) callback(true, name);
                 });
@@ -2365,9 +2374,7 @@
             }
         }
 
-
         return matched;
-
     }
 
     function getData(callback) {

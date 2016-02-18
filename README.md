@@ -665,6 +665,11 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.0.0 (2016-02-19)
+* Breaking changes.
+* (bluefox) Support of script groups
+* (bluefox) global scripts have name script.js.global.ScriptName and not script.js.ScriptName_global
+
 ### 1.2.0 (2016-02-11)
 * (bluefox) start creation of tests
 * (bluefox) add deleteState function

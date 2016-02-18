@@ -24,11 +24,7 @@ systemDictionary = {
     "on":                   {"en": "on",                    "de": "am",                     "ru": " "},
     "at":                   {"en": "at",                    "de": "um",                     "ru": "в"},
     "of":                   {"en": "of",                    "de": "",                       "ru": " "},
-    "Scripts": {
-        "en": "Scripts",
-        "de": "Skripte",
-        "ru": "Скрипты"
-    },
+    "Scripts":              {"en": "Scripts",               "de": "Skripten",               "ru": "Скрипты"},
     "delete script":        {"en": "delete script",         "de": "Script löschen",         "ru": "Удалить скрипт"},
     "edit script":          {"en": "edit script",           "de": "Script bearbeiten",      "ru": "Редактироветь скрипт"},
     "new script":           {"en": "new script",            "de": "Neues Script",           "ru": "Новый скрипт"},
@@ -81,5 +77,40 @@ systemDictionary = {
     "Last changed":         {"en": "Last changed",          "de": "Lätze Änderung",         "ru": "Изменён"},
     "Time stamp":           {"en": "Time stamp",            "de": "Zeitstempel",            "ru": "Время"},
     "Acknowledged":         {"en": "Acknowledged",          "de": "Bestätigt",              "ru": "Подтверждён"},
-    "Processing...":        {"en": "Processing...",         "de": "Bearbeite...",           "ru": "Обработка..."}
+    "Processing...":        {"en": "Processing...",         "de": "Bearbeite...",           "ru": "Обработка..."},
+    "Loading...":           {"en": "Processing...",         "de": "Bearbeite...",           "ru": "Обработка..."},
+    "Log":                  {"en": "Log",                   "de": "Log",                    "ru": "Лог"},
+    "new group name":       {"en": "New group name:",       "de": "Neuer Gruppenname",      "ru": "Имя новой группы"},
+    "Create in:":           {"en": "Create in:",            "de": "Erzeugen in:",           "ru": "Создать в группе:"},
+    "Clear output":         {"en": "Clear output",          "de": "Fenster löschen",        "ru": "Очистить выврд"},
+    "Scroll down":          {"en": "Scroll down",           "de": "Nach unten skrollen",    "ru": "Вниз"},
+    "no group":             {"en": "NO GROUP",              "de": "KEINE GRUPPE",           "ru": "В корне"},
+    "common":               {"en": "Common",                "de": "Allgemein",              "ru": "Общие"},
+    "Script":               {"en": "Script",                "de": "Skript",                 "ru": "Скрипт"},
+    "Type":                 {"en": "Type",                  "de": "Typ",                    "ru": "Тип"},
+    "Edit":                 {"en": "Edit",                  "de": "Editieren",              "ru": "Редактировать"},
+    "Members":              {"en": "Members",               "de": "Mitglieder",             "ru": "Members"},
+    "New script":           {"en": "New script",            "de": "Neues Skript script",    "ru": "Новый скрипт"},
+    "New group":            {"en": "New group",             "de": "Neue Gruppe",            "ru": "Новая группа"},
+    "Message":              {"en": "Message",               "de": "Meldung",                "ru": "Сообщение"},
+    "Deactivated. Click to start.": {
+        "en": "Deactivated. Click to start.",
+        "de": "Deaktiviert. Klicken zum Starten.",
+        "ru": "Неактивно. Нажать для старта."
+    },
+    "Activated. Click to stop.": {
+        "en": "Activated. Click to stop.",
+        "de": "Aktiviert. Klicken zum Stoppen.",
+        "ru": "Активно. Нажать для старта."
+    },
+    'Are you sure to delete group <span style="color: blue">%s</span> and <span style="color: red">all</span> scripts in it?': {
+        "en": 'Are you sure to delete group <span style="color: blue">%s</span> and <span style="color: red">all</span> scripts in it?',
+        "de": 'Are you sure to delete group <span style="color: blue">%s</span> and <span style="color: red">all</span> scripts in it?',
+        "ru": 'Are you sure to delete group <span style="color: blue">%s</span> and <span style="color: red">all</span> scripts in it?'
+    },
+    "Are you sure to delete script %s?": {
+        "en": 'Are you sure to delete script <span style="color: blue">%s?</span>',
+        "de": 'Sind Sie sicher um Skript <span style="color: blue">%s?</span> zu löschen?',
+        "ru": 'Вы точно хотите удалить скрипт <span style="color: blue">%s?</span>?'
+    }
 };
