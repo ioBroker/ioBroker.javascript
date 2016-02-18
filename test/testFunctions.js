@@ -499,7 +499,7 @@ describe('Test JS', function() {
                 states.getState('javascript.0.testGlobalOld', function (err, state) {
                     expect(err).to.be.not.ok;
                     expect(state).to.be.ok;
-                    expect(stateStart.val).to.be.equal(17);
+                    expect(state.val).to.be.equal(17);
                     done();
                 });
             }, 18);
