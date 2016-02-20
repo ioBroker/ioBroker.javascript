@@ -1298,6 +1298,7 @@ function applyResizableH(install, timeout) {
                     width: width
                 });
                 main.saveConfig('script-editor-width', width);
+                if (scripts.editor) scripts.editor.resize();
             }
         });
     }
@@ -1323,6 +1324,7 @@ function applyResizableV() {
                 height: height
             });
             main.saveConfig('script-editor-height', height);
+            if (scripts.editor) scripts.editor.resize();
         }
     });
 }

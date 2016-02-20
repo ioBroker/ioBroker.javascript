@@ -1678,14 +1678,15 @@
             },
             deleteState:      function (id, callback) {
                 adapter.delObject(id, function (err) {
-                    if (!err) {
-                        adapter.delState(id, function (err) {
-                            if (err) adapter.log.error('Cannot delete state "' + id + '": ' + err);
-                            if (typeof callback === 'function') callback(err);
-                        });
-                    } else {
-                        adapter.log.error('Cannot delete state "' + id + '": ' + err);
+                    if (err) {
+                        adapter.log.warn('Object for state "' + id + '" does not exist: ' + err);
                     }
+
+                    adapter.delState(id, function (err) {
+                        if (err) adapter.log.error('Cannot delete state "' + id + '": ' + err);
+                        if (typeof callback === 'function') callback(err);
+                    });
+
                 });
             },
             sendTo:    function (_adapter, cmd, msg, callback) {
