@@ -665,6 +665,11 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.0.1 (2016-02-20)
+* (bluefox) fix resize of script window
+* (bluefox) delete state even if no object exists
+
+
 ### 2.0.0 (2016-02-19)
 * Breaking changes.
 * (bluefox) Support of script groups
