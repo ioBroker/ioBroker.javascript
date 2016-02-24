@@ -423,12 +423,16 @@ function startAdapter(objects, states, callback) {
     if (callback) callback(objects, states);
 }
 
-function startController(isStartAdapter, callback) {
+function startController(isStartAdapter, onObjectChange, onStateChange, callback) {
     if (typeof isStartAdapter === 'function') {
-        callback = isStartAdapter;
+        onObjectChange = isStartAdapter;
         isStartAdapter = true;
     }
-    if (isStartAdapter === undefined) isStartAdapter = true;
+
+    if (onStateChange === undefined) {
+        callback  = onObjectChange;
+        onObjectChange = undefined;
+    }
 
     if (pid) {
         console.error('Controller is already started!');
@@ -472,7 +476,8 @@ function startController(isStartAdapter, callback) {
                         callback && callback(objects, states);
                     }
                 }
-            }
+            },
+            change: onObjectChange
         });
 
         // Just open in memory DB itself
@@ -505,7 +510,8 @@ function startController(isStartAdapter, callback) {
                     console.log('startController: started!!');
                     startAdapter(objects, states, callback);
                 }
-            }
+            },
+            change: onStateChange
         });
     }
 }

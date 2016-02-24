@@ -3,6 +3,8 @@ var setup  = require(__dirname + '/lib/setup');
 
 var objects = null;
 var states  = null;
+var onStateChanged = null;
+var onObjectChanged = null;
 
 function checkConnectionOfAdapter(cb, counter) {
     counter = counter || 0;
@@ -60,10 +62,15 @@ describe('Test JS', function() {
 
             setup.setAdapterConfig(config.common, config.native);
 
-            setup.startController(false, function (_objects, _states) {
+            setup.startController(false, function (id, obj) {
+                    if (onObjectChanged) onObjectChanged(id, obj);
+                }, function (id, state) {
+                    if (onStateChanged) onStateChanged(id, state);
+            },
+            function (_objects, _states) {
                 objects = _objects;
                 states  = _states;
-
+                states.subscribe('*');
                 var script = {
                     "common": {
                         "name":         "new script global",
@@ -121,17 +128,22 @@ describe('Test JS', function() {
             "_id":              "script.js.check_creation_of_state",
             "native": {}
         };
-
+        onStateChanged = function (id, state) {
+            if (id === 'javascript.0.test1' && state.val === 5) {
+                onStateChanged = null;
+                states.getState('javascript.0.test1', function (err, state) {
+                    expect(err).to.be.not.ok;
+                    expect(state.val).to.be.equal(5);
+                    objects.getObject('javascript.0.test1', function (err, obj) {
+                        expect(err).to.be.not.ok;
+                        expect(obj).to.be.ok;
+                        done();
+                    });
+                });
+            }
+        };
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
-            checkValueOfState('javascript.0.test1', 5, function (err) {
-                expect(err).to.be.not.ok;
-                objects.getObject('javascript.0.test1', function (err, obj) {
-                    expect(err).to.be.not.ok;
-                    expect(obj).to.be.ok;
-                    done();
-                });
-            });
         });
     });
 
@@ -159,16 +171,23 @@ describe('Test JS', function() {
                 expect(state).to.be.ok;
                 expect(state.val).to.be.equal(5);
 
+                onStateChanged = function (id, state) {
+                    if (id === 'javascript.0.test1' && state === null) {
+                        onStateChanged = null;
+                        states.getState('javascript.0.test1', function (err, state) {
+                            expect(err).to.be.not.ok;
+                            expect(state).to.be.equal(undefined);
+                            objects.getObject('javascript.0.test1', function (err, obj) {
+                                expect(err).to.be.not.ok;
+                                expect(obj).to.be.not.ok;
+                                done();
+                            });
+                        });
+                    }
+                };
+
                 objects.setObject(script._id, script, function (err) {
                     expect(err).to.be.not.ok;
-                    checkValueOfState('javascript.0.test1', null, function (err) {
-                        expect(err).to.be.not.ok;
-                        objects.getObject('javascript.0.test1', function (err, obj) {
-                            expect(err).to.be.not.ok;
-                            expect(obj).to.be.not.ok;
-                            done();
-                        });
-                    });
                 });
             });
         });
@@ -190,12 +209,15 @@ describe('Test JS', function() {
             "native": {}
         };
 
+        onStateChanged = function (id, state) {
+            if (id === 'javascript.0.error' && state.val === 'Error: Permission denied') {
+                onStateChanged = null;
+                done();
+            }
+        };
+
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
-            checkValueOfState('javascript.0.error', 'Error: Permission denied', function (err) {
-                expect(err).to.be.not.ok;
-                done();
-            });
         });
     });
 
@@ -214,13 +236,14 @@ describe('Test JS', function() {
             "_id":              "script.js.open_objects",
             "native": {}
         };
-
+        onStateChanged = function (id, state) {
+            if (id === 'javascript.0.error1' && state.val === 'Error: Permission denied') {
+                onStateChanged = null;
+                done();
+            }
+        };
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
-            checkValueOfState('javascript.0.error1', 'Error: Permission denied', function (err) {
-                expect(err).to.be.not.ok;
-                done();
-            });
         });
     });
 
@@ -248,15 +271,23 @@ describe('Test JS', function() {
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
             setTimeout(function () {
-                expect(fs.readFileSync(__dirname + "/../tmp/objects.json").toString()).to.be.equal(time);
-                fs.unlinkSync(__dirname + "/../tmp/objects.json");
-                done();
+                if (!fs.existsSync(__dirname + '/../tmp/objects.json')) {
+                    setTimeout(function () {
+                        expect(fs.readFileSync(__dirname + "/../tmp/objects.json").toString()).to.be.equal(time);
+                        fs.unlinkSync(__dirname + "/../tmp/objects.json");
+                        done();
+                    }, 500);
+                } else {
+                    expect(fs.readFileSync(__dirname + "/../tmp/objects.json").toString()).to.be.equal(time);
+                    fs.unlinkSync(__dirname + "/../tmp/objects.json");
+                    done();
+                }
             }, 500);
         });
     });
 
     it('Test JS: test getAstroDate', function (done) {
-        this.timeout(2000);
+        this.timeout(3000);
         var types = [
             "sunrise",
             "sunriseEnd",
@@ -290,21 +321,29 @@ describe('Test JS', function() {
             script.common.source += "createState('" + types[t] + "', getAstroDate('" + types[t] + "') ? getAstroDate('" + types[t] + "').toString() : '');"
         }
 
+        var responses = 0;
+        onStateChanged = function (id, state) {
+            if (types.indexOf(id.substring('javascript.0.'.length)) !== -1) {
+                responses++;
+                if (responses === types.length) {
+                    onStateChanged = null;
+
+                    var count = types.length;
+                    for (var t = 0; t < types.length; t++) {
+                        states.getState('javascript.0.' + types[t], function (err, state) {
+                            expect(err).to.be.not.ok;
+                            expect(state).to.be.ok;
+                            expect(state.val).to.be.ok;
+                            console.log(types[types.length - count] + ': ' + state.val);
+                            if (!--count) done();
+                        });
+                    }
+                }
+            }
+        };
+
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
-            checkValueOfState('javascript.0.' + types[0], undefined, function (err) {
-                expect(err).to.be.not.ok;
-                var count = types.length;
-                for (var t = 0; t < types.length; t++) {
-                    states.getState('javascript.0.' + types[t], function (err, state) {
-                        expect(err).to.be.not.ok;
-                        expect(state).to.be.ok;
-                        expect(state.val).to.be.ok;
-                        console.log(types[types.length - count] + ': ' + state.val);
-                        if (!--count) done();
-                    });
-                }
-            });
         });
     });
 
@@ -503,6 +542,136 @@ describe('Test JS', function() {
                     done();
                 });
             }, 18);
+        });
+    });
+
+    it('Test JS: test ON default', function (done) {
+        this.timeout(5000);
+        // add script
+        var script = {
+            "common": {
+                "name":         "test ON default",
+                "engineType":   "Javascript/js",
+                "source":       "createState('testResponse', false);createState('testVar', 0, function () {on('testVar', function (obj) {setState('testResponse', obj.state.val, true);});});",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.test_ON_default",
+            "native": {}
+        };
+
+        onStateChanged = function (id, state) {
+            if (id === 'javascript.0.testVar' && state.val === 0) {
+                states.setState('javascript.0.testVar', 6, function (err) {
+                    expect(err).to.be.not.ok;
+                });
+            }
+            if (id === 'javascript.0.testResponse' && state.val === 6) {
+                onStateChanged = null;
+                done();
+            }
+        };
+
+        objects.setObject(script._id, script, function (err) {
+            expect(err).to.be.not.ok;
+        });
+    });
+
+    it('Test JS: test ON any', function (done) {
+        this.timeout(5000);
+        // add script
+        var script = {
+            "common": {
+                "name":         "test ON any",
+                "engineType":   "Javascript/js",
+                "source":       "createState('testResponse1', false);createState('testVar1', 1, function () {on({id:'testVar1', change:'any'}, function (obj) {setState('testResponse1', obj.state.val, true);});});",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.test_ON_any",
+            "native": {}
+        };
+
+        onStateChanged = function (id, state) {
+            if (id === 'javascript.0.testVar1' && state.val === 1) {
+                setTimeout(function () {
+                    states.setState('javascript.0.testVar1', 1, function (err) {
+                        expect(err).to.be.not.ok;
+                    });
+                }, 1000);
+            }
+            if (id === 'javascript.0.testResponse1' && state.val === 1) {
+                onStateChanged = null;
+                done();
+            }
+        };
+
+        objects.setObject(script._id, script, function (err) {
+            expect(err).to.be.not.ok;
+        });
+    });
+
+    it('Test JS: test schedule for seconds', function (done) {
+        this.timeout(4000);
+        var d = new Date();
+
+        console.log('Must wait 2 seconds[' + ((d.getSeconds() + 2) % 60) + ' * * * * *]' + d.toISOString());
+        // add script
+        var script = {
+            "common": {
+                "name":         "test ON any",
+                "engineType":   "Javascript/js",
+                "source":       "createState('testScheduleResponse', false);schedule('" + ((d.getSeconds() + 2) % 60) + " * * * * *', function (obj) {setState('testScheduleResponse', true, true);});",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.test_ON_any",
+            "native": {}
+        };
+
+        onStateChanged = function (id, state) {
+            if (id === 'javascript.0.testScheduleResponse' && state.val === true) {
+                onStateChanged = null;
+                done();
+            }
+        };
+
+        objects.setObject(script._id, script, function (err) {
+            expect(err).to.be.not.ok;
+        });
+    });
+
+    it('Test JS: test schedule for minutes', function (done) {
+        var d = new Date();
+        console.log('Must wait ' + (60 - d.getSeconds()) + ' seconds[' + ((d.getMinutes() + 1) % 60) + ' * * * *] ' + d.toISOString());
+        this.timeout((64 - d.getSeconds()) * 1000);
+
+        // add script
+        var script = {
+            "common": {
+                "name":         "test ON any",
+                "engineType":   "Javascript/js",
+                "source":       "createState('testScheduleResponse1', false);schedule('" + ((d.getMinutes() + 1) % 60) + " * * * *', function (obj) {setState('testScheduleResponse1', true, true);});",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.test_ON_any",
+            "native": {}
+        };
+
+        onStateChanged = function (id, state) {
+            if (id === 'javascript.0.testScheduleResponse1' && state.val === true) {
+                onStateChanged = null;
+                done();
+            }
+        };
+
+        objects.setObject(script._id, script, function (err) {
+            expect(err).to.be.not.ok;
         });
     });
 

@@ -340,6 +340,16 @@ schedule({hour: 12, minute: 30}, function () {
 ```
 Pattern can be a Javascript Date object (some specific time point) - in this case only it will be triggered only one time.
 
+**Note:** the newest version of schedule supports seconds too, so you can specify:
+
+```
+schedule("*/2 * * * * *", function () {
+    log("Will be triggered every 2 seconds!");
+});
+```
+
+to trigger every second second.
+
 ####Astro- function
 
 Astro-function can be used via "astro" attribute:
