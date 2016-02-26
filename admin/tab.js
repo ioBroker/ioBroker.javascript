@@ -242,6 +242,27 @@ function Scripts(main) {
         that.initEditor();
 
         if (that.currentId != id) {
+            if (that.changed) {
+                that.main.confirmMessage(_('Script not saved'), _('Save?'), 'help', [_('Save'), _('Discard'), _('Cancel')], function (result) {
+                    if (result === 0) {
+                        that.saveScript();
+                        that.changed = false;
+                        setTimeout(function() {
+                            editScript(id);
+                        }, 0);
+                    } else if (result === 1) {
+                        that.changed = false;
+                        setTimeout(function() {
+                            editScript(id);
+                        }, 0);
+                    } else {
+                        that.$grid.selectId('show', that.currentId);
+                        return;
+                    }
+                });
+                return;
+            }
+
             that.currentId = id;
             $('#script-output').html('');
             main.saveConfig('script-editor-current-id', that.currentId);
@@ -1020,7 +1041,44 @@ var main = {
         }
         $dialogMessage.dialog('open');
     },
-    confirmMessage: function (message, title, icon, callback) {
+    confirmMessage: function (message, title, icon, buttons, callback) {
+        if (typeof buttons === 'function') {
+            callback = buttons;
+            $dialogConfirm.dialog('option', 'buttons', [
+                {
+                    text: _('Ok'),
+                    click: function () {
+                        var cb = $(this).data('callback');
+                        $(this).dialog('close');
+                        if (cb) cb(true);
+                    }
+                },
+                {
+                    text: _('Cancel'),
+                    click: function () {
+                        var cb = $(this).data('callback');
+                        $(this).dialog('close');
+                        if (cb) cb(false);
+                    }
+                }
+
+            ]);
+        } else if (typeof buttons === 'object') {
+            for (var b = 0; b < buttons.length; b++) {
+                buttons[b] = {
+                    text: buttons[b],
+                    id: 'dialog-confirm-button-' + b,
+                    click: function (e) {
+                        var id = parseInt(e.currentTarget.id.substring('dialog-confirm-button-'.length), 10);
+                        var cb = $(this).data('callback');
+                        $(this).dialog('close');
+                        if (cb) cb(id);
+                    }
+                }
+            }
+            $dialogConfirm.dialog('option', 'buttons', buttons);
+        }
+
         $dialogConfirm.dialog('option', 'title', title || _('Message'));
         $('#dialog-confirm-text').html(message);
         if (icon) {
@@ -1222,6 +1280,8 @@ main.socket.on('connect', function () {
                 $dialogConfirm.dialog({
                     autoOpen: false,
                     modal:    true,
+                    width:    400,
+                    height:   200,
                     buttons: [
                         {
                             text: _('Ok'),
@@ -1303,6 +1363,7 @@ function applyResizableH(install, timeout) {
         });
     }
 }
+
 function applyResizableV() {
     var height = parseInt(main.config['script-editor-height'] || '80%', 10);
     $('#editor-scripts-textarea').height(height + '%').next().height(100 - height + '%');
