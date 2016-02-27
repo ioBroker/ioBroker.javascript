@@ -96,6 +96,7 @@ systemDictionary = {
     "Script not saved":     {"en": "Script not saved!",      "de": "Skript ist nicht gespeichert!", "ru": "Скрипт не сохранён!"},
     "Save?":                {"en": "Save?",                 "de": "Speichern?",             "ru": "Сохранить?"},
     "Discard":              {"en": "Discard",               "de": "Nicht speichern",        "ru": "Не сохранять"},
+    "Instance":             {"en": "Instance",              "de": "Wird ausgeführt von ",   "ru": "Выполняется в "},
     "Deactivated. Click to start.": {
         "en": "Deactivated. Click to start.",
         "de": "Deaktiviert. Klicken zum Starten.",

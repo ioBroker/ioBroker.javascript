@@ -702,7 +702,7 @@ function Scripts(main) {
             this.$grid.selectId('init', {
                 objects:        main.objects,
                 noDialog:       true,
-                texts: {
+                texts:          {
                     select:   _('Select'),
                     cancel:   _('Cancel'),
                     all:      _('All'),
@@ -727,8 +727,19 @@ function Scripts(main) {
                 useNameAsId:    true,
                 noColumnResize: true,
                 firstMinWidth:  '*',
-                columns: ['button'],
-                widths:  ['140px'],
+                columns: [
+                    {
+                        name: 'instance',
+                        data: function (id, name) {
+                            return that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.engine ? that.main.objects[id].common.engine.substring('system.adapter.javascript.'.length) : '';
+                        },
+                        title: function (id, name) {
+                            return that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.engine ? _('Instance')  + ' ' + that.main.objects[id].common.engine : '';
+                        }
+                    },
+                    'button'
+                ],
+                widths:  ['100px', '140px'],
                 buttons: [
                     {
                         text: false,
@@ -762,20 +773,6 @@ function Scripts(main) {
                             } else {
                                 this.hide();
                             }
-                        },
-                        width: 26,
-                        height: 20
-                    },
-                    {
-                        text: false,
-                        icons: {
-                            primary:'ui-icon-pencil'
-                        },
-                        click: function (id) {
-                            that.editScript(id);
-                        },
-                        match: function (id) {
-                            if (!that.main.objects[id] || that.main.objects[id].type !=='script') this.hide();
                         },
                         width: 26,
                         height: 20
@@ -881,6 +878,28 @@ function Scripts(main) {
                 ],
                 onChange: function (id) {
                     editScript(id);
+                },
+                quickEdit: [{
+                    name:    'instance',
+                    options: function (id, name) {
+                        var ins = {};
+                        for (var i = 0; i < main.instances.length; i++) {
+                            if (main.instances[i].substring(0, 'system.adapter.javascript.'.length) === 'system.adapter.javascript.') {
+                                ins[main.instances[i]] = main.instances[i].substring('system.adapter.javascript.'.length);
+                            }
+                        }
+                        return ins;
+                    }
+                }],
+                quickEditCallback: function (id, attr, newValue, oldValue) {
+                    main.socket.emit('getObject', id, function (err, _obj) {
+                        if (err) return that.main.showError(err);
+
+                        _obj.common.engine = newValue;
+                        main.socket.emit('setObject', _obj._id, _obj, function (err) {
+                            if (err) that.main.showError(err);
+                        });
+                    });
                 }
             }).selectId('show', update ? undefined : main.config['script-editor-current-id'] || undefined);
 
