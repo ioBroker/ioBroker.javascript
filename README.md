@@ -668,6 +668,11 @@ File will be stored in the DB and can be accessed from any host under name javas
 
 The optional error code will be given in callback.
 
+### name
+    log('Script ' + name + ' started!')
+
+It is not a function. It is a variable with script name, that is visible in script scope.
+
 ## Scripts activity
 
 There is a possibility to enabled and disable scripts via states. For every script the state will be created with name **javascript.INSTANCE.scriptEnabled.SCRIPT_NAME**.
@@ -675,10 +680,14 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+
+### 2.0.2 (2016-02-20)
+* (bluefox) fix start of scripts on adapter start
+* (bluefox) add new scope variable "name" to print name of script: ```log(name) => script.js.common.ScriptName```
+
 ### 2.0.1 (2016-02-20)
 * (bluefox) fix resize of script window
 * (bluefox) delete state even if no object exists
-
 
 ### 2.0.0 (2016-02-19)
 * Breaking changes.

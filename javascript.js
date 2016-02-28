@@ -254,7 +254,7 @@
                                                 globalScriptLines = globalScript.split(/[\r\n|\n|\r]/g).length;
                                                 // load all scripts
                                                 for (var i = 0; i < doc.rows.length; i++) {
-                                                    if (adapter.checkIsGlobal(doc.rows[i].value)) {
+                                                    if (!adapter.checkIsGlobal(doc.rows[i].value)) {
                                                         load(doc.rows[i].value._id);
                                                     }
                                                 }
@@ -272,7 +272,7 @@
 
                             // load all scripts
                             for (var i = 0; i < doc.rows.length; i++) {
-                                if (adapter.checkIsGlobal(doc.rows[i].value)) {
+                                if (!adapter.checkIsGlobal(doc.rows[i].value)) {
                                     load(doc.rows[i].value._id);
                                 }
                             }
@@ -634,6 +634,7 @@
         var sandbox = {
             mods:      mods,
             _id:       script._id,
+            name:      name,
             require:   function (md) {
                 if (mods[md]) return mods[md];
                 try {
