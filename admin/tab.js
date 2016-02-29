@@ -747,6 +747,7 @@ function Scripts(main) {
                             primary:'ui-icon-play'
                         },
                         click: function (id) {
+                            if (this.length == 1) this.button('disable');
                             // toggle state
                             that.main.socket.emit('extendObject', id, {
                                 common: {
