@@ -635,6 +635,7 @@
             mods:      mods,
             _id:       script._id,
             name:      name,
+            instance:  adapter.instance,
             require:   function (md) {
                 if (mods[md]) return mods[md];
                 try {
