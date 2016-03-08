@@ -671,7 +671,12 @@ The optional error code will be given in callback.
 ### name
     log('Script ' + name + ' started!')
 
-It is not a function. It is a variable with script name, that is visible in script scope.
+It is not a function. It is a variable with script name, that is visible in script's scope.
+
+### instance
+    log('Script ' + name + ' started by ' + instance + '!')
+
+It is not a function. It is a variable with javascript instance, that is visible in script's scope.
 
 ## Scripts activity
 
@@ -680,6 +685,10 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+
+### 2.0.3 (2016-03-08)
+* (bluefox) fix edit of instance
+* (bluefox) add instance variable
 
 ### 2.0.2 (2016-02-20)
 * (bluefox) fix start of scripts on adapter start
