@@ -886,7 +886,8 @@ function Scripts(main) {
                         var ins = {};
                         for (var i = 0; i < main.instances.length; i++) {
                             if (main.instances[i].substring(0, 'system.adapter.javascript.'.length) === 'system.adapter.javascript.') {
-                                ins[main.instances[i]] = main.instances[i].substring('system.adapter.javascript.'.length);
+                                var inst = main.instances[i].substring('system.adapter.javascript.'.length);
+                                ins[inst] = inst;
                             }
                         }
                         return ins;
@@ -896,7 +897,7 @@ function Scripts(main) {
                     main.socket.emit('getObject', id, function (err, _obj) {
                         if (err) return that.main.showError(err);
 
-                        _obj.common.engine = newValue;
+                        _obj.common.engine = 'system.adapter.javascript.' + newValue;
                         main.socket.emit('setObject', _obj._id, _obj, function (err) {
                             if (err) that.main.showError(err);
                         });
