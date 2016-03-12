@@ -2,10 +2,10 @@
   "name": "iobroker.javascript",
   "version": "2.0.3",
   "description": "Javascript/Coffescript Script Engine for ioBroker",
-  "author": "hobbyquaker <hq@ccu.io>",
+  "author": "bluefox <dogafox@gmail.com>",
   "contributors": [
-    "hobbyquaker <hq@ccu.io>",
-    "bluefox <bluefox@ccu.io>"
+    "bluefox <dogafox@gmail.com>",
+    "hobbyquaker <hq@ccu.io>"
   ],
   "homepage": "https://github.com/ioBroker/ioBroker.javascript",
   "license": "MIT",
