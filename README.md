@@ -563,14 +563,6 @@ Format is optional:
  - ',.': 1234.567 => 1,234.56
  - ' .': 1234.567 => 1 234.56
 	
-### adapterSubscribe
-    adapterSubscribe(id)
-Sends to adapter message "subscribe" to inform adapter. If adapter has common flag "subscribable" in case of function "subscribe" this function will be called automatically.
-
-### adapterUnsubscribe
-    adapterUnsubscribe(id)
-Sends to adapter message "unsubscribe" to inform adapter to not poll the values.
-
 ####Parameters:
 
 - **date**: number of seconds from state.ts or state.lc (Number seconds from 1970.01.01 00:00:00) or javascript *new Date()* object or number of milliseconds from *(new Date().getTime())*
@@ -597,6 +589,14 @@ Sends to adapter message "unsubscribe" to inform adapter to not poll the values.
   formatDate(state.ts) => "24.02.2015"
   formatDate(state.ts, "JJJJ.MM.TT SS:mm:ss) => "2015.02.15 17:41:98"
   
+	
+### adapterSubscribe
+    adapterSubscribe(id)
+Sends to adapter message "subscribe" to inform adapter. If adapter has common flag "subscribable" in case of function "subscribe" this function will be called automatically.
+
+### adapterUnsubscribe
+    adapterUnsubscribe(id)
+Sends to adapter message "unsubscribe" to inform adapter to not poll the values.
 
 ### $ - Selector
     $(selector).on(function(obj) {});
