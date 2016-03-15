@@ -685,6 +685,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.0.4 (2016-03-15)
+* (bluefox) sort drop down group selector
+* (bluefox) check if object yet exists, when creates group
 
 ### 2.0.3 (2016-03-08)
 * (bluefox) fix edit of instance

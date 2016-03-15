@@ -95,23 +95,29 @@ function Scripts(main) {
                             $('#script-group-button-save').button('disable');
                             $('#script-group-button-cancel').button('disable');
 
-                            that.main.socket.emit('setObject', group, {
-                                common: {
-                                    name: name
-                                },
-                                type: 'channel'
-                            }, function (err) {
+                            // check if object with such name exists
+                            if (that.main.objects[group]) {
+                                that.main.showMessage(_('Object %s yet exists', group));
                                 that.$newGroupDialog.dialog('close');
-                                if (err) {
-                                    that.main.showError(err);
-                                    that.init(true);
-                                } else {
-                                    setTimeout(function () {
-                                        that.$grid.selectId('show', group);
-                                        editScript(group);
-                                    }, 500);
-                                }
-                            });
+                            } else {
+                                that.main.socket.emit('setObject', group, {
+                                    common: {
+                                        name: name
+                                    },
+                                    type: 'channel'
+                                }, function (err) {
+                                    that.$newGroupDialog.dialog('close');
+                                    if (err) {
+                                        that.main.showError(err);
+                                        that.init(true);
+                                    } else {
+                                        setTimeout(function () {
+                                            that.$grid.selectId('show', group);
+                                            editScript(group);
+                                        }, 500);
+                                    }
+                                });
+                            }
                         }
                     },
                     {
@@ -135,8 +141,9 @@ function Scripts(main) {
                 } else {
                     $('#script-group-button-save').button('disable');
                 }
-            }).keyup(function () {
+            }).keyup(function (e) {
                 $(this).trigger('change');
+                if (e.keyCode == 13) $('#script-group-button-save').trigger('click');
             });
         }
 
@@ -362,28 +369,16 @@ function Scripts(main) {
     }
 
     function fillGroups(elemName) {
-        var groups = [];
+        var groups = ['script.js', 'script.js.common', 'script.js.global'];
 
         for (var i = 0; i < that.list.length; i++) {
             var g = getGroup(that.list[i]);
-            if (groups.indexOf(g) === -1 &&
-                g !== 'script.js.global' &&
-                g !== 'script.js.common' &&
-                g !== 'script.js') groups.push(g);
+            if (groups.indexOf(g) === -1 ) groups.push(g);
         }
         for (var j = 0; j < that.groups.length; j++) {
-            if (groups.indexOf(that.groups[j]) === -1 &&
-                that.groups[j] !== 'script.js.global' &&
-                that.groups[j] !== 'script.js.common' &&
-                that.groups[j] !== 'script.js') groups.push(that.groups[j]);
+            if (groups.indexOf(that.groups[j]) === -1) groups.push(that.groups[j]);
         }
         var text = '';
-
-        // place global on the first place
-        groups.sort();
-        groups.unshift('script.js.common');
-        groups.unshift('script.js.global');
-        groups.unshift('script.js');
 
         for (g = 0; g < groups.length; g++) {
             var name = groups[g].substring('script.js.'.length);

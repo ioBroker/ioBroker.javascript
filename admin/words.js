@@ -107,6 +107,11 @@ systemDictionary = {
         "de": "Aktiviert. Klicken zum Stoppen.",
         "ru": "Активно. Нажать для старта."
     },
+    "Object %s yet exists": {
+        "en": 'Object <span style="color: red">"%s"</span> yet exists',
+        "de": 'Objekt <span style="color: red">"%s"</span> existiert bereits',
+        "ru": 'Объект <span style="color: red">"%s"</span> уже существует'
+    },
     'Are you sure to delete group <span style="color: blue">%s</span> and <span style="color: red">all</span> scripts in it?': {
         "en": 'Are you sure to delete group <span style="color: blue">%s</span> and <span style="color: red">all</span> scripts in it?',
         "de": 'Are you sure to delete group <span style="color: blue">%s</span> and <span style="color: red">all</span> scripts in it?',
