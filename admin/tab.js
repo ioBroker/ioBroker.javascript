@@ -362,16 +362,28 @@ function Scripts(main) {
     }
 
     function fillGroups(elemName) {
-        var groups = ['script.js', 'script.js.common', 'script.js.global'];
+        var groups = [];
 
         for (var i = 0; i < that.list.length; i++) {
             var g = getGroup(that.list[i]);
-            if (groups.indexOf(g) === -1 ) groups.push(g);
+            if (groups.indexOf(g) === -1 &&
+                g !== 'script.js.global' &&
+                g !== 'script.js.common' &&
+                g !== 'script.js') groups.push(g);
         }
         for (var j = 0; j < that.groups.length; j++) {
-            if (groups.indexOf(that.groups[j]) === -1) groups.push(that.groups[j]);
+            if (groups.indexOf(that.groups[j]) === -1 &&
+                that.groups[j] !== 'script.js.global' &&
+                that.groups[j] !== 'script.js.common' &&
+                that.groups[j] !== 'script.js') groups.push(that.groups[j]);
         }
         var text = '';
+
+        // place global on the first place
+        groups.sort();
+        groups.unshift('script.js.common');
+        groups.unshift('script.js.global');
+        groups.unshift('script.js');
 
         for (g = 0; g < groups.length; g++) {
             var name = groups[g].substring('script.js.'.length);
