@@ -39,7 +39,7 @@ function Scripts(main) {
             }
         }
 
-        var id = group + '.' + name.replace(/ /g, '_');
+        var id = group + '.' + name.replace(/[\s"']/g, '_');
         that.main.socket.emit('setObject', id, {
             common: {
                 name:       name,
@@ -90,7 +90,7 @@ function Scripts(main) {
                                 that.$newGroupDialog.dialog('close');
                                 return;
                             }
-                            group += '.' + name.replace(/[\s.]+/g, '_');
+                            group += '.' + name.replace(/["'\s.]+/g, '_');
 
                             $('#script-group-button-save').button('disable');
                             $('#script-group-button-cancel').button('disable');
@@ -458,7 +458,7 @@ function Scripts(main) {
                     // Name must always exist
                     _obj.common.name = newCommon.name;
 
-                    _obj._id = newId; // prefix + newCommon.name.replace(/ /g, '_');
+                    _obj._id = newId; // prefix + newCommon.name.replace(/[\s"']/g, '_');
 
                     that.main.socket.emit('setObject', newId, _obj, function (err) {
                         if (err) {
@@ -935,7 +935,7 @@ function Scripts(main) {
     this.saveScript = function () {
 
         var obj = {};
-        var newId      = $('#edit-script-group').val() + '.' + $('#edit-script-name').val().replace(/[\s.]/g, '_');
+        var newId      = $('#edit-script-group').val() + '.' + $('#edit-script-name').val().replace(/["'\s.]/g, '_');
         obj.name       = $('#edit-script-name').val();
         obj.source     = this.editor.getValue();
         obj.engineType = $('#edit-script-engine-type').val() || '';
@@ -1250,7 +1250,7 @@ function objectChange(id, obj) {
 
 function stateChange(id, state) {
     var rowData;
-    id = id ? id.replace(/ /g, '_') : '';
+    id = id ? id.replace(/[\s'"]/g, '_') : '';
 
     if (!id || !id.match(/\.messagebox$/)) {
         if (main.selectId) main.selectId.selectId('state', id, state);
