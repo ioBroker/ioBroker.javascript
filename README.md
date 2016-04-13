@@ -685,6 +685,10 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.0.5 (2016-04-13)
+* (bluefox) do not update script on save
+* (bluefox) add lines wrap
+
 ### 2.0.4 (2016-03-15)
 * (bluefox) sort drop down group selector
 * (bluefox) check if object yet exists, when creates group

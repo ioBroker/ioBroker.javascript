@@ -1,3 +1,12 @@
+$(window).keypress(function(event) {
+    console.log(event.which + ' ' + event.ctrlKey);
+    if (!(event.which == 115 && (navigator.platform.match("Mac") ? event.metaKey : event.ctrlKey)) && !(event.which == 19)) return true;
+    event.preventDefault();
+    if (scripts.changed) scripts.saveScript();
+
+    return false;
+});
+
 function Scripts(main) {
     var that            = this;
     this.list           = [];
@@ -238,6 +247,11 @@ function Scripts(main) {
             if (that.$parentOutput) that.$parentOutput.scrollTop($('#script-output').height());
         }).attr('title', _('Scroll down'));
 
+        $('#edit-wrap-lines').change(function () {
+            that.main.saveConfig('script-editor-wrap-lines', $(this).prop('checked'));
+            if (that.editor) that.editor.getSession().setUseWrapMode($(this).prop('checked'));
+        });
+
         fillGroups('edit-script-group');
     };
 
@@ -294,15 +308,15 @@ function Scripts(main) {
             $('#edit-script-engine-type').val(obj.common.engineType);
 
             if (obj.common.engineType && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
-                that.editor.getSession().setMode("ace/mode/javascript");
+                that.editor.getSession().setMode('ace/mode/javascript');
             } else if (obj.common.engineType && obj.common.engineType.match(/^[cC]offee[sS]cript/)) {
-                that.editor.getSession().setMode("ace/mode/coffee");
+                that.editor.getSession().setMode('ace/mode/coffee');
             }
 
             that.changed = false;
 
             //$('#edit-script-source').val(obj.common.source);
-            that.editor.setValue(obj.common.source);
+            that.editor.setValue(obj.common.source, -1);
 
             applyResizableV();
 
@@ -480,7 +494,7 @@ function Scripts(main) {
             this.editor = ace.edit('script-editor');
             
             //this.editor.setTheme("ace/theme/monokai");
-            this.editor.getSession().setMode("ace/mode/javascript");
+            this.editor.getSession().setMode('ace/mode/javascript');
 
             $('#edit-insert-id').button({
                 icons: {primary: 'ui-icon-note'}
@@ -534,6 +548,8 @@ function Scripts(main) {
                 $('#script-edit-button-save').button('enable');
                 $('#script-edit-button-cancel').button('enable');
             });
+
+            this.editor.getSession().setUseWrapMode($('#edit-wrap-lines').prop('checked'));
         }
     };
 
@@ -694,6 +710,7 @@ function Scripts(main) {
     }
 
     this.init = function (update) {
+        var that = this;
         if (!this.main.objectsLoaded) {
             setTimeout(function () {
                 that.init(update);
@@ -884,8 +901,13 @@ function Scripts(main) {
                         }
                     }
                 ],
-                onChange: function (id) {
-                    editScript(id);
+                onChange: function (id, oldId) {
+                    if (id !== oldId || !that.editor) {
+                        editScript(id);
+                    } else {
+                        // focus again on editor
+                        that.editor.focus();
+                    }
                 },
                 quickEdit: [{
                     name:    'instance',
@@ -929,6 +951,11 @@ function Scripts(main) {
             }, 500);
 
             applyResizableH(true);
+
+            if (this.main.config['script-editor-wrap-lines']) {
+                $('#edit-wrap-lines').prop('checked', true);
+                this.editor.getSession().setUseWrapMode(true);
+            }
         }
     };
 
