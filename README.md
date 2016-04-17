@@ -685,6 +685,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.0.6 (2016-04-17)
+* (bluefox) fix error in GUI
+
 ### 2.0.5 (2016-04-13)
 * (bluefox) do not update script on save
 * (bluefox) add lines wrap

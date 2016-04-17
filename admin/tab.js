@@ -1,12 +1,3 @@
-$(window).keypress(function(event) {
-    console.log(event.which + ' ' + event.ctrlKey);
-    if (!(event.which == 115 && (navigator.platform.match("Mac") ? event.metaKey : event.ctrlKey)) && !(event.which == 19)) return true;
-    event.preventDefault();
-    if (scripts.changed) scripts.saveScript();
-
-    return false;
-});
-
 function Scripts(main) {
     var that            = this;
     this.list           = [];
