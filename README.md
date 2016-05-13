@@ -668,6 +668,51 @@ File will be stored in the DB and can be accessed from any host under name javas
 
 The optional error code will be given in callback.
 
+### getHistory
+    getHistory (instance, options, function (error, result, options, instance) {});
+
+Read history from specified instance. if no instance specified the system default history instance will be taken.
+```
+// Read history of 'system.adapter.admin.0.memRss' from sql driver
+var end = new Date().getTime();
+getHistory('sql.0', {
+        id:         'system.adapter.admin.0.memRss',
+        start:      end - 3600000,
+        end:        end,
+        aggregate:  'm4',
+        timeout:    2000
+    }, function (err, result) {
+        if (err) console.error(err);
+        if (result) {
+            for (var i = 0; i < result.length; i++) {
+            console.log(result[i].id + ' ' + new Date(result[i].ts).toISOString());
+            }
+        }
+    });
+```
+Possible options you can find [here](https://github.com/ioBroker/ioBroker.history#access-values-from-javascript-adapter).
+
+Additionally to these parameters you must specify "id" and you may specify timeout (default: 20000ms).
+
+One more example:
+```
+// Get last 50 entries from default history instance with no aggregation:
+getHistory({
+        id:         'system.adapter.admin.0.alive',
+        aggregate:  'none',
+        count:      50
+    }, function (err, result) {
+        if (err) console.error(err);
+        if (result) {
+            for (var i = 0; i < result.length; i++) {
+            console.log(result[i].id + ' ' + new Date(result[i].ts).toISOString());
+            }
+        }
+    });
+```
+
+**Note: ** of course history must be first enabled for selected ID in admin.
+
 ### name
     log('Script ' + name + ' started!')
 
@@ -685,6 +730,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.1.0 (2016-05-13)
+* (bluefox) add getHistory command
+
 ### 2.0.6 (2016-04-17)
 * (bluefox) fix error in GUI
 

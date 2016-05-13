@@ -1738,31 +1738,72 @@
                     }
                 };
             },
-            
             formatValue: function (value, decimals, format) {
                 if (!format && objects['system.config']) {
                     format = objects['system.config'].common.isFloatComma ?  '.,' : ',.';
                 }
                 return adapter.formatValue(value, decimals, format);
             },
-
-            formatDate: function (date, format, isDataObject) {
-                if (typeof format == 'boolean') {
-                    isDataObject = format;
-                    format = null;
-                }
-
+            formatDate: function (date, format) {
                 if (!format) {
                     format = objects['system.config'] ? (objects['system.config'].common.dateFormat || 'DD.MM.YYYY') : 'DD.MM.YYYY';
                 }
 
-                return adapter.formatDate(date, !isDataObject, format);
+                return adapter.formatDate(date, format);
             },
             writeFile: function (fileName, data, callback) {
                 adapter.writeFile(null, fileName, data, callback);
             },
             readFile:  function (fileName, callback) {
                 adapter.readFile(null, fileName, callback);
+            },
+            getHistory: function (instance, options, callback) {
+                if (typeof instance === 'object') {
+                    callback = options;
+                    options  = instance;
+                    instance = null;
+                }
+
+                if (!callback) {
+                    adapter.log.error('No callback found!');
+                    return;
+                }
+                if (typeof options !== 'object') {
+                    adapter.log.error('No options found!');
+                    return;
+                }
+                if (!options.id) {
+                    adapter.log.error('No ID found!');
+                    return;
+                }
+                var timeoutMs = parseInt(options.timeout, 10) || 20000;
+
+                if (!instance) {
+                    instance = objects['system.config'] ? objects['system.config'].common.defaultHistory : null;
+                }
+                if (!instance) {
+                    adapter.log.error('No default history instance found!');
+                    callback('No default history instance found!');
+                    return;
+                }
+                if (instance.match(/^system\.adapter\./)) instance = instance.substring('system.adapter.'.length);
+
+                if (!objects['system.adapter.' + instance]) {
+                    adapter.log.error('Instance "' + instance + '" not found!');
+                    callback('Instance "' + instance + '" not found!');
+                    return;
+                }
+                var timeout = setTimeout(function () {
+                    timeout = null;
+                    if (callback) callback('Timeout', null, options, instance);
+                    callback = null;
+                }, timeoutMs);
+
+                adapter.sendTo(instance, 'getHistory', {id: options.id, options: options}, function (result) {
+                    if (timeout) clearTimeout(timeout);
+                    if (callback) callback(result.error, result.result, options, instance);
+                    callback = null;
+                });
             },
             toInt:     function (val) {
                 if (val === true  || val === 'true')  val = 1;
