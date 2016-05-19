@@ -1216,8 +1216,15 @@
                     if (objects[_adapter] && objects[_adapter].common && objects[_adapter].common.subscribable) {
                         var alive = 'system.adapter.' + a + '.alive';
                         adapterSubs[alive] = adapterSubs[alive] || [];
-                        adapterSubs[alive].push(pattern.id);
-                        adapter.sendTo(a, 'subscribe', pattern.id);
+
+                        var subExists = adapterSubs[alive].filter(function(sub){
+                            return sub === pattern.id;
+                        }).length > 0;
+
+                        if (!subExists) {
+                            adapterSubs[alive].push(pattern.id);
+                            adapter.sendTo(a, 'subscribe', pattern.id);
+                        }
                     }
                 }
 
@@ -1249,22 +1256,23 @@
                 }
             },
             adapterUnsubscribe: function (id) {
-                if (typeof id !== 'string') {
-                    adapter.log.error('adapterSubscribe: invalid type of id' + typeof id);
-                    return;
-                }
-                var parts = id.split('.');
-                var _adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
-                if (objects[_adapter] && objects[_adapter].common && objects[_adapter].common.subscribable) {
-                    var a     = parts[0] + '.' + parts[1];
-                    var alive = 'system.adapter.' + a + '.alive';
-                    if (adapterSubs[alive]) {
-                        var pos = adapterSubs[alive].indexOf(id);
-                        if (pos != -1) adapterSubs[alive].splice(pos, 1);
-                        if (!adapterSubs[alive].length) delete adapterSubs[alive];
-                    }
-                    adapter.sendTo(a, 'unsubscribe', id);
-                }
+                unsubscribe(id);
+                // if (typeof id !== 'string') {
+                //     adapter.log.error('adapterSubscribe: invalid type of id' + typeof id);
+                //     return;
+                // }
+                // var parts = id.split('.');
+                // var _adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
+                // if (objects[_adapter] && objects[_adapter].common && objects[_adapter].common.subscribable) {
+                //     var a     = parts[0] + '.' + parts[1];
+                //     var alive = 'system.adapter.' + a + '.alive';
+                //     if (adapterSubs[alive]) {
+                //         var pos = adapterSubs[alive].indexOf(id);
+                //         if (pos != -1) adapterSubs[alive].splice(pos, 1);
+                //         if (!adapterSubs[alive].length) delete adapterSubs[alive];
+                //     }
+                //     adapter.sendTo(a, 'unsubscribe', id);
+                // }
             },
             unsubscribe:    function (idOrObject) {
                 var i;
@@ -1738,72 +1746,31 @@
                     }
                 };
             },
+            
             formatValue: function (value, decimals, format) {
                 if (!format && objects['system.config']) {
                     format = objects['system.config'].common.isFloatComma ?  '.,' : ',.';
                 }
                 return adapter.formatValue(value, decimals, format);
             },
-            formatDate: function (date, format) {
+
+            formatDate: function (date, format, isDataObject) {
+                if (typeof format == 'boolean') {
+                    isDataObject = format;
+                    format = null;
+                }
+
                 if (!format) {
                     format = objects['system.config'] ? (objects['system.config'].common.dateFormat || 'DD.MM.YYYY') : 'DD.MM.YYYY';
                 }
 
-                return adapter.formatDate(date, format);
+                return adapter.formatDate(date, !isDataObject, format);
             },
             writeFile: function (fileName, data, callback) {
                 adapter.writeFile(null, fileName, data, callback);
             },
             readFile:  function (fileName, callback) {
                 adapter.readFile(null, fileName, callback);
-            },
-            getHistory: function (instance, options, callback) {
-                if (typeof instance === 'object') {
-                    callback = options;
-                    options  = instance;
-                    instance = null;
-                }
-
-                if (!callback) {
-                    adapter.log.error('No callback found!');
-                    return;
-                }
-                if (typeof options !== 'object') {
-                    adapter.log.error('No options found!');
-                    return;
-                }
-                if (!options.id) {
-                    adapter.log.error('No ID found!');
-                    return;
-                }
-                var timeoutMs = parseInt(options.timeout, 10) || 20000;
-
-                if (!instance) {
-                    instance = objects['system.config'] ? objects['system.config'].common.defaultHistory : null;
-                }
-                if (!instance) {
-                    adapter.log.error('No default history instance found!');
-                    callback('No default history instance found!');
-                    return;
-                }
-                if (instance.match(/^system\.adapter\./)) instance = instance.substring('system.adapter.'.length);
-
-                if (!objects['system.adapter.' + instance]) {
-                    adapter.log.error('Instance "' + instance + '" not found!');
-                    callback('Instance "' + instance + '" not found!');
-                    return;
-                }
-                var timeout = setTimeout(function () {
-                    timeout = null;
-                    if (callback) callback('Timeout', null, options, instance);
-                    callback = null;
-                }, timeoutMs);
-
-                adapter.sendTo(instance, 'getHistory', {id: options.id, options: options}, function (result) {
-                    if (timeout) clearTimeout(timeout);
-                    if (callback) callback(result.error, result.result, options, instance);
-                    callback = null;
-                });
             },
             toInt:     function (val) {
                 if (val === true  || val === 'true')  val = 1;
@@ -1857,6 +1824,26 @@
         }
     }
 
+    function unsubscribe(id) {
+        if (typeof id !== 'string') {
+            adapter.log.error('adapterSubscribe: invalid type of id' + typeof id);
+            return;
+        }
+        var parts = id.split('.');
+        var _adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
+        if (objects[_adapter] && objects[_adapter].common && objects[_adapter].common.subscribable) {
+            var a     = parts[0] + '.' + parts[1];
+            var alive = 'system.adapter.' + a + '.alive';
+            if (adapterSubs[alive]) {
+                var pos = adapterSubs[alive].indexOf(id);
+                if (pos != -1) adapterSubs[alive].splice(pos, 1);
+                if (!adapterSubs[alive].length) delete adapterSubs[alive];
+            }
+            adapter.sendTo(a, 'unsubscribe', id);
+        }
+    }
+
+
     function stop(name, callback) {
         adapter.log.info('Stop script ' + name);
 
@@ -1867,7 +1854,10 @@
             isEnums = false;
             for (var i = subscriptions.length - 1; i >= 0 ; i--) {
                 if (subscriptions[i].name == name) {
-                    subscriptions.splice(i, 1);
+                    var sub = subscriptions.splice(i, 1)[0];
+                    if (sub) {
+                        unsubscribe(sub.pattern.id);
+                    }
                 } else {
                     if (!isEnums && subscriptions[i].pattern.enumName || subscriptions[i].pattern.enumId) isEnums = true;
                 }
