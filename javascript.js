@@ -1754,18 +1754,14 @@
                 return adapter.formatValue(value, decimals, format);
             },
 
-            formatDate: function (date, format, isDataObject) {
-                if (typeof format == 'boolean') {
-                    isDataObject = format;
-                    format = null;
-                }
-
+            formatDate: function (date, format) {
                 if (!format) {
                     format = objects['system.config'] ? (objects['system.config'].common.dateFormat || 'DD.MM.YYYY') : 'DD.MM.YYYY';
                 }
 
-                return adapter.formatDate(date, !isDataObject, format);
+                return adapter.formatDate(date, format);
             },
+
             writeFile: function (fileName, data, callback) {
                 adapter.writeFile(null, fileName, data, callback);
             },
