@@ -675,6 +675,59 @@ describe('Test JS', function() {
         });
     });
 
+    it('Test JS: test write file', function (done) {
+        // add script
+        var script = {
+            "common": {
+                "name":         "test ON any",
+                "engineType":   "Javascript/js",
+                "source":       "createState('testScheduleResponse2', false, function () {writeFile('/javascript.admin/test.txt', 'test', function () {setState('testScheduleResponse2', true, true);});});",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.test_write",
+            "native": {}
+        };
+
+        onStateChanged = function (id, state) {
+            if (id === 'javascript.0.testScheduleResponse2' && state.val === true) {
+                onStateChanged = null;
+                done();
+            }
+        };
+
+        objects.setObject(script._id, script, function (err) {
+            expect(err).to.be.not.ok;
+        });
+    });
+    it('Test JS: test read file', function (done) {
+        // add script
+        var script = {
+            "common": {
+                "name":         "test ON any",
+                "engineType":   "Javascript/js",
+                "source":       "readFile('/javascript.admin/test.txt', function (err, data) {setState('testScheduleResponse2', data, true);});",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.test_read",
+            "native": {}
+        };
+
+        onStateChanged = function (id, state) {
+            if (id === 'javascript.0.testScheduleResponse2' && state.val === 'test') {
+                onStateChanged = null;
+                done();
+            }
+        };
+
+        objects.setObject(script._id, script, function (err) {
+            expect(err).to.be.not.ok;
+        });
+    });
+
     after('Test JS: Stop js-controller', function (done) {
         this.timeout(6000);
 

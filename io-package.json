@@ -1,11 +1,17 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "2.1.0",
+        "version":                  "2.1.1",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
-            "hobbyquaker <hq@ccu.io>, bluefox <bluefox@ccu.io>"
+            "bluefox <dogafox@gmail.com>",
+            "hobbyquaker <hq@ccu.io>"
         ],
+        "news": {
+            "en": "(bluefox) try to fix Duplicate name error\n(bluefox) add getFile/setFile commands\n(gh-god) fix stop of script and unsubscribe",
+            "de": "(bluefox) try to fix Duplicate name error\n(bluefox) add getFile/setFile commands\n(gh-god) fix stop of script and unsubscribe",
+            "ru": "(bluefox) try to fix Duplicate name error\n(bluefox) add getFile/setFile commands\n(gh-god) fix stop of script and unsubscribe"
+        },
         "desc":                     "Javascript/Coffeescript Script Engine",
         "platform":                 "Javascript/Node.js",
         "mode":                     "daemon",
@@ -26,7 +32,8 @@
     "native": {
         "latitude":  "",
         "longitude": "",
-        "enableSetObject": true
+        "enableSetObject": true,
+        "libraries": ""
     },
     "objects": [
         {

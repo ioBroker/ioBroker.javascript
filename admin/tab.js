@@ -420,7 +420,7 @@ function Scripts(main) {
         }
     }
 
-    this.updateScript = function (oldId, newId, newCommon) {
+    this.updateScript = function (oldId, newId, newCommon, cb) {
         this.main.socket.emit('getObject', oldId, function (err, _obj) {
             setTimeout(function () {
                 var obj = {common: {}};
@@ -435,6 +435,7 @@ function Scripts(main) {
                             that.main.showError(err);
                             that.init(true);
                         }
+                        cb && cb(err);
                     });
                 } else {
                     //var prefix;
@@ -474,6 +475,7 @@ function Scripts(main) {
                                 that.$grid.selectId('show', newId);
                             }, 500);
                         }
+                        cb && cb(err);
                     });
                 }
             }, 0);
@@ -613,10 +615,13 @@ function Scripts(main) {
         }
     }
 
-    function renameGroup(id, newId, newName, _list) {
+    function renameGroup(id, newId, newName, _list, cb) {
+        if (typeof _list === 'function') {
+            cb = _list;
+            _list = null;
+        }
         if (!_list) {
             _list = [];
-            that.currentId = newId;
 
             that.renaming = true;
             // collect all elements to rename
@@ -633,24 +638,28 @@ function Scripts(main) {
                     that.renaming = false;
                     that.main.showError(err);
                     that.init(true);
+                    cb && cb(err);
                 } else {
                     obj = obj || {common: {}};
                     obj.common.name = newName;
                     obj._id = newId;
+
                     that.main.socket.emit('delObject', id, function (err) {
                         if (err) {
                             that.renaming = false;
                             that.main.showError(err);
                             that.init(true);
+                            cb && cb(err);
                         } else {
                             that.main.socket.emit('setObject', newId, obj, function (err) {
                                 if (err) {
                                     that.renaming = false;
                                     that.main.showError(err);
                                     that.init(true);
+                                    cb && cb(err);
                                 } else {
                                     setTimeout(function () {
-                                        renameGroup(id, newId, newName, _list);
+                                        renameGroup(id, newId, newName, _list, cb);
                                     }, 0);
                                 }
                             });
@@ -667,12 +676,14 @@ function Scripts(main) {
                         that.renaming = false;
                         that.main.showError(err);
                         that.init(true);
+                        cb && cb(err);
                     } else {
                         that.main.socket.emit('delObject', nId, function (err) {
                             if (err) {
                                 that.renaming = false;
                                 that.main.showError(err);
                                 that.init(true);
+                                cb && cb(err);
                             } else {
                                 nId = newId + nId.substring(id.length);
                                 that.main.socket.emit('setObject', nId, obj, function (err) {
@@ -680,14 +691,14 @@ function Scripts(main) {
                                         that.renaming = false;
                                         that.main.showError(err);
                                         that.init(true);
+                                        cb && cb(err);
                                     } else {
                                         setTimeout(function () {
-                                            renameGroup(id, newId, newName, _list);
+                                            renameGroup(id, newId, newName, _list, cb);
                                         }, 0);
                                     }
                                 });
                             }
-
                         });
                     }
 
@@ -696,6 +707,7 @@ function Scripts(main) {
                 fillGroups('edit-script-group');
                 that.$grid.selectId('reinit');
                 applyResizableH(true, 1000);
+                cb && cb();
             }
         }
     }
@@ -969,10 +981,21 @@ function Scripts(main) {
 
 
         if (that.main.objects[this.currentId] && that.main.objects[this.currentId].type === 'script') {
-            this.updateScript(this.currentId, newId, obj);
+            this.updateScript(this.currentId, newId, obj, function (err) {
+                if (err) {
+                    $('#script-edit-button-save').button('enable');
+                    $('#script-edit-button-cancel').button('enable');
+                }
+            });
         } else {
-            renameGroup(this.currentId, newId, obj.name);
+            renameGroup(this.currentId, newId, obj.name, function (err) {
+                if (err) {
+                    $('#script-edit-button-save').button('enable');
+                    $('#script-edit-button-cancel').button('enable');
+                }
+            });
         }
+        that.currentId = newId;
     };
 
     this.objectChange = function (id, obj) {

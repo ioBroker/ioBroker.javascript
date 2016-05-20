@@ -1805,6 +1805,30 @@
                     callback = null;
                 });
             },
+            getFile: function (fileName, callback) {
+                var parts = fileName.replace(/\\/g, '/').split('/');
+                if (!parts[0]) parts.splice(0, 1);
+                if (!parts[0] || !parts[1]) {
+                    var err = 'Invalid file name "' + fileName + '". It must be like: /vis.0/main/image.png';
+                    adapter.log.error(err);
+                    if (callback) callback(err);
+                    return;
+                }
+                var a = parts.shift();
+                adapter.readFile(a, parts.join('/'), callback);
+            },
+            setFile: function (fileName, data, callback) {
+                var parts = fileName.replace(/\\/g, '/').split('/');
+                if (!parts[0]) parts.splice(0, 1);
+                if (!parts[0] || !parts[1]) {
+                    var err = 'Invalid file name "' + fileName + '". It must be like: /vis.0/main/image.png';
+                    adapter.log.error(err);
+                    if (callback) callback(err);
+                    return;
+                }
+                var a = parts.shift();
+                adapter.writeFile(a, parts.join('/'), callback);
+            },
             toInt:     function (val) {
                 if (val === true  || val === 'true')  val = 1;
                 if (val === false || val === 'false') val = 0;

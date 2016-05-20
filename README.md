@@ -661,12 +661,24 @@ $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').each(function (id,
     readFile (fileName, function (error, bytes) {})
     
 The result will be given in callback.
-File will be stored in the DB and can be accessed from any host under name javascript.X.fileName
+File will be stored on the disk
 
 ### writeFile
     writeFile (fileName, bytes, function (error) {})
 
 The optional error code will be given in callback.
+fileName is the name of file on local disk.
+
+### getFile
+    getFile (fileName, function (error, bytes) {})
+
+The result will be given in callback.
+File will be stored in DB and can be accessed from any host under name javascript.X.fileName
+
+### setFile
+    setFile (fileName, bytes, function (error) {})
+
+The optional error code will be given in callback. Read file from DB. Works on any host.
 
 ### getHistory
     getHistory (instance, options, function (error, result, options, instance) {});
@@ -730,6 +742,11 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.1.1 (2016-05-20)
+* (bluefox) try to fix "Duplicate name" error
+* (bluefox) add getFile/setFile commands
+* (gh-god) fix stop of script and unsubscribe
+
 ### 2.1.0 (2016-05-13)
 * (bluefox) add getHistory command
 
