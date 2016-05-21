@@ -1762,11 +1762,23 @@
                 return adapter.formatDate(date, format);
             },
 
-            writeFile: function (fileName, data, callback) {
-                adapter.writeFile(null, fileName, data, callback);
+            writeFile: function (_adapter, fileName, data, callback) {
+                if (typeof data === 'function' || !data) {
+                    callback = data;
+                    data     = fileName;
+                    fileName = _adapter;
+                    _adapter = null;
+                }
+
+                adapter.writeFile(_adapter, fileName, data, callback);
             },
-            readFile:  function (fileName, callback) {
-                adapter.readFile(null, fileName, callback);
+            readFile:  function (_adapter, fileName, callback) {
+                if (typeof fileName === 'function') {
+                    callback = fileName;
+                    fileName = _adapter;
+                    _adapter = null;
+                }
+                adapter.readFile(_adapter, fileName, callback);
             },
 			getHistory: function (instance, options, callback) {
                 if (typeof instance === 'object') {
@@ -1815,30 +1827,6 @@
                     if (callback) callback(result.error, result.result, options, instance);
                     callback = null;
                 });
-            },
-            getFile: function (fileName, callback) {
-                var parts = fileName.replace(/\\/g, '/').split('/');
-                if (!parts[0]) parts.splice(0, 1);
-                if (!parts[0] || !parts[1]) {
-                    var err = 'Invalid file name "' + fileName + '". It must be like: /vis.0/main/image.png';
-                    adapter.log.error(err);
-                    if (callback) callback(err);
-                    return;
-                }
-                var a = parts.shift();
-                adapter.readFile(a, parts.join('/'), callback);
-            },
-            setFile: function (fileName, data, callback) {
-                var parts = fileName.replace(/\\/g, '/').split('/');
-                if (!parts[0]) parts.splice(0, 1);
-                if (!parts[0] || !parts[1]) {
-                    var err = 'Invalid file name "' + fileName + '". It must be like: /vis.0/main/image.png';
-                    adapter.log.error(err);
-                    if (callback) callback(err);
-                    return;
-                }
-                var a = parts.shift();
-                adapter.writeFile(a, parts.join('/'), callback);
             },
             toInt:     function (val) {
                 if (val === true  || val === 'true')  val = 1;

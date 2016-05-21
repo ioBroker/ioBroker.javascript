@@ -661,24 +661,33 @@ $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').each(function (id,
     readFile (fileName, function (error, bytes) {})
     
 The result will be given in callback.
-File will be stored on the disk
+Read file from DB from folder "javascript".
 
 ### writeFile
     writeFile (fileName, bytes, function (error) {})
 
 The optional error code will be given in callback.
-fileName is the name of file on local disk.
+fileName is the name of file in DB. All files are stored in folder "javascript". if you want to write to other folders, e.g. to "/vis.0/" use setFile for that.
 
-### getFile
-    getFile (fileName, function (error, bytes) {})
+The file that looks like '/subfolder/file.txt' will be stored under "/javascript/subfolder/file.txt" and can be accessed over web server with ```http://ip:8082/javascript/subfolder/file.txt```
 
-The result will be given in callback.
-File will be stored in DB and can be accessed from any host under name javascript.X.fileName
+```
+// store screenshot in DB
+var fs = require('fs');
+var data = fs.readFileSync('/tmp/screenshot.png');
+writeFile('/screenshots/1.png', data, function (error) {
+    console.log('file written');
+});
+```
 
-### setFile
-    setFile (fileName, bytes, function (error) {})
-
-The optional error code will be given in callback. Read file from DB. Works on any host.
+```
+// store file in '/vis.0' in DB
+var fs = require('fs');
+var data = fs.readFileSync('/tmp/screenshot.png');
+writeFile('vis.0', '/screenshots/1.png', data, function (error) {
+    console.log('file written');
+});
+```
 
 ### getHistory
     getHistory (instance, options, function (error, result, options, instance) {});
@@ -744,7 +753,7 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 ## Changelog
 ### 2.1.1 (2016-05-20)
 * (bluefox) try to fix "Duplicate name" error
-* (bluefox) add getFile/setFile commands
+* (bluefox) modify readFile/wrieFile commands
 * (gh-god) fix stop of script and unsubscribe
 
 ### 2.1.0 (2016-05-13)

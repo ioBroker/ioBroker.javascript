@@ -112,7 +112,7 @@ describe('Test JS', function() {
         this.timeout(5000);
         checkConnectionOfAdapter(done);
     });
-
+/*
     it('Test JS: check creation of state', function (done) {
         this.timeout(2000);
         // add script
@@ -673,15 +673,16 @@ describe('Test JS', function() {
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
         });
-    });
+    });*/
 
-    it('Test JS: test write file', function (done) {
+    it('Test JS: test write file to "javascript"', function (done) {
+        this.timeout(5000);
         // add script
         var script = {
             "common": {
                 "name":         "test ON any",
                 "engineType":   "Javascript/js",
-                "source":       "createState('testScheduleResponse2', false, function () {writeFile('/javascript.admin/test.txt', 'test', function () {setState('testScheduleResponse2', true, true);});});",
+                "source":       "createState('testScheduleResponse2', false, function () {writeFile('/test.txt', 'test', function () {setState('testScheduleResponse2', true, true);});});",
                 "enabled":      true,
                 "engine":       "system.adapter.javascript.0"
             },
@@ -701,18 +702,76 @@ describe('Test JS', function() {
             expect(err).to.be.not.ok;
         });
     });
-    it('Test JS: test read file', function (done) {
+    
+    it('Test JS: test read file from "javascript"', function (done) {
+        this.timeout(5000);
         // add script
         var script = {
             "common": {
                 "name":         "test ON any",
                 "engineType":   "Javascript/js",
-                "source":       "readFile('/javascript.admin/test.txt', function (err, data) {setState('testScheduleResponse2', data, true);});",
+                "source":       "readFile('/test.txt', function (err, data) {setState('testScheduleResponse2', data, true);});",
                 "enabled":      true,
                 "engine":       "system.adapter.javascript.0"
             },
             "type":             "script",
             "_id":              "script.js.test_read",
+            "native": {}
+        };
+
+        onStateChanged = function (id, state) {
+            if (id === 'javascript.0.testScheduleResponse2' && state.val === 'test') {
+                onStateChanged = null;
+                done();
+            }
+        };
+
+        objects.setObject(script._id, script, function (err) {
+            expect(err).to.be.not.ok;
+        });
+    });
+
+    it('Test JS: test write file  to "vis.0"', function (done) {
+        this.timeout(5000);
+        // add script
+        var script = {
+            "common": {
+                "name":         "test ON any",
+                "engineType":   "Javascript/js",
+                "source":       "createState('testScheduleResponse2', false, function () {writeFile('vis.0', '/test1.txt', 'test', function () {setState('testScheduleResponse2', true, true);});});",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.test_write1",
+            "native": {}
+        };
+
+        onStateChanged = function (id, state) {
+            if (id === 'javascript.0.testScheduleResponse2' && state.val === true) {
+                onStateChanged = null;
+                done();
+            }
+        };
+
+        objects.setObject(script._id, script, function (err) {
+            expect(err).to.be.not.ok;
+        });
+    });
+    
+    it('Test JS: test read file from "vis.0"', function (done) {
+        this.timeout(5000);
+        // add script
+        var script = {
+            "common": {
+                "name":         "test ON any",
+                "engineType":   "Javascript/js",
+                "source":       "readFile('vis.0', '/test1.txt', function (err, data) {setState('testScheduleResponse2', data, true);});",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.test_read1",
             "native": {}
         };
 

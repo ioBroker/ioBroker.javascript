@@ -356,17 +356,18 @@ function copyAdapterToController() {
     console.log('Adapter copied.');
 }
 
-function clearControllerLog() {
-    var dirPath = rootDir + 'tmp/log';
+function deleteAllFilesInDir(dirPath, isCreate) {
     var files;
     try {
         if (fs.existsSync(dirPath)) {
-            console.log('Clear controller log...');
+            console.log('Clear folder "' + dirPath + '"...');
             files = fs.readdirSync(dirPath);
-        } else {
+        } else if (isCreate) {
             console.log('Create controller log directory...');
             files = [];
             fs.mkdirSync(dirPath);
+        } else {
+            files = [];
         }
     } catch(e) {
         console.error('Cannot read "' + dirPath + '"');
@@ -378,9 +379,31 @@ function clearControllerLog() {
                 var filePath = dirPath + '/' + files[i];
                 fs.unlinkSync(filePath);
             }
-            console.log('Controller log cleared');
+            console.log('Controller folder "' + dirPath + '" cleared');
         } catch (err) {
-            console.error('cannot clear log: ' + err);
+            console.error('Cannot clear folder "' + dirPath + '": ' + err);
+        }
+    }
+}
+
+function clearControllerLog() {
+    deleteAllFilesInDir(rootDir + 'tmp/log');
+
+    // clear store files
+    var dirPath = rootDir + 'tmp/' + appName + '-data/files';
+    var files;
+    try {
+        if (fs.existsSync(dirPath)) {
+            files = fs.readdirSync(dirPath);
+        }
+    } catch(e) {
+        console.error('Cannot read "' + dirPath + '"');
+        return;
+    }
+    if (files.length > 0) {
+        for (var i = 0; i < files.length; i++) {
+            if (files[i] === 'admin.admin' || files[i] === 'javascript.admin') continue;
+            deleteAllFilesInDir(dirPath + '/' + files[i]);
         }
     }
 }
