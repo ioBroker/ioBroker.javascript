@@ -751,10 +751,11 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
-### 2.1.1 (2016-05-20)
+### 2.1.1 (2016-05-21)
 * (bluefox) try to fix "Duplicate name" error
 * (bluefox) modify readFile/wrieFile commands
 * (gh-god) fix stop of script and unsubscribe
+* (paul53) check type of set value and min, max by setState
 
 ### 2.1.0 (2016-05-13)
 * (bluefox) add getHistory command

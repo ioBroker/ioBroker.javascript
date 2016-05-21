@@ -1442,6 +1442,24 @@
                     }
                 }
 
+                // Check type of state
+                var common = objects[id] ? objects[id].common : null;
+                if (common &&
+                    common.type &&
+                    common.type !== 'mixed' &&
+                    common.type !== 'file'  &&
+                    common.type !== 'json'  &&
+                    common.type !== typeof state.val
+                ) {
+                    adapter.log.warn('Wrong type of ' + id + '.state. Please fix, while deprecated and will not work in next versions.');
+                    //return;
+                }
+                // Check min and max of value
+                if (common && typeof state.val === 'number') {
+                    if (common.min !== undefined && state.val < common.min) state.val = common.min;
+                    if (common.max !== undefined && state.val > common.max) state.val = common.max;
+                }
+
                 if (states[id]) {
                     adapter.setForeignState(id, state, function () {
                         if (typeof callback === 'function') callback();
@@ -1652,6 +1670,62 @@
                 if (initValue === undefined) initValue = common.def;
 
                 native = native || {};
+
+                // Check min, max and def values for number
+                if (common.type !== undefined && common.type === 'number') {
+                    var min = 0;
+                    var max = 0;
+                    var def = 0;
+                    var err;
+                    if (common.min !== undefined) {
+                        min = common.min;
+                        if (typeof min !== 'number') {
+                            min = parseFloat(min);
+                            if (isNaN(min)) {
+                                err = 'Wrong type of ' + id + '.common.min';
+                                logger.error(err);
+                                if (callback) callback(err);
+                                return;
+                            } else {
+                                common.min = min;
+                            }
+                        }
+                    }
+                    if (common.max !== undefined) {
+                        max = common.max;
+                        if (typeof max !== 'number') {
+                            max = parseFloat(max);
+                            if (isNaN(max)) {
+                                err = 'Wrong type of ' + id + '.common.max';
+                                logger.error(err);
+                                if (callback) callback(err);
+                                return;
+                            } else {
+                                common.max = max;
+                            }
+                        }
+                    }
+                    if (common.def !== undefined) {
+                        def = common.def;
+                        if (typeof def !== 'number') {
+                            def = parseFloat(def);
+                            if (isNaN(def)) {
+                                err = 'Wrong type of ' + id + '.common.def';
+                                logger.error(err);
+                                if (callback) callback(err);
+                                return;
+                            } else {
+                                common.def = def;
+                            }
+                        }
+                    }
+                    if (common.min !== undefined && common.max !== undefined && min > max) {
+                        common.max = min;
+                        common.min = max;
+                    }
+                    if (common.def !== undefined && common.min !== undefined && def < min) common.def = min;
+                    if (common.def !== undefined && common.max !== undefined && def > max) common.def = max;
+                }
 
                 if (forceCreation) {
                     adapter.setObject(name, {

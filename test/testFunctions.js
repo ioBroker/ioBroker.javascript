@@ -112,7 +112,7 @@ describe('Test JS', function() {
         this.timeout(5000);
         checkConnectionOfAdapter(done);
     });
-/*
+
     it('Test JS: check creation of state', function (done) {
         this.timeout(2000);
         // add script
@@ -673,7 +673,7 @@ describe('Test JS', function() {
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
         });
-    });*/
+    });
 
     it('Test JS: test write file to "javascript"', function (done) {
         this.timeout(5000);
