@@ -1,16 +1,21 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "2.1.1",
+        "version":                  "2.1.2",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
-            "en": "(bluefox) try to fix Duplicate name error\n(bluefox) modify writeFile/readFile commands\n(gh-god) fix stop of script and unsubscribe\n(paul53) check type of set value and min, max by setState",
-            "de": "(bluefox) try to fix Duplicate name error\n(bluefox) modify writeFile/readFile commands\n(gh-god) fix stop of script and unsubscribe\n(paul53) check type of set value and min, max by setState",
-            "ru": "(bluefox) try to fix Duplicate name error\n(bluefox) modify writeFile/readFile commands\n(gh-god) fix stop of script and unsubscribe\n(paul53) check type of set value and min, max by setState"
+			"en": "fix warning with wrong types",
+			"de": "fix warning with wrong types",
+			"ru": "fix warning with wrong types",
+			"2.1.1": {
+			    "en": "try to fix Duplicate name error\n(bluefox) modify writeFile/readFile commands\n(gh-god) fix stop of script and unsubscribe\n(paul53) check type of set value and min, max by setState",
+				"de": "try to fix Duplicate name error\n(bluefox) modify writeFile/readFile commands\n(gh-god) fix stop of script and unsubscribe\n(paul53) check type of set value and min, max by setState",
+				"ru": "try to fix Duplicate name error\n(bluefox) modify writeFile/readFile commands\n(gh-god) fix stop of script and unsubscribe\n(paul53) check type of set value and min, max by setState"
+			}
         },
         "desc":                     "Javascript/Coffeescript Script Engine",
         "platform":                 "Javascript/Node.js",

@@ -751,6 +751,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.1.2 (2016-05-23)
+* (bluefox) fix warning with wrong types
+
 ### 2.1.1 (2016-05-21)
 * (bluefox) try to fix "Duplicate name" error
 * (bluefox) modify readFile/wrieFile commands

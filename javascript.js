@@ -1429,13 +1429,13 @@
                 return false;
             },
             setState:       function (id, state, isAck, callback) {
-                if (typeof isAck == 'function') {
+                if (typeof isAck === 'function') {
                     callback = isAck;
                     isAck = undefined;
                 }
 
                 if (isAck === true || isAck === false || isAck === 'true' || isAck === 'false') {
-                    if (typeof state == 'object') {
+                    if (typeof state === 'object') {
                         state.ack = isAck;
                     } else {
                         state = {val: state, ack: isAck};
@@ -1443,17 +1443,25 @@
                 }
 
                 // Check type of state
+				if (!objects[id] && objects[adapter.namespace + '.' + id]) id = adapter.namespace + '.' + id;
                 var common = objects[id] ? objects[id].common : null;
                 if (common &&
                     common.type &&
                     common.type !== 'mixed' &&
                     common.type !== 'file'  &&
-                    common.type !== 'json'  &&
-                    common.type !== typeof state.val
-                ) {
-                    adapter.log.warn('Wrong type of ' + id + '.state. Please fix, while deprecated and will not work in next versions.');
-                    //return;
-                }
+                    common.type !== 'json') {
+					if (typeof state === 'object' && state.val !== undefined) {
+						if (common.type !== typeof state.val) {
+                    		adapter.log.warn('Wrong type of ' + id + ': ' + typeof state.val + ' Please fix, while deprecated and will not work in next versions.');
+							//return;
+						}
+					} else {
+						if (common.type !== typeof state) {
+                    		adapter.log.warn('Wrong type of ' + id + ': ' + typeof state + ' Please fix, while deprecated and will not work in next versions.');
+							//return;
+						}
+					}
+				}
                 // Check min and max of value
                 if (common && typeof state.val === 'number') {
                     if (common.min !== undefined && state.val < common.min) state.val = common.min;
