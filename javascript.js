@@ -1450,22 +1450,27 @@
                     common.type !== 'mixed' &&
                     common.type !== 'file'  &&
                     common.type !== 'json') {
-					if (typeof state === 'object' && state.val !== undefined) {
+					if (state && typeof state === 'object' && state.val !== undefined) {
 						if (common.type !== typeof state.val) {
-                    		adapter.log.warn('Wrong type of ' + id + ': ' + typeof state.val + ' Please fix, while deprecated and will not work in next versions.');
+                    		adapter.log.warn('Wrong type of ' + id + ': "' + typeof state.val + '". Please fix, while deprecated and will not work in next versions.');
 							//return;
 						}
 					} else {
 						if (common.type !== typeof state) {
-                    		adapter.log.warn('Wrong type of ' + id + ': ' + typeof state + ' Please fix, while deprecated and will not work in next versions.');
+                    		adapter.log.warn('Wrong type of ' + id + ': "' + typeof state + '". Please fix, while deprecated and will not work in next versions.');
 							//return;
 						}
 					}
 				}
                 // Check min and max of value
-                if (common && typeof state.val === 'number') {
-                    if (common.min !== undefined && state.val < common.min) state.val = common.min;
-                    if (common.max !== undefined && state.val > common.max) state.val = common.max;
+				if (typeof state === 'object' && state) {
+					if (common && typeof state.val === 'number') {
+	                    if (common.min !== undefined && state.val < common.min) state.val = common.min;
+	                    if (common.max !== undefined && state.val > common.max) state.val = common.max;
+	                }
+				} else if (common && typeof state === 'number') {
+                    if (common.min !== undefined && state < common.min) state = common.min;
+                    if (common.max !== undefined && state > common.max) state = common.max;
                 }
 
                 if (states[id]) {

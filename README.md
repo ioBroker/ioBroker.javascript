@@ -751,6 +751,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.1.3 (2016-05-24)
+* (bluefox) fix warning with wrong types one more time
+
 ### 2.1.2 (2016-05-23)
 * (bluefox) fix warning with wrong types
 
