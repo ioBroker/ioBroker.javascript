@@ -552,21 +552,12 @@ Same as javascript ***setTimeout***.
 Same as javascript ***clearTimeout***.
 
 ### formatDate
-    formatDate (secondsOrDate, format, isSeconds)
-    
-### formatValue 
-	formatValue (value, decimals, format)
-Formats any value (strings too) to number. Replaces point with comma if configured in system. 
-Decimals specify digits after comma. Default value is 2.
-Format is optional: 
- - '.,': 1234.567 => 1.234,56
- - ',.': 1234.567 => 1,234.56
- - ' .': 1234.567 => 1 234.56
-	
+    formatDate (millisecondsOrDate, format)
+
 ####Parameters:
 
-- **date**: number of seconds from state.ts or state.lc (Number seconds from 1970.01.01 00:00:00) or javascript *new Date()* object or number of milliseconds from *(new Date().getTime())*
-- **format**: Can be "null", so the system time format will be used, elsewise 
+- **date**: number of milliseconds from state.ts or state.lc (Number milliseconds from 1970.01.01 00:00:00) or javascript *new Date()* object or number of milliseconds from *(new Date().getTime())*
+- **format**: Can be "null", so the system time format will be used, elsewise
 
        * YYYY, JJJJ, ГГГГ - full year, e.g 2015
        * YY, JJ, ГГ - short year, e.g 15
@@ -580,16 +571,25 @@ Format is optional:
        * m, м(cyrillic) - short minutes, e.g. 4
        * ss, сс(cyrillic) - full seconds, e.g. 05
        * s, с(cyrillic) - short seconds, e.g. 5
-  
-- **isSeconds**: If *date* seconds from state.ts ot state.lc or milliseconds from *(new Date().getTime())*
+       * sss, ссс(cyrillic) - milliseconds
 
 #### Example
   formatDate(new Date(), "YYYY-MM-DD") => Date "2015-02-24"
   formatDate(new Date(), "hh:mm") => Hours and minutes "17:41"
   formatDate(state.ts) => "24.02.2015"
-  formatDate(state.ts, "JJJJ.MM.TT SS:mm:ss) => "2015.02.15 17:41:98"
-  
+  formatDate(state.ts, "JJJJ.MM.TT SS:mm:ss.sss) => "2015.02.15 17:41:98.123"
+
+
+### formatValue 
+	formatValue (value, decimals, format)
+Formats any value (strings too) to number. Replaces point with comma if configured in system. 
+Decimals specify digits after comma. Default value is 2.
+Format is optional: 
+ - '.,': 1234.567 => 1.234,56
+ - ',.': 1234.567 => 1,234.56
+ - ' .': 1234.567 => 1 234.56
 	
+
 ### adapterSubscribe
     adapterSubscribe(id)
 Sends to adapter message "subscribe" to inform adapter. If adapter has common flag "subscribable" in case of function "subscribe" this function will be called automatically.
