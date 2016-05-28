@@ -88,7 +88,7 @@
                     }
                 }
                 // added new script to this engine
-            } else {
+            } else if (objects[id].common) {
                 var n = getName(id);
 
                 if (n != objects[id].common.name) {

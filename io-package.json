@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "2.1.3",
+        "version":                  "2.1.4",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "2.1.4": {
+                "en": "catch an error if some system object changed, e.g. _design/history",
+                "de": "catch an error if some system object changed, e.g. _design/history",
+                "ru": "catch an error if some system object changed, e.g. _design/history"
+            },
             "2.1.3": {
                 "en": "fix warning with wrong types one more time",
                 "de": "fix warning with wrong types one more time",
