@@ -1,14 +1,14 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "2.1.6",
+        "version":                  "2.1.7",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
-            "2.1.6": {
+            "2.1.7": {
                 "en": "keep configured libraries by upgrade",
                 "de": "keep configured libraries by upgrade",
                 "ru": "keep configured libraries by upgrade"

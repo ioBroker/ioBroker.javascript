@@ -584,24 +584,26 @@
     function installLibraries(callback) {
         var allInstalled = true;
         if (adapter.config && adapter.config.libraries) {
-            for (var lib = 0; lib < adapter.config.libraries.length; lib++) {
-                if (adapter.config.libraries[lib] && adapter.config.libraries[lib].trim()) {
-                    adapter.config.libraries[lib] = adapter.config.libraries[lib].trim();
+            var libraries = adapter.config.libraries.split(/[,;\s]+/);
+
+            for (var lib = 0; lib < libraries.length; lib++) {
+                if (libraries[lib] && libraries[lib].trim()) {
+                    libraries[lib] = libraries[lib].trim();
                     fs = fs || require('fs');
 
-                    if (!fs.existsSync(__dirname + '/node_modules/' + adapter.config.libraries[lib] + '/package.json')) {
+                    if (!fs.existsSync(__dirname + '/node_modules/' + libraries[lib] + '/package.json')) {
 
-                        if (!attempts[adapter.config.libraries[lib]]) {
-                            attempts[adapter.config.libraries[lib]] = 1;
+                        if (!attempts[libraries[lib]]) {
+                            attempts[libraries[lib]] = 1;
                         } else {
-                            attempts[adapter.config.libraries[lib]]++;
+                            attempts[libraries[lib]]++;
                         }
-                        if (attempts[adapter.config.libraries[lib]] > 3) {
-                            adapter.log.error('Cannot install npm packet: ' + adapter.config.libraries[lib]);
+                        if (attempts[libraries[lib]] > 3) {
+                            adapter.log.error('Cannot install npm packet: ' + libraries[lib]);
                             continue;
                         }
 
-                        installNpm(adapter.config.libraries[lib], function () {
+                        installNpm(libraries[lib], function () {
                             installLibraries(callback);
                         });
                         allInstalled = false;
