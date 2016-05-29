@@ -751,6 +751,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.1.6 (2016-05-29)
+* (bluefox) keep configured libraries by upgrade (once more)
+
 ### 2.1.5 (2016-05-29)
 * (bluefox) keep configured libraries by upgrade
 
