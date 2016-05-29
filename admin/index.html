@@ -93,15 +93,6 @@
             setValue(id, settings[id] || '', onChange);
         });
 
-        if (common.npmLibs){
-            $('#libraries').val(common.npmLibs.join(', '));
-        }
-        $('#libraries').change(function () {
-            onChange();
-        }).keyup(function () {
-            $(this).trigger('change');
-        });
-
         onChange(false);
     }
 
@@ -145,6 +136,7 @@
     // you have to make sure the callback is called with the settings object as first param!
     function save(callback) {
         var obj = {};
+
         $('.value').each(function () {
             var $this = $(this);
             if ($this.attr('type') == 'checkbox') {
@@ -153,6 +145,7 @@
                 obj[$this.attr('id')] = $this.val();
             }
         });
+
         if (obj.latitude.indexOf('°') != -1) {
             if (!convertGrad(obj, 'latitude')) {
                 return;
@@ -166,13 +159,7 @@
             $('#longitude').val(obj.longitude);
         }
 
-        var libs = $('#libraries').val().split(',');
-        var common = {npmLibs: []};
-        for (var l = 0; l < libs.length; l++) {
-            common.npmLibs.push(libs[l].trim());
-        }
-
-        callback(obj, common);
+        callback(obj);
     }
 </script>
 </head>

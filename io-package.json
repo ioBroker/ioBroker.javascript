@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "2.1.4",
+        "version":                  "2.1.5",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "2.1.5": {
+                "en": "keep configured libraries by upgrade",
+                "de": "keep configured libraries by upgrade",
+                "ru": "keep configured libraries by upgrade"
+            },
             "2.1.4": {
                 "en": "catch an error if some system object changed, e.g. _design/history",
                 "de": "catch an error if some system object changed, e.g. _design/history",
@@ -39,7 +44,6 @@
         "readme":                   "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
         "license":                  "MIT",
         "engineTypes":              ["Javascript/js", "Coffeescript/coffee"],
-        "npmLibs": [],
         "adminTab": {
             "singleton":            true,
             "name":                 "Scripts"
@@ -49,7 +53,7 @@
     "native": {
         "latitude":         "",
         "longitude":        "",
-        "enableSetObject":  true,
+        "enableSetObject":  false,
         "libraries":        ""
     },
     "objects": [

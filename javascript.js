@@ -583,25 +583,25 @@
 
     function installLibraries(callback) {
         var allInstalled = true;
-        if (adapter.common && adapter.common.npmLibs) {
-            for (var lib = 0; lib < adapter.common.npmLibs.length; lib++) {
-                if (adapter.common.npmLibs[lib] && adapter.common.npmLibs[lib].trim()) {
-                    adapter.common.npmLibs[lib] = adapter.common.npmLibs[lib].trim();
+        if (adapter.native && adapter.native.libraries) {
+            for (var lib = 0; lib < adapter.common.libraries.length; lib++) {
+                if (adapter.native.libraries[lib] && adapter.common.libraries[lib].trim()) {
+                    adapter.common.libraries[lib] = adapter.common.libraries[lib].trim();
                     fs = fs || require('fs');
 
-                    if (!fs.existsSync(__dirname + '/node_modules/' + adapter.common.npmLibs[lib] + '/package.json')) {
+                    if (!fs.existsSync(__dirname + '/node_modules/' + adapter.native.libraries[lib] + '/package.json')) {
 
-                        if (!attempts[adapter.common.npmLibs[lib]]) {
-                            attempts[adapter.common.npmLibs[lib]] = 1;
+                        if (!attempts[adapter.native.libraries[lib]]) {
+                            attempts[adapter.native.libraries[lib]] = 1;
                         } else {
-                            attempts[adapter.common.npmLibs[lib]]++;
+                            attempts[adapter.native.libraries[lib]]++;
                         }
-                        if (attempts[adapter.common.npmLibs[lib]] > 3) {
-                            adapter.log.error('Cannot install npm packet: ' + adapter.common.npmLibs[lib]);
+                        if (attempts[adapter.native.libraries[lib]] > 3) {
+                            adapter.log.error('Cannot install npm packet: ' + adapter.native.libraries[lib]);
                             continue;
                         }
 
-                        installNpm(adapter.common.npmLibs[lib], function () {
+                        installNpm(adapter.native.libraries[lib], function () {
                             installLibraries(callback);
                         });
                         allInstalled = false;

@@ -751,6 +751,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.1.5 (2016-05-29)
+* (bluefox) keep configured libraries by upgrade
+
 ### 2.1.4 (2016-05-28)
 * (bluefox) catch an error if some system object changed, e.g. _design/history
 
