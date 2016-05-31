@@ -751,6 +751,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.1.8 (2016-05-31)
+* (bluefox) do not show error if regexp ID
+
 ### 2.1.7 (2016-05-29)
 * (bluefox) keep configured libraries by upgrade (once more)
 

@@ -1953,13 +1953,18 @@
     }
 
     function unsubscribe(id) {
-        if (id instanceof RegExp) {
+        if (!id) {
+            adapter.log.warn('unsubscribe: empty name');
+            return;
+        }
+
+        if (typeof id === 'object' && id.constructor && id.constructor.name === 'RegExp') {
             //adapter.log.warn('unsubscribe: todo - process regexp');
             return;
         }
 
         if (typeof id !== 'string') {
-            adapter.log.error('unsubscribe: invalid type of id' + typeof id);
+            adapter.log.error('unsubscribe: invalid type of id - ' + typeof id);
             return;
         }
         var parts = id.split('.');
