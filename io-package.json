@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "2.1.8",
+        "version":                  "2.1.9",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "2.1.9": {
+                "en": "add for script onStop handler",
+                "de": "add for script onStop handler",
+                "ru": "add for script onStop handler"
+            },
             "2.1.8": {
                 "en": "do not show error if regexp ID",
                 "de": "do not show error if regexp ID",

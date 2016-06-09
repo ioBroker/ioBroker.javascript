@@ -688,6 +688,24 @@ writeFile('vis.0', '/screenshots/1.png', data, function (error) {
     console.log('file written');
 });
 ```
+### onStop
+    onStop (function(){}, timeout);
+Install callback, that will be called if script stopped. Used e.g. to stop communication or to close connections.
+
+```
+// establish connection
+var conn = require('net')....;
+
+// close connection if script stopped
+onStop(function (callback) {
+    if (conn) {
+        // close connection
+        conn.destory();
+    }
+    callback();
+], 2000 /*ms*/);
+```
+*timeout* is default 1000ms.
 
 ### getHistory
     getHistory (instance, options, function (error, result, options, instance) {});
@@ -751,6 +769,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.1.9 (2016-06-09)
+* (bluefox) add for script onStop handler
+
 ### 2.1.8 (2016-05-31)
 * (bluefox) do not show error if regexp ID
 

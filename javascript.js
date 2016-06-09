@@ -1811,14 +1811,17 @@
             },
             cb:        function (callback) {
                 return function () {
-                    if (scripts[name] && scripts[name]._id == sandbox._id) {
+                    if (scripts[name] && scripts[name]._id === sandbox._id) {
                         if (callback) callback.apply(this, arguments);
                     } else {
                         adapter.log.warn('Callback for old version of script: ' + name);
                     }
                 };
             },
-            
+            onStop:      function (cb, timeout) {
+                script.onStopCb = cb;
+                script.onStopTimeout = timeout || 1000;
+            },
             formatValue: function (value, decimals, format) {
                 if (!format && objects['system.config']) {
                     format = objects['system.config'].common.isFloatComma ?  '.,' : ',.';
@@ -1958,7 +1961,7 @@
             return;
         }
 
-        if (typeof id === 'object' && id.constructor && id.constructor.name === 'RegExp') {
+        if (typeof id === 'object' && id && id.constructor && id.constructor.name === 'RegExp') {
             //adapter.log.warn('unsubscribe: todo - process regexp');
             return;
         }
@@ -2017,8 +2020,31 @@
                     }
                 }
             }
-            delete scripts[name];
-            if (callback) callback(true, name);
+            
+            // if callback for on stop
+            if (typeof scripts[name].onStopCb === 'function') {
+                scripts[name].onStopTimeout = parseInt(scripts[name].onStopTimeout, 10) || 1000;
+                
+                var timeout = setTimeout(function () {
+                    if (timeout) {
+                        timeout = null;
+                        delete scripts[name];
+                        if (callback) callback(true, name);
+                    }
+                }, scripts[name].onStopTimeout);
+                
+                scripts[name].onStopCb(function () {
+                    if (timeout) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                        delete scripts[name];
+                        if (callback) callback(true, name);                    
+                    }
+                });
+            } else {
+                delete scripts[name];
+                if (callback) callback(true, name);   
+            }
         } else {
             if (callback) callback(false, name);
         }
