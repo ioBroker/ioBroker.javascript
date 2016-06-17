@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "2.1.9",
+        "version":                  "2.2.0",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "2.2.0": {
+                "en": "adapter is compatible with redis",
+                "de": "adapter is compatible with redis",
+                "ru": "adapter is compatible with redis"
+            },
             "2.1.9": {
                 "en": "add for script onStop handler",
                 "de": "add for script onStop handler",

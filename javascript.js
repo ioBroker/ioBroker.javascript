@@ -1752,6 +1752,13 @@
                                 }
                             });
                         } else {
+                            if (!states[name] && !states[adapter.namespace + '.' + name]) {
+                                if (name.substring(0, adapter.namespace.length) !== adapter.namespace) {
+                                    states[adapter.namespace + '.' + name] = {val: null};
+                                } else {
+                                    states[name] = {val: null};
+                                }
+                            }
                             // state yet exists
                             if (callback) callback(name);
                         }
