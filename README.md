@@ -703,7 +703,7 @@ onStop(function (callback) {
         conn.destory();
     }
     callback();
-], 2000 /*ms*/);
+}, 2000 /*ms*/);
 ```
 *timeout* is default 1000ms.
 
