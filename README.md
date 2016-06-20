@@ -155,7 +155,7 @@ You can use following parameters to specify the trigger:
 |             |            |                                                                                                        |
 | change      | string     |       "eq", "ne", "gt", "ge", "lt", "le", "any"                                                        |
 |             |   "eq"     |       (equal)            New value must be euqal to old one (state.val == oldState.val)             |
-|             |   "ne"     |       (not equal)        New value must be not equal to the old one (state.val != oldState.val) **If "change" is not specified this value is used by default**    |
+|             |   "ne"     |       (not equal)        New value must be not equal to the old one (state.val != oldState.val) **If pattern is not a object this value is used by default**    |
 |             |   "gt"     |       (greater)          New value must be greater than old value (state.val > oldState.val)        |
 |             |   "ge"     |       (greater or equal) New value must be greater or euqal to old one (state.val >= oldState.val)  |
 |             |   "lt"     |       (smaller)          New value must be smaller than old one (state.val < oldState.val)          |
