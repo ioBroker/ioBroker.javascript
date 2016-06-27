@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "2.2.0",
+        "version":                  "2.2.1",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "2.2.1": {
+                "en": "fix delete state",
+                "de": "fix delete state",
+                "ru": "fix delete state"
+            },
             "2.2.0": {
                 "en": "adapter is compatible with redis",
                 "de": "adapter is compatible with redis",

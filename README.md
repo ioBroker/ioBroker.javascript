@@ -769,6 +769,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.2.1 (2016-06-27)
+* (bluefox) fix delete state
+
 ### 2.2.0 (2016-06-16)
 * (bluefox) adapter is compatible with redis
 

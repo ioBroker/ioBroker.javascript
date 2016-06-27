@@ -150,7 +150,7 @@
         stateChange: function (id, state) {
 
             if (id.match(/^messagebox\./) || id.match(/^log\./)) return;
-
+            
             var oldState = states[id] || {};
             if (state) {
 
@@ -173,7 +173,7 @@
                 
                 states[id] = state;
             } else {
-                delete states[id];
+                if (states[id]) delete states[id];
                 state = {};
             }
 
@@ -850,7 +850,7 @@
                 }
 
                 name = name.trim();
-                if (name == 'channel' || name == 'device') {
+                if (name === 'channel' || name === 'device') {
                     // Fill channels
                     if (!channels || !devices) {
                         channels = {};
@@ -878,7 +878,7 @@
                 var id;
                 var s;
                 var pass;
-                if (name == 'channel') {
+                if (name === 'channel') {
                     for (id in channels) {
                         if (!objects[id]) {
                             continue;
@@ -947,7 +947,7 @@
                             res.push(channels[id][s]);
                         }
                     }
-                } else if (name == 'device') {
+                } else if (name === 'device') {
                     for (id in devices) {
                         if (!objects[id]) {
                             console.log(id);
@@ -1726,6 +1726,7 @@
                 }
 
                 if (forceCreation) {
+                    // todo: store object in objects to have this object directly after callback
                     adapter.setObject(name, {
                         common: common,
                         native: native,
@@ -1740,6 +1741,8 @@
                 } else {
                     adapter.getObject(name, function (err, obj) {
                         if (err || !obj) {
+                            // todo: store object in objects to have this object directly after callback
+                            // create new one
                             adapter.setObject(name, {
                                 common: common,
                                 native: native,
@@ -1766,11 +1769,16 @@
                 }
             },
             deleteState:      function (id, callback) {
+                // todo: check rights
+                if (objects[id]) delete objects[id];
+                if (states[id])  delete states[id];
+                if (objects[adapter.namespace + '.' + id]) delete objects[adapter.namespace + '.' + id];
+                if (states[adapter.namespace + '.' + id])  delete states[adapter.namespace + '.' + id];
+
                 adapter.delObject(id, function (err) {
                     if (err) {
                         adapter.log.warn('Object for state "' + id + '" does not exist: ' + err);
                     }
-
                     adapter.delState(id, function (err) {
                         if (err) adapter.log.error('Cannot delete state "' + id + '": ' + err);
                         if (typeof callback === 'function') callback(err);
