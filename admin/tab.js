@@ -2,6 +2,7 @@ function Scripts(main) {
     var that            = this;
     this.list           = [];
     this.groups         = [];
+    this.hosts          = [];
     this.$grid          = $('#grid-scripts');
     this.$dialog        = $('#dialog-script');
     this.$dialogCron    = $('#dialog-cron');
@@ -244,6 +245,38 @@ function Scripts(main) {
         });
 
         fillGroups('edit-script-group');
+
+        $('.import-drop-file').change(function (e) {
+            fileHandler(e);
+        });
+        $('.import-text-drop').click(function (e) {
+            $('.import-drop-file').trigger('click');
+        });
+        $('#start_import_scripts').button().click(function () {
+            $('#dialog_import_scripts').dialog('close');
+            main.confirmMessage(_('Existing scripts will be overwritten. Are you sure?'), null, null, 700, function (result) {
+                if (result) {
+                    var host = getLiveHost();
+
+                    if (!host) {
+                        window.alert('No active host found');
+                        return;
+                    }
+                    main.socket.emit('sendToHost', host, 'writeObjectsAsZip', {
+                        data:    $('.import-file-name').data('file'),
+                        adapter: 'javascript',
+                        id:      'script.js'
+                    }, function (data) {
+                        if (!data || data.error) {
+                            main.showError(data ? data.error : 'Unknown error');
+                        } else {
+                            main.showMessage(_('Ok'));
+                            that.init(true);
+                        }
+                    });
+                }
+            });
+        });
     };
 
     this.resize = function (width, height) {
@@ -712,6 +745,140 @@ function Scripts(main) {
         }
     }
 
+    function getLiveHost () {
+        var _hosts = [];
+        for (var h = 0; h < that.hosts.length; h++) {
+            if (main.states[that.hosts[h] + '.alive'] && main.states[that.hosts[h] + '.alive'].val) {
+                return that.hosts[h];
+            }
+
+        }
+        return '';
+    }
+
+    function exportScripts() {
+        var host = getLiveHost();
+        if (!host) {
+            window.alert('No active host found');
+            return;
+        }
+        main.socket.emit('sendToHost', host, 'readObjectsAsZip', {
+            adapter: 'javascript',
+            id:      'script.js'
+        }, function (data) {
+            if (data.error) console.error(data.error);
+            if (data.data) {
+                var d = new Date();
+                var date = d.getFullYear();
+                var m = d.getMonth() + 1;
+                if (m < 10) m = '0' + m;
+                date += '-' + m;
+                m = d.getDate();
+                if (m < 10) m = '0' + m;
+                date += '-' + m + '-';
+
+                $('body').append('<a id="zip_download" href="data: application/zip;base64,' + data.data + '" download="' + date + 'scripts.zip"></a>');
+                document.getElementById('zip_download').click();
+                document.getElementById('zip_download').remove();
+            }
+        });
+    }
+
+    function editGetReadableSize (bytes) {
+        var text;
+        if (bytes < 1024) {
+            text = bytes + ' ' + _('bytes');
+        } else if (bytes < 1024 * 1024) {
+            text = Math.round(bytes * 10 / 1024) / 10 + ' ' + _('Kb');
+        } else {
+            text = Math.round(bytes * 10 / (1024 * 1024)) / 10 + ' ' + _('Mb');
+        }
+        if (main.systemConfig.common.isFloatComma) text = text.replace('.', ',');
+        return text;
+    }
+
+    function fileHandler (event) {
+        event.preventDefault();
+        var file = event.dataTransfer ? event.dataTransfer.files[0] : event.target.files[0];
+
+        var $dz = $('.import-drop-zone').show();
+        if (!file || !file.name || !file.name.match(/\.zip$/)) {
+            $('.import-drop-text').html(_('Invalid file extenstion!'));
+            $dz.addClass('import-dropzone-error').animate({opacity: 0}, 1000, function () {
+                $dz.hide().removeClass('import-dropzone-error').css({opacity: 1});
+                $('.import-drop-text').html(_('Drop the files here'));
+            });
+            return false;
+        }
+
+        if (file.size > 50000000) {
+            $('.import-drop-text').html(_('File is too big!'));
+            $dz.addClass('import-dropzone-error').animate({opacity: 0}, 1000, function () {
+                $dz.hide().removeClass('import-dropzone-error').css({opacity: 1});
+                $('.import-drop-text').html(_('Drop the files here'));
+            });
+            return false;
+        }
+        $dz.hide();
+        var that = this;
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+            $('.import-file-name').html('<img src="zip.png" /><br><span style="color: black; font-weight: bold">[' + editGetReadableSize(file.size) + ']</span><br><span style="color: black; font-weight: bold">' + file.name + '</span>');
+            // string has form data:;base64,TEXT==
+            $('.import-file-name').data('file', evt.target.result.split(',')[1]);
+            $('.import-text-drop-plus').hide();
+            if ($('.import-file-name').data('file')) {
+                $('#start_import_scripts').button('enable');
+            } else {
+                $('#start_import_scripts').button('disable');
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function importScripts() {
+        $('#dialog_import_scripts').dialog({
+            autoOpen:   true,
+            resizable: false,
+            width:      600,
+            height:     280,
+            modal:      true,
+            open: function (event, ui) {
+                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                $('[aria-describedby="dialog_import_scripts"]').css('z-index', 1002);
+                $('.ui-widget-overlay').css('z-index', 1001);
+                $('.import-file-name').data('file', null).html(_('Drop files here or click to select one'));
+                $('#start_import_scripts').button('disable');
+                $('.import-drop-file').val('');
+                $('.import-text-drop-plus').show();
+
+                var $dropZone = $('#dialog_import_scripts');
+                if (typeof(window.FileReader) !== 'undefined' && !$dropZone.data('installed')) {
+                    $dropZone.data('installed', true);
+                    var $dz = $('.import-drop-zone');
+                    $('.import-drop-text').html(_('Drop the files here'));
+                    $dropZone[0].ondragover = function() {
+                        $dz.unbind('click');
+                        $dz.show();
+                        return false;
+                    };
+                    $dz.click(function () {
+                        $dz.hide();
+                    });
+
+                    $dz[0].ondragleave = function() {
+                        $dz.hide();
+                        return false;
+                    };
+
+                    $dz[0].ondrop = function (e) {
+                        fileHandler(e);
+                    }
+                }
+            }
+        });
+    }
+
     this.init = function (update) {
         var that = this;
         if (!this.main.objectsLoaded) {
@@ -897,10 +1064,31 @@ function Scripts(main) {
                         text: false,
                         title: _('New group'),
                         icons: {
-                            primary: 'ui-icon ui-icon-circle-plus'
+                            primary: 'ui-icon-circle-plus'
                         },
                         click: function () {
                             addScriptInGroup(that.currentId);
+                        }
+                    }
+                    ,
+                    {
+                        text: false,
+                        title: _('Export'),
+                        icons: {
+                            primary: 'ui-icon-arrowthickstop-1-n'
+                        },
+                        click: function () {
+                            exportScripts();
+                        }
+                    },
+                    {
+                        text: false,
+                        title: _('Import'),
+                        icons: {
+                            primary: 'ui-icon-arrowthickstop-1-s'
+                        },
+                        click: function () {
+                            importScripts();
                         }
                     }
                 ],
@@ -1243,6 +1431,7 @@ function getObjects(callback) {
                 if (obj.type === 'instance') main.instances.push(id);
                 if (obj.type === 'script')   scripts.list.push(id);
                 if (obj.type === 'channel' && id.match(/^script\.js\./)) scripts.groups.push(id);
+                if (obj.type === 'host') scripts.hosts.push(id);
             }
             main.objectsLoaded = true;
 

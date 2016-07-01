@@ -769,6 +769,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.3.0 (2016-07-01)
+* (bluefox) export/import of scripts
+
 ### 2.2.1 (2016-06-27)
 * (bluefox) fix delete state
 

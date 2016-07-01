@@ -98,7 +98,46 @@
         .debug {
             color: darkgray;
         }
+        .import-drop-zone {
+            width: calc(100% - 6px);
+            height: calc(100% - 6px);
+            position: absolute;
+            opacity: 0.95;
+            top: 0;
+            left: 0;
+            background: #eee;
+            -webkit-border-radius: 15px;
+            -moz-border-radius: 15px;
+            z-index: 1;
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            border: 3px dashed black;
+            border-radius: 15px;
+        }
 
+        .import-dropzone-error {
+            background: #faa !important;
+            color: #f00;
+        }
+        .import-text-drop {
+            width: calc(100% - 6px);
+            height: 150px;
+            padding-top: 20px;
+            text-align: center;
+            cursor: pointer;
+            border: 3px dashed #c6c6c6;
+            border-radius: 15px;
+            color: #c6c6c6;
+        }
+        .import-text-drop-plus {
+            position: absolute;
+            top: 30px;
+            left: calc(50% - 40px);
+            font-size: 100px;
+            font-weight: bold;
+            opacity: 0.2;
+        }
     </style>
 
 </header>
@@ -210,6 +249,18 @@
     <div id="dialog-select-member" style="display:none"></div>
     <div id="dialog-cron" style="display:none">
         <div id="div-cron"></div>
+    </div>
+
+    <div style="display: none; overflow: hidden; text-align: center;" id="dialog_import_scripts" title="import scripts" class="translateT">
+        <div class="import-drop-zone" style="display: none">
+            <div style="padding-top: 20%" class="translate import-drop-text"></div>
+            <input type="file" class="import-drop-file" style="display: none">
+        </div>
+        <div class="import-text-drop">
+            <span class="import-file-name translate">Drop files here or click to select one</span>
+            <span class="import-text-drop-plus">+</span>
+        </div>
+        <button id="start_import_scripts" class="translateB" style="margin: 20px">import&nbsp;scripts</button>
     </div>
 
     <script type="text/javascript" src="tab.js"></script>

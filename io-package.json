@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "2.2.1",
+        "version":                  "2.3.0",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+			"2.3.0": {
+                "en": "export/import of scripts",
+                "de": "export/import of scripts",
+                "ru": "export/import of scripts"
+            },
             "2.2.1": {
                 "en": "fix delete state",
                 "de": "fix delete state",
@@ -63,6 +68,7 @@
             "singleton":            true,
             "name":                 "Scripts"
         },
+		"dependencies":             [{"js-controller": ">=0.10.0"}],
         "type":                     "script"
     },
     "native": {

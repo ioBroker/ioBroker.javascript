@@ -97,7 +97,30 @@ systemDictionary = {
     "Save?":                {"en": "Save?",                 "de": "Speichern?",             "ru": "Сохранить?"},
     "Discard":              {"en": "Discard",               "de": "Nicht speichern",        "ru": "Не сохранять"},
     "Instance":             {"en": "Instance",              "de": "Wird ausgeführt von ",   "ru": "Выполняется в "},
-    "Wrap&nbsp;lines":      {"en": "Wrap&nbsp;lines",       "de": "Zeilenunterbrechung",        "ru": "Перенос&nbsp;строк"},
+    "Wrap&nbsp;lines":      {"en": "Wrap&nbsp;lines",       "de": "Zeilenunterbrechung",    "ru": "Перенос&nbsp;строк"},
+    "Drop the files here":  {"en": "Drop the files here",   "de": "Hier hinzufügen",        "ru": "Добавить..."},
+    "Invalid file extenstion!": {
+        "en": "Invalid file extenstion!", 
+        "de": "Invalid Dateiextenstion!", 
+        "ru": "Неправильный тип файла!"
+    },
+    "Drop files here or click to select one": {
+        "en": "Drop files here or click to select one...",
+        "de": "Dateien hereinziehen oder klicken um mit Dialog auszuwählen...",
+        "ru": "Перетащите файл сюда или нажмите, что бы выбрать..."
+    },
+    "bytes":                {"en": "bytes",                 "de": "Bytes",                  "ru": "байт"},
+    "Kb":                   {"en": "Kb",                    "de": "Kb",                     "ru": "Кб"},
+    "Mb":                   {"en": "Kb",                    "de": "Mb",                     "ru": "Мб"},
+    "Existing scripts will be overwritten. Are you sure?": {
+        "en": "Existing scripts will be overwritten. Are you sure?",
+        "de": "Aktuelle Skripte werden überschrieben. Sicher?",
+        "ru": "Существующие скрипты будут переписаны. Вы уверены?"
+    },
+    "import&nbsp;scripts":  {"en": "Import&nbsp;scripts",   "de": "Skriptimport",           "ru": "Импортировать&nbsp;скрипты"},
+    "import scripts":       {"en": "Import scripts",        "de": "Skriptimport",           "ru": "Импортировать скрипты"},
+    "Export":               {"en": "Export all scripts",    "de": "Export von allen Skripten", "ru": "Экспорт всех скриптов"},
+    "Import":               {"en": "Import all scripts",    "de": "Import von allen Skripten", "ru": "Импорт всех скриптов"},
     "Deactivated. Click to start.": {
         "en": "Deactivated. Click to start.",
         "de": "Deaktiviert. Klicken zum Starten.",
