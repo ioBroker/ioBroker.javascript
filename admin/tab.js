@@ -4,14 +4,33 @@ function Scripts(main) {
     this.groups         = [];
     this.hosts          = [];
     this.$grid          = $('#grid-scripts');
-    this.$dialog        = $('#dialog-script');
     this.$dialogCron    = $('#dialog-cron');
     this.editor         = null;
     this.changed        = false;
     this.main           = main;
     this.currentId      = null;
     this.engines        = [];
+    this.currentEngine  = '';
+    this.languageLoaded = false;
+    this.blocklyWorkspace = null;
 
+    function createToolbox() {
+        var text = '';
+        text += '<xml>\n';
+        text += '    <category name="Control">\n';
+        text += '       <block type="controls_if"></block>\n';
+        text += '       <block type="controls_whileUntil"></block>\n';
+        text += '       <block type="controls_for"></block>\n';
+        text += '    </category>\n';
+        text += '    <category name="Logic">\n';
+        text += '       <block type="logic_compare"></block>\n';
+        text += '       <block type="logic_operation"></block>\n';
+        text += '       <block type="logic_boolean"></block>\n';
+        text += '   </category>\n';
+        text += '</xml>\n';
+        return text;
+    }
+    
     function addScript(group) {
         group = group || 'script.js.common';
         // Find new unique name
@@ -31,7 +50,7 @@ function Scripts(main) {
         for (var i = 0; i < that.main.instances.length; i++) {
             if (that.main.objects[that.main.instances[i]] && that.main.objects[that.main.instances[i]] && that.main.objects[that.main.instances[i]].common.engineTypes) {
                 instance = that.main.instances[i];
-                if (typeof that.main.objects[main.instances[i]].common.engineTypes == 'string') {
+                if (typeof that.main.objects[main.instances[i]].common.engineTypes === 'string') {
                     engineType = that.main.objects[that.main.instances[i]].common.engineTypes;
                 } else {
                     engineType = that.main.objects[that.main.instances[i]].common.engineTypes[0];
@@ -277,11 +296,118 @@ function Scripts(main) {
                 }
             });
         });
+
+        window.addEventListener('resize', this.resize, false);
+
+        //load blockly language
+        var fileLang = document.createElement('script');
+        fileLang.setAttribute('type', 'text/javascript');
+        fileLang.setAttribute('src', 'google-blockly/msg/js/' + (systemLang || 'en') + '.js');
+        // most browsers
+        fileLang.onload = function () {
+            that.languageLoaded = true;
+        };
+        // IE 6 & 7
+        fileLang.onreadystatechange = function() {
+            if (this.readyState === 'complete') {
+                that.languageLoaded = true;
+            }
+        };
+        document.getElementsByTagName('head')[0].appendChild(fileLang);
+
+        var fileCustom = document.createElement('script');
+        fileCustom.setAttribute('type', 'text/javascript');
+        fileCustom.setAttribute('src', 'google-blockly/own/msg/' + (systemLang || 'en') + '.js');
+        // most browsers
+        fileCustom.onload = function () {
+            that.languageLoaded = true;
+        };
+        // IE 6 & 7
+        fileCustom.onreadystatechange = function() {
+            if (this.readyState === 'complete') {
+                that.languageLoaded = true;
+            }
+        };
+        document.getElementsByTagName('head')[0].appendChild(fileCustom);
     };
 
     this.resize = function (width, height) {
-        if (this.editor) this.editor.resize();
+        var wasVisible = $('#blockly-editor').data('wasVisible');
+        if (wasVisible !== true && wasVisible !== false) {
+            wasVisible = $('#blockly-editor').is(':visible');
+        }
+        // Set the height of svg
+        if (wasVisible === true) {
+            $('#blockly-editor').hide();
+            $('.blocklyWidgetDiv').hide();
+            $('.blocklyTooltipDiv').hide();
+            $('.blocklyToolboxDiv').hide();
+            $('#blockly-editor svg').height($('#height-editor').height());
+            $('#blockly-editor').show();
+            $('.blocklyWidgetDiv').show();
+            $('.blocklyTooltipDiv').show();
+            $('.blocklyToolboxDiv').show();
+        } else {
+            $('#blockly-editor svg').height($('#height-editor').height());
+        }
+
+        $('#blockly-editor').data('wasVisible', null);
+
+        if (that.blocklyWorkspace) Blockly.svgResize(that.blocklyWorkspace);
+
+        if (that.editor) that.editor.resize();
     };
+
+    function blockly2JS(onWay) {
+        $('#edit-script-engine-type').find('option[value="Blockly"]').remove();
+        blocklyCode2JSCode(onWay);
+
+        that.editor.setReadOnly(false);
+
+        if (that.currentEngine.match(/^[jJ]ava[sS]cript/)) {
+            that.editor.getSession().setMode('ace/mode/javascript');
+            $('#script-editor').show();
+            $('#blockly-editor').hide();
+            $('.blocklyWidgetDiv').hide();
+            $('.blocklyTooltipDiv').hide();
+            $('.blocklyToolboxDiv').hide();
+            $('#show-blockly-id').hide();
+        } else if (that.currentEngine.match(/^[cC]offee[sS]cript/)) {
+            that.editor.getSession().setMode('ace/mode/coffee');
+            $('#script-editor').show();
+            $('.blocklyWidgetDiv').hide();
+            $('.blocklyTooltipDiv').hide();
+            $('.blocklyToolboxDiv').hide();
+            $('#blockly-editor').hide();
+            $('#show-blockly-id').hide();
+        }
+    }
+
+    function blocklyCode2JSCode(onWay, justConvert) {
+        var code = Blockly.JavaScript.workspaceToCode(that.blocklyWorkspace);
+        if (!onWay) {
+            code += '\n';
+            var dom = Blockly.Xml.workspaceToDom(that.blocklyWorkspace);
+            var text = Blockly.Xml.domToText(dom);
+            code += '//' + text;
+        }
+
+        if (!justConvert) that.editor.setValue(code, -1);
+        return code;
+    }
+
+    function jsCode2Blockly(text) {
+        text = text || '';
+        var lines = text.split(/[\r\n|\r|\n]+/g);
+        var xml = '';
+        for (var l = lines.length - 1; l >= 0; l--) {
+            if (lines[l].match(/^\/\/<xml xmlns=/)) {
+                xml = lines[l].substring(2);
+                break;
+            }
+        }
+        return xml;
+    }
 
     function editScript(id) {
         that.initEditor();
@@ -324,17 +450,60 @@ function Scripts(main) {
 
             $('#edit-script-name').val(obj.common.name);
 
+            if (obj.common.engineType !== 'Blockly') {
+                // remove Blockly from list
+                $('#edit-script-engine-type').find('option[value="Blockly"]').remove();
+            } else {
+                if (!$('#edit-script-engine-type').find('option[value="Blockly"]').length) {
+                    $('#edit-script-engine-type').prepend('<option value="Blockly">Blockly</option>');
+                }
+            }
+            that.currentEngine = obj.common.engineType;
+
             // Add engine even if it is not installed
-            if (that.engines.indexOf(obj.common.engineType) == -1) {
+            if (that.engines.indexOf(obj.common.engineType) === -1) {
                 $('#edit-script-engine-type').append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
             }
 
             $('#edit-script-engine-type').val(obj.common.engineType);
 
+            if (obj.common.engineType === 'Blockly') {
+                that.editor.getSession().setMode('ace/mode/javascript');
+                that.editor.setReadOnly(true);
+                $('#script-editor').hide();
+                $('#blockly-editor').show();
+                $('#show-blockly-id').show();
+                $('.blocklyWidgetDiv').show();
+                $('.blocklyTooltipDiv').show();
+                $('.blocklyToolboxDiv').show();
+                that.blocklyWorkspace.clear();
+                try {
+                    var xml = jsCode2Blockly(obj.common.source) || '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>';
+                    var dom = Blockly.Xml.textToDom(xml);
+                    Blockly.Xml.domToWorkspace(dom, that.blocklyWorkspace);
+                } catch (e) {
+                    console.error(e);
+                    window.alert('Cannot extract Blockly code!');
+                }
+            } else
             if (obj.common.engineType && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
                 that.editor.getSession().setMode('ace/mode/javascript');
+                that.editor.setReadOnly(false);
+                $('#script-editor').show();
+                $('#blockly-editor').hide();
+                $('#show-blockly-id').hide();
+                $('.blocklyWidgetDiv').hide();
+                $('.blocklyTooltipDiv').hide();
+                $('.blocklyToolboxDiv').hide();
             } else if (obj.common.engineType && obj.common.engineType.match(/^[cC]offee[sS]cript/)) {
                 that.editor.getSession().setMode('ace/mode/coffee');
+                that.editor.setReadOnly(false);
+                $('#script-editor').show();
+                $('#blockly-editor').hide();
+                $('#show-blockly-id').hide();
+                $('.blocklyWidgetDiv').hide();
+                $('.blocklyTooltipDiv').hide();
+                $('.blocklyToolboxDiv').hide();
             }
 
             that.changed = false;
@@ -372,6 +541,10 @@ function Scripts(main) {
         } else {
             $('#editor-scripts').hide();
         }
+
+        setTimeout(function () {
+            that.resize();
+        }, 100)
     }
 
     // Find all script engines
@@ -550,10 +723,34 @@ function Scripts(main) {
                 that.$dialogCron.dialog('open');
             });
 
+            $('#show-blockly-id').button({
+                icons: {primary: 'ui-icon-clock'}
+            }).css({height: 30, width: 200}).click(function () {
+                if ($('#script-editor').is(':visible')) {
+                    $(this).button('option', 'label', _('Show code'));
+                    $('#script-editor').hide();
+                    $('#blockly-editor').show();
+                    $('.blocklyWidgetDiv').show();
+                    $('.blocklyTooltipDiv').show();
+                    $('.blocklyToolboxDiv').show();
+                } else {
+                    $(this).button('option', 'label', _('Show blockly'));
+                    blocklyCode2JSCode();
+                    // update script editor
+                    $('#script-editor').show();
+                    $('#blockly-editor').hide();
+                    $('.blocklyWidgetDiv').hide();
+                    $('.blocklyTooltipDiv').hide();
+                    $('.blocklyToolboxDiv').hide();
+                }
+            });
+
             this.editor.on('input', function() {
-                that.changed = true;
-                $('#script-edit-button-save').button('enable');
-                $('#script-edit-button-cancel').button('enable');
+                if (that.currentEngine !== 'Blockly') {
+                    that.changed = true;
+                    $('#script-edit-button-save').button('enable');
+                    $('#script-edit-button-cancel').button('enable');
+                }
             });
 
             $('#edit-script-name').change(function () {
@@ -565,6 +762,26 @@ function Scripts(main) {
             });
 
             $('#edit-script-engine-type').change(function () {
+                if (that.currentEngine === 'Blockly' && that.editor.getValue()) {
+                    main.confirmMessage(_('You cannot go back!'), null, null, function (result) {
+                        if (result) {
+                            that.currentEngine = $('#edit-script-engine-type').val();
+                            blockly2JS(true);
+                        } else {
+                            // return value back
+                            $('#edit-script-engine-type').val('Blockly');
+                        }
+                    });
+                    return;
+                }
+
+                if (that.currentEngine === 'Blockly') {
+                    that.currentEngine = $(this).val();
+                    blockly2JS(true);
+                } else {
+                    that.currentEngine = $(this).val();
+                }
+
                 that.changed = true;
                 $('#script-edit-button-save').button('enable');
                 $('#script-edit-button-cancel').button('enable');
@@ -881,11 +1098,53 @@ function Scripts(main) {
 
     this.init = function (update) {
         var that = this;
-        if (!this.main.objectsLoaded) {
+        if (!this.main.objectsLoaded || !this.languageLoaded) {
             setTimeout(function () {
                 that.init(update);
             }, 250);
             return;
+        }
+
+        if (!$('#blockly-editor').data('inited')) {
+            $('#blockly-editor').data('inited', true);
+
+            // Interpolate translated messages into toolbox.
+            var toolboxText = document.getElementById('toolbox').outerHTML;
+            toolboxText = toolboxText.replace(/{(\w+)}/g,
+                function(m, p1) {return MSG[p1]});
+            var toolboxXml = Blockly.Xml.textToDom(toolboxText);
+
+            that.blocklyWorkspace = Blockly.inject(
+                'blockly-editor',
+                {
+                    media: '/adapter/javascript/google-blockly/media/',
+                    toolbox: toolboxXml,
+                    zoom: {
+                        controls:   true,
+                        wheel:      true,
+                        startScale: 1.0,
+                        maxScale:   3,
+                        minScale:   0.3,
+                        scaleSpeed: 1.2
+                    },
+                    trashcan: true,
+                    grid: {
+                        spacing:    25,
+                        length:     3,
+                        colour:     '#ccc',
+                        snap:       true
+                    }
+                }
+            );
+            // Listen to events on master workspace.
+            that.blocklyWorkspace.addChangeListener(function (masterEvent) {
+                if (masterEvent.type == Blockly.Events.UI) {
+                    return;  // Don't mirror UI events.
+                }
+                that.changed = true;
+                $('#script-edit-button-save').button('enable');
+                $('#script-edit-button-cancel').button('enable');
+            });
         }
 
         if (typeof this.$grid !== 'undefined' && (!this.$grid.data('inited') || update)) {
@@ -1069,13 +1328,12 @@ function Scripts(main) {
                         click: function () {
                             addScriptInGroup(that.currentId);
                         }
-                    }
-                    ,
+                    },
                     {
                         text: false,
                         title: _('Export'),
                         icons: {
-                            primary: 'ui-icon-arrowthickstop-1-n'
+                            primary: 'ui-icon-arrowthickstop-1-s'
                         },
                         click: function () {
                             exportScripts();
@@ -1085,7 +1343,7 @@ function Scripts(main) {
                         text: false,
                         title: _('Import'),
                         icons: {
-                            primary: 'ui-icon-arrowthickstop-1-s'
+                            primary: 'ui-icon-arrowthickstop-1-n'
                         },
                         click: function () {
                             importScripts();
@@ -1155,8 +1413,13 @@ function Scripts(main) {
         var obj = {};
         var newId      = $('#edit-script-group').val() + '.' + $('#edit-script-name').val().replace(/["'\s.]/g, '_');
         obj.name       = $('#edit-script-name').val();
-        obj.source     = this.editor.getValue();
         obj.engineType = $('#edit-script-engine-type').val() || '';
+        if (obj.engineType === 'Blockly') {
+            obj.source = blocklyCode2JSCode(false, true);
+        } else {
+            obj.source = this.editor.getValue();
+        }
+
 
         if (this.currentId != newId && that.main.objects[newId]) {
             that.main.showError(_('Duplicate name'));
@@ -1385,8 +1648,8 @@ var main = {
     selectId:       null
 };
 
-var $dialogMessage =        $('#dialog-message');
-var $dialogConfirm =        $('#dialog-confirm');
+var $dialogMessage = $('#dialog-message');
+var $dialogConfirm = $('#dialog-confirm');
 
 // Read all positions, selected widgets for every view,
 // Selected view, selected menu page,
@@ -1602,6 +1865,13 @@ function applyResizableH(install, timeout) {
         $('#grid-scripts').resizable({
             autoHide:   false,
             handles:    'e',
+            start:      function (e, ui) {
+                $('#blockly-editor').data('wasVisible', $('#blockly-editor').is(':visible'));
+                $('#blockly-editor').hide();
+                $('.blocklyWidgetDiv').hide();
+                $('.blocklyTooltipDiv').hide();
+                $('.blocklyToolboxDiv').hide();
+            },
             resize:     function(e, ui) {
                 var parent = ui.element.parent();
                 var remainingSpace = parent.width() - ui.element.outerWidth(),
@@ -1616,7 +1886,7 @@ function applyResizableH(install, timeout) {
                     width: width
                 });
                 main.saveConfig('script-editor-width', width);
-                if (scripts.editor) scripts.editor.resize();
+                scripts.resize();
             }
         });
     }
@@ -1629,21 +1899,29 @@ function applyResizableV() {
     $('#editor-scripts-textarea').resizable({
         autoHide:   false,
         handles:    's',
-        resize:     function(e, ui) {
+        start:      function (e, ui) {
+            $('#blockly-editor').data('wasVisible', $('#blockly-editor').is(':visible'));
+            $('#blockly-editor').hide();
+            $('.blocklyWidgetDiv').hide();
+            $('.blocklyTooltipDiv').hide();
+            $('.blocklyToolboxDiv').hide();
+        },
+        resize:     function (e, ui) {
             var parent = ui.element.parent();
             var remainingSpace = parent.height() - ui.element.outerHeight(),
                 divTwo = ui.element.next(),
                 divTwoWidth = (remainingSpace - (divTwo.outerHeight() - divTwo.height())) / parent.height() * 100 + "%";
             divTwo.height(divTwoWidth);
         },
-        stop: function(e, ui) {
+        stop: function (e, ui) {
             var parent = ui.element.parent();
             var height = ui.element.height() / parent.height() * 100 + '%';
             ui.element.css({
                 height: height
             });
             main.saveConfig('script-editor-height', height);
-            if (scripts.editor) scripts.editor.resize();
+
+            scripts.resize();
         }
     });
 }
