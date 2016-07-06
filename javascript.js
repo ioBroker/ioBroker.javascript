@@ -2074,7 +2074,12 @@
             }
             // todo delete non existing scripts
 
-            if (!err && obj && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
+            if (!err &&
+                obj &&
+                obj.common.enabled &&
+                obj.common.engine === 'system.adapter.' + adapter.namespace &&
+                obj.common.source &&
+                (obj.common.engineType.match(/^[jJ]ava[sS]cript/) || obj.common.engineType === 'Blockly')) {
                 // Javascript
                 adapter.log.info('Start javascript ' + name);
                 scripts[name] = compile(globalScript + obj.common.source, name);

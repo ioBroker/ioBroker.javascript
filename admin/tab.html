@@ -21,6 +21,7 @@
     <script type="text/javascript" src="google-blockly/blockly_compressed.js"></script>
     <script type="text/javascript" src="google-blockly/blocks_compressed.js"></script>
     <script type="text/javascript" src="google-blockly/javascript_compressed.js"></script>
+    <script type="text/javascript" src="google-blockly/own/field_oid.js"></script>
     <script type="text/javascript" src="google-blockly/own/functions.js"></script>
     <script type="text/javascript" src="../../js/selectID.js"></script>
 
@@ -267,21 +268,10 @@
     </div>
 
     <xml id="toolbox" style="display: none">
-        <category name="System" colour="0">
-            <block type="console">
-                <value name="TEXT">
-                    <shadow type="text">
-                        <field name="TEXT">abc</field>
-                    </shadow>
-                </value>
-                <value name="SEVERITY">
-                    <shadow type="text">
-                        <field name="SEVERITY">log</field>
-                    </shadow>
-                </value>
-            </block>
+        <category name="{catSystem}" colour="210">
+            <block>%%SYSTEM%%</block>
         </category>
-        <category name="{catLogic}" colour="210">
+        <category name="{catLogic}" colour="0">
             <block type="controls_if"></block>
             <block type="logic_compare"></block>
             <block type="logic_operation"></block>
@@ -469,20 +459,6 @@
                 </value>
             </block>
             <block type="text_trim">
-                <value name="TEXT">
-                    <shadow type="text">
-                        <field name="TEXT">abc</field>
-                    </shadow>
-                </value>
-            </block>
-            <block type="text_print">
-                <value name="TEXT">
-                    <shadow type="text">
-                        <field name="TEXT">abc</field>
-                    </shadow>
-                </value>
-            </block>
-            <block type="text_prompt_ext">
                 <value name="TEXT">
                     <shadow type="text">
                         <field name="TEXT">abc</field>

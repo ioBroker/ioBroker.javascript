@@ -1108,10 +1108,19 @@ function Scripts(main) {
         if (!$('#blockly-editor').data('inited')) {
             $('#blockly-editor').data('inited', true);
 
+            MSG.catSystem = Blockly.Words['System'][systemLang];
+            
             // Interpolate translated messages into toolbox.
             var toolboxText = document.getElementById('toolbox').outerHTML;
             toolboxText = toolboxText.replace(/{(\w+)}/g,
                 function(m, p1) {return MSG[p1]});
+
+            // add system blocks
+            var systemBlocks = '';
+            for (var b in Blockly.System.blocks) {
+                systemBlocks += Blockly.System.blocks[b];
+            }
+            toolboxText = toolboxText.replace('<block>%%SYSTEM%%</block>', systemBlocks);
             var toolboxXml = Blockly.Xml.textToDom(toolboxText);
 
             that.blocklyWorkspace = Blockly.inject(
