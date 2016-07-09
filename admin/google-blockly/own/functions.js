@@ -24,7 +24,7 @@ Blockly.Blocks['field_oid'] = {
             .appendField('checkbox')
             .appendField(new Blockly.FieldCheckbox('TRUE'), 'CHECKED')
             .appendField(',')
-            .appendField(new Blockly.FieldOID('NAME'), 'FIELDNAME');
+            .appendField(new Blockly.FieldOID("NAME", main.initSelectId(), main.objects), 'FIELDNAME');
         this.setPreviousStatement(true, 'Field');
         this.setNextStatement(true, 'Field');
         this.setTooltip('Checkbox field.');
@@ -96,7 +96,7 @@ Blockly.Blocks['on'] = {
             .appendField(Blockly.Words['on'][systemLang]);
 
         this.appendDummyInput()
-            .appendField(new Blockly.FieldOID("default", main.selectId, main.objects), "oid");
+            .appendField(new Blockly.FieldOID("default", main.initSelectId(), main.objects), "oid");
 
         this.appendDummyInput()
             .appendField(new Blockly.FieldDropdown([[Blockly.Words['on_onchange'][systemLang], "onchange"], [Blockly.Words['on_any'][systemLang], "any"]]), "condition");
