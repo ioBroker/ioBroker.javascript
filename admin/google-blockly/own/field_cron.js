@@ -24,7 +24,7 @@
  */
 'use strict';
 
-goog.provide('Blockly.FieldOID');
+goog.provide('Blockly.FieldCRON');
 
 goog.require('Blockly.Field');
 goog.require('Blockly.Msg');
@@ -43,35 +43,33 @@ goog.require('goog.userAgent');
  * @extends {Blockly.Field}
  * @constructor
  */
-Blockly.FieldOID = function(text, oid_dialog, objects) {
-    Blockly.FieldOID.superClass_.constructor.call(this, text, oid_dialog);
-    this.oid_dialog = oid_dialog;
-    this.objects    = objects;
+Blockly.FieldCRON = function(text) {
+    Blockly.FieldCRON.superClass_.constructor.call(this);
 };
-goog.inherits(Blockly.FieldOID, Blockly.Field);
+goog.inherits(Blockly.FieldCRON, Blockly.Field);
 
 /**
  * Point size of text.  Should match blocklyText's font-size in CSS.
  */
-Blockly.FieldOID.FONTSIZE = 11;
+Blockly.FieldCRON.FONTSIZE = 11;
 
 /**
  * Mouse cursor style when over the hotspot that initiates the editor.
  */
-Blockly.FieldOID.prototype.CURSOR = 'pointer';
+Blockly.FieldCRON.prototype.CURSOR = 'pointer';
 
 /**
  * Allow browser to spellcheck this field.
  * @private
  */
-Blockly.FieldOID.prototype.spellcheck_ = false;
+Blockly.FieldCRON.prototype.spellcheck_ = false;
 
 /**
  * Close the input widget if this input is being deleted.
  */
-Blockly.FieldOID.prototype.dispose = function() {
+Blockly.FieldCRON.prototype.dispose = function() {
     Blockly.WidgetDiv.hideIfOwner(this);
-    Blockly.FieldOID.superClass_.dispose.call(this);
+    Blockly.FieldCRON.superClass_.dispose.call(this);
 };
 
 /**
@@ -79,7 +77,7 @@ Blockly.FieldOID.prototype.dispose = function() {
  * @param {?string} text New text.
  * @override
  */
-Blockly.FieldOID.prototype.setValue = function(text) {
+Blockly.FieldCRON.prototype.setValue = function(text) {
     if (text === null) {
         return;  // No change if null.
     }
@@ -93,11 +91,11 @@ Blockly.FieldOID.prototype.setValue = function(text) {
  *     focus.  Defaults to false.
  * @private
  */
-Blockly.FieldOID.prototype.showEditor_ = function(opt_quietInput) {
+Blockly.FieldCRON.prototype.showEditor_ = function(opt_quietInput) {
     this.workspace_ = this.sourceBlock_.workspace;
     var that = this;
-    this.oid_dialog.selectId('show', that.getValue(), function (newId) {
-        that.setValue(newId);
+    scripts.showCronDialog(that.getValue(), function (newId) {
+        if (newId !== undefined && newId !== null) that.setValue(newId);
     });
 };
 
@@ -106,8 +104,8 @@ Blockly.FieldOID.prototype.showEditor_ = function(opt_quietInput) {
  * @param {!Event} e Keyboard event.
  * @private
  */
-/*Blockly.FieldOID.prototype.onHtmlInputKeyDown_ = function(e) {
-    var htmlInput = Blockly.FieldOID.htmlInput_;
+/*Blockly.FieldCRON.prototype.onHtmlInputKeyDown_ = function(e) {
+    var htmlInput = Blockly.FieldCRON.htmlInput_;
     var tabKey = 9, enterKey = 13, escKey = 27;
     if (e.keyCode == enterKey) {
         Blockly.WidgetDiv.hide();
@@ -126,8 +124,8 @@ Blockly.FieldOID.prototype.showEditor_ = function(opt_quietInput) {
  * @param {!Event} e Keyboard event.
  * @private
  */
-Blockly.FieldOID.prototype.onHtmlInputChange_ = function(e) {
-    var htmlInput = Blockly.FieldOID.htmlInput_;
+Blockly.FieldCRON.prototype.onHtmlInputChange_ = function(e) {
+    var htmlInput = Blockly.FieldCRON.htmlInput_;
     // Update source block.
     var text = htmlInput.value;
     if (text !== htmlInput.oldValue_) {
@@ -148,12 +146,12 @@ Blockly.FieldOID.prototype.onHtmlInputChange_ = function(e) {
  * Style the editor accordingly.
  * @private
  */
-Blockly.FieldOID.prototype.validate_ = function() {
+Blockly.FieldCRON.prototype.validate_ = function() {
     var valid = true;
 
-    goog.asserts.assertObject(Blockly.FieldOID.htmlInput_);
+    goog.asserts.assertObject(Blockly.FieldCRON.htmlInput_);
 
-    var htmlInput = Blockly.FieldOID.htmlInput_;
+    var htmlInput = Blockly.FieldCRON.htmlInput_;
 
     if (htmlInput.value) {
         Blockly.addClass_(htmlInput, 'blocklyInvalidInput');
@@ -166,7 +164,7 @@ Blockly.FieldOID.prototype.validate_ = function() {
  * Resize the editor and the underlying block to fit the text.
  * @private
  */
-Blockly.FieldOID.prototype.resizeEditor_ = function() {
+Blockly.FieldCRON.prototype.resizeEditor_ = function() {
     var div = Blockly.WidgetDiv.DIV;
     var bBox = this.fieldGroup_.getBBox();
     div.style.width = bBox.width * this.workspace_.scale + 'px';
@@ -200,10 +198,10 @@ Blockly.FieldOID.prototype.resizeEditor_ = function() {
  * @return {!Function} Closure to call on destruction of the WidgetDiv.
  * @private
  */
-Blockly.FieldOID.prototype.widgetDispose_ = function() {
+Blockly.FieldCRON.prototype.widgetDispose_ = function() {
     var thisField = this;
     return function() {
-        var htmlInput = Blockly.FieldOID.htmlInput_;
+        var htmlInput = Blockly.FieldCRON.htmlInput_;
         // Save the edit (if it validates).
         var text = htmlInput.value;
         thisField.setValue(text);
@@ -215,7 +213,7 @@ Blockly.FieldOID.prototype.widgetDispose_ = function() {
         thisField.workspace_.removeChangeListener(
             htmlInput.onWorkspaceChangeWrapper_);
 
-        Blockly.FieldOID.htmlInput_ = null;
+        Blockly.FieldCRON.htmlInput_ = null;
 
         // Delete style properties.
         var style = Blockly.WidgetDiv.DIV.style;

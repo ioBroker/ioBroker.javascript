@@ -36,6 +36,9 @@ systemDictionary = {
     "ok":                   {"en": "Ok",                    "de": "Ok",                     "ru": "Ok"},
     "cancel":               {"en": "Cancel",                "de": "Abbrechen",              "ru": "отменить"},
     "global":               {"en": "global",                "de": "Global",                 "ru": "глобальный"},
+    "Show code":            {"en": "Show code",             "de": "Zeige Kode",             "ru": "Показать код"},
+    "Show blockly":         {"en": "Show Blockly",          "de": "Zeige Blockly",          "ru": "Показать Blockly"},
+    "Set CRON":             {"en": "Set",                   "de": "Übernehmen",             "ru": "Перенять"},
     "months":               {
         "en": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
         "de": ["Januar", "Februar", "März", "April", "Mai", "Juni", "July", "August", "September", "Oktober", "November", "Dezember"],
@@ -99,6 +102,7 @@ systemDictionary = {
     "Instance":             {"en": "Instance",              "de": "Wird ausgeführt von ",   "ru": "Выполняется в "},
     "Wrap&nbsp;lines":      {"en": "Wrap&nbsp;lines",       "de": "Zeilenunterbrechung",    "ru": "Перенос&nbsp;строк"},
     "Drop the files here":  {"en": "Drop the files here",   "de": "Hier hinzufügen",        "ru": "Добавить..."},
+    "Clear":                {"en": "Clear",                 "de": "Löschen",                "ru": "Сбросить"},
     "Invalid file extenstion!": {
         "en": "Invalid file extenstion!", 
         "de": "Invalid Dateiextenstion!", 

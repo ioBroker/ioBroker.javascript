@@ -174,18 +174,32 @@ function Scripts(main) {
         this.$dialogCron.dialog({
             autoOpen:   false,
             modal:      true,
-            width:      500,
-            height:     150,
+            width:      700,
+            height:     490,
             resizable:  false,
             title:      _('Cron expression'),
             buttons: [
                 {
-                    text: _('Insert'),
-                    click: function () {
+                    id:     'dialog_cron_insert',
+                    text:   _('Insert'),
+                    click:  function () {
                         var val = $('#div-cron').cron('value');
                         that.$dialogCron.dialog('close');
                         that.editor.insert('"' + val + '"');
                         that.editor.focus();
+                    }
+                },
+                {
+                    id:     'dialog_cron_clear',
+                    text: _('Clear'),
+                    click: function () {
+                        $('#div-cron').cron('value', '* * * * *');
+                    }
+                },
+                {
+                    id:     'dialog_cron_callback',
+                    text:   _('Set CRON'),
+                    click:  function () {
                     }
                 },
                 {
@@ -197,7 +211,7 @@ function Scripts(main) {
             ]
         });
 
-        $('#div-cron').cron({
+        /*$('#div-cron').cron({
             initial: '* * * * *',
             dom: _('daysofmonth'),
             months:  _('months'),
@@ -220,6 +234,9 @@ function Scripts(main) {
             at: _('at'),
             of: _('of'),
             on: _('on')
+        });*/
+        $('#div-cron').cron({
+            value: "* * * * *"
         });
 
         $('#script-edit-button-save').button({
@@ -694,6 +711,7 @@ function Scripts(main) {
             
             //this.editor.setTheme("ace/theme/monokai");
             this.editor.getSession().setMode('ace/mode/javascript');
+            this.editor.$blockScrolling = Infinity;
 
             $('#edit-insert-id').button({
                 icons: {primary: 'ui-icon-note'}
@@ -720,6 +738,8 @@ function Scripts(main) {
                     }
                 }
 
+                $('#dialog_cron_callback').hide();
+                $('#dialog_cron_insert').show();
                 that.$dialogCron.dialog('open');
             });
 
@@ -1543,6 +1563,29 @@ function Scripts(main) {
             }
         }
     }
+
+    this.showCronDialog = function (value, cb) {
+        if (value) {
+            value = value.replace(/\"/g, '').replace(/\'/g, '');
+            if (value) {
+                try {
+                    $('#div-cron').cron('value', value);
+                } catch (e) {
+                    alert(_('Cannot parse value as cron'));
+                }
+            }
+        }
+        $('#dialog_cron_callback').show();
+        $('#dialog_cron_insert').hide();
+
+        $('#dialog_cron_callback').unbind('click').click(function () {
+            var val = $('#div-cron').cron('value');
+            that.$dialogCron.dialog('close');
+            if (cb) cb(val);
+        });
+
+        this.$dialogCron.dialog('open');
+    };
 }
 
 var main = {

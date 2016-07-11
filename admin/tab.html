@@ -3,8 +3,9 @@
     <!-- these 4 files always have to be included -->
     <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
     <!--link rel="stylesheet" type="text/css" href="../../lib/css/jqGrid/ui.jqgrid-4.5.4.css"/-->
-    <link rel="stylesheet" type="text/css" href="cron/jquery-cron.css"/>
+    <!--link rel="stylesheet" type="text/css" href="cron/jquery-cron.css"/-->
     <link rel="stylesheet" type="text/css" href="../../lib/css/fancytree/ui.fancytree.min.css"/>
+    <link rel="stylesheet" type="text/css" href="jquery.cron.css"/>
 
     <script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="../../lib/js/jquery-ui.min.js"></script>
@@ -22,10 +23,12 @@
     <script type="text/javascript" src="google-blockly/blocks_compressed.js"></script>
     <script type="text/javascript" src="google-blockly/javascript_compressed.js"></script>
     <script type="text/javascript" src="google-blockly/own/field_oid.js"></script>
+    <script type="text/javascript" src="google-blockly/own/field_cron.js"></script>
     <script type="text/javascript" src="google-blockly/own/functions.js"></script>
     <script type="text/javascript" src="../../js/selectID.js"></script>
 
-    <script type="text/javascript" src="cron/jquery-cron.js"></script>
+    <!--script type="text/javascript" src="cron/jquery-cron.js"></script-->
+    <script type="text/javascript" src="jquery.cron.js"></script>
 
     <style>
         body {
@@ -251,7 +254,7 @@
         </p>
     </div>
     <div id="dialog-select-member" style="display:none"></div>
-    <div id="dialog-cron" style="display:none">
+    <div id="dialog-cron" style="display: none">
         <div id="div-cron"></div>
     </div>
 
