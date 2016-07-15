@@ -24,12 +24,14 @@
     <script type="text/javascript" src="google-blockly/javascript_compressed.js"></script>
     <script type="text/javascript" src="google-blockly/own/field_oid.js"></script>
     <script type="text/javascript" src="google-blockly/own/field_cron.js"></script>
-    <script type="text/javascript" src="google-blockly/own/functions.js"></script>
+    <script type="text/javascript" src="google-blockly/own/blocks_system.js"></script>
+    <script type="text/javascript" src="google-blockly/own/blocks_sendto.js"></script>
+    <script type="text/javascript" src="google-blockly/own/blocks_time.js"></script>
     <script type="text/javascript" src="../../js/selectID.js"></script>
 
     <!--script type="text/javascript" src="cron/jquery-cron.js"></script-->
+    <script type="text/javascript" src="cron2text.js"></script>
     <script type="text/javascript" src="jquery.cron.js"></script>
-
     <style>
         body {
             font-size: 11px;
@@ -271,9 +273,7 @@
     </div>
 
     <xml id="toolbox" style="display: none">
-        <category name="{catSystem}" colour="210">
-            <block>%%SYSTEM%%</block>
-        </category>
+        <category><block>%%CUSTOM_BLOCKS%%</block></category>
         <category name="{catLogic}" colour="0">
             <block type="controls_if"></block>
             <block type="logic_compare"></block>

@@ -1,12 +1,15 @@
 'use strict';
 
-goog.provide('Blockly.JavaScript.system');
+goog.provide('Blockly.JavaScript.System');
 
 goog.require('Blockly.JavaScript');
 
 // translations
 Blockly.Words = {};
 Blockly.Words['System'] = {'en': 'System', 'de': 'System', 'ru': 'Системные'};
+
+Blockly.CustomBlocks = Blockly.CustomBlocks || [];
+Blockly.CustomBlocks.push('System');
 
 function getHelp(word) {
     return 'https://github.com/ioBroker/ioBroker.javascript/blob/master/README.md#' + Blockly.Words[word][systemLang];
@@ -172,7 +175,7 @@ Blockly.Blocks['schedule'] = {
             .appendField(Blockly.Words['schedule'][systemLang]);
 
         this.appendDummyInput('SCHEDULE')
-            .appendField(new Blockly.FieldCRON('0 * * * *'), 'SCHEDULE');
+            .appendField(new Blockly.FieldCRON('* * * * *'), 'SCHEDULE');
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -190,6 +193,94 @@ Blockly.JavaScript['schedule'] = function(block) {
     return 'schedule("' + schedule +'", function () {\n' + statements_name + '});\n';
 };
 
+// --- ASTRO -----------------------------------------------------------
+Blockly.Words['astro']                  = {'en': 'astro',                           'de': 'Astro',                          'ru': 'Астро'};
+Blockly.Words['astro_tooltip']          = {'en': 'Do something on astrological event', 'de': 'Ausführen nach Astro-Ereignis', 'ru': 'Выполнять по астро-событию'};
+Blockly.Words['astro_offset']           = {'en': ', offset',                        'de': ', Versatz',                      'ru': ', сдвиг'};
+Blockly.Words['astro_minutes']          = {'en': 'minutes',                         'de': 'Minuten',                        'ru': 'минут'};
+
+Blockly.Words['astro_sunriseText']       = {'en': 'sunrise',                         'de': 'Sonnenaufgang',                 'ru': 'восход солнца'};
+Blockly.Words['astro_sunriseEndText']    = {'en': 'sunrise end',                     'de': 'Sonnenaufgang-Ende',            'ru': 'конец восхода'};
+Blockly.Words['astro_goldenHourEndText'] = {'en': 'golden hour end',                 'de': '"Golden hour"-Ende',            'ru': 'конец золотого часа'};
+Blockly.Words['astro_solarNoonText']     = {'en': 'solar noon',                      'de': 'Sonnenmittag',                  'ru': 'солнечеый полдень'};
+Blockly.Words['astro_goldenHourText']    = {'en': 'golden hour',                     'de': '"Golden hour"',                 'ru': 'золотой час'};
+Blockly.Words['astro_sunsetStartText']   = {'en': 'sunset start',                    'de': 'Sonnenuntergang-Anfang',        'ru': 'начало захода солнца'};
+Blockly.Words['astro_sunsetText']        = {'en': 'sunset',                          'de': 'Sonnenuntergang',               'ru': 'конец захода солнца'};
+Blockly.Words['astro_duskText']          = {'en': 'dusk',                            'de': 'Abenddämmerung',                'ru': 'сумерки'};
+Blockly.Words['astro_nauticalDuskText']  = {'en': 'nautical dusk',                   'de': 'Nautische Abenddämmerung',      'ru': 'навигационные сумерки'};
+Blockly.Words['astro_nightText']         = {'en': 'night',                           'de': 'Nacht',                         'ru': 'ночь'};
+Blockly.Words['astro_nightEndText']      = {'en': 'night end',                       'de': 'Nachtsende',                    'ru': 'конец ночи'};
+Blockly.Words['astro_nauticalDawnText']  = {'en': 'nautical dawn',                   'de': 'Nautische Morgendämmerung',     'ru': 'навигационный рассвет'};
+Blockly.Words['astro_dawnText']          = {'en': 'dawn',                            'de': 'Morgendämmerung',               'ru': 'рассвет'};
+Blockly.Words['astro_nadirText']         = {'en': 'nadir',                           'de': 'Nadir',                         'ru': 'надир'};
+
+Blockly.Words['astro_help'] = {
+    'en': 'astro--function',
+    'de': 'astro--function',
+    'ru': 'astro--function'
+};
+
+Blockly.System.blocks['astro'] =
+    '<block type="astro">'
+    + '     <value name="TYPE">'
+    //+ '         <shadow type="text">'
+    //+ '             <field name="TEXT">test</field>'
+    //+ '         </shadow>'
+    + '     </value>'
+    + '     <value name="OFFSET">'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['astro'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Words['astro'][systemLang]);
+
+        this.appendDummyInput("TYPE")
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['astro_sunriseText'][systemLang],         "sunrise"],
+                [Blockly.Words['astro_sunriseEndText'][systemLang],      "sunriseEnd"],
+                [Blockly.Words['astro_goldenHourEndText'][systemLang],   "goldenHourEnd"],
+                [Blockly.Words['astro_solarNoonText'][systemLang],       "solarNoon"],
+                [Blockly.Words['astro_goldenHourText'][systemLang],      "goldenHour"],
+                [Blockly.Words['astro_sunsetStartText'][systemLang],     "sunsetStart"],
+                [Blockly.Words['astro_sunsetText'][systemLang],          "sunset"],
+                [Blockly.Words['astro_duskText'][systemLang],            "dusk"],
+                [Blockly.Words['astro_nauticalDuskText'][systemLang],    "nauticalDusk"],
+                [Blockly.Words['astro_nightText'][systemLang],           "night"],
+                [Blockly.Words['astro_nightEndText'][systemLang],        "nightEnd"],
+                [Blockly.Words['astro_nauticalDawnText'][systemLang],    "nauticalDawn"],
+                [Blockly.Words['astro_dawnText'][systemLang],            "dawn"],
+                [Blockly.Words['astro_nadirText'][systemLang],           "nadir"]
+            ]), "TYPE");
+
+        this.appendDummyInput()
+            .appendField(Blockly.Words['astro_offset'][systemLang]);
+
+        this.appendDummyInput("OFFSET")
+            .appendField(new Blockly.FieldTextInput("0"), "OFFSET");
+
+        this.appendDummyInput()
+            .appendField(Blockly.Words['astro_minutes'][systemLang]);
+
+        this.appendStatementInput("STATEMENT")
+            .setCheck(null);
+        this.setInputsInline(true);
+
+        this.setColour(Blockly.System.HUE);
+        this.setTooltip(Blockly.Words['astro_tooltip'][systemLang]);
+        this.setHelpUrl(getHelp('astro_help'));
+    }
+};
+Blockly.JavaScript['astro'] = function(block) {
+    var astrotype = block.getFieldValue('TYPE');
+    var offset    = parseInt(block.getFieldValue('OFFSET'), 10);
+    var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    return 'schedule({astro: "' + astrotype + '", shift: ' + offset + '}, function () {\n' + statements_name + '});\n';
+};
 
 // --- control -----------------------------------------------------------
 Blockly.Words['control']         = {'en': 'сontrol',        'de': 'steuere',            'ru': 'установить'};
@@ -318,8 +409,7 @@ Blockly.Blocks['update'] = {
         this.appendDummyInput('WITH_DELAY')
             .appendField(Blockly.Words['update_delay'][systemLang])
             .appendField(new Blockly.FieldCheckbox("FALSE", function(option) {
-                var delayInput = (option == true);
-                this.sourceBlock_.updateShape_(delayInput);
+                this.sourceBlock_.updateShape_(option == true);
             }), 'WITH_DELAY');
 
         this.setInputsInline(true);
@@ -370,4 +460,49 @@ Blockly.JavaScript['update'] = function(block) {
     }
 
     return code;
+};
+
+// --- create state --------------------------------------------------
+Blockly.Words['create']         = {'en': 'create state',    'de': 'Zustand erzeugen',   'ru': 'создать состояние'};
+Blockly.Words['create_jsState'] = {'en': 'jsState',         'de': 'jsState',            'ru': 'jsState'};
+Blockly.Words['create_tooltip'] = {'en': 'create state',    'de': 'Zustand erzeugen',   'ru': 'создать состояние'};
+Blockly.Words['create_help']    = {'en': 'createstate',     'de': 'createstate',        'ru': 'createstate'};
+
+Blockly.System.blocks['create'] =
+    '<block type="create">'
+    + '     <value name="NAME">'
+    //+ '         <shadow type="text">'
+    //+ '             <field name="TEXT">test</field>'
+    //+ '         </shadow>'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['create'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Words['create'][systemLang]);
+
+        this.appendDummyInput("NAME")
+            .appendField(new Blockly.FieldTextInput(Blockly.Words['create_jsState'][systemLang]), "NAME");
+
+        this.appendStatementInput("STATEMENT")
+            .setCheck(null);
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setInputsInline(true);
+        this.setColour(Blockly.System.HUE);
+        this.setTooltip(Blockly.Words['create_tooltip'][systemLang]);
+        this.setHelpUrl(getHelp('create_help'));
+    }
+};
+
+Blockly.JavaScript['create'] = function(block) {
+    var name = block.getFieldValue('NAME');
+    var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    return 'createState("' + name + '", function () {\n' + statement + '});\n';
 };

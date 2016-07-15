@@ -44,7 +44,7 @@ goog.require('goog.userAgent');
  * @constructor
  */
 Blockly.FieldCRON = function(text) {
-    Blockly.FieldCRON.superClass_.constructor.call(this);
+    Blockly.FieldCRON.superClass_.constructor.call(this, text);
 };
 goog.inherits(Blockly.FieldCRON, Blockly.Field);
 

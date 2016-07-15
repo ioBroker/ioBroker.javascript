@@ -175,7 +175,7 @@ function Scripts(main) {
             autoOpen:   false,
             modal:      true,
             width:      700,
-            height:     490,
+            height:     550,
             resizable:  false,
             title:      _('Cron expression'),
             buttons: [
@@ -1129,18 +1129,25 @@ function Scripts(main) {
             $('#blockly-editor').data('inited', true);
 
             MSG.catSystem = Blockly.Words['System'][systemLang];
+            MSG.catSendto = Blockly.Words['Sendto'][systemLang];
             
             // Interpolate translated messages into toolbox.
             var toolboxText = document.getElementById('toolbox').outerHTML;
             toolboxText = toolboxText.replace(/{(\w+)}/g,
                 function(m, p1) {return MSG[p1]});
 
-            // add system blocks
-            var systemBlocks = '';
-            for (var b in Blockly.System.blocks) {
-                systemBlocks += Blockly.System.blocks[b];
+            var blocks = '';
+            for (var cb = 0; cb < Blockly.CustomBlocks.length; cb++) {
+                var name = Blockly.CustomBlocks[cb];
+                // add blocks
+                blocks += '<category name="' + Blockly.Words[name][systemLang] + '" colour="' + Blockly[name].HUE + '">';
+                for (var b in Blockly[name].blocks) {
+                    blocks += Blockly[name].blocks[b];
+                }
+                blocks += '</category>';
             }
-            toolboxText = toolboxText.replace('<block>%%SYSTEM%%</block>', systemBlocks);
+            toolboxText = toolboxText.replace('<category><block>%%CUSTOM_BLOCKS%%</block></category>', blocks);
+
             var toolboxXml = Blockly.Xml.textToDom(toolboxText);
 
             that.blocklyWorkspace = Blockly.inject(
@@ -1977,3 +1984,14 @@ function applyResizableV() {
         }
     });
 }
+
+window.onbeforeunload = function(evt) {
+    if (scripts.changed) {
+        if (window.confirm(_('Script changes are not saved. Discard?'))) {
+            return null;
+        } else {
+            return _('Configuration not saved.');
+        }
+    }
+    return null;
+};
