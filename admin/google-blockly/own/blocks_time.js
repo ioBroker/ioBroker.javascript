@@ -12,7 +12,7 @@ Blockly.Time = {
     blocks: {}
 };
 
-Blockly.Words['Time'] = {'en': 'Date & Time', 'de': 'Datum und Zeit', 'ru': 'Дата и время'};
+Blockly.Words['Time'] = {'en': 'Date and Time', 'de': 'Datum und Zeit', 'ru': 'Дата и время'};
 
 // if time greater, less, between
 // --- time compare --------------------------------------------------
@@ -68,8 +68,8 @@ Blockly.Blocks['time_compare'] = {
             .appendField(new Blockly.FieldTextInput("12:00"), "START_TIME");
 
         this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
+        //this.setPreviousStatement(true, null);
+        //this.setNextStatement(true, null);
 
         this.setOutput(true, 'Boolean');
 
@@ -201,6 +201,8 @@ Blockly.Time.blocks['time_get'] =
     + '     <mutation format="false" language="false"></mutation>'
     + '     <value name="FORMAT">'
     + '     </value>'
+    + '     <value name="LANGUAGE">'
+    + '     </value>'
     + '</block>';
 
 Blockly.Blocks['time_get'] = {
@@ -305,27 +307,27 @@ Blockly.JavaScript['time_get'] = function(block) {
     var format = block.getFieldValue('FORMAT');
 
     var code;
-    if (option == "ms") {
+    if (option === "ms") {
         code = '(new Date().getMilliseconds())';
-    } else if (option == "s") {
+    } else if (option === "s") {
         code = '(new Date().getSeconds())';
-    } else if (option == "h") {
+    } else if (option === "h") {
         code = '(new Date().getHours())';
-    } else if (option == "d") {
+    } else if (option === "d") {
         code = '(new Date().getDate())';
-    } else if (option == "M") {
+    } else if (option === "M") {
         code = '(new Date().getMonth() + 1)';
-    } else if (option == "Mt") {
+    } else if (option === "Mt") {
         code = '(new Date().getMonth() + 1)';
-    } else if (option == "y") {
+    } else if (option === "y") {
         code = '(new Date().getYear())';
-    } else if (option == "fy") {
+    } else if (option === "fy") {
         code = '(new Date().getFullYear())';
-    } else if (option == "wdt") {
+    } else if (option === "wdt") {
         code = '(new Date().getDay())';
-    } else if (option == "wd") {
+    } else if (option === "wd") {
         code = '(new Date().getDay())';
-    } else if (option == "custom") {
+    } else if (option === "custom") {
         code = 'formatDate(new Date(), "' + format + '")';
     } else {
         code = 'formatDate(new Date(), "' + option + '")';

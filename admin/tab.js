@@ -236,7 +236,7 @@ function Scripts(main) {
             on: _('on')
         });*/
         $('#div-cron').cron({
-            value: "* * * * *"
+            value: '* * * * *'
         });
 
         $('#script-edit-button-save').button({
