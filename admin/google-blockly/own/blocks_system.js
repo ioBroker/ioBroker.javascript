@@ -20,27 +20,6 @@ Blockly.System = {
     blocks: {}    
 };
 
-Blockly.Blocks['field_oid'] = {
-    // Checkbox.
-    init: function() {
-        this.setColour(160);
-
-        this.appendDummyInput('FIELDNAME')
-            .appendField('checkbox')
-            .appendField(new Blockly.FieldCheckbox('TRUE'), 'CHECKED')
-            .appendField(',')
-            .appendField(new Blockly.FieldOID('NAME', main.initSelectId(), main.objects), 'FIELDNAME');
-
-        this.setPreviousStatement(true, 'Field');
-        this.setNextStatement(true, 'Field');
-        this.setTooltip('Checkbox field.');
-        this.setHelpUrl('https://www.youtube.com/watch?v=s2_xaEvcVI0#t=485');
-    },
-    onchange: function() {
-        fieldNameCheck(this);
-    }
-};
-
 // --- Debug output --------------------------------------------------
 Blockly.Words['debug']         = {'en': 'debug output', 'de': 'debug output',   'ru': 'debug output'};
 Blockly.Words['debug_tooltip'] = {'en': 'Debug',        'de': 'Debug',          'ru': 'Debug'};
@@ -505,4 +484,37 @@ Blockly.JavaScript['create'] = function(block) {
     var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
     return 'createState("' + name + '", function () {\n' + statement + '});\n';
+};
+
+// --- select OID --------------------------------------------------
+Blockly.Words['field_oid']         = {'en': 'Select OID',    'de': 'Zustand erzeugen',   'ru': 'создать состояние'};
+Blockly.Words['field_oid_OID']     = {'en': 'Object ID',         'de': 'Objekt ID',            'ru': 'ID объекта'};
+Blockly.Words['field_oid_tooltip'] = {'en': 'Select object ID with dialog',    'de': 'Objekt ID mit Dialog selektieren',   'ru': 'Выбрать ID объекта'};
+
+Blockly.System.blocks['field_oid'] =
+    '<block type="field_oid">'
+    + '     <value name="TEXT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['field_oid'] = {
+    // Checkbox.
+    init: function() {
+
+        this.appendDummyInput()
+            .appendField(Blockly.Words['field_oid_OID'][systemLang]);
+
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldOID("default", main.initSelectId(), main.objects), 'oid');
+
+        this.setInputsInline(true);
+        this.setColour(Blockly.System.HUE);
+        this.setOutput(true, "String");
+        this.setTooltip(Blockly.Words['field_oid_tooltip'][systemLang]);
+    }
+};
+
+Blockly.JavaScript['field_oid'] = function(block) {
+    var oid = block.getFieldValue('oid');
+    return [oid, Blockly.JavaScript.ORDER_ATOMIC]
 };

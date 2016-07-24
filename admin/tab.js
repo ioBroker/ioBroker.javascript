@@ -358,9 +358,9 @@ function Scripts(main) {
         if (that.editor) that.editor.resize();
     };
 
-    function blockly2JS(onWay) {
+    function blockly2JS(oneWay) {
         $('#edit-script-engine-type').find('option[value="Blockly"]').remove();
-        blocklyCode2JSCode(onWay);
+        blocklyCode2JSCode(oneWay);
 
         that.editor.setReadOnly(false);
 
@@ -383,13 +383,13 @@ function Scripts(main) {
         }
     }
 
-    function blocklyCode2JSCode(onWay, justConvert) {
+    function blocklyCode2JSCode(oneWay, justConvert) {
         var code = Blockly.JavaScript.workspaceToCode(that.blocklyWorkspace);
-        if (!onWay) {
+        if (!oneWay) {
             code += '\n';
             var dom = Blockly.Xml.workspaceToDom(that.blocklyWorkspace);
             var text = Blockly.Xml.domToText(dom);
-            code += '//' + text;
+            code += '//' + btoa(encodeURIComponent(text));
         }
 
         if (!justConvert) that.editor.setValue(code, -1);
@@ -401,12 +401,16 @@ function Scripts(main) {
         var lines = text.split(/[\r\n|\r|\n]+/g);
         var xml = '';
         for (var l = lines.length - 1; l >= 0; l--) {
-            if (lines[l].match(/^\/\/<xml xmlns=/)) {
+            if (lines[l].substring(0, 2) === '//') {
                 xml = lines[l].substring(2);
                 break;
             }
         }
-        return xml;
+        if (xml.substring(0, 4) === '<xml') {
+            return xml;
+        } else {
+            return decodeURIComponent(atob(xml));
+        }
     }
 
     function editScript(id) {

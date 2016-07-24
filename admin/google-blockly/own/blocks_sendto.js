@@ -41,7 +41,6 @@ Blockly.Blocks['telegram'] = {
             .appendField(new Blockly.FieldDropdown([[Blockly.Words['telegram_anyInstance'][systemLang], ""], ["telegram.0", ".0"], ["telegram.1", ".1"], ["telegram.2", ".2"], ["telegram.3", ".3"], ["telegram.4", ".4"]]), "INSTANCE");
 
         this.appendValueInput("MESSAGE")
-            .setCheck("String")
             .appendField(Blockly.Words['telegram_message'][systemLang]);
 
         this.appendValueInput("USERNAME")
@@ -112,7 +111,6 @@ Blockly.Blocks['sayit'] = {
             .appendField(Blockly.Words['sayit_volume'][systemLang]);
 
         this.appendValueInput("MESSAGE")
-            .setCheck("String")
             .appendField(Blockly.Words['sayit_message'][systemLang]);
 
         this.setInputsInline(false);
