@@ -13,23 +13,6 @@ function Scripts(main) {
     this.currentEngine  = '';
     this.languageLoaded = false;
     this.blocklyWorkspace = null;
-
-    function createToolbox() {
-        var text = '';
-        text += '<xml>\n';
-        text += '    <category name="Control">\n';
-        text += '       <block type="controls_if"></block>\n';
-        text += '       <block type="controls_whileUntil"></block>\n';
-        text += '       <block type="controls_for"></block>\n';
-        text += '    </category>\n';
-        text += '    <category name="Logic">\n';
-        text += '       <block type="logic_compare"></block>\n';
-        text += '       <block type="logic_operation"></block>\n';
-        text += '       <block type="logic_boolean"></block>\n';
-        text += '   </category>\n';
-        text += '</xml>\n';
-        return text;
-    }
     
     function addScript(group) {
         group = group || 'script.js.common';
@@ -445,7 +428,6 @@ function Scripts(main) {
                         }, 0);
                     } else {
                         that.$grid.selectId('show', that.currentId);
-                        return;
                     }
                 });
                 return;
@@ -753,6 +735,7 @@ function Scripts(main) {
                     $('.blocklyWidgetDiv').show();
                     $('.blocklyTooltipDiv').show();
                     $('.blocklyToolboxDiv').show();
+                    if (that.blocklyWorkspace) Blockly.svgResize(that.blocklyWorkspace);
                 } else {
                     $(this).button('option', 'label', _('Show blockly'));
                     blocklyCode2JSCode();
@@ -1933,9 +1916,9 @@ function applyResizableH(install, timeout) {
             },
             resize:     function(e, ui) {
                 var parent = ui.element.parent();
-                var remainingSpace = parent.width() - ui.element.outerWidth(),
-                    divTwo = ui.element.next(),
-                    divTwoWidth = (remainingSpace - (divTwo.outerWidth() - divTwo.width())) / parent.width() * 100 + "%";
+                var remainingSpace = parent.width() - ui.element.outerWidth();
+                var divTwo = ui.element.next();
+                var divTwoWidth = (remainingSpace - (divTwo.outerWidth() - divTwo.width())) / parent.width() * 100 + '%';
                 divTwo.width(divTwoWidth);
             },
             stop: function(e, ui) {
@@ -1967,9 +1950,9 @@ function applyResizableV() {
         },
         resize:     function (e, ui) {
             var parent = ui.element.parent();
-            var remainingSpace = parent.height() - ui.element.outerHeight(),
-                divTwo = ui.element.next(),
-                divTwoWidth = (remainingSpace - (divTwo.outerHeight() - divTwo.height())) / parent.height() * 100 + "%";
+            var remainingSpace = parent.height() - ui.element.outerHeight();
+            var divTwo = ui.element.next();
+            var divTwoWidth = (remainingSpace - (divTwo.outerHeight() - divTwo.height())) / parent.height() * 100 + '%';
             divTwo.height(divTwoWidth);
         },
         stop: function (e, ui) {
