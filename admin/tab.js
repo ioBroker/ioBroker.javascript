@@ -409,11 +409,43 @@ function Scripts(main) {
         if (xml.substring(0, 4) === '<xml') {
             return xml;
         } else {
-            return decodeURIComponent(atob(xml));
+            var code;
+            try {
+                code = decodeURIComponent(atob(xml));
+            } catch (e) {
+                code = null;
+                console.error('cannot decode: ' + xml);
+                console.error(e);
+            }
+            return code;
         }
     }
+    function removeBlocklyFromCode(text) {
+        text = text || '';
+        var lines = text.split(/[\r\n|\r|\n]+/g);
+        var xml = '';
+        for (var l = lines.length - 1; l >= 0; l--) {
+            if (lines[l].substring(0, 2) === '//') {
+                if (xml.substring(0, 4) === '<xml') {
+                    lines.splice(l, 1);
+                    break;
+                } else {
+                    try {
+                        if (decodeURIComponent(atob(xml)).substring(0, 4) === '<xml') {
+                            lines.splice(l, 1);
+                            break;
+                        }
+                    } catch (e) {
+                        console.error('cannot decode: ' + xml);
+                        console.error(e);
+                    }
+                }
+            }
+        }
+        return lines.join('\n');
+    }
 
-    function editScript(id) {
+    function editScript(id, forceUpdate) {
         that.initEditor();
 
         if (that.currentId != id) {
@@ -1128,8 +1160,8 @@ function Scripts(main) {
                 var name = Blockly.CustomBlocks[cb];
                 // add blocks
                 blocks += '<category name="' + Blockly.Words[name][systemLang] + '" colour="' + Blockly[name].HUE + '">';
-                for (var b in Blockly[name].blocks) {
-                    blocks += Blockly[name].blocks[b];
+                for (var _b in Blockly[name].blocks) {
+                    blocks += Blockly[name].blocks[_b];
                 }
                 blocks += '</category>';
             }
@@ -1385,6 +1417,9 @@ function Scripts(main) {
                     name:    'instance',
                     options: function (id, name) {
                         var ins = {};
+                        if (that.main.objects[id].type !== 'script') {
+                            return false;
+                        }
                         for (var i = 0; i < main.instances.length; i++) {
                             if (main.instances[i].substring(0, 'system.adapter.javascript.'.length) === 'system.adapter.javascript.') {
                                 var inst = main.instances[i].substring('system.adapter.javascript.'.length);
@@ -1431,42 +1466,73 @@ function Scripts(main) {
         }
     };
 
-    this.saveScript = function () {
-
+    this.saveScript = function (cb) {
+        var that = this;
         var obj = {};
         var newId      = $('#edit-script-group').val() + '.' + $('#edit-script-name').val().replace(/["'\s.]/g, '_');
         obj.name       = $('#edit-script-name').val();
         obj.engineType = $('#edit-script-engine-type').val() || '';
+
+        // Try to detect blockly type
         if (obj.engineType === 'Blockly') {
             obj.source = blocklyCode2JSCode(false, true);
-        } else {
-            obj.source = this.editor.getValue();
         }
 
-
-        if (this.currentId != newId && that.main.objects[newId]) {
+        if (that.currentId !== newId && that.main.objects[newId]) {
             that.main.showError(_('Duplicate name'));
+            cb && cb();
             return;
         }
 
-        this.changed = false;
+        if (obj.engineType !== 'Blockly') {
+            obj.source = that.editor.getValue();
+            var blocklyText = jsCode2Blockly(obj.source);
+            if (blocklyText.substring(0, 4) === '<xml') {
+                // ask about change the script type
+                that.main.confirmMessage(_('Convert to Blockly'), _('Convert?'), 'help', function (result) {
+                    if (result) {
+                        obj.engineType = 'Blockly';
+                        if (!$('#edit-script-engine-type').find('option[value="Blockly"]').length) {
+                            $('#edit-script-engine-type').prepend('<option value="Blockly">Blockly</option>');
+                        }
+                        $('#edit-script-engine-type').val(obj.engineType);
+                        that.changed = true;
+                        that.saveScript(function () {
+                            setTimeout(function () {
+                                editScript(that.currentId);
+                            }, 500);
+                        });
+                    } else {
+                        // remove blockly text
+                        obj.source = removeBlocklyFromCode(obj.source);
+                        that.editor.setValue(obj.source, -1);
+                        that.changed = true;
+                        that.saveScript();
+                    }
+                });
+                return;
+            }
+        }
+
+        that.changed = false;
         $('#script-edit-button-save').button('disable');
         $('#script-edit-button-cancel').button('disable');
 
-
-        if (that.main.objects[this.currentId] && that.main.objects[this.currentId].type === 'script') {
-            this.updateScript(this.currentId, newId, obj, function (err) {
+        if (that.main.objects[that.currentId] && that.main.objects[that.currentId].type === 'script') {
+            that.updateScript(that.currentId, newId, obj, function (err) {
                 if (err) {
                     $('#script-edit-button-save').button('enable');
                     $('#script-edit-button-cancel').button('enable');
                 }
+                cb && cb();
             });
         } else {
-            renameGroup(this.currentId, newId, obj.name, function (err) {
+            renameGroup(that.currentId, newId, obj.name, function (err) {
                 if (err) {
                     $('#script-edit-button-save').button('enable');
                     $('#script-edit-button-cancel').button('enable');
                 }
+                cb && cb();
             });
         }
         that.currentId = newId;

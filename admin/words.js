@@ -108,6 +108,11 @@ systemDictionary = {
         "de": "Invalid Dateiextenstion!", 
         "ru": "Неправильный тип файла!"
     },
+    "You cannot go back!": {
+        "en": "You cannot switch type of script back to Blockly. Yre you sure? (Use 'Show code' button to check th generated code)",
+        "de": "Es wird nicht möglich den Typ zurück auf Blockly um zu schalten. Sind Sie sicher? (Benutze 'Zeige Kode' Knopf um Kode zu prüfrn)",
+        "ru": "Нельзя поменять тип скрипта обратно на Blockly. Вы уверены? (Используйте кнопку 'Показать код', что бы проверить код)"
+    },
     "Drop files here or click to select one": {
         "en": "Drop files here or click to select one...",
         "de": "Dateien hereinziehen oder klicken um mit Dialog auszuwählen...",
