@@ -420,12 +420,14 @@ function Scripts(main) {
             return code;
         }
     }
+
     function removeBlocklyFromCode(text) {
         text = text || '';
         var lines = text.split(/[\r\n|\r|\n]+/g);
         var xml = '';
         for (var l = lines.length - 1; l >= 0; l--) {
             if (lines[l].substring(0, 2) === '//') {
+                xml = lines[l].substring(2);
                 if (xml.substring(0, 4) === '<xml') {
                     lines.splice(l, 1);
                     break;
@@ -445,10 +447,10 @@ function Scripts(main) {
         return lines.join('\n');
     }
 
-    function editScript(id, forceUpdate) {
+    function editScript(id) {
         that.initEditor();
 
-        if (that.currentId != id) {
+        if (that.currentId !== id) {
             if (that.changed) {
                 that.main.confirmMessage(_('Script not saved'), _('Save?'), 'help', [_('Save'), _('Discard'), _('Cancel')], function (result) {
                     if (result === 0) {
@@ -508,6 +510,8 @@ function Scripts(main) {
                 $('#script-editor').hide();
                 $('#blockly-editor').show();
                 $('#show-blockly-id').show();
+                $('.edit-wrap-lines').hide();
+                $('#edit-check-blocks').show();
                 $('.blocklyWidgetDiv').show();
                 $('.blocklyTooltipDiv').show();
                 $('.blocklyToolboxDiv').show();
@@ -527,18 +531,22 @@ function Scripts(main) {
                 $('#script-editor').show();
                 $('#blockly-editor').hide();
                 $('#show-blockly-id').hide();
+                $('.edit-wrap-lines').show();
                 $('.blocklyWidgetDiv').hide();
                 $('.blocklyTooltipDiv').hide();
+                $('#edit-check-blocks').hide();
                 $('.blocklyToolboxDiv').hide();
             } else if (obj.common.engineType && obj.common.engineType.match(/^[cC]offee[sS]cript/)) {
                 that.editor.getSession().setMode('ace/mode/coffee');
                 that.editor.setReadOnly(false);
                 $('#script-editor').show();
                 $('#blockly-editor').hide();
+                $('.edit-wrap-lines').show();
                 $('#show-blockly-id').hide();
                 $('.blocklyWidgetDiv').hide();
                 $('.blocklyTooltipDiv').hide();
                 $('.blocklyToolboxDiv').hide();
+                $('#edit-check-blocks').hide();
             }
 
             that.changed = false;
@@ -580,6 +588,70 @@ function Scripts(main) {
         setTimeout(function () {
             that.resize();
         }, 100)
+    }
+
+    function blocklyBlinkBlock(block) {
+        for (var i = 300; i < 3000; i = i + 300) {
+            setTimeout(function () {
+                block.select();
+            }, i);
+            setTimeout(function () {
+                block.unselect();
+            }, i + 150);
+        }
+    }
+
+    function blocklyCheckBlocks(cb) {
+        var warningText;
+        if (that.blocklyWorkspace.getAllBlocks().length === 0) {
+            cb && cb('no blocks found');
+            return;
+        }
+        var badBlock = blocklyGetUnconnectedBlock();
+        if (badBlock) {
+            warningText = 'not properly connected';
+        } else {
+            badBlock = blocklyGetBlockWithWarning();
+            if (badBlock) warningText = 'warning on this block';
+        }
+
+        if (badBlock) {
+            if (cb) {
+                cb(warningText, badBlock);
+            } else {
+                blocklyBlinkBlock(badBlock);
+            }
+            return false;
+        }
+
+        cb();
+
+        return true;
+    }
+
+    //get unconnected block
+    function blocklyGetUnconnectedBlock () {
+        var blocks = that.blocklyWorkspace.getAllBlocks();
+        for (var i = 0, block; block = blocks[i]; i++) {
+            var connections = block.getConnections_(true);
+            for (var j = 0, conn; conn = connections[j]; j++) {
+                if (!conn.sourceBlock_ || (conn.type == Blockly.INPUT_VALUE || conn.type == Blockly.OUTPUT_VALUE) && !conn.targetConnection) {
+                    return block;
+                }
+            }
+        }
+        return null;
+    }
+
+    //get block with warning
+    function blocklyGetBlockWithWarning() {
+        var blocks = that.blocklyWorkspace.getAllBlocks();
+        for (var i = 0, block; block = blocks[i]; i++) {
+            if (block.warning) {
+                return block;
+            }
+        }
+        return null;
     }
 
     // Find all script engines
@@ -668,16 +740,28 @@ function Scripts(main) {
 
                 if (newCommon.engine  !== undefined) obj.common.engine  = newCommon.engine;
                 if (newCommon.enabled !== undefined) obj.common.enabled = newCommon.enabled;
-                if (newCommon.source !== undefined)  obj.common.source  = newCommon.source;
+                if (newCommon.source  !== undefined) obj.common.source  = newCommon.source;
 
-                if (oldId === newId && _obj && _obj.common && newCommon.name == _obj.common.name && (newCommon.engineType === undefined || newCommon.engineType == _obj.common.engineType)) {
-                    that.main.socket.emit('extendObject', oldId, obj, function (err) {
-                        if (err) {
-                            that.main.showError(err);
-                            that.init(true);
-                        }
-                        cb && cb(err);
-                    });
+                if (oldId === newId && _obj && _obj.common && newCommon.name === _obj.common.name) {
+                    if (!newCommon.engineType || newCommon.engineType !== _obj.common.engineType) {
+                        if (newCommon.engineType !== undefined) obj.common.engineType  = newCommon.engineType || 'Javascript/js';
+
+                        that.main.socket.emit('extendObject', oldId, obj, function (err) {
+                            if (err) {
+                                that.main.showError(err);
+                                that.init(true);
+                            }
+                            cb && cb(err);
+                        });
+                    } else {
+                        that.main.socket.emit('extendObject', oldId, obj, function (err) {
+                            if (err) {
+                                that.main.showError(err);
+                                that.init(true);
+                            }
+                            cb && cb(err);
+                        });
+                    }
                 } else {
                     //var prefix;
 
@@ -726,7 +810,7 @@ function Scripts(main) {
     this.initEditor = function () {
         if (!this.editor) {
             this.editor = ace.edit('script-editor');
-            
+
             //this.editor.setTheme("ace/theme/monokai");
             this.editor.getSession().setMode('ace/mode/javascript');
             this.editor.$blockScrolling = Infinity;
@@ -771,6 +855,8 @@ function Scripts(main) {
                     $('.blocklyWidgetDiv').show();
                     $('.blocklyTooltipDiv').show();
                     $('.blocklyToolboxDiv').show();
+                    $('.edit-wrap-lines').hide();
+                    $('#edit-check-blocks').show();
                     if (that.blocklyWorkspace) Blockly.svgResize(that.blocklyWorkspace);
                 } else {
                     $(this).button('option', 'label', _('Show blockly'));
@@ -781,6 +867,8 @@ function Scripts(main) {
                     $('.blocklyWidgetDiv').hide();
                     $('.blocklyTooltipDiv').hide();
                     $('.blocklyToolboxDiv').hide();
+                    $('.edit-wrap-lines').show();
+                    $('#edit-check-blocks').hide();
                 }
             });
 
@@ -816,8 +904,11 @@ function Scripts(main) {
 
                 if (that.currentEngine === 'Blockly') {
                     that.currentEngine = $(this).val();
+                    $('#edit-check-blocks').show();
                     blockly2JS(true);
                 } else {
+                    $('.edit-wrap-lines').show();
+                    $('#edit-check-blocks').hide();
                     that.currentEngine = $(this).val();
                 }
 
@@ -1461,8 +1552,23 @@ function Scripts(main) {
 
             if (this.main.config['script-editor-wrap-lines']) {
                 $('#edit-wrap-lines').prop('checked', true);
-                this.editor.getSession().setUseWrapMode(true);
             }
+            $('#edit-check-blocks').button({
+                icons: {
+                    primary: 'ui-icon-check'
+                }
+            }).click(function () {
+                blocklyCheckBlocks(function (err, badBlock) {
+                    if (!err) {
+                        that.main.showMessage(_('Ok'));
+                    } else {
+                        if (badBlock) blocklyBlinkBlock(badBlock);
+                        that.main.showError(_(err), function () {
+                            if (badBlock) blocklyBlinkBlock(badBlock);
+                        });
+                    }
+                });
+            });
         }
     };
 
@@ -1506,8 +1612,10 @@ function Scripts(main) {
                         // remove blockly text
                         obj.source = removeBlocklyFromCode(obj.source);
                         that.editor.setValue(obj.source, -1);
-                        that.changed = true;
-                        that.saveScript();
+                        // wait till editor script updates
+                        setTimeout(function () {
+                            that.saveScript();
+                        }, 300);
                     }
                 });
                 return;
@@ -1521,6 +1629,7 @@ function Scripts(main) {
         if (that.main.objects[that.currentId] && that.main.objects[that.currentId].type === 'script') {
             that.updateScript(that.currentId, newId, obj, function (err) {
                 if (err) {
+                    console.error(err);
                     $('#script-edit-button-save').button('enable');
                     $('#script-edit-button-cancel').button('enable');
                 }
@@ -1529,6 +1638,7 @@ function Scripts(main) {
         } else {
             renameGroup(that.currentId, newId, obj.name, function (err) {
                 if (err) {
+                    console.error(err);
                     $('#script-edit-button-save').button('enable');
                     $('#script-edit-button-cancel').button('enable');
                 }
@@ -1542,12 +1652,27 @@ function Scripts(main) {
         // Update scripts
         if (id.match(/^script\./)) {
             if (obj) {
-                if (this.list.indexOf(id) == -1) this.list.push(id);
+                if (this.list.indexOf(id) === -1) this.list.push(id);
+
+                // if script type was changed
+                if (id === this.currentId) {
+                    if (obj.common.name !== $('#edit-script-name').val()) {
+                        $('#edit-script-name').val(obj.common.name);
+                    }
+                    if (obj.common.engineType !== $('#edit-script-engine-type').val()) {
+                        editScript(id);
+                    }
+                }
             } else {
                 // deleted
                 var j = this.list.indexOf(id);
                 if (j != -1) this.list.splice(j, 1);
+                if (id === this.currentId) {
+                    this.changed = false;
+                    editScript(null);
+                }
             }
+
 
             if (this.updateTimer) clearTimeout(this.updateTimer);
 
@@ -1658,19 +1783,32 @@ var main = {
             storage.set('adminConfig', JSON.stringify(main.config));
         }
     },
-    showError:      function (error) {
-        main.showMessage(_(error),  _('Error'), 'alert');
+    showError:      function (error, cb) {
+        main.showMessage(_(error),  _('Error'), 'alert', cb);
     },
-    showMessage:    function (message, title, icon) {
+    showMessage:    function (message, title, icon, cb) {
+        if (typeof title === 'function') {
+            cb = title;
+            title = null;
+            icon = null;
+        }
+        if (typeof icon === 'function') {
+            cb = icon;
+            icon = null;
+        }
         $dialogMessage.dialog('option', 'title', title || _('Message'));
         $('#dialog-message-text').html(message);
+
         if (icon) {
+            if (!icon.match(/^ui\-icon\-/)) icon = 'ui-icon-' + icon;
+
             $('#dialog-message-icon').show();
             $('#dialog-message-icon').attr('class', '');
-            $('#dialog-message-icon').addClass('ui-icon ui-icon-' + icon);
+            $('#dialog-message-icon').addClass('ui-icon ' + icon);
         } else {
             $('#dialog-message-icon').hide();
         }
+        $dialogMessage.data('callback', cb);
         $dialogMessage.dialog('open');
     },
     confirmMessage: function (message, title, icon, buttons, callback) {
@@ -1904,7 +2042,12 @@ main.socket.on('connect', function () {
                         {
                             text: _('Ok'),
                             click: function () {
-                                $(this).dialog("close");
+                                $(this).dialog('close');
+                                var cb = $(this).data('callback');
+                                if (typeof cb === 'function') {
+                                    $(this).data('callback', null);
+                                    cb();
+                                }
                             }
                         }
                     ]

@@ -103,6 +103,33 @@ systemDictionary = {
     "Wrap&nbsp;lines":      {"en": "Wrap&nbsp;lines",       "de": "Zeilenunterbrechung",    "ru": "Перенос&nbsp;строк"},
     "Drop the files here":  {"en": "Drop the files here",   "de": "Hier hinzufügen",        "ru": "Добавить..."},
     "Clear":                {"en": "Clear",                 "de": "Löschen",                "ru": "Сбросить"},
+    "Convert to Blockly":   {
+        "en": "Looks like it is blockly script. Convert to Blockly?",
+        "de": "Sieht aus, dass es ein Blockly Script. Konvertieren zu Blockly?",
+        "ru": "Похоже, что это Blockly скрипт. Поменять тип на Blockly?"
+    },
+    "Convert?":   {
+        "en": "Convert?",
+        "de": "Konvertieren?",
+        "ru": "Поменять тип на Blockly?"
+    },
+    "Check blocks":         {"en": "Check blocks",          "de": "Blöcke prüfen",          "ru": "Проверить блоки"},
+    "not properly connected": {
+        "en": "This block is not properly connected to other blocks.",
+        "de": "Dieser Block ist nicht richtig verbunden mit anderen.",
+        "ru": "Этот блок неправильно соединён или не соединён с другими блоками"
+    },
+    "Error":                {"en": "Error",                 "de": "Fehler",                 "ru": "Ошибка"},
+    "no blocks found": {
+        "en": "No blocks found",
+        "de": "Keine Blocks gefunden",
+        "ru": "Блоков нет"
+    },
+    "warning on this block": {
+        "en": "Please fix the warning on this block.", 
+        "de": "Bitte dei Warnung an diesem Block fixen.",
+        "ru": "Исправте проблему с этим блоком"
+    },
     "Invalid file extenstion!": {
         "en": "Invalid file extenstion!", 
         "de": "Invalid Dateiextenstion!", 

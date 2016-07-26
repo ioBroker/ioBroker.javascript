@@ -335,3 +335,76 @@ Blockly.JavaScript['time_get'] = function(block) {
 
     return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
+
+// get astro time
+// --- time compare --------------------------------------------------
+Blockly.Words['time_astro']               = {'en': 'Actual time is',              'de': 'Aktuelle Zeit ist',                  'ru': 'Время '};
+Blockly.Words['time_astro_default_format'] = {'en': 'YYYY.MM.DD hh:mm:ss.sss',    'de': 'JJJJ.MM.TT SS:mm:ss.sss',            'ru': 'ГГГГ.ММ.ДД чч:мм:сс.ссс'};
+Blockly.Words['time_astro_anyInstance']   = {'en': 'all instances',               'de': 'Alle Instanzen',                     'ru': 'На все драйвера'};
+Blockly.Words['time_astro_tooltip']       = {'en': 'Send message to telegram',    'de': 'Sende eine Meldung über Telegram',   'ru': 'Послать сообщение через Telegram'};
+Blockly.Words['time_astro_help']          = {'en': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md', 'de': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md', 'ru': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md'};
+
+if (!Blockly.Words['astro_sunriseText']) {
+    Blockly.Words['astro_sunriseText']       = {'en': 'sunrise',                         'de': 'Sonnenaufgang',                 'ru': 'восход солнца'};
+    Blockly.Words['astro_sunriseEndText']    = {'en': 'sunrise end',                     'de': 'Sonnenaufgang-Ende',            'ru': 'конец восхода'};
+    Blockly.Words['astro_goldenHourEndText'] = {'en': 'golden hour end',                 'de': '"Golden hour"-Ende',            'ru': 'конец золотого часа'};
+    Blockly.Words['astro_solarNoonText']     = {'en': 'solar noon',                      'de': 'Sonnenmittag',                  'ru': 'солнечеый полдень'};
+    Blockly.Words['astro_goldenHourText']    = {'en': 'golden hour',                     'de': '"Golden hour"',                 'ru': 'золотой час'};
+    Blockly.Words['astro_sunsetStartText']   = {'en': 'sunset start',                    'de': 'Sonnenuntergang-Anfang',        'ru': 'начало захода солнца'};
+    Blockly.Words['astro_sunsetText']        = {'en': 'sunset',                          'de': 'Sonnenuntergang',               'ru': 'конец захода солнца'};
+    Blockly.Words['astro_duskText']          = {'en': 'dusk',                            'de': 'Abenddämmerung',                'ru': 'сумерки'};
+    Blockly.Words['astro_nauticalDuskText']  = {'en': 'nautical dusk',                   'de': 'Nautische Abenddämmerung',      'ru': 'навигационные сумерки'};
+    Blockly.Words['astro_nightText']         = {'en': 'night',                           'de': 'Nacht',                         'ru': 'ночь'};
+    Blockly.Words['astro_nightEndText']      = {'en': 'night end',                       'de': 'Nachtsende',                    'ru': 'конец ночи'};
+    Blockly.Words['astro_nauticalDawnText']  = {'en': 'nautical dawn',                   'de': 'Nautische Morgendämmerung',     'ru': 'навигационный рассвет'};
+    Blockly.Words['astro_dawnText']          = {'en': 'dawn',                            'de': 'Morgendämmerung',               'ru': 'рассвет'};
+    Blockly.Words['astro_nadirText']         = {'en': 'nadir',                           'de': 'Nadir',                         'ru': 'надир'};
+}
+
+
+Blockly.Time.blocks['time_astro'] =
+    '<block type="time_astro">'
+    + '     <value name="TYPE">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['time_astro'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Words['time_astro'][systemLang]);
+
+        this.appendDummyInput("TYPE")
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['astro_sunriseText'][systemLang],         "sunrise"],
+                [Blockly.Words['astro_sunriseEndText'][systemLang],      "sunriseEnd"],
+                [Blockly.Words['astro_goldenHourEndText'][systemLang],   "goldenHourEnd"],
+                [Blockly.Words['astro_solarNoonText'][systemLang],       "solarNoon"],
+                [Blockly.Words['astro_goldenHourText'][systemLang],      "goldenHour"],
+                [Blockly.Words['astro_sunsetStartText'][systemLang],     "sunsetStart"],
+                [Blockly.Words['astro_sunsetText'][systemLang],          "sunset"],
+                [Blockly.Words['astro_duskText'][systemLang],            "dusk"],
+                [Blockly.Words['astro_nauticalDuskText'][systemLang],    "nauticalDusk"],
+                [Blockly.Words['astro_nightText'][systemLang],           "night"],
+                [Blockly.Words['astro_nightEndText'][systemLang],        "nightEnd"],
+                [Blockly.Words['astro_nauticalDawnText'][systemLang],    "nauticalDawn"],
+                [Blockly.Words['astro_dawnText'][systemLang],            "dawn"],
+                [Blockly.Words['astro_nadirText'][systemLang],           "nadir"]
+            ]), "TYPE");
+
+        this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setOutput(true);
+
+        this.setColour(Blockly.Time.HUE);
+        this.setTooltip(Blockly.Words['time_astro_tooltip'][systemLang]);
+        this.setHelpUrl(Blockly.Words['time_astro_help'][systemLang]);
+    }
+};
+
+Blockly.JavaScript['time_astro'] = function(block) {
+    var type = block.getFieldValue('TYPE');
+
+    return ['getAstroDate("' + type + '")', Blockly.JavaScript.ORDER_ATOMIC];
+};
