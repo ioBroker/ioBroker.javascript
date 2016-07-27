@@ -10,6 +10,56 @@
 
 Executes Javascript and Coffescript Scripts.
 
+## Content
+- [Note](#note)
+- [Global functions](#global-functions)
+    - [Best practice](#best-practice)
+
+- [Functions](#following-functions-can-be-used-in-scripts)
+    - [require - load some module](#require---load-some-module)
+    - [Buffer](#buffer)
+    - [log - Gives out the message into log](#log---gives-out-the-message-into-log)
+    - [exec - execute some OS command, like "cp file1 file2"](#exec---execute-some-os-command-like-cp-file1-file2)
+    - [on - Subscribe on changes or updates of some state](#on---subscribe-on-changes-or-updates-of-some-state)
+    - [subscribe - same as on](#subscribe---same-as-on)
+    - [unsubscribe](#unsubscribe)
+    - [getSubscriptions](#getsubscriptions)
+    - [schedule](#schedule)
+        - [Time schedule](#time-schedule)
+        - [Astro- function](#astro--function)
+
+    - [clearSchedule](#clearschedule)
+    - [getAstroDate](#getastrodate)
+    - [isAstroDay](#isastroday)
+    - [setState](#setstate)
+    - [setStateDelayed](#setstatedelayed)
+    - [clearStateDelayed](#clearstatedelayed)
+    - [getState](#getstate)
+    - [getObject](#getobject)
+    - [setObject](#setobject)
+    - [getIdByName](#getidbyname)
+    - [getEnums](#getenums)
+    - [createState](#createstate)
+    - [deleteState](#deletestate)
+    - [sendTo:](#sendto)
+    - [setInterval](#setinterval)
+    - [clearInterval](#clearinterval)
+    - [setTimeout](#settimeout)
+    - [clearTimeout](#cleartimeout)
+    - [formatDate](#formatdate)
+    - [formatValue](#formatvalue)
+    - [adapterSubscribe](#adaptersubscribe)
+    - [adapterUnsubscribe](#adapterunsubscribe)
+    - [$ - Selector](#---selector)
+    - [readFile](#readfile)
+    - [writeFile](#writefile)
+    - [onStop](#onstop)
+    - [getHistory](#gethistory)
+    - [name](#name)
+    - [instance](#instance)
+
+- [Scripts activity](#scripts-activity)
+- [Changelog](#changelog)
 
 ##Note
 If in the script some modules or functions are used with callbacks or cyclic calls, except setTimeout/setInterval, 
@@ -154,54 +204,54 @@ You can use following parameters to specify the trigger:
 |             | RegExp     |       name matched to regular expression                                                               |
 |             |            |                                                                                                        |
 | change      | string     |       "eq", "ne", "gt", "ge", "lt", "le", "any"                                                        |
-|             |   "eq"     |       (equal)            New value must be euqal to old one (state.val == oldState.val)             |
+|             |   "eq"     |       (equal)            New value must be equal to old one (state.val == oldState.val)             |
 |             |   "ne"     |       (not equal)        New value must be not equal to the old one (state.val != oldState.val) **If "change" is not specified this value is used by default**    |
 |             |   "gt"     |       (greater)          New value must be greater than old value (state.val > oldState.val)        |
-|             |   "ge"     |       (greater or equal) New value must be greater or euqal to old one (state.val >= oldState.val)  |
+|             |   "ge"     |       (greater or equal) New value must be greater or equal to old one (state.val >= oldState.val)  |
 |             |   "lt"     |       (smaller)          New value must be smaller than old one (state.val < oldState.val)          |
-|             |   "le"     |       (smaller or equal) New value must be smaller or euqal to old value (state.val <= oldState.val)|
-|             |  "any"     |       Trigger will be rised if just the new value comes                                                |
+|             |   "le"     |       (smaller or equal) New value must be smaller or equal to old value (state.val <= oldState.val)|
+|             |  "any"     |       Trigger will be raised if just the new value comes                                                |
 |             |            |                                                                                                        |
-| val         | mixed      |       New value must be euqal to given one                                                             |
+| val         | mixed      |       New value must be equal to given one                                                             |
 | valNe       | mixed      |       New value must be not equal to given one                                                         |
 | valGt       | mixed      |       New value must be greater than given one                                                         |
-| valGe       | mixed      |       New value must be greater or euqal to given one                                                  |
+| valGe       | mixed      |       New value must be greater or equal to given one                                                  |
 | valLt       | mixed      |       New value must be smaller than given one                                                         |
-| valLe       | mixed      |       New value must be smaller or euqal to given one                                                  |
+| valLe       | mixed      |       New value must be smaller or equal to given one                                                  |
 |             |            |                                                                                                        |
 | ack         | boolean    |       Acknowledged state of new value is equal to given one                                            |
 |             |            |                                                                                                        |
-| oldVal      | mixed      |       Previous value must be euqal to given one                                                        |
+| oldVal      | mixed      |       Previous value must be equal to given one                                                        |
 | oldValNe    | mixed      |       Previous value must be not equal to given one                                                    |
 | oldValGt    | mixed      |       Previous value must be greater than given one                                                    |
-| oldValGe    | mixed      |       Previous value must be greater or euqal to given one                                             |
+| oldValGe    | mixed      |       Previous value must be greater or equal to given one                                             |
 | oldValLt    | mixed      |       Previous value must be smaller than given one                                                    |
-| oldValLe    | mixed      |       Previous value must be smaller or euqal to given one                                             |
+| oldValLe    | mixed      |       Previous value must be smaller or equal to given one                                             |
 |             |            |                                                                                                        |
 | oldAck      | bool       |       Acknowledged state of previous value is equal to given one                                       |
 |             |            |                                                                                                        |
-| ts          | string     |       New value time stamp must be euqal to given one (state.ts == ts)                              |
+| ts          | string     |       New value time stamp must be equal to given one (state.ts == ts)                              |
 | tsGt        | string     |       New value time stamp must be not equal to the given one (state.ts != ts)                      |
 | tsGe        | string     |       New value time stamp must be greater than given value (state.ts > ts)                         |
-| tsLt        | string     |       New value time stamp must be greater or euqal to given one (state.ts >= ts)                   |
+| tsLt        | string     |       New value time stamp must be greater or equal to given one (state.ts >= ts)                   |
 | tsLe        | string     |       New value time stamp must be smaller than given one (state.ts < ts)                           |
 |             |            |                                                                                                        |
-| oldTs       | string     |       Previous time stamp must be euqal to given one (oldState.ts == ts)                               |
+| oldTs       | string     |       Previous time stamp must be equal to given one (oldState.ts == ts)                               |
 | oldTsGt     | string     |       Previous time stamp must be not equal to the given one (oldState.ts != ts)                       |
 | oldTsGe     | string     |       Previous time stamp must be greater than given value (oldState.ts > ts)                          |
-| oldTsLt     | string     |       Previous time stamp must be greater or euqal to given one (oldState.ts >= ts)                    |
+| oldTsLt     | string     |       Previous time stamp must be greater or equal to given one (oldState.ts >= ts)                    |
 | oldTsLe     | string     |       Previous time stamp must be smaller than given one (oldState.ts < ts)                            |
 |             |            |                                                                                                        |
-| lc          | string     |       Last change time stamp must be euqal to given one (state.lc == lc)                            |
+| lc          | string     |       Last change time stamp must be equal to given one (state.lc == lc)                            |
 | lcGt        | string     |       Last change time stamp must be not equal to the given one (state.lc != lc)                    |
 | lcGe        | string     |       Last change time stamp must be greater than given value (state.lc > lc)                       |
-| lcLt        | string     |       Last change time stamp must be greater or euqal to given one (state.lc >= lc)                 |
+| lcLt        | string     |       Last change time stamp must be greater or equal to given one (state.lc >= lc)                 |
 | lcLe        | string     |       Last change time stamp must be smaller than given one (state.lc < lc)                         |
 |             |            |                                                                                                        |
-| oldLc       | string     |       Previous last change time stamp must be euqal to given one (oldState.lc == lc)                   |
+| oldLc       | string     |       Previous last change time stamp must be equal to given one (oldState.lc == lc)                   |
 | oldLcGt     | string     |       Previous last change time stamp must be not equal to the given one (oldState.lc != lc)           |
 | oldLcGe     | string     |       Previous last change time stamp must be greater than given value (oldState.lc > lc)              |
-| oldLcLt     | string     |       Previous last change time stamp must be greater or euqal to given one (oldState.lc >= lc)        |
+| oldLcLt     | string     |       Previous last change time stamp must be greater or equal to given one (oldState.lc >= lc)        |
 | oldLcLe     | string     |       Previous last change time stamp must be smaller than given one (oldState.lc < lc)                |
 |             |            |                                                                                                        |
 | channelId   | string     |       Channel ID must be equal to given one                                                            |
@@ -365,7 +415,7 @@ schedule({astro: "sunset", shift: 10}, function () {
 ```
 The attribute "shift" is the offset in minutes. It can be negative too, to define time before astro event.
 
-Following values can be used as attribut in astro-function:
+Following values can be used as attribute in astro-function:
 
 - sunrise: sunrise (top edge of the sun appears on the horizon)
 - sunriseEnd: sunrise ends (bottom edge of the sun touches the horizon)
@@ -410,7 +460,7 @@ clearSchedule(sch);
 
 ### getAstroDate
     getAstroDate (pattern, date)
-Returns a javascript Date object for the specified pattern. For valid pattern values see the *Astro* section in the *schedule* function.
+Returns a javascript Date object for the specified pattern. For valid pattern values see the [Astro](#astro--function) section in the *schedule* function.
 
 The returned Date object is calculated for the passed *date*. If no date is provided, the current day is used.
 
@@ -441,7 +491,7 @@ Same as setState but with delay in milliseconds. You can clear all running delay
         log('Lamp is OFF');
     });
 ``` 
-This function returns handler of the timer and this timer can be indiviually stopped by clearStateDelayed
+This function returns handler of the timer and this timer can be individually stopped by clearStateDelayed
 
 ### clearStateDelayed
     clearStateDelayed (id)
@@ -801,7 +851,7 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 ### 2.1.1 (2016-05-21)
 * (bluefox) try to fix "Duplicate name" error
-* (bluefox) modify readFile/wrieFile commands
+* (bluefox) modify readFile/writeFile commands
 * (gh-god) fix stop of script and unsubscribe
 * (paul53) check type of set value and min, max by setState
 
@@ -991,7 +1041,7 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 * (bluefox) add new convert functions: toInt, toFloat, toBool
 
 ### 0.2.6 (2015-03-16)
-* (bluefox) convert automatical grad to decimal grad
+* (bluefox) convert automatically grad to decimal grad
 * (bluefox) fix some errors
 
 ### 0.2.5 (2015-03-16)
