@@ -186,7 +186,7 @@ Blockly.Words['time_get_dd.mm.yy']      = {'en': 'dd.mm.yy',                    
 Blockly.Words['time_get_dd/mm/yy']      = {'en': 'dd/mm/yy',                    'de': 'TT/MM/JJ',                           'ru': 'ДД/ММ/ГГ',       format: 'DD/MM/YY'};
 Blockly.Words['time_get_mm/dd/yyyy']    = {'en': 'mm/dd/yyyy',                  'de': 'MM/TT/JJJJ',                         'ru': 'ММ/ДД/ГГГГ',     format: 'MM/DD/YYYY'};
 Blockly.Words['time_get_mm/dd/yy']      = {'en': 'mm/dd/yy',                    'de': 'MM/TT/JJ',                           'ru': 'ММ/ДД/yy',       format: 'MM/DD/YY'};
-Blockly.Words['time_get_dd.mm']         = {'en': 'dd.mm',                       'de': 'TT.MM',                              'ru': 'ДД.ММ',          format: 'DD.MM'};
+Blockly.Words['time_get_dd.mm']         = {'en': 'dd.mm.',                      'de': 'TT.MM.',                             'ru': 'ДД.ММ.',         format: 'DD.MM.'};
 Blockly.Words['time_get_dd/mm']         = {'en': 'dd/mm',                       'de': 'TT/MM',                              'ru': 'ДД/ММ',          format: 'DD/MM'};
 Blockly.Words['time_get_mm.dd']         = {'en': 'mm.dd',                       'de': 'MM.TT',                              'ru': 'ММ.ДД',          format: 'MM.DD'};
 Blockly.Words['time_get_mm/dd']         = {'en': 'mm/dd',                       'de': 'MM/TT',                              'ru': 'ММ/ДД',          format: 'MM/DD'};
@@ -247,8 +247,6 @@ Blockly.Blocks['time_get'] = {
             }), "OPTION");
 
         this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
 
         this.setOutput(true);
 
