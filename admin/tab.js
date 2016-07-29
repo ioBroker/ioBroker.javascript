@@ -635,7 +635,7 @@ function Scripts(main) {
         for (var i = 0, block; block = blocks[i]; i++) {
             var connections = block.getConnections_(true);
             for (var j = 0, conn; conn = connections[j]; j++) {
-                if (!conn.sourceBlock_ || (conn.type == Blockly.INPUT_VALUE || conn.type == Blockly.OUTPUT_VALUE) && !conn.targetConnection) {
+                if (!conn.sourceBlock_ || ((conn.type === Blockly.INPUT_VALUE || conn.type === Blockly.OUTPUT_VALUE) && !conn.targetConnection && !conn._optional)) {
                     return block;
                 }
             }

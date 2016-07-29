@@ -1574,7 +1574,7 @@
                 if (states[id]) return states[id];
                 if (states[adapter.namespace + '.' + id]) return states[adapter.namespace + '.' + id];
                 adapter.log.warn('State "' + id + '" not found');
-                return null;
+                return {val: null, notExist: true};
             },
             getIdByName:    function (name, alwaysArray) {
                 if (alwaysArray) {

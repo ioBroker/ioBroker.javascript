@@ -155,8 +155,7 @@ Blockly.JavaScript['time_compare'] = function(block) {
     return [code_start_time, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
-// if time greater, less, between
-// --- time compare --------------------------------------------------
+// --- get time --------------------------------------------------
 Blockly.Words['time_get']               = {'en': 'Actual time is',              'de': 'Aktuelle Zeit ist',                  'ru': 'Время '};
 Blockly.Words['time_get_default_format'] = {'en': 'YYYY.MM.DD hh:mm:ss.sss',    'de': 'JJJJ.MM.TT SS:mm:ss.sss',            'ru': 'ГГГГ.ММ.ДД чч:мм:сс.ссс'};
 Blockly.Words['time_get_anyInstance']   = {'en': 'all instances',               'de': 'Alle Instanzen',                     'ru': 'На все драйвера'};
@@ -175,6 +174,7 @@ Blockly.Words['time_get_fy']            = {'en': 'full year',                   
 Blockly.Words['time_get_wdt']           = {'en': 'week day text',               'de': 'Wochentag als Text',                 'ru': 'день недели словом'};
 Blockly.Words['time_get_wd']            = {'en': 'week day as number',          'de': 'Wochentag als Nummer',               'ru': 'день недели числом'};
 Blockly.Words['time_get_custom']        = {'en': 'custom format',               'de': 'anwenderformatiert',                 'ru': 'произвольный формат'};
+Blockly.Words['time_get_object']        = {'en': 'Date object',                 'de': 'Datum-Objekt',                       'ru': 'как объект'};
 
 Blockly.Words['time_get_yyyy.mm.dd']    = {'en': 'yyyy.mm.dd',                  'de': 'JJJJ.MM.TT',                         'ru': 'ГГГГ.ММ.ДД',     format: 'YYYY.MM.DD'};
 Blockly.Words['time_get_yyyy/mm/dd']    = {'en': 'yyyy/mm/dd',                  'de': 'JJJJ/MM/TT',                         'ru': 'ГГГГ/ММ/ДД',     format: 'YYYY/MM/DD'};
@@ -224,6 +224,7 @@ Blockly.Blocks['time_get'] = {
                 [Blockly.Words['time_get_wdt'][systemLang]           , "wdt"],
                 [Blockly.Words['time_get_wd'][systemLang]            , "wd"],
                 [Blockly.Words['time_get_custom'][systemLang]        , "custom"],
+                [Blockly.Words['time_get_object'][systemLang]        , "object"],
                 [Blockly.Words['time_get_yyyy.mm.dd'][systemLang]    , [Blockly.Words['time_get_yyyy.mm.dd']  .format]],
                 [Blockly.Words['time_get_yyyy/mm/dd'][systemLang]    , [Blockly.Words['time_get_yyyy/mm/dd']  .format]],
                 [Blockly.Words['time_get_yy.mm.dd'][systemLang]      , [Blockly.Words['time_get_yy.mm.dd']    .format]],
@@ -307,7 +308,9 @@ Blockly.JavaScript['time_get'] = function(block) {
     var format = block.getFieldValue('FORMAT');
 
     var code;
-    if (option === "ms") {
+    if (option === "object") {
+        code = '(new Date().getTime())';
+    } else if (option === "ms") {
         code = '(new Date().getMilliseconds())';
     } else if (option === "s") {
         code = '(new Date().getSeconds())';
@@ -336,12 +339,10 @@ Blockly.JavaScript['time_get'] = function(block) {
     return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
-// get astro time
-// --- time compare --------------------------------------------------
-Blockly.Words['time_astro']               = {'en': 'Actual time is',              'de': 'Aktuelle Zeit ist',                  'ru': 'Время '};
+// --- get astro time --------------------------------------------------
+Blockly.Words['time_astro']               = {'en': 'Actual time of',              'de': 'Aktuelle Zeit von',                  'ru': 'Время '};
 Blockly.Words['time_astro_default_format'] = {'en': 'YYYY.MM.DD hh:mm:ss.sss',    'de': 'JJJJ.MM.TT SS:mm:ss.sss',            'ru': 'ГГГГ.ММ.ДД чч:мм:сс.ссс'};
-Blockly.Words['time_astro_anyInstance']   = {'en': 'all instances',               'de': 'Alle Instanzen',                     'ru': 'На все драйвера'};
-Blockly.Words['time_astro_tooltip']       = {'en': 'Send message to telegram',    'de': 'Sende eine Meldung über Telegram',   'ru': 'Послать сообщение через Telegram'};
+Blockly.Words['time_astro_tooltip']       = {'en': 'Get actual time or ',    'de': 'Sende eine Meldung über Telegram',   'ru': 'Послать сообщение через Telegram'};
 Blockly.Words['time_astro_help']          = {'en': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md', 'de': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md', 'ru': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md'};
 
 if (!Blockly.Words['astro_sunriseText']) {

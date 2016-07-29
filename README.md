@@ -504,10 +504,12 @@ Clears all delayed tasks for specified state ID or some specific delayed task.
     clearStateDelayed('Kitchen.Light.Lamp', timer); // Nothing will be switched on
     clearStateDelayed('Kitchen.Light.Lamp'); // Clear all running delayed tasks for this ID
 ```     
-### getState 
+### getState
     getState (id)
-Returns state of id in form {val: value, ack: true/false, ts: timestamp, lc: lastchanged, from: origin}    
-    
+Returns state of id in form ```{val: value, ack: true/false, ts: timestamp, lc: lastchanged, from: origin}```   .
+
+If state does not exist, it will be returned following object: ```{val: null, notExist: true}```
+
 ### getObject
     getObject (id, enumName)
 Get description of object id as stored in system.
@@ -819,6 +821,10 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 2.3.1 (2016-07-29)
+* (bluefox) modify blockly modules
+* (bluefox) give back some response even if state does not exist
+
 ### 2.3.0 (2016-07-01)
 * (bluefox) export/import of scripts
 
