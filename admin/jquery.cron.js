@@ -13,6 +13,8 @@ $.fn.cron = function(options, setValue) {
     var words = {
         "Every %s seconds": {"en": "Every %s seconds",  "de": "Alle %s Sekunden",   "ru": "Каждые %s секунд(ы)"},
         "Clear":            {"en": "Clear",             "de": "Löschen",            "ru": "Clear"},
+        "never":            {"en": "Never",             "de": "Nie",                "ru": "Никогда"},
+        "Day of Month":     {"en": "Day of Month",      "de": "Monatstag",          "ru": "День месяца"},
 
         "Jan":              {"en": "Jan",               "de": "Jan",                "ru": "Янв"},
         "Feb":              {"en": "Feb",               "de": "Feb",                "ru": "Фев"},
@@ -254,13 +256,19 @@ $.fn.cron = function(options, setValue) {
 
     var cronArr;
     var updateInput = false;
+
     if (options && typeof options.value === 'string') {
-        cronArr = options.value.split(' ');
-        if (cronArr.length === 5) {
+        if (!options.value) {
             $(el).find('.cron-checkbox-seconds').prop('checked', false);
-            cronArr.unshift('*');
+            cronArr = null;
         } else {
-            $(el).find('.cron-checkbox-seconds').prop('checked', true);
+            cronArr = options.value.split(' ');
+            if (cronArr.length === 5) {
+                $(el).find('.cron-checkbox-seconds').prop('checked', false);
+                cronArr.unshift('*');
+            } else {
+                $(el).find('.cron-checkbox-seconds').prop('checked', true);
+            }
         }
     } else {
         cronArr = ['*', '*', '*', '*', '*', '*'];
@@ -273,6 +281,7 @@ $.fn.cron = function(options, setValue) {
         activate: function (event, ui) {
             if ($(el).find('.cron-input').is(':focus') || updateInput) return;
 
+            cronArr = cronArr || ['*', '*', '*', '*', '*', '*'];
             switch ($(ui.newTab).attr('id')) {
 
                 // Seconds
@@ -407,6 +416,12 @@ $.fn.cron = function(options, setValue) {
             value = $(el).find('.cron-input').val();
         }
         value = value.trim();
+        if (!value) {
+            $(el).find('.cron-checkbox-seconds').prop('checked', false);
+            $(el).find('.cron-main-tab').tabs('option', 'disabled', [0]);
+            return null;
+        }
+
         var arr = value.split(' ');
 
         if (arr.length === 5) {
@@ -426,6 +441,11 @@ $.fn.cron = function(options, setValue) {
 
     function cron2text(arr) {
         if (!arr) arr = cronArr;
+
+        if (!arr) {
+            return '';
+        }
+
         arr = JSON.parse(JSON.stringify(arr || ['*', '*', '*', '*', '*', '*']));
         if (!$(el).find('.cron-checkbox-seconds').prop('checked')) {
             arr.shift();
@@ -489,6 +509,10 @@ $.fn.cron = function(options, setValue) {
     }
 
     function updateDescription(value) {
+        if (!value) {
+            $(el).find('.cron-text').html(_('never'));
+            return;
+        }
         var text = cronToText(value, $(el).find('.cron-checkbox-seconds').prop('checked'), LOCALE[systemLang]);
 
         text = correctCasus(text, $(el).find('.cron-checkbox-seconds').prop('checked') ? cronArr[0] : null);
@@ -500,7 +524,7 @@ $.fn.cron = function(options, setValue) {
         updateInput = true;
         cronArr = text2cron(value);
 
-        for (var c = 0; c < cronArr.length; c++) {
+        for (var c = 0; c < (cronArr ? cronArr.length : 6); c++) {
             detect(cronArr, c);
         }
 
@@ -576,6 +600,14 @@ $.fn.cron = function(options, setValue) {
     function detect(values, index) {
         var $tab = $(el).find('.cron-tab-' + types[index]);
 
+        if (!values) {
+            if ($tab.find('.cron-tabs').tabs('option', 'active') != 0) {
+                $tab.find('.cron-tabs').tabs('option', 'active', 0);
+                changed = true;
+            }
+            return;
+        }
+
         values[index] = values[index] || '*';
         var changed = true;
 
@@ -642,6 +674,8 @@ $.fn.cron = function(options, setValue) {
     function processEachChange(elem) {
         var newItem = $(elem).data('index').toString();
         var arg     = $(elem).data('arg');
+
+        if (!cronArr) cronArr = ['*', '*', '*', '*', '*', '*'];
 
         if (cronArr[arg] === '*') {
             cronArr[arg] = newItem;
@@ -769,7 +803,7 @@ $.fn.cron = function(options, setValue) {
             ];
 
             for (var i = 0; i < days.length; i++) {
-                text += '<input type="checkbox" id="cron-week-check' + days[i].id + '" data-index="' + i + '" data-arg="5"><label for="cron-week-check' + days[i].id + '">' + _(days[i].name) + '</label>';
+                text += '<input type="checkbox" id="cron-week-check' + days[i].id + '" data-index="' + days[i].id + '" data-arg="5"><label for="cron-week-check' + days[i].id + '">' + _(days[i].name) + '</label>';
             }
             return text;
         });
