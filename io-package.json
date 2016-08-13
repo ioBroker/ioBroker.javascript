@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "2.3.0",
+        "version":                  "2.3.1",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+			"2.3.1": {
+                "en": "blockly support",
+                "de": "blockly support",
+                "ru": "blockly support"
+            },
 			"2.3.0": {
                 "en": "export/import of scripts",
                 "de": "export/import of scripts",

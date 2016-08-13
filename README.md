@@ -821,9 +821,10 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
-### 2.3.1 (2016-07-29)
+### 2.3.1 (2016-08-13)
 * (bluefox) modify blockly modules
 * (bluefox) give back some response even if state does not exist
+* (bluefox) blockly support
 
 ### 2.3.0 (2016-07-01)
 * (bluefox) export/import of scripts

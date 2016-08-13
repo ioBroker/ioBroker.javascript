@@ -1593,7 +1593,7 @@ function Scripts(main) {
         if (obj.engineType !== 'Blockly') {
             obj.source = that.editor.getValue();
             var blocklyText = jsCode2Blockly(obj.source);
-            if (blocklyText.substring(0, 4) === '<xml') {
+            if (blocklyText && blocklyText.substring(0, 4) === '<xml') {
                 // ask about change the script type
                 that.main.confirmMessage(_('Convert to Blockly'), _('Convert?'), 'help', function (result) {
                     if (result) {
