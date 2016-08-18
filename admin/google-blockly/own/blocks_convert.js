@@ -44,6 +44,29 @@ Blockly.JavaScript.convert_tonumber = function (a) {
     return ["parseFloat(" + Blockly.JavaScript.valueToCode(a, "VALUE", Blockly.JavaScript.ORDER_ATOMIC) + ")", Blockly.JavaScript.ORDER_ATOMIC];
 };
 
+// --- to Boolean --------------------------------------------------
+Blockly.Words['convert_toboolean']         = {'en': 'toBoolean',                         'de': 'nach Logikwert',                       'ru': 'в булево значение'};
+Blockly.Words['convert_toboolean_tooltip'] = {'en': 'Cast input to boolean',             'de': 'Convert Eingang nach Logikwert',       'ru': 'Преобразовать вход в булево значение'};
+
+Blockly.Convert.blocks['convert_toboolean'] =
+    '<block type="convert_toboolean">'
+    + '     <value name="VALUE">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks.convert_toboolean = {
+    init: function () {
+        this.setColour(Blockly.Convert.HUE);
+        this.appendValueInput("VALUE").appendField(Blockly.Words['convert_toboolean'][systemLang]);
+        this.setOutput(true, "Boolean");
+        this.setTooltip(Blockly.Words['convert_toboolean_tooltip'][systemLang])
+    }
+};
+
+Blockly.JavaScript.convert_toboolean = function (a) {
+    return ["(function (){var val = " + Blockly.JavaScript.valueToCode(a, "VALUE", Blockly.JavaScript.ORDER_ATOMIC) + "; if (val === 'true') return true; if (val === 'false') return false; return !!val;})()", Blockly.JavaScript.ORDER_ATOMIC];
+};
+
 // --- to String --------------------------------------------------
 Blockly.Words['convert_tostring']         = {'en': 'toString',                          'de': 'nach String',                          'ru': 'в строку'};
 Blockly.Words['convert_tostring_tooltip'] = {'en': 'Cast input to number',              'de': 'Convert Eingang nach String',          'ru': 'Преобразовать вход в строку'};

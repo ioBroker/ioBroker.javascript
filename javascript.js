@@ -28,13 +28,14 @@
     };
 
     var utils =   require(__dirname + '/lib/utils'); // Get common adapter utils
+    var words =   require(__dirname + '/lib/words');
 
     // modify fs to protect important information
     mods.fs._readFile      = mods.fs.readFile;
     mods.fs._readFileSync  = mods.fs.readFileSync;
     mods.fs._writeFile     = mods.fs.writeFile;
     mods.fs._writeFileSync = mods.fs.writeFileSync;
-
+    
     var adapter = utils.adapter({
 
         name: 'javascript',
@@ -97,8 +98,14 @@
                 }
 
                 // Object just changed
-                if (obj.type != 'script') {
+                if (obj.type !== 'script') {
                     objects[id] = obj;
+
+                    if (id === 'system.config') {
+                        // set langugae for debug messages
+                        if (objects['system.config'].common.language) words.setLanguage(objects['system.config'].common.language);
+                    }
+
                     return;
                 }
 
@@ -626,7 +633,7 @@
         }
     }
 
-    function execute(script, name) {
+    function execute(script, name, verbose, debug) {
         script.intervals = [];
         script.timeouts  = [];
         script.schedules = [];
@@ -638,6 +645,8 @@
             _id:       script._id,
             name:      name,
             instance:  adapter.instance,
+            verbose:   verbose,
+            debug:     debug,
             require:   function (md) {
                 if (mods[md]) return mods[md];
                 try {
@@ -1151,12 +1160,24 @@
                 adapter.log[sev](name + ': ' + msg);
             },
             exec:      function (cmd, callback) {
-                return mods.child_process.exec(cmd, callback);
+                if (sandbox.verbose) sandbox.log('exec: ' + cmd, 'info');
+                if (sandbox.debug) {
+                    sandbox.log(words._('Command %s was not executed, while debug mode is active', cmd), 'warn');
+                    if (typeof callback === 'function') {
+                        setTimeout(function () {
+                            callback();
+                        }, 0);
+                    }
+                } else {
+                    return mods.child_process.exec(cmd, callback);
+                }
             },
             email:     function (msg) {
+                if (sandbox.verbose) sandbox.log('email(msg=' + JSON.stringify(msg) + ')', 'info');
                 adapter.sendTo('email', msg);
             },
             pushover:  function (msg) {
+                if (sandbox.verbose) sandbox.log('pushover(msg=' + JSON.stringify(msg) + ')', 'info');
                 adapter.sendTo('pushover', msg);
             },
             subscribe: function (pattern, callbackOrId, value) {
@@ -1228,6 +1249,7 @@
                         }
                     }
                 }
+                if (sandbox.verbose) sandbox.log('subscribe: ' + JSON.stringify(subs), 'info');
 
                 subscriptions.push(subs);
                 if (pattern.enumName || pattern.enumId) isEnums = true;
@@ -1239,6 +1261,7 @@
                     result[subscriptions[s].pattern.id] = result[subscriptions[s].pattern.id] || [];
                     result[subscriptions[s].pattern.id].push({name: subscriptions[s].name, pattern: subscriptions[s].pattern});
                 }
+                if (sandbox.verbose) sandbox.log('getSubscriptions() => ' + JSON.stringify(result) , 'info');
                 return result;
             },
             adapterSubscribe: function (id) {
@@ -1253,6 +1276,7 @@
                     var alive = 'system.adapter.' + a + '.alive';
                     adapterSubs[alive] = adapterSubs[alive] || [];
                     adapterSubs[alive].push(id);
+                    if (sandbox.verbose) sandbox.log('adapterSubscribe: ' + a + ' - ' + id, 'info');
                     adapter.sendTo(a, 'subscribe', id);
                 }
             },
@@ -1261,6 +1285,7 @@
             },
             unsubscribe:    function (idOrObject) {
                 var i;
+                if (sandbox.verbose) sandbox.log('adapterUnsubscribe(id=' + idOrObject + ')', 'info');
                 if (typeof idOrObject === 'object') {
                     for (i = subscriptions.length - 1; i >= 0 ; i--) {
                         if (subscriptions[i] == idOrObject) {
@@ -1272,7 +1297,7 @@
                 } else {
                     var deleted = 0;
                     for (i = subscriptions.length - 1; i >= 0 ; i--) {
-                        if (subscriptions[i].name == name && subscriptions[i].pattern.id == idOrObject) {
+                        if (subscriptions[i].name === name && subscriptions[i].pattern.id === idOrObject) {
                             deleted++;
                             subscriptions.splice(i, 1);
                             sandbox.__engine.__subscriptions -= 1;
@@ -1285,7 +1310,6 @@
                 return sandbox.subscribe(pattern, callbackOrId, value);
             },
             schedule:       function (pattern, callback) {
-
                 if (typeof callback !== 'function') {
                     adapter.log.error(name + ': schedule callback missing');
                     return;
@@ -1358,9 +1382,12 @@
                         }, 2000);
 
                     }, ts.getTime() - nowdate.getTime());
+
+                    if (sandbox.verbose) sandbox.log('schedule(astro=' + pattern.astro + ', offset=' + pattern.shift + ')', 'info');
+
                 } else {
                     // fix problem with sunday and 7
-                    if (typeof pattern == 'string') {
+                    if (typeof pattern === 'string') {
                         var parts = pattern.replace(/\s+/g, ' ').split(' ');
                         if (parts.length >= 5 && parts[5] >= 7) parts[5] = 0;
                         pattern = parts.join(' ');
@@ -1370,6 +1397,9 @@
                     });
 
                     script.schedules.push(schedule);
+
+                    if (sandbox.verbose) sandbox.log('schedule(cron=' + pattern + ')', 'info');
+
                     return schedule;
                 }
             },
@@ -1388,15 +1418,18 @@
                     adapter.log.error('Cannot get astro date for "' + pattern + '"');
                 }
 
+                if (sandbox.verbose) sandbox.log('getAstroDate(pattern=' + pattern + ', date=' + date + ') => ' + ts, 'info');
+
                 return ts;
             },
             isAstroDay:     function () {
                 var nowDate  = new Date();
                 var dayBegin = sandbox.getAstroDate('sunrise');
                 var dayEnd   = sandbox.getAstroDate('sunset');
-                if (dayBegin === undefined || dayEnd === undefined) {
-                    return;
-                }
+
+                if (dayBegin === undefined || dayEnd === undefined) return;
+
+                if (sandbox.verbose) sandbox.log('isAstroDay() => ' + (nowDate >= dayBegin && nowDate <= dayEnd), 'info');
 
                 return (nowDate >= dayBegin && nowDate <= dayEnd);
             },
@@ -1408,9 +1441,11 @@
                         }
                         delete script.schedules[i];
                         script.schedules.splice(i, 1);
+                        if (sandbox.verbose) sandbox.log('clearSchedule() => cleared', 'info');
                         return true;
                     }
                 }
+                if (sandbox.verbose) sandbox.log('clearSchedule() => invalid handler', 'warn');
                 return false;
             },
             setState:       function (id, state, isAck, callback) {
@@ -1459,28 +1494,81 @@
                 }
 
                 if (states[id]) {
-                    adapter.setForeignState(id, state, function () {
-                        if (typeof callback === 'function') callback();
-                    });
+                    if (sandbox.verbose) sandbox.log('setForeignState(id=' + id + ', state=' + JSON.stringify(state) + ')', 'info');
+
+                    if (sandbox.debug) {
+                        sandbox.log('setForeignState(id=' + id + ', state=' + JSON.stringify(state) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
+
+                        if (typeof callback === 'function') {
+                            setTimeout(function () {
+                                callback();
+                            }, 0);
+                        }
+                    } else {
+                        adapter.setForeignState(id, state, function (err) {
+                            if (err) sandbox.log('setForeignState: ' + err, 'error');
+
+                            if (typeof callback === 'function') callback();
+                        });
+                    }
                 } else if (states[adapter.namespace + '.' + id]) {
-                    adapter.setState(id, state, function () {
-                        if (typeof callback === 'function') callback();
-                    });
+                    if (sandbox.verbose) sandbox.log('setState(id=' + id + ', state=' + JSON.stringify(state) + ')', 'info');
+
+                    if (sandbox.debug) {
+                        sandbox.log('setState(' + id + ', ' + JSON.stringify(state) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
+                        if (typeof callback === 'function') {
+                            setTimeout(function () {
+                                callback();
+                            }, 0);
+                        }
+                    } else {
+                        adapter.setState(id, state, function (err) {
+                            if (err) sandbox.log('setState: ' + err, 'error');
+
+                            if (typeof callback === 'function') callback();
+                        });
+                    }
                 } else {
                     if (objects[id]) {
-                        if (objects[id].type == 'state') {
-                            adapter.setForeignState(id, state, function () {
-                                if (typeof callback === 'function') callback();
-                            });
+                        if (objects[id].type === 'state') {
+                            if (sandbox.verbose) sandbox.log('setForeignState(id=' + id + ', state=' + JSON.stringify(state) + ')', 'info');
+
+                            if (sandbox.debug) {
+                                sandbox.log('setForeignState(id=' + id + ', state=' + JSON.stringify(state) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
+                                if (typeof callback === 'function') {
+                                    setTimeout(function () {
+                                        callback();
+                                    }, 0);
+                                }
+                            } else {
+                                adapter.setForeignState(id, state, function (err) {
+                                    if (err) sandbox.log('setForeignState: ' + err, 'error');
+
+                                    if (typeof callback === 'function') callback();
+                                });
+                            }
                         } else {
                             adapter.log.warn('Cannot set value of non-state object "' + id + '"');
                             if (typeof callback === 'function') callback('Cannot set value of non-state object "' + id + '"');
                         }
                     } else if (objects[adapter.namespace + '.' + id]) {
-                        if (objects[adapter.namespace + '.' + id].type == 'state') {
-                            adapter.setState(id, state, function () {
-                                if (typeof callback === 'function') callback();
-                            });
+                        if (objects[adapter.namespace + '.' + id].type === 'state') {
+                            if (sandbox.verbose) sandbox.log('setState(id=' + id + ', state=' + JSON.stringify(state) + ')', 'info');
+
+                            if (sandbox.debug) {
+                                sandbox.log('setState(id=' + id + ', state=' + JSON.stringify(state) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
+                                if (typeof callback === 'function') {
+                                    setTimeout(function () {
+                                        callback();
+                                    }, 0);
+                                }
+                            } else {
+                                adapter.setState(id, state, function (err) {
+                                    if (err) sandbox.log('setState: ' + err, 'error');
+
+                                    if (typeof callback === 'function') callback();
+                                });
+                            }
                         } else {
                             adapter.log.warn('Cannot set value of non-state object "' + adapter.namespace + '.' + id + '"');
                             if (typeof callback === 'function') callback('Cannot set value of non-state object "' + adapter.namespace + '.' + id + '"');
@@ -1511,12 +1599,18 @@
 
                 if (clearRunning === undefined) clearRunning = true;
 
+                if (sandbox.verbose) sandbox.log('setStateDelayed(id=' + id + ', state=' + state + ', isAck=' + isAck + ', delay=' + delay + ', clearRunning=' + clearRunning + ')', 'info');
+
                 if (clearRunning) {
                     if (timers[id]) {
+                        if (sandbox.verbose) sandbox.log('setStateDelayed: clear ' + timers[id].length + ' running timers', 'info');
+
                         for (var i = 0; i < timers[id].length; i++) {
                             clearTimeout(timers[id][i].t);
                         }
                         delete timers[id];
+                    } else {
+                        if (sandbox.verbose) sandbox.log('setStateDelayed: no running timers', 'info');
                     }
                 }
                 // If no delay => start immediately
@@ -1552,13 +1646,14 @@
                 }
             },
             clearStateDelayed: function (id, timerId) {
+                if (sandbox.verbose) sandbox.log('clearStateDelayed(id=' + id + ', timerId=' + timerId + ')', 'info');
                 if (timers[id]) {
+
                     for (var i = timers[id].length - 1; i >= 0; i--) {
-                        if (timerId === undefined || timers[id][i].id == timerId) {
+                        if (timerId === undefined || timers[id][i].id === timerId) {
                             clearTimeout(timers[id][i].t);
-                            if (timerId !== undefined) {
-                                timers[id].splice(i, 1);
-                            }
+                            if (timerId !== undefined) timers[id].splice(i, 1);
+                            if (sandbox.verbose) sandbox.log('clearStateDelayed: clear timer ' + timers[id][i].id, 'info');
                         }
                     }
                     if (timerId === undefined) {
@@ -1571,14 +1666,26 @@
                 return false;
             },
             getState:       function (id) {
-                if (states[id]) return states[id];
-                if (states[adapter.namespace + '.' + id]) return states[adapter.namespace + '.' + id];
+                if (states[id]) {
+                    if (sandbox.verbose) sandbox.log('getState(id=' + id + ', timerId=' + timerId + ') => ' + JSON.stringify(states[id]), 'info');
+                    return states[id];
+                }
+                if (states[adapter.namespace + '.' + id]) {
+                    if (sandbox.verbose) sandbox.log('getState(id=' + id + ', timerId=' + timerId + ') => ' + states[adapter.namespace + '.' + id], 'info');
+                    return states[adapter.namespace + '.' + id];
+                }
+
+                if (sandbox.verbose) sandbox.log('getState(id=' + id + ', timerId=' + timerId + ') => not found', 'info');
+
                 adapter.log.warn('State "' + id + '" not found');
                 return {val: null, notExist: true};
             },
             getIdByName:    function (name, alwaysArray) {
+                if (sandbox.verbose) sandbox.log('getIdByName(name=' + name + ', alwaysArray=' + alwaysArray + ') => ' + names[name], 'info');
                 if (alwaysArray) {
-                    if (typeof names[name] === 'string') return [names[name]];
+                    if (typeof names[name] === 'string') {
+                        return [names[name]];
+                    }
                     return names[name];
                 } else {
                     return names[name];
@@ -1586,6 +1693,7 @@
             },
             getObject:      function (id, enumName) {
                 if (!objects[id]) {
+                    if (sandbox.verbose) sandbox.log('getObject(id=' + id + ', enumName=' + enumName + ') => does not exist', 'info');
                     adapter.log.warn('Object "' + id + '" does not exist');
                     return null;
                 } else if (enumName) {
@@ -1602,6 +1710,7 @@
                             }
                         }
                     }
+                    if (sandbox.verbose) sandbox.log('getObject(id=' + id + ', enumName=' + enumName + ') => ' + JSON.stringify(obj), 'info');
 
                     return obj;
                 } else {
@@ -1612,6 +1721,7 @@
                         adapter.log.error('Object "' + id + '" can\'t be copied');
                         return null;
                     }
+                    if (sandbox.verbose) sandbox.log('getObject(id=' + id + ', enumName=' + enumName + ') => ' + JSON.stringify(result), 'info');
                     return result;
                 }
             },
@@ -1631,6 +1741,7 @@
                         });
                     }
                 }
+                if (sandbox.verbose) sandbox.log('getEnums(enumName=' + enumName + ') => ' + JSON.stringify(result), 'info');
                 return JSON.parse(JSON.stringify(result));
             },
             createState: function (name, initValue, forceCreation, common, native, callback) {
@@ -1725,13 +1836,17 @@
                     if (common.def !== undefined && common.max !== undefined && def > max) common.def = max;
                 }
 
+                if (sandbox.verbose) sandbox.log('createState(name=' + name + ', initValue=' + initValue + ', forceCreation=' + forceCreation + ', common=' + JSON.stringify(common) + ', native=' + JSON.stringify(native) + ')', 'debug');
+
                 if (forceCreation) {
                     // todo: store object in objects to have this object directly after callback
                     adapter.setObject(name, {
                         common: common,
                         native: native,
                         type:   'state'
-                    }, function () {
+                    }, function (err) {
+                        if (err) adapter.log.warn('Cannot set object "' + name + '": ' + err);
+
                         if (initValue !== undefined) {
                             adapter.setState(name, initValue, callback);
                         } else {
@@ -1747,7 +1862,9 @@
                                 common: common,
                                 native: native,
                                 type:   'state'
-                            }, function () {
+                            }, function (err) {
+                                if (err) adapter.log.warn('Cannot set object "' + name + '": ' + err);
+
                                 if (initValue !== undefined) {
                                     adapter.setState(name, initValue, callback);
                                 } else {
@@ -1775,10 +1892,10 @@
                 if (objects[adapter.namespace + '.' + id]) delete objects[adapter.namespace + '.' + id];
                 if (states[adapter.namespace + '.' + id])  delete states[adapter.namespace + '.' + id];
 
+                if (sandbox.verbose) sandbox.log('deleteState(id=' + id + ')', 'debug');
                 adapter.delObject(id, function (err) {
-                    if (err) {
-                        adapter.log.warn('Object for state "' + id + '" does not exist: ' + err);
-                    }
+                    if (err) adapter.log.warn('Object for state "' + id + '" does not exist: ' + err);
+
                     adapter.delState(id, function (err) {
                         if (err) adapter.log.error('Cannot delete state "' + id + '": ' + err);
                         if (typeof callback === 'function') callback(err);
@@ -1787,6 +1904,7 @@
                 });
             },
             sendTo:    function (_adapter, cmd, msg, callback) {
+                if (sandbox.verbose) sandbox.log('sendTo(adapter=' + _adapter + ', cmd=' + cmd + ', msg=' + JSON.stringify(msg) + ')', 'info');
                 adapter.sendTo(_adapter, cmd, msg, callback);
             },
             sendto:    function (_adapter, cmd, msg, callback) {
@@ -1797,13 +1915,19 @@
                     if (callback) callback.call(sandbox, _arg1, _arg2, _arg3, _arg4);
                 }, ms, arg1, arg2, arg3, arg4);
                 script.intervals.push(int);
+
+                if (sandbox.verbose) sandbox.log('setInterval(ms=' + ms + ')', 'info');
+
                 return int;
             },
             clearInterval: function (id) {
                 var pos = script.intervals.indexOf(id);
                 if (pos != -1) {
+                    if (sandbox.verbose) sandbox.log('clearInterval() => cleared', 'info');
                     clearInterval(id);
                     script.intervals.splice(pos, 1);
+                } else {
+                    if (sandbox.verbose) sandbox.log('clearInterval() => not found', 'warn');
                 }
             },
             setTimeout:    function (callback, ms, arg1, arg2, arg3, arg4) {
@@ -1814,14 +1938,20 @@
 
                     if (callback) callback.call(sandbox, _arg1, _arg2, _arg3, _arg4);
                 }, ms, arg1, arg2, arg3, arg4);
+
+                if (sandbox.verbose) sandbox.log('setTimeout(ms=' + ms + ')', 'info');
+
                 script.timeouts.push(to);
                 return to;
             },
             clearTimeout:  function (id) {
                 var pos = script.timeouts.indexOf(id);
                 if (pos != -1) {
+                    if (sandbox.verbose) sandbox.log('clearTimeout() => cleared', 'info');
                     clearTimeout(id);
                     script.timeouts.splice(pos, 1);
+                } else {
+                    if (sandbox.verbose) sandbox.log('clearTimeout() => not found', 'warn');
                 }
             },
             cb:        function (callback) {
@@ -1834,6 +1964,8 @@
                 };
             },
             onStop:      function (cb, timeout) {
+                if (sandbox.verbose) sandbox.log('onStop(timeout=' + timeout + ')', 'info');
+
                 script.onStopCb = cb;
                 script.onStopTimeout = timeout || 1000;
             },
@@ -1860,7 +1992,17 @@
                     _adapter = null;
                 }
 
-                adapter.writeFile(_adapter, fileName, data, callback);
+                if (sandbox.debug) {
+                    sandbox.log('readFile(adapter=' + _adapter + ', fileName=' + fileName + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
+                    if (typeof callback === 'function') {
+                        setTimeout(function () {
+                            callback();
+                        }, 0);
+                    }
+                } else {
+                    if (sandbox.verbose) sandbox.log('readFile(adapter=' + _adapter + ', fileName=' + fileName + ')', 'info');
+                    adapter.writeFile(_adapter, fileName, data, callback);
+                }
             },
             readFile:  function (_adapter, fileName, callback) {
                 if (typeof fileName === 'function') {
@@ -1868,6 +2010,8 @@
                     fileName = _adapter;
                     _adapter = null;
                 }
+                if (sandbox.verbose) sandbox.log('readFile(adapter=' + _adapter + ', fileName=' + fileName + ')', 'info');
+
                 adapter.readFile(_adapter, fileName, callback);
             },
 			getHistory: function (instance, options, callback) {
@@ -1894,6 +2038,9 @@
                 if (!instance) {
                     instance = objects['system.config'] ? objects['system.config'].common.defaultHistory : null;
                 }
+
+                if (sandbox.verbose) sandbox.log('getHistory(instance=' + instance + ', options=' + JSON.stringify(options) + ')', 'debug');
+
                 if (!instance) {
                     adapter.log.error('No default history instance found!');
                     callback('No default history instance found!');
@@ -1908,12 +2055,19 @@
                 }
                 var timeout = setTimeout(function () {
                     timeout = null;
+
+                    if (sandbox.verbose) sandbox.log('getHistory => timeout', 'debug');
+
                     if (callback) callback('Timeout', null, options, instance);
                     callback = null;
                 }, timeoutMs);
 
                 adapter.sendTo(instance, 'getHistory', {id: options.id, options: options}, function (result) {
                     if (timeout) clearTimeout(timeout);
+
+                    if (sandbox.verbose && result.error)  sandbox.log('getHistory => ' + result.error, 'error');
+                    if (sandbox.verbose && result.result) sandbox.log('getHistory => ' + result.result.length + ' items', 'debug');
+
                     if (callback) callback(result.error, result.result, options, instance);
                     callback = null;
                 });
@@ -1953,7 +2107,17 @@
 
         if (adapter.config.enableSetObject) {
             sandbox.setObject = function (id, obj, callback) {
-                adapter.setForeignObject(id, obj, callback);
+                if (sandbox.debug) {
+                    sandbox.log('setObject(id=' + id + ', obj=' + JSON.stringify(obj) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
+                    if (typeof callback === 'function') {
+                        setTimeout(function () {
+                            callback();
+                        }, 0);
+                    }
+                } else {
+                    if (sandbox.verbose) sandbox.log('setObject(id=' + id + ', obj=' + JSON.stringify(obj) + ')', 'info');
+                    adapter.setForeignObject(id, obj, callback);
+                }
             };
         }
 
@@ -2083,7 +2247,7 @@
                 // Javascript
                 adapter.log.info('Start javascript ' + name);
                 scripts[name] = compile(globalScript + obj.common.source, name);
-                if (scripts[name]) execute(scripts[name], name);
+                if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
                 if (callback) callback(true, name);
             } else if (!err && obj && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[cC]offee/)) {
                 // CoffeeScript
@@ -2095,7 +2259,7 @@
                     }
                     adapter.log.info('Start coffescript ' + name);
                     scripts[name] = compile(globalScript + '\n' + js, name);
-                    if (scripts[name]) execute(scripts[name], name);
+                    if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
                     if (callback) callback(true, name);
                 });
             } else {
@@ -2622,6 +2786,9 @@
                 // Collect all names
                 addToNames(objects[res[i].doc._id]);
             }
+
+            // set langugae for debug messages
+            if (objects['system.config'] && objects['system.config'].common.language) words.setLanguage(objects['system.config'].common.language);
 
             objectsReady = true;
             adapter.log.info('received all objects');

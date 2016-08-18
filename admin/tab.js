@@ -5,7 +5,9 @@ function Scripts(main) {
     this.hosts          = [];
     this.$grid          = $('#grid-scripts');
     this.$dialogCron    = $('#dialog-cron');
+    this.$dialogScript  = $('#dialog-script');
     this.editor         = null;
+    this.editorDialog   = null;
     this.changed        = false;
     this.main           = main;
     this.currentId      = null;
@@ -168,8 +170,14 @@ function Scripts(main) {
                     click:  function () {
                         var val = $('#div-cron').cron('value');
                         that.$dialogCron.dialog('close');
-                        that.editor.insert('"' + val + '"');
-                        that.editor.focus();
+
+                        if (!$('#dialog-script').is(':visible')) {
+                            that.editor.insert('"' + val + '"');
+                            that.editor.focus();
+                        } else {
+                            that.editorDialog.insert('"' + val + '"');
+                            that.editorDialog.focus();
+                        }
                     }
                 },
                 {
@@ -194,30 +202,50 @@ function Scripts(main) {
             ]
         });
 
-        /*$('#div-cron').cron({
-            initial: '* * * * *',
-            dom: _('daysofmonth'),
-            months:  _('months'),
-            days:    _('daysofweek'),
-            periods: _('periods'),
-            minuteOpts : {
-                title     : _('Minutes Past the Hour')
+        this.$dialogScript.dialog({
+            autoOpen:   false,
+            modal:      true,
+            width:      700,
+            height:     550,
+            resizable:  false,
+            title:      _('Edit script'),
+            beforeClose:      function () {
+                if (that.editorDialog._changed) {
+                    if (window.confirm(_('Script changes are not saved. Discard?'))) {
+                        that.editorDialog._changed = false;
+                        return null;
+                    } else {
+                        return false;
+                    }
+                }
             },
-            timeHourOpts : {
-                title     : _('Time: Hour')
-            },
-            domOpts : {
-                title     : _('Day of Month')
-            },
-            timeMinuteOpts : {
-                title     : _('Time: Minute')
-            },
-            every: _('Every'),
-            onThe: _('on the'),
-            at: _('at'),
-            of: _('of'),
-            on: _('on')
-        });*/
+            buttons: [
+                {
+                    id:     'dialog_script_save',
+                    text:   _('Save'),
+                    click:  function () {
+                        that.editorDialog._changed = false;
+                        that.$dialogScript.dialog('close');
+
+                        var val = that.editorDialog.getValue();
+                        var cb = that.$dialogScript.data('callback');
+                        that.$dialogScript.data('callback', null);
+
+                        if (typeof cb === 'function') cb(val);
+                        if (that.editorDialog._isReturn && val.indexOf('return ') === -1) {
+                            that.main.showMessage(_('No return found'), _('Error'), 'alert');
+                        }
+                    }
+                },
+                {
+                    text: _('Cancel'),
+                    click: function () {
+                        that.$dialogScript.dialog('close');
+                    }
+                }
+            ]
+        });
+        
         $('#div-cron').cron({
             value: '* * * * *'
         });
@@ -487,6 +515,9 @@ function Scripts(main) {
 
             $('#edit-script-name').val(obj.common.name);
 
+            $('#edit-script-debug').prop('checked', !!obj.common.debug);
+            $('#edit-script-verbose').prop('checked', !!obj.common.verbose);
+
             if (obj.common.engineType !== 'Blockly') {
                 // remove Blockly from list
                 $('#edit-script-engine-type').find('option[value="Blockly"]').remove();
@@ -571,6 +602,9 @@ function Scripts(main) {
             $('#edit-script-group').val(getGroup(id));
 
             $('#edit-script-name').val(obj.common.name);
+
+            $('#edit-script-debug').prop('checked', !!obj.common.debug);
+            $('#edit-script-verbose').prop('checked', !!obj.common.verbose);
 
             // Add engine even if it is not installed
             $('.script-edit').hide();
@@ -741,6 +775,8 @@ function Scripts(main) {
                 if (newCommon.engine  !== undefined) obj.common.engine  = newCommon.engine;
                 if (newCommon.enabled !== undefined) obj.common.enabled = newCommon.enabled;
                 if (newCommon.source  !== undefined) obj.common.source  = newCommon.source;
+                if (newCommon.debug   !== undefined) obj.common.debug   = newCommon.debug;
+                if (newCommon.verbose !== undefined) obj.common.verbose = newCommon.verbose;
 
                 if (oldId === newId && _obj && _obj.common && newCommon.name === _obj.common.name) {
                     if (!newCommon.engineType || newCommon.engineType !== _obj.common.engineType) {
@@ -781,6 +817,9 @@ function Scripts(main) {
                         if (obj.common.enabled !== undefined) _obj.common.enabled = obj.common.enabled;
                         if (obj.common.source  !== undefined) _obj.common.source  = obj.common.source;
                         if (obj.common.name    !== undefined) _obj.common.name    = obj.common.name;
+                        if (obj.common.debug   !== undefined) _obj.common.debug   = obj.common.debug;
+                        if (obj.common.verbose !== undefined) _obj.common.verbose = obj.common.verbose;
+
                         delete _obj._rev;
                     } else {
                         _obj = obj;
@@ -809,11 +848,25 @@ function Scripts(main) {
 
     this.initEditor = function () {
         if (!this.editor) {
-            this.editor = ace.edit('script-editor');
+            this.editor       = ace.edit('script-editor');
+            this.editorDialog = ace.edit('dialog-script-editor');
 
             //this.editor.setTheme("ace/theme/monokai");
             this.editor.getSession().setMode('ace/mode/javascript');
             this.editor.$blockScrolling = Infinity;
+
+            this.editorDialog.getSession().setMode('ace/mode/javascript');
+            this.editorDialog.$blockScrolling = Infinity;
+
+            $('#dialog-edit-insert-id').button({
+                icons: {primary: 'ui-icon-note'}
+            }).css('height', '30px').click(function () {
+                var sid = that.main.initSelectId();
+                sid.selectId('show', function (newId) {
+                    that.editorDialog.insert('"' + newId + '"' + ((that.main.objects[newId] && that.main.objects[newId].common && that.main.objects[newId].common.name) ? ('/*' + that.main.objects[newId].common.name + '*/') : ''));
+                    that.editorDialog.focus();
+                });
+            });
 
             $('#edit-insert-id').button({
                 icons: {primary: 'ui-icon-note'}
@@ -825,10 +878,15 @@ function Scripts(main) {
                 });
             });
 
-            $('#edit-cron-id').button({
+            $('.edit-cron-id').button({
                 icons: {primary: 'ui-icon-clock'}
             }).css('height', '30px').click(function () {
-                var text = that.editor.getSession().doc.getTextRange(that.editor.selection.getRange());
+                var text;
+                if (!$('#dialog-script').is(':visible')) {
+                    text = that.editor.getSession().doc.getTextRange(that.editor.selection.getRange());
+                } else {
+                    text = that.editorDialog.getSession().doc.getTextRange(that.editor.selection.getRange());
+                }
                 if (text) {
                     text = text.replace(/\"/g, '').replace(/\'/g, '');
                     if (text) {
@@ -880,6 +938,11 @@ function Scripts(main) {
                 }
             });
 
+            this.editorDialog.on('input', function() {
+                that.editorDialog._changed = true;
+                $('#dialog_script_save').button('enable');
+            });
+
             $('#edit-script-name').change(function () {
                 that.changed = true;
                 $('#script-edit-button-save').button('enable');
@@ -887,6 +950,24 @@ function Scripts(main) {
             }).keyup(function () {
                 $(this).trigger('change');
             });
+
+            $('#edit-script-debug').change(function () {
+                if ($(this).prop('checked')) {
+                    that.main.showMessage(_('debug_help'));
+                }
+                that.changed = true;
+                $('#script-edit-button-save').button('enable');
+                $('#script-edit-button-cancel').button('enable');
+            })
+            $('#edit-script-verbose').change(function () {
+                if ($(this).prop('checked')) {
+                    that.main.showMessage(_('verbose_help'));
+                }
+
+                that.changed = true;
+                $('#script-edit-button-save').button('enable');
+                $('#script-edit-button-cancel').button('enable');
+            })
 
             $('#edit-script-engine-type').change(function () {
                 if (that.currentEngine === 'Blockly' && that.editor.getValue()) {
@@ -1578,6 +1659,8 @@ function Scripts(main) {
         var newId      = $('#edit-script-group').val() + '.' + $('#edit-script-name').val().replace(/["'\s.]/g, '_');
         obj.name       = $('#edit-script-name').val();
         obj.engineType = $('#edit-script-engine-type').val() || '';
+        obj.debug      = $('#edit-script-debug').prop('checked');
+        obj.verbose    = $('#edit-script-verbose').prop('checked');
 
         // Try to detect blockly type
         if (obj.engineType === 'Blockly') {
@@ -1747,7 +1830,7 @@ function Scripts(main) {
                 this.$parentOutput.scrollTop(oldHeight + 50);
             }
         }
-    }
+    };
 
     this.showCronDialog = function (value, cb) {
         if (value) {
@@ -1770,6 +1853,26 @@ function Scripts(main) {
         });
 
         this.$dialogCron.dialog('open');
+    };
+
+    this.showScriptDialog = function (value, args, isReturn, cb) {
+        this.editorDialog.setValue(value || '', -1);
+        this.$dialogScript.data('callback', cb);
+        this.$dialogScript.dialog('open');
+        this.editorDialog.focus();
+        
+        if (args && args.length) {
+            this.$dialogScript.dialog('option', 'title', _('Edit script') + '. ' + _('Arguments: ') + args.join(', '));
+        } else {
+            this.$dialogScript.dialog('option', 'title', _('Edit script'));
+        }
+
+        that.editorDialog._isReturn = isReturn;
+        
+        setTimeout(function () {
+            that.editorDialog._changed = false;
+            $('#dialog_script_save').button('disable');
+        }, 100);
     };
 }
 

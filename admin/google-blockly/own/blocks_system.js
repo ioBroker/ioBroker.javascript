@@ -28,9 +28,9 @@ Blockly.Words['debug_help']    = {'en': 'log---gives-out-the-message-into-log', 
 Blockly.System.blocks['debug'] = 
       '<block type="debug">'
     + '     <value name="TEXT">'
-    //+ '         <shadow type="text">'
-    //+ '             <field name="TEXT">test</field>'
-    //+ '         </shadow>'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">test</field>'
+    + '         </shadow>'
     + '     </value>'
     + '</block>';
     
@@ -59,12 +59,13 @@ Blockly.JavaScript['debug'] = function(block) {
 };
 
 // --- control -----------------------------------------------------------
-Blockly.Words['control']         = {'en': 'сontrol',        'de': 'steuere',            'ru': 'установить'};
-Blockly.Words['control_tooltip'] = {'en': 'Control state',  'de': 'Steuere Zustand',    'ru': 'Установить состояние'};
-Blockly.Words['control_help']    = {'en': 'setstate',       'de': 'setstate',           'ru': 'setstate'};
-Blockly.Words['control_with']    = {'en': 'with',           'de': 'mit',                'ru': 'на'};
-Blockly.Words['control_delay']   = {'en': 'with delay',     'de': 'mit Verzögerung',    'ru': 'с задержкой'};
-Blockly.Words['control_ms']      = {'en': 'in ms',          'de': 'in ms',              'ru': 'в мс'};
+Blockly.Words['control']                = {'en': 'сontrol',        'de': 'steuere',             'ru': 'установить'};
+Blockly.Words['control_tooltip']        = {'en': 'Control state',  'de': 'Steuere Zustand',     'ru': 'Установить состояние'};
+Blockly.Words['control_help']           = {'en': 'setstate',       'de': 'setstate',            'ru': 'setstate'};
+Blockly.Words['control_with']           = {'en': 'with',           'de': 'mit',                 'ru': 'на'};
+Blockly.Words['control_delay']          = {'en': 'with delay',     'de': 'mit Verzögerung',     'ru': 'с задержкой'};
+Blockly.Words['control_ms']             = {'en': 'in ms',          'de': 'in ms',               'ru': 'в мс'};
+Blockly.Words['control_clear_running']  = {'en': ', clear running',  'de': ', löschen falls läuft', 'ru': ', остановить уже запущенный'};
 
 Blockly.System.blocks['control'] =
     '<block type="control">'
@@ -74,8 +75,10 @@ Blockly.System.blocks['control'] =
     + '     </value>'
     + '     <value name="WITH_DELAY">'
     + '     </value>'
-    + '     <mutation delay_input="true"></mutation>'
+    + '     <mutation delay_input="false"></mutation>'
     + '     <value name="DELAY_MS">'
+    + '     </value>'
+    + '     <value name="CLEAR_RUNNING">'
     + '     </value>'
     + '</block>';
 
@@ -127,22 +130,36 @@ Blockly.Blocks['control'] = {
         } else if (inputExists) {
             this.removeInput('DELAY');
         }
+
+        inputExists = this.getInput('CLEAR_RUNNING_INPUT');
+
+        if (delayInput) {
+            if (!inputExists) {
+                this.appendDummyInput('CLEAR_RUNNING_INPUT')
+                    .appendField(Blockly.Words['control_clear_running'][systemLang])
+                    .appendField(new Blockly.FieldCheckbox(), 'CLEAR_RUNNING');
+            }
+        } else if (inputExists) {
+            this.removeInput('CLEAR_RUNNING_INPUT');
+        }
     }
 };
+
 Blockly.JavaScript['control'] = function(block) {
-    var value_objectid = block.getFieldValue('OID');
+    var valueObjectID = block.getFieldValue('OID');
 
-    Blockly.Msg.VARIABLES_DEFAULT_NAME = "value";
+    Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
 
-    var value_delay = parseInt(block.getFieldValue('DELAY_MS'), 10);
-    var value_value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-    var objectname = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+    var valueDelay   = parseInt(block.getFieldValue('DELAY_MS'), 10);
+    var clearRunning = block.getFieldValue('CLEAR_RUNNING') === 'true' || block.getFieldValue('CLEAR_RUNNING') === true;
+    var valueValue   = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    var objectName   = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
     var code;
 
     if (this.getFieldValue('WITH_DELAY') === 'TRUE') {
-        code = 'setStateDelayed("' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', ' + value_value + ', ' + value_delay + ');\n';
+        code = 'setStateDelayed("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', ' + valueValue + ', ' + valueDelay + ', ' + clearRunning + ');\n';
     } else {
-        code = 'setState("' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', ' + value_value + ');\n';
+        code = 'setState("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', ' + valueValue + ');\n';
     }
 
     return code;
@@ -164,8 +181,10 @@ Blockly.System.blocks['update'] =
     + '     </value>'
     + '     <value name="WITH_DELAY">'
     + '     </value>'
-    + '     <mutation delay_input="true"></mutation>'
+    + '     <mutation delay_input="false"></mutation>'
     + '     <value name="DELAY_MS">'
+    + '     </value>'
+    + '     <value name="CLEAR_RUNNING">'
     + '     </value>'
     + '</block>';
 
@@ -217,20 +236,34 @@ Blockly.Blocks['update'] = {
         } else if (inputExists) {
             this.removeInput('DELAY');
         }
+
+        inputExists = this.getInput('CLEAR_RUNNING_INPUT');
+
+        if (delayInput) {
+            if (!inputExists) {
+                this.appendDummyInput('CLEAR_RUNNING_INPUT')
+                    .appendField(Blockly.Words['control_clear_running'][systemLang])
+                    .appendField(new Blockly.FieldCheckbox(), 'CLEAR_RUNNING');
+            }
+        } else if (inputExists) {
+            this.removeInput('CLEAR_RUNNING_INPUT');
+        }
     }
 };
+
 Blockly.JavaScript['update'] = function(block) {
     var value_objectid = block.getFieldValue('OID');
 
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
 
-    var value_value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-    var value_delay = parseInt(block.getFieldValue('DELAY_MS'), 10);
+    var value_value  = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    var value_delay  = parseInt(block.getFieldValue('DELAY_MS'), 10);
+    var clearRunning = block.getFieldValue('CLEAR_RUNNING') === 'true' || block.getFieldValue('CLEAR_RUNNING') === true;
 
     var objectname = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
     var code;
     if (this.getFieldValue('WITH_DELAY') === 'TRUE') {
-        code = 'setStateDelayed("' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', ' + value_value + ', true, ' + value_delay + ');\n';
+        code = 'setStateDelayed("' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', ' + value_value + ', true, ' + value_delay + ', ' + clearRunning + ');\n';
     } else {
         code = 'setState("' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', ' + value_value + ', true);\n';
     }
@@ -247,9 +280,6 @@ Blockly.Words['create_help']    = {'en': 'createstate',     'de': 'createstate',
 Blockly.System.blocks['create'] =
     '<block type="create">'
     + '     <value name="NAME">'
-    //+ '         <shadow type="text">'
-    //+ '             <field name="TEXT">test</field>'
-    //+ '         </shadow>'
     + '     </value>'
     + '     <value name="STATEMENT">'
     + '     </value>'
@@ -359,7 +389,7 @@ Blockly.Blocks['get_value'] = {
         this.setOutput(true);
         this.setColour(Blockly.System.HUE);
         this.setTooltip(Blockly.Words['get_value_tooltip'][systemLang]);
-        this.setHelpUrl(getHelp('get_value'));
+        this.setHelpUrl(getHelp('get_value_help'));
     }
 };
 
@@ -368,3 +398,43 @@ Blockly.JavaScript['get_value'] = function(block) {
     var attr = block.getFieldValue('ATTR');
     return ['getValue("' + oid + '").' + attr, Blockly.JavaScript.ORDER_ATOMIC];
 };
+
+// --- custom function --------------------------------------------------
+/*Blockly.Words['custom_function']         = {'en': 'Custom function',                  'de': 'Anwenderfunktion',                'ru': 'Пользовательская функция'};
+Blockly.Words['custom_function_name']    = {'en': 'function',                         'de': 'Funktion',                        'ru': 'Функция'};
+Blockly.Words['custom_function_tooltip'] = {'en': 'Select object ID with dialog',     'de': 'Objekt ID mit Dialog selektieren',   'ru': 'Выбрать ID объекта'};
+Blockly.Words['custom_function_help']    = {'en': 'getstate',                         'de': 'getstate',                           'ru': 'getstate'};
+
+Blockly.System.blocks['custom_function'] =
+    '<block type="custom_function">'
+    + '     <value name="NAME">'
+    + '     </value>'
+    + '     <value name="SCRIPT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['custom_function'] = {
+    // Checkbox.
+    init: function() {
+
+        this.appendDummyInput("NAME")
+            .appendField(Blockly.Words['custom_function'][systemLang])
+            .appendField(new Blockly.FieldTextInput(Blockly.Words['custom_function_name'][systemLang]), "NAME");
+
+        this.appendDummyInput("SCRIPT")
+            .appendField(new Blockly.FieldScript("//Script"), "SCRIPT");
+        
+        this.setInputsInline(true);
+        this.setOutput(true);
+        this.setColour(Blockly.System.HUE);
+        this.setTooltip(Blockly.Words['custom_function_tooltip'][systemLang]);
+        this.setHelpUrl(getHelp('custom_function_help'));
+    }
+};
+
+Blockly.JavaScript['custom_function'] = function(block) {
+    var name   = block.getFieldValue('NAME');
+    var script = block.getFieldValue('SCRIPT');
+    return ['(function ' + name + ' (){' + atob(script) + '\n})()', Blockly.JavaScript.ORDER_ATOMIC];
+};
+*/

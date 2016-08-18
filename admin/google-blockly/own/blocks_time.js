@@ -325,9 +325,9 @@ Blockly.JavaScript['time_get'] = function(block) {
     } else if (option === "fy") {
         code = '(new Date().getFullYear())';
     } else if (option === "wdt") {
-        code = '(new Date().getDay())';
+        code = '(new Date().getDay() === 0 ? 7 : new Date().getDay())';
     } else if (option === "wd") {
-        code = '(new Date().getDay())';
+        code = '(new Date().getDay() === 0 ? 7 : new Date().getDay())';
     } else if (option === "custom") {
         code = 'formatDate(new Date(), "' + format + '")';
     } else {

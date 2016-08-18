@@ -39,6 +39,18 @@ systemDictionary = {
     "Show code":            {"en": "Show code",             "de": "Zeige Kode",             "ru": "Показать код"},
     "Show blockly":         {"en": "Show Blockly",          "de": "Zeige Blockly",          "ru": "Показать Blockly"},
     "Set CRON":             {"en": "Set",                   "de": "Übernehmen",             "ru": "Перенять"},
+    "debug":                {"en": "Debug",                 "de": "Debug",                  "ru": "Debug"},
+    "verbose":              {"en": "Verbose",               "de": "Hilfe-Ausgaben",         "ru": "Вывод отладки"},
+    "debug_help": {
+        "en": "setState, writeFile will be disabled",
+        "de": "setState, writeFile werden deaktiviert sein",
+        "ru": "setState, writeFile будут отключены"
+    },
+    "verbose_help": {
+        "en": "Output of additional information for some functions.",
+        "de": "Züsätzliche Ausgaben für manche Funktionen.",
+        "ru": "Вывод дополнительной информации в лог для некоторых функций."
+    },
     "months":               {
         "en": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
         "de": ["Januar", "Februar", "März", "April", "Mai", "Juni", "July", "August", "September", "Oktober", "November", "Dezember"],
@@ -103,6 +115,13 @@ systemDictionary = {
     "Wrap&nbsp;lines":      {"en": "Wrap&nbsp;lines",       "de": "Zeilenunterbrechung",    "ru": "Перенос&nbsp;строк"},
     "Drop the files here":  {"en": "Drop the files here",   "de": "Hier hinzufügen",        "ru": "Добавить..."},
     "Clear":                {"en": "Clear",                 "de": "Löschen",                "ru": "Сбросить"},
+    "scripts_group":        {"en": "Scripts",               "de": "Skripte",                "ru": "Скрипты"},
+    "Edit script":          {"en": "Edit script",           "de": "Skript editieren",       "ru": "Редактировать скрипт"},
+    "Script changes are not saved. Discard?": {
+        "en": "Script changes are not saved. Discard?",
+        "de": "Änderungen sind nicht gespeichert. Nicht speichern?",
+        "ru": "Изменения не сохранены. Игнорировать?"
+    },
     "Convert to Blockly":   {
         "en": "Looks like it is blockly script. Convert to Blockly?",
         "de": "Sieht aus, dass es ein Blockly Script. Konvertieren zu Blockly?",

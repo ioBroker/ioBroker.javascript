@@ -13,6 +13,7 @@ Blockly.Sendto = {
 };
 
 Blockly.Words['Sendto'] = {'en': 'Sendto', 'de': 'Sendto', 'ru': 'Sendto'};
+Blockly.Words['sendto_message'] = {'en': 'message', 'de': 'Meldung', 'ru': 'сообщение'};
 
 // --- SendTo telegram --------------------------------------------------
 Blockly.Words['telegram']               = {'en': 'telegram',                    'de': 'telegram',                           'ru': 'telegram'};
@@ -27,6 +28,9 @@ Blockly.Sendto.blocks['telegram'] =
     + '     <value name="INSTANCE">'
     + '     </value>'
     + '     <value name="MESSAGE">'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">text</field>'
+    + '         </shadow>'
     + '     </value>'
     + '     <value name="USERNAME">'
     + '     </value>'
@@ -83,6 +87,9 @@ Blockly.Sendto.blocks['sayit'] =
     + '     <value name="VOLUME">'
     + '     </value>'
     + '     <value name="MESSAGE">'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">text</field>'
+    + '         </shadow>'
     + '     </value>'
     + '</block>';
 
@@ -187,6 +194,9 @@ Blockly.Sendto.blocks['pushover'] =
     + '     <value name="INSTANCE">'
     + '     </value>'
     + '     <value name="MESSAGE">'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">text</field>'
+    + '         </shadow>'
     + '     </value>'
     + '     <value name="TITLE">'
     + '     </value>'

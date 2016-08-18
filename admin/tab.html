@@ -24,11 +24,14 @@
     <script type="text/javascript" src="google-blockly/javascript_compressed.js"></script>
     <script type="text/javascript" src="google-blockly/own/field_oid.js"></script>
     <script type="text/javascript" src="google-blockly/own/field_cron.js"></script>
+    <script type="text/javascript" src="google-blockly/own/field_script.js"></script>
     <script type="text/javascript" src="google-blockly/own/blocks_system.js"></script>
     <script type="text/javascript" src="google-blockly/own/blocks_sendto.js"></script>
     <script type="text/javascript" src="google-blockly/own/blocks_time.js"></script>
     <script type="text/javascript" src="google-blockly/own/blocks_convert.js"></script>
     <script type="text/javascript" src="google-blockly/own/blocks_trigger.js"></script>
+    <script type="text/javascript" src="google-blockly/own/blocks_procedures.js"></script>
+    <script type="text/javascript" src="google-blockly/own/blocks_timeout.js"></script>
     <script type="text/javascript" src="../../js/selectID.js"></script>
 
     <!--script type="text/javascript" src="cron/jquery-cron.js"></script-->
@@ -160,6 +163,10 @@
                             <span   style="display: inline-block; padding-right: 5px" class="translate">name</span>
                             <select style="display: inline-block" id="edit-script-group"></select>
                             <input  style="display: inline-block; width: 200px" id="edit-script-name">
+                            <span   style="display: inline-block; padding-left: 25px" class="translate">debug</span>
+                            <input id="edit-script-debug" type="checkbox" />
+                            <span   style="display: inline-block; padding-left: 15px" class="translate">verbose</span>
+                            <input id="edit-script-verbose" type="checkbox" />
                             <select style="float: right" id="edit-script-engine-type"></select>
                             <span style="float: right; padding-right: 5px" class="translate">engine type</span>
                         </td>
@@ -172,10 +179,10 @@
                                 <td class="edit-wrap-lines"><input  id="edit-wrap-lines" type="checkbox"/></td>
                                 <td class="edit-wrap-lines"><div class="translate">Wrap&nbsp;lines</div></td>
                                 <td style="width: 100%"></td>
-                                <td><button id="show-blockly-id" class="translate script-edit">Show code</button></td>
                                 <td><button id="edit-check-blocks" class="translate script-edit" style="white-space: nowrap;">Check blocks</button></td>
-                                <td><button id="edit-cron-id"    class="translate script-edit">Cron</button></td>
-                                <td><button id="edit-insert-id"  class="translate script-edit">Insert ID</button></td>
+                                <td><button id="show-blockly-id"   class="translate script-edit">Show code</button></td>
+                                <td><button                        class="translate script-edit edit-cron-id">Cron</button></td>
+                                <td><button id="edit-insert-id"    class="translate script-edit">Insert ID</button></td>
                             </tr></table>
                         </td>
                     </tr>
@@ -210,29 +217,21 @@
         </div>
     </div>
 
-    <!--div id="dialog-script" style="display:none">
-        <table style="width: 100%">
+    <div id="dialog-script" style="display: none">
+        <table style="height: 100%; width: 100%;">
             <tr>
-                <td class="translate" style="width:100">name</td>
-                <td><input size="50" id="edit-script-name"></td>
-                <td><input type="checkbox" id="edit-script-global"><label for="edit-script-global" class="translate">global</label></td>
-            </tr>
-            <tr>
-                <td class="translate">engine type</td>
-                <td style="width:100">
-                    <select id="edit-script-engine-type"></select>
-                </td>
-                <td style="text-align:right">
-                    <table><tr>
-                        <td><button id="edit-cron-id"   class="translate">Cron</button></td>
-                        <td><button id="edit-insert-id" class="translate">Insert ID</button></td>
-                    </tr></table>
+                <td>
+                    <button                            class="translate edit-cron-id">Cron</button>
+                    <button id="dialog-edit-insert-id" class="translate">Insert ID</button>
                 </td>
             </tr>
-        </table><br/>
-        <div id="script-editor"></div>
-        <input type="hidden" id="edit-script-id">
-    </div-->
+            <tr style="height: 100%;">
+                <td style="height: 100%;">
+                    <div style="height: 100%; width: 100%" id="dialog-script-editor"></div>
+                </td>
+            </tr>
+        </table>
+    </div>
 
     <div id="dialog-new-group" style="display: none">
         <table style="width: 100%">
@@ -248,13 +247,13 @@
     </div>
     <div id="dialog-message" title="Message" style="display: none">
         <p>
-            <span id="dialog-message-icon" class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
+            <span id="dialog-message-icon" class="ui-icon ui-icon-circle-check" style="float: left; margin: 0 7px 50px 0;"></span>
             <span id="dialog-message-text"></span>
         </p>
     </div>
     <div id="dialog-confirm" title="Question" style="display: none">
         <p>
-            <span id="dialog-confirm-icon" class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
+            <span id="dialog-confirm-icon" class="ui-icon ui-icon-circle-check" style="float: left; margin: 0 7px 50px 0;"></span>
             <span id="dialog-confirm-text"></span>
         </p>
     </div>
