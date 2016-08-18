@@ -149,6 +149,7 @@ Blockly.Timeouts.getAllTimeouts = function (workspace) {
             result.push([blocks[i].getFieldValue('NAME'), blocks[i].getFieldValue('NAME')]);
         }
     }
+    if (!result.length) result.push(['', '']);
 
     return result;
 };
@@ -258,6 +259,8 @@ Blockly.Timeouts.getAllIntervals = function (workspace) {
             result.push([blocks[i].getFieldValue('NAME'), blocks[i].getFieldValue('NAME')]);
         }
     }
+
+    if (!result.length) result.push(['', '']);
 
     return result;
 };
