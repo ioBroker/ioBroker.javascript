@@ -207,8 +207,13 @@ function Scripts(main) {
             modal:      true,
             width:      700,
             height:     550,
-            resizable:  false,
+            resizable:  true,
             title:      _('Edit script'),
+            resize:     function () {
+                that.main.saveConfig('script-edit-width',  $(this).parent().width());
+                that.main.saveConfig('script-edit-height', $(this).parent().height() + 10);
+                that.editorDialog.resize();
+            },
             beforeClose:      function () {
                 if (that.editorDialog._changed) {
                     if (window.confirm(_('Script changes are not saved. Discard?'))) {
@@ -291,6 +296,11 @@ function Scripts(main) {
             if (that.editor) that.editor.getSession().setUseWrapMode($(this).prop('checked'));
         });
 
+        $('#dialog-edit-wrap-lines').change(function () {
+            that.main.saveConfig('script-editor-dialog-wrap-lines', $(this).prop('checked'));
+            if (that.editorDialog) that.editorDialog.getSession().setUseWrapMode($(this).prop('checked'));
+        });
+        
         fillGroups('edit-script-group');
 
         $('.import-drop-file').change(function (e) {
@@ -327,7 +337,7 @@ function Scripts(main) {
 
         window.addEventListener('resize', this.resize, false);
 
-        //load blockly language
+        // load blockly language
         var fileLang = document.createElement('script');
         fileLang.setAttribute('type', 'text/javascript');
         fileLang.setAttribute('src', 'google-blockly/msg/js/' + (systemLang || 'en') + '.js');
@@ -392,22 +402,16 @@ function Scripts(main) {
 
         that.editor.setReadOnly(false);
 
+        that.changed = true;
+        $('#script-edit-button-save').button('enable');
+        $('#script-edit-button-cancel').button('enable');
+
+        switchViews(false, that.currentEngine);
+
         if (that.currentEngine.match(/^[jJ]ava[sS]cript/)) {
             that.editor.getSession().setMode('ace/mode/javascript');
-            $('#script-editor').show();
-            $('#blockly-editor').hide();
-            $('.blocklyWidgetDiv').hide();
-            $('.blocklyTooltipDiv').hide();
-            $('.blocklyToolboxDiv').hide();
-            $('#show-blockly-id').hide();
         } else if (that.currentEngine.match(/^[cC]offee[sS]cript/)) {
             that.editor.getSession().setMode('ace/mode/coffee');
-            $('#script-editor').show();
-            $('.blocklyWidgetDiv').hide();
-            $('.blocklyTooltipDiv').hide();
-            $('.blocklyToolboxDiv').hide();
-            $('#blockly-editor').hide();
-            $('#show-blockly-id').hide();
         }
     }
 
@@ -518,6 +522,8 @@ function Scripts(main) {
             $('#edit-script-debug').prop('checked', !!obj.common.debug);
             $('#edit-script-verbose').prop('checked', !!obj.common.verbose);
 
+            that.editor.getSession().setUseWrapMode($('#edit-wrap-lines').prop('checked'));
+
             if (obj.common.engineType !== 'Blockly') {
                 // remove Blockly from list
                 $('#edit-script-engine-type').find('option[value="Blockly"]').remove();
@@ -538,14 +544,7 @@ function Scripts(main) {
             if (obj.common.engineType === 'Blockly') {
                 that.editor.getSession().setMode('ace/mode/javascript');
                 that.editor.setReadOnly(true);
-                $('#script-editor').hide();
-                $('#blockly-editor').show();
-                $('#show-blockly-id').show();
-                $('.edit-wrap-lines').hide();
-                $('#edit-check-blocks').show();
-                $('.blocklyWidgetDiv').show();
-                $('.blocklyTooltipDiv').show();
-                $('.blocklyToolboxDiv').show();
+                switchViews(true, obj.common.engineType);
                 that.blocklyWorkspace.clear();
                 try {
                     var xml = jsCode2Blockly(obj.common.source) || '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>';
@@ -559,25 +558,11 @@ function Scripts(main) {
             if (obj.common.engineType && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
                 that.editor.getSession().setMode('ace/mode/javascript');
                 that.editor.setReadOnly(false);
-                $('#script-editor').show();
-                $('#blockly-editor').hide();
-                $('#show-blockly-id').hide();
-                $('.edit-wrap-lines').show();
-                $('.blocklyWidgetDiv').hide();
-                $('.blocklyTooltipDiv').hide();
-                $('#edit-check-blocks').hide();
-                $('.blocklyToolboxDiv').hide();
+                switchViews(false, obj.common.engineType);
             } else if (obj.common.engineType && obj.common.engineType.match(/^[cC]offee[sS]cript/)) {
                 that.editor.getSession().setMode('ace/mode/coffee');
                 that.editor.setReadOnly(false);
-                $('#script-editor').show();
-                $('#blockly-editor').hide();
-                $('.edit-wrap-lines').show();
-                $('#show-blockly-id').hide();
-                $('.blocklyWidgetDiv').hide();
-                $('.blocklyTooltipDiv').hide();
-                $('.blocklyToolboxDiv').hide();
-                $('#edit-check-blocks').hide();
+                switchViews(false, obj.common.engineType);
             }
 
             that.changed = false;
@@ -846,6 +831,51 @@ function Scripts(main) {
         });
     };
 
+    function switchViews(isBlocklyView, engineType) {
+        engineType = engineType || 'Blockly';
+
+        if (engineType === 'Blockly') {
+            if (isBlocklyView === undefined) isBlocklyView = !$('#script-editor').is(':visible');
+
+            if (isBlocklyView) {
+                $('#show-blockly-id')
+                    .button('option', 'label', _('Show code'))
+                    .button('option', 'icons', {primary: 'ui-icon-script'}).show();
+
+                $('#script-editor').hide();
+                $('#blockly-editor').show();
+                $('.blocklyWidgetDiv').show();
+                $('.blocklyTooltipDiv').show();
+                $('.blocklyToolboxDiv').show();
+                $('.edit-wrap-lines').hide();
+                $('#edit-check-blocks').show();
+                if (that.blocklyWorkspace) Blockly.svgResize(that.blocklyWorkspace);
+            } else {
+                $('#show-blockly-id')
+                    .button('option', 'label', _('Show blockly'))
+                    .button('option', 'icons', {primary: 'ui-icon-calculator'}).show();
+
+                // update script editor
+                $('#script-editor').show();
+                $('#blockly-editor').hide();
+                $('.blocklyWidgetDiv').hide();
+                $('.blocklyTooltipDiv').hide();
+                $('.blocklyToolboxDiv').hide();
+                $('.edit-wrap-lines').show();
+                $('#edit-check-blocks').hide();
+            }
+        } else {
+            $('#show-blockly-id').hide();
+            $('#script-editor').show();
+            $('#blockly-editor').hide();
+            $('.edit-wrap-lines').show();
+            $('.blocklyWidgetDiv').hide();
+            $('.blocklyTooltipDiv').hide();
+            $('.blocklyToolboxDiv').hide();
+            $('#edit-check-blocks').hide();
+        }
+    }
+
     this.initEditor = function () {
         if (!this.editor) {
             this.editor       = ace.edit('script-editor');
@@ -903,30 +933,15 @@ function Scripts(main) {
                 that.$dialogCron.dialog('open');
             });
 
+            // toggle blockly <=> javascript
             $('#show-blockly-id').button({
-                icons: {primary: 'ui-icon-clock'}
+                icons: {primary: 'ui-icon-script'}
             }).css({height: 30, width: 200}).click(function () {
                 if ($('#script-editor').is(':visible')) {
-                    $(this).button('option', 'label', _('Show code'));
-                    $('#script-editor').hide();
-                    $('#blockly-editor').show();
-                    $('.blocklyWidgetDiv').show();
-                    $('.blocklyTooltipDiv').show();
-                    $('.blocklyToolboxDiv').show();
-                    $('.edit-wrap-lines').hide();
-                    $('#edit-check-blocks').show();
-                    if (that.blocklyWorkspace) Blockly.svgResize(that.blocklyWorkspace);
+                    switchViews(true);
                 } else {
-                    $(this).button('option', 'label', _('Show blockly'));
                     blocklyCode2JSCode();
-                    // update script editor
-                    $('#script-editor').show();
-                    $('#blockly-editor').hide();
-                    $('.blocklyWidgetDiv').hide();
-                    $('.blocklyTooltipDiv').hide();
-                    $('.blocklyToolboxDiv').hide();
-                    $('.edit-wrap-lines').show();
-                    $('#edit-check-blocks').hide();
+                    switchViews(false);
                 }
             });
 
@@ -958,7 +973,7 @@ function Scripts(main) {
                 that.changed = true;
                 $('#script-edit-button-save').button('enable');
                 $('#script-edit-button-cancel').button('enable');
-            })
+            });
             $('#edit-script-verbose').change(function () {
                 if ($(this).prop('checked')) {
                     that.main.showMessage(_('verbose_help'));
@@ -967,7 +982,7 @@ function Scripts(main) {
                 that.changed = true;
                 $('#script-edit-button-save').button('enable');
                 $('#script-edit-button-cancel').button('enable');
-            })
+            });
 
             $('#edit-script-engine-type').change(function () {
                 if (that.currentEngine === 'Blockly' && that.editor.getValue()) {
@@ -990,6 +1005,11 @@ function Scripts(main) {
                 } else {
                     $('.edit-wrap-lines').show();
                     $('#edit-check-blocks').hide();
+                    $('#show-blockly-id')
+                        .hide()
+                        .button('option', 'label', _('Show code'))
+                        .button('option', 'icons', {primary: 'ui-icon-script'});
+
                     that.currentEngine = $(this).val();
                 }
 
@@ -1631,9 +1651,9 @@ function Scripts(main) {
 
             applyResizableH(true);
 
-            if (this.main.config['script-editor-wrap-lines']) {
-                $('#edit-wrap-lines').prop('checked', true);
-            }
+            if (this.main.config['script-editor-wrap-lines'])        $('#edit-wrap-lines').prop('checked', true);
+            if (this.main.config['script-editor-dialog-wrap-lines']) $('#dialog-edit-wrap-lines').prop('checked', true);
+            
             $('#edit-check-blocks').button({
                 icons: {
                     primary: 'ui-icon-check'
@@ -1653,7 +1673,7 @@ function Scripts(main) {
         }
     };
 
-    this.saveScript = function (cb) {
+    this.saveScript = function (isConvert, cb) {
         var that = this;
         var obj = {};
         var newId      = $('#edit-script-group').val() + '.' + $('#edit-script-name').val().replace(/["'\s.]/g, '_');
@@ -1664,7 +1684,11 @@ function Scripts(main) {
 
         // Try to detect blockly type
         if (obj.engineType === 'Blockly') {
-            obj.source = blocklyCode2JSCode(false, true);
+            if (!isConvert) {
+                obj.source = blocklyCode2JSCode(false, true);
+            } else {
+                obj.source = that.editor.getValue();
+            }
         }
 
         if (that.currentId !== newId && that.main.objects[newId]) {
@@ -1686,7 +1710,8 @@ function Scripts(main) {
                         }
                         $('#edit-script-engine-type').val(obj.engineType);
                         that.changed = true;
-                        that.saveScript(function () {
+
+                        that.saveScript(true, function () {
                             setTimeout(function () {
                                 editScript(that.currentId);
                             }, 500);
@@ -1857,15 +1882,29 @@ function Scripts(main) {
 
     this.showScriptDialog = function (value, args, isReturn, cb) {
         this.editorDialog.setValue(value || '', -1);
+
+        var width  = 700;
+        var height = 550;
+
+        if (this.main.config['script-edit-width'])  width  = this.main.config['script-edit-width'];
+        if (this.main.config['script-edit-height']) height = this.main.config['script-edit-height'];
+
         this.$dialogScript.data('callback', cb);
-        this.$dialogScript.dialog('open');
-        this.editorDialog.focus();
-        
+
         if (args && args.length) {
             this.$dialogScript.dialog('option', 'title', _('Edit script') + '. ' + _('Arguments: ') + args.join(', '));
         } else {
             this.$dialogScript.dialog('option', 'title', _('Edit script'));
         }
+
+        this.editorDialog.getSession().setUseWrapMode($('#dialog-edit-wrap-lines').prop('checked'));
+        
+        this.$dialogScript
+            .dialog('option', 'width',  width)
+            .dialog('option', 'height', height)
+            .dialog('open');
+
+        this.editorDialog.focus();
 
         that.editorDialog._isReturn = isReturn;
         
