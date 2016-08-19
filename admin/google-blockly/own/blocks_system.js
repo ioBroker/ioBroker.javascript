@@ -58,6 +58,38 @@ Blockly.JavaScript['debug'] = function(block) {
     return 'console.' + dropdown_severity + '(' + value_text + ');\n';
 };
 
+// --- comment --------------------------------------------------
+Blockly.Words['comment']         = {'en': 'comment',                           'de': 'Kommentar',      'ru': 'описание'};
+Blockly.Words['comment_tooltip'] = {'en': 'Enter comment to explain the code', 'de': 'Debug',          'ru': 'Debug'};
+
+Blockly.System.blocks['comment'] =
+    '<block type="comment">'
+    + '     <value name="TEXT">'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">comment</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['comment'] = {
+    init: function() {
+        this.appendDummyInput("COMMENT")
+            .appendField(new Blockly.FieldTextInput(Blockly.Words['comment'][systemLang]), "COMMENT");
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setInputsInline(false);
+        this.setColour('#FFFF00');
+        this.setTooltip(Blockly.Words['comment_tooltip'][systemLang]);
+    }
+};
+
+Blockly.JavaScript['comment'] = function(block) {
+    var comment = block.getFieldValue('COMMENT');
+    return '// ' + comment + '\n';
+};
+
+
 // --- control -----------------------------------------------------------
 Blockly.Words['control']                = {'en': 'сontrol',        'de': 'steuere',             'ru': 'установить'};
 Blockly.Words['control_tooltip']        = {'en': 'Control state',  'de': 'Steuere Zustand',     'ru': 'Установить состояние'};
