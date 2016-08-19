@@ -1,14 +1,14 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "2.3.2",
+        "version":                  "2.3.3",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
-			"2.3.2": {
+			"2.3.3": {
                 "en": "add more blockly modules\nadd debug mode and verbose mode",
                 "de": "add more blockly modules\nadd debug mode and verbose mode",
                 "ru": "add more blockly modules\nadd debug mode and verbose mode"
