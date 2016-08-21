@@ -22,6 +22,12 @@ Blockly.Words['telegram_username']      = {'en': 'User name (optional)',        
 Blockly.Words['telegram_anyInstance']   = {'en': 'all instances',               'de': 'Alle Instanzen',                     'ru': 'На все драйвера'};
 Blockly.Words['telegram_tooltip']       = {'en': 'Send message to telegram',    'de': 'Sende eine Meldung über Telegram',   'ru': 'Послать сообщение через Telegram'};
 Blockly.Words['telegram_help']          = {'en': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md', 'de': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md', 'ru': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md'};
+Blockly.Words['telegram_log']           = {'en': 'log level',                   'de': 'Loglevel',                           'ru': 'Протокол'};
+Blockly.Words['telegram_log_none']      = {'en': 'none',                        'de': 'keins',                              'ru': 'нет'};
+Blockly.Words['telegram_log_info']      = {'en': 'info',                        'de': 'info',                               'ru': 'инфо'};
+Blockly.Words['telegram_log_debug']     = {'en': 'debug',                       'de': 'debug',                              'ru': 'debug'};
+Blockly.Words['telegram_log_warn']      = {'en': 'warning',                     'de': 'warning',                            'ru': 'warning'};
+Blockly.Words['telegram_log_error']     = {'en': 'error',                       'de': 'error',                              'ru': 'ошибка'};
 
 Blockly.Sendto.blocks['telegram'] =
     '<block type="telegram">'
@@ -34,6 +40,8 @@ Blockly.Sendto.blocks['telegram'] =
     + '     </value>'
     + '     <value name="USERNAME">'
     + '     </value>'
+    + '     <value name="LOG">'
+    + '     </value>'
     + '</block>';
 
 Blockly.Blocks['telegram'] = {
@@ -41,15 +49,25 @@ Blockly.Blocks['telegram'] = {
         this.appendDummyInput('TEXT')
             .appendField(Blockly.Words['telegram'][systemLang]);
 
-        this.appendDummyInput("INSTANCE")
-            .appendField(new Blockly.FieldDropdown([[Blockly.Words['telegram_anyInstance'][systemLang], ""], ["telegram.0", ".0"], ["telegram.1", ".1"], ["telegram.2", ".2"], ["telegram.3", ".3"], ["telegram.4", ".4"]]), "INSTANCE");
+        this.appendDummyInput('INSTANCE')
+            .appendField(new Blockly.FieldDropdown([[Blockly.Words['telegram_anyInstance'][systemLang], ''], ['telegram.0', '.0'], ['telegram.1', '.1'], ['telegram.2', '.2'], ['telegram.3', '.3'], ['telegram.4', '.4']]), 'INSTANCE');
 
-        this.appendValueInput("MESSAGE")
+        this.appendValueInput('MESSAGE')
             .appendField(Blockly.Words['telegram_message'][systemLang]);
 
-        var input = this.appendValueInput("USERNAME")
-            .setCheck("String")
+        var input = this.appendValueInput('USERNAME')
+            .setCheck('String')
             .appendField(Blockly.Words['telegram_username'][systemLang]);
+
+        this.appendDummyInput('LOG')
+            .appendField(Blockly.Words['telegram_log'][systemLang])
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['telegram_log_none'][systemLang],  ''],
+                [Blockly.Words['telegram_log_info'][systemLang],  'log'],
+                [Blockly.Words['telegram_log_debug'][systemLang], 'debug'],
+                [Blockly.Words['telegram_log_warn'][systemLang],  'warn'],
+                [Blockly.Words['telegram_log_error'][systemLang], 'error']
+            ]), 'LOG');
 
         if (input.connection) input.connection._optional = true;
 
@@ -65,10 +83,20 @@ Blockly.Blocks['telegram'] = {
 
 Blockly.JavaScript['telegram'] = function(block) {
     var dropdown_instance = block.getFieldValue('INSTANCE');
+    var logLevel = block.getFieldValue('LOG');
     var value_message = Blockly.JavaScript.valueToCode(block, 'MESSAGE', Blockly.JavaScript.ORDER_ATOMIC);
     var value_username = Blockly.JavaScript.valueToCode(block, 'USERNAME', Blockly.JavaScript.ORDER_ATOMIC);
 
-    return 'sendTo("telegram' + dropdown_instance + '", {\n    text: ' + value_message + (value_username ? ', \n    user: ' + value_username : '') + '\n});\n';
+    var logText;
+    if (logLevel) {
+        logText = 'console.' + logLevel + '("telegram' + (value_username ? '[' + value_username + ']' : '') + ': " + ' + value_message + ');\n'
+    } else {
+        logText = '';
+    }
+    
+    return 'sendTo("telegram' + dropdown_instance + '", {\n    text: ' + 
+        value_message + (value_username ? ', \n    user: ' + value_username : '') + '\n});\n' +
+        logText;
 };
 
 // --- SayIt --------------------------------------------------
@@ -80,7 +108,7 @@ Blockly.Words['sayit_help']          = {'en': 'https://github.com/ioBroker/ioBro
 
 Blockly.Sendto.blocks['sayit'] =
     '<block type="sayit">'
-    + '     <value name="INSTANCE_">'
+    + '     <value name="INSTANCE">'
     + '     </value>'
     + '     <value name="LANGUAGE">'
     + '     </value>'
@@ -91,6 +119,8 @@ Blockly.Sendto.blocks['sayit'] =
     + '             <field name="TEXT">text</field>'
     + '         </shadow>'
     + '     </value>'
+    + '     <value name="LOG">'
+    + '     </value>'
     + '</block>';
 
 Blockly.Blocks['sayit'] = {
@@ -98,29 +128,39 @@ Blockly.Blocks['sayit'] = {
         this.appendDummyInput('TEXT')
             .appendField(Blockly.Words['sayit'][systemLang]);
 
-        this.appendDummyInput("INSTANCE")
-            .appendField(new Blockly.FieldDropdown([["sayit.0", ".0"], ["sayit.1", ".1"], ["sayit.2", ".2"], ["sayit.3", ".3"], ["sayit.4", ".4"]]), "INSTANCE");
+        this.appendDummyInput('INSTANCE')
+            .appendField(new Blockly.FieldDropdown([['sayit.0', '.0'], ['sayit.1', '.1'], ['sayit.2', '.2'], ['sayit.3', '.3'], ['sayit.4', '.4']]), 'INSTANCE');
 
         var languages;
         if (systemLang === 'en') {
-            languages = [["english", "en"], ["deutsch", "de"], ["русский", "ru"]];
+            languages = [['english', 'en'], ['deutsch', 'de'], ['русский', 'ru']];
         } else if (systemLang === 'de') {
-            languages = [["deutsch", "de"], ["english", "en"], ["русский", "ru"]];
+            languages = [['deutsch', 'de'], ['english', 'en'], ['русский', 'ru']];
         } else if (systemLang === 'ru') {
-            languages = [["русский", "ru"], ["english", "en"], ["deutsch", "de"]];
+            languages = [['русский', 'ru'], ['english', 'en'], ['deutsch', 'de']];
         } else {
-            languages = [["english", "en"], ["deutsch", "de"], ["русский", "ru"]];
+            languages = [['english', 'en'], ['deutsch', 'de'], ['русский', 'ru']];
         }
 
-        this.appendDummyInput("LANGUAGE")
-            .appendField(new Blockly.FieldDropdown(languages), "LANGUAGE");
+        this.appendDummyInput('LANGUAGE')
+            .appendField(new Blockly.FieldDropdown(languages), 'LANGUAGE');
 
-        this.appendValueInput("VOLUME")
-            .setCheck("Number")
+        this.appendValueInput('VOLUME')
+            .setCheck('Number')
             .appendField(Blockly.Words['sayit_volume'][systemLang]);
 
-        this.appendValueInput("MESSAGE")
+        this.appendValueInput('MESSAGE')
             .appendField(Blockly.Words['sayit_message'][systemLang]);
+
+        this.appendDummyInput('LOG')
+            .appendField(Blockly.Words['telegram_log'][systemLang])
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['telegram_log_none'][systemLang],  ''],
+                [Blockly.Words['telegram_log_info'][systemLang],  'log'],
+                [Blockly.Words['telegram_log_debug'][systemLang], 'debug'],
+                [Blockly.Words['telegram_log_warn'][systemLang],  'warn'],
+                [Blockly.Words['telegram_log_error'][systemLang], 'error']
+            ]), 'LOG');
 
         this.setInputsInline(false);
         this.setPreviousStatement(true, null);
@@ -137,12 +177,21 @@ Blockly.JavaScript['sayit'] = function(block) {
     var dropdown_language = block.getFieldValue('LANGUAGE');
     var value_message = Blockly.JavaScript.valueToCode(block, 'MESSAGE', Blockly.JavaScript.ORDER_ATOMIC);
     var value_volume  = Blockly.JavaScript.valueToCode(block, 'VOLUME', Blockly.JavaScript.ORDER_ATOMIC);
+    var logLevel = block.getFieldValue('LOG');
 
     value_message = value_message || "''";
     value_message = value_message.substring(1, value_message.length - 2);
     value_message = dropdown_language + ';' + (value_volume !== null && value_volume !== '' ? value_volume + ';' : '') + value_message;
 
-    return 'setState("sayit' + dropdown_instance + '.tts.text", "' + value_message + '");\n';
+    var logText;
+    if (logLevel) {
+        logText = 'console.' + logLevel + '("telegram' + (value_username ? '[' + value_username + ']' : '') + ': " + ' + value_message + ');\n'
+    } else {
+        logText = '';
+    }
+
+    return 'setState("sayit' + dropdown_instance + '.tts.text", "' + value_message + '");\n' +
+        logText;
 };
 
 // --- SendTo pushover --------------------------------------------------
@@ -211,6 +260,8 @@ Blockly.Sendto.blocks['pushover'] =
     + '     <value name="DEVICE">'
     + '     </value>'
     + '     <value name="TIMESTAMP">'
+    + '     </value>'
+    + '     <value name="LOG">'
     + '     </value>'
     + '</block>';
 
@@ -288,6 +339,16 @@ Blockly.Blocks['pushover'] = {
             .appendField(Blockly.Words['pushover_timestamp'][systemLang]);
         if (input.connection) input.connection._optional = true;
 
+        this.appendDummyInput('LOG')
+            .appendField(Blockly.Words['telegram_log'][systemLang])
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['telegram_log_none'][systemLang],  ''],
+                [Blockly.Words['telegram_log_info'][systemLang],  'log'],
+                [Blockly.Words['telegram_log_debug'][systemLang], 'debug'],
+                [Blockly.Words['telegram_log_warn'][systemLang],  'warn'],
+                [Blockly.Words['telegram_log_error'][systemLang], 'error']
+            ]), 'LOG');
+
         this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -300,9 +361,10 @@ Blockly.Blocks['pushover'] = {
 
 Blockly.JavaScript['pushover'] = function(block) {
     var dropdown_instance = block.getFieldValue('INSTANCE');
-    var value_username = Blockly.JavaScript.valueToCode(block, 'USERNAME', Blockly.JavaScript.ORDER_ATOMIC);
+    var logLevel = block.getFieldValue('LOG');
+    var message  = Blockly.JavaScript.valueToCode(block, 'MESSAGE', Blockly.JavaScript.ORDER_ATOMIC);
     var text = '{\n';
-    text += '   message: ' + Blockly.JavaScript.valueToCode(block, 'MESSAGE', Blockly.JavaScript.ORDER_ATOMIC) + ',\n';
+    text += '   message: ' + message + ',\n';
     text += '   sound: "' + block.getFieldValue('SOUND') + '",\n';
     var value = parseInt(block.getFieldValue('PRIORITY'), 10);
     if (value)     text += '   priority: ' + value + ',\n';
@@ -325,6 +387,221 @@ Blockly.JavaScript['pushover'] = function(block) {
     text += '\n';
 
     text += '}';
+    var logText;
 
-    return 'sendTo("pushover' + dropdown_instance + '", ' + text + ');\n';
+    if (logLevel) {
+        logText = 'console.' + logLevel + '("pushover: " + ' + message + ');\n'
+    } else {
+        logText = '';
+    }
+
+    return 'sendTo("pushover' + dropdown_instance + '", ' + text + ');\n' + logText;
 };
+if (0) {
+// --- sendTo Custom --------------------------------------------------
+    Blockly.Words['sendto_custom'] = {'en': 'sendTo', 'de': 'sendTo', 'ru': 'sendTo'};
+    Blockly.Words['sendto_custom_tooltip'] = {
+        'en': 'Text to speech',
+        'de': 'Text zu Sprache',
+        'ru': 'Произнести сообщение'
+    };
+    Blockly.Words['sendto_custom_help'] = {'en': 'sendto', 'de': 'sendto', 'ru': 'sendto'};
+    Blockly.Words['sendto_custom_arguments'] = {'en': 'parameters', 'de': 'Parameter', 'ru': 'параметры'};
+    Blockly.Words['sendto_custom_argument'] = {'en': 'parameter', 'de': 'Parameter', 'ru': 'параметр'};
+    Blockly.Words['sendto_custom_arg_tooltip'] = {
+        'en': 'Add parameter to sendTo object.',
+        'de': 'Parameter zum sendTo-Objekt hinzufügen',
+        'ru': 'Добавить параметр к sendTo объекту'
+    };
+
+    Blockly.Sendto.blocks['sendto_custom'] =
+        '<block type="sendto_custom">'
+        + '     <value name="INSTANCE">'
+        + '     </value>'
+        + '</block>';
+
+
+    Blockly.Blocks['sendto_custom_container'] = {
+        /**
+         * Mutator block for container.
+         * @this Blockly.Block
+         */
+        init: function () {
+            this.setColour(Blockly.Sendto.HUE);
+
+            this.appendDummyInput()
+                .appendField(Blockly.Words['sendto_custom_arguments'][systemLang]);
+
+            this.appendStatementInput('STACK');
+            this.setTooltip(Blockly.Msg.TEXT_CREATE_JOIN_TOOLTIP);
+            this.contextMenu = false;
+        }
+    };
+
+    Blockly.Blocks['sendto_custom_item'] = {
+        /**
+         * Mutator block for add items.
+         * @this Blockly.Block
+         */
+        init: function () {
+            this.setColour(Blockly.Sendto.HUE);
+
+            this.appendDummyInput()
+                .appendField(Blockly.Words['sendto_custom_argument'][systemLang])
+                .appendField(new Blockly.FieldTextInput('text'), 'NAME');
+
+            this.setPreviousStatement(true);
+            this.setNextStatement(true);
+            this.setTooltip(Blockly.Words['sendto_custom_arg_tooltip'][systemLang]);
+            this.contextMenu = false;
+        }
+    };
+
+    Blockly.Blocks['sendto_custom'] = {
+        /**
+         * Block for creating a string made up of any number of elements of any type.
+         * @this Blockly.Block
+         */
+        init: function () {
+            this.appendDummyInput('TEXT')
+                .appendField(Blockly.Words['sendto_custom'][systemLang]);
+
+            this.appendDummyInput('INSTANCE')
+                .appendField(new Blockly.FieldTextInput('adapter.0'), 'INSTANCE');
+
+            this.setColour(Blockly.Sendto.HUE);
+            this.arguments_ = ['text'];
+            this.updateShape_();
+            this.setMutator(new Blockly.Mutator(['sendto_custom_item']));
+            this.setTooltip(Blockly.Words['sendto_custom_tooltip'][systemLang]);
+            this.setHelpUrl(getHelp('sendto_custom_help'));
+        },
+        /**
+         * Create XML to represent number of text inputs.
+         * @return {!Element} XML storage element.
+         * @this Blockly.Block
+         */
+        mutationToDom: function () {
+            var container = document.createElement('mutation');
+            container.setAttribute('arguments', this.arguments_.join(','));
+            return container;
+        },
+        /**
+         * Parse XML to restore the text inputs.
+         * @param {!Element} xmlElement XML storage element.
+         * @this Blockly.Block
+         */
+        domToMutation: function (xmlElement) {
+            var arg = xmlElement.getAttribute('arguments') || '';
+            this.arguments_ = arg.split(',');
+            this.updateShape_();
+        },
+        /**
+         * Populate the mutator's dialog with this block's components.
+         * @param {!Blockly.Workspace} workspace Mutator's workspace.
+         * @return {!Blockly.Block} Root block in mutator.
+         * @this Blockly.Block
+         */
+        decompose: function (workspace) {
+            var containerBlock = workspace.newBlock('sendto_custom_container');
+            containerBlock.initSvg();
+            var connection = containerBlock.getInput('STACK').connection;
+            for (var i = 0; i < this.arguments_.length; i++) {
+                var itemBlock = workspace.newBlock('sendto_custom_item');
+                itemBlock.setFieldValue(this.arguments_[i], 'NAME');
+                itemBlock.initSvg();
+                connection.connect(itemBlock.previousConnection);
+                connection = itemBlock.nextConnection;
+            }
+            return containerBlock;
+        },
+        /**
+         * Reconfigure this block based on the mutator dialog's components.
+         * @param {!Blockly.Block} containerBlock Root block in mutator.
+         * @this Blockly.Block
+         */
+        compose: function (containerBlock) {
+            var itemBlock = containerBlock.getInputTargetBlock('STACK');
+            // Count number of inputs.
+            var connections = [];
+            while (itemBlock) {
+                connections.push(itemBlock.valueConnection_);
+                itemBlock = itemBlock.nextConnection &&
+                    itemBlock.nextConnection.targetBlock();
+            }
+
+            // Disconnect any children that don't belong.
+            for (var i = 0; i < this.arguments_.length; i++) {
+                var connection = this.getInput('PARAM' + i).connection.targetConnection;
+                if (connection && connections.indexOf(connection) == -1) {
+                    connection.disconnect();
+                }
+            }
+            this.arguments_ = Array(connections.length);
+
+            this.updateShape_();
+            // Reconnect any child blocks.
+            for (var i = 0; i < this.arguments_.length; i++) {
+                Blockly.Mutator.reconnect(connections[i], this, 'PARAM' + i);
+            }
+        },
+        /**
+         * Store pointers to any connected child blocks.
+         * @param {!Blockly.Block} containerBlock Root block in mutator.
+         * @this Blockly.Block
+         */
+        saveConnections: function (containerBlock) {
+            var itemBlock = containerBlock.getInputTargetBlock('STACK');
+            var i = 0;
+            while (itemBlock) {
+                var input = this.getInput('PARAM' + i);
+                itemBlock.valueConnection_ = input && input.connection.targetConnection;
+                i++;
+                itemBlock = itemBlock.nextConnection &&
+                    itemBlock.nextConnection.targetBlock();
+            }
+        },
+        /**
+         * Modify this block to have the correct number of inputs.
+         * @private
+         * @this Blockly.Block
+         */
+        updateShape_: function () {
+            if (this.itemCount_ && this.getInput('EMPTY')) {
+                this.removeInput('EMPTY');
+            } else if (!this.itemCount_ && !this.getInput('EMPTY')) {
+                this.appendDummyInput('EMPTY')
+                    .appendField(this.newQuote_(true))
+                    .appendField(this.newQuote_(false));
+            }
+            // Add new inputs.
+            for (var i = 0; i < this.itemCount_; i++) {
+                if (!this.getInput('PARAM' + i)) {
+                    var input = this.appendValueInput('PARAM' + i);
+                    var name = input.getFieldValue();
+                    input.appendField(name);
+                }
+            }
+            // Remove deleted inputs.
+            while (this.getInput('PARAM' + i)) {
+                this.removeInput('PARAM' + i);
+                i++;
+            }
+        },
+        newQuote_: Blockly.Blocks['text'].newQuote_
+    };
+
+    Blockly.JavaScript['sendto_custom'] = function (block) {
+        var dropdown_instance = block.getFieldValue('INSTANCE');
+        var logLevel = block.getFieldValue('LOG');
+
+        var logText;
+        if (logLevel) {
+            logText = 'console.' + logLevel + '("telegram' + (value_username ? '[' + value_username + ']' : '') + ': " + ' + value_message + ');\n'
+        } else {
+            logText = '';
+        }
+
+        return 'sendTo("' + dropdown_instance + '", "' + 3 + '");\n' + logText;
+    };
+}

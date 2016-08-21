@@ -143,8 +143,8 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
             .appendField(nameField, 'NAME')
             .appendField('', 'PARAMS');
 
-        this.appendDummyInput("SCRIPT")
-            .appendField(new Blockly.FieldScript(btoa('return 0;')), "SCRIPT");
+        this.appendDummyInput('SCRIPT')
+            .appendField(new Blockly.FieldScript(btoa('return 0;')), 'SCRIPT');
 
         this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
 

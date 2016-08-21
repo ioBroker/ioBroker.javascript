@@ -81,7 +81,7 @@ Blockly.JavaScript['on'] = function(block) {
 
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
 
-    var code = 'on({id: "' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', change: "' + dropdown_condition + '"}, function (obj) {\n  var value = obj.state.val;\n' + statements_name + '});\n';
+    var code = 'on({id: "' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', change: "' + dropdown_condition + '"}, function (obj) {\n  var value = obj.state.val;\n  var oldValue = obj.oldState.val;\n' + statements_name + '});\n';
     return code;
 };
 

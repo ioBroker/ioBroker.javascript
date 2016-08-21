@@ -364,7 +364,7 @@ Blockly.Blocks['field_oid'] = {
             .appendField(Blockly.Words['field_oid_OID'][systemLang]);
 
         this.appendDummyInput()
-            .appendField(new Blockly.FieldOID("default", main.initSelectId(), main.objects), 'oid');
+            .appendField(new Blockly.FieldOID('default', main.initSelectId(), main.objects), 'oid');
 
         this.setInputsInline(true);
         this.setColour(Blockly.System.HUE);
@@ -402,14 +402,14 @@ Blockly.Blocks['get_value'] = {
     // Checkbox.
     init: function() {
 
-        this.appendDummyInput("ATTR")
+        this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['get_value_val'][systemLang],    "val"],
-                [Blockly.Words['get_value_ts'][systemLang],     "ts"],
-                [Blockly.Words['get_value_lc'][systemLang],     "lc"],
-                [Blockly.Words['get_value_q'][systemLang] ,     "q"],
-                [Blockly.Words['get_value_from'][systemLang],   "from"]
-            ]), "ATTR");
+                [Blockly.Words['get_value_val'][systemLang],    'val'],
+                [Blockly.Words['get_value_ts'][systemLang],     'ts'],
+                [Blockly.Words['get_value_lc'][systemLang],     'lc'],
+                [Blockly.Words['get_value_q'][systemLang] ,     'q'],
+                [Blockly.Words['get_value_from'][systemLang],   'from']
+            ]), 'ATTR');
 
         this.appendDummyInput()
             .appendField(Blockly.Words['get_value_OID'][systemLang]);
