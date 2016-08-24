@@ -280,7 +280,7 @@
                             // load all scripts
                             for (var i = 0; i < doc.rows.length; i++) {
                                 if (!adapter.checkIsGlobal(doc.rows[i].value)) {
-                                    load(doc.rows[i].value._id);
+                                    load(doc.rows[i].value);
                                 }
                             }
                         }
@@ -2229,27 +2229,19 @@
         }
     }
 
-    function load(name, callback) {
-
-        adapter.getForeignObject(name, function (err, obj) {
-            // create states for scripts
-            if (obj && obj.common.engine === 'system.adapter.' + adapter.namespace) {
-                createActiveObject(obj._id, obj.common.enabled);
-            }
-            // todo delete non existing scripts
-
-            if (!err &&
-                obj &&
-                obj.common.enabled &&
-                obj.common.engine === 'system.adapter.' + adapter.namespace &&
-                obj.common.source &&
-                (obj.common.engineType.match(/^[jJ]ava[sS]cript/) || obj.common.engineType === 'Blockly')) {
+    function prepareScript(obj, callback) {
+        if (obj &&
+            obj.common.enabled &&
+            obj.common.engine === 'system.adapter.' + adapter.namespace &&
+            obj.common.source) {
+            var name = obj._id;
+            if ((obj.common.engineType.match(/^[jJ]ava[sS]cript/) || obj.common.engineType === 'Blockly')) {
                 // Javascript
                 adapter.log.info('Start javascript ' + name);
                 scripts[name] = compile(globalScript + obj.common.source, name);
                 if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
                 if (callback) callback(true, name);
-            } else if (!err && obj && obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.source && obj.common.engineType.match(/^[cC]offee/)) {
+            } else if (obj.common.engineType.match(/^[cC]offee/)) {
                 // CoffeeScript
                 mods['coffee-compiler'].fromSource(obj.common.source, {sourceMap: false, bare: true}, function (err, js) {
                     if (err) {
@@ -2262,18 +2254,29 @@
                     if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
                     if (callback) callback(true, name);
                 });
-            } else {
-                if (callback) callback(false, name);
             }
-        });
-
+        } else {
+            if (!obj) adapter.log.error('Invalid script');
+            if (callback) callback(false, name);
+        }
+    }
+    function load(nameOrObject, callback) {
+        if (typeof nameOrObject === 'object') {
+            return prepareScript(nameOrObject, callback);
+        } else {
+            adapter.getForeignObject(nameOrObject, function (err, obj) {
+                if (!obj || err) {
+                    if (err) adapter.log.error('Invalid script "' + nameOrObject + '": ' + err);
+                    if (callback) callback(false, nameOrObject);
+                } else {
+                    return prepareScript(obj, callback);
+                }
+            });
+        }
     }
 
     function patternMatching(event, pattern) {
-
-        if (!pattern.logic) {
-            pattern.logic = 'and';
-        }
+        if (!pattern.logic) pattern.logic = 'and';
 
         var matched = false;
 
