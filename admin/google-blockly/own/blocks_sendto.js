@@ -179,10 +179,6 @@ Blockly.JavaScript['sayit'] = function(block) {
     var value_volume  = Blockly.JavaScript.valueToCode(block, 'VOLUME', Blockly.JavaScript.ORDER_ATOMIC);
     var logLevel = block.getFieldValue('LOG');
 
-    value_message = value_message || "''";
-    value_message = value_message.substring(1, value_message.length - 2);
-    value_message = dropdown_language + ';' + (value_volume !== null && value_volume !== '' ? value_volume + ';' : '') + value_message;
-
     var logText;
     if (logLevel) {
         logText = 'console.' + logLevel + '("telegram' + (value_username ? '[' + value_username + ']' : '') + ': " + ' + value_message + ');\n'
@@ -190,7 +186,7 @@ Blockly.JavaScript['sayit'] = function(block) {
         logText = '';
     }
 
-    return 'setState("sayit' + dropdown_instance + '.tts.text", "' + value_message + '");\n' +
+    return 'setState("sayit' + dropdown_instance + '.tts.text", "' + dropdown_language + ';' + (value_volume !== null && value_volume !== '' ? value_volume + ';' : '') + '" + ' + value_message  + ');\n' +
         logText;
 };
 
