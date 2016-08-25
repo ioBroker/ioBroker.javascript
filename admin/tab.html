@@ -179,6 +179,8 @@
                                 <td class="edit-wrap-lines"><input  id="edit-wrap-lines" type="checkbox"/></td>
                                 <td class="edit-wrap-lines"><div class="translate">Wrap&nbsp;lines</div></td>
                                 <td style="width: 100%"></td>
+                                <td><button id="edit-export-blocks" class="translate script-edit"></button></td>
+                                <td><button id="edit-import-blocks" class="translate script-edit"></button></td>
                                 <td><button id="edit-check-blocks" class="translate script-edit" style="white-space: nowrap;">Check blocks</button></td>
                                 <td><button id="show-blockly-id"   class="translate script-edit">Show code</button></td>
                                 <td><button                        class="translate script-edit edit-cron-id">Cron</button></td>
@@ -262,6 +264,10 @@
     <div id="dialog-select-member" style="display:none"></div>
     <div id="dialog-cron" style="display: none">
         <div id="div-cron"></div>
+    </div>
+
+    <div id="dialog-export-blockly" style="display: none">
+        <textarea id="dialog-export-blockly-textarea" style="width: 99%; height: 98%; font-size: 11px; resize: none;" readonly></textarea>
     </div>
 
     <div style="display: none; overflow: hidden; text-align: center;" id="dialog_import_scripts" title="import scripts" class="translateT">

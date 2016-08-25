@@ -322,10 +322,10 @@ Blockly.Blocks['create'] = {
         this.appendDummyInput()
             .appendField(Blockly.Words['create'][systemLang]);
 
-        this.appendDummyInput("NAME")
-            .appendField(new Blockly.FieldTextInput(Blockly.Words['create_jsState'][systemLang]), "NAME");
+        this.appendDummyInput('NAME')
+            .appendField(new Blockly.FieldTextInput(Blockly.Words['create_jsState'][systemLang]), 'NAME');
 
-        this.appendStatementInput("STATEMENT")
+        this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
         this.setPreviousStatement(true, null);
