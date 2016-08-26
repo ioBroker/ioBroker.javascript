@@ -121,7 +121,19 @@ Default severity is ***'info'***
 
 ### exec - execute some OS command, like "cp file1 file2"
     exec (cmd, callback)
-    
+
+Execute system command and get the outputs.
+
+```
+// reboot linux system :)
+exec('reboot');
+
+// Get the list of files and directories in /var/log
+exec('ls /var/log', function (error, stdout, stderr) {
+    console.log('stdout: ' + stdout);
+});
+```
+
 ### on - Subscribe on changes or updates of some state
     on(pattern, callbackOrId, value)
 
