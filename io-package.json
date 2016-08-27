@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.0.0",
+        "version":                  "3.0.1",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.0.1": {
+                "en": "Fix disabling of script",
+                "de": "Fix Deaktivierung vom Skript",
+                "ru": "Исправлена деактивация скрипта"
+            },
             "3.0.0": {
                 "en": "Beta Release with Blockly",
                 "de": "Beta Release mit Blockly",

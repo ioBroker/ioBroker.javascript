@@ -833,6 +833,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 3.0.1 (2016-08-27)
+* (bluefox) Fix disabling of script
+
 ### 3.0.0 (2016-08-27)
 * (bluefox) Beta Release with Blockly
 

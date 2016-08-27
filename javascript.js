@@ -2258,9 +2258,13 @@
                 });
             }
         } else {
-            adapter.setState('scriptEnabled.' + name.substring('script.js.'.length), false, true);
+            var _name;
+            if (obj && obj._id) {
+                _name = obj._id;
+                adapter.setState('scriptEnabled.' + _name.substring('script.js.'.length), false, true);
+            }
             if (!obj) adapter.log.error('Invalid script');
-            if (callback) callback(false, name);
+            if (callback) callback(false, _name);
         }
     }
     function load(nameOrObject, callback) {
