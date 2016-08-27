@@ -547,6 +547,7 @@ function Scripts(main) {
             if (obj.common.engineType === 'Blockly') {
                 that.editor.getSession().setMode('ace/mode/javascript');
                 that.editor.setReadOnly(true);
+                that.editor.getSession().setUseWorker(false); // disable syntax check
                 switchViews(true, obj.common.engineType);
                 that.blocklyWorkspace.clear();
                 try {
@@ -560,10 +561,12 @@ function Scripts(main) {
             } else
             if (obj.common.engineType && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
                 that.editor.getSession().setMode('ace/mode/javascript');
+                that.editor.getSession().setUseWorker(true); // enable syntax check
                 that.editor.setReadOnly(false);
                 switchViews(false, obj.common.engineType);
             } else if (obj.common.engineType && obj.common.engineType.match(/^[cC]offee[sS]cript/)) {
                 that.editor.getSession().setMode('ace/mode/coffee');
+                that.editor.getSession().setUseWorker(true); // enable syntax check
                 that.editor.setReadOnly(false);
                 switchViews(false, obj.common.engineType);
             }

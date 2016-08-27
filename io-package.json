@@ -1,14 +1,19 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "2.3.4",
+        "version":                  "3.0.0",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
-			"2.3.4": {
+            "3.0.0": {
+                "en": "Beta Release with Blockly",
+                "de": "Beta Release mit Blockly",
+                "ru": "Бета релих с Blockly"
+            },
+            "2.3.4": {
                 "en": "fix sayIt Block",
                 "de": "Repariere sayIt Block",
                 "ru": "Исправлен sayIt блок"

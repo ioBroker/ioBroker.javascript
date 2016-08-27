@@ -833,6 +833,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 3.0.0 (2016-08-27)
+* (bluefox) Beta Release with Blockly
+
 ### 2.3.4 (2016-08-24)
 * (bluefox) fix sayIt Block
 

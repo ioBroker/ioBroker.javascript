@@ -2163,7 +2163,6 @@
         }
     }
 
-
     function stop(name, callback) {
         adapter.log.info('Stop script ' + name);
 
@@ -2235,6 +2234,9 @@
             obj.common.engine === 'system.adapter.' + adapter.namespace &&
             obj.common.source) {
             var name = obj._id;
+
+            adapter.setState('scriptEnabled.' + name.substring('script.js.'.length), true, true);
+
             if ((obj.common.engineType.match(/^[jJ]ava[sS]cript/) || obj.common.engineType === 'Blockly')) {
                 // Javascript
                 adapter.log.info('Start javascript ' + name);
@@ -2256,6 +2258,7 @@
                 });
             }
         } else {
+            adapter.setState('scriptEnabled.' + name.substring('script.js.'.length), false, true);
             if (!obj) adapter.log.error('Invalid script');
             if (callback) callback(false, name);
         }
