@@ -646,7 +646,6 @@
             name:      name,
             instance:  adapter.instance,
             verbose:   verbose,
-            debug:     debug,
             require:   function (md) {
                 if (mods[md]) return mods[md];
                 try {
@@ -1161,7 +1160,7 @@
             },
             exec:      function (cmd, callback) {
                 if (sandbox.verbose) sandbox.log('exec: ' + cmd, 'info');
-                if (sandbox.debug) {
+                if (debug) {
                     sandbox.log(words._('Command %s was not executed, while debug mode is active', cmd), 'warn');
                     if (typeof callback === 'function') {
                         setTimeout(function () {
@@ -1496,7 +1495,7 @@
                 if (states[id]) {
                     if (sandbox.verbose) sandbox.log('setForeignState(id=' + id + ', state=' + JSON.stringify(state) + ')', 'info');
 
-                    if (sandbox.debug) {
+                    if (debug) {
                         sandbox.log('setForeignState(id=' + id + ', state=' + JSON.stringify(state) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
 
                         if (typeof callback === 'function') {
@@ -1514,7 +1513,7 @@
                 } else if (states[adapter.namespace + '.' + id]) {
                     if (sandbox.verbose) sandbox.log('setState(id=' + id + ', state=' + JSON.stringify(state) + ')', 'info');
 
-                    if (sandbox.debug) {
+                    if (debug) {
                         sandbox.log('setState(' + id + ', ' + JSON.stringify(state) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
                         if (typeof callback === 'function') {
                             setTimeout(function () {
@@ -1533,7 +1532,7 @@
                         if (objects[id].type === 'state') {
                             if (sandbox.verbose) sandbox.log('setForeignState(id=' + id + ', state=' + JSON.stringify(state) + ')', 'info');
 
-                            if (sandbox.debug) {
+                            if (debug) {
                                 sandbox.log('setForeignState(id=' + id + ', state=' + JSON.stringify(state) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
                                 if (typeof callback === 'function') {
                                     setTimeout(function () {
@@ -1555,7 +1554,7 @@
                         if (objects[adapter.namespace + '.' + id].type === 'state') {
                             if (sandbox.verbose) sandbox.log('setState(id=' + id + ', state=' + JSON.stringify(state) + ')', 'info');
 
-                            if (sandbox.debug) {
+                            if (debug) {
                                 sandbox.log('setState(id=' + id + ', state=' + JSON.stringify(state) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
                                 if (typeof callback === 'function') {
                                     setTimeout(function () {
@@ -1992,7 +1991,7 @@
                     _adapter = null;
                 }
 
-                if (sandbox.debug) {
+                if (debug) {
                     sandbox.log('readFile(adapter=' + _adapter + ', fileName=' + fileName + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
                     if (typeof callback === 'function') {
                         setTimeout(function () {
@@ -2107,7 +2106,7 @@
 
         if (adapter.config.enableSetObject) {
             sandbox.setObject = function (id, obj, callback) {
-                if (sandbox.debug) {
+                if (debug) {
                     sandbox.log('setObject(id=' + id + ', obj=' + JSON.stringify(obj) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
                     if (typeof callback === 'function') {
                         setTimeout(function () {

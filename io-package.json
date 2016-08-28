@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.0.1",
+        "version":                  "3.0.2",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.0.2": {
+                "en": "Change name of sandbox debug variable",
+                "de": "Ändere Name von Sandbox-Debug",
+                "ru": "Изменено имя Sandbox debug переменной"
+            },
             "3.0.1": {
                 "en": "Fix disabling of script",
                 "de": "Fix Deaktivierung vom Skript",
