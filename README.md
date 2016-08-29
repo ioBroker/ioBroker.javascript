@@ -47,6 +47,7 @@ Executes Javascript and Coffescript Scripts.
     - [setTimeout](#settimeout)
     - [clearTimeout](#cleartimeout)
     - [formatDate](#formatdate)
+    - [getDateObject](#getDateObject)
     - [formatValue](#formatvalue)
     - [adapterSubscribe](#adaptersubscribe)
     - [adapterUnsubscribe](#adapterunsubscribe)
@@ -643,6 +644,12 @@ Same as javascript ***clearTimeout***.
   formatDate(state.ts) => "24.02.2015"
   formatDate(state.ts, "JJJJ.MM.TT SS:mm:ss.sss) => "2015.02.15 17:41:98.123"
 
+### getDateObject
+    getDateObject (stringOrNumber)
+Converts string or number to Date object.
+If only hours are given it will add current date to it and will try to convert.
+
+getDateObject("20:00") => "Tue Aug 09 2016 20:00:00 GMT+0200"
 
 ### formatValue 
 	formatValue (value, decimals, format)
@@ -833,6 +840,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 3.0.3 (2016-08-29)
+* (bluefox) Fixed the convert date block
+
 ### 3.0.2 (2016-08-28)
 * (bluefox) Change name of sandbox debug variable
 

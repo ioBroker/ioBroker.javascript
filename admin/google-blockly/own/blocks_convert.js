@@ -103,15 +103,16 @@ Blockly.Convert.blocks['convert_type'] =
 Blockly.Blocks.convert_type = {
     init: function () {
         this.setColour(Blockly.Convert.HUE);
-        this.appendValueInput("ITEM")
+
+        this.appendValueInput('ITEM')
             .appendField(Blockly.Words['convert_type'][systemLang]);
 
-        this.setOutput(true, "String");
+        this.setOutput(true, 'String');
         this.setTooltip(Blockly.Words['convert_type_tooltip'][systemLang])
     }
 };
 Blockly.JavaScript.convert_type = function (a) {
-    return ["typeof " + Blockly.JavaScript.valueToCode(a, "ITEM", Blockly.JavaScript.ORDER_ATOMIC), Blockly.JavaScript.ORDER_ATOMIC];
+    return ['typeof ' + Blockly.JavaScript.valueToCode(a, 'ITEM', Blockly.JavaScript.ORDER_ATOMIC), Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- to Date --------------------------------------------------
@@ -126,16 +127,17 @@ Blockly.Convert.blocks['convert_to_date'] =
 
 Blockly.Blocks.convert_to_date = {
     init: function () {
-        this.setColour(Blockly.Convert.HUE);
-        this.appendValueInput("VALUE")
+        
+        this.appendValueInput('VALUE')
             .appendField(Blockly.Words['convert_to_date'][systemLang]);
 
-        this.setOutput(true, "Date");
+        this.setColour(Blockly.Convert.HUE);
+        this.setOutput(true, 'Date');
         this.setTooltip(Blockly.Words['convert_to_date_tooltip'][systemLang])
     }
 };
 Blockly.JavaScript.convert_to_date = function (a) {
-    return ['new Date(' + Blockly.JavaScript.valueToCode(a, "VALUE", Blockly.JavaScript.ORDER_ATOMIC) + ').getTime()', Blockly.JavaScript.ORDER_ATOMIC];
+    return ['new Date(' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + ').getTime()', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- from Date --------------------------------------------------
@@ -159,25 +161,25 @@ Blockly.Convert.blocks['convert_from_date'] =
 Blockly.Blocks.convert_from_date = {
     init: function () {
         this.setColour(Blockly.Convert.HUE);
-        this.appendValueInput("VALUE")
+        this.appendValueInput('VALUE')
             .appendField(Blockly.Words['convert_from_date'][systemLang]);
 
-        this.appendDummyInput("OPTION")
+        this.appendDummyInput('OPTION')
             .appendField(Blockly.Words['convert_to'][systemLang])
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['time_get_ms'][systemLang]            , "ms"],
-                [Blockly.Words['time_get_s'][systemLang]             , "s"],
-                [Blockly.Words['time_get_m'][systemLang]             , "m"],
-                [Blockly.Words['time_get_h'][systemLang]             , "h"],
-                [Blockly.Words['time_get_d'][systemLang]             , "d"],
-                [Blockly.Words['time_get_M'][systemLang]             , "M"],
-                [Blockly.Words['time_get_Mt'][systemLang]            , "Mt"],
-                [Blockly.Words['time_get_y'][systemLang]             , "y"],
-                [Blockly.Words['time_get_fy'][systemLang]            , "fy"],
-                [Blockly.Words['time_get_wdt'][systemLang]           , "wdt"],
-                [Blockly.Words['time_get_wd'][systemLang]            , "wd"],
-                [Blockly.Words['time_get_custom'][systemLang]        , "custom"],
-                [Blockly.Words['time_get_object'][systemLang]        , "object"],
+                [Blockly.Words['time_get_ms'][systemLang]            , 'ms'],
+                [Blockly.Words['time_get_s'][systemLang]             , 's'],
+                [Blockly.Words['time_get_m'][systemLang]             , 'm'],
+                [Blockly.Words['time_get_h'][systemLang]             , 'h'],
+                [Blockly.Words['time_get_d'][systemLang]             , 'd'],
+                [Blockly.Words['time_get_M'][systemLang]             , 'M'],
+                [Blockly.Words['time_get_Mt'][systemLang]            , 'Mt'],
+                [Blockly.Words['time_get_y'][systemLang]             , 'y'],
+                [Blockly.Words['time_get_fy'][systemLang]            , 'fy'],
+                [Blockly.Words['time_get_wdt'][systemLang]           , 'wdt'],
+                [Blockly.Words['time_get_wd'][systemLang]            , 'wd'],
+                [Blockly.Words['time_get_custom'][systemLang]        , 'custom'],
+                [Blockly.Words['time_get_object'][systemLang]        , 'object'],
                 [Blockly.Words['time_get_yyyy.mm.dd'][systemLang]    , [Blockly.Words['time_get_yyyy.mm.dd']  .format]],
                 [Blockly.Words['time_get_yyyy/mm/dd'][systemLang]    , [Blockly.Words['time_get_yyyy/mm/dd']  .format]],
                 [Blockly.Words['time_get_yy.mm.dd'][systemLang]      , [Blockly.Words['time_get_yy.mm.dd']    .format]],
@@ -197,7 +199,7 @@ Blockly.Blocks.convert_from_date = {
                 [Blockly.Words['time_get_hh_mm_ss.sss'][systemLang]  , [Blockly.Words['time_get_hh_mm_ss.sss'].format]]
             ], function (option) {
                 this.sourceBlock_.updateShape_(option === 'custom', option === 'wdt' || option === 'Mt');
-            }), "OPTION");
+            }), 'OPTION');
 
 
         this.setInputsInline(true);
@@ -234,16 +236,16 @@ Blockly.Blocks.convert_from_date = {
             if (!inputExists) {
                 var languages;
                 if (systemLang === 'en') {
-                    languages = [["in english", "en"], ["auf deutsch", "de"], ["на русском", "ru"]];
+                    languages = [['in english', 'en'], ['auf deutsch', 'de'], ['на русском', 'ru']];
                 } else if (systemLang === 'de') {
-                    languages = [["auf deutsch", "de"], ["in english", "en"], ["на русском", "ru"]];
+                    languages = [['auf deutsch', 'de'], ['in english', 'en'], ['на русском', 'ru']];
                 } else if (systemLang === 'ru') {
-                    languages = [["на русском", "ru"], ["in english", "en"], ["auf deutsch", "de"]];
+                    languages = [['на русском', 'ru'], ['in english', 'en'], ['auf deutsch', 'de']];
                 } else {
-                    languages = [["in english", "en"], ["auf deutsch", "de"], ["на русском", "ru"]];
+                    languages = [['in english', 'en'], ['auf deutsch', 'de'], ['на русском', 'ru']];
                 }
-                this.appendDummyInput("LANGUAGE")
-                    .appendField(new Blockly.FieldDropdown(languages), "LANGUAGE");
+                this.appendDummyInput('LANGUAGE')
+                    .appendField(new Blockly.FieldDropdown(languages), 'LANGUAGE');
             }
         } else if (inputExists) {
             this.removeInput('LANGUAGE');
@@ -254,34 +256,35 @@ Blockly.JavaScript.convert_from_date = function (block) {
     var option = block.getFieldValue('OPTION');
     var format = block.getFieldValue('FORMAT');
 
-    var value = Blockly.JavaScript.valueToCode(block, "ITEM", Blockly.JavaScript.ORDER_ATOMIC);
+    var value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+
     var code;
-    if (option === "object") {
-        code = '(new Date(' + value + ').getTime())';
-    } else if (option === "ms") {
-        code = '(new Date(' + value + ').getMilliseconds())';
-    } else if (option === "s") {
-        code = '(new Date(' + value + ').getSeconds())';
-    } else if (option === "h") {
-        code = '(new Date(' + value + ').getHours())';
-    } else if (option === "d") {
-        code = '(new Date(' + value + ').getDate())';
-    } else if (option === "M") {
-        code = '(new Date(' + value + ').getMonth() + 1)';
-    } else if (option === "Mt") {
-        code = '(new Date(' + value + ').getMonth() + 1)';
-    } else if (option === "y") {
-        code = '(new Date(' + value + ').getYear())';
-    } else if (option === "fy") {
-        code = '(new Date(' + value + ').getFullYear())';
-    } else if (option === "wdt") {
-        code = '(new Date(' + value + ').getDay())';
-    } else if (option === "wd") {
-        code = '(new Date(' + value + ').getDay())';
-    } else if (option === "custom") {
-        code = 'formatDate(new Date(' + value + '), "' + format + '")';
+    if (option === 'object') {
+        code = 'getDateObject(' + value + ').getTime()';
+    } else if (option === 'ms') {
+        code = 'getDateObject(' + value + ').getMilliseconds()';
+    } else if (option === 's') {
+        code = 'getDateObject(' + value + ').getSeconds()';
+    } else if (option === 'h') {
+        code = 'getDateObject(' + value + ').getHours()';
+    } else if (option === 'd') {
+        code = 'getDateObject(' + value + ').getDate()';
+    } else if (option === 'M') {
+        code = '(getDateObject(' + value + ').getMonth() + 1)';
+    } else if (option === 'Mt') {
+        code = '(getDateObject(' + value + ').getMonth() + 1)';
+    } else if (option === 'y') {
+        code = 'getDateObject(' + value + ').getYear()';
+    } else if (option === 'fy') {
+        code = 'getDateObject(' + value + ').getFullYear()';
+    } else if (option === 'wdt') {
+        code = 'getDateObject(' + value + ').getDay()';
+    } else if (option === 'wd') {
+        code = 'getDateObject(' + value + ').getDay()';
+    } else if (option === 'custom') {
+        code = 'formatDate(getDateObject(' + value + '), "' + format + '")';
     } else {
-        code = 'formatDate(new Date(' + value + '), "' + option + '")';
+        code = 'formatDate(getDateObject(' + value + '), "' + option + '")';
     }
 
     return [code, Blockly.JavaScript.ORDER_ATOMIC];

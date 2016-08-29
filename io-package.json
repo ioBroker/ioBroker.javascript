@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.0.2",
+        "version":                  "3.0.3",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.0.3": {
+                "en": "Fixed the convert date block",
+                "de": "Block für Datumkonevrtirung ist geändert",
+                "ru": "Поправлен блок конвертирования даты"
+            },
             "3.0.2": {
                 "en": "Change name of sandbox debug variable",
                 "de": "Ändere Name von Sandbox-Debug",

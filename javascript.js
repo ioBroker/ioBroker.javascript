@@ -1983,6 +1983,21 @@
                 return adapter.formatDate(date, format);
             },
 
+            getDateObject: function (date) {
+                if (typeof date === 'object') return date;
+                if (typeof date !== 'string') return new Date(date);
+                if (date.match(/^\d?\d$/)) {
+                    var _now = new Date();
+                    date = _now.getFullYear() + '-' + (_now.getMonth() + 1) + '-' + _now.getDate() + ' ' + date + ':00';
+                } else
+                // 20:00, 2:00, 20:00:00, 2:00:00
+                if (date.match(/^\d?\d:\d\d(:\d\d)?$/)) {
+                    var now = new Date();
+                    date = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + ' ' + date;
+                }
+                return new Date(date);
+            },
+
             writeFile: function (_adapter, fileName, data, callback) {
                 if (typeof data === 'function' || !data) {
                     callback = data;
