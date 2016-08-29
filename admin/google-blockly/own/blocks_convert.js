@@ -137,7 +137,7 @@ Blockly.Blocks.convert_to_date = {
     }
 };
 Blockly.JavaScript.convert_to_date = function (a) {
-    return ['new Date(' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + ').getTime()', Blockly.JavaScript.ORDER_ATOMIC];
+    return ['getDateObject(' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + ').getTime()', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- from Date --------------------------------------------------
