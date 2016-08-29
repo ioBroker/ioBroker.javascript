@@ -176,6 +176,10 @@ systemDictionary = {
     "import scripts":       {"en": "Import scripts",        "de": "Skriptimport",           "ru": "Импортировать скрипты"},
     "Export":               {"en": "Export all scripts",    "de": "Export von allen Skripten", "ru": "Экспорт всех скриптов"},
     "Import":               {"en": "Import all scripts",    "de": "Import von allen Skripten", "ru": "Импорт всех скриптов"},
+    "Export blocks":        {"en": "Export blocks",         "de": "Blöcke exportieren",     "ru": "Экспорт блоков"},
+    "Import blocks":        {"en": "Import blocks",         "de": "Blöcke importieren",     "ru": "Импорт блоков"},
+    "Import selected blocks": {"en": "Import of blocks",    "de": "Import von Blöcken",     "ru": "Импорт блоков"},
+    "Export selected blocks": {"en": "Export selected blocks", "de": "Export von selected blocks", "ru": "Экспорт выбранных блоков"},
     "Deactivated. Click to start.": {
         "en": "Deactivated. Click to start.",
         "de": "Deaktiviert. Klicken zum Starten.",
