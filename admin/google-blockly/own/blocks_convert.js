@@ -116,7 +116,7 @@ Blockly.JavaScript.convert_type = function (a) {
 };
 
 // --- to Date --------------------------------------------------
-Blockly.Words['convert_to_date']         = {'en': 'toDate',                         'de': 'nach Datum',                 'ru': 'в дату'};
+Blockly.Words['convert_to_date']         = {'en': 'to Date/Time',                   'de': 'nach Datum/Zeit',            'ru': 'в дату/время'};
 Blockly.Words['convert_to_date_tooltip'] = {'en': 'Cast input to date',             'de': 'Convert Eingang nach Datum', 'ru': 'Преобразовать вход в дату'};
 
 Blockly.Convert.blocks['convert_to_date'] =
@@ -141,7 +141,7 @@ Blockly.JavaScript.convert_to_date = function (a) {
 };
 
 // --- from Date --------------------------------------------------
-Blockly.Words['convert_from_date']         = {'en': 'date',                          'de': 'Datum',               'ru': 'дату'};
+Blockly.Words['convert_from_date']         = {'en': 'date/time',                     'de': 'Datum/Zeit',          'ru': 'дату/время'};
 Blockly.Words['convert_to']                = {'en': 'to',                            'de': 'nach',                'ru': 'в'};
 Blockly.Words['convert_from_date_tooltip'] = {'en': 'Cast input from date',          'de': 'Convert Eingang aus Datum', 'ru': 'Преобразовать вход из даты'};
 
