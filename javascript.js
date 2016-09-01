@@ -35,7 +35,30 @@
     mods.fs._readFileSync  = mods.fs.readFileSync;
     mods.fs._writeFile     = mods.fs.writeFile;
     mods.fs._writeFileSync = mods.fs.writeFileSync;
-    
+
+    var dayOfWeeksFull         = {
+        'en': ['Sunday',        'Monday',  'Tuesday',   'Wednesday',    'Thursday',     'Friday',  'Saturday'],
+        'de': ['Sonntag',       'Montag',  'Dienstag',  'Mittwoch',     'Donnerstag',   'Freitag', 'Samstag'],
+        'ru': ['Понедельник',   'Вторник', 'Среда',     'Четверг',      'Пятница',      'Суббота', 'Воскресенье']
+    };
+    var dayOfWeeksShort        = {
+        'en': ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+        'de': ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+        'ru': ['По', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+    };
+
+    var monthFull         = {
+        'en': ['January', 'February', 'March', 'April',  'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        'de': ['Januar',  'Februar',  'März',  'April',  'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+        'ru': ['Январь',  'Февраль',  'Март',  'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь',  'Октябрь', 'Ноябрь',   'Декабрь']
+    };
+    var monthShort        = {
+        'en': ['Jan', 'Feb',  'Mar',  'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+        'de': ['Jan', 'Feb',  'Mär',  'Apr', 'Mai', 'Jun',  'Jul',  'Aug', 'Sep',  'Okt', 'Nov', 'Dez'],
+        'ru': ['Янв',  'Фев', 'Март', 'Апр', 'Май', 'Июнь', 'Июль', 'Авг', 'Сен',  'Окт', 'Ноя', 'Дек']
+    };
+
+
     var adapter = utils.adapter({
 
         name: 'javascript',
@@ -1975,12 +1998,27 @@
                 return adapter.formatValue(value, decimals, format);
             },
 
-            formatDate: function (date, format) {
+            formatDate: function (date, format, language) {
                 if (!format) {
                     format = objects['system.config'] ? (objects['system.config'].common.dateFormat || 'DD.MM.YYYY') : 'DD.MM.YYYY';
                 }
-
-                return adapter.formatDate(date, format);
+                if (format.match(/W|Н|O|О/)) {
+                    var text = adapter.formatDate(date, format);
+                    if (!language || !dayOfWeeksFull[language]) language = objects['system.config'].common.language;
+                    var d = date.getDay();
+                    text = text.replace('WW', dayOfWeeksFull[language][d]);
+                    text = text.replace('НН', dayOfWeeksFull[language][d]);
+                    text = text.replace('W',  dayOfWeeksShort[language][d]);
+                    text = text.replace('Н',  dayOfWeeksShort[language][d]);
+                    var m = date.getMonth();
+                    text = text.replace('OO', monthFull[language][m]);
+                    text = text.replace('ОО', monthFull[language][m]);
+                    text = text.replace('O',  monthShort[language][m]);
+                    text = text.replace('О',  monthShort[language][m]);
+                    return text;
+                } else {
+                    return adapter.formatDate(date, format);
+                }
             },
 
             getDateObject: function (date) {

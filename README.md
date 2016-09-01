@@ -637,12 +637,18 @@ Same as javascript ***clearTimeout***.
        * ss, сс(cyrillic) - full seconds, e.g. 05
        * s, с(cyrillic) - short seconds, e.g. 5
        * sss, ссс(cyrillic) - milliseconds
-
+       * WW, НН(cyrillic) - full week day as text
+       * W, Н(cyrillic) - short week day as text
+       * OO, ОО(cyrillic) - full month as text
+       * O, О(cyrillic) - short month as text
+       
 #### Example
   formatDate(new Date(), "YYYY-MM-DD") => Date "2015-02-24"
   formatDate(new Date(), "hh:mm") => Hours and minutes "17:41"
   formatDate(state.ts) => "24.02.2015"
   formatDate(state.ts, "JJJJ.MM.TT SS:mm:ss.sss) => "2015.02.15 17:41:98.123"
+  formatDate(new Date(), "WW") => Day of week "Tuesday"
+  formatDate(new Date(), "W") => Day of week "Tu"
 
 ### getDateObject
     getDateObject (stringOrNumber)
@@ -840,6 +846,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 3.0.4 (2016-09-01)
+* (bluefox) Support of convert day of week into text in blockly
+
 ### 3.0.3 (2016-08-29)
 * (bluefox) Fixed the convert date block
 

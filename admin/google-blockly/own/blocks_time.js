@@ -169,9 +169,11 @@ Blockly.Words['time_get_h']             = {'en': 'hours',                       
 Blockly.Words['time_get_d']             = {'en': 'day of month',                'de': 'Monatsdatum',                        'ru': 'день месяца'};
 Blockly.Words['time_get_M']             = {'en': 'month as number',             'de': 'Monat als Nummer',                   'ru': 'месяц числом'};
 Blockly.Words['time_get_Mt']            = {'en': 'month as text',               'de': 'Monat als Text',                     'ru': 'месяц словом'};
+Blockly.Words['time_get_Mts']           = {'en': 'month as short text',         'de': 'Monat als Kurztext',                 'ru': 'месяц коротким словом'};
 Blockly.Words['time_get_y']             = {'en': 'short year',                  'de': 'Kurzes Jahr',                        'ru': 'короткий год'};
 Blockly.Words['time_get_fy']            = {'en': 'full year',                   'de': 'Volljahr',                           'ru': 'полный год'};
 Blockly.Words['time_get_wdt']           = {'en': 'week day text',               'de': 'Wochentag als Text',                 'ru': 'день недели словом'};
+Blockly.Words['time_get_wdts']          = {'en': 'short week day',              'de': 'Wochentag als Kurztext',             'ru': 'короткий день недели'};
 Blockly.Words['time_get_wd']            = {'en': 'week day as number',          'de': 'Wochentag als Nummer',               'ru': 'день недели числом'};
 Blockly.Words['time_get_custom']        = {'en': 'custom format',               'de': 'anwenderformatiert',                 'ru': 'произвольный формат'};
 Blockly.Words['time_get_object']        = {'en': 'Date object',                 'de': 'Datum-Objekt',                       'ru': 'как объект'};
@@ -210,21 +212,23 @@ Blockly.Blocks['time_get'] = {
         this.appendDummyInput()
             .appendField(Blockly.Words['time_get'][systemLang]);
 
-        this.appendDummyInput("OPTION")
+        this.appendDummyInput('OPTION')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['time_get_ms'][systemLang]            , "ms"],
-                [Blockly.Words['time_get_s'][systemLang]             , "s"],
-                [Blockly.Words['time_get_m'][systemLang]             , "m"],
-                [Blockly.Words['time_get_h'][systemLang]             , "h"],
-                [Blockly.Words['time_get_d'][systemLang]             , "d"],
-                [Blockly.Words['time_get_M'][systemLang]             , "M"],
-                [Blockly.Words['time_get_Mt'][systemLang]            , "Mt"],
-                [Blockly.Words['time_get_y'][systemLang]             , "y"],
-                [Blockly.Words['time_get_fy'][systemLang]            , "fy"],
-                [Blockly.Words['time_get_wdt'][systemLang]           , "wdt"],
-                [Blockly.Words['time_get_wd'][systemLang]            , "wd"],
-                [Blockly.Words['time_get_custom'][systemLang]        , "custom"],
-                [Blockly.Words['time_get_object'][systemLang]        , "object"],
+                [Blockly.Words['time_get_ms'][systemLang]            , 'ms'],
+                [Blockly.Words['time_get_s'][systemLang]             , 's'],
+                [Blockly.Words['time_get_m'][systemLang]             , 'm'],
+                [Blockly.Words['time_get_h'][systemLang]             , 'h'],
+                [Blockly.Words['time_get_d'][systemLang]             , 'd'],
+                [Blockly.Words['time_get_M'][systemLang]             , 'M'],
+                [Blockly.Words['time_get_Mt'][systemLang]            , 'Mt'],
+                [Blockly.Words['time_get_Mts'][systemLang]           , 'Mts'],
+                [Blockly.Words['time_get_y'][systemLang]             , 'y'],
+                [Blockly.Words['time_get_fy'][systemLang]            , 'fy'],
+                [Blockly.Words['time_get_wdt'][systemLang]           , 'wdt'],
+                [Blockly.Words['time_get_wdts'][systemLang]          , 'wdts'],
+                [Blockly.Words['time_get_wd'][systemLang]            , 'wd'],
+                [Blockly.Words['time_get_custom'][systemLang]        , 'custom'],
+                [Blockly.Words['time_get_object'][systemLang]        , 'object'],
                 [Blockly.Words['time_get_yyyy.mm.dd'][systemLang]    , [Blockly.Words['time_get_yyyy.mm.dd']  .format]],
                 [Blockly.Words['time_get_yyyy/mm/dd'][systemLang]    , [Blockly.Words['time_get_yyyy/mm/dd']  .format]],
                 [Blockly.Words['time_get_yy.mm.dd'][systemLang]      , [Blockly.Words['time_get_yy.mm.dd']    .format]],
@@ -243,7 +247,7 @@ Blockly.Blocks['time_get'] = {
                 [Blockly.Words['time_get_hh_mm_ss'][systemLang]      , [Blockly.Words['time_get_hh_mm_ss']    .format]],
                 [Blockly.Words['time_get_hh_mm_ss.sss'][systemLang]  , [Blockly.Words['time_get_hh_mm_ss.sss'].format]]
             ], function (option) {
-                this.sourceBlock_.updateShape_(option === 'custom', option === 'wdt' || option === 'Mt');
+                this.sourceBlock_.updateShape_(option === 'custom', option === 'wdt' || option === 'wdts' || option === 'Mt' || option === 'Mts');
             }), "OPTION");
 
         this.setInputsInline(true);
@@ -258,7 +262,7 @@ Blockly.Blocks['time_get'] = {
         var container = document.createElement('mutation');
         var option = this.getFieldValue('OPTION');
         container.setAttribute('format', option === 'custom' ? 'true' : 'false');
-        container.setAttribute('language', option === 'wdt' || option === 'Mt' ? 'true' : 'false');
+        container.setAttribute('language', option === 'wdt' || option === 'wdts' || option === 'Mt' || option === 'Mts' ? 'true' : 'false');
         return container;
     },
     domToMutation: function(xmlElement) {
@@ -284,16 +288,16 @@ Blockly.Blocks['time_get'] = {
             if (!inputExists) {
                 var languages;
                 if (systemLang === 'en') {
-                    languages = [["in english", "en"], ["auf deutsch", "de"], ["на русском", "ru"]];
+                    languages = [['in english', 'en'], ['auf deutsch', 'de'], ['на русском', 'ru']];
                 } else if (systemLang === 'de') {
-                    languages = [["auf deutsch", "de"], ["in english", "en"], ["на русском", "ru"]];
+                    languages = [['auf deutsch', 'de'], ['in english', 'en'], ['на русском', 'ru']];
                 } else if (systemLang === 'ru') {
-                    languages = [["на русском", "ru"], ["in english", "en"], ["auf deutsch", "de"]];
+                    languages = [['на русском', 'ru'], ['in english', 'en'], ['auf deutsch', 'de']];
                 } else {
-                    languages = [["in english", "en"], ["auf deutsch", "de"], ["на русском", "ru"]];
+                    languages = [['in english', 'en'], ['auf deutsch', 'de'], ['на русском', 'ru']];
                 }
-                this.appendDummyInput("LANGUAGE")
-                    .appendField(new Blockly.FieldDropdown(languages), "LANGUAGE");
+                this.appendDummyInput('LANGUAGE')
+                    .appendField(new Blockly.FieldDropdown(languages), 'LANGUAGE');
             }
         } else if (inputExists) {
             this.removeInput('LANGUAGE');
@@ -304,31 +308,36 @@ Blockly.Blocks['time_get'] = {
 Blockly.JavaScript['time_get'] = function(block) {
     var option = block.getFieldValue('OPTION');
     var format = block.getFieldValue('FORMAT');
+    var lang   = block.getFieldValue('LANGUAGE');
 
     var code;
-    if (option === "object") {
+    if (option === 'object') {
         code = '(new Date().getTime())';
-    } else if (option === "ms") {
+    } else if (option === 'ms') {
         code = '(new Date().getMilliseconds())';
-    } else if (option === "s") {
+    } else if (option === 's') {
         code = '(new Date().getSeconds())';
-    } else if (option === "h") {
+    } else if (option === 'h') {
         code = '(new Date().getHours())';
-    } else if (option === "d") {
+    } else if (option === 'd') {
         code = '(new Date().getDate())';
-    } else if (option === "M") {
+    } else if (option === 'M') {
         code = '(new Date().getMonth() + 1)';
-    } else if (option === "Mt") {
-        code = '(new Date().getMonth() + 1)';
-    } else if (option === "y") {
+    } else if (option === 'Mt') {
+        code = 'formatDate(new Date(), "OO", "' + lang + '")';
+    } else if (option === 'Mts') {
+        code = 'formatDate(new Date(), "O", "' + lang + '")';
+    } else if (option === 'y') {
         code = '(new Date().getYear())';
-    } else if (option === "fy") {
+    } else if (option === 'fy') {
         code = '(new Date().getFullYear())';
-    } else if (option === "wdt") {
+    } else if (option === 'wdt') {
+        code = 'formatDate(new Date(), "WW", "' + lang + '")';
+    } else if (option === 'wdts') {
+        code = 'formatDate(new Date(), "W", "' + lang + '")';
+    } else if (option === 'wd') {
         code = '(new Date().getDay() === 0 ? 7 : new Date().getDay())';
-    } else if (option === "wd") {
-        code = '(new Date().getDay() === 0 ? 7 : new Date().getDay())';
-    } else if (option === "custom") {
+    } else if (option === 'custom') {
         code = 'formatDate(new Date(), "' + format + '")';
     } else {
         code = 'formatDate(new Date(), "' + option + '")';
