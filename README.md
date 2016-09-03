@@ -846,6 +846,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 3.0.5 (2016-09-03)
+* (bluefox) Fix sendTo blocks
+
 ### 3.0.4 (2016-09-01)
 * (bluefox) Support of convert day of week into text in blockly
 

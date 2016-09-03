@@ -94,7 +94,7 @@ Blockly.JavaScript['telegram'] = function(block) {
         logText = '';
     }
     
-    return 'sendTo("telegram' + dropdown_instance + '", {\n    text: ' + 
+    return 'sendTo("telegram' + dropdown_instance + '", "send", {\n    text: ' +
         value_message + (value_username ? ', \n    user: ' + value_username : '') + '\n});\n' +
         logText;
 };
@@ -391,7 +391,7 @@ Blockly.JavaScript['pushover'] = function(block) {
         logText = '';
     }
 
-    return 'sendTo("pushover' + dropdown_instance + '", ' + text + ');\n' + logText;
+    return 'sendTo("pushover' + dropdown_instance + '", "send", ' + text + ');\n' + logText;
 };
 
 // --- SendTo email --------------------------------------------------
@@ -546,7 +546,7 @@ Blockly.JavaScript['email'] = function(block) {
         logText = '';
     }
 
-    return 'sendTo("email' + dropdown_instance + '", ' + text + ');\n' + logText;
+    return 'sendTo("email' + dropdown_instance + '", "send", ' + text + ');\n' + logText;
 };
 
 if (0) {

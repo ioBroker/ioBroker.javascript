@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.0.4",
+        "version":                  "3.0.5",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.0.5": {
+                "en": "Fix sendTo blocks",
+                "de": "Repariere sendTo Blöcke",
+                "ru": "Исправлены sendTo блоки"
+            },
             "3.0.4": {
                 "en": "Support of convert day of week into text in blockly",
                 "de": "Unterstützung von der Konvertierung des Wochentages in Text",
