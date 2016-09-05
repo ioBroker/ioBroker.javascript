@@ -1,6 +1,6 @@
 /* jshint -W097 */// jshint strict:false
 /*jslint node: true */
-"use strict";
+'use strict';
 
 (function () {
 
@@ -1751,6 +1751,10 @@
                 adapter.log.error('Function "setObject" is not allowed. Use adapter settings to allow it.');
                 if (callback) callback('Function "setObject" is not allowed. Use adapter settings to allow it.');
             },
+            extendObject:      function (id, obj, callback) {
+                adapter.log.error('Function "extendObject" is not allowed. Use adapter settings to allow it.');
+                if (callback) callback('Function "extendObject" is not allowed. Use adapter settings to allow it.');
+            },
             getEnums:  function (enumName) {
                 var result = [];
                 var r = enumName ? new RegExp('^enum\.' + enumName + '\.') : false;
@@ -2169,6 +2173,19 @@
                 } else {
                     if (sandbox.verbose) sandbox.log('setObject(id=' + id + ', obj=' + JSON.stringify(obj) + ')', 'info');
                     adapter.setForeignObject(id, obj, callback);
+                }
+            };
+            sandbox.extendObject = function (id, obj, callback) {
+                if (debug) {
+                    sandbox.log('extendObject(id=' + id + ', obj=' + JSON.stringify(obj) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
+                    if (typeof callback === 'function') {
+                        setTimeout(function () {
+                            callback();
+                        }, 0);
+                    }
+                } else {
+                    if (sandbox.verbose) sandbox.log('extendObject(id=' + id + ', obj=' + JSON.stringify(obj) + ')', 'info');
+                    adapter.extendForeignObject(id, obj, callback);
                 }
             };
         }

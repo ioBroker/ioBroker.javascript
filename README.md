@@ -37,6 +37,7 @@ Executes Javascript and Coffescript Scripts.
     - [getState](#getstate)
     - [getObject](#getobject)
     - [setObject](#setobject)
+    - [extendObject](#extendobject)
     - [getIdByName](#getidbyname)
     - [getEnums](#getenums)
     - [createState](#createstate)
@@ -541,9 +542,20 @@ Use it like this:
 ``` 
 var obj = getObject ('adapter.N.objectName'); 
 obj.native.settings = 1;
-setObject('adapter.N.objectName',obj, function (err) {
+setObject('adapter.N.objectName', obj, function (err) {
     if (err) log('Cannot write object: ' + err);
 });
+```
+    
+### extendObject
+    extendObject(id, obj, callback)
+
+It is almost the same as setObject, but first it reads the object and tries to merge all settings together. 
+
+Use it like this:
+``` 
+// Stop instance
+extendObject('system.adapter.sayit.0', {common: {enabled: false}});
 ```
     
 ### getIdByName 
@@ -846,6 +858,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 3.0.6 (2016-09-)
+* (bluefox) add extendObject function
+
 ### 3.0.5 (2016-09-03)
 * (bluefox) Fix sendTo blocks
 
