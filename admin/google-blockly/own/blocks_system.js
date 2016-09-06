@@ -353,6 +353,7 @@ Blockly.Words['get_value_help']    = {'en': 'getstate',                         
 Blockly.Words['get_value_default'] = {'en': 'select ID',                        'de': 'ID auswählen',                       'ru': 'Выбрать ID'};
 
 Blockly.Words['get_value_val']     = {'en': 'Value',                            'de': 'Wert',                               'ru': 'Значение'};
+Blockly.Words['get_value_ack']     = {'en': 'Acknowledge',                      'de': 'anerkannt',                          'ru': 'Подтверждение'};
 Blockly.Words['get_value_ts']      = {'en': 'Timestamp',                        'de': 'Zeitstempel',                        'ru': 'Время'};
 Blockly.Words['get_value_lc']      = {'en': 'Last change ',                     'de': 'Letze Änderung',                     'ru': 'Последнее изменеие'};
 Blockly.Words['get_value_q']       = {'en': 'Quality',                          'de': 'Qualität',                           'ru': 'Качество'};
@@ -373,6 +374,7 @@ Blockly.Blocks['get_value'] = {
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Words['get_value_val'][systemLang],    'val'],
+                [Blockly.Words['get_value_ack'][systemLang],    'ack'],
                 [Blockly.Words['get_value_ts'][systemLang],     'ts'],
                 [Blockly.Words['get_value_lc'][systemLang],     'lc'],
                 [Blockly.Words['get_value_q'][systemLang] ,     'q'],
@@ -429,7 +431,7 @@ Blockly.Blocks['field_oid'] = {
 
 Blockly.JavaScript['field_oid'] = function(block) {
     var oid = block.getFieldValue('oid');
-    return [oid, Blockly.JavaScript.ORDER_ATOMIC]
+    return ['"' + oid + '"', Blockly.JavaScript.ORDER_ATOMIC]
 };
 
 // --- custom function --------------------------------------------------

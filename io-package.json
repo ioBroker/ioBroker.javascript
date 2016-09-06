@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.0.5",
+        "version":                  "3.0.6",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+			"3.0.5": {
+                "en": "add extendObject function\nadd custom sendTo block\nadd multiple trigger block",
+                "de": "Neue Funktion: extendObject\nNeuer Block: custom sendTo\nNeuer Block: multiple trigger",
+                "ru": "Добавлена функция extendObject\nДобавлен блок: custom sendTo\nДобавлен блок: multiple trigger"
+            },
             "3.0.5": {
                 "en": "Fix sendTo blocks",
                 "de": "Repariere sendTo Blöcke",

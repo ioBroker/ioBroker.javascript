@@ -15,9 +15,8 @@ Blockly.Trigger = {
     blocks: {}
 };
 
-// --- ON -----------------------------------------------------------
-Blockly.Words['on']          = {'en': 'Event: If Objekt',               'de': 'Falls Objekt',                           'ru': 'Событие: если объект'};
-Blockly.Words['on_tooltip']  = {'en': 'If some state changed or updated', 'de': 'Auf Zustandsänderung',                 'ru': 'При изменении или обновлении состояния'};
+// --- ON Extended-----------------------------------------------------------
+
 Blockly.Words['on_onchange'] = {'en': 'was changed',                    'de': 'wurde geändert',                         'ru': 'изменился'};
 Blockly.Words['on_any']      = {'en': 'was updated',                    'de': 'wurde aktulaisiert',                     'ru': 'обновился'};
 Blockly.Words['on_gt']       = {'en': 'is greater than last',           'de': 'ist größer als letztes',                 'ru': 'больше прошлого'};
@@ -31,13 +30,239 @@ Blockly.Words['on_help']     = {
     'ru': 'on---subscribe-on-changes-or-updates-of-some-state'
 };
 
+
+Blockly.Words['on_ext']             = {'en': 'Event: if objects',               'de': 'Falls Objekt',                           'ru': 'Событие: если объект'};
+Blockly.Words['on_ext_tooltip']     = {'en': 'If some state changed or updated', 'de': 'Auf Zustandsänderung',                  'ru': 'При изменении или обновлении состояния'};
+Blockly.Words['on_ext_oid']         = {'en': 'object ID',                       'de': 'Objekt ID',                              'ru': 'ID объекта'};
+Blockly.Words['on_ext_oid_tooltip'] = {'en': 'Object ID',                       'de': 'Objekt ID',                              'ru': 'ID объекта'};
+Blockly.Words['on_ext_on']          = {'en': 'trigger on',                      'de': 'falls Trigger auf',                      'ru': 'если cобытие'};
+Blockly.Words['on_ext_on_tooltip']  = {'en': 'trigger on',                      'de': 'falls Trigger auf',                      'ru': 'если cобытие'};
+
+Blockly.Trigger.blocks['on_ext'] =
+    '<block type="on_ext">'
+    + '     <value name="CONDITION">'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['on_ext_oid_container'] = {
+    /**
+     * Mutator block for container.
+     * @this Blockly.Block
+     */
+    init: function() {
+        this.setColour(Blockly.Trigger.HUE);
+
+        this.appendDummyInput()
+            .appendField(Blockly.Words['on_ext_on'][systemLang]);
+
+        this.appendStatementInput('STACK');
+        this.setTooltip(Blockly.Words['on_ext_on_tooltip'][systemLang]);
+        this.contextMenu = false;
+    }
+};
+
+Blockly.Blocks['on_ext_oid'] = {
+    /**
+     * Mutator block for add items.
+     * @this Blockly.Block
+     */
+    init: function() {
+        this.setColour(Blockly.Trigger.HUE);
+
+        this.appendDummyInput('OID')
+            .appendField(Blockly.Words['on_ext_oid'][systemLang]);
+
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+
+        this.setTooltip(Blockly.Words['on_ext_oid_tooltip'][systemLang]);
+
+        this.contextMenu = false;
+    }
+};
+
+Blockly.Blocks['on_ext'] = {
+    init: function() {
+        this.itemCount_ = 1;
+        this.updateShape_();
+
+        this.setMutator(new Blockly.Mutator(['on_ext_oid']));
+
+        this.setInputsInline(false);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setTooltip(Blockly.Words['on_ext_tooltip'][systemLang]);
+        this.setHelpUrl(getHelp('on_help'));
+    },
+    /**
+     * Create XML to represent number of text inputs.
+     * @return {!Element} XML storage element.
+     * @this Blockly.Block
+     */
+    mutationToDom: function () {
+        var container = document.createElement('mutation');
+        container.setAttribute('items', this.itemCount_);
+        return container;
+    },
+    /**
+     * Parse XML to restore the text inputs.
+     * @param {!Element} xmlElement XML storage element.
+     * @this Blockly.Block
+     */
+    domToMutation: function (xmlElement) {
+        this.itemCount_ = parseInt(xmlElement.getAttribute('items'), 10);
+        this.updateShape_();
+    },
+    /**
+     * Populate the mutator's dialog with this block's components.
+     * @param {!Blockly.Workspace} workspace Mutator's workspace.
+     * @return {!Blockly.Block} Root block in mutator.
+     * @this Blockly.Block
+     */
+    decompose: function (workspace) {
+        var containerBlock = workspace.newBlock('on_ext_oid_container');
+        containerBlock.initSvg();
+        var connection = containerBlock.getInput('STACK').connection;
+        for (var i = 0; i < this.itemCount_; i++) {
+            var itemBlock = workspace.newBlock('on_ext_oid');
+            itemBlock.initSvg();
+            connection.connect(itemBlock.previousConnection);
+            connection = itemBlock.nextConnection;
+        }
+        return containerBlock;
+    },
+    /**
+     * Reconfigure this block based on the mutator dialog's components.
+     * @param {!Blockly.Block} containerBlock Root block in mutator.
+     * @this Blockly.Block
+     */
+    compose: function (containerBlock) {
+        var itemBlock = containerBlock.getInputTargetBlock('STACK');
+        // Count number of inputs.
+        var connections = [];
+        while (itemBlock) {
+            connections.push(itemBlock.valueConnection_);
+            itemBlock = itemBlock.nextConnection &&
+                itemBlock.nextConnection.targetBlock();
+        }
+        // Disconnect any children that don't belong.
+        for (var i = 0; i < this.itemCount_; i++) {
+            var connection = this.getInput('OID' + i).connection.targetConnection;
+            if (connection && connections.indexOf(connection) === -1) {
+                connection.disconnect();
+            }
+        }
+        this.itemCount_ = connections.length;
+        if (this.itemCount_ < 1) this.itemCount_ = 1;
+        this.updateShape_();
+        // Reconnect any child blocks.
+        for (var i = 0; i < this.itemCount_; i++) {
+            Blockly.Mutator.reconnect(connections[i], this, 'OID' + i);
+        }
+    },
+    /**
+     * Store pointers to any connected child blocks.
+     * @param {!Blockly.Block} containerBlock Root block in mutator.
+     * @this Blockly.Block
+     */
+    saveConnections: function(containerBlock) {
+        var itemBlock = containerBlock.getInputTargetBlock('STACK');
+        var i = 0;
+        while (itemBlock) {
+            var input = this.getInput('OID' + i);
+            itemBlock.valueConnection_ = input && input.connection.targetConnection;
+            i++;
+            itemBlock = itemBlock.nextConnection &&
+                itemBlock.nextConnection.targetBlock();
+        }
+    },
+    /**
+     * Modify this block to have the correct number of inputs.
+     * @private
+     * @this Blockly.Block
+     */
+    updateShape_: function() {
+        this.removeInput('CONDITION');
+        var input;
+
+        for (var j = 0; input = this.inputList[j]; j++) {
+            if (input.name === 'STATEMENT') {
+                this.inputList.splice(j, 1);
+                break;
+            }
+        }
+
+        // Add new inputs.
+        for (var i = 0; i < this.itemCount_; i++) {
+            var _input = this.getInput('OID' + i);
+            if (!_input) {
+                _input = this.appendValueInput('OID' + i);
+
+                if (i === 0) {
+                    _input.appendField(Blockly.Words['on_ext'][systemLang]);
+                }
+                var shadow = this.workspace.newBlock('field_oid');
+                shadow.setShadow(true);
+                shadow.outputConnection.connect(_input.connection);
+                shadow.initSvg();
+                shadow.render();
+            } else {
+                if (!_input.connection.isConnected()) {
+                    var shadow = this.workspace.newBlock('field_oid');
+                    shadow.setShadow(true);
+                    shadow.outputConnection.connect(_input.connection);
+                    shadow.initSvg();
+                    shadow.render();
+                }
+            }
+        }
+        // Remove deleted inputs.
+        while (this.getInput('OID' + i)) {
+            this.removeInput('OID' + i);
+            i++;
+        }
+
+        this.appendDummyInput('CONDITION')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['on_onchange'][systemLang], 'ne'],
+                [Blockly.Words['on_any'][systemLang], 'any'],
+                [Blockly.Words['on_gt'][systemLang], 'gt'],
+                [Blockly.Words['on_ge'][systemLang], 'ge'],
+                [Blockly.Words['on_lt'][systemLang], 'lt'],
+                [Blockly.Words['on_le'][systemLang], 'le']
+            ]), 'CONDITION');
+
+        if (input) {
+            this.inputList.push(input);
+        }
+        else {
+            this.appendStatementInput('STATEMENT')
+                .setCheck(null)
+        }
+    }
+};
+Blockly.JavaScript['on_ext'] = function(block) {
+    var dropdown_condition = block.getFieldValue('CONDITION');
+    var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    var oids = [];
+    for (var n = 0; n < block.itemCount_; n++) {
+        var id =  Blockly.JavaScript.valueToCode(block, 'OID' + n, Blockly.JavaScript.ORDER_COMMA);
+        if (id) oids.push(id.replace(/\./g, '\\\\.'));
+    }
+    var oid = 'new RegExp(' + (oids.join(' + "|" + ')|| "") + ')';
+
+    var code = 'on({id: ' + oid + ', change: "' + dropdown_condition + '"}, function (obj) {\n  ' + statements_name + '});\n';
+    return code;
+};
+
+// --- ON -----------------------------------------------------------
+Blockly.Words['on']          = {'en': 'Event: if object',               'de': 'Falls Objekt',                           'ru': 'Событие: если объект'};
+Blockly.Words['on_tooltip']  = {'en': 'If some state changed or updated', 'de': 'Auf Zustandsänderung',                 'ru': 'При изменении или обновлении состояния'};
+
 Blockly.Trigger.blocks['on'] =
     '<block type="on">'
-    + '     <value name="OID">'
-    //+ '         <shadow type="text">'
-    //+ '             <field name="TEXT">test</field>'
-    //+ '         </shadow>'
-    + '     </value>'
     + '     <value name="OID">'
     + '     </value>'
     + '     <value name="CONDITION">'
@@ -51,24 +276,24 @@ Blockly.Blocks['on'] = {
         this.appendDummyInput()
             .appendField(Blockly.Words['on'][systemLang]);
 
-        this.appendDummyInput("OID")
-            .appendField(new Blockly.FieldOID("Object ID", main.initSelectId(), main.objects), "OID");
+        this.appendDummyInput('OID')
+            .appendField(new Blockly.FieldOID('Object ID', main.initSelectId(), main.objects), 'OID');
 
-        this.appendDummyInput("CONDITION")
+        this.appendDummyInput('CONDITION')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['on_onchange'][systemLang], "ne"],
-                [Blockly.Words['on_any'][systemLang], "any"],
-                [Blockly.Words['on_gt'][systemLang], "gt"],
-                [Blockly.Words['on_ge'][systemLang], "ge"],
-                [Blockly.Words['on_lt'][systemLang], "lt"],
-                [Blockly.Words['on_le'][systemLang], "le"]
-            ]), "CONDITION");
+                [Blockly.Words['on_onchange'][systemLang], 'ne'],
+                [Blockly.Words['on_any'][systemLang], 'any'],
+                [Blockly.Words['on_gt'][systemLang], 'gt'],
+                [Blockly.Words['on_ge'][systemLang], 'ge'],
+                [Blockly.Words['on_lt'][systemLang], 'lt'],
+                [Blockly.Words['on_le'][systemLang], 'le']
+            ]), 'CONDITION');
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
         this.setInputsInline(false);
-        this.setColour(Blockly.System.HUE);
+        this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Words['on_tooltip'][systemLang]);
         this.setHelpUrl(getHelp('on_help'));
     }
@@ -117,7 +342,7 @@ Blockly.Blocks['schedule'] = {
             .setCheck(null);
 
         this.setInputsInline(false);
-        this.setColour(Blockly.System.HUE);
+        this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Words['schedule_tooltip'][systemLang]);
         this.setHelpUrl(getHelp('schedule_help'));
     }
@@ -201,11 +426,11 @@ Blockly.Blocks['astro'] = {
         this.appendDummyInput()
             .appendField(Blockly.Words['astro_minutes'][systemLang]);
 
-        this.appendStatementInput("STATEMENT")
+        this.appendStatementInput('STATEMENT')
             .setCheck(null);
         this.setInputsInline(true);
 
-        this.setColour(Blockly.System.HUE);
+        this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Words['astro_tooltip'][systemLang]);
         this.setHelpUrl(getHelp('astro_help'));
     }
@@ -217,3 +442,4 @@ Blockly.JavaScript['astro'] = function(block) {
 
     return 'schedule({astro: "' + astrotype + '", shift: ' + offset + '}, function () {\n' + statements_name + '});\n';
 };
+
