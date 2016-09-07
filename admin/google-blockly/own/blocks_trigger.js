@@ -24,11 +24,17 @@ Blockly.Words['on_ge']       = {'en': 'is greater or equal than last',  'de': 'i
 Blockly.Words['on_lt']       = {'en': 'is less than last',              'de': 'ist kleiner als letztes',                'ru': 'меньше прошлого'};
 Blockly.Words['on_le']       = {'en': 'is less or equal than last',     'de': 'ist gleich oder kleiner als letztes',    'ru': 'меньше или равен прошлому'};
 Blockly.Words['on_eq']       = {'en': 'is same as last',                'de': 'ist gleich wie letztes',                 'ru': 'равен прошлому'};
+Blockly.Words['on_true']     = {'en': 'is true',                        'de': 'ist wahr',                               'ru': 'равен true'};
+Blockly.Words['on_false']    = {'en': 'is false',                       'de': 'ist unwahr',                             'ru': 'равен false'};
 Blockly.Words['on_help']     = {
     'en': 'on---subscribe-on-changes-or-updates-of-some-state',
     'de': 'on---subscribe-on-changes-or-updates-of-some-state',
     'ru': 'on---subscribe-on-changes-or-updates-of-some-state'
 };
+Blockly.Words['on_ack']      = {'en': 'Ack is',                         'de': 'anerkannt ist',                          'ru': 'Подтверждение'};
+Blockly.Words['on_ack_any']  = {'en': 'any',                            'de': 'egal',                                   'ru': 'не важно'};
+Blockly.Words['on_ack_true'] = {'en': 'update',                         'de': 'Update',                                 'ru': 'обновление'};
+Blockly.Words['on_ack_false'] = {'en': 'command',                       'de': 'Kommando',                               'ru': 'команда'};
 
 
 Blockly.Words['on_ext']             = {'en': 'Event: if objects',               'de': 'Falls Objekt',                           'ru': 'Событие: если объект'};
@@ -41,6 +47,8 @@ Blockly.Words['on_ext_on_tooltip']  = {'en': 'trigger on',                      
 Blockly.Trigger.blocks['on_ext'] =
     '<block type="on_ext">'
     + '     <value name="CONDITION">'
+    + '     </value>'
+    + '     <value name="ACK_CONDITION">'
     + '     </value>'
     + '     <value name="STATEMENT">'
     + '     </value>'
@@ -184,6 +192,7 @@ Blockly.Blocks['on_ext'] = {
      */
     updateShape_: function() {
         this.removeInput('CONDITION');
+        this.removeInput('ACK_CONDITION');
         var input;
 
         for (var j = 0; input = this.inputList[j]; j++) {
@@ -230,8 +239,18 @@ Blockly.Blocks['on_ext'] = {
                 [Blockly.Words['on_gt'][systemLang], 'gt'],
                 [Blockly.Words['on_ge'][systemLang], 'ge'],
                 [Blockly.Words['on_lt'][systemLang], 'lt'],
-                [Blockly.Words['on_le'][systemLang], 'le']
+                [Blockly.Words['on_le'][systemLang], 'le'],
+                [Blockly.Words['on_true'][systemLang], 'true'],
+                [Blockly.Words['on_false'][systemLang], 'false']
             ]), 'CONDITION');
+
+        this.appendDummyInput('ACK_CONDITION')
+            .appendField(Blockly.Words['on_ack'][systemLang])
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['on_ack_any'][systemLang], ''],
+                [Blockly.Words['on_ack_true'][systemLang], 'true'],
+                [Blockly.Words['on_ack_false'][systemLang], 'false']
+            ]), 'ACK_CONDITION');
 
         if (input) {
             this.inputList.push(input);
@@ -245,15 +264,31 @@ Blockly.Blocks['on_ext'] = {
 Blockly.JavaScript['on_ext'] = function(block) {
     var dropdown_condition = block.getFieldValue('CONDITION');
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    var ack_condition = block.getFieldValue('ACK_CONDITION');
+    var val;
+    if (dropdown_condition === 'true' || dropdown_condition === 'false') {
+        val = 'val: ' + dropdown_condition;
+    } else {
+        val = 'change: "' + dropdown_condition + '"';
+    }
 
     var oids = [];
     for (var n = 0; n < block.itemCount_; n++) {
         var id =  Blockly.JavaScript.valueToCode(block, 'OID' + n, Blockly.JavaScript.ORDER_COMMA);
-        if (id) oids.push(id.replace(/\./g, '\\\\.'));
+        if (id) {
+            id = id.replace(/\./g, '\\\\.');
+            if (oids.indexOf(id) === -1) oids.push(id);
+        }
     }
-    var oid = 'new RegExp(' + (oids.join(' + "|" + ')|| "") + ')';
+    var oid;
+    if (oids.length === 1) {
+        oid = oids[0];
+    } else {
+        oid = 'new RegExp(' + (oids.join(' + "|" + ')|| "") + ')';
+    }
 
-    var code = 'on({id: ' + oid + ', change: "' + dropdown_condition + '"}, function (obj) {\n  ' + statements_name + '});\n';
+
+    var code = 'on({id: ' + oid + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + '}, function (obj) {\n  ' + statements_name + '});\n';
     return code;
 };
 
@@ -266,6 +301,8 @@ Blockly.Trigger.blocks['on'] =
     + '     <value name="OID">'
     + '     </value>'
     + '     <value name="CONDITION">'
+    + '     </value>'
+    + '     <value name="ACK_CONDITION">'
     + '     </value>'
     + '     <value name="STATEMENT">'
     + '     </value>'
@@ -286,8 +323,18 @@ Blockly.Blocks['on'] = {
                 [Blockly.Words['on_gt'][systemLang], 'gt'],
                 [Blockly.Words['on_ge'][systemLang], 'ge'],
                 [Blockly.Words['on_lt'][systemLang], 'lt'],
-                [Blockly.Words['on_le'][systemLang], 'le']
+                [Blockly.Words['on_le'][systemLang], 'le'],
+                [Blockly.Words['on_true'][systemLang], 'true'],
+                [Blockly.Words['on_false'][systemLang], 'false']
             ]), 'CONDITION');
+
+        this.appendDummyInput('ACK_CONDITION')
+            .appendField(Blockly.Words['on_ack'][systemLang])
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['on_ack_any'][systemLang], ''],
+                [Blockly.Words['on_ack_true'][systemLang], 'true'],
+                [Blockly.Words['on_ack_false'][systemLang], 'false']
+            ]), 'ACK_CONDITION');
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -301,12 +348,20 @@ Blockly.Blocks['on'] = {
 Blockly.JavaScript['on'] = function(block) {
     var value_objectid = block.getFieldValue('OID');
     var dropdown_condition = block.getFieldValue('CONDITION');
+    var ack_condition = block.getFieldValue('ACK_CONDITION');
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     var objectname = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
 
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
 
-    var code = 'on({id: "' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', change: "' + dropdown_condition + '"}, function (obj) {\n  var value = obj.state.val;\n  var oldValue = obj.oldState.val;\n' + statements_name + '});\n';
+    var val;
+    if (dropdown_condition === 'true' || dropdown_condition === 'false') {
+        val = 'val: ' + dropdown_condition;
+    } else {
+        val = 'change: "' + dropdown_condition + '"';
+    }
+
+    var code = 'on({id: "' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + '}, function (obj) {\n  var value = obj.state.val;\n  var oldValue = obj.oldState.val;\n' + statements_name + '});\n';
     return code;
 };
 

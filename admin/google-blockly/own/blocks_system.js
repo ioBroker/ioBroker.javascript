@@ -431,7 +431,7 @@ Blockly.Blocks['field_oid'] = {
 
 Blockly.JavaScript['field_oid'] = function(block) {
     var oid = block.getFieldValue('oid');
-    return ['"' + oid + '"', Blockly.JavaScript.ORDER_ATOMIC]
+    return ['\'' + oid + '\'', Blockly.JavaScript.ORDER_ATOMIC]
 };
 
 // --- custom function --------------------------------------------------
