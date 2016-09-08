@@ -298,7 +298,7 @@
                         }
 
                         if (!count) {
-                            globalScriptLines = globalScript.split(/[\r\n|\n|\r]/g).length;
+                            globalScriptLines = globalScript.split(/[\r\n|\n|\r]/g).length - 1;
 
                             // load all scripts
                             for (var i = 0; i < doc.rows.length; i++) {
@@ -657,11 +657,11 @@
     }
 
     function execute(script, name, verbose, debug) {
-        script.intervals = [];
-        script.timeouts  = [];
-        script.schedules = [];
-        script.name      = name;
-        script._id       = Math.floor(Math.random() * 0xFFFFFFFF);
+        script.intervals  = [];
+        script.timeouts   = [];
+        script.schedules  = [];
+        script.name       = name;
+        script._id        = Math.floor(Math.random() * 0xFFFFFFFF);
 
         var sandbox = {
             mods:      mods,
@@ -2128,6 +2128,44 @@
                     callback = null;
                 });
             },
+            runScript: function (scriptName, isStart) {
+                if (isStart === undefined) isStart = true;
+                if (!scriptName.match(/^script\.js\./)) scriptName = 'script.js.' + scriptName;
+                // start other script
+                if (!objects[scriptName] || !objects[scriptName].common) {
+                    sandbox.log('Cannot start "' + scriptName + '", because not found', 'error');
+                    return false;
+                } else {
+                    if (debug) {
+                        sandbox.log('runScript(scriptName=' + scriptName + ', isStart=' + isStart + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
+                    } else {
+                        if (objects[scriptName].common.enabled) {
+                            objects[scriptName].common.enabled = false;
+                            adapter.extendForeignObject(scriptName, {common: {enabled: false}}, function (err, obj) {
+                                adapter.extendForeignObject(obj._id, {common: {enabled: true}});
+                            });
+                        } else {
+                            adapter.extendForeignObject(scriptName, {common: {enabled: true}});
+                        }
+                    }
+                    return true;
+                }
+            },
+            startScript: function (scriptName) {
+                return sandbox.runScript(scriptName, true);
+            },
+            stopScript: function (scriptName) {
+                return sandbox.runScript(scriptName, false);
+            },
+            isScriptActive: function (scriptName) {
+                if (!scriptName.match(/^script\.js\./)) scriptName = 'script.js.' + scriptName;
+                if (!objects[scriptName] || !objects[scriptName].common) {
+                    sandbox.log('Script does not exist', 'error');
+                    return false;
+                } else {
+                    return objects[scriptName].common.enabled;
+                }
+            },
             toInt:     function (val) {
                 if (val === true  || val === 'true')  val = 1;
                 if (val === false || val === 'false') val = 0;
@@ -2191,7 +2229,11 @@
         }
 
         try {
-            script.runInNewContext(sandbox);
+            script.runInNewContext(sandbox, {
+                filename:       name,
+                displayErrors:  true,
+                lineOffset:     globalScriptLines
+            });
         } catch (e) {
             var lines = e.stack.split('\n');
             var stack = [];

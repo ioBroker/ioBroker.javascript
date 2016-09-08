@@ -10,6 +10,8 @@
 
 Executes Javascript and Coffescript Scripts.
 
+Here you can find description of [blockly](doc/blockly_en.md).
+
 ## Content
 - [Note](#note)
 - [Global functions](#global-functions)
@@ -57,6 +59,10 @@ Executes Javascript and Coffescript Scripts.
     - [writeFile](#writefile)
     - [onStop](#onstop)
     - [getHistory](#gethistory)
+    - [runScript](#runscript)
+    - [startScript](#startscript)
+    - [stopScript](#stopscript)
+    - [isScriptActive](#isscriptactive)
     - [name](#name)
     - [instance](#instance)
 
@@ -840,6 +846,33 @@ getHistory({
 ```
 
 **Note: ** of course history must be first enabled for selected ID in admin.
+
+### runScript
+    runScript('scriptName')
+    
+Starts or stops other scripts (and itself too) by name. There is a second parameter 
+```
+// stop script
+runScript('groupName.scriptName1', false);
+
+// start script
+runScript('scriptName2')
+```
+    
+### startScript
+    startScript('scriptName')
+    
+Same as ```runScript('scriptName', true);```
+
+### stopScript
+    stopScript('scriptName')
+   
+Same as ```runScript('scriptName', false);```
+
+### isScriptActive
+    isScriptActive('scriptName')
+    
+Returns if script enabled or disabled. Please note, that that does not give back if the script now running or not. Script can be finished, but still activated.
 
 ### name
     log('Script ' + name + ' started!')
