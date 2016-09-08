@@ -316,15 +316,18 @@ on(/^system\.adapter\..*\.\d+\.memRss$/, function (obj) {
 });
 
 // same as
-on({id: /^system\.adapter\..*\.\d+\.memRss$/, "change": "ne"}, function (obj) {
+on({id: /^system\.adapter\..*\.\d+\.memRss$/, change: "ne"}, function (obj) {
 });
 ```
+
 To simply connect two states with each other, write:
 ```
 on('stateId1', 'stateId2');
 ```
 
 All changes of *stateId1* will be written to *stateId2*.
+
+Please note, that by default "change" is equal to "any", except when only id as string is set (like ```on("id", function (){});```). In last case change will be set to "ne".
 
 Function "on" returns handler back. This handler can be used by unsubscribe. 
 

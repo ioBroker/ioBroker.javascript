@@ -78,7 +78,7 @@
                 if (!objects[id]) return;
 
                 // Script deleted => remove it
-                if (objects[id].type === 'script' && objects[id].common.engine == 'system.adapter.' + adapter.namespace) {
+                if (objects[id].type === 'script' && objects[id].common.engine === 'system.adapter.' + adapter.namespace) {
                     stop(id);
 
                     var idActive = 'scriptEnabled.' + id.substring('script.js.'.length);
@@ -115,7 +115,7 @@
             } else if (objects[id].common) {
                 var n = getName(id);
 
-                if (n != objects[id].common.name) {
+                if (n !== objects[id].common.name) {
                     if (n) removeFromNames(id);
                     if (objects[id].common.name) addToNames(obj);
                 }
@@ -143,10 +143,10 @@
                 }
 
                 if ((objects[id].common.enabled && !obj.common.enabled) ||
-                    (objects[id].common.engine == 'system.adapter.' + adapter.namespace && obj.common.engine != 'system.adapter.' + adapter.namespace)) {
+                    (objects[id].common.engine === 'system.adapter.' + adapter.namespace && obj.common.engine !== 'system.adapter.' + adapter.namespace)) {
 
                     // Script disabled
-                    if (objects[id].common.enabled && objects[id].common.engine == 'system.adapter.' + adapter.namespace) {
+                    if (objects[id].common.enabled && objects[id].common.engine === 'system.adapter.' + adapter.namespace) {
                         // Remove it from executing
                         objects[id] = obj;
                         stop(id);
@@ -155,15 +155,15 @@
                     }
                 } else
                 if ((!objects[id].common.enabled && obj.common.enabled) ||
-                    (objects[id].common.engine != 'system.adapter.' + adapter.namespace && obj.common.engine == 'system.adapter.' + adapter.namespace)) {
+                    (objects[id].common.engine !== 'system.adapter.' + adapter.namespace && obj.common.engine === 'system.adapter.' + adapter.namespace)) {
                     // Script enabled
                     objects[id] = obj;
 
-                    if (objects[id].common.enabled && objects[id].common.engine == 'system.adapter.' + adapter.namespace) {
+                    if (objects[id].common.enabled && objects[id].common.engine === 'system.adapter.' + adapter.namespace) {
                         // Start script
                         load(id);
                     }
-                } else { //if (obj.common.source != objects[id].common.source) {
+                } else { //if (obj.common.source !== objects[id].common.source) {
                     objects[id] = obj;
 
                     // Source changed => restart it
@@ -438,7 +438,7 @@
             var pos;
             if (names[n] === 'object') {
                 pos = names[n].indexOf(id);
-                if (pos != -1) {
+                if (pos !== -1) {
                     names[n].splice(pos, 1);
                     if (names[n].length) names[n] = names[n][0];
                 }
@@ -453,8 +453,8 @@
         for (var n in names) {
             if (names[n] && typeof names[n] === 'object') {
                 pos = names[n].indexOf(id);
-                if (pos != -1) return n;
-            } else if (names[n] == id) {
+                if (pos !== -1) return n;
+            } else if (names[n] === id) {
                 return n;
             }
         }
@@ -502,7 +502,7 @@
                         eventObj.deviceName = null;
                     } else {
                         var pos = eventObj.channelId.lastIndexOf('.');
-                        if (pos != -1) {
+                        if (pos !== -1) {
                             eventObj.deviceId = eventObj.channelId.substring(0, pos);
                             if (!objects[eventObj.deviceId]) {
                                 eventObj.deviceId   = null;
@@ -545,7 +545,7 @@
                             eventObj.deviceName = null;
                         } else {
                             var pos_ = eventObj.channelId.lastIndexOf('.');
-                            if (pos_ != -1) {
+                            if (pos_ !== -1) {
                                 eventObj.deviceId = eventObj.channelId.substring(0, pos_);
                                 if (!objects[eventObj.deviceId]) {
                                     eventObj.deviceId   = null;
@@ -723,7 +723,7 @@
 
                 // parse string
                 for (var i = 0; i < selector.length; i++) {
-                    if (selector[i] == '{') {
+                    if (selector[i] === '{') {
                         isName = false;
                         if (isCommons || isEnums || isNatives) {
                             // Error
@@ -731,12 +731,12 @@
                         }
                         isNatives = true;
                     } else
-                    if (selector[i] == '}') {
+                    if (selector[i] === '}') {
                         isNatives = false;
                         natives.push(native);
                         native = '';
                     } else
-                    if (selector[i] == '[') {
+                    if (selector[i] === '[') {
                         isName = false;
                         if (isCommons || isEnums || isNatives) {
                             // Error
@@ -744,12 +744,12 @@
                         }
                         isCommons = true;
                     } else
-                    if (selector[i] == ']') {
+                    if (selector[i] === ']') {
                         isCommons = false;
                         commons.push(common);
                         common = '';
                     }else
-                    if (selector[i] == '(') {
+                    if (selector[i] === '(') {
                         isName = false;
                         if (isCommons || isEnums || isNatives) {
                             // Error
@@ -757,7 +757,7 @@
                         }
                         isEnums = true;
                     } else
-                    if (selector[i] == ')') {
+                    if (selector[i] === ')') {
                         isEnums = false;
                         _enums.push(_enum);
                         _enum = '';
@@ -812,21 +812,21 @@
 
                 for (i = 0; i < commons.length; i++) {
                     parts = commons[i].split('=', 2);
-                    if (parts[1] && parts[1][0] == '"') {
+                    if (parts[1] && parts[1][0] === '"') {
                         parts[1] = parts[1].substring(1);
                         len = parts[1].length;
-                        if (parts[1] && parts[1][len - 1] == '"') parts[1] = parts[1].substring(0, len - 1);
+                        if (parts[1] && parts[1][len - 1] === '"') parts[1] = parts[1].substring(0, len - 1);
                     }
-                    if (parts[1] && parts[1][0] == "'") {
+                    if (parts[1] && parts[1][0] === "'") {
                         parts[1] = parts[1].substring(1);
                         len = parts[1].length;
-                        if (parts[1] && parts[1][len - 1] == "'") parts[1] = parts[1].substring(0, len - 1);
+                        if (parts[1] && parts[1][len - 1] === "'") parts[1] = parts[1].substring(0, len - 1);
                     }
 
                     if (parts[1]) parts[1] = parts[1].trim();
                     parts[0] = parts[0].trim();
 
-                    if (parts[0] == 'state.id') {
+                    if (parts[0] === 'state.id') {
                         filterStates.push({attr: parts[0], value: parts[1].trim()});
                         commons[i] = null;
                     } else {
@@ -836,20 +836,20 @@
 
                 for (i = 0; i < natives.length; i++) {
                     parts = natives[i].split('=', 2);
-                    if (parts[1] && parts[1][0] == '"') {
+                    if (parts[1] && parts[1][0] === '"') {
                         parts[1] = parts[1].substring(1);
                         len = parts[1].length;
-                        if (parts[1] && parts[1][len - 1] == '"') parts[1] = parts[1].substring(0, len - 1);
+                        if (parts[1] && parts[1][len - 1] === '"') parts[1] = parts[1].substring(0, len - 1);
                     }
-                    if (parts[1] && parts[1][0] == "'") {
+                    if (parts[1] && parts[1][0] === "'") {
                         parts[1] = parts[1].substring(1);
                         len = parts[1].length;
-                        if (parts[1] && parts[1][len - 1] == "'") parts[1] = parts[1].substring(0, len - 1);
+                        if (parts[1] && parts[1][len - 1] === "'") parts[1] = parts[1].substring(0, len - 1);
                     }
 
                     if (parts[1]) parts[1] = parts[1].trim();
                     parts[0] = parts[0].trim();
-                    if (parts[0] == 'state.id') {
+                    if (parts[0] === 'state.id') {
                         filterStates.push({attr: parts[0], value: parts[1].trim()});
                         natives[i] = null;
                     } else {
@@ -859,20 +859,20 @@
 
                 for (i = 0; i < _enums.length; i++) {
                     parts = _enums[i].split('=', 2);
-                    if (parts[1] && parts[1][0] == '"') {
+                    if (parts[1] && parts[1][0] === '"') {
                         parts[1] = parts[1].substring(1);
                         len = parts[1].length;
-                        if (parts[1] && parts[1][len - 1] == '"') parts[1] = parts[1].substring(0, len - 1);
+                        if (parts[1] && parts[1][len - 1] === '"') parts[1] = parts[1].substring(0, len - 1);
                     }
-                    if (parts[1] && parts[1][0] == "'") {
+                    if (parts[1] && parts[1][0] === "'") {
                         parts[1] = parts[1].substring(1);
                         len = parts[1].length;
-                        if (parts[1] && parts[1][len - 1] == "'") parts[1] = parts[1].substring(0, len - 1);
+                        if (parts[1] && parts[1][len - 1] === "'") parts[1] = parts[1].substring(0, len - 1);
                     }
 
                     if (parts[1]) parts[1] = parts[1].trim();
                     parts[0] = parts[0].trim();
-                    if (parts[0] == 'state.id') {
+                    if (parts[0] === 'state.id') {
                         filterStates.push({attr: parts[0], value: parts[1].trim()});
                         _enums[i] = null;
                     } else {
@@ -887,7 +887,7 @@
                         channels = {};
                         devices  = {};
                         for (var _id in objects) {
-                            if (objects[_id].type == 'state') {
+                            if (objects[_id].type === 'state') {
                                 parts = _id.split('.');
                                 parts.pop();
                                 var chn = parts.join('.');
@@ -917,12 +917,12 @@
                         pass = true;
                         for (var c = 0; c < commons.length; c++) {
                             if (!commons[c]) continue;
-                            if (commons[c].attr == 'id') {
+                            if (commons[c].attr === 'id') {
                                 if (!commons[c].r && commons[c].value) commons[c].r = new RegExp('^' + commons[c].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
                                 if (!commons[c].r || commons[c].r.test(id)) continue;
                             } else if (objects[id].common) {
                                 if (commons[c].value === undefined && objects[id].common[commons[c].attr] !== undefined) continue;
-                                if (objects[id].common[commons[c].attr] == commons[c].value) continue;
+                                if (objects[id].common[commons[c].attr] === commons[c].value) continue;
                             }
                             pass = false;
                             break;
@@ -930,7 +930,7 @@
                         if (!pass) continue;
                         for (var n = 0; n < natives.length; n++) {
                             if (!natives[n]) continue;
-                            if (natives[n].attr == 'id') {
+                            if (natives[n].attr === 'id') {
                                 if (!natives[n].r && natives[n].value) natives[n].r = new RegExp('^' + natives[n].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
                                 if (!natives[n].r || natives[n].r.test(id)) continue;
                             } else if (objects[id].native) {
@@ -948,7 +948,7 @@
 
                             for (var m = 0; m < _enums.length; m++) {
                                 if (!_enums[m]) continue;
-                                if (enumIds.indexOf(_enums[m]) != -1) continue;
+                                if (enumIds.indexOf(_enums[m]) !== -1) continue;
                                 pass = false;
                                 break;
                             }
@@ -961,9 +961,9 @@
                                 pass = true;
                                 for (var st = 0; st < filterStates.length; st++) {
                                     if (!filterStates[st].r && filterStates[st].value) {
-                                        if (filterStates[st].value[0] == '*') {
+                                        if (filterStates[st].value[0] === '*') {
                                             filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
-                                        } else if (filterStates[st].value[filterStates[st].value - 1] == '*') {
+                                        } else if (filterStates[st].value[filterStates[st].value - 1] === '*') {
                                             filterStates[st].r = new RegExp('^' + filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
                                         } else {
                                             filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
@@ -987,7 +987,7 @@
                         pass = true;
                         for (var _c = 0; _c < commons.length; _c++) {
                             if (!commons[_c]) continue;
-                            if (commons[_c].attr == 'id') {
+                            if (commons[_c].attr === 'id') {
                                 if (!commons[_c].r && commons[_c].value) commons[_c].r = new RegExp('^' + commons[_c].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
                                 if (!commons[_c].r || commons[_c].r.test(id)) continue;
                             } else if (objects[id].common) {
@@ -1000,7 +1000,7 @@
                         if (!pass) continue;
                         for (var n = 0; n < natives.length; n++) {
                             if (!natives[n]) continue;
-                            if (natives[n].attr == 'id') {
+                            if (natives[n].attr === 'id') {
                                 if (!natives[n].r && natives[n].value) natives[n].r = new RegExp('^' + natives[n].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
                                 if (!natives[n].r || natives[n].r.test(id)) continue;
                             } else if (objects[id].native) {
@@ -1018,7 +1018,7 @@
 
                             for (var n = 0; n < _enums.length; n++) {
                                 if (!_enums[n]) continue;
-                                if (enumIds.indexOf(_enums[n]) != -1) continue;
+                                if (enumIds.indexOf(_enums[n]) !== -1) continue;
                                 pass = false;
                                 break;
                             }
@@ -1031,9 +1031,9 @@
                                 pass = true;
                                 for (var st = 0; st < filterStates.length; st++) {
                                     if (!filterStates[st].r && filterStates[st].value) {
-                                        if (filterStates[st].value[0] == '*') {
+                                        if (filterStates[st].value[0] === '*') {
                                             filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
-                                        } else if (filterStates[st].value[filterStates[st].value - 1] == '*') {
+                                        } else if (filterStates[st].value[filterStates[st].value - 1] === '*') {
                                             filterStates[st].r = new RegExp('^' + filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
                                         } else {
                                             filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
@@ -1049,7 +1049,7 @@
                         }
                     }
                 } else {
-                    var r = (name && name != 'state') ? new RegExp('^' + name.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$') : null;
+                    var r = (name && name !== 'state') ? new RegExp('^' + name.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$') : null;
 
                     // state
                     for (id in states) {
@@ -1059,7 +1059,7 @@
                         if (commons.length) {
                             for (var c = 0; c < commons.length; c++) {
                                 if (!commons[c]) continue;
-                                if (commons[c].attr == 'id') {
+                                if (commons[c].attr === 'id') {
                                     if (!commons[c].r && commons[c].value) commons[c].r = new RegExp(commons[c].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
                                     if (!commons[c].r || commons[c].r.test(id)) continue;
                                 } else if (objects[id].common) {
@@ -1074,7 +1074,7 @@
                         if (natives.length) {
                             for (var n = 0; n < natives.length; n++) {
                                 if (!natives[n]) continue;
-                                if (natives[n].attr == 'id') {
+                                if (natives[n].attr === 'id') {
                                     if (!natives[n].r && natives[n].value) natives[id].r = new RegExp(natives[n].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
                                     if (!natives[n].r || natives[n].r.test(id)) continue;
                                 } else if (objects[id].native) {
@@ -1090,9 +1090,9 @@
                         if (filterStates.length) {
                             for (var st = 0; st < filterStates.length; st++) {
                                 if (!filterStates[st].r && filterStates[st].value) {
-                                    if (filterStates[st].value[0] == '*') {
+                                    if (filterStates[st].value[0] === '*') {
                                         filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
-                                    } else if (filterStates[st].value[filterStates[st].value - 1] == '*') {
+                                    } else if (filterStates[st].value[filterStates[st].value - 1] === '*') {
                                         filterStates[st].r = new RegExp('^' + filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
                                     } else {
                                         filterStates[st].r = new RegExp(filterStates[st].value.replace(/\./g, '\\.').replace(/\*/g, '.*'));
@@ -1111,7 +1111,7 @@
 
                             for (var nn = 0; nn < _enums.length; nn++) {
                                 if (!_enums[nn]) continue;
-                                if (enumIds.indexOf(_enums[nn]) != -1) continue;
+                                if (enumIds.indexOf(_enums[nn]) !== -1) continue;
                                 pass = false;
                                 break;
                             }
@@ -1129,7 +1129,7 @@
                 }
                 result.length = res.length;
                 result.each = function (callback) {
-                    if (typeof callback == 'function') {
+                    if (typeof callback === 'function') {
                         var r;
                         for (var i = 0; i < this.length; i++) {
                             r = callback(result[i], i);
@@ -1144,13 +1144,13 @@
                     return null;
                 };
                 result.setState = function (state, isAck, callback) {
-                    if (typeof isAck == 'function') {
+                    if (typeof isAck === 'function') {
                         callback = isAck;
                         isAck = undefined;
                     }
 
                     if (isAck === true || isAck === false || isAck === 'true' || isAck === 'false') {
-                        if (typeof state == 'object') {
+                        if (typeof state === 'object') {
                             state.ack = isAck;
                         } else {
                             state = {val: state, ack: isAck};
@@ -1203,7 +1203,7 @@
                 adapter.sendTo('pushover', msg);
             },
             subscribe: function (pattern, callbackOrId, value) {
-                if (typeof pattern == 'object') {
+                if (typeof pattern === 'object') {
                     if (pattern.astro) {
                         return sandbox.schedule(pattern, callbackOrId, value);
                     } else if (pattern.time) {
@@ -1215,6 +1215,7 @@
 
                 sandbox.__engine.__subscriptions += 1;
 
+                // source is set by regexp if defined as /regexp/
                 if (typeof pattern !== 'object' || pattern instanceof RegExp || pattern.source) {
                     pattern = {id: pattern, change: 'ne'};
                 }
@@ -1225,7 +1226,7 @@
                 }
 
                 // add adapter namespace if nothing given
-                if (pattern.id && typeof pattern.id == 'string' && pattern.id.indexOf('.') == -1) {
+                if (pattern.id && typeof pattern.id === 'string' && pattern.id.indexOf('.') === -1) {
                     pattern.id = adapter.namespace + '.' + pattern.id;
                 }
 
@@ -1310,7 +1311,7 @@
                 if (sandbox.verbose) sandbox.log('adapterUnsubscribe(id=' + idOrObject + ')', 'info');
                 if (typeof idOrObject === 'object') {
                     for (i = subscriptions.length - 1; i >= 0 ; i--) {
-                        if (subscriptions[i] == idOrObject) {
+                        if (subscriptions[i] === idOrObject) {
                             subscriptions.splice(i, 1);
                             sandbox.__engine.__subscriptions -= 1;
                             return true;
@@ -1354,11 +1355,11 @@
                         adapter.log.warn('Cannot calculate "' + pattern.astro + '" for ' + adapter.config.latitude + ', ' + adapter.config.longitude);
                         ts = new Date(nowdate.getTime());
 
-                        if (pattern.astro == 'sunriseEnd'       ||
-                            pattern.astro == 'goldenHourEnd'    ||
-                            pattern.astro == 'sunset'           ||
-                            pattern.astro == 'nightEnd'         ||
-                            pattern.astro == 'nauticalDusk') {
+                        if (pattern.astro === 'sunriseEnd'       ||
+                            pattern.astro === 'goldenHourEnd'    ||
+                            pattern.astro === 'sunset'           ||
+                            pattern.astro === 'nightEnd'         ||
+                            pattern.astro === 'nauticalDusk') {
                             ts.setMinutes(59);
                             ts.setHours(23);
                             ts.setSeconds(59);
@@ -1457,7 +1458,7 @@
             },
             clearSchedule:  function (schedule) {
                 for (var i = 0; i < script.schedules.length; i++) {
-                    if (script.schedules[i] == schedule) {
+                    if (script.schedules[i] === schedule) {
                         if (!mods['node-schedule'].cancelJob(script.schedules[i])) {
                             adapter.log.error('Error by canceling scheduled job');
                         }
@@ -1603,18 +1604,18 @@
             },
             setStateDelayed: function (id, state, isAck, delay, clearRunning, callback) {
                 // find arguments
-                if (typeof isAck != 'boolean') {
+                if (typeof isAck !== 'boolean') {
                     callback        = clearRunning;
                     clearRunning    = delay;
                     delay           = isAck;
                     isAck           = false;
                 }
-                if (typeof delay != 'number') {
+                if (typeof delay !== 'number') {
                     callback        = clearRunning;
                     clearRunning    = delay;
                     delay           = 0;
                 }
-                if (typeof clearRunning != 'boolean') {
+                if (typeof clearRunning !== 'boolean') {
                     callback        = clearRunning;
                     clearRunning    = true;
                 }
@@ -1653,7 +1654,7 @@
                         // delete timer handler
                         if (timers[id]) {
                             for (var t = 0; t < timers[id].length; t++) {
-                                if (timers[id][t].id == _timerId) {
+                                if (timers[id][t].id === _timerId) {
                                     timers[id].splice(t, 1);
                                     break;
                                 }
@@ -1723,7 +1724,7 @@
                     var obj = JSON.parse(JSON.stringify(objects[id]));
                     obj.enumIds   = JSON.parse(JSON.stringify(e.enumIds));
                     obj.enumNames = JSON.parse(JSON.stringify(e.enumNames));
-                    if (typeof enumName == 'string') {
+                    if (typeof enumName === 'string') {
                         var r = new RegExp('^enum\.' + enumName + '\.');
                         for (var i = obj.enumIds.length - 1; i >= 0; i--) {
                             if (!r.test(obj.enumIds[i])) {
@@ -1948,7 +1949,7 @@
             },
             clearInterval: function (id) {
                 var pos = script.intervals.indexOf(id);
-                if (pos != -1) {
+                if (pos !== -1) {
                     if (sandbox.verbose) sandbox.log('clearInterval() => cleared', 'info');
                     clearInterval(id);
                     script.intervals.splice(pos, 1);
@@ -1960,7 +1961,7 @@
                 var to = setTimeout(function (_arg1, _arg2, _arg3, _arg4) {
                     // Remove timeout from the list
                     var pos = script.timeouts.indexOf(to);
-                    if (pos != -1) script.timeouts.splice(pos, 1);
+                    if (pos !== -1) script.timeouts.splice(pos, 1);
 
                     if (callback) callback.call(sandbox, _arg1, _arg2, _arg3, _arg4);
                 }, ms, arg1, arg2, arg3, arg4);
@@ -1972,7 +1973,7 @@
             },
             clearTimeout:  function (id) {
                 var pos = script.timeouts.indexOf(id);
-                if (pos != -1) {
+                if (pos !== -1) {
                     if (sandbox.verbose) sandbox.log('clearTimeout() => cleared', 'info');
                     clearTimeout(id);
                     script.timeouts.splice(pos, 1);
@@ -2267,7 +2268,7 @@
             var alive = 'system.adapter.' + a + '.alive';
             if (adapterSubs[alive]) {
                 var pos = adapterSubs[alive].indexOf(id);
-                if (pos != -1) adapterSubs[alive].splice(pos, 1);
+                if (pos !== -1) adapterSubs[alive].splice(pos, 1);
                 if (!adapterSubs[alive].length) delete adapterSubs[alive];
             }
             adapter.sendTo(a, 'unsubscribe', id);
@@ -2283,7 +2284,7 @@
             // Remove from subscriptions
             isEnums = false;
             for (var i = subscriptions.length - 1; i >= 0 ; i--) {
-                if (subscriptions[i].name == name) {
+                if (subscriptions[i].name === name) {
                     var sub = subscriptions.splice(i, 1)[0];
                     if (sub) {
                         unsubscribe(sub.pattern.id);
@@ -2436,12 +2437,12 @@
             }
         }
 
-        // todo anchestor name matching
+        // todo ancestor name matching
 
         // change matching
         if (pattern.change) {
             switch (pattern.change) {
-                case "eq":
+                case 'eq':
                     if (event.newState.val === event.oldState.val) {
                         if (pattern.logic === 'or') return true;
                         matched = true;
@@ -2449,7 +2450,7 @@
                         if (pattern.logic === 'and') return false;
                     }
                     break;
-                case "ne":
+                case 'ne':
                     if (event.newState.val !== event.oldState.val) {
                         if (pattern.logic === 'or') return true;
                         matched = true;
@@ -2457,7 +2458,7 @@
                         if (pattern.logic === 'and') return false;
                     }
                     break;
-                case "gt":
+                case 'gt':
                     if (event.newState.val > event.oldState.val) {
                         if (pattern.logic === 'or') return true;
                         matched = true;
@@ -2465,7 +2466,7 @@
                         if (pattern.logic === 'and') return false;
                     }
                     break;
-                case "ge":
+                case 'ge':
                     if (event.newState.val >= event.oldState.val) {
                         if (pattern.logic === 'or') return true;
                         matched = true;
@@ -2473,7 +2474,7 @@
                         if (pattern.logic === 'and') return false;
                     }
                     break;
-                case "lt":
+                case 'lt':
                     if (event.newState.val < event.oldState.val) {
                         if (pattern.logic === 'or') return true;
                         matched = true;
@@ -2481,7 +2482,7 @@
                         if (pattern.logic === 'and') return false;
                     }
                     break;
-                case "le":
+                case 'le':
                     if (event.newState.val <= event.oldState.val) {
                         if (pattern.logic === 'or') return true;
                         matched = true;
@@ -2520,7 +2521,7 @@
         }
 
         // Value Matching
-        if (pattern.val !== undefined && pattern.val === event.newState.val) {
+        if (pattern.val   !== undefined && pattern.val === event.newState.val) {
             if (pattern.logic === 'or') return true;
             matched = true;
         } else if (pattern.val !== undefined) {
@@ -2558,7 +2559,7 @@
         }
 
         // Old-Value matching
-        if (pattern.oldVal !== undefined && pattern.oldVal === event.oldState.val) {
+        if (pattern.oldVal   !== undefined && pattern.oldVal === event.oldState.val) {
             if (pattern.logic === 'or') return true;
             matched = true;
         } else if (pattern.oldVal !== undefined) {
@@ -2596,7 +2597,7 @@
         }
 
         // newState.ts matching
-        if (pattern.ts && pattern.ts === event.newState.ts) {
+        if (pattern.ts   && pattern.ts === event.newState.ts) {
             if (pattern.logic === 'or') return true;
             matched = true;
         } else if (pattern.ts) {
@@ -2628,7 +2629,7 @@
         }
 
         // oldState.ts matching
-        if (pattern.oldTs && pattern.oldTs === event.oldState.ts) {
+        if (pattern.oldTs   && pattern.oldTs === event.oldState.ts) {
             if (pattern.logic === 'or') return true;
             matched = true;
         } else if (pattern.oldTs) {
@@ -2660,7 +2661,7 @@
         }
 
         // newState.lc matching
-        if (pattern.lc && pattern.lc === event.newState.lc) {
+        if (pattern.lc   && pattern.lc === event.newState.lc) {
             if (pattern.logic === 'or') return true;
             matched = true;
         } else if (pattern.lc) {
@@ -2692,7 +2693,7 @@
         }
 
         // oldState.lc matching
-        if (pattern.oldLc && pattern.oldLc === event.oldState.lc) {
+        if (pattern.oldLc   && pattern.oldLc === event.oldState.lc) {
             if (pattern.logic === 'or') return true;
             matched = true;
         } else if (pattern.oldLc) {
@@ -2725,32 +2726,32 @@
 
         // newState.from matching
         if (pattern.from && pattern.from === event.newState.from) {
-            if (pattern.logic == 'or') return true;
+            if (pattern.logic === 'or') return true;
             matched = true;
         } else if (pattern.from) {
-            if (pattern.logic == 'and') return false;
+            if (pattern.logic === 'and') return false;
         }
 
         if (pattern.fromNe && pattern.fromNe !== event.newState.from) {
-            if (pattern.logic == 'or') return true;
+            if (pattern.logic === 'or') return true;
             matched = true;
         } else if (pattern.fromNe) {
-            if (pattern.logic == 'and') return false;
+            if (pattern.logic === 'and') return false;
         }
 
         // oldState.from matching
         if (pattern.oldFrom && pattern.oldFrom === event.oldState.from) {
-            if (pattern.logic == 'or') return true;
+            if (pattern.logic === 'or') return true;
             matched = true;
         } else if (pattern.oldFrom) {
-            if (pattern.logic == 'and') return false;
+            if (pattern.logic === 'and') return false;
         }
 
         if (pattern.oldFromNe && pattern.oldFromNe !== event.oldState.from) {
-            if (pattern.logic == 'or') return true;
+            if (pattern.logic === 'or') return true;
             matched = true;
         } else if (pattern.oldFromNe) {
-            if (pattern.logic == 'and') return false;
+            if (pattern.logic === 'and') return false;
         }
 
         // channelId matching
@@ -2924,10 +2925,10 @@
         if (cacheObjectEnums[idObj]) {
             if (typeof callback === 'function') {
                 for (var j = 0; j < cacheObjectEnums[idObj].enumIds.length; j++) {
-                    if (enumIds.indexOf(cacheObjectEnums[idObj].enumIds[j]) == -1) enumIds.push(cacheObjectEnums[idObj].enumIds[j]);
+                    if (enumIds.indexOf(cacheObjectEnums[idObj].enumIds[j]) === -1) enumIds.push(cacheObjectEnums[idObj].enumIds[j]);
                 }
                 for (j = 0; j < cacheObjectEnums[idObj].enumNames.length; j++) {
-                    if (enumNames.indexOf(cacheObjectEnums[idObj].enumNames[j]) == -1) enumNames.push(cacheObjectEnums[idObj].enumNames[j]);
+                    if (enumNames.indexOf(cacheObjectEnums[idObj].enumNames[j]) === -1) enumNames.push(cacheObjectEnums[idObj].enumNames[j]);
                 }
 
                 callback(cacheObjectEnums[idObj].enumIds, cacheObjectEnums[idObj].enumNames);
@@ -2940,13 +2941,13 @@
                 objects[enums[i]].common &&
                 objects[enums[i]].common.members &&
                 objects[enums[i]].common.members.indexOf(idObj) !== -1) {
-                if (enumIds.indexOf(enums[i]) == -1) enumIds.push(enums[i]);
-                if (enumNames.indexOf(objects[enums[i]].common.name) == -1) enumNames.push(objects[enums[i]].common.name);
+                if (enumIds.indexOf(enums[i]) === -1) enumIds.push(enums[i]);
+                if (enumNames.indexOf(objects[enums[i]].common.name) === -1) enumNames.push(objects[enums[i]].common.name);
             }
         }
         if (objects[idObj]) {
             var pos = idObj.lastIndexOf('.');
-            if (pos != -1) {
+            if (pos !== -1) {
                 var parent = idObj.substring(0, pos);
                 if (parent && objects[parent]) {
                     return getObjectEnums(parent, callback, enumIds, enumNames);
@@ -2964,10 +2965,10 @@
 
         if (cacheObjectEnums[idObj]) {
             for (var j = 0; j < cacheObjectEnums[idObj].enumIds.length; j++) {
-                if (enumIds.indexOf(cacheObjectEnums[idObj].enumIds[j]) == -1) enumIds.push(cacheObjectEnums[idObj].enumIds[j]);
+                if (enumIds.indexOf(cacheObjectEnums[idObj].enumIds[j]) === -1) enumIds.push(cacheObjectEnums[idObj].enumIds[j]);
             }
             for (j = 0; j < cacheObjectEnums[idObj].enumNames.length; j++) {
-                if (enumNames.indexOf(cacheObjectEnums[idObj].enumNames[j]) == -1) enumNames.push(cacheObjectEnums[idObj].enumNames[j]);
+                if (enumNames.indexOf(cacheObjectEnums[idObj].enumNames[j]) === -1) enumNames.push(cacheObjectEnums[idObj].enumNames[j]);
             }
             return {enumIds: enumIds, enumNames: enumNames};
         }
@@ -2978,14 +2979,14 @@
                 objects[enums[i]].common &&
                 objects[enums[i]].common.members &&
                 objects[enums[i]].common.members.indexOf(idObj) !== -1) {
-                if (enumIds.indexOf(enums[i]) == -1) enumIds.push(enums[i]);
-                if (enumNames.indexOf(objects[enums[i]].common.name) == -1) enumNames.push(objects[enums[i]].common.name);
+                if (enumIds.indexOf(enums[i]) === -1) enumIds.push(enums[i]);
+                if (enumNames.indexOf(objects[enums[i]].common.name) === -1) enumNames.push(objects[enums[i]].common.name);
             }
         }
 
         if (objects[idObj]) {
             var pos = idObj.lastIndexOf('.');
-            if (pos != -1) {
+            if (pos !== -1) {
                 var parent = idObj.substring(0, pos);
                 if (parent && objects[parent]) {
                     return getObjectEnumsSync(parent, enumIds, enumNames);
