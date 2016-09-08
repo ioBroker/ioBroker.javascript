@@ -115,19 +115,46 @@ Blockly.JavaScript['time_compare'] = function(block) {
 
     if (option === 'between' && end_time) {
         if (end_time.indexOf(':') === -1) {
-            code_end_time = ' && ((new Date().getMinutes()) < ' + parseInt(end_time, 10) + ')';
+            if (parseInt(end_time, 10) < parseInt(end_time, 10)) {
+                code_end_time = ' || ';
+            } else {
+                code_end_time = ' && ';
+            }
+
+            code_end_time += '((new Date().getMinutes()) < ' + parseInt(end_time, 10) + ')';
         } else {
             var parts = end_time.split(':');
             end_time = 60 * parseInt(parts[0], 10) + parseInt(parts[1], 10);
-            code_end_time = ' && (((new Date().getHours()) * 60 + (new Date().getMinutes())) < ' + end_time + ')';
+            parts = start_time.split(':');
+            var _start_time = 60 * parseInt(parts[0], 10) + parseInt(parts[1], 10);
+            if (end_time < _start_time) {
+                code_end_time = ' || ';
+            } else {
+                code_end_time = ' && ';
+            }
+            code_end_time += '(((new Date().getHours()) * 60 + (new Date().getMinutes())) < ' + end_time + ')';
         }
     } else if (option === 'not between' && end_time) {
         if (end_time.indexOf(':') === -1) {
-            code_end_time = ' && ((new Date().getMinutes()) >= ' + parseInt(end_time, 10) + ')';
+            if (parseInt(end_time, 10) < parseInt(end_time, 10)) {
+                code_end_time = ' || ';
+            } else {
+                code_end_time = ' && ';
+            }
+            code_end_time += '((new Date().getMinutes()) >= ' + parseInt(end_time, 10) + ')';
         } else {
             var parts = end_time.split(':');
             end_time = 60 * parseInt(parts[0], 10) + parseInt(parts[1], 10);
-            code_end_time = ' && (((new Date().getHours()) * 60 + (new Date().getMinutes())) >= ' + end_time + ')';
+
+            parts = start_time.split(':');
+            var _start_time = 60 * parseInt(parts[0], 10) + parseInt(parts[1], 10);
+            if (end_time < _start_time) {
+                code_end_time = ' || ';
+            } else {
+                code_end_time = ' && ';
+            }
+
+            code_end_time += '(((new Date().getHours()) * 60 + (new Date().getMinutes())) >= ' + end_time + ')';
         }
     }
 
@@ -381,23 +408,23 @@ Blockly.Blocks['time_astro'] = {
         this.appendDummyInput()
             .appendField(Blockly.Words['time_astro'][systemLang]);
 
-        this.appendDummyInput("TYPE")
+        this.appendDummyInput('TYPE')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['astro_sunriseText'][systemLang],         "sunrise"],
-                [Blockly.Words['astro_sunriseEndText'][systemLang],      "sunriseEnd"],
-                [Blockly.Words['astro_goldenHourEndText'][systemLang],   "goldenHourEnd"],
-                [Blockly.Words['astro_solarNoonText'][systemLang],       "solarNoon"],
-                [Blockly.Words['astro_goldenHourText'][systemLang],      "goldenHour"],
-                [Blockly.Words['astro_sunsetStartText'][systemLang],     "sunsetStart"],
-                [Blockly.Words['astro_sunsetText'][systemLang],          "sunset"],
-                [Blockly.Words['astro_duskText'][systemLang],            "dusk"],
-                [Blockly.Words['astro_nauticalDuskText'][systemLang],    "nauticalDusk"],
-                [Blockly.Words['astro_nightText'][systemLang],           "night"],
-                [Blockly.Words['astro_nightEndText'][systemLang],        "nightEnd"],
-                [Blockly.Words['astro_nauticalDawnText'][systemLang],    "nauticalDawn"],
-                [Blockly.Words['astro_dawnText'][systemLang],            "dawn"],
-                [Blockly.Words['astro_nadirText'][systemLang],           "nadir"]
-            ]), "TYPE");
+                [Blockly.Words['astro_sunriseText'][systemLang],         'sunrise'],
+                [Blockly.Words['astro_sunriseEndText'][systemLang],      'sunriseEnd'],
+                [Blockly.Words['astro_goldenHourEndText'][systemLang],   'goldenHourEnd'],
+                [Blockly.Words['astro_solarNoonText'][systemLang],       'solarNoon'],
+                [Blockly.Words['astro_goldenHourText'][systemLang],      'goldenHour'],
+                [Blockly.Words['astro_sunsetStartText'][systemLang],     'sunsetStart'],
+                [Blockly.Words['astro_sunsetText'][systemLang],          'sunset'],
+                [Blockly.Words['astro_duskText'][systemLang],            'dusk'],
+                [Blockly.Words['astro_nauticalDuskText'][systemLang],    'nauticalDusk'],
+                [Blockly.Words['astro_nightText'][systemLang],           'night'],
+                [Blockly.Words['astro_nightEndText'][systemLang],        'nightEnd'],
+                [Blockly.Words['astro_nauticalDawnText'][systemLang],    'nauticalDawn'],
+                [Blockly.Words['astro_dawnText'][systemLang],            'dawn'],
+                [Blockly.Words['astro_nadirText'][systemLang],           'nadir']
+            ]), 'TYPE');
 
         this.setInputsInline(true);
         this.setPreviousStatement(true, null);
