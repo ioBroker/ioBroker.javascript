@@ -98,6 +98,8 @@ Blockly.Blocks['on_ext'] = {
 
         this.setMutator(new Blockly.Mutator(['on_ext_oid']));
 
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
         this.setInputsInline(false);
         this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Words['on_ext_tooltip'][systemLang]);
@@ -288,7 +290,9 @@ Blockly.JavaScript['on_ext'] = function(block) {
     }
 
 
-    var code = 'on({id: ' + oid + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + '}, function (obj) {\n  ' + statements_name + '});\n';
+    var code = 'on({id: ' + oid + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + '}, function (obj) {\n  ' +
+        (oids.length === 1 ? 'var value = obj.state.val;\n  var oldValue = obj.oldState.val;\n' : '') + 
+        statements_name + '});\n';
     return code;
 };
 
@@ -339,6 +343,8 @@ Blockly.Blocks['on'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
         this.setInputsInline(false);
         this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Words['on_tooltip'][systemLang]);
@@ -363,6 +369,119 @@ Blockly.JavaScript['on'] = function(block) {
 
     var code = 'on({id: "' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + '}, function (obj) {\n  var value = obj.state.val;\n  var oldValue = obj.oldState.val;\n' + statements_name + '});\n';
     return code;
+};
+
+// --- get info about event -----------------------------------------------------------
+Blockly.Words['on_source']              = {'en': 'get',                'de': 'Nehme',                           'ru': 'взять'};
+Blockly.Words['on_source_of']           = {'en': 'of trigger',         'de': 'von Trigger',                     'ru': 'триггера'};
+Blockly.Words['on_source_tooltip']      = {'en': 'Get information about event', 'de': 'Bekommen die Information über Ereignis',      'ru': 'Получить информацию о событии'};
+Blockly.Words['on_source_id']           = {'en': 'object ID',                       'de': 'Objekt ID',          'ru': 'ID объекта'};
+Blockly.Words['on_source_name']         = {'en': 'name',                            'de': 'Name',               'ru': 'имя'};
+Blockly.Words['on_source_desc']         = {'en': 'description',                     'de': 'Beschreibung',       'ru': 'описание'};
+Blockly.Words['on_source_channel_id']   = {'en': 'channel ID',                      'de': 'Kanal ID',           'ru': 'ID канала'};
+Blockly.Words['on_source_channel_name'] = {'en': 'channel name',                    'de': 'Kanalname ID',       'ru': 'имя канала'};
+Blockly.Words['on_source_device_id']    = {'en': 'device ID',                       'de': 'Gerät ID ID',        'ru': 'ID устройства'};
+Blockly.Words['on_source_device_name']  = {'en': 'device name',                     'de': 'Gerätname',          'ru': 'имя устройства'};
+Blockly.Words['on_source_state_val']    = {'en': 'state value',                     'de': 'Wert',               'ru': 'значение'};
+Blockly.Words['on_source_state_ts']     = {'en': 'state timestamp',                 'de': 'Zeitstempel',        'ru': 'время'};
+Blockly.Words['on_source_state_q']      = {'en': 'state quality',                   'de': 'Qualität',           'ru': 'качество'};
+Blockly.Words['on_source_state_from']   = {'en': 'origin of value',                 'de': 'Ursrpung',           'ru': 'происхождение'};
+Blockly.Words['on_source_state_ack']    = {'en': 'is command or update',            'de': 'Kommando oder Aktualisierung', 'ru': 'команда или обновление'};
+Blockly.Words['on_source_state_lc']     = {'en': 'last change of state',            'de': 'letze Änderung',     'ru': 'последнее изменение'};
+Blockly.Words['on_source_oldstate_val'] = {'en': 'previous value',                  'de': 'vorheriges Wert',    'ru': 'предыдущее значение'};
+Blockly.Words['on_source_oldstate_ts']  = {'en': 'previous timestamp',              'de': 'vorheriger Zeitstempel', 'ru': 'предыдущее время'};
+Blockly.Words['on_source_oldstate_q']   = {'en': 'previous quality',                'de': 'vorherige Quialität', 'ru': 'предыдущее качество'};
+Blockly.Words['on_source_oldstate_from']= {'en': 'previous origin',                 'de': 'vorherige Ursrpung', 'ru': 'предыдущее происхождение'};
+Blockly.Words['on_source_oldstate_ack'] = {'en': 'previous command or update',      'de': 'vorheriges Ack',     'ru': 'предыдущее команда или обновление'};
+Blockly.Words['on_source_oldstate_lc']  = {'en': 'previous last change',            'de': 'vorherige letze Änderung', 'ru': 'предыдущее последнее изменение'};
+
+Blockly.Words['on_source_warning']      = {
+    'en': 'This block must be used only inside of event block',
+    'de': 'Dieser Block darf nur innerhalb \"Falls Objekt" Block verwendet werden',
+    'ru': 'Этот блок можно использовать только внутри блока \"Событие\"'
+};
+
+Blockly.Trigger.blocks['on_source'] =
+    '<block type="on_source">'
+    + '     <value name="ATTR">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['on_source'] = {
+    /**
+     * Block for conditionally returning a value from a procedure.
+     * @this Blockly.Block
+     */
+    init: function() {
+        this.appendDummyInput('ATTR')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['on_source_id'][systemLang],             '_id'],
+                [Blockly.Words['on_source_name'][systemLang],           'common.name'],
+                [Blockly.Words['on_source_desc'][systemLang],           'common.desc'],
+                [Blockly.Words['on_source_channel_id'][systemLang],     'channelId'],
+                [Blockly.Words['on_source_channel_name'][systemLang],   'channelName'],
+                [Blockly.Words['on_source_device_id'][systemLang],      'deviceId'],
+                [Blockly.Words['on_source_device_name'][systemLang],    'deviceName'],
+                [Blockly.Words['on_source_state_val'][systemLang],      'state.val'],
+                [Blockly.Words['on_source_state_ts'][systemLang],       'state.ts'],
+                [Blockly.Words['on_source_state_q'][systemLang],        'state.q'],
+                [Blockly.Words['on_source_state_from'][systemLang],     'state.from'],
+                [Blockly.Words['on_source_state_ack'][systemLang],      'state.ack'],
+                [Blockly.Words['on_source_state_lc'][systemLang],       'state.lc'],
+                [Blockly.Words['on_source_oldstate_val'][systemLang],   'oldState.val'],
+                [Blockly.Words['on_source_oldstate_ts'][systemLang],    'oldState.ts'],
+                [Blockly.Words['on_source_oldstate_q'][systemLang],     'oldState.q'],
+                [Blockly.Words['on_source_oldstate_from'][systemLang],  'oldState.from'],
+                [Blockly.Words['on_source_oldstate_ack'][systemLang],   'oldState.ack'],
+                [Blockly.Words['on_source_oldstate_lc'][systemLang],    'oldState.lc']
+            ]), 'ATTR');
+
+        this.setInputsInline(true);
+        this.setOutput(true);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setTooltip(Blockly.Words['on_source_tooltip'][systemLang]);
+        this.setHelpUrl(getHelp('on_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        var legal = false;
+        // Is the block nested in a trigger?
+        var block = this;
+        do {
+            if (this.FUNCTION_TYPES.indexOf(block.type) !== -1) {
+                legal = true;
+                break;
+            }
+            block = block.getSurroundParent();
+        } while (block);
+
+        if (legal) {
+            this.setWarningText(null);
+        } else {
+            this.setWarningText(Blockly.Words['on_source_warning'][systemLang]);
+        }
+    },
+    /**
+     * List of block types that are functions and thus do not need warnings.
+     * To add a new function type add this to your code:
+     * Blockly.Blocks['procedures_ifreturn'].FUNCTION_TYPES.push('custom_func');
+     */
+    FUNCTION_TYPES: ['on', 'on_ext']
+};
+Blockly.JavaScript['on_source'] = function(block) {
+    var attr = block.getFieldValue('ATTR');
+    var parts = attr.split('.');
+    if (parts.length > 1) {
+        attr = '(obj.' + parts[0] + ' ? obj.' + attr + ' : "")';
+    } else {
+        attr = 'obj.' + attr;
+    }
+    return [attr, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- SCHEDULE -----------------------------------------------------------
@@ -396,6 +515,8 @@ Blockly.Blocks['schedule'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
         this.setInputsInline(false);
         this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Words['schedule_tooltip'][systemLang]);
@@ -485,6 +606,8 @@ Blockly.Blocks['astro'] = {
             .setCheck(null);
         this.setInputsInline(true);
 
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
         this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Words['astro_tooltip'][systemLang]);
         this.setHelpUrl(getHelp('astro_help'));

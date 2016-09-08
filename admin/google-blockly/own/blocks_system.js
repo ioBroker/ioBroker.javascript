@@ -64,17 +64,14 @@ Blockly.Words['comment_tooltip'] = {'en': 'Enter comment to explain the code', '
 
 Blockly.System.blocks['comment'] =
     '<block type="comment">'
-    + '     <value name="TEXT">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">comment</field>'
-    + '         </shadow>'
+    + '     <value name="COMMENT">'
     + '     </value>'
     + '</block>';
 
 Blockly.Blocks['comment'] = {
     init: function() {
-        this.appendDummyInput("COMMENT")
-            .appendField(new Blockly.FieldTextInput(Blockly.Words['comment'][systemLang]), "COMMENT");
+        this.appendDummyInput('COMMENT')
+            .appendField(new Blockly.FieldTextInput(Blockly.Words['comment'][systemLang]), 'COMMENT');
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -119,19 +116,19 @@ Blockly.Blocks['control'] = {
         this.appendDummyInput()
             .appendField(Blockly.Words['control'][systemLang]);
 
-        this.appendDummyInput("OID")
-            .appendField(new Blockly.FieldOID("Object ID", main.initSelectId(), main.objects), "OID");
+        this.appendDummyInput('OID')
+            .appendField(new Blockly.FieldOID('Object ID', main.initSelectId(), main.objects), 'OID');
 
-        this.appendValueInput("VALUE")
+        this.appendValueInput('VALUE')
             .setCheck(null)
             .appendField(Blockly.Words['control_with'][systemLang]);
 
-        this.appendDummyInput("WITH_DELAY")
+        this.appendDummyInput('WITH_DELAY')
             .appendField(Blockly.Words['control_delay'][systemLang])
-            .appendField(new Blockly.FieldCheckbox("FALSE", function(option) {
+            .appendField(new Blockly.FieldCheckbox('FALSE', function(option) {
                 var delayInput = (option == true);
                 this.sourceBlock_.updateShape_(delayInput);
-            }), "WITH_DELAY");
+            }), 'WITH_DELAY');
 
         this.setInputsInline(true);
         this.setPreviousStatement(true, null);
@@ -183,7 +180,7 @@ Blockly.JavaScript['control'] = function(block) {
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
 
     var valueDelay   = parseInt(block.getFieldValue('DELAY_MS'), 10);
-    var clearRunning = block.getFieldValue('CLEAR_RUNNING') === 'true' || block.getFieldValue('CLEAR_RUNNING') === true;
+    var clearRunning = block.getFieldValue('CLEAR_RUNNING') === 'TRUE';
     var valueValue   = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     var objectName   = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
     var code;
