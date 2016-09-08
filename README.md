@@ -894,6 +894,14 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 
 ## Changelog
+### 3.0.7 (2016-09-09)
+* (bluefox) add ack for trigger in blockly
+* (bluefox) add block to get info about trigger
+* (bluefox) start description of blockly
+* (bluefox) add runScript functions
+* (bluefox) disable zoom on wheel in blockly
+* (bluefox) fix block: time compare
+
 ### 3.0.6 (2016-09-07)
 * (bluefox) add extendObject function
 * (bluefox) add custom sendTo block

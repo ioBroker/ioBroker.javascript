@@ -1,14 +1,19 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.0.6",
+        "version":                  "3.0.7",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
-			"3.0.5": {
+			"3.0.7": {
+                "en": "add ack for trigger in blockly\nadd block to get info about trigger\nstart description of blockly\nadd runScript functions\ndisable zoom on wheel in blockly\nfix block: time compare",
+                "de": "add ack for trigger in blockly\nadd block to get info about trigger\nstart description of blockly\nadd runScript functions\ndisable zoom on wheel in blockly\nfix block: time compare",
+                "ru": "add ack for trigger in blockly\nadd block to get info about trigger\nstart description of blockly\nadd runScript functions\ndisable zoom on wheel in blockly\nfix block: time compare"
+            },
+            "3.0.6": {
                 "en": "add extendObject function\nadd custom sendTo block\nadd multiple trigger block",
                 "de": "Neue Funktion: extendObject\nNeuer Block: custom sendTo\nNeuer Block: multiple trigger",
                 "ru": "Добавлена функция extendObject\nДобавлен блок: custom sendTo\nДобавлен блок: multiple trigger"
