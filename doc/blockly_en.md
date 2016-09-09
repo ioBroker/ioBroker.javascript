@@ -313,24 +313,404 @@ Sample to import:
 ## System blocks
 
 ### Debug output
+![Debug output](img/system_debug_en.png)
+
+This block does nothing except prints line into the log. You can use it for debugging of your script.
+
+Like this one: 
+
+![Debug output](img/system_debug_1_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="comment" id="K|2AnJ|5})RoNZ1T%Hh#" x="38" y="13">
+    <field name="COMMENT">Print time into log every second</field>
+    <next>
+      <block type="timeouts_setinterval" id="LNsHTl,!r6eR8J9Yg,Xn">
+        <field name="NAME">interval</field>
+        <field name="INTERVAL">1000</field>
+        <statement name="STATEMENT">
+          <block type="debug" id=".oLS7P_oFU0%PWocRlYp">
+            <field name="Severity">log</field>
+            <value name="TEXT">
+              <shadow type="text" id="X^Z/.qUry9B5Rr#N`)Oy">
+                <field name="TEXT">test</field>
+              </shadow>
+              <block type="time_get" id="TPo6nim+=TBb-pnKMkRp">
+                <mutation format="false" language="false"></mutation>
+                <field name="OPTION">hh:mm:ss</field>
+              </block>
+            </value>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+</xml>
+```
+
+You can define 4 different levels of severity for message:
+- debug (the debug level of javascript adapter must be enabled)
+- info (default, at least info log level must be set in javascript instance settings)
+- warning 
+- error - will be always displayed. Other severity levels can be ignored if severity of logging in javascirpt adapter is higher.
 
 ### Comment
+![Comment](img/system_comment_en.png)
+
+Comment your code to understand it later better. 
+
+It does nothing, just a comment.
 
 ### Control state
+![Control state](img/system_control_en.png)
+
+You can write the state with two different meanings:
+- to control something and send command to end hardware (this block)
+- to update some state to just inform about e.g. new temperature ([next block](#update-state))
+
+Typical usage of block:
+
+![Control state](img/system_control_sample1_en.png)
+
+The object ID must be selected from dialog and the value must be defined too. Depends on the type of state the value can be [string](#string-value), [number](#number-value) or [boolean](#ogical-value-trueflase).
+
+You can read the explanation [here](https://github.com/ioBroker/ioBroker/wiki/Adapter-Development-Documentation#commands-and-statuses).
+
+This block writes command into state (ack=false). Additionally the delay can be specified.
+If delay is not 0, the state will be set not immediately but after defined in milliseconds period of time.
+
+You can stop all running delayed sets by issuing of control command. 
+
+E.g in following schema the state "Light" will be controlled only once (in 2 seconds):
+![Control state](img/system_control_1_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="comment" id="K|2AnJ|5})RoNZ1T%Hh#" x="38" y="13">
+    <field name="COMMENT">Will be executed only once</field>
+    <next>
+      <block type="control" id="IWceY@BFn9/Y?Ez^b(_-">
+        <mutation delay_input="true"></mutation>
+        <field name="OID">javascript.0.Light</field>
+        <field name="WITH_DELAY">TRUE</field>
+        <field name="DELAY_MS">1000</field>
+        <field name="CLEAR_RUNNING">FALSE</field>
+        <value name="VALUE">
+          <block type="logic_boolean" id="I/LUv5/AknHr#[{{qd-@">
+            <field name="BOOL">TRUE</field>
+          </block>
+        </value>
+        <next>
+          <block type="control" id=".Ih(K(P)SFApUP0)/K7,">
+            <mutation delay_input="true"></mutation>
+            <field name="OID">javascript.0.Light</field>
+            <field name="WITH_DELAY">TRUE</field>
+            <field name="DELAY_MS">2000</field>
+            <field name="CLEAR_RUNNING">TRUE</field>
+            <value name="VALUE">
+              <block type="logic_boolean" id="B?)bgD[JZoNL;enJQ4M.">
+                <field name="BOOL">TRUE</field>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>
+```
+
+But in this schema the state "Light" will be controlled twice (in 1 second and in 2 seconds):
+![Control state](img/system_control_2_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="comment" id="K|2AnJ|5})RoNZ1T%Hh#" x="38" y="13">
+    <field name="COMMENT">Will be executed twice</field>
+    <next>
+      <block type="control" id="IWceY@BFn9/Y?Ez^b(_-">
+        <mutation delay_input="true"></mutation>
+        <field name="OID">javascript.0.Light</field>
+        <field name="WITH_DELAY">TRUE</field>
+        <field name="DELAY_MS">1000</field>
+        <field name="CLEAR_RUNNING">FALSE</field>
+        <value name="VALUE">
+          <block type="logic_boolean" id="I/LUv5/AknHr#[{{qd-@">
+            <field name="BOOL">TRUE</field>
+          </block>
+        </value>
+        <next>
+          <block type="control" id=".Ih(K(P)SFApUP0)/K7,">
+            <mutation delay_input="true"></mutation>
+            <field name="OID">javascript.0.Light</field>
+            <field name="WITH_DELAY">TRUE</field>
+            <field name="DELAY_MS">2000</field>
+            <field name="CLEAR_RUNNING">FALSE</field>
+            <value name="VALUE">
+              <block type="logic_boolean" id="B?)bgD[JZoNL;enJQ4M.">
+                <field name="BOOL">FALSE</field>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>
+```
 
 ### Update state
+![Update state](img/system_update_en.png)
+
+This block is similar to [control block](#control-state), but it is only updates the value. No command to control the hardware will be sent.
+
+Typical usage example:
+
+![Update state](img/system_update_sample_en.png)
 
 ### Create state
+![Create state](img/system_create_en.png)
+There are two types of variables that can be created in scripts:
+- local [variables](#set-variables-value)
+- global variables or states. 
+
+Global states are visible in all scripts, but local are visible only in this current script.
+
+Global states can be used in vis, mobile and all other logic or visualisation modules, can be logged into db or whatever.
+
+This block creates global state and if the state yet exist, the command will be ignored. You can safely call this block by every start of the script.
+
+Typical usage example:
+
+![Create state](img/system_create_sample1_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="comment" id="dBV.{0z/{Fr@RB+10H5i" x="38" y="13">
+    <field name="COMMENT">Create state and subscribe on it changes</field>
+    <next>
+      <block type="create" id="D%[{T~!b9^V#Z.7bI+3y">
+        <field name="NAME">myState</field>
+        <statement name="STATEMENT">
+          <block type="on_ext" id="H@F~z_,FpvXo8BptmAtL">
+            <mutation items="1"></mutation>
+            <field name="CONDITION">ne</field>
+            <field name="ACK_CONDITION"></field>
+            <value name="OID0">
+              <shadow type="field_oid" id="hn{OMH9y7AP_dns;KO6*">
+                <field name="oid">javascript.0.myState</field>
+              </shadow>
+            </value>
+            <statement name="STATEMENT">
+              <block type="debug" id="DjP1pU?v=))`V;styIRR">
+                <field name="Severity">log</field>
+                <value name="TEXT">
+                  <shadow type="text" id="de?mCXefl4v#XrO])~7y">
+                    <field name="TEXT">test</field>
+                  </shadow>
+                  <block type="text_join" id="^33}.]#ov(vUAEEn8Hdp">
+                    <mutation items="2"></mutation>
+                    <value name="ADD0">
+                      <block type="text" id="_-p%CZq4%)v1EYvh)lf@">
+                        <field name="TEXT">Value of my state is </field>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="variables_get" id="6r!TtpfrfQ@5Nf[4#[6l">
+                        <field name="VAR">value</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </statement>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+</xml>
+```
+
+You can start to use the new created state first in the block itself. 
+
+Following code will report an error by the first execution, because subscribe for "myState" cannot find object:
+ 
+![Create state](img/system_create_sample2_en.png)
+
+Although no warning will be printed by the second execution, because the state yet exists.
 
 ### Get value of state
+![Get value of state](img/system_get_value_en.png)
+
+You can use this block to get the value of state. Additionally to value you can get following attributes:
+- Value
+- Acknowledge - command = false or update = true
+- Timestamp in ms from 1970.1.1 (It has type "Date object")
+- Last change of value in ms from 1970.1.1 (It has type "Date object")
+- Quality
+- Source - instance name, that wrote last value, like "system.adapter.javascript.0"
+
+
+Example to print time of the last value change:
+
+![Get value of state](img/system_get_value_sample_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="comment" id="GVW732OFexZ9HP[q]B3," x="38" y="13">
+    <field name="COMMENT">Print time of last change for myState</field>
+    <next>
+      <block type="debug" id="t,GmgLjo]1d0{xT+@Yns">
+        <field name="Severity">log</field>
+        <value name="TEXT">
+          <shadow type="text" id="w{UF-|ashrP4e*jl~{9_">
+            <field name="TEXT">test</field>
+          </shadow>
+          <block type="text_join" id="i~L{r:B9oU}.ANc.AV8F">
+            <mutation items="2"></mutation>
+            <value name="ADD0">
+              <block type="text" id="r5=i|qvrII+NCAQ~t{p5">
+                <field name="TEXT">Last change of myState was at</field>
+              </block>
+            </value>
+            <value name="ADD1">
+              <block type="convert_from_date" id="?cGS1/CwThX!tTDMVSoj">
+                <mutation format="false" language="false"></mutation>
+                <field name="OPTION">hh:mm:ss</field>
+                <value name="VALUE">
+                  <block type="get_value" id="k+#N2u^rx)u%Z9lA`Yps">
+                    <field name="ATTR">lc</field>
+                    <field name="OID">javascript.0.myState</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </next>
+  </block>
+</xml>
+```
 
 ### Get Object ID
+![Get Object ID](img/system_get_id_en.png)
+
+It is just a help block to comfortable select the object ID for trigger block.
+
+By clicking on Object ID value the select ID dialog will be opened.
+
+Typical usage:
+
+![Get Object ID](img/system_get_id_sample_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="comment" id="GVW732OFexZ9HP[q]B3," x="38" y="13">
+    <field name="COMMENT">Typical usage of Object ID selector</field>
+    <next>
+      <block type="on_ext" id="D+1_tP(lF!R]wy?R#|~A">
+        <mutation items="1"></mutation>
+        <field name="CONDITION">ne</field>
+        <field name="ACK_CONDITION"></field>
+        <value name="OID0">
+          <shadow type="field_oid" id="rpg#*-DXMVqzexE8-^Xc">
+            <field name="oid">default</field>
+          </shadow>
+          <block type="field_oid" id="YYTRKxeC@l3WE~OJx4ei">
+            <field name="oid">javascript.0.myState</field>
+          </block>
+        </value>
+        <statement name="STATEMENT">
+          <block type="debug" id="{;_x6LATJ,b^leE,xgz9">
+            <field name="Severity">log</field>
+            <value name="TEXT">
+              <shadow type="text" id="-)V}_9Cxt2kj:]36y,7#">
+                <field name="TEXT">Changed</field>
+              </shadow>
+            </value>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+</xml>
+```
 
 ## Actions Blocks
 
 ### Exec - execute
+![Exec - execute](img/action_exec_en.png)
+
+Executes defined command on system. Like someone has written this command in SSH console.
+
+The command will be executed with permissions of user under which the iobroker was started.
+
+If no outputs are required, they can be ignored:
+
+![Exec - execute](img/action_exec_2_en.png)
+
+If parsing of outputs must be done:
+
+![Exec - execute](img/action_exec_1_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="comment" id="GVW732OFexZ9HP[q]B3," x="313" y="38">
+    <field name="COMMENT">Execute some system command</field>
+    <next>
+      <block type="exec" id="hGkHs.IkmiTa{jR^@-}S">
+        <mutation with_statement="true"></mutation>
+        <field name="WITH_STATEMENT">TRUE</field>
+        <field name="LOG"></field>
+        <value name="COMMAND">
+          <shadow type="text" id=":KG#hyuPRhQJWFSk)6Yo">
+            <field name="TEXT">ls /opt/</field>
+          </shadow>
+        </value>
+        <statement name="STATEMENT">
+          <block type="debug" id="ELv(y5V4[hZ,F8,]D51x">
+            <field name="Severity">log</field>
+            <value name="TEXT">
+              <shadow type="text" id="J[o*Fylexfu41}smph).">
+                <field name="TEXT">result</field>
+              </shadow>
+              <block type="variables_get" id="gWo7Y^,QI=PqL(Q;7D=^">
+                <field name="VAR">result</field>
+              </block>
+            </value>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+</xml>
+```
+
+By analysing of outputs 3 special variables will be created: 
+- result, consists normal output to the console (e.g. for "ls /opt" it consist "iobroker nodejs")
+- error object if command cannot be executed by javascript module
+- stderr, error output of executed program
+
+Additionally if the log level is not "none", the same command will be sent to log.
 
 ### request URL
+![request URL](img/action_request_en.png)
+
+Calls URL and give back the result.
+
+Example:
+
+![request URL](img/action_request_1_en.png)
+
+By analysing of outputs 3 special variables will be created: 
+- result, consists body of the requested page
+- error, error description 
+- response (only for experts), special object and has type of [http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
+
+If no outputs are required, they can be ignored. Just unset "with results" option.
 
 ## Send to Blocks
 
