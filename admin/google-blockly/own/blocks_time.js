@@ -427,8 +427,6 @@ Blockly.Blocks['time_astro'] = {
             ]), 'TYPE');
 
         this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
 
         this.setOutput(true);
 

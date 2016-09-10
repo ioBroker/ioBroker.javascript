@@ -542,266 +542,265 @@ Blockly.JavaScript['email'] = function(block) {
     return 'sendTo("email' + dropdown_instance + '", "send", ' + text + ');\n' + logText;
 };
 
-if (1) {
 // --- sendTo Custom --------------------------------------------------
-    Blockly.Words['sendto_custom'] = {'en': 'sendTo', 'de': 'sendTo', 'ru': 'sendTo'};
-    Blockly.Words['sendto_custom_tooltip'] = {
-        'en': 'Text to speech',
-        'de': 'Text zu Sprache',
-        'ru': 'Произнести сообщение'
-    };
-    Blockly.Words['sendto_custom_help'] = {'en': 'sendto', 'de': 'sendto', 'ru': 'sendto'};
-    Blockly.Words['sendto_custom_arguments'] = {'en': 'parameters', 'de': 'Parameter', 'ru': 'параметры'};
-    Blockly.Words['sendto_custom_argument'] = {'en': 'parameter', 'de': 'Parameter', 'ru': 'параметр'};
-    Blockly.Words['sendto_custom_arg_tooltip'] = {
-        'en': 'Add parameter to sendTo object.',
-        'de': 'Parameter zum sendTo-Objekt hinzufügen',
-        'ru': 'Добавить параметр к sendTo объекту'
-    };
+Blockly.Words['sendto_custom'] = {'en': 'sendTo', 'de': 'sendTo', 'ru': 'sendTo'};
+Blockly.Words['sendto_custom_tooltip'] = {
+    'en': 'Text to speech',
+    'de': 'Text zu Sprache',
+    'ru': 'Произнести сообщение'
+};
+Blockly.Words['sendto_custom_help'] = {'en': 'sendto', 'de': 'sendto', 'ru': 'sendto'};
+Blockly.Words['sendto_custom_arguments'] = {'en': 'parameters', 'de': 'Parameter', 'ru': 'параметры'};
+Blockly.Words['sendto_custom_argument'] = {'en': 'parameter', 'de': 'Parameter', 'ru': 'параметр'};
+Blockly.Words['sendto_custom_arg_tooltip'] = {
+    'en': 'Add parameter to sendTo object.',
+    'de': 'Parameter zum sendTo-Objekt hinzufügen',
+    'ru': 'Добавить параметр к sendTo объекту'
+};
 
-    Blockly.Sendto.blocks['sendto_custom'] =
-        '<block type="sendto_custom">'
-        + '     <value name="INSTANCE">'
-        + '     </value>'
-        + '     <value name="LOG">'
-        + '     </value>'
-        + '</block>';
+Blockly.Sendto.blocks['sendto_custom'] =
+    '<block type="sendto_custom">'
+    + '     <value name="INSTANCE">'
+    + '     </value>'
+    + '     <value name="LOG">'
+    + '     </value>'
+    + '</block>';
 
-    Blockly.Blocks['sendto_custom_container'] = {
-        /**
-         * Mutator block for container.
-         * @this Blockly.Block
-         */
-        init: function () {
-            this.setColour(Blockly.Sendto.HUE);
+Blockly.Blocks['sendto_custom_container'] = {
+    /**
+     * Mutator block for container.
+     * @this Blockly.Block
+     */
+    init: function () {
+        this.setColour(Blockly.Sendto.HUE);
 
-            this.appendDummyInput()
-                .appendField(Blockly.Words['sendto_custom_arguments'][systemLang]);
+        this.appendDummyInput()
+            .appendField(Blockly.Words['sendto_custom_arguments'][systemLang]);
 
-            this.appendStatementInput('STACK');
-            this.setTooltip(Blockly.Words['sendto_custom_arg_tooltip'][systemLang]);
-            this.contextMenu = false;
+        this.appendStatementInput('STACK');
+        this.setTooltip(Blockly.Words['sendto_custom_arg_tooltip'][systemLang]);
+        this.contextMenu = false;
+    }
+};
+
+Blockly.Blocks['sendto_custom_item'] = {
+    /**
+     * Mutator block for add items.
+     * @this Blockly.Block
+     */
+    init: function () {
+        this.setColour(Blockly.Sendto.HUE);
+
+        this.appendDummyInput('NAME')
+            .appendField(Blockly.Words['sendto_custom_argument'][systemLang]);
+
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setTooltip(Blockly.Words['sendto_custom_arg_tooltip'][systemLang]);
+        this.contextMenu = false;
+    }
+};
+
+Blockly.Blocks['sendto_custom'] = {
+    /**
+     * Block for creating a string made up of any number of elements of any type.
+     * @this Blockly.Block
+     */
+    init: function () {
+        //this.appendDummyInput('TEXT')
+
+        this.appendDummyInput('INSTANCE')
+            .appendField(Blockly.Words['sendto_custom'][systemLang])
+            .appendField(new Blockly.FieldTextInput('adapter.0'), 'INSTANCE');
+
+        this.setColour(Blockly.Sendto.HUE);
+
+        this.itemCount_ = 1;
+        this.updateShape_();
+        this.setInputsInline(false);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setMutator(new Blockly.Mutator(['sendto_custom_item']));
+        this.setTooltip(Blockly.Words['sendto_custom_tooltip'][systemLang]);
+        this.setHelpUrl(getHelp('sendto_custom_help'));
+    },
+    /**
+     * Create XML to represent number of text inputs.
+     * @return {!Element} XML storage element.
+     * @this Blockly.Block
+     */
+    mutationToDom: function () {
+        var container = document.createElement('mutation');
+        var names = [];
+        for (var i = 0; i < this.itemCount_; i++) {
+            var input = this.getInput('ARG' + i);
+            names[i] = input.fieldRow[0].getValue();
         }
-    };
 
-    Blockly.Blocks['sendto_custom_item'] = {
-        /**
-         * Mutator block for add items.
-         * @this Blockly.Block
-         */
-        init: function () {
-            this.setColour(Blockly.Sendto.HUE);
-
-            this.appendDummyInput('NAME')
-                .appendField(Blockly.Words['sendto_custom_argument'][systemLang]);
-
-            this.setPreviousStatement(true);
-            this.setNextStatement(true);
-            this.setTooltip(Blockly.Words['sendto_custom_arg_tooltip'][systemLang]);
-            this.contextMenu = false;
+        container.setAttribute('items', names.join(','));
+        return container;
+    },
+    /**
+     * Parse XML to restore the text inputs.
+     * @param {!Element} xmlElement XML storage element.
+     * @this Blockly.Block
+     */
+    domToMutation: function (xmlElement) {
+        var names = xmlElement.getAttribute('items').split(',');
+        this.itemCount_ = names.length;
+        this.updateShape_(names);
+    },
+    /**
+     * Populate the mutator's dialog with this block's components.
+     * @param {!Blockly.Workspace} workspace Mutator's workspace.
+     * @return {!Blockly.Block} Root block in mutator.
+     * @this Blockly.Block
+     */
+    decompose: function (workspace) {
+        var containerBlock = workspace.newBlock('sendto_custom_container');
+        containerBlock.initSvg();
+        var connection = containerBlock.getInput('STACK').connection;
+        for (var i = 0; i < this.itemCount_; i++) {
+            var itemBlock = workspace.newBlock('sendto_custom_item');
+            itemBlock.initSvg();
+            connection.connect(itemBlock.previousConnection);
+            connection = itemBlock.nextConnection;
         }
-    };
-
-    Blockly.Blocks['sendto_custom'] = {
-        /**
-         * Block for creating a string made up of any number of elements of any type.
-         * @this Blockly.Block
-         */
-        init: function () {
-            //this.appendDummyInput('TEXT')
-
-            this.appendDummyInput('INSTANCE')
-                .appendField(Blockly.Words['sendto_custom'][systemLang])
-                .appendField(new Blockly.FieldTextInput('adapter.0'), 'INSTANCE');
-
-            this.setColour(Blockly.Sendto.HUE);
-
-            this.itemCount_ = 1;
-            this.updateShape_();
-            this.setInputsInline(false);
-            this.setMutator(new Blockly.Mutator(['sendto_custom_item']));
-            this.setTooltip(Blockly.Words['sendto_custom_tooltip'][systemLang]);
-            this.setHelpUrl(getHelp('sendto_custom_help'));
-        },
-        /**
-         * Create XML to represent number of text inputs.
-         * @return {!Element} XML storage element.
-         * @this Blockly.Block
-         */
-        mutationToDom: function () {
-            var container = document.createElement('mutation');
-            var names = [];
-            for (var i = 0; i < this.itemCount_; i++) {
-                var input = this.getInput('ARG' + i);
-                names[i] = input.fieldRow[0].getValue();
+        return containerBlock;
+    },
+    /**
+     * Reconfigure this block based on the mutator dialog's components.
+     * @param {!Blockly.Block} containerBlock Root block in mutator.
+     * @this Blockly.Block
+     */
+    compose: function (containerBlock) {
+        var itemBlock = containerBlock.getInputTargetBlock('STACK');
+        // Count number of inputs.
+        var connections = [];
+        var names = [];
+        while (itemBlock) {
+            connections.push(itemBlock.valueConnection_);
+            itemBlock = itemBlock.nextConnection &&
+                itemBlock.nextConnection.targetBlock();
+        }
+        // Disconnect any children that don't belong.
+        for (var i = 0; i < this.itemCount_; i++) {
+            var input = this.getInput('ARG' + i);
+            var connection = input.connection.targetConnection;
+            names[i] = input.fieldRow[0].getValue();
+            if (connection && connections.indexOf(connection) === -1) {
+                connection.disconnect();
             }
+        }
+        this.itemCount_ = connections.length;
+        if (this.itemCount_ < 1) this.itemCount_ = 1;
+        this.updateShape_(names);
+        // Reconnect any child blocks.
+        for (var i = 0; i < this.itemCount_; i++) {
+            Blockly.Mutator.reconnect(connections[i], this, 'ARG' + i);
 
-            container.setAttribute('items', names.join(','));
-            return container;
-        },
-        /**
-         * Parse XML to restore the text inputs.
-         * @param {!Element} xmlElement XML storage element.
-         * @this Blockly.Block
-         */
-        domToMutation: function (xmlElement) {
-            var names = xmlElement.getAttribute('items').split(',');
-            this.itemCount_ = names.length;
-            this.updateShape_(names);
-        },
-        /**
-         * Populate the mutator's dialog with this block's components.
-         * @param {!Blockly.Workspace} workspace Mutator's workspace.
-         * @return {!Blockly.Block} Root block in mutator.
-         * @this Blockly.Block
-         */
-        decompose: function (workspace) {
-            var containerBlock = workspace.newBlock('sendto_custom_container');
-            containerBlock.initSvg();
-            var connection = containerBlock.getInput('STACK').connection;
-            for (var i = 0; i < this.itemCount_; i++) {
-                var itemBlock = workspace.newBlock('sendto_custom_item');
-                itemBlock.initSvg();
-                connection.connect(itemBlock.previousConnection);
-                connection = itemBlock.nextConnection;
-            }
-            return containerBlock;
-        },
-        /**
-         * Reconfigure this block based on the mutator dialog's components.
-         * @param {!Blockly.Block} containerBlock Root block in mutator.
-         * @this Blockly.Block
-         */
-        compose: function (containerBlock) {
-            var itemBlock = containerBlock.getInputTargetBlock('STACK');
-            // Count number of inputs.
-            var connections = [];
-            var names = [];
-            while (itemBlock) {
-                connections.push(itemBlock.valueConnection_);
-                itemBlock = itemBlock.nextConnection &&
-                    itemBlock.nextConnection.targetBlock();
-            }
-            // Disconnect any children that don't belong.
-            for (var i = 0; i < this.itemCount_; i++) {
-                var input = this.getInput('ARG' + i);
-                var connection = input.connection.targetConnection;
-                names[i] = input.fieldRow[0].getValue();
-                if (connection && connections.indexOf(connection) === -1) {
-                    connection.disconnect();
-                }
-            }
-            this.itemCount_ = connections.length;
-            if (this.itemCount_ < 1) this.itemCount_ = 1;
-            this.updateShape_(names);
-            // Reconnect any child blocks.
-            for (var i = 0; i < this.itemCount_; i++) {
-                Blockly.Mutator.reconnect(connections[i], this, 'ARG' + i);
+        }
+    },
+    /**
+     * Store pointers to any connected child blocks.
+     * @param {!Blockly.Block} containerBlock Root block in mutator.
+     * @this Blockly.Block
+     */
+    saveConnections: function (containerBlock) {
+        var itemBlock = containerBlock.getInputTargetBlock('STACK');
+        var i = 0;
+        while (itemBlock) {
+            var input = this.getInput('ARG' + i);
+            itemBlock.valueConnection_ = input && input.connection.targetConnection;
+            itemBlock = itemBlock.nextConnection && itemBlock.nextConnection.targetBlock();
+            i++;
+        }
+    },
+    /**
+     * Modify this block to have the correct number of inputs.
+     * @private
+     * @this Blockly.Block
+     */
+    updateShape_: function (names) {
+        this.removeInput('LOG');
+        names = names || [];
+        var _input;
+        // Add new inputs.
+        for (var i = 0; i < this.itemCount_; i++) {
+            _input = this.getInput('ARG' + i);
+            if (!_input) {
+                _input = this.appendValueInput('ARG' + i);
+                if (!names[i]) names[i] = Blockly.Words['sendto_custom_argument'][systemLang] + (i + 1);
+                _input.appendField(new Blockly.FieldTextInput(names[i]));
 
-            }
-        },
-        /**
-         * Store pointers to any connected child blocks.
-         * @param {!Blockly.Block} containerBlock Root block in mutator.
-         * @this Blockly.Block
-         */
-        saveConnections: function (containerBlock) {
-            var itemBlock = containerBlock.getInputTargetBlock('STACK');
-            var i = 0;
-            while (itemBlock) {
-                var input = this.getInput('ARG' + i);
-                itemBlock.valueConnection_ = input && input.connection.targetConnection;
-                itemBlock = itemBlock.nextConnection && itemBlock.nextConnection.targetBlock();
-                i++;
-            }
-        },
-        /**
-         * Modify this block to have the correct number of inputs.
-         * @private
-         * @this Blockly.Block
-         */
-        updateShape_: function (names) {
-            this.removeInput('LOG');
-            names = names || [];
-            var _input;
-            // Add new inputs.
-            for (var i = 0; i < this.itemCount_; i++) {
-                _input = this.getInput('ARG' + i);
-                if (!_input) {
-                    _input = this.appendValueInput('ARG' + i);
-                    if (!names[i]) names[i] = Blockly.Words['sendto_custom_argument'][systemLang] + (i + 1);
-                    _input.appendField(new Blockly.FieldTextInput(names[i]));
-
+                var shadow = this.workspace.newBlock('text');
+                shadow.setShadow(true);
+                shadow.outputConnection.connect(_input.connection);
+                shadow.initSvg();
+                shadow.render();
+                console.log('New ' + names[i]);
+            } else {
+                _input.fieldRow[0].setValue(names[i]);
+                console.log('Exist ' + names[i]);
+                if (!_input.connection.isConnected()) {
+                    console.log('Create ' + names[i]);
                     var shadow = this.workspace.newBlock('text');
+
                     shadow.setShadow(true);
+
                     shadow.outputConnection.connect(_input.connection);
                     shadow.initSvg();
                     shadow.render();
-                    console.log('New ' + names[i]);
-                } else {
-                    _input.fieldRow[0].setValue(names[i]);
-                    console.log('Exist ' + names[i]);
-                    if (!_input.connection.isConnected()) {
-                        console.log('Create ' + names[i]);
-                        var shadow = this.workspace.newBlock('text');
-
-                        shadow.setShadow(true);
-
-                        shadow.outputConnection.connect(_input.connection);
-                        shadow.initSvg();
-                        shadow.render();
-                    }
-
                 }
             }
-            // Remove deleted inputs.
-            var j = i;
-            var blocks = [];
-            while (_input = this.getInput('ARG' + i)) {
-                var b = _input.connection.targetBlock();
-                if (b && b.isShadow()) {
-                    blocks.push(b);
-                }
-                this.removeInput('ARG' + i);
-                i++;
+        }
+        // Remove deleted inputs.
+        var j = i;
+        var blocks = [];
+        while (_input = this.getInput('ARG' + i)) {
+            var b = _input.connection.targetBlock();
+            if (b && b.isShadow()) {
+                blocks.push(b);
             }
-            if (blocks.length) {
-                var ws = this.workspace;
-                setTimeout(function () {
-                    for(var b = 0; b < blocks.length; b++) {
-                        ws.removeTopBlock(blocks[b]);
-                    }
-                }, 100);            }
-
-
-            this.appendDummyInput('LOG')
-                .appendField(Blockly.Words['telegram_log'][systemLang])
-                .appendField(new Blockly.FieldDropdown([
-                    [Blockly.Words['telegram_log_none'][systemLang],  ''],
-                    [Blockly.Words['telegram_log_info'][systemLang],  'log'],
-                    [Blockly.Words['telegram_log_debug'][systemLang], 'debug'],
-                    [Blockly.Words['telegram_log_warn'][systemLang],  'warn'],
-                    [Blockly.Words['telegram_log_error'][systemLang], 'error']
-                ]), 'LOG');
+            this.removeInput('ARG' + i);
+            i++;
         }
-    };
+        if (blocks.length) {
+            var ws = this.workspace;
+            setTimeout(function () {
+                for(var b = 0; b < blocks.length; b++) {
+                    ws.removeTopBlock(blocks[b]);
+                }
+            }, 100);            }
 
-    Blockly.JavaScript['sendto_custom'] = function (block) {
-        var dropdown_instance = block.getFieldValue('INSTANCE');
-        var logLevel = block.getFieldValue('LOG');
-        var args = [];
-        for (var n = 0; n < block.itemCount_; n++) {
-            var input = this.getInput('ARG' + n);
-            var val = Blockly.JavaScript.valueToCode(block, 'ARG' + n, Blockly.JavaScript.ORDER_COMMA);
-            args.push('\n   "' + input.fieldRow[0].getValue() + '": ' + val);
-        }
-        var logText;
-        if (logLevel) {
-            logText = 'console.' + logLevel + '("telegram' + (value_username ? '[' + value_username + ']' : '') + ': " + ' + value_message + ');\n'
-        } else {
-            logText = '';
-        }
 
-        return 'sendTo("' + dropdown_instance + '", {' + (args.length ? args.join(',') + '\n' : '') + '});\n' + logText;
-    };
-}
+        this.appendDummyInput('LOG')
+            .appendField(Blockly.Words['telegram_log'][systemLang])
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['telegram_log_none'][systemLang],  ''],
+                [Blockly.Words['telegram_log_info'][systemLang],  'log'],
+                [Blockly.Words['telegram_log_debug'][systemLang], 'debug'],
+                [Blockly.Words['telegram_log_warn'][systemLang],  'warn'],
+                [Blockly.Words['telegram_log_error'][systemLang], 'error']
+            ]), 'LOG');
+    }
+};
+
+Blockly.JavaScript['sendto_custom'] = function (block) {
+    var dropdown_instance = block.getFieldValue('INSTANCE');
+    var logLevel = block.getFieldValue('LOG');
+    var args = [];
+    for (var n = 0; n < block.itemCount_; n++) {
+        var input = this.getInput('ARG' + n);
+        var val = Blockly.JavaScript.valueToCode(block, 'ARG' + n, Blockly.JavaScript.ORDER_COMMA);
+        args.push('\n   "' + input.fieldRow[0].getValue() + '": ' + val);
+    }
+    var logText;
+    if (logLevel) {
+        logText = 'console.' + logLevel + '("telegram' + (value_username ? '[' + value_username + ']' : '') + ': " + ' + value_message + ');\n'
+    } else {
+        logText = '';
+    }
+
+    return 'sendTo("' + dropdown_instance + '", {' + (args.length ? args.join(',') + '\n' : '') + '});\n' + logText;
+};
