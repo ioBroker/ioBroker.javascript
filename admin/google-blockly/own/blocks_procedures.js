@@ -51,37 +51,38 @@ Blockly.Procedures.allProcedures = function(root) {
  */
 Blockly.Procedures.flyoutCategory = function(workspace) {
     var xmlList = [];
+    var block;
     if (Blockly.Blocks['procedures_defnoreturn']) {
         // <block type="procedures_defnoreturn" gap="16"></block>
-        var block = goog.dom.createDom('block');
+        block = goog.dom.createDom('block');
         block.setAttribute('type', 'procedures_defnoreturn');
         block.setAttribute('gap', 16);
         xmlList.push(block);
     }
     if (Blockly.Blocks['procedures_defreturn']) {
         // <block type="procedures_defreturn" gap="16"></block>
-        var block = goog.dom.createDom('block');
+        block = goog.dom.createDom('block');
         block.setAttribute('type', 'procedures_defreturn');
         block.setAttribute('gap', 16);
         xmlList.push(block);
     }
     if (Blockly.Blocks['procedures_ifreturn']) {
         // <block type="procedures_ifreturn" gap="16"></block>
-        var block = goog.dom.createDom('block');
+        block = goog.dom.createDom('block');
         block.setAttribute('type', 'procedures_ifreturn');
         block.setAttribute('gap', 16);
         xmlList.push(block);
     }
     if (Blockly.Blocks['procedures_defcustomnoreturn']) {
         // <block type="procedures_defnoreturn" gap="16"></block>
-        var block = goog.dom.createDom('block');
+        block = goog.dom.createDom('block');
         block.setAttribute('type', 'procedures_defcustomnoreturn');
         block.setAttribute('gap', 16);
         xmlList.push(block);
     }
     if (Blockly.Blocks['procedures_defcustomreturn']) {
         // <block type="procedures_defnoreturn" gap="16"></block>
-        var block = goog.dom.createDom('block');
+        block = goog.dom.createDom('block');
         block.setAttribute('type', 'procedures_defcustomreturn');
         block.setAttribute('gap', 16);
         xmlList.push(block);

@@ -892,8 +892,10 @@ It is not a function. It is a variable with javascript instance, that is visible
 There is a possibility to enabled and disable scripts via states. For every script the state will be created with name **javascript.INSTANCE.scriptEnabled.SCRIPT_NAME**.
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
-
 ## Changelog
+### 3.0.8 (2016-09-11)
+* (bluefox) Bugfixing of blockly
+
 ### 3.0.7 (2016-09-09)
 * (bluefox) add ack for trigger in blockly
 * (bluefox) add block to get info about trigger

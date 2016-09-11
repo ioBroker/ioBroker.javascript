@@ -177,7 +177,7 @@ Blockly.JavaScript['sayit'] = function(block) {
 
     var logText;
     if (logLevel) {
-        logText = 'console.' + logLevel + '("telegram' + (value_username ? '[' + value_username + ']' : '') + ': " + ' + value_message + ');\n'
+        logText = 'console.' + logLevel + '("telegram' + (dropdown_language ? '[' + dropdown_language + ']' : '') + (value_volume ? '[Volume - ' + value_volume + ']' : '') + ': " + ' + value_message + ');\n'
     } else {
         logText = '';
     }
@@ -189,11 +189,11 @@ Blockly.JavaScript['sayit'] = function(block) {
 // --- SendTo pushover --------------------------------------------------
 Blockly.Words['pushover']               = {'en': 'pushover',                    'de': 'pushover',                           'ru': 'pushover'};
 Blockly.Words['pushover_message']       = {'en': 'message',                     'de': 'Meldung',                            'ru': 'сообщение'};
-Blockly.Words['pushover_title']         = {'en': 'Title (optional)',            'de': 'Betreff (optional)',                 'ru': 'заголовок (не обяз.)'};
+Blockly.Words['pushover_title']         = {'en': 'title (optional)',            'de': 'Betreff (optional)',                 'ru': 'заголовок (не обяз.)'};
 Blockly.Words['pushover_sound']         = {'en': 'sound',                       'de': 'Klang',                              'ru': 'звук'};
 Blockly.Words['pushover_priority']      = {'en': 'priority',                    'de': 'Priorität',                          'ru': 'приоритет'};
 Blockly.Words['pushover_url']           = {'en': 'URL (optional)',              'de': 'URL (optional)',                     'ru': 'URL (не обяз.)'};
-Blockly.Words['pushover_url_title']     = {'en': 'URL Title (optional)',        'de': 'URL Betreff (optional)',             'ru': 'заголовок для URL (не обяз.)'};
+Blockly.Words['pushover_url_title']     = {'en': 'URL title (optional)',        'de': 'URL Betreff (optional)',             'ru': 'заголовок для URL (не обяз.)'};
 Blockly.Words['pushover_device']        = {'en': 'device ID (optional)',        'de': 'Gerät ID (optional)',                'ru': 'ID устройства (не обяз.)'};
 Blockly.Words['pushover_timestamp']     = {'en': 'time in ms (optional)',       'de': 'Zeit in ms (optional)',              'ru': 'время в мс (не обяз.)'};
 Blockly.Words['pushover_normal']        = {'en': 'default',                     'de': 'normal',                             'ru': 'по умолчанию'};
@@ -543,16 +543,17 @@ Blockly.JavaScript['email'] = function(block) {
 };
 
 // --- sendTo Custom --------------------------------------------------
-Blockly.Words['sendto_custom'] = {'en': 'sendTo', 'de': 'sendTo', 'ru': 'sendTo'};
-Blockly.Words['sendto_custom_tooltip'] = {
+Blockly.Words['sendto_custom']              = {'en': 'sendTo',      'de': 'sendTo',     'ru': 'sendTo'};
+Blockly.Words['sendto_custom_tooltip']      = {
     'en': 'Text to speech',
     'de': 'Text zu Sprache',
     'ru': 'Произнести сообщение'
 };
-Blockly.Words['sendto_custom_help'] = {'en': 'sendto', 'de': 'sendto', 'ru': 'sendto'};
-Blockly.Words['sendto_custom_arguments'] = {'en': 'parameters', 'de': 'Parameter', 'ru': 'параметры'};
-Blockly.Words['sendto_custom_argument'] = {'en': 'parameter', 'de': 'Parameter', 'ru': 'параметр'};
-Blockly.Words['sendto_custom_arg_tooltip'] = {
+Blockly.Words['sendto_custom_help']         = {'en': 'sendto',      'de': 'sendto',     'ru': 'sendto'};
+Blockly.Words['sendto_custom_arguments']    = {'en': 'parameters',  'de': 'Parameter',  'ru': 'параметры'};
+Blockly.Words['sendto_custom_command']      = {'en': 'command',     'de': 'Kommando',   'ru': 'команда'};
+Blockly.Words['sendto_custom_argument']     = {'en': 'parameter',   'de': 'Parameter',  'ru': 'параметр'};
+Blockly.Words['sendto_custom_arg_tooltip']  = {
     'en': 'Add parameter to sendTo object.',
     'de': 'Parameter zum sendTo-Objekt hinzufügen',
     'ru': 'Добавить параметр к sendTo объекту'
@@ -562,8 +563,13 @@ Blockly.Sendto.blocks['sendto_custom'] =
     '<block type="sendto_custom">'
     + '     <value name="INSTANCE">'
     + '     </value>'
+    + '     <value name="COMMAND">'
+    + '     </value>'
     + '     <value name="LOG">'
     + '     </value>'
+    + '     <value name="WITH_STATEMENT">'
+    + '     </value>'
+    + '     <mutation with_statement="false" items="parameter1"></mutation>'
     + '</block>';
 
 Blockly.Blocks['sendto_custom_container'] = {
@@ -613,6 +619,10 @@ Blockly.Blocks['sendto_custom'] = {
             .appendField(Blockly.Words['sendto_custom'][systemLang])
             .appendField(new Blockly.FieldTextInput('adapter.0'), 'INSTANCE');
 
+        this.appendDummyInput('COMMAND')
+            .appendField(Blockly.Words['sendto_custom_command'][systemLang])
+            .appendField(new Blockly.FieldTextInput('send'), 'COMMAND');
+
         this.setColour(Blockly.Sendto.HUE);
 
         this.itemCount_ = 1;
@@ -638,6 +648,7 @@ Blockly.Blocks['sendto_custom'] = {
         }
 
         container.setAttribute('items', names.join(','));
+        container.setAttribute('with_statement', this.getFieldValue('WITH_STATEMENT') === 'TRUE');
         return container;
     },
     /**
@@ -648,7 +659,7 @@ Blockly.Blocks['sendto_custom'] = {
     domToMutation: function (xmlElement) {
         var names = xmlElement.getAttribute('items').split(',');
         this.itemCount_ = names.length;
-        this.updateShape_(names);
+        this.updateShape_(names, xmlElement.getAttribute('with_statement') == 'true');
     },
     /**
      * Populate the mutator's dialog with this block's components.
@@ -696,10 +707,18 @@ Blockly.Blocks['sendto_custom'] = {
         if (this.itemCount_ < 1) this.itemCount_ = 1;
         this.updateShape_(names);
         // Reconnect any child blocks.
-        for (var i = 0; i < this.itemCount_; i++) {
-            Blockly.Mutator.reconnect(connections[i], this, 'ARG' + i);
+        for (var j = 0; j < this.itemCount_; j++) {
+            Blockly.Mutator.reconnect(connections[j], this, 'ARG' + j);
 
         }
+    },
+    getArgNames_: function () {
+        var names = [];
+        for (var n = 0; n < this.itemCount_; n++) {
+            var input = this.getInput('ARG' + n);
+            names.push(input.fieldRow[0].getValue());
+        }
+        return names;
     },
     /**
      * Store pointers to any connected child blocks.
@@ -721,8 +740,9 @@ Blockly.Blocks['sendto_custom'] = {
      * @private
      * @this Blockly.Block
      */
-    updateShape_: function (names) {
+    updateShape_: function (names, withStatement) {
         this.removeInput('LOG');
+        this.removeInput('WITH_STATEMENT');
         names = names || [];
         var _input;
         // Add new inputs.
@@ -733,15 +753,15 @@ Blockly.Blocks['sendto_custom'] = {
                 if (!names[i]) names[i] = Blockly.Words['sendto_custom_argument'][systemLang] + (i + 1);
                 _input.appendField(new Blockly.FieldTextInput(names[i]));
 
-                var shadow = this.workspace.newBlock('text');
-                shadow.setShadow(true);
-                shadow.outputConnection.connect(_input.connection);
-                shadow.initSvg();
-                shadow.render();
-                console.log('New ' + names[i]);
+                var _shadow = this.workspace.newBlock('text');
+                _shadow.setShadow(true);
+                _shadow.outputConnection.connect(_input.connection);
+                _shadow.initSvg();
+                _shadow.render();
+                //console.log('New ' + names[i]);
             } else {
                 _input.fieldRow[0].setValue(names[i]);
-                console.log('Exist ' + names[i]);
+                //console.log('Exist ' + names[i]);
                 if (!_input.connection.isConnected()) {
                     console.log('Create ' + names[i]);
                     var shadow = this.workspace.newBlock('text');
@@ -755,7 +775,6 @@ Blockly.Blocks['sendto_custom'] = {
             }
         }
         // Remove deleted inputs.
-        var j = i;
         var blocks = [];
         while (_input = this.getInput('ARG' + i)) {
             var b = _input.connection.targetBlock();
@@ -771,8 +790,15 @@ Blockly.Blocks['sendto_custom'] = {
                 for(var b = 0; b < blocks.length; b++) {
                     ws.removeTopBlock(blocks[b]);
                 }
-            }, 100);            }
+            }, 100);
+        }
 
+        this.appendDummyInput('WITH_STATEMENT')
+            .appendField(Blockly.Words['request_statement'][systemLang])
+            .appendField(new Blockly.FieldCheckbox(withStatement ? 'TRUE': 'FALSE', function (option) {
+                var withStatement = (option == true);
+                this.sourceBlock_.updateShape_(this.sourceBlock_.getArgNames_(), withStatement);
+            }), 'WITH_STATEMENT');
 
         this.appendDummyInput('LOG')
             .appendField(Blockly.Words['telegram_log'][systemLang])
@@ -783,24 +809,58 @@ Blockly.Blocks['sendto_custom'] = {
                 [Blockly.Words['telegram_log_warn'][systemLang],  'warn'],
                 [Blockly.Words['telegram_log_error'][systemLang], 'error']
             ]), 'LOG');
+
+        // Add or remove a statement Input.
+        var inputExists = this.getInput('STATEMENT');
+
+        if (withStatement) {
+            if (!inputExists) {
+                this.appendStatementInput('STATEMENT');
+            }
+        } else if (inputExists) {
+            this.removeInput('STATEMENT');
+        }
     }
 };
 
 Blockly.JavaScript['sendto_custom'] = function (block) {
-    var dropdown_instance = block.getFieldValue('INSTANCE');
-    var logLevel = block.getFieldValue('LOG');
+    var instance      = block.getFieldValue('INSTANCE');
+    var logLevel      = block.getFieldValue('LOG');
+    var command       = block.getFieldValue('COMMAND');
+    var withStatement = block.getFieldValue('WITH_STATEMENT');
     var args = [];
-    for (var n = 0; n < block.itemCount_; n++) {
-        var input = this.getInput('ARG' + n);
-        var val = Blockly.JavaScript.valueToCode(block, 'ARG' + n, Blockly.JavaScript.ORDER_COMMA);
-        args.push('\n   "' + input.fieldRow[0].getValue() + '": ' + val);
-    }
     var logText;
     if (logLevel) {
-        logText = 'console.' + logLevel + '("telegram' + (value_username ? '[' + value_username + ']' : '') + ': " + ' + value_message + ');\n'
+        logText = 'console.' + logLevel + '("' + instance + ': " + "' + (args.length ? args.join(',') + '\n' : '') + '");\n'
     } else {
         logText = '';
     }
+    var statement;
+    if (withStatement === 'TRUE') {
+        statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    }
 
-    return 'sendTo("' + dropdown_instance + '", {' + (args.length ? args.join(',') + '\n' : '') + '});\n' + logText;
+    for (var n = 0; n < block.itemCount_; n++) {
+        var input = this.getInput('ARG' + n);
+        var val = Blockly.JavaScript.valueToCode(block, 'ARG' + n, Blockly.JavaScript.ORDER_COMMA);
+        // if JSON
+        if (val && val[0] === "'" && val[1] === '{') {
+            val = val.substring(1, val.length - 1);
+        }
+        args.push('\n   "' + input.fieldRow[0].getValue() + '": ' + val);
+
+        if (block.itemCount_ === 1 && !input.fieldRow[0].getValue()) {
+            if (statement) {
+                return 'sendTo("' + instance + '", "' + command + '", ' + val + ', function (result) {\n  ' + statement + '  });\n' + logText;
+            } else {
+                return 'sendTo("' + instance + '", "' + command + '", ' + val + ');\n' + logText;
+            }
+        }
+    }
+
+    if (statement) {
+        return 'sendTo("' + instance + '", "' + command + '", {' + (args.length ? args.join(',') + '\n' : '') + '}, function (result) {\n  ' + statement + '  });\n' + logText;
+    } else {
+        return 'sendTo("' + instance + '", "' + command + '", {' + (args.length ? args.join(',') + '\n' : '') + '});\n' + logText;
+    }
 };

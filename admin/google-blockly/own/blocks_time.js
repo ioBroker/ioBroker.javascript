@@ -126,8 +126,8 @@ Blockly.JavaScript['time_compare'] = function(block) {
             var parts = end_time.split(':');
             end_time = 60 * parseInt(parts[0], 10) + parseInt(parts[1], 10);
             parts = start_time.split(':');
-            var _start_time = 60 * parseInt(parts[0], 10) + parseInt(parts[1], 10);
-            if (end_time < _start_time) {
+            var __start_time = 60 * parseInt(parts[0], 10) + parseInt(parts[1], 10);
+            if (end_time < __start_time) {
                 code_end_time = ' || ';
             } else {
                 code_end_time = ' && ';
@@ -143,11 +143,11 @@ Blockly.JavaScript['time_compare'] = function(block) {
             }
             code_end_time += '((new Date().getMinutes()) >= ' + parseInt(end_time, 10) + ')';
         } else {
-            var parts = end_time.split(':');
-            end_time = 60 * parseInt(parts[0], 10) + parseInt(parts[1], 10);
+            var _parts = end_time.split(':');
+            end_time = 60 * parseInt(_parts[0], 10) + parseInt(_parts[1], 10);
 
-            parts = start_time.split(':');
-            var _start_time = 60 * parseInt(parts[0], 10) + parseInt(parts[1], 10);
+            _parts = start_time.split(':');
+            var _start_time = 60 * parseInt(_parts[0], 10) + parseInt(_parts[1], 10);
             if (end_time < _start_time) {
                 code_end_time = ' || ';
             } else {
@@ -168,8 +168,8 @@ Blockly.JavaScript['time_compare'] = function(block) {
             code_start_time = '((new Date().getMinutes()) ' + option + ' ' + parseInt(start_time, 10) + ')';
         }
     } else {
-        var parts = start_time.split(':');
-        start_time = 60 * parseInt(parts[0], 10) + parseInt(parts[1], 10);
+        var __parts = start_time.split(':');
+        start_time = 60 * parseInt(__parts[0], 10) + parseInt(__parts[1], 10);
         if (option === 'between') {
             code_start_time = '(((new Date().getHours()) * 60 + (new Date().getMinutes()) >= ' + start_time + ')' + code_end_time + ')';
         } else if (option === 'not between'){

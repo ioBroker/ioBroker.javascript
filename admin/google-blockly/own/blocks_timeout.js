@@ -130,8 +130,7 @@ Blockly.JavaScript['timeouts_settimeout'] = function(block) {
     var delay = block.getFieldValue('DELAY');
     var name  = block.getFieldValue('NAME');
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    var code = name + ' = setTimeout(function (obj) {\n' + statements_name + '}, ' + delay + ');\n';
-    return code;
+    return name + ' = setTimeout(function (obj) {\n' + statements_name + '}, ' + delay + ');\n';;
 };
 
 // --- clearTimeout -----------------------------------------------------------

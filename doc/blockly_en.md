@@ -715,14 +715,302 @@ If no outputs are required, they can be ignored. Just unset "with results" optio
 ## Send to Blocks
 
 ### Send to telegram
+![Send to telegram](img/sendto_telegram_en.png)
+
+This block is used to send message to telegram client via telegram adapter.
+
+Of course the telegram adapter must be installed and configured.
+
+To send message to some specific instance, you should select the installed adapter instance (Normally telegram.0), elsewise message will be sent to all existing instances.
+
+Property *message* is mandatory and exactly this text will be sent to client. 
+
+User name ID is optional and this is ID from [telegram](https://core.telegram.org/bots/api#user) (Unique identifier for user or bot).
+
+Additionally if the log level is not "none", the same message will be sent to log.
 
 ### Send to SayIt
+![Send to SayIt](img/sendto_sayit_en.png)
+
+This block is used to send text to sayit instance to pronounce this text.
+
+Of course the sayit adapter must be installed and configured.
+
+To send message to some specific instance, you should select the installed adapter instance (Normally sayit.0), elsewise message will be sent to all existing instances.
+
+Property *message* is mandatory and exactly this text will be pronounced. 
+
+You must check the language property. This will be used for text2speech engine. 
+
+Volume is optional (normally from 0 to 100).
+
+Additionally if the log level is not "none", the same message will be sent to log.
 
 ### Send to pushover
+![Send to pushover](img/sendto_pushover_en.png)
+
+This block is used to send text to pushover client. You can read about pushover driver [here](https://github.com/ioBroker/ioBroker.pushover).
+
+Of course the pushover adapter must be installed and configured.
+
+To send message to some specific instance, you should select the installed adapter instance (Normally pushover.0), elsewise message will be sent to all existing instances.
+
+Property *message* is mandatory and exactly this text will be sent to client. 
+
+All other properties are optional and you can read bout them [here](https://pushover.net/api):
+
+- *device ID* - your user's device name to send the message directly to that device, rather than all of the user's devices (multiple devices may be separated by a comma)
+- *title* - your message's title, otherwise your app's name is used
+- *URL* - a supplementary URL to show with your message
+- *URL title* - a title for your supplementary URL, otherwise just the URL is shown
+- *priority* - send as -2 to generate no notification/alert, -1 to always send as a quiet notification, 1 to display as high-priority and bypass the user's quiet hours, or 2 to also require confirmation from the user
+- *time in ms* - a Unix timestamp of your message's date and time to display to the user, rather than the time your message is received by our API
+- *sound* - the name of one of the sounds supported by device clients to override the user's default sound choice
+
+Additionally if the log level is not "none", the same message will be sent to log.
 
 ### Send email
+![Send to email](img/sendto_email_en.png)
+
+This block is used to send text as email.
+
+Of course the email adapter must be installed, configured and tested.
+
+To send message to some specific instance, you should select the installed adapter instance (Normally email.0), elsewise message will be sent to all existing instances.
+
+Property *text* is mandatory and exactly this text will be sent to client. 
+
+Of course the destination (*to*) must be filled with valid email address.
+
+You can attach up to files (normally images) to email. To use images in the text, you must change format to HTML (check "Send as HTML" option) and text could look like:
+
+```
+<p>Embedded image 1: <img src='cid:file1'/></p>
+<p>Embedded image 2: <img src='cid:file2'/></p>
+```
+
+You can refer to files as ```<img src='cid:file1'/>```. "file1" and "file2" are reserved IDs and cannot be changed.
+
+"file name" must consist full path to image on disk.
+
+![Send to email](img/sendto_email_1_en.png)
+
+```
+<block xmlns="http://www.w3.org/1999/xhtml" type="email" id="VeysPTJXFh^.CW1t(s@Q" x="563" y="63">
+  <field name="INSTANCE"></field>
+  <field name="IS_HTML">FALSE</field>
+  <field name="LOG"></field>
+  <value name="TO">
+    <shadow type="text" id=".6+6Rp^N7JHiNkP/.^09">
+      <field name="TEXT"></field>
+    </shadow>
+    <block type="text" id="NC6==~4g|OB^`xZ:|Rlx">
+      <field name="TEXT">user@myemail.com</field>
+    </block>
+  </value>
+  <value name="TEXT">
+    <shadow type="text" id="jaGOyI%O4wl(.s.wo(Y`">
+      <field name="TEXT"></field>
+    </shadow>
+    <block type="text" id=")--+u-+rdoAyWpi9I87+">
+      <field name="TEXT">&lt;p&gt;Embedded image 1: &lt;img src='cid:file1'/&gt;&lt;/p&gt;</field>
+    </block>
+  </value>
+  <value name="SUBJECT">
+    <shadow type="text" id="|49=rPOCP]hwFD[HX@_I">
+      <field name="TEXT">From Sweet Home</field>
+    </shadow>
+  </value>
+  <value name="FILE_1">
+    <block type="text" id="tlb_Kuh5?JvPTQr)A{}4">
+      <field name="TEXT">/opt/video/imageCam.png</field>
+    </block>
+  </value>
+</block>
+```
+
+Additionally if the log level is not "none", the same message will be sent to log.
 
 ### Custom sendTo block
+![Custom sendTo block](img/sendto_custom_en.png)
+
+This is just a help block to send internal system message (sendTo) to any adapter. 
+
+Of course you can use custom function block to do anything crazy, and to send messages too.
+
+You can define your own parameters for sendTo command:
+
+![Custom sendTo block](img/sendto_custom_1_en.png)
+
+Read more [here](https://github.com/ioBroker/ioBroker.javascript#sendto) about "sendTo".
+
+Example how to send SQL query to sql adapter:
+
+![Custom sendTo block](img/sendto_custom_2_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="comment" id="GVW732OFexZ9HP[q]B3," x="163" y="13">
+    <field name="COMMENT">Send query to SQL adapter</field>
+    <next>
+      <block type="sendto_custom" id="84lYloO4o+RvLszPVHZ5">
+        <mutation items="" with_statement="true"></mutation>
+        <field name="INSTANCE">sql.0</field>
+        <field name="COMMAND">query</field>
+        <field name="WITH_STATEMENT">TRUE</field>
+        <field name="LOG">log</field>
+        <value name="ARG0">
+          <shadow type="text" id=")faamoSD,nGPXawY4|(Z">
+            <field name="TEXT">SELECT * FROM datapoints</field>
+          </shadow>
+        </value>
+        <statement name="STATEMENT">
+          <block type="debug" id="Q#UJl]^_g/VHzM*G/a:f">
+            <field name="Severity">log</field>
+            <value name="TEXT">
+              <shadow type="text" id="#!NJS43!0z@}z:6~_,9(">
+                <field name="TEXT">test</field>
+              </shadow>
+              <block type="procedures_callcustomreturn" id="0E2fmQQduf4)-({z(om|">
+                <mutation name="JSON.stringify">
+                  <arg name="obj"></arg>
+                </mutation>
+                <value name="ARG0">
+                  <block type="variables_get" id=",^2E2eT#598hI^TvABD9">
+                    <field name="VAR">result</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+  <block type="procedures_defcustomreturn" id="lm*.n3kQXll8o9X^*m,k" x="163" y="263">
+    <mutation statements="false">
+      <arg name="obj"></arg>
+    </mutation>
+    <field name="NAME">JSON.stringify</field>
+    <field name="SCRIPT">cmV0dXJuIEpTT04uc3RyaW5naWZ5KG9iaik7</field>
+    <comment pinned="false" h="80" w="160">Describe this function...</comment>
+  </block>
+</xml>
+```
+
+If you will use only one parameter with empty name, so no structure will created, like here:
+
+```
+var obj, result;
+
+/**
+ * Describe this function...
+ */
+function JSON_stringify(obj) {
+    return JSON.stringify(obj);
+}
+
+
+// Send query to SQL adapter
+sendTo("sql.0", "query", 'SELECT * FROM datapoints', function (result) {
+    console.log((JSON_stringify(result)));
+  });
+console.log("sql.0: " + "");
+```
+
+Or how to request history from SQL adapter:
+
+![Custom sendTo block](img/sendto_custom_3_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="comment" id="GVW732OFexZ9HP[q]B3," x="263" y="13">
+    <field name="COMMENT">Get history from SQL adapter</field>
+    <next>
+      <block type="variables_set" id="J;8I^fN*4YQ1+jPI3FS#">
+        <field name="VAR">end</field>
+        <value name="VALUE">
+          <block type="time_get" id="kZFFxa-2%7/:=IHU|}eB">
+            <mutation format="false" language="false"></mutation>
+            <field name="OPTION">object</field>
+          </block>
+        </value>
+        <next>
+          <block type="sendto_custom" id="84lYloO4o+RvLszPVHZ5">
+            <mutation items="id,options" with_statement="true"></mutation>
+            <field name="INSTANCE">sql.0</field>
+            <field name="COMMAND">getHistory</field>
+            <field name="WITH_STATEMENT">TRUE</field>
+            <field name="LOG"></field>
+            <value name="ARG0">
+              <shadow type="text" id=")faamoSD,nGPXawY4|(Z">
+                <field name="TEXT">system.adapter.admin.0.memRss</field>
+              </shadow>
+            </value>
+            <value name="ARG1">
+              <shadow type="text" id="/nmT=qDw;S`#*tXN=C6n">
+                <field name="TEXT">{start: end - 3600000, end: end, aggregate: "minmax"}</field>
+              </shadow>
+            </value>
+            <statement name="STATEMENT">
+              <block type="debug" id="Q#UJl]^_g/VHzM*G/a:f">
+                <field name="Severity">log</field>
+                <value name="TEXT">
+                  <shadow type="text" id="#!NJS43!0z@}z:6~_,9(">
+                    <field name="TEXT">test</field>
+                  </shadow>
+                  <block type="procedures_callcustomreturn" id="0E2fmQQduf4)-({z(om|">
+                    <mutation name="JSON.stringify">
+                      <arg name="obj"></arg>
+                    </mutation>
+                    <value name="ARG0">
+                      <block type="variables_get" id=",^2E2eT#598hI^TvABD9">
+                        <field name="VAR">result</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </statement>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+  <block type="procedures_defcustomreturn" id="lm*.n3kQXll8o9X^*m,k" x="263" y="313">
+    <mutation statements="false">
+      <arg name="obj"></arg>
+    </mutation>
+    <field name="NAME">JSON.stringify</field>
+    <field name="SCRIPT">cmV0dXJuIEpTT04uc3RyaW5naWZ5KG9iaik7</field>
+    <comment pinned="false" h="80" w="160">JSON.stringify object</comment>
+  </block>
+</xml>
+```
+
+Generated javascript code:
+```
+var obj, end, result;
+
+/**
+ * JSON.stringify object
+ */
+function JSON_stringify(obj) {
+    return JSON.stringify(obj);
+}
+
+
+// Get history from SQL adapter
+end = (new Date().getTime());
+sendTo("sql.0", "getHistory", {
+   "id": 'system.adapter.admin.0.memRss',
+   "options": {start: end - 3600000, end: end, aggregate: "minmax"}
+}, function (result) {
+    console.log((JSON_stringify(result)));
+  });
+```
+
+If you will start value with "{" it will be interpreted as JSON string. Use double quotes in string.
 
 ## Date and Time blocks
 
