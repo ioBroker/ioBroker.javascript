@@ -137,9 +137,9 @@ Blockly.JavaScript['time_compare'] = function(block) {
     } else if (option === 'not between' && end_time) {
         if (end_time.indexOf(':') === -1) {
             if (parseInt(end_time, 10) < parseInt(end_time, 10)) {
-                code_end_time = ' || ';
-            } else {
                 code_end_time = ' && ';
+            } else {
+                code_end_time = ' || ';
             }
             code_end_time += '((new Date().getMinutes()) >= ' + parseInt(end_time, 10) + ')';
         } else {
@@ -149,9 +149,9 @@ Blockly.JavaScript['time_compare'] = function(block) {
             _parts = start_time.split(':');
             var _start_time = 60 * parseInt(_parts[0], 10) + parseInt(_parts[1], 10);
             if (end_time < _start_time) {
-                code_end_time = ' || ';
-            } else {
                 code_end_time = ' && ';
+            } else {
+                code_end_time = ' || ';
             }
 
             code_end_time += '(((new Date().getHours()) * 60 + (new Date().getMinutes())) >= ' + end_time + ')';
@@ -172,7 +172,7 @@ Blockly.JavaScript['time_compare'] = function(block) {
         start_time = 60 * parseInt(__parts[0], 10) + parseInt(__parts[1], 10);
         if (option === 'between') {
             code_start_time = '(((new Date().getHours()) * 60 + (new Date().getMinutes()) >= ' + start_time + ')' + code_end_time + ')';
-        } else if (option === 'not between'){
+        } else if (option === 'not between') {
             code_start_time = '(((new Date().getHours()) * 60 + (new Date().getMinutes()) < ' + start_time + ')' + code_end_time + ')';
         } else {
             code_start_time = '((new Date().getHours()) * 60 + (new Date().getMinutes()) ' + option + ' ' + start_time + ')';

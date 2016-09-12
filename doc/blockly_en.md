@@ -1015,6 +1015,26 @@ If you will start value with "{" it will be interpreted as JSON string. Use doub
 ## Date and Time blocks
 
 ### Time comparision
+![Time comparision](img/datetime_compare_en.png)
+
+This block is used to compare the day time with actual time. 
+
+There are following compare modes:
+
+- less than, check if actual time less than specified time.
+- equal to or less than
+- greater than
+- equal to or greater than
+- equal to
+- between, check if the time between some day times. 
+    - E.g. if time must be between 12:00 and 20:00. It will be checked if actual time grater or equal than 12:00 and less than 20:00. 20:00 will return false.
+    - or for instance between 21:00 and 8:00. In the last case it will be checked if time greater or equal to 21:00 or less than 8:00.
+
+- not between, if the time is not in the given period of the day time. If the time less than start and greater or equal to end. (if start time is greater than end time, it will be checked if the time greater or equal than end and smaller than start)
+
+You can make all the comparison with only minutes too. For this you must use only numbers from 0 to 59. E.g. by comparison type "between" and limits from 20 to 30 it will be checked if minutes are greater or equal to 20 and less than 30. So 1:25, 2:29 and so on are valid.
+
+Seconds cannot be compared.
 
 ### Get actual time im specific format
 
