@@ -275,16 +275,18 @@ Blockly.JavaScript['on_ext'] = function(block) {
     }
 
     var oids = [];
+    var firstID;
     for (var n = 0; n < block.itemCount_; n++) {
         var id =  Blockly.JavaScript.valueToCode(block, 'OID' + n, Blockly.JavaScript.ORDER_COMMA);
         if (id) {
+            firstID = id;
             id = id.replace(/\./g, '\\\\.');
             if (oids.indexOf(id) === -1) oids.push(id);
         }
     }
     var oid;
     if (oids.length === 1) {
-        oid = oids[0];
+        oid = firstID;
     } else {
         oid = 'new RegExp(' + (oids.join(' + "|" + ')|| "") + ')';
     }

@@ -48,7 +48,7 @@ Blockly.Blocks['time_compare'] = {
         this.appendDummyInput()
             .appendField(Blockly.Words['time_compare'][systemLang]);
 
-        this.appendDummyInput("OPTION")
+        this.appendDummyInput('OPTION')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Words['time_compare_lt'][systemLang], "<"],
                 [Blockly.Words['time_compare_le'][systemLang], "<="],
@@ -59,13 +59,13 @@ Blockly.Blocks['time_compare'] = {
                 [Blockly.Words['time_compare_nb'][systemLang], "not between"]
             ], function (option) {
                 this.sourceBlock_.updateShape_((option === 'between' || option === 'not between'));
-            }), "OPTION");
+            }), 'OPTION');
 
         this.appendDummyInput()
             .appendField(" ");
 
-        this.appendDummyInput("START_TIME")
-            .appendField(new Blockly.FieldTextInput("12:00"), "START_TIME");
+        this.appendDummyInput('START_TIME')
+            .appendField(new Blockly.FieldTextInput('12:00'), 'START_TIME');
 
         this.setInputsInline(true);
         //this.setPreviousStatement(true, null);
@@ -192,6 +192,8 @@ Blockly.Words['time_get_help']          = {'en': 'https://github.com/ioBroker/io
 Blockly.Words['time_get_ms']            = {'en': 'milliseconds',                'de': 'Millisekunden',                      'ru': 'миллисекунды'};
 Blockly.Words['time_get_s']             = {'en': 'seconds',                     'de': 'Sekunden',                           'ru': 'секунды'};
 Blockly.Words['time_get_m']             = {'en': 'minutes',                     'de': 'Minuten',                            'ru': 'минуты'};
+Blockly.Words['time_get_mid']           = {'en': 'minutes in day',              'de': 'Minuten von Tagsanfang',             'ru': 'кол-во минут с начала дня'};
+Blockly.Words['time_get_sid']           = {'en': 'seconds in day',              'de': 'Sekunden von Tagsanfang',            'ru': 'кол-во секунд с начала дня'};
 Blockly.Words['time_get_h']             = {'en': 'hours',                       'de': 'Stunden',                            'ru': 'часы'};
 Blockly.Words['time_get_d']             = {'en': 'day of month',                'de': 'Monatsdatum',                        'ru': 'день месяца'};
 Blockly.Words['time_get_M']             = {'en': 'month as number',             'de': 'Monat als Nummer',                   'ru': 'месяц числом'};
@@ -243,7 +245,9 @@ Blockly.Blocks['time_get'] = {
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Words['time_get_ms'][systemLang]            , 'ms'],
                 [Blockly.Words['time_get_s'][systemLang]             , 's'],
+                [Blockly.Words['time_get_sid'][systemLang]           , 'sid'],
                 [Blockly.Words['time_get_m'][systemLang]             , 'm'],
+                [Blockly.Words['time_get_mid'][systemLang]           , 'mid'],
                 [Blockly.Words['time_get_h'][systemLang]             , 'h'],
                 [Blockly.Words['time_get_d'][systemLang]             , 'd'],
                 [Blockly.Words['time_get_M'][systemLang]             , 'M'],
@@ -275,7 +279,7 @@ Blockly.Blocks['time_get'] = {
                 [Blockly.Words['time_get_hh_mm_ss.sss'][systemLang]  , [Blockly.Words['time_get_hh_mm_ss.sss'].format]]
             ], function (option) {
                 this.sourceBlock_.updateShape_(option === 'custom', option === 'wdt' || option === 'wdts' || option === 'Mt' || option === 'Mts');
-            }), "OPTION");
+            }), 'OPTION');
 
         this.setInputsInline(true);
 
@@ -344,6 +348,12 @@ Blockly.JavaScript['time_get'] = function(block) {
         code = '(new Date().getMilliseconds())';
     } else if (option === 's') {
         code = '(new Date().getSeconds())';
+    } else if (option === 'sid') {
+        code = '(new Date().getHours() * 3600 + new Date().getMinutes() * 60 + new Date().getSeconds())';
+    } else if (option === 'm') {
+        code = '(new Date().getMinutes())';
+    } else if (option === 'mid') {
+        code = '(new Date().getHours() * 60 + new Date().getMinutes())';
     } else if (option === 'h') {
         code = '(new Date().getHours())';
     } else if (option === 'd') {

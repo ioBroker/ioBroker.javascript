@@ -1037,6 +1037,46 @@ You can make all the comparison with only minutes too. For this you must use onl
 Seconds cannot be compared.
 
 ### Get actual time im specific format
+![Get actual time im specific format](img/datetime_actualtime_en.png)
+
+Returns the actual time in some specified format.
+
+Following formats are supported:
+
+- milliseconds - returns only milliseconds of current second from 0 to 999 (not epoch milliseconds). To get epoch milliseconds use "Date object";        
+- seconds - returns only seconds of current minute from 0 to 59,            
+- seconds in day - returns number of seconds from start of the day (0 to 24 * 3600 - 1),            
+- minutes - returns minutes of current hour from 0 to 59,
+- minutes in day - returns number of minutes from the day start (0 to 24 * 60 - 1),            
+- hours - returns hours of current day from 0 to 23,
+- day of month - get day of month from 1 to 31,       
+- month as number - get month as number from 1 to 12,
+- month as text - get month as text. Language must be specified.      
+- month as short text - get month as text: Jan, Feb,  Mar,  Apr, May, June, July, Aug, Sept, Oct, Nov, Dec. Language must be specified.     
+- short year - Year from 0 to 99, e.g for 2016 the result will be 16.         
+- full year - Full year: 2016
+- week day text - Get day of week as text.
+- short week day - Get day of week as short text: Su, Mo, Tu, We, Th, Fr, Sa.
+- week day as number - Day of week as number from 1 (monday) to 7 (sunday).  
+- custom format - You can specify your own [format](https://github.com/ioBroker/ioBroker.javascript#formatdate).
+- Date object - Returns date and time as number of milliseconds from start of epoch (1970.1.1 00:00:00.000Z GMT). This is always GMT.        
+- yyyy.mm.dd - 2016.09.14
+- yyyy/mm/dd - 2016/09/14
+- yy.mm.dd - 16.09.14            
+- yy/mm/dd - 16/09/14   
+- dd.mm.yyyy - 14.09.2016   
+- dd/mm/yyyy - 14/09/2016
+- dd.mm.yy - 14.09.16             
+- dd/mm/yy - 14/09/16           
+- mm/dd/yyyy - 09/14/2016        
+- mm/dd/yy - 09/14/16                
+- dd.mm. - 14.09.            
+- dd/mm - 14/09      
+- mm.dd - 09.14         
+- mm/dd - 09/14         
+- hh:mm - 12:00         
+- hh:mm:ss - 12:00:00         
+- hh:mm:ss.sss - 12:00:00.000    
 
 ### Get time of astro events for today
 
