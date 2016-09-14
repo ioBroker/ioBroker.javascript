@@ -130,7 +130,7 @@ Blockly.JavaScript['timeouts_settimeout'] = function(block) {
     var delay = block.getFieldValue('DELAY');
     var name  = block.getFieldValue('NAME');
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    return name + ' = setTimeout(function (obj) {\n' + statements_name + '}, ' + delay + ');\n';;
+    return name + ' = setTimeout(function () {\n' + statements_name + '}, ' + delay + ');\n';;
 };
 
 // --- clearTimeout -----------------------------------------------------------
@@ -234,7 +234,7 @@ Blockly.JavaScript['timeouts_setinterval'] = function(block) {
     var delay = block.getFieldValue('INTERVAL');
     var name  = block.getFieldValue('NAME');
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    return name + ' = setInterval(function (obj) {\n' + statements_name + '}, ' + delay + ');\n';
+    return name + ' = setInterval(function () {\n' + statements_name + '}, ' + delay + ');\n';
 };
 
 // --- clearInterval -----------------------------------------------------------

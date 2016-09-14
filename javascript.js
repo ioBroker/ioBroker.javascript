@@ -1426,7 +1426,7 @@
                     return schedule;
                 }
             },
-            getAstroDate:   function (pattern, date) {
+            getAstroDate:   function (pattern, date, offsetMinutes) {
                 if (date === undefined) date = new Date();
 
                 if ((!adapter.config.latitude  && adapter.config.latitude  !== 0 && adapter.config.latitude  !== '0') ||
@@ -1443,6 +1443,9 @@
 
                 if (sandbox.verbose) sandbox.log('getAstroDate(pattern=' + pattern + ', date=' + date + ') => ' + ts, 'info');
 
+                if (offsetMinutes !== undefined) {
+                    ts = new Date(ts.getTime() + (offsetMinutes * 60000));
+                }
                 return ts;
             },
             isAstroDay:     function () {

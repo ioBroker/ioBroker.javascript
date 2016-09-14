@@ -183,7 +183,7 @@ Blockly.JavaScript['time_compare'] = function(block) {
 };
 
 // --- get time --------------------------------------------------
-Blockly.Words['time_get']               = {'en': 'Actual time is',              'de': 'Aktuelle Zeit ist',                  'ru': 'Время '};
+Blockly.Words['time_get']               = {'en': 'Actual time as',              'de': 'Aktuelle Zeit als',                  'ru': 'Время '};
 Blockly.Words['time_get_default_format'] = {'en': 'YYYY.MM.DD hh:mm:ss.sss',    'de': 'JJJJ.MM.TT SS:mm:ss.sss',            'ru': 'ГГГГ.ММ.ДД чч:мм:сс.ссс'};
 Blockly.Words['time_get_anyInstance']   = {'en': 'all instances',               'de': 'Alle Instanzen',                     'ru': 'На все драйвера'};
 Blockly.Words['time_get_tooltip']       = {'en': 'Send message to telegram',    'de': 'Sende eine Meldung über Telegram',   'ru': 'Послать сообщение через Telegram'};
@@ -385,6 +385,7 @@ Blockly.JavaScript['time_get'] = function(block) {
 
 // --- get astro time --------------------------------------------------
 Blockly.Words['time_astro']               = {'en': 'Actual time of',              'de': 'Aktuelle Zeit von',                  'ru': 'Время '};
+Blockly.Words['time_astro_offset']        = {'en': 'Offset (minutes)',            'de': 'Offset (Minuten)',                   'ru': 'Сдвиг в минутах '};
 Blockly.Words['time_astro_default_format'] = {'en': 'YYYY.MM.DD hh:mm:ss.sss',    'de': 'JJJJ.MM.TT SS:mm:ss.sss',            'ru': 'ГГГГ.ММ.ДД чч:мм:сс.ссс'};
 Blockly.Words['time_astro_tooltip']       = {'en': 'Get actual time or ',    'de': 'Sende eine Meldung über Telegram',   'ru': 'Послать сообщение через Telegram'};
 Blockly.Words['time_astro_help']          = {'en': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md', 'de': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md', 'ru': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md'};
@@ -411,6 +412,8 @@ Blockly.Time.blocks['time_astro'] =
     '<block type="time_astro">'
     + '     <value name="TYPE">'
     + '     </value>'
+    + '     <value name="OFFSET">'
+    + '     </value>'
     + '</block>';
 
 Blockly.Blocks['time_astro'] = {
@@ -436,6 +439,10 @@ Blockly.Blocks['time_astro'] = {
                 [Blockly.Words['astro_nadirText'][systemLang],           'nadir']
             ]), 'TYPE');
 
+        this.appendDummyInput('OFFSET')
+            .appendField(Blockly.Words['time_astro_offset'][systemLang])
+            .appendField(new Blockly.FieldTextInput('0'), 'OFFSET');
+
         this.setInputsInline(true);
 
         this.setOutput(true);
@@ -447,7 +454,7 @@ Blockly.Blocks['time_astro'] = {
 };
 
 Blockly.JavaScript['time_astro'] = function(block) {
-    var type = block.getFieldValue('TYPE');
-
-    return ['getAstroDate("' + type + '")', Blockly.JavaScript.ORDER_ATOMIC];
+    var type    = block.getFieldValue('TYPE');
+    var offset  = parseFloat(block.getFieldValue('OFFSET'));
+    return ['getAstroDate("' + type + '", undefined, ' + offset + ')', Blockly.JavaScript.ORDER_ATOMIC];
 };
