@@ -26,7 +26,7 @@
     - [Date and Time blocks](#date-and-time-blocks)
         - [Time comparision](#time-comparision)
         - [Get actual time im specific format](#get-actual-time-im-specific-format)
-        - [Get time of astro events for today](get-time-of-astro-events-for-today)
+        - [Get time of astro events for today](#get-time-of-astro-events-for-today)
     - [Convert blocks](#convert-blocks)
         - [Convert to number](convert-to-number)
         - [Convert to boolean](convert-to-boolean)
@@ -1102,19 +1102,39 @@ Following values can be used as attribute in astro-function:
 - dawn: dawn (morning nautical twilight ends, morning civil twilight starts)
 - nadir: nadir (darkest moment of the night, sun is in the lowest position)
 
+The return value has type "Date Object", what is just the number of milliseconds from 1970.01.01.
+
 ## Convert blocks
+Sometimes it is required to convert value into other type. Following blocks allow to convert value into specific types.
 
 ### Convert to number
+![Convert to number](img/convert_tonumber_en.png)
+
+Convert value to number (float).
 
 ### Convert to boolean
+![Convert to boolean](img/convert_toboolean_en.png)
+
+Convert value to boolean (true or false).
 
 ### Convert to string
+![Convert to string](img/convert_tostring_en.png)
+
+Convert value to string.
 
 ### Get type of variable
+![Get type of variable](img/convert_typeof_en.png)
+
+Get type of value. Type can be: boolean, number, string, object.
 
 ### Convert to date/time object
+![Convert to date/time object](img/convert_todate_en.png)
+
+Convert value to "Date object". Read [here](#get-actual-time-im-specific-format), what the "Date object" is.
 
 ### Convert date/time object to string
+![Convert to boolean](img/convert_fromtime_en.png)
+Convert "Date object" into string. It has the same format options as [Get actual time im specific format](img/datetime_actualtime_en.png).
 
 ## Trigger
 

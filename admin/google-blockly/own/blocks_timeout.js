@@ -71,7 +71,7 @@ Blockly.Timeouts.isLegalName_ = function(name, workspace, opt_exclude) {
  * @return {string} The accepted name.
  * @this {!Blockly.Field}
  */
-Blockly.Timeouts.rename = function(name) {
+Blockly.Timeouts.rename = function (name) {
     // Strip leading and trailing whitespace.  Beyond this, all names are legal.
     name = name.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
     return Blockly.Timeouts.findLegalName(name, this.sourceBlock_);
@@ -161,11 +161,11 @@ Blockly.Timeouts.blocks['timeouts_cleartimeout'] =
 
 Blockly.Blocks['timeouts_cleartimeout'] = {
     init: function() {
-        this.appendDummyInput("NAME")
+        this.appendDummyInput('NAME')
             .appendField(Blockly.Words['timeouts_cleartimeout'][systemLang])
             .appendField(new Blockly.FieldDropdown(function () {
                 return Blockly.Timeouts.getAllTimeouts(scripts.blocklyWorkspace);
-            }), "NAME");
+            }), 'NAME');
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -178,7 +178,7 @@ Blockly.Blocks['timeouts_cleartimeout'] = {
 
 Blockly.JavaScript['timeouts_cleartimeout'] = function(block) {
     var name = block.getFieldValue('NAME');
-    return name + ' && clearTimeout(' + name + ');\n';
+    return '(function () {if (' + name + ') {clearTimeout(' + name + '); ' + name + ' = null;}})();\n';
 };
 
 // --- setInterval -----------------------------------------------------------
@@ -283,5 +283,5 @@ Blockly.Blocks['timeouts_clearinterval'] = {
 
 Blockly.JavaScript['timeouts_clearinterval'] = function(block) {
     var name = block.getFieldValue('NAME');
-    return name + ' && clearInterval(' + name + ');\n';
+    return '(function () {if (' + name + ') {clearInterval(' + name + '); ' + name + ' = null;}})();\n';
 };

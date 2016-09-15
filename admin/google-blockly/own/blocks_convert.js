@@ -169,7 +169,9 @@ Blockly.Blocks.convert_from_date = {
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Words['time_get_ms'][systemLang]            , 'ms'],
                 [Blockly.Words['time_get_s'][systemLang]             , 's'],
+                [Blockly.Words['time_get_sid'][systemLang]           , 'sid'],
                 [Blockly.Words['time_get_m'][systemLang]             , 'm'],
+                [Blockly.Words['time_get_mid'][systemLang]           , 'mid'],
                 [Blockly.Words['time_get_h'][systemLang]             , 'h'],
                 [Blockly.Words['time_get_d'][systemLang]             , 'd'],
                 [Blockly.Words['time_get_M'][systemLang]             , 'M'],
@@ -268,6 +270,12 @@ Blockly.JavaScript.convert_from_date = function (block) {
         code = 'getDateObject(' + value + ').getMilliseconds()';
     } else if (option === 's') {
         code = 'getDateObject(' + value + ').getSeconds()';
+    } else if (option === 'sid') {
+        code = '(function () {var v = getDateObject(' + value + '); return v.getHours() * 3600 + v.getMinutes() * 60 + v.getSeconds();})()';
+    } else if (option === 'm') {
+        code = '(getDateObject(' + value + ').getMinutes())';
+    } else if (option === 'mid') {
+        code = '(function () {var v = getDateObject(' + value + '); return v.getHours() * 60 + v.getMinutes();})()';
     } else if (option === 'h') {
         code = 'getDateObject(' + value + ').getHours()';
     } else if (option === 'd') {

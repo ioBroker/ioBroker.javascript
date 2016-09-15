@@ -593,7 +593,7 @@ Blockly.Blocks['astro'] = {
                 [Blockly.Words['astro_nauticalDawnText'][systemLang],    "nauticalDawn"],
                 [Blockly.Words['astro_dawnText'][systemLang],            "dawn"],
                 [Blockly.Words['astro_nadirText'][systemLang],           "nadir"]
-            ]), "TYPE");
+            ]), 'TYPE');
 
         this.appendDummyInput()
             .appendField(Blockly.Words['astro_offset'][systemLang]);
@@ -623,3 +623,357 @@ Blockly.JavaScript['astro'] = function(block) {
     return 'schedule({astro: "' + astrotype + '", shift: ' + offset + '}, function () {\n' + statements_name + '});\n';
 };
 
+// --- set named schedule -----------------------------------------------------------
+Blockly.Words['schedule_create']          = {'en': 'schedule',                          'de': 'Zeitplan',                   'ru': 'Расписание'};
+Blockly.Words['schedule_create_name']     = {'en': 'schedule',                          'de': 'Zeitplan',                   'ru': 'Расписание'};
+Blockly.Words['schedule_text']            = {'en': 'cron rule',                         'de': 'CRON Regel',                 'ru': 'cron правило'};
+Blockly.Words['schedule_create_tooltip']  = {'en': 'Delay execution',                   'de': 'Ausführung verzögern',       'ru': 'Сделать паузу'};
+Blockly.Words['schedule_create_help']     = {'en': 'settimeout',                        'de': 'settimeout',                 'ru': 'settimeout'};
+
+Blockly.Trigger.blocks['schedule_create'] =
+    '<block type="schedule_create">'
+    + '     <value name="NAME">'
+    + '     </value>'
+    + '     <value name="SCHEDULE">'
+    + '         <shadow type="field_cron">'
+    + '             <field name="CRON">* * * * *</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+/**
+ * Ensure two identically-named procedures don't exist.
+ * @param {string} name Proposed procedure name.
+ * @param {!Blockly.Block} block Block to disambiguate.
+ * @return {string} Non-colliding name.
+ */
+Blockly.Trigger.findLegalName = function(name, block) {
+    if (block.isInFlyout) {
+        // Flyouts can have multiple procedures called 'do something'.
+        return name;
+    }
+    while (!Blockly.Trigger.isLegalName_(name, block.workspace, block)) {
+        // Collision with another procedure.
+        var r = name.match(/^(.*?)(\d+)$/);
+        if (!r) {
+            name += '2';
+        } else {
+            name = r[1] + (parseInt(r[2], 10) + 1);
+        }
+    }
+    return name;
+};
+
+/**
+ * Does this procedure have a legal name?  Illegal names include names of
+ * procedures already defined.
+ * @param {string} name The questionable name.
+ * @param {!Blockly.Workspace} workspace The workspace to scan for collisions.
+ * @param {Blockly.Block=} opt_exclude Optional block to exclude from
+ *     comparisons (one doesn't want to collide with oneself).
+ * @return {boolean} True if the name is legal.
+ * @private
+ */
+Blockly.Trigger.isLegalName_ = function(name, workspace, opt_exclude) {
+    var blocks = workspace.getAllBlocks();
+    // Iterate through every block and check the name.
+    for (var i = 0; i < blocks.length; i++) {
+        if (blocks[i] == opt_exclude) {
+            continue;
+        }
+        if (blocks[i].isSchedule_) {
+            var blockName = blocks[i].getFieldValue('NAME');
+            if (Blockly.Names.equals(blockName, name)) {
+                return false;
+            }
+        }
+    }
+    return true;
+};
+/**
+ * Rename a procedure.  Called by the editable field.
+ * @param {string} name The proposed new name.
+ * @return {string} The accepted name.
+ * @this {!Blockly.Field}
+ */
+Blockly.Trigger.rename = function (name) {
+    // Strip leading and trailing whitespace.  Beyond this, all names are legal.
+    name = name.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
+    return Blockly.Trigger.findLegalName(name, this.sourceBlock_);
+};
+
+Blockly.Blocks['schedule_create'] = {
+    init: function() {
+        var nameField = new Blockly.FieldTextInput(
+            Blockly.Trigger.findLegalName('schedule', this),
+            Blockly.Trigger.rename);
+
+        nameField.setSpellcheck(false);
+
+        this.appendDummyInput('NAME')
+            .appendField(Blockly.Words['schedule_create'][systemLang])
+            .appendField(nameField, 'NAME');
+
+        this.appendValueInput('SCHEDULE')
+            .appendField(Blockly.Words['schedule_text'][systemLang]);
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setInputsInline(false);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setTooltip(Blockly.Words['schedule_create_tooltip'][systemLang]);
+        this.setHelpUrl(getHelp('schedule_create_help'));
+    },
+    isSchedule_: true,
+    getVars: function () {
+        return [this.getFieldValue('NAME')];
+    }
+};
+
+Blockly.JavaScript['schedule_create'] = function(block) {
+    var name  = block.getFieldValue('NAME');
+    var schedule = Blockly.JavaScript.valueToCode(block, 'SCHEDULE', Blockly.JavaScript.ORDER_ATOMIC);
+    var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    return name + ' = schedule("' + schedule + '", function () {\n' + statements_name + '});\n';
+};
+
+// --- clearSchedule -----------------------------------------------------------
+Blockly.Words['schedule_clear']          = {'en': 'clear',                             'de': 'stop',                             'ru': 'остановить'};
+Blockly.Words['schedule_clear_tooltip']  = {'en': 'Clear delay execution',             'de': 'Ausführungsverzögerung anhalten',  'ru': 'Отменить выполнение с паузой'};
+Blockly.Words['schedule_clear_help']     = {'en': 'cleartimeout',                      'de': 'cleartimeout',                     'ru': 'cleartimeout'};
+
+Blockly.Trigger.getAllSchedules = function (workspace) {
+    var blocks = workspace.getAllBlocks();
+    var result = [];
+
+    // Iterate through every block and check the name.
+    for (var i = 0; i < blocks.length; i++) {
+        if (blocks[i].isSchedule_) {
+            result.push([blocks[i].getFieldValue('NAME'), blocks[i].getFieldValue('NAME')]);
+        }
+    }
+    if (!result.length) result.push(['', '']);
+
+    return result;
+};
+
+Blockly.Trigger.blocks['schedule_clear'] =
+    '<block type="schedule_clear">'
+    + '     <value name="NAME">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['schedule_clear'] = {
+    init: function() {
+        this.appendDummyInput('NAME')
+            .appendField(Blockly.Words['schedule_clear'][systemLang])
+            .appendField(new Blockly.FieldDropdown(function () {
+                return Blockly.Trigger.getAllSchedules(scripts.blocklyWorkspace);
+            }), 'NAME');
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setInputsInline(true);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setTooltip(Blockly.Words['schedule_clear_tooltip'][systemLang]);
+        this.setHelpUrl(getHelp('schedule_clear_help'));
+    }
+};
+
+Blockly.JavaScript['schedule_clear'] = function(block) {
+    var name = block.getFieldValue('NAME');
+    return '(function () {if (' + name + ') {clearSchedule(' + name + '); ' + name + ' = null;}})();\n';
+};
+
+// --- CRON dialog --------------------------------------------------
+Blockly.Words['field_cron']         = {'en': 'CRON',          'de': 'CRON',     'ru': 'CRON'};
+Blockly.Words['field_cron_CRON']    = {'en': 'CRON',          'de': 'CRON',     'ru': 'CRON'};
+Blockly.Words['field_cron_tooltip'] = {'en': 'Create CRON rule with dialog',    'de': 'Erzeuge CRON Regel mit Dialog',   'ru': 'Создать CRON правило с помощью диалога'};
+
+Blockly.Trigger.blocks['field_cron'] =
+    '<block type="field_cron">'
+    + '     <value name="CRON">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['field_cron'] = {
+    // Checkbox.
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Words['field_cron_CRON'][systemLang]);
+
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldCRON('* * * * *'), 'CRON');
+
+        this.setInputsInline(true);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setOutput(true, 'String');
+        this.setTooltip(Blockly.Words['field_cron_tooltip'][systemLang]);
+    }
+};
+
+Blockly.JavaScript['field_cron'] = function(block) {
+    var oid = block.getFieldValue('CRON');
+    return ['\'' + oid + '\'', Blockly.JavaScript.ORDER_ATOMIC]
+};
+
+// --- CRON builder --------------------------------------------------
+Blockly.Words['cron_builder']         = {'en': 'CRON',          'de': 'CRON',     'ru': 'CRON'};
+Blockly.Words['cron_builder_CRON']    = {'en': 'CRON',          'de': 'CRON',     'ru': 'CRON'};
+Blockly.Words['cron_builder_tooltip'] = {'en': 'Create CRON rule with dialog',    'de': 'Erzeuge CRON Regel mit Dialog',   'ru': 'Создать CRON правило с помощью диалога'};
+Blockly.Words['cron_builder_with_seconds'] = {'en': 'with seconds',    'de': 'mit Sekunden',   'ru': 'с секундами'};
+Blockly.Words['cron_builder_dow']     = {'en': 'day of week',   'de': 'Wochentag',     'ru': 'день недели'};
+Blockly.Words['cron_builder_month']   = {'en': 'month',         'de': 'Monat',     'ru': 'месяц'};
+Blockly.Words['cron_builder_day']     = {'en': 'date',          'de': 'Datum',     'ru': 'число'};
+Blockly.Words['cron_builder_hour']    = {'en': 'hour',          'de': 'Stunde',    'ru': 'час'};
+Blockly.Words['cron_builder_minutes'] = {'en': 'minutes',       'de': 'Minuten',   'ru': 'минуты'};
+Blockly.Words['cron_builder_seconds'] = {'en': 'seconds',       'de': 'Sekunden',  'ru': 'секунды'};
+Blockly.Words['cron_builder_line']    = {'en': 'as line',       'de': 'Als Linie', 'ru': 'в линию'};
+
+Blockly.Trigger.blocks['cron_builder'] =
+    '<block type="cron_builder">'
+    + '     <value name="LINE">'
+    + '     </value>'
+    + '     <value name="MINUTES">'
+    + '     </value>'
+    + '     <value name="HOURS">'
+    + '     </value>'
+    + '     <value name="DAYS">'
+    + '     </value>'
+    + '     <value name="MONTHS">'
+    + '     </value>'
+    + '     <value name="WEEKDAYS">'
+    + '     </value>'
+    + '     <value name="WITH_SECONDS">'
+    + '     </value>'
+    + '     <mutation seconds="false"></mutation>'
+    + '</block>';
+
+Blockly.Blocks['cron_builder'] = {
+    // Checkbox.
+    init: function() {
+
+        this.appendDummyInput()
+            .appendField(Blockly.Words['cron_builder_CRON'][systemLang]);
+
+        this.appendDummyInput('LINE')
+            .appendField(Blockly.Words['cron_builder_line'][systemLang])
+            .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
+                this.sourceBlock_.setInputsInline(option == true);
+            }), 'LINE');
+
+        var _input = this.appendValueInput('DOW')
+            .appendField(Blockly.Words['cron_builder_dow'][systemLang]);
+        var _shadow = this.workspace.newBlock('text');
+        _shadow.setShadow(true);
+        _shadow.setFieldValue('*', 'TEXT');
+        _shadow.outputConnection.connect(_input.connection);
+
+
+        _input = this.appendValueInput('MONTHS')
+            .appendField(Blockly.Words['cron_builder_month'][systemLang]);
+        _shadow = this.workspace.newBlock('text');
+        _shadow.setShadow(true);
+        _shadow.setFieldValue('*', 'TEXT');
+        _shadow.outputConnection.connect(_input.connection);
+
+        _input = this.appendValueInput('DAYS')
+            .appendField(Blockly.Words['cron_builder_day'][systemLang]);
+        _shadow = this.workspace.newBlock('text');
+        _shadow.setShadow(true);
+        _shadow.setFieldValue('*', 'TEXT');
+        _shadow.outputConnection.connect(_input.connection);
+
+
+        _input = this.appendValueInput('HOURS')
+            .appendField(Blockly.Words['cron_builder_hour'][systemLang]);
+        _shadow = this.workspace.newBlock('text');
+        _shadow.setShadow(true);
+        _shadow.setFieldValue('*', 'TEXT');
+        _shadow.outputConnection.connect(_input.connection);
+
+
+        _input = this.appendValueInput('MINUTES')
+            .appendField(Blockly.Words['cron_builder_minutes'][systemLang]);
+        _shadow = this.workspace.newBlock('text');
+        _shadow.setShadow(true);
+        _shadow.setFieldValue('*', 'TEXT');
+        _shadow.outputConnection.connect(_input.connection);
+
+        this.appendDummyInput('WITH_SECONDS')
+            .appendField(Blockly.Words['cron_builder_with_seconds'][systemLang])
+            .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
+                var withSeconds = (option == true);
+                this.sourceBlock_.updateShape_(withSeconds);
+            }), 'WITH_SECONDS');
+
+        this.seconds_ = false;
+        this.as_line_ = false;
+        this.setInputsInline(this.as_line_);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setOutput(true, 'String');
+        this.setTooltip(Blockly.Words['field_cron_tooltip'][systemLang]);
+    },
+    /**
+     * Create XML to represent number of text inputs.
+     * @return {!Element} XML storage element.
+     * @this Blockly.Block
+     */
+    mutationToDom: function () {
+        var container = document.createElement('mutation');
+        container.setAttribute('seconds', this.seconds_);
+        container.setAttribute('as_line', this.as_line_);
+        return container;
+    },
+    /**
+     * Parse XML to restore the text inputs.
+     * @param {!Element} xmlElement XML storage element.
+     * @this Blockly.Block
+     */
+    domToMutation: function (xmlElement) {
+        this.seconds_ = xmlElement.getAttribute('seconds') === 'true';
+        this.as_line_ = xmlElement.getAttribute('as_line') === 'true';
+        this.setInputsInline(this.as_line_);
+        this.updateShape_(this.seconds_);
+    },
+    updateShape_: function(withSeconds) {
+        this.seconds_ = withSeconds;
+        // Add or remove a statement Input.
+        var inputExists = this.getInput('SECONDS');
+
+        if (withSeconds) {
+            if (!inputExists) {
+                var _input = this.appendValueInput('SECONDS');
+                _input.appendField(Blockly.Words['cron_builder_seconds'][systemLang]);
+
+                var _shadow = this.workspace.newBlock('text');
+                _shadow.setShadow(true);
+                _shadow.setFieldValue('*', 'TEXT');
+                _shadow.outputConnection.connect(_input.connection);
+                _shadow.initSvg();
+                _shadow.render();
+            }
+        } else if (inputExists) {
+            this.removeInput('SECONDS');
+        }
+    }
+
+};
+
+Blockly.JavaScript['cron_builder'] = function(block) {
+    var dow     = Blockly.JavaScript.valueToCode(block, 'DOW',     Blockly.JavaScript.ORDER_ATOMIC);
+    var minutes = Blockly.JavaScript.valueToCode(block, 'MONTHS',  Blockly.JavaScript.ORDER_ATOMIC);
+    var months  = Blockly.JavaScript.valueToCode(block, 'DAYS',    Blockly.JavaScript.ORDER_ATOMIC);
+    var days    = Blockly.JavaScript.valueToCode(block, 'HOURS',   Blockly.JavaScript.ORDER_ATOMIC);
+    var hours   = Blockly.JavaScript.valueToCode(block, 'MINUTES', Blockly.JavaScript.ORDER_ATOMIC);
+    var seconds = Blockly.JavaScript.valueToCode(block, 'SECONDS', Blockly.JavaScript.ORDER_ATOMIC);
+    var withSeconds = block.getFieldValue('WITH_SECONDS');
+
+    var code = (withSeconds ? seconds + ' + ' : '') + minutes + ' + ' + hours + ' + ' + days + ' + ' + months + ' + ' + dow;
+    return [code, Blockly.JavaScript.ORDER_ATOMIC]
+};

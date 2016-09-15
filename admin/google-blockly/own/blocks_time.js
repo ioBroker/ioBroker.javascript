@@ -353,7 +353,7 @@ Blockly.JavaScript['time_get'] = function(block) {
     } else if (option === 'm') {
         code = '(new Date().getMinutes())';
     } else if (option === 'mid') {
-        code = '(new Date().getHours() * 60 + new Date().getMinutes())';
+        code = '(function () {var v = new Date(); return v.getHours() * 60 + v.getMinutes();})()';
     } else if (option === 'h') {
         code = '(new Date().getHours())';
     } else if (option === 'd') {
