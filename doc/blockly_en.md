@@ -479,9 +479,34 @@ This block simply binds two states with each other.
 
 You can achieve the same with this blocks:
 
-![Bind state](img/C:\pWork\ioBroker.javascript\doc\img\system_bind_1_en.png.png)
+![Bind state](img/system_bind_1_en.png)
 
-You can only select if the value will be forwarded only if value was changed or always when the state is just updated. 
+You can select if the value will be forwarded only if source state was changed or always when the state is just updated. 
+
+```
+<block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="w/@=5/5!D;8wn4DZ;jzG" x="287.99999999999943" y="37.999999999999716">
+  <mutation items="1"></mutation>
+  <field name="CONDITION">ne</field>
+  <field name="ACK_CONDITION"></field>
+  <value name="OID0">
+    <shadow type="field_oid" id="tQBL3[;V1luVO[`h2ONM">
+      <field name="oid">javascript.0.Motion</field>
+    </shadow>
+  </value>
+  <statement name="STATEMENT">
+    <block type="control" id="w=sN]yxb)5Jv!,YK[C5%">
+      <mutation delay_input="false"></mutation>
+      <field name="OID">javascript.0.Light</field>
+      <field name="WITH_DELAY">FALSE</field>
+      <value name="VALUE">
+        <block type="variables_get" id="6`1|t;T%_h^|ES+nd~/?">
+          <field name="VAR">value</field>
+        </block>
+      </value>
+    </block>
+  </statement>
+</block>
+```
 
 ### Create state
 ![Create state](img/system_create_en.png)
