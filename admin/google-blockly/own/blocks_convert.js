@@ -305,3 +305,62 @@ Blockly.JavaScript.convert_from_date = function (block) {
     return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
+// --- json2object --------------------------------------------------
+Blockly.Words['convert_json2object']         = {'en': 'JSON to object',     'de': 'JSON nach Objekt',           'ru': 'JSON в объект'};
+Blockly.Words['convert_json2object_tooltip'] = {'en': 'Parse JSON string',  'de': 'Parse JSON',           'ru': 'Преобразовать JSON в объект'};
+
+Blockly.Convert.blocks['convert_json2object'] =
+    '<block type="convert_json2object">'
+    + '     <value name="VALUE">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks.convert_json2object = {
+    init: function () {
+
+        this.appendValueInput('VALUE')
+            .appendField(Blockly.Words['convert_json2object'][systemLang]);
+
+        this.setColour(Blockly.Convert.HUE);
+        this.setOutput(true);
+        this.setTooltip(Blockly.Words['convert_json2object_tooltip'][systemLang])
+    }
+};
+Blockly.JavaScript.convert_json2object = function (a) {
+    return ['(function () { try {return JSON.parse(' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + ');} catch(e) {return {};}})()', Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+// --- object2json --------------------------------------------------
+Blockly.Words['convert_object2json']          = {'en': 'object to JSON',   'de': 'Objekt nach JSON',           'ru': 'объект в JSON'};
+Blockly.Words['convert_object2json_tooltip']  = {'en': 'Strinify object',  'de': 'Objekt nach JSON',           'ru': 'Преобразовать объект в JSON'};
+Blockly.Words['convert_object2json_prettify'] = {'en': 'prettify',         'de': 'formatieren',                'ru': 'форматировать'};
+
+Blockly.Convert.blocks['convert_object2json'] =
+    '<block type="convert_object2json">'
+    + '     <value name="VALUE">'
+    + '     </value>'
+    + '     <value name="PRETTIFY">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks.convert_object2json = {
+    init: function () {
+
+        this.appendValueInput('VALUE')
+            .appendField(Blockly.Words['convert_object2json'][systemLang]);
+
+        this.appendDummyInput('PRETTIFY')
+            .appendField(Blockly.Words['convert_object2json_prettify'][systemLang])
+            .appendField(new Blockly.FieldCheckbox('FALSE'), 'PRETTIFY');
+
+        this.setColour(Blockly.Convert.HUE);
+        this.setOutput(true, 'String');
+        this.setTooltip(Blockly.Words['convert_object2json_tooltip'][systemLang])
+    }
+};
+Blockly.JavaScript.convert_object2json = function (block) {
+    var prettify = block.getFieldValue('PRETTIFY');
+
+    return ['JSON.stringify(' + Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + (prettify == 'TRUE' ? ', null, 2' : '') + ')', Blockly.JavaScript.ORDER_ATOMIC];
+};
+

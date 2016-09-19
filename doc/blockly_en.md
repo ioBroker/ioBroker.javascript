@@ -11,6 +11,7 @@
         - [Comment](#comment)
         - [Control state](#control-state)
         - [Update state](#update-state)
+        - [Bind states](#bind-states)
         - [Create state](#create-state)
         - [Get value of state](#get-value-of-state)
         - [Get Object ID](#get-object-id)
@@ -33,6 +34,8 @@
         - [Get type of variable](get-type-of-variable)
         - [Convert to date/time object](convert-to-datetime-object)
         - [Convert date/time object to string](convert-datetime-object-to-string)    
+        - [Convert JSON to object](convert-json-to-object)
+        - [Convert object to JSON](convert-object-to-json)
     - [Trigger](#trigger)
         - [Trigger on states change](#trigger-on-states-change)
         - [Trigger on state change](#trigger-on-state-change)
@@ -468,6 +471,17 @@ This block is similar to [control block](#control-state), but it is only updates
 Typical usage example:
 
 ![Update state](img/system_update_sample_en.png)
+
+### Bind states
+![Bind state](img/system_bind_en.png)
+
+This block simply binds two states with each other.
+
+You can achieve the same with this blocks:
+
+![Bind state](img/C:\pWork\ioBroker.javascript\doc\img\system_bind_1_en.png.png)
+
+You can only select if the value will be forwarded only if value was changed or always when the state is just updated. 
 
 ### Create state
 ![Create state](img/system_create_en.png)
@@ -1135,6 +1149,28 @@ Convert value to "Date object". Read [here](#get-actual-time-im-specific-format)
 ### Convert date/time object to string
 ![Convert to boolean](img/convert_fromtime_en.png)
 Convert "Date object" into string. It has the same format options as [Get actual time im specific format](img/datetime_actualtime_en.png).
+
+### Convert JSON to object
+![Convert JSON to object](img/convert_json2object_en.png)
+Convert JSON string into javascript object. If an error occurs, the empty object will be returned. (only for experts)
+
+### Convert object to JSON
+![Convert object to JSON](img/convert_object2json_en.png)
+
+Convert Javascript object to JSON string. If prettify option is selected the result string looks like:
+
+```
+{
+  "a": 1,
+  "b": 2
+}
+```
+
+if not:
+
+```
+{"a": 1, "b": 2}
+```
 
 ## Trigger
 

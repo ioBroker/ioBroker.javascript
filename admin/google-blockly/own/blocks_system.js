@@ -86,7 +86,6 @@ Blockly.JavaScript['comment'] = function(block) {
     return '// ' + comment + '\n';
 };
 
-
 // --- control -----------------------------------------------------------
 Blockly.Words['control']                = {'en': 'сontrol',        'de': 'steuere',             'ru': 'установить'};
 Blockly.Words['control_tooltip']        = {'en': 'Control state',  'de': 'Steuere Zustand',     'ru': 'Установить состояние'};
@@ -300,6 +299,63 @@ Blockly.JavaScript['update'] = function(block) {
     return code;
 };
 
+// --- direct binding -----------------------------------------------------------
+Blockly.Words['direct']                 = {'en': 'bind',           'de': 'binde',            'ru': 'связять'};
+Blockly.Words['direct_tooltip']         = {'en': 'Bind two states with each other',          'de': 'Binde zwei Zustände miteinander',     'ru': 'Связать два состояния между собой'};
+Blockly.Words['direct_help']            = {'en': 'setstate',       'de': 'setstate',         'ru': 'setstate'};
+Blockly.Words['direct_oid_src']         = {'en': 'from',           'de': 'aus',              'ru': 'из'};
+Blockly.Words['direct_only_changes']    = {'en': 'only changes',   'de': 'nur Änderungen',   'ru': 'только изменения'};
+Blockly.Words['direct_oid_dst']         = {'en': 'to',             'de': 'nach',             'ru': 'в'};
+
+Blockly.System.blocks['direct'] =
+    '<block type="direct">'
+    + '     <value name="OID_SRC">'
+    + '         <shadow type="field_oid">'
+    + '             <field name="TEXT">test</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="ONLY_CHANGES">'
+    + '     </value>'
+    + '     <value name="OID_DST">'
+    + '         <shadow type="field_oid">'
+    + '             <field name="TEXT">test</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['direct'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Words['direct'][systemLang]);
+
+        this.appendValueInput('OID_SRC')
+            .setCheck('String')
+            .appendField(Blockly.Words['direct_oid_src'][systemLang]);
+
+        this.appendDummyInput('ONLY_CHANGES')
+            .appendField(Blockly.Words['direct_only_changes'][systemLang])
+            .appendField(new Blockly.FieldCheckbox('TRUE'), 'ONLY_CHANGES');
+
+        this.appendValueInput('OID_DST')
+            .setCheck('String')
+            .appendField(Blockly.Words['direct_oid_dst'][systemLang]);
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(Blockly.System.HUE);
+        this.setTooltip(Blockly.Words['direct_tooltip'][systemLang]);
+        this.setHelpUrl(getHelp('direct_help'));
+    }
+};
+
+Blockly.JavaScript['direct'] = function(block) {
+    var oidSrc = Blockly.JavaScript.valueToCode(block, 'OID_SRC', Blockly.JavaScript.ORDER_ATOMIC);
+    var onlyChanges = block.getFieldValue('ONLY_CHANGES');
+    var oidDest = Blockly.JavaScript.valueToCode(block, 'OID_DST', Blockly.JavaScript.ORDER_ATOMIC);
+
+    return 'on({id: ' + oidSrc + ', change: "' + (onlyChanges == 'TRUE' ? 'ne' : 'any') + '"}, function (obj) {\n  setState(' + oidDest + ', obj.state.val);\n});';
+};
+
 // --- create state --------------------------------------------------
 Blockly.Words['create']         = {'en': 'create state',    'de': 'Zustand erzeugen',   'ru': 'создать состояние'};
 Blockly.Words['create_jsState'] = {'en': 'jsState',         'de': 'jsState',            'ru': 'jsState'};
@@ -430,3 +486,4 @@ Blockly.JavaScript['field_oid'] = function(block) {
     var oid = block.getFieldValue('oid');
     return ['\'' + oid + '\'', Blockly.JavaScript.ORDER_ATOMIC]
 };
+
