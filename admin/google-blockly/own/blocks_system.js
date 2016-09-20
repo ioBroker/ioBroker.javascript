@@ -303,9 +303,9 @@ Blockly.JavaScript['update'] = function(block) {
 Blockly.Words['direct']                 = {'en': 'bind',           'de': 'binde',            'ru': 'связять'};
 Blockly.Words['direct_tooltip']         = {'en': 'Bind two states with each other',          'de': 'Binde zwei Zustände miteinander',     'ru': 'Связать два состояния между собой'};
 Blockly.Words['direct_help']            = {'en': 'setstate',       'de': 'setstate',         'ru': 'setstate'};
-Blockly.Words['direct_oid_src']         = {'en': 'from',           'de': 'aus',              'ru': 'из'};
+Blockly.Words['direct_oid_src']         = {'en': '',               'de': '',                 'ru': ''};
 Blockly.Words['direct_only_changes']    = {'en': 'only changes',   'de': 'nur Änderungen',   'ru': 'только изменения'};
-Blockly.Words['direct_oid_dst']         = {'en': 'to',             'de': 'nach',             'ru': 'в'};
+Blockly.Words['direct_oid_dst']         = {'en': 'with',           'de': 'mit',              'ru': 'c'};
 
 Blockly.System.blocks['direct'] =
     '<block type="direct">'
@@ -314,12 +314,12 @@ Blockly.System.blocks['direct'] =
     + '             <field name="TEXT">test</field>'
     + '         </shadow>'
     + '     </value>'
-    + '     <value name="ONLY_CHANGES">'
-    + '     </value>'
     + '     <value name="OID_DST">'
     + '         <shadow type="field_oid">'
     + '             <field name="TEXT">test</field>'
     + '         </shadow>'
+    + '     </value>'
+    + '     <value name="ONLY_CHANGES">'
     + '     </value>'
     + '</block>';
 
@@ -332,13 +332,13 @@ Blockly.Blocks['direct'] = {
             .setCheck('String')
             .appendField(Blockly.Words['direct_oid_src'][systemLang]);
 
-        this.appendDummyInput('ONLY_CHANGES')
-            .appendField(Blockly.Words['direct_only_changes'][systemLang])
-            .appendField(new Blockly.FieldCheckbox('TRUE'), 'ONLY_CHANGES');
-
         this.appendValueInput('OID_DST')
             .setCheck('String')
             .appendField(Blockly.Words['direct_oid_dst'][systemLang]);
+
+        this.appendDummyInput('ONLY_CHANGES')
+            .appendField(Blockly.Words['direct_only_changes'][systemLang])
+            .appendField(new Blockly.FieldCheckbox('TRUE'), 'ONLY_CHANGES');
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
