@@ -1,14 +1,14 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.0.8",
+        "version":                  "3.0.9",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
-            "3.0.8": {
+            "3.0.9": {
                 "en": "Bugfixing of blockly",
                 "de": "Fehler korrigiert in Blockly",
                 "ru": "Исправлены ошибки в Blockly"

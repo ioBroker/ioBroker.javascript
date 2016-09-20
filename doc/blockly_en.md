@@ -1200,10 +1200,13 @@ if not:
 ## Trigger
 
 ### Trigger on states change
+![Trigger on states change](img/trigger_trigger_ex_en.png)
 
 ### Trigger on state change
+![Trigger on state change](img/trigger_trigger_en.png)
 
 ### Trigger info
+![Trigger info](img/trigger_trigger_en.png)
 Get information about value, timestamp or ID of the state, that triggered the trigger.
 
 ### Schedule
