@@ -42,6 +42,10 @@
         - [Trigger info](#trigger-info)
         - [Schedule](#schedule)
         - [Trigger on astro event](#trigger-on-astro-event)
+        - [Named schedule](#named-schedule)
+        - [Clear schedule](#clear-schedule)
+        - [CRON dialog](#cron-dialog)
+        - [CRON rule](#cron-rule)
     - [Timeouts](#timeouts)
         - [Delayed execution](#delayed-execution)
         - [Clear delayed execution](#clear-delayed-execution)
@@ -1206,12 +1210,27 @@ if not:
 ![Trigger on state change](img/trigger_trigger_en.png)
 
 ### Trigger info
-![Trigger info](img/trigger_trigger_en.png)
+![Trigger info](img/trigger_object_id_en.png)
+
 Get information about value, timestamp or ID of the state, that triggered the trigger.
 
 ### Schedule
+![Schedule](img/trigger_schedule_en.png)
 
 ### Trigger on astro event
+![Schedule](img/trigger_astro_en.png)
+
+### Named schedule
+![Schedule](img/trigger_schedule_ex_en.png)
+
+### Clear schedule
+![Schedule](img/trigger_cron_clear_en.png)
+
+### CRON dialog
+![Schedule](img/trigger_cron_input_en.png)
+
+### CRON rule
+![Schedule](img/trigger_cron_rule_en.png)
 
 ## Timeouts
 
