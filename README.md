@@ -33,6 +33,7 @@ Here you can find description of [blockly](doc/blockly_en.md).
     - [clearSchedule](#clearschedule)
     - [getAstroDate](#getastrodate)
     - [isAstroDay](#isastroday)
+    - [compareTime](#comparetime)
     - [setState](#setstate)
     - [setStateDelayed](#setstatedelayed)
     - [clearStateDelayed](#clearstatedelayed)
@@ -383,7 +384,7 @@ Example of result:
 
 Time scheduler with astro-funktion.
 
-####Time schedule
+#### Time schedule
 Pattern can be a string with [Cron-Syntax](http://en.wikipedia.org/wiki/Cron), e.G.:
 
      # *  *  * *  *  command to execute
@@ -499,6 +500,25 @@ var tomorrowNigh = getAstroDate("night", tomorrow);
 ### isAstroDay
     isAstroDay ()
 Returns true if the current time is between the astro sunrise and sunset.
+
+### compareTime
+    compareTime (startTime, endTime, operation, timeToCompare)
+Compares given time with limits.
+
+If timeToCompare is not given, so the actual time will be used.
+
+Following operations are possible:
+
+- > - if given time is greater as startTime
+- >= - if given time is greater or equal to startTime
+- < - if given time is less as startTime
+- <= - if given time is less or equal to startTime
+- == - if given time is equal to startTime
+- <> - if given time is not equal to startTime
+- between - if given time is between startTime and endTime
+- not between - if given time is not between startTime and endTime
+
+Time can be Date object or Date with time or just time.
 
 ### setState 
     setState (id, state, ack, callback)

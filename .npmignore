@@ -2,3 +2,4 @@ Gruntfile.js
 tasks
 test
 .travis.yml
+doc

@@ -26,6 +26,7 @@
         - [Custom sendTo block](#custom-sendto-block)
     - [Date and Time blocks](#date-and-time-blocks)
         - [Time comparision](#time-comparision)
+        - [Actual time comparision](#actual-time-comparision)
         - [Get actual time im specific format](#get-actual-time-im-specific-format)
         - [Get time of astro events for today](#get-time-of-astro-events-for-today)
     - [Convert blocks](#convert-blocks)
@@ -1056,11 +1057,16 @@ sendTo("sql.0", "getHistory", {
 If you will start value with "{" it will be interpreted as JSON string. Use double quotes in string.
 
 ## Date and Time blocks
-
 ### Time comparision
-![Time comparision](img/datetime_compare_en.png)
+![Time comparision](img/datetime_compare_ex_en.png)
 
-This block is used to compare the day time with actual time. 
+If used operator "between" or "not between", the block looks like this:
+
+![Time comparision](img/datetime_compare_ex_1_en.png)
+
+You can specify a time, which must be compared. Block expects the time as "Date object".
+
+![Time comparision](img/datetime_compare_ex_2_en.png)
 
 There are following compare modes:
 
@@ -1075,9 +1081,16 @@ There are following compare modes:
 
 - not between, if the time is not in the given period of the day time. If the time less than start and greater or equal to end. (if start time is greater than end time, it will be checked if the time greater or equal than end and smaller than start)
 
-You can make all the comparison with only minutes too. For this you must use only numbers from 0 to 59. E.g. by comparison type "between" and limits from 20 to 30 it will be checked if minutes are greater or equal to 20 and less than 30. So 1:25, 2:29 and so on are valid.
+Following time formats are valid:
+- YYYY-MM-DD hh:mm:ss
+- YYYY-MM-DD hh:mm
+- hh:mm:ss
+- hh:mm
 
-Seconds cannot be compared.
+### Actual time comparision
+![Actual time comparision](img/datetime_compare_en.png)
+
+This block is used to compare the day time with actual time. It has the same logic as [Time comparision](#time-comparision), but limits cannot be a blocks and it compares only actual time. (for compatibility with old versions)
 
 ### Get actual time im specific format
 ![Get actual time im specific format](img/datetime_actualtime_en.png)
@@ -1147,6 +1160,8 @@ Following values can be used as attribute in astro-function:
 
 The return value has type "Date Object", what is just the number of milliseconds from 1970.01.01.
 
+**Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
+
 ## Convert blocks
 Sometimes it is required to convert value into other type. Following blocks allow to convert value into specific types.
 
@@ -1177,10 +1192,12 @@ Convert value to "Date object". Read [here](#get-actual-time-im-specific-format)
 
 ### Convert date/time object to string
 ![Convert to boolean](img/convert_fromtime_en.png)
-Convert "Date object" into string. It has the same format options as [Get actual time im specific format](img/datetime_actualtime_en.png).
+
+Convert "Date object" into string. It has the same format options as [Get actual time im specific format](#get-actual-time-im-specific-format).
 
 ### Convert JSON to object
 ![Convert JSON to object](img/convert_json2object_en.png)
+
 Convert JSON string into javascript object. If an error occurs, the empty object will be returned. (only for experts)
 
 ### Convert object to JSON
@@ -1206,31 +1223,432 @@ if not:
 ### Trigger on states change
 ![Trigger on states change](img/trigger_trigger_ex_en.png)
 
+This block executes some action if state of given objects changed or updated. This is the main block to build interactions between different states and accordingly systems.
+
+With this block you can bind different states together or send message or email on value change.
+
+Typical usage of block:
+
+![Trigger on states change](img/trigger_trigger_ex_1_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="comment" id="]L0d;6j+=OH*[4n{C7v^" x="112" y="13">
+    <field name="COMMENT">Switch light on if motion detected</field>
+    <next>
+      <block type="on_ext" id="QYVeQlu|#2hwniNg)=z8">
+        <mutation items="1"></mutation>
+        <field name="CONDITION">ne</field>
+        <field name="ACK_CONDITION"></field>
+        <value name="OID0">
+          <shadow type="field_oid" id="Xe6D#r|nf9SEK`.oAuS0">
+            <field name="oid">javascript.0.Motion</field>
+          </shadow>
+        </value>
+        <statement name="STATEMENT">
+          <block type="control" id="J(HiEvnNKw2B%V1~WXsX">
+            <mutation delay_input="false"></mutation>
+            <field name="OID">javascript.0.Light</field>
+            <field name="WITH_DELAY">FALSE</field>
+            <value name="VALUE">
+              <block type="logic_boolean" id="o;j8lE#h.XE,0:0_LcW{">
+                <field name="BOOL">TRUE</field>
+              </block>
+            </value>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+</xml>
+```
+
+You can define as many ObjectIDs as you want via extension dialog:
+
+![Trigger on states change](img/trigger_trigger_ex_2_en.png)
+
+If only one object ID is used so special variables are available in the statement block:
+- value - actual value of state
+- oldValue - old value of state
+
+![Trigger on states change](img/trigger_trigger_ex_3_en.png)
+
+```
+<block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="QYVeQlu|#2hwniNg)=z8" x="38" y="39">
+  <mutation items="1"></mutation>
+  <field name="CONDITION">ne</field>
+  <field name="ACK_CONDITION"></field>
+  <value name="OID0">
+    <shadow type="field_oid" id="Xe6D#r|nf9SEK`.oAuS0">
+      <field name="oid">javascript.0.Motion</field>
+    </shadow>
+  </value>
+  <statement name="STATEMENT">
+    <block type="debug" id="jT6fif_FI9ua|,rL[Ra1">
+      <field name="Severity">log</field>
+      <value name="TEXT">
+        <shadow type="text" id="}=qIm)a0)};f+J/JRgy^">
+          <field name="TEXT">test</field>
+        </shadow>
+        <block type="text_join" id="wjgpY(Whewaqy0d8NVx%">
+          <mutation items="4"></mutation>
+          <value name="ADD0">
+            <block type="text" id="M?[Xy1(Fu36A;b#=4~[t">
+              <field name="TEXT">Actual value is</field>
+            </block>
+          </value>
+          <value name="ADD1">
+            <block type="variables_get" id="W)*G#(JDzuVpV^1P|[2m">
+              <field name="VAR">value</field>
+            </block>
+          </value>
+          <value name="ADD2">
+            <block type="text" id="7TW;voPvdc#c4e/SWCjZ">
+              <field name="TEXT">Old value was</field>
+            </block>
+          </value>
+          <value name="ADD3">
+            <block type="variables_get" id="s`6)4s:}%L#f]pu4E[vK">
+              <field name="VAR">oldValue</field>
+            </block>
+          </value>
+        </block>
+      </value>
+    </block>
+  </statement>
+</block>
+```
+
+elsewise if more than one object ID is used for trigger, you can access value and old value via [Trigger info](#trigger-info).
+
 ### Trigger on state change
 ![Trigger on state change](img/trigger_trigger_en.png)
+
+This is the same block as "Trigger on states change", but with no possibility to use multiple object IDs for triggering (for versions compatibility).
+
 
 ### Trigger info
 ![Trigger info](img/trigger_object_id_en.png)
 
 Get information about value, timestamp or ID of the state, that triggered the trigger.
 
+This block can be used only inside of ["Trigger on states change"](#trigger-on-states-change) or ["Trigger on state change"](#trigger-on-state-change) blocks.
+
+Following information can be accessed:
+
+- object ID - ID of state, that fired the trigger                
+- name - name of state from common.name                   
+- description - description of state from common.desc
+- channel ID - ID of channel to which belongs the state. If not channel there, it will be null 
+- channel name - name of channel to which belongs the state. If not channel there, it will be null  
+- device ID - ID of device to which belongs the state. If not channel there, it will be null 
+- device name - name of device to which belongs the state. If not channel there, it will be null                
+- state value - actual value of fired state
+- state timestamp - actual timestamp as Date object
+- state quality - actual quality code of value
+- origin of value - name of instance that cause the change
+- is command or update - is it command (ack=false) or update (ack=true)
+- last change of state - timestamp of last change of this value
+- previous value - previous value of this state, before the trigger fired
+- previous timestamp - previous timestamp of this state, before the trigger fired
+- previous quality - previous quality of this state, before the trigger fired
+- previous origin -  previous origin of this state, before the trigger fired
+- previous command or update - previous type of this value, before the trigger fired
+- previous last change - previous "last changed value" of this state, before the trigger fired
+
+Typical usage:
+
+![Trigger info](img/trigger_object_id_1_en.png)
+
+```
+<block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="QYVeQlu|#2hwniNg)=z8" x="113" y="238">
+  <mutation items="1"></mutation>
+  <field name="CONDITION">ne</field>
+  <field name="ACK_CONDITION"></field>
+  <value name="OID0">
+    <shadow type="field_oid" id="Xe6D#r|nf9SEK`.oAuS0">
+      <field name="oid">javascript.0.Motion</field>
+    </shadow>
+  </value>
+  <statement name="STATEMENT">
+    <block type="debug" id="jT6fif_FI9ua|,rL[Ra1">
+      <field name="Severity">log</field>
+      <value name="TEXT">
+        <shadow type="text" id="}=qIm)a0)};f+J/JRgy^">
+          <field name="TEXT">test</field>
+        </shadow>
+        <block type="text_join" id="wjgpY(Whewaqy0d8NVx%">
+          <mutation items="4"></mutation>
+          <value name="ADD0">
+            <block type="text" id="M?[Xy1(Fu36A;b#=4~[t">
+              <field name="TEXT">Actual value is</field>
+            </block>
+          </value>
+          <value name="ADD1">
+            <block type="on_source" id="_q8v0HD`c[7e76O{@4Tq">
+              <field name="ATTR">state.val</field>
+            </block>
+          </value>
+          <value name="ADD2">
+            <block type="text" id="7TW;voPvdc#c4e/SWCjZ">
+              <field name="TEXT">Old value was</field>
+            </block>
+          </value>
+          <value name="ADD3">
+            <block type="on_source" id="D`gpXSShKRQuy:jyMK}6">
+              <field name="ATTR">oldState.val</field>
+            </block>
+          </value>
+        </block>
+      </value>
+    </block>
+  </statement>
+</block>
+```
+
 ### Schedule
 ![Schedule](img/trigger_schedule_en.png)
+
+This is second main block for automation after ["Trigger on states change"](#trigger-on-states-change). This block lets execute some actions periodically.
+
+The definition of schedule rule will be done in very well documented CRON [format](https://en.wikipedia.org/wiki/Cron). With extension, that seconds can be defined too. 
+If seconds should be used they must be defined as very first parameter of CRON rule and rule will have 6 parts.
+
+Generally CRON rule consist of 5 or 6 parts:
+- seconds rules (optional)
+- minutes rules
+- hours rules
+- day of month rules
+- month's rules
+- and day of week rules.
+
+For every part following formats are allowed:
+- \* - fire every (second, minute, hour, ...)
+- X (e.g. 5) - fire only in this second, minute, hour...
+- from-to (e.g 1-9) - fire only in this interval
+- \*/X (e.g. \*/5) - fire every X seconds, minutes... In case of "\*/5" for hours the trigger will fire on 0, 5, 10, 15 and on 20 hours.
+- numbers and intervals can be combined by comma (e.g 1,3,4-6). Do not make spaces between numbers, because space is delimiter for rule's parts.
+
+\*/10 \* \* \* 6,7 - fire every 10 minutes on saturday and sunday.
+
+\*/30 \* \* \* \* \* - fire every 30 seconds.
+
+```
+ ┌───────────── min (0 - 59)
+ │ ┌────────────── hour (0 - 23)
+ │ │ ┌─────────────── day of month (1 - 31)
+ │ │ │ ┌──────────────── month (1 - 12)
+ │ │ │ │ ┌───────────────── day of week (0 - 6) (0 to 6 are Sunday to Saturday; 7 is also Sunday)
+ │ │ │ │ │
+ │ │ │ │ │
+ │ │ │ │ │
+ * * * * *  schedule
+```
+
+or if seconds used:
+
+```
+ ┌───────────── seconds (0 - 59)
+ │ ┌───────────── min (0 - 59)
+ │ │ ┌────────────── hour (0 - 23)
+ │ │ │ ┌─────────────── day of month (1 - 31)
+ │ │ │ │ ┌──────────────── month (1 - 12)
+ │ │ │ │ │ ┌───────────────── day of week (0 - 6) (0 to 6 are Sunday to Saturday; 7 is also Sunday)
+ │ │ │ │ │ │
+ │ │ │ │ │ │
+ │ │ │ │ │ │
+ * * * * * *  schedule
+```
+
+But there is a good help for you to build such a rules. By clicking on rule the CRON dialog will be opened and you can specify by mouse your rule.
+
+![Schedule](img/trigger_schedule_1_en.png)
 
 ### Trigger on astro event
 ![Schedule](img/trigger_astro_en.png)
 
+Execute some action on astrological event. Following events are possible:
+
+- sunrise: sunrise (top edge of the sun appears on the horizon)
+- sunriseEnd: sunrise ends (bottom edge of the sun touches the horizon)
+- goldenHourEnd: morning golden hour (soft light, best time for photography) ends
+- solarNoon: solar noon (sun is in the highest position)
+- goldenHour: evening golden hour starts
+- sunsetStart: sunset starts (bottom edge of the sun touches the horizon)
+- sunset: sunset (sun disappears below the horizon, evening civil twilight starts)
+- dusk: dusk (evening nautical twilight starts)
+- nauticalDusk: nautical dusk (evening astronomical twilight starts)
+- night: night starts (dark enough for astronomical observations)
+- nightEnd: night ends (morning astronomical twilight starts)
+- nauticalDawn: nautical dawn (morning nautical twilight starts)
+- dawn: dawn (morning nautical twilight ends, morning civil twilight starts)
+- nadir: nadir (darkest moment of the night, sun is in the lowest position)
+
+**Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
+
+Additionally you can set the offset in minutes to astrological event, e.g. to fire the trigger 1 hour before down: 
+
+![Schedule](img/trigger_astro_1_en.png)
+
+As you can see the offset can be negative too to specify time before astrological events.
+
 ### Named schedule
 ![Schedule](img/trigger_schedule_ex_en.png)
+
+This block is the same as [Schedule](#schedule), but with possibility to set CRON rule by string and with possibility to stop the schedule.
+
+You can specify unique name of this schedule block and then later to clear it with [Clear schedule](#clear-schedule). 
+
+Here is an example of configurable alarm clock:
+ 
+![Schedule](img/trigger_schedule_ex_1_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="comment" id="QWp.l96v1;-4{x)j5K5y" x="38" y="13">
+    <field name="COMMENT">Configurable alarm. Set time as: hh:mm</field>
+    <next>
+      <block type="create" id="5*XX`C;PgnU(q#Nk~D,o">
+        <field name="NAME">alarmTime</field>
+        <statement name="STATEMENT">
+          <block type="on_ext" id="ot:9oFMh.(c)sxkufTxA">
+            <mutation items="1"></mutation>
+            <field name="CONDITION">ne</field>
+            <field name="ACK_CONDITION"></field>
+            <value name="OID0">
+              <shadow type="field_oid" id="qV#=^mz,%qxL#}VsA)3C">
+                <field name="oid">javascript.0.alarmTime</field>
+              </shadow>
+            </value>
+            <statement name="STATEMENT">
+              <block type="schedule_clear" id="ukGIQYyTpip_9!1H_xnN">
+                <field name="NAME">alarm</field>
+                <next>
+                  <block type="schedule_create" id=")^!A|k+`1=[pFp(S-*sw">
+                    <field name="NAME">alarm</field>
+                    <value name="SCHEDULE">
+                      <shadow type="field_cron" id="uSka7fK[T7j0m_4!4+fO">
+                        <field name="CRON">* * * * *</field>
+                      </shadow>
+                      <block type="procedures_callcustomreturn" id=")E!Ljg1z9iQ3)Nb#CX~n">
+                        <mutation name="time to CRON">
+                          <arg name="time"></arg>
+                        </mutation>
+                        <value name="ARG0">
+                          <block type="on_source" id="qs+k30Lnd1V(BSNs{}P!">
+                            <field name="ATTR">state.val</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="STATEMENT">
+                      <block type="debug" id="7arB5vcx^ci2Un#}TLKh">
+                        <field name="Severity">log</field>
+                        <value name="TEXT">
+                          <shadow type="text" id="N;`AY!p#T_do@vP_OQr9">
+                            <field name="TEXT">Wake up!</field>
+                          </shadow>
+                        </value>
+                      </block>
+                    </statement>
+                  </block>
+                </next>
+              </block>
+            </statement>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+  <block type="procedures_defcustomreturn" id="_*_L4XpCr!7eLsYWS(R(" x="38" y="337">
+    <mutation statements="false">
+      <arg name="time"></arg>
+    </mutation>
+    <field name="NAME">time to CRON</field>
+    <field name="SCRIPT">dmFyIHBhcnRzID0gdGltZS5zcGxpdCgnOicpOwovLyBpZiBpdCBpcyBDUk9OCmlmIChwYXJ0cy5sZW5ndGggPT09IDEpIHJldHVybiB0aW1lOwpyZXR1cm4gcGFydHNbMV0gKyAnICcgKyBwYXJ0c1swXSArICcgKiAqIConOw==</field>
+    <comment pinned="false" h="80" w="160">Describe this function...</comment>
+  </block>
+</xml>
+```
 
 ### Clear schedule
 ![Schedule](img/trigger_cron_clear_en.png)
 
+With this function block you can clear named schedule. If you define named one more time without clearing it, the old one will still active.
+
+See an example in [Named schedule](#named-schedule)
+
 ### CRON dialog
 ![Schedule](img/trigger_cron_input_en.png)
 
+Create CRON rule from dialog. This block can be connected with [Named schedule](#named-schedule).
+
+![Schedule](img/trigger_cron_input_1_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="comment" id="]aB;GhQJvYrr~:H4Ft9l" x="63" y="38">
+    <field name="COMMENT">Every 0th minute every hour</field>
+    <next>
+      <block type="schedule_create" id="?}upFtiA@CE_Gd)SmDo|">
+        <field name="NAME">schedule</field>
+        <value name="SCHEDULE">
+          <shadow type="field_cron" id="1Ag|noK^~u]GFEW/(lb)">
+            <field name="CRON">* * * * *</field>
+          </shadow>
+          <block type="field_cron" id="phjg#B~@BJTO9i[HmZ4O">
+            <field name="CRON">0 * * * *</field>
+          </block>
+        </value>
+        <statement name="STATEMENT">
+          <block type="debug" id="Lv[a}BtvBDO-2Lt,s+z4">
+            <field name="Severity">log</field>
+            <value name="TEXT">
+              <shadow type="text" id="evxnn0R1(AC^Y_U`oT_a">
+                <field name="TEXT">It is exactly</field>
+              </shadow>
+              <block type="text_join" id="6!2uB_db8.g}63I{^e}#">
+                <mutation items="3"></mutation>
+                <value name="ADD0">
+                  <block type="text" id="HH((bCdxr?A5)8Svuo6(">
+                    <field name="TEXT">It is exactly </field>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="time_get" id="7{BBfF0jmKD[qX,y6voK">
+                    <mutation format="false" language="false"></mutation>
+                    <field name="OPTION">h</field>
+                  </block>
+                </value>
+                <value name="ADD2">
+                  <block type="text" id="edML0zJ2V9kN}5/DLdS5">
+                    <field name="TEXT"> o'clock</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+</xml>
+```
+
 ### CRON rule
 ![Schedule](img/trigger_cron_rule_en.png)
+
+Combine CRON rule from different parts.
+
+You can display rule as block or as line:
+
+![Schedule](img/trigger_cron_rule_1_en.png)
+
+With additional parameter "with seconds" you can specify seconds for CRON rule too
+
+![Schedule](img/trigger_cron_rule_2_en.png)
+
+This block can be used (like [CRON dialog](#cron-dialog)) only with [Named schedule](#named-schedule) block.
 
 ## Timeouts
 

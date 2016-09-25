@@ -739,7 +739,7 @@ Blockly.JavaScript['schedule_create'] = function(block) {
     var schedule = Blockly.JavaScript.valueToCode(block, 'SCHEDULE', Blockly.JavaScript.ORDER_ATOMIC);
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    return name + ' = schedule("' + schedule + '", function () {\n' + statements_name + '});\n';
+    return name + ' = schedule(' + schedule + ', function () {\n' + statements_name + '});\n';
 };
 
 // --- clearSchedule -----------------------------------------------------------

@@ -16,11 +16,156 @@ Blockly.Words['Time'] = {'en': 'Date and Time', 'de': 'Datum und Zeit', 'ru': '�
 
 // if time greater, less, between
 // --- time compare --------------------------------------------------
+Blockly.Words['time_compare_ex']               = {'en': 'Actual time',                 'de': 'Aktuelle Zeit',                      'ru': 'Текущее время'};
+Blockly.Words['time_compare_custom_ex']        = {'en': 'Custom time',                 'de': 'Zeit',                               'ru': 'Время'};
+Blockly.Words['time_compare_is_ex']            = {'en': 'is',                          'de': 'ist',                                'ru': ''};
+Blockly.Words['time_compare_ex_custom']        = {'en': 'time',                        'de': 'Zeit',                               'ru': 'Время'};
+Blockly.Words['time_compare_ex_tooltip']       = {'en': 'Compare time',                'de': 'Zeit vergleichen',                   'ru': 'Сравнить время'};
+Blockly.Words['time_compare_ex_help']          = {'en': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md', 'de': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md', 'ru': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md'};
+
+Blockly.Time.blocks['time_compare_ex'] =
+    '<block type="time_compare_ex">'
+    + '     <value name="OPTION">'
+    + '     </value>'
+    + '     <value name="USE_ACTUAL_TIME">'
+    + '     </value>'
+    + '     <value name="START_TIME">'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">12:00</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <mutation end_time="false" actual_time="true"></mutation>'
+    + '     <value name="END_TIME">'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">18:00</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="CUSTOM_TIME">'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">14:00</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['time_compare_ex'] = {
+    init: function() {
+        this.appendDummyInput('TIME_TEXT')
+            .appendField(Blockly.Words['time_compare_ex'][systemLang]);
+
+        this.appendDummyInput('USE_ACTUAL_TIME')
+            .appendField(new Blockly.FieldCheckbox('TRUE', function (option) {
+                this.sourceBlock_.updateShape_(undefined, option);
+            }), 'USE_ACTUAL_TIME');
+
+        this.appendDummyInput()
+            .appendField(Blockly.Words['time_compare_is_ex'][systemLang]);
+
+        this.appendDummyInput('OPTION')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['time_compare_lt'][systemLang], '<'],
+                [Blockly.Words['time_compare_le'][systemLang], '<='],
+                [Blockly.Words['time_compare_gt'][systemLang], '>'],
+                [Blockly.Words['time_compare_ge'][systemLang], '>='],
+                [Blockly.Words['time_compare_eq'][systemLang], '=='],
+                [Blockly.Words['time_compare_bw'][systemLang], 'between'],
+                [Blockly.Words['time_compare_nb'][systemLang], 'not between']
+            ], function (option) {
+                this.sourceBlock_.updateShape_((option === 'between' || option === 'not between'));
+            }), 'OPTION');
+
+        this.appendDummyInput()
+            .appendField(' ');
+
+        this.appendValueInput('START_TIME');
+
+        this.setInputsInline(true);
+        //this.setPreviousStatement(true, null);
+        //this.setNextStatement(true, null);
+
+        this.setOutput(true, 'Boolean');
+
+        this.setColour(Blockly.Time.HUE);
+        this.setTooltip(Blockly.Words['time_compare_ex_tooltip'][systemLang]);
+        this.setHelpUrl(Blockly.Words['time_compare_ex_help'][systemLang]);
+    },
+    mutationToDom: function() {
+        var container = document.createElement('mutation');
+        var option = this.getFieldValue('OPTION');
+        var use_actual_time = this.getFieldValue('USE_ACTUAL_TIME');
+        container.setAttribute('end_time', (option === 'between' || option === 'not between') ? 'true' : 'false');
+        container.setAttribute('actual_time', (use_actual_time === 'TRUE') ? 'true' : 'false');
+        return container;
+    },
+    domToMutation: function(xmlElement) {
+        this.updateShape_(xmlElement.getAttribute('end_time') === 'true', xmlElement.getAttribute('actual_time') === 'true');
+    },
+    updateShape_: function(isBetween, useActualTime) {
+        if (isBetween === undefined) {
+            isBetween = (this.getFieldValue('OPTION') === 'between' || this.getFieldValue('OPTION') === 'not between');
+        }
+        // Add or remove a delay Input.
+        var inputExists = this.getInput('END_TIME');
+
+        if (isBetween) {
+            if (!inputExists) {
+                inputExists = this.getInput('CUSTOM_TIME');
+                if (inputExists) {
+                    this.removeInput('CUSTOM_TIME');
+                    this.removeInput('CUSTOM_TEXT');
+                }
+
+                this.appendDummyInput('AND')
+                    .appendField(Blockly.Words['time_compare_and'][systemLang]);
+
+                var input = this.appendValueInput('END_TIME');
+                var shadow = this.workspace.newBlock('text');
+                shadow.setShadow(true);
+                shadow.outputConnection.connect(input.connection);
+                shadow.setFieldValue('18:00', 'TEXT');
+                shadow.initSvg();
+                shadow.render();
+            }
+        } else if (inputExists) {
+            this.removeInput('END_TIME');
+            this.removeInput('AND');
+        }
+
+        if (useActualTime === undefined) {
+            useActualTime = this.getFieldValue('USE_ACTUAL_TIME') === 'TRUE';
+        }
+        inputExists = this.getInput('CUSTOM_TIME');
+
+        if (!useActualTime) {
+            this.getInput('TIME_TEXT').fieldRow[0].setText(Blockly.Words['time_compare_custom_ex'][systemLang]);
+
+            if (!inputExists) {
+                this.appendDummyInput('CUSTOM_TEXT')
+                    .appendField(Blockly.Words['time_compare_ex_custom'][systemLang]);
+
+                this.appendValueInput('CUSTOM_TIME');
+            }
+        } else if (inputExists) {
+            this.getInput('TIME_TEXT').fieldRow[0].setText(Blockly.Words['time_compare_ex'][systemLang]);
+            this.removeInput('CUSTOM_TIME');
+            this.removeInput('CUSTOM_TEXT');
+        }
+    }
+};
+
+Blockly.JavaScript['time_compare_ex'] = function(block) {
+    var option     = block.getFieldValue('OPTION');
+    var start_time = Blockly.JavaScript.valueToCode(block, 'START_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+    var end_time   = Blockly.JavaScript.valueToCode(block, 'END_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+    var time       = Blockly.JavaScript.valueToCode(block, 'CUSTOM_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+    if (!end_time) end_time = null;
+    if (!time) time = null;
+    return ['compareTime(' + start_time + ', ' + end_time + ', "' + option + '", ' + time + ')', Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+// if time greater, less, between
+// --- time compare --------------------------------------------------
 Blockly.Words['time_compare']               = {'en': 'Actual time is',              'de': 'Aktuelle Zeit ist',                  'ru': 'Время '};
-Blockly.Words['time_compare_message']       = {'en': 'message',                     'de': 'Meldung',                            'ru': 'сообщение'};
-Blockly.Words['time_compare_username']      = {'en': 'User name (optional)',        'de': 'Username (optional)',                'ru': 'имя пользователя (не обяз.)'};
-Blockly.Words['time_compare_anyInstance']   = {'en': 'all instances',               'de': 'Alle Instanzen',                     'ru': 'На все драйвера'};
-Blockly.Words['time_compare_tooltip']       = {'en': 'Send message to telegram',    'de': 'Sende eine Meldung über Telegram',   'ru': 'Послать сообщение через Telegram'};
+Blockly.Words['time_compare_tooltip']       = {'en': 'Compare current time',        'de': 'Aktuelle Zeit vergleichen',          'ru': 'Сравнить текущее время'};
 Blockly.Words['time_compare_help']          = {'en': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md', 'de': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md', 'ru': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md'};
 
 Blockly.Words['time_compare_lt']            = {'en': 'less than',                   'de': 'kleiner als',                        'ru': 'меньше чем'};
@@ -62,7 +207,7 @@ Blockly.Blocks['time_compare'] = {
             }), 'OPTION');
 
         this.appendDummyInput()
-            .appendField(" ");
+            .appendField(' ');
 
         this.appendDummyInput('START_TIME')
             .appendField(new Blockly.FieldTextInput('12:00'), 'START_TIME');
@@ -77,6 +222,7 @@ Blockly.Blocks['time_compare'] = {
         this.setTooltip(Blockly.Words['time_compare_tooltip'][systemLang]);
         this.setHelpUrl(Blockly.Words['time_compare_help'][systemLang]);
     },
+
     mutationToDom: function() {
         var container = document.createElement('mutation');
         var option = this.getFieldValue('OPTION');
@@ -96,7 +242,7 @@ Blockly.Blocks['time_compare'] = {
                     .appendField(Blockly.Words['time_compare_and'][systemLang]);
 
                 this.appendDummyInput('END_TIME')
-                    .appendField(new Blockly.FieldTextInput("18:00"), 'END_TIME');
+                    .appendField(new Blockly.FieldTextInput('18:00'), 'END_TIME');
             }
         } else if (inputExists) {
             this.removeInput('END_TIME');
@@ -109,77 +255,9 @@ Blockly.JavaScript['time_compare'] = function(block) {
     var option     = block.getFieldValue('OPTION');
     var start_time = block.getFieldValue('START_TIME');
     var end_time   = block.getFieldValue('END_TIME');
+    if (!end_time) end_time = null;
 
-    var code_start_time;
-    var code_end_time = '';
-
-    if (option === 'between' && end_time) {
-        if (end_time.indexOf(':') === -1) {
-            if (parseInt(end_time, 10) < parseInt(end_time, 10)) {
-                code_end_time = ' || ';
-            } else {
-                code_end_time = ' && ';
-            }
-
-            code_end_time += '((new Date().getMinutes()) < ' + parseInt(end_time, 10) + ')';
-        } else {
-            var parts = end_time.split(':');
-            end_time = 60 * parseInt(parts[0], 10) + parseInt(parts[1], 10);
-            parts = start_time.split(':');
-            var __start_time = 60 * parseInt(parts[0], 10) + parseInt(parts[1], 10);
-            if (end_time < __start_time) {
-                code_end_time = ' || ';
-            } else {
-                code_end_time = ' && ';
-            }
-            code_end_time += '(((new Date().getHours()) * 60 + (new Date().getMinutes())) < ' + end_time + ')';
-        }
-    } else if (option === 'not between' && end_time) {
-        if (end_time.indexOf(':') === -1) {
-            if (parseInt(end_time, 10) < parseInt(end_time, 10)) {
-                code_end_time = ' && ';
-            } else {
-                code_end_time = ' || ';
-            }
-            code_end_time += '((new Date().getMinutes()) >= ' + parseInt(end_time, 10) + ')';
-        } else {
-            var _parts = end_time.split(':');
-            end_time = 60 * parseInt(_parts[0], 10) + parseInt(_parts[1], 10);
-
-            _parts = start_time.split(':');
-            var _start_time = 60 * parseInt(_parts[0], 10) + parseInt(_parts[1], 10);
-            if (end_time < _start_time) {
-                code_end_time = ' && ';
-            } else {
-                code_end_time = ' || ';
-            }
-
-            code_end_time += '(((new Date().getHours()) * 60 + (new Date().getMinutes())) >= ' + end_time + ')';
-        }
-    }
-
-    // compare minutes
-    if (start_time.indexOf(':') === -1) {
-        if (option === 'between') {
-            code_start_time = '(((new Date().getMinutes()) >= ' + parseInt(start_time, 10) + ')' + code_end_time + ')';
-        } else if (option === 'not between') {
-            code_start_time = '(((new Date().getMinutes()) <= ' + parseInt(start_time, 10) + ')' + code_end_time + ')';
-        } else {
-            code_start_time = '((new Date().getMinutes()) ' + option + ' ' + parseInt(start_time, 10) + ')';
-        }
-    } else {
-        var __parts = start_time.split(':');
-        start_time = 60 * parseInt(__parts[0], 10) + parseInt(__parts[1], 10);
-        if (option === 'between') {
-            code_start_time = '(((new Date().getHours()) * 60 + (new Date().getMinutes()) >= ' + start_time + ')' + code_end_time + ')';
-        } else if (option === 'not between') {
-            code_start_time = '(((new Date().getHours()) * 60 + (new Date().getMinutes()) < ' + start_time + ')' + code_end_time + ')';
-        } else {
-            code_start_time = '((new Date().getHours()) * 60 + (new Date().getMinutes()) ' + option + ' ' + start_time + ')';
-        }
-    }
-
-    return [code_start_time, Blockly.JavaScript.ORDER_ATOMIC];
+    return ['compareTime("' + start_time + '", "' + end_time + '", "' + option + '")', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- get time --------------------------------------------------
@@ -189,6 +267,7 @@ Blockly.Words['time_get_anyInstance']   = {'en': 'all instances',               
 Blockly.Words['time_get_tooltip']       = {'en': 'Send message to telegram',    'de': 'Sende eine Meldung über Telegram',   'ru': 'Послать сообщение через Telegram'};
 Blockly.Words['time_get_help']          = {'en': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md', 'de': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md', 'ru': 'https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md'};
 
+Blockly.Words['time_get_object']        = {'en': 'Date object',                 'de': 'Datum-Objekt',                       'ru': 'как объект'};
 Blockly.Words['time_get_ms']            = {'en': 'milliseconds',                'de': 'Millisekunden',                      'ru': 'миллисекунды'};
 Blockly.Words['time_get_s']             = {'en': 'seconds',                     'de': 'Sekunden',                           'ru': 'секунды'};
 Blockly.Words['time_get_m']             = {'en': 'minutes',                     'de': 'Minuten',                            'ru': 'минуты'};
@@ -205,7 +284,6 @@ Blockly.Words['time_get_wdt']           = {'en': 'week day text',               
 Blockly.Words['time_get_wdts']          = {'en': 'short week day',              'de': 'Wochentag als Kurztext',             'ru': 'короткий день недели'};
 Blockly.Words['time_get_wd']            = {'en': 'week day as number',          'de': 'Wochentag als Nummer',               'ru': 'день недели числом'};
 Blockly.Words['time_get_custom']        = {'en': 'custom format',               'de': 'anwenderformatiert',                 'ru': 'произвольный формат'};
-Blockly.Words['time_get_object']        = {'en': 'Date object',                 'de': 'Datum-Objekt',                       'ru': 'как объект'};
 
 Blockly.Words['time_get_yyyy.mm.dd']    = {'en': 'yyyy.mm.dd',                  'de': 'JJJJ.MM.TT',                         'ru': 'ГГГГ.ММ.ДД',     format: 'YYYY.MM.DD'};
 Blockly.Words['time_get_yyyy/mm/dd']    = {'en': 'yyyy/mm/dd',                  'de': 'JJJJ/MM/TT',                         'ru': 'ГГГГ/ММ/ДД',     format: 'YYYY/MM/DD'};
@@ -243,6 +321,7 @@ Blockly.Blocks['time_get'] = {
 
         this.appendDummyInput('OPTION')
             .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['time_get_object'][systemLang]        , 'object'],
                 [Blockly.Words['time_get_ms'][systemLang]            , 'ms'],
                 [Blockly.Words['time_get_s'][systemLang]             , 's'],
                 [Blockly.Words['time_get_sid'][systemLang]           , 'sid'],
@@ -259,7 +338,6 @@ Blockly.Blocks['time_get'] = {
                 [Blockly.Words['time_get_wdts'][systemLang]          , 'wdts'],
                 [Blockly.Words['time_get_wd'][systemLang]            , 'wd'],
                 [Blockly.Words['time_get_custom'][systemLang]        , 'custom'],
-                [Blockly.Words['time_get_object'][systemLang]        , 'object'],
                 [Blockly.Words['time_get_yyyy.mm.dd'][systemLang]    , [Blockly.Words['time_get_yyyy.mm.dd']  .format]],
                 [Blockly.Words['time_get_yyyy/mm/dd'][systemLang]    , [Blockly.Words['time_get_yyyy/mm/dd']  .format]],
                 [Blockly.Words['time_get_yy.mm.dd'][systemLang]      , [Blockly.Words['time_get_yy.mm.dd']    .format]],

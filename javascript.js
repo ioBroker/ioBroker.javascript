@@ -1344,7 +1344,9 @@
 
                     var nowdate = new Date();
 
-                    if (adapter.config.latitude === undefined || adapter.config.longitude === undefined) {
+                    if (adapter.config.latitude === undefined || adapter.config.longitude === undefined ||
+                        adapter.config.latitude === ''        || adapter.config.longitude === '' ||
+                        adapter.config.latitude === null      || adapter.config.longitude === null) {
                         adapter.log.error('Longitude or latitude does not set. Cannot use astro.');
                         return;
                     }
@@ -1992,6 +1994,85 @@
                         adapter.log.warn('Callback for old version of script: ' + name);
                     }
                 };
+            },
+            compareTime: function (startTime, endTime, operation, time) {
+                if (time && typeof time !== 'object') {
+                    time = new Date(time);
+                } else if (!time) {
+                    time = new Date();
+                    time.setMilliseconds(0);
+                }
+
+                if (typeof startTime === 'string') {
+                    if (startTime.indexOf(' ') === -1 && startTime.indexOf('T') === -1) {
+                        var parts = startTime.split(':');
+                        startTime = new Date();
+                        startTime.setHours(parseInt(parts[0], 10));
+                        startTime.setMinutes(parseInt(parts[1], 10));
+                        startTime.setMilliseconds(0);
+
+                        if (parts.length === 3) {
+                            startTime.setSeconds(parseInt(parts[2], 10));
+                        } else {
+                            startTime.setSeconds(0);
+                        }
+                    } else {
+                        startTime = new Date(startTime);
+                    }
+                } else {
+                    startTime = new Date(startTime);
+                }
+                startTime = startTime.getTime();
+
+                if (endTime && typeof endTime === 'string') {
+                    if (endTime.indexOf(' ') === -1 && endTime.indexOf('T') === -1) {
+                        var parts = endTime.split(':');
+                        endTime = new Date();
+                        endTime.setHours(parseInt(parts[0], 10));
+                        endTime.setMinutes(parseInt(parts[1], 10));
+                        endTime.setMilliseconds(0);
+
+                        if (parts.length === 3) {
+                            endTime.setSeconds(parseInt(parts[2], 10));
+                        } else {
+                            endTime.setSeconds(0);
+                        }
+                    } else {
+                        endTime = new Date(endTime);
+                    }
+                } else if (endTime) {
+                    endTime = new Date(endTime);
+                } else {
+                    endTime = null;
+                }
+
+                if (endTime) {
+                    if (endTime.getTime() < startTime) {
+                        endTime.setDate(endTime.getDate() + 1);
+                    }
+                    endTime = endTime.getTime();
+                }
+
+                if (operation === 'between' && endTime) {
+                    return time >= startTime && time < endTime;
+                } else if (operation === 'not between' && endTime) {
+                    return !(time >= startTime && time < endTime);
+                } else if (operation === '>') {
+                    return time > startTime;
+                } else if (operation === '>=') {
+                    return time >= startTime;
+                } else if (operation === '<') {
+                    return time < startTime;
+                } else if (operation === '<=') {
+                    return time <= startTime;
+                } else if (operation === '==') {
+                    return time === startTime;
+                }  else if (operation === '<>') {
+                    return time !== startTime;
+                } else {
+                    adapter.log.warn('Invalid operator: ' + operation);
+                    return false;
+                }
             },
             onStop:      function (cb, timeout) {
                 if (sandbox.verbose) sandbox.log('onStop(timeout=' + timeout + ')', 'info');

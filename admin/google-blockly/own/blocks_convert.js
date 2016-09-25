@@ -167,6 +167,7 @@ Blockly.Blocks.convert_from_date = {
         this.appendDummyInput('OPTION')
             .appendField(Blockly.Words['convert_to'][systemLang])
             .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['time_get_object'][systemLang]        , 'object'],
                 [Blockly.Words['time_get_ms'][systemLang]            , 'ms'],
                 [Blockly.Words['time_get_s'][systemLang]             , 's'],
                 [Blockly.Words['time_get_sid'][systemLang]           , 'sid'],
@@ -183,7 +184,6 @@ Blockly.Blocks.convert_from_date = {
                 [Blockly.Words['time_get_wdts'][systemLang]          , 'wdts'],
                 [Blockly.Words['time_get_wd'][systemLang]            , 'wd'],
                 [Blockly.Words['time_get_custom'][systemLang]        , 'custom'],
-                [Blockly.Words['time_get_object'][systemLang]        , 'object'],
                 [Blockly.Words['time_get_yyyy.mm.dd'][systemLang]    , [Blockly.Words['time_get_yyyy.mm.dd']  .format]],
                 [Blockly.Words['time_get_yyyy/mm/dd'][systemLang]    , [Blockly.Words['time_get_yyyy/mm/dd']  .format]],
                 [Blockly.Words['time_get_yy.mm.dd'][systemLang]      , [Blockly.Words['time_get_yy.mm.dd']    .format]],
