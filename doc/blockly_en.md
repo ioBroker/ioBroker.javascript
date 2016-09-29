@@ -53,8 +53,33 @@
         - [Execution by interval](#execution-by-interval)
         - [Stop execution by interval](#stop-execution-by-interval)
     - [Logic](#logic)
+        - [If else block](#if-else-block)
+        - [Comparision block](#comparision-block)
+        - [Logical AND/OR block](#logical-and-or-block)
+        - [Negation block](#negation-block)
+        - [Logical value TRUE/FALSE](#logical-value-true-false)
+        - [null block](#null-block)
+        - [Test block](#test-block)
     - [Loops](#loops)
+        - [Repeat N times](#repeat-n-times)
+        - [Repeat while](#repeat-while)
+        - [Count](#count)
+        - [For each](#for-each)
+        - [Break out of loop](#break-out-of-loop)
     - [Math](#math)
+        - [Number value](#number-value)
+        - [Arithmetical operations +-\*/^](#Arithmetical operations +-*/^)
+        - [Square root, Abs, -, ln, log10, e^, 10^](#Square root, Abs, -, ln, log10, e^, 10^]
+        - [sin, cos, tan, asin, acos, atan](#sin, cos, tan, asin, acos, atan)
+        - [Math constants: pi, e, phi, sqrt(2), sqrt(1/2), infinity](#Math constants: pi, e, phi, sqrt(2), sqrt(1/2), infinity)
+        - [Is even, odd, prime, whole, positive, negative, divisibly by](#Is even, odd, prime, whole, positive, negative, divisibly by)
+        - [Modify variably by value plus or minus](#Modify variably by value (plus or minus))
+        - [Round, floor, ceil value](#Round, floor, ceil value)
+        - [Operations Operations on the list of values: sum, min, max, average, median, modes, deviation, random itemon the list of values: sum, min, max, average, median, modes, deviation, random item](#
+        - [Modulus](#modulus)
+        - [Limit some value by min and max](#limit-some-value-by-min-and-max)
+        - [Random value from 0 to 1](#random-value-from-0-to-1)
+        - [Random value between min and max](#random-value-between-min-and-max)
     - [Text](#text)
     - [Lists](#lists)
     - [Colour](#colour)
@@ -1825,7 +1850,7 @@ With the help of this block you can cancel periodically execution of interval bl
 
 ### Negation block
 
-### Logical value TRUE/FLASE 
+### Logical value TRUE/FALSE 
 
 ### null block
 
