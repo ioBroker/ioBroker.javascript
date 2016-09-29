@@ -1653,12 +1653,167 @@ This block can be used (like [CRON dialog](#cron-dialog)) only with [Named sched
 ## Timeouts
 
 ### Delayed execution
+![Delayed execution](img/timeouts_timeout_en.png)
+
+With this block you can execute other blocks delayed by some time specified in milliseconds.
+if you know Javascript it is the same function as setTimeout.
+
+There is no "pause" in blockly, but you can use this block to simulate pause. If you place all blocks, that must be executed after the pause you will achieve the same effect as with pause.
+
+Every delayed execution can have unique name. It can be canceled by other block. [Clear delayed execution](#clear-delayed-execution)
+
+![Delayed execution](img/timeouts_timeout_1_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="debug" id=":6GZ!E*FHy@vPKKl{`hV" x="487" y="163">
+    <field name="Severity">log</field>
+    <value name="TEXT">
+      <shadow type="text" id="LV!-dx[I(8bAu(_kcG.U">
+        <field name="TEXT">Make a pause 5 seconds</field>
+      </shadow>
+    </value>
+    <next>
+      <block type="timeouts_settimeout" id="~?BW3eBK_t:TzNk}x9l3">
+        <field name="NAME">timeout</field>
+        <field name="DELAY">5000</field>
+        <statement name="STATEMENT">
+          <block type="debug" id="glbs:mQxsDfEieLaru!0">
+            <field name="Severity">log</field>
+            <value name="TEXT">
+              <shadow type="text" id="_7T9e{FEJTWcpLl*BltU">
+                <field name="TEXT">After pause</field>
+              </shadow>
+            </value>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+</xml>
+```
 
 ### Clear delayed execution
+![Clear delayed execution](img/timeouts_timeout_clear_en.png)
+
+This block is used to cancel running delay by name. Typical usage is simulation of motion detection scenario.
+By first motion the light should go on and after the last motion after 30 seconds the light should go off.
+
+![Clear delayed execution](img/timeouts_timeout_clear_1_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="on_ext" id="+nZ`H6mh/;g(e3u,t;wJ" x="163" y="12">
+    <mutation items="1"></mutation>
+    <field name="CONDITION">ne</field>
+    <field name="ACK_CONDITION"></field>
+    <value name="OID0">
+      <shadow type="field_oid" id="{mRcPH:!k^_5q-hwg1q%">
+        <field name="oid">node-red.0.javascript.0.Motion</field>
+      </shadow>
+    </value>
+    <statement name="STATEMENT">
+      <block type="controls_if" id="]lX4.m?HnwXigM.6wY/D">
+        <value name="IF0">
+          <block type="logic_compare" id="s0DHFun9e*,c3AawmP_~">
+            <field name="OP">EQ</field>
+            <value name="A">
+              <block type="variables_get" id="g}IH`Bx0T(mkht8~{Ul0">
+                <field name="VAR">value</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="logic_boolean" id="Meek9{gS-NOR?|(fgbVg">
+                <field name="BOOL">TRUE</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="debug" id=":6GZ!E*FHy@vPKKl{`hV">
+            <field name="Severity">log</field>
+            <value name="TEXT">
+              <shadow type="text" id="LV!-dx[I(8bAu(_kcG.U">
+                <field name="TEXT">Motion detected</field>
+              </shadow>
+            </value>
+            <next>
+              <block type="comment" id="6_T-s#wApgZhu0+4uEk}">
+                <field name="COMMENT">Switch light ON</field>
+                <next>
+                  <block type="control" id="fxgT@s0r?[`LJIsqR~M_">
+                    <mutation delay_input="false"></mutation>
+                    <field name="OID">javascript.0.Light</field>
+                    <field name="WITH_DELAY">FALSE</field>
+                    <value name="VALUE">
+                      <block type="logic_boolean" id="0mgo#`N%Zm{MTELxw%~0">
+                        <field name="BOOL">TRUE</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="comment" id="rZ^o06`}^uFftKj2oYvE">
+                        <field name="COMMENT">Stop timer, even if it not running</field>
+                        <next>
+                          <block type="timeouts_cleartimeout" id="#H#~HxipC8_-/{%,2R1P">
+                            <field name="NAME">lightOff</field>
+                            <next>
+                              <block type="timeouts_settimeout" id="~?BW3eBK_t:TzNk}x9l3">
+                                <field name="NAME">lightOff</field>
+                                <field name="DELAY">5000</field>
+                                <statement name="STATEMENT">
+                                  <block type="debug" id="glbs:mQxsDfEieLaru!0">
+                                    <field name="Severity">log</field>
+                                    <value name="TEXT">
+                                      <shadow type="text" id="_7T9e{FEJTWcpLl*BltU">
+                                        <field name="TEXT">Light OFF</field>
+                                      </shadow>
+                                    </value>
+                                    <next>
+                                      <block type="control" id="McdOD=k4)MlO42RVgB~r">
+                                        <mutation delay_input="false"></mutation>
+                                        <field name="OID">javascript.0.Light</field>
+                                        <field name="WITH_DELAY">FALSE</field>
+                                        <value name="VALUE">
+                                          <block type="logic_boolean" id="XLHrXB)/|dqGlh,nXl^[">
+                                            <field name="BOOL">FALSE</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </statement>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+</xml>
+```
 
 ### Execution by interval
+![Execution by interval](img/timeouts_interval_en.png)
+
+This block allows you to execute some action periodically. Of course there is a CRON block, but CRON block has a smallest interval one second.
+This block can execute actions in milliseconds periods. 
+
+If you set the interval too small (under 100ms) it can be, that intervals will be bigger.
+
+Similar to timeout block you can set unique interval name too.
 
 ### Stop execution by interval
+![Stop execution by interval](img/timeouts_interval_clear_en.png)
+
+With the help of this block you can cancel periodically execution of interval block by its name.
 
 ## Logic
 
