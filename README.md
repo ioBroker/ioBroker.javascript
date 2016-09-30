@@ -913,6 +913,10 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+### 3.0.10 (2016-09-30)
+* (bluefox) New blocks: compare time, write state
+* (bluefox) Documentation
+
 ### 3.0.9 (2016-09-20)
 * (bluefox) Bugfixing of blockly
 

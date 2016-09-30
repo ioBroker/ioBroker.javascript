@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.0.9",
+        "version":                  "3.0.10",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.0.10": {
+                "en": "New blocks: compare time, write state\nDocumentation",
+                "de": "Neue Blöcke: Zeitvergleich, Zustand schreiben\nDokumentation ",
+                "ru": "Новые блоки: сравнение времени, запись в состояние\nДокументация"
+            },
             "3.0.9": {
                 "en": "Bugfixing of blockly",
                 "de": "Fehler korrigiert in Blockly",

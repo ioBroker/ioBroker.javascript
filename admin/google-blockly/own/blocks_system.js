@@ -311,12 +311,12 @@ Blockly.System.blocks['direct'] =
     '<block type="direct">'
     + '     <value name="OID_SRC">'
     + '         <shadow type="field_oid">'
-    + '             <field name="TEXT">test</field>'
+    + '             <field name="oid">Object ID 1</field>'
     + '         </shadow>'
     + '     </value>'
     + '     <value name="OID_DST">'
     + '         <shadow type="field_oid">'
-    + '             <field name="TEXT">test</field>'
+    + '             <field name="oid">Object ID 2</field>'
     + '         </shadow>'
     + '     </value>'
     + '     <value name="ONLY_CHANGES">'
@@ -354,6 +354,83 @@ Blockly.JavaScript['direct'] = function(block) {
     var oidDest = Blockly.JavaScript.valueToCode(block, 'OID_DST', Blockly.JavaScript.ORDER_ATOMIC);
 
     return 'on({id: ' + oidSrc + ', change: "' + (onlyChanges == 'TRUE' ? 'ne' : 'any') + '"}, function (obj) {\n  setState(' + oidDest + ', obj.state.val);\n});';
+};
+
+// --- control ex -----------------------------------------------------------
+Blockly.Words['control_ex']                = {'en': 'write',          'de': 'schreibe',            'ru': 'записать'};
+Blockly.Words['control_ex_tooltip']        = {'en': 'Control state',  'de': 'Steuere Zustand',     'ru': 'Установить состояние'};
+Blockly.Words['control_ex_control']        = {'en': 'сontrol',        'de': 'steuere',             'ru': 'установить'};
+Blockly.Words['control_ex_update']         = {'en': 'update',         'de': 'aktualisiere',        'ru': 'обновить'};
+Blockly.Words['control_ex_delay']          = {'en': 'delay in ms',    'de': 'Verzögerung in ms',   'ru': 'Задержка в мс'};
+Blockly.Words['control_ex_value']          = {'en': 'value',          'de': 'Wert',                'ru': 'значение'};
+Blockly.Words['control_ex_clear_running']  = {'en': 'clear running',  'de': 'löschen falls läuft', 'ru': 'остановить уже запущенный'};
+
+Blockly.System.blocks['control_ex'] =
+    '<block type="control_ex">'
+    + '     <value name="OID">'
+    + '         <shadow type="field_oid">'
+    + '             <field name="oid">Object ID</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="VALUE">'
+    + '         <shadow type="logic_boolean">'
+    + '             <field name="BOOL">TRUE</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="TYPE">'
+    + '     </value>'
+    + '     <value name="DELAY_MS">'
+    + '         <shadow type="math_number">'
+    + '             <field name="NUM">0</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="CLEAR_RUNNING">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['control_ex'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Words['control_ex'][systemLang]);
+
+        this.appendValueInput('OID')
+            .setCheck('String')
+            .appendField(Blockly.Words['field_oid_OID'][systemLang]);
+
+        this.appendDummyInput('TYPE')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['control_ex_control'][systemLang],   'false'],
+                [Blockly.Words['control_ex_update'][systemLang],    'true']
+            ]), 'TYPE');
+
+        this.appendValueInput('VALUE')
+            .setCheck(null)
+            .appendField(Blockly.Words['control_ex_value'][systemLang]);
+
+        this.appendValueInput('DELAY_MS')
+            .setCheck('Number')
+            .appendField(Blockly.Words['control_ex_delay'][systemLang]);
+
+        this.appendDummyInput('CLEAR_RUNNING_INPUT')
+            .appendField(Blockly.Words['control_ex_clear_running'][systemLang])
+            .appendField(new Blockly.FieldCheckbox(), 'CLEAR_RUNNING');
+
+        this.setInputsInline(false);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(Blockly.System.HUE);
+        this.setTooltip(Blockly.Words['control_tooltip'][systemLang]);
+        this.setHelpUrl(getHelp('control_help'));
+    }
+};
+
+Blockly.JavaScript['control_ex'] = function(block) {
+    var valueObjectID = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    var value         = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    var valueDelay    = Blockly.JavaScript.valueToCode(block, 'DELAY_MS', Blockly.JavaScript.ORDER_ATOMIC);
+    var clearRunning  = block.getFieldValue('CLEAR_RUNNING') === 'TRUE';
+    var type          = block.getFieldValue('TYPE') === 'true';
+    return 'setStateDelayed(' + valueObjectID + ', ' + value + ', ' + type + ', parseInt(' + valueDelay + ', 10), ' + clearRunning + ');\n';
 };
 
 // --- create state --------------------------------------------------

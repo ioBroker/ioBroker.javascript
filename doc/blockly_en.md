@@ -12,6 +12,7 @@
         - [Control state](#control-state)
         - [Update state](#update-state)
         - [Bind states](#bind-states)
+        - [Write states](#write-states)
         - [Create state](#create-state)
         - [Get value of state](#get-value-of-state)
         - [Get Object ID](#get-object-id)
@@ -569,6 +570,13 @@ You can select if the value will be forwarded only if source state was changed o
   </statement>
 </block>
 ```
+
+### Write states
+![Write state](img/system_write_en.png)
+
+Universal write block that can do the same as ["Update state"](#update-state) and ["Control state"](#control-state) together. 
+
+But in compare with them you can define Object ID and delay with other blocks to make your script more universal.
 
 ### Create state
 ![Create state](img/system_create_en.png)
@@ -1985,8 +1993,48 @@ With the help of this block you can cancel periodically execution of interval bl
 ## Variables
 
 ### Set variable's value
+![Set variable's value](img/variables_set_en.png)
+
+To use this block you should understand basic programming rules: how to use variables.
+
+With this block you can write into global (visible everywhere in this script) variable and use it to store some values. If variable does not exist, it will be declared automatically.
+
+This block can create new variable or use existing one. 
+
+![Set variable's value](img/variables_set_1_en.png)
+
+This code:
+
+![Set variable's value](img/variables_set_2_en.png)
+
+```
+<block xmlns="http://www.w3.org/1999/xhtml" type="variables_set" id="ch{H@omhfzI(QA{syxAG" x="212.99999999999977" y="37.99999999999994">
+  <field name="VAR">item</field>
+  <value name="VALUE">
+    <block type="math_number" id="SbmD7,uR:hMW!(P%IZRc">
+      <field name="NUM">0</field>
+    </block>
+  </value>
+</block>
+```
+
+does only this:
+```
+var item;
+item = 0;
+```
 
 ### Get variable's value
+![Get variable's value](img/variables_get_en.png)
+
+This block gets the value of variable. You can create a new one or use existing one.
+
+![Get variable's value](img/variables_get_1_en.png)
+
+There is one exception with trigger blocks [Trigger on states change](#trigger-on-states-change) and [Trigger on state change](#trigger-on-state-change).
+Inside these blocks variable "value" yet exist, but anyway to read their values you must rename variable into value and then use it.
+
+![Get variable's value](img/variables_get_2_en.png)
 
 ## Functions
 

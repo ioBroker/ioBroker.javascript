@@ -177,7 +177,7 @@ Blockly.JavaScript['sayit'] = function(block) {
 
     var logText;
     if (logLevel) {
-        logText = 'console.' + logLevel + '("telegram' + (dropdown_language ? '[' + dropdown_language + ']' : '') + (value_volume ? '[Volume - ' + value_volume + ']' : '') + ': " + ' + value_message + ');\n'
+        logText = 'console.' + logLevel + '("sayIt' + (dropdown_language ? '[' + dropdown_language + ']' : '') + (value_volume ? '[Volume - ' + value_volume + ']' : '') + ': " + ' + value_message + ');\n'
     } else {
         logText = '';
     }
