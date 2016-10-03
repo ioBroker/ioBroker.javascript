@@ -119,10 +119,14 @@
         - [Create custom function with return value](#create-custom-function-with-return-value)
         - [Call function](#call-function)
 
+
+&nbsp;
 # Beschreibung
 Blockly ist ein grafischer Editor, der es Nutzern erlaubt Skripte durch zusammenfügen von Blöchen zu erzeugen. 
 Er wurde für Nutzer entwickelt, die keine Erfahrung in Programmierung von Computern besitzen.
 
+
+&nbsp;
 # Getting started
 
 ## Beispiel 1
@@ -180,6 +184,7 @@ Beispiel zum importieren:
 ```
 
 
+&nbsp;
 ## Beispiel 2 
 **Licht bei Bewegung anschalten und ausschalten wenn 10 Minuten keine Bewegung.**
 
@@ -240,7 +245,7 @@ Beispiel zum importieren:
 ```
 
 
-
+&nbsp;
 ## Beispiel 3
 **Verschicke eine eMail wenn die Außentemperatur höher als 25 Grad Celsius ist.**
 
@@ -386,7 +391,10 @@ Beispiel zum importieren:
 ```
 
 
+&nbsp;
 
+
+&nbsp;
 # Blöcke
 
 ## Systemblöcke
