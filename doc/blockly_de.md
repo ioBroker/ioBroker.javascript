@@ -258,12 +258,15 @@ Wenn die Temperatur unter 23 Grad fällt setzen wir die Variable "emailSent" zur
 Dazu wird die aktuelle Temperatur mit 23 verglichen und es werden keine eMails geschickt, solange die Temperatur um 25 Grad schwankt.
 
 Un den "if ... else if ..." Block zu erstellen klickt man auf das Zahnrad und fügt die zusätzlich benötigten Elemente dem "IF" Block hinzu.
+
 ![Getting started 3](img/getting_started_3_1_en.png)
 
 Man kann zu jedem Block einen Kommentar hinterlegen, indem man "Kommentar hinzufügen" im Kontextmenü des Blocks anklickt. Diesen Kommentar kann man später durch anklicken des Fragezeichens ansehen.
+
 ![Getting started 3](img/getting_started_3_2_en.png)
 
 Man kann größere Blöcke einklappen um eine bessere Übersicht zu erhalten, indem man im Kontextmenü den Punkt "Block einklappen" auswählt. 
+
 ![Getting started 3](img/getting_started_3_3_en.png)
 
 
