@@ -8,7 +8,7 @@
 - [Blöcke](#blocks)
     - [Systemblöcke](#systemblöcke)
         - [Debug Ausgabe](#debug-ausgabe)
-        - [Kommentar](#comment)
+        - [Kommentar](#kommentar)
         - [Control state](#control-state)
         - [Update state](#update-state)
         - [Bind states](#bind-states)
