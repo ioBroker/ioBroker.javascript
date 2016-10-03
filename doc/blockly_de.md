@@ -1,4 +1,4 @@
-# Contents
+# Inhalt
 
 - [Beschreibung](#beschreibung)
 - [Getting started](#getting-started)
@@ -6,7 +6,7 @@
     - [Beispiel 2](#Beispiel-2)
     - [Beispiel 3](#Beispiel-3)
 - [Blöcke](#blocks)
-    - [Systemblöcke](#system-blocks)
+    - [Systemblöcke](#Systemblöcke)
         - [Debug output](#debug-output)
         - [Kommentar](#comment)
         - [Control state](#control-state)
@@ -16,16 +16,16 @@
         - [Create state](#create-state)
         - [Get value of state](#get-value-of-state)
         - [Get Object ID](#get-object-id)
-    - [Aktionsblöcke](#actions-blocks)
+    - [Aktionsblöcke](#Aktionsblöcke)
         - [Exec - execute](#exec---execute)
         - [request URL](#request-url)
-    - [SendTo Blöcke](#send-to-blocks)
+    - [SendTo Blöcke](#SendTo-Blöcke)
         - [Send to telegram](#send-to-telegram)
         - [Send to SayIt](#send-to-sayit)
         - [Send to pushover](#send-to-pushover)
         - [Send email](#send-email)
         - [Custom sendTo block](#custom-sendto-block)
-    - [Date and Time blocks](#date-and-time-blocks)
+    - [Datum und Zeit Blöcke](#Datum-und-Zeit-Blöcke)
         - [Time comparision](#time-comparision)
         - [Actual time comparision](#actual-time-comparision)
         - [Get actual time im specific format](#get-actual-time-im-specific-format)
@@ -136,11 +136,11 @@ Hier wird das Licht an oder ausgeschaltet wenn Bewegung bzw. keine Bewegung erka
 
 Zuerst den Block "Triggers=>Event: if object" einfügen. Die object ID auswählen um den Zustand des Objekts als Trigger für dieses Skript zu benutzen.
 
-Add to trigger other block - "System=>Control" and select in dialog other state that must be controlled by event.
+Einen anderen Block - "System=>Control" hinzufügen und im Dialog den anderen Zustand der durch den Trigger geändert werden soll auswählen.
 
-Insert into control block the "System=>Get value of state" block and select in dialog the "Motion" object to write the value of this state into "Light"*[]: 
+In diesen Kontrollblock einen Block "System=>Get value of state" einfügen und im Dialog das "Motion" Objekt um dessen Zustand in "Light"*[]: zu schreiben.
  
-There is a special variable **value"" in trigger block. It is always defined there and you can use this variable for your need. It consist actual value of triggered state and you can create simpler rule by using "Variable=>item" block and renaming it into "value".
+Es gibt bei den Trigger Blöcken eine spezielle Variable **value"". Diese wird immer hier definiert und kann für diese Zwecke verwendet werden. Sie enthält den aktuellen Wert des triggernden Objekts und man kann daher einfacherer Skripte erzeugen indem man den Block "Variable=>item" benutzt und ihn in "value" umbenennt..
 
 ![Getting started 1](img/getting_started_1_2_en.png)
 
