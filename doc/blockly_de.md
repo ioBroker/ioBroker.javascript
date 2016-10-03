@@ -9,8 +9,8 @@
     - [Systemblöcke](#systemblöcke)
         - [Debug Ausgabe](#debug-ausgabe)
         - [Kommentar](#kommentar)
-        - [Control state](#control-state)
-        - [Update state](#update-state)
+        - [Steuere State](#steuere-state)
+        - [Aktualisiere State](#aktualisiere-state)
         - [Bind states](#bind-states)
         - [Write states](#write-states)
         - [Create state](#create-state)
@@ -169,7 +169,7 @@ Erklärung:
 Zuerst müssen wir eine Variable definieren um zu speichern, dass die eMail für den aktuellen Temperaturalarm bereits gesendet wurde und diese Variable auf "falsch" setzen.
 Dann beobachten wir die Veränderungen der Temperatur. Wir könnten dieses Skript auch periodisch ausführen, aber das ist nicht so effektiv.
 
-Wenn sich die Temperatur ändert vergleichen wir den aktuellen Wert mit  25 und prüfen ob die eMail bereits verschickt wurde oder nicht.
+Wenn sich die Temperatur ändert vergleichen wir den aktuellen Wert mit 25 und prüfen ob die eMail bereits verschickt wurde oder nicht.
 Wenn die eMail noch nicht versendet war, speichern wir dass wir sie jetzt senden und sneden sie auch. Natürlich muss der eMail-Adapter vorher installiert und konfiguriert worden sein.
 
 Wenn die Temperatur unter 23 Grad fällt setzen wir die Variable "emailSent" zurück, damit beim nächsten Temperaturalarm wieder eine eMail gesendet wird. 
@@ -211,20 +211,20 @@ Einen Kommentar zum Skript hinzufügen um es später besser verstehen zu können
 
 Der Block macht gar nichts, es ist nur ein Kommentar
 
-### Control state
+### Steuere State
 ![Control state](img/system_control_en.png)
 
-You can write the state with two different meanings:
-- to control something and send command to end hardware (this block)
-- to update some state to just inform about e.g. new temperature ([next block](#update-state))
+Man kann einen Zustand auf zwei verschiedene Arten schreiben:
+- Um etwas zu steuern und den Wert an die Hardware zu schicken (Dieser Block)
+- Einen neuen Wert schreiben, der nur der Information dient, z.B. Temperaturänderung ([nächster Block](#update-state))
 
-Typical usage of block:
+Typische Anwendung dieses Blocks:
 
 ![Control state](img/system_control_sample1_en.png)
 
-The object ID must be selected from dialog and the value must be defined too. Depends on the type of state the value can be [string](#string-value), [number](#number-value) or [boolean](#ogical-value-trueflase).
+Die Object ID wird im Dialog ausgewählt der Wert muss definiert werden. Abhängig vom Typ des Datenpunkts kann der Wert [string](#string-value), [number](#number-value) oder [boolean](#ogical-value-trueflase) sein.
 
-You can read the explanation [here](https://github.com/ioBroker/ioBroker/wiki/Adapter-Development-Documentation#commands-and-statuses).
+Weitere Erklärungen gibt es [hier](https://github.com/ioBroker/ioBroker/wiki/Adapter-Development-Documentation#commands-and-statuses).
 
 This block writes command into state (ack=false). Additionally the delay can be specified.
 If delay is not 0, the state will be set not immediately but after defined in milliseconds period of time.
@@ -309,7 +309,7 @@ But in this schema the state "Light" will be controlled twice (in 1 second and i
 </xml>
 ```
 
-### Update state
+### Aktualisiere State
 ![Update state](img/system_update_en.png)
 
 This block is similar to [control block](#control-state), but it is only updates the value. No command to control the hardware will be sent.
