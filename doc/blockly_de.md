@@ -7,7 +7,7 @@
     - [Beispiel 3](#beispiel-3)
 - [Blöcke](#blocks)
     - [Systemblöcke](#systemblöcke)
-        - [Debug output](#debug-output)
+        - [Debug Ausgabe](#debug-ausgabe)
         - [Kommentar](#comment)
         - [Control state](#control-state)
         - [Update state](#update-state)
@@ -186,59 +186,29 @@ Man kann größere Blöcke einklappen um eine bessere Übersicht zu erhalten, in
 
 
 
-# Blocks
+# Blöcke
 
-## System blocks
+## Systemblöcke
 
-### Debug output
+### Debug Ausgabe
 ![Debug output](img/system_debug_en.png)
 
-This block does nothing except prints line into the log. You can use it for debugging of your script.
-
-Like this one: 
+Dieser Block macht nichts, außer eine Zeile ins log zu schreiben. Man kann ihn zum debuggen des Scripts nutzen, wie diesen hier:
 
 ![Debug output](img/system_debug_1_en.png)
 
-```
-<xml xmlns="http://www.w3.org/1999/xhtml">
-  <block type="comment" id="K|2AnJ|5})RoNZ1T%Hh#" x="38" y="13">
-    <field name="COMMENT">Print time into log every second</field>
-    <next>
-      <block type="timeouts_setinterval" id="LNsHTl,!r6eR8J9Yg,Xn">
-        <field name="NAME">interval</field>
-        <field name="INTERVAL">1000</field>
-        <statement name="STATEMENT">
-          <block type="debug" id=".oLS7P_oFU0%PWocRlYp">
-            <field name="Severity">log</field>
-            <value name="TEXT">
-              <shadow type="text" id="X^Z/.qUry9B5Rr#N`)Oy">
-                <field name="TEXT">test</field>
-              </shadow>
-              <block type="time_get" id="TPo6nim+=TBb-pnKMkRp">
-                <mutation format="false" language="false"></mutation>
-                <field name="OPTION">hh:mm:ss</field>
-              </block>
-            </value>
-          </block>
-        </statement>
-      </block>
-    </next>
-  </block>
-</xml>
-```
 
-You can define 4 different levels of severity for message:
-- debug (the debug level of javascript adapter must be enabled)
-- info (default, at least info log level must be set in javascript instance settings)
+Man kann 4 verschiedenE Schweregrade für die Nachrichten definieren:
+- debug (dazu muss der debug-Level der Javascript Instanz aktiviert sein.)
+- info (default, zumindest der info log level muss ider Javascript Instanz aktiviert sein.)
 - warning 
-- error - will be always displayed. Other severity levels can be ignored if severity of logging in javascirpt adapter is higher.
+- error - wird immer angezeigt. Die anderen Level können ignoriert werden, wenn es entsprechend in der der Javascript Instanz eingestellt ist.
 
-### Comment
+### Kommentar
 ![Comment](img/system_comment_en.png)
 
-Comment your code to understand it later better. 
-
-It does nothing, just a comment.
+Einen Kommentar zum Skript hinzufügen um es später besser verstehen zu können.
+Der Block macht gar nichts, es ist nur ein Kommentar
 
 ### Control state
 ![Control state](img/system_control_en.png)
