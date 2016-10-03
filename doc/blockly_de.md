@@ -177,16 +177,16 @@ In diesen Kontrollblock einen Block "System=>Get value of state" einfügen und i
 </xml>
 ```
 
-## Sample 2 
-**Switch light on by motion and switch off in 10 minutes if no motion detected.**
+## Beispiel 2 
+**Licht bei Bewegung anschalten und ausschalten wenn 10 Minuten keine Bewegung.**
 
 ![Getting started 2](img/getting_started_2_en.png)
 
-If state "Motion" was updated with value true do:
-- switch "Light" on
-- start the delayed set in 10 minutes to switch "Light" off and clear all the delayed sets for this state
+Wenn der Zustand "Bewegung" mit dem Wert "wahr" aktualisiert wird, mache:
+- schalte "Licht" an
+- starte die Verzögerung von 10 Minuten um "Licht" auszuschalten und lösche alle bisherigen Verzögerungen für diesen Datenpunkt.
 
-You can notice, that the flag "clear running" is set by last command. This clears any running timers for this state and the timer will be started anew.
+Wie man sieht wird der Flag "lösche Verzögerung" durch den letzten Befehl gelöscht. Dieses löscht alle Timer für diesen Datenpunkt und startet einen neuen Timer
 
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
