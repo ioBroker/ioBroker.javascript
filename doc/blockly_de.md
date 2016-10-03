@@ -226,12 +226,12 @@ Die Object ID wird im Dialog ausgewählt der zu sendende Wert muss angegeben wer
 
 Weitere Erklärungen gibt es [hier](https://github.com/ioBroker/ioBroker/wiki/Adapter-Development-Documentation#commands-and-statuses).
 
-This block writes command into state (ack=false). Additionally the delay can be specified.
-If delay is not 0, the state will be set not immediately but after defined in milliseconds period of time.
+Dieser Block schreibt den Befehl in den Datenpunkt mit (ack=false). Zusätzlich kann eine Verzögerung angegeben werden.
+Wenn die Verzögerung nicht 0 ist, wird der Zustand nicht sofort, sondern erst nach der angegebenen Zeit in Millisekunden gesetzt.
 
-You can stop all running delayed sets by issuing of control command. 
+Man kann alle anderen Verzögerungen für diesen Datenpunkt löschen, indem man die Checkbox anhakt.
 
-E.g in following schema the state "Light" will be controlled only once (in 2 seconds):
+So wird in dem folgenden Beispiel der Datenpunkt "Licht" nur einmal geschaltet (in 2 seconds):
 ![Control state](img/system_control_1_en.png)
 
 ```
