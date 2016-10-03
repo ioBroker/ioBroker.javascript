@@ -222,7 +222,7 @@ Typische Anwendung dieses Blocks:
 
 ![Control state](img/system_control_sample1_en.png)
 
-Die Object ID wird im Dialog ausgewählt der Wert muss definiert werden. Abhängig vom Typ des Datenpunkts kann der Wert [string](#string-value), [number](#number-value) oder [boolean](#ogical-value-trueflase) sein.
+Die Object ID wird im Dialog ausgewählt der zu sendende Wert muss angegeben werden. Abhängig vom Typ des Datenpunkts kann der Wert vom Typ [string](#string-value), [number](#number-value) oder [boolean](#ogical-value-trueflase) sein.
 
 Weitere Erklärungen gibt es [hier](https://github.com/ioBroker/ioBroker/wiki/Adapter-Development-Documentation#commands-and-statuses).
 
