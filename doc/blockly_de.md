@@ -445,6 +445,8 @@ Man kann 4 verschiedene Schweregrade für die Nachrichten definieren:
 - warning 
 - error (wird immer angezeigt. Die anderen Level können ignoriert werden, wenn es entsprechend in der der Javascript Instanz eingestellt ist.)
 
+
+&nbsp;
 ### Kommentar
 ![Comment](img/system_comment_en.png)
 
@@ -452,6 +454,8 @@ Einen Kommentar zum Skript hinzufügen um es später besser verstehen zu können
 
 Der Block macht gar nichts, es ist nur ein Kommentar
 
+
+&nbsp;
 ### Steuere State
 ![Control state](img/system_control_en.png)
 
@@ -550,6 +554,8 @@ Im Gegensatz zu dem vorherigen Beispiel wird der Zustand von "Licht" in dem folg
 </xml>
 ```
 
+
+&nbsp;
 ### Aktualisiere State
 ![Update state](img/system_update_en.png)
 
@@ -560,16 +566,18 @@ Typische Anwendung dieses Blocks:
 ![Update state](img/system_update_sample_en.png)
 
 
-### Bind states
+&nbsp;
+### Bind States
 ![Bind state](img/system_bind_en.png)
 
-This block simply binds two states with each other.
+Dieser Block bindet zwei Zustände aneinander.
 
-You can achieve the same with this blocks:
+Man kann das gleiche mit diesen Blöcken erreichen:
 
 ![Bind state](img/system_bind_1_en.png)
 
-You can select if the value will be forwarded only if source state was changed or always when the state is just updated. 
+Man kann auswählen, ob der Wert nur weitergeleitet wird,  wenn sich die Quelle ändert, oder bei jeder Aktualisierung.
+
 
 ```
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="w/@=5/5!D;8wn4DZ;jzG" x="287.99999999999943" y="37.999999999999716">
@@ -596,6 +604,8 @@ You can select if the value will be forwarded only if source state was changed o
 </block>
 ```
 
+
+&nbsp;
 ### Write states
 ![Write state](img/system_write_en.png)
 
