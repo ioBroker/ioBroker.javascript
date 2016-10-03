@@ -1,14 +1,14 @@
 # Contents
 
-- [Description](#description)
+- [Beschreibung](#beschreibung)
 - [Getting started](#getting-started)
-    - [Sample 1](#sample-1)
-    - [Sample 2](#sample-2)
-    - [Sample 3](#sample-3)
-- [Blocks](#blocks)
-    - [System blocks](#system-blocks)
+    - [Beispiel 1](#Beispiel-1)
+    - [Beispiel 2](#Beispiel-2)
+    - [Beispiel 3](#Beispiel-3)
+- [Blöcke](#blocks)
+    - [Systemblöcke](#system-blocks)
         - [Debug output](#debug-output)
-        - [Comment](#comment)
+        - [Kommentar](#comment)
         - [Control state](#control-state)
         - [Update state](#update-state)
         - [Bind states](#bind-states)
@@ -16,10 +16,10 @@
         - [Create state](#create-state)
         - [Get value of state](#get-value-of-state)
         - [Get Object ID](#get-object-id)
-    - [Actions Blocks](#actions-blocks)
+    - [Aktionsblöcke](#actions-blocks)
         - [Exec - execute](#exec---execute)
         - [request URL](#request-url)
-    - [Send to Blocks](#send-to-blocks)
+    - [SendTo Blöcke](#send-to-blocks)
         - [Send to telegram](#send-to-telegram)
         - [Send to SayIt](#send-to-sayit)
         - [Send to pushover](#send-to-pushover)
@@ -119,22 +119,22 @@
         - [Create custom function with return value](#create-custom-function-with-return-value)
         - [Call function](#call-function)
 
-# Description
+# Beschreibung
 Blockly is a visual editor that allows users to write programs by adding blocks together. 
 It is designed for people with no prior experience with computer programming. 
 
 # Getting started
 
-## Sample 1
-**Control state on change of some other state**
+## Beispiel 1
+**Zustand eines Datenpunkts bei Änderung eines anderen Datenpunkts ändern**
 
 ![Getting started 1](img/getting_started_1_en.png)
 
-This is the classical rule to switch something ON or OFF on other event.
+Dies ist das klassische Beispiel bei Änderung eines Datenpunktes etwas anderes zu schalten.
 
-Here the light will be switched on or off if the motion was detected or motion detector sends IDLE state.
+Hier wird das Licht an oder ausgeschaltet wenn Bewegung bzw. keine Bewegung erkannt wird.
 
-First of all insert block "Triggers=>Event: if object". Select object ID to use this state as trigger for rule.
+Zuerst den Block "Triggers=>Event: if object" einfügen. Die object ID auswählen um den Zustand des Objekts als Trigger für dieses Skript zu benutzen.
 
 Add to trigger other block - "System=>Control" and select in dialog other state that must be controlled by event.
 
