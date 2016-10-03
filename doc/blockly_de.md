@@ -198,16 +198,17 @@ Dieser Block macht nichts, außer eine Zeile ins log zu schreiben. Man kann ihn 
 ![Debug output](img/system_debug_1_en.png)
 
 
-Man kann 4 verschiedenE Schweregrade für die Nachrichten definieren:
+Man kann 4 verschiedene Schweregrade für die Nachrichten definieren:
 - debug (dazu muss der debug-Level der Javascript Instanz aktiviert sein.)
 - info (default, zumindest der info log level muss ider Javascript Instanz aktiviert sein.)
 - warning 
-- error - wird immer angezeigt. Die anderen Level können ignoriert werden, wenn es entsprechend in der der Javascript Instanz eingestellt ist.
+- error (wird immer angezeigt. Die anderen Level können ignoriert werden, wenn es entsprechend in der der Javascript Instanz eingestellt ist.)
 
 ### Kommentar
 ![Comment](img/system_comment_en.png)
 
 Einen Kommentar zum Skript hinzufügen um es später besser verstehen zu können.
+
 Der Block macht gar nichts, es ist nur ein Kommentar
 
 ### Control state
