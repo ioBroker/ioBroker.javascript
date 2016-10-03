@@ -144,38 +144,7 @@ In diesen Kontrollblock einen Block "System=>Get value of state" einfügen und i
 
 ![Getting started 1](img/getting_started_1_2_en.png)
 
-```
-<xml xmlns="http://www.w3.org/1999/xhtml">
-  <block type="comment" id="s7s**k+Cc_KjDnJW`(h~" x="12" y="63">
-    <field name="COMMENT">Switch light ON or OFF it motion detected or IDLE</field>
-    <next>
-      <block type="on_ext" id="#}:B(M-o5:/]k,_msr%y">
-        <mutation items="1"></mutation>
-        <field name="CONDITION">ne</field>
-        <field name="ACK_CONDITION"></field>
-        <value name="OID0">
-          <shadow type="field_oid" id="o~6)!C0IVy{WD%Km(lkc">
-            <field name="oid">javascript.0.Motion</field>
-          </shadow>
-        </value>
-        <statement name="STATEMENT">
-          <block type="control" id="(ZqzhS_7*jGpk;`zJAZg">
-            <mutation delay_input="false"></mutation>
-            <field name="OID">javascript.0.Light</field>
-            <field name="WITH_DELAY">FALSE</field>
-            <value name="VALUE">
-              <block type="get_value" id="a-E@UcwER=knNljh@:M/">
-                <field name="ATTR">val</field>
-                <field name="OID">javascript.0.Motion</field>
-              </block>
-            </value>
-          </block>
-        </statement>
-      </block>
-    </next>
-  </block>
-</xml>
-```
+
 
 ## Beispiel 2 
 **Licht bei Bewegung anschalten und ausschalten wenn 10 Minuten keine Bewegung.**
@@ -188,68 +157,23 @@ Wenn der Zustand "Bewegung" mit dem Wert "wahr" aktualisiert wird, mache:
 
 Wie man sieht wird der Flag "lösche Verzögerung" durch den letzten Befehl gelöscht. Dieses löscht alle Timer für diesen Datenpunkt und startet einen neuen Timer
 
-```
-<xml xmlns="http://www.w3.org/1999/xhtml">
-  <block type="comment" id="s7s**k+Cc_KjDnJW`(h~" x="112" y="63">
-    <field name="COMMENT">Switch light ON and OFF in 10 minutes of IDLE</field>
-    <next>
-      <block type="on_ext" id="#}:B(M-o5:/]k,_msr%y">
-        <mutation items="1"></mutation>
-        <field name="CONDITION">true</field>
-        <field name="ACK_CONDITION">true</field>
-        <value name="OID0">
-          <shadow type="field_oid" id="o~6)!C0IVy{WD%Km(lkc">
-            <field name="oid">javascript.0.Motion</field>
-          </shadow>
-        </value>
-        <statement name="STATEMENT">
-          <block type="control" id="(ZqzhS_7*jGpk;`zJAZg">
-            <mutation delay_input="false"></mutation>
-            <field name="OID">javascript.0.Light</field>
-            <field name="WITH_DELAY">FALSE</field>
-            <value name="VALUE">
-              <block type="logic_boolean" id="%^ADwe*2l0tLw8Ga5F*Y">
-                <field name="BOOL">TRUE</field>
-              </block>
-            </value>
-            <next>
-              <block type="control" id="=]vmzp6j^V9:3?R?2Y,x">
-                <mutation delay_input="true"></mutation>
-                <field name="OID">javascript.0.Light</field>
-                <field name="WITH_DELAY">TRUE</field>
-                <field name="DELAY_MS">600000</field>
-                <field name="CLEAR_RUNNING">TRUE</field>
-                <value name="VALUE">
-                  <block type="logic_boolean" id="!;DiIh,D]l1oN{D;skYl">
-                    <field name="BOOL">FALSE</field>
-                  </block>
-                </value>
-              </block>
-            </next>
-          </block>
-        </statement>
-      </block>
-    </next>
-  </block>
-</xml>
-```
 
 
-## Sample 3
-**Send email if outside temperature is more than 25 grad Celsius.**
+## Beispiel 3
+**Verschicke eine eMail wenn die Außentemperatur höher als 25 Grad Celsius ist.**
 
 ![Getting started 3](img/getting_started_3_en.png)
 
-Explanation:
+Erklärung:
 
-First we must to define the variable to remember if the email yet sent for actual temperature alert or not and fill it with "false".
-Then we subscribe on changes of temperature. We can execute our rule periodically, but is is not so effective. 
+Zuerst müssen wir eine Variable definieren um zu speichern, dass die eMail für den aktuellen Temperaturalarm bereits gesendet wurde und dies Variable auf "falsch" setzen.
+Dann beobachten wir die Veränderungen der Temperatur. Wir könnten dieses Skript auch periodisch ausführen, aber das ist nicht so effektiv.
 
-If temperature was changed we compare its value with 25 and check if the email yet sent or not. 
-If email is not sent, we remember, that email sent and send the email. Of course email adapter must be installed and configured before.
+Wenn sich die Temperatur ändert vergleichen wir den aktuellen Wert mit  25 und prüfen ob die eMail bereits verschickt wurde oder nicht.
+Wenn die eMail noch nicht versendet war, speichern wir dass wir sie jetzt senden und sneden sie auch. Natürlich muss der eMail-Adapter vorher installiert und konfiguriert worden sein.
 
-If the temperature less than 23 grad, reset "emailSent" flag to send email by next temperature alert. 
-We compare temperature with 23 to do not sent emails every time if temperature fluctuate about 25 grad.
+Wenn die Temperatur unter 23 Grad fällt setzen wir die Variable "emailSent" zurück, damit beim nächsten Temperaturalarm wieder eine eMail gesendet wird. 
+Dazu wird die aktuelle Temperatur mit 23 verglichen und es werden keine eMails geschickt, solange die Temperatur um 25 Grad schwankt.
 
 To create the "if ... else if ..." block you must click on the gear icon and add required parts to "IF" block.
 ![Getting started 3](img/getting_started_3_1_en.png)
