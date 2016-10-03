@@ -139,8 +139,8 @@ Zuerst den Block "Triggers=>Event: if object" einfügen. Die object ID auswähle
 Einen anderen Block - "System=>Control" hinzufügen und im Dialog den anderen Zustand der durch den Trigger geändert werden soll auswählen.
 
 In diesen Kontrollblock einen Block "System=>Get value of state" einfügen und im Dialog das "Motion" Objekt um dessen Zustand in "Light"*[]: zu schreiben.
- 
-Es gibt bei den Trigger Blöcken eine spezielle Variable **value"". Diese wird immer hier definiert und kann für diese Zwecke verwendet werden. Sie enthält den aktuellen Wert des triggernden Objekts und man kann daher einfacherer Skripte erzeugen indem man den Block "Variable=>item" benutzt und ihn in "value" umbenennt..
+
+**Es gibt bei den Trigger Blöcken eine spezielle Variable "Wert". Diese wird immer hier definiert und kann für verschiedene Zwecke verwendet werden. Sie enthält den aktuellen Wert des triggernden Objekts und man kann daher einfacherer Skripte erzeugen indem man den Block "Variable=>Objekt ID" benutzt und ihn in "Wert" umbenennt.
 
 ![Getting started 1](img/getting_started_1_2_en.png)
 
