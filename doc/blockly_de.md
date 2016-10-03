@@ -11,9 +11,9 @@
         - [Kommentar](#kommentar)
         - [Steuere State](#steuere-state)
         - [Aktualisiere State](#aktualisiere-state)
-        - [Bind states](#bind-states)
-        - [Write states](#write-states)
-        - [Create state](#create-state)
+        - [Binde states](#binde-states)
+        - [Schreibe states](#schreibe-states)
+        - [Erzeuge state](#erzeuge-state)
         - [Get value of state](#get-value-of-state)
         - [Get Object ID](#get-object-id)
     - [Aktionsblöcke](#aktionsblöcke)
@@ -561,13 +561,14 @@ Im Gegensatz zu dem vorherigen Beispiel wird der Zustand von "Licht" in dem folg
 
 Dieser Block ist ähnlich dem [Steuere Block](#steuere-state), aber er setzt nur den aktuellen Wert. Es wird kein Befehl zum steuern der Hardware gesendet.
 
+
 Typische Anwendung dieses Blocks:
 
 ![Update state](img/system_update_sample_en.png)
 
 
 &nbsp;
-### Bind States
+### Binde States
 ![Bind state](img/system_bind_en.png)
 
 Dieser Block bindet zwei Zustände aneinander.
@@ -606,26 +607,30 @@ Man kann auswählen, ob der Wert nur weitergeleitet wird,  wenn sich die Quelle 
 
 
 &nbsp;
-### Write states
+### Schreibe States
 ![Write state](img/system_write_en.png)
 
-Universal write block that can do the same as ["Update state"](#update-state) and ["Control state"](#control-state) together. 
+Dies ist ein universeller Block zum schreiben von Zuständen, indem er das slebe macht, wie ["Aktualisiere State"](#aktualisiere-state) and ["Steuere State"](#steuere-state) zusammen. 
 
-But in compare with them you can define Object ID and delay with other blocks to make your script more universal.
+Aber im Vergleich dazu kann man die Objekt ID und die Verzögerung über andere Blöcke definieren um das Skript universeller zu gestalten.
 
-### Create state
+
+&nbsp;
+### Erzeuge State
 ![Create state](img/system_create_en.png)
-There are two types of variables that can be created in scripts:
-- local [variables](#set-variables-value)
-- global variables or states. 
 
-Global states are visible in all scripts, but local are visible only in this current script.
+Es gibt zwei verschiedene Arten von Variablen, die mit diesem Block erzeugt werden können:
+- lokale [Variablen](#set-variables-value)
+- globale Variablen oder Zustände. 
 
-Global states can be used in vis, mobile and all other logic or visualisation modules, can be logged into db or whatever.
+Globale Zustände sind in allen Skripts sichtbar, während lokale nur in dem aktuellen Skript gültig sind.
 
-This block creates global state and if the state yet exist, the command will be ignored. You can safely call this block by every start of the script.
+Global Zustände können in vis, mobile und allen anderen Logik- oder Visualisierungsmodulen genutz werden, sie können gelogged werden in Datenbanken oder wo auch immer.
 
-Typical usage example:
+Dieser Block erzeugt globale Zustände und wenn dieser bereits existiert wird der Befehl ignoriert. Daher kann dieser Block ohne Risiko zu jedem Skriptstart verwendet werden.
+
+
+Typische Anwendung dieses Blocks:
 
 ![Create state](img/system_create_sample1_en.png)
 
