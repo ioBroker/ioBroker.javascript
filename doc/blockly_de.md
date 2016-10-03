@@ -464,7 +464,7 @@ Wenn die Verzögerung nicht 0 ist, wird der Zustand nicht sofort, sondern erst n
 
 Man kann alle anderen Verzögerungen für diesen Datenpunkt löschen, indem man die Checkbox anhakt.
 
-So wird in dem folgenden Beispiel der Datenpunkt "Licht" nur einmal geschaltet (in 2 seconds):
+So wird in dem folgenden Beispiel der Datenpunkt "Licht" nur einmal geschaltet (nach 2 Sekunden):
 ![Control state](img/system_control_1_en.png)
 
 ```
@@ -503,7 +503,7 @@ So wird in dem folgenden Beispiel der Datenpunkt "Licht" nur einmal geschaltet (
 </xml>
 ```
 
-But in this schema the state "Light" will be controlled twice (in 1 second and in 2 seconds):
+Im Gegensatz zu dem vorherigen Beispiel wird der Zustand von "Licht" in dem folgenden Beispiel zweimal geschaltet(nach 1 Sekunde und nach 2 Sekunden):
 ![Control state](img/system_control_2_en.png)
 
 ```
@@ -545,11 +545,12 @@ But in this schema the state "Light" will be controlled twice (in 1 second and i
 ### Aktualisiere State
 ![Update state](img/system_update_en.png)
 
-This block is similar to [control block](#control-state), but it is only updates the value. No command to control the hardware will be sent.
+Dieser Block ist ähnlich dem [Steuere Block](#steuere-state), aber er setzt nur den aktuellen Wert. Es wird kein Befehl zum steuern der Hardware gesendet.
 
-Typical usage example:
+Typische Anwendung dieses Blocks:
 
 ![Update state](img/system_update_sample_en.png)
+
 
 ### Bind states
 ![Bind state](img/system_bind_en.png)
