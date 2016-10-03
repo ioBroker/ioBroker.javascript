@@ -120,8 +120,8 @@
         - [Call function](#call-function)
 
 # Beschreibung
-Blockly is a visual editor that allows users to write programs by adding blocks together. 
-It is designed for people with no prior experience with computer programming. 
+Blockly ist ein grafischer Editor, der es Nutzern erlaubt Skripte durch zusammenfügen von Blöchen zu erzeugen. 
+Er wurde für Nutzer entwickelt, die keine Erfahrung in Programmierung von Computern besitzen.
 
 # Getting started
 
