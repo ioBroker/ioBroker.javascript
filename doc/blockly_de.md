@@ -138,16 +138,18 @@ Dies ist das klassische Beispiel bei Änderung eines Datenpunktes etwas anderes 
 
 Hier wird das Licht an oder ausgeschaltet wenn Bewegung bzw. keine Bewegung erkannt wird.
 
-Zuerst den Block "Triggers=>Event: if object" einfügen. Die object ID auswählen um den Zustand des Objekts als Trigger für dieses Skript zu benutzen.
+Zuerst den Block "Triggers=>Falls Objekt" einfügen. Die Objekt ID auswählen um den Zustand des Objekts als Trigger für dieses Skript zu benutzen.
 
-Einen anderen Block - "System=>Control" hinzufügen und im Dialog den anderen Zustand der durch den Trigger geändert werden soll auswählen.
+Einen anderen Block - "System=>Steuere" hinzufügen und im Dialog den anderen Zustand der durch den Trigger geändert werden soll auswählen.
 
-In diesen Kontrollblock einen Block "System=>Get value of state" einfügen und im Dialog das "Motion" Objekt um dessen Zustand in "Light"*[]: zu schreiben.
+In diesen Steuerungsblock einen Block "System=>Wert von Objekt ID" einfügen und im Dialog das Objekt "Bewegung" auswählen, um dessen Zustand in "Licht": zu schreiben.
 
 **Es gibt bei den Trigger Blöcken eine spezielle Variable "Wert". Diese wird immer hier definiert und kann für verschiedene Zwecke verwendet werden. Sie enthält den aktuellen Wert des triggernden Objekts und man kann daher einfacherer Skripte erzeugen indem man den Block "Variable=>Objekt ID" benutzt und ihn in "Wert" umbenennt.**
 
 ![Getting started 1](img/getting_started_1_2_en.png)
 
+
+&nbsp;
 Beispiel zum importieren:
 
 ```
@@ -196,6 +198,8 @@ Wenn der Zustand "Bewegung" mit dem Wert "wahr" aktualisiert wird, mache:
 
 Wie man sieht wird der Flag "lösche Verzögerung" durch den letzten Befehl gelöscht. Dieses löscht alle Timer für diesen Datenpunkt und startet einen neuen Timer
 
+
+&nbsp;
 Beispiel zum importieren:
 
 ```
@@ -275,6 +279,7 @@ Man kann größere Blöcke einklappen um eine bessere Übersicht zu erhalten, in
 ![Getting started 3](img/getting_started_3_3_en.png)
 
 
+&nbsp;
 Beispiel zum importieren:
 
 ```
@@ -406,6 +411,8 @@ Dieser Block macht nichts, außer eine Zeile ins log zu schreiben. Man kann ihn 
 
 ![Debug output](img/system_debug_1_en.png)
 
+
+&nbsp;
 Beispiel zum importieren:
 
 ```
@@ -438,7 +445,6 @@ Beispiel zum importieren:
 
 
 
-
 Man kann 4 verschiedene Schweregrade für die Nachrichten definieren:
 - debug (dazu muss der debug-Level der Javascript Instanz aktiviert sein.)
 - info (default, zumindest der info log level muss ider Javascript Instanz aktiviert sein.)
@@ -452,7 +458,7 @@ Man kann 4 verschiedene Schweregrade für die Nachrichten definieren:
 
 Einen Kommentar zum Skript hinzufügen um es später besser verstehen zu können.
 
-Der Block macht gar nichts, es ist nur ein Kommentar
+Der Block macht gar nichts, es ist nur ein Kommentar.
 
 
 &nbsp;
@@ -463,6 +469,8 @@ Man kann einen Zustand auf zwei verschiedene Arten schreiben:
 - Um etwas zu steuern und den Wert an die Hardware zu schicken (Dieser Block)
 - Einen neuen Wert schreiben, der nur der Information dient, z.B. Temperaturänderung ([nächster Block](#update-state))
 
+
+&nbsp;
 Typische Anwendung dieses Blocks:
 
 ![Control state](img/system_control_sample1_en.png)
@@ -478,6 +486,10 @@ Man kann alle anderen Verzögerungen für diesen Datenpunkt löschen, indem man 
 
 So wird in dem folgenden Beispiel der Datenpunkt "Licht" nur einmal geschaltet (nach 2 Sekunden):
 ![Control state](img/system_control_1_en.png)
+
+
+&nbsp;
+Beispiel zum importieren:
 
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -580,6 +592,8 @@ Man kann das gleiche mit diesen Blöcken erreichen:
 Man kann auswählen, ob der Wert nur weitergeleitet wird,  wenn sich die Quelle ändert, oder bei jeder Aktualisierung.
 
 
+&nbsp;
+Beispiel zum importieren:
 ```
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="w/@=5/5!D;8wn4DZ;jzG" x="287.99999999999943" y="37.999999999999716">
   <mutation items="1"></mutation>
@@ -630,6 +644,7 @@ Global Zustände können in vis, mobile und allen anderen Logik- oder Visualisie
 Dieser Block erzeugt globale Zustände und wenn dieser bereits existiert wird der Befehl ignoriert. Daher kann dieser Block ohne Risiko zu jedem Skriptstart verwendet werden.
 
 
+&nbsp;
 Typische Anwendung dieses Blocks:
 
 ![Create state](img/system_create_sample1_en.png)
@@ -690,6 +705,8 @@ Following code will report an error by the first execution, because subscribe fo
 
 Although no warning will be printed by the second execution, because the state yet exists.
 
+
+&nbsp;
 ### Get value of state
 ![Get value of state](img/system_get_value_en.png)
 
@@ -702,6 +719,7 @@ You can use this block to get the value of state. Additionally to value you can 
 - Source - instance name, that wrote last value, like "system.adapter.javascript.0"
 
 
+&nbsp;
 Example to print time of the last value change:
 
 ![Get value of state](img/system_get_value_sample_en.png)
