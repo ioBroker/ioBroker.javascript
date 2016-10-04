@@ -17,7 +17,7 @@
         - [Wert von Objekt ID](#wert-von-objekt-id
         - [Get Object ID](#get-object-id)
     - [Aktionsblöcke](#aktionsblöcke)
-        - [Exec - execute](#exec---execute)
+        - [Exec - Kommando](#exec---kommando)
         - [request URL](#request-url)
     - [SendTo Blöcke](#sendTo-blöcke)
         - [Send to telegram](#send-to-telegram)
@@ -762,6 +762,9 @@ Beispiel um die Zeit der letzten Änderung des Wertes auszugeben:
 </xml>
 ```
 
+
+&nbsp;
+
 ### Objekt ID
 ![Get Object ID](img/system_get_id_en.png)
 
@@ -808,22 +811,33 @@ Typische Anwendung dieses Blocks:
 </xml>
 ```
 
+
+&nbsp;
+
+
+
+&nbsp;
+
+
 ## Aktionsblöcke
 
-### Exec - execute
+### Exec - Kommando
 ![Exec - execute](img/action_exec_en.png)
 
-Executes defined command on system. Like someone has written this command in SSH console.
+Dieser Block führt das eingegebene Kommando im System aus, so als ob man es auf der Kommandozeile via SSH eingegeben hätte.
 
-The command will be executed with permissions of user under which the iobroker was started.
+Der Befehl wird mit den rechten des Users ausgeführt unter dem ioBroker gestartet wurde. 
 
-If no outputs are required, they can be ignored:
+Wenn keine Ausgabe gewünscht ist, kann diese unterdrückt werden:
 
 ![Exec - execute](img/action_exec_2_en.png)
 
-If parsing of outputs must be done:
+Wenn eine Ausgabe erfolgen soll:
 
 ![Exec - execute](img/action_exec_1_en.png)
+
+
+&nbsp;
 
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -858,30 +872,42 @@ If parsing of outputs must be done:
 </xml>
 ```
 
-By analysing of outputs 3 special variables will be created: 
-- result, consists normal output to the console (e.g. for "ls /opt" it consist "iobroker nodejs")
-- error object if command cannot be executed by javascript module
-- stderr, error output of executed program
 
-Additionally if the log level is not "none", the same command will be sent to log.
+&nbsp;
+
+Zur Anlayse der Ausgabe werden 3 besondere Variable erzeugt:
+- Ergebnis, enthält die reguläre Ausgabe auf die Konsole (z.B für den Befehl "ls /opt" lautet die Ausgabe "iobroker nodejs")
+- Fehlerobjekt, wenn der Befehl vom JavaScript Modul nicht ausgeführt werden konnte
+- stderr, die Fehlerausgabe des ausgeführten Programms
+
+Zusätzlich wird die selbe Ausgabe auch im log erscheinen, wenn der loglevel nicht auf 'none' steht.
+
+
+&nbsp;
 
 ### request URL
 ![request URL](img/action_request_en.png)
 
-Calls URL and give back the result.
+Ruft eine URL auf und gibt das Ergebnis zurück.
 
-Example:
+
+&nbsp;
+Beispiel:
 
 ![request URL](img/action_request_1_en.png)
 
-By analysing of outputs 3 special variables will be created: 
-- result, consists body of the requested page
-- error, error description 
-- response (only for experts), special object and has type of [http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
+Zur Anlayse der Ausgabe werden 3 besondere Variable erzeugt:
+- Ergebnis, enthält den body der angeforderten Seite
+- Fehler, enthält eine Fehlerbeschreibung
+- Antwort (nur für Fortgeschrittene), Spezialobjekt vom Typ [http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
 
-If no outputs are required, they can be ignored. Just unset "with results" option.
+Wenn keine Ausgabe gewünscht ist, kann diese unterdrückt werden. Dazu die Option "mit Ergebnis" abhaken.
 
-## Send to Blocks
+
+&nbsp;
+
+
+## SendTo Blöcke
 
 ### Send to telegram
 ![Send to telegram](img/sendto_telegram_en.png)
