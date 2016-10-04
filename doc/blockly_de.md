@@ -14,7 +14,7 @@
         - [Binde States](#binde-states)
         - [Schreibe States](#schreibe-states)
         - [Erzeuge State](#erzeuge-state)
-        - [Get value of state](#get-value-of-state)
+        - [Wert von Objekt ID](#wert-von-objekt-id
         - [Get Object ID](#get-object-id)
     - [Aktionsblöcke](#aktionsblöcke)
         - [Exec - execute](#exec---execute)
@@ -697,30 +697,30 @@ Typische Anwendung dieses Blocks:
 </xml>
 ```
 
-You can start to use the new created state first in the block itself. 
+Man kann den neu erzeugten State bereits in dem Block sekber nutzen. 
 
-Following code will report an error by the first execution, because subscribe for "myState" cannot find object:
+Der folgende Code gibt bei der ersten Ausführung einen Fehler aus, weil'subscribe' für "myState" das Objekt nicht finden kann:
  
 ![Create state](img/system_create_sample2_en.png)
 
-Although no warning will be printed by the second execution, because the state yet exists.
+Bei der zweiten Ausführung wird keine Fehler ausgegeben, weil der Datenpunkt jetzt existiert.
 
 
 &nbsp;
-### Get value of state
+### Wert von Objekt ID
 ![Get value of state](img/system_get_value_en.png)
 
-You can use this block to get the value of state. Additionally to value you can get following attributes:
-- Value
-- Acknowledge - command = false or update = true
-- Timestamp in ms from 1970.1.1 (It has type "Date object")
-- Last change of value in ms from 1970.1.1 (It has type "Date object")
-- Quality
-- Source - instance name, that wrote last value, like "system.adapter.javascript.0"
+Dieser Block dient dazu den Wert eines Datenpunktes auszulesen. Folgende Attribute des Datenpunktes können ausgelesen werden:
+- Wert
+- Acknowledge - Befehl = falsch oder update = wahr
+- Timestamp in ms seit dem 01.01.1970 (Hat den Typ "Datumsobjekt")
+- Letzte Änderung des Wertes in ms seit dem 01.01.1970 (Hat den Typ "Datumsobjekt")
+- Qualität
+- Quelle - Name der Instanz, die den letzten Wert geschrieben hat, wie z.B. "system.adapter.javascript.0"
 
 
 &nbsp;
-Example to print time of the last value change:
+Beispiel um die Zeit der letzten Änderung des Wertes auszugeben:
 
 ![Get value of state](img/system_get_value_sample_en.png)
 
@@ -762,14 +762,16 @@ Example to print time of the last value change:
 </xml>
 ```
 
-### Get Object ID
+### Objekt ID
 ![Get Object ID](img/system_get_id_en.png)
 
-It is just a help block to comfortable select the object ID for trigger block.
+Dieses ist ein einfacher Hilfsblock um komfortabel die Objekt ID zum triggern des Blocks auszuwählen.
 
-By clicking on Object ID value the select ID dialog will be opened.
+Der ID Auswahldialog wird durch Anklicken von "Objekt ID" geöffnet.
 
-Typical usage:
+
+&nbsp;
+Typische Anwendung dieses Blocks:
 
 ![Get Object ID](img/system_get_id_sample_en.png)
 
@@ -806,7 +808,7 @@ Typical usage:
 </xml>
 ```
 
-## Actions Blocks
+## Aktionsblöcke
 
 ### Exec - execute
 ![Exec - execute](img/action_exec_en.png)
