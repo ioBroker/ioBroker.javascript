@@ -926,6 +926,9 @@ User name ID is optional and this is ID from [telegram](https://core.telegram.or
 
 Additionally if the log level is not "none", the same message will be sent to log.
 
+
+&nbsp;
+
 ### Send to SayIt
 ![Send to SayIt](img/sendto_sayit_en.png)
 
@@ -942,6 +945,9 @@ You must check the language property. This will be used for text2speech engine.
 Volume is optional (normally from 0 to 100).
 
 Additionally if the log level is not "none", the same message will be sent to log.
+
+
+&nbsp;
 
 ### Send to pushover
 ![Send to pushover](img/sendto_pushover_en.png)
@@ -965,6 +971,9 @@ All other properties are optional and you can read bout them [here](https://push
 - *sound* - the name of one of the sounds supported by device clients to override the user's default sound choice
 
 Additionally if the log level is not "none", the same message will be sent to log.
+
+
+&nbsp;
 
 ### Send email
 ![Send to email](img/sendto_email_en.png)
@@ -1027,6 +1036,9 @@ You can refer to files as ```<img src='cid:file1'/>```. "file1" and "file2" are 
 ```
 
 Additionally if the log level is not "none", the same message will be sent to log.
+
+
+&nbsp;
 
 ### Custom sendTo block
 ![Custom sendTo block](img/sendto_custom_en.png)
@@ -1209,6 +1221,12 @@ sendTo("sql.0", "getHistory", {
 
 If you will start value with "{" it will be interpreted as JSON string. Use double quotes in string.
 
+
+&nbsp;
+
+
+&nbsp;
+
 ## Date and Time blocks
 ### Time comparision
 ![Time comparision](img/datetime_compare_ex_en.png)
@@ -1240,10 +1258,16 @@ Following time formats are valid:
 - hh:mm:ss
 - hh:mm
 
+
+&nbsp;
+
 ### Actual time comparision
 ![Actual time comparision](img/datetime_compare_en.png)
 
 This block is used to compare the day time with actual time. It has the same logic as [Time comparision](#time-comparision), but limits cannot be a blocks and it compares only actual time. (for compatibility with old versions)
+
+
+&nbsp;
 
 ### Get actual time im specific format
 ![Get actual time im specific format](img/datetime_actualtime_en.png)
@@ -1287,6 +1311,9 @@ Following formats are supported:
 - hh:mm:ss - 12:00:00         
 - hh:mm:ss.sss - 12:00:00.000    
 
+
+&nbsp;
+
 ### Get time of astro events for today
 ![Get time of astro events for today](img/datetime_astro_en.png)
 
@@ -1315,6 +1342,12 @@ The return value has type "Date Object", what is just the number of milliseconds
 
 **Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
 
+
+&nbsp;
+
+
+&nbsp;
+
 ## Convert blocks
 Sometimes it is required to convert value into other type. Following blocks allow to convert value into specific types.
 
@@ -1323,35 +1356,56 @@ Sometimes it is required to convert value into other type. Following blocks allo
 
 Convert value to number (float).
 
+
+&nbsp;
+
 ### Convert to boolean
 ![Convert to boolean](img/convert_toboolean_en.png)
 
 Convert value to boolean (true or false).
+
+
+&nbsp;
 
 ### Convert to string
 ![Convert to string](img/convert_tostring_en.png)
 
 Convert value to string.
 
+
+&nbsp;
+
 ### Get type of variable
 ![Get type of variable](img/convert_typeof_en.png)
 
 Get type of value. Type can be: boolean, number, string, object.
+
+
+&nbsp;
 
 ### Convert to date/time object
 ![Convert to date/time object](img/convert_todate_en.png)
 
 Convert value to "Date object". Read [here](#get-actual-time-im-specific-format), what the "Date object" is.
 
+
+&nbsp;
+
 ### Convert date/time object to string
 ![Convert to boolean](img/convert_fromtime_en.png)
 
 Convert "Date object" into string. It has the same format options as [Get actual time im specific format](#get-actual-time-im-specific-format).
 
+
+&nbsp;
+
 ### Convert JSON to object
 ![Convert JSON to object](img/convert_json2object_en.png)
 
 Convert JSON string into javascript object. If an error occurs, the empty object will be returned. (only for experts)
+
+
+&nbsp;
 
 ### Convert object to JSON
 ![Convert object to JSON](img/convert_object2json_en.png)
@@ -1370,6 +1424,12 @@ if not:
 ```
 {"a": 1, "b": 2}
 ```
+
+
+&nbsp;
+
+
+&nbsp;
 
 ## Trigger
 
@@ -1474,10 +1534,16 @@ If only one object ID is used so special variables are available in the statemen
 
 elsewise if more than one object ID is used for trigger, you can access value and old value via [Trigger info](#trigger-info).
 
+
+&nbsp;
+
 ### Trigger on state change
 ![Trigger on state change](img/trigger_trigger_en.png)
 
 This is the same block as "Trigger on states change", but with no possibility to use multiple object IDs for triggering (for versions compatibility).
+
+
+&nbsp;
 
 
 ### Trigger info
@@ -1559,6 +1625,9 @@ Typical usage:
 </block>
 ```
 
+
+&nbsp;
+
 ### Schedule
 ![Schedule](img/trigger_schedule_en.png)
 
@@ -1617,6 +1686,9 @@ But there is a good help for you to build such a rules. By clicking on rule the 
 
 ![Schedule](img/trigger_schedule_1_en.png)
 
+
+&nbsp;
+
 ### Trigger on astro event
 ![Schedule](img/trigger_astro_en.png)
 
@@ -1644,6 +1716,9 @@ Additionally you can set the offset in minutes to astrological event, e.g. to fi
 ![Schedule](img/trigger_astro_1_en.png)
 
 As you can see the offset can be negative too to specify time before astrological events.
+
+
+&nbsp;
 
 ### Named schedule
 ![Schedule](img/trigger_schedule_ex_en.png)
@@ -1724,12 +1799,18 @@ Here is an example of configurable alarm clock:
 </xml>
 ```
 
+
+&nbsp;
+
 ### Clear schedule
 ![Schedule](img/trigger_cron_clear_en.png)
 
 With this function block you can clear named schedule. If you define named one more time without clearing it, the old one will still active.
 
 See an example in [Named schedule](#named-schedule)
+
+
+&nbsp;
 
 ### CRON dialog
 ![Schedule](img/trigger_cron_input_en.png)
@@ -1788,6 +1869,9 @@ Create CRON rule from dialog. This block can be connected with [Named schedule](
 </xml>
 ```
 
+
+&nbsp;
+
 ### CRON rule
 ![Schedule](img/trigger_cron_rule_en.png)
 
@@ -1802,6 +1886,12 @@ With additional parameter "with seconds" you can specify seconds for CRON rule t
 ![Schedule](img/trigger_cron_rule_2_en.png)
 
 This block can be used (like [CRON dialog](#cron-dialog)) only with [Named schedule](#named-schedule) block.
+
+
+&nbsp;
+
+
+&nbsp;
 
 ## Timeouts
 
@@ -1845,6 +1935,9 @@ Every delayed execution can have unique name. It can be canceled by other block.
   </block>
 </xml>
 ```
+
+
+&nbsp;
 
 ### Clear delayed execution
 ![Clear delayed execution](img/timeouts_timeout_clear_en.png)
@@ -1953,6 +2046,9 @@ By first motion the light should go on and after the last motion after 30 second
 </xml>
 ```
 
+
+&nbsp;
+
 ### Execution by interval
 ![Execution by interval](img/timeouts_interval_en.png)
 
@@ -1963,10 +2059,19 @@ If you set the interval too small (under 100ms) it can be, that intervals will b
 
 Similar to timeout block you can set unique interval name too.
 
+
+&nbsp;
+
 ### Stop execution by interval
 ![Stop execution by interval](img/timeouts_interval_clear_en.png)
 
 With the help of this block you can cancel periodically execution of interval block by its name.
+
+
+&nbsp;
+
+
+&nbsp;
 
 ## Logic
 
@@ -1984,6 +2089,12 @@ With the help of this block you can cancel periodically execution of interval bl
 
 ### Test block
 
+
+&nbsp;
+
+
+&nbsp;
+
 ## Loops
 
 ### Repeat N times
@@ -1995,6 +2106,12 @@ With the help of this block you can cancel periodically execution of interval bl
 ### For each
 
 ### Break out of loop
+
+
+&nbsp;
+
+
+&nbsp;
 
 ## Math
 
@@ -2024,6 +2141,12 @@ With the help of this block you can cancel periodically execution of interval bl
 
 ### Random value between min and max
 
+
+&nbsp;
+
+
+&nbsp;
+
 ## Text
 
 ### String value
@@ -2045,6 +2168,12 @@ With the help of this block you can cancel periodically execution of interval bl
 ### Convert to upper case or to lower case
 
 ### Trim string
+
+
+&nbsp;
+
+
+&nbsp;
 
 ## Lists
 
@@ -2068,6 +2197,12 @@ With the help of this block you can cancel periodically execution of interval bl
 
 ### Convert text to list and vice versa
 
+
+&nbsp;
+
+
+&nbsp;
+
 ## Colour
 
 ### Colour value
@@ -2077,6 +2212,12 @@ With the help of this block you can cancel periodically execution of interval bl
 ### RGB colour
 
 ### Mix colours
+
+
+&nbsp;
+
+
+&nbsp;
 
 ## Variables
 
@@ -2112,6 +2253,9 @@ var item;
 item = 0;
 ```
 
+
+&nbsp;
+
 ### Get variable's value
 ![Get variable's value](img/variables_get_en.png)
 
@@ -2123,6 +2267,12 @@ There is one exception with trigger blocks [Trigger on states change](#trigger-o
 Inside these blocks variable "value" yet exist, but anyway to read their values you must rename variable into value and then use it.
 
 ![Get variable's value](img/variables_get_2_en.png)
+
+
+&nbsp;
+
+
+&nbsp;
 
 ## Functions
 
