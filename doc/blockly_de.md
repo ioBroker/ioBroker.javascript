@@ -907,18 +907,20 @@ Wenn keine Ausgabe gewünscht ist, kann diese unterdrückt werden. Dazu die Opti
 &nbsp;
 
 
+&nbsp;
+
 ## SendTo Blöcke
 
 ### Send to telegram
 ![Send to telegram](img/sendto_telegram_en.png)
 
-This block is used to send message to telegram client via telegram adapter.
+Dieser Block dient dazu eine Nachricht über telegram mit Hilfe des telegram-Adapters zu senden.
 
-Of course the telegram adapter must be installed and configured.
+Selbstverständlich muss dafür vorher der telegram-Adapter installiert und konfiguriert werden.
 
-To send message to some specific instance, you should select the installed adapter instance (Normally telegram.0), elsewise message will be sent to all existing instances.
+Um die Nachricht über eine bestimmte Instanz zu senden, muss die gewünschte Instanz des Adapters (üblicherweise telegram.0) ausgewählt werden, ansonsten wird die Nachricht über alle verfügbaren Instanzen verschickt.
 
-Property *message* is mandatory and exactly this text will be sent to client. 
+Das Feld *Meldung* ist zwingend notwendig und der dort enthaltene Text wird exakt so an den Klienten gesendet. 
 
 User name ID is optional and this is ID from [telegram](https://core.telegram.org/bots/api#user) (Unique identifier for user or bot).
 
