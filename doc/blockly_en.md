@@ -2039,13 +2039,521 @@ Inside these blocks variable "value" yet exist, but anyway to read their values 
 ## Functions
 
 ### Create function from blocks with no return value
+![Create function from blocks with no return value](img/functions_function_en.png)
+
+With this block you can combine some repeat sequences into function and than use this function everywhere in current blockly.
+
+Here is an example of function that just prints into log current time.
+
+![Create function from blocks with no return value](img/functions_function_2_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="comment" id=";LE@QUg[hpGG!Ed6(?Hf" x="463" y="88">
+    <field name="COMMENT">Print current time</field>
+  </block>
+  <block type="procedures_defnoreturn" id="zz#oL]VPR)s}NMK9htHa" x="463" y="113">
+    <field name="NAME">printTime</field>
+    <comment pinned="false" h="80" w="160">Describe this function...</comment>
+    <statement name="STACK">
+      <block type="debug" id="ak(`[aJB-AH@Hvc;B,[D">
+        <field name="Severity">log</field>
+        <value name="TEXT">
+          <shadow type="text" id="aGuA=^(ge/)=lXes9f]?">
+            <field name="TEXT">test</field>
+          </shadow>
+          <block type="time_get" id="M}z9(p(melE7BbTGqczO">
+            <mutation format="false" language="false"></mutation>
+            <field name="OPTION">hh:mm:ss.sss</field>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+</xml>
+```
+
+After the function created, you can use this function like this:
+
+![Create function from blocks with no return value](img/functions_function_3_en.png)
+
+```
+<block xmlns="http://www.w3.org/1999/xhtml" type="timeouts_setinterval" id="hp;?}l3uStXhm+a2s!9t" x="62.99999999999943" y="112.99999999999994">
+  <field name="NAME">interval</field>
+  <field name="INTERVAL">1000</field>
+  <statement name="STATEMENT">
+    <block type="procedures_callnoreturn" id="(/)MPv+z_|516CuG%[XD">
+      <mutation name="printTime"></mutation>
+    </block>
+  </statement>
+</block>
+```
+
+You can find this new function in the blocks menu:
+
+![Create function from blocks with no return value](img/functions_function_4_en.png)
+
+Additionally you can specify arguments for the function too via configuration dialog. You can edit the names of arguments in hte same dialog.
+
+![Create function from blocks with no return value](img/functions_function_1_en.png)
+
+Here is an example of function that prints the sum of first argument and the second one:
+
+![Create function from blocks with no return value](img/functions_function_5_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="comment" id=";LE@QUg[hpGG!Ed6(?Hf" x="463" y="88">
+    <field name="COMMENT">Print sum of a and b</field>
+  </block>
+  <block type="procedures_defnoreturn" id="zz#oL]VPR)s}NMK9htHa" x="463" y="113">
+    <mutation>
+      <arg name="a"></arg>
+      <arg name="b"></arg>
+    </mutation>
+    <field name="NAME">printSum</field>
+    <comment pinned="false" h="80" w="160">Describe this function...</comment>
+    <statement name="STACK">
+      <block type="debug" id="ak(`[aJB-AH@Hvc;B,[D">
+        <field name="Severity">log</field>
+        <value name="TEXT">
+          <shadow type="text" id="aGuA=^(ge/)=lXes9f]?">
+            <field name="TEXT">test</field>
+          </shadow>
+          <block type="math_arithmetic" id="qUGc!b+U]:yE!I+3I+Lp">
+            <field name="OP">ADD</field>
+            <value name="A">
+              <shadow type="math_number" id="OqjQ{@*pgO,~Xd(ef)9~">
+                <field name="NUM">1</field>
+              </shadow>
+              <block type="variables_get" id="]dC)!=A3{(5?9hJ:1gET">
+                <field name="VAR">a</field>
+              </block>
+            </value>
+            <value name="B">
+              <shadow type="math_number" id="aDp|:rn#.wve0]WKi(D[">
+                <field name="NUM">1</field>
+              </shadow>
+              <block type="variables_get" id="5];ao,?ce{;GJ;OOW~S4">
+                <field name="VAR">b</field>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+</xml>
+```
+
+You can find the arguments in the variables menu:
+
+![Create function from blocks with no return value](img/functions_function_6_en.png)
+
+And use this function like this:
+
+![Create function from blocks with no return value](img/functions_function_7_en.png)
+
+```
+<block xmlns="http://www.w3.org/1999/xhtml" type="procedures_callnoreturn" id="(-G|y+Y7AC]w2CTQGjYC" x="138" y="188">
+  <mutation name="printSum">
+    <arg name="a"></arg>
+    <arg name="b"></arg>
+  </mutation>
+  <value name="ARG0">
+    <block type="math_number" id="!.UT=[{Xkz-*wlPh)sYn">
+      <field name="NUM">5</field>
+    </block>
+  </value>
+  <value name="ARG1">
+    <block type="math_number" id="EMhKM9Cn#;DjMZ#Ko%EN">
+      <field name="NUM">6</field>
+    </block>
+  </value>
+</block>
+```
 
 ### Create function from blocks with return value
+![Create function from blocks with return value](img/functions_function_ret_en.png)
+
+This block is the same, but it can return result of the function, that can be used later in blocks.
+
+![Create function from blocks with return value](img/functions_function_ret_2_en.png)
+
+```
+<block xmlns="http://www.w3.org/1999/xhtml" type="procedures_defreturn" id="4)|}1YzV}e6YUvVV^sY{" x="413" y="138">
+  <mutation statements="false">
+    <arg name="a"></arg>
+    <arg name="b"></arg>
+  </mutation>
+  <field name="NAME">do something</field>
+  <comment pinned="false" h="80" w="160">Return sum of a and b</comment>
+  <value name="RETURN">
+    <block type="math_arithmetic" id="qUGc!b+U]:yE!I+3I+Lp">
+      <field name="OP">ADD</field>
+      <value name="A">
+        <shadow type="math_number" id="OqjQ{@*pgO,~Xd(ef)9~">
+          <field name="NUM">1</field>
+        </shadow>
+        <block type="variables_get" id="]dC)!=A3{(5?9hJ:1gET">
+          <field name="VAR">a</field>
+        </block>
+      </value>
+      <value name="B">
+        <shadow type="math_number" id="aDp|:rn#.wve0]WKi(D[">
+          <field name="NUM">1</field>
+        </shadow>
+        <block type="variables_get" id="5];ao,?ce{;GJ;OOW~S4">
+          <field name="VAR">b</field>
+        </block>
+      </value>
+    </block>
+  </value>
+</block>
+```
+
+Usage is similar with other function blocks:
+
+![Create function from blocks with return value](img/functions_function_ret_3_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="debug" id="zgr7b0g)}uMe1ySGYL7X" x="163" y="137">
+    <field name="Severity">log</field>
+    <value name="TEXT">
+      <shadow type="text" id="q-]m1ptAzK4Rq20wWRBq">
+        <field name="TEXT">test</field>
+      </shadow>
+      <block type="procedures_callreturn" id="0RX?V1j|FZHK@*Lw3W-g">
+        <mutation name="sum">
+          <arg name="a"></arg>
+          <arg name="b"></arg>
+        </mutation>
+        <value name="ARG0">
+          <block type="math_number" id="Xd52^_Qp83=ah2RTWzSU">
+            <field name="NUM">5</field>
+          </block>
+        </value>
+        <value name="ARG1">
+          <block type="math_number" id="-M9A9EhrgJSRc*4(X^[;">
+            <field name="NUM">6</field>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defreturn" id="4)|}1YzV}e6YUvVV^sY{" x="413" y="138">
+    <mutation statements="false">
+      <arg name="a"></arg>
+      <arg name="b"></arg>
+    </mutation>
+    <field name="NAME">sum</field>
+    <comment pinned="false" h="80" w="160">Return sum of a and b</comment>
+    <value name="RETURN">
+      <block type="math_arithmetic" id="qUGc!b+U]:yE!I+3I+Lp">
+        <field name="OP">ADD</field>
+        <value name="A">
+          <shadow type="math_number" id="OqjQ{@*pgO,~Xd(ef)9~">
+            <field name="NUM">1</field>
+          </shadow>
+          <block type="variables_get" id="]dC)!=A3{(5?9hJ:1gET">
+            <field name="VAR">a</field>
+          </block>
+        </value>
+        <value name="B">
+          <shadow type="math_number" id="aDp|:rn#.wve0]WKi(D[">
+            <field name="NUM">1</field>
+          </shadow>
+          <block type="variables_get" id="5];ao,?ce{;GJ;OOW~S4">
+            <field name="VAR">b</field>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+</xml>
+```
+
+For all functions you can add comment or description. 
+
+![Create function from blocks with return value](img/functions_function_ret_1_en.png)
+
+In the return block you can use special return element:
+
+![Create function from blocks with return value](img/functions_function_ret_4_en.png)
+
+![Create function from blocks with return value](img/functions_function_ret_5_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="debug" id="zgr7b0g)}uMe1ySGYL7X" x="63" y="12">
+    <field name="Severity">log</field>
+    <value name="TEXT">
+      <shadow type="text" id="q-]m1ptAzK4Rq20wWRBq">
+        <field name="TEXT">test</field>
+      </shadow>
+      <block type="procedures_callreturn" id="0RX?V1j|FZHK@*Lw3W-g">
+        <mutation name="numberToDay">
+          <arg name="day"></arg>
+        </mutation>
+        <value name="ARG0">
+          <block type="math_number" id="Xd52^_Qp83=ah2RTWzSU">
+            <field name="NUM">5</field>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+  <block type="debug" id="@i@bdG^90dp,cJ#W*[nB" x="12" y="188">
+    <field name="Severity">log</field>
+    <value name="TEXT">
+      <shadow type="text" id="8:/`}T!:6Wz.d/;)jpHl">
+        <field name="TEXT">test</field>
+      </shadow>
+      <block type="procedures_callreturn" id="hvzS!O_Q=FlccQR@*%tk">
+        <mutation name="numberToDay">
+          <arg name="day"></arg>
+        </mutation>
+        <value name="ARG0">
+          <block type="time_get" id=":A,Ba,yrW_QgiX*cs9zh">
+            <mutation format="false" language="false"></mutation>
+            <field name="OPTION">wd</field>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defreturn" id="4)|}1YzV}e6YUvVV^sY{" x="588" y="163">
+    <mutation>
+      <arg name="day"></arg>
+    </mutation>
+    <field name="NAME">numberToDay</field>
+    <comment pinned="false" h="80" w="160">Return sum of a and b</comment>
+    <statement name="STACK">
+      <block type="procedures_ifreturn" id="/qJjm#cr-naS}joAL0eT">
+        <mutation value="1"></mutation>
+        <value name="CONDITION">
+          <block type="logic_compare" id="cbxuAYxF,ptMi.`E/nB.">
+            <field name="OP">EQ</field>
+            <value name="A">
+              <block type="variables_get" id="`mWQWp).?qDuD=)NX2dA">
+                <field name="VAR">day</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="s,20+9X6bB/2nL{v?g:/">
+                <field name="NUM">0</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <value name="VALUE">
+          <block type="text" id="iI)V7P`3YP]{-S-7HcO1">
+            <field name="TEXT">Sunday</field>
+          </block>
+        </value>
+        <next>
+          <block type="procedures_ifreturn" id="3=FBSCS{jzu[}2L5Spi[">
+            <mutation value="1"></mutation>
+            <value name="CONDITION">
+              <block type="logic_compare" id="V[;S84AH5cf93^5/[AN^">
+                <field name="OP">EQ</field>
+                <value name="A">
+                  <block type="variables_get" id=";ShgVu*+:nn9WSzbm[fA">
+                    <field name="VAR">day</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="math_number" id="jY?Wj8lC1-~SiIHa*I)0">
+                    <field name="NUM">1</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="VALUE">
+              <block type="text" id="=aVg_FatldZUUsS(8G`;">
+                <field name="TEXT">Monday</field>
+              </block>
+            </value>
+            <next>
+              <block type="procedures_ifreturn" id="(g_VE2e?U^J-nhk,bP|0">
+                <mutation value="1"></mutation>
+                <value name="CONDITION">
+                  <block type="logic_compare" id="M;B+SSw[Mc.iu;fUjvcV">
+                    <field name="OP">EQ</field>
+                    <value name="A">
+                      <block type="variables_get" id="yT{.UQ)qXY8-@2XzpxQo">
+                        <field name="VAR">day</field>
+                      </block>
+                    </value>
+                    <value name="B">
+                      <block type="math_number" id="Q-JC5_JZ=i{[+~:^|BpU">
+                        <field name="NUM">2</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="VALUE">
+                  <block type="text" id="9`665+j*i_?3BCZWODGt">
+                    <field name="TEXT">Tuesday</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="procedures_ifreturn" id="{+9IT6E:N-a+Y.cFNMsw">
+                    <mutation value="1"></mutation>
+                    <value name="CONDITION">
+                      <block type="logic_compare" id="B}D{JSK|}=bk|-|D#/_h">
+                        <field name="OP">EQ</field>
+                        <value name="A">
+                          <block type="variables_get" id="s{Zxm|sBbEGA1#~Tv3EE">
+                            <field name="VAR">day</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="math_number" id="f!3KoyGu4bWpxdaJY`JI">
+                            <field name="NUM">3</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="VALUE">
+                      <block type="text" id="yS4pn;Fdg9JT[MjvPu,4">
+                        <field name="TEXT">Wednesday</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="procedures_ifreturn" id="g*VMz;jyw4,@;Qb*/8TN">
+                        <mutation value="1"></mutation>
+                        <value name="CONDITION">
+                          <block type="logic_compare" id="(^azMqi{:`?S.tJ@y7-m">
+                            <field name="OP">EQ</field>
+                            <value name="A">
+                              <block type="variables_get" id="P*CAI!ug.Xl*BM2v/kpb">
+                                <field name="VAR">day</field>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="math_number" id="YN@VzF~X=BOcWm+P]c3i">
+                                <field name="NUM">4</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="VALUE">
+                          <block type="text" id="H`yzv!j_GjSw|@f7Gap8">
+                            <field name="TEXT">Thursday</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="procedures_ifreturn" id=")htNPjBWw1J/gp-Y5#Kg">
+                            <mutation value="1"></mutation>
+                            <value name="CONDITION">
+                              <block type="logic_compare" id="nFZ;s`3ij0v|.wQqw`AB">
+                                <field name="OP">EQ</field>
+                                <value name="A">
+                                  <block type="variables_get" id="Q^3OKKD]aGa0/qxWf%*g">
+                                    <field name="VAR">day</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <block type="math_number" id="#brnWNXj0_dx[JwHjgh0">
+                                    <field name="NUM">5</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <value name="VALUE">
+                              <block type="text" id="Y1-{3UJxFrpq{uJp6DkB">
+                                <field name="TEXT">Friday</field>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="procedures_ifreturn" id="K2~CLXTJ5b=T+=/6%m=~">
+                                <mutation value="1"></mutation>
+                                <value name="CONDITION">
+                                  <block type="logic_compare" id="Cjh^D.y[m3YQn},sC1(0">
+                                    <field name="OP">EQ</field>
+                                    <value name="A">
+                                      <block type="variables_get" id="|uXT]6-.XcdAG-6HtffC">
+                                        <field name="VAR">day</field>
+                                      </block>
+                                    </value>
+                                    <value name="B">
+                                      <block type="math_number" id="N@!AqGy7OCz9:zhv@f?K">
+                                        <field name="NUM">6</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <value name="VALUE">
+                                  <block type="text" id="omKlSmgS{[5T:v{9(j}?">
+                                    <field name="TEXT">Saturday</field>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="procedures_ifreturn" id=".XFx#9RZIGl!joSiMNyq">
+                                    <mutation value="1"></mutation>
+                                    <value name="CONDITION">
+                                      <block type="logic_compare" id="aqkbbBOzUTv/%JlX)V}S">
+                                        <field name="OP">EQ</field>
+                                        <value name="A">
+                                          <block type="variables_get" id="qrl+C-GvBF7QzLz8?@:u">
+                                            <field name="VAR">day</field>
+                                          </block>
+                                        </value>
+                                        <value name="B">
+                                          <block type="math_number" id="_[;I?)){=vm_jnSYHumL">
+                                            <field name="NUM">7</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </value>
+                                    <value name="VALUE">
+                                      <block type="text" id="MCTQyN!}ig#3~)B[r#q[">
+                                        <field name="TEXT">Sunday</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="RETURN">
+      <block type="text" id="revjgT`{%j^1mn*-SJ1a">
+        <field name="TEXT">Invalid day</field>
+      </block>
+    </value>
+  </block>
+</xml>
+```
 
 ### Return value in function 
+![Return value in function](img/functions_return_en.png)
+
+See usage of this block in [Create function from blocks with return value](#create-function-from-blocks-with-return-value]).
+
+This block can be used only there.
 
 ### Create custom function with no return value
+![Create custom function with no return value](img/functions_function_ex_en.png)
+
+![Create custom function with no return value](img/functions_function_ex_1_en.png)
 
 ### Create custom function with return value
+![Create custom function with return value](img/functions_function_ex_ret_en.png)
 
 ### Call function
+![Call function](img/functions_call_ex_en.png)
+
+![Call function](img/functions_call_ex_ret_en.png)

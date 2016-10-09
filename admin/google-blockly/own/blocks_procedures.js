@@ -176,7 +176,7 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
         containerBlock.initSvg();
 
         // Check/uncheck the allow statement box.
-        containerBlock.setFieldValue('FALSE', 'STATEMENTS');
+        containerBlock.getInput('STATEMENT_INPUT').setVisible(false);
 
         // Parameter list.
         var connection = containerBlock.getInput('STACK').connection;
@@ -286,8 +286,8 @@ Blockly.Blocks['procedures_defcustomnoreturn'] = {
             .appendField(nameField, 'NAME')
             .appendField('', 'PARAMS');
 
-        this.appendDummyInput("SCRIPT")
-            .appendField(new Blockly.FieldScript(""), "SCRIPT");
+        this.appendDummyInput('SCRIPT')
+            .appendField(new Blockly.FieldScript(''), 'SCRIPT');
 
         this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
 
