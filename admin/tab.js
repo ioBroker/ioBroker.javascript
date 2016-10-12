@@ -517,6 +517,12 @@ function Scripts(main) {
 
             $('.script-edit').show();
 
+            if (id.match(/^script\.js\.global/)) {
+                $('#global_hint').show();
+            } else {
+                $('#global_hint').hide();
+            }
+
             $('#edit-script-group').val(getGroup(id));
 
             $('#edit-script-name').val(obj.common.name);
@@ -1431,6 +1437,35 @@ function Scripts(main) {
         that.$dialogExport.dialog('open');
     }
 
+    function loadScripts(scripts, callback) {
+        if (!scripts || !scripts.length) {
+            return callback();
+        }
+        var adapter = scripts.pop();
+        $.getScript('../../adapter/' + adapter + '/blockly.js', function (/*data, textStatus, jqxhr*/) {
+            setTimeout(function () {
+                loadScripts(scripts, callback);
+            }, 0);
+        }).fail(function (jqxhr, settings, exception) {
+            console.error('cannot load ' + '../../adapter/' + adapter + '/blockly.js: ' + exception);
+        });
+    }
+
+    function loadCustomBlockly(callback) {
+        // get all adapters, that can have blockly
+        var toLoad = [];
+        for (var id in that.main.objects) {
+            if (!that.main.objects.hasOwnProperty(id) || !that.main.objects[id]) continue;
+            if (!id.match(/^system\.adapter\./)) continue;
+            if (that.main.objects[id].type !== 'adapter') continue;
+            if (that.main.objects[id].common && that.main.objects[id].common.blockly) {
+                toLoad.push(that.main.objects[id].common.name);
+            }
+        }
+
+        loadScripts(toLoad, callback);
+    }
+
     this.init = function (update) {
         var that = this;
         if (!this.main.objectsLoaded || !this.languageLoaded) {
@@ -1442,59 +1477,60 @@ function Scripts(main) {
 
         if (!$('#blockly-editor').data('inited')) {
             $('#blockly-editor').data('inited', true);
+            loadCustomBlockly(function () {
+                MSG.catSystem = Blockly.Words['System'][systemLang];
+                MSG.catSendto = Blockly.Words['Sendto'][systemLang];
 
-            MSG.catSystem = Blockly.Words['System'][systemLang];
-            MSG.catSendto = Blockly.Words['Sendto'][systemLang];
-            
-            // Interpolate translated messages into toolbox.
-            var toolboxText = document.getElementById('toolbox').outerHTML;
-            toolboxText = toolboxText.replace(/{(\w+)}/g,
-                function(m, p1) {return MSG[p1]});
+                // Interpolate translated messages into toolbox.
+                var toolboxText = document.getElementById('toolbox').outerHTML;
+                toolboxText = toolboxText.replace(/{(\w+)}/g,
+                    function(m, p1) {return MSG[p1]});
 
-            var blocks = '';
-            for (var cb = 0; cb < Blockly.CustomBlocks.length; cb++) {
-                var name = Blockly.CustomBlocks[cb];
-                // add blocks
-                blocks += '<category name="' + Blockly.Words[name][systemLang] + '" colour="' + Blockly[name].HUE + '">';
-                for (var _b in Blockly[name].blocks) {
-                    blocks += Blockly[name].blocks[_b];
-                }
-                blocks += '</category>';
-            }
-            toolboxText = toolboxText.replace('<category><block>%%CUSTOM_BLOCKS%%</block></category>', blocks);
-
-            var toolboxXml = Blockly.Xml.textToDom(toolboxText);
-
-            that.blocklyWorkspace = Blockly.inject(
-                'blockly-editor',
-                {
-                    media: '/adapter/javascript/google-blockly/media/',
-                    toolbox: toolboxXml,
-                    zoom: {
-                        controls:   true,
-                        wheel:      false,
-                        startScale: 1.0,
-                        maxScale:   3,
-                        minScale:   0.3,
-                        scaleSpeed: 1.2
-                    },
-                    trashcan: true,
-                    grid: {
-                        spacing:    25,
-                        length:     3,
-                        colour:     '#ccc',
-                        snap:       true
+                var blocks = '';
+                for (var cb = 0; cb < Blockly.CustomBlocks.length; cb++) {
+                    var name = Blockly.CustomBlocks[cb];
+                    // add blocks
+                    blocks += '<category name="' + Blockly.Words[name][systemLang] + '" colour="' + Blockly[name].HUE + '">';
+                    for (var _b in Blockly[name].blocks) {
+                        blocks += Blockly[name].blocks[_b];
                     }
+                    blocks += '</category>';
                 }
-            );
-            // Listen to events on master workspace.
-            that.blocklyWorkspace.addChangeListener(function (masterEvent) {
-                if (masterEvent.type == Blockly.Events.UI) {
-                    return;  // Don't mirror UI events.
-                }
-                that.changed = true;
-                $('#script-edit-button-save').button('enable');
-                $('#script-edit-button-cancel').button('enable');
+                toolboxText = toolboxText.replace('<category><block>%%CUSTOM_BLOCKS%%</block></category>', blocks);
+
+                var toolboxXml = Blockly.Xml.textToDom(toolboxText);
+
+                that.blocklyWorkspace = Blockly.inject(
+                    'blockly-editor',
+                    {
+                        media: '/adapter/javascript/google-blockly/media/',
+                        toolbox: toolboxXml,
+                        zoom: {
+                            controls:   true,
+                            wheel:      false,
+                            startScale: 1.0,
+                            maxScale:   3,
+                            minScale:   0.3,
+                            scaleSpeed: 1.2
+                        },
+                        trashcan: true,
+                        grid: {
+                            spacing:    25,
+                            length:     3,
+                            colour:     '#ccc',
+                            snap:       true
+                        }
+                    }
+                );
+                // Listen to events on master workspace.
+                that.blocklyWorkspace.addChangeListener(function (masterEvent) {
+                    if (masterEvent.type == Blockly.Events.UI) {
+                        return;  // Don't mirror UI events.
+                    }
+                    that.changed = true;
+                    $('#script-edit-button-save').button('enable');
+                    $('#script-edit-button-cancel').button('enable');
+                });
             });
         }
 
@@ -1923,10 +1959,20 @@ function Scripts(main) {
 
             if (this.$grid) this.$grid.selectId('object', id, obj);
         } else
-        if (id.match(/^system\.adapter\.[-\w]+\.[0-9]+$/)) {
+        if (id.match(/^system\.adapter\.[-\w\d]+\.[0-9]+$/)) {
             var val = $('#edit-script-engine-type').val();
             that.engines = that.fillEngines('edit-script-engine-type');
             $('#edit-script-engine-type').val(val);
+        }
+        else
+        if (id.match(/^system\.adapter\.[-\w\d]+\$/)) {
+            if (obj[id].common && obj[id].common.blockly) {
+                main.confirmMessage(_('Some blocks were updated. Reload admin?'), null, null, 700, function (result) {
+                    if (result) {
+                        window.location.reload();
+                    }
+                });
+            }
         }
 
         if (id.match(/^script\.js\./) && obj && obj.type === 'channel') {

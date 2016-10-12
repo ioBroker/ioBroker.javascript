@@ -2543,17 +2543,77 @@ In the return block you can use special return element:
 
 See usage of this block in [Create function from blocks with return value](#create-function-from-blocks-with-return-value]).
 
-This block can be used only there.
+This block can be used only there and serves to return value in the middle of the function.
 
 ### Create custom function with no return value
 ![Create custom function with no return value](img/functions_function_ex_en.png)
 
+Sometimes existing blocks are not suitable to solve specific problem. With this block you can create your own block as a function, that can accept parameters and do some action.
+To write such a function you must know javascript. You can use inside all functions, that were created for pure scripting.
+
+To write the code you must click the '...' at the ond the block and the editor dialog will be opened.
+
 ![Create custom function with no return value](img/functions_function_ex_1_en.png)
+
+Otherwise the usage of this block is similar with standard function blocks, like [Create function from blocks with return value](#create-function-from-blocks-with-return-value]) or [Create function from blocks with no return value](#create-function-from-blocks-with-no-return-value]).
 
 ### Create custom function with return value
 ![Create custom function with return value](img/functions_function_ex_ret_en.png)
+
+This custom function block can return values. To return result from function write 
+
+```
+return 'your result';
+```
+
+Like here:
+
+![Create custom function with return value](img/functions_function_ex_ret_1_en.png)
+
+```
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="procedures_defcustomreturn" id="mG^pXm=MO7vPl!c^/.Px" x="163" y="63">
+    <mutation statements="false">
+      <arg name="a"></arg>
+      <arg name="b"></arg>
+    </mutation>
+    <field name="NAME">sum</field>
+    <field name="SCRIPT">cmV0dXJuIGEgKyBiOw==</field>
+    <comment pinned="false" h="80" w="160">Summarise a and b</comment>
+  </block>
+  <block type="debug" id="U6pI-lE0VS#G):ELrQ(0" x="163" y="138">
+    <field name="Severity">log</field>
+    <value name="TEXT">
+      <shadow type="text" id="PBg^5*vuC?Isr)]pqx/u">
+        <field name="TEXT">test</field>
+      </shadow>
+      <block type="procedures_callcustomreturn" id="XuhUUF65jRZGB#YE(GTC">
+        <mutation name="sum">
+          <arg name="a"></arg>
+          <arg name="b"></arg>
+        </mutation>
+        <value name="ARG0">
+          <block type="math_number" id="h_[^zH{ILtnHrsxY0j~z">
+            <field name="NUM">5</field>
+          </block>
+        </value>
+        <value name="ARG1">
+          <block type="math_number" id="iIoph|b.?suX;)R=d|),">
+            <field name="NUM">6</field>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+</xml>
+```
 
 ### Call function
 ![Call function](img/functions_call_ex_en.png)
 
 ![Call function](img/functions_call_ex_ret_en.png)
+
+For every created function in the menu appears additional block with the name of this function. 
+
+You can use it like normal blocks in you scripts.
+
