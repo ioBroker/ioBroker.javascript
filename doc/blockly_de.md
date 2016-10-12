@@ -11,10 +11,17 @@
         - [Kommentar](#kommentar)
         - [Steuere State](#steuere-state)
         - [Aktualisiere State](#aktualisiere-state)
+<<<<<<< HEAD
         - [Binde States](#binde-states)
         - [Schreibe States](#schreibe-states)
         - [Erzeuge State](#erzeuge-state)
         - [Wert von Objekt ID](#wert-von-objekt-id)
+=======
+        - [Bind states](#bind-states)
+        - [Write states](#write-states)
+        - [Create state](#create-state)
+        - [Get value of state](#get-value-of-state)
+>>>>>>> parent of ab7fb3b... Update blockly_de.md
         - [Get Object ID](#get-object-id)
     - [Aktionsblöcke](#aktionsblöcke)
         - [Exec - Kommando](#exec---kommando)
@@ -573,14 +580,13 @@ Im Gegensatz zu dem vorherigen Beispiel wird der Zustand von "Licht" in dem folg
 
 Dieser Block ist ähnlich dem [Steuere Block](#steuere-state), aber er setzt nur den aktuellen Wert. Es wird kein Befehl zum steuern der Hardware gesendet.
 
-
 Typische Anwendung dieses Blocks:
 
 ![Update state](img/system_update_sample_en.png)
 
 
 &nbsp;
-### Binde States
+### Bind States
 ![Bind state](img/system_bind_en.png)
 
 Dieser Block bindet zwei Zustände aneinander.
@@ -621,31 +627,34 @@ Beispiel zum importieren:
 
 
 &nbsp;
-### Schreibe States
+### Write states
 ![Write state](img/system_write_en.png)
 
-Dies ist ein universeller Block zum schreiben von Zuständen, indem er das slebe macht, wie ["Aktualisiere State"](#aktualisiere-state) and ["Steuere State"](#steuere-state) zusammen. 
+Universal write block that can do the same as ["Update state"](#update-state) and ["Control state"](#control-state) together. 
 
-Aber im Vergleich dazu kann man die Objekt ID und die Verzögerung über andere Blöcke definieren um das Skript universeller zu gestalten.
+But in compare with them you can define Object ID and delay with other blocks to make your script more universal.
 
-
-&nbsp;
-### Erzeuge State
+### Create state
 ![Create state](img/system_create_en.png)
+There are two types of variables that can be created in scripts:
+- local [variables](#set-variables-value)
+- global variables or states. 
 
-Es gibt zwei verschiedene Arten von Variablen, die mit diesem Block erzeugt werden können:
-- lokale [Variablen](#set-variables-value)
-- globale Variablen oder Zustände. 
+Global states are visible in all scripts, but local are visible only in this current script.
 
-Globale Zustände sind in allen Skripts sichtbar, während lokale nur in dem aktuellen Skript gültig sind.
+Global states can be used in vis, mobile and all other logic or visualisation modules, can be logged into db or whatever.
 
-Global Zustände können in vis, mobile und allen anderen Logik- oder Visualisierungsmodulen genutz werden, sie können gelogged werden in Datenbanken oder wo auch immer.
+This block creates global state and if the state yet exist, the command will be ignored. You can safely call this block by every start of the script.
 
+<<<<<<< HEAD
 Dieser Block erzeugt globale Zustände und wenn dieser bereits existiert wird der Befehl ignoriert. Daher kann dieser Block ohne Risiko zu jedem Skriptstart verwendet werden.
 
 
 &nbsp;
 Typische Anwendung dieses Blocks:
+=======
+Typical usage example:
+>>>>>>> parent of ab7fb3b... Update blockly_de.md
 
 ![Create state](img/system_create_sample1_en.png)
 
