@@ -129,7 +129,7 @@
 
 &nbsp;
 # Beschreibung
-Blockly ist ein grafischer Editor, der es Nutzern erlaubt Skripte durch zusammenfügen von Blöchen zu erzeugen. 
+Blockly ist ein grafischer Editor, der es Nutzern erlaubt Skripte durch zusammenfügen von Blöcken zu erzeugen. 
 Er wurde für Nutzer entwickelt, die keine Erfahrung in Programmierung von Computern besitzen.
 
 
@@ -268,12 +268,12 @@ Zuerst müssen wir eine Variable definieren um zu speichern, dass die eMail für
 Dann beobachten wir die Veränderungen der Temperatur. Wir könnten dieses Skript auch periodisch ausführen, aber das ist nicht so effektiv.
 
 Wenn sich die Temperatur ändert vergleichen wir den aktuellen Wert mit 25 und prüfen ob die eMail bereits verschickt wurde oder nicht.
-Wenn die eMail noch nicht versendet war, speichern wir dass wir sie jetzt senden und sneden sie auch. Natürlich muss der eMail-Adapter vorher installiert und konfiguriert worden sein.
+Wenn die eMail noch nicht versendet war, speichern wir dass wir sie jetzt senden und senden sie auch. Natürlich muss der eMail-Adapter vorher installiert und konfiguriert worden sein.
 
 Wenn die Temperatur unter 23 Grad fällt setzen wir die Variable "emailSent" zurück, damit beim nächsten Temperaturalarm wieder eine eMail gesendet wird. 
 Dazu wird die aktuelle Temperatur mit 23 verglichen und es werden keine eMails geschickt, solange die Temperatur um 25 Grad schwankt.
 
-Un den "if ... else if ..." Block zu erstellen klickt man auf das Zahnrad und fügt die zusätzlich benötigten Elemente dem "IF" Block hinzu.
+Um den "falls ... sonst falls ..." Block zu erstellen klickt man auf das Zahnrad und fügt die zusätzlich benötigten Elemente dem "falls" Block hinzu.
 
 ![Getting started 3](img/getting_started_3_1_en.png)
 
