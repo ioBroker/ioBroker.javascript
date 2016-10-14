@@ -11,7 +11,6 @@
         - [Kommentar](#kommentar)
         - [Steuere State](#steuere-state)
         - [Aktualisiere State](#aktualisiere-state)
-<<<<<<< HEAD
         - [Binde States](#binde-states)
         - [Schreibe States](#schreibe-states)
         - [Erzeuge State](#erzeuge-state)
@@ -21,7 +20,6 @@
         - [Write states](#write-states)
         - [Create state](#create-state)
         - [Get value of state](#get-value-of-state)
->>>>>>> parent of ab7fb3b... Update blockly_de.md
         - [Get Object ID](#get-object-id)
     - [Aktionsblöcke](#aktionsblöcke)
         - [Exec - Kommando](#exec---kommando)
