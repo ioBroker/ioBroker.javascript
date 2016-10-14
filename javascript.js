@@ -421,7 +421,8 @@
         var id = obj._id;
         if (obj.common && obj.common.name) {
             var name = obj.common.name;
-
+            if (typeof name !== 'string') return;
+            
             if (!names[name]) {
                 names[name] = id;
             } else {
