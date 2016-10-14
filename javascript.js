@@ -422,7 +422,7 @@
         if (obj.common && obj.common.name) {
             var name = obj.common.name;
 
-            if (!names[names]) {
+            if (!names[name]) {
                 names[name] = id;
             } else {
                 if (typeof names[name] === 'string') names[name] = [names[name]];
