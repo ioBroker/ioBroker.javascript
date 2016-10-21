@@ -3,3 +3,6 @@ tasks
 test
 .travis.yml
 doc
+.idea
+.git
+node_modules

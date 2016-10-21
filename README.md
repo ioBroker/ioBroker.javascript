@@ -58,6 +58,7 @@ Here you can find description of [blockly](doc/blockly_en.md).
     - [$ - Selector](#---selector)
     - [readFile](#readfile)
     - [writeFile](#writefile)
+    - [delFile](#delFile)
     - [onStop](#onstop)
     - [getHistory](#gethistory)
     - [runScript](#runscript)
@@ -806,6 +807,14 @@ writeFile('vis.0', '/screenshots/1.png', data, function (error) {
     console.log('file written');
 });
 ```
+
+### delFile
+    delFile (adapter, fileName, function (error) {})
+    
+Delete file or directory. fileName is the name of file or directory in DB. 
+
+This function is alias for *unlink*.
+
 ### onStop
     onStop (function(){}, timeout);
 Install callback, that will be called if script stopped. Used e.g. to stop communication or to close connections.

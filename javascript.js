@@ -2156,6 +2156,29 @@
 
                 adapter.readFile(_adapter, fileName, callback);
             },
+            unlink: function (_adapter, fileName, callback) {
+                if (typeof fileName === 'function') {
+                    callback = fileName;
+                    fileName = _adapter;
+                    _adapter = null;
+                }
+                if (sandbox.verbose) sandbox.log('unlink(adapter=' + _adapter + ', fileName=' + fileName + ')', 'info');
+
+                if (debug) {
+                    sandbox.log('unlink(adapter=' + _adapter + ', fileName=' + fileName + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
+                    if (typeof callback === 'function') {
+                        setTimeout(function () {
+                            callback();
+                        }, 0);
+                    }
+                } else {
+                    if (sandbox.verbose) sandbox.log('unlink(adapter=' + _adapter + ', fileName=' + fileName + ')', 'info');
+                    adapter.unlink(_adapter, fileName, callback);
+                }
+            },
+            delFile: function (_adapter, fileName, callback) {
+                return sandbox.unlink(_adapter, fileName, callback);
+            },
 			getHistory: function (instance, options, callback) {
                 if (typeof instance === 'object') {
                     callback = options;
