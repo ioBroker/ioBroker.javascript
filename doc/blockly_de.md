@@ -132,7 +132,7 @@ Er wurde für Nutzer entwickelt, die keine Erfahrung in Programmierung von Compu
 ## Beispiel 1
 **Zustand eines Datenpunkts bei Änderung eines anderen Datenpunkts ändern**
 
-![Getting started 1](img/getting_started_1_en.png)
+![Getting started 1](img/getting_started_1_de.png)
 
 Dies ist das klassische Beispiel bei Änderung eines Datenpunktes etwas anderes zu schalten.
 
@@ -146,7 +146,7 @@ In diesen Steuerungsblock einen Block "System=>Wert von Objekt ID" einfügen und
 
 **Es gibt bei den Trigger Blöcken eine spezielle Variable "Wert". Diese wird immer hier definiert und kann für verschiedene Zwecke verwendet werden. Sie enthält den aktuellen Wert des triggernden Objekts und man kann daher einfacherer Skripte erzeugen indem man den Block "Variable=>Objekt ID" benutzt und ihn in "Wert" umbenennt.**
 
-![Getting started 1](img/getting_started_1_2_en.png)
+![Getting started 1](img/getting_started_1_2_de.png)
 
 
 &nbsp;
@@ -190,7 +190,7 @@ Beispiel zum importieren:
 ## Beispiel 2 
 **Licht bei Bewegung anschalten und ausschalten wenn 10 Minuten keine Bewegung.**
 
-![Getting started 2](img/getting_started_2_en.png)
+![Getting started 2](img/getting_started_2_de.png)
 
 Wenn der Zustand "Bewegung" mit dem Wert "wahr" aktualisiert wird, mache:
 - schalte "Licht" an
@@ -253,7 +253,7 @@ Beispiel zum importieren:
 ## Beispiel 3
 **Verschicke eine eMail wenn die Außentemperatur höher als 25 Grad Celsius ist.**
 
-![Getting started 3](img/getting_started_3_en.png)
+![Getting started 3](img/getting_started_3_de.png)
 
 Erklärung:
 
@@ -268,15 +268,15 @@ Dazu wird die aktuelle Temperatur mit 23 verglichen und es werden keine eMails g
 
 Um den "falls ... sonst falls ..." Block zu erstellen klickt man auf das Zahnrad und fügt die zusätzlich benötigten Elemente dem "falls" Block hinzu.
 
-![Getting started 3](img/getting_started_3_1_en.png)
+![Getting started 3](img/getting_started_3_1_de.png)
 
 Man kann zu jedem Block einen Kommentar hinterlegen, indem man "Kommentar hinzufügen" im Kontextmenü des Blocks anklickt. Diesen Kommentar kann man später durch anklicken des Fragezeichens ansehen.
 
-![Getting started 3](img/getting_started_3_2_en.png)
+![Getting started 3](img/getting_started_3_2_de.png)
 
 Man kann größere Blöcke einklappen um eine bessere Übersicht zu erhalten, indem man im Kontextmenü den Punkt "Block einklappen" auswählt. 
 
-![Getting started 3](img/getting_started_3_3_en.png)
+![Getting started 3](img/getting_started_3_3_de.png)
 
 
 &nbsp;
