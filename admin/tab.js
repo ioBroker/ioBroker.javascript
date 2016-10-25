@@ -150,7 +150,7 @@ function Scripts(main) {
                 }
             }).keyup(function (e) {
                 $(this).trigger('change');
-                if (e.keyCode == 13) $('#script-group-button-save').trigger('click');
+                if (e.keyCode === 13) $('#script-group-button-save').trigger('click');
             });
         }
 
@@ -689,11 +689,11 @@ function Scripts(main) {
         for (var t = 0; t < that.main.instances.length; t++) {
             if (that.main.objects[that.main.instances[t]] && that.main.objects[that.main.instances[t]].common && that.main.objects[that.main.instances[t]].common.engineTypes) {
                 var engineTypes = that.main.objects[that.main.instances[t]].common.engineTypes;
-                if (typeof engineTypes == 'string') {
-                    if (_engines.indexOf(engineTypes) == -1) _engines.push(engineTypes);
+                if (typeof engineTypes === 'string') {
+                    if (_engines.indexOf(engineTypes) === -1) _engines.push(engineTypes);
                 } else {
                     for (var z = 0; z < engineTypes.length; z++) {
-                        if (_engines.indexOf(engineTypes[z]) == -1) _engines.push(engineTypes[z]);
+                        if (_engines.indexOf(engineTypes[z]) === -1) _engines.push(engineTypes[z]);
                     }
                 }
             }
@@ -1058,13 +1058,13 @@ function Scripts(main) {
         confirmed.push(id);
         // find all elements
         for (var l = 0; l < that.list.length; l++) {
-            if (that.list[l].substring(0, id.length + 1) == id + '.') {
+            if (that.list[l].substring(0, id.length + 1) === id + '.') {
                 deleteId(that.list[l], id, confirmed);
                 return;
             }
         }
         for (var g = 0; g < that.groups.length; g++) {
-            if (that.groups[g].substring(0, id.length + 1) == id + '.') {
+            if (that.groups[g].substring(0, id.length + 1) === id + '.') {
                 deleteId(that.groups[g], id, confirmed);
                 return;
             }
@@ -1135,10 +1135,10 @@ function Scripts(main) {
             // collect all elements to rename
             // find all elements
             for (var l = 0; l < that.list.length; l++) {
-                if (that.list[l].substring(0, id.length + 1) == id + '.') _list.push(that.list[l]);
+                if (that.list[l].substring(0, id.length + 1) === id + '.') _list.push(that.list[l]);
             }
             for (var g = 0; g < that.groups.length; g++) {
-                if (that.groups[g].substring(0, id.length + 1) == id + '.') _list.push(that.list[l]);
+                if (that.groups[g].substring(0, id.length + 1) === id + '.') _list.push(that.list[l]);
             }
 
             that.main.socket.emit('getObject', id, function (err, obj) {
@@ -1524,7 +1524,7 @@ function Scripts(main) {
                 );
                 // Listen to events on master workspace.
                 that.blocklyWorkspace.addChangeListener(function (masterEvent) {
-                    if (masterEvent.type == Blockly.Events.UI) {
+                    if (masterEvent.type === Blockly.Events.UI) {
                         return;  // Don't mirror UI events.
                     }
                     that.changed = true;
@@ -1587,7 +1587,7 @@ function Scripts(main) {
                             primary:'ui-icon-play'
                         },
                         click: function (id) {
-                            if (this.length == 1) this.button('disable');
+                            if (this.length === 1) this.button('disable');
                             // toggle state
                             that.main.socket.emit('extendObject', id, {
                                 common: {
@@ -1660,7 +1660,7 @@ function Scripts(main) {
                                     } else {
                                         newId = obj._id + '(' + i + ')';
                                     }
-                                } while (that.list.indexOf(newId) != -1);
+                                } while (that.list.indexOf(newId) !== -1);
 
                                 obj._id = newId;
                                 that.main.socket.emit('setObject', newId, obj, function (err, obj) {
@@ -1941,7 +1941,7 @@ function Scripts(main) {
             } else {
                 // deleted
                 var j = this.list.indexOf(id);
-                if (j != -1) this.list.splice(j, 1);
+                if (j !== -1) this.list.splice(j, 1);
                 if (id === this.currentId) {
                     this.changed = false;
                     editScript(null);
@@ -2098,7 +2098,7 @@ var main = {
         if (!main.config) return;
         if (attr) main.config[attr] = value;
 
-        if (typeof storage != 'undefined') {
+        if (typeof storage !== 'undefined') {
             storage.set('adminConfig', JSON.stringify(main.config));
         }
     },
@@ -2224,7 +2224,7 @@ var $dialogConfirm = $('#dialog-confirm');
 // Selected view, selected menu page,
 // Selected widget or view page
 // Selected filter
-if (typeof storage != 'undefined') {
+if (typeof storage !== 'undefined') {
     try {
         main.config = storage.get('adminConfig');
         if (main.config) {
