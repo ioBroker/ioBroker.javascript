@@ -12,6 +12,9 @@ Executes Javascript and Coffescript Scripts.
 
 Here you can find description of [blockly](doc/blockly_en.md).
 
+Hier kann man die Beschreibung von [Blockly](doc/blockly_de.md) finden.
+
+
 ## Content
 - [Note](#note)
 - [Global functions](#global-functions)
