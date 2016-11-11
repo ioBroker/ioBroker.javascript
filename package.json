@@ -21,8 +21,8 @@
     "url": "https://github.com/ioBroker/ioBroker.javascript"
   },
   "dependencies": {
-    "node-schedule": "1.1.1",
-    "request": "^2.74.0",
+    "node-schedule": "1.2.0",
+    "request": "^2.78.0",
     "suncalc": "^1.7.0",
     "wake_on_lan": "0.0.4",
     "coffee-compiler": "^0.3.2",

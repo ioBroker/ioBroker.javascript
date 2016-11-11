@@ -145,7 +145,8 @@
         "latitude":         "",
         "longitude":        "",
         "enableSetObject":  false,
-        "libraries":        ""
+        "libraries":        "",
+        "subscribe":        false
     },
     "objects": [
         {

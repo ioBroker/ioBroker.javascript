@@ -229,13 +229,13 @@ You can use following parameters to specify the trigger:
 |             | RegExp     |       name matched to regular expression                                                               |
 |             |            |                                                                                                        |
 | change      | string     |       "eq", "ne", "gt", "ge", "lt", "le", "any"                                                        |
-|             |   "eq"     |       (equal)            New value must be equal to old one (state.val == oldState.val)             |
+|             |   "eq"     |       (equal)            New value must be equal to old one (state.val == oldState.val)                |
 |             |   "ne"     |       (not equal)        New value must be not equal to the old one (state.val != oldState.val) **If pattern is id-string this value is used by default**    |
-|             |   "gt"     |       (greater)          New value must be greater than old value (state.val > oldState.val)        |
-|             |   "ge"     |       (greater or equal) New value must be greater or equal to old one (state.val >= oldState.val)  |
-|             |   "lt"     |       (smaller)          New value must be smaller than old one (state.val < oldState.val)          |
-|             |   "le"     |       (smaller or equal) New value must be smaller or equal to old value (state.val <= oldState.val)|
-|             |  "any"     |       Trigger will be raised if just the new value comes                                                |
+|             |   "gt"     |       (greater)          New value must be greater than old value (state.val > oldState.val)           |
+|             |   "ge"     |       (greater or equal) New value must be greater or equal to old one (state.val >= oldState.val)     |
+|             |   "lt"     |       (smaller)          New value must be smaller than old one (state.val < oldState.val)             |
+|             |   "le"     |       (smaller or equal) New value must be smaller or equal to old value (state.val <= oldState.val)   |
+|             |  "any"     |       Trigger will be raised if just the new value comes                                               |
 |             |            |                                                                                                        |
 | val         | mixed      |       New value must be equal to given one                                                             |
 | valNe       | mixed      |       New value must be not equal to given one                                                         |
@@ -255,11 +255,11 @@ You can use following parameters to specify the trigger:
 |             |            |                                                                                                        |
 | oldAck      | bool       |       Acknowledged state of previous value is equal to given one                                       |
 |             |            |                                                                                                        |
-| ts          | string     |       New value time stamp must be equal to given one (state.ts == ts)                              |
-| tsGt        | string     |       New value time stamp must be not equal to the given one (state.ts != ts)                      |
-| tsGe        | string     |       New value time stamp must be greater than given value (state.ts > ts)                         |
-| tsLt        | string     |       New value time stamp must be greater or equal to given one (state.ts >= ts)                   |
-| tsLe        | string     |       New value time stamp must be smaller than given one (state.ts < ts)                           |
+| ts          | string     |       New value time stamp must be equal to given one (state.ts == ts)                                 |
+| tsGt        | string     |       New value time stamp must be not equal to the given one (state.ts != ts)                         |
+| tsGe        | string     |       New value time stamp must be greater than given value (state.ts > ts)                            |
+| tsLt        | string     |       New value time stamp must be greater or equal to given one (state.ts >= ts)                      |
+| tsLe        | string     |       New value time stamp must be smaller than given one (state.ts < ts)                              |
 |             |            |                                                                                                        |
 | oldTs       | string     |       Previous time stamp must be equal to given one (oldState.ts == ts)                               |
 | oldTsGt     | string     |       Previous time stamp must be not equal to the given one (oldState.ts != ts)                       |
@@ -267,11 +267,11 @@ You can use following parameters to specify the trigger:
 | oldTsLt     | string     |       Previous time stamp must be greater or equal to given one (oldState.ts >= ts)                    |
 | oldTsLe     | string     |       Previous time stamp must be smaller than given one (oldState.ts < ts)                            |
 |             |            |                                                                                                        |
-| lc          | string     |       Last change time stamp must be equal to given one (state.lc == lc)                            |
-| lcGt        | string     |       Last change time stamp must be not equal to the given one (state.lc != lc)                    |
-| lcGe        | string     |       Last change time stamp must be greater than given value (state.lc > lc)                       |
-| lcLt        | string     |       Last change time stamp must be greater or equal to given one (state.lc >= lc)                 |
-| lcLe        | string     |       Last change time stamp must be smaller than given one (state.lc < lc)                         |
+| lc          | string     |       Last change time stamp must be equal to given one (state.lc == lc)                               |
+| lcGt        | string     |       Last change time stamp must be not equal to the given one (state.lc != lc)                       |
+| lcGe        | string     |       Last change time stamp must be greater than given value (state.lc > lc)                          |
+| lcLt        | string     |       Last change time stamp must be greater or equal to given one (state.lc >= lc)                    |
+| lcLe        | string     |       Last change time stamp must be smaller than given one (state.lc < lc)                            |
 |             |            |                                                                                                        |
 | oldLc       | string     |       Previous last change time stamp must be equal to given one (oldState.lc == lc)                   |
 | oldLcGt     | string     |       Previous last change time stamp must be not equal to the given one (oldState.lc != lc)           |
@@ -918,6 +918,25 @@ It is not a function. It is a variable with script name, that is visible in scri
     log('Script ' + name + ' started by ' + instance + '!')
 
 It is not a function. It is a variable with javascript instance, that is visible in script's scope.
+
+## Option - "Do not subscribe all states on start"
+There are two modes of subscribe on states:
+- Adapter subscribes on all changes at start and receives all changes of all states (it is easy to use getStates(id), but required more CPU and RAM):
+
+```
+console.log(getState('someID').val);
+```
+
+- Adapter subscribes every time on specified ID if "on/subscribe" called. In this mode the adapter receives only updates for desired states. 
+It is very perform and RAM efficiency, but you cannot access states directly in getState. You must use callback to get the result of state:
+
+```
+getState('someID', function (error, state) {
+    console.log(state.val);
+});
+```
+
+It is because the adapter does not have the value of state in RAM and must ask central DB for the value. 
 
 ## Scripts activity
 

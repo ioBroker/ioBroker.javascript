@@ -68,7 +68,12 @@
             "ru": 'Разрешить команду "setObject":'
         },
         "Security relevant":    {"en": "Security relevant", "de": "Sicherheits relevant",   "ru": "Безопасность уменшена"},
-        "Astro settings":       {"en": "Astro settings",    "de": "Astro-Einstellungen",    "ru": "Настройки астро-функций"}
+        "Astro settings":       {"en": "Astro settings",    "de": "Astro-Einstellungen",    "ru": "Настройки астро-функций"},
+        "Do not subscribe all states on start:": {
+            "en": "Do not subscribe all states on start:",
+            "de": "Nicht auf alle Zustände beim Start abonieren:",
+            "ru": "Оптимизация состояний:"
+        }
     };
 
     function setValue(id, value, onChange) {
@@ -177,12 +182,12 @@
             <td colspan="3"><h4 class="translate" style="width: 100%">Settings</h4></td>
         </tr>
         <tr>
-            <td class="translate">Additional npm modules:</td>
+            <td><label for="libraries" class="translate">Additional npm modules:</label></td>
             <td><input id="libraries" class="value" style="width: 100%"/></td>
             <td class="translate" style="color: gray; font-style: italic; font-size: smaller">Divided by comma</td>
         </tr>
         <tr>
-            <td class="translate">Enable command "setObject":</td>
+            <td><label for="enableSetObject" class="translate">Enable command "setObject":</label></td>
             <td><input id="enableSetObject" class="value" type="checkbox"/></td>
             <td class="translate" style="color: gray; font-style: italic; font-size: smaller">Security relevant</td>
         </tr>
@@ -191,10 +196,13 @@
             <td colspan="3"><h4 class="translate" style="width: 100%">Astro settings</h4></td>
         </tr>
         <tr>
-            <td class="translate">Latitude °:</td><td><input id="latitude" class="value" /></td><td></td>
+            <td><label for="latitude" class="translate">Latitude °:</label></td><td><input id="latitude" class="value" /></td><td></td>
         </tr>
         <tr>
-            <td class="translate">Longitude °:</td><td><input id="longitude" class="value" /></td><td></td>
+            <td><label for="longitude" class="translate">Longitude °:</label></td><td><input id="longitude" class="value" /></td><td></td>
+        </tr>
+        <tr>
+            <td><label for="subscribe" class="translate">Do not subscribe all states on start:</label></td><td><input type="checkbox" id="subscribe" class="value" /></td><td></td>
         </tr>
     </table>
     <p class="translate">Help</p>

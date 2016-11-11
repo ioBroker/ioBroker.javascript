@@ -5,28 +5,27 @@
 (function () {
 
     var mods = {
-        'vm':               require('vm'),
-        'fs':               require('fs'),
-        'dgram':            require('dgram'),
-        'crypto':           require('crypto'),
-        'dns':              require('dns'),
-        'events':           require('events'),
-        'http':             require('http'),
-        'https':            require('https'),
-        'net':              require('net'),
-        'os':               require('os'),
-        'path':             require('path'),
-        'util':             require('util'),
-        'child_process':    require('child_process'),
+        vm:               require('vm'),
+        fs:               require('fs'),
+        dgram:            require('dgram'),
+        crypto:           require('crypto'),
+        dns:              require('dns'),
+        events:           require('events'),
+        http:             require('http'),
+        https:            require('https'),
+        net:              require('net'),
+        os:               require('os'),
+        path:             require('path'),
+        util:             require('util'),
+        child_process:    require('child_process'),
 
-        'coffee-compiler':  require('coffee-compiler'),
+        'coffee-compiler': require('coffee-compiler'),
 
-        'node-schedule':    require('node-schedule'),
-        'suncalc':          require('suncalc'),
-        'request':          require('request'),
-        'wake_on_lan':      require('wake_on_lan')
+        'node-schedule':  require('node-schedule'),
+        suncalc:          require('suncalc'),
+        request:          require('request'),
+        wake_on_lan:      require('wake_on_lan')
     };
-
     var utils =   require(__dirname + '/lib/utils'); // Get common adapter utils
     var words =   require(__dirname + '/lib/words');
 
@@ -188,6 +187,10 @@
                 if (!state.ack && activeRegEx.test(id)) {
                     adapter.extendForeignObject(objects[id].native.script, {common: {enabled: state.val}});
                 }
+                if (stateIds.indexOf(id) === -1) {
+                    stateIds.push(id);
+                    stateIds.sort();
+                }
 
                 // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
                 if (states[id] && states[id].val === false && id.match(/\.alive$/) && state.val) {
@@ -205,6 +208,10 @@
             } else {
                 if (states[id]) delete states[id];
                 state = {};
+                var pos = stateIds.indexOf(id);
+                if (pos !== -1) {
+                    stateIds.splice(pos, 1);
+                }
             }
 
             var eventObj = {
@@ -257,7 +264,10 @@
             installLibraries(function () {
                 getData(function () {
                     adapter.subscribeForeignObjects('*');
-                    adapter.subscribeForeignStates('*');
+
+                    if (!adapter.config.subscribe) {
+                        adapter.subscribeForeignStates('*');
+                    }
 
                     adapter.objects.getObjectView('script', 'javascript', {}, function (err, doc) {
                         globalScript = '';
@@ -373,8 +383,10 @@
 
     var objects =          {};
     var states =           {};
+    var stateIds =         [];
     var scripts =          {};
     var subscriptions =    [];
+    var subscribedPatterns =      {};
     var adapterSubs =      {};
     var isEnums =          false; // If some subscription wants enum
     var enums =            [];
@@ -656,6 +668,59 @@
             return false;
         }
     }
+    
+    function unsubscribePattern(script, pattern) {
+        if (adapter.config.subscribe) {
+            if (script.subscribes[pattern]) {
+                script.subscribes[pattern]--;
+                if (!script.subscribes[pattern]) delete script.subscribes[pattern];
+            }
+
+            if (subscribedPatterns[pattern]) {
+                subscribedPatterns[pattern]--;
+                if (!subscribedPatterns[pattern]) {
+                    adapter.unsubscribeForeignStates(pattern);
+                    delete subscribedPatterns[pattern];
+                    
+                    // if pattern was regex or with * some states will stay in RAM, but it is OK.
+                    if (states[pattern]) delete states[pattern];
+                }
+            }
+        }
+    }
+    
+    function subscribePattern(script, pattern) {
+        if (adapter.config.subscribe) {
+            if (!script.subscribes[pattern]) {
+                script.subscribes[pattern] = 1;
+            } else {
+                script.subscribes[pattern]++;
+            }
+
+            if (!subscribedPatterns[pattern]) {
+                subscribedPatterns[pattern] = 1;
+                adapter.subscribeForeignStates(pattern);
+                
+                // request current value to deliver old value on change.
+                if (typeof pattern === 'string' && pattern.indexOf('*') === -1) {
+                    adapter.getForeignState(pattern, function (err, state) {
+                        if (state) states[pattern] = state;
+                    });
+                } else {
+                    adapter.getForeignStates(pattern, function (err, _states) {
+                        if (_states) {
+                            for (var id in _states) {
+                                if (!_states.hasOwnProperty(id)) continue;
+                                states[id] = _states[id];
+                            }
+                        }
+                    });
+                }
+            } else {
+                subscribedPatterns[pattern]++;
+            }
+        }
+    }
 
     function execute(script, name, verbose, debug) {
         script.intervals  = [];
@@ -663,6 +728,7 @@
         script.schedules  = [];
         script.name       = name;
         script._id        = Math.floor(Math.random() * 0xFFFFFFFF);
+        script.subscribes = {};
 
         var sandbox = {
             mods:      mods,
@@ -912,9 +978,7 @@
                 var pass;
                 if (name === 'channel') {
                     for (id in channels) {
-                        if (!objects[id]) {
-                            continue;
-                        }
+                        if (!channels.hasOwnProperty(id) || !objects.hasOwnProperty(id)) continue;
                         pass = true;
                         for (var c = 0; c < commons.length; c++) {
                             if (!commons[c]) continue;
@@ -1053,7 +1117,8 @@
                     var r = (name && name !== 'state') ? new RegExp('^' + name.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$') : null;
 
                     // state
-                    for (id in states) {
+                    for (var s = 0; s < stateIds.length; s++) {
+                        id = stateIds[s];
                         if (r && !r.test(id)) continue;
                         pass = true;
 
@@ -1139,10 +1204,17 @@
                     }
                     return this;
                 };
-                result.getState = function () {
-                    if (this[0]) return states[this[0]];
-                    
-                    return null;
+                result.getState = function (callback) {
+                    if (adapter.config.subscribe) {
+                        if (typeof callback !== 'function') {
+                            sandbox.log('You cannot use this function synchronous', 'error');
+                        } else {
+                            adapter.getForeignState(this[0], callback);
+                        }
+                    } else {
+                        if (this[0]) return states[this[0]];
+                        return null;
+                    }
                 };
                 result.setState = function (state, isAck, callback) {
                     if (typeof isAck === 'function') {
@@ -1259,6 +1331,7 @@
                     var parts = pattern.id.split('.');
                     var a = parts[0] + '.' + parts[1];
                     var _adapter = 'system.adapter.' + a;
+
                     if (objects[_adapter] && objects[_adapter].common && objects[_adapter].common.subscribable) {
                         var alive = 'system.adapter.' + a + '.alive';
                         adapterSubs[alive] = adapterSubs[alive] || [];
@@ -1275,7 +1348,10 @@
                 }
                 if (sandbox.verbose) sandbox.log('subscribe: ' + JSON.stringify(subs), 'info');
 
+                subscribePattern(script, pattern.id);
+
                 subscriptions.push(subs);
+
                 if (pattern.enumName || pattern.enumId) isEnums = true;
                 return subs;
             },
@@ -1313,8 +1389,9 @@
                 if (typeof idOrObject === 'object') {
                     for (i = subscriptions.length - 1; i >= 0 ; i--) {
                         if (subscriptions[i] === idOrObject) {
+                            unsubscribePattern(subscriptions[i].pattern.id);
                             subscriptions.splice(i, 1);
-                            sandbox.__engine.__subscriptions -= 1;
+                            sandbox.__engine.__subscriptions--;
                             return true;
                         }
                     }
@@ -1323,8 +1400,9 @@
                     for (i = subscriptions.length - 1; i >= 0 ; i--) {
                         if (subscriptions[i].name === name && subscriptions[i].pattern.id === idOrObject) {
                             deleted++;
+                            unsubscribePattern(subscriptions[i].pattern.id);
                             subscriptions.splice(i, 1);
-                            sandbox.__engine.__subscriptions -= 1;
+                            sandbox.__engine.__subscriptions--;
                         }
                     }
                     return !!deleted;
@@ -1522,7 +1600,7 @@
                     if (common.max !== undefined && state > common.max) state = common.max;
                 }
 
-                if (states[id]) {
+                if (objects[id]) {
                     if (sandbox.verbose) sandbox.log('setForeignState(id=' + id + ', state=' + JSON.stringify(state) + ')', 'info');
 
                     if (debug) {
@@ -1540,7 +1618,7 @@
                             if (typeof callback === 'function') callback();
                         });
                     }
-                } else if (states[adapter.namespace + '.' + id]) {
+                } else if (objects[adapter.namespace + '.' + id]) {
                     if (sandbox.verbose) sandbox.log('setState(id=' + id + ', state=' + JSON.stringify(state) + ')', 'info');
 
                     if (debug) {
@@ -1694,20 +1772,32 @@
                 }
                 return false;
             },
-            getState:       function (id) {
-                if (states[id]) {
-                    if (sandbox.verbose) sandbox.log('getState(id=' + id + ', timerId=' + timerId + ') => ' + JSON.stringify(states[id]), 'info');
-                    return states[id];
-                }
-                if (states[adapter.namespace + '.' + id]) {
-                    if (sandbox.verbose) sandbox.log('getState(id=' + id + ', timerId=' + timerId + ') => ' + states[adapter.namespace + '.' + id], 'info');
-                    return states[adapter.namespace + '.' + id];
-                }
+            getState:       function (id, callback) {
+                if (typeof callback === 'function') {
+                    if (id.indexOf('.') === -1) {
+                        adapter.getState(id, callback);
+                    } else {
+                        adapter.getForeignState(id, callback);
+                    }
+                } else {
+                    if (adapter.config.subscribe) {
+                        sandbox.log('Cannot use sync getState, use callback instead getState("' + id + '", function (err, state){});', 'error');
+                    } else {
+                        if (states[id]) {
+                            if (sandbox.verbose) sandbox.log('getState(id=' + id + ', timerId=' + timerId + ') => ' + JSON.stringify(states[id]), 'info');
+                            return states[id];
+                        }
+                        if (states[adapter.namespace + '.' + id]) {
+                            if (sandbox.verbose) sandbox.log('getState(id=' + id + ', timerId=' + timerId + ') => ' + states[adapter.namespace + '.' + id], 'info');
+                            return states[adapter.namespace + '.' + id];
+                        }
 
-                if (sandbox.verbose) sandbox.log('getState(id=' + id + ', timerId=' + timerId + ') => not found', 'info');
+                        if (sandbox.verbose) sandbox.log('getState(id=' + id + ', timerId=' + timerId + ') => not found', 'info');
 
-                adapter.log.warn('State "' + id + '" not found');
-                return {val: null, notExist: true};
+                        adapter.log.warn('State "' + id + '" not found');
+                        return {val: null, notExist: true};
+                    }
+                }
             },
             getIdByName:    function (name, alwaysArray) {
                 if (sandbox.verbose) sandbox.log('getIdByName(name=' + name + ', alwaysArray=' + alwaysArray + ') => ' + names[name], 'info');
@@ -1905,7 +1995,7 @@
                                 }
                             });
                         } else {
-                            if (!states[name] && !states[adapter.namespace + '.' + name]) {
+                            if (!adapter.config.subscribe && !states[name] && !states[adapter.namespace + '.' + name]) {
                                 if (name.substring(0, adapter.namespace.length) !== adapter.namespace) {
                                     states[adapter.namespace + '.' + name] = {val: null};
                                 } else {
@@ -2391,6 +2481,21 @@
         if (scripts[name]) {
             // Remove from subscriptions
             isEnums = false;
+            if (adapter.config.subscribe) {
+                // check all subscribed IDs
+                for (var id in scripts[name].subscribes) {
+                    if (!scripts[name].subscribes.hasOwnProperty(id)) continue;
+                    if (subscribedPatterns[id]) {
+                        subscribedPatterns[id] -= scripts[name].subscribes[id];
+                        if (subscribedPatterns[id] <= 0) {
+                            adapter.unsubscribeForeignStates(id);
+                            delete subscribedPatterns[id];
+                            if (states[id]) delete states[id];
+                        }
+                    }
+                }
+            }
+
             for (var i = subscriptions.length - 1; i >= 0 ; i--) {
                 if (subscriptions[i].name === name) {
                     var sub = subscriptions.splice(i, 1)[0];
@@ -2401,6 +2506,7 @@
                     if (!isEnums && subscriptions[i].pattern.enumName || subscriptions[i].pattern.enumId) isEnums = true;
                 }
             }
+
             // Stop all timeouts
             for (i = 0; i < scripts[name].timeouts.length; i++) {
                 clearTimeout(scripts[name].timeouts[i]);
@@ -2487,6 +2593,7 @@
             if (callback) callback(false, _name);
         }
     }
+
     function load(nameOrObject, callback) {
         if (typeof nameOrObject === 'object') {
             return prepareScript(nameOrObject, callback);
@@ -2999,11 +3106,21 @@
         var objectsReady;
         adapter.log.info('requesting all states');
         adapter.getForeignStates('*', function (err, res) {
-            states = res;
+            if (!adapter.config.subscribe) {
+                states = res;
+            }
+
+            // remember all IDs
+            for (var id in states) {
+                if (states.hasOwnProperty(id)) {
+                    stateIds.push(id);
+                }
+            }
             statesReady = true;
             adapter.log.info('received all states');
             if (objectsReady && typeof callback === 'function') callback();
         });
+
         adapter.log.info('requesting all objects');
 
         adapter.objects.getObjectList({include_docs: true}, function (err, res) {
