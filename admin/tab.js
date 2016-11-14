@@ -1447,7 +1447,10 @@ function Scripts(main) {
                 loadScripts(scripts, callback);
             }, 0);
         }).fail(function (jqxhr, settings, exception) {
-            console.error('cannot load ' + '../../adapter/' + adapter + '/blockly.js: ' + exception);
+            console.warn('cannot load ' + '../../adapter/' + adapter + '/blockly.js: ' + exception);
+            setTimeout(function () {
+                loadScripts(scripts, callback);
+            }, 0);
         });
     }
 

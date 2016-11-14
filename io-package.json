@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.1.0",
+        "version":                  "3.2.0",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.2.0": {
+                "en": "Fix error with of blocks in adapters\nSupport of subscribe for only required states",
+                "de": "Korrigiere den Fahler mit Blöcken in Adaptern\nUnterstützung von Subscribe nur für benötigten States",
+                "ru": "Исправлена ошибка в блоках при драйверах\nПоддержка режима, что подписваются только на необходимые объекты"
+            },
             "3.1.0": {
                 "en": "Support of blocks in adapters\nMove sendTo blocks into adapters",
                 "de": "Unterstützung von Blöcken in Adaptern\nVerschiebe sendTo Blöcke in Adaptern",
