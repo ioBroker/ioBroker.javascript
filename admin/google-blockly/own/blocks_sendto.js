@@ -31,6 +31,12 @@ Blockly.Words['sendto_custom_arg_tooltip']  = {
     'de': 'Parameter zum sendTo-Objekt hinzufügen',
     'ru': 'Добавить параметр к sendTo объекту'
 };
+Blockly.Words['sendto_log']           = {'en': 'log level',                   'de': 'Loglevel',                           'ru': 'Протокол'};
+Blockly.Words['sendto_log_none']      = {'en': 'none',                        'de': 'keins',                              'ru': 'нет'};
+Blockly.Words['sendto_log_info']      = {'en': 'info',                        'de': 'info',                               'ru': 'инфо'};
+Blockly.Words['sendto_log_debug']     = {'en': 'debug',                       'de': 'debug',                              'ru': 'debug'};
+Blockly.Words['sendto_log_warn']      = {'en': 'warning',                     'de': 'warning',                            'ru': 'warning'};
+Blockly.Words['sendto_log_error']     = {'en': 'error',                       'de': 'error',                              'ru': 'ошибка'};
 
 Blockly.Sendto.blocks['sendto_custom'] =
     '<block type="sendto_custom">'
@@ -274,13 +280,13 @@ Blockly.Blocks['sendto_custom'] = {
             }), 'WITH_STATEMENT');
 
         this.appendDummyInput('LOG')
-            .appendField(Blockly.Words['telegram_log'][systemLang])
+            .appendField(Blockly.Words['sendto_log'][systemLang])
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['telegram_log_none'][systemLang],  ''],
-                [Blockly.Words['telegram_log_info'][systemLang],  'log'],
-                [Blockly.Words['telegram_log_debug'][systemLang], 'debug'],
-                [Blockly.Words['telegram_log_warn'][systemLang],  'warn'],
-                [Blockly.Words['telegram_log_error'][systemLang], 'error']
+                [Blockly.Words['sendto_log_none'][systemLang],  ''],
+                [Blockly.Words['sendto_log_info'][systemLang],  'log'],
+                [Blockly.Words['sendto_log_debug'][systemLang], 'debug'],
+                [Blockly.Words['sendto_log_warn'][systemLang],  'warn'],
+                [Blockly.Words['sendto_log_error'][systemLang], 'error']
             ]), 'LOG');
 
         // Add or remove a statement Input.
