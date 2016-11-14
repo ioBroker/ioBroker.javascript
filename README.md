@@ -948,6 +948,8 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 ### 3.2.0 (2016-11-14)
 * (bluefox) Fix error with of blocks in adapters
 * (bluefox) Support of subscribe for only required states
+* (bluefox) add delFile
+* (bluefox) fix error with names
 
 ### 3.1.0 (2016-10-12)
 * (bluefox) Support of blocks in adapters
