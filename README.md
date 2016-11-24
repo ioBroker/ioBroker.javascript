@@ -945,6 +945,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 ## Changelog
 
+### 3.2.1 (2016-11-24)
+* (bluefox) Fix error with subscribe for only required states
+
 ### 3.2.0 (2016-11-14)
 * (bluefox) Fix error with of blocks in adapters
 * (bluefox) Support of subscribe for only required states

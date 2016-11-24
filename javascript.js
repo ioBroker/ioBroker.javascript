@@ -3111,8 +3111,8 @@
             }
 
             // remember all IDs
-            for (var id in states) {
-                if (states.hasOwnProperty(id)) {
+            for (var id in res) {
+                if (res.hasOwnProperty(id)) {
                     stateIds.push(id);
                 }
             }
