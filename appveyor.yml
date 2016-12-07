@@ -1,0 +1,35 @@
+version: 'test-{build}'
+
+# Test against this version of Node.js
+environment:
+  matrix:
+    - nodejs_version: "0.10"
+    - nodejs_version: "0.12"
+    - nodejs_version: "4"
+    - nodejs_version: "6"
+
+platform:
+  - x86
+  - x64
+
+clone_folder: c:\projects\%APPVEYOR_PROJECT_NAME%
+# Install scripts. (runs after repo cloning)
+install:
+  # Get the latest stable version of Node.js or io.js
+  - ps: Install-Product node $env:nodejs_version $env:platform
+  # install modules
+  - npm install
+  - npm install winston@2.3.0
+  - npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production
+
+# Post-install test scripts.
+test_script:
+  # Output useful info for debugging.
+  - echo %cd%
+  - node --version
+  - npm --version
+  # run tests
+  - npm test
+
+# Don't actually build.
+build: off
