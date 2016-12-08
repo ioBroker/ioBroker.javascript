@@ -334,7 +334,8 @@ describe('Test JS', function() {
                             expect(err).to.be.not.ok;
                             expect(state).to.be.ok;
                             expect(state.val).to.be.ok;
-                            console.log(types[types.length - count] + ': ' + state.val);
+                            if (state) console.log(types[types.length - count] + ': ' + state.val);
+                              else console.log(types[types.length - count] + ' ERROR: ' + state);
                             if (!--count) done();
                         });
                     }
