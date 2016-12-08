@@ -373,7 +373,7 @@ describe('Test JS', function() {
                         expect(err).to.be.not.ok;
                         states.getState('javascript.0.delayed', function (err, stateStop) {
                             expect(err).to.be.not.ok;
-                            expect(stateStop.ts - stateStart.ts).to.be.equal(1);
+                            expect(stateStop.ts - stateStart.ts).to.be.least(1000);
                             done();
                         });
                     });
@@ -408,7 +408,7 @@ describe('Test JS', function() {
                         expect(err).to.be.not.ok;
                         states.getState('javascript.0.delayed', function (err, stateStop) {
                             expect(err).to.be.not.ok;
-                            expect(stateStop.ts - stateStart.ts).to.be.equal(1);
+                            expect(stateStop.ts - stateStart.ts).to.be.least(1000);
                             done();
                         });
                     });
@@ -702,7 +702,7 @@ describe('Test JS', function() {
             expect(err).to.be.not.ok;
         });
     });
-    
+
     it('Test JS: test read file from "javascript"', function (done) {
         this.timeout(5000);
         // add script
@@ -758,7 +758,7 @@ describe('Test JS', function() {
             expect(err).to.be.not.ok;
         });
     });
-    
+
     it('Test JS: test read file from "vis.0"', function (done) {
         this.timeout(5000);
         // add script
