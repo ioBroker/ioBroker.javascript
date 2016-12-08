@@ -287,7 +287,7 @@ describe('Test JS', function() {
     });
 
     it('Test JS: test getAstroDate', function (done) {
-        this.timeout(3000);
+        this.timeout(6000);
         var types = [
             "sunrise",
             "sunriseEnd",
@@ -323,7 +323,8 @@ describe('Test JS', function() {
 
         var responses = 0;
         onStateChanged = function (id, state) {
-            if (types.indexOf(id.substring('javascript.0.'.length)) !== -1) {
+            console.log('State change '+ id + ' = ' + JSON.stringify(state))
+            if ((state) && (types.indexOf(id.substring('javascript.0.'.length)) !== -1)) {
                 responses++;
                 if (responses === types.length) {
                     onStateChanged = null;
