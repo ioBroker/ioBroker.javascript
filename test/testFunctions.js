@@ -375,7 +375,7 @@ describe('Test JS', function() {
                         expect(err).to.be.not.ok;
                         states.getState('javascript.0.delayed', function (err, stateStop) {
                             expect(err).to.be.not.ok;
-                            expect(stateStop.ts - stateStart.ts).to.be.least(1000);
+                            expect(stateStop.ts - stateStart.ts).to.be.least(950);
                             done();
                         });
                     });
@@ -410,7 +410,7 @@ describe('Test JS', function() {
                         expect(err).to.be.not.ok;
                         states.getState('javascript.0.delayed', function (err, stateStop) {
                             expect(err).to.be.not.ok;
-                            expect(stateStop.ts - stateStart.ts).to.be.least(1000);
+                            expect(stateStop.ts - stateStart.ts).to.be.least(950);
                             done();
                         });
                     });
