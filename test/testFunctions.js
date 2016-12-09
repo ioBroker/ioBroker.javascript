@@ -287,7 +287,7 @@ describe('Test JS', function() {
     });
 
     it('Test JS: test getAstroDate', function (done) {
-        this.timeout(3000);
+        this.timeout(6000);
         var types = [
             "sunrise",
             "sunriseEnd",
@@ -321,11 +321,12 @@ describe('Test JS', function() {
             script.common.source += "createState('" + types[t] + "', getAstroDate('" + types[t] + "') ? getAstroDate('" + types[t] + "').toString() : '');"
         }
 
-        var responses = 0;
+        var typesChanged = {};
         onStateChanged = function (id, state) {
             if (types.indexOf(id.substring('javascript.0.'.length)) !== -1) {
-                responses++;
-                if (responses === types.length) {
+                typesChanged[id] = true;
+                console.log('State change '+ id + ' / ' + Object.keys(typesChanged).length + '-' + types.length + '  = ' + JSON.stringify(state))
+                if (Object.keys(typesChanged).length === types.length) {
                     onStateChanged = null;
 
                     var count = types.length;
@@ -334,7 +335,8 @@ describe('Test JS', function() {
                             expect(err).to.be.not.ok;
                             expect(state).to.be.ok;
                             expect(state.val).to.be.ok;
-                            console.log(types[types.length - count] + ': ' + state.val);
+                            if (state) console.log(types[types.length - count] + ': ' + state.val);
+                              else console.log(types[types.length - count] + ' ERROR: ' + state);
                             if (!--count) done();
                         });
                     }
@@ -373,7 +375,7 @@ describe('Test JS', function() {
                         expect(err).to.be.not.ok;
                         states.getState('javascript.0.delayed', function (err, stateStop) {
                             expect(err).to.be.not.ok;
-                            expect(stateStop.ts - stateStart.ts).to.be.equal(1);
+                            expect(stateStop.ts - stateStart.ts).to.be.least(950);
                             done();
                         });
                     });
@@ -408,7 +410,7 @@ describe('Test JS', function() {
                         expect(err).to.be.not.ok;
                         states.getState('javascript.0.delayed', function (err, stateStop) {
                             expect(err).to.be.not.ok;
-                            expect(stateStop.ts - stateStart.ts).to.be.equal(1);
+                            expect(stateStop.ts - stateStart.ts).to.be.least(950);
                             done();
                         });
                     });
@@ -702,7 +704,7 @@ describe('Test JS', function() {
             expect(err).to.be.not.ok;
         });
     });
-    
+
     it('Test JS: test read file from "javascript"', function (done) {
         this.timeout(5000);
         // add script
@@ -758,7 +760,7 @@ describe('Test JS', function() {
             expect(err).to.be.not.ok;
         });
     });
-    
+
     it('Test JS: test read file from "vis.0"', function (done) {
         this.timeout(5000);
         // add script
