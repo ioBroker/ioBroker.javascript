@@ -321,12 +321,12 @@ describe('Test JS', function() {
             script.common.source += "createState('" + types[t] + "', getAstroDate('" + types[t] + "') ? getAstroDate('" + types[t] + "').toString() : '');"
         }
 
-        var responses = 0;
+        var typesChanged = {};
         onStateChanged = function (id, state) {
             if (types.indexOf(id.substring('javascript.0.'.length)) !== -1) {
-                responses++;
                 console.log('State change '+ id + ' / ' + responses + '-' + types.length + '  = ' + JSON.stringify(state))
-                if (responses === types.length) {
+                typesChanged[id] = true;
+                if (Object.keys(typesChanged).length === types.length) {
                     onStateChanged = null;
 
                     var count = types.length;
