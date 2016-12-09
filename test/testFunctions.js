@@ -324,8 +324,8 @@ describe('Test JS', function() {
         var typesChanged = {};
         onStateChanged = function (id, state) {
             if (types.indexOf(id.substring('javascript.0.'.length)) !== -1) {
-                console.log('State change '+ id + ' / ' + responses + '-' + types.length + '  = ' + JSON.stringify(state))
                 typesChanged[id] = true;
+                console.log('State change '+ id + ' / ' + Object.keys(typesChanged).length + '-' + types.length + '  = ' + JSON.stringify(state))
                 if (Object.keys(typesChanged).length === types.length) {
                     onStateChanged = null;
 
