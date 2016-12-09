@@ -323,9 +323,9 @@ describe('Test JS', function() {
 
         var responses = 0;
         onStateChanged = function (id, state) {
-            //console.log('State change '+ id + ' = ' + JSON.stringify(state))
-            if ((id.indexOf('javascript.0.scriptEnabled') === -1) && (types.indexOf(id.substring('javascript.0.'.length)) !== -1)) {
+            if (types.indexOf(id.substring('javascript.0.'.length)) !== -1) {
                 responses++;
+                console.log('State change '+ id + ' / ' + responses + '-' + types.length + '  = ' + JSON.stringify(state))
                 if (responses === types.length) {
                     onStateChanged = null;
 
