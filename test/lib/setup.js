@@ -115,7 +115,8 @@ function restoreOriginalFiles() {
 
 }
 
-function checkIsAdapterInstalled(cb, counter) {
+function checkIsAdapterInstalled(cb, counter, customName) {
+    customName = customName || pkg.name.split('.').pop();
     counter = counter || 0;
     var dataDir = rootDir + 'tmp/' + appName + '-data/';
     console.log('checkIsAdapterInstalled...');
@@ -123,7 +124,7 @@ function checkIsAdapterInstalled(cb, counter) {
     try {
         var f = fs.readFileSync(dataDir + 'objects.json');
         var objects = JSON.parse(f.toString());
-        if (objects['system.adapter.' + pkg.name.split('.').pop() + '.0']) {
+        if (objects['system.adapter.' + customName + '.0']) {
             console.log('checkIsAdapterInstalled: ready!');
             setTimeout(function () {
                 if (cb) cb();
@@ -177,12 +178,17 @@ function checkIsControllerInstalled(cb, counter) {
     }
 }
 
-function installAdapter(cb) {
+function installAdapter(customName, cb) {
+    if (typeof customName === 'function') {
+        cb = customName;
+        customName = null;
+    }
+    customName = customName || pkg.name.split('.').pop();
     console.log('Install adapter...');
     var startFile = 'node_modules/' + appName + '.js-controller/' + appName + '.js';
     // make first install
     if (debug) {
-        child_process.execSync('node ' + startFile + ' add ' + pkg.name.split('.').pop() + ' --enabled false', {
+        child_process.execSync('node ' + startFile + ' add ' + customName + ' --enabled false', {
             cwd:   rootDir + 'tmp',
             stdio: [0, 1, 2]
         });
@@ -193,7 +199,7 @@ function installAdapter(cb) {
         });
     } else {
         // add controller
-        var _pid = child_process.fork(startFile, ['add', pkg.name.split('.').pop(), '--enabled', 'false'], {
+        var _pid = child_process.fork(startFile, ['add', customName, '--enabled', 'false'], {
             cwd:   rootDir + 'tmp',
             stdio: [0, 1, 2, 'ipc']
         });
@@ -663,6 +669,7 @@ if (typeof module !== undefined && module.parent) {
     module.exports.setupController  = setupController;
     module.exports.stopAdapter      = stopAdapter;
     module.exports.startAdapter     = startAdapter;
+    module.exports.installAdapter   = installAdapter;
     module.exports.appName          = appName;
     module.exports.adapterName      = adapterName;
 }
