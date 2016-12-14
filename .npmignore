@@ -6,3 +6,4 @@ doc
 .idea
 .git
 node_modules
+appveyor.yml
