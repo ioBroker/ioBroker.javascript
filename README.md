@@ -75,7 +75,7 @@ Hier kann man die Beschreibung von [Blockly](doc/blockly_de.md) finden.
 - [Changelog](#changelog)
 
 ##Note
-If in the script some modules or functions are used with callbacks or cyclic calls, except setTimeout/setInterval, 
+If in the script some modules or functions are used with callbacks or cyclic calls, except setTimeout/setInterval,
 so they will be called again and again even if the new version of script exists or script is deleted. For example the following script:
 
 ```
@@ -112,7 +112,7 @@ You can define the global scripts in the "global" folder.
 All global scripts are available on all instances. If global script is disabled, it will not be used.
 Global script will be just prepend to the normal script and compiled, so you cannot share data between scripts via global scrips. Use states for it.
 
-####Best practice: 
+####Best practice:
 Create two instances of javascript adapter: one "test" and one "production".
 After the script is tested in the "test" instance, it can be moved to "production". By that you can restart the "test" instance as you want.
 
@@ -122,12 +122,12 @@ After the script is tested in the "test" instance, it can be moved to "productio
     var mod = require('module_name');
 Following modules are pre-loaded: fs, crypto, wake_on_lan, request, suncalc, util, path, os, net, events, dns.
 
-To use other modules go to iobroker/adapter/javascript folder and run in console npm install <modulename>. After npm successfully finished it can be used in script engine. 
-    
+To use other modules go to iobroker/adapter/javascript folder and run in console npm install <modulename>. After npm successfully finished it can be used in script engine.
+
 ### Buffer
 Buffer - Node.js Buffer, read here [http://nodejs.org/api/buffer.html](http://nodejs.org/api/buffer.html)
-    
-### log - Gives out the message into log 
+
+### log - Gives out the message into log
     log(msg, sev)
 Message is a string and sev is one of the following: 'debug', 'info', 'warn', 'error'.
 Default severity is ***'info'***
@@ -209,7 +209,7 @@ on('adapter.0.device.channel.sensor', function (obj) {
 
         // Set acknowledged value
         setState('counter', 1 + getState('counter'), true/*ack*/);
-        
+
         // Or to set unacknowledged command
         setState('adapter.0.device.channel.actor', true);
     }
@@ -334,13 +334,13 @@ All changes of *stateId1* will be written to *stateId2*.
 
 Please note, that by default "change" is equal to "any", except when only id as string is set (like ```on("id", function (){});```). In last case change will be set to "ne".
 
-Function "on" returns handler back. This handler can be used by unsubscribe. 
+Function "on" returns handler back. This handler can be used by unsubscribe.
 
 ### subscribe - same as **[on](#on---subscribe-on-changes-or-updates-of-some-state)**
-    
-### unsubscribe 
+
+### unsubscribe
     unsubscribe(id or handler)
-    
+
 Remove all subscriptions for given object ID or for given handler.
 
 ```
@@ -358,7 +358,7 @@ on({id: "javascript.0.myState1", change: 'ne'}, function (data) {
 });
 
 on({id: "javascript.0.myState1", change: 'any'}, function (data) {
-    // unsubscribe 
+    // unsubscribe
     if (unsubscribe("javascript.0.myState1")) {
         log('All subscriptions deleted');
     }
@@ -367,7 +367,7 @@ on({id: "javascript.0.myState1", change: 'any'}, function (data) {
 
 ### getSubscriptions
 Get the list of subscriptions.    
-    
+
 Example of result:
 ```
 {
@@ -382,7 +382,7 @@ Example of result:
 	]
 }
 ```
-    
+
 ### schedule
     schedule (pattern, callback)
 
@@ -462,7 +462,7 @@ Following values can be used as attribute in astro-function:
 
 **Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
 
-**Note:** you can use "on" function for schedule with small modification: 
+**Note:** you can use "on" function for schedule with small modification:
 ```
 on({time: "*/2 * * * *"}, function () {
     log((new Date()).toString() + " - Will be triggered every 2 minutes!");
@@ -524,25 +524,30 @@ Following operations are possible:
 
 Time can be Date object or Date with time or just time.
 
-### setState 
+### setState
     setState (id, state, ack, callback)
-    
+
+Please refer to https://github.com/ioBroker/ioBroker/wiki/Adapter-Development-Documentation#commands-and-statuses for usage of "ack".
+Short:
+- ack = false : Script wants to send a command to be executed by the target device/adapter
+- ack = true  : Command was successfully executed and state is updated as positive result
+
 ### setStateDelayed
     setStateDelayed (id, state, isAck, delay, clearRunning, callback)
-    
+
 Same as setState but with delay in milliseconds. You can clear all running delay for this ID (by default). E.g.
 
 ```
     setStateDelayed('Kitchen.Light.Lamp', true,  1000);// Switch ON the light in the kitchen in one second
-    setStateDelayed('Kitchen.Light.Lamp', false, 5000, false, function () { // Switch OFF the light in the kitchen in 5 seconds and let first timeout run. 
+    setStateDelayed('Kitchen.Light.Lamp', false, 5000, false, function () { // Switch OFF the light in the kitchen in 5 seconds and let first timeout run.
         log('Lamp is OFF');
     });
-``` 
+```
 This function returns handler of the timer and this timer can be individually stopped by clearStateDelayed
 
 ### clearStateDelayed
     clearStateDelayed (id)
-    
+
 Clears all delayed tasks for specified state ID or some specific delayed task.
 
 ```
@@ -564,7 +569,7 @@ You can specify the enumeration name. If this is defined, two additional attribu
 These arrays has all enumerations, where ID is member of. E.g:
 
 ``` getObject ('adapter.N.objectName', 'rooms') ```
- 
+
 gives back in enumIds all rooms, where the requested object is a member. You can define "true" as enumName to get back *all* enumerations.
 
 ### setObject
@@ -572,33 +577,33 @@ gives back in enumIds all rooms, where the requested object is a member. You can
 Write object into DB. This command can be disabled in adapter's settings. Use this function carefully, while the global settings can be damaged.
 
 Use it like this:
-``` 
-var obj = getObject ('adapter.N.objectName'); 
+```
+var obj = getObject ('adapter.N.objectName');
 obj.native.settings = 1;
 setObject('adapter.N.objectName', obj, function (err) {
     if (err) log('Cannot write object: ' + err);
 });
 ```
-    
+
 ### extendObject
     extendObject(id, obj, callback)
 
-It is almost the same as setObject, but first it reads the object and tries to merge all settings together. 
+It is almost the same as setObject, but first it reads the object and tries to merge all settings together.
 
 Use it like this:
-``` 
+```
 // Stop instance
 extendObject('system.adapter.sayit.0', {common: {enabled: false}});
 ```
-    
-### getIdByName 
+
+### getIdByName
     getIdByName(name, alwaysArray)
 
 returns id of the object with given name. If there are more than one object with this name the result will be an array. If _alwaysArray_ flag is set, the result will be always an array if some ID found.
 ### getEnums
     getEnums(enumName)
-    
-Get the list of existing enumerations with members, like: 
+
+Get the list of existing enumerations with members, like:
 
 ```
 getEnums('rooms') =>
@@ -639,24 +644,24 @@ It is possible short type of createState:
 ### deleteState
     deleteState(name, callback)
     Delete state and object in javascript space, e.g. "javascript.0.mystate".
-    
+
 ``` deleteState('myVariable')_ - simply delete variable if exists```
 
 ### sendTo:    
     sendTo (adapter, cmd, msg, callback)
-    
+
 ### setInterval
     setInterval (callback, ms, arg1, arg2, arg3, arg4)
 Same as javascript ***setInterval***.
-    
+
 ### clearInterval
     clearInterval (id)
 Same as javascript ***clearInterval***.
-    
-### setTimeout 
+
+### setTimeout
     setTimeout (callback, ms, arg1, arg2, arg3, arg4)
 Same as javascript ***setTimeout***.
-    
+
 ### clearTimeout
     clearTimeout (id)
 Same as javascript ***clearTimeout***.
@@ -686,7 +691,7 @@ Same as javascript ***clearTimeout***.
        * W, Н(cyrillic) - short week day as text
        * OO, ОО(cyrillic) - full month as text
        * O, О(cyrillic) - short month as text
-       
+
 #### Example
   formatDate(new Date(), "YYYY-MM-DD") => Date "2015-02-24"
   formatDate(new Date(), "hh:mm") => Hours and minutes "17:41"
@@ -702,15 +707,15 @@ If only hours are given it will add current date to it and will try to convert.
 
 getDateObject("20:00") => "Tue Aug 09 2016 20:00:00 GMT+0200"
 
-### formatValue 
+### formatValue
 	formatValue (value, decimals, format)
-Formats any value (strings too) to number. Replaces point with comma if configured in system. 
+Formats any value (strings too) to number. Replaces point with comma if configured in system.
 Decimals specify digits after comma. Default value is 2.
-Format is optional: 
+Format is optional:
  - '.,': 1234.567 => 1.234,56
  - ',.': 1234.567 => 1,234.56
  - ' .': 1234.567 => 1 234.56
-	
+
 
 ### adapterSubscribe
     adapterSubscribe(id)
@@ -737,12 +742,12 @@ Prefixes ***(not implemented - should be discussed)*** :
  . - filter by role
  § - filter by room
 
-***Example***: 
+***Example***:
 
 - $('state[id=*.STATE]') or $('state[state.id=*.STATE]') or $('*.STATE') - select all states where id ends with ".STATE".
 - $('state[id='hm-rpc.0.*]') or $('hm-rpc.0.*') - returns all states of adapter instance hm-rpc.0
 - $('channel(rooms=Living room)') - all states in room "Living room"
-- $('channel{TYPE=BLIND}[state.id=*.LEVEL]') - Get all shutter of Homematic 
+- $('channel{TYPE=BLIND}[state.id=*.LEVEL]') - Get all shutter of Homematic
 - $('channel\[role=switch\]\(rooms=Living room\)\[state.id=*.STATE\]').setState(false) - Switch all states with .STATE of channels with role "switch" in "Living room" to false
 - $('channel\[state.id=*.STATE\]\(functions=Windows\)').each(function (id, i) {log(id);}); - print all states of enum "windows" in log
 
@@ -757,7 +762,7 @@ $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').on(function (obj) 
    log('New state ' + obj.id + ' = ' + obj.state.val);
 }
 </code></pre>
-This code searches in channels. 
+This code searches in channels.
 Find all channels with common.role="switch" and belongs to enum.rooms.Wohnzimmer.
 Take all their states, where id ends with ".STATE and make subscription on all these states.
 If some of these states changes the callback will be called like for "on" function.
@@ -770,7 +775,7 @@ Following functions are possible, setValue, getValue (only from first), on, each
 $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').setValue(true);
 ```
 
-You can interrupt the "each" loop by returning the false value, like: 
+You can interrupt the "each" loop by returning the false value, like:
 ```
 // print two first IDs of on all switches in "Wohnzimmer"
 $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').each(function (id, i) {
@@ -781,7 +786,7 @@ $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').each(function (id,
 
 ### readFile
     readFile (adapter, fileName, function (error, bytes) {})
-    
+
 The result will be given in callback.
 Read file from DB from folder "javascript".
 
@@ -813,8 +818,8 @@ writeFile('vis.0', '/screenshots/1.png', data, function (error) {
 
 ### delFile
     delFile (adapter, fileName, function (error) {})
-    
-Delete file or directory. fileName is the name of file or directory in DB. 
+
+Delete file or directory. fileName is the name of file or directory in DB.
 
 This function is alias for *unlink*.
 
@@ -884,8 +889,8 @@ getHistory({
 
 ### runScript
     runScript('scriptName')
-    
-Starts or stops other scripts (and itself too) by name. There is a second parameter 
+
+Starts or stops other scripts (and itself too) by name. There is a second parameter
 ```
 // stop script
 runScript('groupName.scriptName1', false);
@@ -893,20 +898,20 @@ runScript('groupName.scriptName1', false);
 // start script
 runScript('scriptName2')
 ```
-    
+
 ### startScript
     startScript('scriptName')
-    
+
 Same as ```runScript('scriptName', true);```
 
 ### stopScript
     stopScript('scriptName')
-   
+
 Same as ```runScript('scriptName', false);```
 
 ### isScriptActive
     isScriptActive('scriptName')
-    
+
 Returns if script enabled or disabled. Please note, that that does not give back if the script now running or not. Script can be finished, but still activated.
 
 ### name
@@ -927,7 +932,7 @@ There are two modes of subscribe on states:
 console.log(getState('someID').val);
 ```
 
-- Adapter subscribes every time on specified ID if "on/subscribe" called. In this mode the adapter receives only updates for desired states. 
+- Adapter subscribes every time on specified ID if "on/subscribe" called. In this mode the adapter receives only updates for desired states.
 It is very perform and RAM efficiency, but you cannot access states directly in getState. You must use callback to get the result of state:
 
 ```
@@ -936,7 +941,7 @@ getState('someID', function (error, state) {
 });
 ```
 
-It is because the adapter does not have the value of state in RAM and must ask central DB for the value. 
+It is because the adapter does not have the value of state in RAM and must ask central DB for the value.
 
 ## Scripts activity
 
@@ -995,4 +1000,3 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 ### 3.0.0 (2016-08-27)
 * (bluefox) Beta Release with Blockly
-
