@@ -909,6 +909,10 @@ Same as ```runScript('scriptName', true);```
 
 Same as ```runScript('scriptName', false);```
 
+If stopScript is called without arguments, it will stop itself:
+
+```stopScript();```
+
 ### isScriptActive
     isScriptActive('scriptName')
 
@@ -949,6 +953,9 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+
+### 3.2.2 (2016-12-17)
+* (bluefox) Allow with stopScript() to stop itself
 
 ### 3.2.1 (2016-11-24)
 * (bluefox) Fix error with subscribe for only required states

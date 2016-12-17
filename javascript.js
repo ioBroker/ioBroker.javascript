@@ -2329,6 +2329,7 @@
             },
             runScript: function (scriptName, isStart) {
                 if (isStart === undefined) isStart = true;
+                scriptName = scriptName || name;
                 if (!scriptName.match(/^script\.js\./)) scriptName = 'script.js.' + scriptName;
                 // start other script
                 if (!objects[scriptName] || !objects[scriptName].common) {

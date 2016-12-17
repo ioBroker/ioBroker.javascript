@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.2.1",
+        "version":                  "3.2.2",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.2.2": {
+                "en": "Allow with stopScript() to stop itself",
+                "de": "Ermögliche mit stopScript() sich anzuhalten",
+                "ru": "Позволяет при помощи stopScript() остановить сам скрипт"
+            },
             "3.2.1": {
                 "en": "Fix error with subscribe for only required states",
                 "de": "Korrigiere den Fahler mit dem Subscribe nur für benötigten States",
