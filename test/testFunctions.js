@@ -109,7 +109,7 @@ describe('Test JS', function() {
     });
 
     it('Test JS: Check if adapter started', function (done) {
-        this.timeout(5000);
+        this.timeout(30000);
         checkConnectionOfAdapter(done);
     });
 
