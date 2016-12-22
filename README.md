@@ -903,7 +903,11 @@ runScript('scriptName2')
 ### startScript
     startScript('scriptName')
 
-Same as ```runScript('scriptName', true);```
+Same as 
+
+```
+runScript('scriptName', true);
+```
 
 ### stopScript
     stopScript('scriptName')
@@ -912,7 +916,10 @@ Same as ```runScript('scriptName', false);```
 
 If stopScript is called without arguments, it will stop itself:
 
-```stopScript();```
+```
+stopScript();
+```
+
 
 ### isScriptActive
     isScriptActive('scriptName')
