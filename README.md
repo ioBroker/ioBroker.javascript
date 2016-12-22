@@ -891,6 +891,7 @@ getHistory({
     runScript('scriptName')
 
 Starts or stops other scripts (and itself too) by name. There is a second parameter
+
 ```
 // stop script
 runScript('groupName.scriptName1', false);
