@@ -21,7 +21,7 @@ describe('Test package.json and io-package.json', function() {
             console.log('ERROR: Version numbers in package.json and io-package.json differ!!');
         }
 
-        if (!ioPackage.common.news[ioPackage.common.version]) {
+        if (!ioPackage.common.news || !ioPackage.common.news[ioPackage.common.version]) {
             console.log('WARNING: No news entry for current version exists in io-package.json, no rollback in Admin possible!');
         }
 
