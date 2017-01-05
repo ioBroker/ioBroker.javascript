@@ -962,6 +962,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 ## Changelog
 
+### 3.2.3 (2017-01-05)
+* (bluefox) Try to fix error with sayit
+
 ### 3.2.2 (2016-12-17)
 * (bluefox) Allow with stopScript() to stop itself
 

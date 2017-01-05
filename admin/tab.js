@@ -554,7 +554,10 @@ function Scripts(main) {
                 that.editor.setReadOnly(true);
                 that.editor.getSession().setUseWorker(false); // disable syntax check
                 switchViews(true, obj.common.engineType);
+                if (!that.blocklyWorkspace) return;
+
                 that.blocklyWorkspace.clear();
+
                 try {
                     var xml = jsCode2Blockly(obj.common.source) || '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>';
                     var dom = Blockly.Xml.textToDom(xml);
@@ -1462,6 +1465,7 @@ function Scripts(main) {
             if (!id.match(/^system\.adapter\./)) continue;
             if (that.main.objects[id].type !== 'adapter') continue;
             if (that.main.objects[id].common && that.main.objects[id].common.blockly) {
+                console.log('Detected custom blockly: ' + that.main.objects[id].common.name);
                 toLoad.push(that.main.objects[id].common.name);
             }
         }
