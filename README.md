@@ -790,10 +790,26 @@ $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').each(function (id,
 The result will be given in callback.
 Read file from DB from folder "javascript".
 
+Argument *adapter* can be omitted. 
+
+```
+// read vis views
+readFile('vis.0', '/main/vis-views.json', function (error, data) {
+    console.log(data.substring(0, 50));
+});
+
+// The same as
+//readFile('/../vis.0/main/vis-views.json', function (error) {
+//     console.log(data.substring(0, 50));
+//});
+```
+
+By default working directory/adapter is "javascript.0".
+
 ### writeFile
     writeFile (adapter, fileName, bytes, function (error) {})
 
-The optional error code will be given in callback.
+The optional error code will be given in callback. Argument *adapter* can be ommited. 
 fileName is the name of file in DB. All files are stored in folder "javascript". if you want to write to other folders, e.g. to "/vis.0/" use setFile for that.
 
 The file that looks like '/subfolder/file.txt' will be stored under "/javascript/subfolder/file.txt" and can be accessed over web server with ```http://ip:8082/javascript/subfolder/file.txt```
@@ -805,6 +821,11 @@ var data = fs.readFileSync('/tmp/screenshot.png');
 writeFile(null, '/screenshots/1.png', data, function (error) {
     console.log('file written');
 });
+
+// The same as
+//writeFile('/screenshots/1.png', data, function (error) {
+//    console.log('file written');
+//});
 ```
 
 ```
