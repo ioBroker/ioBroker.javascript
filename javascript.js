@@ -2342,7 +2342,8 @@
                         if (objects[scriptName].common.enabled) {
                             objects[scriptName].common.enabled = false;
                             adapter.extendForeignObject(scriptName, {common: {enabled: false}}, function (err, obj) {
-                                adapter.extendForeignObject(obj._id, {common: {enabled: true}});
+                                adapter.extendForeignObject(scriptName, {common: {enabled: true}});
+                                scriptName = null;
                             });
                         } else {
                             adapter.extendForeignObject(scriptName, {common: {enabled: true}});

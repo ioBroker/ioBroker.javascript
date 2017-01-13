@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.2.3",
+        "version":                  "3.2.4",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.2.4": {
+                "en": "fix stopScript",
+                "de": "Korrigiere stopScript",
+                "ru": "Исправлен stopScript"
+            },
             "3.2.3": {
                 "en": "Try to fix error with sayit",
                 "de": "Try to fix error with sayit",
