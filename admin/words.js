@@ -24,19 +24,19 @@ systemDictionary = {
     "on":                   {"en": "on",                    "de": "am",                     "ru": " "},
     "at":                   {"en": "at",                    "de": "um",                     "ru": "в"},
     "of":                   {"en": "of",                    "de": "",                       "ru": " "},
-    "Scripts":              {"en": "Scripts",               "de": "Skripten",               "ru": "Скрипты"},
-    "delete script":        {"en": "delete script",         "de": "Script löschen",         "ru": "Удалить скрипт"},
-    "edit script":          {"en": "edit script",           "de": "Script bearbeiten",      "ru": "Редактироветь скрипт"},
-    "new script":           {"en": "new script",            "de": "Neues Script",           "ru": "Новый скрипт"},
+    "Scripts":              {"en": "Scripts",               "de": "Skripte",                "ru": "Скрипты"},
+    "delete script":        {"en": "delete script",         "de": "Skript löschen",         "ru": "Удалить скрипт"},
+    "edit script":          {"en": "edit script",           "de": "Skript bearbeiten",      "ru": "Редактироветь скрипт"},
+    "new script":           {"en": "new script",            "de": "Neues Skript",           "ru": "Новый скрипт"},
     "edit file":            {"en": "edit file",             "de": "Datei editieren",        "ru": "Редактировать"},
-    "restart script":       {"en": "restart script",        "de": "Skript neu starten",     "ru": "Перезапустить скрипт"},
+    "restart script":       {"en": "restart script",        "de": "Skript neustarten",      "ru": "Перезапустить скрипт"},
     "Save":                 {"en": "Save",                  "de": "Speichern",              "ru": "Сохранить"},
     "edit":                 {"en": "edit",                  "de": "ändern",                 "ru": "редактировать"},
     "delete":               {"en": "delete",                "de": "löschen",                "ru": "удалить"},
     "ok":                   {"en": "Ok",                    "de": "Ok",                     "ru": "Ok"},
     "cancel":               {"en": "Cancel",                "de": "Abbrechen",              "ru": "отменить"},
     "global":               {"en": "global",                "de": "Global",                 "ru": "глобальный"},
-    "Show code":            {"en": "Show code",             "de": "Zeige Kode",             "ru": "Показать код"},
+    "Show code":            {"en": "Show code",             "de": "Zeige Code",             "ru": "Показать код"},
     "Show blockly":         {"en": "Show Blockly",          "de": "Zeige Blockly",          "ru": "Показать Blockly"},
     "Set CRON":             {"en": "Set",                   "de": "Übernehmen",             "ru": "Перенять"},
     "debug":                {"en": "Debug",                 "de": "Debug",                  "ru": "Debug"},
@@ -48,7 +48,7 @@ systemDictionary = {
     },
     "verbose_help": {
         "en": "Output of additional information for some functions.",
-        "de": "Züsätzliche Ausgaben für manche Funktionen.",
+        "de": "Zeige zusätzliche Ausgaben für manche Funktionen an.",
         "ru": "Вывод дополнительной информации в лог для некоторых функций."
     },
     "months":               {
@@ -89,16 +89,16 @@ systemDictionary = {
     "Room":                 {"en": "Room",                  "de": "Raum",                   "ru": "Комната"},
     "Value":                {"en": "Value",                 "de": "Wert",                   "ru": "Значение"},
     "From":                 {"en": "From: ",                "de": "Von",                    "ru": "От"},
-    "Last changed":         {"en": "Last changed",          "de": "Lätze Änderung",         "ru": "Изменён"},
+    "Last changed":         {"en": "Last changed",          "de": "Letzte Änderung",        "ru": "Изменён"},
     "Time stamp":           {"en": "Time stamp",            "de": "Zeitstempel",            "ru": "Время"},
     "Acknowledged":         {"en": "Acknowledged",          "de": "Bestätigt",              "ru": "Подтверждён"},
-    "Processing...":        {"en": "Processing...",         "de": "Bearbeite...",           "ru": "Обработка..."},
-    "Loading...":           {"en": "Processing...",         "de": "Bearbeite...",           "ru": "Обработка..."},
+    "Processing...":        {"en": "Processing...",         "de": "Verarbeite...",          "ru": "Обработка..."},
+    "Loading...":           {"en": "Processing...",         "de": "Verarbeite...",          "ru": "Обработка..."},
     "Log":                  {"en": "Log",                   "de": "Log",                    "ru": "Лог"},
     "new group name":       {"en": "New group name:",       "de": "Neuer Gruppenname",      "ru": "Имя новой группы"},
     "Create in:":           {"en": "Create in:",            "de": "Erzeugen in:",           "ru": "Создать в группе:"},
     "Clear output":         {"en": "Clear output",          "de": "Fenster löschen",        "ru": "Очистить выврд"},
-    "Scroll down":          {"en": "Scroll down",           "de": "Nach unten skrollen",    "ru": "Вниз"},
+    "Scroll down":          {"en": "Scroll down",           "de": "Nach unten scrollen",    "ru": "Вниз"},
     "no group":             {"en": "NO GROUP",              "de": "KEINE GRUPPE",           "ru": "В корне"},
     "common":               {"en": "Common",                "de": "Allgemein",              "ru": "Общие"},
     "Script":               {"en": "Script",                "de": "Skript",                 "ru": "Скрипт"},
@@ -112,19 +112,19 @@ systemDictionary = {
     "Save?":                {"en": "Save?",                 "de": "Speichern?",             "ru": "Сохранить?"},
     "Discard":              {"en": "Discard",               "de": "Nicht speichern",        "ru": "Не сохранять"},
     "Instance":             {"en": "Instance",              "de": "Wird ausgeführt von ",   "ru": "Выполняется в "},
-    "Wrap&nbsp;lines":      {"en": "Wrap&nbsp;lines",       "de": "Zeilenunterbrechung",    "ru": "Перенос&nbsp;строк"},
+    "Wrap&nbsp;lines":      {"en": "Wrap&nbsp;lines",       "de": "Zeilenumbruch",          "ru": "Перенос&nbsp;строк"},
     "Drop the files here":  {"en": "Drop the files here",   "de": "Hier hinzufügen",        "ru": "Добавить..."},
     "Clear":                {"en": "Clear",                 "de": "Löschen",                "ru": "Сбросить"},
     "scripts_group":        {"en": "Scripts",               "de": "Skripte",                "ru": "Скрипты"},
     "Edit script":          {"en": "Edit script",           "de": "Skript editieren",       "ru": "Редактировать скрипт"},
     "Script changes are not saved. Discard?": {
         "en": "Script changes are not saved. Discard?",
-        "de": "Änderungen sind nicht gespeichert. Nicht speichern?",
+        "de": "Änderungen sind nicht gespeichert. Verwerfen?",
         "ru": "Изменения не сохранены. Игнорировать?"
     },
     "Convert to Blockly":   {
-        "en": "Looks like it is blockly script. Convert to Blockly?",
-        "de": "Sieht aus, dass es ein Blockly Script. Konvertieren zu Blockly?",
+        "en": "Looks like it is a blockly script. Convert to Blockly?",
+        "de": "Sieht wie ein Blockly Skript aus. Zu Blockly konvertieren?",
         "ru": "Похоже, что это Blockly скрипт. Поменять тип на Blockly?"
     },
     "Convert?":   {
@@ -135,28 +135,28 @@ systemDictionary = {
     "Check blocks":         {"en": "Check blocks",          "de": "Blöcke prüfen",          "ru": "Проверить блоки"},
     "not properly connected": {
         "en": "This block is not properly connected to other blocks.",
-        "de": "Dieser Block ist nicht richtig verbunden mit anderen.",
+        "de": "Dieser Block ist mit anderen nicht richtig verbunden.",
         "ru": "Этот блок неправильно соединён или не соединён с другими блоками"
     },
     "Error":                {"en": "Error",                 "de": "Fehler",                 "ru": "Ошибка"},
     "no blocks found": {
         "en": "No blocks found",
-        "de": "Keine Blocks gefunden",
+        "de": "Keine Blöcke gefunden",
         "ru": "Блоков нет"
     },
     "warning on this block": {
         "en": "Please fix the warning on this block.", 
-        "de": "Bitte dei Warnung an diesem Block fixen.",
+        "de": "Bitte die Warnung an diesem Block korrigieren.",
         "ru": "Исправте проблему с этим блоком"
     },
     "Invalid file extenstion!": {
         "en": "Invalid file extenstion!", 
-        "de": "Invalid Dateiextenstion!", 
+        "de": "Invalide Dateinameserweiterung!", 
         "ru": "Неправильный тип файла!"
     },
     "You cannot go back!": {
-        "en": "You cannot switch type of script back to Blockly. Yre you sure? (Use 'Show code' button to check th generated code)",
-        "de": "Es wird nicht möglich den Typ zurück auf Blockly um zu schalten. Sind Sie sicher? (Benutze 'Zeige Kode' Knopf um Kode zu prüfrn)",
+        "en": "You cannot switch back to Blockly after this operation. Are you sure? (Use 'Show code' button to check the generated code)",
+        "de": "Nach diesem Vorgang ist es nicht möglich zurück auf Blockly zu schalten. Sind Sie sich sicher? (Benutze 'Zeige Code'-Button um Code zu prüfen)",
         "ru": "Нельзя поменять тип скрипта обратно на Blockly. Вы уверены? (Используйте кнопку 'Показать код', что бы проверить код)"
     },
     "Drop files here or click to select one": {
@@ -179,8 +179,8 @@ systemDictionary = {
     "Export blocks":        {"en": "Export blocks",         "de": "Blöcke exportieren",     "ru": "Экспорт блоков"},
     "Import blocks":        {"en": "Import blocks",         "de": "Blöcke importieren",     "ru": "Импорт блоков"},
     "Import selected blocks": {"en": "Import of blocks",    "de": "Import von Blöcken",     "ru": "Импорт блоков"},
-    "Export selected blocks": {"en": "Export selected blocks", "de": "Export von selected blocks", "ru": "Экспорт выбранных блоков"},
-    "global_hint":          {"en": "Global script! (click here for help)", "de": "Globales Skript (hier klick für Hilfe)", "ru": "Глобальный скрипт (описание)"},
+    "Export selected blocks": {"en": "Export selected blocks", "de": "Export ausgewählter Blöcke", "ru": "Экспорт выбранных блоков"},
+    "global_hint":          {"en": "Global script! (click here for help)", "de": "Globales Skript (klicke hier für Hilfe)", "ru": "Глобальный скрипт (описание)"},
     "Deactivated. Click to start.": {
         "en": "Deactivated. Click to start.",
         "de": "Deaktiviert. Klicken zum Starten.",
@@ -192,18 +192,18 @@ systemDictionary = {
         "ru": "Активно. Нажать для старта."
     },
     "Object %s yet exists": {
-        "en": 'Object <span style="color: red">"%s"</span> yet exists',
+        "en": 'Object <span style="color: red">"%s"</span> already exists',
         "de": 'Objekt <span style="color: red">"%s"</span> existiert bereits',
         "ru": 'Объект <span style="color: red">"%s"</span> уже существует'
     },
     'Are you sure to delete group <span style="color: blue">%s</span> and <span style="color: red">all</span> scripts in it?': {
         "en": 'Are you sure to delete group <span style="color: blue">%s</span> and <span style="color: red">all</span> scripts in it?',
-        "de": 'Are you sure to delete group <span style="color: blue">%s</span> and <span style="color: red">all</span> scripts in it?',
+        "de": 'Soll die Gruppe <span style="color: blue">%s</span> und <span style="color: red">alle</span> enthaltenen Skripte wirklich gelöscht werden?',
         "ru": 'Are you sure to delete group <span style="color: blue">%s</span> and <span style="color: red">all</span> scripts in it?'
     },
     "Are you sure to delete script %s?": {
-        "en": 'Are you sure to delete script <span style="color: blue">%s?</span>',
-        "de": 'Sind Sie sicher um Skript <span style="color: blue">%s?</span> zu löschen?',
-        "ru": 'Вы точно хотите удалить скрипт <span style="color: blue">%s?</span>?'
+        "en": 'Are you sure to delete script <span style="color: blue">%s</span>?',
+        "de": 'Soll das Skript <span style="color: blue">%s</span> wirklich gelöscht werden?',
+        "ru": 'Вы точно хотите удалить скрипт <span style="color: blue">%s</span>?'
     }
 };
