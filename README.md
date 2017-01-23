@@ -524,6 +524,31 @@ Following operations are possible:
 
 Time can be Date object or Date with time or just time.
 
+You can use astro-names for the time definition. All 3 parameters can be set as astro time.
+Following values are possible: 'sunrise', 'sunset', 'sunriseEnd', 'sunsetStart', 'dawn', 'dusk', 'nauticalDawn', 'nauticalDusk', 'nightEnd', 'night', 'goldenHourEnd', 'goldenHour'.
+See [Astro](#astro--function) for detail.
+
+
+```
+console.log(compareTime('sunsetStart', 'sunsetEnd', 'between') ? 'Now is sunrise' : 'Now is no sunrise');
+```
+
+It is possible to define the time with offset too:
+
+```
+console.log(compareTime({astro: 'sunsetStart', offset: 30}, {astro: 'sunrise', offset: -30}, '>') ? 'Now is at least 30 minutes after sunset' : 'No idea');
+```
+
+Structure of astro object.
+
+```
+    {
+        astro: 'sunsetStart',// mandatory, can be written as string and not as object if offset and date are default
+        offset: 30,          // optional
+        date:   new Date()   // optional
+    }
+```
+
 ### setState
     setState (id, state, ack, callback)
 
@@ -982,6 +1007,9 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+
+### 3.2.5 (2017-01-23)
+* (bluefox) Extend compareTime function with astro features
 
 ### 3.2.4 (2017-01-13)
 * (bluefox) fix stopScript

@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.2.4",
+        "version":                  "3.2.5",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.2.5": {
+                "en": "Extend compareTime function with astro features",
+                "de": "Erweitere compareTime Funktion mit astro Möglichkeiten",
+                "ru": "Функция compareTime расширена astro возможностями"
+            },
             "3.2.4": {
                 "en": "fix stopScript",
                 "de": "Korrigiere stopScript",

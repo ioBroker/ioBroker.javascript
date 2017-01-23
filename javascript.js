@@ -56,8 +56,8 @@
         'de': ['Jan', 'Feb',  'Mär',  'Apr', 'Mai', 'Jun',  'Jul',  'Aug', 'Sep',  'Okt', 'Nov', 'Dez'],
         'ru': ['Янв',  'Фев', 'Март', 'Апр', 'Май', 'Июнь', 'Июль', 'Авг', 'Сен',  'Окт', 'Ноя', 'Дек']
     };
-
-
+    var astroList = ['sunrise', 'sunset', 'sunriseEnd', 'sunsetStart', 'dawn', 'dusk', 'nauticalDawn', 'nauticalDusk', 'nightEnd', 'night', 'goldenHourEnd', 'goldenHour'];
+    
     var adapter = utils.adapter({
 
         name: 'javascript',
@@ -2087,6 +2087,48 @@
                 };
             },
             compareTime: function (startTime, endTime, operation, time) {
+                if (startTime && typeof startTime === 'string') {
+                    if (astroList.indexOf(startTime) !== -1) {
+                        startTime = sandbox.getAstroDate(startTime);
+                        startTime = startTime.toLocaleTimeString([], {
+                            hour:   '2-digit',
+                            minute: '2-digit',
+                            hour12: false
+                        });
+                    }
+                } else if (startTime && typeof startTime === 'object' && startTime.astro) {
+                    startTime = sandbox.getAstroDate(startTime.astro, startTime.date || new Date(), startTime.offset || 0);
+                    startTime = startTime.toLocaleTimeString([], {
+                        hour:   '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    });
+                }
+                if (endTime && typeof endTime === 'string') {
+                    if (astroList.indexOf(endTime) !== -1) {
+                        endTime = sandbox.getAstroDate(endTime);
+                        endTime = endTime.toLocaleTimeString([], {
+                            hour:   '2-digit',
+                            minute: '2-digit',
+                            hour12: false
+                        });
+                    }
+                } else if (endTime && typeof endTime === 'object' && endTime.astro) {
+                    endTime = sandbox.getAstroDate(endTime.astro, endTime.date || new Date(), endTime.offset || 0);
+                    endTime = endTime.toLocaleTimeString([], {
+                        hour:   '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    });
+                }
+                if (time && typeof time === 'string') {
+                    if (astroList.indexOf(time) !== -1) {
+                        time = sandbox.getAstroDate(time);
+                    }
+                } else if (time && typeof time === 'object' && time.astro) {
+                    time = sandbox.getAstroDate(time.astro, time.date || new Date(), time.offset || 0);
+                }
+                
                 if (time && typeof time !== 'object') {
                     time = new Date(time);
                 } else if (!time) {

@@ -531,6 +531,59 @@ Blockly.JavaScript['get_value'] = function(block) {
     return ['getState("' + oid + '").' + attr, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
+// --- get value async--------------------------------------------------
+Blockly.Words['get_value_async']         = {'en': 'Get state value',                  'de': 'Zustandswert nehmen',                'ru': 'Взять значение состояния'};
+
+Blockly.System.blocks['get_value_async'] =
+    '<block type="get_value_async">'
+    + '     <value name="ATTR">'
+    + '     </value>'
+    + '     <value name="OID">'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['get_value_async'] = {
+    // Checkbox.
+    init: function() {
+
+        this.appendDummyInput('ATTR')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['get_value_val'][systemLang],    'val'],
+                [Blockly.Words['get_value_ack'][systemLang],    'ack'],
+                [Blockly.Words['get_value_ts'][systemLang],     'ts'],
+                [Blockly.Words['get_value_lc'][systemLang],     'lc'],
+                [Blockly.Words['get_value_q'][systemLang] ,     'q'],
+                [Blockly.Words['get_value_from'][systemLang],   'from']
+            ]), 'ATTR');
+
+        this.appendDummyInput()
+            .appendField(Blockly.Words['get_value_OID'][systemLang]);
+
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldOID(Blockly.Words['get_value_default'][systemLang], main.initSelectId(), main.objects), 'OID');
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        
+        this.setInputsInline(true);
+        this.setColour(Blockly.System.HUE);
+        this.setTooltip(Blockly.Words['get_value_tooltip'][systemLang]);
+        this.setHelpUrl(getHelp('get_value_help'));
+    }
+};
+
+Blockly.JavaScript['get_value_async'] = function(block) {
+    var oid  = block.getFieldValue('OID');
+    var attr = block.getFieldValue('ATTR');
+    var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    return 'getState("' + oid + '", function (err, state) {\n   var value = state.' + attr + ';\n' + statement + '});\n';
+};
+
 // --- select OID --------------------------------------------------
 Blockly.Words['field_oid']         = {'en': 'Select OID',    'de': 'Zustand erzeugen',   'ru': 'создать состояние'};
 Blockly.Words['field_oid_OID']     = {'en': 'Object ID',         'de': 'Objekt ID',            'ru': 'ID объекта'};

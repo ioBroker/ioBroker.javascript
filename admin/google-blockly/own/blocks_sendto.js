@@ -92,11 +92,25 @@ Blockly.Blocks['sendto_custom'] = {
      * @this Blockly.Block
      */
     init: function () {
-        //this.appendDummyInput('TEXT')
-
-        this.appendDummyInput('INSTANCE')
-            .appendField(Blockly.Words['sendto_custom'][systemLang])
-            .appendField(new Blockly.FieldTextInput('adapter.0'), 'INSTANCE');
+        var options = [];
+        if (typeof main !== 'undefined' && main.instances) {
+            for (var i = 0; i < main.instances.length; i++) {
+                if (main.objects[main.instances[i]].common.messagebox) {
+                    var id = main.instances[i].substring('system.adapter.'.length);
+                    options.push([id, id]);
+                }
+            }
+            /*for (var h = 0; h < scripts.hosts.length; h++) {
+                options.push([scripts.hosts[h], scripts.hosts[h]]);
+            }*/
+            this.appendDummyInput('INSTANCE')
+                .appendField(Blockly.Words['sendto_custom'][systemLang])
+                .appendField(new Blockly.FieldDropdown(options), 'INSTANCE');
+        } else {
+            this.appendDummyInput('INSTANCE')
+                .appendField(Blockly.Words['sendto_custom'][systemLang])
+                .appendField(new Blockly.FieldTextInput('adapter.0'), 'INSTANCE');
+        }
 
         this.appendDummyInput('COMMAND')
             .appendField(Blockly.Words['sendto_custom_command'][systemLang])
