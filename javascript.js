@@ -56,8 +56,9 @@
         'de': ['Jan', 'Feb',  'Mär',  'Apr', 'Mai', 'Jun',  'Jul',  'Aug', 'Sep',  'Okt', 'Nov', 'Dez'],
         'ru': ['Янв',  'Фев', 'Март', 'Апр', 'Май', 'Июнь', 'Июль', 'Авг', 'Сен',  'Окт', 'Ноя', 'Дек']
     };
-    var astroList = ['sunrise', 'sunset', 'sunriseEnd', 'sunsetStart', 'dawn', 'dusk', 'nauticalDawn', 'nauticalDusk', 'nightEnd', 'night', 'goldenHourEnd', 'goldenHour'];
-    
+    var astroList    = ['sunrise', 'sunset', 'sunriseEnd', 'sunsetStart', 'dawn', 'dusk', 'nauticalDawn', 'nauticalDusk', 'nightEnd', 'night', 'goldenHourEnd', 'goldenHour'];
+    var astroListLow = ['sunrise', 'sunset', 'sunriseend', 'sunsetstart', 'dawn', 'dusk', 'nauticaldawn', 'nauticaldusk', 'nightend', 'night', 'goldenhourend', 'goldenhour'];
+
     var adapter = utils.adapter({
 
         name: 'javascript',
@@ -1510,6 +1511,11 @@
             getAstroDate:   function (pattern, date, offsetMinutes) {
                 if (date === undefined) date = new Date();
 
+                if (astroList.indexOf(pattern) === -1) {
+                    var pos = astroListLow.indexOf(pattern.toLowerCase());
+                    if (pos !== -1) pattern = astroList[pos];
+                }
+
                 if ((!adapter.config.latitude  && adapter.config.latitude  !== 0 && adapter.config.latitude  !== '0') ||
                     (!adapter.config.longitude && adapter.config.longitude !== 0 && adapter.config.longitude !== '0')) {
                     adapter.log.error('Longitude or latitude does not set. Cannot use astro.');
@@ -2087,9 +2093,10 @@
                 };
             },
             compareTime: function (startTime, endTime, operation, time) {
+                var pos;
                 if (startTime && typeof startTime === 'string') {
-                    if (astroList.indexOf(startTime) !== -1) {
-                        startTime = sandbox.getAstroDate(startTime);
+                    if ((pos = astroListLow.indexOf(startTime.toLowerCase())) !== -1) {
+                        startTime = sandbox.getAstroDate(astroList[pos]);
                         startTime = startTime.toLocaleTimeString([], {
                             hour:   '2-digit',
                             minute: '2-digit',
@@ -2105,8 +2112,8 @@
                     });
                 }
                 if (endTime && typeof endTime === 'string') {
-                    if (astroList.indexOf(endTime) !== -1) {
-                        endTime = sandbox.getAstroDate(endTime);
+                    if ((pos = astroListLow.indexOf(endTime.toLowerCase())) !== -1) {
+                        endTime = sandbox.getAstroDate(astroList[pos]);
                         endTime = endTime.toLocaleTimeString([], {
                             hour:   '2-digit',
                             minute: '2-digit',
@@ -2122,8 +2129,8 @@
                     });
                 }
                 if (time && typeof time === 'string') {
-                    if (astroList.indexOf(time) !== -1) {
-                        time = sandbox.getAstroDate(time);
+                    if ((pos = astroListLow.indexOf(time.toLowerCase())) !== -1) {
+                        time = sandbox.getAstroDate(astroList[pos]);
                     }
                 } else if (time && typeof time === 'object' && time.astro) {
                     time = sandbox.getAstroDate(time.astro, time.date || new Date(), time.offset || 0);
