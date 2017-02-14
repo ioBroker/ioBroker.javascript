@@ -1008,6 +1008,10 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 ## Changelog
 
+### 3.2.6 (2017-02-14)
+* (bluefox) Fix import of scripts
+* (bluefox) Ask to save before start the script
+
 ### 3.2.5 (2017-01-23)
 * (bluefox) Extend compareTime function with astro features
 

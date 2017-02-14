@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.2.5",
+        "version":                  "3.2.6",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.2.6": {
+                "en": "Fix import of scripts\nAsk to save before start the script",
+                "de": "Korrigiere Skriptimport\nFrage um Speichern bevor Skriptstart",
+                "ru": "Исправлен импорт скриптов\nСохранение скриптов прежде, чем запустить их"
+            },
             "3.2.5": {
                 "en": "Extend compareTime function with astro features",
                 "de": "Erweitere compareTime Funktion mit astro Möglichkeiten",

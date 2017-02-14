@@ -164,6 +164,11 @@ systemDictionary = {
         "de": "Dateien hereinziehen oder klicken um mit Dialog auszuwählen...",
         "ru": "Перетащите файл сюда или нажмите, что бы выбрать..."
     },
+    "Do you want to save script %s?": {
+        "en": "Do you want to save script %s?",
+        "de": "Erst speichern %s?",
+        "ru": "Прежде чем запустить, сохранить %s?"
+    },
     "bytes":                {"en": "bytes",                 "de": "Bytes",                  "ru": "байт"},
     "Kb":                   {"en": "Kb",                    "de": "Kb",                     "ru": "Кб"},
     "Mb":                   {"en": "Kb",                    "de": "Mb",                     "ru": "Мб"},

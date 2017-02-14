@@ -1298,7 +1298,6 @@ function Scripts(main) {
             return false;
         }
         $dz.hide();
-        var that = this;
         var reader = new FileReader();
         reader.onload = function (evt) {
             $('.import-file-name').html('<img src="zip.png" /><br><span style="color: black; font-weight: bold">[' + editGetReadableSize(file.size) + ']</span><br><span style="color: black; font-weight: bold">' + file.name + '</span>');
@@ -1473,6 +1472,19 @@ function Scripts(main) {
         loadScripts(toLoad, callback);
     }
 
+    function enableScript(id, isEnable) {
+        that.main.socket.emit('extendObject', id, {
+            common: {
+                enabled: isEnable
+            }
+        }, function (err) {
+            if (err) {
+                that.main.showError(err);
+                that.init(true);
+            }
+        });
+    }
+
     this.init = function (update) {
         var that = this;
         if (!this.main.objectsLoaded || !this.languageLoaded) {
@@ -1595,17 +1607,25 @@ function Scripts(main) {
                         },
                         click: function (id) {
                             if (this.length === 1) this.button('disable');
-                            // toggle state
-                            that.main.socket.emit('extendObject', id, {
-                                common: {
-                                    enabled: !(that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.enabled)
-                                }
-                            }, function (err) {
-                                if (err) {
-                                    that.main.showError(err);
-                                    that.init(true);
-                                }
-                            });
+
+                            var enabled = !(that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.enabled);
+                            // If script not saved ask about saving
+                            if (enabled && !$('#script-edit-button-save').hasClass('ui-button-disabled')) {
+                                that.main.confirmMessage(_('Do you want to save script %s?', that.main.objects[id].common.name), null, 'help', function (result) {
+                                    if (result) {
+                                        that.saveScript(function () {
+                                            // toggle state
+                                            enableScript(id, enabled);
+                                        });
+                                    } else {
+                                        // toggle state
+                                        enableScript(id, enabled);
+                                    }
+                                });
+                            } else {
+                                // toggle state
+                                enableScript(id, enabled);
+                            }
                         },
                         match: function (id) {
                             if (that.main.objects[id] && that.main.objects[id].type ==='script') {
@@ -1848,6 +1868,10 @@ function Scripts(main) {
     };
 
     this.saveScript = function (isConvert, cb) {
+        if (typeof isConvert === 'function') {
+            cb = isConvert;
+            isConvert = false;
+        }
         var that = this;
         var obj = {};
         var newId      = $('#edit-script-group').val() + '.' + $('#edit-script-name').val().replace(/["'\s.]/g, '_');
