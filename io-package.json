@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.2.6",
+        "version":                  "3.2.7",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.2.7": {
+                "en": "allow creation of states for other javascript instances",
+                "de": "Erlaube States-Erzeugung für andere Javascirpt-Instanzen",
+                "ru": "Можно создавать переменные для других Javascirpt экземпляров"
+            },
             "3.2.6": {
                 "en": "Fix import of scripts\nAsk to save before start the script",
                 "de": "Korrigiere Skriptimport\nFrage um Speichern bevor Skriptstart",

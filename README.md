@@ -668,7 +668,7 @@ It is possible short type of createState:
 
 ### deleteState
     deleteState(name, callback)
-    Delete state and object in javascript space, e.g. "javascript.0.mystate".
+    Delete state and object in javascript space, e.g. "javascript.0.mystate". The foreign state cannot be deleted.
 
 ``` deleteState('myVariable')_ - simply delete variable if exists```
 
@@ -1007,6 +1007,9 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+
+### 3.2.7 (2017-03-03)
+* (bluefox) allow creation of states for other javascript instances
 
 ### 3.2.6 (2017-02-14)
 * (bluefox) Fix import of scripts

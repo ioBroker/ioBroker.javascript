@@ -137,6 +137,42 @@ describe('Test JS', function() {
                     objects.getObject('javascript.0.test1', function (err, obj) {
                         expect(err).to.be.not.ok;
                         expect(obj).to.be.ok;
+
+                        done();
+                    });
+                });
+            }
+        };
+        objects.setObject(script._id, script, function (err) {
+            expect(err).to.be.not.ok;
+        });
+    });
+
+    it('Test JS: check creation of state for other instance', function (done) {
+        this.timeout(2000);
+        // add script
+        var script = {
+            "common": {
+                "name":         "check creation of state",
+                "engineType":   "Javascript/js",
+                "source":       "createState('javascript.1.test1', 6);",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.check_creation_of_foreign_state",
+            "native": {}
+        };
+        onStateChanged = function (id, state) {
+            if (id === 'javascript.1.test1' && state.val === 6) {
+                onStateChanged = null;
+                states.getState('javascript.1.test1', function (err, state) {
+                    expect(err).to.be.not.ok;
+                    expect(state).to.be.ok;
+                    expect(state.val).to.be.equal(6);
+                    objects.getObject('javascript.1.test1', function (err, obj) {
+                        expect(err).to.be.not.ok;
+                        expect(obj).to.be.ok;
                         done();
                     });
                 });
@@ -185,6 +221,51 @@ describe('Test JS', function() {
                         });
                     }
                 };
+
+                objects.setObject(script._id, script, function (err) {
+                    expect(err).to.be.not.ok;
+                });
+            });
+        });
+    });
+
+    it('Test JS: check deletion of foreign state', function (done) {
+        this.timeout(2000);
+        // add script
+        var script = {
+            "common": {
+                "name":         "check deletion of state",
+                "engineType":   "Javascript/js",
+                "source":       "deleteState('javascript.1.test1');",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.check_deletion_of_foreign_state",
+            "native": {}
+        };
+
+        objects.getObject('javascript.1.test1', function (err, obj) {
+            expect(err).to.be.not.ok;
+            expect(obj).to.be.ok;
+            states.getState('javascript.1.test1', function (err, state) {
+                expect(err).to.be.not.ok;
+                expect(state).to.be.ok;
+                expect(state.val).to.be.equal(6);
+
+                // we cannot delete foreign object, even if we created it.
+                setTimeout(function () {
+                    objects.getObject('javascript.1.test1', function (err, obj) {
+                        expect(err).to.be.not.ok;
+                        expect(obj).to.be.ok;
+                        states.getState('javascript.1.test1', function (err, state) {
+                            expect(err).to.be.not.ok;
+                            expect(state).to.be.ok;
+                            expect(state.val).to.be.equal(6);
+                            done();
+                        });
+                    });
+                }, 400);
 
                 objects.setObject(script._id, script, function (err) {
                     expect(err).to.be.not.ok;

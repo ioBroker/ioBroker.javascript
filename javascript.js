@@ -1576,7 +1576,10 @@
                 }
 
                 // Check type of state
-				if (!objects[id] && objects[adapter.namespace + '.' + id]) id = adapter.namespace + '.' + id;
+				if (!objects[id] && objects[adapter.namespace + '.' + id]) {
+                    id = adapter.namespace + '.' + id;
+                }
+
                 var common = objects[id] ? objects[id].common : null;
                 if (common &&
                     common.type &&
@@ -1987,19 +1990,36 @@
                         if (err || !obj) {
                             // todo: store object in objects to have this object directly after callback
                             // create new one
-                            adapter.setObject(name, {
-                                common: common,
-                                native: native,
-                                type:   'state'
-                            }, function (err) {
-                                if (err) adapter.log.warn('Cannot set object "' + name + '": ' + err);
+                            if (name.match(/^javascript\.\d+\./)) {
+                                adapter.setForeignObject(name, {
+                                    common: common,
+                                    native: native,
+                                    type:   'state'
+                                }, function (err) {
+                                    if (err) adapter.log.warn('Cannot set object "' + name + '": ' + err);
 
-                                if (initValue !== undefined) {
-                                    adapter.setState(name, initValue, callback);
-                                } else {
-                                    adapter.setState(name, null,      callback);
-                                }
-                            });
+                                    if (initValue !== undefined) {
+                                        adapter.setForeignState(name, initValue, callback);
+                                    } else {
+                                        adapter.setForeignState(name, null,      callback);
+                                    }
+                                });
+                            } else {
+                                adapter.setObject(name, {
+                                    common: common,
+                                    native: native,
+                                    type:   'state'
+                                }, function (err) {
+                                    if (err) adapter.log.warn('Cannot set object "' + name + '": ' + err);
+
+                                    if (initValue !== undefined) {
+                                        adapter.setState(name, initValue, callback);
+                                    } else {
+                                        adapter.setState(name, null,      callback);
+                                    }
+                                });
+
+                            }
                         } else {
                             if (!adapter.config.subscribe && !states[name] && !states[adapter.namespace + '.' + name]) {
                                 if (name.substring(0, adapter.namespace.length) !== adapter.namespace) {
@@ -2016,9 +2036,16 @@
             },
             deleteState:      function (id, callback) {
                 // todo: check rights
-                if (objects[id]) delete objects[id];
+                var found = false;
+                if (objects[id]) {
+                    found = true;
+                    delete objects[id];
+                }
                 if (states[id])  delete states[id];
-                if (objects[adapter.namespace + '.' + id]) delete objects[adapter.namespace + '.' + id];
+                if (objects[adapter.namespace + '.' + id]) {
+                    delete objects[adapter.namespace + '.' + id];
+                    found = true;
+                }
                 if (states[adapter.namespace + '.' + id])  delete states[adapter.namespace + '.' + id];
 
                 if (sandbox.verbose) sandbox.log('deleteState(id=' + id + ')', 'debug');
@@ -2027,7 +2054,7 @@
 
                     adapter.delState(id, function (err) {
                         if (err) adapter.log.error('Cannot delete state "' + id + '": ' + err);
-                        if (typeof callback === 'function') callback(err);
+                        if (typeof callback === 'function') callback(err, found);
                     });
 
                 });
