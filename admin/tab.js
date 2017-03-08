@@ -97,21 +97,21 @@ function Scripts(main) {
                                 return;
                             }
                             group += '.' + name.replace(/["'\s.]+/g, '_');
-
-                            $('#script-group-button-save').button('disable');
-                            $('#script-group-button-cancel').button('disable');
-
+                            
                             // check if object with such name exists
                             if (that.main.objects[group]) {
                                 that.main.showMessage(_('Object %s yet exists', group));
                                 that.$newGroupDialog.dialog('close');
                             } else {
+                                $('#script-group-button-save').button('disable');
+                                $('#script-group-button-cancel').button('disable');
                                 that.main.socket.emit('setObject', group, {
                                     common: {
                                         name: name
                                     },
                                     type: 'channel'
                                 }, function (err) {
+                                    $('#script-group-button-cancel').button('enable');
                                     that.$newGroupDialog.dialog('close');
                                     if (err) {
                                         that.main.showError(err);

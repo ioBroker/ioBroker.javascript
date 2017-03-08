@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "3.2.7",
+  "version": "3.2.8",
   "description": "Javascript/Coffescript Script Engine for ioBroker",
   "author": "bluefox <dogafox@gmail.com>",
   "contributors": [

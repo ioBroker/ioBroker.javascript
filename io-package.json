@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.2.7",
+        "version":                  "3.2.8",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.2.8": {
+                "en": "Translations",
+                "de": "Übersetzungen",
+                "ru": "Перевод"
+            },
             "3.2.7": {
                 "en": "allow creation of states for other javascript instances",
                 "de": "Erlaube States-Erzeugung für andere Javascirpt-Instanzen",

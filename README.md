@@ -1008,6 +1008,9 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 ## Changelog
 
+### 3.2.8 (2017-03-08)
+* (bluefox) Translations
+
 ### 3.2.7 (2017-03-03)
 * (bluefox) allow creation of states for other javascript instances
 

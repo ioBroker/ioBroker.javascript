@@ -96,6 +96,7 @@ systemDictionary = {
     "Loading...":           {"en": "Processing...",         "de": "Verarbeite...",          "ru": "Обработка..."},
     "Log":                  {"en": "Log",                   "de": "Log",                    "ru": "Лог"},
     "new group name":       {"en": "New group name:",       "de": "Neuer Gruppenname",      "ru": "Имя новой группы"},
+    "Create new group":     {"en": "Create new group",      "de": "Neuer Gruppe erzeugen",  "ru": "Создать новую группу"},
     "Create in:":           {"en": "Create in:",            "de": "Erzeugen in:",           "ru": "Создать в группе:"},
     "Clear output":         {"en": "Clear output",          "de": "Fenster löschen",        "ru": "Очистить выврд"},
     "Scroll down":          {"en": "Scroll down",           "de": "Nach unten scrollen",    "ru": "Вниз"},
