@@ -1080,3 +1080,12 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 
 ### 3.0.0 (2016-08-27)
 * (bluefox) Beta Release with Blockly
+
+
+## License
+
+The MIT License (MIT)
+
+Copyright (c) 2014-2017 bluefox <dogafox@gmail.com>,
+
+Copyright (c) 2014      hobbyquaker
