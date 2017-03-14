@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.2.8",
+        "version":                  "3.3.0",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.3.0": {
+                "en": "all callbacks in try/catch",
+                "de": "Alle Callbacks in try/catch",
+                "ru": "Все callbacks в try/catch"
+            },
             "3.2.8": {
                 "en": "Translations",
                 "de": "Übersetzungen",

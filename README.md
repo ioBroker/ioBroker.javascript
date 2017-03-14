@@ -1007,6 +1007,8 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+### 3.3.0 (2017-03-14)
+* (bluefox) all callbacks in try/catch
 
 ### 3.2.8 (2017-03-08)
 * (bluefox) Translations

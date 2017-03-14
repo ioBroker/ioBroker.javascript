@@ -621,7 +621,7 @@
                 adapter.log.error('Cannot install ' + npmLib + ': ' + code);
             }
             // command succeeded
-            if (callback) callback(npmLib);
+            if (typeof callback === 'function') callback(npmLib);
         });
     }
 
@@ -1322,7 +1322,13 @@
                 var subs = {
                     pattern:  pattern,
                     callback: function (obj) {
-                        if (callback) callback.call(sandbox, obj);
+                        if (typeof callback === 'function') {
+                            try {
+                                callback.call(sandbox, obj);
+                            } catch (e) {
+                                adapter.log.error('Error in callback: ' + e)
+                            }
+                        }
                     },
                     name:     name
                 };
@@ -1479,7 +1485,11 @@
                     }
 
                     sandbox.setTimeout(function () {
-                        callback.call(sandbox);
+                        try {
+                            callback.call(sandbox);
+                        } catch (e) {
+                            adapter.log.error('Error in callback: ' + e)
+                        }
                         // Reschedule in 2 seconds
                         sandbox.setTimeout(function () {
                             if (sandbox.__engine.__schedules > 0) sandbox.__engine.__schedules--;
@@ -1498,7 +1508,11 @@
                         pattern = parts.join(' ');
                     }
                     var schedule = mods['node-schedule'].scheduleJob(pattern, function () {
-                        callback.call(sandbox);
+                        try {
+                            callback.call(sandbox);
+                        } catch (e) {
+                            adapter.log.error('Error in callback: ' + e)
+                        }
                     });
 
                     script.schedules.push(schedule);
@@ -1617,14 +1631,24 @@
 
                         if (typeof callback === 'function') {
                             setTimeout(function () {
-                                callback();
+                                try {
+                                    callback.call(sandbox);
+                                } catch (e) {
+                                    adapter.log.error('Error in callback: ' + e)
+                                }
                             }, 0);
                         }
                     } else {
                         adapter.setForeignState(id, state, function (err) {
                             if (err) sandbox.log('setForeignState: ' + err, 'error');
 
-                            if (typeof callback === 'function') callback();
+                            if (typeof callback === 'function') {
+                                try {
+                                    callback.call(sandbox);
+                                } catch (e) {
+                                    adapter.log.error('Error in callback: ' + e)
+                                }
+                            }
                         });
                     }
                 } else if (objects[adapter.namespace + '.' + id]) {
@@ -1634,14 +1658,24 @@
                         sandbox.log('setState(' + id + ', ' + JSON.stringify(state) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
                         if (typeof callback === 'function') {
                             setTimeout(function () {
-                                callback();
+                                try {
+                                    callback.call(sandbox);
+                                } catch (e) {
+                                    adapter.log.error('Error in callback: ' + e)
+                                }
                             }, 0);
                         }
                     } else {
                         adapter.setState(id, state, function (err) {
                             if (err) sandbox.log('setState: ' + err, 'error');
 
-                            if (typeof callback === 'function') callback();
+                            if (typeof callback === 'function') {
+                                try {
+                                    callback.call(sandbox);
+                                } catch (e) {
+                                    adapter.log.error('Error in callback: ' + e)
+                                }
+                            }
                         });
                     }
                 } else {
@@ -1653,19 +1687,35 @@
                                 sandbox.log('setForeignState(id=' + id + ', state=' + JSON.stringify(state) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
                                 if (typeof callback === 'function') {
                                     setTimeout(function () {
-                                        callback();
+                                        try {
+                                            callback.call(sandbox);
+                                        } catch (e) {
+                                            adapter.log.error('Error in callback: ' + e)
+                                        }
                                     }, 0);
                                 }
                             } else {
                                 adapter.setForeignState(id, state, function (err) {
                                     if (err) sandbox.log('setForeignState: ' + err, 'error');
 
-                                    if (typeof callback === 'function') callback();
+                                    if (typeof callback === 'function') {
+                                        try {
+                                            callback.call(sandbox);
+                                        } catch (e) {
+                                            adapter.log.error('Error in callback: ' + e)
+                                        }
+                                    }
                                 });
                             }
                         } else {
                             adapter.log.warn('Cannot set value of non-state object "' + id + '"');
-                            if (typeof callback === 'function') callback('Cannot set value of non-state object "' + id + '"');
+                            if (typeof callback === 'function') {
+                                try {
+                                    callback.call(sandbox, 'Cannot set value of non-state object "' + id + '"');
+                                } catch (e) {
+                                    adapter.log.error('Error in callback: ' + e)
+                                }
+                            }
                         }
                     } else if (objects[adapter.namespace + '.' + id]) {
                         if (objects[adapter.namespace + '.' + id].type === 'state') {
@@ -1675,23 +1725,45 @@
                                 sandbox.log('setState(id=' + id + ', state=' + JSON.stringify(state) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
                                 if (typeof callback === 'function') {
                                     setTimeout(function () {
-                                        callback();
+                                        try {
+                                            callback.call(sandbox);
+                                        } catch (e) {
+                                            adapter.log.error('Error in callback: ' + e)
+                                        }
                                     }, 0);
                                 }
                             } else {
                                 adapter.setState(id, state, function (err) {
                                     if (err) sandbox.log('setState: ' + err, 'error');
 
-                                    if (typeof callback === 'function') callback();
+                                    if (typeof callback === 'function') {
+                                        try {
+                                            callback.call(sandbox);
+                                        } catch (e) {
+                                            adapter.log.error('Error in callback: ' + e)
+                                        }
+                                    }
                                 });
                             }
                         } else {
                             adapter.log.warn('Cannot set value of non-state object "' + adapter.namespace + '.' + id + '"');
-                            if (typeof callback === 'function') callback('Cannot set value of non-state object "' + adapter.namespace + '.' + id + '"');
+                            if (typeof callback === 'function') {
+                                try {
+                                    callback.call(sandbox, 'Cannot set value of non-state object "' + adapter.namespace + '.' + id + '"');
+                                } catch (e) {
+                                    adapter.log.error('Error in callback: ' + e)
+                                }
+                            }
                         }
                     } else {
                         adapter.log.warn('State "' + id + '" not found');
-                        if (typeof callback === 'function') callback('State "' + id + '" not found');
+                        if (typeof callback === 'function') {
+                            try {
+                                callback.call(sandbox, 'State "' + id + '" not found');
+                            } catch (e) {
+                                adapter.log.error('Error in callback: ' + e)
+                            }
+                        }
                     }
                 }
             },
@@ -1855,11 +1927,23 @@
             },
             setObject:      function (id, obj, callback) {
                 adapter.log.error('Function "setObject" is not allowed. Use adapter settings to allow it.');
-                if (callback) callback('Function "setObject" is not allowed. Use adapter settings to allow it.');
+                if (typeof callback === 'function') {
+                    try {
+                        callback.call(sandbox, 'Function "setObject" is not allowed. Use adapter settings to allow it.');
+                    } catch (e) {
+                        adapter.log.error('Error in callback: ' + e)
+                    }
+                }
             },
             extendObject:      function (id, obj, callback) {
                 adapter.log.error('Function "extendObject" is not allowed. Use adapter settings to allow it.');
-                if (callback) callback('Function "extendObject" is not allowed. Use adapter settings to allow it.');
+                if (typeof callback === 'function') {
+                    try {
+                        callback.call(sandbox, 'Function "extendObject" is not allowed. Use adapter settings to allow it.');
+                    } catch (e) {
+                        adapter.log.error('Error in callback: ' + e)
+                    }
+                }
             },
             getEnums:  function (enumName) {
                 var result = [];
@@ -1925,7 +2009,13 @@
                             if (isNaN(min)) {
                                 err = 'Wrong type of ' + id + '.common.min';
                                 sandbox.log(err, 'error');
-                                if (callback) callback(err);
+                                if (typeof callback === 'function') {
+                                    try {
+                                        callback.call(sandbox, err);
+                                    } catch (e) {
+                                        adapter.log.error('Error in callback: ' + e)
+                                    }
+                                }
                                 return;
                             } else {
                                 common.min = min;
@@ -1939,7 +2029,13 @@
                             if (isNaN(max)) {
                                 err = 'Wrong type of ' + id + '.common.max';
                                 sandbox.log(err, 'error');
-                                if (callback) callback(err);
+                                if (typeof callback === 'function') {
+                                    try {
+                                        callback.call(sandbox, err);
+                                    } catch (e) {
+                                        adapter.log.error('Error in callback: ' + e)
+                                    }
+                                }
                                 return;
                             } else {
                                 common.max = max;
@@ -1953,7 +2049,13 @@
                             if (isNaN(def)) {
                                 err = 'Wrong type of ' + id + '.common.def';
                                 sandbox.log(err, 'error');
-                                if (callback) callback(err);
+                                if (typeof callback === 'function') {
+                                    try {
+                                        callback.call(sandbox, err);
+                                    } catch (e) {
+                                        adapter.log.error('Error in callback: ' + e)
+                                    }
+                                }
                                 return;
                             } else {
                                 common.def = def;
@@ -1982,7 +2084,13 @@
                         if (initValue !== undefined) {
                             adapter.setState(name, initValue, callback);
                         } else {
-                            if (callback) callback(name);
+                            if (typeof callback === 'function') {
+                                try {
+                                    callback.call(sandbox, name);
+                                } catch (e) {
+                                    adapter.log.error('Error in callback: ' + e)
+                                }
+                            }
                         }
                     });
                 } else {
@@ -2029,7 +2137,13 @@
                                 }
                             }
                             // state yet exists
-                            if (callback) callback(name);
+                            if (typeof callback === 'function') {
+                                try {
+                                    callback.call(sandbox, name);
+                                } catch (e) {
+                                    adapter.log.error('Error in callback: ' + e)
+                                }
+                            }
                         }
                     });
                 }
@@ -2054,7 +2168,15 @@
 
                     adapter.delState(id, function (err) {
                         if (err) adapter.log.error('Cannot delete state "' + id + '": ' + err);
-                        if (typeof callback === 'function') callback(err, found);
+                        if (typeof callback === 'function') {
+                            if (typeof callback === 'function') {
+                                try {
+                                    callback.call(sandbox, err, found);
+                                } catch (e) {
+                                    adapter.log.error('Error in callback: ' + e)
+                                }
+                            }
+                        }
                     });
 
                 });
@@ -2068,7 +2190,13 @@
             },
             setInterval:   function (callback, ms, arg1, arg2, arg3, arg4) {
                 var int = setInterval(function (_arg1, _arg2, _arg3, _arg4) {
-                    if (callback) callback.call(sandbox, _arg1, _arg2, _arg3, _arg4);
+                    if (typeof callback === 'function') {
+                        try {
+                            callback.call(sandbox, _arg1, _arg2, _arg3, _arg4);
+                        } catch (e) {
+                            adapter.log.error('Error in callback: ' + e)
+                        }
+                    }
                 }, ms, arg1, arg2, arg3, arg4);
                 script.intervals.push(int);
 
@@ -2092,7 +2220,13 @@
                     var pos = script.timeouts.indexOf(to);
                     if (pos !== -1) script.timeouts.splice(pos, 1);
 
-                    if (callback) callback.call(sandbox, _arg1, _arg2, _arg3, _arg4);
+                    if (typeof callback === 'function') {
+                        try {
+                            callback.call(sandbox, _arg1, _arg2, _arg3, _arg4);
+                        } catch (e) {
+                            adapter.log.error('Error in callback: ' + e)
+                        }
+                    }
                 }, ms, arg1, arg2, arg3, arg4);
 
                 if (sandbox.verbose) sandbox.log('setTimeout(ms=' + ms + ')', 'info');
@@ -2113,7 +2247,13 @@
             cb:        function (callback) {
                 return function () {
                     if (scripts[name] && scripts[name]._id === sandbox._id) {
-                        if (callback) callback.apply(this, arguments);
+                        if (typeof callback === 'function') {
+                            try {
+                                callback.apply(this, arguments);
+                            } catch (e) {
+                                adapter.log.error('Error in callback: ' + e)
+                            }
+                        }
                     } else {
                         adapter.log.warn('Callback for old version of script: ' + name);
                     }
@@ -2304,7 +2444,11 @@
                     sandbox.log('readFile(adapter=' + _adapter + ', fileName=' + fileName + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
                     if (typeof callback === 'function') {
                         setTimeout(function () {
-                            callback();
+                            try {
+                                callback.call(sandbox);
+                            } catch (e) {
+                                adapter.log.error('Error in callback: ' + e)
+                            }
                         }, 0);
                     }
                 } else {
@@ -2334,7 +2478,11 @@
                     sandbox.log('unlink(adapter=' + _adapter + ', fileName=' + fileName + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
                     if (typeof callback === 'function') {
                         setTimeout(function () {
-                            callback();
+                            try {
+                                callback.call(sandbox);
+                            } catch (e) {
+                                adapter.log.error('Error in callback: ' + e)
+                            }
                         }, 0);
                     }
                 } else {
@@ -2352,7 +2500,7 @@
                     instance = null;
                 }
 
-                if (!callback) {
+                if (typeof callback !== 'function') {
                     adapter.log.error('No callback found!');
                     return;
                 }
@@ -2374,14 +2522,22 @@
 
                 if (!instance) {
                     adapter.log.error('No default history instance found!');
-                    callback('No default history instance found!');
+                    try {
+                        callback.call(sandbox, 'No default history instance found!');
+                    } catch (e) {
+                        adapter.log.error('Error in callback: ' + e)
+                    }
                     return;
                 }
                 if (instance.match(/^system\.adapter\./)) instance = instance.substring('system.adapter.'.length);
 
                 if (!objects['system.adapter.' + instance]) {
                     adapter.log.error('Instance "' + instance + '" not found!');
-                    callback('Instance "' + instance + '" not found!');
+                    try {
+                        callback.call(sandbox, 'Instance "' + instance + '" not found!');
+                    } catch (e) {
+                        adapter.log.error('Error in callback: ' + e)
+                    }
                     return;
                 }
                 var timeout = setTimeout(function () {
@@ -2389,8 +2545,14 @@
 
                     if (sandbox.verbose) sandbox.log('getHistory => timeout', 'debug');
 
-                    if (callback) callback('Timeout', null, options, instance);
-                    callback = null;
+                    if (typeof callback === 'function') {
+                        try {
+                            callback.call(sandbox, 'Timeout', null, options, instance);
+                        } catch (e) {
+                            adapter.log.error('Error in callback: ' + e)
+                        }
+                        callback = null;
+                    }
                 }, timeoutMs);
 
                 adapter.sendTo(instance, 'getHistory', {id: options.id, options: options}, function (result) {
@@ -2399,8 +2561,15 @@
                     if (sandbox.verbose && result.error)  sandbox.log('getHistory => ' + result.error, 'error');
                     if (sandbox.verbose && result.result) sandbox.log('getHistory => ' + result.result.length + ' items', 'debug');
 
-                    if (callback) callback(result.error, result.result, options, instance);
-                    callback = null;
+                    if (typeof callback === 'function') {
+                        try {
+                            callback.call(sandbox, result.error, result.result, options, instance);
+                        } catch (e) {
+                            adapter.log.error('Error in callback: ' + e)
+                        }
+                        callback = null;
+                    }
+
                 });
             },
             runScript: function (scriptName, isStart) {
@@ -2482,7 +2651,11 @@
                     sandbox.log('setObject(id=' + id + ', obj=' + JSON.stringify(obj) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
                     if (typeof callback === 'function') {
                         setTimeout(function () {
-                            callback();
+                            try {
+                                callback.call(sandbox);
+                            } catch (e) {
+                                adapter.log.error('Error in callback: ' + e)
+                            }
                         }, 0);
                     }
                 } else {
@@ -2495,7 +2668,11 @@
                     sandbox.log('extendObject(id=' + id + ', obj=' + JSON.stringify(obj) + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
                     if (typeof callback === 'function') {
                         setTimeout(function () {
-                            callback();
+                            try {
+                                callback.call(sandbox);
+                            } catch (e) {
+                                adapter.log.error('Error in callback: ' + e)
+                            }
                         }, 0);
                     }
                 } else {
@@ -2611,24 +2788,28 @@
                     if (timeout) {
                         timeout = null;
                         delete scripts[name];
-                        if (callback) callback(true, name);
+                        if (typeof callback === 'function') callback(true, name);
                     }
                 }, scripts[name].onStopTimeout);
-                
-                scripts[name].onStopCb(function () {
-                    if (timeout) {
-                        clearTimeout(timeout);
-                        timeout = null;
-                        delete scripts[name];
-                        if (callback) callback(true, name);                    
-                    }
-                });
+                try {
+                    scripts[name].onStopCb(function () {
+                        if (timeout) {
+                            clearTimeout(timeout);
+                            timeout = null;
+                            delete scripts[name];
+                            if (typeof callback === 'function') callback(true, name);
+                        }
+                    });
+                } catch (e) {
+                    adapter.log.error('error in onStop callback: ' + e);
+                }
+
             } else {
                 delete scripts[name];
-                if (callback) callback(true, name);   
+                if (typeof callback === 'function') callback(true, name);
             }
         } else {
-            if (callback) callback(false, name);
+            if (typeof callback === 'function') callback(false, name);
         }
     }
 
@@ -2646,19 +2827,19 @@
                 adapter.log.info('Start javascript ' + name);
                 scripts[name] = compile(globalScript + obj.common.source, name);
                 if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
-                if (callback) callback(true, name);
+                if (typeof callback === 'function') callback(true, name);
             } else if (obj.common.engineType.match(/^[cC]offee/)) {
                 // CoffeeScript
                 mods['coffee-compiler'].fromSource(obj.common.source, {sourceMap: false, bare: true}, function (err, js) {
                     if (err) {
                         adapter.log.error(name + ' coffee compile ' + err);
-                        if (callback) callback(false, name);
+                        if (typeof callback === 'function') callback(false, name);
                         return;
                     }
                     adapter.log.info('Start coffescript ' + name);
                     scripts[name] = compile(globalScript + '\n' + js, name);
                     if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
-                    if (callback) callback(true, name);
+                    if (typeof callback === 'function') callback(true, name);
                 });
             }
         } else {
@@ -2668,7 +2849,7 @@
                 adapter.setState('scriptEnabled.' + _name.substring('script.js.'.length), false, true);
             }
             if (!obj) adapter.log.error('Invalid script');
-            if (callback) callback(false, _name);
+            if (typeof callback === 'function') callback(false, _name);
         }
     }
 
@@ -2679,7 +2860,7 @@
             adapter.getForeignObject(nameOrObject, function (err, obj) {
                 if (!obj || err) {
                     if (err) adapter.log.error('Invalid script "' + nameOrObject + '": ' + err);
-                    if (callback) callback(false, nameOrObject);
+                    if (typeof callback === 'function') callback(false, nameOrObject);
                 } else {
                     return prepareScript(obj, callback);
                 }
