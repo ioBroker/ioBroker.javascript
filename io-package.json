@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.3.0",
+        "version":                  "3.3.1",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.3.1": {
+                "en": "fix error if no scripts exists",
+                "de": "Korrigiere das Problem, falls keine Skripte existieren",
+                "ru": "Исправлена ошибка, если нет никаких скриптов"
+            },
             "3.3.0": {
                 "en": "all callbacks in try/catch",
                 "de": "Alle Callbacks in try/catch",

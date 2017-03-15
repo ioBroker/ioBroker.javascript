@@ -273,48 +273,52 @@
                     adapter.objects.getObjectView('script', 'javascript', {}, function (err, doc) {
                         globalScript = '';
                         var count = 0;
+                        if (doc && doc.rows && doc.rows.length) {
+                            // assemble global script
+                            for (var g = 0; g < doc.rows.length; g++) {
+                                if (adapter.checkIsGlobal(doc.rows[g].value)) {
+                                    var obj = doc.rows[g].value;
 
-                        // assemble global script
-                        for (var g = 0; g < doc.rows.length; g++) {
-                            if (adapter.checkIsGlobal(doc.rows[g].value)) {
-                                var obj = doc.rows[g].value;
-
-                                if (obj && obj.common.enabled) {
-                                    if (obj.common.engineType.match(/^[cC]offee/)) {
-                                        count++;
-                                        mods['coffee-compiler'].fromSource(obj.common.source, {
-                                            sourceMap: false,
-                                            bare: true
-                                        }, function (err, js) {
-                                            if (err) {
-                                                adapter.log.error('coffee compile ' + err);
-                                                return;
-                                            }
-                                            globalScript += js + '\n';
-                                            if (!--count) {
-                                                globalScriptLines = globalScript.split(/[\r\n|\n|\r]/g).length;
-                                                // load all scripts
-                                                for (var i = 0; i < doc.rows.length; i++) {
-                                                    if (!adapter.checkIsGlobal(doc.rows[i].value)) {
-                                                        load(doc.rows[i].value._id);
+                                    if (obj && obj.common.enabled) {
+                                        if (obj.common.engineType.match(/^[cC]offee/)) {
+                                            count++;
+                                            mods['coffee-compiler'].fromSource(obj.common.source, {
+                                                sourceMap: false,
+                                                bare: true
+                                            }, function (err, js) {
+                                                if (err) {
+                                                    adapter.log.error('coffee compile ' + err);
+                                                    return;
+                                                }
+                                                globalScript += js + '\n';
+                                                if (!--count) {
+                                                    globalScriptLines = globalScript.split(/[\r\n|\n|\r]/g).length;
+                                                    // load all scripts
+                                                    for (var i = 0; i < doc.rows.length; i++) {
+                                                        if (!adapter.checkIsGlobal(doc.rows[i].value)) {
+                                                            load(doc.rows[i].value._id);
+                                                        }
                                                     }
                                                 }
-                                            }
-                                        });
-                                    } else {
-                                        globalScript += doc.rows[g].value.common.source + '\n';
+                                            });
+                                        } else {
+                                            globalScript += doc.rows[g].value.common.source + '\n';
+                                        }
                                     }
                                 }
                             }
                         }
 
                         if (!count) {
-                            globalScriptLines = globalScript.split(/[\r\n|\n|\r]/g).length - 1;
+                            globalScript = globalScript.replace(/\r\n/g, '\n');
+                            globalScriptLines = globalScript.split(/\n/g).length - 1;
 
-                            // load all scripts
-                            for (var i = 0; i < doc.rows.length; i++) {
-                                if (!adapter.checkIsGlobal(doc.rows[i].value)) {
-                                    load(doc.rows[i].value);
+                            if (doc && doc.rows && doc.rows.length) {
+                                // load all scripts
+                                for (var i = 0; i < doc.rows.length; i++) {
+                                    if (!adapter.checkIsGlobal(doc.rows[i].value)) {
+                                        load(doc.rows[i].value);
+                                    }
                                 }
                             }
                         }
