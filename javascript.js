@@ -3397,8 +3397,15 @@
                 addToNames(objects[res[i].doc._id]);
             }
 
-            // set langugae for debug messages
+            // set language for debug messages
             if (objects['system.config'] && objects['system.config'].common.language) words.setLanguage(objects['system.config'].common.language);
+
+            // try to use system coordinates
+            if (adapter.config.useSystemGPS && objects['system.config'] &&
+                objects['system.config'].common.latitude) {
+                adapter.config.latitude  = parseFloat(objects['system.config'].common.latitude);
+                adapter.config.longitude = parseFloat(objects['system.config'].common.longitude);
+            }
 
             objectsReady = true;
             adapter.log.info('received all objects');

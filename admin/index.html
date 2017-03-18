@@ -11,6 +11,7 @@
 <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
 <script type="text/javascript" src="../../js/translate.js"></script>
 <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+<script type="text/javascript" src="adminWords.js"></script>
 
 <style>
     .table_header {
@@ -21,69 +22,25 @@
         width: 150px;
         text-align: right;
     }
+    .title {
+        white-space: nowrap;
+    }
+    .admin-text {
+        white-space: nowrap;
+    }
 </style>
 <!-- you have to define 2 functions in the global scope: -->
 <script type="text/javascript">
-
-    systemDictionary = {
-        "Javascript scripts adapter settings": {
-            "en": "Javascript scripts adapter settings",
-            "de": "Javascript Skripte Einstellungen",
-            "ru": "Настройки скриптов Javascript"
-        },
-        "Latitude °:": {
-            "en": "Latitude °:",
-            "de": "Breite °:",
-            "ru": "Широта °:"
-        },
-        "Longitude °:": {
-            "en": "Longitude °:",
-            "de": "Länge °:",
-            "ru": "Долгота °:"
-        },
-        "Invalid format. Use A°B'C\"D": {
-            "en": "Invalid format. Use A°B'C\"D",
-            "de": "Invalid Format. Benutze A°B'C\"D",
-            "ru": "Неправильный формат. Используется г°м'с\"Н"
-        },
-        "Help": {
-            "en": "Use form with 49.1245 and <b>not</b> 49°34'0\". Elsewise it will be converted automatically.",
-            "de": "Benutze das Format mit 49.1245 und <b>nicht</b> 49°34'0\", sonst es wird automatisch umgerechnet",
-            "ru": "Используйте формат 49.1245, а <b>не</b> 49°34'0\", иначе градусы автоматически переведутся в нужный формат"
-        },
-        "Divided by comma": {
-            "en": "Divided by comma",
-            "de": "Getrennt mit Komma",
-            "ru": "Через запятую"
-        },
-        "Additional npm modules:": {
-            "en": "Additional npm modules:",
-            "de": "Zusätzliche NPM-Module",
-            "ru": "Дополнительные NPM Модули:"
-        },
-        "Settings":             {"en": "Settings",          "de": "Einstellungen",          "ru": "Настройки"},
-        'Enable command "setObject":': {
-            "en": 'Enable command "setObject":',
-            "de": 'Erlaube das Kommando "setObject":',
-            "ru": 'Разрешить команду "setObject":'
-        },
-        "Security relevant":    {"en": "Security relevant", "de": "Sicherheits relevant",   "ru": "Безопасность уменшена"},
-        "Astro settings":       {"en": "Astro settings",    "de": "Astro-Einstellungen",    "ru": "Настройки астро-функций"},
-        "Do not subscribe all states on start:": {
-            "en": "Do not subscribe all states on start:",
-            "de": "Nicht auf alle Zustände beim Start abonieren:",
-            "ru": "Оптимизация состояний:"
-        }
-    };
-
     function setValue(id, value, onChange) {
-        // example: select elements with id=key and class=value and insert value
-        if ($('#' + id + '.value').attr('type') == 'checkbox') {
-            $('#' + id + '.value').prop('checked', value).change(function() {
+        var $value = $('#' + id + '.value');
+        if ($value.attr('type') === 'checkbox') {
+            $value.prop('checked', value).change(function() {
+                var id = $(this).attr('id');
+                if (id === 'useSystemGPS') showHideSettings();
                 onChange();
             });
         } else {
-            $('#' + id + '.value').val(value).change(function() {
+            $value.val(value).change(function() {
                 onChange();
             }).keyup(function() {
                 onChange();
@@ -91,12 +48,29 @@
         }
     }
 
+    function showHideSettings() {
+        if ($('#useSystemGPS').prop('checked')) {
+            $('#tr_latitude').hide();
+            $('#tr_longitude').hide();
+        } else {
+            $('#tr_latitude').show();
+            $('#tr_longitude').show();
+        }
+    }
     // the function loadSettings has to exist ...
     function load(settings, onChange) {
+        if (settings.useSystemGPS === undefined) {
+            if (systemConfig.common.longitude && systemConfig.common.latitude) {
+                settings.useSystemGPS = true;
+            }
+        }
+
         $('.value').each(function () {
             var id = $(this).attr('id');
             setValue(id, settings[id] || '', onChange);
         });
+
+        showHideSettings();
 
         onChange(false);
     }
@@ -173,36 +147,41 @@
 <div id="adapter-container">
 
     <table><tr>
-        <td><img src="js.jpeg"></td>
+        <td><img src="js.jpeg" style="width: 64px"/></td>
         <td style="padding-top: 20px;padding-left: 10px"><h3 class="translate">Javascript scripts adapter settings</h3></td>
     </tr></table>
 
-    <table>
+    <table style="width: calc(100% - 20px); padding: 5px;">
         <tr>
-            <td colspan="3"><h4 class="translate" style="width: 100%">Settings</h4></td>
+            <td colspan="4"><h4 class="translate" style="width: 100%">Settings</h4></td>
         </tr>
         <tr>
-            <td><label for="libraries" class="translate">Additional npm modules:</label></td>
-            <td><input id="libraries" class="value" style="width: 100%"/></td>
-            <td class="translate" style="color: gray; font-style: italic; font-size: smaller">Divided by comma</td>
+            <td style="width: 100px"><label for="libraries" class="translate title">Additional npm modules:</label></td>
+            <td class="admin-icon"></td>
+            <td style="width: 100%"><textarea id="libraries" class="value" style="width: 100%"></textarea></td>
+            <td class="admin-text" style="width: 150px"></td>
         </tr>
         <tr>
-            <td><label for="enableSetObject" class="translate">Enable command "setObject":</label></td>
+            <td><label for="enableSetObject" class="translate title">Enable command "setObject":</label></td>
+            <td class="admin-icon"></td>
             <td><input id="enableSetObject" class="value" type="checkbox"/></td>
-            <td class="translate" style="color: gray; font-style: italic; font-size: smaller">Security relevant</td>
+            <td class="admin-text"></td>
         </tr>
-        <tr><td colspan="3" style="height:10px"></td></tr>
+        <tr><td colspan="4" style="height:10px"></td></tr>
         <tr>
-            <td colspan="3"><h4 class="translate" style="width: 100%">Astro settings</h4></td>
-        </tr>
-        <tr>
-            <td><label for="latitude" class="translate">Latitude °:</label></td><td><input id="latitude" class="value" /></td><td></td>
+            <td colspan="4"><h4 class="translate" style="width: 100%">Astro settings</h4></td>
         </tr>
         <tr>
-            <td><label for="longitude" class="translate">Longitude °:</label></td><td><input id="longitude" class="value" /></td><td></td>
+            <td><label for="useSystemGPS" class="translate title">Use system settings:</label></td><td class="admin-icon"></td><td><input id="useSystemGPS" type="checkbox" class="value" /></td><td class="admin-text"></td>
+        </tr>
+        <tr id="tr_latitude">
+            <td><label for="latitude" class="translate title">Latitude °:</label></td><td class="admin-icon"></td><td><input id="latitude" class="value" /></td><td class="admin-text"></td>
+        </tr>
+        <tr id="tr_longitude">
+            <td><label for="longitude" class="translate title">Longitude °:</label></td><td class="admin-icon"></td><td><input id="longitude" class="value" /></td><td class="admin-text"></td>
         </tr>
         <tr>
-            <td><label for="subscribe" class="translate">Do not subscribe all states on start:</label></td><td><input type="checkbox" id="subscribe" class="value" /></td><td></td>
+            <td><label for="subscribe" class="translate title">Do not subscribe all states on start:</label></td><td class="admin-icon"></td><td><input type="checkbox" id="subscribe" class="value" /></td><td class="admin-text"></td>
         </tr>
     </table>
     <p class="translate">Help</p>

@@ -1007,8 +1007,11 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+### 3.3.2 (2017-03-18)
+* (bluefox) Support of system coordinates
+
 ### 3.3.1 (2017-03-15)
-* (bluefox) fix error if no scripts exists
+ * (bluefox) fix error if no scripts exists 
 
 ### 3.3.0 (2017-03-14)
 * (bluefox) all callbacks in try/catch
