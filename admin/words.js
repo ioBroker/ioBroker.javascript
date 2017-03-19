@@ -4,7 +4,7 @@
 systemDictionary = {
     "name":                 {"en": "name",                  "de": "Name",                   "ru": "Имя"},
     "engine type":          {"en": "engine type",           "de": "Enginetyp",              "ru": "Тип движка"},
-    "Insert ID":            {"en": "Insert&nbsp;ID",             "de": "ID&nbsp;Einfügen",            "ru": "Вставить&nbsp;ID"},
+    "Insert ID":            {"en": "Insert&nbsp;ID",             "de": "ID&nbsp;einfügen",            "ru": "Вставить&nbsp;ID"},
     "Ok":                   {"en": "Ok",                    "de": "Ok",                     "ru": "Ok"},
     "Cron":                 {"en": "Cron",                  "de": "Cron",                   "ru": "Cron"},
     "Cron expression":      {"en": "Cron expression",       "de": "Cron-Ausdruck",          "ru": "Cron-Выражение"},
@@ -14,9 +14,9 @@ systemDictionary = {
     "true":                 {"en": "true",                  "de": "ja",                     "ru": "да"},
     "false":                {"en": "false",                 "de": "nein",                   "ru": "нет"},
     "Insert":               {"en": "Insert",                "de": "Einfügen",               "ru": "Вставить"},
-    "Minutes Past the Hour": {"en": "Minutes Past the Hour", "de": "Minuten nach volle Stunde", "ru": "минут после полного часа"},
+    "Minutes Past the Hour": {"en": "Minutes Past the Hour", "de": "Minuten nach voller Stunde", "ru": "минут после полного часа"},
     "Time: Hour":           {"en": "Time: Hour",            "de": "Zeit: Stunde",           "ru": "Время: Час"},
-    "Day of Month":         {"en": "Day of Month",          "de": "Monatstag",              "ru": "День месяца"},
+    "Day of Month":         {"en": "Day of Month",          "de": "Tag im Monat",           "ru": "День месяца"},
     "Time: Minute":         {"en": "Time: Minute",          "de": "Zeit: Minute",           "ru": "Время: Минуты"},
     "copy":                 {"en": "copy",                  "de": "kopieren",               "ru": "копировать"},
     "Every":                {"en": "Every",                 "de": "Jede(n)",                "ru": "Каждую(ый)"},
@@ -43,17 +43,17 @@ systemDictionary = {
     "verbose":              {"en": "Verbose",               "de": "Hilfe-Ausgaben",         "ru": "Вывод отладки"},
     "debug_help": {
         "en": "setState, writeFile will be disabled",
-        "de": "setState, writeFile werden deaktiviert sein",
+        "de": "setState, writeFile werden deaktiviert",
         "ru": "setState, writeFile будут отключены"
     },
     "verbose_help": {
         "en": "Output of additional information for some functions.",
-        "de": "Zeige zusätzliche Ausgaben für manche Funktionen an.",
+        "de": "Macht zusätzliche Ausgaben für einige Funktionen.",
         "ru": "Вывод дополнительной информации в лог для некоторых функций."
     },
     "months":               {
         "en": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-        "de": ["Januar", "Februar", "März", "April", "Mai", "Juni", "July", "August", "September", "Oktober", "November", "Dezember"],
+        "de": ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
         "ru": ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
     },
     "daysofweek":           {
@@ -81,7 +81,7 @@ systemDictionary = {
                 '30го', '31го']
     },
     "Name":                 {"en": "Name",                  "de": "Name",                   "ru": "Имя"},
-    "Select ID":            {"en": "Select&nbsp;ID",        "de": "ID&nbsp;Auswählen",      "ru": "Выбрать&nbsp;ID"},
+    "Select ID":            {"en": "Select&nbsp;ID",        "de": "ID&nbsp;auswählen",      "ru": "Выбрать&nbsp;ID"},
     "Select":               {"en": "Select",                "de": "Auswählen",              "ru": "Выбрать"},
     "All":                  {"en": "All",                   "de": "Alle",                   "ru": "все"},
     "ID":                   {"en": "ID",                    "de": "ID",                     "ru": "ID"},
@@ -106,7 +106,7 @@ systemDictionary = {
     "Type":                 {"en": "Type",                  "de": "Typ",                    "ru": "Тип"},
     "Edit":                 {"en": "Edit",                  "de": "Editieren",              "ru": "Редактировать"},
     "Members":              {"en": "Members",               "de": "Mitglieder",             "ru": "Members"},
-    "New script":           {"en": "New script",            "de": "Neues Skript",    "ru": "Новый скрипт"},
+    "New script":           {"en": "New script",            "de": "Neues Skript",           "ru": "Новый скрипт"},
     "New group":            {"en": "New group",             "de": "Neue Gruppe",            "ru": "Новая группа"},
     "Message":              {"en": "Message",               "de": "Meldung",                "ru": "Сообщение"},
     "Script not saved":     {"en": "Script not saved!",      "de": "Skript ist nicht gespeichert!", "ru": "Скрипт не сохранён!"},
@@ -136,7 +136,7 @@ systemDictionary = {
     "Check blocks":         {"en": "Check blocks",          "de": "Blöcke prüfen",          "ru": "Проверить блоки"},
     "not properly connected": {
         "en": "This block is not properly connected to other blocks.",
-        "de": "Dieser Block ist mit anderen nicht richtig verbunden.",
+        "de": "Dieser Block ist mit Anderen nicht richtig verbunden.",
         "ru": "Этот блок неправильно соединён или не соединён с другими блоками"
     },
     "Error":                {"en": "Error",                 "de": "Fehler",                 "ru": "Ошибка"},
@@ -162,7 +162,7 @@ systemDictionary = {
     },
     "Drop files here or click to select one": {
         "en": "Drop files here or click to select one...",
-        "de": "Dateien hereinziehen oder klicken um mit Dialog auszuwählen...",
+        "de": "Dateien hereinziehen oder klicken um eine auszuwählen...",
         "ru": "Перетащите файл сюда или нажмите, что бы выбрать..."
     },
     "Do you want to save script %s?": {
