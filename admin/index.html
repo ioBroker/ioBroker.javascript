@@ -62,6 +62,8 @@
         if (settings.useSystemGPS === undefined) {
             if (systemConfig.common.longitude && systemConfig.common.latitude) {
                 settings.useSystemGPS = true;
+            } else {
+                settings.useSystemGPS = false;
             }
         }
 
