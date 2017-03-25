@@ -196,7 +196,8 @@
         "engineTypes":              ["Blockly", "Javascript/js", "Coffeescript/coffee"],
         "adminTab": {
             "singleton":            true,
-            "name":                 "Scripts"
+            "name":                 "Scripts",
+		    "fa-icon":              "file-text-o"
         },
 		"dependencies":             [{"js-controller": ">=0.10.0"}],
         "type":                     "script"
