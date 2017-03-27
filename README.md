@@ -936,36 +936,30 @@ getHistory({
 ### runScript
     runScript('scriptName')
 
-Starts or stops other scripts (and itself too) by name. There is a second parameter
+Starts or restarts other scripts (and itself too) by name.
 
 ```
-// stop script
-runScript('groupName.scriptName1', false);
-
-// start script
-runScript('scriptName2')
+// restart script
+runScript('groupName.scriptName1');
 ```
 
 ### startScript
-    startScript('scriptName')
+    startScript('scriptName', ignoreIfStarted, callback)
 
-Same as 
+Starts the script. If ignoreIfStarted set to true, nothing will be done if script yet running, elsewise the script will be restarted.
 
 ```
-runScript('scriptName', true);
+startScript('scriptName', true); // start script if not started
 ```
 
 ### stopScript
-    stopScript('scriptName')
-
-Same as ```runScript('scriptName', false);```
+    stopScript('scriptName', callback)
 
 If stopScript is called without arguments, it will stop itself:
 
 ```
 stopScript();
 ```
-
 
 ### isScriptActive
     isScriptActive('scriptName')
@@ -1007,6 +1001,9 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+### 3.3.3 (2017-03-27)
+* (bluefox)Fix stopScript
+
 ### 3.3.2 (2017-03-18)
 * (bluefox) Support of system coordinates
 

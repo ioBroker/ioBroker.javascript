@@ -568,6 +568,80 @@ describe('Test JS', function() {
         });
     });
 
+    it('Test JS: test stopScript', function (done) {
+        this.timeout(5000);
+        // add script
+        var script = {
+            "common": {
+                "name":         "stopScript",
+                "engineType":   "Javascript/js",
+                "source":       "stopScript('stopScript');",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.stopScript",
+            "native": {}
+        };
+
+        objects.setObject(script._id, script, function (err) {
+            expect(err).to.be.not.ok;
+            setTimeout(function () {
+                objects.getObject(script._id, function (err, obj) {
+                    expect(err).to.be.not.ok;
+                    expect(obj.common.enabled).to.be.false;
+                    done();
+                });
+            }, 1000);
+        });
+    });
+
+    it('Test JS: test startScript', function (done) {
+        this.timeout(5000);
+        // add script
+        var script = {
+            "common": {
+                "name":         "startScript",
+                "engineType":   "Javascript/js",
+                "source":       "startScript('stopScript');",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.startScript",
+            "native": {}
+        };
+        var stopScript = {
+            "common": {
+                "name":         "stopScript",
+                "engineType":   "Javascript/js",
+                "source":       "console.log('aaa');",
+                "enabled":      false,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.stopScript",
+            "native": {}
+        };
+
+        objects.setObject(stopScript._id, stopScript, function (err) {
+            objects.getObject(stopScript._id, function (err, obj) {
+                expect(err).to.be.not.ok;
+                expect(obj.common.enabled).to.be.false;
+                objects.setObject(script._id, script, function (err) {
+                    expect(err).to.be.not.ok;
+                    setTimeout(function () {
+                        objects.getObject(stopScript._id, function (err, obj) {
+                            expect(err).to.be.not.ok;
+                            expect(obj.common.enabled).to.be.true;
+                            done();
+                        });
+                    }, 1000);
+                });
+            });
+        });
+    });
+    
     it('Test JS: test global scripts New', function (done) {
         this.timeout(5000);
         // add script

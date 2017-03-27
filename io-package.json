@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.3.2",
+        "version":                  "3.3.3",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.3.3": {
+                "en": "Fix stopScript",
+                "de": "Korrigiere stopScript",
+                "ru": "Исправлен stopScript"
+            },
             "3.3.2": {
                 "en": "Support of system coordinates",
                 "de": "Unterstützung von Systemkoordinaten",
@@ -196,8 +201,7 @@
         "engineTypes":              ["Blockly", "Javascript/js", "Coffeescript/coffee"],
         "adminTab": {
             "singleton":            true,
-            "name":                 "Scripts",
-		    "fa-icon":              "file-text-o"
+            "name":                 "Scripts"
         },
 		"dependencies":             [{"js-controller": ">=0.10.0"}],
         "type":                     "script"

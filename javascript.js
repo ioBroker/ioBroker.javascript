@@ -2576,8 +2576,7 @@
 
                 });
             },
-            runScript: function (scriptName, isStart) {
-                if (isStart === undefined) isStart = true;
+            runScript: function (scriptName, callback) {
                 scriptName = scriptName || name;
                 if (!scriptName.match(/^script\.js\./)) scriptName = 'script.js.' + scriptName;
                 // start other script
@@ -2586,26 +2585,87 @@
                     return false;
                 } else {
                     if (debug) {
-                        sandbox.log('runScript(scriptName=' + scriptName + ', isStart=' + isStart + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
+                        sandbox.log('runScript(scriptName=' + scriptName + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
                     } else {
                         if (objects[scriptName].common.enabled) {
                             objects[scriptName].common.enabled = false;
                             adapter.extendForeignObject(scriptName, {common: {enabled: false}}, function (err, obj) {
-                                adapter.extendForeignObject(scriptName, {common: {enabled: true}});
+                                adapter.extendForeignObject(scriptName, {common: {enabled: true}}, function (err) {
+                                    if (callback === 'function') callback(err);
+                                });
                                 scriptName = null;
                             });
                         } else {
-                            adapter.extendForeignObject(scriptName, {common: {enabled: true}});
+                            adapter.extendForeignObject(scriptName, {common: {enabled: true}}, function (err) {
+                                if (callback === 'function') callback(err);
+                            });
                         }
                     }
                     return true;
                 }
             },
-            startScript: function (scriptName) {
-                return sandbox.runScript(scriptName, true);
+            startScript: function (scriptName, ignoreIfStarted, callback) {
+                if (typeof ignoreIfStarted === 'function') {
+                    callback = ignoreIfStarted;
+                    ignoreIfStarted = false;
+                }
+                scriptName = scriptName || name;
+                if (!scriptName.match(/^script\.js\./)) scriptName = 'script.js.' + scriptName;
+                // start other script
+                if (!objects[scriptName] || !objects[scriptName].common) {
+                    sandbox.log('Cannot start "' + scriptName + '", because not found', 'error');
+                    return false;
+                } else {
+                    console.log('STARTING!');
+                    if (debug) {
+                        sandbox.log('startScript(scriptName=' + scriptName + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
+                    } else {
+                        if (objects[scriptName].common.enabled) {
+                            if (!ignoreIfStarted) {
+                                objects[scriptName].common.enabled = false;
+                                adapter.extendForeignObject(scriptName, {common: {enabled: false}}, function (err) {
+                                    adapter.extendForeignObject(scriptName, {common: {enabled: true}}, function (err) {
+                                        if (callback === 'function') callback(err, true);
+                                    });
+                                    scriptName = null;
+                                });
+                            } else if (callback === 'function') {
+                                callback(null, false);
+                            }
+                        } else {
+                            adapter.extendForeignObject(scriptName, {common: {enabled: true}}, function (err) {
+                                if (callback === 'function') callback(err, true);
+                            });
+                        }
+                    }
+                    return true;
+                }
             },
-            stopScript: function (scriptName) {
-                return sandbox.runScript(scriptName, false);
+            stopScript: function (scriptName, callback) {
+                scriptName = scriptName || name;
+
+                if (!scriptName.match(/^script\.js\./)) scriptName = 'script.js.' + scriptName;
+
+                // stop other script
+                if (!objects[scriptName] || !objects[scriptName].common) {
+                    sandbox.log('Cannot stop "' + scriptName + '", because not found', 'error');
+                    return false;
+                } else {
+                    if (debug) {
+                        sandbox.log('stopScript(scriptName=' + scriptName + ') - ' + words._('was not executed, while debug mode is active'), 'warn');
+                    } else {
+                        if (objects[scriptName].common.enabled) {
+                            objects[scriptName].common.enabled = false;
+                            adapter.extendForeignObject(scriptName, {common: {enabled: false}}, function (err) {
+                                if (callback === 'function') callback(err, true);
+                                scriptName = null;
+                            });
+                        } else if (callback === 'function') {
+                            callback(null, false);
+                        }
+                    }
+                    return true;
+                }
             },
             isScriptActive: function (scriptName) {
                 if (!scriptName.match(/^script\.js\./)) scriptName = 'script.js.' + scriptName;
