@@ -2357,17 +2357,14 @@
                     endTime = null;
                 }
 
-                if (endTime) {
-                    if (endTime.getTime() < startTime) {
-                        endTime.setDate(endTime.getDate() + 1);
-                    }
-                    endTime = endTime.getTime();
-                }
+                if (endTime) endTime = endTime.getTime();
 
                 if (operation === 'between' && endTime) {
-                    return time >= startTime && time < endTime;
+		    if (startTime > endTime) return !(time >= endTime && time < startTime);	
+                    else return time >= startTime && time < endTime;
                 } else if (operation === 'not between' && endTime) {
-                    return !(time >= startTime && time < endTime);
+		    if (startTime > endTime) return time >= endTime && time < startTime;	
+                    else return !(time >= startTime && time < endTime);
                 } else if (operation === '>') {
                     return time > startTime;
                 } else if (operation === '>=') {
@@ -2385,7 +2382,7 @@
                     return false;
                 }
             },
-            onStop:      function (cb, timeout) {
+            onStop:      function (cb, timeout) {(
                 if (sandbox.verbose) sandbox.log('onStop(timeout=' + timeout + ')', 'info');
 
                 script.onStopCb = cb;
