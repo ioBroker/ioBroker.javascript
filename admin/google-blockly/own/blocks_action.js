@@ -220,14 +220,14 @@ Blockly.JavaScript['request'] = function(block) {
     if (withStatement === 'TRUE') {
         var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
         if (statement) {
-            return 'try {\n  require("request")(' + URL + ', function (error, response, result) {\n  ' + statement + '  });\n} catch (e) { console.error(e); }\n' +
+            return 'try {\n  require("request")(' + URL + ', function (error, response, result) {\n  ' + statement + '  }).on("error", function () {console.error(e);});\n} catch (e) { console.error(e); }\n' +
                 logText;
         } else {
-            return 'try {\n  require("request")(' + URL + ');\n} catch (e) { console.error(e); }\n' +
+            return 'try {\n  require("request")(' + URL + ').on("error", function () {console.error(e);});\n} catch (e) { console.error(e); }\n' +
                 logText;
         }
     } else {
-        return 'try {\n  require("request")(' + URL + ');\n} catch (e) { console.error(e); }\n' +
+        return 'try {\n  require("request")(' + URL + ').on("error", function () {console.error(e);});\n} catch (e) { console.error(e); }\n' +
             logText;
     }
 };

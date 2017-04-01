@@ -124,6 +124,8 @@ Following modules are pre-loaded: fs, crypto, wake_on_lan, request, suncalc, uti
 
 To use other modules go to iobroker/adapter/javascript folder and run in console npm install <modulename>. After npm successfully finished it can be used in script engine.
 
+**Notice** - module *request* is available via variable *request*. There is no need to write ```var request = require('request');```.
+
 ### Buffer
 Buffer - Node.js Buffer, read here [http://nodejs.org/api/buffer.html](http://nodejs.org/api/buffer.html)
 
@@ -1001,6 +1003,10 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+### 3.3.4 (2017-04-01)
+* (bluefox) Catch error by request if host unavailable
+* (bluefox) add "request" to script namespace
+
 ### 3.3.3 (2017-03-27)
 * (bluefox)Fix stopScript
 

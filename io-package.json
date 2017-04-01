@@ -1,13 +1,18 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.3.3",
+        "version":                  "3.3.4",
         "title":                    "Javascript/Coffescript Script Engine",
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.3.4": {
+                "en": "Catch error by request if host unavailable",
+                "de": "Fange den Fehler ab, falls URL nicht online",
+                "ru": "Ловятся ошибки request, если адрес не доступен"
+            },
             "3.3.3": {
                 "en": "Fix stopScript",
                 "de": "Korrigiere stopScript",
@@ -77,116 +82,6 @@
                 "en": "Support of blocks in adapters\nMove sendTo blocks into adapters",
                 "de": "Unterstützung von Blöcken in Adaptern\nVerschiebe sendTo Blöcke in Adaptern",
                 "ru": "Поддержка блоков в драйверах\nБлоки sendTo передвинуты в драйвера"
-            },
-            "3.0.10": {
-                "en": "New blocks: compare time, write state\nDocumentation",
-                "de": "Neue Blöcke: Zeitvergleich, Zustand schreiben\nDokumentation ",
-                "ru": "Новые блоки: сравнение времени, запись в состояние\nДокументация"
-            },
-            "3.0.9": {
-                "en": "Bugfixing of blockly",
-                "de": "Fehler korrigiert in Blockly",
-                "ru": "Исправлены ошибки в Blockly"
-            },
-			"3.0.7": {
-                "en": "add ack for trigger in blockly\nadd block to get info about trigger\nstart description of blockly\nadd runScript functions\ndisable zoom on wheel in blockly\nfix block: time compare",
-                "de": "add ack for trigger in blockly\nadd block to get info about trigger\nstart description of blockly\nadd runScript functions\ndisable zoom on wheel in blockly\nfix block: time compare",
-                "ru": "add ack for trigger in blockly\nadd block to get info about trigger\nstart description of blockly\nadd runScript functions\ndisable zoom on wheel in blockly\nfix block: time compare"
-            },
-            "3.0.6": {
-                "en": "add extendObject function\nadd custom sendTo block\nadd multiple trigger block",
-                "de": "Neue Funktion: extendObject\nNeuer Block: custom sendTo\nNeuer Block: multiple trigger",
-                "ru": "Добавлена функция extendObject\nДобавлен блок: custom sendTo\nДобавлен блок: multiple trigger"
-            },
-            "3.0.5": {
-                "en": "Fix sendTo blocks",
-                "de": "Repariere sendTo Blöcke",
-                "ru": "Исправлены sendTo блоки"
-            },
-            "3.0.4": {
-                "en": "Support of convert day of week into text in blockly",
-                "de": "Unterstützung von der Konvertierung des Wochentages in Text",
-                "ru": "Поддержка конвертирования дня недели в текст в blockly"
-            },
-            "3.0.3": {
-                "en": "Fixed the convert date block",
-                "de": "Block für Datumkonevrtirung ist geändert",
-                "ru": "Поправлен блок конвертирования даты"
-            },
-            "3.0.2": {
-                "en": "Change name of sandbox debug variable",
-                "de": "Ändere Name von Sandbox-Debug",
-                "ru": "Изменено имя Sandbox debug переменной"
-            },
-            "3.0.1": {
-                "en": "Fix disabling of script",
-                "de": "Fix Deaktivierung vom Skript",
-                "ru": "Исправлена деактивация скрипта"
-            },
-            "3.0.0": {
-                "en": "Beta Release with Blockly",
-                "de": "Beta Release mit Blockly",
-                "ru": "Бета релих с Blockly"
-            },
-            "2.3.4": {
-                "en": "fix sayIt Block",
-                "de": "Repariere sayIt Block",
-                "ru": "Исправлен sayIt блок"
-            },
-			"2.3.3": {
-                "en": "add more blockly modules\nadd debug mode and verbose mode",
-                "de": "add more blockly modules\nadd debug mode and verbose mode",
-                "ru": "add more blockly modules\nadd debug mode and verbose mode"
-            },
-            "2.3.1": {
-                "en": "blockly support",
-                "de": "blockly support",
-                "ru": "blockly support"
-            },
-			"2.3.0": {
-                "en": "export/import of scripts",
-                "de": "export/import of scripts",
-                "ru": "export/import of scripts"
-            },
-            "2.2.1": {
-                "en": "fix delete state",
-                "de": "fix delete state",
-                "ru": "fix delete state"
-            },
-            "2.2.0": {
-                "en": "adapter is compatible with redis",
-                "de": "adapter is compatible with redis",
-                "ru": "adapter is compatible with redis"
-            },
-            "2.1.9": {
-                "en": "add for script onStop handler",
-                "de": "add for script onStop handler",
-                "ru": "add for script onStop handler"
-            },
-            "2.1.8": {
-                "en": "do not show error if regexp ID",
-                "de": "do not show error if regexp ID",
-                "ru": "do not show error if regexp ID"
-            },
-            "2.1.7": {
-                "en": "keep configured libraries by upgrade",
-                "de": "keep configured libraries by upgrade",
-                "ru": "keep configured libraries by upgrade"
-            },
-            "2.1.4": {
-                "en": "catch an error if some system object changed, e.g. _design/history",
-                "de": "catch an error if some system object changed, e.g. _design/history",
-                "ru": "catch an error if some system object changed, e.g. _design/history"
-            },
-            "2.1.3": {
-                "en": "fix warning with wrong types one more time",
-                "de": "fix warning with wrong types one more time",
-                "ru": "fix warning with wrong types one more time"
-            },
-            "2.1.2": {
-                "en": "fix warning with wrong types",
-                "de": "fix warning with wrong types",
-                "ru": "fix warning with wrong types"
             }
         },
         "desc":                     "Javascript/Coffeescript Script Engine",

@@ -113,6 +113,37 @@ describe('Test JS', function() {
         checkConnectionOfAdapter(done);
     });
 
+    it('Test JS: Catch request error', function (done) {
+        this.timeout(10000);
+        // add script
+        var script = {
+            "common": {
+                "name":         "Catch request error",
+                "engineType":   "Javascript/js",
+                "source":       "var request = require('request');" +
+                                "createState('check_request_error', function () {" +
+                                "   request('http://google1456.com').on('error', function (error) { " +
+                                "       console.error(error); setState('check_request_error', true, true);" +
+                                "   });" +
+                                "});",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.check_request_error",
+            "native": {}
+        };
+        onStateChanged = function (id, state) {
+            if (id === 'javascript.0.check_request_error' && state.val === true) {
+                onStateChanged = null;
+                done();
+            }
+        };
+        objects.setObject(script._id, script, function (err) {
+            expect(err).to.be.not.ok;
+        });
+    });
+
     it('Test JS: check creation of state', function (done) {
         this.timeout(2000);
         // add script

@@ -741,6 +741,7 @@
             name:      name,
             instance:  adapter.instance,
             verbose:   verbose,
+            request:   mods.request,
             require:   function (md) {
                 if (mods[md]) return mods[md];
                 try {
