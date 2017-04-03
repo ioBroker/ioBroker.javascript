@@ -2382,7 +2382,7 @@
                     return false;
                 }
             },
-            onStop:      function (cb, timeout) {(
+            onStop:      function (cb, timeout) {
                 if (sandbox.verbose) sandbox.log('onStop(timeout=' + timeout + ')', 'info');
 
                 script.onStopCb = cb;
