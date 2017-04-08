@@ -2307,6 +2307,8 @@
                     time = sandbox.getAstroDate(time.astro, time.date || new Date(), time.offset || 0);
                 }
                 
+		var daily = true;
+		if (time) daily = false;    
                 if (time && typeof time !== 'object') {
                     time = new Date(time);
                 } else if (!time) {
@@ -2328,9 +2330,11 @@
                             startTime.setSeconds(0);
                         }
                     } else {
+			daily = false;    
                         startTime = new Date(startTime);
                     }
                 } else {
+		    daily = false;
                     startTime = new Date(startTime);
                 }
                 startTime = startTime.getTime();
@@ -2349,9 +2353,11 @@
                             endTime.setSeconds(0);
                         }
                     } else {
+			daily = false;    
                         endTime = new Date(endTime);
                     }
                 } else if (endTime) {
+		    daily = false;	
                     endTime = new Date(endTime);
                 } else {
                     endTime = null;
@@ -2360,10 +2366,10 @@
                 if (endTime) endTime = endTime.getTime();
 
                 if (operation === 'between' && endTime) {
-		    if (startTime > endTime) return !(time >= endTime && time < startTime);	
+		    if (startTime > endTime && daily) return !(time >= endTime && time < startTime);	
                     else return time >= startTime && time < endTime;
                 } else if (operation === 'not between' && endTime) {
-		    if (startTime > endTime) return time >= endTime && time < startTime;	
+		    if (startTime > endTime && daily) return time >= endTime && time < startTime;	
                     else return !(time >= startTime && time < endTime);
                 } else if (operation === '>') {
                     return time > startTime;
