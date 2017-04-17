@@ -39,7 +39,7 @@ systemDictionary = {
     "Astro settings":       {"en": "Astro settings",    "de": "Astro-Einstellungen",    "ru": "Настройки астро-функций"},
     "Do not subscribe all states on start:": {
         "en": "Do not subscribe all states on start:",
-        "de": "Nicht auf alle Zustände beim Start abonieren:",
+        "de": "Nicht auf alle Zustände beim Start abonnieren:",
         "ru": "Оптимизация состояний:"
     },
     "info_libraries": {
