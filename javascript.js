@@ -2087,7 +2087,11 @@
                         if (err) adapter.log.warn('Cannot set object "' + name + '": ' + err);
 
                         if (initValue !== undefined) {
-                            adapter.setState(name, initValue, callback);
+							if (typeof initValue === 'object' && initValue.ack !== undefined) {
+                            	adapter.setState(name, initValue, callback);
+							} else {
+                            	adapter.setState(name, initValue, true, callback);
+							}
                         } else {
                             if (typeof callback === 'function') {
                                 try {
@@ -2113,8 +2117,13 @@
 
                                     if (initValue !== undefined) {
                                         adapter.setForeignState(name, initValue, callback);
+										if (typeof initValue === 'object' && initValue.ack !== undefined) {
+											adapter.setForeignState(name, initValue, callback);
+										} else {
+											adapter.setForeignState(name, initValue, true, callback);
+										}
                                     } else {
-                                        adapter.setForeignState(name, null,      callback);
+                                        adapter.setForeignState(name, null, true, callback);
                                     }
                                 });
                             } else {
@@ -2126,9 +2135,13 @@
                                     if (err) adapter.log.warn('Cannot set object "' + name + '": ' + err);
 
                                     if (initValue !== undefined) {
-                                        adapter.setState(name, initValue, callback);
+                                        if (typeof initValue === 'object' && initValue.ack !== undefined) {
+											adapter.setState(name, initValue, callback);
+										} else {
+											adapter.setState(name, initValue, true, callback);
+										}
                                     } else {
-                                        adapter.setState(name, null,      callback);
+                                        adapter.setState(name, null, true, callback);
                                     }
                                 });
 
@@ -2136,9 +2149,9 @@
                         } else {
                             if (!adapter.config.subscribe && !states[name] && !states[adapter.namespace + '.' + name]) {
                                 if (name.substring(0, adapter.namespace.length) !== adapter.namespace) {
-                                    states[adapter.namespace + '.' + name] = {val: null};
+                                    states[adapter.namespace + '.' + name] = {val: null, ack: true};
                                 } else {
-                                    states[name] = {val: null};
+                                    states[name] = {val: null, ack: true};
                                 }
                             }
                             // state yet exists
