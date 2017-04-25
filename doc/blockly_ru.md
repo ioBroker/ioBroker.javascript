@@ -1,146 +1,145 @@
 # Содержание
 
 - [Описание](#description)
-- [Getting started](#getting-started)
-    - [Sample 1](#sample-1)
-    - [Sample 2](#sample-2)
-    - [Sample 3](#sample-3)
-- [Blocks](#blocks)
-    - [System blocks](#system-blocks)
-        - [Debug output](#debug-output)
-        - [Comment](#comment)
-        - [Control state](#control-state)
-        - [Update state](#update-state)
-        - [Bind states](#bind-states)
-        - [Write states](#write-states)
-        - [Create state](#create-state)
-        - [Get value of state](#get-value-of-state)
-        - [Get Object ID](#get-object-id)
-    - [Actions Blocks](#actions-blocks)
-        - [Exec - execute](#exec---execute)
-        - [request URL](#request-url)
-    - [Send to Blocks](#send-to-blocks)
-        - [Send to telegram](#send-to-telegram)
-        - [Send to SayIt](#send-to-sayit)
-        - [Send to pushover](#send-to-pushover)
-        - [Send email](#send-email)
-        - [Custom sendTo block](#custom-sendto-block)
-    - [Date and Time blocks](#date-and-time-blocks)
-        - [Time comparision](#time-comparision)
-        - [Actual time comparision](#actual-time-comparision)
-        - [Get actual time im specific format](#get-actual-time-im-specific-format)
-        - [Get time of astro events for today](#get-time-of-astro-events-for-today)
-    - [Convert blocks](#convert-blocks)
-        - [Convert to number](convert-to-number)
-        - [Convert to boolean](convert-to-boolean)
-        - [Get type of variable](get-type-of-variable)
-        - [Convert to date/time object](convert-to-datetime-object)
-        - [Convert date/time object to string](convert-datetime-object-to-string)    
-        - [Convert JSON to object](convert-json-to-object)
-        - [Convert object to JSON](convert-object-to-json)
-    - [Trigger](#trigger)
-        - [Trigger on states change](#trigger-on-states-change)
-        - [Trigger on state change](#trigger-on-state-change)
-        - [Trigger info](#trigger-info)
-        - [Schedule](#schedule)
-        - [Trigger on astro event](#trigger-on-astro-event)
-        - [Named schedule](#named-schedule)
-        - [Clear schedule](#clear-schedule)
-        - [CRON dialog](#cron-dialog)
-        - [CRON rule](#cron-rule)
-    - [Timeouts](#timeouts)
-        - [Delayed execution](#delayed-execution)
-        - [Clear delayed execution](#clear-delayed-execution)
-        - [Execution by interval](#execution-by-interval)
-        - [Stop execution by interval](#stop-execution-by-interval)
-    - [Logic](#logic)
-        - [If else block](#if-else-block)
-        - [Comparision block](#comparision-block)
-        - [Logical AND/OR block](#logical-and-or-block)
-        - [Negation block](#negation-block)
-        - [Logical value TRUE/FALSE](#logical-value-true-false)
-        - [null block](#null-block)
-        - [Test block](#test-block)
-    - [Loops](#loops)
-        - [Repeat N times](#repeat-n-times)
-        - [Repeat while](#repeat-while)
-        - [Count](#count)
-        - [For each](#for-each)
-        - [Break out of loop](#break-out-of-loop)
-    - [Math](#math)
-        - [Number value](#number-value)
-        - [Arithmetical operations +-\*/^](#arithmetical-operations--)
-        - [Square root, Abs, -, ln, log10, e^, 10^](#square-root-abs---ln-log10-e-10)
+- [Введение с примерами](#getting-started)
+    - [Пример 1](#sample-1)
+    - [Пример 2](#sample-2)
+    - [Пример 3](#sample-3)
+- [Блоки](#blocks)
+    - [Системные блоки](#system-blocks)
+        - [Отладка](#debug-output)
+        - [Комментарий](#comment)
+        - [Управление состоянием](#control-state)
+        - [Обновление состояния](#update-state)
+        - [Связывание состояний](#bind-states)
+        - [Запись состояний](#write-states)
+        - [Создание переменных](#create-state)
+        - [Получение значения состояния](#get-value-of-state)
+        - [Получения ID объекта](#get-object-id)
+    - [Исполнительные блоки](#actions-blocks)
+        - [Exec - выполнение](#exec---execute)
+        - [запросить URL](#request-url)
+    - [Отправить к Блокам](#send-to-blocks)
+        - [Отправить в telegram](#send-to-telegram)
+        - [Отправить в SayIt](#send-to-sayit)
+        - [Отправить в pushover](#send-to-pushover)
+        - [Отправить email](#send-email)
+        - [Пользовательское sendTo block](#custom-sendto-block)
+    - [Блоки даты и времени](#date-and-time-blocks)
+        - [Сравнение времени](#time-comparision)
+        - [Сравнение текущего времени](#actual-time-comparision)
+        - [Получить фактический формат времени](#get-actual-time-im-specific-format)
+        - [Получить время астрономических событий на сегодня](#get-time-of-astro-events-for-today)
+    - [Преобразование блоков](#convert-blocks)
+        - [Преобразование к числовому формату](convert-to-number)
+        - [Преобразование к формату Boolean](convert-to-boolean)
+        - [Получение типа переменной](get-type-of-variable)
+        - [Преобразование в date/time object](convert-to-datetime-object)
+        - [Преобразование date/time object к string](convert-datetime-object-to-string)    
+        - [Преобразование JSON к object](convert-json-to-object)
+        - [Преобразование object к JSON](convert-object-to-json)
+    - [Триггер](#trigger)
+        - [Триггер по изменению состояний](#trigger-on-states-change)
+        - [Триггер по изменению состояния](#trigger-on-state-change)
+        - [Информация триггера](#trigger-info)
+        - [Расписание](#schedule)
+        - [Триггер по астрономическому событию](#trigger-on-astro-event)
+        - [Присвоение имени расписанию](#named-schedule)
+        - [Очистить расписание](#clear-schedule)
+        - [CRON диалог](#cron-dialog)
+        - [CRON правило](#cron-rule)
+    - [Таймауты](#timeouts)
+        - [Задержка выполнения](#delayed-execution)
+        - [Очистить отложенное выполнение](#clear-delayed-execution)
+        - [Выполнение по интервалу](#execution-by-interval)
+        - [Остановить выполнение по интервалу](#stop-execution-by-interval)
+    - [Логические](#logic)
+        - [Блок If else](#if-else-block)
+        - [Блоки сравнения](#comparision-block)
+        - [Логический блок AND/OR](#logical-and-or-block)
+        - [Блок отрицания](#negation-block)
+        - [Логическое значение TRUE/FALSE](#logical-value-true-false)
+        - [Нулевой блок](#null-block)
+        - [Тестовый блок](#test-block)
+    - [Циклы](#loops)
+        - [Повторить N раз](#repeat-n-times)
+        - [Повторять пока](#repeat-while)
+        - [Счетчик](#count)
+        - [Для каждого](#for-each)
+        - [Выйти из цикла](#break-out-of-loop)
+    - [Математические](#math)
+        - [Числовое значение](#number-value)
+        - [Арифметические операции +-\*/^](#arithmetical-operations--)
+        - [Корень квадратный, Abs, -, ln, log10, e^, 10^](#square-root-abs---ln-log10-e-10)
         - [sin, cos, tan, asin, acos, atan](#sin-cos-tan-asin-acos-atan)
-        - [Math constants: pi, e, phi, sqrt(2), sqrt(1/2), infinity](#math-constants-pi-e-phi-sqrt2-sqrt12-infinity)
-        - [Is even, odd, prime, whole, positive, negative, divisibly by](#is-even-odd-prime-whole-positive-negative-divisibly-by)
-        - [Modify variably by value plus or minus](#modify-variably-by-value-plus-or-minus)
-        - [Round, floor, ceil value](#round-floor-ceil-value)
-        - [Operations on the list of values: sum, min, max, average, median, modes, deviation, random item](#operations-on-the-list-of-values-sum-min-max-average-median-modes-deviation-random-item)
-        - [Modulus](#modulus)
-        - [Limit some value by min and max](#limit-some-value-by-min-and-max)
-        - [Random value from 0 to 1](#random-value-from-0-to-1)
-        - [Random value between min and max](#random-value-between-min-and-max)
-    - [Text](#text)
-        - [String value](#string-value)
-        - [Concatenate strings](#concatenate-strings)
-        - [Append string to variable](#append-string-to-variable)
-        - [Length of string](#length-of-string)
-        - [Is string empty](#is-string-empty)
-        - [Find position in string](#find-position-in-string)
-        - [Get symbol in string on specific position](#get-symbol-in-string-on-specific-position)
-        - [Get substring](#get-substring)
-        - [Convert to upper case or to lower case](#Convert-to-upper-case-or-to-lower-case)
-        - [Trim string](#trim-string)
-    - [Lists](#lists)
-        - [Create empty list](#create-empty-list)
-        - [Create list with values](#create-list-with-values)
-        - [Create list with same value N times](#create-list-with-same-value-n-times)
-        - [Get length of list](#get-length-of-list)
-        - [Is list empty](#is-list-empty)
-        - [Find position of item in list](#Find-position-of-item-in-list)
-        - [Get item in list](#get-item-in-list)
-        - [Set item in list](#set-item-in-list)
-        - [Get sublist of list](#get-sublist-of-list)
-        - [Convert text to list and vice versa](#convert-text-to-list-and-vice-versa)
-    - [Colour](#colour)
-        - [Colour value](#colour-value)
-        - [Random colour](#random-colour)
-        - [RGB colour](#rgb-colour)
-        - [Mix colours](#mix-colours)
-    - [Variables](#variables)
-        - [Set variable's value](#set-variables-value)
-        - [Get variable's value](#get-variables-value)
-    - [Functions](#functions)
-        - [Create function from blocks with no return value](#create-function-from-blocks-with-no-return-value)
-        - [Create function from blocks with return value](#create-function-from-blocks-with-return-value)
-        - [Return value in function ](#return-value-in-function)
-        - [Create custom function with no return value](#create-custom-function-with-no-return-value)
-        - [Create custom function with return value](#create-custom-function-with-return-value)
-        - [Call function](#call-function)
+        - [Математические постоянные: pi, e, phi, sqrt(2), sqrt(1/2), infinity](#math-constants-pi-e-phi-sqrt2-sqrt12-infinity)
+        - [Четное, нечетное, простое, целое, положительное, отрицательное, делимое на](#is-even-odd-prime-whole-positive-negative-divisibly-by)
+        - [Изменение переменной со знаком плюс или минус](#modify-variably-by-value-plus-or-minus)
+        - [Округленное, приближенное, действительное значение](#round-floor-ceil-value)
+        - [Операции со списком значений: сумма, минимум, максимум, среднее, медиана, мода, отклонения, случайное значение](#operations-on-the-list-of-values-sum-min-max-average-median-modes-deviation-random-item)
+        - [Модуль](#modulus)
+        - [Установить для значения минимум или максимум](#limit-some-value-by-min-and-max)
+        - [Случайное значение от 0 до 1](#random-value-from-0-to-1)
+        - [Случайное значение между минимальным или максимальным](#random-value-between-min-and-max)
+    - [Текст](#text)
+        - [Строковое значение](#string-value)
+        - [Объединить строки](#concatenate-strings)
+        - [Добавить строку в переменную](#append-string-to-variable)
+        - [Длина строки](#length-of-string)
+        - [Строка пустая](#is-string-empty)
+        - [Найти позицию в строке](#find-position-in-string)
+        - [Получить символ в строке по определенной позиции](#get-symbol-in-string-on-specific-position)
+        - [Получить подстроку](#get-substring)
+        - [Преобразование в верхний или в нижний регистр](#Convert-to-upper-case-or-to-lower-case)
+        - [Строка обрезки](#trim-string)
+    - [Списки](#lists)
+        - [Создать пустой список](#create-empty-list)
+        - [Создать список значений](#create-list-with-values)
+        - [Создать список с тем же значением N раз](#create-list-with-same-value-n-times)
+        - [Получить длину списка](#get-length-of-list)
+        - [Список пуст](#is-list-empty)
+        - [Найти позицию элемента в списке](#Find-position-of-item-in-list)
+        - [Получить элемент в списке](#get-item-in-list)
+        - [Указать элемент в списке](#set-item-in-list)
+        - [Получить дочерний список](#get-sublist-of-list)
+        - [Преобразование текста в список и наоборот](#convert-text-to-list-and-vice-versa)
+    - [Цвет](#colour)
+        - [Цветовое значение](#colour-value)
+        - [Произвольный цвет](#random-colour)
+        - [RGB палитра](#rgb-colour)
+        - [Смешанные цвета](#mix-colours)
+    - [Переменные](#variables)
+        - [Установить значение переменной](#set-variables-value)
+        - [Получить значение переменной](#get-variables-value)
+    - [Функции](#functions)
+        - [Создать функцию из блоков без возвращения значения](#create-function-from-blocks-with-no-return-value)
+        - [Создать функцию из блоков с возвращением значения](#create-function-from-blocks-with-return-value)
+        - [Вернуть значение в функции](#return-value-in-function)
+        - [Создать пользовательскую функцию без возвращения значения](#create-custom-function-with-no-return-value)
+        - [Создать пользовательскую функцию с возвращением значения](#create-custom-function-with-return-value)
+        - [Вызов функции](#call-function)
 
 # Описание
-Блокли является визуальным редактором, который позволяет пользователям писать программы, составляя блоки вместе.
-Он предназначен для людей, не имеющих большого опыта работы с компьютером. 
+Blockly - визуальный редактор, который позволяет пользователям писать программы, составляя блоки вместе. Он предназначен для людей, у которых отсутствует опыт работы в области программирования. 
 
-# Введение на примерах
+# Введение с примерами
 
 ## Пример 1
-**Управлять переменной при изменении какой-либо другой переменной**
+**Управление переменной по изменению какой-либо другой переменной**
 
 ![Getting started 1](img/getting_started_1_en.png)
 
-This is the classical rule to switch something ON or OFF on other event.
+Это классический случай включения или выключения чего-либо по другому событию.
 
-Here the light will be switched on or off if the motion was detected or motion detector sends IDLE state.
+В этом случае свет включается или выключается, если обнаружено движение или детектор движения посылает состояние IDLE.
 
-First of all insert block "Triggers=>Event: if object". Select object ID to use this state as trigger for rule.
+Прежде всего вставьте блок «Триггеры=>Событие: если объект». Выберите  ID объекта, чтобы использовать это состояние как триггер для управления.
 
-Add to trigger other block - "System=>Control" and select in dialog other state that must be controlled by event.
+Добавьте в триггер другой блок - "Система=>Управление" и выберите в диалоге другое состояние, которое должно контролироваться событием.
 
-Insert into control block the "System=>Get value of state" block and select in dialog the "Motion" object to write the value of this state into "Light"*[]: 
- 
-There is a special variable **value"" in trigger block. It is always defined there and you can use this variable for your need. It consist actual value of triggered state and you can create simpler rule by using "Variable=>item" block and renaming it into "value".
+Вставьте в блок управления блок «Система => Получить значение состояния» и выберите в диалоговом окне объект «Движение», чтобы записать значение этого состояния в «Свет» * []:
+
+В блоке триггера есть специальная переменная ** значение "". Она всегда там определена, используйте эту переменную по своему усмотрению. Она содержит текущее значение состояния триггера, при этом вы также можете создать более простое правило, используя блок «Переменная =>элемент» и переименовать его в «значение».
 
 ![Getting started 1](img/getting_started_1_2_en.png)
 
@@ -177,17 +176,16 @@ There is a special variable **value"" in trigger block. It is always defined the
 </xml>
 ```
 
-## Sample 2 
-**Switch light on by motion and switch off in 10 minutes if no motion detected.**
+## Пример 2 
+**Включить свет при движении и выключить через 10 минут, если движение не обнаружено.**
 
 ![Getting started 2](img/getting_started_2_en.png)
 
-If state "Motion" was updated with value true do:
-- switch "Light" on
-- start the delayed set in 10 minutes to switch "Light" off and clear all the delayed sets for this state
+Если состояние «Движение» стало true, выполните:
+- выключатель «Свет» включить
+- запустить задержку на 10 минут, чтобы выключить «Свет» и очистить все установленные задержки для этого состояния
 
-You can notice, that the flag "clear running" is set by last command. This clears any running timers for this state and the timer will be started anew.
-
+Вы можете заметить, что флаг «очистка запущенных» уже установлен последней командой. Это позволит очистить все запущенные таймеры для данного состояния, а таймер будет перезапущен.
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="s7s**k+Cc_KjDnJW`(h~" x="112" y="63">
@@ -235,32 +233,32 @@ You can notice, that the flag "clear running" is set by last command. This clear
 ```
 
 
-## Sample 3
-**Send email if outside temperature is more than 25 grad Celsius.**
+## Пример 3
+**Отправить электронное сообщение, если температура наружного воздуха превышает 25 град Цельсия.**
 
 ![Getting started 3](img/getting_started_3_en.png)
 
-Explanation:
+Пояснение:
 
-First we must to define the variable to remember if the email yet sent for actual temperature alert or not and fill it with "false".
-Then we subscribe on changes of temperature. We can execute our rule periodically, but is is not so effective. 
+Сначала мы должны определить переменную, чтобы помнить, отправлялось ли или нет электронной почтой оповещение о текущем состоянии температуры, и заполнить ее значением «false».
+Затем мы подписываемся на изменения температуры. Мы можем выполнять наше правило периодически, но это не настолько эффективно.
 
-If temperature was changed we compare its value with 25 and check if the email yet sent or not. 
-If email is not sent, we remember, that email sent and send the email. Of course email adapter must be installed and configured before.
+Если температура изменялась, то мы сравниваем ее значение с 25 и проверяем, было ли отправлено письмо или нет.
+Если письмо не отправлено, мы помним, что это письмо отправлено и отправлено по электронной почте. Конечно, перед установкой и настройкой должен быть установлен адаптер электронной почты.
 
-If the temperature less than 23 grad, reset "emailSent" flag to send email by next temperature alert. 
-We compare temperature with 23 to do not sent emails every time if temperature fluctuate about 25 grad.
+Если температура менее 23 град, сбросьте флаг «emailSent», чтобы отправить электронное письмо, оповещая о температуре.
+Мы сравниваем температуру с 23, чтобы не отправлять электронные письма каждый раз, если температура колеблется около 25 град.
 
-To create the "if ... else if ..." block you must click on the gear icon and add required parts to "IF" block.
+Чтобы создать блок «if ... else if ...», вы должны нажать на значок шестеренки и добавить необходимые части в блок «IF».
 ![Getting started 3](img/getting_started_3_1_en.png)
 
-You can specify comment for every block by selecting "Add comment" in context menu. You can later open the comments by clicking on the question mark icon.
+Вы можете указать комментарий для каждого блока, выбрав «Добавить комментарий» в контекстном меню. Позднее вы можете открыть комментарии, нажав на значок вопросительного знака.
 ![Getting started 3](img/getting_started_3_2_en.png)
 
-You can collapse some big blocks for better code presentation by selection in context menu "Collapse Block". 
+Вы можете свернуть некоторые большие блоки для лучшего представления кода путем выбора в контекстном меню «Свернуть блок».
 ![Getting started 3](img/getting_started_3_3_en.png)
 
-Sample to import:
+Пример для импорта:
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="r53:ZiP]3DYe;Ly;@!v5" x="87" y="13">
@@ -374,16 +372,16 @@ Sample to import:
 </xml>
 ```
 
-# Blocks
+# Блоки
 
-## System blocks
+## Системные блоки
 
-### Debug output
+### Отладка
 ![Debug output](img/system_debug_en.png)
 
-This block does nothing except prints line into the log. You can use it for debugging of your script.
+Этот блок ничего не делает, кроме как выводит строки записей в журнал. Вы можете использовать его для отладки вашего скрипта.
 
-Like this one: 
+Как этот:
 
 ![Debug output](img/system_debug_1_en.png)
 
@@ -415,40 +413,38 @@ Like this one:
 </xml>
 ```
 
-You can define 4 different levels of severity for message:
-- debug (the debug level of javascript adapter must be enabled)
-- info (default, at least info log level must be set in javascript instance settings)
-- warning 
-- error - will be always displayed. Other severity levels can be ignored if severity of logging in javascirpt adapter is higher.
-
-### Comment
+Для сообщения можно указать 4 уровня важности:
+- отладка (уровень отладки javascript адаптера  должен быть включен)
+- info (по умолчанию, по крайней мере, уровень info log должен быть установлен в настройках экземпляра javascript)
+- предупреждение
+- ошибка - будет отображаться всегда. Другие уровни важности могут быть проигнорированы, если важность журналирования в javascirpt адаптере  выше.
+### Комментарий
 ![Comment](img/system_comment_en.png)
 
-Comment your code to understand it later better. 
+Прокомментируйте свой код, чтобы позже его лучше понять.
 
-It does nothing, just a comment.
+Он ничего не делает, просто комментарий.
 
-### Control state
+### Управление состоянием
 ![Control state](img/system_control_en.png)
 
-You can write the state with two different meanings:
-- to control something and send command to end hardware (this block)
-- to update some state to just inform about e.g. new temperature ([next block](#update-state))
+Вы можете описать состояние двумя различными способами:
+- контролируя что-либо и отправляя команду для завершения работы технического средства (этот блок)
+- обновить некоторое состояние, чтобы просто информировать о, например,новой температуре ([next block](#update-state))
 
-Typical usage of block:
+Типовое использование блока:
 
 ![Control state](img/system_control_sample1_en.png)
 
-The object ID must be selected from dialog and the value must be defined too. Depends on the type of state the value can be [string](#string-value), [number](#number-value) or [boolean](#ogical-value-trueflase).
+ID объекта должен быть выбран из диалога, и значение также должно быть определено. В зависимости от типа состояния, значение может быть [string](#string-value), [number](#number-value) или [boolean](#ogical-value-trueflase)..
 
-You can read the explanation [here](https://github.com/ioBroker/ioBroker/wiki/Adapter-Development-Documentation#commands-and-statuses).
+Описание можно прочесть [тут](https://github.com/ioBroker/ioBroker/wiki/Adapter-Development-Documentation#commands-and-statuses).
 
-This block writes command into state (ack=false). Additionally the delay can be specified.
-If delay is not 0, the state will be set not immediately but after defined in milliseconds period of time.
+Этот блок записывает команду в состояние (ack = false). Кроме того, можно указать задержку.
+Если задержка не равна 0, состояние будет установлено не сразу, а после определенного в миллисекундах периода времени.
+Вы можете остановить все запущенные уставки задержек при помощи управляющей команды.
 
-You can stop all running delayed sets by issuing of control command. 
-
-E.g in following schema the state "Light" will be controlled only once (in 2 seconds):
+Например, в следующей схеме состояние «Свет» будет контролироваться только один раз (через 2 секунды):
 ![Control state](img/system_control_1_en.png)
 
 ```
@@ -487,7 +483,7 @@ E.g in following schema the state "Light" will be controlled only once (in 2 sec
 </xml>
 ```
 
-But in this schema the state "Light" will be controlled twice (in 1 second and in 2 seconds):
+Но в этой схеме состояние «Свет» будет контролироваться дважды (через 1 секунду и через 2 секунды):
 ![Control state](img/system_control_2_en.png)
 
 ```
@@ -526,26 +522,25 @@ But in this schema the state "Light" will be controlled twice (in 1 second and i
 </xml>
 ```
 
-### Update state
+### Обновление состояния
 ![Update state](img/system_update_en.png)
 
-This block is similar to [control block](#control-state), but it is only updates the value. No command to control the hardware will be sent.
+Этот блок похож на [control block](#control-state), единственным отличием является то, что он только обновляет значение. Никаких команд по управлению техническими средствами не отправляется.
 
-Typical usage example:
+Пример типового применения:
 
 ![Update state](img/system_update_sample_en.png)
 
-### Bind states
+### Связывание состояний
 ![Bind state](img/system_bind_en.png)
 
-This block simply binds two states with each other.
+Данный блок просто связывает два состояния друг с другом.
 
-You can achieve the same with this blocks:
+Вы можете достичь этого с помощью следующих блоков:
 
 ![Bind state](img/system_bind_1_en.png)
 
-You can select if the value will be forwarded only if source state was changed or always when the state is just updated. 
-
+Вы можете выбрать, будет ли значение пересылаться, только тогда когда состояние источника было изменено или всегда, при обновлении состояния.
 ```
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="w/@=5/5!D;8wn4DZ;jzG" x="287.99999999999943" y="37.999999999999716">
   <mutation items="1"></mutation>
@@ -571,26 +566,25 @@ You can select if the value will be forwarded only if source state was changed o
 </block>
 ```
 
-### Write states
+### Запись состояния
 ![Write state](img/system_write_en.png)
 
-Universal write block that can do the same as ["Update state"](#update-state) and ["Control state"](#control-state) together. 
+Универсальный блок записи,  может делать то же самое, что и ["Update state"](#update-state) и ["Control state"](#control-state) совместно. 
 
-But in compare with them you can define Object ID and delay with other blocks to make your script more universal.
+Но в отличии от них вы можете определить Object ID и задать задержку с другими блоками, чтобы ваш скрипт стал более универсальным.
 
-### Create state
+### Создание переменных
 ![Create state](img/system_create_en.png)
-There are two types of variables that can be created in scripts:
-- local [variables](#set-variables-value)
-- global variables or states. 
+Существует два типа переменных, которые применяются в скриптах:
+- локальные [переменные](#set-variables-value)
+- глобальные переменные или состояния. 
 
-Global states are visible in all scripts, but local are visible only in this current script.
+Глобальные переменные видны во всех скриптах, в отличии от локальных, которые видны только в текущем скрипте.
+Глобальные переменные могут использоваться в vis, mobile и других логических или визуальных модулях, могут быть зарегистрированы в db или как-то еще.
 
-Global states can be used in vis, mobile and all other logic or visualisation modules, can be logged into db or whatever.
+Этот блок создает глобальную переменную, и если переменная уже существует, то команда будет проигнорирована. Вы можете спокойно вызывать этот блок при каждом запуске скрипта.
 
-This block creates global state and if the state yet exist, the command will be ignored. You can safely call this block by every start of the script.
-
-Typical usage example:
+Пример типового применения:
 
 ![Create state](img/system_create_sample1_en.png)
 
@@ -642,27 +636,26 @@ Typical usage example:
 </xml>
 ```
 
-You can start to use the new created state first in the block itself. 
 
-Following code will report an error by the first execution, because subscribe for "myState" cannot find object:
+Вы можете начать использовать только что созданную переменную сначала в самом блоке.
+Следующий код сообщит об ошибке при первом выполнении, так как подписка на «myState» не может найти объект:
  
 ![Create state](img/system_create_sample2_en.png)
 
-Although no warning will be printed by the second execution, because the state yet exists.
+При повторном выполнении никаких предупреждений не появится, так как переменная все же существует.
 
-### Get value of state
+### Получение значения состояния
 ![Get value of state](img/system_get_value_en.png)
 
-You can use this block to get the value of state. Additionally to value you can get following attributes:
-- Value
-- Acknowledge - command = false or update = true
-- Timestamp in ms from 1970.1.1 (It has type "Date object")
-- Last change of value in ms from 1970.1.1 (It has type "Date object")
-- Quality
-- Source - instance name, that wrote last value, like "system.adapter.javascript.0"
+Используйте данный блок для получения значения состояния. Вдобавок к значению, у вас появится доступ к следующим аттрибутам:
+- Значение
+- Подтверждение - command = false или update = true
+- Отметка времени в миллисекундах с 1970.1.1 (имеет тип «Date object»)
+- Последнее изменение значения в миллисекундах с 1970.1.1 (имеет тип «Date object»)
+- Качество
+- Источник - имя экземпляра, который написал последнее значение, например "system.adapter.javascript.0"
 
-
-Example to print time of the last value change:
+Пример вывода времени последнего изменения значения:
 
 ![Get value of state](img/system_get_value_sample_en.png)
 
@@ -704,14 +697,13 @@ Example to print time of the last value change:
 </xml>
 ```
 
-### Get Object ID
+### Получение ID объекта
 ![Get Object ID](img/system_get_id_en.png)
+Данный блок вспомогательный, он существует чтобы удобнее было выбирать ID объекта для триггерного блока.
 
-It is just a help block to comfortable select the object ID for trigger block.
+Нажав на значение ID объекта, откроется диалоговое окно выбора ID.
 
-By clicking on Object ID value the select ID dialog will be opened.
-
-Typical usage:
+Типовое применение:
 
 ![Get Object ID](img/system_get_id_sample_en.png)
 
