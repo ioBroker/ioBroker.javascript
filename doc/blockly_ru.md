@@ -15,21 +15,21 @@
         - [Запись состояний](#write-states)
         - [Создание переменных](#create-state)
         - [Получение значения состояния](#get-value-of-state)
-        - [Получения ID объекта](#get-object-id)
+        - [Получение ID объекта](#get-object-id)
     - [Исполнительные блоки](#actions-blocks)
         - [Exec - выполнение](#exec---execute)
-        - [запросить URL](#request-url)
-    - [Отправить к Блокам](#send-to-blocks)
-        - [Отправить в telegram](#send-to-telegram)
-        - [Отправить в SayIt](#send-to-sayit)
-        - [Отправить в pushover](#send-to-pushover)
-        - [Отправить email](#send-email)
+        - [Запросить URL](#request-url)
+    - [Отправить Блокам](#send-to-blocks)
+        - [Отправить к telegram](#send-to-telegram)
+        - [Отправить к SayIt](#send-to-sayit)
+        - [Отправить к pushover](#send-to-pushover)
+        - [Отправить к email](#send-email)
         - [Пользовательское sendTo block](#custom-sendto-block)
     - [Блоки даты и времени](#date-and-time-blocks)
         - [Сравнение времени](#time-comparision)
-        - [Сравнение текущего времени](#actual-time-comparision)
-        - [Получить фактический формат времени](#get-actual-time-im-specific-format)
-        - [Получить время астрономических событий на сегодня](#get-time-of-astro-events-for-today)
+        - [Сравнение фактического времени](#actual-time-comparision)
+        - [Получение фактического формата времени](#get-actual-time-im-specific-format)
+        - [Получение времени астрономических событий на сегодня](#get-time-of-astro-events-for-today)
     - [Преобразование блоков](#convert-blocks)
         - [Преобразование к числовому формату](convert-to-number)
         - [Преобразование к формату Boolean](convert-to-boolean)
@@ -39,7 +39,7 @@
         - [Преобразование JSON к object](convert-json-to-object)
         - [Преобразование object к JSON](convert-object-to-json)
     - [Триггер](#trigger)
-        - [Триггер по изменению состояний](#trigger-on-states-change)
+        - [Триггер по состояниям](#trigger-on-states-change)
         - [Триггер по изменению состояния](#trigger-on-state-change)
         - [Информация триггера](#trigger-info)
         - [Расписание](#schedule)
@@ -139,7 +139,7 @@ Blockly - визуальный редактор, который позволяе
 
 Вставьте в блок управления блок «Система => Получить значение состояния» и выберите в диалоговом окне объект «Движение», чтобы записать значение этого состояния в «Свет» * []:
 
-В блоке триггера есть специальная переменная ** значение "". Она всегда там определена, используйте эту переменную по своему усмотрению. Она содержит текущее значение состояния триггера, при этом вы также можете создать более простое правило, используя блок «Переменная =>элемент» и переименовать его в «значение».
+В блоке триггера есть специальная переменная ** значение "". Эта переменная всегда там определена, используйте ее по своему усмотрению. Данная переменная содержит текущее значение состояния триггера, при этом вы также можете создать более простое правило, используя блок «Переменная =>элемент» и переименовать его в «значение».
 
 ![Getting started 1](img/getting_started_1_2_en.png)
 
@@ -421,9 +421,9 @@ Blockly - визуальный редактор, который позволяе
 ### Комментарий
 ![Comment](img/system_comment_en.png)
 
-Прокомментируйте свой код, чтобы позже его лучше понять.
+Напишите комментарии к своему коду, чтобы позже было проще его понимать.
 
-Он ничего не делает, просто комментарий.
+Комментарий ничего не делает, это просто комментарий.
 
 ### Управление состоянием
 ![Control state](img/system_control_en.png)
@@ -653,7 +653,7 @@ ID объекта должен быть выбран из диалога, и з�
 - Отметка времени в миллисекундах с 1970.1.1 (имеет тип «Date object»)
 - Последнее изменение значения в миллисекундах с 1970.1.1 (имеет тип «Date object»)
 - Качество
-- Источник - имя экземпляра, который написал последнее значение, например "system.adapter.javascript.0"
+- Источник - имя экземпляра, который написал последнее значение, например, "system.adapter.javascript.0"
 
 Пример вывода времени последнего изменения значения:
 
@@ -740,20 +740,20 @@ ID объекта должен быть выбран из диалога, и з�
 </xml>
 ```
 
-## Actions Blocks
+## Исполнительные Блоки
 
-### Exec - execute
+### Exec - выполнение
 ![Exec - execute](img/action_exec_en.png)
 
-Executes defined command on system. Like someone has written this command in SSH console.
+Выполнение определенной команды в системе. По типу, когда кто-нибудь набирает такую команду при помощи консоли SSH.
 
-The command will be executed with permissions of user under which the iobroker was started.
+Выполнение команды определяется разрешениями пользователя, под которым запускался iobroker.
 
-If no outputs are required, they can be ignored:
+Если не требуется никаких выводов, то их можно проигнорировать:
 
 ![Exec - execute](img/action_exec_2_en.png)
 
-If parsing of outputs must be done:
+Если требуется анализ выходных данных:
 
 ![Exec - execute](img/action_exec_1_en.png)
 
@@ -790,109 +790,109 @@ If parsing of outputs must be done:
 </xml>
 ```
 
-By analysing of outputs 3 special variables will be created: 
-- result, consists normal output to the console (e.g. for "ls /opt" it consist "iobroker nodejs")
-- error object if command cannot be executed by javascript module
-- stderr, error output of executed program
+Анализируя выходные данные необходимо будет создать три специальные переменные: 
+- result, при успешном завершении результат выводится на консоль (например, для «ls / opt» он выглядит как «iobroker nodejs»)
+- error object, в случае, когда команда не может быть выполнена javascript модулем.
+- stderr, ошибка вывода выполняемой программы.
 
-Additionally if the log level is not "none", the same command will be sent to log.
+Кроме того, если уровень доступа к логу соответствует, то такая же команда будет отправлена в лог.
 
-### request URL
+### request URL- запросить URL
 ![request URL](img/action_request_en.png)
 
-Calls URL and give back the result.
+Запрашивает URL и возвращает результат.
 
-Example:
+Пример:
 
 ![request URL](img/action_request_1_en.png)
 
-By analysing of outputs 3 special variables will be created: 
-- result, consists body of the requested page
-- error, error description 
-- response (only for experts), special object and has type of [http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
+Анализируя выходные данные будет создано 3 специальных переменных: result, результат содержит тело запрашиваемой страницы
+- result, результат содержит тело запрашиваемой страницы
+- error, описание ошибки
+- response (только для профессионалов), ответ - специальный объект имеющий тип http.[http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
 
-If no outputs are required, they can be ignored. Just unset "with results" option.
+Если не требуется никаких выводов, то их можно проигнорировать. Путем отключения опции "с результатом".
 
-## Send to Blocks
+## Отправить Блокам
 
-### Send to telegram
+### Отправить к telegram
 ![Send to telegram](img/sendto_telegram_en.png)
 
-This block is used to send message to telegram client via telegram adapter.
+Данный блок используется для отправки сообщений в клиент telegram посредством адаптера telegram.
 
-Of course the telegram adapter must be installed and configured.
+Соответственно, адаптер telegram должен быть установлен и сконфигурирован.
 
-To send message to some specific instance, you should select the installed adapter instance (Normally telegram.0), elsewise message will be sent to all existing instances.
+При отправке сообщения какому-нибудь специализированному драйверу, вы должны выбрать установленный адаптер драйвера (обычно telegram.0), иначе сообщение будет отправлено всем существующим драйверам.
 
-Property *message* is mandatory and exactly this text will be sent to client. 
+Свойства *сообщения* являются обязательными, и именно этот текст будет отправлен клиенту.
 
-User name ID is optional and this is ID from [telegram](https://core.telegram.org/bots/api#user) (Unique identifier for user or bot).
+ID пользователя не является обязательным и этот ID из [telegram](https://core.telegram.org/bots/api#user) (Уникальный идентификатор пользователя или бота).
 
-Additionally if the log level is not "none", the same message will be sent to log.
+Кроме того, если уровень доступа к логу соответствует, то такая же команда будет отправлена в лог.
 
-### Send to SayIt
+### Отправить к  SayIt
 ![Send to SayIt](img/sendto_sayit_en.png)
 
-This block is used to send text to sayit instance to pronounce this text.
+Этот блок используется при отправке текста драйверу sayit для произношения этого текста.
 
-Of course the sayit adapter must be installed and configured.
+Соответственно, адаптер sayit должен быть установлен и сконфигурирован.
 
-To send message to some specific instance, you should select the installed adapter instance (Normally sayit.0), elsewise message will be sent to all existing instances.
+При отправке сообщения какому-нибудь специализированному драйверу, вы должны выбрать установленный адаптер драйвера (обычно sayit.0), иначе сообщение будет отправлено всем существующим драйверам.
 
-Property *message* is mandatory and exactly this text will be pronounced. 
+Свойства *сообщения* являются обязательными, и именно этот текст будет произнесен.
 
-You must check the language property. This will be used for text2speech engine. 
+Вы должны проверить свойство language. Так как оно применяется для движка text2speech.
 
-Volume is optional (normally from 0 to 100).
+Громкость необязательна (обычно от 0 до 100).
 
-Additionally if the log level is not "none", the same message will be sent to log.
+Кроме того, если уровень доступа к логу соответствует, то такое же сообщение будет отправлено в лог.
 
-### Send to pushover
+### Отправить к pushover
 ![Send to pushover](img/sendto_pushover_en.png)
 
-This block is used to send text to pushover client. You can read about pushover driver [here](https://github.com/ioBroker/ioBroker.pushover).
+Этот блок используется для отправки текста pushover клиенту. Про pushover драйвер вы можете прочесть [здесь](https://github.com/ioBroker/ioBroker.pushover).
 
-Of course the pushover adapter must be installed and configured.
+Соответственно, адаптер pushover должен быть установлен и сконфигурирован.
 
-To send message to some specific instance, you should select the installed adapter instance (Normally pushover.0), elsewise message will be sent to all existing instances.
+При отправке сообщения какому-нибудь специализированному драйверу, вы должны выбрать установленный адаптер драйвера (обычно pushover.0), иначе сообщение будет отправлено всем существующим драйверам.
 
-Property *message* is mandatory and exactly this text will be sent to client. 
+Свойства *сообщения* являются обязательными и именно этот текст будет отправлен клиенту.
 
-All other properties are optional and you can read bout them [here](https://pushover.net/api):
+Все остальные свойства необязательны, об этих свойствах вы можете прочесть [здесь](https://pushover.net/api):
 
-- *device ID* - your user's device name to send the message directly to that device, rather than all of the user's devices (multiple devices may be separated by a comma)
-- *title* - your message's title, otherwise your app's name is used
-- *URL* - a supplementary URL to show with your message
-- *URL title* - a title for your supplementary URL, otherwise just the URL is shown
-- *priority* - send as -2 to generate no notification/alert, -1 to always send as a quiet notification, 1 to display as high-priority and bypass the user's quiet hours, or 2 to also require confirmation from the user
-- *time in ms* - a Unix timestamp of your message's date and time to display to the user, rather than the time your message is received by our API
-- *sound* - the name of one of the sounds supported by device clients to override the user's default sound choice
+- *ID устройства* - пользовательское имя вашего устройства для отправки сообщения прямо на это устройство, а не на все устройства пользователя (несколько устройств могут быть разделены запятой) 
+- *заголовок* - заголовок вашего сообщения, иначе используется название вашего приложения
+- *URL* - дополнительный URL для отображения вашего сообщения
+- *URL заголовок* - заголовок для вашего дополнительного URL-адреса, иначе просто указывается URL-адрес
+- *приоритет* - -2 при отправке без уведомлений/предупреждений, -1 всегда отправлять как скрытое уведомление, 1 при отображении в качестве высокоприоритетного, обходя бесшумный режим пользователя, или 2 требовать подтверждения от пользователя
+- *время в мс* - временная метка Unix даты и времени вашего сообщения для отображения пользователю, а не то время, когда ваше сообщение было получено нашим API
+- *звук* - наименование одного из звуков, поддерживаемых устройством клиента, чтобы не использовать выбор звука по умолчанию.
 
-Additionally if the log level is not "none", the same message will be sent to log.
+Кроме того, если уровень доступа к логу соответствует, то такое же сообщение будет отправлено в лог.
 
-### Send email
+### Отправить к email
 ![Send to email](img/sendto_email_en.png)
 
-This block is used to send text as email.
+Этот блок используется для отправки текста по электронной почте.
 
-Of course the email adapter must be installed, configured and tested.
+Соответственно, адаптер email должен быть установлен и сконфигурирован.
 
-To send message to some specific instance, you should select the installed adapter instance (Normally email.0), elsewise message will be sent to all existing instances.
+При отправке сообщения какому-нибудь специализированному драйверу, вы должны выбрать установленный адаптер драйвера (обычно email.0), иначе сообщение будет отправлено всем существующим драйверам.
 
-Property *text* is mandatory and exactly this text will be sent to client. 
+Свойства *текста* являются обязательными и именно этот текст будет отправлен клиенту.
 
-Of course the destination (*to*) must be filled with valid email address.
+Несомненно, адресат (to) должен быть заполнен действительным адресом электронной почты.
 
-You can attach up to files (normally images) to email. To use images in the text, you must change format to HTML (check "Send as HTML" option) and text could look like:
+Вы можете прикрепить файлы (обычно изображения) к электронной почте. Чтобы использовать изображения в тексте, вы должны изменить формат на HTML (установите флажок «Отправить как HTML»), и текст будет выглядеть так:
 
 ```
 <p>Embedded image 1: <img src='cid:file1'/></p>
 <p>Embedded image 2: <img src='cid:file2'/></p>
 ```
 
-You can refer to files as ```<img src='cid:file1'/>```. "file1" and "file2" are reserved IDs and cannot be changed.
+Вы можете ссылаться на файлы так ```<img src='cid:file1'/>```. «File1» и «file2» являются зарезервированными идентификаторами и не могут быть изменены.
 
-"file name" must consist full path to image on disk.
+«Имя файла» должно содержать полный путь к изображению на диске.
 
 ![Send to email](img/sendto_email_1_en.png)
 
@@ -930,22 +930,22 @@ You can refer to files as ```<img src='cid:file1'/>```. "file1" and "file2" are 
 </block>
 ```
 
-Additionally if the log level is not "none", the same message will be sent to log.
+Кроме того, если уровень доступа к логу соответствует, то такое же сообщение будет отправлено в лог.
 
-### Custom sendTo block
+### Пользовательское sendTo block
 ![Custom sendTo block](img/sendto_custom_en.png)
 
-This is just a help block to send internal system message (sendTo) to any adapter. 
+Данный блок вспомогательный для отправки внутреннего системного сообщения (sendTo) любому адаптеру.
 
-Of course you can use custom function block to do anything crazy, and to send messages too.
+Конечно, вы также можете использовать пользовательский функциональный блок, чтобы сделать что-нибудь беспредельное, и также отправлять сообщения.
 
-You can define your own parameters for sendTo command:
+Вы можете определить свои собственные параметры для команды sendTo:
 
 ![Custom sendTo block](img/sendto_custom_1_en.png)
 
-Read more [here](https://github.com/ioBroker/ioBroker.javascript#sendto) about "sendTo".
+Узнать больше можно [здесь](https://github.com/ioBroker/ioBroker.javascript#sendto) о "sendTo".
 
-Example how to send SQL query to sql adapter:
+Пример отправки SQL-запроса к sql адаптеру:
 
 ![Custom sendTo block](img/sendto_custom_2_en.png)
 
@@ -999,7 +999,7 @@ Example how to send SQL query to sql adapter:
 </xml>
 ```
 
-If you will use only one parameter with empty name, so no structure will created, like here:
+Если у вас будет хоть один параметр с пустым именем, то тогда структура не будет создана, как здесь:
 
 ```
 var obj, result;
@@ -1019,7 +1019,7 @@ sendTo("sql.0", "query", 'SELECT * FROM datapoints', function (result) {
 console.log("sql.0: " + "");
 ```
 
-Or how to request history from SQL adapter:
+Или, как запросить историю из SQL-адаптера:
 
 ![Custom sendTo block](img/sendto_custom_3_en.png)
 
@@ -1089,7 +1089,7 @@ Or how to request history from SQL adapter:
 </xml>
 ```
 
-Generated javascript code:
+Сгенерированный код javascript:
 ```
 var obj, end, result;
 
@@ -1111,68 +1111,68 @@ sendTo("sql.0", "getHistory", {
   });
 ```
 
-If you will start value with "{" it will be interpreted as JSON string. Use double quotes in string.
+Если вы начнете значение с "{", это будет интерпретироваться как строка JSON. Используйте двойные кавычки в строке.
 
-## Date and Time blocks
-### Time comparision
+## Блоки даты и времени
+### Сравнение времени
 ![Time comparision](img/datetime_compare_ex_en.png)
 
-If used operator "between" or "not between", the block looks like this:
+Если используется оператор «между» или «не между», блок выглядит так:
 
 ![Time comparision](img/datetime_compare_ex_1_en.png)
 
-You can specify a time, which must be compared. Block expects the time as "Date object".
+Вы можете указать время, которое необходимо сравнить. Блок предполагает, что время это «Date object».
 
 ![Time comparision](img/datetime_compare_ex_2_en.png)
 
-There are following compare modes:
+Существуют следующие режимы сравнения:
 
-- less than, check if actual time less than specified time.
-- equal to or less than
-- greater than
-- equal to or greater than
-- equal to
-- between, check if the time between some day times. 
-    - E.g. if time must be between 12:00 and 20:00. It will be checked if actual time grater or equal than 12:00 and less than 20:00. 20:00 will return false.
-    - or for instance between 21:00 and 8:00. In the last case it will be checked if time greater or equal to 21:00 or less than 8:00.
+- меньше чем, проверьте, действительно ли текущее время меньше указанного времени.
+- равно или меньше
+- больше чем
+- равно или больше
+- равно
+- между, проверяется попало ли время в некоторый промежуток. 
+    - например, если время должно быть между 12:00 и 20:00. Проверяется фактическое время больше или равно 12:00 и меньше, чем 20:00. 20:00 вернет false.
+    - или, например, для случая с 21:00 до 8:00. В данном случае будет проверено, фактическое время больше или равно 21:00 или меньше 8:00.
 
-- not between, if the time is not in the given period of the day time. If the time less than start and greater or equal to end. (if start time is greater than end time, it will be checked if the time greater or equal than end and smaller than start)
+- не между, в случае если время не попадает в заданный промежуток дневного времени. Если время меньше начала и больше или равно концу (если время начала больше времени окончания, то оно проверяется на следующее условие - время больше или равно, чем конец и меньше, чем начало).
 
-Following time formats are valid:
+Действуют следующие форматы времени:
 - YYYY-MM-DD hh:mm:ss
 - YYYY-MM-DD hh:mm
 - hh:mm:ss
 - hh:mm
 
-### Actual time comparision
+### Сравнение фактического времени
 ![Actual time comparision](img/datetime_compare_en.png)
 
-This block is used to compare the day time with actual time. It has the same logic as [Time comparision](#time-comparision), but limits cannot be a blocks and it compares only actual time. (for compatibility with old versions)
+Этот блок используется для сравнения дневного времени с фактическим временем. Он имеет ту же логику, что и [Сравнение времени](#time-comparision), но ограничения не могут быть в виде блоков, и данный блок сравнивает только фактическое время. (для совместимости со старыми версиями)
 
-### Get actual time im specific format
+### Получение фактического формата времени
 ![Get actual time im specific format](img/datetime_actualtime_en.png)
 
-Returns the actual time in some specified format.
+Возвращает текущее время в определенном формате.
 
-Following formats are supported:
+Поддерживаются следующие форматы:
 
-- milliseconds - returns only milliseconds of current second from 0 to 999 (not epoch milliseconds). To get epoch milliseconds use "Date object";        
-- seconds - returns only seconds of current minute from 0 to 59,            
-- seconds in day - returns number of seconds from start of the day (0 to 24 * 3600 - 1),            
-- minutes - returns minutes of current hour from 0 to 59,
-- minutes in day - returns number of minutes from the day start (0 to 24 * 60 - 1),            
-- hours - returns hours of current day from 0 to 23,
-- day of month - get day of month from 1 to 31,       
-- month as number - get month as number from 1 to 12,
-- month as text - get month as text. Language must be specified.      
-- month as short text - get month as text: Jan, Feb,  Mar,  Apr, May, June, July, Aug, Sept, Oct, Nov, Dec. Language must be specified.     
-- short year - Year from 0 to 99, e.g for 2016 the result will be 16.         
-- full year - Full year: 2016
-- week day text - Get day of week as text.
-- short week day - Get day of week as short text: Su, Mo, Tu, We, Th, Fr, Sa.
-- week day as number - Day of week as number from 1 (monday) to 7 (sunday).  
-- custom format - You can specify your own [format](https://github.com/ioBroker/ioBroker.javascript#formatdate).
-- Date object - Returns date and time as number of milliseconds from start of epoch (1970.1.1 00:00:00.000Z GMT). This is always GMT.        
+- миллисекунды - возвращает только миллисекунды текущей секунды от 0 до 999 (не миллисекунды эпохи). Чтобы получить миллисекунды эпохи, используйте «Date object»;       
+- секунды - возвращает секунды текущей минуты от 0 до 59,         
+- секунд в дне - возвращает количество секунд от начала дня (от 0 до 24 * 3600 - 1),           
+- минуты - возвращает минуты текущего часа от 0 до 59,
+- минут в дне - возвращает количество минут от начала дня (от 0 до 24 * 60 - 1),         
+- часы - возвращает часы текущего дня от 0 до 23,
+- дней в месяце - получить день месяца от 1 до 31,     
+- месяц как число - получить месяц как число от 1 до 12,
+- месяц как текст - получить месяц как текст. Язык должен быть указан.  
+- месяц как короткий текст - получить месяц как короткий текст: Янв, Фев, Мар, Апр, Май, Июнь, Июль, Авг, Сен, Окт, Ноя, Дек. Язык должен быть указан.    
+- короткий год - год от 0 до 99, например, в 2016 году результат будет 16.        
+- полный год - полный год: 2016
+- день недели текстом - получить день недели в виде текста.
+- день недели как короткий текст - получить день недели как короткий текст: Вс, Пн, Вт, Ср, Чт, Пт, Сб.
+- день недели как число - день недели как число от 1 (понедельник) до 7 (воскресенье).  
+- пользовательский формат - вы можете указать свой собственный [формат](https://github.com/ioBroker/ioBroker.javascript#formatdate).
+- Date object - возвращает дату и время как количество миллисекунд с начала эпохи (1970.1.1 00: 00: 00.000Z GMT). Это всегда GMT.        
 - yyyy.mm.dd - 2016.09.14
 - yyyy/mm/dd - 2016/09/14
 - yy.mm.dd - 16.09.14            
@@ -1191,76 +1191,76 @@ Following formats are supported:
 - hh:mm:ss - 12:00:00         
 - hh:mm:ss.sss - 12:00:00.000    
 
-### Get time of astro events for today
+### Получение времени астрономических событий на сегодня
 ![Get time of astro events for today](img/datetime_astro_en.png)
 
-Returns the time in current day of some specific astrological event.
+Возвращает время текущего дня в виде определенного астрономического события. 
 
-The attribute "offset" is the offset in minutes. It can be negative too, to define time before astro event.
+Атрибут «offset» это смещение в минутах. Оно может быть и отрицательным, при определении времени до астрономического события.
   
-Following values can be used as attribute in astro-function:
+Следующие значения могут использоваться в качестве атрибута астро-функции:
   
-- sunrise: sunrise (top edge of the sun appears on the horizon)
-- sunriseEnd: sunrise ends (bottom edge of the sun touches the horizon)
-- goldenHourEnd: morning golden hour (soft light, best time for photography) ends
-- solarNoon: solar noon (sun is in the highest position)
-- goldenHour: evening golden hour starts
-- sunsetStart: sunset starts (bottom edge of the sun touches the horizon)
-- sunset: sunset (sun disappears below the horizon, evening civil twilight starts)
-- dusk: dusk (evening nautical twilight starts)
-- nauticalDusk: nautical dusk (evening astronomical twilight starts)
-- night: night starts (dark enough for astronomical observations)
-- nightEnd: night ends (morning astronomical twilight starts)
-- nauticalDawn: nautical dawn (morning nautical twilight starts)
-- dawn: dawn (morning nautical twilight ends, morning civil twilight starts)
-- nadir: nadir (darkest moment of the night, sun is in the lowest position)
+- sunrise: восход (верхний край солнца появляется на горизонте)
+- sunriseEnd: восход солнца заканчивается (нижний край солнца касается горизонта)
+- goldenHourEnd: утренний золотой час (мягкий свет, лучшее время для фотографии) заканчивается
+- solarNoon: солнечный полдень (солнце находится в самом высоком положении)
+- goldenHour: начинается вечерний золотой час
+- sunsetStart: начинается закат (нижний край солнца касается горизонта)
+- sunset: закат (солнце исчезает за горизонтом, начинаются вечерние сумерки)
+- dusk: сумерки (начало сумерек)
+- nauticalDusk: реальные сумерки (вечерние астрономические сумерки)
+- night: ночь начинается (довольное темное время для астрономических наблюдений)
+- nightEnd: ночь заканчивается (утренние астрономические сумерки начинаются)
+- nauticalDawn: реальный рассвет (начинаются утренние реальные сумерки)
+- dawn: рассвет (утренние реальные сумерки заканчиваются, начинаются утренние фактические сумерки)
+- nadir: надир (самый темный момент ночи, солнце находится в самом низком положении)
 
-The return value has type "Date Object", what is just the number of milliseconds from 1970.01.01.
+Возвращаемое значение имеет тип «Date Object», то есть число миллисекунд от 1970.01.01.
 
-**Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
+**Примечание:** для использования «астро-функции» в настройках адаптера javascript должны быть определены «широта» и «долгота».
 
-## Convert blocks
-Sometimes it is required to convert value into other type. Following blocks allow to convert value into specific types.
+## Преобразование блоков
+Иногда требуется преобразовать значение в другой тип. Следующие блоки позволяют преобразовывать значение в определенные типы.
 
-### Convert to number
+### Преобразование к числовому формату
 ![Convert to number](img/convert_tonumber_en.png)
 
-Convert value to number (float).
+Преобразование к числовому формату  (с плавающей запятой).
 
-### Convert to boolean
+### Преобразование к формату Boolean
 ![Convert to boolean](img/convert_toboolean_en.png)
 
-Convert value to boolean (true or false).
+Преобразование к формату Boolean (правда или ложь).
 
-### Convert to string
+### Преобразование в строку
 ![Convert to string](img/convert_tostring_en.png)
 
-Convert value to string.
+Преобразует значение в строку.
 
-### Get type of variable
+### Получение типа переменной
 ![Get type of variable](img/convert_typeof_en.png)
 
-Get type of value. Type can be: boolean, number, string, object.
+Получить тип значения. Тип может быть: boolean, number, string, object.
 
-### Convert to date/time object
+### Преобразование в date/time object
 ![Convert to date/time object](img/convert_todate_en.png)
 
-Convert value to "Date object". Read [here](#get-actual-time-im-specific-format), what the "Date object" is.
+Преобразовать значение в "Date object". Прочтите [здесь](#get-actual-time-im-specific-format), что такое "Date object".
 
-### Convert date/time object to string
+### Преобразование date/time object к string
 ![Convert to boolean](img/convert_fromtime_en.png)
 
-Convert "Date object" into string. It has the same format options as [Get actual time im specific format](#get-actual-time-im-specific-format).
+Преобразовать «Date object» в строку. Данное преобразование имеет те же параметры форматирования, что и [Получить фактический формат времени](#get-actual-time-im-specific-format).
 
-### Convert JSON to object
+### Преобразование JSON к object
 ![Convert JSON to object](img/convert_json2object_en.png)
 
-Convert JSON string into javascript object. If an error occurs, the empty object will be returned. (only for experts)
+Преобразует строку JSON в объект javascript. Если произойдет ошибка, будет возвращен пустой объект. (только для профессионалов)
 
-### Convert object to JSON
+### Преобразование object к JSON
 ![Convert object to JSON](img/convert_object2json_en.png)
 
-Convert Javascript object to JSON string. If prettify option is selected the result string looks like:
+Преобразуйте объект Javascript в строку JSON. Если выбран параметр prettify, результирующая строка выглядит так:
 
 ```
 {
@@ -1269,22 +1269,22 @@ Convert Javascript object to JSON string. If prettify option is selected the res
 }
 ```
 
-if not:
+если нет:
 
 ```
 {"a": 1, "b": 2}
 ```
 
-## Trigger
+## Триггер
 
-### Trigger on states change
+### Триггер по состояниям
 ![Trigger on states change](img/trigger_trigger_ex_en.png)
 
-This block executes some action if state of given objects changed or updated. This is the main block to build interactions between different states and accordingly systems.
+Данный блок выполняет некоторое действие, если состояние заданных объектов изменено или обновлено. Это основной блок для построения взаимодействия между различными состояниями и, соответственно, системами.
 
-With this block you can bind different states together or send message or email on value change.
+При помощи этого блока вы можете собрать различные состояния и отправить сообщение или email по изменению значения.
 
-Typical usage of block:
+Типовое использование блока:
 
 ![Trigger on states change](img/trigger_trigger_ex_1_en.png)
 
@@ -1320,13 +1320,13 @@ Typical usage of block:
 </xml>
 ```
 
-You can define as many ObjectIDs as you want via extension dialog:
+Вы можете определить столько идентификаторов ObjectID, сколько хотите, через диалоговое окно расширения:
 
 ![Trigger on states change](img/trigger_trigger_ex_2_en.png)
 
-If only one object ID is used so special variables are available in the statement block:
-- value - actual value of state
-- oldValue - old value of state
+Если используется только один ID объекта, то тогда будут доступны следующие специальные переменные в заявленном блоке:
+- value - фактическое значение состояния
+- oldValue - устаревшее значение состояния
 
 ![Trigger on states change](img/trigger_trigger_ex_3_en.png)
 
@@ -1376,44 +1376,44 @@ If only one object ID is used so special variables are available in the statemen
 </block>
 ```
 
-elsewise if more than one object ID is used for trigger, you can access value and old value via [Trigger info](#trigger-info).
+В противном случае, если для триггера используется более одного ID объекта, вы можете получить доступ к значению и устаревшему значению через [Информация триггера](#trigger-info).
 
-### Trigger on state change
+### Триггер по изменению состояния
 ![Trigger on state change](img/trigger_trigger_en.png)
 
-This is the same block as "Trigger on states change", but with no possibility to use multiple object IDs for triggering (for versions compatibility).
+Это такой же блок, что и «Триггер по состояниям», но без возможности использования нескольких ID объектов при срабатывании (для совместимости версий).
 
 
-### Trigger info
+### Информация триггера
 ![Trigger info](img/trigger_object_id_en.png)
 
-Get information about value, timestamp or ID of the state, that triggered the trigger.
+Получение информации о значении, метке времени или ID состояния, которое вызвало срабатывание триггера.
 
-This block can be used only inside of ["Trigger on states change"](#trigger-on-states-change) or ["Trigger on state change"](#trigger-on-state-change) blocks.
+Данный блок может использоваться только внутри блоков ["Триггер по состояниям"](#trigger-on-states-change) или ["Триггер по изменению состояния"](#trigger-on-state-change).
 
-Following information can be accessed:
+Доступна следующая информация:
 
-- object ID - ID of state, that fired the trigger                
-- name - name of state from common.name                   
-- description - description of state from common.desc
-- channel ID - ID of channel to which belongs the state. If not channel there, it will be null 
-- channel name - name of channel to which belongs the state. If not channel there, it will be null  
-- device ID - ID of device to which belongs the state. If not channel there, it will be null 
-- device name - name of device to which belongs the state. If not channel there, it will be null                
-- state value - actual value of fired state
-- state timestamp - actual timestamp as Date object
-- state quality - actual quality code of value
-- origin of value - name of instance that cause the change
-- is command or update - is it command (ack=false) or update (ack=true)
-- last change of state - timestamp of last change of this value
-- previous value - previous value of this state, before the trigger fired
-- previous timestamp - previous timestamp of this state, before the trigger fired
-- previous quality - previous quality of this state, before the trigger fired
-- previous origin -  previous origin of this state, before the trigger fired
-- previous command or update - previous type of this value, before the trigger fired
-- previous last change - previous "last changed value" of this state, before the trigger fired
+- object ID - ID состояния, которое запускает триггер               
+- name - наименование состояния из common.name                
+- description - описание состояния из common.desc
+- channel ID - ID канала, которому принадлежит состояние. Если канал отсутствует, то он будет нулевым. 
+- channel name - имя канала, которому принадлежит состояние. Если канал отсутствует, то он будет нулевым.
+- device ID - ID устройства, которому принадлежит состояние. Если канал отсутствует, то он будет нулевым.
+- device name - имя устройства, которому принадлежит состояние. Если канал отсутствует, то он будет нулевым.        
+- state value - фактическое значение состояния сработки 
+- state timestamp - фактическая временная метка в виде Date object
+- state quality - фактическое качество кода значения
+- origin of value - имя объекта, вызывающего изменение
+- is command or update - это команда (ack = false) или update (ack = true)
+- last change of state - время последнего изменения значения
+- previous value - предыдущее значение состояния до срабатывания триггера
+- previous timestamp - предыдущая временная метка этого состояния до срабатывания триггера
+- previous quality - предыдущее качество этого состояния до срабатывания триггера
+- previous origin -  предыдущее возникновение этого состояния, до того, как триггер сработал
+- previous command or update - предыдущий тип этого значения, до срабатывания триггера
+- previous last change - предыдущее «последнее измененное значение» этого состояния до срабатывания триггера
 
-Typical usage:
+Типовое использование:
 
 ![Trigger info](img/trigger_object_id_1_en.png)
 
@@ -1463,61 +1463,61 @@ Typical usage:
 </block>
 ```
 
-### Schedule
+### Расписание
 ![Schedule](img/trigger_schedule_en.png)
 
-This is second main block for automation after ["Trigger on states change"](#trigger-on-states-change). This block lets execute some actions periodically.
+Это второй основной блок для автоматизации после ["Триггер по состояниям"](#trigger-on-states-change). Этот блок позволяет выполнять некоторые действия периодически.
 
-The definition of schedule rule will be done in very well documented CRON [format](https://en.wikipedia.org/wiki/Cron). With extension, that seconds can be defined too. 
-If seconds should be used they must be defined as very first parameter of CRON rule and rule will have 6 parts.
+Описание правила построения расписания будет выполнено в хорошо документированном CRON [формате](https://en.wikipedia.org/wiki/Cron).В расширении можно определить и секунды. 
+Если необходимо использовать секунды, то они должны быть определены как самый первый параметр правила CRON, и правило будет состоять из 6 частей.
 
-Generally CRON rule consist of 5 or 6 parts:
-- seconds rules (optional)
-- minutes rules
-- hours rules
-- day of month rules
-- month's rules
-- and day of week rules.
+В общем CRON правило состоит из 5 или 6 частей:
+- правила по секундам (необязательно)
+- правила по минутам
+- правила по часам
+- правила по дням месяца
+- правила по месяцам
+- правила по дням недели.
 
-For every part following formats are allowed:
-- \* - fire every (second, minute, hour, ...)
-- X (e.g. 5) - fire only in this second, minute, hour...
-- from-to (e.g 1-9) - fire only in this interval
-- \*/X (e.g. \*/5) - fire every X seconds, minutes... In case of "\*/5" for hours the trigger will fire on 0, 5, 10, 15 and on 20 hours.
-- numbers and intervals can be combined by comma (e.g 1,3,4-6). Do not make spaces between numbers, because space is delimiter for rule's parts.
+Для каждой части разрешены следующие форматы:
+- \* - сработка каждую (секунду, минуту, час, ...)
+- X (например, 5) - сработка только в эту секунду, минуту, час ...
+- from-to (например, 1-9) - сработка только в этом интервале
+- \*/X (например, * / 5) - срабатывать каждые X секунд, минут ... В случае  "\*/5"  в течение нескольких часов триггер будет срабатывать в 0, 5, 10, 15 и в 20 часов.
+- числа и интервалы могут быть объединены запятой (например, 1,3,4-6). Не делайте пробелов между числами, потому что пространство является разделителем для частей правила.
 
-\*/10 \* \* \* 6,7 - fire every 10 minutes on saturday and sunday.
+\*/10 \* \* \* 6,7 - срабатывать каждые 10 минут в субботу и воскресенье.
 
-\*/30 \* \* \* \* \* - fire every 30 seconds.
+\*/30 \* \* \* \* \* - срабатывать каждые 30 секунд.
 
 ```
- ┌───────────── min (0 - 59)
- │ ┌────────────── hour (0 - 23)
- │ │ ┌─────────────── day of month (1 - 31)
- │ │ │ ┌──────────────── month (1 - 12)
- │ │ │ │ ┌───────────────── day of week (0 - 6) (0 to 6 are Sunday to Saturday; 7 is also Sunday)
+ ┌───────────── мин (0 - 59)
+ │ ┌────────────── час (0 - 23)
+ │ │ ┌─────────────── день месяца (1 - 31)
+ │ │ │ ┌──────────────── месяц (1 - 12)
+ │ │ │ │ ┌───────────────── день недели (0 - 6) (0 to 6 от Воскресенья до Субботы; 7 также Воскресенье)
  │ │ │ │ │
  │ │ │ │ │
  │ │ │ │ │
- * * * * *  schedule
+ * * * * *  расписание
 ```
 
-or if seconds used:
+или при использовании секунд:
 
 ```
- ┌───────────── seconds (0 - 59)
- │ ┌───────────── min (0 - 59)
- │ │ ┌────────────── hour (0 - 23)
- │ │ │ ┌─────────────── day of month (1 - 31)
- │ │ │ │ ┌──────────────── month (1 - 12)
- │ │ │ │ │ ┌───────────────── day of week (0 - 6) (0 to 6 are Sunday to Saturday; 7 is also Sunday)
+ ┌───────────── секунды (0 - 59)
+ │ ┌───────────── мин (0 - 59)
+ │ │ ┌────────────── час (0 - 23)
+ │ │ │ ┌─────────────── день месяца (1 - 31)
+ │ │ │ │ ┌──────────────── месяц (1 - 12)
+ │ │ │ │ │ ┌───────────────── день недели (0 - 6) (0 to 6 от Воскресенья до Субботы; 7 также Воскресенье)
  │ │ │ │ │ │
  │ │ │ │ │ │
  │ │ │ │ │ │
- * * * * * *  schedule
+ * * * * * *  расписание
 ```
 
-But there is a good help for you to build such a rules. By clicking on rule the CRON dialog will be opened and you can specify by mouse your rule.
+Но вы также можете построить и свои такие же правила. Нажав на правило, откроется диалог CRON, и вы можете указать мышью свое правило.
 
 ![Schedule](img/trigger_schedule_1_en.png)
 
