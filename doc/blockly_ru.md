@@ -44,8 +44,8 @@
         - [Информация триггера](#trigger-info)
         - [Расписание](#schedule)
         - [Триггер по астрономическому событию](#trigger-on-astro-event)
-        - [Присвоение имени расписанию](#named-schedule)
-        - [Очистить расписание](#clear-schedule)
+        - [Именованное расписание](#named-schedule)
+        - [Очистка расписания](#clear-schedule)
         - [CRON диалог](#cron-dialog)
         - [CRON правило](#cron-rule)
     - [Таймауты](#timeouts)
@@ -55,7 +55,7 @@
         - [Остановить выполнение по интервалу](#stop-execution-by-interval)
     - [Логические](#logic)
         - [Блок If else](#if-else-block)
-        - [Блоки сравнения](#comparision-block)
+        - [Блок сравнения](#comparision-block)
         - [Логический блок AND/OR](#logical-and-or-block)
         - [Блок отрицания](#negation-block)
         - [Логическое значение TRUE/FALSE](#logical-value-true-false)
@@ -78,12 +78,12 @@
         - [Округленное, приближенное, действительное значение](#round-floor-ceil-value)
         - [Операции со списком значений: сумма, минимум, максимум, среднее, медиана, мода, отклонения, случайное значение](#operations-on-the-list-of-values-sum-min-max-average-median-modes-deviation-random-item)
         - [Модуль](#modulus)
-        - [Установить для значения минимум или максимум](#limit-some-value-by-min-and-max)
+        - [Установить предел для значения по минимуму и максимуму](#limit-some-value-by-min-and-max)
         - [Случайное значение от 0 до 1](#random-value-from-0-to-1)
         - [Случайное значение между минимальным или максимальным](#random-value-between-min-and-max)
     - [Текст](#text)
         - [Строковое значение](#string-value)
-        - [Объединить строки](#concatenate-strings)
+        - [Объединение строк](#concatenate-strings)
         - [Добавить строку в переменную](#append-string-to-variable)
         - [Длина строки](#length-of-string)
         - [Строка пустая](#is-string-empty)
@@ -101,7 +101,7 @@
         - [Найти позицию элемента в списке](#Find-position-of-item-in-list)
         - [Получить элемент в списке](#get-item-in-list)
         - [Указать элемент в списке](#set-item-in-list)
-        - [Получить дочерний список](#get-sublist-of-list)
+        - [Получить подсписок](#get-sublist-of-list)
         - [Преобразование текста в список и наоборот](#convert-text-to-list-and-vice-versa)
     - [Цвет](#colour)
         - [Цветовое значение](#colour-value)
@@ -114,7 +114,7 @@
     - [Функции](#functions)
         - [Создать функцию из блоков без возвращения значения](#create-function-from-blocks-with-no-return-value)
         - [Создать функцию из блоков с возвращением значения](#create-function-from-blocks-with-return-value)
-        - [Вернуть значение в функции](#return-value-in-function)
+        - [Вернуть значение в функцию](#return-value-in-function)
         - [Создать пользовательскую функцию без возвращения значения](#create-custom-function-with-no-return-value)
         - [Создать пользовательскую функцию с возвращением значения](#create-custom-function-with-return-value)
         - [Вызов функции](#call-function)
@@ -525,7 +525,7 @@ ID объекта должен быть выбран из диалога, и з�
 ### Обновление состояния
 ![Update state](img/system_update_en.png)
 
-Этот блок похож на [control block](#control-state), единственным отличием является то, что он только обновляет значение. Никаких команд по управлению техническими средствами не отправляется.
+Этот блок похож на [Управление состоянием](#control-state), единственным отличием является то, что он только обновляет значение. Никаких команд по управлению техническими средствами не отправляется.
 
 Пример типового применения:
 
@@ -569,7 +569,7 @@ ID объекта должен быть выбран из диалога, и з�
 ### Запись состояния
 ![Write state](img/system_write_en.png)
 
-Универсальный блок записи,  может делать то же самое, что и ["Update state"](#update-state) и ["Control state"](#control-state) совместно. 
+Универсальный блок записи,  может делать то же самое, что и ["Обновление состояния"](#update-state) и ["Управление состоянием"](#control-state) совместно. 
 
 Но в отличии от них вы можете определить Object ID и задать задержку с другими блоками, чтобы ваш скрипт стал более универсальным.
 
@@ -791,7 +791,7 @@ ID объекта должен быть выбран из диалога, и з�
 ```
 
 Анализируя выходные данные необходимо будет создать три специальные переменные: 
-- result, при успешном завершении результат выводится на консоль (например, для «ls / opt» он выглядит как «iobroker nodejs»)
+- result, при успешном завершении результат выводится на консоль (например, для «ls/opt» он выглядит как «iobroker nodejs»)
 - error object, в случае, когда команда не может быть выполнена javascript модулем.
 - stderr, ошибка вывода выполняемой программы.
 
@@ -1202,17 +1202,17 @@ sendTo("sql.0", "getHistory", {
   
 - sunrise: восход (верхний край солнца появляется на горизонте)
 - sunriseEnd: восход солнца заканчивается (нижний край солнца касается горизонта)
-- goldenHourEnd: утренний золотой час (мягкий свет, лучшее время для фотографии) заканчивается
-- solarNoon: солнечный полдень (солнце находится в самом высоком положении)
-- goldenHour: начинается вечерний золотой час
-- sunsetStart: начинается закат (нижний край солнца касается горизонта)
-- sunset: закат (солнце исчезает за горизонтом, начинаются вечерние сумерки)
-- dusk: сумерки (начало сумерек)
-- nauticalDusk: реальные сумерки (вечерние астрономические сумерки)
-- night: ночь начинается (довольное темное время для астрономических наблюдений)
-- nightEnd: ночь заканчивается (утренние астрономические сумерки начинаются)
-- nauticalDawn: реальный рассвет (начинаются утренние реальные сумерки)
-- dawn: рассвет (утренние реальные сумерки заканчиваются, начинаются утренние фактические сумерки)
+- goldenHourEnd: конец «золотого часа» (мягкий свет, наиболее подходящее время для фотографии)
+- solarNoon: солнечный полдень (солнце находится в наивысшей точке)
+- goldenHour: начало «золотого часа»
+- sunsetStart:  начало заката (нижний край солнца касается горизонта)
+- sunset: закат (солнце полностью заходит за горизонт, начинаются вечерние гражданские сумерки)
+- dusk: начало вечерних навигационных сумерек (время, когда уже достаточно темно, но всё еще можно ориентироваться по горизонту в море)
+- nauticalDusk:  начало вечерних астрономических сумерек (визуально темно, но недостаточно для астрономических наблюдений)
+- night: начало ночи (достаточно темно для большинства астрономических наблюдений)
+- nightEnd: конец ночи (и начало утренних астрономических сумерек)
+- nauticalDawn: начало утренних навигационных сумерек
+- dawn: утренняя заря (начало утренних гражданских сумерек)
 - nadir: надир (самый темный момент ночи, солнце находится в самом низком положении)
 
 Возвращаемое значение имеет тип «Date Object», то есть число миллисекунд от 1970.01.01.
@@ -1521,42 +1521,43 @@ sendTo("sql.0", "getHistory", {
 
 ![Schedule](img/trigger_schedule_1_en.png)
 
-### Trigger on astro event
+### Триггер по астрономическому событию
 ![Schedule](img/trigger_astro_en.png)
 
-Execute some action on astrological event. Following events are possible:
+Выполнение некоторых действий по астрологическому событию. Возможны следующие события:
 
-- sunrise: sunrise (top edge of the sun appears on the horizon)
-- sunriseEnd: sunrise ends (bottom edge of the sun touches the horizon)
-- goldenHourEnd: morning golden hour (soft light, best time for photography) ends
-- solarNoon: solar noon (sun is in the highest position)
-- goldenHour: evening golden hour starts
-- sunsetStart: sunset starts (bottom edge of the sun touches the horizon)
-- sunset: sunset (sun disappears below the horizon, evening civil twilight starts)
-- dusk: dusk (evening nautical twilight starts)
-- nauticalDusk: nautical dusk (evening astronomical twilight starts)
-- night: night starts (dark enough for astronomical observations)
-- nightEnd: night ends (morning astronomical twilight starts)
-- nauticalDawn: nautical dawn (morning nautical twilight starts)
-- dawn: dawn (morning nautical twilight ends, morning civil twilight starts)
-- nadir: nadir (darkest moment of the night, sun is in the lowest position)
+- sunrise: восход (верхний край солнца появляется на горизонте)
+- sunriseEnd: восход солнца заканчивается (нижний край солнца касается горизонта)
+- goldenHourEnd: конец «золотого часа» (мягкий свет, наиболее подходящее время для фотографии)
+- solarNoon: солнечный полдень (солнце находится в наивысшей точке)
+- goldenHour: начало «золотого часа»
+- sunsetStart:  начало заката (нижний край солнца касается горизонта)
+- sunset: закат (солнце полностью заходит за горизонт, начинаются вечерние гражданские сумерки)
+- dusk: начало вечерних навигационных сумерек (время, когда уже достаточно темно, но всё еще можно ориентироваться по горизонту в море)
+- nauticalDusk:  начало вечерних астрономических сумерек (визуально темно, но недостаточно для астрономических наблюдений)
+- night: начало ночи (достаточно темно для большинства астрономических наблюдений)
+- nightEnd: конец ночи (и начало утренних астрономических сумерек)
+- nauticalDawn: начало утренних навигационных сумерек
+- dawn: утренняя заря (начало утренних гражданских сумерек)
+- nadir: надир (самый темный момент ночи, солнце находится в самом низком положении)
 
-**Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
 
-Additionally you can set the offset in minutes to astrological event, e.g. to fire the trigger 1 hour before down: 
+**Примечание:** для использования «астро-функции» в настройках адаптера javascript должны быть определены «широта» и «долгота».
+
+Кроме того, вы можете установить смещение в минутах до астрологического события, например, сработка триггера за 1 час до рассвета:
 
 ![Schedule](img/trigger_astro_1_en.png)
 
-As you can see the offset can be negative too to specify time before astrological events.
+Как вы видите, смещение может быть и отрицательным, при указании времени перед астрологическими событиями.
 
-### Named schedule
+### Именованное расписание
 ![Schedule](img/trigger_schedule_ex_en.png)
 
-This block is the same as [Schedule](#schedule), but with possibility to set CRON rule by string and with possibility to stop the schedule.
+Данный блок похож на блок [Расписание](#schedule), но помимо этого у него есть возможность установки правила CRON по строке, а также возможность остановить расписание.
 
-You can specify unique name of this schedule block and then later to clear it with [Clear schedule](#clear-schedule). 
+Вы можете присвоить уникальное имя этому блоку расписания, а затем позже очистить его с помощью  [Очистка расписания](#clear-schedule). 
 
-Here is an example of configurable alarm clock:
+Вот пример настраиваемого будильника:
  
 ![Schedule](img/trigger_schedule_ex_1_en.png)
 
@@ -1628,17 +1629,17 @@ Here is an example of configurable alarm clock:
 </xml>
 ```
 
-### Clear schedule
+### Очистка расписания
 ![Schedule](img/trigger_cron_clear_en.png)
 
-With this function block you can clear named schedule. If you define named one more time without clearing it, the old one will still active.
+С помощью этого функционального блока вы можете очистить Именованное расписание. Если вы измените имя еще один раз, не очищая его, то тогда останется старое имя.
 
-See an example in [Named schedule](#named-schedule)
+Пример использования в [Именованное расписание](#named-schedule)
 
-### CRON dialog
+### CRON диалог
 ![Schedule](img/trigger_cron_input_en.png)
 
-Create CRON rule from dialog. This block can be connected with [Named schedule](#named-schedule).
+Создать правило CRON из диалога. Этот блок может быть соединен с [Именованное расписание](#named-schedule).
 
 ![Schedule](img/trigger_cron_input_1_en.png)
 
@@ -1692,32 +1693,31 @@ Create CRON rule from dialog. This block can be connected with [Named schedule](
 </xml>
 ```
 
-### CRON rule
+### CRON правило
 ![Schedule](img/trigger_cron_rule_en.png)
 
-Combine CRON rule from different parts.
+Составляет правило CRON из разных частей.
 
-You can display rule as block or as line:
+Вы можете отобразить правило, как блок или как строку:
 
 ![Schedule](img/trigger_cron_rule_1_en.png)
 
-With additional parameter "with seconds" you can specify seconds for CRON rule too
+Вы также можете указать секунды для правила CRON при помощи дополнительного параметра «с секундами»
 
 ![Schedule](img/trigger_cron_rule_2_en.png)
 
-This block can be used (like [CRON dialog](#cron-dialog)) only with [Named schedule](#named-schedule) block.
+Этот блок может использоваться (как и [CRON диалог](#cron-dialog)) только с [Именованное расписание](#named-schedule).
 
-## Timeouts
+## Таймауты
 
-### Delayed execution
+### Задержка выполнения
 ![Delayed execution](img/timeouts_timeout_en.png)
 
-With this block you can execute other blocks delayed by some time specified in milliseconds.
-if you know Javascript it is the same function as setTimeout.
+При помощи этого блока вы можете выполнять другие блоки, отложенные на некоторое время, указанное в миллисекундах. Если вы знаете Javascript, то это такая же функция, как setTimeout.
 
-There is no "pause" in blockly, but you can use this block to simulate pause. If you place all blocks, that must be executed after the pause you will achieve the same effect as with pause.
+В блочном режиме нет «паузы», но вы можете использовать этот блок для имитации паузы. Если вы разместите все блоки, которые должны быть выполнены после паузы, то вы получите тот же эффект, что и при паузе.
 
-Every delayed execution can have unique name. It can be canceled by other block. [Clear delayed execution](#clear-delayed-execution)
+У каждого отложенного выполнения может быть свое уникальное имя. Оно может быть отменено другим блоком. [Очистить отложенное выполнение](#clear-delayed-execution)
 
 ![Delayed execution](img/timeouts_timeout_1_en.png)
 
@@ -1750,11 +1750,10 @@ Every delayed execution can have unique name. It can be canceled by other block.
 </xml>
 ```
 
-### Clear delayed execution
+### Очистить отложенное выполнение
 ![Clear delayed execution](img/timeouts_timeout_clear_en.png)
 
-This block is used to cancel running delay by name. Typical usage is simulation of motion detection scenario.
-By first motion the light should go on and after the last motion after 30 seconds the light should go off.
+Данный блок используется для отмены задержки запуска по имени. Типовое использование - имитация сценария обнаружения движения. По первому движению свет должен загореться, а после последнего движения, через 30 секунд, свет должен погаснуть.
 
 ![Clear delayed execution](img/timeouts_timeout_clear_1_en.png)
 
@@ -1857,145 +1856,145 @@ By first motion the light should go on and after the last motion after 30 second
 </xml>
 ```
 
-### Execution by interval
+### Выполнение по интервалу
 ![Execution by interval](img/timeouts_interval_en.png)
 
-This block allows you to execute some action periodically. Of course there is a CRON block, but CRON block has a smallest interval one second.
-This block can execute actions in milliseconds periods. 
+Данный блок позволяет вам периодически выполнять какое-либо действие. Конечно, есть блок CRON, но у CRON блока наименьший интервал равен одной секунде. 
+Этот блок может выполнять действия в миллисекундных периодах.
 
-If you set the interval too small (under 100ms) it can be, that intervals will be bigger.
+Если вы установите интервал меньше (менее 100 мс) чем он может быть, то эти интервалы будут больше.
 
-Similar to timeout block you can set unique interval name too.
+Аналогично блоку таймаута, вы также можете присвоить уникальное имя интервалу.
 
-### Stop execution by interval
+### Остановить выполнение по интервалу
 ![Stop execution by interval](img/timeouts_interval_clear_en.png)
 
-With the help of this block you can cancel periodically execution of interval block by its name.
+При помощи этого блока вы можете отменить периодическое выполнение блока интервалов по их именам.
 
-## Logic
+## Логические
 
-### If else block
+### Блок If else 
 
-### Comparision block
+### Блок сравнения
 
-### Logical AND/OR block
+### Логический блок AND/OR
 
-### Negation block
+### Блок отрицания
 
-### Logical value TRUE/FALSE 
+### Логическое значение TRUE/FALSE
 
-### null block
+### Нулевой блок
 
-### Test block
+### Тестовый блок
 
-## Loops
+## Циклы
 
-### Repeat N times
+### Повторить N раз
 
-### Repeat while
+### Повторять пока
 
-### Count 
+### Счетчик
 
-### For each
+### Для каждого
 
-### Break out of loop
+### Выйти из цикла
 
-## Math
+## Математические
 
-### Number value
+### Числовое значение
 
-### Arithmetical operations +-*/^
- 
-### Square root, Abs, -, ln, log10, e^, 10^
+### Арифметические операции +-\*/^
+
+### Корень квадратный, Abs, -, ln, log10, e^, 10^
 
 ### sin, cos, tan, asin, acos, atan
 
-### Math constants: pi, e, phi, sqrt(2), sqrt(1/2), infinity
+### Математические постоянные: pi, e, phi, sqrt(2), sqrt(1/2), infinity
 
-### Is even, odd, prime, whole, positive, negative, divisibly by
+### Четное, нечетное, простое, целое, положительное, отрицательное, делимое на
 
-### Modify variably by value (plus or minus)
+### Изменение переменной со знаком плюс или минус
 
-### Round, floor, ceil value
+### Округленное, приближенное, действительное значение
 
-### Operations on the list of values: sum, min, max, average, median, modes, deviation, random item
+### Операции со списком значений: сумма, минимум, максимум, среднее, медиана, мода, отклонения, случайное значение
 
-### Modulus 
+### Модуль
 
-### Limit some value by min and max 
+### Установить предел для значения по минимуму и максимуму
 
-### Random value from 0 to 1
+### Случайное значение от 0 до 1
 
-### Random value between min and max
+### Случайное значение между минимальным или максимальным
 
-## Text
+## Текст
 
-### String value
+### Строковое значение
 
-### Concatenate strings
+### Объединение строк
 
-### Append string to variable
+### Добавить строку в переменную
 
-### Length of string
+### Длина строки
 
-### Is string empty
+### Строка пустая
 
-### Find position in string
+### Найти позицию в строке
 
-### Get symbol in string on specific position
+### Получить символ в строке по определенной позиции
 
-### Get substring
+### Получить подстроку
 
-### Convert to upper case or to lower case
+### Преобразование в верхний или в нижний регистр
 
-### Trim string
+### Строка обрезки
 
-## Lists
+## Списки
 
-### Create empty list
+### Создать пустой список
 
-### Create list with values
+### Создать список значений
 
-### Create list with same value N times
+### Создать список с тем же значением N раз
 
-### Get length of list
+### Получить длину списка
 
-### Is list empty
+### Список пуст
 
-### Find position of item in list
+### Найти позицию элемента в списке
 
-### Get item in list
+### Получить элемент в списке
 
-### Set item in list
- 
-### Get sublist of list
+### Указать элемент в списке
 
-### Convert text to list and vice versa
+### Получить подсписок
 
-## Colour
+### Преобразование текста в список и наоборот
 
-### Colour value
+## Цвет
 
-### Random colour
+### Цветовое значение
 
-### RGB colour
+### Произвольный цвет
 
-### Mix colours
+### RGB палитра
 
-## Variables
+### Смешанные цвета
 
-### Set variable's value
+## Переменные
+
+### Установить значение переменной
 ![Set variable's value](img/variables_set_en.png)
 
-To use this block you should understand basic programming rules: how to use variables.
+Чтобы понять, как использовать этот блок, вы должны знать основные правила программирования, в частности, как использовать переменные.
 
-With this block you can write into global (visible everywhere in this script) variable and use it to store some values. If variable does not exist, it will be declared automatically.
+С помощью этого блока вы можете записать в глобальную переменную (видимую отовсюду в этом скрипте) и использовать ее для хранения некоторых значений. Если переменная не существует, она будет объявлена автоматически.
 
-This block can create new variable or use existing one. 
+Этот блок может создать новую переменную или использовать существующую.
 
 ![Set variable's value](img/variables_set_1_en.png)
 
-This code:
+Вот этот код:
 
 ![Set variable's value](img/variables_set_2_en.png)
 
@@ -2010,32 +2009,32 @@ This code:
 </block>
 ```
 
-does only this:
+делает только это:
 ```
 var item;
 item = 0;
 ```
 
-### Get variable's value
+### Получить значение переменной
 ![Get variable's value](img/variables_get_en.png)
 
-This block gets the value of variable. You can create a new one or use existing one.
+Этот блок получает значение переменной. Вы можете создать новый или использовать уже существующий.
 
 ![Get variable's value](img/variables_get_1_en.png)
 
-There is one exception with trigger blocks [Trigger on states change](#trigger-on-states-change) and [Trigger on state change](#trigger-on-state-change).
-Inside these blocks variable "value" yet exist, but anyway to read their values you must rename variable into value and then use it.
+Существует одно исключение с триггерными блоками:  [Триггер по состояниям](#trigger-on-states-change) и [Триггер по изменению состояния](#trigger-on-state-change).
+Внутри этих блоков переменная «значение» уже существует, но в любом случае для чтения этих значений вам необходимо переименовать переменную в значение и затем использовать ее.
 
 ![Get variable's value](img/variables_get_2_en.png)
 
-## Functions
+## Функции
 
-### Create function from blocks with no return value
+### Создать функцию из блоков без возвращения значения
 ![Create function from blocks with no return value](img/functions_function_en.png)
 
-With this block you can combine some repeat sequences into function and than use this function everywhere in current blockly.
+С помощью этого блока вы можете комбинировать некоторые повторяющиеся последовательности в функции, а затем использовать эту функцию повсюду в текущем блочном режиме.
 
-Here is an example of function that just prints into log current time.
+Ниже приведен пример функции, которая просто печатает текущее время в лог.
 
 ![Create function from blocks with no return value](img/functions_function_2_en.png)
 
@@ -2065,7 +2064,7 @@ Here is an example of function that just prints into log current time.
 </xml>
 ```
 
-After the function created, you can use this function like this:
+После создания функции вы можете использовать эту функцию следующим образом:
 
 ![Create function from blocks with no return value](img/functions_function_3_en.png)
 
@@ -2081,15 +2080,15 @@ After the function created, you can use this function like this:
 </block>
 ```
 
-You can find this new function in the blocks menu:
+Вы сможете найти эту новую функцию в меню блоков:
 
 ![Create function from blocks with no return value](img/functions_function_4_en.png)
 
-Additionally you can specify arguments for the function too via configuration dialog. You can edit the names of arguments in hte same dialog.
+Помимо этого, через диалог конфигурации вы можете указать аргументы для функции. Вам доступно редактирование имен аргументов в одном и том же диалоговом окне.
 
 ![Create function from blocks with no return value](img/functions_function_1_en.png)
 
-Here is an example of function that prints the sum of first argument and the second one:
+Пример функции, которая выводит сумму первого и второго аргумента:
 
 ![Create function from blocks with no return value](img/functions_function_5_en.png)
 
@@ -2138,11 +2137,11 @@ Here is an example of function that prints the sum of first argument and the sec
 </xml>
 ```
 
-You can find the arguments in the variables menu:
+В меню переменных, вы можете найти аргументы:
 
 ![Create function from blocks with no return value](img/functions_function_6_en.png)
 
-And use this function like this:
+И использовать эту функцию следующим образом:
 
 ![Create function from blocks with no return value](img/functions_function_7_en.png)
 
@@ -2165,10 +2164,10 @@ And use this function like this:
 </block>
 ```
 
-### Create function from blocks with return value
+### Создать функцию из блоков с возвращением значения
 ![Create function from blocks with return value](img/functions_function_ret_en.png)
 
-This block is the same, but it can return result of the function, that can be used later in blocks.
+Данный блок похож на предыдущий, но он еще и возвращает результат функции, который в дальнейшем можно использовать в блоках.
 
 ![Create function from blocks with return value](img/functions_function_ret_2_en.png)
 
@@ -2204,7 +2203,7 @@ This block is the same, but it can return result of the function, that can be us
 </block>
 ```
 
-Usage is similar with other function blocks:
+Применение схоже с другими функциональными блоками:
 
 ![Create function from blocks with return value](img/functions_function_ret_3_en.png)
 
@@ -2266,11 +2265,11 @@ Usage is similar with other function blocks:
 </xml>
 ```
 
-For all functions you can add comment or description. 
+Для всех функций вы можете добавить комментарий или описание.
 
 ![Create function from blocks with return value](img/functions_function_ret_1_en.png)
 
-In the return block you can use special return element:
+В блоке возврата вы можете использовать специальный элемент возврата:
 
 ![Create function from blocks with return value](img/functions_function_ret_4_en.png)
 
@@ -2530,35 +2529,34 @@ In the return block you can use special return element:
 </xml>
 ```
 
-### Return value in function 
+### Вернуть значение в функцию
 ![Return value in function](img/functions_return_en.png)
 
-See usage of this block in [Create function from blocks with return value](#create-function-from-blocks-with-return-value]).
+Просмотреть использование данного блока можно в  [Создать функцию из блоков с возвращением значения](#create-function-from-blocks-with-return-value]).
 
-This block can be used only there and serves to return value in the middle of the function.
+Данный блок может использоваться только там и необходим для возврата значения в середину функции.
 
-### Create custom function with no return value
+### Создать пользовательскую функцию без возвращения значения
 ![Create custom function with no return value](img/functions_function_ex_en.png)
 
-Sometimes existing blocks are not suitable to solve specific problem. With this block you can create your own block as a function, that can accept parameters and do some action.
-To write such a function you must know javascript. You can use inside all functions, that were created for pure scripting.
+Иногда существующие блоки не подходят для решения конкретной проблемы. С помощью этого блока вы можете создать свой собственный блок как функцию, которая может принимать параметры и выполнять некоторые действия. Чтобы написать такую функцию, вы должны знать javascript. Вы можете использовать внутри все функции, написанные скриптами.
 
-To write the code you must click the '...' at the ond the block and the editor dialog will be opened.
+Чтобы написать код, вы должны щелкнуть '...' в конце блока, и откроется диалоговое окно редактора.
 
 ![Create custom function with no return value](img/functions_function_ex_1_en.png)
 
-Otherwise the usage of this block is similar with standard function blocks, like [Create function from blocks with return value](#create-function-from-blocks-with-return-value]) or [Create function from blocks with no return value](#create-function-from-blocks-with-no-return-value]).
+В противном случае, использование этого блока аналогично использованию стандартных функциональных блоков, таких как [Создать функцию из блоков с возвращением значения](#create-function-from-blocks-with-return-value]) или [Создать функцию из блоков без возвращения значения](#create-function-from-blocks-with-no-return-value]).
 
-### Create custom function with return value
+### Создать пользовательскую функцию с возвращением значения
 ![Create custom function with return value](img/functions_function_ex_ret_en.png)
 
-This custom function block can return values. To return result from function write 
+Данный пользовательский функциональный блок возвращает значения. Для того, чтобы вернуть результат из функции напишите:
 
 ```
 return 'your result';
 ```
 
-Like here:
+Как здесь:
 
 ![Create custom function with return value](img/functions_function_ex_ret_1_en.png)
 
@@ -2600,12 +2598,11 @@ Like here:
 </xml>
 ```
 
-### Call function
+### Вызов функции
 ![Call function](img/functions_call_ex_en.png)
 
 ![Call function](img/functions_call_ex_ret_en.png)
 
-For every created function in the menu appears additional block with the name of this function. 
+Для каждой созданной функции в меню появляется дополнительный блок с названием этой функции.
 
-You can use it like normal blocks in you scripts.
-
+Вы можете использовать этот блок как обычные блоки в своих скриптах.
