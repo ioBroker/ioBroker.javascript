@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "3.3.4",
+  "version": "3.3.5",
   "description": "Javascript/Coffescript Script Engine for ioBroker",
   "author": "bluefox <dogafox@gmail.com>",
   "contributors": [
@@ -21,8 +21,8 @@
     "url": "https://github.com/ioBroker/ioBroker.javascript"
   },
   "dependencies": {
-    "node-schedule": "1.2.0",
-    "request": "^2.79.0",
+    "node-schedule": "1.2.1",
+    "request": "^2.81.0",
     "suncalc": "^1.8.0",
     "wake_on_lan": "0.0.4",
     "coffee-compiler": "^0.3.2",

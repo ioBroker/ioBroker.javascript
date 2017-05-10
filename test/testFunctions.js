@@ -113,6 +113,43 @@ describe('Test JS', function() {
         checkConnectionOfAdapter(done);
     });
 
+    it('Test JS: check compareTime between', function (done) {
+        this.timeout(4000);
+        // add script
+        var script = {
+            "common": {
+                "name":         "check compareTime",
+                "engineType":   "Javascript/js",
+                "source":       "createState('test10', 0, function () {\n" +
+                "   var count = 0;\n" +
+                "   count += compareTime('23:00', '01:00', 'between', new Date().setHours(23).setMinutes(30)) ? 1 : 0;\n" +
+                "   count += compareTime('23:00', '01:00', 'between', new Date().setHours(0).setMinutes(30)) ? 1 : 0;\n" +
+//                "   count += compareTime('23:00', '01:00', 'between', '22:30') ? 0 : 1;\n" +
+//                "   count += compareTime('23:00', '01:00', 'between', '02:30') ? 0 : 1;\n" +
+                "   setState('test10', count);\n" +
+                "});",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.check_compareTime",
+            "native": {}
+        };
+        onStateChanged = function (id, state) {
+            if (id === 'javascript.0.test10' && state.val === 2) {
+                onStateChanged = null;
+                states.getState('javascript.0.test10', function (err, state) {
+                    expect(err).to.be.not.ok;
+                    expect(state.val).to.be.equal(5);
+                    done();
+                });
+            }
+        };
+        objects.setObject(script._id, script, function (err) {
+            expect(err).to.be.not.ok;
+        });
+    });
+
     it('Test JS: Catch request error', function (done) {
         this.timeout(10000);
         // add script

@@ -51,6 +51,11 @@
         'de': ['Januar',  'Februar',  'März',  'April',  'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
         'ru': ['Январь',  'Февраль',  'Март',  'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь',  'Октябрь', 'Ноябрь',   'Декабрь']
     };
+    var monthFullGen      = {
+        'en': ['January', 'February', 'March', 'April',  'May', 'June', 'July', 'August',  'September', 'October', 'November', 'December'],
+        'de': ['Januar',  'Februar',  'März',  'April',  'Mai', 'Juni', 'Juli', 'August',  'September', 'Oktober', 'November', 'Dezember'],
+        'ru': ['Января',  'Февраля',  'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября',  'Октября', 'Ноября',   'Декабря']
+    };
     var monthShort        = {
         'en': ['Jan', 'Feb',  'Mar',  'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
         'de': ['Jan', 'Feb',  'Mär',  'Apr', 'Mai', 'Jun',  'Jul',  'Aug', 'Sep',  'Okt', 'Nov', 'Dez'],
@@ -2428,6 +2433,8 @@
                     text = text.replace('W',  dayOfWeeksShort[language][d]);
                     text = text.replace('Н',  dayOfWeeksShort[language][d]);
                     var m = date.getMonth();
+                    text = text.replace('OOO', monthFullGen[language][m]);
+                    text = text.replace('ООО', monthFullGen[language][m]);
                     text = text.replace('OO', monthFull[language][m]);
                     text = text.replace('ОО', monthFull[language][m]);
                     text = text.replace('O',  monthShort[language][m]);

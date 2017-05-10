@@ -74,7 +74,7 @@ Hier kann man die Beschreibung von [Blockly](doc/blockly_de.md) finden.
 - [Scripts activity](#scripts-activity)
 - [Changelog](#changelog)
 
-##Note
+## Note
 If in the script some modules or functions are used with callbacks or cyclic calls, except setTimeout/setInterval,
 so they will be called again and again even if the new version of script exists or script is deleted. For example the following script:
 
@@ -112,11 +112,11 @@ You can define the global scripts in the "global" folder.
 All global scripts are available on all instances. If global script is disabled, it will not be used.
 Global script will be just prepend to the normal script and compiled, so you cannot share data between scripts via global scrips. Use states for it.
 
-####Best practice:
+#### Best practice:
 Create two instances of javascript adapter: one "test" and one "production".
 After the script is tested in the "test" instance, it can be moved to "production". By that you can restart the "test" instance as you want.
 
-##Following functions can be used in scripts:
+## Following functions can be used in scripts:
 
 ### require - load some module
     var mod = require('module_name');
@@ -430,7 +430,7 @@ schedule("*/2 * * * * *", function () {
 
 to trigger every second second.
 
-####Astro- function
+#### Astro- function
 
 Astro-function can be used via "astro" attribute:
 
@@ -652,7 +652,7 @@ getEnums('rooms') =>
     createState(name, initialValue, forceCreation, common, native, callback)
 Create state and object in javascript space if does not exist, e.g. "javascript.0.mystate".
 
-####Parameters:
+#### Parameters:
 
 - **name**: name of the state without namespace, e.g. "mystate"
 - **initialValue**: variable can be initialized after created. Value "undefined" means do not initialize value.
@@ -696,7 +696,7 @@ Same as javascript ***clearTimeout***.
 ### formatDate
     formatDate (millisecondsOrDate, format)
 
-####Parameters:
+#### Parameters:
 
 - **date**: number of milliseconds from state.ts or state.lc (Number milliseconds from 1970.01.01 00:00:00) or javascript *new Date()* object or number of milliseconds from *(new Date().getTime())*
 - **format**: Can be "null", so the system time format will be used, elsewise
@@ -717,15 +717,19 @@ Same as javascript ***clearTimeout***.
        * WW, НН(cyrillic) - full week day as text
        * W, Н(cyrillic) - short week day as text
        * OO, ОО(cyrillic) - full month as text
+       * OOO, ООО(cyrillic) - full month as text as genitiv
        * O, О(cyrillic) - short month as text
 
 #### Example
+
+´´´
   formatDate(new Date(), "YYYY-MM-DD") => Date "2015-02-24"
   formatDate(new Date(), "hh:mm") => Hours and minutes "17:41"
   formatDate(state.ts) => "24.02.2015"
   formatDate(state.ts, "JJJJ.MM.TT SS:mm:ss.sss) => "2015.02.15 17:41:98.123"
   formatDate(new Date(), "WW") => Day of week "Tuesday"
   formatDate(new Date(), "W") => Day of week "Tu"
+´´´
 
 ### getDateObject
     getDateObject (stringOrNumber)
@@ -1003,6 +1007,9 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+### 3.3.5 (2017-05-10)
+* (bluefox) add the genitive month for formatDate
+
 ### 3.3.4 (2017-04-01)
 * (bluefox) Catch error by request if host unavailable
 * (bluefox) add "request" to script namespace

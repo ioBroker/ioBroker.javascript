@@ -1,13 +1,23 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.3.4",
-        "title":                    "Javascript/Coffescript Script Engine",
+        "version":                  "3.3.5",
+        "title":                    "Javascript/Blockly Script Engine",
+        "titleLang": {
+            "en": "Javascript/Blockly Script Engine",
+            "de": "Javascript/Blockly Skriptausführung",
+            "ru": "Javascript/Blockly Скрипты"
+        },
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.3.5": {
+                "en": "add the genitive month for formatDate",
+                "de": "Genitiv Monat für formatDate hinzugefügt",
+                "ru": "Добавлены месяцы в дательном падеже для formatDate"
+            },
             "3.3.4": {
                 "en": "Catch error by request if host unavailable",
                 "de": "Fange den Fehler ab, falls URL nicht online",
@@ -84,13 +94,17 @@
                 "ru": "Поддержка блоков в драйверах\nБлоки sendTo передвинуты в драйвера"
             }
         },
-        "desc":                     "Javascript/Coffeescript Script Engine",
+        "desc":                     {
+            "en": "Javascript/Blockly Script Engine for ioBroker",
+            "de": "Javascript/Blockly Skriptausführung für ioBroker",
+            "ru": "Выполнение Javascript/Blockly скриптов для ioBroker"
+        },
         "platform":                 "Javascript/Node.js",
         "mode":                     "daemon",
         "loglevel":                 "info",
         "icon":                     "js.jpeg",
         "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin/js.jpeg",
-        "keywords":                 ["js", "javascript", "coffeescript", "rules", "automate", "scriptengine"],
+        "keywords":                 ["js", "javascript", "coffeescript", "rules", "automate", "scriptengine", "blockly", "blokly"],
         "readme":                   "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
         "license":                  "MIT",
         "engineTypes":              ["Blockly", "Javascript/js", "Coffeescript/coffee"],
