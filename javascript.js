@@ -38,12 +38,12 @@
     var dayOfWeeksFull         = {
         'en': ['Sunday',        'Monday',  'Tuesday',   'Wednesday',    'Thursday',     'Friday',  'Saturday'],
         'de': ['Sonntag',       'Montag',  'Dienstag',  'Mittwoch',     'Donnerstag',   'Freitag', 'Samstag'],
-        'ru': ['Понедельник',   'Вторник', 'Среда',     'Четверг',      'Пятница',      'Суббота', 'Воскресенье']
+        'ru': ['Воскресенье',   'Понедельник', 'Вторник', 'Среда',      'Четверг',      'Пятница', 'Суббота']
     };
     var dayOfWeeksShort        = {
         'en': ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
         'de': ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
-        'ru': ['По', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+        'ru': ['Вс', 'По', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
     };
 
     var monthFull         = {

@@ -1007,7 +1007,7 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
-### 3.3.5 (2017-05-10)
+### 3.3.6 (2017-05-17)
 * (bluefox) add the genitive month for formatDate
 
 ### 3.3.4 (2017-04-01)
