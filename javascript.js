@@ -1287,14 +1287,14 @@
                 adapter.sendTo('pushover', msg);
             },
             subscribe: function (pattern, callbackOrId, value) {
-                if (pattern instanceof Array) {
+                if (pattern && (pattern instanceof Array || (typeof pattern === 'object' && pattern.length))) {
                     var result = [];
                     for (var t = 0; t < pattern.length; t++) {
                         result.push(this.subscribe(pattern[t], callbackOrId, value));
                     }
                     return result;
                 }
-                if (pattern && pattern.id instanceof Array) {
+                if (pattern && pattern.id && (pattern.id instanceof Array || (typeof pattern.id === 'object' && pattern.id.length))) {
                     var result_ = [];
                     for (var tt = 0; tt < pattern.id.length; tt++) {
                         var pa = JSON.parse(JSON.stringify(pattern));
@@ -1418,6 +1418,13 @@
                 unsubscribe(id);
             },
             unsubscribe:    function (idOrObject) {
+                if (idOrObject && (idOrObject instanceof Array || (typeof idOrObject === 'object' && idOrObject.length))) {
+                    var result = [];
+                    for (var t = 0; t < idOrObject.length; t++) {
+                        result.push(this.unsubscribe(idOrObject[t]));
+                    }
+                    return result;
+                }
                 var i;
                 if (sandbox.verbose) sandbox.log('adapterUnsubscribe(id=' + idOrObject + ')', 'info');
                 if (typeof idOrObject === 'object') {
