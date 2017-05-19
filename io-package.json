@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.3.6",
+        "version":                  "3.3.7",
         "title":                    "Javascript/Blockly Script Engine",
         "titleLang": {
             "en": "Javascript/Blockly Script Engine",
@@ -13,6 +13,11 @@
             "hobbyquaker <hq@ccu.io>"
         ],
         "news": {
+            "3.3.7": {
+                "en": "Accept for subscribes arrays of IDs",
+                "de": "Arrays von IDs werden bei Subscribe akzeptiert",
+                "ru": "Можно задавать для on массивы индексов"
+            },
             "3.3.6": {
                 "en": "add the genitive month for formatDate",
                 "de": "Genitiv Monat für formatDate hinzugefügt",

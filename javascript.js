@@ -1287,6 +1287,23 @@
                 adapter.sendTo('pushover', msg);
             },
             subscribe: function (pattern, callbackOrId, value) {
+                if (pattern instanceof Array) {
+                    var result = [];
+                    for (var t = 0; t < pattern.length; t++) {
+                        result.push(this.subscribe(pattern[t], callbackOrId, value));
+                    }
+                    return result;
+                }
+                if (pattern && pattern.id instanceof Array) {
+                    var result_ = [];
+                    for (var tt = 0; tt < pattern.id.length; tt++) {
+                        var pa = JSON.parse(JSON.stringify(pattern));
+                        pa.id = pattern.id[tt];
+                        result_.push(this.subscribe(pa, callbackOrId, value));
+                    }
+                    return result_;
+                }
+
                 if (typeof pattern === 'object') {
                     if (pattern.astro) {
                         return sandbox.schedule(pattern, callbackOrId, value);
@@ -2326,8 +2343,10 @@
                     time = sandbox.getAstroDate(time.astro, time.date || new Date(), time.offset || 0);
                 }
                 
-		var daily = true;
-		if (time) daily = false;    
+		        var daily = true;
+		        if (time) {
+		            daily = false;
+                }
                 if (time && typeof time !== 'object') {
                     time = new Date(time);
                 } else if (!time) {
@@ -2349,11 +2368,11 @@
                             startTime.setSeconds(0);
                         }
                     } else {
-			daily = false;    
+			            daily = false;
                         startTime = new Date(startTime);
                     }
                 } else {
-		    daily = false;
+		            daily = false;
                     startTime = new Date(startTime);
                 }
                 startTime = startTime.getTime();
@@ -2372,11 +2391,11 @@
                             endTime.setSeconds(0);
                         }
                     } else {
-			daily = false;    
+			            daily = false;
                         endTime = new Date(endTime);
                     }
                 } else if (endTime) {
-		    daily = false;	
+		            daily = false;
                     endTime = new Date(endTime);
                 } else {
                     endTime = null;
