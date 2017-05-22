@@ -142,13 +142,18 @@ describe('Test JS', function() {
             "native": {}
         };
         onStateChanged = function (id, state) {
-            if (id === 'javascript.0.test10' && state.val === 2) {
-                onStateChanged = null;
-                states.getState('javascript.0.test10', function (err, state) {
-                    expect(err).to.be.not.ok;
-                    expect(state.val).to.be.equal(5);
-                    done();
-                });
+            if (id === 'javascript.0.test10') {
+                if (state.val === 2) {
+                    onStateChanged = null;
+                    states.getState('javascript.0.test10', function (err, state) {
+                        expect(err).to.be.not.ok;
+                        expect(state.val).to.be.equal(5);
+                        done();
+                    });
+                }
+                else {
+                    console.log('GOT State.val =' + state.val);
+                }
             }
         };
         objects.setObject(script._id, script, function (err) {
