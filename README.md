@@ -225,7 +225,8 @@ You can use following parameters to specify the trigger:
 | logic       | string     |       "and" or "or" logic to combine the conditions \(default: "and"\)                                 |
 |             |            |                                                                                                        |
 | id          | string     |       name ist equal to given one                                                                      |
-|             | RegExp     |       name matched to regular expression                                                               |
+|             | RegExp     |       name matched to regular expression   
+|             | Array      |       name matched to a list of given one                                                         |
 |             |            |                                                                                                        |
 | name        | string     |       name ist equal to given one                                                                      |
 |             | RegExp     |       name matched to regular expression                                                               |
