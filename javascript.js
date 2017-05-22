@@ -185,7 +185,7 @@
         stateChange: function (id, state) {
 
             if (id.match(/^messagebox\./) || id.match(/^log\./)) return;
-            
+
             var oldState = states[id] || {};
             if (state) {
 
@@ -209,7 +209,7 @@
                         }
                     }
                 }
-                
+
                 states[id] = state;
             } else {
                 if (states[id]) delete states[id];
@@ -444,7 +444,7 @@
         if (obj.common && obj.common.name) {
             var name = obj.common.name;
             if (typeof name !== 'string') return;
-            
+
             if (!names[name]) {
                 names[name] = id;
             } else {
@@ -624,7 +624,7 @@
         child.stderr.on('data', function (buf) {
             adapter.log.error(buf.toString('utf8'));
         });
-        
+
         child.on('exit', function (code, signal) {
             if (code) {
                 adapter.log.error('Cannot install ' + npmLib + ': ' + code);
@@ -673,12 +673,12 @@
         try {
             return mods.vm.createScript(source, name);
         } catch (e) {
-            // todo 
+            // todo
             adapter.log.error(name + ' compile failed: ' + e);
             return false;
         }
     }
-    
+
     function unsubscribePattern(script, pattern) {
         if (adapter.config.subscribe) {
             if (script.subscribes[pattern]) {
@@ -691,14 +691,14 @@
                 if (!subscribedPatterns[pattern]) {
                     adapter.unsubscribeForeignStates(pattern);
                     delete subscribedPatterns[pattern];
-                    
+
                     // if pattern was regex or with * some states will stay in RAM, but it is OK.
                     if (states[pattern]) delete states[pattern];
                 }
             }
         }
     }
-    
+
     function subscribePattern(script, pattern) {
         if (adapter.config.subscribe) {
             if (!script.subscribes[pattern]) {
@@ -710,7 +710,7 @@
             if (!subscribedPatterns[pattern]) {
                 subscribedPatterns[pattern] = 1;
                 adapter.subscribeForeignStates(pattern);
-                
+
                 // request current value to deliver old value on change.
                 if (typeof pattern === 'string' && pattern.indexOf('*') === -1) {
                     adapter.getForeignState(pattern, function (err, state) {
@@ -1287,14 +1287,14 @@
                 adapter.sendTo('pushover', msg);
             },
             subscribe: function (pattern, callbackOrId, value) {
-                if (pattern && (pattern instanceof Array || (typeof pattern === 'object' && pattern.length))) {
+                if (pattern && pattern instanceof Array) {
                     var result = [];
                     for (var t = 0; t < pattern.length; t++) {
                         result.push(this.subscribe(pattern[t], callbackOrId, value));
                     }
                     return result;
                 }
-                if (pattern && pattern.id && (pattern.id instanceof Array || (typeof pattern.id === 'object' && pattern.id.length))) {
+                if (pattern && pattern.id && pattern.id instanceof Array) {
                     var result_ = [];
                     for (var tt = 0; tt < pattern.id.length; tt++) {
                         var pa = JSON.parse(JSON.stringify(pattern));
@@ -2349,7 +2349,7 @@
                 } else if (time && typeof time === 'object' && time.astro) {
                     time = sandbox.getAstroDate(time.astro, time.date || new Date(), time.offset || 0);
                 }
-                
+
 		        var daily = true;
 		        if (time) {
 		            daily = false;
@@ -2411,10 +2411,10 @@
                 if (endTime) endTime = endTime.getTime();
 
                 if (operation === 'between' && endTime) {
-		    if (startTime > endTime && daily) return !(time >= endTime && time < startTime);	
+		    if (startTime > endTime && daily) return !(time >= endTime && time < startTime);
                     else return time >= startTime && time < endTime;
                 } else if (operation === 'not between' && endTime) {
-		    if (startTime > endTime && daily) return time >= endTime && time < startTime;	
+		    if (startTime > endTime && daily) return time >= endTime && time < startTime;
                     else return !(time >= startTime && time < endTime);
                 } else if (operation === '>') {
                     return time > startTime;
@@ -2893,11 +2893,11 @@
                     }
                 }
             }
-            
+
             // if callback for on stop
             if (typeof scripts[name].onStopCb === 'function') {
                 scripts[name].onStopTimeout = parseInt(scripts[name].onStopTimeout, 10) || 1000;
-                
+
                 var timeout = setTimeout(function () {
                     if (timeout) {
                         timeout = null;
