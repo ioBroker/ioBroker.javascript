@@ -148,7 +148,7 @@ describe('Test JS', function() {
                     onStateChanged = null;
                     states.getState('javascript.0.test10', function (err, state) {
                         expect(err).to.be.not.ok;
-                        expect(state.val).to.be.equal(5);
+                        expect(state.val).to.be.equal(2);
                         done();
                     });
                 }
