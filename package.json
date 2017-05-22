@@ -1,11 +1,12 @@
 {
   "name": "iobroker.javascript",
-  "version": "3.3.7",
+  "version": "3.3.8",
   "description": "Javascript/Coffescript Script Engine for ioBroker",
   "author": "bluefox <dogafox@gmail.com>",
   "contributors": [
     "bluefox <dogafox@gmail.com>",
-    "hobbyquaker <hq@ccu.io>"
+    "hobbyquaker <hq@ccu.io>",
+    "ingo@fischer-ka.de"
   ],
   "homepage": "https://github.com/ioBroker/ioBroker.javascript",
   "license": "MIT",

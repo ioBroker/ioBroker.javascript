@@ -821,7 +821,7 @@ $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').each(function (id,
 The result will be given in callback.
 Read file from DB from folder "javascript".
 
-Argument *adapter* can be omitted. 
+Argument *adapter* can be omitted.
 
 ```
 // read vis views
@@ -840,7 +840,7 @@ By default working directory/adapter is "javascript.0".
 ### writeFile
     writeFile (adapter, fileName, bytes, function (error) {})
 
-The optional error code will be given in callback. Argument *adapter* can be ommited. 
+The optional error code will be given in callback. Argument *adapter* can be ommited.
 fileName is the name of file in DB. All files are stored in folder "javascript". if you want to write to other folders, e.g. to "/vis.0/" use setFile for that.
 
 The file that looks like '/subfolder/file.txt' will be stored under "/javascript/subfolder/file.txt" and can be accessed over web server with ```http://ip:8082/javascript/subfolder/file.txt```
@@ -1007,8 +1007,8 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
-### 3.3.7 (2017-05-19)
-* (bluefox) Accept for subscribes arrays of IDs
+### 3.3.8 (2017-05-22)
+* (Apollon77/bluefox) Accept for subscribes arrays of IDs
 
 ### 3.3.6 (2017-05-17)
 * (bluefox) add the genitive month for formatDate
@@ -1024,7 +1024,7 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 * (bluefox) Support of system coordinates
 
 ### 3.3.1 (2017-03-15)
- * (bluefox) fix error if no scripts exists 
+ * (bluefox) fix error if no scripts exists
 
 ### 3.3.0 (2017-03-14)
 * (bluefox) all callbacks in try/catch

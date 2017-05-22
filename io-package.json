@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.3.7",
+        "version":                  "3.3.8",
         "title":                    "Javascript/Blockly Script Engine",
         "titleLang": {
             "en": "Javascript/Blockly Script Engine",
@@ -10,10 +10,11 @@
         },
         "authors": [
             "bluefox <dogafox@gmail.com>",
-            "hobbyquaker <hq@ccu.io>"
+            "hobbyquaker <hq@ccu.io>",
+            "ingo@fischer-ka.de"
         ],
         "news": {
-            "3.3.7": {
+            "3.3.8": {
                 "en": "Accept for subscribes arrays of IDs",
                 "de": "Arrays von IDs werden bei Subscribe akzeptiert",
                 "ru": "Можно задавать для on массивы индексов"
