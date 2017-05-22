@@ -2411,11 +2411,11 @@
                 if (endTime) endTime = endTime.getTime();
 
                 if (operation === 'between' && endTime) {
-		    if (startTime > endTime && daily) return !(time >= endTime && time < startTime);
-                    else return time >= startTime && time < endTime;
+		            if (startTime > endTime && daily) return !(time >= endTime && time < startTime);
+                      else return time >= startTime && time < endTime;
                 } else if (operation === 'not between' && endTime) {
-		    if (startTime > endTime && daily) return time >= endTime && time < startTime;
-                    else return !(time >= startTime && time < endTime);
+		            if (startTime > endTime && daily) return time >= endTime && time < startTime;
+                      else return !(time >= startTime && time < endTime);
                 } else if (operation === '>') {
                     return time > startTime;
                 } else if (operation === '>=') {

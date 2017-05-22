@@ -122,7 +122,7 @@ describe('Test JS', function() {
                 "engineType":   "Javascript/js",
                 "source":       "createState('test10', 0, function () {\n" +
                 "   var count = 0;\n" +
-                "   var date1 = new Date();\n" +
+/*                "   var date1 = new Date();\n" +
                 "   date1.setHours(23);\n" +
                 "   date1.setMinutes(30);\n" +
                 "   var date2 = new Date();\n" +
@@ -130,8 +130,9 @@ describe('Test JS', function() {
                 "   date2.setMinutes(30);\n" +
                 "   count += compareTime('23:00', '01:00', 'between', date1) ? 1 : 0;\n" +
                 "   count += compareTime('23:00', '01:00', 'between', date2) ? 1 : 0;\n" +
-//                "   count += compareTime('23:00', '01:00', 'between', '22:30') ? 0 : 1;\n" +
-//                "   count += compareTime('23:00', '01:00', 'between', '02:30') ? 0 : 1;\n" +
+*/
+                "   count += compareTime('23:00', '01:00', 'between', '22:30') ? 0 : 1;\n" +
+                "   count += compareTime('23:00', '01:00', 'between', '02:30') ? 0 : 1;\n" +
                 "   setState('test10', count);\n" +
                 "});",
                 "enabled":      true,
