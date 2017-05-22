@@ -1287,19 +1287,19 @@
                 adapter.sendTo('pushover', msg);
             },
             subscribe: function (pattern, callbackOrId, value) {
-                if (pattern && pattern instanceof Array) {
+                if (pattern && Array.isArray(pattern)) {
                     var result = [];
                     for (var t = 0; t < pattern.length; t++) {
-                        result.push(this.subscribe(pattern[t], callbackOrId, value));
+                        result.push(sandbox.subscribe(pattern[t], callbackOrId, value));
                     }
                     return result;
                 }
-                if (pattern && pattern.id && pattern.id instanceof Array) {
+                if (pattern && pattern.id && Array.isArray(pattern.id)) {
                     var result_ = [];
                     for (var tt = 0; tt < pattern.id.length; tt++) {
                         var pa = JSON.parse(JSON.stringify(pattern));
                         pa.id = pattern.id[tt];
-                        result_.push(this.subscribe(pa, callbackOrId, value));
+                        result_.push(sandbox.subscribe(pa, callbackOrId, value));
                     }
                     return result_;
                 }
@@ -1418,10 +1418,10 @@
                 unsubscribe(id);
             },
             unsubscribe:    function (idOrObject) {
-                if (idOrObject && (idOrObject instanceof Array || (typeof idOrObject === 'object' && idOrObject.length))) {
+                if (idOrObject && Array.isArray(idOrObject)) {
                     var result = [];
                     for (var t = 0; t < idOrObject.length; t++) {
-                        result.push(this.unsubscribe(idOrObject[t]));
+                        result.push(sandbox.unsubscribe(idOrObject[t]));
                     }
                     return result;
                 }
