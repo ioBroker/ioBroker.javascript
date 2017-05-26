@@ -465,6 +465,8 @@ Following values can be used as attribute in astro-function:
 
 **Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
 
+**Note:** On some places sometines it could be so, that no night/nightEnd exists. Please read [here](https://github.com/mourner/suncalc/issues/70) about it.
+
 **Note:** you can use "on" function for schedule with small modification:
 ```
 on({time: "*/2 * * * *"}, function () {
