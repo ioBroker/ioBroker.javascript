@@ -1875,6 +1875,10 @@ If you set the interval too small (under 100ms) it can be, that intervals will b
 
 Similar to timeout block you can set unique interval name too.
 
+An additional feature is to set the interval by using a variable, just replave the "ms" with an predefined variable:
+![Execution by interval variable](img/Timer_variable.jpg)
+
+
 ### Stop execution by interval
 ![Stop execution by interval](img/timeouts_interval_clear_en.png)
 
