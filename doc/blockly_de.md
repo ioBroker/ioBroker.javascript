@@ -1906,7 +1906,7 @@ if you know Javascript it is the same function as setTimeout.
 There is no "pause" in blockly, but you can use this block to simulate pause. If you place all blocks, that must be executed after the pause you will achieve the same effect as with pause.
 
 An additional feature is to set the interval by using a variable, just replace the "ms" with an predefined variable:
-![Execution by interval variable](img/Timer_variable.jpg)
+![Execution by interval variable](img/Timer_variable_en.png)
 
 
 
