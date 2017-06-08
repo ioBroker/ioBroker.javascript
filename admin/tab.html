@@ -153,6 +153,9 @@
         .fancytree-force-folder span.fancytree-icon{
             background-position: -32px -16px;
         }
+        .dialog-new-script-button {
+            cursor: pointer;
+        }
     </style>
 
 </header>
@@ -270,6 +273,15 @@
             <span id="dialog-confirm-icon" class="ui-icon ui-icon-circle-check" style="float: left; margin: 0 7px 50px 0;"></span>
             <span id="dialog-confirm-text"></span>
         </p>
+    </div>
+    <div id="dialog-new-script" title="Select type" style="display: none; width: 550px; height: 170px">
+        <table><tr>
+            <td><img src="blockly.png"      data-type="Blockly"             class="dialog-new-script-button" /></td>
+            <td><img src="js.png"           data-type="Javascript/js"       class="dialog-new-script-button" /></td>
+            <td><img src="coffeescript.png" data-type="Coffeescript/coffee" class="dialog-new-script-button" /></td>
+            <td><img src="rule.png"         data-type="Rule"                class="dialog-new-script-button" /></td>
+        </tr>
+        </table>
     </div>
     <div id="dialog-select-member" style="display:none"></div>
     <div id="dialog-cron" style="display: none">

@@ -18,54 +18,57 @@ function Scripts(main) {
     this.blocklyWorkspace = null;
     
     function addScript(group) {
-        group = group || 'script.js.common';
-        // Find new unique name
-        var newText = _('Script');
-        var idx     = 1;
-        var name    = newText + idx;
+        $('#dialog-new-script').data('callback', function (type) {
+            group = group || 'script.js.common';
+            // Find new unique name
+            var newText = _('Script');
+            var idx     = 1;
+            var name    = newText + idx;
 
-        while (that.main.objects[group + '.' + name]) {
-            if (idx === '') idx = 0;
-            idx++;
-            name = newText + idx;
-        }
-        var instance = '';
-        var engineType = '';
+            while (that.main.objects[group + '.' + name]) {
+                if (idx === '') idx = 0;
+                idx++;
+                name = newText + idx;
+            }
+            var instance = '';
+            var engineType = type;
 
-        // find first instance
-        for (var i = 0; i < that.main.instances.length; i++) {
-            if (that.main.objects[that.main.instances[i]] && that.main.objects[that.main.instances[i]] && that.main.objects[that.main.instances[i]].common.engineTypes) {
-                instance = that.main.instances[i];
-                if (typeof that.main.objects[main.instances[i]].common.engineTypes === 'string') {
-                    engineType = that.main.objects[that.main.instances[i]].common.engineTypes;
-                } else {
-                    engineType = that.main.objects[that.main.instances[i]].common.engineTypes[0];
+            // find first instance
+            /*for (var i = 0; i < that.main.instances.length; i++) {
+                if (that.main.objects[that.main.instances[i]] && that.main.objects[that.main.instances[i]] && that.main.objects[that.main.instances[i]].common.engineTypes) {
+                    instance = that.main.instances[i];
+                    if (typeof that.main.objects[main.instances[i]].common.engineTypes === 'string') {
+                        engineType = that.main.objects[that.main.instances[i]].common.engineTypes;
+                    } else {
+                        engineType = that.main.objects[that.main.instances[i]].common.engineTypes[0];
+                    }
+                    break;
                 }
-                break;
-            }
-        }
+            }*/
 
-        var id = group + '.' + name.replace(/[\s"']/g, '_');
-        that.main.socket.emit('setObject', id, {
-            common: {
-                name:       name,
-                engineType: engineType,
-                source:     '',
-                enabled:    false,
-                engine:     instance
-            },
-            type: 'script'
-        }, function (err) {
-            if (err) {
-                that.main.showError(err);
-                that.init(true);
-            } else {
-                setTimeout(function () {
-                    that.$grid.selectId('show', id);
-                    editScript(id);
-                }, 500);
-            }
-        });
+            var id = group + '.' + name.replace(/[\s"']/g, '_');
+            that.main.socket.emit('setObject', id, {
+                common: {
+                    name:       name,
+                    engineType: engineType,
+                    source:     '',
+                    enabled:    false,
+                    engine:     instance
+                },
+                type: 'script'
+            }, function (err) {
+                if (err) {
+                    that.main.showError(err);
+                    that.init(true);
+                } else {
+                    setTimeout(function () {
+                        that.$grid.selectId('show', id);
+                        editScript(id);
+                    }, 500);
+                }
+            });
+
+        }).dialog('open');
     }
 
     function addScriptInGroup(_group) {
@@ -1410,6 +1413,7 @@ function Scripts(main) {
         }
         that.$dialogExport.dialog('option', 'title',  title || _('Export selected blocks'));
     }
+
     function showExportBlocklyDialog() {
         initBlocklyDialog(_('Export selected blocks'));
         if (Blockly.selected) {
@@ -1550,6 +1554,25 @@ function Scripts(main) {
                     $('#script-edit-button-save').button('enable');
                     $('#script-edit-button-cancel').button('enable');
                 });
+            });
+
+            $('#dialog-new-script').dialog({
+                autoOpen: false,
+                modal:    true,
+                width: 550,
+                height: 170,
+                open: function ()  {
+                    $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                    $('#dialog-new-script').css({height: 170, overflow: 'hidden'});
+                },
+                resizable: false,
+                buttons: {}
+            });
+            $('.dialog-new-script-button').click(function () {
+                var callback = $('#dialog-new-script').dialog('close').data('callback');
+                if (callback) {
+                    callback($(this).data('type'));
+                }
             });
         }
 
