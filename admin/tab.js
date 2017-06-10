@@ -580,6 +580,229 @@ function Scripts(main) {
                 that.editor.getSession().setUseWorker(true); // enable syntax check
                 that.editor.setReadOnly(false);
                 switchViews(false, obj.common.engineType);
+            } else if(obj.common.engineType === 'Rule') {
+                switchViews(true, obj.common.engineType);
+                var rules_basic = {
+                    condition: 'AND',
+                    rules: [{
+                        id: 'price',
+                        operator: 'less',
+                        value: 10.25
+                    }, {
+                        condition: 'OR',
+                        rules: [{
+                            id: 'category',
+                            operator: 'equal',
+                            value: 2
+                        }, {
+                            id: 'category',
+                            operator: 'equal',
+                            value: 1
+                        }]
+                    }]
+                };
+
+                // Fix for Selectize
+                $('#builder-widgets').on('afterCreateRuleInput.queryBuilder', function(e, rule) {
+                    if (rule.filter.plugin === 'selectize') {
+                        rule.$el.find('.rule-value-container').css('min-width', '200px')
+                            .find('.selectize-control').removeClass('form-control');
+                    }
+                }).queryBuilder({
+                    //plugins: ['bt-tooltip-errors'],
+
+                    filters: [{
+                        id: 'name',
+                        label: 'Name',
+                        type: 'string'
+                    }, {
+                        id: 'category',
+                        label: 'Category',
+                        type: 'integer',
+                        input: 'select',
+                        values: {
+                            1: 'Books',
+                            2: 'Movies',
+                            3: 'Music',
+                            4: 'Tools',
+                            5: 'Goodies',
+                            6: 'Clothes'
+                        },
+                        operators: ['equal', 'not_equal', 'in', 'not_in', 'is_null', 'is_not_null']
+                    }, {
+                        id: 'in_stock',
+                        label: 'In stock',
+                        type: 'integer',
+                        input: 'radio',
+                        values: {
+                            1: 'Yes',
+                            0: 'No'
+                        },
+                        operators: ['equal']
+                    }, {
+                        id: 'price',
+                        label: 'Price',
+                        type: 'double',
+                        validation: {
+                            min: 0,
+                            step: 0.01
+                        }
+                    }, {
+                        id: 'id',
+                        label: 'Identifier',
+                        type: 'string',
+                        placeholder: '____-____-____',
+                        operators: ['equal', 'not_equal'],
+                        validation: {
+                            format: /^.{4}-.{4}-.{4}$/
+                        }
+                    }],
+                    /*filters: [{
+                        id: 'date',
+                        label: 'Datepicker',
+                        type: 'date',
+                        validation: {
+                            format: 'YYYY/MM/DD'
+                        },
+                        plugin: 'datepicker',
+                        plugin_config: {
+                            format: 'yyyy/mm/dd',
+                            todayBtn: 'linked',
+                            todayHighlight: true,
+                            autoclose: true
+                        }
+                    }, {
+                        id: 'rate',
+                        label: 'Slider',
+                        type: 'integer',
+                        validation: {
+                            min: 0,
+                            max: 100
+                        },
+                        plugin: 'slider',
+                        plugin_config: {
+                            min: 0,
+                            max: 100,
+                            value: 0
+                        },
+                        valueSetter: function(rule, value) {
+                            if (rule.operator.nb_inputs == 1) value = [value];
+                            rule.$el.find('.rule-value-container input').each(function(i) {
+                                //$(this).slider('setValue', value[i] || 0);
+                            });
+                        },
+                        valueGetter: function(rule) {
+                            var value = [];
+                            rule.$el.find('.rule-value-container input').each(function() {
+                                //value.push($(this).slider('getValue'));
+                            });
+                            return rule.operator.nb_inputs == 1 ? value[0] : value;
+                        }
+                    }, {
+                        id: 'category',
+                        label: 'Selectize',
+                        type: 'string',
+                        plugin: 'selectize',
+                        plugin_config: {
+                            valueField: 'id',
+                            labelField: 'name',
+                            searchField: 'name',
+                            sortField: 'name',
+                            create: true,
+                            maxItems: 1,
+                            plugins: ['remove_button'],
+                            onInitialize: function() {
+                                var that = this;
+
+                                //if (localStorage.demoData === undefined) {
+                                //    $.getJSON(baseurl + '/assets/demo-data.json', function(data) {
+                                //        localStorage.demoData = JSON.stringify(data);
+                                //        data.forEach(function(item) {
+                                //            that.addOption(item);
+                                //        });
+                                //    });
+                                //}
+                                //else {
+                                //    JSON.parse(localStorage.demoData).forEach(function(item) {
+                                //        that.addOption(item);
+                                //    });
+                                //}
+                            }
+                        },
+                        valueSetter: function(rule, value) {
+                            rule.$el.find('.rule-value-container input')[0].selectize.setValue(value);
+                        }
+                    }, {
+                        id: 'coord',
+                        label: 'Coordinates',
+                        type: 'string',
+                        validation: {
+                            format: /^[A-C]{1}.[1-6]{1}$/
+                        },
+                        input: function(rule, name) {
+                            var $container = rule.$el.find('.rule-value-container');
+
+                            $container.on('change', '[name='+ name +'_1]', function(){
+                                var h = '';
+
+                                switch ($(this).val()) {
+                                    case 'A':
+                                        h = '<option value="-1">-</option> <option value="1">1</option> <option value="2">2</option>';
+                                        break;
+                                    case 'B':
+                                        h = '<option value="-1">-</option> <option value="3">3</option> <option value="4">4</option>';
+                                        break;
+                                    case 'C':
+                                        h = '<option value="-1">-</option> <option value="5">5</option> <option value="6">6</option>';
+                                        break;
+                                }
+
+                                $container.find('[name$=_2]')
+                                    .html(h).toggle(!!h)
+                                    .val('-1').trigger('change');
+                            });
+
+                            return '\
+      <select name="'+ name +'_1"> \
+        <option value="-1">-</option> \
+        <option value="A">A</option> \
+        <option value="B">B</option> \
+        <option value="C">C</option> \
+      </select> \
+      <select name="'+ name +'_2" style="display:none;"></select>';
+                        },
+                        valueGetter: function(rule) {
+                            return rule.$el.find('.rule-value-container [name$=_1]').val()
+                                +'.'+ rule.$el.find('.rule-value-container [name$=_2]').val();
+                        },
+                        valueSetter: function(rule, value) {
+                            if (rule.operator.nb_inputs > 0) {
+                                var val = value.split('.');
+
+                                rule.$el.find('.rule-value-container [name$=_1]').val(val[0]).trigger('change');
+                                rule.$el.find('.rule-value-container [name$=_2]').val(val[1]).trigger('change');
+                            }
+                        }
+                    }],*/
+
+                    rules: rules_basic
+                });
+
+                $('#btn-reset').on('click', function() {
+                    $('#builder-widgets').queryBuilder('reset');
+                });
+
+                $('#btn-set').on('click', function() {
+                    $('#builder-widgets').queryBuilder('setRules', rules_basic);
+                });
+
+                $('#btn-get').on('click', function() {
+                    var result = $('#builder-widgets').queryBuilder('getRules');
+
+                    if (!$.isEmptyObject(result)) {
+                        alert(JSON.stringify(result, null, 2));
+                    }
+                });
             }
 
             that.changed = false;
@@ -849,6 +1072,7 @@ function Scripts(main) {
 
     function switchViews(isBlocklyView, engineType) {
         if (engineType === null) {
+            $('#builder-widgets').hide();
             $('#script-buttons').hide();
             $('.script-edit').hide();
             $('#show-blockly-id').hide();
@@ -868,13 +1092,17 @@ function Scripts(main) {
         engineType = engineType || 'Blockly';
 
         if (engineType === 'Blockly') {
-            if (isBlocklyView === undefined) isBlocklyView = !$('#script-editor').is(':visible');
+            if (isBlocklyView === undefined) {
+                isBlocklyView = !$('#script-editor').is(':visible');
+            }
 
             if (isBlocklyView) {
+
                 $('#show-blockly-id')
                     .button('option', 'label', _('Show code'))
                     .button('option', 'icons', {primary: 'ui-icon-script'}).show();
 
+                $('#builder-widgets').hide();
                 $('#script-editor').hide();
                 $('#blockly-editor').show();
                 $('.blocklyWidgetDiv').show();
@@ -891,6 +1119,7 @@ function Scripts(main) {
                     .button('option', 'icons', {primary: 'ui-icon-calculator'}).show();
 
                 // update script editor
+                $('#builder-widgets').hide();
                 $('#script-editor').show();
                 $('#blockly-editor').hide();
                 $('.blocklyWidgetDiv').hide();
@@ -901,7 +1130,20 @@ function Scripts(main) {
                 $('#edit-export-blocks').hide();
                 $('#edit-import-blocks').hide();
             }
+        } else if (engineType === 'Rule') {
+            $('#builder-widgets').show();
+            $('#show-blockly-id').hide();
+            $('#script-editor').hide();
+            $('#blockly-editor').hide();
+            $('.edit-wrap-lines').show();
+            $('.blocklyWidgetDiv').hide();
+            $('.blocklyTooltipDiv').hide();
+            $('.blocklyToolboxDiv').hide();
+            $('#edit-check-blocks').hide();
+            $('#edit-export-blocks').hide();
+            $('#edit-import-blocks').hide();
         } else {
+            $('#builder-widgets').hide();
             $('#show-blockly-id').hide();
             $('#script-editor').show();
             $('#blockly-editor').hide();
