@@ -82,6 +82,8 @@ Blockly.Words['timeouts_settimeout']          = {'en': 'Execution',             
 Blockly.Words['timeouts_settimeout_name']     = {'en': 'timeout',                           'de': 'Verzögerung',                'ru': 'Пауза'};
 Blockly.Words['timeouts_settimeout_in']       = {'en': 'in',                                'de': 'in',                         'ru': 'через'};
 Blockly.Words['timeouts_settimeout_ms']       = {'en': 'ms',                                'de': 'ms',                         'ru': 'мс'};
+Blockly.Words['timeouts_settimeout_sec']      = {'en': 'sec',                               'de': 'Sek',                        'ru': 'сек.'};
+Blockly.Words['timeouts_settimeout_min']      = {'en': 'min',                               'de': 'Min',                        'ru': 'мин.'};
 Blockly.Words['timeouts_settimeout_tooltip']  = {'en': 'Delay execution',                   'de': 'Ausführung verzögern',       'ru': 'Сделать паузу'};
 Blockly.Words['timeouts_settimeout_help']     = {'en': 'settimeout',                        'de': 'settimeout',                 'ru': 'settimeout'};
 
@@ -90,6 +92,8 @@ Blockly.Timeouts.blocks['timeouts_settimeout'] =
     + '     <value name="NAME">'
     + '     </value>'
     + '     <value name="DELAY">'
+    + '     </value>'
+    + '     <value name="UNIT">'
     + '     </value>'
     + '     <value name="STATEMENT">'
     + '     </value>'
@@ -108,6 +112,11 @@ Blockly.Blocks['timeouts_settimeout'] = {
             .appendField(nameField, 'NAME')
             .appendField(Blockly.Words['timeouts_settimeout_in'][systemLang])
             .appendField(new Blockly.FieldTextInput(1000), "DELAY")
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['timeouts_settimeout_ms'][systemLang], 'ms'],
+                [Blockly.Words['timeouts_settimeout_sec'][systemLang], 'sec'],
+                [Blockly.Words['timeouts_settimeout_min'][systemLang], 'min']
+            ]), 'UNIT')
             .appendField(Blockly.Words['timeouts_settimeout_ms'][systemLang]);
 
         this.appendStatementInput("STATEMENT")
@@ -129,8 +138,14 @@ Blockly.Blocks['timeouts_settimeout'] = {
 Blockly.JavaScript['timeouts_settimeout'] = function(block) {
     var delay = block.getFieldValue('DELAY');
     var name  = block.getFieldValue('NAME');
+    var unit  = block.getFieldValue('UNIT');
+    if (unit === 'min') {
+        delay *= 60000;
+    } else if (unit === 'sec') {
+        delay *= 1000;
+    }
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    return name + ' = setTimeout(function () {\n' + statements_name + '}, ' + delay + ');\n';;
+    return name + ' = setTimeout(function () {\n' + statements_name + '}, ' + delay + ');\n';
 };
 
 // --- clearTimeout -----------------------------------------------------------
@@ -195,6 +210,8 @@ Blockly.Timeouts.blocks['timeouts_setinterval'] =
     + '     </value>'
     + '     <value name="INTERVAL">'
     + '     </value>'
+    + '     <value name="UNIT">'
+    + '     </value>'
     + '     <value name="STATEMENT">'
     + '     </value>'
     + '</block>';
@@ -212,6 +229,11 @@ Blockly.Blocks['timeouts_setinterval'] = {
             .appendField(nameField, 'NAME')
             .appendField(Blockly.Words['timeouts_setinterval_in'][systemLang])
             .appendField(new Blockly.FieldTextInput(1000), "INTERVAL")
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Words['timeouts_settimeout_ms'][systemLang], 'ms'],
+                [Blockly.Words['timeouts_settimeout_sec'][systemLang], 'sec'],
+                [Blockly.Words['timeouts_settimeout_min'][systemLang], 'min']
+            ]), 'UNIT')
             .appendField(Blockly.Words['timeouts_setinterval_ms'][systemLang]);
 
         this.appendStatementInput("STATEMENT")
@@ -233,6 +255,13 @@ Blockly.Blocks['timeouts_setinterval'] = {
 Blockly.JavaScript['timeouts_setinterval'] = function(block) {
     var delay = block.getFieldValue('INTERVAL');
     var name  = block.getFieldValue('NAME');
+    var unit  = block.getFieldValue('UNIT');
+    if (unit === 'min') {
+        delay *= 60000;
+    } else if (unit === 'sec') {
+        delay *= 1000;
+    }
+
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     return name + ' = setInterval(function () {\n' + statements_name + '}, ' + delay + ');\n';
 };

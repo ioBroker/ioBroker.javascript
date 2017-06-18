@@ -92,7 +92,9 @@ Blockly.Words['control_tooltip']        = {'en': 'Control state',  'de': 'Steuer
 Blockly.Words['control_help']           = {'en': 'setstate',       'de': 'setstate',            'ru': 'setstate'};
 Blockly.Words['control_with']           = {'en': 'with',           'de': 'mit',                 'ru': 'на'};
 Blockly.Words['control_delay']          = {'en': 'with delay',     'de': 'mit Verzögerung',     'ru': 'с задержкой'};
-Blockly.Words['control_ms']             = {'en': 'in ms',          'de': 'in ms',               'ru': 'в мс'};
+Blockly.Words['control_ms']             = {'en': 'ms',             'de': 'ms',                  'ru': 'мс'};
+Blockly.Words['control_sec']            = {'en': 'sec',            'de': 'Sek',                 'ru': 'сек.'};
+Blockly.Words['control_min']            = {'en': 'min',            'de': 'Min',                 'ru': 'мин.'};
 Blockly.Words['control_clear_running']  = {'en': ', clear running',  'de': ', löschen falls läuft', 'ru': ', остановить уже запущенный'};
 
 Blockly.System.blocks['control'] =
@@ -105,6 +107,8 @@ Blockly.System.blocks['control'] =
     + '     </value>'
     + '     <mutation delay_input="false"></mutation>'
     + '     <value name="DELAY_MS">'
+    + '     </value>'
+    + '     <value name="UNIT">'
     + '     </value>'
     + '     <value name="CLEAR_RUNNING">'
     + '     </value>'
@@ -128,6 +132,7 @@ Blockly.Blocks['control'] = {
                 var delayInput = (option == true);
                 this.sourceBlock_.updateShape_(delayInput);
             }), 'WITH_DELAY');
+
 
         this.setInputsInline(true);
         this.setPreviousStatement(true, null);
@@ -153,7 +158,12 @@ Blockly.Blocks['control'] = {
                 this.appendDummyInput('DELAY')
                     .appendField(' ')
                     .appendField(new Blockly.FieldTextInput('1000'), 'DELAY_MS')
-                    .appendField(Blockly.Words['control_ms'][systemLang]);
+                    .appendField(new Blockly.FieldDropdown([
+                        [Blockly.Words['control_ms'][systemLang], 'ms'],
+                        [Blockly.Words['control_sec'][systemLang], 'sec'],
+                        [Blockly.Words['control_min'][systemLang], 'min']
+                    ]), 'UNIT');
+                    //.appendField(Blockly.Words['control_ms'][systemLang]);
             }
         } else if (inputExists) {
             this.removeInput('DELAY');
@@ -179,6 +189,12 @@ Blockly.JavaScript['control'] = function(block) {
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
 
     var valueDelay   = parseInt(block.getFieldValue('DELAY_MS'), 10);
+    var unit  = block.getFieldValue('UNIT');
+    if (unit === 'min') {
+        valueDelay *= 60000;
+    } else if (unit === 'sec') {
+        valueDelay *= 1000;
+    }
     var clearRunning = block.getFieldValue('CLEAR_RUNNING') === 'TRUE';
     var valueValue   = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     var objectName   = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
@@ -210,6 +226,8 @@ Blockly.System.blocks['toggle'] =
     + '     </value>'
     + '     <mutation delay_input="false"></mutation>'
     + '     <value name="DELAY_MS">'
+    + '     </value>'
+    + '     <value name="UNIT">'
     + '     </value>'
     + '     <value name="CLEAR_RUNNING">'
     + '     </value>'
@@ -254,7 +272,12 @@ Blockly.Blocks['toggle'] = {
                 this.appendDummyInput('DELAY')
                     .appendField(' ')
                     .appendField(new Blockly.FieldTextInput('1000'), 'DELAY_MS')
-                    .appendField(Blockly.Words['toggle_ms'][systemLang]);
+                    .appendField(new Blockly.FieldDropdown([
+                        [Blockly.Words['control_ms'][systemLang], 'ms'],
+                        [Blockly.Words['control_sec'][systemLang], 'sec'],
+                        [Blockly.Words['control_min'][systemLang], 'min']
+                    ]), 'UNIT');
+                    //.appendField(Blockly.Words['toggle_ms'][systemLang]);
             }
         } else if (inputExists) {
             this.removeInput('DELAY');
@@ -280,17 +303,33 @@ Blockly.JavaScript['toggle'] = function(block) {
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
 
     var valueDelay   = parseInt(block.getFieldValue('DELAY_MS'), 10);
+    var unit  = block.getFieldValue('UNIT');
+    if (unit === 'min') {
+        valueDelay *= 60000;
+    } else if (unit === 'sec') {
+        valueDelay *= 1000;
+    }
     var clearRunning = block.getFieldValue('CLEAR_RUNNING') === 'TRUE';
     var valueValue   = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     var objectName   = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
+    var objectType   = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.type ? main.objects[valueObjectID].common.type : 'boolean';
     var code;
+    var setCommand;
+    if (objectType === 'number') {
+        setCommand = '    setState("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? !state.val : true);\n';
+    } else {
+        setCommand = '    setState("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? !state.val : true);\n';
+    }
 
     if (this.getFieldValue('WITH_DELAY') === 'TRUE') {
-        code = 'setStateDelayed("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', ' + valueValue + ', ' + valueDelay + ', ' + clearRunning + ');\n';
+        code =
+            'getState("' + valueObjectID + '", function (err, state) {\n' +
+            '    setStateDelayed("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? !state.val : true, ' + valueDelay + ', ' + clearRunning + ');\n' +
+            '});\n';
     } else {
         code =
         'getState("' + valueObjectID + '", function (err, state) {\n' +
-        '    setState("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? !state.val : true);\n' +
+        setCommand +
         '});\n';
     }
 
@@ -315,6 +354,8 @@ Blockly.System.blocks['update'] =
     + '     </value>'
     + '     <mutation delay_input="false"></mutation>'
     + '     <value name="DELAY_MS">'
+    + '     </value>'
+    + '     <value name="UNIT">'
     + '     </value>'
     + '     <value name="CLEAR_RUNNING">'
     + '     </value>'
@@ -363,7 +404,12 @@ Blockly.Blocks['update'] = {
                 this.appendDummyInput('DELAY')
                     .appendField(' ')
                     .appendField(new Blockly.FieldTextInput('1000'), 'DELAY_MS')
-                    .appendField(Blockly.Words['update_ms'][systemLang]);
+                    .appendField(new Blockly.FieldDropdown([
+                        [Blockly.Words['control_ms'][systemLang], 'ms'],
+                        [Blockly.Words['control_sec'][systemLang], 'sec'],
+                        [Blockly.Words['control_min'][systemLang], 'min']
+                    ]), 'UNIT');
+                    //.appendField(Blockly.Words['update_ms'][systemLang]);
             }
         } else if (inputExists) {
             this.removeInput('DELAY');
@@ -391,7 +437,12 @@ Blockly.JavaScript['update'] = function(block) {
     var value_value  = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     var value_delay  = parseInt(block.getFieldValue('DELAY_MS'), 10);
     var clearRunning = block.getFieldValue('CLEAR_RUNNING') === 'true' || block.getFieldValue('CLEAR_RUNNING') === true;
-
+    var unit  = block.getFieldValue('UNIT');
+    if (unit === 'min') {
+        value_delay *= 60000;
+    } else if (unit === 'sec') {
+        value_delay *= 1000;
+    }
     var objectname = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
     var code;
     if (this.getFieldValue('WITH_DELAY') === 'TRUE') {
