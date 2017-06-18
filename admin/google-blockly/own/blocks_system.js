@@ -310,13 +310,20 @@ Blockly.JavaScript['toggle'] = function(block) {
         valueDelay *= 1000;
     }
     var clearRunning = block.getFieldValue('CLEAR_RUNNING') === 'TRUE';
-    var valueValue   = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     var objectName   = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
     var objectType   = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.type ? main.objects[valueObjectID].common.type : 'boolean';
     var code;
     var setCommand;
     if (objectType === 'number') {
-        setCommand = '    setState("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? !state.val : true);\n';
+        var max = 100;
+        var min = 0;
+        if (main.objects[valueObjectID].common.max !== undefined) {
+            max = parseFloat(main.objects[valueObjectID].common.max);
+        }
+        if (main.objects[valueObjectID].common.min !== undefined) {
+            min = parseFloat(main.objects[valueObjectID].common.min);
+        }
+        setCommand = '    setState("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? (state.val == ' + min + ' ?  ' + max + ' : '  + min + ') : ' + max + ');\n';
     } else {
         setCommand = '    setState("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? !state.val : true);\n';
     }
