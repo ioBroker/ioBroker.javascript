@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.3.8",
+        "version":                  "3.3.9",
         "title":                    "Javascript/Blockly Script Engine",
         "titleLang": {
             "en": "Javascript/Blockly Script Engine",
@@ -14,6 +14,11 @@
             "ingo@fischer-ka.de"
         ],
         "news": {
+            "3.3.9": {
+                "en": "Add the toggle blockly block",
+                "de": "Umschaltblock hinzufügen ins Blockly",
+                "ru": "Добавлен блок переключение."
+            },
             "3.3.8": {
                 "en": "Accept for subscribes arrays of IDs",
                 "de": "Arrays von IDs werden bei Subscribe akzeptiert",

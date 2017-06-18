@@ -1010,6 +1010,9 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+### 3.3.9 (2017-06-18)
+* (bluefox) Add the toggle blockly block
+
 ### 3.3.8 (2017-05-22)
 * (Apollon77/bluefox) Accept for subscribes arrays of IDs
 

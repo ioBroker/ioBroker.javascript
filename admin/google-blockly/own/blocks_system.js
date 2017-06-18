@@ -193,6 +193,110 @@ Blockly.JavaScript['control'] = function(block) {
     return code;
 };
 
+// --- toggle -----------------------------------------------------------
+Blockly.Words['toggle']                = {'en': 'toggle',         'de': 'umschalten',             'ru': 'переключить'};
+Blockly.Words['toggle_tooltip']        = {'en': 'Toggle the state',  'de': 'Schalte Zustand um',     'ru': 'Изменить состояние'};
+Blockly.Words['toggle_help']           = {'en': 'setstate',       'de': 'setstate',            'ru': 'setstate'};
+Blockly.Words['toggle_with']           = {'en': 'with',           'de': 'mit',                 'ru': 'на'};
+Blockly.Words['toggle_delay']          = {'en': 'with delay',     'de': 'mit Verzögerung',     'ru': 'с задержкой'};
+Blockly.Words['toggle_ms']             = {'en': 'in ms',          'de': 'in ms',               'ru': 'в мс'};
+Blockly.Words['toggle_clear_running']  = {'en': ', clear running',  'de': ', löschen falls läuft', 'ru': ', остановить уже запущенный'};
+
+Blockly.System.blocks['toggle'] =
+    '<block type="toggle">'
+    + '     <value name="OID">'
+    + '     </value>'
+    + '     <value name="WITH_DELAY">'
+    + '     </value>'
+    + '     <mutation delay_input="false"></mutation>'
+    + '     <value name="DELAY_MS">'
+    + '     </value>'
+    + '     <value name="CLEAR_RUNNING">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['toggle'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Words['toggle'][systemLang]);
+
+        this.appendDummyInput('OID')
+            .appendField(new Blockly.FieldOID('Object ID', main.initSelectId(), main.objects), 'OID');
+
+        this.appendDummyInput('WITH_DELAY')
+            .appendField(Blockly.Words['toggle_delay'][systemLang])
+            .appendField(new Blockly.FieldCheckbox('FALSE', function(option) {
+                var delayInput = (option == true);
+                this.sourceBlock_.updateShape_(delayInput);
+            }), 'WITH_DELAY');
+
+        this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(Blockly.System.HUE);
+        this.setTooltip(Blockly.Words['toggle_tooltip'][systemLang]);
+        this.setHelpUrl(getHelp('toggle_help'));
+    },
+    mutationToDom: function() {
+        var container = document.createElement('mutation');
+        container.setAttribute('delay_input', this.getFieldValue('WITH_DELAY') === 'TRUE');
+        return container;
+    },
+    domToMutation: function(xmlElement) {
+        this.updateShape_(xmlElement.getAttribute('delay_input') == 'true');
+    },
+    updateShape_: function(delayInput) {
+        // Add or remove a delay Input.
+        var inputExists = this.getInput('DELAY');
+
+        if (delayInput) {
+            if (!inputExists) {
+                this.appendDummyInput('DELAY')
+                    .appendField(' ')
+                    .appendField(new Blockly.FieldTextInput('1000'), 'DELAY_MS')
+                    .appendField(Blockly.Words['toggle_ms'][systemLang]);
+            }
+        } else if (inputExists) {
+            this.removeInput('DELAY');
+        }
+
+        inputExists = this.getInput('CLEAR_RUNNING_INPUT');
+
+        if (delayInput) {
+            if (!inputExists) {
+                this.appendDummyInput('CLEAR_RUNNING_INPUT')
+                    .appendField(Blockly.Words['toggle_clear_running'][systemLang])
+                    .appendField(new Blockly.FieldCheckbox(), 'CLEAR_RUNNING');
+            }
+        } else if (inputExists) {
+            this.removeInput('CLEAR_RUNNING_INPUT');
+        }
+    }
+};
+
+Blockly.JavaScript['toggle'] = function(block) {
+    var valueObjectID = block.getFieldValue('OID');
+
+    Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
+
+    var valueDelay   = parseInt(block.getFieldValue('DELAY_MS'), 10);
+    var clearRunning = block.getFieldValue('CLEAR_RUNNING') === 'TRUE';
+    var valueValue   = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    var objectName   = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
+    var code;
+
+    if (this.getFieldValue('WITH_DELAY') === 'TRUE') {
+        code = 'setStateDelayed("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', ' + valueValue + ', ' + valueDelay + ', ' + clearRunning + ');\n';
+    } else {
+        code =
+        'getState("' + valueObjectID + '", function (err, state) {\n' +
+        '    setState("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? !state.val : true);\n' +
+        '});\n';
+    }
+
+    return code;
+};
+
 // --- update -----------------------------------------------------------
 Blockly.Words['update']         = {'en': 'update',          'de': 'aktualisiere',           'ru': 'обновить'};
 Blockly.Words['update_tooltip'] = {'en': 'Update state',    'de': 'Zustand aktualisieren',  'ru': 'Обновить состояние'};
