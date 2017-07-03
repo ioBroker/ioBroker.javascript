@@ -34,7 +34,7 @@ function Scripts(main) {
             var engineType = type;
 
             // find first instance
-            /*for (var i = 0; i < that.main.instances.length; i++) {
+            for (var i = 0; i < that.main.instances.length; i++) {
                 if (that.main.objects[that.main.instances[i]] && that.main.objects[that.main.instances[i]] && that.main.objects[that.main.instances[i]].common.engineTypes) {
                     instance = that.main.instances[i];
                     if (typeof that.main.objects[main.instances[i]].common.engineTypes === 'string') {
@@ -44,7 +44,7 @@ function Scripts(main) {
                     }
                     break;
                 }
-            }*/
+            }
 
             var id = group + '.' + name.replace(/[\s"']/g, '_');
             that.main.socket.emit('setObject', id, {
@@ -137,7 +137,7 @@ function Scripts(main) {
                         }
                     }
                 ],
-                open: function () {
+                open: function (event) {
                     $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                     $('#script-group-button-save').button('disable');
                     $('#script-group-button-cancel').button('enable');
@@ -484,6 +484,245 @@ function Scripts(main) {
         return lines.join('\n');
     }
 
+    function buildRules() {
+        var rules_basic = {
+            condition: 'AND',
+            rules: [{
+                id: 'id',
+                operator: 'is',
+                value: 'abc'
+            }]
+        };
+        var $builderWidgets = $('#builder-widgets');
+        // Fix for Selectize
+        $builderWidgets.on('afterCreateRuleInput.queryBuilder', function(e, rule) {
+            if (rule.filter.plugin === 'selectize') {
+                rule.$el.find('.rule-value-container').css('min-width', '200px')
+                    .find('.selectize-control').removeClass('form-control');
+            }
+        }).queryBuilder({
+            //plugins: ['bt-tooltip-errors'],
+            operators: [
+                { type: 'equal', optgroup: 'basic' },
+                { type: 'not_equal', optgroup: 'basic' },
+                { type: 'is', optgroup: 'custom', nb_inputs: 2, multiple: false, apply_to: ['string'] }
+            ],
+            filters: [{
+                id:    'id',
+                label: _('Value of'),
+                type: 'string',
+                operators: ['is']
+            }, {
+                id:    'time',
+                label: _('Time'),
+                placeholder: 'HH:mm',
+                //input: 'select',
+                type: 'string',
+                validation: {
+                    format: /^\d{2}:\d{2}$/
+                },
+                operators: ['equal']
+            }, {
+                id:    'test',
+                label: _('test'),
+                placeholder: 'HH:mm',
+                //input: 'select',
+                type: 'string',
+                operators: ['is'],
+                input: function(rule, name) {
+                    var $container = rule.$el.find('.rule-value-container');
+
+                    $container.on('change', '[name='+ name +'_1]', function(){
+                        var h = '';
+
+                        switch ($(this).val()) {
+                            case 'A':
+                                h = '<option value="-1">-</option> <option value="1">1</option> <option value="2">2</option>';
+                                break;
+                            case 'B':
+                                h = '<option value="-1">-</option> <option value="3">3</option> <option value="4">4</option>';
+                                break;
+                            case 'C':
+                                h = '<option value="-1">-</option> <option value="5">5</option> <option value="6">6</option>';
+                                break;
+                        }
+
+                        $container.find('[name$=_2]')
+                            .html(h).toggle(!!h)
+                            .val('-1').trigger('change');
+                    });
+
+                    return '\
+                      <select name="'+ name +'_id"> \
+                        <option value="-1">-</option> \
+                        <option value="A">A</option> \
+                        <option value="B">B</option> \
+                        <option value="C">C</option> \
+                      </select> \
+                      is \
+                      <input name="'+ name +'_value" />';
+                },
+                valueGetter: function(rule) {
+                    return rule.$el.find('.rule-value-container [name$=_1]').val()
+                        +'.'+ rule.$el.find('.rule-value-container [name$=_2]').val();
+                },
+                valueSetter: function(rule, value) {
+                    if (rule.operator.nb_inputs > 0) {
+                        var val = value.split('.');
+
+                        rule.$el.find('.rule-value-container [name$=_1]').val(val[0]).trigger('change');
+                        rule.$el.find('.rule-value-container [name$=_2]').val(val[1]).trigger('change');
+                    }
+                }
+            }],
+            /*filters: [{
+             id: 'date',
+             label: 'Datepicker',
+             type: 'date',
+             validation: {
+             format: 'YYYY/MM/DD'
+             },
+             plugin: 'datepicker',
+             plugin_config: {
+             format: 'yyyy/mm/dd',
+             todayBtn: 'linked',
+             todayHighlight: true,
+             autoclose: true
+             }
+             }, {
+             id: 'rate',
+             label: 'Slider',
+             type: 'integer',
+             validation: {
+             min: 0,
+             max: 100
+             },
+             plugin: 'slider',
+             plugin_config: {
+             min: 0,
+             max: 100,
+             value: 0
+             },
+             valueSetter: function(rule, value) {
+             if (rule.operator.nb_inputs == 1) value = [value];
+             rule.$el.find('.rule-value-container input').each(function(i) {
+             //$(this).slider('setValue', value[i] || 0);
+             });
+             },
+             valueGetter: function(rule) {
+             var value = [];
+             rule.$el.find('.rule-value-container input').each(function() {
+             //value.push($(this).slider('getValue'));
+             });
+             return rule.operator.nb_inputs == 1 ? value[0] : value;
+             }
+             }, {
+             id: 'category',
+             label: 'Selectize',
+             type: 'string',
+             plugin: 'selectize',
+             plugin_config: {
+             valueField: 'id',
+             labelField: 'name',
+             searchField: 'name',
+             sortField: 'name',
+             create: true,
+             maxItems: 1,
+             plugins: ['remove_button'],
+             onInitialize: function() {
+             var that = this;
+
+             //if (localStorage.demoData === undefined) {
+             //    $.getJSON(baseurl + '/assets/demo-data.json', function(data) {
+             //        localStorage.demoData = JSON.stringify(data);
+             //        data.forEach(function(item) {
+             //            that.addOption(item);
+             //        });
+             //    });
+             //}
+             //else {
+             //    JSON.parse(localStorage.demoData).forEach(function(item) {
+             //        that.addOption(item);
+             //    });
+             //}
+             }
+             },
+             valueSetter: function(rule, value) {
+             rule.$el.find('.rule-value-container input')[0].selectize.setValue(value);
+             }
+             }, {
+             id: 'coord',
+             label: 'Coordinates',
+             type: 'string',
+             validation: {
+             format: /^[A-C]{1}.[1-6]{1}$/
+             },
+             input: function(rule, name) {
+             var $container = rule.$el.find('.rule-value-container');
+
+             $container.on('change', '[name='+ name +'_1]', function(){
+             var h = '';
+
+             switch ($(this).val()) {
+             case 'A':
+             h = '<option value="-1">-</option> <option value="1">1</option> <option value="2">2</option>';
+             break;
+             case 'B':
+             h = '<option value="-1">-</option> <option value="3">3</option> <option value="4">4</option>';
+             break;
+             case 'C':
+             h = '<option value="-1">-</option> <option value="5">5</option> <option value="6">6</option>';
+             break;
+             }
+
+             $container.find('[name$=_2]')
+             .html(h).toggle(!!h)
+             .val('-1').trigger('change');
+             });
+
+             return '\
+             <select name="'+ name +'_1"> \
+             <option value="-1">-</option> \
+             <option value="A">A</option> \
+             <option value="B">B</option> \
+             <option value="C">C</option> \
+             </select> \
+             <select name="'+ name +'_2" style="display:none;"></select>';
+             },
+             valueGetter: function(rule) {
+             return rule.$el.find('.rule-value-container [name$=_1]').val()
+             +'.'+ rule.$el.find('.rule-value-container [name$=_2]').val();
+             },
+             valueSetter: function(rule, value) {
+             if (rule.operator.nb_inputs > 0) {
+             var val = value.split('.');
+
+             rule.$el.find('.rule-value-container [name$=_1]').val(val[0]).trigger('change');
+             rule.$el.find('.rule-value-container [name$=_2]').val(val[1]).trigger('change');
+             }
+             }
+             }],*/
+
+            rules: rules_basic
+        });
+
+        $('#btn-reset').on('click', function() {
+            $builderWidgets.queryBuilder('reset');
+        });
+
+        $('#btn-set').on('click', function() {
+            $builderWidgets.queryBuilder('setRules', rules_basic);
+        });
+
+        $('#btn-get').on('click', function() {
+            var result = $builderWidgets.queryBuilder('getRules');
+
+            if (!$.isEmptyObject(result)) {
+                alert(JSON.stringify(result, null, 2));
+            }
+        });
+    }
+
     function editScript(id) {
         that.initEditor();
 
@@ -535,22 +774,32 @@ function Scripts(main) {
 
             that.editor.getSession().setUseWrapMode($('#edit-wrap-lines').prop('checked'));
 
-            if (obj.common.engineType !== 'Blockly') {
+            var $editType = $('#edit-script-engine-type');
+            if (obj.common.engineType !== 'Blockly' && obj.common.engineType !== 'Rule') {
                 // remove Blockly from list
-                $('#edit-script-engine-type').find('option[value="Blockly"]').remove();
-            } else {
-                if (!$('#edit-script-engine-type').find('option[value="Blockly"]').length) {
-                    $('#edit-script-engine-type').prepend('<option value="Blockly">Blockly</option>');
+                $editType.find('option[value="Blockly"]').remove();
+                $editType.find('option[value="Rule"]').remove();
+            } else if (obj.common.engineType === 'Blockly') {
+                $editType.find('option[value="Rule"]').remove();
+                if (!$editType.find('option[value="Blockly"]').length) {
+                    $editType.prepend('<option value="Blockly">Blockly</option>');
+                }
+            } else if (obj.common.engineType === 'Rule') {
+                $editType.find('option[value="Blockly"]').remove();
+                if (!$editType.find('option[value="Rule"]').length) {
+                    $editType.prepend('<option value="Rule">' + _('Rule') + '</option>');
                 }
             }
             that.currentEngine = obj.common.engineType;
 
             // Add engine even if it is not installed
             if (that.engines.indexOf(obj.common.engineType) === -1) {
-                $('#edit-script-engine-type').append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
+                if (!$editType.find('option[value="' + obj.common.engineType + '"]').length) {
+                    $editType.append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
+                }
             }
 
-            $('#edit-script-engine-type').val(obj.common.engineType);
+            $editType.val(obj.common.engineType);
 
             if (obj.common.engineType === 'Blockly') {
                 that.editor.getSession().setMode('ace/mode/javascript');
@@ -582,227 +831,7 @@ function Scripts(main) {
                 switchViews(false, obj.common.engineType);
             } else if(obj.common.engineType === 'Rule') {
                 switchViews(true, obj.common.engineType);
-                var rules_basic = {
-                    condition: 'AND',
-                    rules: [{
-                        id: 'price',
-                        operator: 'less',
-                        value: 10.25
-                    }, {
-                        condition: 'OR',
-                        rules: [{
-                            id: 'category',
-                            operator: 'equal',
-                            value: 2
-                        }, {
-                            id: 'category',
-                            operator: 'equal',
-                            value: 1
-                        }]
-                    }]
-                };
-
-                // Fix for Selectize
-                $('#builder-widgets').on('afterCreateRuleInput.queryBuilder', function(e, rule) {
-                    if (rule.filter.plugin === 'selectize') {
-                        rule.$el.find('.rule-value-container').css('min-width', '200px')
-                            .find('.selectize-control').removeClass('form-control');
-                    }
-                }).queryBuilder({
-                    //plugins: ['bt-tooltip-errors'],
-
-                    filters: [{
-                        id: 'name',
-                        label: 'Name',
-                        type: 'string'
-                    }, {
-                        id: 'category',
-                        label: 'Category',
-                        type: 'integer',
-                        input: 'select',
-                        values: {
-                            1: 'Books',
-                            2: 'Movies',
-                            3: 'Music',
-                            4: 'Tools',
-                            5: 'Goodies',
-                            6: 'Clothes'
-                        },
-                        operators: ['equal', 'not_equal', 'in', 'not_in', 'is_null', 'is_not_null']
-                    }, {
-                        id: 'in_stock',
-                        label: 'In stock',
-                        type: 'integer',
-                        input: 'radio',
-                        values: {
-                            1: 'Yes',
-                            0: 'No'
-                        },
-                        operators: ['equal']
-                    }, {
-                        id: 'price',
-                        label: 'Price',
-                        type: 'double',
-                        validation: {
-                            min: 0,
-                            step: 0.01
-                        }
-                    }, {
-                        id: 'id',
-                        label: 'Identifier',
-                        type: 'string',
-                        placeholder: '____-____-____',
-                        operators: ['equal', 'not_equal'],
-                        validation: {
-                            format: /^.{4}-.{4}-.{4}$/
-                        }
-                    }],
-                    /*filters: [{
-                        id: 'date',
-                        label: 'Datepicker',
-                        type: 'date',
-                        validation: {
-                            format: 'YYYY/MM/DD'
-                        },
-                        plugin: 'datepicker',
-                        plugin_config: {
-                            format: 'yyyy/mm/dd',
-                            todayBtn: 'linked',
-                            todayHighlight: true,
-                            autoclose: true
-                        }
-                    }, {
-                        id: 'rate',
-                        label: 'Slider',
-                        type: 'integer',
-                        validation: {
-                            min: 0,
-                            max: 100
-                        },
-                        plugin: 'slider',
-                        plugin_config: {
-                            min: 0,
-                            max: 100,
-                            value: 0
-                        },
-                        valueSetter: function(rule, value) {
-                            if (rule.operator.nb_inputs == 1) value = [value];
-                            rule.$el.find('.rule-value-container input').each(function(i) {
-                                //$(this).slider('setValue', value[i] || 0);
-                            });
-                        },
-                        valueGetter: function(rule) {
-                            var value = [];
-                            rule.$el.find('.rule-value-container input').each(function() {
-                                //value.push($(this).slider('getValue'));
-                            });
-                            return rule.operator.nb_inputs == 1 ? value[0] : value;
-                        }
-                    }, {
-                        id: 'category',
-                        label: 'Selectize',
-                        type: 'string',
-                        plugin: 'selectize',
-                        plugin_config: {
-                            valueField: 'id',
-                            labelField: 'name',
-                            searchField: 'name',
-                            sortField: 'name',
-                            create: true,
-                            maxItems: 1,
-                            plugins: ['remove_button'],
-                            onInitialize: function() {
-                                var that = this;
-
-                                //if (localStorage.demoData === undefined) {
-                                //    $.getJSON(baseurl + '/assets/demo-data.json', function(data) {
-                                //        localStorage.demoData = JSON.stringify(data);
-                                //        data.forEach(function(item) {
-                                //            that.addOption(item);
-                                //        });
-                                //    });
-                                //}
-                                //else {
-                                //    JSON.parse(localStorage.demoData).forEach(function(item) {
-                                //        that.addOption(item);
-                                //    });
-                                //}
-                            }
-                        },
-                        valueSetter: function(rule, value) {
-                            rule.$el.find('.rule-value-container input')[0].selectize.setValue(value);
-                        }
-                    }, {
-                        id: 'coord',
-                        label: 'Coordinates',
-                        type: 'string',
-                        validation: {
-                            format: /^[A-C]{1}.[1-6]{1}$/
-                        },
-                        input: function(rule, name) {
-                            var $container = rule.$el.find('.rule-value-container');
-
-                            $container.on('change', '[name='+ name +'_1]', function(){
-                                var h = '';
-
-                                switch ($(this).val()) {
-                                    case 'A':
-                                        h = '<option value="-1">-</option> <option value="1">1</option> <option value="2">2</option>';
-                                        break;
-                                    case 'B':
-                                        h = '<option value="-1">-</option> <option value="3">3</option> <option value="4">4</option>';
-                                        break;
-                                    case 'C':
-                                        h = '<option value="-1">-</option> <option value="5">5</option> <option value="6">6</option>';
-                                        break;
-                                }
-
-                                $container.find('[name$=_2]')
-                                    .html(h).toggle(!!h)
-                                    .val('-1').trigger('change');
-                            });
-
-                            return '\
-      <select name="'+ name +'_1"> \
-        <option value="-1">-</option> \
-        <option value="A">A</option> \
-        <option value="B">B</option> \
-        <option value="C">C</option> \
-      </select> \
-      <select name="'+ name +'_2" style="display:none;"></select>';
-                        },
-                        valueGetter: function(rule) {
-                            return rule.$el.find('.rule-value-container [name$=_1]').val()
-                                +'.'+ rule.$el.find('.rule-value-container [name$=_2]').val();
-                        },
-                        valueSetter: function(rule, value) {
-                            if (rule.operator.nb_inputs > 0) {
-                                var val = value.split('.');
-
-                                rule.$el.find('.rule-value-container [name$=_1]').val(val[0]).trigger('change');
-                                rule.$el.find('.rule-value-container [name$=_2]').val(val[1]).trigger('change');
-                            }
-                        }
-                    }],*/
-
-                    rules: rules_basic
-                });
-
-                $('#btn-reset').on('click', function() {
-                    $('#builder-widgets').queryBuilder('reset');
-                });
-
-                $('#btn-set').on('click', function() {
-                    $('#builder-widgets').queryBuilder('setRules', rules_basic);
-                });
-
-                $('#btn-get').on('click', function() {
-                    var result = $('#builder-widgets').queryBuilder('getRules');
-
-                    if (!$.isEmptyObject(result)) {
-                        alert(JSON.stringify(result, null, 2));
-                    }
-                });
+                buildRules()
             }
 
             that.changed = false;
@@ -1613,7 +1642,7 @@ function Scripts(main) {
                 close: function () {
                     $('#dialog-export-blockly-textarea').val('');
                 },
-                open: function () {
+                open: function (event) {
                     $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                     $('#dialog-export-blockly-textarea').focus();
                 },
@@ -1787,6 +1816,12 @@ function Scripts(main) {
                         }
                     }
                 );
+                if (that.currentId) {
+                    var obj = main.objects[that.currentId];
+                    if (obj && obj.common && obj.common.engineType === 'Blockly') {
+                        editScript(that.currentId);
+                    }
+                }
                 // Listen to events on master workspace.
                 that.blocklyWorkspace.addChangeListener(function (masterEvent) {
                     if (masterEvent.type === Blockly.Events.UI) {
@@ -1803,7 +1838,7 @@ function Scripts(main) {
                 modal:    true,
                 width: 550,
                 height: 170,
-                open: function ()  {
+                open: function (event)  {
                     $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                     $('#dialog-new-script').css({height: 170, overflow: 'hidden'});
                 },
