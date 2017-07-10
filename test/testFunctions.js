@@ -136,6 +136,12 @@ describe('Test JS', function() {
                 "   count += compareTime('10:00', '20:00', 'between', '15:00') ? 1 : 0;\n" +
                 "   count += compareTime('10:00', '20:00', 'between', '9:00') ? 0 : 1;\n" +
                 "   count += compareTime('10:00', null, '<', '9:00') ? 1 : 0;\n" +
+                "   var date1 = new Date();\n" +
+                "   date1.setHours(10);\n" +
+                "   date1.setMinutes(0);\n" +
+                "   count += compareTime(date1, null, '<', '9:00') ? 1 : 0;\n" +
+                "   count += compareTime(date1, '20:00', 'between', '15:00') ? 1 : 0;\n" +
+                "   count += compareTime('5:00', date1, 'between', '8:00') ? 1 : 0;\n" +
                 "   setState('test10', count);\n" +
                 "});",
                 "enabled":      true,
@@ -147,11 +153,11 @@ describe('Test JS', function() {
         };
         onStateChanged = function (id, state) {
             if (id === 'javascript.0.test10') {
-                if (state.val === 5) {
+                if (state.val === 8) {
                     onStateChanged = null;
                     states.getState('javascript.0.test10', function (err, state) {
                         expect(err).to.be.not.ok;
-                        expect(state.val).to.be.equal(5);
+                        expect(state.val).to.be.equal(8);
                         done();
                     });
                 }
