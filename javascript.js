@@ -2355,7 +2355,7 @@
 		            daily = false;
                 }
                 if (time && typeof time !== 'object') {
-                    if (time.indexOf(' ') === -1 && time.indexOf('T') === -1) {
+                    if (typeof time === 'string' && time.indexOf(' ') === -1 && time.indexOf('T') === -1) {
                         var parts = time.split(':');
                         time = new Date();
                         time.setHours(parseInt(parts[0], 10));
@@ -2367,7 +2367,6 @@
                         } else {
                             time.setSeconds(0);
                         }
-                        daily = true;
                     } else {
                         time = new Date(time);
                     }
