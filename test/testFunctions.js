@@ -131,8 +131,11 @@ describe('Test JS', function() {
                 "   count += compareTime('23:00', '01:00', 'between', date1) ? 1 : 0;\n" +
                 "   count += compareTime('23:00', '01:00', 'between', date2) ? 1 : 0;\n" +
 */
-                "   count += compareTime('23:00', '01:00', 'between', '22:30') ? 0 : 1;\n" +
-                "   count += compareTime('23:00', '01:00', 'between', '02:30') ? 0 : 1;\n" +
+                "   count += compareTime('23:00', '01:00', 'between', '22:30') ? 1 : 0;\n" +
+                "   count += compareTime('23:00', '01:00', 'between', '02:30') ? 1 : 0;\n" +
+                "   count += compareTime('10:00', '20:00', 'between', '15:00') ? 1 : 0;\n" +
+                "   count += compareTime('10:00', '20:00', 'between', '9:00') ? 0 : 1;\n" +
+                "   count += compareTime('10:00', null, '<', '9:00') ? 1 : 0;\n" +
                 "   setState('test10', count);\n" +
                 "});",
                 "enabled":      true,
@@ -144,7 +147,7 @@ describe('Test JS', function() {
         };
         onStateChanged = function (id, state) {
             if (id === 'javascript.0.test10') {
-                if (state.val === 2) {
+                if (state.val === 5) {
                     onStateChanged = null;
                     states.getState('javascript.0.test10', function (err, state) {
                         expect(err).to.be.not.ok;
