@@ -2355,7 +2355,21 @@
 		            daily = false;
                 }
                 if (time && typeof time !== 'object') {
-                    time = new Date(time);
+                    if (typeof time === 'string' && time.indexOf(' ') === -1 && time.indexOf('T') === -1) {
+                        var parts = time.split(':');
+                        time = new Date();
+                        time.setHours(parseInt(parts[0], 10));
+                        time.setMinutes(parseInt(parts[1], 10));
+                        time.setMilliseconds(0);
+
+                        if (parts.length === 3) {
+                            time.setSeconds(parseInt(parts[2], 10));
+                        } else {
+                            time.setSeconds(0);
+                        }
+                    } else {
+                        time = new Date(time);
+                    }
                 } else if (!time) {
                     time = new Date();
                     time.setMilliseconds(0);
