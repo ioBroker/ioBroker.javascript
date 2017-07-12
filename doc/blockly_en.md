@@ -526,6 +526,11 @@ But in this schema the state "Light" will be controlled twice (in 1 second and i
 </xml>
 ```
 
+### Toggle state
+![Toggle state](img/system_toggle_en.png)
+
+This block is similar to [control block](#control-state), but it toggles the value. From true to false and vice versa.
+
 ### Update state
 ![Update state](img/system_update_en.png)
 

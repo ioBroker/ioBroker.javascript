@@ -37,10 +37,12 @@ function Scripts(main) {
             for (var i = 0; i < that.main.instances.length; i++) {
                 if (that.main.objects[that.main.instances[i]] && that.main.objects[that.main.instances[i]] && that.main.objects[that.main.instances[i]].common.engineTypes) {
                     instance = that.main.instances[i];
-                    if (typeof that.main.objects[main.instances[i]].common.engineTypes === 'string') {
-                        engineType = that.main.objects[that.main.instances[i]].common.engineTypes;
-                    } else {
-                        engineType = that.main.objects[that.main.instances[i]].common.engineTypes[0];
+                    if (!engineType) {
+                         if (typeof that.main.objects[main.instances[i]].common.engineTypes === 'string') {
+                            engineType = that.main.objects[that.main.instances[i]].common.engineTypes;
+                         } else {
+                            engineType = that.main.objects[that.main.instances[i]].common.engineTypes[0];
+                         }
                     }
                     break;
                 }
