@@ -2424,6 +2424,10 @@
 
                 if (endTime) endTime = endTime.getTime();
 
+                if(operation === 'between' && !endTime) {
+                    adapter.log.warn("missing or unrecognized endTime expression: "+endTime);
+                    return false;
+                }
                 if (operation === 'between' && endTime) {
 		            if (startTime > endTime && daily) return !(time >= endTime && time < startTime);
                       else return time >= startTime && time < endTime;
