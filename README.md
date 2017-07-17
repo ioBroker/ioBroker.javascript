@@ -1010,6 +1010,9 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+### 3.3.10 (2017-07-17)
+* (bluefox) fix build CRON block
+
 ### 3.3.9 (2017-06-18)
 * (bluefox) Add the toggle blockly block
 
