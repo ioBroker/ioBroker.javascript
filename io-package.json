@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.3.10",
+        "version":                  "3.3.11",
         "title":                    "Javascript/Blockly Script Engine",
         "titleLang": {
             "en": "Javascript/Blockly Script Engine",
@@ -14,7 +14,7 @@
             "ingo@fischer-ka.de"
         ],
         "news": {
-            "3.3.10": {
+            "3.3.11": {
                 "en": "Fix build CRON block",
                 "de": "Korrigiere CRON block",
                 "ru": "Исправлен CRON блок"

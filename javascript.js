@@ -2424,16 +2424,22 @@
 
                 if (endTime) endTime = endTime.getTime();
 
-                if(operation === 'between' && !endTime) {
-                    adapter.log.warn("missing or unrecognized endTime expression: "+endTime);
-                    return false;
-                }
-                if (operation === 'between' && endTime) {
-		            if (startTime > endTime && daily) return !(time >= endTime && time < startTime);
-                      else return time >= startTime && time < endTime;
-                } else if (operation === 'not between' && endTime) {
-		            if (startTime > endTime && daily) return time >= endTime && time < startTime;
-                      else return !(time >= startTime && time < endTime);
+                if (operation === 'between') {
+                    if (endTime) {
+                        if (startTime > endTime && daily) return !(time >= endTime && time < startTime);
+                        else return time >= startTime && time < endTime;
+                    } else {
+                        adapter.log.warn('missing or unrecognized endTime expression: ' + endTime);
+                        return false;
+                    }
+                } else if (operation === 'not between') {
+                    if (endTime) {
+                        if (startTime > endTime && daily) return time >= endTime && time < startTime;
+                        else return !(time >= startTime && time < endTime);
+                    } else {
+                        adapter.log.warn('missing or unrecognized endTime expression: ' + endTime);
+                        return false;
+                    }
                 } else if (operation === '>') {
                     return time > startTime;
                 } else if (operation === '>=') {
