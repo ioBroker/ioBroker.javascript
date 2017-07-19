@@ -1,11 +1,12 @@
 {
   "name": "iobroker.javascript",
-  "version": "1.1.4",
+  "version": "3.3.11",
   "description": "Javascript/Coffescript Script Engine for ioBroker",
-  "author": "hobbyquaker <hq@ccu.io>",
+  "author": "bluefox <dogafox@gmail.com>",
   "contributors": [
+    "bluefox <dogafox@gmail.com>",
     "hobbyquaker <hq@ccu.io>",
-    "bluefox <bluefox@ccu.io>"
+    "ingo@fischer-ka.de"
   ],
   "homepage": "https://github.com/ioBroker/ioBroker.javascript",
   "license": "MIT",
@@ -21,12 +22,12 @@
     "url": "https://github.com/ioBroker/ioBroker.javascript"
   },
   "dependencies": {
-    "node-schedule": "^0.5.1",
-    "request": "^2.65.0",
-    "suncalc": "^1.7.0",
+    "node-schedule": "1.2.1",
+    "request": "^2.81.0",
+    "suncalc": "^1.8.0",
     "wake_on_lan": "0.0.4",
     "coffee-compiler": "^0.3.2",
-    "coffee-script": ">=1.10.0"
+    "coffee-script": ">=1.12.3"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
@@ -34,16 +35,14 @@
     "grunt-contrib-jshint": "^0.11.2",
     "grunt-jscs": "^2.0.0",
     "grunt-http": "^1.6.0",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-compress": "^0.13.0",
-    "grunt-contrib-copy": "^0.8.0",
-    "grunt-exec": "^0.4.6"
+    "mocha": "^2.3.4",
+    "chai": "^3.4.1"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.javascript/issues"
   },
   "main": "javascript.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node node_modules/mocha/bin/mocha"
   }
 }

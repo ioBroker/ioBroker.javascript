@@ -1,11 +1,81 @@
 ![Logo](admin/js.jpeg)
 # Javascript Script Engine
+==================
 
-executes Javascript and Coffescript Scripts.
+[![NPM version](http://img.shields.io/npm/v/iobroker.javascript.svg)](https://www.npmjs.com/package/iobroker.javascript)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.javascript.svg)](https://www.npmjs.com/package/iobroker.javascript)
+[![Tests](https://travis-ci.org/ioBroker/ioBroker.javascript.svg?branch=master)](https://travis-ci.org/ioBroker/ioBroker.javascript)
+
+[![NPM](https://nodei.co/npm/iobroker.javascript.png?downloads=true)](https://nodei.co/npm/iobroker.javascript/)
+
+Executes Javascript and Coffescript Scripts.
+
+Here you can find description of [blockly](doc/blockly_en.md).
+
+Hier kann man die Beschreibung von [Blockly](doc/blockly_de.md) finden.
 
 
-##Note
-If in the script some modules or functions are used with callbacks or cyclic calls, except setTimeout/setInterval, 
+## Content
+- [Note](#note)
+- [Global functions](#global-functions)
+    - [Best practice](#best-practice)
+
+- [Functions](#following-functions-can-be-used-in-scripts)
+    - [require - load some module](#require---load-some-module)
+    - [Buffer](#buffer)
+    - [log - Gives out the message into log](#log---gives-out-the-message-into-log)
+    - [exec - execute some OS command, like "cp file1 file2"](#exec---execute-some-os-command-like-cp-file1-file2)
+    - [on - Subscribe on changes or updates of some state](#on---subscribe-on-changes-or-updates-of-some-state)
+    - [subscribe - same as on](#subscribe---same-as-on)
+    - [unsubscribe](#unsubscribe)
+    - [getSubscriptions](#getsubscriptions)
+    - [schedule](#schedule)
+        - [Time schedule](#time-schedule)
+        - [Astro- function](#astro--function)
+
+    - [clearSchedule](#clearschedule)
+    - [getAstroDate](#getastrodate)
+    - [isAstroDay](#isastroday)
+    - [compareTime](#comparetime)
+    - [setState](#setstate)
+    - [setStateDelayed](#setstatedelayed)
+    - [clearStateDelayed](#clearstatedelayed)
+    - [getState](#getstate)
+    - [getObject](#getobject)
+    - [setObject](#setobject)
+    - [extendObject](#extendobject)
+    - [getIdByName](#getidbyname)
+    - [getEnums](#getenums)
+    - [createState](#createstate)
+    - [deleteState](#deletestate)
+    - [sendTo:](#sendto)
+    - [setInterval](#setinterval)
+    - [clearInterval](#clearinterval)
+    - [setTimeout](#settimeout)
+    - [clearTimeout](#cleartimeout)
+    - [formatDate](#formatdate)
+    - [getDateObject](#getDateObject)
+    - [formatValue](#formatvalue)
+    - [adapterSubscribe](#adaptersubscribe)
+    - [adapterUnsubscribe](#adapterunsubscribe)
+    - [$ - Selector](#---selector)
+    - [readFile](#readfile)
+    - [writeFile](#writefile)
+    - [delFile](#delFile)
+    - [onStop](#onstop)
+    - [getHistory](#gethistory)
+    - [runScript](#runscript)
+    - [startScript](#startscript)
+    - [stopScript](#stopscript)
+    - [isScriptActive](#isscriptactive)
+    - [name](#name)
+    - [instance](#instance)
+
+- [Scripts activity](#scripts-activity)
+- [Changelog](#changelog)
+
+## Note
+If in the script some modules or functions are used with callbacks or cyclic calls, except setTimeout/setInterval,
 so they will be called again and again even if the new version of script exists or script is deleted. For example the following script:
 
 ```
@@ -38,33 +108,47 @@ http.request('www.google.com', cb(function(res) {
 to be sure, that no callback will be called if script is deleted or modified.
 
 ## Global functions
-You can define the global scripts with suffux name "_global", like "MyGlobalFunctions_global".
+You can define the global scripts in the "global" folder.
 All global scripts are available on all instances. If global script is disabled, it will not be used.
 Global script will be just prepend to the normal script and compiled, so you cannot share data between scripts via global scrips. Use states for it.
 
-####Best practice: 
+#### Best practice:
 Create two instances of javascript adapter: one "test" and one "production".
 After the script is tested in the "test" instance, it can be moved to "production". By that you can restart the "test" instance as you want.
 
-##Following functions can be used in scripts:
+## Following functions can be used in scripts:
 
 ### require - load some module
     var mod = require('module_name');
 Following modules are pre-loaded: fs, crypto, wake_on_lan, request, suncalc, util, path, os, net, events, dns.
 
-To use other modules go to iobroker/adapter/javascript folder and run in console npm install <modulename>. After npm successfully finished it can be used in script engine. 
-    
+To use other modules go to iobroker/adapter/javascript folder and run in console npm install <modulename>. After npm successfully finished it can be used in script engine.
+
+**Notice** - module *request* is available via variable *request*. There is no need to write ```var request = require('request');```.
+
 ### Buffer
 Buffer - Node.js Buffer, read here [http://nodejs.org/api/buffer.html](http://nodejs.org/api/buffer.html)
-    
-### log - Gives out the message into log 
+
+### log - Gives out the message into log
     log(msg, sev)
 Message is a string and sev is one of the following: 'debug', 'info', 'warn', 'error'.
 Default severity is ***'info'***
 
 ### exec - execute some OS command, like "cp file1 file2"
     exec (cmd, callback)
-    
+
+Execute system command and get the outputs.
+
+```
+// reboot linux system :)
+exec('reboot');
+
+// Get the list of files and directories in /var/log
+exec('ls /var/log', function (error, stdout, stderr) {
+    console.log('stdout: ' + stdout);
+});
+```
+
 ### on - Subscribe on changes or updates of some state
     on(pattern, callbackOrId, value)
 
@@ -92,7 +176,7 @@ The callback function will return the object as parameter with following content
     	'deviceName' :  'deviceName',
     	'enumIds' : [],
     	'enumNames' : [],
-    	'newState' : {
+    	'state' : {
     		'val' :  'new state',
     		'ts' :   1416149118,
     		'ack' :  true,
@@ -108,7 +192,7 @@ The callback function will return the object as parameter with following content
     	}
     }
 ```
-
+**Note:** early was *newState* instead of *state*. It is still working.
 
 Example:
 ```
@@ -127,7 +211,7 @@ on('adapter.0.device.channel.sensor', function (obj) {
 
         // Set acknowledged value
         setState('counter', 1 + getState('counter'), true/*ack*/);
-        
+
         // Or to set unacknowledged command
         setState('adapter.0.device.channel.actor', true);
     }
@@ -141,60 +225,61 @@ You can use following parameters to specify the trigger:
 | logic       | string     |       "and" or "or" logic to combine the conditions \(default: "and"\)                                 |
 |             |            |                                                                                                        |
 | id          | string     |       name ist equal to given one                                                                      |
-|             | RegExp     |       name matched to regular expression                                                               |
+|             | RegExp     |       name matched to regular expression   
+|             | Array      |       name matched to a list of given one                                                         |
 |             |            |                                                                                                        |
 | name        | string     |       name ist equal to given one                                                                      |
 |             | RegExp     |       name matched to regular expression                                                               |
 |             |            |                                                                                                        |
 | change      | string     |       "eq", "ne", "gt", "ge", "lt", "le", "any"                                                        |
-|             |   "eq"     |       (equal)            New value must be euqal to old one (newState.val == oldState.val)             |
-|             |   "ne"     |       (not equal)        New value must be not equal to the old one (newState.val != oldState.val) **If "change" is not specified this value is used by default**    |
-|             |   "gt"     |       (greater)          New value must be greater than old value (newState.val > oldState.val)        |
-|             |   "ge"     |       (greater or equal) New value must be greater or euqal to old one (newState.val >= oldState.val)  |
-|             |   "lt"     |       (smaller)          New value must be smaller than old one (newState.val < oldState.val)          |
-|             |   "le"     |       (smaller or equal) New value must be smaller or euqal to old value (newState.val <= oldState.val)|
-|             |  "any"     |       Trigger will be rised if just the new value comes                                                |
+|             |   "eq"     |       (equal)            New value must be equal to old one (state.val == oldState.val)                |
+|             |   "ne"     |       (not equal)        New value must be not equal to the old one (state.val != oldState.val) **If pattern is id-string this value is used by default**    |
+|             |   "gt"     |       (greater)          New value must be greater than old value (state.val > oldState.val)           |
+|             |   "ge"     |       (greater or equal) New value must be greater or equal to old one (state.val >= oldState.val)     |
+|             |   "lt"     |       (smaller)          New value must be smaller than old one (state.val < oldState.val)             |
+|             |   "le"     |       (smaller or equal) New value must be smaller or equal to old value (state.val <= oldState.val)   |
+|             |  "any"     |       Trigger will be raised if just the new value comes                                               |
 |             |            |                                                                                                        |
-| val         | mixed      |       New value must be euqal to given one                                                             |
+| val         | mixed      |       New value must be equal to given one                                                             |
 | valNe       | mixed      |       New value must be not equal to given one                                                         |
 | valGt       | mixed      |       New value must be greater than given one                                                         |
-| valGe       | mixed      |       New value must be greater or euqal to given one                                                  |
+| valGe       | mixed      |       New value must be greater or equal to given one                                                  |
 | valLt       | mixed      |       New value must be smaller than given one                                                         |
-| valLe       | mixed      |       New value must be smaller or euqal to given one                                                  |
+| valLe       | mixed      |       New value must be smaller or equal to given one                                                  |
 |             |            |                                                                                                        |
 | ack         | boolean    |       Acknowledged state of new value is equal to given one                                            |
 |             |            |                                                                                                        |
-| oldVal      | mixed      |       Previous value must be euqal to given one                                                        |
+| oldVal      | mixed      |       Previous value must be equal to given one                                                        |
 | oldValNe    | mixed      |       Previous value must be not equal to given one                                                    |
 | oldValGt    | mixed      |       Previous value must be greater than given one                                                    |
-| oldValGe    | mixed      |       Previous value must be greater or euqal to given one                                             |
+| oldValGe    | mixed      |       Previous value must be greater or equal to given one                                             |
 | oldValLt    | mixed      |       Previous value must be smaller than given one                                                    |
-| oldValLe    | mixed      |       Previous value must be smaller or euqal to given one                                             |
+| oldValLe    | mixed      |       Previous value must be smaller or equal to given one                                             |
 |             |            |                                                                                                        |
 | oldAck      | bool       |       Acknowledged state of previous value is equal to given one                                       |
 |             |            |                                                                                                        |
-| ts          | string     |       New value time stamp must be euqal to given one (newState.ts == ts)                              |
-| tsGt        | string     |       New value time stamp must be not equal to the given one (newState.ts != ts)                      |
-| tsGe        | string     |       New value time stamp must be greater than given value (newState.ts > ts)                         |
-| tsLt        | string     |       New value time stamp must be greater or euqal to given one (newState.ts >= ts)                   |
-| tsLe        | string     |       New value time stamp must be smaller than given one (newState.ts < ts)                           |
+| ts          | string     |       New value time stamp must be equal to given one (state.ts == ts)                                 |
+| tsGt        | string     |       New value time stamp must be not equal to the given one (state.ts != ts)                         |
+| tsGe        | string     |       New value time stamp must be greater than given value (state.ts > ts)                            |
+| tsLt        | string     |       New value time stamp must be greater or equal to given one (state.ts >= ts)                      |
+| tsLe        | string     |       New value time stamp must be smaller than given one (state.ts < ts)                              |
 |             |            |                                                                                                        |
-| oldTs       | string     |       Previous time stamp must be euqal to given one (oldState.ts == ts)                               |
+| oldTs       | string     |       Previous time stamp must be equal to given one (oldState.ts == ts)                               |
 | oldTsGt     | string     |       Previous time stamp must be not equal to the given one (oldState.ts != ts)                       |
 | oldTsGe     | string     |       Previous time stamp must be greater than given value (oldState.ts > ts)                          |
-| oldTsLt     | string     |       Previous time stamp must be greater or euqal to given one (oldState.ts >= ts)                    |
+| oldTsLt     | string     |       Previous time stamp must be greater or equal to given one (oldState.ts >= ts)                    |
 | oldTsLe     | string     |       Previous time stamp must be smaller than given one (oldState.ts < ts)                            |
 |             |            |                                                                                                        |
-| lc          | string     |       Last change time stamp must be euqal to given one (newState.lc == lc)                            |
-| lcGt        | string     |       Last change time stamp must be not equal to the given one (newState.lc != lc)                    |
-| lcGe        | string     |       Last change time stamp must be greater than given value (newState.lc > lc)                       |
-| lcLt        | string     |       Last change time stamp must be greater or euqal to given one (newState.lc >= lc)                 |
-| lcLe        | string     |       Last change time stamp must be smaller than given one (newState.lc < lc)                         |
+| lc          | string     |       Last change time stamp must be equal to given one (state.lc == lc)                               |
+| lcGt        | string     |       Last change time stamp must be not equal to the given one (state.lc != lc)                       |
+| lcGe        | string     |       Last change time stamp must be greater than given value (state.lc > lc)                          |
+| lcLt        | string     |       Last change time stamp must be greater or equal to given one (state.lc >= lc)                    |
+| lcLe        | string     |       Last change time stamp must be smaller than given one (state.lc < lc)                            |
 |             |            |                                                                                                        |
-| oldLc       | string     |       Previous last change time stamp must be euqal to given one (oldState.lc == lc)                   |
+| oldLc       | string     |       Previous last change time stamp must be equal to given one (oldState.lc == lc)                   |
 | oldLcGt     | string     |       Previous last change time stamp must be not equal to the given one (oldState.lc != lc)           |
 | oldLcGe     | string     |       Previous last change time stamp must be greater than given value (oldState.lc > lc)              |
-| oldLcLt     | string     |       Previous last change time stamp must be greater or euqal to given one (oldState.lc >= lc)        |
+| oldLcLt     | string     |       Previous last change time stamp must be greater or equal to given one (oldState.lc >= lc)        |
 | oldLcLe     | string     |       Previous last change time stamp must be smaller than given one (oldState.lc < lc)                |
 |             |            |                                                                                                        |
 | channelId   | string     |       Channel ID must be equal to given one                                                            |
@@ -239,9 +324,10 @@ on(/^system\.adapter\..*\.\d+\.memRss$/, function (obj) {
 });
 
 // same as
-on({id: /^system\.adapter\..*\.\d+\.memRss$/, "change": "ne"}, function (obj) {
+on({id: /^system\.adapter\..*\.\d+\.memRss$/, change: "ne"}, function (obj) {
 });
 ```
+
 To simply connect two states with each other, write:
 ```
 on('stateId1', 'stateId2');
@@ -249,13 +335,15 @@ on('stateId1', 'stateId2');
 
 All changes of *stateId1* will be written to *stateId2*.
 
-Function "on" returns handler back. This handler can be used by unsubscribe. 
+Please note, that by default "change" is equal to "any", except when only id as string is set (like ```on("id", function (){});```). In last case change will be set to "ne".
+
+Function "on" returns handler back. This handler can be used by unsubscribe.
 
 ### subscribe - same as **[on](#on---subscribe-on-changes-or-updates-of-some-state)**
-    
-### unsubscribe 
+
+### unsubscribe
     unsubscribe(id or handler)
-    
+
 Remove all subscriptions for given object ID or for given handler.
 
 ```
@@ -273,7 +361,7 @@ on({id: "javascript.0.myState1", change: 'ne'}, function (data) {
 });
 
 on({id: "javascript.0.myState1", change: 'any'}, function (data) {
-    // unsubscribe 
+    // unsubscribe
     if (unsubscribe("javascript.0.myState1")) {
         log('All subscriptions deleted');
     }
@@ -282,7 +370,7 @@ on({id: "javascript.0.myState1", change: 'any'}, function (data) {
 
 ### getSubscriptions
 Get the list of subscriptions.    
-    
+
 Example of result:
 ```
 {
@@ -297,13 +385,13 @@ Example of result:
 	]
 }
 ```
-    
+
 ### schedule
     schedule (pattern, callback)
 
 Time scheduler with astro-funktion.
 
-####Time schedule
+#### Time schedule
 Pattern can be a string with [Cron-Syntax](http://en.wikipedia.org/wiki/Cron), e.G.:
 
      # *  *  * *  *  command to execute
@@ -333,7 +421,17 @@ schedule({hour: 12, minute: 30}, function () {
 ```
 Pattern can be a Javascript Date object (some specific time point) - in this case only it will be triggered only one time.
 
-####Astro- funktion
+**Note:** the newest version of schedule supports seconds too, so you can specify:
+
+```
+schedule("*/2 * * * * *", function () {
+    log("Will be triggered every 2 seconds!");
+});
+```
+
+to trigger every second second.
+
+#### Astro- function
 
 Astro-function can be used via "astro" attribute:
 
@@ -348,7 +446,7 @@ schedule({astro: "sunset", shift: 10}, function () {
 ```
 The attribute "shift" is the offset in minutes. It can be negative too, to define time before astro event.
 
-Following values can be used as attribut in astro-function:
+Following values can be used as attribute in astro-function:
 
 - sunrise: sunrise (top edge of the sun appears on the horizon)
 - sunriseEnd: sunrise ends (bottom edge of the sun touches the horizon)
@@ -367,7 +465,9 @@ Following values can be used as attribut in astro-function:
 
 **Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
 
-**Note:** you can use "on" function for schedule with small modification: 
+**Note:** On some places sometines it could be so, that no night/nightEnd exists. Please read [here](https://github.com/mourner/suncalc/issues/70) about it.
+
+**Note:** you can use "on" function for schedule with small modification:
 ```
 on({time: "*/2 * * * *"}, function () {
     log((new Date()).toString() + " - Will be triggered every 2 minutes!");
@@ -393,7 +493,7 @@ clearSchedule(sch);
 
 ### getAstroDate
     getAstroDate (pattern, date)
-Returns a javascript Date object for the specified pattern. For valid pattern values see the *Astro* section in the *schedule* function.
+Returns a javascript Date object for the specified pattern. For valid pattern values see the [Astro](#astro--function) section in the *schedule* function.
 
 The returned Date object is calculated for the passed *date*. If no date is provided, the current day is used.
 
@@ -402,7 +502,7 @@ var sunriseEnd = getAstroDate("sunriseEnd");
 log("Sunrise ends today at " + sunriseEnd.toLocaleTimeString());
 
 var today = new Date();
-var tomorrow = today.setDate(today.getDate()+1);
+var tomorrow = today.setDate(today.getDate() + 1);
 var tomorrowNigh = getAstroDate("night", tomorrow);
 ```
 
@@ -410,25 +510,74 @@ var tomorrowNigh = getAstroDate("night", tomorrow);
     isAstroDay ()
 Returns true if the current time is between the astro sunrise and sunset.
 
-### setState 
+### compareTime
+    compareTime (startTime, endTime, operation, timeToCompare)
+Compares given time with limits.
+
+If timeToCompare is not given, so the actual time will be used.
+
+Following operations are possible:
+
+- > - if given time is greater as startTime
+- >= - if given time is greater or equal to startTime
+- < - if given time is less as startTime
+- <= - if given time is less or equal to startTime
+- == - if given time is equal to startTime
+- <> - if given time is not equal to startTime
+- between - if given time is between startTime and endTime
+- not between - if given time is not between startTime and endTime
+
+Time can be Date object or Date with time or just time.
+
+You can use astro-names for the time definition. All 3 parameters can be set as astro time.
+Following values are possible: 'sunrise', 'sunset', 'sunriseEnd', 'sunsetStart', 'dawn', 'dusk', 'nauticalDawn', 'nauticalDusk', 'nightEnd', 'night', 'goldenHourEnd', 'goldenHour'.
+See [Astro](#astro--function) for detail.
+
+
+```
+console.log(compareTime('sunsetStart', 'sunsetEnd', 'between') ? 'Now is sunrise' : 'Now is no sunrise');
+```
+
+It is possible to define the time with offset too:
+
+```
+console.log(compareTime({astro: 'sunsetStart', offset: 30}, {astro: 'sunrise', offset: -30}, '>') ? 'Now is at least 30 minutes after sunset' : 'No idea');
+```
+
+Structure of astro object.
+
+```
+    {
+        astro: 'sunsetStart',// mandatory, can be written as string and not as object if offset and date are default
+        offset: 30,          // optional
+        date:   new Date()   // optional
+    }
+```
+
+### setState
     setState (id, state, ack, callback)
-    
+
+Please refer to https://github.com/ioBroker/ioBroker/wiki/Adapter-Development-Documentation#commands-and-statuses for usage of "ack".
+Short:
+- ack = false : Script wants to send a command to be executed by the target device/adapter
+- ack = true  : Command was successfully executed and state is updated as positive result
+
 ### setStateDelayed
     setStateDelayed (id, state, isAck, delay, clearRunning, callback)
-    
+
 Same as setState but with delay in milliseconds. You can clear all running delay for this ID (by default). E.g.
 
 ```
     setStateDelayed('Kitchen.Light.Lamp', true,  1000);// Switch ON the light in the kitchen in one second
-    setStateDelayed('Kitchen.Light.Lamp', false, 5000, false, function () { // Switch OFF the light in the kitchen in 5 seconds and let first timeout run. 
+    setStateDelayed('Kitchen.Light.Lamp', false, 5000, false, function () { // Switch OFF the light in the kitchen in 5 seconds and let first timeout run.
         log('Lamp is OFF');
     });
-``` 
-This function returns handler of the timer and this timer can be indiviually stopped by clearStateDelayed
+```
+This function returns handler of the timer and this timer can be individually stopped by clearStateDelayed
 
 ### clearStateDelayed
     clearStateDelayed (id)
-    
+
 Clears all delayed tasks for specified state ID or some specific delayed task.
 
 ```
@@ -437,10 +586,12 @@ Clears all delayed tasks for specified state ID or some specific delayed task.
     clearStateDelayed('Kitchen.Light.Lamp', timer); // Nothing will be switched on
     clearStateDelayed('Kitchen.Light.Lamp'); // Clear all running delayed tasks for this ID
 ```     
-### getState 
+### getState
     getState (id)
-Returns state of id in form {val: value, ack: true/false, ts: timestamp, lc: lastchanged, from: origin}    
-    
+Returns state of id in form ```{val: value, ack: true/false, ts: timestamp, lc: lastchanged, from: origin}```   .
+
+If state does not exist, it will be returned following object: ```{val: null, notExist: true}```
+
 ### getObject
     getObject (id, enumName)
 Get description of object id as stored in system.
@@ -448,7 +599,7 @@ You can specify the enumeration name. If this is defined, two additional attribu
 These arrays has all enumerations, where ID is member of. E.g:
 
 ``` getObject ('adapter.N.objectName', 'rooms') ```
- 
+
 gives back in enumIds all rooms, where the requested object is a member. You can define "true" as enumName to get back *all* enumerations.
 
 ### setObject
@@ -456,22 +607,33 @@ gives back in enumIds all rooms, where the requested object is a member. You can
 Write object into DB. This command can be disabled in adapter's settings. Use this function carefully, while the global settings can be damaged.
 
 Use it like this:
-``` 
-var obj = getObject ('adapter.N.objectName'); 
+```
+var obj = getObject ('adapter.N.objectName');
 obj.native.settings = 1;
-setObject('adapter.N.objectName',obj, function (err) {
+setObject('adapter.N.objectName', obj, function (err) {
     if (err) log('Cannot write object: ' + err);
 });
 ```
-    
-### getIdByName 
+
+### extendObject
+    extendObject(id, obj, callback)
+
+It is almost the same as setObject, but first it reads the object and tries to merge all settings together.
+
+Use it like this:
+```
+// Stop instance
+extendObject('system.adapter.sayit.0', {common: {enabled: false}});
+```
+
+### getIdByName
     getIdByName(name, alwaysArray)
 
 returns id of the object with given name. If there are more than one object with this name the result will be an array. If _alwaysArray_ flag is set, the result will be always an array if some ID found.
 ### getEnums
     getEnums(enumName)
-    
-Get the list of existing enumerations with members, like: 
+
+Get the list of existing enumerations with members, like:
 
 ```
 getEnums('rooms') =>
@@ -493,7 +655,7 @@ getEnums('rooms') =>
     createState(name, initialValue, forceCreation, common, native, callback)
 Create state and object in javascript space if does not exist, e.g. "javascript.0.mystate".
 
-####Parameters:
+#### Parameters:
 
 - **name**: name of the state without namespace, e.g. "mystate"
 - **initialValue**: variable can be initialized after created. Value "undefined" means do not initialize value.
@@ -509,40 +671,38 @@ It is possible short type of createState:
 - _createState('myVariable', {name: 'My own variable', unit: '°C'}, function () {log('created');});_
 - _createState('myVariable', 1, {name: 'My own variable', unit: '°C'})_ - create variable if does not exist with specific name and units
 
+### deleteState
+    deleteState(name, callback)
+    Delete state and object in javascript space, e.g. "javascript.0.mystate". The foreign state cannot be deleted.
+
+``` deleteState('myVariable')_ - simply delete variable if exists```
+
 ### sendTo:    
     sendTo (adapter, cmd, msg, callback)
-    
+
 ### setInterval
     setInterval (callback, ms, arg1, arg2, arg3, arg4)
 Same as javascript ***setInterval***.
-    
+
 ### clearInterval
     clearInterval (id)
 Same as javascript ***clearInterval***.
-    
-### setTimeout 
+
+### setTimeout
     setTimeout (callback, ms, arg1, arg2, arg3, arg4)
 Same as javascript ***setTimeout***.
-    
+
 ### clearTimeout
     clearTimeout (id)
 Same as javascript ***clearTimeout***.
 
 ### formatDate
-    formatDate (secondsOrDate, format, isSeconds)
-    
-### adapterSubscribe
-    adapterSubscribe(id)
-Sends to adapter message "subscribe" to inform adapter. If adapter has common flag "subscribable" in case of function "subscribe" this function will be called automatically.
+    formatDate (millisecondsOrDate, format)
 
-### adapterUnsubscribe
-    adapterUnsubscribe(id)
-Sends to adapter message "unsubscribe" to inform adapter to not poll the values.
+#### Parameters:
 
-####Parameters:
-
-- **date**: number of seconds from state.ts or state.lc (Number seconds from 1970.01.01 00:00:00) or javascript *new Date()* object or number of milliseconds from *(new Date().getTime())*
-- **format**: Can be "null", so the system time format will be used, elsewise 
+- **date**: number of milliseconds from state.ts or state.lc (Number milliseconds from 1970.01.01 00:00:00) or javascript *new Date()* object or number of milliseconds from *(new Date().getTime())*
+- **format**: Can be "null", so the system time format will be used, elsewise
 
        * YYYY, JJJJ, ГГГГ - full year, e.g 2015
        * YY, JJ, ГГ - short year, e.g 15
@@ -556,15 +716,48 @@ Sends to adapter message "unsubscribe" to inform adapter to not poll the values.
        * m, м(cyrillic) - short minutes, e.g. 4
        * ss, сс(cyrillic) - full seconds, e.g. 05
        * s, с(cyrillic) - short seconds, e.g. 5
-  
-- **isSeconds**: If *date* seconds from state.ts ot state.lc or milliseconds from *(new Date().getTime())*
+       * sss, ссс(cyrillic) - milliseconds
+       * WW, НН(cyrillic) - full week day as text
+       * W, Н(cyrillic) - short week day as text
+       * OO, ОО(cyrillic) - full month as text
+       * OOO, ООО(cyrillic) - full month as text as genitiv
+       * O, О(cyrillic) - short month as text
 
 #### Example
+
+´´´
   formatDate(new Date(), "YYYY-MM-DD") => Date "2015-02-24"
   formatDate(new Date(), "hh:mm") => Hours and minutes "17:41"
   formatDate(state.ts) => "24.02.2015"
-  formatDate(state.ts, "JJJJ.MM.TT SS:mm:ss) => "2015.02.15 17:41:98"
-  
+  formatDate(state.ts, "JJJJ.MM.TT SS:mm:ss.sss) => "2015.02.15 17:41:98.123"
+  formatDate(new Date(), "WW") => Day of week "Tuesday"
+  formatDate(new Date(), "W") => Day of week "Tu"
+´´´
+
+### getDateObject
+    getDateObject (stringOrNumber)
+Converts string or number to Date object.
+If only hours are given it will add current date to it and will try to convert.
+
+getDateObject("20:00") => "Tue Aug 09 2016 20:00:00 GMT+0200"
+
+### formatValue
+	formatValue (value, decimals, format)
+Formats any value (strings too) to number. Replaces point with comma if configured in system.
+Decimals specify digits after comma. Default value is 2.
+Format is optional:
+ - '.,': 1234.567 => 1.234,56
+ - ',.': 1234.567 => 1,234.56
+ - ' .': 1234.567 => 1 234.56
+
+
+### adapterSubscribe
+    adapterSubscribe(id)
+Sends to adapter message "subscribe" to inform adapter. If adapter has common flag "subscribable" in case of function "subscribe" this function will be called automatically.
+
+### adapterUnsubscribe
+    adapterUnsubscribe(id)
+Sends to adapter message "unsubscribe" to inform adapter to not poll the values.
 
 ### $ - Selector
     $(selector).on(function(obj) {});
@@ -583,12 +776,12 @@ Prefixes ***(not implemented - should be discussed)*** :
  . - filter by role
  § - filter by room
 
-***Example***: 
+***Example***:
 
 - $('state[id=*.STATE]') or $('state[state.id=*.STATE]') or $('*.STATE') - select all states where id ends with ".STATE".
 - $('state[id='hm-rpc.0.*]') or $('hm-rpc.0.*') - returns all states of adapter instance hm-rpc.0
 - $('channel(rooms=Living room)') - all states in room "Living room"
-- $('channel{TYPE=BLIND}[state.id=*.LEVEL]') - Get all shutter of Homematic 
+- $('channel{TYPE=BLIND}[state.id=*.LEVEL]') - Get all shutter of Homematic
 - $('channel\[role=switch\]\(rooms=Living room\)\[state.id=*.STATE\]').setState(false) - Switch all states with .STATE of channels with role "switch" in "Living room" to false
 - $('channel\[state.id=*.STATE\]\(functions=Windows\)').each(function (id, i) {log(id);}); - print all states of enum "windows" in log
 
@@ -600,10 +793,10 @@ Prefixes ***(not implemented - should be discussed)*** :
 Lets take a look at:
 <pre><code>
 $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').on(function (obj) {
-   log('New state ' + obj.id + ' = ' + obj.newState.val);
+   log('New state ' + obj.id + ' = ' + obj.state.val);
 }
 </code></pre>
-This code searches in channels. 
+This code searches in channels.
 Find all channels with common.role="switch" and belongs to enum.rooms.Wohnzimmer.
 Take all their states, where id ends with ".STATE and make subscription on all these states.
 If some of these states changes the callback will be called like for "on" function.
@@ -616,7 +809,7 @@ Following functions are possible, setValue, getValue (only from first), on, each
 $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').setValue(true);
 ```
 
-You can interrupt the "each" loop by returning the false value, like: 
+You can interrupt the "each" loop by returning the false value, like:
 ```
 // print two first IDs of on all switches in "Wohnzimmer"
 $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').each(function (id, i) {
@@ -626,227 +819,303 @@ $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').each(function (id,
 ```
 
 ### readFile
-    readFile (fileName, function (error, bytes) {})
-    
+    readFile (adapter, fileName, function (error, bytes) {})
+
 The result will be given in callback.
-File will be stored in the DB and can be accessed from any host under name javascript.X.fileName
+Read file from DB from folder "javascript".
+
+Argument *adapter* can be omitted.
+
+```
+// read vis views
+readFile('vis.0', '/main/vis-views.json', function (error, data) {
+    console.log(data.substring(0, 50));
+});
+
+// The same as
+//readFile('/../vis.0/main/vis-views.json', function (error) {
+//     console.log(data.substring(0, 50));
+//});
+```
+
+By default working directory/adapter is "javascript.0".
 
 ### writeFile
-    writeFile (fileName, bytes, function (error) {})
+    writeFile (adapter, fileName, bytes, function (error) {})
 
-The optional error code will be given in callback.
+The optional error code will be given in callback. Argument *adapter* can be ommited.
+fileName is the name of file in DB. All files are stored in folder "javascript". if you want to write to other folders, e.g. to "/vis.0/" use setFile for that.
+
+The file that looks like '/subfolder/file.txt' will be stored under "/javascript/subfolder/file.txt" and can be accessed over web server with ```http://ip:8082/javascript/subfolder/file.txt```
+
+```
+// store screenshot in DB
+var fs = require('fs');
+var data = fs.readFileSync('/tmp/screenshot.png');
+writeFile(null, '/screenshots/1.png', data, function (error) {
+    console.log('file written');
+});
+
+// The same as
+//writeFile('/screenshots/1.png', data, function (error) {
+//    console.log('file written');
+//});
+```
+
+```
+// store file in '/vis.0' in DB
+var fs = require('fs');
+var data = fs.readFileSync('/tmp/screenshot.png');
+writeFile('vis.0', '/screenshots/1.png', data, function (error) {
+    console.log('file written');
+});
+```
+
+### delFile
+    delFile (adapter, fileName, function (error) {})
+
+Delete file or directory. fileName is the name of file or directory in DB.
+
+This function is alias for *unlink*.
+
+### onStop
+    onStop (function(){}, timeout);
+Install callback, that will be called if script stopped. Used e.g. to stop communication or to close connections.
+
+```
+// establish connection
+var conn = require('net')....;
+
+// close connection if script stopped
+onStop(function (callback) {
+    if (conn) {
+        // close connection
+        conn.destory();
+    }
+    callback();
+}, 2000 /*ms*/);
+```
+*timeout* is default 1000ms.
+
+### getHistory
+    getHistory (instance, options, function (error, result, options, instance) {});
+
+Read history from specified instance. if no instance specified the system default history instance will be taken.
+```
+// Read history of 'system.adapter.admin.0.memRss' from sql driver
+var end = new Date().getTime();
+getHistory('sql.0', {
+        id:         'system.adapter.admin.0.memRss',
+        start:      end - 3600000,
+        end:        end,
+        aggregate:  'm4',
+        timeout:    2000
+    }, function (err, result) {
+        if (err) console.error(err);
+        if (result) {
+            for (var i = 0; i < result.length; i++) {
+            console.log(result[i].id + ' ' + new Date(result[i].ts).toISOString());
+            }
+        }
+    });
+```
+Possible options you can find [here](https://github.com/ioBroker/ioBroker.history#access-values-from-javascript-adapter).
+
+Additionally to these parameters you must specify "id" and you may specify timeout (default: 20000ms).
+
+One more example:
+```
+// Get last 50 entries from default history instance with no aggregation:
+getHistory({
+        id:         'system.adapter.admin.0.alive',
+        aggregate:  'none',
+        count:      50
+    }, function (err, result) {
+        if (err) console.error(err);
+        if (result) {
+            for (var i = 0; i < result.length; i++) {
+            console.log(result[i].id + ' ' + new Date(result[i].ts).toISOString());
+            }
+        }
+    });
+```
+
+**Note: ** of course history must be first enabled for selected ID in admin.
+
+### runScript
+    runScript('scriptName')
+
+Starts or restarts other scripts (and itself too) by name.
+
+```
+// restart script
+runScript('groupName.scriptName1');
+```
+
+### startScript
+    startScript('scriptName', ignoreIfStarted, callback)
+
+Starts the script. If ignoreIfStarted set to true, nothing will be done if script yet running, elsewise the script will be restarted.
+
+```
+startScript('scriptName', true); // start script if not started
+```
+
+### stopScript
+    stopScript('scriptName', callback)
+
+If stopScript is called without arguments, it will stop itself:
+
+```
+stopScript();
+```
+
+### isScriptActive
+    isScriptActive('scriptName')
+
+Returns if script enabled or disabled. Please note, that that does not give back if the script now running or not. Script can be finished, but still activated.
+
+### name
+    log('Script ' + name + ' started!')
+
+It is not a function. It is a variable with script name, that is visible in script's scope.
+
+### instance
+    log('Script ' + name + ' started by ' + instance + '!')
+
+It is not a function. It is a variable with javascript instance, that is visible in script's scope.
+
+## Option - "Do not subscribe all states on start"
+There are two modes of subscribe on states:
+- Adapter subscribes on all changes at start and receives all changes of all states (it is easy to use getStates(id), but required more CPU and RAM):
+
+```
+console.log(getState('someID').val);
+```
+
+- Adapter subscribes every time on specified ID if "on/subscribe" called. In this mode the adapter receives only updates for desired states.
+It is very perform and RAM efficiency, but you cannot access states directly in getState. You must use callback to get the result of state:
+
+```
+getState('someID', function (error, state) {
+    console.log(state.val);
+});
+```
+
+It is because the adapter does not have the value of state in RAM and must ask central DB for the value.
 
 ## Scripts activity
 
 There is a possibility to enabled and disable scripts via states. For every script the state will be created with name **javascript.INSTANCE.scriptEnabled.SCRIPT_NAME**.
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
-
 ## Changelog
-### 1.1.4 (2016-01-22)
-* (bluefox) fix error by states to control activity of scripts
+### 3.3.11 (2017-07-18)
+* (bluefox) fix build CRON block
 
-### 1.1.2 (2016-01-21)
-* (bluefox) fix error by setStateDelayed
-* (bluefox) add clearStateDelayed
-* (bluefox) add javascript.INSTANCE.scriptEnabled.SCRIPT_NAME state to control activity of scripts
+### 3.3.9 (2017-06-18)
+* (bluefox) Add the toggle blockly block
 
-### 1.1.1 (2015-12-16)
-* (bluefox) fix error if id is regExp
+### 3.3.8 (2017-05-22)
+* (Apollon77/bluefox) Accept for subscribes arrays of IDs
 
-### 1.1.0 (2015-12-14)
-* (bluefox) fix setObject
-* (bluefox) implement adapterSubscribe/adapterUnsubscribe
+### 3.3.6 (2017-05-17)
+* (bluefox) add the genitive month for formatDate
 
-### 1.0.9 (2015-12-08)
-* (bluefox) clear enums cache if some enum changed
-* (bluefox) add getSubscriptions function
+### 3.3.4 (2017-04-01)
+* (bluefox) Catch error by request if host unavailable
+* (bluefox) add "request" to script namespace
 
-### 1.0.8 (2015-11-30)
-* (bluefox) fix error if name is null
+### 3.3.3 (2017-03-27)
+* (bluefox)Fix stopScript
 
-### 1.0.7 (2015-11-16)
-* (bluefox) Add setObject function
+### 3.3.2 (2017-03-18)
+* (bluefox) Support of system coordinates
 
-### 1.0.6 (2015-11-15)
-* (angelnu) Add getAstroDay and isAstroDay functions.
+### 3.3.1 (2017-03-15)
+ * (bluefox) fix error if no scripts exists
 
-### 1.0.5 (2015-11-03)
-* (bluefox) fix clearSchedule
+### 3.3.0 (2017-03-14)
+* (bluefox) all callbacks in try/catch
 
-### 1.0.4 (2015-11-03)
-* (bluefox) add unsubscribe
+### 3.2.8 (2017-03-08)
+* (bluefox) Translations
 
-### 1.0.3 (2015-10-30)
-* (bluefox) add clearSchedule function (only for non astro function)
+### 3.2.7 (2017-03-03)
+* (bluefox) allow creation of states for other javascript instances
 
-### 1.0.2 (2015-10-12)
-* (bluefox) allow break the "each" by returning of false value.
+### 3.2.6 (2017-02-14)
+* (bluefox) Fix import of scripts
+* (bluefox) Ask to save before start the script
 
-### 1.0.1 (2015-10-06)
-* (bluefox) enable resize of columns in select ID dialog
+### 3.2.5 (2017-01-23)
+* (bluefox) Extend compareTime function with astro features
 
-### 1.0.0 (2015-10-05)
-* (bluefox) fix error with regex and name
-* (bluefox) adapter is stable => make 1.0.0
+### 3.2.4 (2017-01-13)
+* (bluefox) fix stopScript
 
-### 0.5.9 (2015-09-26)
-* (bluefox) update ace editor
+### 3.2.3 (2017-01-05)
+* (bluefox) Try to fix error with sayit
 
-### 0.5.8 (2015-09-23)
-* (bluefox) add new function "setStateDelayed"
+### 3.2.2 (2016-12-17)
+* (bluefox) Allow with stopScript() to stop itself
 
-### 0.5.7 (2015-09-13)
-* (bluefox) change createState: if "def" exists, the state will be created with "def" value.
+### 3.2.1 (2016-11-24)
+* (bluefox) Fix error with subscribe for only required states
 
-### 0.5.6 (2015-09-10)
-* (bluefox) allow set state of object if value was never set
+### 3.2.0 (2016-11-14)
+* (bluefox) Fix error with of blocks in adapters
+* (bluefox) Support of subscribe for only required states
+* (bluefox) add delFile
+* (bluefox) fix error with names
 
-### 0.5.5 (2015-08-23)
-* (bluefox) fix error if many additional npm packets
+### 3.1.0 (2016-10-12)
+* (bluefox) Support of blocks in adapters
+* (bluefox) Move sendTo blocks into adapters
 
-### 0.5.4 (2015-08-17)
-* (bluefox) new function getIdByName
+### 3.0.10 (2016-09-30)
+* (bluefox) New blocks: compare time, write state
+* (bluefox) Documentation
 
-### 0.5.3 (2015-08-15)
-* (bluefox) fix error with regexp
+### 3.0.9 (2016-09-20)
+* (bluefox) Bugfixing of blockly
 
-### 0.5.2 (2015-08-05)
-* (bluefox) make edit buttons (in admin tab) visible
-* (bluefox) add console.log, console.warn, console.error commands
-* (bluefox) update packets
+### 3.0.7 (2016-09-09)
+* (bluefox) add ack for trigger in blockly
+* (bluefox) add block to get info about trigger
+* (bluefox) start description of blockly
+* (bluefox) add runScript functions
+* (bluefox) disable zoom on wheel in blockly
+* (bluefox) fix block: time compare
 
-### 0.5.1 (2015-07-27)
-* (bluefox) fix error with enums
+### 3.0.6 (2016-09-07)
+* (bluefox) add extendObject function
+* (bluefox) add custom sendTo block
+* (bluefox) add multiple trigger block
 
-### 0.5.0 (2015-07-27)
-* (bluefox) extend getObject with enum names and add new function getEnums
+### 3.0.5 (2016-09-03)
+* (bluefox) Fix sendTo blocks
 
-### 0.4.13 (2015-07-20)
-* (bluefox) sort scripts alphabetically and globals at begin
+### 3.0.4 (2016-09-01)
+* (bluefox) Support of convert day of week into text in blockly
 
-### 0.4.12 (2015-07-17)
-* (bluefox) fix error in getObjectEnums
+### 3.0.3 (2016-08-29)
+* (bluefox) Fixed the convert date block
 
-### 0.4.11 (2015-07-13)
-* (bluefox) fix error with selector and enums
+### 3.0.2 (2016-08-28)
+* (bluefox) Change name of sandbox debug variable
 
-### 0.4.9 (2015-07-11)
-* (bluefox) fix channelName and channelId and optimize matching
+### 3.0.1 (2016-08-27)
+* (bluefox) Fix disabling of script
 
-### 0.4.8 (2015-06-29)
-* (bluefox) fix select dialog
+### 3.0.0 (2016-08-27)
+* (bluefox) Beta Release with Blockly
 
-### 0.4.7 (2015-06-28)
-* (bluefox) own tab in admin
-* (bluefox) cron editor (limited)
 
-### 0.4.6 (2015-06-16)
-* (bluefox) global scripts
+## License
 
-### 0.4.5 (2015-06-04)
-* (bluefox) fix error with schedule and sunday
+The MIT License (MIT)
 
-### 0.4.4 (2015-06-03)
-* (bluefox) show error if suncalc cannot calculate time and set time to 23:59:59
+Copyright (c) 2014-2017 bluefox <dogafox@gmail.com>,
 
-### 0.4.3 (2015-06-01)
-* (bluefox) show error if suncalc cannot calculate time
-
-### 0.4.2 (2015-05-16)
-* (bluefox) fix error with invalid additional packages
-
-### 0.4.0 (2015-05-16)
-* (bluefox) allow additionally install other npm packages for javascript
-
-### 0.3.2 (2015-04-30)
-* (bluefox) fix warning with createState
-
-### 0.3.1 (2015-04-29)
-* (bluefox) fix astro function
-
-### 0.3.0 (2015-03-22)
-* (bluefox) extend createState with native and common
-* (bluefox) add new convert functions: toInt, toFloat, toBool
-
-### 0.2.6 (2015-03-16)
-* (bluefox) convert automatical grad to decimal grad
-* (bluefox) fix some errors
-
-### 0.2.5 (2015-03-16)
-* (bluefox) enable on('localVar', function ()...)
-
-### 0.2.4 (2015-03-16)
-* (bluefox) fix error with astro. Add longitude and latitude to settings.
-* (bluefox) fix selector if brackets are wrong
-* (bluefox) make possible use "on" instead schedule
-
-### 0.2.3 (2015-03-06)
-* (bluefox) extend readme
-* (bluefox) add "change: 'any'" condition to trigger on updated value
-
-### 0.2.2 (2015-03-04)
-* (bluefox) fix log function
-
-### 0.2.1 (2015-03-02)
-* (bluefox) fix sendTo function
-
-### 0.2.0 (2015-02-24)
-* (bluefox) add functions to sandbox: formatDate, writeFile, readFile
-
-### 0.1.12 (2015-02-21)
-* (bluefox) fix createState and expand it.
-
-### 0.1.11 (2015-01-10)
-* (bluefox) fix "on('state1', 'state2');"
-
-### 0.1.10 (2015-01-04)
-* (bluefox) catch errors if states deleted
-
-### 0.1.9 (2015-01-04)
-* (bluefox) add settings page
-
-### 0.1.8 (2015-01-03)
-* (bluefox) enable npm install
-
-### 0.1.7 (2014-12-12)
-* (bluefox) check errors if invalid object.
-
-### 0.1.6 (2014-12-08)
-* (bluefox) add some log outputs.
-
-### 0.1.5 (2014-11-26)
-* (bluefox) fix context of all callbacks.
-
-### 0.1.4 (2014-11-22)
-* (bluefox) Support of jquery like selector $. See above for details.
-
-### 0.1.3 (2014-11-16)
-* (bluefox) Support of wrapper "cb" for callbacks in script. (Expert mode)
-
-### 0.1.2 (2014-11-15)
-* (bluefox) support change, delete and add of the scripts without restart of adapter
-
-### 0.1.1
-* (hobbyquaker) fixed typo
-
-### 0.1.0
-
-* (hobbyquaker) require() in scripts works now
-* (hobbyquaker) fixes
-
-### 0.0.2
-
-* (hobbyquaker) CoffeeScript support
-* (hobbyquaker) fixes
-
-### 0.0.1
-
-* (hobbyquaker) first release
-
-## Todo
-
-* $() 
-* complete patternMatching 
-* complete eventObj 
-* global script?
+Copyright (c) 2014      hobbyquaker

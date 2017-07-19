@@ -5,21 +5,22 @@
 /*jslint node: true */
 "use strict";
 
+function getAppName() {
+    var parts = __dirname.replace(/\\/g, '/').split('/');
+    return parts[parts.length - 1].split('.')[0].toLowerCase();
+}
+
 module.exports = function (grunt) {
 
     var srcDir    = __dirname + '/';
-    var dstDir    = srcDir + '.build/';
     var pkg       = grunt.file.readJSON('package.json');
     var iopackage = grunt.file.readJSON('io-package.json');
     var version   = (pkg && pkg.version) ? pkg.version : iopackage.common.version;
+    var appName   = getAppName();
 
     // Project configuration.
     grunt.initConfig({
         pkg: pkg,
-        clean: {
-            all: ['tmp/*.json', 'tmp/*.zip', 'tmp/*.jpg', 'tmp/*.jpeg', 'tmp/*.png',
-                  dstDir + '*.json', dstDir + '*.zip', dstDir + '*.jpg', dstDir + '*.jpeg', dstDir + '*.png']
-        },
         replace: {
             core: {
                 options: {
@@ -46,6 +47,60 @@ module.exports = function (grunt) {
                         dest:    srcDir
                     }
                 ]
+            },
+            name: {
+                options: {
+                    patterns: [
+                        {
+                            match:       /iobroker/gi,
+                            replacement: appName
+                        }
+                    ]
+                },
+                files: [
+                    {
+                        expand:  true,
+                        flatten: true,
+                        src:     [
+                            srcDir + '*.*',
+                            srcDir + '.travis.yml'
+                        ],
+                        dest:    srcDir
+                    },
+                    {
+                        expand:  true,
+                        flatten: true,
+                        src:     [
+                            srcDir + 'admin/*.*',
+                            '!' + srcDir + 'admin/*.png'
+                        ],
+                        dest:    srcDir + 'admin'
+                    },
+                    {
+                        expand:  true,
+                        flatten: true,
+                        src:     [
+                            srcDir + 'lib/*.*'
+                        ],
+                        dest:    srcDir + 'lib'
+                    },
+                    {
+                        expand:  true,
+                        flatten: true,
+                        src:     [
+                            srcDir + 'example/*.*'
+                        ],
+                        dest:    srcDir + 'example'
+                    },
+                    {
+                        expand:  true,
+                        flatten: true,
+                        src:     [
+                            srcDir + 'www/*.*'
+                        ],
+                        dest:    srcDir + 'www'
+                    }
+                ]
             }
         },
         // Javascript code styler
@@ -55,141 +110,62 @@ module.exports = function (grunt) {
         http: {
             get_hjscs: {
                 options: {
-                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jscs.js'
+                    url: 'https://raw.githubusercontent.com/' + appName + '/' + appName + '.js-controller/master/tasks/jscs.js'
                 },
                 dest: 'tasks/jscs.js'
             },
             get_jshint: {
                 options: {
-                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jshint.js'
+                    url: 'https://raw.githubusercontent.com/' + appName + '/' + appName + '.js-controller/master/tasks/jshint.js'
                 },
                 dest: 'tasks/jshint.js'
             },
             get_gruntfile: {
                 options: {
-                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.build/master/adapters/Gruntfile.js'
+                    url: 'https://raw.githubusercontent.com/' + appName + '/' + appName + '.build/master/adapters/Gruntfile.js'
                 },
                 dest: 'Gruntfile.js'
             },
             get_utilsfile: {
                 options: {
-                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.build/master/adapters/utils.js'
+                    url: 'https://raw.githubusercontent.com/' + appName + '/' + appName + '.build/master/adapters/utils.js'
                 },
                 dest: 'lib/utils.js'
             },
             get_jscsRules: {
                 options: {
-                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jscsRules.js'
+                    url: 'https://raw.githubusercontent.com/' + appName + '/' + appName + '.js-controller/master/tasks/jscsRules.js'
                 },
                 dest: 'tasks/jscsRules.js'
-            },
-            get_iconOnline: {
-                options: {
-                    encoding: null,
-                    url: iopackage.common.extIcon || 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png'
-                },
-                dest: dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.png'
-
-            },
-            get_iconOffline: {
-                options: {
-                    encoding: null,
-                    url: iopackage.common.extIcon || 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png'
-                },
-                dest: dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.png'
-
-            }
-        },
-        compress: {
-            adapter: {
-                options: {
-                    archive: dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.zip'
-                },
-                files: [
-                    {
-                        expand: true,
-                        src: ['**', '!tasks/*', '!Gruntfile.js', '!node_modules/**/*', '!build/**/*'],
-                        dest: '/',
-                        cwd: srcDir
-                    }
-                ]
-            },
-            adapterOffline: {
-                options: {
-                    archive: dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.zip'
-                },
-                files: [
-                    {
-                        expand: true,
-                        src: ['**',
-                            '!tasks/*',
-                            '!Gruntfile.js',
-                            '!build/**/*',
-                            '!node_modules/grunt/**/*',
-                            '!node_modules/grunt*/**/*'
-                        ],
-                        dest: '/',
-                        cwd: srcDir
-                    }
-                ]
-            }
-        },
-        exec: {
-            npm: {
-                cmd: 'npm install'
-            }
-        },
-        copy: {
-            json: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: srcDir,
-                        src: ['io-package.json'],
-                        dest: dstDir,
-                        rename: function (dest, src) {
-                            return dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.json';
-                        }
-                    },
-                    {
-                        expand: true,
-                        cwd: srcDir,
-                        src: ['io-package.json'],
-                        dest: dstDir,
-                        rename: function (dest, src) {
-                            return dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.json';
-                        }
-                    }
-                ]
             }
         }
     });
 
     grunt.registerTask('updateReadme', function () {
         var readme = grunt.file.read('README.md');
-        var pos = readme.indexOf('## Changelog\r\n');
+        var pos = readme.indexOf('## Changelog\n');
         if (pos != -1) {
-            var readmeStart = readme.substring(0, pos + '## Changelog\r\n'.length);
-            var readmeEnd   = readme.substring(pos + '## Changelog\r\n'.length);
+            var readmeStart = readme.substring(0, pos + '## Changelog\n'.length);
+            var readmeEnd   = readme.substring(pos + '## Changelog\n'.length);
 
-            if (iopackage.common && readme.indexOf(iopackage.common.version) == -1) {
+            if (readme.indexOf(version) == -1) {
                 var timestamp = new Date();
                 var date = timestamp.getFullYear() + '-' +
-                    ("0" + (timestamp.getMonth() + 1).toString(10)).slice(-2) + '-' +
-                    ("0" + (timestamp.getDate()).toString(10)).slice(-2);
+                    ('0' + (timestamp.getMonth() + 1).toString(10)).slice(-2) + '-' +
+                    ('0' + (timestamp.getDate()).toString(10)).slice(-2);
 
                 var news = "";
                 if (iopackage.common.whatsNew) {
                     for (var i = 0; i < iopackage.common.whatsNew.length; i++) {
                         if (typeof iopackage.common.whatsNew[i] == 'string') {
-                            news += '* ' + iopackage.common.whatsNew[i] + '\r\n';
+                            news += '* ' + iopackage.common.whatsNew[i] + '\n';
                         } else {
-                            news += '* ' + iopackage.common.whatsNew[i].en + '\r\n';
+                            news += '* ' + iopackage.common.whatsNew[i].en + '\n';
                         }
                     }
                 }
 
-                grunt.file.write('README.md', readmeStart + '### ' + iopackage.common.version + ' (' + date + ')\r\n' + (news ? news + '\r\n\r\n' : '\r\n') + readmeEnd);
+                grunt.file.write('README.md', readmeStart + '### ' + version + ' (' + date + ')\n' + (news ? news + '\n\n' : '\n') + readmeEnd);
             }
         }
     });
@@ -198,20 +174,20 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-jscs');
     grunt.loadNpmTasks('grunt-http');
-    grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-compress');
-    grunt.loadNpmTasks('grunt-exec');
-    grunt.loadNpmTasks('grunt-contrib-copy');
 
     grunt.registerTask('default', [
-        'exec',
         'http',
-        'clean',
-        'replace',
+        'replace:core',
         'updateReadme',
-        'compress',
-        'copy',
         'jshint',
         'jscs'
+    ]);
+
+    grunt.registerTask('p', [
+        'replace:core',
+        'updateReadme'
+    ]);
+    grunt.registerTask('rename', [
+        'replace:name'
     ]);
 };

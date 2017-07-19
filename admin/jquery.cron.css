@@ -1,0 +1,15 @@
+#cron-input {
+    margin-bottom: 10px;
+}
+.cron-preview-every {
+    padding-bottom: 10px;
+}
+.cron-tab-page {
+    padding-top: 0em !important;
+    padding-left: 0em !important;
+    padding-right: 0em !important;
+    padding-bottom: 0em !important;
+}
+.cron-tabs {
+    background: white;
+}

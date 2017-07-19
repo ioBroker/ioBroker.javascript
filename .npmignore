@@ -1,2 +1,9 @@
 Gruntfile.js
 tasks
+test
+.travis.yml
+doc
+.idea
+.git
+node_modules
+appveyor.yml
