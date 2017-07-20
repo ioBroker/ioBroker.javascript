@@ -423,7 +423,7 @@
         var stack = e.stack.split('\n');
         adapter.log.error('Error in callback: ' + stack.shift());
         stack.forEach(function (line) {
-            adapter.log.error(line);
+            adapter.log.error(fixLineNo(line));
         });
     }
 
