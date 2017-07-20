@@ -414,18 +414,27 @@
 
     function fixLineNo(line) {
         if (line.indexOf('javascript.js:') >= 0) return line;
-        return line.replace(/:([\d]+):/, function ($0, $1) {
+        line = line.replace(/:([\d]+):/, function ($0, $1) {
             return ':' + ($1 - globalScriptLines) + ':'
         });
+        return line;
     }
 
-    function errorInCallback(e) {
+
+    function logError(msg, e, offs) {
         var stack = e.stack.split('\n');
-        adapter.log.error('Error in callback: ' + stack.shift());
-        stack.forEach(function (line) {
-            adapter.log.error(fixLineNo(line));
-        });
+        msg = msg.replace(/[: ]*$/, ': ');
+        adapter.log.error(msg + stack[0]);
+        for (var i=offs || 1; i<stack.length; i++) {
+            if (!stack[i]) continue;
+            if (stack[i].match(/runInNewContext|javascript\.js\:/)) break;
+            adapter.log.error(fixLineNo(stack[i]));
     }
+    }
+    function errorInCallback(e) {
+        logError('Error in callback', e);
+    }
+
 
     // function errorInCallback1(e) {
     //     var stack = e.stack.split('\n');
@@ -438,7 +447,7 @@
         var stack = (new Error().stack).split("\n");
         for (var i=3; i<stack.length; i++) {
             if (!stack[i]) continue;
-            if (stack[i].indexOf('runInNewContext') >= 0) break;
+            if (stack[i].match(/runInNewContext|javascript\.js\:/)) break;
             adapter.log[level](fixLineNo(stack[i]));
         }
     };
@@ -706,7 +715,12 @@
     function compile(source, name) {
         source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + ' and ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ));\n";
         try {
-            return mods.vm.createScript(source, name);
+            var options = {
+                filename: name,
+                displayErrors: true
+                //lineOffset: globalScriptLines
+            };
+            return mods.vm.createScript(source, options);
         } catch (e) {
             // todo
             adapter.log.error(name + ' compile failed: ' + e);
@@ -788,14 +802,7 @@
                     mods[md] = require(__dirname + '/node_modules/' + md);
                     return mods[md];
                 } catch (e) {
-                    var lines = e.stack.split('\n');
-                    var stack = [];
-                    for (var i = 6; i < lines.length; i++) {
-                        if (lines[i].match(/runInNewContext/)) break;
-                        stack.push(lines[i]);
-                    }
-                    adapter.log.error(name + ': ' + e.message + '\n' + stack);
-
+                    logError(name, e, 6);
                 }
             },
             Buffer:    Buffer,
@@ -2859,16 +2866,10 @@
             script.runInNewContext(sandbox, {
                 filename:       name,
                 displayErrors:  true,
-                lineOffset:     globalScriptLines
+                //lineOffset: globalScriptLines
             });
         } catch (e) {
-            var lines = e.stack.split('\n');
-            var stack = [];
-            for (var i = 0; i < lines.length; i++) {
-                if (lines[i].match(/runInNewContext/)) break;
-                stack.push(fixLineNo(lines[i]));
-            }
-            adapter.log.error(name + ': ' + stack.join('\n'));
+            logError(name, e);
         }
     }
 
