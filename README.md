@@ -1010,6 +1010,9 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+### 3.3.12 (2017-07-24)
+* (bluefox) file and line info added to log outputs
+
 ### 3.3.11 (2017-07-18)
 * (bluefox) fix build CRON block
 
