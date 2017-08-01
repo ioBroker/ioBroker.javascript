@@ -28,6 +28,7 @@
     };
     var utils =   require(__dirname + '/lib/utils'); // Get common adapter utils
     var words =   require(__dirname + '/lib/words');
+    var patternCompareFunctions = require(__dirname + '/lib/patternCompareFunctions');
 
     // modify fs to protect important information
     mods.fs._readFile      = mods.fs.readFile;
@@ -70,7 +71,7 @@
 
         regExEnum: /^enum\./,
 
-		useFormatDate: true, // load float formatting
+        useFormatDate: true, // load float formatting
 
         objectChange: function (id, obj) {
             if (this.regExEnum.test(id)) {
@@ -184,7 +185,7 @@
 
         stateChange: function (id, state) {
 
-            if (id.match(/^messagebox\./) || id.match(/^log\./)) return;
+            if (id.match(/^messagebox\./) || id.match(/^log\./)) return;     ///!! -> regexp.test()
 
             var oldState = states[id] || {};
             if (state) {
@@ -414,8 +415,9 @@
 
     function fixLineNo(line) {
         if (line.indexOf('javascript.js:') >= 0) return line;
+        if (!/[.\\\/]script\.js[.\\\/]/.test(line)) return line;
         line = line.replace(/:([\d]+):/, function ($0, $1) {
-            return ':' + ($1 - globalScriptLines) + ':'
+            return ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1) + ':'
         });
         return line;
     }
@@ -429,7 +431,7 @@
             if (!stack[i]) continue;
             if (stack[i].match(/runInNewContext|javascript\.js\:/)) break;
             adapter.log.error(fixLineNo(stack[i]));
-    }
+        }
     }
     function errorInCallback(e) {
         logError('Error in callback', e);
@@ -583,7 +585,7 @@
                 }
             }
 
-            if (patternMatching(eventObj, subscriptions[i].pattern)) {
+            if (patternMatching(eventObj, subscriptions[i].patternCompareFunctions)) {
                 if (!matched) {
                     matched = true;
                     if (eventObj.name === undefined) {
@@ -644,7 +646,7 @@
                 }
             }
         }
-   }
+    }
 
     function installNpm(npmLib, callback) {
         var path = __dirname;
@@ -807,8 +809,8 @@
             },
             Buffer:    Buffer,
             __engine:  {
-                        __subscriptions: 0,
-                        __schedules: 0
+                __subscriptions: 0,
+                __schedules: 0
             },
             $:         function (selector) {
                 // following is supported
@@ -894,7 +896,7 @@
                     if (isNatives) {
                         native  += selector[i];
                     } //else {
-                        // some error
+                    // some error
                     //}
                 }
 
@@ -1426,6 +1428,7 @@
 
                 subscribePattern(script, pattern.id);
 
+                subs.patternCompareFunctions = getPatternCompareFunctions(pattern);
                 subscriptions.push(subs);
 
                 if (pattern.enumName || pattern.enumId) isEnums = true;
@@ -3042,495 +3045,31 @@
         }
     }
 
-    function patternMatching(event, pattern) {
-        if (!pattern.logic) pattern.logic = 'and';
 
+    function getPatternCompareFunctions (pattern) {
+        var func, functions = [];
+        functions.logic = pattern.logic || 'and';
+        //adapter.log.info('## '+JSON.stringify(pattern));
+        for (var key in pattern) {
+            if (key === 'logic') continue;
+            if (key === 'change' && pattern.change === 'any') continue;
+            if (!(func = patternCompareFunctions[key])) continue;
+            if (typeof (func = func(pattern)) !== 'function') continue;
+            functions.push(func);
+        }
+        return functions;
+    }
+
+    function patternMatching (event, patternFunctions) {
         var matched = false;
-
-        // state id matching
-        if (pattern.id) {
-            if (pattern.id instanceof RegExp || pattern.id.source) {
-                if (event.id && event.id.match(pattern.id)) {
-                    if (pattern.logic === 'or') return true;
+        for (var i=0, len=patternFunctions.length; i < len; i++) {
+            if (patternFunctions[i] (event)) {
+                if (patternFunctions.logic === 'or') return true;
                     matched = true;
                 } else {
-                    if (pattern.logic === 'and') return false;
+                if (patternFunctions.logic === 'and') return false;
                 }
-            } else {
-                if (event.id && pattern.id === event.id) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
                 }
-            }
-        }
-
-        // state name matching
-        if (pattern.name) {
-            if (pattern.name instanceof RegExp || pattern.name.source) {
-                if (event.common.name && event.common.name.match(pattern.name)) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.common.name && pattern.name === event.common.name) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-
-        // todo ancestor name matching
-
-        // change matching
-        if (pattern.change) {
-            switch (pattern.change) {
-                case 'eq':
-                    if (event.newState.val === event.oldState.val) {
-                        if (pattern.logic === 'or') return true;
-                        matched = true;
-                    } else {
-                        if (pattern.logic === 'and') return false;
-                    }
-                    break;
-                case 'ne':
-                    if (event.newState.val !== event.oldState.val) {
-                        if (pattern.logic === 'or') return true;
-                        matched = true;
-                    } else {
-                        if (pattern.logic === 'and') return false;
-                    }
-                    break;
-                case 'gt':
-                    if (event.newState.val > event.oldState.val) {
-                        if (pattern.logic === 'or') return true;
-                        matched = true;
-                    } else {
-                        if (pattern.logic === 'and') return false;
-                    }
-                    break;
-                case 'ge':
-                    if (event.newState.val >= event.oldState.val) {
-                        if (pattern.logic === 'or') return true;
-                        matched = true;
-                    } else {
-                        if (pattern.logic === 'and') return false;
-                    }
-                    break;
-                case 'lt':
-                    if (event.newState.val < event.oldState.val) {
-                        if (pattern.logic === 'or') return true;
-                        matched = true;
-                    } else {
-                        if (pattern.logic === 'and') return false;
-                    }
-                    break;
-                case 'le':
-                    if (event.newState.val <= event.oldState.val) {
-                        if (pattern.logic === 'or') return true;
-                        matched = true;
-                    } else {
-                        if (pattern.logic === 'and') return false;
-                    }
-                    break;
-                default:
-                    // on any other logic, just signal about message
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                    break;
-            }
-        }
-
-        // Ack Matching
-        if (pattern.ack !== undefined) {
-            if (((pattern.ack === 'true'  || pattern.ack === true)  && (event.newState.ack === true  || event.newState.ack === 'true')) ||
-                ((pattern.ack === 'false' || pattern.ack === false) && (event.newState.ack === false || event.newState.ack === 'false'))) {
-                if (pattern.logic === 'or') return true;
-                matched = true;
-            } else {
-                if (pattern.logic === 'and') return false;
-            }
-        }
-
-        // oldAck Matching
-        if (pattern.oldAck !== undefined) {
-            if (((pattern.oldAck === 'true'  || pattern.oldAck === true)  && (event.oldState.ack === true  || event.oldState.ack === 'true')) ||
-                ((pattern.oldAck === 'false' || pattern.oldAck === false) && (event.oldState.ack === false || event.oldState.ack === 'false'))) {
-                if (pattern.logic === 'or') return true;
-                matched = true;
-            } else {
-                if (pattern.logic === 'and') return false;
-            }
-        }
-
-        // Value Matching
-        if (pattern.val   !== undefined && pattern.val === event.newState.val) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.val !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.valGt !== undefined && event.newState.val > pattern.valGt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.valGt !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.valGe !== undefined && event.newState.val >= pattern.valGe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.valGe !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.valLt !== undefined && event.newState.val < pattern.valLt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.valLt !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.valLe !== undefined && event.newState.val <= pattern.valLe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.valLe !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.valNe !== undefined && event.newState.val !== pattern.valNe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.valNe !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // Old-Value matching
-        if (pattern.oldVal   !== undefined && pattern.oldVal === event.oldState.val) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldVal !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldValGt !== undefined && event.oldState.val > pattern.oldValGt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldValGt !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldValGe !== undefined && event.oldState.val >= pattern.oldValGe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldValGe !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldValLt !== undefined && event.oldState.val < pattern.oldValLt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldValLt !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldValLe !== undefined && event.oldState.val <= pattern.oldValLe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldValLe !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldValNe !== undefined && event.oldState.val !== pattern.oldValNe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldValNe !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // newState.ts matching
-        if (pattern.ts   && pattern.ts === event.newState.ts) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.ts) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.tsGt && event.newState.ts > pattern.tsGt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.tsGt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.tsGe && event.newState.ts >= pattern.tsGe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.tsGe) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.tsLt && event.newState.ts < pattern.tsLt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.tsLt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.tsLe && event.newState.ts <= pattern.tsLe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.tsLe) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // oldState.ts matching
-        if (pattern.oldTs   && pattern.oldTs === event.oldState.ts) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldTs) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldTsGt && event.oldState.ts > pattern.oldTsGt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldTsGt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldTsGe && event.oldState.ts >= pattern.oldTsGe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldTsGe) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldTsLt && event.oldState.ts < pattern.oldTsLt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldTsLt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldTsLe && event.oldState.ts <= pattern.oldTsLe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldTsLe) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // newState.lc matching
-        if (pattern.lc   && pattern.lc === event.newState.lc) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.lc) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.lcGt && event.newState.lc > pattern.lcGt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.lcGt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.lcGe && event.newState.lc >= pattern.lcGe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.lcGe) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.lcLt && event.newState.lc < pattern.lcLt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.lcLt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.lcLe && event.newState.lc <= pattern.lcLe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.lcLe) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // oldState.lc matching
-        if (pattern.oldLc   && pattern.oldLc === event.oldState.lc) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldLc) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldLcGt && event.oldState.lc > pattern.oldLcGt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldLcGt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldLcGe && event.oldState.lc >= pattern.oldLcGe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldLcGe) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldLcLt && event.oldState.lc < pattern.oldLcLt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldLcLt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldLcLe && event.oldState.lc <= pattern.oldLcLe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldLcLe) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // newState.from matching
-        if (pattern.from && pattern.from === event.newState.from) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.from) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        if (pattern.fromNe && pattern.fromNe !== event.newState.from) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.fromNe) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // oldState.from matching
-        if (pattern.oldFrom && pattern.oldFrom === event.oldState.from) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldFrom) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        if (pattern.oldFromNe && pattern.oldFromNe !== event.oldState.from) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldFromNe) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // channelId matching
-        if (pattern.channelId) {
-            if (pattern.channelId instanceof RegExp) {
-                if (event.channelId && event.channelId.match(pattern.channelId)) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.channelId && pattern.channelId === event.channelId) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-
-        // channelName matching
-        if (pattern.channelName) {
-            if (pattern.channelName instanceof RegExp) {
-                if (event.channelName && event.channelName.match(pattern.channelName)) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.channelName && pattern.channelName === event.channelName) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-
-        // deviceId matching
-        if (pattern.deviceId) {
-            if (pattern.deviceId instanceof RegExp) {
-                if (event.deviceId && event.deviceId.match(pattern.deviceId)) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.deviceId && pattern.deviceId === event.deviceId) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-
-        // deviceName matching
-        if (pattern.deviceName) {
-            if (pattern.deviceName instanceof RegExp) {
-                if (event.deviceName && event.deviceName.match(pattern.deviceName)) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.deviceName && pattern.deviceName === event.deviceName) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-        var subMatched;
-
-        // enumIds matching
-        if (pattern.enumId) {
-            if (pattern.enumId instanceof RegExp) {
-                subMatched = false;
-                for (var i = 0; i < event.enumIds.length; i++) {
-                    if (event.enumIds[i].match(pattern.enumId)) {
-                        subMatched = true;
-                        break;
-                    }
-                }
-                if (subMatched) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.enumIds && event.enumIds.indexOf(pattern.enumId) !== -1) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-
-        // enumNames matching
-        if (pattern.enumName) {
-            if (pattern.enumName instanceof RegExp) {
-                subMatched = false;
-                for (var j = 0; j < event.enumNames.length; j++) {
-                    if (event.enumNames[j].match(pattern.enumName)) {
-                        subMatched = true;
-                        break;
-                    }
-                }
-                if (subMatched) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.enumNames && event.enumNames.indexOf(pattern.enumName) !== -1) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-
         return matched;
     }
 
