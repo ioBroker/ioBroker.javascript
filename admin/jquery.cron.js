@@ -31,7 +31,7 @@ $.fn.cron = function(options, setValue) {
 
         "Sunday":           {"en": "Sunday",            "de": "Sonntag",            "ru": "Воскресение"},
         "Monday":           {"en": "Monday",            "de": "Montag",             "ru": "Понедельник"},
-        "Tuesday":          {"en": "Tuesday",           "de": "Diesntag",           "ru": "Вторник"},
+        "Tuesday":          {"en": "Tuesday",           "de": "Dienstag",           "ru": "Вторник"},
         "Wednesday":        {"en": "Wednesday",         "de": "Mittwoch",           "ru": "Среда"},
         "Thursday":         {"en": "Thursday",          "de": "Donnerstag",         "ru": "Четверг"},
         "Friday":           {"en": "Friday",            "de": "Freitag",            "ru": "Пятница"},
