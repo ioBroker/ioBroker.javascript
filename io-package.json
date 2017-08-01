@@ -17,6 +17,7 @@
             "3.3.12": {
                 "en": "file and line info added to log outputs",
                 "de": "Datei- und Zeilen-Info zu Log-Ausgaben hinzugefügt",
+                "ru": "Информация о сроке в сообщении об ошибке"
             },
             "3.3.11": {
                 "en": "Fix build CRON block",
