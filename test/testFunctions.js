@@ -48,6 +48,7 @@ function checkValueOfState(id, value, cb, counter) {
 }
 
 describe('Test JS', function() {
+
     before('Test JS: Start js-controller', function (_done) {
         this.timeout(600000); // because of first install from npm
 
@@ -861,6 +862,212 @@ describe('Test JS', function() {
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
         });
+    });
+
+    it('Test JS: test ON misc', function (done) {
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        function scriptFunction (param) {
+            var results = '';
+            var TEST_VAR = 'javascript.0.device.channel.testVar';
+            var TEST_RESULTS = 'javascript.0.testResults';
+
+            var recs = [
+                // request Options                                 // on options or iD                       // states to set
+                [ { no:  1, cnt: 2, val: true },                   { id: /\.testVar$/, val: true },                            [ true, false, { val: true, ack: true } ] ],
+                [ { no:  2, cnt: 2, val: true },                   { id: 0, val: true },                                       [ true, false, { val: true, ack: true } ] ],
+                [ { no:  3, cnt: 2, val: false },                  { id: 0, val: false },                                      [ true, false, { val: true, ack: true }, { val: false, ack: true } ] ],
+                [ { no:  4, cnt: 1, val: {val: true, ack: true }}, { id: 0, val: true, ack: true },                            [ true, false, { val: true, ack: true }, { val: false, ack: true } ] ],
+                [ { no:  5, cnt: 1, val: {val:false, ack: true }}, { id: 0, val: false, ack: true },                           [ true, false, { val: true, ack: true }, { val: false, ack: true } ] ],
+                [ { no:  6, cnt: 1, val: true },                   { id: 0, change: 'ne' },                                    [ false, true, true ]],
+                [ { no:  7, cnt: 2, val: true },                   { id: 0, change: 'any' },                                   [ true, true ]],
+                [ { no:  8, cnt: 1, val: true },                   { id: 0, change: 'gt' },                                    [ false, true, true ]],
+                [ { no:  9, cnt: 2, val: true },                   { id: 0, change: 'eq' },                                    [ true, true, true, false ]],
+                [ { no: 10, cnt: 1, val: 'World' },                { name: 'Hello', change: 'gt' },                            ['Change', 'World', 'World'] ],
+                [ { no: 11, cnt: 0, val: 'World' },                { name: 'hello', change: 'gt' },                            ['Change', 'World', 'World'] ],
+                [ { no: 12, cnt: 1, val: 'World' },                { name: /^[h|H]ello/, change: 'any' },                      ['World'] ],
+
+                [ { no: 13, cnt: 1, val: 'B' },                    { id: 0, valGt: 'A' },                                      [ 'B', 'A'] ],
+                [ { no: 14, cnt: 2, val: 'B' },                    { id: 0, valGe: 'A' },                                      [ 'B', 'B'] ],
+                [ { no: 15, cnt: 1, val: 'B' },                    { id: 0, valGe: 'B' },                                      [ 'B', 'A'] ],
+                [ { no: 16, cnt: 1, val: 'A' },                    { id: 0, valLt: 'B' },                                      [ 'A', 'C'] ],
+                [ { no: 17, cnt: 1, val: 'A' },                    { id: 0, valLe: 'A' },                                      [ 'A', 'B'] ],
+                [ { no: 18, cnt: 1, val: 'B' },                    { id: 0, valNe: 'A' },                                      [ 'B', 'A'] ],
+                [ { no: 19, cnt: 1, val: 'onChannel' },            { channelId: 'javascript.0.device.channel' },                      [ 'onChannel'] ],
+                [ { no: 20, cnt: 1, val: 'onChannel'},             { channelId: 'javascript.0.device.channel', val: 'onChannel' },    [ 'onChannel', 'xyz'] ],
+                [ { no: 21, cnt: 1, val: 'onChannel'},             { channelName: 'Channel' },                                        [ 'onChannel'] ],
+                [ { no: 22, cnt: 1, val: 'onChannel'},             { channelName: 'Channel', val: 'onChannel' },                      [ 'onChannel', 'xyz'] ],
+                [ { no: 23, cnt: 1, val: 'onDevice'},              { deviceId: 'javascript.0.device' },                               [ 'onDevice'] ],
+                [ { no: 24, cnt: 1, val: 'onDevice'},              { deviceId: 'javascript.0.device', val: 'onDevice' },              [ 'onDevice', 'xyz'] ],
+                [ { no: 25, cnt: 1, val: 'onDevice'},              { deviceName: 'Device' },                                          [ 'onDevice'] ],
+                [ { no: 26, cnt: 1, val: 'onDevice'},              { deviceName: 'Device', val: 'onDevice' },                         [ 'onDevice', 'xyz'] ],
+
+                [ { no: 27, cnt: 1, val: 1, before: false },       { id:0, oldVal: false },                                        [ 1, 1 ] ],
+                [ { no: 28, cnt: 1, val: 1, before: 2 },           { id:0, oldValGt: 1 },                                          [ 1, 1 ] ],
+                [ { no: 29, cnt: 2, val: 1, before: 2 },           { id:0, oldValGe: 1 },                                          [ 1, 1 ] ],
+                [ { no: 30, cnt: 1, before: 2 },                   { id:0, oldValNe: 1 },                                          [ 1, 0 ] ],
+                [ { no: 31, cnt: 1, before: 0 },                   { id:0, oldValLt: 1 },                                          [ 1, 0 ] ],
+                [ { no: 32, cnt: 2, before: 0 },                   { id:0, oldValLe: 1 },                                          [ 1, 2, 0] ],
+
+                [ { no: 33, cnt: 1, val: 1 },                      { id:0, tsGt: 1 },                                              [ 1 ] ],
+                [ { no: 34, cnt: 0 },                              { id:0, tsGt: 0xfffffffffff },                                  [ 1 ] ],
+                [ { no: 35, cnt: 1, val: 1 },                      { id:0, tsLt: 0xfffffffffff },                                  [ 1 ] ],
+                [ { no: 36, cnt: 0 },                              { id:0, tsLt: 1 },                                              [ 1 ] ],
+                [ { no: 37, cnt: 1, val: 1 },                      { id:0, oldTsGt: 1 },                                           [ 1 ] ],
+                [ { no: 38, cnt: 0 },                              { id:0, oldTsGt: 0xfffffffffff },                               [ 1 ] ],
+                [ { no: 39, cnt: 1, val: 1 },                      { id:0, oldTsLt: 0xfffffffffff },                               [ 1 ] ],
+                [ { no: 40, cnt: 0 },                              { id:0, oldTsLt: 1 },                                           [ 1 ] ],
+                [ { no: 41, cnt: 1, val: 1 },                      { id:0, lcGt: 1 },                                              [ 1 ] ],
+                [ { no: 42, cnt: 1, val: 1 },                      { id:0, lcLt: 0xfffffffffff },                                  [ 1 ] ],
+                [ { no: 43, cnt: 0 },                              { id:0, lcLt: 1 },                                              [ 1 ] ],
+                [ { no: 44, cnt: 1, val: 1 },                      { id:0, oldLcGt: 1 },                                           [ 1 ] ],
+                [ { no: 45, cnt: 0 },                              { id:0, oldLcGt: 0xfffffffffff },                               [ 1 ] ],
+                [ { no: 46, cnt: 1, val: 1 },                      { id:0, oldLcLt: 0xfffffffffff },                               [ 1 ] ],
+                [ { no: 47, cnt: 0 },                              { id:0, oldLcLt: 1 },                                           [ 1 ] ],
+
+                [ { no: 48, cnt: 1, val: 1 },                      { id:0, from: 'system.adapter.javascript.0' },                  [ 1 ] ],
+                [ { no: 49, cnt: 0 },                              { id:0, from: 'system.adapter.javascript.1' },                  [ 1 ] ],
+                [ { no: 50, cnt: 1, val: 1 },                      { id:0, oldFrom: 'system.adapter.javascript.0' },               [ 1 ] ],
+                [ { no: 51, cnt: 0 },                              { id:0, oldFrom: 'system.adapter.javascript.1' },               [ 1 ] ]
+
+                // not ok with the old patternMatching function
+                // [ { no: 52, cnt: 1, val: 'onChannel'},          { channelId: /^javascript.0.device.channel$/ },                    [ 'onChannel'] ],
+                // [ { no: 53, cnt: 1, val: 'onChannel'},          { channelId: /^javascript.0.device.channel$/, val: 'onChannel' },  [ 'onChannel', 'xyz'] ],
+                // [ { no: 54, cnt: 1, val: 'onChannel'},          { channelName: /^Channel$/ },                                      [ 'onChannel'] ],
+                // [ { no: 55, cnt: 1, val: 'onChannel'},          { channelName: /^Channel$/, val: 'onChannel' },                    [ 'onChannel', 'xyz'] ],
+                // [ { no: 56, cnt: 1, val: 'onDevice'},           { deviceId: /^javascript.0.device$/ },                             [ 'onDevice'] ],
+                // [ { no: 57, cnt: 1, val: 'onDevice'},           { deviceId: /^javascript.0.device$/, val: 'onDevice' },            [ 'onDevice', 'xyz'] ],
+                // [ { no: 58, cnt: 1, val: 'onDevice'},           { deviceName: /^Device$/ },                                        [ 'onDevice'] ],
+                // [ { no: 59, cnt: 1, val: 'onDevice'},           { deviceName: /^Device$/, val: 'onDevice' },                       [ 'onDevice', 'xyz'] ]
+
+            ];
+
+            switch (param) {
+                case 'recs': return recs;
+                case 'TEST_VAR': return TEST_VAR;
+            }
+
+            createState(TEST_RESULTS, '', true, { name: 'Testresults', type: 'string' });
+
+            function addResult(name, val) {
+                results += name + (val!==undefined ? '=' + val : '') + ';\r\n';
+            }
+
+            function handler(result, req, obj) {
+                //log ('handler: ' + JSON.stringify (req));
+                if (typeof result.val === 'object') {
+                    for (var n in result.val) {
+                        addResult ('obj.state.' + n + '=' + obj.state[n] + ' val.' + n + '=' + result.val[n]);
+                        result.nok = result.nok || (result.val[n] !== obj.state[n]);
+                    }
+                } else if (result.val !== undefined) {
+                    addResult ('obj.state.val=' + obj.state.val + ' val=' + result.val);
+                    result.nok = result.nok || (result.val !== obj.state.val);
+                }
+                result.callCount += 1;
+            }
+
+            function createTest(req, obj, ar, callback) {
+                results = '';
+                if (obj.id === 0) obj.id = TEST_VAR;
+                if (req.before === undefined) req.before = false;
+                if (req.ack === undefined) req.ack = true;
+                if (req.tio === undefined) req.tio = 400; else req.tio *= 1000;
+                setState(TEST_VAR, req.before, req.ack, function (_err, _obj) {
+                    req.nok = false;
+                    req.callCount = 0;
+                    if (req.cnt === undefined) req.cnt = 1;
+                    var sub = on (obj, handler.bind(1, req, obj));
+                    if (!ar) return doIt();
+                    var no = 0;
+                    (function doIt() {
+                        if (no >= ar.length) {
+                            setTimeout(function () {
+                                unsubscribe(sub);
+                                results = ((req.callCount === req.cnt && req.nok === false) ? 'OK;' : 'NOK;') + 'no=' + req.no + ';' + results + 'callCount=' + req.callCount + ';cnt=' + req.cnt;
+                                setState(TEST_RESULTS, results, true, callback);
+                            }, req.tio);
+                            return;
+                        }
+                        var o = ar[no++];
+                        if (typeof o !== 'object') {
+                            o = { val: o };
+                        }
+                        setState(TEST_VAR, o.val, o.ack, doIt)
+                    })();
+                });
+            }
+
+            function runTests (id) {
+                createState(id, '', true, { name: 'Hello' }, function (err, obj) {
+                    var cnt = 0;
+                    (function doIt() {
+                        if (cnt >= recs.length) return;
+                        var rec = recs[cnt++];
+                        createTest(rec[0], rec[1], rec[2], doIt);
+                    })();
+                });
+            }
+            runTests(TEST_VAR);
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        var script = {
+            "common": {
+                "name":         "test ON any",
+                "engineType":   "Javascript/js",
+                "source":       scriptFunction.toString() + '\r\nscriptFunction();\r\n',
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.test_ON",
+            "native": {}
+        };
+
+
+        var recs = scriptFunction('recs');
+        var TEST_VAR = scriptFunction('TEST_VAR');
+        this.timeout(5000 + 500*recs.length);
+
+        function createObjects(callback) {
+            var channel = TEST_VAR.replace(/\.[^.]+$/, '');
+            var device = channel.replace(/\.[^.]+$/, '');
+            objects.setObject(device, { common: { name: 'Device', type: 'device'}}, function (err, obj) {
+                expect(err).to.be.not.ok
+                objects.setObject(channel, { common: { name: 'Channel', type: 'channel'}}, callback)
+            })
+        }
+
+        createObjects(function (err, _obj) {
+            expect(err).to.be.not.ok
+            // objects.getObject('system.adapter.javascript.0', function(err, obj) {
+            //     obj.native.enableSetObject = true;
+            //     objects.setObject('system.adapter.javascript.0', function(err, obj) {
+            var cnt = 0;
+
+            onStateChanged = function (id, state) {
+                if (id === 'javascript.0.testResults' && state.val) {
+                    cnt += 1;
+                    var ar = /^(OK;no=[\d]+)/.exec(state.val) || ['', state.val];
+                    expect(ar).to.be.ok;
+                    expect(ar[1]).to.be.equal('OK;no=' + cnt);
+
+                    if (cnt >= recs.length) {
+                        onStateChanged = null;
+                        done ();
+                    }
+                }
+            };
+
+            objects.setObject(script._id, script, function (err) {
+                expect(err).to.be.not.ok;
+            });
+        })
+
+
     });
 
     it('Test JS: test schedule for seconds', function (done) {
