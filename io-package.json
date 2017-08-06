@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.3.12",
+        "version":                  "3.4.0",
         "title":                    "Javascript/Blockly Script Engine",
         "titleLang": {
             "en": "Javascript/Blockly Script Engine",
@@ -14,6 +14,11 @@
             "ingo@fischer-ka.de"
         ],
         "news": {
+            "3.4.0": {
+                "en": "Support of new admin",
+                "de": "Unterstützung von neuen Admin",
+                "ru": "Поддержка нового admin"
+            },
             "3.3.12": {
                 "en": "file and line info added to log outputs",
                 "de": "Datei- und Zeilen-Info zu Log-Ausgaben hinzugefügt",
@@ -133,7 +138,7 @@
             "singleton":            true,
             "name":                 "Scripts"
         },
-		"dependencies":             [{"js-controller": ">=0.10.0"}],
+		"dependencies":             [{"js-controller": ">=0.10.0"}, {"admin": ">=2.0.0"}],
         "type":                     "script"
     },
     "native": {

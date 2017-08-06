@@ -2585,7 +2585,7 @@ function getStates(callback) {
 }
 
 function getObjects(callback) {
-    main.socket.emit('getObjects', function (err, res) {
+    main.socket.emit('getAllObjects', function (err, res) {
         setTimeout(function () {
             var obj;
             main.objects = res;
