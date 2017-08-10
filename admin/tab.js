@@ -1054,14 +1054,14 @@ function Scripts(main) {
                         });
                     }
                 } else {
-                    //var prefix;
+                    // var prefix;
 
-                    _obj.common.engineType = newCommon.engineType || _obj.common.engineType || 'Javascript/js';
-                    var parts = _obj.common.engineType.split('/');
+                    // var parts = _obj.common.engineType.split('/');
 
-                    //prefix = 'script.' + (parts[1] || parts[0]) + '.';
+                    // prefix = 'script.' + (parts[1] || parts[0]) + '.';
 
-                    if (_obj) {
+                    if (_obj && _obj.common) {
+                        _obj.common.engineType = newCommon.engineType || _obj.common.engineType || 'Javascript/js';
                         that.main.socket.emit('delObject', oldId, function (err) {
                             if (err) {
                                 that.main.showError(err);
@@ -2122,7 +2122,7 @@ function Scripts(main) {
 
             if (this.main.config['script-editor-wrap-lines'])        $('#edit-wrap-lines').prop('checked', true);
             if (this.main.config['script-editor-dialog-wrap-lines']) $('#dialog-edit-wrap-lines').prop('checked', true);
-            
+
             $('#edit-check-blocks').button({
                 icons: {
                     primary: 'ui-icon-check'
@@ -2408,7 +2408,7 @@ function Scripts(main) {
         }
 
         this.editorDialog.getSession().setUseWrapMode($('#dialog-edit-wrap-lines').prop('checked'));
-        
+
         this.$dialogScript
             .dialog('option', 'width',  width)
             .dialog('option', 'height', height)
@@ -2417,7 +2417,7 @@ function Scripts(main) {
         this.editorDialog.focus();
 
         that.editorDialog._isReturn = isReturn;
-        
+
         setTimeout(function () {
             that.editorDialog._changed = false;
             $('#dialog_script_save').button('disable');
