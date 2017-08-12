@@ -1657,6 +1657,10 @@
                     isAck = undefined;
                 }
 
+                if (state === null) {
+                    state = {val: null};
+                }
+
                 if (isAck === true || isAck === false || isAck === 'true' || isAck === 'false') {
                     if (typeof state === 'object') {
                         state.ack = isAck;
