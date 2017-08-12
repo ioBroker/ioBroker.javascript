@@ -1010,6 +1010,9 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+### 3.4.1 (2017-08-12)
+* (soef) patternMatching optimized
+
 ### 3.4.0 (2017-08-06)
 * (bluefox) Support of new admin
 
