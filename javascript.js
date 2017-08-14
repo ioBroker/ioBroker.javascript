@@ -160,7 +160,7 @@
             from: state.from
         };
         //if (oldState === undefined) oldState = {};
-        if (oldState === undefined) {
+        if (!oldState) {
             this.oldState = {
                 val:  undefined,
                 ts:   undefined,
