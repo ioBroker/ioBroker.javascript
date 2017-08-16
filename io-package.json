@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.4.2",
+        "version":                  "3.4.3",
         "title":                    "Javascript/Blockly Script Engine",
         "titleLang": {
             "en": "Javascript/Blockly Script Engine",
@@ -14,6 +14,10 @@
             "ingo@fischer-ka.de"
         ],
         "news": {
+            "3.4.3": {
+                "en": "typo error in line number correction fixed",
+                "de": "Tippfehler in Zeilennummernkorrektur behoben"
+            },
             "3.4.2": {
                 "en": "Some enhancements and improvements",
                 "de": "Einige Erweiterungen und Optimierungen"
