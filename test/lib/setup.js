@@ -7,9 +7,11 @@ var child_process = require('child_process');
 var rootDir       = path.normalize(__dirname + '/../../');
 var pkg           = require(rootDir + 'package.json');
 var debug         = typeof v8debug === 'object';
+pkg.main = pkg.main || 'main.js';
 
 var adapterName = path.normalize(rootDir).replace(/\\/g, '/').split('/');
 adapterName = adapterName[adapterName.length - 2];
+var adapterStarted = false;
 
 function getAppName() {
     var parts = __dirname.replace(/\\/g, '/').split('/');
@@ -34,12 +36,7 @@ function copyFileSync(source, target) {
         }
     }
 
-    try {
-        fs.writeFileSync(targetFile, fs.readFileSync(source));
-    }
-    catch (err) {
-        console.log("file copy error: " +source +" -> " + targetFile + " (error ignored)");
-    }
+    fs.writeFileSync(targetFile, fs.readFileSync(source));
 }
 
 function copyFolderRecursiveSync(source, target, ignore) {
@@ -454,6 +451,12 @@ function setupController(cb) {
 }
 
 function startAdapter(objects, states, callback) {
+    if (adapterStarted) {
+        console.log('Adapter already started ...');
+        if (callback) callback(objects, states);
+        return;
+    }
+    adapterStarted = true;
     console.log('startAdapter...');
     if (fs.existsSync(rootDir + 'tmp/node_modules/' + pkg.name + '/' + pkg.main)) {
         try {
@@ -481,6 +484,8 @@ function startAdapter(objects, states, callback) {
 
 function startController(isStartAdapter, onObjectChange, onStateChange, callback) {
     if (typeof isStartAdapter === 'function') {
+        callback = onStateChange;
+        onStateChange = onObjectChange
         onObjectChange = isStartAdapter;
         isStartAdapter = true;
     }
@@ -529,10 +534,7 @@ function startController(isStartAdapter, onObjectChange, onStateChange, callback
                     if (isStartAdapter) {
                         startAdapter(objects, states, callback);
                     } else {
-                        if (callback) {
-                            callback(objects, states);
-                            callback = null;
-                        }
+                        if (callback) callback(objects, states);
                     }
                 }
             },
@@ -567,14 +569,7 @@ function startController(isStartAdapter, onObjectChange, onStateChange, callback
                 isStatesConnected = true;
                 if (isObjectConnected) {
                     console.log('startController: started!!');
-                    if (isStartAdapter) {
-                        startAdapter(objects, states, callback);
-                    } else {
-                        if (callback) {
-                            callback(objects, states);
-                            callback = null;
-                        }
-                    }
+                    startAdapter(objects, states, callback);
                 }
             },
             change: onStateChange
