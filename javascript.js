@@ -506,7 +506,7 @@
 
     function fixLineNo(line) {
         if (line.indexOf('javascript.js:') >= 0) return line;
-        if (!/[.\\\/]scripts\.js[.\\\/]/.test(line)) return line;
+        if (!/script[s]?\.js[.\\\/]/.test(line)) return line;
         line = line.replace(/:([\d]+):/, function ($0, $1) {
             return ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1) + ':'
         });
