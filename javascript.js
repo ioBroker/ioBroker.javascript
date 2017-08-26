@@ -64,7 +64,20 @@
     };
     var astroList    = ['sunrise', 'sunset', 'sunriseEnd', 'sunsetStart', 'dawn', 'dusk', 'nauticalDawn', 'nauticalDusk', 'nightEnd', 'night', 'goldenHourEnd', 'goldenHour'];
     var astroListLow = ['sunrise', 'sunset', 'sunriseend', 'sunsetstart', 'dawn', 'dusk', 'nauticaldawn', 'nauticaldusk', 'nightend', 'night', 'goldenhourend', 'goldenhour'];
-    
+
+    // for node version <= 0.12
+    if (''.startsWith === undefined) {
+        String.prototype.startsWith = function (s) {
+            return this.indexOf(s) === 0;
+        };
+    }
+    if (''.endsWith === undefined) {
+        String.prototype.endsWith = function (s) {
+            return this.slice(0-s.length) === s;
+        };
+    }
+    ////
+
     function doGetter(obj, name, ret) {
         //adapter.log.debug('getter: ' + name + ' returns ' + ret);
         Object.defineProperty(obj, name, { value: ret });
