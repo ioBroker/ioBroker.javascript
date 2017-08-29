@@ -540,23 +540,19 @@ describe('Test JS', function() {
             "native": {}
         };
 
-        objects.setObject(script._id, script, function (err) {
-            expect(err).to.be.not.ok;
-            checkValueOfState('javascript.0.delayed', 4, function (err) {
-                expect(err).to.be.not.ok;
-                states.getState('javascript.0.delayed', function (err, stateStart) {
-                    expect(err).to.be.not.ok;
-                    checkValueOfState('javascript.0.delayed', 5, function (err) {
-                        expect(err).to.be.not.ok;
-                        states.getState('javascript.0.delayed', function (err, stateStop) {
-                            expect(err).to.be.not.ok;
-                            expect(stateStop.ts - stateStart.ts).to.be.least(950);
-                            done();
-                        });
-                    });
-                });
-            });
-        });
+        var start = 0;
+        onStateChanged = function (id, state){
+            if (id !== 'javascript.0.delayed') return;
+            if (state.val === 4) {
+                start = state.ts;
+            } else if (state.val === 5) {
+                expect(start).to.be.not.equal(0);
+                expect(state.ts - start).to.be.least(950);
+                onStateChanged = null;
+                setTimeout(done, 100);
+            }
+        };
+        objects.setObject(script._id, script);
     });
 
     it('Test JS: test setStateDelayed nested', function (done) {
@@ -575,23 +571,19 @@ describe('Test JS', function() {
             "native": {}
         };
 
-        objects.setObject(script._id, script, function (err) {
-            expect(err).to.be.not.ok;
-            checkValueOfState('javascript.0.delayed', 6, function (err) {
-                expect(err).to.be.not.ok;
-                states.getState('javascript.0.delayed', function (err, stateStart) {
-                    expect(err).to.be.not.ok;
-                    checkValueOfState('javascript.0.delayed', 7, function (err) {
-                        expect(err).to.be.not.ok;
-                        states.getState('javascript.0.delayed', function (err, stateStop) {
-                            expect(err).to.be.not.ok;
-                            expect(stateStop.ts - stateStart.ts).to.be.least(950);
-                            done();
-                        });
-                    });
-                });
-            });
-        });
+        var start = 0;
+        onStateChanged = function (id, state){
+            if (id !== 'javascript.0.delayed') return;
+            if (state.val === 6) {
+                start = state.ts;
+            } else if (state.val === 7) {
+                expect(start).to.be.not.equal(0);
+                expect(state.ts - start).to.be.least(950);
+                onStateChanged = null;
+                setTimeout(done, 100);
+            }
+        };
+        objects.setObject(script._id, script);
     });
 
     it('Test JS: test setStateDelayed overwritten', function (done) {
@@ -932,14 +924,14 @@ describe('Test JS', function() {
                 [ { no: 51, cnt: 0 },                              { id:0, oldFrom: 'system.adapter.javascript.1' },               [ 1 ] ],
 
                 // not ok with the old patternMatching function
-                [ { no: 52, cnt: 1, val: 'onChannel'},             { channelId: /^javascript.0.device.channel$/ },                 [ 'onChannel'] ],
-                [ { no: 53, cnt: 1, val: 'onChannel'},             { channelId: /^javascript.0.device.channel$/, val: 'onChannel' }, [ 'onChannel', 'xyz'] ],
-                [ { no: 54, cnt: 1, val: 'onChannel'},             { channelName: /^Channel$/ },                                   [ 'onChannel'] ],
-                [ { no: 55, cnt: 1, val: 'onChannel'},             { channelName: /^Channel$/, val: 'onChannel' },                 [ 'onChannel', 'xyz'] ],
-                [ { no: 56, cnt: 1, val: 'onDevice'},              { deviceId: /^javascript.0.device$/ },                          [ 'onDevice'] ],
-                [ { no: 57, cnt: 1, val: 'onDevice'},              { deviceId: /^javascript.0.device$/, val: 'onDevice' },         [ 'onDevice', 'xyz'] ],
-                [ { no: 58, cnt: 1, val: 'onDevice'},              { deviceName: /^Device$/ },                                     [ 'onDevice'] ],
-                [ { no: 59, cnt: 1, val: 'onDevice'},              { deviceName: /^Device$/, val: 'onDevice' },                    [ 'onDevice', 'xyz'] ]
+                [ { no: 52, cnt: 1, val: 'onChannel'},          { channelId: /^javascript.0.device.channel$/ },                    [ 'onChannel'] ],
+                [ { no: 53, cnt: 1, val: 'onChannel'},          { channelId: /^javascript.0.device.channel$/, val: 'onChannel' },  [ 'onChannel', 'xyz'] ],
+                [ { no: 54, cnt: 1, val: 'onChannel'},          { channelName: /^Channel$/ },                                      [ 'onChannel'] ],
+                [ { no: 55, cnt: 1, val: 'onChannel'},          { channelName: /^Channel$/, val: 'onChannel' },                    [ 'onChannel', 'xyz'] ],
+                [ { no: 56, cnt: 1, val: 'onDevice'},           { deviceId: /^javascript.0.device$/ },                             [ 'onDevice'] ],
+                [ { no: 57, cnt: 1, val: 'onDevice'},           { deviceId: /^javascript.0.device$/, val: 'onDevice' },            [ 'onDevice', 'xyz'] ],
+                [ { no: 58, cnt: 1, val: 'onDevice'},           { deviceName: /^Device$/ },                                        [ 'onDevice'] ],
+                [ { no: 59, cnt: 1, val: 'onDevice'},           { deviceName: /^Device$/, val: 'onDevice' },                       [ 'onDevice', 'xyz'] ]
 
             ];
 
