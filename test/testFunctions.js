@@ -929,17 +929,17 @@ describe('Test JS', function() {
                 [ { no: 48, cnt: 1, val: 1 },                      { id:0, from: 'system.adapter.javascript.0' },                  [ 1 ] ],
                 [ { no: 49, cnt: 0 },                              { id:0, from: 'system.adapter.javascript.1' },                  [ 1 ] ],
                 [ { no: 50, cnt: 1, val: 1 },                      { id:0, oldFrom: 'system.adapter.javascript.0' },               [ 1 ] ],
-                [ { no: 51, cnt: 0 },                              { id:0, oldFrom: 'system.adapter.javascript.1' },               [ 1 ] ]
+                [ { no: 51, cnt: 0 },                              { id:0, oldFrom: 'system.adapter.javascript.1' },               [ 1 ] ],
 
                 // not ok with the old patternMatching function
-                // [ { no: 52, cnt: 1, val: 'onChannel'},          { channelId: /^javascript.0.device.channel$/ },                    [ 'onChannel'] ],
-                // [ { no: 53, cnt: 1, val: 'onChannel'},          { channelId: /^javascript.0.device.channel$/, val: 'onChannel' },  [ 'onChannel', 'xyz'] ],
-                // [ { no: 54, cnt: 1, val: 'onChannel'},          { channelName: /^Channel$/ },                                      [ 'onChannel'] ],
-                // [ { no: 55, cnt: 1, val: 'onChannel'},          { channelName: /^Channel$/, val: 'onChannel' },                    [ 'onChannel', 'xyz'] ],
-                // [ { no: 56, cnt: 1, val: 'onDevice'},           { deviceId: /^javascript.0.device$/ },                             [ 'onDevice'] ],
-                // [ { no: 57, cnt: 1, val: 'onDevice'},           { deviceId: /^javascript.0.device$/, val: 'onDevice' },            [ 'onDevice', 'xyz'] ],
-                // [ { no: 58, cnt: 1, val: 'onDevice'},           { deviceName: /^Device$/ },                                        [ 'onDevice'] ],
-                // [ { no: 59, cnt: 1, val: 'onDevice'},           { deviceName: /^Device$/, val: 'onDevice' },                       [ 'onDevice', 'xyz'] ]
+                [ { no: 52, cnt: 1, val: 'onChannel'},             { channelId: /^javascript.0.device.channel$/ },                 [ 'onChannel'] ],
+                [ { no: 53, cnt: 1, val: 'onChannel'},             { channelId: /^javascript.0.device.channel$/, val: 'onChannel' }, [ 'onChannel', 'xyz'] ],
+                [ { no: 54, cnt: 1, val: 'onChannel'},             { channelName: /^Channel$/ },                                   [ 'onChannel'] ],
+                [ { no: 55, cnt: 1, val: 'onChannel'},             { channelName: /^Channel$/, val: 'onChannel' },                 [ 'onChannel', 'xyz'] ],
+                [ { no: 56, cnt: 1, val: 'onDevice'},              { deviceId: /^javascript.0.device$/ },                          [ 'onDevice'] ],
+                [ { no: 57, cnt: 1, val: 'onDevice'},              { deviceId: /^javascript.0.device$/, val: 'onDevice' },         [ 'onDevice', 'xyz'] ],
+                [ { no: 58, cnt: 1, val: 'onDevice'},              { deviceName: /^Device$/ },                                     [ 'onDevice'] ],
+                [ { no: 59, cnt: 1, val: 'onDevice'},              { deviceName: /^Device$/, val: 'onDevice' },                    [ 'onDevice', 'xyz'] ]
 
             ];
 

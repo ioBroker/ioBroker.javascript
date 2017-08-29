@@ -65,6 +65,135 @@
     var astroList    = ['sunrise', 'sunset', 'sunriseEnd', 'sunsetStart', 'dawn', 'dusk', 'nauticalDawn', 'nauticalDusk', 'nightEnd', 'night', 'goldenHourEnd', 'goldenHour'];
     var astroListLow = ['sunrise', 'sunset', 'sunriseend', 'sunsetstart', 'dawn', 'dusk', 'nauticaldawn', 'nauticaldusk', 'nightend', 'night', 'goldenhourend', 'goldenhour'];
 
+    // for node version <= 0.12
+    if (''.startsWith === undefined) {
+        String.prototype.startsWith = function (s) {
+            return this.indexOf(s) === 0;
+        };
+    }
+    if (''.endsWith === undefined) {
+        String.prototype.endsWith = function (s) {
+            return this.slice(0-s.length) === s;
+        };
+    }
+    ////
+
+    function doGetter(obj, name, ret) {
+        //adapter.log.debug('getter: ' + name + ' returns ' + ret);
+        Object.defineProperty(obj, name, { value: ret });
+        return ret;
+    }
+
+    var eventObjectProperties = {
+        common: {
+            get: function () {
+                var ret = objects[this.id] ? objects[this.id].common : {};
+                return doGetter (this, 'common', ret);
+            },
+            configurable: true
+        },
+        native: {
+            get: function () {
+                var ret = objects[this.id] ? objects[this.id].native : {};
+                return doGetter (this, 'native', ret);
+            },
+            configurable: true
+        },
+        name: {
+            get: function () {
+                var ret = this.common ? this.common.name : null;
+                return doGetter (this, 'name', ret);
+            },
+            configurable: true
+        },
+        channelId: {
+            get: function () {
+                var ret = this.id.replace (/\.*[^.]+$/, '');
+                return doGetter (this, 'channelId', objects[ret] ? ret : null);
+            },
+            configurable: true
+        },
+        channelName: {
+            get: function () {
+                var channelId = this.channelId;
+                var ret = channelId && objects[channelId].common ? objects[channelId].common.name : null;
+                return doGetter (this, 'channelName', ret);
+            },
+            configurable: true
+        },
+        deviceId: {
+            get: function () {
+                var deviceId, channelId = this.channelId;
+                if (!channelId || !(deviceId = channelId.replace (/\.*[^.]+$/, '')) || !objects[deviceId]) {
+                    Object.defineProperty(this, 'deviceName', { value: null });
+                    return doGetter (this, 'deviceId', null);
+                }
+                return doGetter (this, 'deviceId', deviceId);
+            },
+            configurable: true
+        },
+        deviceName: {
+            get: function () {
+                var deviceId = this.deviceId;
+                var ret = deviceId && objects[deviceId].common ? objects[deviceId].common.name : null;
+                return doGetter (this, 'deviceName', ret);
+            },
+            configurable: true
+        },
+        enumIds: {
+            get: function () {
+                if (!isEnums) return undefined;
+                var enumIds = {}, enumNames = {};
+                getObjectEnumsSync(this.id, enumIds, enumNames);
+                Object.defineProperty(this, 'enumNames', { value: enumNames });
+                return doGetter(this, 'enumIds', enumIds);
+            },
+            configurable: true
+        },
+        enumNames: {
+            get: function () {
+                if (!isEnums) return undefined;
+                var enumIds = {}, enumNames = {};
+                getObjectEnumsSync(this.id, enumIds, enumNames);
+                Object.defineProperty(this, 'enumIds', { value: enumIds });
+                return doGetter(this, 'enumNames', enumNames);
+            },
+            configurable: true
+        }
+    };
+
+    function EventObj (id, state, oldState) {
+        if (!(this instanceof EventObj)) return new EventObj(id, newState, oldState);
+        this.id = id;
+        this.newState = {
+            val:  state.val,
+            ts:   state.ts,
+            ack:  state.ack,
+            lc:   state.lc,
+            from: state.from
+        };
+        //if (oldState === undefined) oldState = {};
+        if (!oldState) {
+            this.oldState = {
+                val:  undefined,
+                ts:   undefined,
+                ack:  undefined,
+                lc:   undefined,
+                from: undefined
+            };
+        } else {
+            this.oldState = {
+                val:  oldState.val,
+                ts:   oldState.ts,
+                ack:  oldState.ack,
+                lc:   oldState.lc,
+                from: oldState.from
+            };
+        }
+        this.state = this.newState;
+    }
+    Object.defineProperties(EventObj.prototype, eventObjectProperties);
+
     var adapter = utils.adapter({
 
         name: 'javascript',
@@ -184,88 +313,62 @@
         },
 
         stateChange: function (id, state) {
+            if (id.startsWith('messagebox.') || id.startsWith('log.')) return;
 
-            if (id.match(/^messagebox\./) || id.match(/^log\./)) return;     ///!! -> regexp.test()
-
-            var oldState = states[id] || {};
+            var oldState = states[id];
             if (state) {
 
-                // enable or disable script
-                if (!state.ack && activeRegEx.test(id)) {
-                    adapter.extendForeignObject(objects[id].native.script, {common: {enabled: state.val}});
-                }
-                if (stateIds.indexOf(id) === -1) {
-                    stateIds.push(id);
-                    stateIds.sort();
-                }
+                if (oldState) {
+                    // enable or disable script
+                    if (!state.ack && id.startsWith (activeStr)) {
+                        adapter.extendForeignObject (oldState.native.script, {common: {enabled: state.val}});
+                    }
 
-                // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
-                if (states[id] && states[id].val === false && id.match(/\.alive$/) && state.val) {
-                    if (adapterSubs[id]) {
-                        var parts = id.split('.');
-                        var a = parts[2] + '.' + parts[3];
-                        for (var t = 0; t < adapterSubs[id].length; t++) {
-                            adapter.log.info('Detected coming adapter "' + a + '". Send subscribe: ' + adapterSubs[id][t]);
-                            adapter.sendTo(a, 'subscribe', adapterSubs[id][t]);
+                    // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
+                    if (/*oldState && */oldState.val === false && state.val && id.endsWith ('.alive')) {
+                        if (adapterSubs[id]) {
+                            var parts = id.split ('.');
+                            var a = parts[2] + '.' + parts[3];
+                            for (var t = 0; t < adapterSubs[id].length; t++) {
+                                adapter.log.info ('Detected coming adapter "' + a + '". Send subscribe: ' + adapterSubs[id][t]);
+                                adapter.sendTo (a, 'subscribe', adapterSubs[id][t]);
+                            }
                         }
                     }
+                } else {
+                    if (/*!oldState && */stateIds.indexOf (id) === -1) {
+                        stateIds.push (id);
+                        stateIds.sort ();
+                    }
                 }
-
                 states[id] = state;
             } else {
-                if (states[id]) delete states[id];
+                if (oldState) delete states[id];
                 state = {};
                 var pos = stateIds.indexOf(id);
                 if (pos !== -1) {
                     stateIds.splice(pos, 1);
                 }
             }
+            var eventObj = new EventObj(id, state, oldState);
 
-            var eventObj = {
-                id: id,
-                //name: name,
-                //common: common,
-                //native: nativeObj,
-                //channelId: channelId,
-                //channelName: channelName,
-                //deviceId: deviceId,
-                //deviceName: deviceName,
-                //enumIds: enumIds,       // Array of Strings
-                //enumNames: enumNames,     // Array of Strings
-                newState: {
-                    val:  state.val,
-                    ts:   state.ts,
-                    ack:  state.ack,
-                    lc:   state.lc,
-                    from: state.from
-                },
-                oldState: {
-                    val:  oldState.val,
-                    ts:   oldState.ts,
-                    ack:  oldState.ack,
-                    lc:   oldState.lc,
-                    from: oldState.from
+            // if this state matchs any subscriptions
+            for (var i = 0, l = subscriptions.length; i < l; i++) {
+                var sub = subscriptions[i];
+                if (patternMatching(eventObj, sub.patternCompareFunctions)) {
+                    sub.callback(eventObj);
                 }
-            };
-            eventObj.state = eventObj.newState;
-
-            if (isEnums) {
-                getObjectEnums(id, function (enumIds, enumNames) {
-                    eventObj.enumIds   = enumIds;
-                    eventObj.enumNames = enumNames;
-                    checkPatterns(eventObj);
-                });
-            } else {
-                checkPatterns(eventObj);
             }
         },
+
 
         unload: function (callback) {
             callback();
         },
 
         ready: function () {
-
+             // todo
+            activeStr = adapter.namespace + '.scriptEnabled.';
             activeRegEx = new RegExp('^' + adapter.namespace.replace('.', '\\.') + '\\.scriptEnabled\\.');
 
             installLibraries(function () {
@@ -412,10 +515,11 @@
     var timers =           {};
     var timerId =          0;
     var activeRegEx =      null;
+    var activeStr =        '';
 
     function fixLineNo(line) {
         if (line.indexOf('javascript.js:') >= 0) return line;
-        if (!/[.\\\/]script\.js[.\\\/]/.test(line)) return line;
+        if (!/script[s]?\.js[.\\\/]/.test(line)) return line;
         line = line.replace(/:([\d]+):/, function ($0, $1) {
             return ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1) + ':'
         });
@@ -530,123 +634,6 @@
         return null;
     }
 
-    function checkPatterns(eventObj) {
-        // if this state matchs any subscriptions
-        var matched = false;
-        var subs = [];
-        for (var i = 0, l = subscriptions.length; i < l; i++) {
-            var pattern = subscriptions[i].pattern;
-            // possible matches
-            //    pattern.name
-            //    pattern.channelId
-            //    pattern.channelName
-            //    pattern.deviceId
-            //    pattern.deviceName
-            //    pattern.enumId
-            //    pattern.enumName
-            if (!matched) {
-                if (eventObj.name === undefined && pattern.name) {
-                    eventObj.common = objects[eventObj.id] ? objects[eventObj.id].common : {};
-                    eventObj.native = objects[eventObj.id] ? objects[eventObj.id].native : {};
-                    eventObj.name   = eventObj.common ? eventObj.common.name : null;
-                }
-
-                if (eventObj.channelId === undefined && (pattern.deviceId || pattern.deviceName || pattern.channelId || pattern.channelName)) {
-                    var _pos = eventObj.id.lastIndexOf('.');
-                    if (_pos !== -1) eventObj.channelId = eventObj.id.substring(0, _pos);
-                    if (!objects[eventObj.channelId]) eventObj.channelId = null;
-                }
-
-                if (eventObj.channelName === undefined && pattern.channelName) {
-                    if (eventObj.channelId && objects[eventObj.channelId]) {
-                        eventObj.channelName = objects[eventObj.channelId].common ? objects[eventObj.channelId].common.name : null;
-                    } else {
-                        eventObj.channelName = null;
-                    }
-                }
-
-                if (eventObj.deviceId === undefined && (pattern.deviceId || pattern.deviceName)) {
-                    if (!eventObj.channelId) {
-                        eventObj.deviceId   = null;
-                        eventObj.deviceName = null;
-                    } else {
-                        var pos = eventObj.channelId.lastIndexOf('.');
-                        if (pos !== -1) {
-                            eventObj.deviceId = eventObj.channelId.substring(0, pos);
-                            if (!objects[eventObj.deviceId]) {
-                                eventObj.deviceId   = null;
-                                eventObj.deviceName = null;
-                            }
-                        }
-                    }
-                }
-                if (eventObj.deviceName === undefined && pattern.deviceName) {
-                    eventObj.deviceName = objects[eventObj.deviceId] && objects[eventObj.deviceId].common ? objects[eventObj.deviceId].common.name : null;
-                }
-            }
-
-            if (patternMatching(eventObj, subscriptions[i].patternCompareFunctions)) {
-                if (!matched) {
-                    matched = true;
-                    if (eventObj.name === undefined) {
-                        eventObj.common = objects[eventObj.id] ? objects[eventObj.id].common : {};
-                        eventObj.native = objects[eventObj.id] ? objects[eventObj.id].native : {};
-                        eventObj.name   = eventObj.common ? eventObj.common.name : null;
-                    }
-
-                    if (eventObj.channelId === undefined) {
-                        var __pos = eventObj.id.lastIndexOf('.');
-                        if (__pos !== -1) eventObj.channelId = eventObj.id.substring(0, __pos);
-                        if (!objects[eventObj.channelId]) eventObj.channelId = null;
-                    }
-
-                    if (eventObj.channelName === undefined) {
-                        if (eventObj.channelId && objects[eventObj.channelId]) {
-                            eventObj.channelName = objects[eventObj.channelId].common ? objects[eventObj.channelId].common.name : null;
-                        } else {
-                            eventObj.channelName = null;
-                        }
-                    }
-
-                    if (eventObj.deviceId === undefined) {
-                        if (!eventObj.channelId) {
-                            eventObj.deviceId   = null;
-                            eventObj.deviceName = null;
-                        } else {
-                            var pos_ = eventObj.channelId.lastIndexOf('.');
-                            if (pos_ !== -1) {
-                                eventObj.deviceId = eventObj.channelId.substring(0, pos_);
-                                if (!objects[eventObj.deviceId]) {
-                                    eventObj.deviceId   = null;
-                                    eventObj.deviceName = null;
-                                }
-                            }
-                        }
-                    }
-                    if (eventObj.deviceName === undefined) {
-                        eventObj.deviceName = objects[eventObj.deviceId] && objects[eventObj.deviceId].common ? objects[eventObj.deviceId].common.name : null;
-                    }
-                }
-                subs.push(i);
-            }
-        }
-
-        if (matched) {
-            if (eventObj.enumIds === undefined) {
-                getObjectEnums(eventObj.id, function (enumIds, enumNames) {
-                    eventObj.enumIds   = enumIds;
-                    eventObj.enumNames = enumNames;
-                    for (var i = 0, l = subs.length; i < l; i++) {
-                        subscriptions[subs[i]].callback(eventObj);
-                    }
-                });
-            } else {
-                for (var ii = 0, ll = subs.length; ii < ll; ii++) {
-                    subscriptions[subs[ii]].callback(eventObj);
-                }
-            }
-        }
-    }
 
     function installNpm(npmLib, callback) {
         var path = __dirname;
@@ -1673,7 +1660,7 @@
                 }
 
                 // Check type of state
-				if (!objects[id] && objects[adapter.namespace + '.' + id]) {
+                if (!objects[id] && objects[adapter.namespace + '.' + id]) {
                     id = adapter.namespace + '.' + id;
                 }
 
@@ -1683,25 +1670,25 @@
                     common.type !== 'mixed' &&
                     common.type !== 'file'  &&
                     common.type !== 'json') {
-					if (state && typeof state === 'object' && state.val !== undefined) {
-						if (common.type !== typeof state.val) {
+                    if (state && typeof state === 'object' && state.val !== undefined) {
+                        if (common.type !== typeof state.val) {
                             logWithLineInfo.warn('Wrong type of ' + id + ': "' + typeof state.val + '". Please fix, while deprecated and will not work in next versions.');
-							//return;
-						}
-					} else {
-						if (common.type !== typeof state) {
+                            //return;
+                        }
+                    } else {
+                        if (common.type !== typeof state) {
                             logWithLineInfo.warn('Wrong type of ' + id + ': "' + typeof state + '". Please fix, while deprecated and will not work in next versions.');
-							//return;
-						}
-					}
-				}
+                            //return;
+                        }
+                    }
+                }
                 // Check min and max of value
-				if (typeof state === 'object' && state) {
-					if (common && typeof state.val === 'number') {
-	                    if (common.min !== undefined && state.val < common.min) state.val = common.min;
-	                    if (common.max !== undefined && state.val > common.max) state.val = common.max;
-	                }
-				} else if (common && typeof state === 'number') {
+                if (typeof state === 'object' && state) {
+                    if (common && typeof state.val === 'number') {
+                        if (common.min !== undefined && state.val < common.min) state.val = common.min;
+                        if (common.max !== undefined && state.val > common.max) state.val = common.max;
+                    }
+                } else if (common && typeof state === 'number') {
                     if (common.min !== undefined && state < common.min) state = common.min;
                     if (common.max !== undefined && state > common.max) state = common.max;
                 }
@@ -1958,7 +1945,7 @@
 
                         if (sandbox.verbose) sandbox.log('getState(id=' + id + ', timerId=' + timerId + ') => not found', 'info');
 
-                        logWithLineInfo.warn('State "' + id + '" not found');
+                        logWithLineInfo.warn('getState "' + id + '" not found (3)' + (states[id] !== undefined ? ' states[id]=' + states[id] : ''));     ///xxx
                         return {val: null, notExist: true};
                     }
                 }
@@ -2165,11 +2152,11 @@
                         if (err) adapter.log.warn('Cannot set object "' + name + '": ' + err);
 
                         if (initValue !== undefined) {
-							if (typeof initValue === 'object' && initValue.ack !== undefined) {
-                            	adapter.setState(name, initValue, callback);
-							} else {
-                            	adapter.setState(name, initValue, true, callback);
-							}
+                            if (typeof initValue === 'object' && initValue.ack !== undefined) {
+                                adapter.setState(name, initValue, callback);
+                            } else {
+                                adapter.setState(name, initValue, true, callback);
+                            }
                         } else {
                             if (typeof callback === 'function') {
                                 try {
@@ -2195,11 +2182,11 @@
 
                                     if (initValue !== undefined) {
                                         adapter.setForeignState(name, initValue, callback);
-										if (typeof initValue === 'object' && initValue.ack !== undefined) {
-											adapter.setForeignState(name, initValue, callback);
-										} else {
-											adapter.setForeignState(name, initValue, true, callback);
-										}
+                                        if (typeof initValue === 'object' && initValue.ack !== undefined) {
+                                            adapter.setForeignState(name, initValue, callback);
+                                        } else {
+                                            adapter.setForeignState(name, initValue, true, callback);
+                                        }
                                     } else {
                                         adapter.setForeignState(name, null, true, callback);
                                     }
@@ -2214,10 +2201,10 @@
 
                                     if (initValue !== undefined) {
                                         if (typeof initValue === 'object' && initValue.ack !== undefined) {
-											adapter.setState(name, initValue, callback);
-										} else {
-											adapter.setState(name, initValue, true, callback);
-										}
+                                            adapter.setState(name, initValue, callback);
+                                        } else {
+                                            adapter.setState(name, initValue, true, callback);
+                                        }
                                     } else {
                                         adapter.setState(name, null, true, callback);
                                     }
@@ -2399,9 +2386,9 @@
                     time = sandbox.getAstroDate(time.astro, time.date || new Date(), time.offset || 0);
                 }
 
-		        var daily = true;
-		        if (time) {
-		            daily = false;
+                var daily = true;
+                if (time) {
+                    daily = false;
                 }
                 if (time && typeof time !== 'object') {
                     if (typeof time === 'string' && time.indexOf(' ') === -1 && time.indexOf('T') === -1) {
@@ -2438,11 +2425,11 @@
                             startTime.setSeconds(0);
                         }
                     } else {
-			            daily = false;
+                        daily = false;
                         startTime = new Date(startTime);
                     }
                 } else {
-		            daily = false;
+                    daily = false;
                     startTime = new Date(startTime);
                 }
                 startTime = startTime.getTime();
@@ -2461,11 +2448,11 @@
                             endTime.setSeconds(0);
                         }
                     } else {
-			            daily = false;
+                        daily = false;
                         endTime = new Date(endTime);
                     }
                 } else if (endTime) {
-		            daily = false;
+                    daily = false;
                     endTime = new Date(endTime);
                 } else {
                     endTime = null;
@@ -2620,7 +2607,7 @@
             delFile: function (_adapter, fileName, callback) {
                 return sandbox.unlink(_adapter, fileName, callback);
             },
-			getHistory: function (instance, options, callback) {
+            getHistory: function (instance, options, callback) {
                 if (typeof instance === 'object') {
                     callback = options;
                     options  = instance;
