@@ -417,7 +417,7 @@ Blockly.Blocks['on_source'] = {
     init: function() {
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['on_source_id'][systemLang],             '_id'],
+                [Blockly.Words['on_source_id'][systemLang],             'id'],
                 [Blockly.Words['on_source_name'][systemLang],           'common.name'],
                 [Blockly.Words['on_source_desc'][systemLang],           'common.desc'],
                 [Blockly.Words['on_source_channel_id'][systemLang],     'channelId'],
