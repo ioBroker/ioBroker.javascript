@@ -76,7 +76,17 @@
             return this.slice(0-s.length) === s;
         };
     }
-    ////
+    ///
+
+    var webstormDebug;
+    if (process.argv) {
+        for (var a = 1; a < process.argv.length; a++) {
+            if (process.argv[a].startsWith('--webstorm')) {
+                webstormDebug = process.argv[a].replace(/^(.*?=\s*)/, '');
+                break;
+            }
+        }
+    }
 
     function doGetter(obj, name, ret) {
         //adapter.log.debug('getter: ' + name + ' returns ' + ret);
@@ -355,7 +365,7 @@
             // if this state matchs any subscriptions
             for (var i = 0, l = subscriptions.length; i < l; i++) {
                 var sub = subscriptions[i];
-                if (patternMatching(eventObj, sub.patternCompareFunctions)) {
+                if (sub && patternMatching(eventObj, sub.patternCompareFunctions)) {
                     sub.callback(eventObj);
                 }
             }
@@ -368,6 +378,7 @@
 
         ready: function () {
              // todo
+            errorLogFunction = webstormDebug ? console : adapter.log;
             activeStr = adapter.namespace + '.scriptEnabled.';
             activeRegEx = new RegExp('^' + adapter.namespace.replace('.', '\\.') + '\\.scriptEnabled\\.');
 
@@ -516,25 +527,43 @@
     var timerId =          0;
     var activeRegEx =      null;
     var activeStr =        '';
+    var errorLogFunction;
+
+    function addGetProperty(object) {
+        Object.defineProperty (object, 'get', {
+            value: function (id) {
+                return this[id] || this[adapter.namespace + '.' + id];
+            },
+            enumerable: false
+        });
+    }
 
     function fixLineNo(line) {
         if (line.indexOf('javascript.js:') >= 0) return line;
         if (!/script[s]?\.js[.\\\/]/.test(line)) return line;
+        if (/:([\d]+):/.test(line)) {
         line = line.replace(/:([\d]+):/, function ($0, $1) {
-            return ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1) + ':'
-        });
+                return ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1) + ':';
+            })
+        } else {
+            line = line.replace(/:([\d]+)$/, function ($0, $1) {
+                return ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1);
+            })
+        }
         return line;
     }
 
 
     function logError(msg, e, offs) {
         var stack = e.stack.split('\n');
-        msg = msg.replace(/[: ]*$/, ': ');
-        adapter.log.error(msg + stack[0]);
+        if (msg.indexOf('\n') < 0) msg = msg.replace(/[: ]*$/, ': ');
+        //errorLogFunction.error(msg + stack[0]);
+        errorLogFunction.error(msg + fixLineNo(stack[0]));
         for (var i=offs || 1; i<stack.length; i++) {
             if (!stack[i]) continue;
             if (stack[i].match(/runInNewContext|javascript\.js\:/)) break;
-            adapter.log.error(fixLineNo(stack[i]));
+            //adapter.log.error(fixLineNo(stack[i]));
+            errorLogFunction.error (fixLineNo(stack[i]));
         }
     }
     function errorInCallback(e) {
@@ -549,12 +578,12 @@
 
     var logWithLineInfo = function (level, msg) {
         if (msg === undefined) return logWithLineInfo ('info', msg);
-        adapter.log[level](msg);
+        errorLogFunction[level](msg);
         var stack = (new Error().stack).split("\n");
         for (var i=3; i<stack.length; i++) {
             if (!stack[i]) continue;
-            if (stack[i].match(/runInNewContext|javascript\.js\:/)) break;
-            adapter.log[level](fixLineNo(stack[i]));
+            if (stack[i].match(/runInContext|runInNewContext|javascript\.js\:/)) break;
+            errorLogFunction[level](fixLineNo(stack[i]));
         }
     };
     logWithLineInfo.warn = logWithLineInfo.bind(1, 'warn');
@@ -711,8 +740,7 @@
             };
             return mods.vm.createScript(source, options);
         } catch (e) {
-            // todo
-            adapter.log.error(name + ' compile failed: ' + e);
+            logError(name + ' compile failed:\r\nat ', e);
             return false;
         }
     }
@@ -1950,6 +1978,12 @@
                     }
                 }
             },
+            existsState: function(id) {
+                return states.get(id) !== undefined;
+            },
+            existsObject: function(id) {
+                return objects.get(id) !== undefined;
+            },
             getIdByName:    function (name, alwaysArray) {
                 if (sandbox.verbose) sandbox.log('getIdByName(name=' + name + ', alwaysArray=' + alwaysArray + ') => ' + names[name], 'info');
                 if (alwaysArray) {
@@ -2993,8 +3027,14 @@
             if ((obj.common.engineType.match(/^[jJ]ava[sS]cript/) || obj.common.engineType === 'Blockly')) {
                 // Javascript
                 adapter.log.info('Start javascript ' + name);
-                scripts[name] = compile(globalScript + obj.common.source, name);
-                if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
+
+                var sourceFn = name;
+                if (webstormDebug) {
+                    var fn = name.replace(/^script.js./, '').replace(/\./g, '/');
+                    sourceFn = mods.path.join(webstormDebug, fn + '.js');
+                }
+                scripts[name] = compile(globalScript + obj.common.source, sourceFn);
+                if (scripts[name]) execute(scripts[name], sourceFn, obj.common.verbose, obj.common.debug);
                 if (typeof callback === 'function') callback(true, name);
             } else if (obj.common.engineType.match(/^[cC]offee/)) {
                 // CoffeeScript
@@ -3072,6 +3112,7 @@
             if (!adapter.config.subscribe) {
                 states = res;
             }
+            addGetProperty(states);
 
             // remember all IDs
             for (var id in res) {
@@ -3096,6 +3137,7 @@
                 // Collect all names
                 addToNames(objects[res[i].doc._id]);
             }
+            addGetProperty(objects);
 
             // set language for debug messages
             if (objects['system.config'] && objects['system.config'].common.language) words.setLanguage(objects['system.config'].common.language);

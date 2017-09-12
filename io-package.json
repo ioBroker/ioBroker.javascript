@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "javascript",
-        "version":                  "3.4.3",
+        "version":                  "3.4.5",
         "title":                    "Javascript/Blockly Script Engine",
         "titleLang": {
             "en": "Javascript/Blockly Script Engine",
@@ -14,6 +14,14 @@
             "ingo@fischer-ka.de"
         ],
         "news": {
+            "3.4.5": {
+                "en": "added webstorm environment variable for debugging",
+                "de": "webstorm Umgebungsvariable zum debuggen hinzugefügt"
+            },
+            "3.4.4": {
+                "en": "added existsObject and existsState function",
+                "de": "existsObject und existsState Function hinzugefügt"
+            },
             "3.4.3": {
                 "en": "typo error in line number correction fixed",
                 "de": "Tippfehler in Zeilennummernkorrektur behoben"
