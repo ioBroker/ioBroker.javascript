@@ -2426,7 +2426,9 @@ function Scripts(main) {
 }
 
 var main = {
-    socket:         io.connect(),
+    socket:         io.connect(location.protocol + '//' + location.host, {
+        query: 'ws=true'
+    }),
     saveConfig:     function (attr, value) {
         if (!main.config) return;
         if (attr) main.config[attr] = value;

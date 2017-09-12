@@ -1010,6 +1010,9 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+### 3.4.4 (2017-09-12)
+* (soef) typo error in line number correction fixed
+
 ### 3.4.1 (2017-08-12)
 * (soef) patternMatching optimized
 

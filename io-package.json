@@ -24,7 +24,8 @@
             },
             "3.4.3": {
                 "en": "typo error in line number correction fixed",
-                "de": "Tippfehler in Zeilennummernkorrektur behoben"
+                "de": "Tippfehler in Zeilennummernkorrektur behoben",
+                "ru": "Исправлена ошибка с сообщением об ошибке"
             },
             "3.4.2": {
                 "en": "Some enhancements and improvements",
@@ -159,7 +160,7 @@
             "singleton":            true,
             "name":                 "Scripts"
         },
-		"dependencies":             [{"js-controller": ">=0.10.0"}, {"admin": ">=2.0.0"}],
+		"dependencies":             [{"js-controller": ">=0.10.0"}],
         "type":                     "script"
     },
     "native": {

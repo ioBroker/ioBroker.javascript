@@ -553,19 +553,22 @@
         return line;
     }
 
-
     function logError(msg, e, offs) {
         var stack = e.stack.split('\n');
-        if (msg.indexOf('\n') < 0) msg = msg.replace(/[: ]*$/, ': ');
+        if (msg.indexOf('\n') < 0) {
+            msg = msg.replace(/[: ]*$/, ': ');
+        }
+
         //errorLogFunction.error(msg + stack[0]);
         errorLogFunction.error(msg + fixLineNo(stack[0]));
-        for (var i=offs || 1; i<stack.length; i++) {
+        for (var i = offs || 1; i < stack.length; i++) {
             if (!stack[i]) continue;
-            if (stack[i].match(/runInNewContext|javascript\.js\:/)) break;
+            if (stack[i].match(/runInNewContext|javascript\.js:/)) break;
             //adapter.log.error(fixLineNo(stack[i]));
             errorLogFunction.error (fixLineNo(stack[i]));
         }
     }
+
     function errorInCallback(e) {
         logError('Error in callback', e);
     }
@@ -582,7 +585,7 @@
         var stack = (new Error().stack).split("\n");
         for (var i=3; i<stack.length; i++) {
             if (!stack[i]) continue;
-            if (stack[i].match(/runInContext|runInNewContext|javascript\.js\:/)) break;
+            if (stack[i].match(/runInContext|runInNewContext|javascript\.js:/)) break;
             errorLogFunction[level](fixLineNo(stack[i]));
         }
     };
@@ -687,7 +690,7 @@
             adapter.log.error(buf.toString('utf8'));
         });
 
-        child.on('exit', function (code, signal) {
+        child.on('exit', function (code /* , signal */) {
             if (code) {
                 adapter.log.error('Cannot install ' + npmLib + ': ' + code);
             }
@@ -1399,7 +1402,7 @@
                             that.setState(callbackOrId, obj.newState.val);
                         };
                     } else {
-                        callback = function (obj) {
+                        callback = function (/* obj */) {
                             that.setState(callbackOrId, value);
                         };
                     }
@@ -2733,7 +2736,7 @@
                     } else {
                         if (objects[scriptName].common.enabled) {
                             objects[scriptName].common.enabled = false;
-                            adapter.extendForeignObject(scriptName, {common: {enabled: false}}, function (err, obj) {
+                            adapter.extendForeignObject(scriptName, {common: {enabled: false}}, function (/* err, obj */) {
                                 adapter.extendForeignObject(scriptName, {common: {enabled: true}}, function (err) {
                                     if (callback === 'function') callback(err);
                                 });
@@ -2893,7 +2896,7 @@
         try {
             script.runInNewContext(sandbox, {
                 filename:       name,
-                displayErrors:  true,
+                displayErrors:  true
                 //lineOffset: globalScriptLines
             });
         } catch (e) {
