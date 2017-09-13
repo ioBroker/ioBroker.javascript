@@ -327,28 +327,27 @@
 
             var oldState = states[id];
             if (state) {
-
                 if (oldState) {
                     // enable or disable script
-                    if (!state.ack && id.startsWith (activeStr)) {
-                        adapter.extendForeignObject (oldState.native.script, {common: {enabled: state.val}});
+                    if (!state.ack && id.startsWith(activeStr)) {
+                        adapter.extendForeignObject(objects[id].native.script, {common: {enabled: state.val}});
                     }
 
                     // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
-                    if (/*oldState && */oldState.val === false && state.val && id.endsWith ('.alive')) {
+                    if (/*oldState && */oldState.val === false && state.val && id.endsWith('.alive')) {
                         if (adapterSubs[id]) {
-                            var parts = id.split ('.');
+                            var parts = id.split('.');
                             var a = parts[2] + '.' + parts[3];
                             for (var t = 0; t < adapterSubs[id].length; t++) {
-                                adapter.log.info ('Detected coming adapter "' + a + '". Send subscribe: ' + adapterSubs[id][t]);
-                                adapter.sendTo (a, 'subscribe', adapterSubs[id][t]);
+                                adapter.log.info('Detected coming adapter "' + a + '". Send subscribe: ' + adapterSubs[id][t]);
+                                adapter.sendTo(a, 'subscribe', adapterSubs[id][t]);
                             }
                         }
                     }
                 } else {
-                    if (/*!oldState && */stateIds.indexOf (id) === -1) {
-                        stateIds.push (id);
-                        stateIds.sort ();
+                    if (/*!oldState && */stateIds.indexOf(id) === -1) {
+                        stateIds.push(id);
+                        stateIds.sort();
                     }
                 }
                 states[id] = state;
