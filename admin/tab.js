@@ -1333,21 +1333,26 @@ function Scripts(main) {
         }
     };
 
-    function _deleteGroup(id, originalGroup, confirmed) {
-        confirmed.push(id);
+    function _deleteGroup(id, originalGroup, confirmed, deleted) {
+        if (confirmed.indexOf(id) === -1) {
+            confirmed.push(id);
+        }
+
         // find all elements
         for (var l = 0; l < that.list.length; l++) {
-            if (that.list[l].substring(0, id.length + 1) === id + '.') {
-                deleteId(that.list[l], id, confirmed);
+            if (that.list[l].substring(0, id.length + 1) === id + '.' && (!deleted || deleted.indexOf(that.list[l]) === -1)) {
+                deleteId(that.list[l], id, confirmed, deleted);
                 return;
             }
         }
+
         for (var g = 0; g < that.groups.length; g++) {
             if (that.groups[g].substring(0, id.length + 1) === id + '.') {
-                deleteId(that.groups[g], id, confirmed);
+                deleteId(that.groups[g], id, confirmed, deleted);
                 return;
             }
         }
+
         that.main.socket.emit('delObject', id, function (err) {
             if (err) {
                 if (err) {
@@ -1356,48 +1361,50 @@ function Scripts(main) {
                 }
             } else if (originalGroup !== id) {
                 setTimeout(function () {
-                    deleteId(originalGroup, null, confirmed);
+                    deleteId(originalGroup, null, confirmed, deleted);
                 }, 0);
             } else {
                 // finish
             }
         });
     }
-    function deleteId(id, originalGroup, confirmed) {
+    function deleteId(id, originalGroup, confirmed, deleted) {
         originalGroup = originalGroup || id;
-        confirmed = confirmed || [];
+        confirmed     = confirmed     || [];
+        deleted       = deleted       || [];
 
         if (that.main.objects[id] && that.main.objects[id].type === 'script') {
             that.main.confirmMessage(_('Are you sure to delete script %s?', that.main.objects[id].common.name), null, 'help', function (result) {
                 if (result) {
                     that.main.socket.emit('delObject', id, function (err) {
                         if (err) {
-                            if (err) {
-                                that.main.showError(err);
-                                that.init(true);
-                            }
+                            that.main.showError(err);
+                            that.init(true);
                         } else {
+                            deleted.push(id);
                             setTimeout(function () {
-                                deleteId(originalGroup, null, confirmed);
+                                deleteId(originalGroup, null, confirmed, deleted);
                             }, 0);
                         }
                     });
                 } else {
-
+                    // Do nothing
                 }
             });
         } else {
             var name = id;
             if (confirmed.indexOf(id) === -1) {
-                if (that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.name) name = that.main.objects[id].common.name;
+                if (that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.name) {
+                    name = that.main.objects[id].common.name;
+                }
 
                 that.main.confirmMessage(_('Are you sure to delete group <span style="color: blue">%s</span> and <span style="color: red">all</span> scripts in it?', name), null, 'help', function (result) {
                     if (result) {
-                        _deleteGroup(id, originalGroup, confirmed);
+                        _deleteGroup(id, originalGroup, confirmed, deleted);
                     }
                 });
             } else {
-                _deleteGroup(id, originalGroup, confirmed);
+                _deleteGroup(id, originalGroup, confirmed, deleted);
             }
         }
     }
@@ -1995,7 +2002,6 @@ function Scripts(main) {
                                 that.main.socket.emit('setObject', newId, obj, function (err, obj) {
                                     if (err) {
                                         that.main.showError(err);
-                                        return;
                                     }
                                 });
                             });
