@@ -331,7 +331,9 @@ function Scripts(main) {
                         adapter: 'javascript',
                         id:      'script.js'
                     }, function (data) {
-                        if (!data || data.error) {
+                        if (data === 'permissionError') {
+                            main.showError(_(data));
+                        } else if (!data || data.error) {
                             main.showError(data ? data.error : 'Unknown error');
                         } else {
                             main.showMessage(_('Ok'));

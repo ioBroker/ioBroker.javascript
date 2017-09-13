@@ -41,6 +41,7 @@ systemDictionary = {
     "Set CRON":             {"en": "Set",                   "de": "Übernehmen",             "ru": "Перенять"},
     "debug":                {"en": "Debug",                 "de": "Debug",                  "ru": "Debug"},
     "verbose":              {"en": "Verbose",               "de": "Hilfe-Ausgaben",         "ru": "Вывод отладки"},
+    "permissionError":      {"en": "Permission error",      "de": "Zugriffsfehler",         "ru": "Ошибка доступа"},
     "debug_help": {
         "en": "setState, writeFile will be disabled",
         "de": "setState, writeFile werden deaktiviert",
