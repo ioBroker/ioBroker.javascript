@@ -91,16 +91,16 @@
     }
 
     var tsCompilerOptions = {
-        // for now allow failed compilation
-        // remove this line when we have an ambient declaration
-        // for the script adapter
-        noEmitOnError: false,
+        // don't compile faulty scripts
+        noEmitOnError: true,
         // change this to "es6" if we're dropping support for NodeJS 4.x
         target: mods.typescript.ScriptTarget.ES5,
         // we need this for the native promise support in NodeJS 4.x.
         // can be dropped if we're targeting ES6 anyways
         lib: ["lib.es6.d.ts"],
     };
+    // ambient declarations for typescript
+    var tsAmbient;
 
     function doGetter(obj, name, ret) {
         //adapter.log.debug('getter: ' + name + ' returns ' + ret);
@@ -395,6 +395,15 @@
             activeStr = adapter.namespace + '.scriptEnabled.';
             activeRegEx = new RegExp('^' + adapter.namespace.replace('.', '\\.') + '\\.scriptEnabled\\.');
 
+            // try to read TS declarations
+            try {
+                tsAmbient = {
+                    "javascript.d.ts": mods.fs.readFileSync(mods.path.join(__dirname, "lib/javascript.d.ts"), "utf8")
+                };
+            } catch (e) {
+                adapter.log.warn("Could not read TypeScript ambient declarations: " + e);
+            }
+                    
             installLibraries(function () {
                 getData(function () {
                     adapter.subscribeForeignObjects('*');
@@ -436,9 +445,7 @@
                                             });
                                         } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
                                             var tsCompiled = mods.tsc.compile(
-                                                obj.common.source, tsCompilerOptions, {
-                                                    "ioBroker.js.d.ts": "// TODO: replace this with an ambient declaration"
-                                                }
+                                                obj.common.source, tsCompilerOptions, tsAmbient
                                             );
                                             var errors = tsCompiled.diagnostics.map(function (diag) {
                                                 return diag.annotatedSource + "\n";
@@ -3088,9 +3095,7 @@
                 // TypeScript
                 adapter.log.info(name + ": compiling TypeScript source...");
                 mods.tsc.compileAsync(
-                    obj.common.source, tsCompilerOptions, {
-                        "ioBroker.js.d.ts": "// TODO: replace this with an ambient declaration"
-                    })
+                    obj.common.source, tsCompilerOptions, tsAmbient)
                     .then(function (tsCompiled) {
                         var errors = tsCompiled.diagnostics.map(function (diag) {
                             return diag.annotatedSource + "\n";
