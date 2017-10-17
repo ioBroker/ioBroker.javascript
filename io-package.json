@@ -163,6 +163,7 @@
             "blokly"
         ],
         "readme": "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
+        "enabled": true,
         "license": "MIT",
         "engineTypes": [
             "Blockly",
