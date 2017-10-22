@@ -20,6 +20,7 @@
         child_process:    require('child_process'),
 
         'coffee-compiler': require('coffee-compiler'),
+        typescript:       require('virtual-tsc'),
 
         'node-schedule':  require('node-schedule'),
         suncalc:          require('suncalc'),
@@ -420,7 +421,26 @@
                                                     }
                                                 }
                                             });
-                                        } else {
+                                        } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
+                                            var tsCompiled = mods.typescript.compile(
+                                                obj.common.source, {
+                                                    // for now allow failed compilation
+                                                    // remove this line when we have an ambient declaration
+                                                    // for the script adapter
+                                                    noEmitOnError: false
+                                                }, {
+                                                    "ioBroker.js.d.ts": "// TODO: replace this with an ambient declaration"
+                                                }
+                                            );
+                                            if (tsCompiled.success) {
+                                                globalScript += tsCompiled.result + '\n';
+                                            } else {
+                                                var errors = tsCompiled.diagnostics.map(function (diag) {
+                                                    return diag.annotatedSource + "\n";
+                                                }).join("\n");
+                                                adapter.log.error("TypeScript compilation failed: \n" + errors);
+                                            }
+                                        } else { // javascript
                                             globalScript += doc.rows[g].value.common.source + '\n';
                                         }
                                     }
@@ -3051,6 +3071,28 @@
                     if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
                     if (typeof callback === 'function') callback(true, name);
                 });
+            } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
+                // TypeScript
+                var tsCompiled = mods.typescript.compile(
+                    obj.common.source, {
+                        // for now allow failed compilation
+                        // remove this line when we have an ambient declaration
+                        // for the script adapter
+                        noEmitOnError: false
+                    }, {
+                        "ioBroker.js.d.ts": "// TODO: replace this with an ambient declaration"
+                    }
+                );
+                if (tsCompiled.success) {
+                    scripts[name] = compile(globalScript + '\n' + tsCompiled.result, name);
+                    if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
+                    if (typeof callback === 'function') callback(true, name);
+                } else {
+                    var errors = tsCompiled.diagnostics.map(function (diag) {
+                        return diag.annotatedSource + "\n";
+                    }).join("\n");
+                    adapter.log.error(name + ": TypeScript compilation failed: \n" + errors);
+                }
             }
         } else {
             var _name;
