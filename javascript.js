@@ -20,6 +20,8 @@
         child_process:    require('child_process'),
 
         'coffee-compiler': require('coffee-compiler'),
+        tsc:              require('virtual-tsc'),
+        typescript:       require('typescript'),
 
         'node-schedule':  require('node-schedule'),
         suncalc:          require('suncalc'),
@@ -87,6 +89,18 @@
             }
         }
     }
+
+    var tsCompilerOptions = {
+        // for now allow failed compilation
+        // remove this line when we have an ambient declaration
+        // for the script adapter
+        noEmitOnError: false,
+        // change this to "es6" if we're dropping support for NodeJS 4.x
+        target: mods.typescript.ScriptTarget.ES5,
+        // we need this for the native promise support in NodeJS 4.x.
+        // can be dropped if we're targeting ES6 anyways
+        lib: ["lib.es6.d.ts"],
+    };
 
     function doGetter(obj, name, ret) {
         //adapter.log.debug('getter: ' + name + ' returns ' + ret);
@@ -420,7 +434,26 @@
                                                     }
                                                 }
                                             });
-                                        } else {
+                                        } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
+                                            var tsCompiled = mods.tsc.compile(
+                                                obj.common.source, tsCompilerOptions, {
+                                                    "ioBroker.js.d.ts": "// TODO: replace this with an ambient declaration"
+                                                }
+                                            );
+                                            var errors = tsCompiled.diagnostics.map(function (diag) {
+                                                return diag.annotatedSource + "\n";
+                                            }).join("\n");
+                                            if (tsCompiled.success) {
+                                                if (errors.length > 0) {
+                                                    adapter.log.warn("TypeScript compilation had errors: \n" + errors);
+                                                } else {
+                                                    adapter.log.info("TypeScript compilation successful");
+                                                }
+                                                globalScript += tsCompiled.result + '\n';
+                                            } else {
+                                                adapter.log.error("TypeScript compilation failed: \n" + errors);
+                                            }
+                                        } else { // javascript
                                             globalScript += doc.rows[g].value.common.source + '\n';
                                         }
                                     }
@@ -3051,6 +3084,34 @@
                     if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
                     if (typeof callback === 'function') callback(true, name);
                 });
+            } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
+                // TypeScript
+                adapter.log.info(name + ": compiling TypeScript source...");
+                mods.tsc.compileAsync(
+                    obj.common.source, tsCompilerOptions, {
+                        "ioBroker.js.d.ts": "// TODO: replace this with an ambient declaration"
+                    })
+                    .then(function (tsCompiled) {
+                        var errors = tsCompiled.diagnostics.map(function (diag) {
+                            return diag.annotatedSource + "\n";
+                        }).join("\n");
+                        if (tsCompiled.success) {
+                            if (errors.length > 0) {
+                                adapter.log.warn(name + ": TypeScript compilation had errors: \n" + errors);
+                            } else {
+                                adapter.log.info(name + ": TypeScript compilation successful");
+                            }
+                            scripts[name] = compile(globalScript + '\n' + tsCompiled.result, name);
+                            if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
+                            if (typeof callback === 'function') callback(true, name);
+                        } else {
+                            adapter.log.error(name + ": TypeScript compilation failed: \n" + errors);
+                        }
+                    })
+                    .catch(function (err) {
+                        adapter.log.error(name + ": TypeScript compilation failed: \n" + err);
+                    })
+                ;
             }
         } else {
             var _name;

@@ -421,6 +421,8 @@ function Scripts(main) {
             that.editor.getSession().setMode('ace/mode/javascript');
         } else if (that.currentEngine.match(/^[cC]offee[sS]cript/)) {
             that.editor.getSession().setMode('ace/mode/coffee');
+        } else if (that.currentEngine.match(/^[tT]ype[sS]cript/)) {
+            that.editor.getSession().setMode('ace/mode/typescript');
         }
     }
 
@@ -830,6 +832,11 @@ function Scripts(main) {
                 switchViews(false, obj.common.engineType);
             } else if (obj.common.engineType && obj.common.engineType.match(/^[cC]offee[sS]cript/)) {
                 that.editor.getSession().setMode('ace/mode/coffee');
+                that.editor.getSession().setUseWorker(true); // enable syntax check
+                that.editor.setReadOnly(false);
+                switchViews(false, obj.common.engineType);
+            } else if (obj.common.engineType && obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
+                that.editor.getSession().setMode('ace/mode/typescript');
                 that.editor.getSession().setUseWorker(true); // enable syntax check
                 that.editor.setReadOnly(false);
                 switchViews(false, obj.common.engineType);

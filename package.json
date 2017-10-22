@@ -27,7 +27,10 @@
     "suncalc": "^1.8.0",
     "wake_on_lan": "0.0.4",
     "coffee-compiler": "^0.3.2",
-    "coffee-script": ">=1.12.3"
+    "coffee-script": ">=1.12.3",
+    "typescript": "^2.5.3",
+    "virtual-tsc": "^0.2.3",
+    "@types/node": "^8.0.34"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
