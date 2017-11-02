@@ -1666,8 +1666,8 @@
                     if (pos !== -1) pattern = astroList[pos];
                 }
 
-                if ((!adapter.config.latitude  && adapter.config.latitude  !== 0 && adapter.config.latitude  !== '0') ||
-                    (!adapter.config.longitude && adapter.config.longitude !== 0 && adapter.config.longitude !== '0')) {
+                if ((!adapter.config.latitude  && adapter.config.latitude  !== 0) ||
+                    (!adapter.config.longitude && adapter.config.longitude !== 0)) {
                     adapter.log.error('Longitude or latitude does not set. Cannot use astro.');
                     return;
                 }
@@ -3213,9 +3213,11 @@
             // try to use system coordinates
             if (adapter.config.useSystemGPS && objects['system.config'] &&
                 objects['system.config'].common.latitude) {
-                adapter.config.latitude  = parseFloat(objects['system.config'].common.latitude);
-                adapter.config.longitude = parseFloat(objects['system.config'].common.longitude);
+                adapter.config.latitude  = objects['system.config'].common.latitude;
+                adapter.config.longitude = objects['system.config'].common.longitude;
             }
+            adapter.config.latitude  = parseFloat(adapter.config.latitude);
+            adapter.config.longitude = parseFloat(adapter.config.longitude);
 
             objectsReady = true;
             adapter.log.info('received all objects');
