@@ -10,9 +10,9 @@
 
 Executes Javascript and Coffescript Scripts.
 
-Here you can find description of [blockly](doc/blockly_en.md).
+Here you can find description of [blockly](doc/en/blockly_en.md).
 
-Hier kann man die Beschreibung von [Blockly](doc/blockly_de.md) finden.
+Hier kann man die Beschreibung von [Blockly](doc/de/blockly_de.md) finden.
 
 
 ## Content
@@ -1010,6 +1010,10 @@ There is a possibility to enabled and disable scripts via states. For every scri
 Scripts can be activated and deactivated by controlling of this state with ack=false.
 
 ## Changelog
+### 3.5.0 (2017-09-12)
+* (bluefox) fixed: sometimes MSG is not defined
+* (dominic.griesel) TypeScript support (preparations)
+
 ### 3.4.4 (2017-09-12)
 * (soef) typo error in line number correction fixed
 

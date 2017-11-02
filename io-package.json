@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "3.4.5",
+        "version": "3.5.0",
         "title": "Javascript/Blockly Script Engine",
         "titleLang": {
             "en": "Javascript/Blockly Script Engine",
@@ -14,6 +14,11 @@
             "Apollon77 <ingo@fischer-ka.de>"
         ],
         "news": {
+            "3.5.0": {
+                "en": "fixed: sometimes MSG is not defined\nTypeScript support (preparations)",
+                "de": "Korrigiert: manchmal ist MSG Objekt nicht definiert\nTypeScript Unterstützung(Vorberetung)",
+                "ru": "Исправлено: иногда переменная MSG не инициализирована\nПоддержка TypeScript (подготовка)"
+            },
             "3.4.5": {
                 "en": "added webstorm environment variable for debugging",
                 "de": "webstorm Umgebungsvariable zum debuggen hinzugefügt"
@@ -181,6 +186,11 @@
                 "js-controller": ">=0.10.0"
             }
         ],
+        "docs": {
+            "en": ["docs/en/blockly_en.md"],
+            "ru": ["docs/en/blockly_ru.md"],
+            "de": ["docs/en/blockly_de.md"]
+        },
         "type": "logic"
     },
     "native": {

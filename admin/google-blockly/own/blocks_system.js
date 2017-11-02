@@ -383,7 +383,7 @@ Blockly.Blocks['update'] = {
 
         this.appendDummyInput('WITH_DELAY')
             .appendField(Blockly.Words['update_delay'][systemLang])
-            .appendField(new Blockly.FieldCheckbox("FALSE", function(option) {
+            .appendField(new Blockly.FieldCheckbox('FALSE', function(option) {
                 this.sourceBlock_.updateShape_(option == true);
             }), 'WITH_DELAY');
 

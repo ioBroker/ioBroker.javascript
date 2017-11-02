@@ -14,7 +14,7 @@ function Scripts(main) {
     this.currentId      = null;
     this.engines        = [];
     this.currentEngine  = '';
-    this.languageLoaded = false;
+    this.languageLoaded = [false, false];
     this.blocklyWorkspace = null;
     
     function addScript(group) {
@@ -352,12 +352,12 @@ function Scripts(main) {
         fileLang.setAttribute('src', 'google-blockly/msg/js/' + (systemLang || 'en') + '.js');
         // most browsers
         fileLang.onload = function () {
-            that.languageLoaded = true;
+            that.languageLoaded[0] = true;
         };
         // IE 6 & 7
         fileLang.onreadystatechange = function() {
             if (this.readyState === 'complete') {
-                that.languageLoaded = true;
+                that.languageLoaded[0] = true;
             }
         };
         document.getElementsByTagName('head')[0].appendChild(fileLang);
@@ -367,38 +367,39 @@ function Scripts(main) {
         fileCustom.setAttribute('src', 'google-blockly/own/msg/' + (systemLang || 'en') + '.js');
         // most browsers
         fileCustom.onload = function () {
-            that.languageLoaded = true;
+            that.languageLoaded[1] = true;
         };
         // IE 6 & 7
         fileCustom.onreadystatechange = function() {
             if (this.readyState === 'complete') {
-                that.languageLoaded = true;
+                that.languageLoaded[1] = true;
             }
         };
         document.getElementsByTagName('head')[0].appendChild(fileCustom);
     };
 
     this.resize = function (width, height) {
-        var wasVisible = $('#blockly-editor').data('wasVisible');
+        var $blocklyEditor = $('#blockly-editor');
+        var wasVisible = $blocklyEditor.data('wasVisible');
         if (wasVisible !== true && wasVisible !== false) {
-            wasVisible = $('#blockly-editor').is(':visible');
+            wasVisible = $blocklyEditor.is(':visible');
         }
         // Set the height of svg
         if (wasVisible === true) {
-            $('#blockly-editor').hide();
+            $blocklyEditor.hide();
             $('.blocklyWidgetDiv').hide();
             $('.blocklyTooltipDiv').hide();
             $('.blocklyToolboxDiv').hide();
-            $('#blockly-editor svg').height($('#height-editor').height());
-            $('#blockly-editor').show();
+            $blocklyEditor.find('svg').height($('#height-editor').height());
+            $blocklyEditor.show();
             $('.blocklyWidgetDiv').show();
             $('.blocklyTooltipDiv').show();
             $('.blocklyToolboxDiv').show();
         } else {
-            $('#blockly-editor svg').height($('#height-editor').height());
+            $blocklyEditor.find('svg').height($('#height-editor').height());
         }
 
-        $('#blockly-editor').data('wasVisible', null);
+        $blocklyEditor.data('wasVisible', null);
 
         if (that.blocklyWorkspace) Blockly.svgResize(that.blocklyWorkspace);
 
@@ -1780,15 +1781,16 @@ function Scripts(main) {
 
     this.init = function (update) {
         var that = this;
-        if (!this.main.objectsLoaded || !this.languageLoaded) {
+        if (!this.main.objectsLoaded || !this.languageLoaded[0] || !this.languageLoaded[1]) {
             setTimeout(function () {
                 that.init(update);
             }, 250);
             return;
         }
 
-        if (!$('#blockly-editor').data('inited')) {
-            $('#blockly-editor').data('inited', true);
+        var $blocklyEditor = $('#blockly-editor');
+        if (!$blocklyEditor.data('inited')) {
+            $blocklyEditor.data('inited', true);
             loadCustomBlockly(function () {
                 MSG.catSystem = Blockly.Words['System'][systemLang];
                 MSG.catSendto = Blockly.Words['Sendto'][systemLang];
@@ -1804,7 +1806,9 @@ function Scripts(main) {
                     // add blocks
                     blocks += '<category name="' + Blockly.Words[name][systemLang] + '" colour="' + Blockly[name].HUE + '">';
                     for (var _b in Blockly[name].blocks) {
-                        blocks += Blockly[name].blocks[_b];
+                        if (Blockly[name].blocks.hasOwnProperty(_b)) {
+                            blocks += Blockly[name].blocks[_b];
+                        }
                     }
                     blocks += '</category>';
                 }
