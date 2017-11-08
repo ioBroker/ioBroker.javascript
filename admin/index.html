@@ -60,11 +60,7 @@
     // the function loadSettings has to exist ...
     function load(settings, onChange) {
         if (settings.useSystemGPS === undefined) {
-            if (systemConfig.common.longitude && systemConfig.common.latitude) {
-                settings.useSystemGPS = true;
-            } else {
-                settings.useSystemGPS = false;
-            }
+            settings.useSystemGPS = (systemConfig.common.longitude && systemConfig.common.latitude);
         }
 
         $('.value').each(function () {
@@ -97,7 +93,7 @@
                 }
                 if (dir) {
                     dir = dir.toLowerCase();
-                    if (dir == 's' || dir == 'w') {
+                    if (dir === 's' || dir === 'w') {
                         result = (-1) * result;
                     }
                 }
@@ -106,7 +102,6 @@
             } else {
                 return false;
             }
-            return true;
         } else {
             showMessage(_('Invalid format. Use A°B\'C"D'));
             return false;
@@ -120,20 +115,20 @@
 
         $('.value').each(function () {
             var $this = $(this);
-            if ($this.attr('type') == 'checkbox') {
+            if ($this.attr('type') === 'checkbox') {
                 obj[$this.attr('id')] = $this.prop('checked');
             } else {
                 obj[$this.attr('id')] = $this.val();
             }
         });
 
-        if (obj.latitude.indexOf('°') != -1) {
+        if (obj.latitude.indexOf('°') !== -1) {
             if (!convertGrad(obj, 'latitude')) {
                 return;
             }
             $('#latitude').val(obj.latitude);
         }
-        if (obj.longitude.indexOf('°') != -1) {
+        if (obj.longitude.indexOf('°') !== -1) {
             if (!convertGrad(obj, 'longitude')) {
                 return;
             }

@@ -1367,16 +1367,29 @@
                 adapter.log[sev](name + ': ' + msg);
             },
             exec:      function (cmd, callback) {
-                if (sandbox.verbose) sandbox.log('exec: ' + cmd, 'info');
-                if (debug) {
-                    sandbox.log(words._('Command %s was not executed, while debug mode is active', cmd), 'warn');
+                if (!adapter.config.enableSetObject) {
+                    var error = 'exec is not available. Please enable "enableSetObject" option in instance settings';
+                    adapter.log.error(error);
+                    sandbox.log(error);
                     if (typeof callback === 'function') {
-                        setTimeout(function () {
-                            callback();
-                        }, 0);
+                        setImmediate(function () {
+                            callback(error);
+                        });
                     }
                 } else {
-                    return mods.child_process.exec(cmd, callback);
+                    if (sandbox.verbose) {
+                        sandbox.log('exec: ' + cmd, 'info');
+                    }
+                    if (debug) {
+                        sandbox.log(words._('Command %s was not executed, while debug mode is active', cmd), 'warn');
+                        if (typeof callback === 'function') {
+                            setImmediate(function () {
+                                callback();
+                            });
+                        }
+                    } else {
+                        return mods.child_process.exec(cmd, callback);
+                    }
                 }
             },
             email:     function (msg) {
@@ -2346,6 +2359,21 @@
             },
             sendto:    function (_adapter, cmd, msg, callback) {
                 return sandbox.sendTo(_adapter, cmd, msg, callback);
+            },
+            sendToHost:    function (host, cmd, msg, callback) {
+                if (!adapter.config.enableSetObject) {
+                    var error = 'sendToHost is not available. Please enable "enableSetObject" option in instance settings';
+                    adapter.log.error(error);
+                    sandbox.log(error);
+                    if (typeof callback === 'function') {
+                        setImmediate(function () {
+                            callback(error);
+                        });
+                    }
+                } else {
+                    if (sandbox.verbose) sandbox.log('sendToHost(adapter=' + host + ', cmd=' + cmd + ', msg=' + JSON.stringify(msg) + ')', 'info');
+                    adapter.sendToHost(host, cmd, msg, callback);
+                }
             },
             setInterval:   function (callback, ms, arg1, arg2, arg3, arg4) {
                 var int = setInterval(function (_arg1, _arg2, _arg3, _arg4) {

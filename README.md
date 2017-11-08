@@ -48,7 +48,8 @@ Hier kann man die Beschreibung von [Blockly](doc/de/blockly_de.md) finden.
     - [getEnums](#getenums)
     - [createState](#createstate)
     - [deleteState](#deletestate)
-    - [sendTo:](#sendto)
+    - [sendTo](#sendto)
+    - [sendToHost](#sendtohost)
     - [setInterval](#setinterval)
     - [clearInterval](#clearinterval)
     - [setTimeout](#settimeout)
@@ -148,6 +149,8 @@ exec('ls /var/log', function (error, stdout, stderr) {
     console.log('stdout: ' + stdout);
 });
 ```
+
+**Notice:** you must enable *Enable command "setObject"* option to call it.
 
 ### on - Subscribe on changes or updates of some state
     on(pattern, callbackOrId, value)
@@ -677,8 +680,50 @@ It is possible short type of createState:
 
 ``` deleteState('myVariable')_ - simply delete variable if exists```
 
-### sendTo:    
-    sendTo (adapter, cmd, msg, callback)
+### sendTo
+    sendTo (adapter, command, message, callback)
+
+Send message to adapter instance.
+
+Some adapters could accept messages and give the answers on that. (e.g. history, sql, telegram)
+
+To get specific information about messages you must read the documentation for particular adapter.
+
+Example:
+
+```
+sendTo('telegram', {user: 'UserName', text: 'Test message'}, function (res) {
+    console.log('Sent to ' + res + ' users');
+});
+```
+
+### sendToHost
+    sendToHost (hostName, command, message, callback)
+
+Send message to controller instance.
+
+Following commands are supported:
+- cmdExec
+- getRepository
+- getInstalled
+- getVersion
+- getDiagData
+- getLocationOnDisk
+- getDevList
+- getLogs
+- getHostInfo
+
+It is rather specific commands and are not required often.
+
+Example:
+
+```
+sendToHost('myComputer', cmdExec, 'ls /', function (res) {
+    console.log('List of files: ' + res.data);
+});
+```
+
+**Notice:** you must enable *Enable command "setObject"* option to call it.
 
 ### setInterval
     setInterval (callback, ms, arg1, arg2, arg3, arg4)
@@ -1013,6 +1058,8 @@ Scripts can be activated and deactivated by controlling of this state with ack=f
 ### 3.5.0 (2017-09-12)
 * (bluefox) fixed: sometimes MSG is not defined
 * (dominic.griesel) TypeScript support (preparations)
+* (bluefox) add sendToHost call
+* (bluefox) protect exec call
 
 ### 3.4.4 (2017-09-12)
 * (soef) typo error in line number correction fixed
