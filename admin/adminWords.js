@@ -35,6 +35,16 @@ systemDictionary = {
         "de": 'Erlaube das Kommando "setObject":',
         "ru": 'Разрешить команду "setObject":'
     },
+    'Enable command "sendToHost":': {
+        "en": 'Enable command "sendToHost":',
+        "de": 'Erlaube das Kommando "sendToHost":',
+        "ru": 'Разрешить команду "sendToHost":'
+    },
+    'Enable command "exec":': {
+        "en": 'Enable command "exec":',
+        "de": 'Erlaube das Kommando "exec":',
+        "ru": 'Разрешить команду "exec":'
+    },
     "Security relevant":    {"en": "Security relevant", "de": "Sicherheits relevant",   "ru": "Безопасность уменшена"},
     "Astro settings":       {"en": "Astro settings",    "de": "Astro-Einstellungen",    "ru": "Настройки астро-функций"},
     "Do not subscribe all states on start:": {
@@ -50,7 +60,17 @@ systemDictionary = {
     "info_enableSetObject": {
         "en": "Security relevant",
         "de": "Sicherheits relevant",
-        "ru": "Пониженная безопасность"
+        "ru": "Снижает безопасность"
+    },
+    "info_enableSendToHost": {
+        "en": "Security relevant",
+        "de": "Sicherheits relevant",
+        "ru": "Снижает безопасность"
+    },
+    "info_enableExec": {
+        "en": "System security relevant",
+        "de": "Systemsicherheits relevant",
+        "ru": "Снижает безопасность системы"
     },
     "tooltip_latitude":        {
         "en": "Latitude as 5.345 to use astro functions",
@@ -66,6 +86,16 @@ systemDictionary = {
         "en": "Allow changes of the system objects in scripts",
         "de": "Erlaube die Veränderung von Systemobjekten in Skripten",
         "ru": "Разрешить изменять системные объекты в скриптах"
+    },
+    "tooltip_enableSendToHost": {
+        "en": "Allow to send messages to hosts in scripts",
+        "de": "Erlaube die Versendung von Nachrichten in Skripten",
+        "ru": "Разрешить посылать специальные сообщения в скриптах"
+    },
+    "tooltip_enableExec": {
+        "en": "Allow calling of exec in scripts",
+        "de": "Erlaube die Aufrufe von exec in Skripten",
+        "ru": "Разрешить вызывать exec в скриптах"
     },
     "tooltip_libraries":       {
         "en": "Additional NPM libraries divided by comma. You can access them with require('name') in scripts.",

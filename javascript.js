@@ -1367,8 +1367,8 @@
                 adapter.log[sev](name + ': ' + msg);
             },
             exec:      function (cmd, callback) {
-                if (!adapter.config.enableSetObject) {
-                    var error = 'exec is not available. Please enable "enableSetObject" option in instance settings';
+                if (!adapter.config.enableExec) {
+                    var error = 'exec is not available. Please enable "Enable Exec" option in instance settings';
                     adapter.log.error(error);
                     sandbox.log(error);
                     if (typeof callback === 'function') {
@@ -2361,8 +2361,8 @@
                 return sandbox.sendTo(_adapter, cmd, msg, callback);
             },
             sendToHost:    function (host, cmd, msg, callback) {
-                if (!adapter.config.enableSetObject) {
-                    var error = 'sendToHost is not available. Please enable "enableSetObject" option in instance settings';
+                if (!adapter.config.enableSendToHost) {
+                    var error = 'sendToHost is not available. Please enable "Enable SendToHost" option in instance settings';
                     adapter.log.error(error);
                     sandbox.log(error);
                     if (typeof callback === 'function') {

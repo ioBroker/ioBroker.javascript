@@ -62,6 +62,12 @@
         if (settings.useSystemGPS === undefined) {
             settings.useSystemGPS = (systemConfig.common.longitude && systemConfig.common.latitude);
         }
+        if (settings.enableSendToHost === undefined) {
+            settings.enableSendToHost = false;
+        }
+        if (settings.enableExec === undefined) {
+            settings.enableExec = false;
+        }
 
         $('.value').each(function () {
             var id = $(this).attr('id');
@@ -144,7 +150,7 @@
 <div id="adapter-container">
 
     <table><tr>
-        <td><img src="js.jpeg" style="width: 64px"/></td>
+        <td><img src="js.png" style="width: 64px"/></td>
         <td style="padding-top: 20px;padding-left: 10px"><h3 class="translate">Javascript scripts adapter settings</h3></td>
     </tr></table>
 
@@ -162,6 +168,18 @@
             <td><label for="enableSetObject" class="translate title">Enable command "setObject":</label></td>
             <td class="admin-icon"></td>
             <td><input id="enableSetObject" class="value" type="checkbox"/></td>
+            <td class="admin-text"></td>
+        </tr>
+        <tr>
+            <td><label for="enableSendToHost" class="translate title">Enable command "sendToHost":</label></td>
+            <td class="admin-icon"></td>
+            <td><input id="enableSendToHost" class="value" type="checkbox"/></td>
+            <td class="admin-text"></td>
+        </tr>
+        <tr>
+            <td><label for="enableExec" class="translate title">Enable command "exec":</label></td>
+            <td class="admin-icon"></td>
+            <td><input id="enableExec" class="value" type="checkbox"/></td>
             <td class="admin-text"></td>
         </tr>
         <tr><td colspan="4" style="height:10px"></td></tr>
