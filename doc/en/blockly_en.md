@@ -144,7 +144,7 @@ There is a special variable **value"" in trigger block. It is always defined the
 
 ![Getting started 1](img/getting_started_1_2_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="s7s**k+Cc_KjDnJW`(h~" x="12" y="63">
     <field name="COMMENT">Switch light ON or OFF it motion detected or IDLE</field>
@@ -188,7 +188,7 @@ If state "Motion" was updated with value true do:
 
 You can notice, that the flag "clear running" is set by last command. This clears any running timers for this state and the timer will be started anew.
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="s7s**k+Cc_KjDnJW`(h~" x="112" y="63">
     <field name="COMMENT">Switch light ON and OFF in 10 minutes of IDLE</field>
@@ -261,7 +261,7 @@ You can collapse some big blocks for better code presentation by selection in co
 ![Getting started 3](img/getting_started_3_3_en.png)
 
 Sample to import:
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="r53:ZiP]3DYe;Ly;@!v5" x="87" y="13">
     <field name="COMMENT"> Send email if outside temperature is more than 25 grad Celsius.</field>
@@ -387,7 +387,7 @@ Like this one:
 
 ![Debug output](img/system_debug_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="K|2AnJ|5})RoNZ1T%Hh#" x="38" y="13">
     <field name="COMMENT">Print time into log every second</field>
@@ -451,7 +451,7 @@ You can stop all running delayed sets by issuing of control command.
 E.g in following schema the state "Light" will be controlled only once (in 2 seconds):
 ![Control state](img/system_control_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="K|2AnJ|5})RoNZ1T%Hh#" x="38" y="13">
     <field name="COMMENT">Will be executed only once</field>
@@ -490,7 +490,7 @@ E.g in following schema the state "Light" will be controlled only once (in 2 sec
 But in this schema the state "Light" will be controlled twice (in 1 second and in 2 seconds):
 ![Control state](img/system_control_2_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="K|2AnJ|5})RoNZ1T%Hh#" x="38" y="13">
     <field name="COMMENT">Will be executed twice</field>
@@ -551,7 +551,7 @@ You can achieve the same with this blocks:
 
 You can select if the value will be forwarded only if source state was changed or always when the state is just updated. 
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="w/@=5/5!D;8wn4DZ;jzG" x="287.99999999999943" y="37.999999999999716">
   <mutation items="1"></mutation>
   <field name="CONDITION">ne</field>
@@ -599,7 +599,7 @@ Typical usage example:
 
 ![Create state](img/system_create_sample1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="dBV.{0z/{Fr@RB+10H5i" x="38" y="13">
     <field name="COMMENT">Create state and subscribe on it changes</field>
@@ -671,7 +671,7 @@ Example to print time of the last value change:
 
 ![Get value of state](img/system_get_value_sample_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="38" y="13">
     <field name="COMMENT">Print time of last change for myState</field>
@@ -720,7 +720,7 @@ Typical usage:
 
 ![Get Object ID](img/system_get_id_sample_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="38" y="13">
     <field name="COMMENT">Typical usage of Object ID selector</field>
@@ -770,7 +770,7 @@ If parsing of outputs must be done:
 
 ![Exec - execute](img/action_exec_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="313" y="38">
     <field name="COMMENT">Execute some system command</field>
@@ -909,7 +909,7 @@ You can refer to files as ```<img src='cid:file1'/>```. "file1" and "file2" are 
 
 ![Send to email](img/sendto_email_1_en.png)
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="email" id="VeysPTJXFh^.CW1t(s@Q" x="563" y="63">
   <field name="INSTANCE"></field>
   <field name="IS_HTML">FALSE</field>
@@ -962,7 +962,7 @@ Example how to send SQL query to sql adapter:
 
 ![Custom sendTo block](img/sendto_custom_2_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="163" y="13">
     <field name="COMMENT">Send query to SQL adapter</field>
@@ -1014,7 +1014,7 @@ Example how to send SQL query to sql adapter:
 
 If you will use only one parameter with empty name, so no structure will created, like here:
 
-```
+```javascript
 var obj, result;
 
 /**
@@ -1036,7 +1036,7 @@ Or how to request history from SQL adapter:
 
 ![Custom sendTo block](img/sendto_custom_3_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="263" y="13">
     <field name="COMMENT">Get history from SQL adapter</field>
@@ -1103,7 +1103,7 @@ Or how to request history from SQL adapter:
 ```
 
 Generated javascript code:
-```
+```javascript
 var obj, end, result;
 
 /**
@@ -1301,7 +1301,7 @@ Typical usage of block:
 
 ![Trigger on states change](img/trigger_trigger_ex_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="]L0d;6j+=OH*[4n{C7v^" x="112" y="13">
     <field name="COMMENT">Switch light on if motion detected</field>
@@ -1343,7 +1343,7 @@ If only one object ID is used so special variables are available in the statemen
 
 ![Trigger on states change](img/trigger_trigger_ex_3_en.png)
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="QYVeQlu|#2hwniNg)=z8" x="38" y="39">
   <mutation items="1"></mutation>
   <field name="CONDITION">ne</field>
@@ -1430,7 +1430,7 @@ Typical usage:
 
 ![Trigger info](img/trigger_object_id_1_en.png)
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="QYVeQlu|#2hwniNg)=z8" x="113" y="238">
   <mutation items="1"></mutation>
   <field name="CONDITION">ne</field>
@@ -1573,7 +1573,7 @@ Here is an example of configurable alarm clock:
  
 ![Schedule](img/trigger_schedule_ex_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="QWp.l96v1;-4{x)j5K5y" x="38" y="13">
     <field name="COMMENT">Configurable alarm. Set time as: hh:mm</field>
@@ -1655,7 +1655,7 @@ Create CRON rule from dialog. This block can be connected with [Named schedule](
 
 ![Schedule](img/trigger_cron_input_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="]aB;GhQJvYrr~:H4Ft9l" x="63" y="38">
     <field name="COMMENT">Every 0th minute every hour</field>
@@ -1734,7 +1734,7 @@ Every delayed execution can have unique name. It can be canceled by other block.
 
 ![Delayed execution](img/timeouts_timeout_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="debug" id=":6GZ!E*FHy@vPKKl{`hV" x="487" y="163">
     <field name="Severity">log</field>
@@ -1771,7 +1771,7 @@ By first motion the light should go on and after the last motion after 30 second
 
 ![Clear delayed execution](img/timeouts_timeout_clear_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="on_ext" id="+nZ`H6mh/;g(e3u,t;wJ" x="163" y="12">
     <mutation items="1"></mutation>
@@ -2016,7 +2016,7 @@ This code:
 
 ![Set variable's value](img/variables_set_2_en.png)
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="variables_set" id="ch{H@omhfzI(QA{syxAG" x="212.99999999999977" y="37.99999999999994">
   <field name="VAR">item</field>
   <value name="VALUE">
@@ -2028,7 +2028,7 @@ This code:
 ```
 
 does only this:
-```
+```javascript
 var item;
 item = 0;
 ```
@@ -2056,7 +2056,7 @@ Here is an example of function that just prints into log current time.
 
 ![Create function from blocks with no return value](img/functions_function_2_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id=";LE@QUg[hpGG!Ed6(?Hf" x="463" y="88">
     <field name="COMMENT">Print current time</field>
@@ -2086,7 +2086,7 @@ After the function created, you can use this function like this:
 
 ![Create function from blocks with no return value](img/functions_function_3_en.png)
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="timeouts_setinterval" id="hp;?}l3uStXhm+a2s!9t" x="62.99999999999943" y="112.99999999999994">
   <field name="NAME">interval</field>
   <field name="INTERVAL">1000</field>
@@ -2110,7 +2110,7 @@ Here is an example of function that prints the sum of first argument and the sec
 
 ![Create function from blocks with no return value](img/functions_function_5_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id=";LE@QUg[hpGG!Ed6(?Hf" x="463" y="88">
     <field name="COMMENT">Print sum of a and b</field>
@@ -2163,7 +2163,7 @@ And use this function like this:
 
 ![Create function from blocks with no return value](img/functions_function_7_en.png)
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="procedures_callnoreturn" id="(-G|y+Y7AC]w2CTQGjYC" x="138" y="188">
   <mutation name="printSum">
     <arg name="a"></arg>
@@ -2189,7 +2189,7 @@ This block is the same, but it can return result of the function, that can be us
 
 ![Create function from blocks with return value](img/functions_function_ret_2_en.png)
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="procedures_defreturn" id="4)|}1YzV}e6YUvVV^sY{" x="413" y="138">
   <mutation statements="false">
     <arg name="a"></arg>
@@ -2225,7 +2225,7 @@ Usage is similar with other function blocks:
 
 ![Create function from blocks with return value](img/functions_function_ret_3_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="debug" id="zgr7b0g)}uMe1ySGYL7X" x="163" y="137">
     <field name="Severity">log</field>
@@ -2293,7 +2293,7 @@ In the return block you can use special return element:
 
 ![Create function from blocks with return value](img/functions_function_ret_5_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="debug" id="zgr7b0g)}uMe1ySGYL7X" x="63" y="12">
     <field name="Severity">log</field>
@@ -2579,7 +2579,7 @@ Like here:
 
 ![Create custom function with return value](img/functions_function_ex_ret_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="procedures_defcustomreturn" id="mG^pXm=MO7vPl!c^/.Px" x="163" y="63">
     <mutation statements="false">

@@ -152,7 +152,7 @@ In diesen Steuerungsblock einen Block "System=>Wert von Objekt ID" einfügen und
 &nbsp;
 Beispiel zum importieren:
 
-```
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="s7s**k+Cc_KjDnJW`(h~" x="12" y="63">
     <field name="COMMENT">Switch light ON or OFF it motion detected or IDLE</field>
@@ -202,8 +202,8 @@ Wie man sieht wird der Flag "lösche Verzögerung" durch den letzten Befehl gel�
 &nbsp;
 Beispiel zum importieren:
 
-```
-<xml xmlns="http://www.w3.org/1999/xhtml">
+<!-- ```xml 
+<xml xmlns="http://www.w3.org/1999/xhtml"> -->
   <block type="comment" id="s7s**k+Cc_KjDnJW`(h~" x="112" y="63">
     <field name="COMMENT">Switch light ON and OFF in 10 minutes of IDLE</field>
     <next>
@@ -282,7 +282,7 @@ Man kann größere Blöcke einklappen um eine bessere Übersicht zu erhalten, in
 &nbsp;
 Beispiel zum importieren:
 
-```
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="r53:ZiP]3DYe;Ly;@!v5" x="87" y="13">
     <field name="COMMENT"> Send email if outside temperature is more than 25 grad Celsius.</field>
@@ -415,7 +415,7 @@ Dieser Block macht nichts, außer eine Zeile ins log zu schreiben. Man kann ihn 
 &nbsp;
 Beispiel zum importieren:
 
-```
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="K|2AnJ|5})RoNZ1T%Hh#" x="38" y="13">
     <field name="COMMENT">Print time into log every second</field>
@@ -491,7 +491,7 @@ So wird in dem folgenden Beispiel der Datenpunkt "Licht" nur einmal geschaltet (
 &nbsp;
 Beispiel zum importieren:
 
-```
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="K|2AnJ|5})RoNZ1T%Hh#" x="38" y="13">
     <field name="COMMENT">Will be executed only once</field>
@@ -530,7 +530,7 @@ Beispiel zum importieren:
 Im Gegensatz zu dem vorherigen Beispiel wird der Zustand von "Licht" in dem folgenden Beispiel zweimal geschaltet(nach 1 Sekunde und nach 2 Sekunden):
 ![Control state](img/system_control_2_en.png)
 
-```
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="K|2AnJ|5})RoNZ1T%Hh#" x="38" y="13">
     <field name="COMMENT">Will be executed twice</field>
@@ -593,7 +593,7 @@ Man kann auswählen, ob der Wert nur weitergeleitet wird,  wenn sich die Quelle 
 
 &nbsp;
 Beispiel zum importieren:
-```
+```xml 
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="w/@=5/5!D;8wn4DZ;jzG" x="287.99999999999943" y="37.999999999999716">
   <mutation items="1"></mutation>
   <field name="CONDITION">ne</field>
@@ -639,19 +639,15 @@ Global states can be used in vis, mobile and all other logic or visualisation mo
 
 This block creates global state and if the state yet exist, the command will be ignored. You can safely call this block by every start of the script.
 
-<<<<<<< HEAD
 Dieser Block erzeugt globale Zustände und wenn dieser bereits existiert wird der Befehl ignoriert. Daher kann dieser Block ohne Risiko zu jedem Skriptstart verwendet werden.
 
 
 &nbsp;
 Typische Anwendung dieses Blocks:
-=======
-Typical usage example:
->>>>>>> parent of ab7fb3b... Update blockly_de.md
 
 ![Create state](img/system_create_sample1_en.png)
 
-```
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="dBV.{0z/{Fr@RB+10H5i" x="38" y="13">
     <field name="COMMENT">Create state and subscribe on it changes</field>
@@ -726,7 +722,7 @@ Beispiel um die Zeit der letzten Änderung des Wertes auszugeben:
 
 ![Get value of state](img/system_get_value_sample_en.png)
 
-```
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="38" y="13">
     <field name="COMMENT">Print time of last change for myState</field>
@@ -780,7 +776,7 @@ Typische Anwendung dieses Blocks:
 
 ![Get Object ID](img/system_get_id_sample_en.png)
 
-```
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="38" y="13">
     <field name="COMMENT">Typical usage of Object ID selector</field>
@@ -841,7 +837,7 @@ Wenn eine Ausgabe erfolgen soll:
 
 &nbsp;
 
-```
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="313" y="38">
     <field name="COMMENT">Execute some system command</field>
@@ -992,7 +988,7 @@ Of course the destination (*to*) must be filled with valid email address.
 
 You can attach up to files (normally images) to email. To use images in the text, you must change format to HTML (check "Send as HTML" option) and text could look like:
 
-```
+```html
 <p>Embedded image 1: <img src='cid:file1'/></p>
 <p>Embedded image 2: <img src='cid:file2'/></p>
 ```
@@ -1003,7 +999,7 @@ You can refer to files as ```<img src='cid:file1'/>```. "file1" and "file2" are 
 
 ![Send to email](img/sendto_email_1_en.png)
 
-```
+```xml 
 <block xmlns="http://www.w3.org/1999/xhtml" type="email" id="VeysPTJXFh^.CW1t(s@Q" x="563" y="63">
   <field name="INSTANCE"></field>
   <field name="IS_HTML">FALSE</field>
@@ -1059,8 +1055,8 @@ Example how to send SQL query to sql adapter:
 
 ![Custom sendTo block](img/sendto_custom_2_en.png)
 
-```
-<xml xmlns="http://www.w3.org/1999/xhtml">
+<!-- ```xml 
+<xml xmlns="http://www.w3.org/1999/xhtml"> -->
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="163" y="13">
     <field name="COMMENT">Send query to SQL adapter</field>
     <next>
@@ -1111,7 +1107,7 @@ Example how to send SQL query to sql adapter:
 
 If you will use only one parameter with empty name, so no structure will created, like here:
 
-```
+```javascript
 var obj, result;
 
 /**
@@ -1133,7 +1129,7 @@ Or how to request history from SQL adapter:
 
 ![Custom sendTo block](img/sendto_custom_3_en.png)
 
-```
+```XML
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="263" y="13">
     <field name="COMMENT">Get history from SQL adapter</field>
@@ -1200,7 +1196,7 @@ Or how to request history from SQL adapter:
 ```
 
 Generated javascript code:
-```
+```javascript
 var obj, end, result;
 
 /**
@@ -1414,7 +1410,7 @@ Convert JSON string into javascript object. If an error occurs, the empty object
 
 Convert Javascript object to JSON string. If prettify option is selected the result string looks like:
 
-```
+```json
 {
   "a": 1,
   "b": 2
@@ -1446,7 +1442,7 @@ Typical usage of block:
 
 ![Trigger on states change](img/trigger_trigger_ex_1_en.png)
 
-```
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="]L0d;6j+=OH*[4n{C7v^" x="112" y="13">
     <field name="COMMENT">Switch light on if motion detected</field>
@@ -1488,7 +1484,7 @@ If only one object ID is used so special variables are available in the statemen
 
 ![Trigger on states change](img/trigger_trigger_ex_3_en.png)
 
-```
+```xml 
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="QYVeQlu|#2hwniNg)=z8" x="38" y="39">
   <mutation items="1"></mutation>
   <field name="CONDITION">ne</field>
@@ -1581,7 +1577,7 @@ Typical usage:
 
 ![Trigger info](img/trigger_object_id_1_en.png)
 
-```
+```xml 
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="QYVeQlu|#2hwniNg)=z8" x="113" y="238">
   <mutation items="1"></mutation>
   <field name="CONDITION">ne</field>
@@ -1733,7 +1729,7 @@ Here is an example of configurable alarm clock:
  
 ![Schedule](img/trigger_schedule_ex_1_en.png)
 
-```
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="QWp.l96v1;-4{x)j5K5y" x="38" y="13">
     <field name="COMMENT">Configurable alarm. Set time as: hh:mm</field>
@@ -1821,7 +1817,7 @@ Create CRON rule from dialog. This block can be connected with [Named schedule](
 
 ![Schedule](img/trigger_cron_input_1_en.png)
 
-```
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="]aB;GhQJvYrr~:H4Ft9l" x="63" y="38">
     <field name="COMMENT">Every 0th minute every hour</field>
@@ -1914,7 +1910,7 @@ Every delayed execution can have unique name. It can be canceled by other block.
 
 ![Delayed execution](img/timeouts_timeout_1_en.png)
 
-```
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="debug" id=":6GZ!E*FHy@vPKKl{`hV" x="487" y="163">
     <field name="Severity">log</field>
@@ -1954,7 +1950,7 @@ By first motion the light should go on and after the last motion after 30 second
 
 ![Clear delayed execution](img/timeouts_timeout_clear_1_en.png)
 
-```
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="on_ext" id="+nZ`H6mh/;g(e3u,t;wJ" x="163" y="12">
     <mutation items="1"></mutation>
@@ -2243,7 +2239,7 @@ This code:
 
 ![Set variable's value](img/variables_set_2_en.png)
 
-```
+```xml 
 <block xmlns="http://www.w3.org/1999/xhtml" type="variables_set" id="ch{H@omhfzI(QA{syxAG" x="212.99999999999977" y="37.99999999999994">
   <field name="VAR">item</field>
   <value name="VALUE">
@@ -2255,7 +2251,7 @@ This code:
 ```
 
 does only this:
-```
+```javascript
 var item;
 item = 0;
 ```
