@@ -132,7 +132,7 @@ Er wurde für Nutzer entwickelt, die keine Erfahrung in Programmierung von Compu
 ## Beispiel 1
 **Zustand eines Datenpunkts bei Änderung eines anderen Datenpunkts ändern**
 
-![Getting started 1](../img/getting_started_1_de.png)
+![Getting started 1](img/getting_started_1_de.png)
 
 Dies ist das klassische Beispiel bei Änderung eines Datenpunktes etwas anderes zu schalten.
 
@@ -146,7 +146,7 @@ In diesen Steuerungsblock einen Block "System=>Wert von Objekt ID" einfügen und
 
 **Es gibt bei den Trigger Blöcken eine spezielle Variable "Wert". Diese wird immer hier definiert und kann für verschiedene Zwecke verwendet werden. Sie enthält den aktuellen Wert des triggernden Objekts und man kann daher einfacherer Skripte erzeugen indem man den Block "Variable=>Objekt ID" benutzt und ihn in "Wert" umbenennt.**
 
-![Getting started 1](../img/getting_started_1_2_de.png)
+![Getting started 1](img/getting_started_1_2_de.png)
 
 
 &nbsp;
@@ -190,7 +190,7 @@ Beispiel zum importieren:
 ## Beispiel 2 
 **Licht bei Bewegung anschalten und ausschalten wenn 10 Minuten keine Bewegung.**
 
-![Getting started 2](../img/getting_started_2_de.png)
+![Getting started 2](img/getting_started_2_de.png)
 
 Wenn der Zustand "Bewegung" mit dem Wert "wahr" aktualisiert wird, mache:
 - schalte "Licht" an
@@ -253,7 +253,7 @@ Beispiel zum importieren:
 ## Beispiel 3
 **Verschicke eine eMail wenn die Außentemperatur höher als 25 Grad Celsius ist.**
 
-![Getting started 3](../img/getting_started_3_de.png)
+![Getting started 3](img/getting_started_3_de.png)
 
 Erklärung:
 
@@ -268,15 +268,15 @@ Dazu wird die aktuelle Temperatur mit 23 verglichen und es werden keine eMails g
 
 Um den "falls ... sonst falls ..." Block zu erstellen klickt man auf das Zahnrad und fügt die zusätzlich benötigten Elemente dem "falls" Block hinzu.
 
-![Getting started 3](../img/getting_started_3_1_de.png)
+![Getting started 3](img/getting_started_3_1_de.png)
 
 Man kann zu jedem Block einen Kommentar hinterlegen, indem man "Kommentar hinzufügen" im Kontextmenü des Blocks anklickt. Diesen Kommentar kann man später durch anklicken des Fragezeichens ansehen.
 
-![Getting started 3](../img/getting_started_3_2_de.png)
+![Getting started 3](img/getting_started_3_2_de.png)
 
 Man kann größere Blöcke einklappen um eine bessere Übersicht zu erhalten, indem man im Kontextmenü den Punkt "Block einklappen" auswählt. 
 
-![Getting started 3](../img/getting_started_3_3_de.png)
+![Getting started 3](img/getting_started_3_3_de.png)
 
 
 &nbsp;
@@ -405,11 +405,11 @@ Beispiel zum importieren:
 ## Systemblöcke
 
 ### Debug Ausgabe
-![Debug output](../img/system_debug_en.png)
+![Debug output](img/system_debug_en.png)
 
 Dieser Block macht nichts, außer eine Zeile ins log zu schreiben. Man kann ihn zum debuggen des Scripts nutzen, wie diesen hier:
 
-![Debug output](../img/system_debug_1_en.png)
+![Debug output](img/system_debug_1_en.png)
 
 
 &nbsp;
@@ -454,7 +454,7 @@ Man kann 4 verschiedene Schweregrade für die Nachrichten definieren:
 
 &nbsp;
 ### Kommentar
-![Comment](../img/system_comment_en.png)
+![Comment](img/system_comment_en.png)
 
 Einen Kommentar zum Skript hinzufügen um es später besser verstehen zu können.
 
@@ -463,7 +463,7 @@ Der Block macht gar nichts, es ist nur ein Kommentar.
 
 &nbsp;
 ### Steuere State
-![Control state](../img/system_control_en.png)
+![Control state](img/system_control_en.png)
 
 Man kann einen Zustand auf zwei verschiedene Arten schreiben:
 - Um etwas zu steuern und den Wert an die Hardware zu schicken (Dieser Block)
@@ -473,7 +473,7 @@ Man kann einen Zustand auf zwei verschiedene Arten schreiben:
 &nbsp;
 Typische Anwendung dieses Blocks:
 
-![Control state](../img/system_control_sample1_en.png)
+![Control state](img/system_control_sample1_en.png)
 
 Die Object ID wird im Dialog ausgewählt der zu sendende Wert muss angegeben werden. Abhängig vom Typ des Datenpunkts kann der Wert vom Typ [string](#string-value), [number](#number-value) oder [boolean](#ogical-value-trueflase) sein.
 
@@ -485,7 +485,7 @@ Wenn die Verzögerung nicht 0 ist, wird der Zustand nicht sofort, sondern erst n
 Man kann alle anderen Verzögerungen für diesen Datenpunkt löschen, indem man die Checkbox anhakt.
 
 So wird in dem folgenden Beispiel der Datenpunkt "Licht" nur einmal geschaltet (nach 2 Sekunden):
-![Control state](../img/system_control_1_en.png)
+![Control state](img/system_control_1_en.png)
 
 
 &nbsp;
@@ -528,7 +528,7 @@ Beispiel zum importieren:
 ```
 
 Im Gegensatz zu dem vorherigen Beispiel wird der Zustand von "Licht" in dem folgenden Beispiel zweimal geschaltet(nach 1 Sekunde und nach 2 Sekunden):
-![Control state](../img/system_control_2_en.png)
+![Control state](img/system_control_2_en.png)
 
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -569,24 +569,24 @@ Im Gegensatz zu dem vorherigen Beispiel wird der Zustand von "Licht" in dem folg
 
 &nbsp;
 ### Aktualisiere State
-![Update state](../img/system_update_en.png)
+![Update state](img/system_update_en.png)
 
 Dieser Block ist ähnlich dem [Steuere Block](#steuere-state), aber er setzt nur den aktuellen Wert. Es wird kein Befehl zum steuern der Hardware gesendet.
 
 Typische Anwendung dieses Blocks:
 
-![Update state](../img/system_update_sample_en.png)
+![Update state](img/system_update_sample_en.png)
 
 
 &nbsp;
 ### Bind States
-![Bind state](../img/system_bind_en.png)
+![Bind state](img/system_bind_en.png)
 
 Dieser Block bindet zwei Zustände aneinander.
 
 Man kann das gleiche mit diesen Blöcken erreichen:
 
-![Bind state](../img/system_bind_1_en.png)
+![Bind state](img/system_bind_1_en.png)
 
 Man kann auswählen, ob der Wert nur weitergeleitet wird,  wenn sich die Quelle ändert, oder bei jeder Aktualisierung.
 
@@ -621,14 +621,14 @@ Beispiel zum importieren:
 
 &nbsp;
 ### Write states
-![Write state](../img/system_write_en.png)
+![Write state](img/system_write_en.png)
 
 Universal write block that can do the same as ["Update state"](#update-state) and ["Control state"](#control-state) together. 
 
 But in compare with them you can define Object ID and delay with other blocks to make your script more universal.
 
 ### Create state
-![Create state](../img/system_create_en.png)
+![Create state](img/system_create_en.png)
 There are two types of variables that can be created in scripts:
 - local [variables](#set-variables-value)
 - global variables or states. 
@@ -649,7 +649,7 @@ Typische Anwendung dieses Blocks:
 Typical usage example:
 >>>>>>> parent of ab7fb3b... Update blockly_de.md
 
-![Create state](../img/system_create_sample1_en.png)
+![Create state](img/system_create_sample1_en.png)
 
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -703,14 +703,14 @@ Man kann den neu erzeugten State bereits in dem Block sekber nutzen.
 
 Der folgende Code gibt bei der ersten Ausführung einen Fehler aus, weil'subscribe' für "myState" das Objekt nicht finden kann:
  
-![Create state](../img/system_create_sample2_en.png)
+![Create state](img/system_create_sample2_en.png)
 
 Bei der zweiten Ausführung wird keine Fehler ausgegeben, weil der Datenpunkt jetzt existiert.
 
 
 &nbsp;
 ### Wert von Objekt ID
-![Get value of state](../img/system_get_value_en.png)
+![Get value of state](img/system_get_value_en.png)
 
 Dieser Block dient dazu den Wert eines Datenpunktes auszulesen. Folgende Attribute des Datenpunktes können ausgelesen werden:
 - Wert
@@ -724,7 +724,7 @@ Dieser Block dient dazu den Wert eines Datenpunktes auszulesen. Folgende Attribu
 &nbsp;
 Beispiel um die Zeit der letzten Änderung des Wertes auszugeben:
 
-![Get value of state](../img/system_get_value_sample_en.png)
+![Get value of state](img/system_get_value_sample_en.png)
 
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -768,7 +768,7 @@ Beispiel um die Zeit der letzten Änderung des Wertes auszugeben:
 &nbsp;
 
 ### Objekt ID
-![Get Object ID](../img/system_get_id_en.png)
+![Get Object ID](img/system_get_id_en.png)
 
 Dieses ist ein einfacher Hilfsblock um komfortabel die Objekt ID zum triggern des Blocks auszuwählen.
 
@@ -778,7 +778,7 @@ Der ID Auswahldialog wird durch Anklicken von "Objekt ID" geöffnet.
 &nbsp;
 Typische Anwendung dieses Blocks:
 
-![Get Object ID](../img/system_get_id_sample_en.png)
+![Get Object ID](img/system_get_id_sample_en.png)
 
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -824,7 +824,7 @@ Typische Anwendung dieses Blocks:
 ## Aktionsblöcke
 
 ### Exec - Kommando
-![Exec - execute](../img/action_exec_en.png)
+![Exec - execute](img/action_exec_en.png)
 
 Dieser Block führt das eingegebene Kommando im System aus, so als ob man es auf der Kommandozeile via SSH eingegeben hätte.
 
@@ -832,11 +832,11 @@ Der Befehl wird mit den rechten des Users ausgeführt unter dem ioBroker gestart
 
 Wenn keine Ausgabe gewünscht ist, kann diese unterdrückt werden:
 
-![Exec - execute](../img/action_exec_2_en.png)
+![Exec - execute](img/action_exec_2_en.png)
 
 Wenn eine Ausgabe erfolgen soll:
 
-![Exec - execute](../img/action_exec_1_en.png)
+![Exec - execute](img/action_exec_1_en.png)
 
 
 &nbsp;
@@ -888,7 +888,7 @@ Zusätzlich wird die selbe Ausgabe auch im log erscheinen, wenn der loglevel nic
 &nbsp;
 
 ### request URL
-![request URL](../img/action_request_en.png)
+![request URL](img/action_request_en.png)
 
 Ruft eine URL auf und gibt das Ergebnis zurück.
 
@@ -896,7 +896,7 @@ Ruft eine URL auf und gibt das Ergebnis zurück.
 &nbsp;
 Beispiel:
 
-![request URL](../img/action_request_1_en.png)
+![request URL](img/action_request_1_en.png)
 
 Zur Anlayse der Ausgabe werden 3 besondere Variable erzeugt:
 - Ergebnis, enthält den body der angeforderten Seite
@@ -914,7 +914,7 @@ Wenn keine Ausgabe gewünscht ist, kann diese unterdrückt werden. Dazu die Opti
 ## SendTo Blöcke
 
 ### Send to telegram
-![Send to telegram](../img/sendto_telegram_en.png)
+![Send to telegram](img/sendto_telegram_en.png)
 
 Dieser Block dient dazu eine Nachricht über telegram mit Hilfe des telegram-Adapters zu senden.
 
@@ -932,7 +932,7 @@ Additionally if the log level is not "none", the same message will be sent to lo
 &nbsp;
 
 ### Send to SayIt
-![Send to SayIt](../img/sendto_sayit_en.png)
+![Send to SayIt](img/sendto_sayit_en.png)
 
 This block is used to send text to sayit instance to pronounce this text.
 
@@ -952,7 +952,7 @@ Additionally if the log level is not "none", the same message will be sent to lo
 &nbsp;
 
 ### Send to pushover
-![Send to pushover](../img/sendto_pushover_en.png)
+![Send to pushover](img/sendto_pushover_en.png)
 
 This block is used to send text to pushover client. You can read about pushover driver [here](https://github.com/ioBroker/ioBroker.pushover).
 
@@ -978,7 +978,7 @@ Additionally if the log level is not "none", the same message will be sent to lo
 &nbsp;
 
 ### Send email
-![Send to email](../img/sendto_email_en.png)
+![Send to email](img/sendto_email_en.png)
 
 This block is used to send text as email.
 
@@ -1001,7 +1001,7 @@ You can refer to files as ```<img src='cid:file1'/>```. "file1" and "file2" are 
 
 "file name" must consist full path to image on disk.
 
-![Send to email](../img/sendto_email_1_en.png)
+![Send to email](img/sendto_email_1_en.png)
 
 ```
 <block xmlns="http://www.w3.org/1999/xhtml" type="email" id="VeysPTJXFh^.CW1t(s@Q" x="563" y="63">
@@ -1043,7 +1043,7 @@ Additionally if the log level is not "none", the same message will be sent to lo
 &nbsp;
 
 ### Custom sendTo block
-![Custom sendTo block](../img/sendto_custom_en.png)
+![Custom sendTo block](img/sendto_custom_en.png)
 
 This is just a help block to send internal system message (sendTo) to any adapter. 
 
@@ -1051,13 +1051,13 @@ Of course you can use custom function block to do anything crazy, and to send me
 
 You can define your own parameters for sendTo command:
 
-![Custom sendTo block](../img/sendto_custom_1_en.png)
+![Custom sendTo block](img/sendto_custom_1_en.png)
 
 Read more [here](https://github.com/ioBroker/ioBroker.javascript#sendto) about "sendTo".
 
 Example how to send SQL query to sql adapter:
 
-![Custom sendTo block](../img/sendto_custom_2_en.png)
+![Custom sendTo block](img/sendto_custom_2_en.png)
 
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -1131,7 +1131,7 @@ console.log("sql.0: " + "");
 
 Or how to request history from SQL adapter:
 
-![Custom sendTo block](../img/sendto_custom_3_en.png)
+![Custom sendTo block](img/sendto_custom_3_en.png)
 
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -1231,15 +1231,15 @@ If you will start value with "{" it will be interpreted as JSON string. Use doub
 
 ## Date and Time blocks
 ### Time comparision
-![Time comparision](../img/datetime_compare_ex_en.png)
+![Time comparision](img/datetime_compare_ex_en.png)
 
 If used operator "between" or "not between", the block looks like this:
 
-![Time comparision](../img/datetime_compare_ex_1_en.png)
+![Time comparision](img/datetime_compare_ex_1_en.png)
 
 You can specify a time, which must be compared. Block expects the time as "Date object".
 
-![Time comparision](../img/datetime_compare_ex_2_en.png)
+![Time comparision](img/datetime_compare_ex_2_en.png)
 
 There are following compare modes:
 
@@ -1264,7 +1264,7 @@ Following time formats are valid:
 &nbsp;
 
 ### Actual time comparision
-![Actual time comparision](../img/datetime_compare_en.png)
+![Actual time comparision](img/datetime_compare_en.png)
 
 This block is used to compare the day time with actual time. It has the same logic as [Time comparision](#time-comparision), but limits cannot be a blocks and it compares only actual time. (for compatibility with old versions)
 
@@ -1272,7 +1272,7 @@ This block is used to compare the day time with actual time. It has the same log
 &nbsp;
 
 ### Get actual time im specific format
-![Get actual time im specific format](../img/datetime_actualtime_en.png)
+![Get actual time im specific format](img/datetime_actualtime_en.png)
 
 Returns the actual time in some specified format.
 
@@ -1317,7 +1317,7 @@ Following formats are supported:
 &nbsp;
 
 ### Get time of astro events for today
-![Get time of astro events for today](../img/datetime_astro_en.png)
+![Get time of astro events for today](img/datetime_astro_en.png)
 
 Returns the time in current day of some specific astrological event.
 
@@ -1354,7 +1354,7 @@ The return value has type "Date Object", what is just the number of milliseconds
 Sometimes it is required to convert value into other type. Following blocks allow to convert value into specific types.
 
 ### Convert to number
-![Convert to number](../img/convert_tonumber_en.png)
+![Convert to number](img/convert_tonumber_en.png)
 
 Convert value to number (float).
 
@@ -1362,7 +1362,7 @@ Convert value to number (float).
 &nbsp;
 
 ### Convert to boolean
-![Convert to boolean](../img/convert_toboolean_en.png)
+![Convert to boolean](img/convert_toboolean_en.png)
 
 Convert value to boolean (true or false).
 
@@ -1370,7 +1370,7 @@ Convert value to boolean (true or false).
 &nbsp;
 
 ### Convert to string
-![Convert to string](../img/convert_tostring_en.png)
+![Convert to string](img/convert_tostring_en.png)
 
 Convert value to string.
 
@@ -1378,7 +1378,7 @@ Convert value to string.
 &nbsp;
 
 ### Get type of variable
-![Get type of variable](../img/convert_typeof_en.png)
+![Get type of variable](img/convert_typeof_en.png)
 
 Get type of value. Type can be: boolean, number, string, object.
 
@@ -1386,7 +1386,7 @@ Get type of value. Type can be: boolean, number, string, object.
 &nbsp;
 
 ### Convert to date/time object
-![Convert to date/time object](../img/convert_todate_en.png)
+![Convert to date/time object](img/convert_todate_en.png)
 
 Convert value to "Date object". Read [here](#get-actual-time-im-specific-format), what the "Date object" is.
 
@@ -1394,7 +1394,7 @@ Convert value to "Date object". Read [here](#get-actual-time-im-specific-format)
 &nbsp;
 
 ### Convert date/time object to string
-![Convert to boolean](../img/convert_fromtime_en.png)
+![Convert to boolean](img/convert_fromtime_en.png)
 
 Convert "Date object" into string. It has the same format options as [Get actual time im specific format](#get-actual-time-im-specific-format).
 
@@ -1402,7 +1402,7 @@ Convert "Date object" into string. It has the same format options as [Get actual
 &nbsp;
 
 ### Convert JSON to object
-![Convert JSON to object](../img/convert_json2object_en.png)
+![Convert JSON to object](img/convert_json2object_en.png)
 
 Convert JSON string into javascript object. If an error occurs, the empty object will be returned. (only for experts)
 
@@ -1410,7 +1410,7 @@ Convert JSON string into javascript object. If an error occurs, the empty object
 &nbsp;
 
 ### Convert object to JSON
-![Convert object to JSON](../img/convert_object2json_en.png)
+![Convert object to JSON](img/convert_object2json_en.png)
 
 Convert Javascript object to JSON string. If prettify option is selected the result string looks like:
 
@@ -1436,7 +1436,7 @@ if not:
 ## Trigger
 
 ### Trigger on states change
-![Trigger on states change](../img/trigger_trigger_ex_en.png)
+![Trigger on states change](img/trigger_trigger_ex_en.png)
 
 This block executes some action if state of given objects changed or updated. This is the main block to build interactions between different states and accordingly systems.
 
@@ -1444,7 +1444,7 @@ With this block you can bind different states together or send message or email 
 
 Typical usage of block:
 
-![Trigger on states change](../img/trigger_trigger_ex_1_en.png)
+![Trigger on states change](img/trigger_trigger_ex_1_en.png)
 
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -1480,13 +1480,13 @@ Typical usage of block:
 
 You can define as many ObjectIDs as you want via extension dialog:
 
-![Trigger on states change](../img/trigger_trigger_ex_2_en.png)
+![Trigger on states change](img/trigger_trigger_ex_2_en.png)
 
 If only one object ID is used so special variables are available in the statement block:
 - value - actual value of state
 - oldValue - old value of state
 
-![Trigger on states change](../img/trigger_trigger_ex_3_en.png)
+![Trigger on states change](img/trigger_trigger_ex_3_en.png)
 
 ```
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="QYVeQlu|#2hwniNg)=z8" x="38" y="39">
@@ -1540,7 +1540,7 @@ elsewise if more than one object ID is used for trigger, you can access value an
 &nbsp;
 
 ### Trigger on state change
-![Trigger on state change](../img/trigger_trigger_en.png)
+![Trigger on state change](img/trigger_trigger_en.png)
 
 This is the same block as "Trigger on states change", but with no possibility to use multiple object IDs for triggering (for versions compatibility).
 
@@ -1549,7 +1549,7 @@ This is the same block as "Trigger on states change", but with no possibility to
 
 
 ### Trigger info
-![Trigger info](../img/trigger_object_id_en.png)
+![Trigger info](img/trigger_object_id_en.png)
 
 Get information about value, timestamp or ID of the state, that triggered the trigger.
 
@@ -1579,7 +1579,7 @@ Following information can be accessed:
 
 Typical usage:
 
-![Trigger info](../img/trigger_object_id_1_en.png)
+![Trigger info](img/trigger_object_id_1_en.png)
 
 ```
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="QYVeQlu|#2hwniNg)=z8" x="113" y="238">
@@ -1631,7 +1631,7 @@ Typical usage:
 &nbsp;
 
 ### Schedule
-![Schedule](../img/trigger_schedule_en.png)
+![Schedule](img/trigger_schedule_en.png)
 
 This is second main block for automation after ["Trigger on states change"](#trigger-on-states-change). This block lets execute some actions periodically.
 
@@ -1686,13 +1686,13 @@ or if seconds used:
 
 But there is a good help for you to build such a rules. By clicking on rule the CRON dialog will be opened and you can specify by mouse your rule.
 
-![Schedule](../img/trigger_schedule_1_en.png)
+![Schedule](img/trigger_schedule_1_en.png)
 
 
 &nbsp;
 
 ### Trigger on astro event
-![Schedule](../img/trigger_astro_en.png)
+![Schedule](img/trigger_astro_en.png)
 
 Execute some action on astrological event. Following events are possible:
 
@@ -1715,7 +1715,7 @@ Execute some action on astrological event. Following events are possible:
 
 Additionally you can set the offset in minutes to astrological event, e.g. to fire the trigger 1 hour before down: 
 
-![Schedule](../img/trigger_astro_1_en.png)
+![Schedule](img/trigger_astro_1_en.png)
 
 As you can see the offset can be negative too to specify time before astrological events.
 
@@ -1723,7 +1723,7 @@ As you can see the offset can be negative too to specify time before astrologica
 &nbsp;
 
 ### Named schedule
-![Schedule](../img/trigger_schedule_ex_en.png)
+![Schedule](img/trigger_schedule_ex_en.png)
 
 This block is the same as [Schedule](#schedule), but with possibility to set CRON rule by string and with possibility to stop the schedule.
 
@@ -1731,7 +1731,7 @@ You can specify unique name of this schedule block and then later to clear it wi
 
 Here is an example of configurable alarm clock:
  
-![Schedule](../img/trigger_schedule_ex_1_en.png)
+![Schedule](img/trigger_schedule_ex_1_en.png)
 
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -1805,7 +1805,7 @@ Here is an example of configurable alarm clock:
 &nbsp;
 
 ### Clear schedule
-![Schedule](../img/trigger_cron_clear_en.png)
+![Schedule](img/trigger_cron_clear_en.png)
 
 With this function block you can clear named schedule. If you define named one more time without clearing it, the old one will still active.
 
@@ -1815,11 +1815,11 @@ See an example in [Named schedule](#named-schedule)
 &nbsp;
 
 ### CRON dialog
-![Schedule](../img/trigger_cron_input_en.png)
+![Schedule](img/trigger_cron_input_en.png)
 
 Create CRON rule from dialog. This block can be connected with [Named schedule](#named-schedule).
 
-![Schedule](../img/trigger_cron_input_1_en.png)
+![Schedule](img/trigger_cron_input_1_en.png)
 
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -1875,17 +1875,17 @@ Create CRON rule from dialog. This block can be connected with [Named schedule](
 &nbsp;
 
 ### CRON rule
-![Schedule](../img/trigger_cron_rule_en.png)
+![Schedule](img/trigger_cron_rule_en.png)
 
 Combine CRON rule from different parts.
 
 You can display rule as block or as line:
 
-![Schedule](../img/trigger_cron_rule_1_en.png)
+![Schedule](img/trigger_cron_rule_1_en.png)
 
 With additional parameter "with seconds" you can specify seconds for CRON rule too
 
-![Schedule](../img/trigger_cron_rule_2_en.png)
+![Schedule](img/trigger_cron_rule_2_en.png)
 
 This block can be used (like [CRON dialog](#cron-dialog)) only with [Named schedule](#named-schedule) block.
 
@@ -1898,7 +1898,7 @@ This block can be used (like [CRON dialog](#cron-dialog)) only with [Named sched
 ## Timeouts
 
 ### Delayed execution
-![Delayed execution](../img/timeouts_timeout_en.png)
+![Delayed execution](img/timeouts_timeout_en.png)
 
 With this block you can execute other blocks delayed by some time specified in milliseconds.
 if you know Javascript it is the same function as setTimeout.
@@ -1906,13 +1906,13 @@ if you know Javascript it is the same function as setTimeout.
 There is no "pause" in blockly, but you can use this block to simulate pause. If you place all blocks, that must be executed after the pause you will achieve the same effect as with pause.
 
 An additional feature is to set the interval by using a variable, just replace the "ms" with an predefined variable:
-![Execution by interval variable](../img/Timer_variable_en.PNG)
+![Execution by interval variable](img/Timer_variable_en.PNG)
 
 
 
 Every delayed execution can have unique name. It can be canceled by other block. [Clear delayed execution](#clear-delayed-execution)
 
-![Delayed execution](../img/timeouts_timeout_1_en.png)
+![Delayed execution](img/timeouts_timeout_1_en.png)
 
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -1947,12 +1947,12 @@ Every delayed execution can have unique name. It can be canceled by other block.
 &nbsp;
 
 ### Clear delayed execution
-![Clear delayed execution](../img/timeouts_timeout_clear_en.png)
+![Clear delayed execution](img/timeouts_timeout_clear_en.png)
 
 This block is used to cancel running delay by name. Typical usage is simulation of motion detection scenario.
 By first motion the light should go on and after the last motion after 30 seconds the light should go off.
 
-![Clear delayed execution](../img/timeouts_timeout_clear_1_en.png)
+![Clear delayed execution](img/timeouts_timeout_clear_1_en.png)
 
 ```
 <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -2057,7 +2057,7 @@ By first motion the light should go on and after the last motion after 30 second
 &nbsp;
 
 ### Execution by interval
-![Execution by interval](../img/timeouts_interval_en.png)
+![Execution by interval](img/timeouts_interval_en.png)
 
 This block allows you to execute some action periodically. Of course there is a CRON block, but CRON block has a smallest interval one second.
 This block can execute actions in milliseconds periods. 
@@ -2070,7 +2070,7 @@ Similar to timeout block you can set unique interval name too.
 &nbsp;
 
 ### Stop execution by interval
-![Stop execution by interval](../img/timeouts_interval_clear_en.png)
+![Stop execution by interval](img/timeouts_interval_clear_en.png)
 
 With the help of this block you can cancel periodically execution of interval block by its name.
 
@@ -2229,7 +2229,7 @@ With the help of this block you can cancel periodically execution of interval bl
 ## Variables
 
 ### Set variable's value
-![Set variable's value](../img/variables_set_en.png)
+![Set variable's value](img/variables_set_en.png)
 
 To use this block you should understand basic programming rules: how to use variables.
 
@@ -2237,11 +2237,11 @@ With this block you can write into global (visible everywhere in this script) va
 
 This block can create new variable or use existing one. 
 
-![Set variable's value](../img/variables_set_1_en.png)
+![Set variable's value](img/variables_set_1_en.png)
 
 This code:
 
-![Set variable's value](../img/variables_set_2_en.png)
+![Set variable's value](img/variables_set_2_en.png)
 
 ```
 <block xmlns="http://www.w3.org/1999/xhtml" type="variables_set" id="ch{H@omhfzI(QA{syxAG" x="212.99999999999977" y="37.99999999999994">
@@ -2264,16 +2264,16 @@ item = 0;
 &nbsp;
 
 ### Get variable's value
-![Get variable's value](../img/variables_get_en.png)
+![Get variable's value](img/variables_get_en.png)
 
 This block gets the value of variable. You can create a new one or use existing one.
 
-![Get variable's value](../img/variables_get_1_en.png)
+![Get variable's value](img/variables_get_1_en.png)
 
 There is one exception with trigger blocks [Trigger on states change](#trigger-on-states-change) and [Trigger on state change](#trigger-on-state-change).
 Inside these blocks variable "value" yet exist, but anyway to read their values you must rename variable into value and then use it.
 
-![Get variable's value](../img/variables_get_2_en.png)
+![Get variable's value](img/variables_get_2_en.png)
 
 
 &nbsp;
