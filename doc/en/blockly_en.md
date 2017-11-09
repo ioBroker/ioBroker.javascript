@@ -128,7 +128,7 @@ It is designed for people with no prior experience with computer programming.
 ## Sample 1
 **Control state on change of some other state**
 
-![Getting started 1](../img/getting_started_1_en.png)
+![Getting started 1](img/getting_started_1_en.png)
 
 This is the classical rule to switch something ON or OFF on other event.
 
@@ -142,9 +142,9 @@ Insert into control block the "System=>Get value of state" block and select in d
  
 There is a special variable **value"" in trigger block. It is always defined there and you can use this variable for your need. It consist actual value of triggered state and you can create simpler rule by using "Variable=>item" block and renaming it into "value".
 
-![Getting started 1](../img/getting_started_1_2_en.png)
+![Getting started 1](img/getting_started_1_2_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="s7s**k+Cc_KjDnJW`(h~" x="12" y="63">
     <field name="COMMENT">Switch light ON or OFF it motion detected or IDLE</field>
@@ -180,7 +180,7 @@ There is a special variable **value"" in trigger block. It is always defined the
 ## Sample 2 
 **Switch light on by motion and switch off in 10 minutes if no motion detected.**
 
-![Getting started 2](../img/getting_started_2_en.png)
+![Getting started 2](img/getting_started_2_en.png)
 
 If state "Motion" was updated with value true do:
 - switch "Light" on
@@ -188,7 +188,7 @@ If state "Motion" was updated with value true do:
 
 You can notice, that the flag "clear running" is set by last command. This clears any running timers for this state and the timer will be started anew.
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="s7s**k+Cc_KjDnJW`(h~" x="112" y="63">
     <field name="COMMENT">Switch light ON and OFF in 10 minutes of IDLE</field>
@@ -238,7 +238,7 @@ You can notice, that the flag "clear running" is set by last command. This clear
 ## Sample 3
 **Send email if outside temperature is more than 25 grad Celsius.**
 
-![Getting started 3](../img/getting_started_3_en.png)
+![Getting started 3](img/getting_started_3_en.png)
 
 Explanation:
 
@@ -252,16 +252,16 @@ If the temperature less than 23 grad, reset "emailSent" flag to send email by ne
 We compare temperature with 23 to do not sent emails every time if temperature fluctuate about 25 grad.
 
 To create the "if ... else if ..." block you must click on the gear icon and add required parts to "IF" block.
-![Getting started 3](../img/getting_started_3_1_en.png)
+![Getting started 3](img/getting_started_3_1_en.png)
 
 You can specify comment for every block by selecting "Add comment" in context menu. You can later open the comments by clicking on the question mark icon.
-![Getting started 3](../img/getting_started_3_2_en.png)
+![Getting started 3](img/getting_started_3_2_en.png)
 
 You can collapse some big blocks for better code presentation by selection in context menu "Collapse Block". 
-![Getting started 3](../img/getting_started_3_3_en.png)
+![Getting started 3](img/getting_started_3_3_en.png)
 
 Sample to import:
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="r53:ZiP]3DYe;Ly;@!v5" x="87" y="13">
     <field name="COMMENT"> Send email if outside temperature is more than 25 grad Celsius.</field>
@@ -379,15 +379,15 @@ Sample to import:
 ## System blocks
 
 ### Debug output
-![Debug output](../img/system_debug_en.png)
+![Debug output](img/system_debug_en.png)
 
 This block does nothing except prints line into the log. You can use it for debugging of your script.
 
 Like this one: 
 
-![Debug output](../img/system_debug_1_en.png)
+![Debug output](img/system_debug_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="K|2AnJ|5})RoNZ1T%Hh#" x="38" y="13">
     <field name="COMMENT">Print time into log every second</field>
@@ -422,14 +422,14 @@ You can define 4 different levels of severity for message:
 - error - will be always displayed. Other severity levels can be ignored if severity of logging in javascirpt adapter is higher.
 
 ### Comment
-![Comment](../img/system_comment_en.png)
+![Comment](img/system_comment_en.png)
 
 Comment your code to understand it later better. 
 
 It does nothing, just a comment.
 
 ### Control state
-![Control state](../img/system_control_en.png)
+![Control state](img/system_control_en.png)
 
 You can write the state with two different meanings:
 - to control something and send command to end hardware (this block)
@@ -437,7 +437,7 @@ You can write the state with two different meanings:
 
 Typical usage of block:
 
-![Control state](../img/system_control_sample1_en.png)
+![Control state](img/system_control_sample1_en.png)
 
 The object ID must be selected from dialog and the value must be defined too. Depends on the type of state the value can be [string](#string-value), [number](#number-value) or [boolean](#ogical-value-trueflase).
 
@@ -449,9 +449,9 @@ If delay is not 0, the state will be set not immediately but after defined in mi
 You can stop all running delayed sets by issuing of control command. 
 
 E.g in following schema the state "Light" will be controlled only once (in 2 seconds):
-![Control state](../img/system_control_1_en.png)
+![Control state](img/system_control_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="K|2AnJ|5})RoNZ1T%Hh#" x="38" y="13">
     <field name="COMMENT">Will be executed only once</field>
@@ -488,9 +488,9 @@ E.g in following schema the state "Light" will be controlled only once (in 2 sec
 ```
 
 But in this schema the state "Light" will be controlled twice (in 1 second and in 2 seconds):
-![Control state](../img/system_control_2_en.png)
+![Control state](img/system_control_2_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="K|2AnJ|5})RoNZ1T%Hh#" x="38" y="13">
     <field name="COMMENT">Will be executed twice</field>
@@ -532,26 +532,26 @@ But in this schema the state "Light" will be controlled twice (in 1 second and i
 This block is similar to [control block](#control-state), but it toggles the value. From true to false and vice versa.
 
 ### Update state
-![Update state](../img/system_update_en.png)
+![Update state](img/system_update_en.png)
 
 This block is similar to [control block](#control-state), but it is only updates the value. No command to control the hardware will be sent.
 
 Typical usage example:
 
-![Update state](../img/system_update_sample_en.png)
+![Update state](img/system_update_sample_en.png)
 
 ### Bind states
-![Bind state](../img/system_bind_en.png)
+![Bind state](img/system_bind_en.png)
 
 This block simply binds two states with each other.
 
 You can achieve the same with this blocks:
 
-![Bind state](../img/system_bind_1_en.png)
+![Bind state](img/system_bind_1_en.png)
 
 You can select if the value will be forwarded only if source state was changed or always when the state is just updated. 
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="w/@=5/5!D;8wn4DZ;jzG" x="287.99999999999943" y="37.999999999999716">
   <mutation items="1"></mutation>
   <field name="CONDITION">ne</field>
@@ -577,14 +577,14 @@ You can select if the value will be forwarded only if source state was changed o
 ```
 
 ### Write states
-![Write state](../img/system_write_en.png)
+![Write state](img/system_write_en.png)
 
 Universal write block that can do the same as ["Update state"](#update-state) and ["Control state"](#control-state) together. 
 
 But in compare with them you can define Object ID and delay with other blocks to make your script more universal.
 
 ### Create state
-![Create state](../img/system_create_en.png)
+![Create state](img/system_create_en.png)
 There are two types of variables that can be created in scripts:
 - local [variables](#set-variables-value)
 - global variables or states. 
@@ -597,9 +597,9 @@ This block creates global state and if the state yet exist, the command will be 
 
 Typical usage example:
 
-![Create state](../img/system_create_sample1_en.png)
+![Create state](img/system_create_sample1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="dBV.{0z/{Fr@RB+10H5i" x="38" y="13">
     <field name="COMMENT">Create state and subscribe on it changes</field>
@@ -651,12 +651,12 @@ You can start to use the new created state first in the block itself.
 
 Following code will report an error by the first execution, because subscribe for "myState" cannot find object:
  
-![Create state](../img/system_create_sample2_en.png)
+![Create state](img/system_create_sample2_en.png)
 
 Although no warning will be printed by the second execution, because the state yet exists.
 
 ### Get value of state
-![Get value of state](../img/system_get_value_en.png)
+![Get value of state](img/system_get_value_en.png)
 
 You can use this block to get the value of state. Additionally to value you can get following attributes:
 - Value
@@ -669,9 +669,9 @@ You can use this block to get the value of state. Additionally to value you can 
 
 Example to print time of the last value change:
 
-![Get value of state](../img/system_get_value_sample_en.png)
+![Get value of state](img/system_get_value_sample_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="38" y="13">
     <field name="COMMENT">Print time of last change for myState</field>
@@ -710,7 +710,7 @@ Example to print time of the last value change:
 ```
 
 ### Get Object ID
-![Get Object ID](../img/system_get_id_en.png)
+![Get Object ID](img/system_get_id_en.png)
 
 It is just a help block to comfortable select the object ID for trigger block.
 
@@ -718,9 +718,9 @@ By clicking on Object ID value the select ID dialog will be opened.
 
 Typical usage:
 
-![Get Object ID](../img/system_get_id_sample_en.png)
+![Get Object ID](img/system_get_id_sample_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="38" y="13">
     <field name="COMMENT">Typical usage of Object ID selector</field>
@@ -756,7 +756,7 @@ Typical usage:
 ## Actions Blocks
 
 ### Exec - execute
-![Exec - execute](../img/action_exec_en.png)
+![Exec - execute](img/action_exec_en.png)
 
 Executes defined command on system. Like someone has written this command in SSH console.
 
@@ -764,13 +764,13 @@ The command will be executed with permissions of user under which the iobroker w
 
 If no outputs are required, they can be ignored:
 
-![Exec - execute](../img/action_exec_2_en.png)
+![Exec - execute](img/action_exec_2_en.png)
 
 If parsing of outputs must be done:
 
-![Exec - execute](../img/action_exec_1_en.png)
+![Exec - execute](img/action_exec_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="313" y="38">
     <field name="COMMENT">Execute some system command</field>
@@ -811,13 +811,13 @@ By analysing of outputs 3 special variables will be created:
 Additionally if the log level is not "none", the same command will be sent to log.
 
 ### request URL
-![request URL](../img/action_request_en.png)
+![request URL](img/action_request_en.png)
 
 Calls URL and give back the result.
 
 Example:
 
-![request URL](../img/action_request_1_en.png)
+![request URL](img/action_request_1_en.png)
 
 By analysing of outputs 3 special variables will be created: 
 - result, consists body of the requested page
@@ -829,7 +829,7 @@ If no outputs are required, they can be ignored. Just unset "with results" optio
 ## Send to Blocks
 
 ### Send to telegram
-![Send to telegram](../img/sendto_telegram_en.png)
+![Send to telegram](img/sendto_telegram_en.png)
 
 This block is used to send message to telegram client via telegram adapter.
 
@@ -844,7 +844,7 @@ User name ID is optional and this is ID from [telegram](https://core.telegram.or
 Additionally if the log level is not "none", the same message will be sent to log.
 
 ### Send to SayIt
-![Send to SayIt](../img/sendto_sayit_en.png)
+![Send to SayIt](img/sendto_sayit_en.png)
 
 This block is used to send text to sayit instance to pronounce this text.
 
@@ -861,7 +861,7 @@ Volume is optional (normally from 0 to 100).
 Additionally if the log level is not "none", the same message will be sent to log.
 
 ### Send to pushover
-![Send to pushover](../img/sendto_pushover_en.png)
+![Send to pushover](img/sendto_pushover_en.png)
 
 This block is used to send text to pushover client. You can read about pushover driver [here](https://github.com/ioBroker/ioBroker.pushover).
 
@@ -884,7 +884,7 @@ All other properties are optional and you can read bout them [here](https://push
 Additionally if the log level is not "none", the same message will be sent to log.
 
 ### Send email
-![Send to email](../img/sendto_email_en.png)
+![Send to email](img/sendto_email_en.png)
 
 This block is used to send text as email.
 
@@ -907,9 +907,9 @@ You can refer to files as ```<img src='cid:file1'/>```. "file1" and "file2" are 
 
 "file name" must consist full path to image on disk.
 
-![Send to email](../img/sendto_email_1_en.png)
+![Send to email](img/sendto_email_1_en.png)
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="email" id="VeysPTJXFh^.CW1t(s@Q" x="563" y="63">
   <field name="INSTANCE"></field>
   <field name="IS_HTML">FALSE</field>
@@ -946,7 +946,7 @@ You can refer to files as ```<img src='cid:file1'/>```. "file1" and "file2" are 
 Additionally if the log level is not "none", the same message will be sent to log.
 
 ### Custom sendTo block
-![Custom sendTo block](../img/sendto_custom_en.png)
+![Custom sendTo block](img/sendto_custom_en.png)
 
 This is just a help block to send internal system message (sendTo) to any adapter. 
 
@@ -954,15 +954,15 @@ Of course you can use custom function block to do anything crazy, and to send me
 
 You can define your own parameters for sendTo command:
 
-![Custom sendTo block](../img/sendto_custom_1_en.png)
+![Custom sendTo block](img/sendto_custom_1_en.png)
 
 Read more [here](https://github.com/ioBroker/ioBroker.javascript#sendto) about "sendTo".
 
 Example how to send SQL query to sql adapter:
 
-![Custom sendTo block](../img/sendto_custom_2_en.png)
+![Custom sendTo block](img/sendto_custom_2_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="163" y="13">
     <field name="COMMENT">Send query to SQL adapter</field>
@@ -1014,7 +1014,7 @@ Example how to send SQL query to sql adapter:
 
 If you will use only one parameter with empty name, so no structure will created, like here:
 
-```
+```javascript
 var obj, result;
 
 /**
@@ -1034,9 +1034,9 @@ console.log("sql.0: " + "");
 
 Or how to request history from SQL adapter:
 
-![Custom sendTo block](../img/sendto_custom_3_en.png)
+![Custom sendTo block](img/sendto_custom_3_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="263" y="13">
     <field name="COMMENT">Get history from SQL adapter</field>
@@ -1103,7 +1103,7 @@ Or how to request history from SQL adapter:
 ```
 
 Generated javascript code:
-```
+```javascript
 var obj, end, result;
 
 /**
@@ -1128,15 +1128,15 @@ If you will start value with "{" it will be interpreted as JSON string. Use doub
 
 ## Date and Time blocks
 ### Time comparision
-![Time comparision](../img/datetime_compare_ex_en.png)
+![Time comparision](img/datetime_compare_ex_en.png)
 
 If used operator "between" or "not between", the block looks like this:
 
-![Time comparision](../img/datetime_compare_ex_1_en.png)
+![Time comparision](img/datetime_compare_ex_1_en.png)
 
 You can specify a time, which must be compared. Block expects the time as "Date object".
 
-![Time comparision](../img/datetime_compare_ex_2_en.png)
+![Time comparision](img/datetime_compare_ex_2_en.png)
 
 There are following compare modes:
 
@@ -1158,12 +1158,12 @@ Following time formats are valid:
 - hh:mm
 
 ### Actual time comparision
-![Actual time comparision](../img/datetime_compare_en.png)
+![Actual time comparision](img/datetime_compare_en.png)
 
 This block is used to compare the day time with actual time. It has the same logic as [Time comparision](#time-comparision), but limits cannot be a blocks and it compares only actual time. (for compatibility with old versions)
 
 ### Get actual time im specific format
-![Get actual time im specific format](../img/datetime_actualtime_en.png)
+![Get actual time im specific format](img/datetime_actualtime_en.png)
 
 Returns the actual time in some specified format.
 
@@ -1205,7 +1205,7 @@ Following formats are supported:
 - hh:mm:ss.sss - 12:00:00.000    
 
 ### Get time of astro events for today
-![Get time of astro events for today](../img/datetime_astro_en.png)
+![Get time of astro events for today](img/datetime_astro_en.png)
 
 Returns the time in current day of some specific astrological event.
 
@@ -1236,42 +1236,42 @@ The return value has type "Date Object", what is just the number of milliseconds
 Sometimes it is required to convert value into other type. Following blocks allow to convert value into specific types.
 
 ### Convert to number
-![Convert to number](../img/convert_tonumber_en.png)
+![Convert to number](img/convert_tonumber_en.png)
 
 Convert value to number (float).
 
 ### Convert to boolean
-![Convert to boolean](../img/convert_toboolean_en.png)
+![Convert to boolean](img/convert_toboolean_en.png)
 
 Convert value to boolean (true or false).
 
 ### Convert to string
-![Convert to string](../img/convert_tostring_en.png)
+![Convert to string](img/convert_tostring_en.png)
 
 Convert value to string.
 
 ### Get type of variable
-![Get type of variable](../img/convert_typeof_en.png)
+![Get type of variable](img/convert_typeof_en.png)
 
 Get type of value. Type can be: boolean, number, string, object.
 
 ### Convert to date/time object
-![Convert to date/time object](../img/convert_todate_en.png)
+![Convert to date/time object](img/convert_todate_en.png)
 
 Convert value to "Date object". Read [here](#get-actual-time-im-specific-format), what the "Date object" is.
 
 ### Convert date/time object to string
-![Convert to boolean](../img/convert_fromtime_en.png)
+![Convert to boolean](img/convert_fromtime_en.png)
 
 Convert "Date object" into string. It has the same format options as [Get actual time im specific format](#get-actual-time-im-specific-format).
 
 ### Convert JSON to object
-![Convert JSON to object](../img/convert_json2object_en.png)
+![Convert JSON to object](img/convert_json2object_en.png)
 
 Convert JSON string into javascript object. If an error occurs, the empty object will be returned. (only for experts)
 
 ### Convert object to JSON
-![Convert object to JSON](../img/convert_object2json_en.png)
+![Convert object to JSON](img/convert_object2json_en.png)
 
 Convert Javascript object to JSON string. If prettify option is selected the result string looks like:
 
@@ -1291,7 +1291,7 @@ if not:
 ## Trigger
 
 ### Trigger on states change
-![Trigger on states change](../img/trigger_trigger_ex_en.png)
+![Trigger on states change](img/trigger_trigger_ex_en.png)
 
 This block executes some action if state of given objects changed or updated. This is the main block to build interactions between different states and accordingly systems.
 
@@ -1299,9 +1299,9 @@ With this block you can bind different states together or send message or email 
 
 Typical usage of block:
 
-![Trigger on states change](../img/trigger_trigger_ex_1_en.png)
+![Trigger on states change](img/trigger_trigger_ex_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="]L0d;6j+=OH*[4n{C7v^" x="112" y="13">
     <field name="COMMENT">Switch light on if motion detected</field>
@@ -1335,15 +1335,15 @@ Typical usage of block:
 
 You can define as many ObjectIDs as you want via extension dialog:
 
-![Trigger on states change](../img/trigger_trigger_ex_2_en.png)
+![Trigger on states change](img/trigger_trigger_ex_2_en.png)
 
 If only one object ID is used so special variables are available in the statement block:
 - value - actual value of state
 - oldValue - old value of state
 
-![Trigger on states change](../img/trigger_trigger_ex_3_en.png)
+![Trigger on states change](img/trigger_trigger_ex_3_en.png)
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="QYVeQlu|#2hwniNg)=z8" x="38" y="39">
   <mutation items="1"></mutation>
   <field name="CONDITION">ne</field>
@@ -1392,13 +1392,13 @@ If only one object ID is used so special variables are available in the statemen
 elsewise if more than one object ID is used for trigger, you can access value and old value via [Trigger info](#trigger-info).
 
 ### Trigger on state change
-![Trigger on state change](../img/trigger_trigger_en.png)
+![Trigger on state change](img/trigger_trigger_en.png)
 
 This is the same block as "Trigger on states change", but with no possibility to use multiple object IDs for triggering (for versions compatibility).
 
 
 ### Trigger info
-![Trigger info](../img/trigger_object_id_en.png)
+![Trigger info](img/trigger_object_id_en.png)
 
 Get information about value, timestamp or ID of the state, that triggered the trigger.
 
@@ -1428,9 +1428,9 @@ Following information can be accessed:
 
 Typical usage:
 
-![Trigger info](../img/trigger_object_id_1_en.png)
+![Trigger info](img/trigger_object_id_1_en.png)
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="QYVeQlu|#2hwniNg)=z8" x="113" y="238">
   <mutation items="1"></mutation>
   <field name="CONDITION">ne</field>
@@ -1477,7 +1477,7 @@ Typical usage:
 ```
 
 ### Schedule
-![Schedule](../img/trigger_schedule_en.png)
+![Schedule](img/trigger_schedule_en.png)
 
 This is second main block for automation after ["Trigger on states change"](#trigger-on-states-change). This block lets execute some actions periodically.
 
@@ -1532,10 +1532,10 @@ or if seconds used:
 
 But there is a good help for you to build such a rules. By clicking on rule the CRON dialog will be opened and you can specify by mouse your rule.
 
-![Schedule](../img/trigger_schedule_1_en.png)
+![Schedule](img/trigger_schedule_1_en.png)
 
 ### Trigger on astro event
-![Schedule](../img/trigger_astro_en.png)
+![Schedule](img/trigger_astro_en.png)
 
 Execute some action on astrological event. Following events are possible:
 
@@ -1558,12 +1558,12 @@ Execute some action on astrological event. Following events are possible:
 
 Additionally you can set the offset in minutes to astrological event, e.g. to fire the trigger 1 hour before down: 
 
-![Schedule](../img/trigger_astro_1_en.png)
+![Schedule](img/trigger_astro_1_en.png)
 
 As you can see the offset can be negative too to specify time before astrological events.
 
 ### Named schedule
-![Schedule](../img/trigger_schedule_ex_en.png)
+![Schedule](img/trigger_schedule_ex_en.png)
 
 This block is the same as [Schedule](#schedule), but with possibility to set CRON rule by string and with possibility to stop the schedule.
 
@@ -1571,9 +1571,9 @@ You can specify unique name of this schedule block and then later to clear it wi
 
 Here is an example of configurable alarm clock:
  
-![Schedule](../img/trigger_schedule_ex_1_en.png)
+![Schedule](img/trigger_schedule_ex_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="QWp.l96v1;-4{x)j5K5y" x="38" y="13">
     <field name="COMMENT">Configurable alarm. Set time as: hh:mm</field>
@@ -1642,20 +1642,20 @@ Here is an example of configurable alarm clock:
 ```
 
 ### Clear schedule
-![Schedule](../img/trigger_cron_clear_en.png)
+![Schedule](img/trigger_cron_clear_en.png)
 
 With this function block you can clear named schedule. If you define named one more time without clearing it, the old one will still active.
 
 See an example in [Named schedule](#named-schedule)
 
 ### CRON dialog
-![Schedule](../img/trigger_cron_input_en.png)
+![Schedule](img/trigger_cron_input_en.png)
 
 Create CRON rule from dialog. This block can be connected with [Named schedule](#named-schedule).
 
-![Schedule](../img/trigger_cron_input_1_en.png)
+![Schedule](img/trigger_cron_input_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id="]aB;GhQJvYrr~:H4Ft9l" x="63" y="38">
     <field name="COMMENT">Every 0th minute every hour</field>
@@ -1706,24 +1706,24 @@ Create CRON rule from dialog. This block can be connected with [Named schedule](
 ```
 
 ### CRON rule
-![Schedule](../img/trigger_cron_rule_en.png)
+![Schedule](img/trigger_cron_rule_en.png)
 
 Combine CRON rule from different parts.
 
 You can display rule as block or as line:
 
-![Schedule](../img/trigger_cron_rule_1_en.png)
+![Schedule](img/trigger_cron_rule_1_en.png)
 
 With additional parameter "with seconds" you can specify seconds for CRON rule too
 
-![Schedule](../img/trigger_cron_rule_2_en.png)
+![Schedule](img/trigger_cron_rule_2_en.png)
 
 This block can be used (like [CRON dialog](#cron-dialog)) only with [Named schedule](#named-schedule) block.
 
 ## Timeouts
 
 ### Delayed execution
-![Delayed execution](../img/timeouts_timeout_en.png)
+![Delayed execution](img/timeouts_timeout_en.png)
 
 With this block you can execute other blocks delayed by some time specified in milliseconds.
 if you know Javascript it is the same function as setTimeout.
@@ -1732,9 +1732,9 @@ There is no "pause" in blockly, but you can use this block to simulate pause. If
 
 Every delayed execution can have unique name. It can be canceled by other block. [Clear delayed execution](#clear-delayed-execution)
 
-![Delayed execution](../img/timeouts_timeout_1_en.png)
+![Delayed execution](img/timeouts_timeout_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="debug" id=":6GZ!E*FHy@vPKKl{`hV" x="487" y="163">
     <field name="Severity">log</field>
@@ -1764,14 +1764,14 @@ Every delayed execution can have unique name. It can be canceled by other block.
 ```
 
 ### Clear delayed execution
-![Clear delayed execution](../img/timeouts_timeout_clear_en.png)
+![Clear delayed execution](img/timeouts_timeout_clear_en.png)
 
 This block is used to cancel running delay by name. Typical usage is simulation of motion detection scenario.
 By first motion the light should go on and after the last motion after 30 seconds the light should go off.
 
-![Clear delayed execution](../img/timeouts_timeout_clear_1_en.png)
+![Clear delayed execution](img/timeouts_timeout_clear_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="on_ext" id="+nZ`H6mh/;g(e3u,t;wJ" x="163" y="12">
     <mutation items="1"></mutation>
@@ -1871,7 +1871,7 @@ By first motion the light should go on and after the last motion after 30 second
 ```
 
 ### Execution by interval
-![Execution by interval](../img/timeouts_interval_en.png)
+![Execution by interval](img/timeouts_interval_en.png)
 
 This block allows you to execute some action periodically. Of course there is a CRON block, but CRON block has a smallest interval one second.
 This block can execute actions in milliseconds periods. 
@@ -1881,11 +1881,11 @@ If you set the interval too small (under 100ms) it can be, that intervals will b
 Similar to timeout block you can set unique interval name too.
 
 An additional feature is to set the interval by using a variable, just replace the "ms" with an predefined variable:
-![Execution by interval variable](../img/Timer_variable_en.PNG)
+![Execution by interval variable](img/Timer_variable_en.PNG)
 
 
 ### Stop execution by interval
-![Stop execution by interval](../img/timeouts_interval_clear_en.png)
+![Stop execution by interval](img/timeouts_interval_clear_en.png)
 
 With the help of this block you can cancel periodically execution of interval block by its name.
 
@@ -2002,7 +2002,7 @@ With the help of this block you can cancel periodically execution of interval bl
 ## Variables
 
 ### Set variable's value
-![Set variable's value](../img/variables_set_en.png)
+![Set variable's value](img/variables_set_en.png)
 
 To use this block you should understand basic programming rules: how to use variables.
 
@@ -2010,13 +2010,13 @@ With this block you can write into global (visible everywhere in this script) va
 
 This block can create new variable or use existing one. 
 
-![Set variable's value](../img/variables_set_1_en.png)
+![Set variable's value](img/variables_set_1_en.png)
 
 This code:
 
-![Set variable's value](../img/variables_set_2_en.png)
+![Set variable's value](img/variables_set_2_en.png)
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="variables_set" id="ch{H@omhfzI(QA{syxAG" x="212.99999999999977" y="37.99999999999994">
   <field name="VAR">item</field>
   <value name="VALUE">
@@ -2028,35 +2028,35 @@ This code:
 ```
 
 does only this:
-```
+```javascript
 var item;
 item = 0;
 ```
 
 ### Get variable's value
-![Get variable's value](../img/variables_get_en.png)
+![Get variable's value](img/variables_get_en.png)
 
 This block gets the value of variable. You can create a new one or use existing one.
 
-![Get variable's value](../img/variables_get_1_en.png)
+![Get variable's value](img/variables_get_1_en.png)
 
 There is one exception with trigger blocks [Trigger on states change](#trigger-on-states-change) and [Trigger on state change](#trigger-on-state-change).
 Inside these blocks variable "value" yet exist, but anyway to read their values you must rename variable into value and then use it.
 
-![Get variable's value](../img/variables_get_2_en.png)
+![Get variable's value](img/variables_get_2_en.png)
 
 ## Functions
 
 ### Create function from blocks with no return value
-![Create function from blocks with no return value](../img/functions_function_en.png)
+![Create function from blocks with no return value](img/functions_function_en.png)
 
 With this block you can combine some repeat sequences into function and than use this function everywhere in current blockly.
 
 Here is an example of function that just prints into log current time.
 
-![Create function from blocks with no return value](../img/functions_function_2_en.png)
+![Create function from blocks with no return value](img/functions_function_2_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id=";LE@QUg[hpGG!Ed6(?Hf" x="463" y="88">
     <field name="COMMENT">Print current time</field>
@@ -2084,9 +2084,9 @@ Here is an example of function that just prints into log current time.
 
 After the function created, you can use this function like this:
 
-![Create function from blocks with no return value](../img/functions_function_3_en.png)
+![Create function from blocks with no return value](img/functions_function_3_en.png)
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="timeouts_setinterval" id="hp;?}l3uStXhm+a2s!9t" x="62.99999999999943" y="112.99999999999994">
   <field name="NAME">interval</field>
   <field name="INTERVAL">1000</field>
@@ -2100,17 +2100,17 @@ After the function created, you can use this function like this:
 
 You can find this new function in the blocks menu:
 
-![Create function from blocks with no return value](../img/functions_function_4_en.png)
+![Create function from blocks with no return value](img/functions_function_4_en.png)
 
 Additionally you can specify arguments for the function too via configuration dialog. You can edit the names of arguments in hte same dialog.
 
-![Create function from blocks with no return value](../img/functions_function_1_en.png)
+![Create function from blocks with no return value](img/functions_function_1_en.png)
 
 Here is an example of function that prints the sum of first argument and the second one:
 
-![Create function from blocks with no return value](../img/functions_function_5_en.png)
+![Create function from blocks with no return value](img/functions_function_5_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="comment" id=";LE@QUg[hpGG!Ed6(?Hf" x="463" y="88">
     <field name="COMMENT">Print sum of a and b</field>
@@ -2157,13 +2157,13 @@ Here is an example of function that prints the sum of first argument and the sec
 
 You can find the arguments in the variables menu:
 
-![Create function from blocks with no return value](../img/functions_function_6_en.png)
+![Create function from blocks with no return value](img/functions_function_6_en.png)
 
 And use this function like this:
 
-![Create function from blocks with no return value](../img/functions_function_7_en.png)
+![Create function from blocks with no return value](img/functions_function_7_en.png)
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="procedures_callnoreturn" id="(-G|y+Y7AC]w2CTQGjYC" x="138" y="188">
   <mutation name="printSum">
     <arg name="a"></arg>
@@ -2183,13 +2183,13 @@ And use this function like this:
 ```
 
 ### Create function from blocks with return value
-![Create function from blocks with return value](../img/functions_function_ret_en.png)
+![Create function from blocks with return value](img/functions_function_ret_en.png)
 
 This block is the same, but it can return result of the function, that can be used later in blocks.
 
-![Create function from blocks with return value](../img/functions_function_ret_2_en.png)
+![Create function from blocks with return value](img/functions_function_ret_2_en.png)
 
-```
+```xml
 <block xmlns="http://www.w3.org/1999/xhtml" type="procedures_defreturn" id="4)|}1YzV}e6YUvVV^sY{" x="413" y="138">
   <mutation statements="false">
     <arg name="a"></arg>
@@ -2223,9 +2223,9 @@ This block is the same, but it can return result of the function, that can be us
 
 Usage is similar with other function blocks:
 
-![Create function from blocks with return value](../img/functions_function_ret_3_en.png)
+![Create function from blocks with return value](img/functions_function_ret_3_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="debug" id="zgr7b0g)}uMe1ySGYL7X" x="163" y="137">
     <field name="Severity">log</field>
@@ -2285,15 +2285,15 @@ Usage is similar with other function blocks:
 
 For all functions you can add comment or description. 
 
-![Create function from blocks with return value](../img/functions_function_ret_1_en.png)
+![Create function from blocks with return value](img/functions_function_ret_1_en.png)
 
 In the return block you can use special return element:
 
-![Create function from blocks with return value](../img/functions_function_ret_4_en.png)
+![Create function from blocks with return value](img/functions_function_ret_4_en.png)
 
-![Create function from blocks with return value](../img/functions_function_ret_5_en.png)
+![Create function from blocks with return value](img/functions_function_ret_5_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="debug" id="zgr7b0g)}uMe1ySGYL7X" x="63" y="12">
     <field name="Severity">log</field>
@@ -2548,26 +2548,26 @@ In the return block you can use special return element:
 ```
 
 ### Return value in function 
-![Return value in function](../img/functions_return_en.png)
+![Return value in function](img/functions_return_en.png)
 
 See usage of this block in [Create function from blocks with return value](#create-function-from-blocks-with-return-value]).
 
 This block can be used only there and serves to return value in the middle of the function.
 
 ### Create custom function with no return value
-![Create custom function with no return value](../img/functions_function_ex_en.png)
+![Create custom function with no return value](img/functions_function_ex_en.png)
 
 Sometimes existing blocks are not suitable to solve specific problem. With this block you can create your own block as a function, that can accept parameters and do some action.
 To write such a function you must know javascript. You can use inside all functions, that were created for pure scripting.
 
 To write the code you must click the '...' at the ond the block and the editor dialog will be opened.
 
-![Create custom function with no return value](../img/functions_function_ex_1_en.png)
+![Create custom function with no return value](img/functions_function_ex_1_en.png)
 
 Otherwise the usage of this block is similar with standard function blocks, like [Create function from blocks with return value](#create-function-from-blocks-with-return-value]) or [Create function from blocks with no return value](#create-function-from-blocks-with-no-return-value]).
 
 ### Create custom function with return value
-![Create custom function with return value](../img/functions_function_ex_ret_en.png)
+![Create custom function with return value](img/functions_function_ex_ret_en.png)
 
 This custom function block can return values. To return result from function write 
 
@@ -2577,9 +2577,9 @@ return 'your result';
 
 Like here:
 
-![Create custom function with return value](../img/functions_function_ex_ret_1_en.png)
+![Create custom function with return value](img/functions_function_ex_ret_1_en.png)
 
-```
+```xml
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="procedures_defcustomreturn" id="mG^pXm=MO7vPl!c^/.Px" x="163" y="63">
     <mutation statements="false">
@@ -2618,9 +2618,9 @@ Like here:
 ```
 
 ### Call function
-![Call function](../img/functions_call_ex_en.png)
+![Call function](img/functions_call_ex_en.png)
 
-![Call function](../img/functions_call_ex_ret_en.png)
+![Call function](img/functions_call_ex_ret_en.png)
 
 For every created function in the menu appears additional block with the name of this function. 
 
