@@ -101,6 +101,8 @@
     };
     // ambient declarations for typescript
     var tsAmbient;
+    // compiler instance for typescript
+    var tsServer = new mods.tsc.Server(tsCompilerOptions);
 
     function doGetter(obj, name, ret) {
         //adapter.log.debug('getter: ' + name + ' returns ' + ret);
@@ -400,6 +402,7 @@
                 tsAmbient = {
                     "javascript.d.ts": mods.fs.readFileSync(mods.path.join(__dirname, "lib/javascript.d.ts"), "utf8")
                 };
+                tsServer.provideAmbientDeclarations(tsAmbient);
             } catch (e) {
                 adapter.log.warn("Could not read TypeScript ambient declarations: " + e);
             }
@@ -444,8 +447,9 @@
                                                 }
                                             });
                                         } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
-                                            var tsCompiled = mods.tsc.compile(
-                                                obj.common.source, tsCompilerOptions, tsAmbient
+                                            var tsCompiled = tsServer.compile(
+                                                "global_" + g + ".ts",
+                                                obj.common.source
                                             );
                                             var errors = tsCompiled.diagnostics.map(function (diag) {
                                                 return diag.annotatedSource + "\n";
@@ -3122,29 +3126,26 @@
             } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
                 // TypeScript
                 adapter.log.info(name + ": compiling TypeScript source...");
-                mods.tsc.compileAsync(
-                    obj.common.source, tsCompilerOptions, tsAmbient)
-                    .then(function (tsCompiled) {
-                        var errors = tsCompiled.diagnostics.map(function (diag) {
-                            return diag.annotatedSource + "\n";
-                        }).join("\n");
-                        if (tsCompiled.success) {
-                            if (errors.length > 0) {
-                                adapter.log.warn(name + ": TypeScript compilation had errors: \n" + errors);
-                            } else {
-                                adapter.log.info(name + ": TypeScript compilation successful");
-                            }
-                            scripts[name] = compile(globalScript + '\n' + tsCompiled.result, name);
-                            if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
-                            if (typeof callback === 'function') callback(true, name);
-                        } else {
-                            adapter.log.error(name + ": TypeScript compilation failed: \n" + errors);
-                        }
-                    })
-                    .catch(function (err) {
-                        adapter.log.error(name + ": TypeScript compilation failed: \n" + err);
-                    })
-                ;
+                var filename = name.replace(/^script.js./, '').replace(/\./g, '/') + ".ts";
+                var tsCompiled = tsServer.compile(
+                    filename,
+                    obj.common.source,
+                );
+                var errors = tsCompiled.diagnostics.map(function (diag) {
+                    return diag.annotatedSource + "\n";
+                }).join("\n");
+                if (tsCompiled.success) {
+                    if (errors.length > 0) {
+                        adapter.log.warn(name + ": TypeScript compilation had errors: \n" + errors);
+                    } else {
+                        adapter.log.info(name + ": TypeScript compilation successful");
+                    }
+                    scripts[name] = compile(globalScript + '\n' + tsCompiled.result, name);
+                    if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
+                    if (typeof callback === 'function') callback(true, name);
+                } else {
+                    adapter.log.error(name + ": TypeScript compilation failed: \n" + errors);
+                }
             }
         } else {
             var _name;
