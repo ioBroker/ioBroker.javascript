@@ -1055,7 +1055,7 @@ Example how to send SQL query to sql adapter:
 
 ![Custom sendTo block](img/sendto_custom_2_en.png)
 
-<!-- ```xml 
+```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml"> -->
   <block type="comment" id="GVW732OFexZ9HP[q]B3," x="163" y="13">
     <field name="COMMENT">Send query to SQL adapter</field>
