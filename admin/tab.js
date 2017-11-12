@@ -2309,7 +2309,7 @@ function Scripts(main) {
                         that.editor.focus();
                     }
                 }
-            });
+            }).treeTable('show', update ? undefined : main.config['script-editor-current-id'] || undefined);
             // Show add button
             setTimeout(function () {
                 // show blink on start
@@ -2374,6 +2374,10 @@ function Scripts(main) {
                 .click(function () {
                     showImportBlocklyDialog();
                 });
+
+            if (!update && main.config['script-editor-current-id']) {
+                editScript(main.config['script-editor-current-id']);
+            }
         }
     };
 
