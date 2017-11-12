@@ -3125,26 +3125,27 @@
                 });
             } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
                 // TypeScript
-                adapter.log.info(name + ": compiling TypeScript source...");
-                var filename = name.replace(/^script.js./, '').replace(/\./g, '/') + ".ts";
+                adapter.log.info(name + ': compiling TypeScript source...');
+                var filename = name.replace(/^script.js./, '').replace(/\./g, '/') + '.ts';
                 var tsCompiled = tsServer.compile(
                     filename,
-                    obj.common.source,
+                    obj.common.source
                 );
                 var errors = tsCompiled.diagnostics.map(function (diag) {
-                    return diag.annotatedSource + "\n";
-                }).join("\n");
+                    return diag.annotatedSource + '\n';
+                }).join('\n');
+
                 if (tsCompiled.success) {
                     if (errors.length > 0) {
-                        adapter.log.warn(name + ": TypeScript compilation had errors: \n" + errors);
+                        adapter.log.warn(name + ': TypeScript compilation had errors: \n' + errors);
                     } else {
-                        adapter.log.info(name + ": TypeScript compilation successful");
+                        adapter.log.info(name + ': TypeScript compilation successful');
                     }
                     scripts[name] = compile(globalScript + '\n' + tsCompiled.result, name);
                     if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
                     if (typeof callback === 'function') callback(true, name);
                 } else {
-                    adapter.log.error(name + ": TypeScript compilation failed: \n" + errors);
+                    adapter.log.error(name + ': TypeScript compilation failed: \n' + errors);
                 }
             }
         } else {
@@ -3173,8 +3174,7 @@
         }
     }
 
-
-    function getPatternCompareFunctions (pattern) {
+    function getPatternCompareFunctions(pattern) {
         var func, functions = [];
         functions.logic = pattern.logic || 'and';
         //adapter.log.info('## '+JSON.stringify(pattern));
@@ -3188,16 +3188,17 @@
         return functions;
     }
 
-    function patternMatching (event, patternFunctions) {
+    function patternMatching(event, patternFunctions) {
         var matched = false;
-        for (var i=0, len=patternFunctions.length; i < len; i++) {
-            if (patternFunctions[i] (event)) {
+        for (var i = 0, len = patternFunctions.length; i < len; i++) {
+            if (patternFunctions[i](event)) {
                 if (patternFunctions.logic === 'or') return true;
-                    matched = true;
-                } else {
+
+                matched = true;
+            } else {
                 if (patternFunctions.logic === 'and') return false;
-                }
-                }
+            }
+        }
         return matched;
     }
 
@@ -3209,6 +3210,7 @@
             if (!adapter.config.subscribe) {
                 states = res;
             }
+            
             addGetProperty(states);
 
             // remember all IDs
