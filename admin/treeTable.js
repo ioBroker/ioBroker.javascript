@@ -284,11 +284,14 @@
         buildTable.call(this, options);
         $table = $(this).find('.tree-table-main');
         for (var e = 0; e < exIDs.length; e++) {
-            $table.treetable('expandNode', exIDs[e]);
+			try {
+				$table.treetable('expandNode', exIDs[e]);
+			} catch (e) {
+			}
         }
         if (id) {
-            $table.treetable('reveal', id);
             var node = $table.treetable('node', id);
+            node && $table.treetable('reveal', id);
             node && node.addClass('selected');
         }
         if (nameFilter) $table.find('.filter_name').val(nameFilter).trigger('change');
@@ -305,7 +308,10 @@
                         exIDs = JSON.parse(exIDs);
                         var $table = $(this[i]).find('.tree-table-main');
                         for (var e = 0; e < exIDs.length; e++) {
-                            $table.treetable('expandNode', exIDs[e]);
+							try {
+								$table.treetable('expandNode', exIDs[e]);
+							} catch (e) {
+							}
                         }
                     }
                 }
@@ -325,7 +331,10 @@
                 var $table = $(this[i]).find('.tree-table-main');
                 var data = $table.data('data');
                 $table.find('.selected').removeClass('selected');
-                $table.treetable('reveal', currentId);
+				try {
+					$table.treetable('reveal', currentId);
+				} catch (e) {
+				}
                 var node = $table.treetable('node', currentId);
                 node && node.row.addClass('selected');
             }
@@ -348,6 +357,7 @@
                 if (options.root && !id.match('^' + options.root.replace(/\./g, '\\.') + '\\.')) continue;
 
                 var elem = this[i];
+				// do not update too often. de-bounce it
                 (function (_elem, _$table) {
                     _$table.updateTimer = setTimeout(function () {
                         reInit.call(_elem);
