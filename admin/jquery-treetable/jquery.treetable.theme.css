@@ -26,7 +26,7 @@ table.treetable > tbody > tr > td {
   white-space: nowrap;
 }
 table.treetable thead tr th {
-  border: 1px solid #888;
+  border: 1px solid #b8b5b5;
   font-weight: normal;
   padding: .1em 1em .1em 1em;
   text-align: left;
@@ -156,4 +156,26 @@ table.treetable span.indenter a {
 }
 table.treetable .filtered-out {
   display: none !important;
+}
+table.treetable .treetable-counter {
+  color: gray;
+  font-size: 0.8em;
+  float: right;
+}
+table.treetable .treetable-filter {
+  width: calc(100% - 24px);
+  padding: 5px 0 0 0;
+  font-size: 12px;
+  border: 0;
+  line-height: 1.5em;
+}
+table.treetable .treetable-th-name {
+  padding: .1em .1em;
+}
+
+table.treetable .filter-clear {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  background: #fff;
 }

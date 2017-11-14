@@ -2046,9 +2046,9 @@
 					result = {};
 					for (var _id in timers) {
 						if (timers.hasOwnProperty(_id) && timers[_id] && timers[_id].length) {
-							result[_id] = {id: _id, timers: []};
+							result[_id] = [];
 							for (var t = 0; t < timers[_id].length; t++) {
-								result[_id].timers.push({timerId: timers[_id][t].id, left: timers[_id][t].delay - (now - timers[_id][t].ts), delay: timers[_id][t].delay});
+								result[_id].push({timerId: timers[_id][t].id, left: timers[_id][t].delay - (now - timers[_id][t].ts), delay: timers[_id][t].delay});
 							}
 						}
 					}

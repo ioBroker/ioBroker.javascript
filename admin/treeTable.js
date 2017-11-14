@@ -96,11 +96,11 @@
         table += '<table class="tree-table-main">';
         table += '  <thead>';
         table += '      <tr class="tree-table-main-header">';
-        table += '      <th' + (options.widths && options.widths[0] ? ' style="padding: .1em .1em; width: ' + options.widths[0] + '"' : '') + '>';
-        table += '      <input placeholder="' + _('name') + '" style="width: calc(100% - 24px); padding: 0; padding-left: 5px; font-size: 12px; border: 0; line-height: 1.5em;" class="filter_name">';
-        table += '      <button data-id="filter_name" role="button" class="filter-clear" style="width: 18px; height: 18px; border: 0; background: #fff;"></button>';
+        table += '      <th' + (options.widths && options.widths[0] ? ' class="treetable-th-name" style="width: ' + options.widths[0] + '"' : '') + '>';
+        table += '      <input placeholder="' + _('name') + '" class="filter_name treetable-filter">';
+        table += '      <button data-id="filter_name" role="button" class="filter-clear"></button>';
         table += '</th>';
-        table += '      <th' + (options.widths && options.widths[1] ? ' style="width: ' + options.widths[1] + '"' : '') + '>Inst.</th>';
+        table += '      <th' + (options.widths && options.widths[1] ? ' style="width: ' + options.widths[1] + '"' : '') + ' title="' + _('Instance')+ '">'+ _('Inst.') + '</th>';
         table += '      <th' + (options.widths && options.widths[2] ? ' style="width: ' + options.widths[2] + '"' : '') + '></th>';
         table += '  </tr>';
         table += '</thead>';
@@ -133,6 +133,7 @@
                 })
             }
         }
+
         // find parents
         for (var pp = 0; pp < rows.length; pp++) {
             // find parent:
@@ -171,7 +172,7 @@
             }
 
             // edit instance
-            table += '<td style="' + titleStyle + '">' + rows[i].title + '</td>';
+            table += '<td style="' + titleStyle + '">' + rows[i].title + '<span class="treetable-counter">' + (rows[i].children && rows[i].children.length ? rows[i].children.length : '') + '</span></td>';
             if (rows[i].instance !== undefined && instances.length > 1) {
                 instSelect = '<select>';
                 for (var ii = 0; ii < instances.length; ii++) {

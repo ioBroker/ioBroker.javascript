@@ -712,10 +712,10 @@ describe('Test JS', function() {
 					console.log('delayedResult!: ' + delayedResult.val);
 					expect(err).to.be.not.ok;
 					var result = JSON.parse(delayedResult.val);
-					expect(result['javascirpt.0.delayed'][0]).to.be.ok;
-					expect(result['javascirpt.0.delayed'][0].timerId).to.be.ok;
-					expect(result['javascirpt.0.delayed'][0].left).to.be.ok;
-					expect(result['javascirpt.0.delayed'][0].delay).to.be.equal(2500);
+					expect(result['javascript.0.delayed'][0]).to.be.ok;
+					expect(result['javascript.0.delayed'][0].timerId).to.be.ok;
+					expect(result['javascript.0.delayed'][0].left).to.be.ok;
+					expect(result['javascript.0.delayed'][0].delay).to.be.equal(2500);
 					done();
 				});
 			}, 500);

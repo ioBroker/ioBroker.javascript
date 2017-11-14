@@ -187,9 +187,9 @@
             }
         ],
         "docs": {
-            "en": ["docs/en/blockly_en.md"],
-            "ru": ["docs/en/blockly_ru.md"],
-            "de": ["docs/en/blockly_de.md"]
+            "en": ["docs/en/javascript.md", "docs/en/blockly.md"],
+            "ru": ["docs/ru/blockly.md"],
+            "de": ["docs/de/usage.md", "docs/de/blockly.md"]
         },
         "type": "logic"
     },
