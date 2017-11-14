@@ -328,7 +328,7 @@ declare global {
 	 * @param date (optional) The date for which the astro time should be calculated. Default = today
 	 * @param offsetMinutes (optional) The amount of minutes to be added to the return value.
 	 */
-	function getAstroDate(pattern: string, date?: number, offsetMinutes?: number): number;
+	function getAstroDate(pattern: string, date?: number, offsetMinutes?: number): Date;
 
 	/**
 	 * Determines if now is between sunrise and sunset.
