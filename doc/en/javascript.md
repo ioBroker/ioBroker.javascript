@@ -23,6 +23,7 @@
     - [setState](#setstate)
     - [setStateDelayed](#setstatedelayed)
     - [clearStateDelayed](#clearstatedelayed)
+    - [getStateDelayed](#getstatedelayed)
     - [getState](#getstate)
     - [getObject](#getobject)
     - [setObject](#setobject)
