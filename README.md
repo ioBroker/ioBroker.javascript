@@ -589,6 +589,44 @@ Clears all delayed tasks for specified state ID or some specific delayed task.
     clearStateDelayed('Kitchen.Light.Lamp', timer); // Nothing will be switched on
     clearStateDelayed('Kitchen.Light.Lamp'); // Clear all running delayed tasks for this ID
 ```     
+
+### getStateDelayed
+    getStateDelayed (id)
+	
+This is synchronious call and you will get the list of all running timers (setStateDelayed) for this id. 
+You can call this function without id and get timers for all IDs.
+In case you call this functino for some specific object ID you will get following answer:
+
+```
+getStateDelayed('hm-rpc.0.LQE91119.1.STATE');
+=>
+[
+	{timerId: 1, left: 1123,   delay: 5000},
+	{timerId: 2, left: 12555,  delay: 15000},
+]
+```
+
+If you will ask for all IDS the answer will loks like:
+
+```
+getStateDelayed()
+=>
+{
+	"hm-rpc.0.LQE91119.1.STATE": [
+		{timerId: 1, left: 1123,   delay: 5000},
+		{timerId: 2, left: 12555,  delay: 15000},
+	],
+	"hm-rpc.0.LQE91119.2.LEVEL": [
+		{timerId: 3, left: 5679, delay: 10000}
+	]
+}
+```
+
+**left** is the time left in milliseconds. 
+
+**delay** is the initial delay value in milliseconds;
+
+
 ### getState
     getState (id)
 Returns state of id in form ```{val: value, ack: true/false, ts: timestamp, lc: lastchanged, from: origin}```   .

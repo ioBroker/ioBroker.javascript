@@ -653,6 +653,74 @@ describe('Test JS', function() {
             }, 18);
         });
     });
+	
+	it('Test JS: test getStateDelayed single', function (done) {
+        this.timeout(5000);
+        // add script
+        var script = {
+            "common": {
+                "name":         "setStateDelayed",
+                "engineType":   "Javascript/js",
+                "source":       "createState('delayedResult', '', function () {setStateDelayed('delayed', 10, 1500); setState('delayedResult', JSON.stringify(getStateDelayed('delayed')));});",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.setStateDelayed",
+            "native": {}
+        };
+
+        objects.setObject(script._id, script, function (err) {
+            expect(err).to.be.not.ok;
+
+			setTimeout(function () {
+				states.getState('javascript.0.delayedResult', function (err, delayedResult) {
+					expect(err).to.be.not.ok;
+					console.log('delayedResult: ' + delayedResult.val);
+					var result = JSON.parse(delayedResult.val);
+					expect(result[0]).to.be.ok;
+					expect(result[0].timerId).to.be.ok;
+					expect(result[0].left).to.be.ok;
+					expect(result[0].delay).to.be.equal(1500);
+					done();
+				});
+			}, 500);
+        });
+    });
+	
+	it('Test JS: test getStateDelayed all', function (done) {
+        this.timeout(5000);
+        // add script
+        var script = {
+            "common": {
+                "name":         "setStateDelayed",
+                "engineType":   "Javascript/js",
+                "source":       "createState('delayedResult', '', function () {setStateDelayed('delayed', 11, 2500); setState('delayedResult', JSON.stringify(getStateDelayed()));});",
+                "enabled":      true,
+                "engine":       "system.adapter.javascript.0"
+            },
+            "type":             "script",
+            "_id":              "script.js.setStateDelayed",
+            "native": {}
+        };
+
+        objects.setObject(script._id, script, function (err) {
+            expect(err).to.be.not.ok;
+
+			setTimeout(function () {
+				states.getState('javascript.0.delayedResult', function (err, delayedResult) {
+					console.log('delayedResult!: ' + delayedResult.val);
+					expect(err).to.be.not.ok;
+					var result = JSON.parse(delayedResult.val);
+					expect(result['javascirpt.0.delayed'][0]).to.be.ok;
+					expect(result['javascirpt.0.delayed'][0].timerId).to.be.ok;
+					expect(result['javascirpt.0.delayed'][0].left).to.be.ok;
+					expect(result['javascirpt.0.delayed'][0].delay).to.be.equal(2500);
+					done();
+				});
+			}, 500);
+        });
+    });
 
     it('Test JS: test stopScript', function (done) {
         this.timeout(5000);

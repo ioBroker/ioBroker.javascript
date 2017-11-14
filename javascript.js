@@ -1942,6 +1942,11 @@
                     clearRunning    = true;
                 }
 
+				// Check type of state
+                if (!objects[id] && objects[adapter.namespace + '.' + id]) {
+                    id = adapter.namespace + '.' + id;
+                }
+				
                 if (clearRunning === undefined) clearRunning = true;
 
                 if (sandbox.verbose) sandbox.log('setStateDelayed(id=' + id + ', state=' + state + ', isAck=' + isAck + ', delay=' + delay + ', clearRunning=' + clearRunning + ')', 'info');
@@ -1975,23 +1980,35 @@
                         sandbox.setState(id, state, isAck, callback);
                         // delete timer handler
                         if (timers[id]) {
-                            for (var t = 0; t < timers[id].length; t++) {
-                                if (timers[id][t].id === _timerId) {
-                                    timers[id].splice(t, 1);
-                                    break;
-                                }
-                            }
-                            if (!timers[id].length) delete timers[id];
+							// optimisation
+							if (timers[id].length === 1) {
+								 delete timers[id];
+							} else {
+								for (var t = 0; t < timers[id].length; t++) {
+									if (timers[id][t].id === _timerId) {
+										timers[id].splice(t, 1);
+										break;
+									}
+								}
+								if (!timers[id].length) delete timers[id];
+							}
+                            
                         }
                     }, delay, timerId);
 
                     // add timer handler
-                    timers[id].push({t: timer, id: timerId});
+                    timers[id].push({t: timer, id: timerId, ts: Date.now(), delay: delay});
                     return timerId;
                 }
             },
             clearStateDelayed: function (id, timerId) {
+				// Check type of state
+                if (!objects[id] && objects[adapter.namespace + '.' + id]) {
+                    id = adapter.namespace + '.' + id;
+                }
+				
                 if (sandbox.verbose) sandbox.log('clearStateDelayed(id=' + id + ', timerId=' + timerId + ')', 'info');
+
                 if (timers[id]) {
 
                     for (var i = timers[id].length - 1; i >= 0; i--) {
@@ -2010,6 +2027,34 @@
                 }
                 return false;
             },
+			getStateDelayed: function (id) {
+				var result;
+				var now = Date.now();
+				if (id) {
+					// Check type of state
+					if (!objects[id] && objects[adapter.namespace + '.' + id]) {
+						id = adapter.namespace + '.' + id;
+					}
+					result = [];
+					if (timers.hasOwnProperty(id) && timers[id] && timers[id].length) {
+						for (var t = 0; t < timers[id].length; t++) {
+							result.push({timerId: timers[id][t].id, left: timers[id][t].delay - (now - timers[id][t].ts), delay: timers[id][t].delay});
+						}
+					} 
+					return result;
+				} else {
+					result = {};
+					for (var _id in timers) {
+						if (timers.hasOwnProperty(_id) && timers[_id] && timers[_id].length) {
+							result[_id] = {id: _id, timers: []};
+							for (var t = 0; t < timers[_id].length; t++) {
+								result[_id].timers.push({timerId: timers[_id][t].id, left: timers[_id][t].delay - (now - timers[_id][t].ts), delay: timers[_id][t].delay});
+							}
+						}
+					}
+				}
+				return result;
+			},
             getState:       function (id, callback) {
                 if (typeof callback === 'function') {
                     if (id.indexOf('.') === -1) {
