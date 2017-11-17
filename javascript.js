@@ -1976,28 +1976,35 @@
                     if (timerId > 0xFFFFFFFE) timerId = 0;
 
                     // Start timeout
-                    var timer = setTimeout(function (_timerId) {
-                        sandbox.setState(id, state, isAck, callback);
+                    var timer = setTimeout(function (_timerId, _id, _state, _isAck) {
+                        sandbox.setState(_id, _state, _isAck, callback);
                         // delete timer handler
-                        if (timers[id]) {
+                        if (timers[_id]) {
 							// optimisation
-							if (timers[id].length === 1) {
-								 delete timers[id];
+							if (timers[_id].length === 1) {
+								 delete timers[_id];
 							} else {
-								for (var t = 0; t < timers[id].length; t++) {
-									if (timers[id][t].id === _timerId) {
-										timers[id].splice(t, 1);
+								for (var t = 0; t < timers[_id].length; t++) {
+									if (timers[_id][t].id === _timerId) {
+										timers[_id].splice(t, 1);
 										break;
 									}
 								}
-								if (!timers[id].length) delete timers[id];
+								if (!timers[_id].length) delete timers[_id];
 							}
                             
                         }
-                    }, delay, timerId);
+                    }, delay, timerId, id, state, isAck);
 
                     // add timer handler
-                    timers[id].push({t: timer, id: timerId, ts: Date.now(), delay: delay});
+                    timers[id].push({
+                        t:      timer,
+                        id:     timerId,
+                        ts:     Date.now(),
+                        delay:  delay,
+                        val:    typeof state === 'object' && state.val !== undefined ? state.val : state,
+                        ack:    typeof state === 'object' && state.val !== undefined && state.ack !== undefined ? state.ack : isAck
+                    });
                     return timerId;
                 }
             },
@@ -2035,10 +2042,36 @@
 					if (!objects[id] && objects[adapter.namespace + '.' + id]) {
 						id = adapter.namespace + '.' + id;
 					}
+					// If timerId given
+					if (typeof id === 'number') {
+                        for (var _id_ in timers) {
+                            if (timers.hasOwnProperty(_id_)) {
+                                for (var ttt = 0; ttt < timers[_id_].length; ttt++) {
+                                    if (timers[_id_][ttt].id === id) {
+                                        return {
+                                            id:         _id_,
+                                            left:       timers[_id_][ttt].delay - (now - timers[id][ttt].ts),
+                                            delay:      timers[_id_][ttt].delay,
+                                            val:        timers[_id_][ttt].val,
+                                            ack:        timers[_id_][ttt].ack
+                                        };
+                                    }
+                                }
+                            }
+                        }
+                        return null;
+                    }
+
 					result = [];
 					if (timers.hasOwnProperty(id) && timers[id] && timers[id].length) {
-						for (var t = 0; t < timers[id].length; t++) {
-							result.push({timerId: timers[id][t].id, left: timers[id][t].delay - (now - timers[id][t].ts), delay: timers[id][t].delay});
+						for (var tt = 0; tt < timers[id].length; tt++) {
+							result.push({
+                                timerId:    timers[id][tt].id,
+                                left:       timers[id][tt].delay - (now - timers[id][tt].ts),
+                                delay:      timers[id][tt].delay,
+                                val:        timers[id][tt].val,
+                                ack:        timers[id][tt].ack
+                            });
 						}
 					} 
 					return result;
@@ -2048,7 +2081,13 @@
 						if (timers.hasOwnProperty(_id) && timers[_id] && timers[_id].length) {
 							result[_id] = [];
 							for (var t = 0; t < timers[_id].length; t++) {
-								result[_id].push({timerId: timers[_id][t].id, left: timers[_id][t].delay - (now - timers[_id][t].ts), delay: timers[_id][t].delay});
+								result[_id].push({
+                                    timerId:    timers[_id][t].id,
+                                    left:       timers[_id][t].delay - (now - timers[_id][t].ts),
+                                    delay:      timers[_id][t].delay,
+                                    val:        timers[_id][t].val,
+                                    ack:        timers[_id][t].ack
+								});
 							}
 						}
 					}

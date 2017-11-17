@@ -579,29 +579,29 @@ Clears all delayed tasks for specified state ID or some specific delayed task.
 
 This is synchronious call and you will get the list of all running timers (setStateDelayed) for this id.
 You can call this function without id and get timers for all IDs.
-In case you call this functino for some specific object ID you will get following answer:
+In case you call this function for some specific object ID you will get following answer:
 
 ```
 getStateDelayed('hm-rpc.0.LQE91119.1.STATE');
 =>
 [
-	{timerId: 1, left: 1123,   delay: 5000},
-	{timerId: 2, left: 12555,  delay: 15000},
+	{timerId: 1, left: 1123,   delay: 5000,  val: true,  ack: false},
+	{timerId: 2, left: 12555,  delay: 15000, val: false, ack: false},
 ]
 ```
 
-If you will ask for all IDS the answer will loks like:
+If you will ask for all IDS the answer will looks like:
 
 ```
 getStateDelayed()
 =>
 {
 	"hm-rpc.0.LQE91119.1.STATE": [
-		{timerId: 1, left: 1123,   delay: 5000},
-		{timerId: 2, left: 12555,  delay: 15000},
+		{timerId: 1, left: 1123,   delay: 5000,   val: true,  ack: false},
+		{timerId: 2, left: 12555,  delay: 15000,  val: false, ack: false},
 	],
 	"hm-rpc.0.LQE91119.2.LEVEL": [
-		{timerId: 3, left: 5679, delay: 10000}
+		{timerId: 3, left: 5679, delay: 10000,   val: 100,  ack: false}
 	]
 }
 ```
@@ -610,6 +610,13 @@ getStateDelayed()
 
 **delay** is the initial delay value in milliseconds;
 
+You can ask by timerId directly. In this case the answer will be:
+
+```
+getStateDelayed(3)
+=>
+{id: "hm-rpc.0.LQE91119.2.LEVEL", left: 5679, delay: 10000, val: 100,  ack: false}
+```
 
 ### getState
     getState (id)

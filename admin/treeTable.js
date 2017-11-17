@@ -293,7 +293,7 @@
         if (id) {
             var node = $table.treetable('node', id);
             node && $table.treetable('reveal', id);
-            node && node.addClass('selected');
+            node && node.row && node.row.addClass('selected');
         }
         if (nameFilter) $table.find('.filter_name').val(nameFilter).trigger('change');
     }
