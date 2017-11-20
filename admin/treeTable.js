@@ -95,7 +95,7 @@
     }
 
     function buildList(options) {
-        var table = '<div><button class="treetable-list-btn-ok"></button><button class="treetable-list-btn-cancel"></button></div>';
+        var table = '<div class="treetablelist-buttons"><button class="treetable-list-btn-ok"></button><button class="treetable-list-btn-cancel"></button></div>';
         table += '<ul class="treetable-list">';
         var rows = options.rows;
         for (var i = 0; i < rows.length; i++) {
@@ -112,7 +112,11 @@
         var $dlg = $(this);
         var $table = $(table);
 
-        $dlg.html($table);
+        $dlg.find('.treetablelist-buttons').remove();
+        $dlg.find('.treetable-list').remove();
+        $dlg.find('.tree-table-buttons').remove();
+        $dlg.find('.tree-table-main').remove();
+        $dlg.prepend($table);
 
         var $buttons = $($table[0]);
         var $list    = $($table[1]);
@@ -161,7 +165,7 @@
     function buildTable(options) {
         var table = '';
         if (options.panelButtons) {
-            table += '<div>';
+            table += '<div class="tree-table-buttons">';
             for (var z = 0; z < options.panelButtons.length; z++) {
                 table += '<button class="btn-custom-' + z + '" style="margin-right: 3px;"></button>';
             }
@@ -279,7 +283,14 @@
 
         var $dlg = $(this);
         var $table = $(table);
-        $dlg.html($table);
+
+        $dlg.find('span:first-child').remove();
+        $dlg.find('.treetablelist-buttons').remove();
+        $dlg.find('.treetable-list').remove();
+        $dlg.find('.tree-table-buttons').remove();
+        $dlg.find('.tree-table-main').remove();
+
+        $dlg.prepend($table);
         $table.data('data', options);
         options.rows = rows;
         var $treeTable = $($table[1]);
