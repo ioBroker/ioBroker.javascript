@@ -189,12 +189,12 @@ table.treetable .branch.collapsed td:first-child:before {
 }
 .treetable-list {
   padding: 0;
-  font-size: 1.3em;
+  font-size: 0.82rem;
 }
 .treetable-list .treetable-list-item {
   list-style-type: none;
   cursor: ns-resize;
-  line-height: 24px;
+  line-height: 1.5rem;
   border: 1px solid #e0e0e0;
   background: rgb(239, 239, 239);
   padding-left: 5px;
@@ -202,8 +202,9 @@ table.treetable .branch.collapsed td:first-child:before {
 .treetable-list .treetable-list-folder {
   list-style-type: none;
   font-weight: bold;
-  line-height: 24px;
+  line-height: 1.5rem;
   cursor: not-allowed;
+  color: #000080;
   border: 1px solid #e0e0e0;
   background: white;
 }
