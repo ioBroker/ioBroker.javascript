@@ -82,6 +82,82 @@
         }
     }
 
+    function processMoveTasks(tasks, callback) {
+        if (!tasks || !tasks.length) {
+            callback && callback();
+            return;
+        }
+        var task = tasks.shift();
+
+        setTimeout(function () {
+            processMoveTasks(tasks, callback);
+        }, 50);
+    }
+
+    function buildList(options) {
+        var table = '<div><button class="treetable-list-btn-ok"></button><button class="treetable-list-btn-cancel"></button></div>';
+        table += '<ul class="treetable-list">';
+        var rows = options.rows;
+        for (var i = 0; i < rows.length; i++) {
+            var parents = 0;
+            var current = rows[i];
+            while (current.parent) {
+                current = current.parent;
+                parents++;
+            }
+            var isNotFolder = rows[i].instance === undefined ? 0 : 1;
+            table += '<li data-id="' + rows[i].id + '" class="' + (!isNotFolder ? 'treetable-list-folder' : 'treetable-list-item') + '" style="margin-left: ' + (parents * 15) + 'px; width: calc(100% - ' + (parents * 15 + 2 + isNotFolder * 7) + 'px);">' + rows[i].title + '</li>';
+        }
+        table += '</ul>';
+        var $dlg = $(this);
+        var $table = $(table);
+
+        $dlg.html($table);
+
+        var $buttons = $($table[0]);
+        var $list    = $($table[1]);
+
+        $list.sortable({
+            cancel: '.treetable-list-folder',
+            axis: 'y'
+        });
+        var that = this;
+        $buttons.find('.treetable-list-btn-ok').button({
+            icons: {primary: 'ui-icon-check'},
+            text: false
+        })
+        .css({width: 24, height: 24})
+        .click(function () {
+            // analyse new structure
+            var currentFolder = '';
+            var tasks = [];
+            $list.find('li').each(function () {
+                var id = $(this).data('id');
+                if ($(this).hasClass('treetable-list-folder')) {
+                    currentFolder = id;
+                } else {
+                    if (id.substring(0, currentFolder.length + 1) !== currentFolder + '.') {
+                        console.log('Move ' + id + ' to ' + currentFolder);
+                        var parts = id.split('.');
+                        var name = parts.pop();
+                        tasks.push({oldId: id, newId: currentFolder + '.' + name});
+                    }
+                }
+            });
+            processMoveTasks(tasks, function () {
+                buildTable.call(that, options);
+            });
+        });
+        $buttons.find('.treetable-list-btn-cancel').button({
+            icons: {primary: 'ui-icon-cancel'},
+            text: false
+        })
+        .css({width: 24, height: 24})
+        .click(function () {
+            buildTable.call(that, options);
+        });
+    }
+
     function buildTable(options) {
         var table = '';
         if (options.panelButtons) {
@@ -89,6 +165,7 @@
             for (var z = 0; z < options.panelButtons.length; z++) {
                 table += '<button class="btn-custom-' + z + '" style="margin-right: 3px;"></button>';
             }
+            table += '<button class="treetable-sort"></button>';
             table += '</div>';
         }
 
@@ -205,7 +282,10 @@
         $dlg.html($table);
         $table.data('data', options);
         options.rows = rows;
-        $table.treetable({
+        var $treeTable = $($table[1]);
+        var $buttons   = $($table[0]);
+
+        $treeTable.treetable({
             expandable:         true,
             clickableNodeNames: true,
             onNodeExpand:       nodeExpand,
@@ -213,7 +293,9 @@
             stringCollapse:     _('collapse'),
             stringExpand:       _('expand')
         });
-        var $tbody = $table.find('tbody');
+
+        var $tbody = $treeTable.find('tbody');
+
         $tbody.on('mousedown', 'tr', function() {
             $('.selected').not(this).removeClass('selected');
             $(this).addClass('selected');
@@ -231,22 +313,24 @@
             }).data ('callback', options.buttons[b].click).attr('title', options.buttons[b].title || '');
 
             if ($btn.length === 0) continue;
-            if (options.buttons[b].width) $btn.css({width: options.buttons[b].width});
+            if (options.buttons[b].width)  $btn.css({width:  options.buttons[b].width});
             if (options.buttons[b].height) $btn.css({height: options.buttons[b].height});
-            if (options.buttons[b].match) $btn.each(function () {
-                options.buttons[b].match.call($(this), $(this).data('id'));
-            });
+            if (options.buttons[b].match) {
+                $btn.each(function () {
+                    options.buttons[b].match.call($(this), $(this).data('id'));
+                });
+            }
         }
         if (options.panelButtons) {
             for (var zz = 0; zz < options.panelButtons.length; zz++) {
-                $table.find('.btn-custom-' + zz)
+                $buttons.find('.btn-custom-' + zz)
                     .button(options.panelButtons[zz])
                     .click(options.panelButtons[zz].click)
                     .attr('title', options.panelButtons[zz].title || '').css({width: 24, height: 24});
             }
         }
 
-        $table.find('.filter_name').change(function () {
+        $treeTable.find('.filter_name').change(function () {
             var timer = $(this).data('timer');
             if (timer) {
                 clearTimeout(timer);
@@ -265,10 +349,19 @@
         }).keyup(function () {
             $(this).trigger('change');
         });
-        $table.find('.filter-clear').button({icons: {primary: 'ui-icon-close'}, text: false}).click(function () {
-            var name = $(this).data('id');
-            $table.find('.' + name).val('').trigger('change');
-        });
+        $treeTable.find('.filter-clear')
+            .button({icons: {primary: 'ui-icon-close'}, text: false})
+            .click(function () {
+                var name = $(this).data('id');
+                $table.find('.' + name).val('').trigger('change');
+            });
+        var that = this;
+        $buttons.find('.treetable-sort')
+            .button({icons: {primary: 'ui-icon-arrowthick-2-n-s'}, text: false})
+            .css({width: 24, height: 24})
+            .click(function () {
+                buildList.call(that, options);
+            });
     }
 
     function reInit() {
@@ -286,7 +379,7 @@
         $table = $(this).find('.tree-table-main');
         for (var e = 0; e < exIDs.length; e++) {
 			try {
-				$table.treetable('expandNode', exIDs[e]);
+                $table.treetable('expandNode', exIDs[e]);
 			} catch (e) {
 			}
         }
@@ -330,7 +423,6 @@
             }
             for (var i = 0; i < this.length; i++) {
                 var $table = $(this[i]).find('.tree-table-main');
-                var data = $table.data('data');
                 $table.find('.selected').removeClass('selected');
 				try {
 					$table.treetable('reveal', currentId);

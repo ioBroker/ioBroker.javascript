@@ -179,3 +179,35 @@ table.treetable .filter-clear {
   border: 0;
   background: #fff;
 }
+table.treetable .branch.expanded td:first-child:before {
+  content: "⯆";
+  padding-right: 4px;
+}
+table.treetable .branch.collapsed td:first-child:before {
+  content: "⯈";
+  padding-right: 4px;
+}
+.treetable-list {
+  padding: 0;
+  font-size: 1.3em;
+}
+.treetable-list .treetable-list-item {
+  list-style-type: none;
+  cursor: ns-resize;
+  line-height: 24px;
+  border: 1px solid #e0e0e0;
+  background: rgb(239, 239, 239);
+  padding-left: 5px;
+}
+.treetable-list .treetable-list-folder {
+  list-style-type: none;
+  font-weight: bold;
+  line-height: 24px;
+  cursor: not-allowed;
+  border: 1px solid #e0e0e0;
+  background: white;
+}
+.treetable-list .treetable-list-folder:before {
+  content: "⯆";
+  padding-right: 4px;
+}
