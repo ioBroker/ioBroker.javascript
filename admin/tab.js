@@ -2133,11 +2133,11 @@ function Scripts(main) {
             }).selectId('show', update ? undefined : main.config['script-editor-current-id'] || undefined);
 */
             this.$grid.treeTable({
-                objects: main.objects,
-                root: 'script.js',
-                widths:  ['calc(100% - 106px)', '20px', '86px'],
-                name: 'scripts',
-                buttons: [
+                objects:    that.main.objects,
+                root:       'script.js',
+                widths:     ['calc(100% - 106px)', '20px', '86px'],
+                name:       'scripts',
+                buttons:    [
                     {
                         text: false,
                         icons: {
@@ -2256,6 +2256,17 @@ function Scripts(main) {
                         height: 20
                     }
                 ],
+                moveId:     function (oldId, newId, callback) {
+                    var obj = that.main.objects[oldId];
+                    if (obj === undefined) {
+                        callback && callback('Not found');
+                    } else {
+                        that.main.socket.emit('delObject', oldId, function (err) {
+                            obj._id = newId;
+                            that.main.socket.emit('setObject', newId, obj, callback);
+                        });
+                    }
+                },
                 panelButtons: [
                     {
                         text: false,
@@ -2301,7 +2312,7 @@ function Scripts(main) {
                         }
                     }
                 ],
-                onChange: function (id, oldId) {
+                onChange:   function (id, oldId) {
                     if (id !== oldId || !that.editor) {
                         editScript(id);
                     } else {
@@ -2360,7 +2371,6 @@ function Scripts(main) {
                 .click(function () {
                     showExportBlocklyDialog();
                 });
-
 
             $('#edit-import-blocks')
                 .button({

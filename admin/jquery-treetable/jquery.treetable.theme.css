@@ -24,6 +24,7 @@ table.treetable > tbody > tr > td {
   border-top: 0 !important;
   /*xxx*/
   white-space: nowrap;
+  position: relative;
 }
 table.treetable thead tr th {
   border: 1px solid #b8b5b5;
@@ -37,7 +38,9 @@ table.treetable tbody tr td {
   padding: .0em 0.5em;
 }
 
-table.treetable span.indenter {
+table.treetable span.indenter,
+.treetable-list span.indenter
+{
   background-position: center left;
   background-repeat: no-repeat;
   padding: .2em 0 .2em 1.5em;
@@ -47,11 +50,14 @@ table.treetable span.file {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAADoSURBVBgZBcExblNBGAbA2ceegTRBuIKOgiihSZNTcC5LUHAihNJR0kGKCDcYJY6D3/77MdOinTvzAgCw8ysThIvn/VojIyMjIyPP+bS1sUQIV2s95pBDDvmbP/mdkft83tpYguZq5Jh/OeaYh+yzy8hTHvNlaxNNczm+la9OTlar1UdA/+C2A4trRCnD3jS8BB1obq2Gk6GU6QbQAS4BUaYSQAf4bhhKKTFdAzrAOwAxEUAH+KEM01SY3gM6wBsEAQB0gJ+maZoC3gI6iPYaAIBJsiRmHU0AALOeFC3aK2cWAACUXe7+AwO0lc9eTHYTAAAAAElFTkSuQmCC);
 }
 
-table.treetable span.folder {
+table.treetable span.folder
+{
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAGrSURBVDjLxZO7ihRBFIa/6u0ZW7GHBUV0UQQTZzd3QdhMQxOfwMRXEANBMNQX0MzAzFAwEzHwARbNFDdwEd31Mj3X7a6uOr9BtzNjYjKBJ6nicP7v3KqcJFaxhBVtZUAK8OHlld2st7Xl3DJPVONP+zEUV4HqL5UDYHr5xvuQAjgl/Qs7TzvOOVAjxjlC+ePSwe6DfbVegLVuT4r14eTr6zvA8xSAoBLzx6pvj4l+DZIezuVkG9fY2H7YRQIMZIBwycmzH1/s3F8AapfIPNF3kQk7+kw9PWBy+IZOdg5Ug3mkAATy/t0usovzGeCUWTjCz0B+Sj0ekfdvkZ3abBv+U4GaCtJ1iEm6ANQJ6fEzrG/engcKw/wXQvEKxSEKQxRGKE7Izt+DSiwBJMUSm71rguMYhQKrBygOIRStf4TiFFRBvbRGKiQLWP29yRSHKBTtfdBmHs0BUpgvtgF4yRFR+NUKi0XZcYjCeCG2smkzLAHkbRBmP0/Uk26O5YnUActBp1GsAI+S5nRJJJal5K1aAMrq0d6Tm9uI6zjyf75dAe6tx/SsWeD//o2/Ab6IH3/h25pOAAAAAElFTkSuQmCC);
 }
 
-table.treetable tr.collapsed span.indenter a {
+table.treetable tr.collapsed span.indenter a,
+.treetable-list span.indenter a
+{
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAQCAYAAADNo/U5AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTnU1rJkAAACEElEQVQ4T42S72sScRzH/cuKop64EUgjtD2Q9ctGP1gsKGq0hXtSUhTRg4hRD7JROrZIEVbXYtPbMvWueXrmz+aWtum8UHf+2Om77/cuFaOgD7y4J6/Xl7vPfXV05LwNlHLKhlJmuvv8GdHYFa9hO2qFKtOhckN2oFlfRrtVgFLl0cjPoJK9j920FdnILWQEK8o7drRqi1pII9RcXdrNL2i362hDgaLsoZB9gVRgFF9XxyH6bvw96sWiGu2kniPhPQ1x6RIizNX/iarIJZ8iujKMyNKFf0eKvKB+436TR0uR8D32BGFmGDxzFhxzUYvolqjckt8Q2Yl6xYGaRBYj06iEXOwxhHfHwXtOgnObexE9uSPXpFeoSy9RL7shVz5iU7jdF6XYEahRTXISXqtytTCDUv4h4QGKW/cQ91sQdA+Ccw2Bd5l+R+kJNIi8V3wG6ccjVaYU0neQF6YQWxlB0DWI0LwB3NyQFuWjl7uiKn+7q/59SicKuPT4NK/HmlMPgTH1ouKGDdux6W6QXZ9EPHgdwUUTvI7D8M0eAWs/qkU5brQrUjbDk0hwN5HwX0Hcew5Bj4FEh8DOHsSq/YAWZUIWVd4KTyHJTSDxeRwJ9jyS7BlyE8wIeY71RRvsmLZ20WdEdNkI4QOBnNQh/N4I/9uBvtdTgz+HXEoLobLOnELAPYC1hRPwzZlTBINm6HS/ACb+az/hqY6BAAAAAElFTkSuQmCC')
 }
 
@@ -126,7 +132,8 @@ table.treetable.fancytree-treefocus tbody tr.fancytree-selected {
   background-color: #CBE8F6
 }
 
-table.treetable span.indenter {
+table.treetable span.indenter,
+.treetable-list span.indenter {
   display: inline-block;
   margin: 0;
   padding: 0;
@@ -147,7 +154,8 @@ table.treetable span.indenter {
   width: 19px;
 }
 
-table.treetable span.indenter a {
+table.treetable span.indenter a,
+.treetable-list span.indenter a {
   background-position: left center;
   background-repeat: no-repeat;
   display: inline-block;
@@ -158,13 +166,15 @@ table.treetable .filtered-out {
   display: none !important;
 }
 table.treetable .treetable-counter {
-  color: gray;
-  font-size: 0.8em;
-  float: right;
+    color: gray;
+    font-size: 0.8em;
+    position: absolute;
+    right: 2px;
+    top: 1px;
 }
 table.treetable .treetable-filter {
   width: calc(100% - 24px);
-  padding: 5px 0 0 0;
+  padding: 0 5px 0 0;
   font-size: 12px;
   border: 0;
   line-height: 1.5em;
@@ -180,11 +190,15 @@ table.treetable .filter-clear {
   background: #fff;
 }
 table.treetable .branch.expanded td:first-child:before {
-  content: "⯆";
+  content: "↓";
+  color: black;
+  font-weight: bold;
   padding-right: 4px;
 }
 table.treetable .branch.collapsed td:first-child:before {
-  content: "⯈";
+  content: "→";
+  color: black;
+  font-weight: bold;
   padding-right: 4px;
 }
 .treetable-list {
@@ -209,6 +223,8 @@ table.treetable .branch.collapsed td:first-child:before {
   background: white;
 }
 .treetable-list .treetable-list-folder:before {
-  content: "⯆";
+  content: "↓";
+  color: black;
+  font-weight: bold;
   padding-right: 4px;
 }

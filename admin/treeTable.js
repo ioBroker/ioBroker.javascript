@@ -82,16 +82,18 @@
         }
     }
 
-    function processMoveTasks(tasks, callback) {
+    function processMoveTasks(options, tasks, callback) {
         if (!tasks || !tasks.length) {
             callback && callback();
             return;
         }
         var task = tasks.shift();
 
-        setTimeout(function () {
-            processMoveTasks(tasks, callback);
-        }, 50);
+        options.moveId && options.moveId(task.oldId, task.newId, function (err) {
+            setTimeout(function () {
+                processMoveTasks(options, tasks, callback);
+            }, 50);
+        });
     }
 
     function buildList(options) {
@@ -102,11 +104,21 @@
             var parents = 0;
             var current = rows[i];
             while (current.parent) {
-                current = current.parent;
+                var found = false;
+                for (var j = 0; j < rows.length; j++) {
+                    if (rows[j].id === current.parent) {
+                        current = rows[j];
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) break;
                 parents++;
             }
             var isNotFolder = rows[i].instance === undefined ? 0 : 1;
-            table += '<li data-id="' + rows[i].id + '" class="' + (!isNotFolder ? 'treetable-list-folder' : 'treetable-list-item') + '" style="margin-left: ' + (parents * 15) + 'px; width: calc(100% - ' + (parents * 15 + 2 + isNotFolder * 7) + 'px);">' + rows[i].title + '</li>';
+            table += '<li data-id="' + rows[i].id + '" class="' + (!isNotFolder ? 'treetable-list-folder' : 'treetable-list-item') + '" style="margin-left: ' + (parents * 19) + 'px; width: calc(100% - ' + (parents * 15 + 2 + isNotFolder * 7) + 'px);' +
+            (rows[i].id === 'script.js.global' ? 'color: rgb(0, 128, 0);' : '') + '">' +
+            (!isNotFolder ? '<span class="indenter" style="padding-left: 0;"><a href="#">&nbsp;</a></span>' : '') + rows[i].title + '</li>';
         }
         table += '</ul>';
         var $dlg = $(this);
@@ -148,7 +160,7 @@
                     }
                 }
             });
-            processMoveTasks(tasks, function () {
+            processMoveTasks(options, tasks, function () {
                 buildTable.call(that, options);
             });
         });
@@ -169,7 +181,9 @@
             for (var z = 0; z < options.panelButtons.length; z++) {
                 table += '<button class="btn-custom-' + z + '" style="margin-right: 3px;"></button>';
             }
-            table += '<button class="treetable-sort"></button>';
+            if (options.moveId) {
+                table += '<button class="treetable-sort" title="' + _('reorder') + '"></button>';
+            }
             table += '</div>';
         }
 
