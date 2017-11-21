@@ -29,7 +29,7 @@
     "coffee-compiler": "^0.3.2",
     "coffee-script": ">=1.12.3",
     "typescript": "^2.5.3",
-    "virtual-tsc": "^0.3.2",
+    "virtual-tsc": "^0.3.3",
     "@types/node": "^8.0.34"
   },
   "devDependencies": {
