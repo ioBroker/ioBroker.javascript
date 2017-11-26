@@ -102,7 +102,10 @@
     // ambient declarations for typescript
     var tsAmbient;
     // compiler instance for typescript
-    var tsServer = new mods.tsc.Server(tsCompilerOptions);
+    function tsLog(msg, sev) {
+        if (adapter && adapter.log) adapter.log[sev || "info"](msg);
+    }
+    var tsServer = new mods.tsc.Server(tsCompilerOptions, tsLog);
 
     function doGetter(obj, name, ret) {
         //adapter.log.debug('getter: ' + name + ' returns ' + ret);
@@ -448,7 +451,7 @@
                                             });
                                         } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
                                             var tsCompiled = tsServer.compile(
-                                                "global_" + g + ".ts",
+                                                mods.path.join(__dirname, "global_" + g + ".ts"),
                                                 obj.common.source
                                             );
                                             var errors = tsCompiled.diagnostics.map(function (diag) {
@@ -460,7 +463,9 @@
                                                 } else {
                                                     adapter.log.info("TypeScript compilation successful");
                                                 }
-                                                globalScript += tsCompiled.result + '\n';
+                                                // polyfill `exports` with an empty object so the vm doesn't choke
+                                                var code = "(function(exports){" + tsCompiled.result + "}({}));";
+                                                globalScript += code + '\n';
                                             } else {
                                                 adapter.log.error("TypeScript compilation failed: \n" + errors);
                                             }
@@ -3212,7 +3217,7 @@
                 adapter.log.info(name + ': compiling TypeScript source...');
                 var filename = name.replace(/^script.js./, '').replace(/\./g, '/') + '.ts';
                 var tsCompiled = tsServer.compile(
-                    filename,
+                    mods.path.join(__dirname, filename),
                     obj.common.source
                 );
                 var errors = tsCompiled.diagnostics.map(function (diag) {
@@ -3225,7 +3230,9 @@
                     } else {
                         adapter.log.info(name + ': TypeScript compilation successful');
                     }
-                    scripts[name] = compile(globalScript + '\n' + tsCompiled.result, name);
+                    // polyfill `exports` with an empty object so the vm doesn't choke
+                    var code = "(function(exports){" + tsCompiled.result + "}({}));";
+                    scripts[name] = compile(globalScript + '\n' + code, name);
                     if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
                     if (typeof callback === 'function') callback(true, name);
                 } else {
