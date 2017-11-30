@@ -472,7 +472,7 @@
                     clearTimeout($table.updateTimer);
                 }
                 var options = $table.data('data');
-                if (options.root && !id.match('^' + options.root.replace(/\./g, '\\.') + '\\.')) continue;
+                if (options && options.root && !id.match('^' + options.root.replace(/\./g, '\\.') + '\\.')) continue;
 
                 var elem = this[i];
 				// do not update too often. de-bounce it
