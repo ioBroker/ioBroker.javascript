@@ -22,7 +22,7 @@ Hier kann man die Beschreibung von [Blockly](doc/de/blockly.md) finden.
 
 
 ## Changelog
-### 3.5.0 (2017-11-14)
+### 3.5.1 (2017-11-14)
 * (bluefox) fixed: sometimes MSG is not defined
 * (dominic.griesel) TypeScript support (preparations)
 * (bluefox) add sendToHost call

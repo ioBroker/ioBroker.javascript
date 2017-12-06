@@ -118,7 +118,7 @@
             var isNotFolder = rows[i].instance === undefined ? 0 : 1;
             table += '<li data-id="' + rows[i].id + '" class="' + (!isNotFolder ? 'treetable-list-folder' : 'treetable-list-item') + '" style="margin-left: ' + (parents * 19) + 'px; width: calc(100% - ' + (parents * 15 + 2 + isNotFolder * 7) + 'px);' +
             (rows[i].id === 'script.js.global' ? 'color: rgb(0, 128, 0);' : '') + '">' +
-            (!isNotFolder ? '<span class="indenter" style="padding-left: 0;"><a href="#">&nbsp;</a></span>' : '') + rows[i].title + '</li>';
+            (!isNotFolder ? '<span class="fancytree-expander"></span>' : '') + '<span class="fancytree-icon"></span>' + rows[i].title + '</li>';
         }
         table += '</ul>';
         var $dlg = $(this);
@@ -152,10 +152,9 @@
                 if ($(this).hasClass('treetable-list-folder')) {
                     currentFolder = id;
                 } else {
-                    if (id.substring(0, currentFolder.length + 1) !== currentFolder + '.') {
-                        console.log('Move ' + id + ' to ' + currentFolder);
-                        var parts = id.split('.');
-                        var name = parts.pop();
+                    var parts = id.split('.');
+                    var name  = parts.pop();
+                    if (parts.join('.') !== currentFolder) {
                         tasks.push({oldId: id, newId: currentFolder + '.' + name});
                     }
                 }
@@ -176,60 +175,101 @@
 
     function buildTable(options) {
         var table = '';
+        var buttonTag = !options.isMaterial ? 'button' : 'a';
         if (options.panelButtons) {
-            table += '<div class="tree-table-buttons">';
+            table += '<div class="row tree-table-buttons m">';
             for (var z = 0; z < options.panelButtons.length; z++) {
-                table += '<button class="btn-custom-' + z + '" style="margin-right: 3px;"></button>';
+                table += '<' + buttonTag + ' class="btn-floating waves-effect waves-light blue btn-custom-' + z + '" title="' + (options.panelButtons[z].title || '') + '" ' + (options.panelButtons[z].id ? 'id="' + options.panelButtons[z].id + '"' : '') + '>';
+                if (options.isMaterial) {
+                    table += '<i class="material-icons">' + (options.panelButtons[z].icon || '') + '</i>';
+                }
+                table += '</' + buttonTag + '>';
             }
             if (options.moveId) {
-                table += '<button class="treetable-sort" title="' + _('reorder') + '"></button>';
+                table += '<' + buttonTag + ' class="btn-floating waves-effect waves-light blue treetable-sort" title="' + _('reorder') + '">';
+                if (options.isMaterial) {
+                    table += '<i class="material-icons">import_export</i>';
+                }
+                table += '</' + buttonTag + '>';
             }
             table += '</div>';
         }
 
-        // build table
-        table += '<table class="tree-table-main">';
+        // build header
+        table += '<div class="row tree-table-body"><table class="tree-table-main">';
         table += '  <thead>';
         table += '      <tr class="tree-table-main-header">';
-        table += '      <th' + (options.widths && options.widths[0] ? ' class="treetable-th-name" style="width: ' + options.widths[0] + '"' : '') + '>';
-        table += '      <input placeholder="' + _('name') + '" class="filter_name treetable-filter">';
-        table += '      <button data-id="filter_name" role="button" class="filter-clear"></button>';
-        table += '</th>';
-        table += '      <th' + (options.widths && options.widths[1] ? ' style="width: ' + options.widths[1] + '"' : '') + ' title="' + _('Instance')+ '">'+ _('Inst.') + '</th>';
-        table += '      <th' + (options.widths && options.widths[2] ? ' style="width: ' + options.widths[2] + '"' : '') + '></th>';
+        var withMembers = false;
+        for (var ch = 0; ch < options.columns.length; ch++) {
+            if (options.columns[ch] === 'members') {
+                withMembers = true;
+                continue;
+            }
+            if (options.columns[ch] === 'name') {
+                table += '      <th' + (options.widths && options.widths[ch] ? ' class="treetable-th-name" style="width: ' + options.widths[ch] + '"' : '') + '>';
+                table += '          <input placeholder="' + _('name') + '" class="filter_name treetable-filter" />';
+                table += '      <button data-id="filter_name" role="button" class="filter-clear"></button>';
+                table += '</th>';
+            } else {
+                table += '      <th' + (options.widths && options.widths[ch] ? ' style="width: ' + options.widths[ch] + '"' : '') + '>' + _(options.columns[ch]) + '</th>';
+            }
+        }
+        if (options.buttons) {
+            table += '      <th' + (options.buttonsWidth ? ' style="width: ' + options.buttonsWidth + '"' : '') + '></th>';
+        }
         table += '  </tr>';
         table += '</thead>';
+        // build body
         table += '<tbody>';
         // <tr data-tt-id="system.adapter.0" data-tt-branch='true'>
         var rows = [];
         var rootEx = options.root ? new RegExp('^' + options.root.replace(/\./g, '\\.') + '\\.') : null;
-        var instances = [];
+        var instances   = options.columns.indexOf('instance') !== -1 ? [] : null;
+
         for (var id in options.objects) {
             if (!options.objects.hasOwnProperty(id)) continue;
             var m;
-            if (options.objects[id].type === 'instance' &&
+            if (instances && options.objects[id].type === 'instance' &&
                 (m = id.match(/^system\.adapter\.javascript\.(\d+)$/))) {
                 instances.push(m[1]);
             }
 
             if (rootEx && !rootEx.test(id)) continue;
+            var common = options.objects[id].common;
+
+            var obj = {
+                id:     id,
+                parent: null,
+                _class: 'treetable-' + options.objects[id].type
+            };
 
             if (options.objects[id].type === 'channel') {
-                rows.push({
-                    parent: null,
-                    id: id
-                });
-            } else {
-                var instance = options.objects[id].common ? options.objects[id].common.engine.split('.').pop() : 0;
-                rows.push({
-                    parent: null,
-                    id: id,
-                    instance: instance
-                })
+                obj.folder = true;
             }
+            for (var cb = 0; cb < options.columns.length; cb++) {
+                if (options.columns[cb] === 'instance') {
+                    if (options.objects[id].type === 'script') {
+                        obj.instance = common ? common.engine.split('.').pop() : 0;
+                    }
+                } else if (common && options.columns[cb] !== 'id') {
+                    var val = common[options.columns[cb]];
+                    if (val !== undefined) {
+                        obj[options.columns[cb]] = val;
+                    }
+                }
+            }
+
+            rows.push(obj);
         }
 
-        // find parents
+        // sort
+        rows.sort(function (a, b) {
+            if (a.id > b.id) return 1;
+            if (a.id < b.id) return -1;
+            return 0;
+        });
+
+        // find parents and extend memebers
         for (var pp = 0; pp < rows.length; pp++) {
             // find parent:
             var parts = rows[pp].id.split('.');
@@ -240,60 +280,118 @@
                 if (rows[p].id === parent) {
                     rows[pp].parent = parent;
                     rows[p].children = rows[p].children || [];
-                    rows[p].children.push(p);
+                    rows[p].children.push(pp);
                     break;
                 }
             }
+
+            if (parts.length === 1) {
+                rows[pp]._class += ' treetable-root'
+            }
+
         }
-        // sort
-        rows.sort(function (a, b) {
-            if (a.id > b.id) return 1;
-            if (a.id < b.id) return -1;
-            return 0;
-        });
+
+        if (withMembers) {
+            for (var k = rows.length - 1; k >= 0; k--) {
+                // extend members
+                if (rows[k].members) {
+                    rows[k].children = rows[k].children || [];
+                    var members = Object.assign([], rows[k].members);
+                    members.sort();
+                    for (var mm = 0; mm < members.length; mm++) {
+                        obj = {
+                            id: members[mm],
+                            parent: rows[k].id,
+                            _class: 'treetable-member'
+                        };
+                        rows[k].children.push(members[mm]);
+
+                        if (options.objects[obj.id]) {
+                            var ccommon = options.objects[obj.id].common;
+                            if (ccommon) {
+                                for (var ccb = 0; ccb < options.columns.length; ccb++) {
+                                    if (options.columns[ccb] === 'members' || options.columns[ccb] === 'id') continue;
+                                    var vval = common[options.columns[ccb]];
+                                    if (vval !== undefined) {
+                                        obj.name = vval;
+                                    }
+                                }
+                            }
+                        }
+                        rows.splice(k + 1, 0, obj);
+                    }
+                    delete rows[k].members;
+                }
+            }
+        }
+
         var instSelect = '';
 
         for (var i = 0; i < rows.length; i++) {
             // title
-            table += '<tr data-tt-id="' + rows[i].id + '"' + (!!rows[i].children ? ' data-tt-branch="true"' : '') + (rows[i].parent ? ' data-tt-parent-id="' + rows[i].parent + '"' : '') + '>';
-            var titleStyle = '';
-            if (rows[i].instance === undefined) {
-                titleStyle = 'font-weight: bold;';
-                if (rows[i].id === 'script.js.global') {
-                    titleStyle += ' color: rgb(0, 128, 0);'
+            table += '<tr data-tt-id="' + rows[i].id + '"' + (!!rows[i].children ? ' data-tt-branch="true"' : '') + (rows[i].parent ? ' data-tt-parent-id="' + rows[i].parent + '"' : '');
+            if (rows[i]._class) {
+                table += ' class="' + rows[i]._class + '" ';
+            }
+
+            table += '>';
+            for (var c = 0; c < options.columns.length; c++) {
+                if (options.columns[c] === 'members') {
+                    continue;
+                }
+                var style = '';
+                var _class = '';
+                if (!c && rows[i].hasOwnProperty('children')) {
+                    _class = 'treetable-folder fancytree-exp-c fancytree-has-children fancytree-ico-cf';
+                    if (rows[i].id === 'script.js.global') {
+                            style += ' color: rgb(0, 128, 0);'
+                    } else {
+                            style += ' color: rgb(0, 0, 128);'
+                    }
+                    table += '<td style="' + style + '" class="' + _class + '">';
+                    if (rows[i].children && rows[i].children.length) {
+                        table += '<span class="treetable-counter">' + rows[i].children.length + '</span>';
+                    }
                 } else {
-                    titleStyle += ' color: rgb(0, 0, 128);'
+                    table += '<td style="' + style + '">';
                 }
-            }
 
-            // edit instance
-            table += '<td style="' + titleStyle + '">' + rows[i].title + '<span class="treetable-counter">' + (rows[i].children && rows[i].children.length ? rows[i].children.length : '') + '</span></td>';
-            if (rows[i].instance !== undefined && instances.length > 1) {
-                instSelect = '<select>';
-                for (var ii = 0; ii < instances.length; ii++) {
-                    instSelect += '<option value="' + instances[ii] + '" ' + (instances[ii] === rows[i].instance ? 'selected' : '') + '>' + instances[ii] + '</option>';
+                // edit instance
+                if (options.columns[c] === 'instance') {
+                    if (rows[i].instance !== undefined && instances.length > 1) {
+                        instSelect = '<select class="treetable-instance" data-id="' + rows[i].id + '">';
+                        for (var ii = 0; ii < instances.length; ii++) {
+                            instSelect += '<option value="' + instances[ii] + '" ' + (instances[ii] === rows[i].instance ? 'selected' : '') + '>' + instances[ii] + '</option>';
+                        }
+                        instSelect += '</select>';
+
+                        table += instSelect;
+                    } else {
+                        table += (rows[i].instance === undefined ? '' : rows[i].instance);
+                    }
+                } else {
+                    table += (rows[i][options.columns[c]] || '');
                 }
-                instSelect += '</select>';
-
-                table += '<td>' + instSelect + '</td>';
-            } else {
-                table += '<td>' + (rows[i].instance === undefined ? '' : rows[i].instance) + '</td>';
+                table += '</td>';
             }
-            table += '<td>';
-
             // add buttons
             if (options.buttons) {
+                table += '<td class="treetable-buttons" style="' + (options.buttonsStyle || '') + '">';
                 var text = '';
                 for (var jj = 0; jj < options.buttons.length; jj++) {
-                    text += '<button data-id="' + rows[i].id + '" class="select-button-' + jj + ' select-button-custom td-button"  style="margin-right: 3px;"></button>';
+                    text += '<' + buttonTag + ' data-id="' + rows[i].id + '" class="select-button-' + jj + ' select-button-custom td-button"  style="margin-right: 3px;'+ '" title="' + (options.buttons[jj].title || '') + '">';
+                    if (options.isMaterial) {
+                        text += '<i class="material-icons">' + (options.buttons[jj].icon || '') + '</i>';
+                    }
+                    text += '</' + buttonTag + '>';
                 }
 
-                table += text;
+                table += text + '</td>';
             }
 
-            table += '</td>';
             table += '</tr>';
         }
+        table += '</body>';
 
         var $dlg = $(this);
         var $table = $(table);
@@ -305,14 +403,17 @@
         $dlg.find('.tree-table-main').remove();
 
         $dlg.prepend($table);
-        $table.data('data', options);
         options.rows = rows;
-        var $treeTable = $($table[1]);
+        var $treeTable = $($table[1]).find('>table');
         var $buttons   = $($table[0]);
+
+        $treeTable.data('data', options);
 
         $treeTable.treetable({
             expandable:         true,
             clickableNodeNames: true,
+            expanderTemplate:   '',
+            indenterTemplate:   '<span class="fancytree-expander"></span><span class="fancytree-icon"></span>',
             onNodeExpand:       nodeExpand,
             onNodeCollapse:     nodeCollapse,
             stringCollapse:     _('collapse'),
@@ -331,27 +432,36 @@
             options.oldId = id;
         });
 
-        for (var b = 0; b < options.buttons.length; b++) {
-            var $btn = $tbody.find('.select-button-' + b).button(options.buttons[b]).click(function () {
-                var cb = $(this).data('callback');
-                if (cb) cb.call ($(this), $(this).data('id'));
-            }).data ('callback', options.buttons[b].click).attr('title', options.buttons[b].title || '');
+        if (options.buttons) {
+            for (var b = 0; b < options.buttons.length; b++) {
+                var $btn = $tbody.find('.select-button-' + b).button(options.buttons[b]).click(function () {
+                    var cb = $(this).data('callback');
+                    if (cb) cb.call ($(this), $(this).data('id'));
+                }).data ('callback', options.buttons[b].click).attr('title', options.buttons[b].title || '');
 
-            if ($btn.length === 0) continue;
-            if (options.buttons[b].width)  $btn.css({width:  options.buttons[b].width});
-            if (options.buttons[b].height) $btn.css({height: options.buttons[b].height});
-            if (options.buttons[b].match) {
-                $btn.each(function () {
-                    options.buttons[b].match.call($(this), $(this).data('id'));
-                });
+                if ($btn.length === 0) continue;
+                if (options.buttons[b].width)  $btn.css({width:  options.buttons[b].width});
+                if (options.buttons[b].height) $btn.css({height: options.buttons[b].height});
+                if (options.buttons[b].match) {
+                    $btn.each(function () {
+                        options.buttons[b].match.call($(this), $(this).data('id'));
+                    });
+                }
             }
         }
+
         if (options.panelButtons) {
             for (var zz = 0; zz < options.panelButtons.length; zz++) {
-                $buttons.find('.btn-custom-' + zz)
-                    .button(options.panelButtons[zz])
+                var $zz = $buttons.find('.btn-custom-' + zz);
+                $zz
                     .click(options.panelButtons[zz].click)
-                    .attr('title', options.panelButtons[zz].title || '').css({width: 24, height: 24});
+                    .attr('title', options.panelButtons[zz].title || '');
+
+                if (!options.isMaterial) {
+                    $zz
+                        .button(options.panelButtons[zz])
+                        .css({width: 24, height: 24})
+                }
             }
         }
 
@@ -387,6 +497,14 @@
             .click(function () {
                 buildList.call(that, options);
             });
+
+        if (options.onEdit) {
+            $treeTable.find('.treetable-instance').change(function () {
+                options.onEdit($(this).data('id'), 'instance', $(this).val());
+            });
+        } else {
+            $treeTable.find('.treetable-instance').prop('disabled', true)
+        }
     }
 
     function reInit() {

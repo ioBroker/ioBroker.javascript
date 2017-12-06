@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "3.5.0",
+        "version": "3.5.1",
         "title": "Javascript/Blockly Script Engine",
         "titleLang": {
             "en": "Javascript/Blockly Script Engine",
@@ -14,7 +14,7 @@
             "Apollon77 <ingo@fischer-ka.de>"
         ],
         "news": {
-            "3.5.0": {
+            "3.5.1": {
                 "en": "fixed: sometimes MSG is not defined\nTypeScript support (preparations)",
                 "de": "Korrigiert: manchmal ist MSG Objekt nicht definiert\nTypeScript Unterstützung(Vorberetung)",
                 "ru": "Исправлено: иногда переменная MSG не инициализирована\nПоддержка TypeScript (подготовка)"
@@ -50,101 +50,6 @@
                 "en": "file and line info added to log outputs",
                 "de": "Datei- und Zeilen-Info zu Log-Ausgaben hinzugefügt",
                 "ru": "Информация о сроке в сообщении об ошибке"
-            },
-            "3.3.11": {
-                "en": "Fix build CRON block",
-                "de": "Korrigiere CRON block",
-                "ru": "Исправлен CRON блок"
-            },
-            "3.3.9": {
-                "en": "Add the toggle blockly block",
-                "de": "Umschaltblock hinzufügen ins Blockly",
-                "ru": "Добавлен блок переключение."
-            },
-            "3.3.8": {
-                "en": "Accept for subscribes arrays of IDs",
-                "de": "Arrays von IDs werden bei Subscribe akzeptiert",
-                "ru": "Можно задавать для on массивы индексов"
-            },
-            "3.3.6": {
-                "en": "add the genitive month for formatDate",
-                "de": "Genitiv Monat für formatDate hinzugefügt",
-                "ru": "Добавлены месяцы в дательном падеже для formatDate"
-            },
-            "3.3.4": {
-                "en": "Catch error by request if host unavailable",
-                "de": "Fange den Fehler ab, falls URL nicht online",
-                "ru": "Ловятся ошибки request, если адрес не доступен"
-            },
-            "3.3.3": {
-                "en": "Fix stopScript",
-                "de": "Korrigiere stopScript",
-                "ru": "Исправлен stopScript"
-            },
-            "3.3.2": {
-                "en": "Support of system coordinates",
-                "de": "Unterstützung von Systemkoordinaten",
-                "ru": "Поддержка системных настроек для координат"
-            },
-            "3.3.1": {
-                "en": "fix error if no scripts exists",
-                "de": "Korrigiere das Problem, falls keine Skripte existieren",
-                "ru": "Исправлена ошибка, если нет никаких скриптов"
-            },
-            "3.3.0": {
-                "en": "all callbacks in try/catch",
-                "de": "Alle Callbacks in try/catch",
-                "ru": "Все callbacks в try/catch"
-            },
-            "3.2.8": {
-                "en": "Translations",
-                "de": "Übersetzungen",
-                "ru": "Перевод"
-            },
-            "3.2.7": {
-                "en": "allow creation of states for other javascript instances",
-                "de": "Erlaube States-Erzeugung für andere Javascirpt-Instanzen",
-                "ru": "Можно создавать переменные для других Javascirpt экземпляров"
-            },
-            "3.2.6": {
-                "en": "Fix import of scripts\nAsk to save before start the script",
-                "de": "Korrigiere Skriptimport\nFrage um Speichern bevor Skriptstart",
-                "ru": "Исправлен импорт скриптов\nСохранение скриптов прежде, чем запустить их"
-            },
-            "3.2.5": {
-                "en": "Extend compareTime function with astro features",
-                "de": "Erweitere compareTime Funktion mit astro Möglichkeiten",
-                "ru": "Функция compareTime расширена astro возможностями"
-            },
-            "3.2.4": {
-                "en": "fix stopScript",
-                "de": "Korrigiere stopScript",
-                "ru": "Исправлен stopScript"
-            },
-            "3.2.3": {
-                "en": "Try to fix error with sayit",
-                "de": "Try to fix error with sayit",
-                "ru": "Try to fix error with sayit"
-            },
-            "3.2.2": {
-                "en": "Allow with stopScript() to stop itself",
-                "de": "Ermögliche mit stopScript() sich anzuhalten",
-                "ru": "Позволяет при помощи stopScript() остановить сам скрипт"
-            },
-            "3.2.1": {
-                "en": "Fix error with subscribe for only required states",
-                "de": "Korrigiere den Fahler mit dem Subscribe nur für benötigten States",
-                "ru": "Исправлена ошибка в подписвании только на необходимые объекты"
-            },
-            "3.2.0": {
-                "en": "Fix error with of blocks in adapters\nSupport of subscribe for only required states",
-                "de": "Korrigiere den Fahler mit Blöcken in Adaptern\nUnterstützung von Subscribe nur für benötigten States",
-                "ru": "Исправлена ошибка в блоках при драйверах\nПоддержка режима, что подписваются только на необходимые объекты"
-            },
-            "3.1.0": {
-                "en": "Support of blocks in adapters\nMove sendTo blocks into adapters",
-                "de": "Unterstützung von Blöcken in Adaptern\nVerschiebe sendTo Blöcke in Adaptern",
-                "ru": "Поддержка блоков в драйверах\nБлоки sendTo передвинуты в драйвера"
             }
         },
         "desc": {

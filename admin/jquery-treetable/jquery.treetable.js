@@ -153,7 +153,9 @@
         });
       }
 
-      this.indenter[0].style.paddingLeft = "" + (this.level() * settings.indent) + "px";
+      //this.indenter[0].style.paddingLeft = "" + (this.level() * settings.indent) + "px";
+      // iob
+      this.indenter[0].style.marginLeft = "" + (this.level() * settings.indent) + "px";
 
       return this;
     };

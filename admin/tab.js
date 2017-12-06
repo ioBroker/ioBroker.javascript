@@ -2135,8 +2135,11 @@ function Scripts(main) {
             this.$grid.treeTable({
                 objects:    that.main.objects,
                 root:       'script.js',
-                widths:     ['calc(100% - 106px)', '20px', '86px'],
+                widths:     ['calc(100% - 106px)', '20px'],
+                columns:    ['name', 'instance'],
                 name:       'scripts',
+                buttonsWidth: '86px',
+                buttonsStyle: 'text-align: left',
                 buttons:    [
                     {
                         text: false,
@@ -2318,6 +2321,24 @@ function Scripts(main) {
                     } else {
                         // focus again on editor
                         that.editor.focus();
+                    }
+                },
+                onEdit: function (id, attr, value) {
+                    if (attr === 'instance') {
+                        that.main.socket.emit('getObject', id, function (err, obj) {
+                            if (obj) {
+                                obj.common.engine = 'system.adapter.javascript.' + value;
+                                that.main.socket.emit('setObject', obj._id, obj, function (err) {
+                                    if (err) {
+                                        that.main.showError(err);
+                                        that.init(true);
+                                    }
+                                });
+                            } else {
+                                window.alert('Object "' + id + '" not exists');
+                                that.init(true);
+                            }
+                        });
                     }
                 }
             }).treeTable('show', update ? undefined : main.config['script-editor-current-id'] || undefined);
