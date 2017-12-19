@@ -1,24 +1,24 @@
 <html>
-<header>
+<head>
     <!-- these 4 files always have to be included -->
-    <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
-    <!--link rel="stylesheet" type="text/css" href="../../lib/css/jqGrid/ui.jqgrid-4.5.4.css"/-->
-    <!--link rel="stylesheet" type="text/css" href="cron/jquery-cron.css"/-->
+    <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/default/jquery-ui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/default/jquery-ui.structure.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/default/jquery-ui.theme.min.css"/>
     <link rel="stylesheet" type="text/css" href="../../lib/css/fancytree/ui.fancytree.min.css"/>
     <link rel="stylesheet" type="text/css" href="jquery.cron.css"/>
+    <link rel="stylesheet" type="text/css" href="jquery-treetable/jquery.treetable.theme.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/admin.css"/>
 
-    <script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../lib/js/jquery-1.11.2.min.js"></script>
     <script type="text/javascript" src="../../lib/js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
     <script type="text/javascript" src="../../lib/js/loStorage.js"></script>
-    <!--script type="text/javascript" src="../../lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js"></script>
-    <script type="text/javascript" src="../../lib/js/jqGrid/grid.locale-all.js"></script-->
     <script type="text/javascript" src="../../lib/js/ace-1.2.0/ace.js"></script>
-    <script type="text/javascript" src="../../js/translate.js"></script>
+    <script type="text/javascript" src="../../lib/js/translate.js"></script>
     <script type="text/javascript" src="words.js"></script>
 
     <script type="text/javascript" src="../../lib/js/jquery.fancytree-all.min.js"></script>
-    <script type="text/javascript" src="../../lib/js/colResizable-1.5.min.js"></script>
+    <script type="text/javascript" src="../../lib/js/colResizable-1.6.min.js"></script>
     <script type="text/javascript" src="google-blockly/blockly_compressed.js"></script>
     <script type="text/javascript" src="google-blockly/blocks_compressed.js"></script>
     <script type="text/javascript" src="google-blockly/javascript_compressed.js"></script>
@@ -33,9 +33,10 @@
     <script type="text/javascript" src="google-blockly/own/blocks_trigger.js"></script>
     <script type="text/javascript" src="google-blockly/own/blocks_procedures.js"></script>
     <script type="text/javascript" src="google-blockly/own/blocks_timeout.js"></script>
-    <script type="text/javascript" src="../../js/selectID.js"></script>
+    <script type="text/javascript" src="../../lib/js/selectID.js"></script>
+    <script type="text/javascript" src="jquery-treetable/jquery.treetable.js"></script>
+    <script type="text/javascript" src="treeTable.js"></script>
 
-    <!--script type="text/javascript" src="cron/jquery-cron.js"></script-->
     <script type="text/javascript" src="cron2text.js"></script>
     <script type="text/javascript" src="jquery.cron.js"></script>
 
@@ -76,15 +77,15 @@
             resize:none;
         }
         .no-space {
-             border: 0px !important;
-             margin: 0px;
-             padding: 0px;
-             border-spacing: 0px;
-             border-image-width: 0px;
+             border: 0 !important;
+             margin: 0;
+             padding: 0;
+             border-spacing: 0;
+             border-image-width: 0;
          }
         #script-main .ui-resizable-e {
             cursor: e-resize;
-            width: 8px;
+            width: 4px;
             right: 0;
             top: 0;
             bottom: 0;
@@ -92,7 +93,7 @@
         }
         #script-main .ui-resizable-s {
             cursor: s-resize;
-            height: 8px;
+            height: 4px;
             right: 0;
             left: 0;
             bottom: 0;
@@ -160,24 +161,52 @@
         .dialog-new-script-button {
             cursor: pointer;
         }
+        .main-toolbar-table {
+            height: 30px;
+            width: 100%;
+            padding: 0;
+            border-spacing: 3px 0;
+            margin-bottom: 5px;
+            position: relative;
+            left: -2px;
+        }
+        table.main-toolbar-table > tbody > tr > td {
+            padding: 0;
+            width: 24px !important;
+            height: 24px !important;
+        }
+        table.main-toolbar-table > tbody > tr > td:last-child {
+            width: 100% !important;
+            text-align: right;
+            white-space: nowrap;
+            font-size: 0.75em;
+            font-weight: normal;
+        }
+        table.main-toolbar-table > tbody > tr > td > button {
+            width: 24px;
+            height: 24px;
+        }
+        table.main-toolbar-table > tr > td {
+            padding: 10px !important;
+        }
     </style>
+</head>
 
-</header>
 <body>
     <div id="script-main" style="width: 100%; height: 100%; display: flex; flex-direction: row; flex-wrap: nowrap">
-        <div id="grid-scripts"   style="height: 100%;             width: 30%; padding-right: 8px"><span class="translate">Loading...</span></div>
+        <div id="grid-scripts"   style="height: 100%; width: 30%; padding-right: 8px; overflow-x: hidden; background: #efefef"><span class="translate">Loading...</span></div>
         <div id="editor-scripts" style="height: calc(100% - 8px); width: calc(70% - 15px); display: flex; flex-direction: column; flex-wrap: nowrap; display: none">
             <div style="height: 80%; width: 100%; padding-bottom: 8px; overflow: hidden;" class="ui-widget" id="editor-scripts-textarea">
                 <table style="width: 100%; height: 100%">
                     <tr>
                         <td colspan="2">
-                            <table style="width: 100%; border: 0;"><tr>
-                                <td style="width: 400px;">
+                            <table style="width: calc(100% - 20px); border: 0;"><tr>
+                                <td style="width: 410px;">
                                     <span   style="display: inline-block; padding-right: 5px" class="translate">name</span>
                                     <select style="display: inline-block" id="edit-script-group"></select>
                                     <input  style="display: inline-block; width: 200px" id="edit-script-name">
                                 </td>
-                                <td id="script-buttons" style="width: calc(100% - 400px);">
+                                <td id="script-buttons" style="width: calc(100% - 410px);">
                                     <span   style="display: inline-block; padding-left: 25px" class="translate">debug</span>
                                     <input id="edit-script-debug" type="checkbox" />
                                     <span   style="display: inline-block; padding-left: 15px" class="translate">verbose</span>
@@ -281,10 +310,10 @@
     </div>
     <div id="dialog-new-script" title="Select type" style="display: none; width: 550px; height: 170px">
         <table style="width: 100%"><tr>
-            <td><img src="blockly.png"      data-type="Blockly"             class="dialog-new-script-button" /></td>
-            <td><img src="js.png"           data-type="Javascript/js"       class="dialog-new-script-button" /></td>
-            <!--td><img src="coffeescript.png" data-type="Coffeescript/coffee" class="dialog-new-script-button" /></td-->
-            <!--td><img src="rule.png"         data-type="Rule"                class="dialog-new-script-button" /></td-->
+            <td style="text-align: center"><img src="blockly.png"      data-type="Blockly"             class="dialog-new-script-button" /></td>
+            <td style="text-align: center"><img src="js.png"           data-type="Javascript/js"       class="dialog-new-script-button" /></td>
+            <!--td  style="text-align: center"><img src="coffeescript.png" data-type="Coffeescript/coffee" class="dialog-new-script-button" /></td-->
+            <!--td style="text-align: center"><img src="rule.png"         data-type="Rule"                class="dialog-new-script-button" /></td-->
         </tr>
         </table>
     </div>

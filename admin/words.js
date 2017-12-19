@@ -41,6 +41,7 @@ systemDictionary = {
     "Set CRON":             {"en": "Set",                   "de": "Übernehmen",             "ru": "Перенять"},
     "debug":                {"en": "Debug",                 "de": "Debug",                  "ru": "Debug"},
     "verbose":              {"en": "Verbose",               "de": "Hilfe-Ausgaben",         "ru": "Вывод отладки"},
+    "permissionError":      {"en": "Permission error",      "de": "Zugriffsfehler",         "ru": "Ошибка доступа"},
     "debug_help": {
         "en": "setState, writeFile will be disabled",
         "de": "setState, writeFile werden deaktiviert",
@@ -118,6 +119,10 @@ systemDictionary = {
     "Clear":                {"en": "Clear",                 "de": "Löschen",                "ru": "Сбросить"},
     "scripts_group":        {"en": "Scripts",               "de": "Skripte",                "ru": "Скрипты"},
     "Edit script":          {"en": "Edit script",           "de": "Skript editieren",       "ru": "Редактировать скрипт"},
+    "reorder":              {"en": "reorder",               "de": "Neu ordnen",             "ru": "Поменять порядок"},
+    "instance":             {"en": "Inst.",                 "de": "Inst.",                  "ru": "Инст."},
+    "collapse":             {"en": "collapse",              "de": "Zuklappen",              "ru": "свернуть"},
+    "expand":               {"en": "expand",                "de": "Aufmachen",              "ru": "раскрыть"},
     "Script changes are not saved. Discard?": {
         "en": "Script changes are not saved. Discard?",
         "de": "Änderungen sind nicht gespeichert. Verwerfen?",

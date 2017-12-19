@@ -20,6 +20,8 @@
         child_process:    require('child_process'),
 
         'coffee-compiler': require('coffee-compiler'),
+        tsc:              require('virtual-tsc'),
+        typescript:       require('typescript'),
 
         'node-schedule':  require('node-schedule'),
         suncalc:          require('suncalc'),
@@ -28,6 +30,7 @@
     };
     var utils =   require(__dirname + '/lib/utils'); // Get common adapter utils
     var words =   require(__dirname + '/lib/words');
+    var patternCompareFunctions = require(__dirname + '/lib/patternCompareFunctions');
 
     // modify fs to protect important information
     mods.fs._readFile      = mods.fs.readFile;
@@ -64,13 +67,169 @@
     var astroList    = ['sunrise', 'sunset', 'sunriseEnd', 'sunsetStart', 'dawn', 'dusk', 'nauticalDawn', 'nauticalDusk', 'nightEnd', 'night', 'goldenHourEnd', 'goldenHour'];
     var astroListLow = ['sunrise', 'sunset', 'sunriseend', 'sunsetstart', 'dawn', 'dusk', 'nauticaldawn', 'nauticaldusk', 'nightend', 'night', 'goldenhourend', 'goldenhour'];
 
+    // for node version <= 0.12
+    if (''.startsWith === undefined) {
+        String.prototype.startsWith = function (s) {
+            return this.indexOf(s) === 0;
+        };
+    }
+    if (''.endsWith === undefined) {
+        String.prototype.endsWith = function (s) {
+            return this.slice(0-s.length) === s;
+        };
+    }
+    ///
+
+    var webstormDebug;
+    if (process.argv) {
+        for (var a = 1; a < process.argv.length; a++) {
+            if (process.argv[a].startsWith('--webstorm')) {
+                webstormDebug = process.argv[a].replace(/^(.*?=\s*)/, '');
+                break;
+            }
+        }
+    }
+
+    var tsCompilerOptions = {
+        // don't compile faulty scripts
+        noEmitOnError: true,
+        // change this to "es6" if we're dropping support for NodeJS 4.x
+        target: mods.typescript.ScriptTarget.ES5,
+        // we need this for the native promise support in NodeJS 4.x.
+        // can be dropped if we're targeting ES6 anyways
+        lib: ["lib.es6.d.ts"],
+    };
+    // ambient declarations for typescript
+    var tsAmbient;
+    // compiler instance for typescript
+    function tsLog(msg, sev) {
+        if (adapter && adapter.log) adapter.log[sev || "info"](msg);
+    }
+    var tsServer = new mods.tsc.Server(tsCompilerOptions, tsLog);
+
+    function doGetter(obj, name, ret) {
+        //adapter.log.debug('getter: ' + name + ' returns ' + ret);
+        Object.defineProperty(obj, name, { value: ret });
+        return ret;
+    }
+
+    var eventObjectProperties = {
+        common: {
+            get: function () {
+                var ret = objects[this.id] ? objects[this.id].common : {};
+                return doGetter (this, 'common', ret);
+            },
+            configurable: true
+        },
+        native: {
+            get: function () {
+                var ret = objects[this.id] ? objects[this.id].native : {};
+                return doGetter (this, 'native', ret);
+            },
+            configurable: true
+        },
+        name: {
+            get: function () {
+                var ret = this.common ? this.common.name : null;
+                return doGetter (this, 'name', ret);
+            },
+            configurable: true
+        },
+        channelId: {
+            get: function () {
+                var ret = this.id.replace (/\.*[^.]+$/, '');
+                return doGetter (this, 'channelId', objects[ret] ? ret : null);
+            },
+            configurable: true
+        },
+        channelName: {
+            get: function () {
+                var channelId = this.channelId;
+                var ret = channelId && objects[channelId].common ? objects[channelId].common.name : null;
+                return doGetter (this, 'channelName', ret);
+            },
+            configurable: true
+        },
+        deviceId: {
+            get: function () {
+                var deviceId, channelId = this.channelId;
+                if (!channelId || !(deviceId = channelId.replace (/\.*[^.]+$/, '')) || !objects[deviceId]) {
+                    Object.defineProperty(this, 'deviceName', { value: null });
+                    return doGetter (this, 'deviceId', null);
+                }
+                return doGetter (this, 'deviceId', deviceId);
+            },
+            configurable: true
+        },
+        deviceName: {
+            get: function () {
+                var deviceId = this.deviceId;
+                var ret = deviceId && objects[deviceId].common ? objects[deviceId].common.name : null;
+                return doGetter (this, 'deviceName', ret);
+            },
+            configurable: true
+        },
+        enumIds: {
+            get: function () {
+                if (!isEnums) return undefined;
+                var enumIds = {}, enumNames = {};
+                getObjectEnumsSync(this.id, enumIds, enumNames);
+                Object.defineProperty(this, 'enumNames', { value: enumNames });
+                return doGetter(this, 'enumIds', enumIds);
+            },
+            configurable: true
+        },
+        enumNames: {
+            get: function () {
+                if (!isEnums) return undefined;
+                var enumIds = {}, enumNames = {};
+                getObjectEnumsSync(this.id, enumIds, enumNames);
+                Object.defineProperty(this, 'enumIds', { value: enumIds });
+                return doGetter(this, 'enumNames', enumNames);
+            },
+            configurable: true
+        }
+    };
+
+    function EventObj (id, state, oldState) {
+        if (!(this instanceof EventObj)) return new EventObj(id, newState, oldState);
+        this.id = id;
+        this.newState = {
+            val:  state.val,
+            ts:   state.ts,
+            ack:  state.ack,
+            lc:   state.lc,
+            from: state.from
+        };
+        //if (oldState === undefined) oldState = {};
+        if (!oldState) {
+            this.oldState = {
+                val:  undefined,
+                ts:   undefined,
+                ack:  undefined,
+                lc:   undefined,
+                from: undefined
+            };
+        } else {
+            this.oldState = {
+                val:  oldState.val,
+                ts:   oldState.ts,
+                ack:  oldState.ack,
+                lc:   oldState.lc,
+                from: oldState.from
+            };
+        }
+        this.state = this.newState;
+    }
+    Object.defineProperties(EventObj.prototype, eventObjectProperties);
+
     var adapter = utils.adapter({
 
         name: 'javascript',
 
         regExEnum: /^enum\./,
 
-		useFormatDate: true, // load float formatting
+        useFormatDate: true, // load float formatting
 
         objectChange: function (id, obj) {
             if (this.regExEnum.test(id)) {
@@ -183,90 +342,74 @@
         },
 
         stateChange: function (id, state) {
+            if (id.startsWith('messagebox.') || id.startsWith('log.')) return;
 
-            if (id.match(/^messagebox\./) || id.match(/^log\./)) return;
-
-            var oldState = states[id] || {};
+            var oldState = states[id];
             if (state) {
+                if (oldState) {
+                    // enable or disable script
+                    if (!state.ack && id.startsWith(activeStr)) {
+                        adapter.extendForeignObject(objects[id].native.script, {common: {enabled: state.val}});
+                    }
 
-                // enable or disable script
-                if (!state.ack && activeRegEx.test(id)) {
-                    adapter.extendForeignObject(objects[id].native.script, {common: {enabled: state.val}});
-                }
-                if (stateIds.indexOf(id) === -1) {
-                    stateIds.push(id);
-                    stateIds.sort();
-                }
-
-                // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
-                if (states[id] && states[id].val === false && id.match(/\.alive$/) && state.val) {
-                    if (adapterSubs[id]) {
-                        var parts = id.split('.');
-                        var a = parts[2] + '.' + parts[3];
-                        for (var t = 0; t < adapterSubs[id].length; t++) {
-                            adapter.log.info('Detected coming adapter "' + a + '". Send subscribe: ' + adapterSubs[id][t]);
-                            adapter.sendTo(a, 'subscribe', adapterSubs[id][t]);
+                    // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
+                    if (/*oldState && */oldState.val === false && state.val && id.endsWith('.alive')) {
+                        if (adapterSubs[id]) {
+                            var parts = id.split('.');
+                            var a = parts[2] + '.' + parts[3];
+                            for (var t = 0; t < adapterSubs[id].length; t++) {
+                                adapter.log.info('Detected coming adapter "' + a + '". Send subscribe: ' + adapterSubs[id][t]);
+                                adapter.sendTo(a, 'subscribe', adapterSubs[id][t]);
+                            }
                         }
                     }
+                } else {
+                    if (/*!oldState && */stateIds.indexOf(id) === -1) {
+                        stateIds.push(id);
+                        stateIds.sort();
+                    }
                 }
-
                 states[id] = state;
             } else {
-                if (states[id]) delete states[id];
+                if (oldState) delete states[id];
                 state = {};
                 var pos = stateIds.indexOf(id);
                 if (pos !== -1) {
                     stateIds.splice(pos, 1);
                 }
             }
+            var eventObj = new EventObj(id, state, oldState);
 
-            var eventObj = {
-                id: id,
-                //name: name,
-                //common: common,
-                //native: nativeObj,
-                //channelId: channelId,
-                //channelName: channelName,
-                //deviceId: deviceId,
-                //deviceName: deviceName,
-                //enumIds: enumIds,       // Array of Strings
-                //enumNames: enumNames,     // Array of Strings
-                newState: {
-                    val:  state.val,
-                    ts:   state.ts,
-                    ack:  state.ack,
-                    lc:   state.lc,
-                    from: state.from
-                },
-                oldState: {
-                    val:  oldState.val,
-                    ts:   oldState.ts,
-                    ack:  oldState.ack,
-                    lc:   oldState.lc,
-                    from: oldState.from
+            // if this state matchs any subscriptions
+            for (var i = 0, l = subscriptions.length; i < l; i++) {
+                var sub = subscriptions[i];
+                if (sub && patternMatching(eventObj, sub.patternCompareFunctions)) {
+                    sub.callback(eventObj);
                 }
-            };
-            eventObj.state = eventObj.newState;
-
-            if (isEnums) {
-                getObjectEnums(id, function (enumIds, enumNames) {
-                    eventObj.enumIds   = enumIds;
-                    eventObj.enumNames = enumNames;
-                    checkPatterns(eventObj);
-                });
-            } else {
-                checkPatterns(eventObj);
             }
         },
+
 
         unload: function (callback) {
             callback();
         },
 
         ready: function () {
-
+             // todo
+            errorLogFunction = webstormDebug ? console : adapter.log;
+            activeStr = adapter.namespace + '.scriptEnabled.';
             activeRegEx = new RegExp('^' + adapter.namespace.replace('.', '\\.') + '\\.scriptEnabled\\.');
 
+            // try to read TS declarations
+            try {
+                tsAmbient = {
+                    "javascript.d.ts": mods.fs.readFileSync(mods.path.join(__dirname, "lib/javascript.d.ts"), "utf8")
+                };
+                tsServer.provideAmbientDeclarations(tsAmbient);
+            } catch (e) {
+                adapter.log.warn("Could not read TypeScript ambient declarations: " + e);
+            }
+                    
             installLibraries(function () {
                 getData(function () {
                     adapter.subscribeForeignObjects('*');
@@ -306,7 +449,27 @@
                                                     }
                                                 }
                                             });
-                                        } else {
+                                        } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
+                                            var tsCompiled = tsServer.compile(
+                                                mods.path.join(__dirname, "global_" + g + ".ts"),
+                                                obj.common.source
+                                            );
+                                            var errors = tsCompiled.diagnostics.map(function (diag) {
+                                                return diag.annotatedSource + "\n";
+                                            }).join("\n");
+                                            if (tsCompiled.success) {
+                                                if (errors.length > 0) {
+                                                    adapter.log.warn("TypeScript compilation had errors: \n" + errors);
+                                                } else {
+                                                    adapter.log.info("TypeScript compilation successful");
+                                                }
+                                                // polyfill `exports` with an empty object so the vm doesn't choke
+                                                var code = "(function(exports){" + tsCompiled.result + "}({}));";
+                                                globalScript += code + '\n';
+                                            } else {
+                                                adapter.log.error("TypeScript compilation failed: \n" + errors);
+                                            }
+                                        } else { // javascript
                                             globalScript += doc.rows[g].value.common.source + '\n';
                                         }
                                     }
@@ -411,6 +574,73 @@
     var timers =           {};
     var timerId =          0;
     var activeRegEx =      null;
+    var activeStr =        '';
+    var errorLogFunction;
+
+    function addGetProperty(object) {
+        Object.defineProperty (object, 'get', {
+            value: function (id) {
+                return this[id] || this[adapter.namespace + '.' + id];
+            },
+            enumerable: false
+        });
+    }
+
+    function fixLineNo(line) {
+        if (line.indexOf('javascript.js:') >= 0) return line;
+        if (!/script[s]?\.js[.\\\/]/.test(line)) return line;
+        if (/:([\d]+):/.test(line)) {
+        line = line.replace(/:([\d]+):/, function ($0, $1) {
+                return ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1) + ':';
+            })
+        } else {
+            line = line.replace(/:([\d]+)$/, function ($0, $1) {
+                return ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1);
+            })
+        }
+        return line;
+    }
+
+    function logError(msg, e, offs) {
+        var stack = e.stack.split('\n');
+        if (msg.indexOf('\n') < 0) {
+            msg = msg.replace(/[: ]*$/, ': ');
+        }
+
+        //errorLogFunction.error(msg + stack[0]);
+        errorLogFunction.error(msg + fixLineNo(stack[0]));
+        for (var i = offs || 1; i < stack.length; i++) {
+            if (!stack[i]) continue;
+            if (stack[i].match(/runInNewContext|javascript\.js:/)) break;
+            //adapter.log.error(fixLineNo(stack[i]));
+            errorLogFunction.error (fixLineNo(stack[i]));
+        }
+    }
+
+    function errorInCallback(e) {
+        logError('Error in callback', e);
+    }
+
+
+    // function errorInCallback1(e) {
+    //     var stack = e.stack.split('\n');
+    //     adapter.log.error('Error in callback: ' + stack[0] + 'file://' + stack[1].substr(3));
+    // }
+
+    var logWithLineInfo = function (level, msg) {
+        if (msg === undefined) return logWithLineInfo ('info', msg);
+        errorLogFunction[level](msg);
+        var stack = (new Error().stack).split("\n");
+        for (var i=3; i<stack.length; i++) {
+            if (!stack[i]) continue;
+            if (stack[i].match(/runInContext|runInNewContext|javascript\.js:/)) break;
+            errorLogFunction[level](fixLineNo(stack[i]));
+        }
+    };
+    logWithLineInfo.warn = logWithLineInfo.bind(1, 'warn');
+    logWithLineInfo.error = logWithLineInfo.bind(1, 'error');
+    logWithLineInfo.info = logWithLineInfo.bind(1, 'info');
+
 
     function createActiveObject(id, enabled) {
         var idActive = adapter.namespace + '.scriptEnabled.' + id.substring('script.js.'.length);
@@ -484,123 +714,6 @@
         return null;
     }
 
-    function checkPatterns(eventObj) {
-        // if this state matchs any subscriptions
-        var matched = false;
-        var subs = [];
-        for (var i = 0, l = subscriptions.length; i < l; i++) {
-            var pattern = subscriptions[i].pattern;
-            // possible matches
-            //    pattern.name
-            //    pattern.channelId
-            //    pattern.channelName
-            //    pattern.deviceId
-            //    pattern.deviceName
-            //    pattern.enumId
-            //    pattern.enumName
-            if (!matched) {
-                if (eventObj.name === undefined && pattern.name) {
-                    eventObj.common = objects[eventObj.id] ? objects[eventObj.id].common : {};
-                    eventObj.native = objects[eventObj.id] ? objects[eventObj.id].native : {};
-                    eventObj.name   = eventObj.common ? eventObj.common.name : null;
-                }
-
-                if (eventObj.channelId === undefined && (pattern.deviceId || pattern.deviceName || pattern.channelId || pattern.channelName)) {
-                    var _pos = eventObj.id.lastIndexOf('.');
-                    if (_pos !== -1) eventObj.channelId = eventObj.id.substring(0, _pos);
-                    if (!objects[eventObj.channelId]) eventObj.channelId = null;
-                }
-
-                if (eventObj.channelName === undefined && pattern.channelName) {
-                    if (eventObj.channelId && objects[eventObj.channelId]) {
-                        eventObj.channelName = objects[eventObj.channelId].common ? objects[eventObj.channelId].common.name : null;
-                    } else {
-                        eventObj.channelName = null;
-                    }
-                }
-
-                if (eventObj.deviceId === undefined && (pattern.deviceId || pattern.deviceName)) {
-                    if (!eventObj.channelId) {
-                        eventObj.deviceId   = null;
-                        eventObj.deviceName = null;
-                    } else {
-                        var pos = eventObj.channelId.lastIndexOf('.');
-                        if (pos !== -1) {
-                            eventObj.deviceId = eventObj.channelId.substring(0, pos);
-                            if (!objects[eventObj.deviceId]) {
-                                eventObj.deviceId   = null;
-                                eventObj.deviceName = null;
-                            }
-                        }
-                    }
-                }
-                if (eventObj.deviceName === undefined && pattern.deviceName) {
-                    eventObj.deviceName = objects[eventObj.deviceId] && objects[eventObj.deviceId].common ? objects[eventObj.deviceId].common.name : null;
-                }
-            }
-
-            if (patternMatching(eventObj, subscriptions[i].pattern)) {
-                if (!matched) {
-                    matched = true;
-                    if (eventObj.name === undefined) {
-                        eventObj.common = objects[eventObj.id] ? objects[eventObj.id].common : {};
-                        eventObj.native = objects[eventObj.id] ? objects[eventObj.id].native : {};
-                        eventObj.name   = eventObj.common ? eventObj.common.name : null;
-                    }
-
-                    if (eventObj.channelId === undefined) {
-                        var __pos = eventObj.id.lastIndexOf('.');
-                        if (__pos !== -1) eventObj.channelId = eventObj.id.substring(0, __pos);
-                        if (!objects[eventObj.channelId]) eventObj.channelId = null;
-                    }
-
-                    if (eventObj.channelName === undefined) {
-                        if (eventObj.channelId && objects[eventObj.channelId]) {
-                            eventObj.channelName = objects[eventObj.channelId].common ? objects[eventObj.channelId].common.name : null;
-                        } else {
-                            eventObj.channelName = null;
-                        }
-                    }
-
-                    if (eventObj.deviceId === undefined) {
-                        if (!eventObj.channelId) {
-                            eventObj.deviceId   = null;
-                            eventObj.deviceName = null;
-                        } else {
-                            var pos_ = eventObj.channelId.lastIndexOf('.');
-                            if (pos_ !== -1) {
-                                eventObj.deviceId = eventObj.channelId.substring(0, pos_);
-                                if (!objects[eventObj.deviceId]) {
-                                    eventObj.deviceId   = null;
-                                    eventObj.deviceName = null;
-                                }
-                            }
-                        }
-                    }
-                    if (eventObj.deviceName === undefined) {
-                        eventObj.deviceName = objects[eventObj.deviceId] && objects[eventObj.deviceId].common ? objects[eventObj.deviceId].common.name : null;
-                    }
-                }
-                subs.push(i);
-            }
-        }
-
-        if (matched) {
-            if (eventObj.enumIds === undefined) {
-                getObjectEnums(eventObj.id, function (enumIds, enumNames) {
-                    eventObj.enumIds   = enumIds;
-                    eventObj.enumNames = enumNames;
-                    for (var i = 0, l = subs.length; i < l; i++) {
-                        subscriptions[subs[i]].callback(eventObj);
-                    }
-                });
-            } else {
-                for (var ii = 0, ll = subs.length; ii < ll; ii++) {
-                    subscriptions[subs[ii]].callback(eventObj);
-                }
-            }
-        }
-   }
 
     function installNpm(npmLib, callback) {
         var path = __dirname;
@@ -625,7 +738,7 @@
             adapter.log.error(buf.toString('utf8'));
         });
 
-        child.on('exit', function (code, signal) {
+        child.on('exit', function (code /* , signal */) {
             if (code) {
                 adapter.log.error('Cannot install ' + npmLib + ': ' + code);
             }
@@ -671,10 +784,14 @@
     function compile(source, name) {
         source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + ' and ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ));\n";
         try {
-            return mods.vm.createScript(source, name);
+            var options = {
+                filename: name,
+                displayErrors: true
+                //lineOffset: globalScriptLines
+            };
+            return mods.vm.createScript(source, options);
         } catch (e) {
-            // todo
-            adapter.log.error(name + ' compile failed: ' + e);
+            logError(name + ' compile failed:\r\nat ', e);
             return false;
         }
     }
@@ -753,20 +870,13 @@
                     mods[md] = require(__dirname + '/node_modules/' + md);
                     return mods[md];
                 } catch (e) {
-                    var lines = e.stack.split('\n');
-                    var stack = [];
-                    for (var i = 6; i < lines.length; i++) {
-                        if (lines[i].match(/runInNewContext/)) break;
-                        stack.push(lines[i]);
-                    }
-                    adapter.log.error(name + ': ' + e.message + '\n' + stack);
-
+                    logError(name, e, 6);
                 }
             },
             Buffer:    Buffer,
             __engine:  {
-                        __subscriptions: 0,
-                        __schedules: 0
+                __subscriptions: 0,
+                __schedules: 0
             },
             $:         function (selector) {
                 // following is supported
@@ -852,7 +962,7 @@
                     if (isNatives) {
                         native  += selector[i];
                     } //else {
-                        // some error
+                    // some error
                     //}
                 }
 
@@ -1266,16 +1376,29 @@
                 adapter.log[sev](name + ': ' + msg);
             },
             exec:      function (cmd, callback) {
-                if (sandbox.verbose) sandbox.log('exec: ' + cmd, 'info');
-                if (debug) {
-                    sandbox.log(words._('Command %s was not executed, while debug mode is active', cmd), 'warn');
+                if (!adapter.config.enableExec) {
+                    var error = 'exec is not available. Please enable "Enable Exec" option in instance settings';
+                    adapter.log.error(error);
+                    sandbox.log(error);
                     if (typeof callback === 'function') {
-                        setTimeout(function () {
-                            callback();
-                        }, 0);
+                        setImmediate(function () {
+                            callback(error);
+                        });
                     }
                 } else {
-                    return mods.child_process.exec(cmd, callback);
+                    if (sandbox.verbose) {
+                        sandbox.log('exec: ' + cmd, 'info');
+                    }
+                    if (debug) {
+                        sandbox.log(words._('Command %s was not executed, while debug mode is active', cmd), 'warn');
+                        if (typeof callback === 'function') {
+                            setImmediate(function () {
+                                callback();
+                            });
+                        }
+                    } else {
+                        return mods.child_process.exec(cmd, callback);
+                    }
                 }
             },
             email:     function (msg) {
@@ -1340,7 +1463,7 @@
                             that.setState(callbackOrId, obj.newState.val);
                         };
                     } else {
-                        callback = function (obj) {
+                        callback = function (/* obj */) {
                             that.setState(callbackOrId, value);
                         };
                     }
@@ -1353,7 +1476,7 @@
                             try {
                                 callback.call(sandbox, obj);
                             } catch (e) {
-                                adapter.log.error('Error in callback: ' + e);
+                                errorInCallback(e); // adapter.log.error('Error in callback: ' + e);
                             }
                         }
                     },
@@ -1384,6 +1507,7 @@
 
                 subscribePattern(script, pattern.id);
 
+                subs.patternCompareFunctions = getPatternCompareFunctions(pattern);
                 subscriptions.push(subs);
 
                 if (pattern.enumName || pattern.enumId) isEnums = true;
@@ -1522,7 +1646,7 @@
                         try {
                             callback.call(sandbox);
                         } catch (e) {
-                            adapter.log.error('Error in callback: ' + e);
+                            errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                         }
                         // Reschedule in 2 seconds
                         sandbox.setTimeout(function () {
@@ -1545,7 +1669,7 @@
                         try {
                             callback.call(sandbox);
                         } catch (e) {
-                            adapter.log.error('Error in callback: ' + e);
+                            errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                         }
                     });
 
@@ -1564,8 +1688,8 @@
                     if (pos !== -1) pattern = astroList[pos];
                 }
 
-                if ((!adapter.config.latitude  && adapter.config.latitude  !== 0 && adapter.config.latitude  !== '0') ||
-                    (!adapter.config.longitude && adapter.config.longitude !== 0 && adapter.config.longitude !== '0')) {
+                if ((!adapter.config.latitude  && adapter.config.latitude  !== 0) ||
+                    (!adapter.config.longitude && adapter.config.longitude !== 0)) {
                     adapter.log.error('Longitude or latitude does not set. Cannot use astro.');
                     return;
                 }
@@ -1615,6 +1739,10 @@
                     isAck = undefined;
                 }
 
+                if (state === null) {
+                    state = {val: null};
+                }
+
                 if (isAck === true || isAck === false || isAck === 'true' || isAck === 'false') {
                     if (typeof state === 'object') {
                         state.ack = isAck;
@@ -1624,7 +1752,7 @@
                 }
 
                 // Check type of state
-				if (!objects[id] && objects[adapter.namespace + '.' + id]) {
+                if (!objects[id] && objects[adapter.namespace + '.' + id]) {
                     id = adapter.namespace + '.' + id;
                 }
 
@@ -1634,25 +1762,25 @@
                     common.type !== 'mixed' &&
                     common.type !== 'file'  &&
                     common.type !== 'json') {
-					if (state && typeof state === 'object' && state.val !== undefined) {
-						if (common.type !== typeof state.val) {
-                    		adapter.log.warn('Wrong type of ' + id + ': "' + typeof state.val + '". Please fix, while deprecated and will not work in next versions.');
-							//return;
-						}
-					} else {
-						if (common.type !== typeof state) {
-                    		adapter.log.warn('Wrong type of ' + id + ': "' + typeof state + '". Please fix, while deprecated and will not work in next versions.');
-							//return;
-						}
-					}
-				}
+                    if (state && typeof state === 'object' && state.val !== undefined) {
+                        if (common.type !== typeof state.val) {
+                            logWithLineInfo.warn('Wrong type of ' + id + ': "' + typeof state.val + '". Please fix, while deprecated and will not work in next versions.');
+                            //return;
+                        }
+                    } else {
+                        if (common.type !== typeof state) {
+                            logWithLineInfo.warn('Wrong type of ' + id + ': "' + typeof state + '". Please fix, while deprecated and will not work in next versions.');
+                            //return;
+                        }
+                    }
+                }
                 // Check min and max of value
-				if (typeof state === 'object' && state) {
-					if (common && typeof state.val === 'number') {
-	                    if (common.min !== undefined && state.val < common.min) state.val = common.min;
-	                    if (common.max !== undefined && state.val > common.max) state.val = common.max;
-	                }
-				} else if (common && typeof state === 'number') {
+                if (typeof state === 'object' && state) {
+                    if (common && typeof state.val === 'number') {
+                        if (common.min !== undefined && state.val < common.min) state.val = common.min;
+                        if (common.max !== undefined && state.val > common.max) state.val = common.max;
+                    }
+                } else if (common && typeof state === 'number') {
                     if (common.min !== undefined && state < common.min) state = common.min;
                     if (common.max !== undefined && state > common.max) state = common.max;
                 }
@@ -1668,7 +1796,7 @@
                                 try {
                                     callback.call(sandbox);
                                 } catch (e) {
-                                    adapter.log.error('Error in callback: ' + e);
+                                    errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                 }
                             }, 0);
                         }
@@ -1680,7 +1808,7 @@
                                 try {
                                     callback.call(sandbox);
                                 } catch (e) {
-                                    adapter.log.error('Error in callback: ' + e);
+                                    errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                 }
                             }
                         });
@@ -1695,7 +1823,7 @@
                                 try {
                                     callback.call(sandbox);
                                 } catch (e) {
-                                    adapter.log.error('Error in callback: ' + e);
+                                    errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                 }
                             }, 0);
                         }
@@ -1707,7 +1835,7 @@
                                 try {
                                     callback.call(sandbox);
                                 } catch (e) {
-                                    adapter.log.error('Error in callback: ' + e);
+                                    errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                 }
                             }
                         });
@@ -1724,7 +1852,7 @@
                                         try {
                                             callback.call(sandbox);
                                         } catch (e) {
-                                            adapter.log.error('Error in callback: ' + e);
+                                            errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                         }
                                     }, 0);
                                 }
@@ -1736,7 +1864,7 @@
                                         try {
                                             callback.call(sandbox);
                                         } catch (e) {
-                                            adapter.log.error('Error in callback: ' + e);
+                                            errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                         }
                                     }
                                 });
@@ -1747,7 +1875,7 @@
                                 try {
                                     callback.call(sandbox, 'Cannot set value of non-state object "' + id + '"');
                                 } catch (e) {
-                                    adapter.log.error('Error in callback: ' + e);
+                                    errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                 }
                             }
                         }
@@ -1762,7 +1890,7 @@
                                         try {
                                             callback.call(sandbox);
                                         } catch (e) {
-                                            adapter.log.error('Error in callback: ' + e);
+                                            errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                         }
                                     }, 0);
                                 }
@@ -1774,7 +1902,7 @@
                                         try {
                                             callback.call(sandbox);
                                         } catch (e) {
-                                            adapter.log.error('Error in callback: ' + e);
+                                            errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                         }
                                     }
                                 });
@@ -1785,17 +1913,17 @@
                                 try {
                                     callback.call(sandbox, 'Cannot set value of non-state object "' + adapter.namespace + '.' + id + '"');
                                 } catch (e) {
-                                    adapter.log.error('Error in callback: ' + e);
+                                    errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                 }
                             }
                         }
                     } else {
-                        adapter.log.warn('State "' + id + '" not found');
+                        logWithLineInfo.warn('State "' + id + '" not found');
                         if (typeof callback === 'function') {
                             try {
                                 callback.call(sandbox, 'State "' + id + '" not found');
                             } catch (e) {
-                                adapter.log.error('Error in callback: ' + e);
+                                errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                             }
                         }
                     }
@@ -1819,6 +1947,11 @@
                     clearRunning    = true;
                 }
 
+				// Check type of state
+                if (!objects[id] && objects[adapter.namespace + '.' + id]) {
+                    id = adapter.namespace + '.' + id;
+                }
+				
                 if (clearRunning === undefined) clearRunning = true;
 
                 if (sandbox.verbose) sandbox.log('setStateDelayed(id=' + id + ', state=' + state + ', isAck=' + isAck + ', delay=' + delay + ', clearRunning=' + clearRunning + ')', 'info');
@@ -1848,27 +1981,46 @@
                     if (timerId > 0xFFFFFFFE) timerId = 0;
 
                     // Start timeout
-                    var timer = setTimeout(function (_timerId) {
-                        sandbox.setState(id, state, isAck, callback);
+                    var timer = setTimeout(function (_timerId, _id, _state, _isAck) {
+                        sandbox.setState(_id, _state, _isAck, callback);
                         // delete timer handler
-                        if (timers[id]) {
-                            for (var t = 0; t < timers[id].length; t++) {
-                                if (timers[id][t].id === _timerId) {
-                                    timers[id].splice(t, 1);
-                                    break;
-                                }
-                            }
-                            if (!timers[id].length) delete timers[id];
+                        if (timers[_id]) {
+							// optimisation
+							if (timers[_id].length === 1) {
+								 delete timers[_id];
+							} else {
+								for (var t = 0; t < timers[_id].length; t++) {
+									if (timers[_id][t].id === _timerId) {
+										timers[_id].splice(t, 1);
+										break;
+									}
+								}
+								if (!timers[_id].length) delete timers[_id];
+							}
+                            
                         }
-                    }, delay, timerId);
+                    }, delay, timerId, id, state, isAck);
 
                     // add timer handler
-                    timers[id].push({t: timer, id: timerId});
+                    timers[id].push({
+                        t:      timer,
+                        id:     timerId,
+                        ts:     Date.now(),
+                        delay:  delay,
+                        val:    typeof state === 'object' && state.val !== undefined ? state.val : state,
+                        ack:    typeof state === 'object' && state.val !== undefined && state.ack !== undefined ? state.ack : isAck
+                    });
                     return timerId;
                 }
             },
             clearStateDelayed: function (id, timerId) {
+				// Check type of state
+                if (!objects[id] && objects[adapter.namespace + '.' + id]) {
+                    id = adapter.namespace + '.' + id;
+                }
+				
                 if (sandbox.verbose) sandbox.log('clearStateDelayed(id=' + id + ', timerId=' + timerId + ')', 'info');
+
                 if (timers[id]) {
 
                     for (var i = timers[id].length - 1; i >= 0; i--) {
@@ -1887,6 +2039,66 @@
                 }
                 return false;
             },
+			getStateDelayed: function (id) {
+				var result;
+				var now = Date.now();
+				if (id) {
+					// Check type of state
+					if (!objects[id] && objects[adapter.namespace + '.' + id]) {
+						id = adapter.namespace + '.' + id;
+					}
+					// If timerId given
+					if (typeof id === 'number') {
+                        for (var _id_ in timers) {
+                            if (timers.hasOwnProperty(_id_)) {
+                                for (var ttt = 0; ttt < timers[_id_].length; ttt++) {
+                                    if (timers[_id_][ttt].id === id) {
+                                        return {
+                                            id:         _id_,
+                                            left:       timers[_id_][ttt].delay - (now - timers[id][ttt].ts),
+                                            delay:      timers[_id_][ttt].delay,
+                                            val:        timers[_id_][ttt].val,
+                                            ack:        timers[_id_][ttt].ack
+                                        };
+                                    }
+                                }
+                            }
+                        }
+                        return null;
+                    }
+
+					result = [];
+					if (timers.hasOwnProperty(id) && timers[id] && timers[id].length) {
+						for (var tt = 0; tt < timers[id].length; tt++) {
+							result.push({
+                                timerId:    timers[id][tt].id,
+                                left:       timers[id][tt].delay - (now - timers[id][tt].ts),
+                                delay:      timers[id][tt].delay,
+                                val:        timers[id][tt].val,
+                                ack:        timers[id][tt].ack
+                            });
+						}
+					} 
+					return result;
+				} else {
+					result = {};
+					for (var _id in timers) {
+						if (timers.hasOwnProperty(_id) && timers[_id] && timers[_id].length) {
+							result[_id] = [];
+							for (var t = 0; t < timers[_id].length; t++) {
+								result[_id].push({
+                                    timerId:    timers[_id][t].id,
+                                    left:       timers[_id][t].delay - (now - timers[_id][t].ts),
+                                    delay:      timers[_id][t].delay,
+                                    val:        timers[_id][t].val,
+                                    ack:        timers[_id][t].ack
+								});
+							}
+						}
+					}
+				}
+				return result;
+			},
             getState:       function (id, callback) {
                 if (typeof callback === 'function') {
                     if (id.indexOf('.') === -1) {
@@ -1909,10 +2121,16 @@
 
                         if (sandbox.verbose) sandbox.log('getState(id=' + id + ', timerId=' + timerId + ') => not found', 'info');
 
-                        adapter.log.warn('State "' + id + '" not found');
+                        logWithLineInfo.warn('getState "' + id + '" not found (3)' + (states[id] !== undefined ? ' states[id]=' + states[id] : ''));     ///xxx
                         return {val: null, notExist: true};
                     }
                 }
+            },
+            existsState: function(id) {
+                return states.get(id) !== undefined;
+            },
+            existsObject: function(id) {
+                return objects.get(id) !== undefined;
             },
             getIdByName:    function (name, alwaysArray) {
                 if (sandbox.verbose) sandbox.log('getIdByName(name=' + name + ', alwaysArray=' + alwaysArray + ') => ' + names[name], 'info');
@@ -1965,7 +2183,7 @@
                     try {
                         callback.call(sandbox, 'Function "setObject" is not allowed. Use adapter settings to allow it.');
                     } catch (e) {
-                        adapter.log.error('Error in callback: ' + e);
+                        errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                     }
                 }
             },
@@ -1975,7 +2193,7 @@
                     try {
                         callback.call(sandbox, 'Function "extendObject" is not allowed. Use adapter settings to allow it.');
                     } catch (e) {
-                        adapter.log.error('Error in callback: ' + e);
+                        errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                     }
                 }
             },
@@ -2041,13 +2259,13 @@
                         if (typeof min !== 'number') {
                             min = parseFloat(min);
                             if (isNaN(min)) {
-                                err = 'Wrong type of ' + name + '.common.min';
+                                err = 'Wrong type of ' + id + '.common.min';
                                 sandbox.log(err, 'error');
                                 if (typeof callback === 'function') {
                                     try {
                                         callback.call(sandbox, err);
                                     } catch (e) {
-                                        adapter.log.error('Error in callback: ' + e);
+                                        errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                     }
                                 }
                                 return;
@@ -2067,7 +2285,7 @@
                                     try {
                                         callback.call(sandbox, err);
                                     } catch (e) {
-                                        adapter.log.error('Error in callback: ' + e);
+                                        errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                     }
                                 }
                                 return;
@@ -2087,7 +2305,7 @@
                                     try {
                                         callback.call(sandbox, err);
                                     } catch (e) {
-                                        adapter.log.error('Error in callback: ' + e);
+                                        errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                     }
                                 }
                                 return;
@@ -2116,17 +2334,17 @@
                         if (err) adapter.log.warn('Cannot set object "' + name + '": ' + err);
 
                         if (initValue !== undefined) {
-							if (typeof initValue === 'object' && initValue.ack !== undefined) {
-                            	adapter.setState(name, initValue, callback);
-							} else {
-                            	adapter.setState(name, initValue, true, callback);
-							}
+                            if (typeof initValue === 'object' && initValue.ack !== undefined) {
+                                adapter.setState(name, initValue, callback);
+                            } else {
+                                adapter.setState(name, initValue, true, callback);
+                            }
                         } else {
                             if (typeof callback === 'function') {
                                 try {
                                     callback.call(sandbox, name);
                                 } catch (e) {
-                                    adapter.log.error('Error in callback: ' + e);
+                                    errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                 }
                             }
                         }
@@ -2146,11 +2364,11 @@
 
                                     if (initValue !== undefined) {
                                         adapter.setForeignState(name, initValue, callback);
-										if (typeof initValue === 'object' && initValue.ack !== undefined) {
-											adapter.setForeignState(name, initValue, callback);
-										} else {
-											adapter.setForeignState(name, initValue, true, callback);
-										}
+                                        if (typeof initValue === 'object' && initValue.ack !== undefined) {
+                                            adapter.setForeignState(name, initValue, callback);
+                                        } else {
+                                            adapter.setForeignState(name, initValue, true, callback);
+                                        }
                                     } else {
                                         adapter.setForeignState(name, null, true, callback);
                                     }
@@ -2165,10 +2383,10 @@
 
                                     if (initValue !== undefined) {
                                         if (typeof initValue === 'object' && initValue.ack !== undefined) {
-											adapter.setState(name, initValue, callback);
-										} else {
-											adapter.setState(name, initValue, true, callback);
-										}
+                                            adapter.setState(name, initValue, callback);
+                                        } else {
+                                            adapter.setState(name, initValue, true, callback);
+                                        }
                                     } else {
                                         adapter.setState(name, null, true, callback);
                                     }
@@ -2188,7 +2406,7 @@
                                 try {
                                     callback.call(sandbox, name);
                                 } catch (e) {
-                                    adapter.log.error('Error in callback: ' + e);
+                                    errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                 }
                             }
                         }
@@ -2220,7 +2438,7 @@
                                 try {
                                     callback.call(sandbox, err, found);
                                 } catch (e) {
-                                    adapter.log.error('Error in callback: ' + e);
+                                    errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                                 }
                             }
                         }
@@ -2235,13 +2453,28 @@
             sendto:    function (_adapter, cmd, msg, callback) {
                 return sandbox.sendTo(_adapter, cmd, msg, callback);
             },
+            sendToHost:    function (host, cmd, msg, callback) {
+                if (!adapter.config.enableSendToHost) {
+                    var error = 'sendToHost is not available. Please enable "Enable SendToHost" option in instance settings';
+                    adapter.log.error(error);
+                    sandbox.log(error);
+                    if (typeof callback === 'function') {
+                        setImmediate(function () {
+                            callback(error);
+                        });
+                    }
+                } else {
+                    if (sandbox.verbose) sandbox.log('sendToHost(adapter=' + host + ', cmd=' + cmd + ', msg=' + JSON.stringify(msg) + ')', 'info');
+                    adapter.sendToHost(host, cmd, msg, callback);
+                }
+            },
             setInterval:   function (callback, ms, arg1, arg2, arg3, arg4) {
                 var int = setInterval(function (_arg1, _arg2, _arg3, _arg4) {
                     if (typeof callback === 'function') {
                         try {
                             callback.call(sandbox, _arg1, _arg2, _arg3, _arg4);
                         } catch (e) {
-                            adapter.log.error('Error in callback: ' + e);
+                            errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                         }
                     }
                 }, ms, arg1, arg2, arg3, arg4);
@@ -2271,7 +2504,7 @@
                         try {
                             callback.call(sandbox, _arg1, _arg2, _arg3, _arg4);
                         } catch (e) {
-                            adapter.log.error('Error in callback: ' + e);
+                            errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                         }
                     }
                 }, ms, arg1, arg2, arg3, arg4);
@@ -2298,7 +2531,7 @@
                             try {
                                 callback.apply(this, arguments);
                             } catch (e) {
-                                adapter.log.error('Error in callback: ' + e);
+                                errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                             }
                         }
                     } else {
@@ -2350,12 +2583,26 @@
                     time = sandbox.getAstroDate(time.astro, time.date || new Date(), time.offset || 0);
                 }
 
-		        var daily = true;
-		        if (time) {
-		            daily = false;
+                var daily = true;
+                if (time) {
+                    daily = false;
                 }
                 if (time && typeof time !== 'object') {
-                    time = new Date(time);
+                    if (typeof time === 'string' && time.indexOf(' ') === -1 && time.indexOf('T') === -1) {
+                        var parts = time.split(':');
+                        time = new Date();
+                        time.setHours(parseInt(parts[0], 10));
+                        time.setMinutes(parseInt(parts[1], 10));
+                        time.setMilliseconds(0);
+
+                        if (parts.length === 3) {
+                            time.setSeconds(parseInt(parts[2], 10));
+                        } else {
+                            time.setSeconds(0);
+                        }
+                    } else {
+                        time = new Date(time);
+                    }
                 } else if (!time) {
                     time = new Date();
                     time.setMilliseconds(0);
@@ -2375,11 +2622,11 @@
                             startTime.setSeconds(0);
                         }
                     } else {
-			            daily = false;
+                        daily = false;
                         startTime = new Date(startTime);
                     }
                 } else {
-		            daily = false;
+                    daily = false;
                     startTime = new Date(startTime);
                 }
                 startTime = startTime.getTime();
@@ -2398,11 +2645,11 @@
                             endTime.setSeconds(0);
                         }
                     } else {
-			            daily = false;
+                        daily = false;
                         endTime = new Date(endTime);
                     }
                 } else if (endTime) {
-		            daily = false;
+                    daily = false;
                     endTime = new Date(endTime);
                 } else {
                     endTime = null;
@@ -2410,12 +2657,22 @@
 
                 if (endTime) endTime = endTime.getTime();
 
-                if (operation === 'between' && endTime) {
-		            if (startTime > endTime && daily) return !(time >= endTime && time < startTime);
-                      else return time >= startTime && time < endTime;
-                } else if (operation === 'not between' && endTime) {
-		            if (startTime > endTime && daily) return time >= endTime && time < startTime;
-                      else return !(time >= startTime && time < endTime);
+                if (operation === 'between') {
+                    if (endTime) {
+                        if (startTime > endTime && daily) return !(time >= endTime && time < startTime);
+                        else return time >= startTime && time < endTime;
+                    } else {
+                        adapter.log.warn('missing or unrecognized endTime expression: ' + endTime);
+                        return false;
+                    }
+                } else if (operation === 'not between') {
+                    if (endTime) {
+                        if (startTime > endTime && daily) return time >= endTime && time < startTime;
+                        else return !(time >= startTime && time < endTime);
+                    } else {
+                        adapter.log.warn('missing or unrecognized endTime expression: ' + endTime);
+                        return false;
+                    }
                 } else if (operation === '>') {
                     return time > startTime;
                 } else if (operation === '>=') {
@@ -2501,7 +2758,7 @@
                             try {
                                 callback.call(sandbox);
                             } catch (e) {
-                                adapter.log.error('Error in callback: ' + e);
+                                errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                             }
                         }, 0);
                     }
@@ -2535,7 +2792,7 @@
                             try {
                                 callback.call(sandbox);
                             } catch (e) {
-                                adapter.log.error('Error in callback: ' + e);
+                                errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                             }
                         }, 0);
                     }
@@ -2547,7 +2804,7 @@
             delFile: function (_adapter, fileName, callback) {
                 return sandbox.unlink(_adapter, fileName, callback);
             },
-			getHistory: function (instance, options, callback) {
+            getHistory: function (instance, options, callback) {
                 if (typeof instance === 'object') {
                     callback = options;
                     options  = instance;
@@ -2579,7 +2836,7 @@
                     try {
                         callback.call(sandbox, 'No default history instance found!');
                     } catch (e) {
-                        adapter.log.error('Error in callback: ' + e);
+                        errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                     }
                     return;
                 }
@@ -2590,7 +2847,7 @@
                     try {
                         callback.call(sandbox, 'Instance "' + instance + '" not found!');
                     } catch (e) {
-                        adapter.log.error('Error in callback: ' + e);
+                        errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                     }
                     return;
                 }
@@ -2603,7 +2860,7 @@
                         try {
                             callback.call(sandbox, 'Timeout', null, options, instance);
                         } catch (e) {
-                            adapter.log.error('Error in callback: ' + e);
+                            errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                         }
                         callback = null;
                     }
@@ -2619,7 +2876,7 @@
                         try {
                             callback.call(sandbox, result.error, result.result, options, instance);
                         } catch (e) {
-                            adapter.log.error('Error in callback: ' + e);
+                            errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                         }
                         callback = null;
                     }
@@ -2639,7 +2896,7 @@
                     } else {
                         if (objects[scriptName].common.enabled) {
                             objects[scriptName].common.enabled = false;
-                            adapter.extendForeignObject(scriptName, {common: {enabled: false}}, function (err, obj) {
+                            adapter.extendForeignObject(scriptName, {common: {enabled: false}}, function (/* err, obj */) {
                                 adapter.extendForeignObject(scriptName, {common: {enabled: true}}, function (err) {
                                     if (callback === 'function') callback(err);
                                 });
@@ -2768,7 +3025,7 @@
                             try {
                                 callback.call(sandbox);
                             } catch (e) {
-                                adapter.log.error('Error in callback: ' + e);
+                                errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                             }
                         }, 0);
                     }
@@ -2785,7 +3042,7 @@
                             try {
                                 callback.call(sandbox);
                             } catch (e) {
-                                adapter.log.error('Error in callback: ' + e);
+                                errorInCallback(e) //adapter.log.error('Error in callback: ' + e)
                             }
                         }, 0);
                     }
@@ -2799,17 +3056,11 @@
         try {
             script.runInNewContext(sandbox, {
                 filename:       name,
-                displayErrors:  true,
-                lineOffset:     globalScriptLines
+                displayErrors:  true
+                //lineOffset: globalScriptLines
             });
         } catch (e) {
-            var lines = e.stack.split('\n');
-            var stack = [];
-            for (var i = 0; i < lines.length; i++) {
-                if (lines[i].match(/runInNewContext/)) break;
-                stack.push(lines[i]);
-            }
-            adapter.log.error(name + ': ' + stack.join('\n'));
+            logError(name, e);
         }
     }
 
@@ -2939,8 +3190,14 @@
             if ((obj.common.engineType.match(/^[jJ]ava[sS]cript/) || obj.common.engineType === 'Blockly')) {
                 // Javascript
                 adapter.log.info('Start javascript ' + name);
-                scripts[name] = compile(globalScript + obj.common.source, name);
-                if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
+
+                var sourceFn = name;
+                if (webstormDebug) {
+                    var fn = name.replace(/^script.js./, '').replace(/\./g, '/');
+                    sourceFn = mods.path.join(webstormDebug, fn + '.js');
+                }
+                scripts[name] = compile(globalScript + obj.common.source, sourceFn);
+                if (scripts[name]) execute(scripts[name], sourceFn, obj.common.verbose, obj.common.debug);
                 if (typeof callback === 'function') callback(true, name);
             } else if (obj.common.engineType.match(/^[cC]offee/)) {
                 // CoffeeScript
@@ -2955,6 +3212,32 @@
                     if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
                     if (typeof callback === 'function') callback(true, name);
                 });
+            } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
+                // TypeScript
+                adapter.log.info(name + ': compiling TypeScript source...');
+                var filename = name.replace(/^script.js./, '').replace(/\./g, '/') + '.ts';
+                var tsCompiled = tsServer.compile(
+                    mods.path.join(__dirname, filename),
+                    obj.common.source
+                );
+                var errors = tsCompiled.diagnostics.map(function (diag) {
+                    return diag.annotatedSource + '\n';
+                }).join('\n');
+
+                if (tsCompiled.success) {
+                    if (errors.length > 0) {
+                        adapter.log.warn(name + ': TypeScript compilation had errors: \n' + errors);
+                    } else {
+                        adapter.log.info(name + ': TypeScript compilation successful');
+                    }
+                    // polyfill `exports` with an empty object so the vm doesn't choke
+                    var code = "(function(exports){" + tsCompiled.result + "}({}));";
+                    scripts[name] = compile(globalScript + '\n' + code, name);
+                    if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
+                    if (typeof callback === 'function') callback(true, name);
+                } else {
+                    adapter.log.error(name + ': TypeScript compilation failed: \n' + errors);
+                }
             }
         } else {
             var _name;
@@ -2982,495 +3265,31 @@
         }
     }
 
-    function patternMatching(event, pattern) {
-        if (!pattern.logic) pattern.logic = 'and';
+    function getPatternCompareFunctions(pattern) {
+        var func, functions = [];
+        functions.logic = pattern.logic || 'and';
+        //adapter.log.info('## '+JSON.stringify(pattern));
+        for (var key in pattern) {
+            if (key === 'logic') continue;
+            if (key === 'change' && pattern.change === 'any') continue;
+            if (!(func = patternCompareFunctions[key])) continue;
+            if (typeof (func = func(pattern)) !== 'function') continue;
+            functions.push(func);
+        }
+        return functions;
+    }
 
+    function patternMatching(event, patternFunctions) {
         var matched = false;
+        for (var i = 0, len = patternFunctions.length; i < len; i++) {
+            if (patternFunctions[i](event)) {
+                if (patternFunctions.logic === 'or') return true;
 
-        // state id matching
-        if (pattern.id) {
-            if (pattern.id instanceof RegExp || pattern.id.source) {
-                if (event.id && event.id.match(pattern.id)) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.id && pattern.id === event.id) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-
-        // state name matching
-        if (pattern.name) {
-            if (pattern.name instanceof RegExp || pattern.name.source) {
-                if (event.common.name && event.common.name.match(pattern.name)) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.common.name && pattern.name === event.common.name) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-
-        // todo ancestor name matching
-
-        // change matching
-        if (pattern.change) {
-            switch (pattern.change) {
-                case 'eq':
-                    if (event.newState.val === event.oldState.val) {
-                        if (pattern.logic === 'or') return true;
-                        matched = true;
-                    } else {
-                        if (pattern.logic === 'and') return false;
-                    }
-                    break;
-                case 'ne':
-                    if (event.newState.val !== event.oldState.val) {
-                        if (pattern.logic === 'or') return true;
-                        matched = true;
-                    } else {
-                        if (pattern.logic === 'and') return false;
-                    }
-                    break;
-                case 'gt':
-                    if (event.newState.val > event.oldState.val) {
-                        if (pattern.logic === 'or') return true;
-                        matched = true;
-                    } else {
-                        if (pattern.logic === 'and') return false;
-                    }
-                    break;
-                case 'ge':
-                    if (event.newState.val >= event.oldState.val) {
-                        if (pattern.logic === 'or') return true;
-                        matched = true;
-                    } else {
-                        if (pattern.logic === 'and') return false;
-                    }
-                    break;
-                case 'lt':
-                    if (event.newState.val < event.oldState.val) {
-                        if (pattern.logic === 'or') return true;
-                        matched = true;
-                    } else {
-                        if (pattern.logic === 'and') return false;
-                    }
-                    break;
-                case 'le':
-                    if (event.newState.val <= event.oldState.val) {
-                        if (pattern.logic === 'or') return true;
-                        matched = true;
-                    } else {
-                        if (pattern.logic === 'and') return false;
-                    }
-                    break;
-                default:
-                    // on any other logic, just signal about message
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                    break;
-            }
-        }
-
-        // Ack Matching
-        if (pattern.ack !== undefined) {
-            if (((pattern.ack === 'true'  || pattern.ack === true)  && (event.newState.ack === true  || event.newState.ack === 'true')) ||
-                ((pattern.ack === 'false' || pattern.ack === false) && (event.newState.ack === false || event.newState.ack === 'false'))) {
-                if (pattern.logic === 'or') return true;
                 matched = true;
             } else {
-                if (pattern.logic === 'and') return false;
+                if (patternFunctions.logic === 'and') return false;
             }
         }
-
-        // oldAck Matching
-        if (pattern.oldAck !== undefined) {
-            if (((pattern.oldAck === 'true'  || pattern.oldAck === true)  && (event.oldState.ack === true  || event.oldState.ack === 'true')) ||
-                ((pattern.oldAck === 'false' || pattern.oldAck === false) && (event.oldState.ack === false || event.oldState.ack === 'false'))) {
-                if (pattern.logic === 'or') return true;
-                matched = true;
-            } else {
-                if (pattern.logic === 'and') return false;
-            }
-        }
-
-        // Value Matching
-        if (pattern.val   !== undefined && pattern.val === event.newState.val) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.val !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.valGt !== undefined && event.newState.val > pattern.valGt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.valGt !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.valGe !== undefined && event.newState.val >= pattern.valGe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.valGe !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.valLt !== undefined && event.newState.val < pattern.valLt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.valLt !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.valLe !== undefined && event.newState.val <= pattern.valLe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.valLe !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.valNe !== undefined && event.newState.val !== pattern.valNe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.valNe !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // Old-Value matching
-        if (pattern.oldVal   !== undefined && pattern.oldVal === event.oldState.val) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldVal !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldValGt !== undefined && event.oldState.val > pattern.oldValGt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldValGt !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldValGe !== undefined && event.oldState.val >= pattern.oldValGe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldValGe !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldValLt !== undefined && event.oldState.val < pattern.oldValLt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldValLt !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldValLe !== undefined && event.oldState.val <= pattern.oldValLe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldValLe !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldValNe !== undefined && event.oldState.val !== pattern.oldValNe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldValNe !== undefined) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // newState.ts matching
-        if (pattern.ts   && pattern.ts === event.newState.ts) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.ts) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.tsGt && event.newState.ts > pattern.tsGt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.tsGt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.tsGe && event.newState.ts >= pattern.tsGe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.tsGe) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.tsLt && event.newState.ts < pattern.tsLt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.tsLt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.tsLe && event.newState.ts <= pattern.tsLe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.tsLe) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // oldState.ts matching
-        if (pattern.oldTs   && pattern.oldTs === event.oldState.ts) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldTs) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldTsGt && event.oldState.ts > pattern.oldTsGt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldTsGt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldTsGe && event.oldState.ts >= pattern.oldTsGe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldTsGe) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldTsLt && event.oldState.ts < pattern.oldTsLt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldTsLt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldTsLe && event.oldState.ts <= pattern.oldTsLe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldTsLe) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // newState.lc matching
-        if (pattern.lc   && pattern.lc === event.newState.lc) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.lc) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.lcGt && event.newState.lc > pattern.lcGt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.lcGt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.lcGe && event.newState.lc >= pattern.lcGe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.lcGe) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.lcLt && event.newState.lc < pattern.lcLt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.lcLt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.lcLe && event.newState.lc <= pattern.lcLe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.lcLe) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // oldState.lc matching
-        if (pattern.oldLc   && pattern.oldLc === event.oldState.lc) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldLc) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldLcGt && event.oldState.lc > pattern.oldLcGt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldLcGt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldLcGe && event.oldState.lc >= pattern.oldLcGe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldLcGe) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldLcLt && event.oldState.lc < pattern.oldLcLt) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldLcLt) {
-            if (pattern.logic === 'and') return false;
-        }
-        if (pattern.oldLcLe && event.oldState.lc <= pattern.oldLcLe) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldLcLe) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // newState.from matching
-        if (pattern.from && pattern.from === event.newState.from) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.from) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        if (pattern.fromNe && pattern.fromNe !== event.newState.from) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.fromNe) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // oldState.from matching
-        if (pattern.oldFrom && pattern.oldFrom === event.oldState.from) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldFrom) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        if (pattern.oldFromNe && pattern.oldFromNe !== event.oldState.from) {
-            if (pattern.logic === 'or') return true;
-            matched = true;
-        } else if (pattern.oldFromNe) {
-            if (pattern.logic === 'and') return false;
-        }
-
-        // channelId matching
-        if (pattern.channelId) {
-            if (pattern.channelId instanceof RegExp) {
-                if (event.channelId && event.channelId.match(pattern.channelId)) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.channelId && pattern.channelId === event.channelId) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-
-        // channelName matching
-        if (pattern.channelName) {
-            if (pattern.channelName instanceof RegExp) {
-                if (event.channelName && event.channelName.match(pattern.channelName)) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.channelName && pattern.channelName === event.channelName) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-
-        // deviceId matching
-        if (pattern.deviceId) {
-            if (pattern.deviceId instanceof RegExp) {
-                if (event.deviceId && event.deviceId.match(pattern.deviceId)) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.deviceId && pattern.deviceId === event.deviceId) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-
-        // deviceName matching
-        if (pattern.deviceName) {
-            if (pattern.deviceName instanceof RegExp) {
-                if (event.deviceName && event.deviceName.match(pattern.deviceName)) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.deviceName && pattern.deviceName === event.deviceName) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-        var subMatched;
-
-        // enumIds matching
-        if (pattern.enumId) {
-            if (pattern.enumId instanceof RegExp) {
-                subMatched = false;
-                for (var i = 0; i < event.enumIds.length; i++) {
-                    if (event.enumIds[i].match(pattern.enumId)) {
-                        subMatched = true;
-                        break;
-                    }
-                }
-                if (subMatched) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.enumIds && event.enumIds.indexOf(pattern.enumId) !== -1) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-
-        // enumNames matching
-        if (pattern.enumName) {
-            if (pattern.enumName instanceof RegExp) {
-                subMatched = false;
-                for (var j = 0; j < event.enumNames.length; j++) {
-                    if (event.enumNames[j].match(pattern.enumName)) {
-                        subMatched = true;
-                        break;
-                    }
-                }
-                if (subMatched) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            } else {
-                if (event.enumNames && event.enumNames.indexOf(pattern.enumName) !== -1) {
-                    if (pattern.logic === 'or') return true;
-                    matched = true;
-                } else {
-                    if (pattern.logic === 'and') return false;
-                }
-            }
-        }
-
         return matched;
     }
 
@@ -3482,6 +3301,8 @@
             if (!adapter.config.subscribe) {
                 states = res;
             }
+            
+            addGetProperty(states);
 
             // remember all IDs
             for (var id in res) {
@@ -3506,6 +3327,7 @@
                 // Collect all names
                 addToNames(objects[res[i].doc._id]);
             }
+            addGetProperty(objects);
 
             // set language for debug messages
             if (objects['system.config'] && objects['system.config'].common.language) words.setLanguage(objects['system.config'].common.language);
@@ -3513,9 +3335,11 @@
             // try to use system coordinates
             if (adapter.config.useSystemGPS && objects['system.config'] &&
                 objects['system.config'].common.latitude) {
-                adapter.config.latitude  = parseFloat(objects['system.config'].common.latitude);
-                adapter.config.longitude = parseFloat(objects['system.config'].common.longitude);
+                adapter.config.latitude  = objects['system.config'].common.latitude;
+                adapter.config.longitude = objects['system.config'].common.longitude;
             }
+            adapter.config.latitude  = parseFloat(adapter.config.latitude);
+            adapter.config.longitude = parseFloat(adapter.config.longitude);
 
             objectsReady = true;
             adapter.log.info('received all objects');

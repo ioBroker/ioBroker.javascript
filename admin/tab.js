@@ -14,7 +14,7 @@ function Scripts(main) {
     this.currentId      = null;
     this.engines        = [];
     this.currentEngine  = '';
-    this.languageLoaded = false;
+    this.languageLoaded = [false, false];
     this.blocklyWorkspace = null;
     
     function addScript(group) {
@@ -30,21 +30,23 @@ function Scripts(main) {
                 idx++;
                 name = newText + idx;
             }
-            var instance = '';
+            var instance   = '';
             var engineType = type;
 
             // find first instance
-            /*for (var i = 0; i < that.main.instances.length; i++) {
+            for (var i = 0; i < that.main.instances.length; i++) {
                 if (that.main.objects[that.main.instances[i]] && that.main.objects[that.main.instances[i]] && that.main.objects[that.main.instances[i]].common.engineTypes) {
                     instance = that.main.instances[i];
-                    if (typeof that.main.objects[main.instances[i]].common.engineTypes === 'string') {
-                        engineType = that.main.objects[that.main.instances[i]].common.engineTypes;
-                    } else {
-                        engineType = that.main.objects[that.main.instances[i]].common.engineTypes[0];
+                    if (!engineType) {
+                         if (typeof that.main.objects[main.instances[i]].common.engineTypes === 'string') {
+                            engineType = that.main.objects[that.main.instances[i]].common.engineTypes;
+                         } else {
+                            engineType = that.main.objects[that.main.instances[i]].common.engineTypes[0];
+                         }
                     }
                     break;
                 }
-            }*/
+            }
 
             var id = group + '.' + name.replace(/[\s"']/g, '_');
             that.main.socket.emit('setObject', id, {
@@ -62,7 +64,7 @@ function Scripts(main) {
                     that.init(true);
                 } else {
                     setTimeout(function () {
-                        that.$grid.selectId('show', id);
+                        that.$grid.treeTable('show', id);
                         editScript(id);
                     }, 500);
                 }
@@ -121,7 +123,7 @@ function Scripts(main) {
                                         that.init(true);
                                     } else {
                                         setTimeout(function () {
-                                            that.$grid.selectId('show', group);
+                                            that.$grid.treeTable('show', group);
                                             editScript(group);
                                         }, 500);
                                     }
@@ -137,7 +139,7 @@ function Scripts(main) {
                         }
                     }
                 ],
-                open: function () {
+                open: function (event) {
                     $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                     $('#script-group-button-save').button('disable');
                     $('#script-group-button-cancel').button('enable');
@@ -329,7 +331,9 @@ function Scripts(main) {
                         adapter: 'javascript',
                         id:      'script.js'
                     }, function (data) {
-                        if (!data || data.error) {
+                        if (data === 'permissionError') {
+                            main.showError(_(data));
+                        } else if (!data || data.error) {
                             main.showError(data ? data.error : 'Unknown error');
                         } else {
                             main.showMessage(_('Ok'));
@@ -348,12 +352,12 @@ function Scripts(main) {
         fileLang.setAttribute('src', 'google-blockly/msg/js/' + (systemLang || 'en') + '.js');
         // most browsers
         fileLang.onload = function () {
-            that.languageLoaded = true;
+            that.languageLoaded[0] = true;
         };
         // IE 6 & 7
         fileLang.onreadystatechange = function() {
             if (this.readyState === 'complete') {
-                that.languageLoaded = true;
+                that.languageLoaded[0] = true;
             }
         };
         document.getElementsByTagName('head')[0].appendChild(fileLang);
@@ -363,38 +367,42 @@ function Scripts(main) {
         fileCustom.setAttribute('src', 'google-blockly/own/msg/' + (systemLang || 'en') + '.js');
         // most browsers
         fileCustom.onload = function () {
-            that.languageLoaded = true;
+            that.languageLoaded[1] = true;
         };
         // IE 6 & 7
         fileCustom.onreadystatechange = function() {
             if (this.readyState === 'complete') {
-                that.languageLoaded = true;
+                that.languageLoaded[1] = true;
             }
         };
         document.getElementsByTagName('head')[0].appendChild(fileCustom);
     };
 
     this.resize = function (width, height) {
-        var wasVisible = $('#blockly-editor').data('wasVisible');
+        var $blocklyEditor = $('#blockly-editor');
+        var wasVisible = $blocklyEditor.data('wasVisible');
         if (wasVisible !== true && wasVisible !== false) {
-            wasVisible = $('#blockly-editor').is(':visible');
+            wasVisible = $blocklyEditor.is(':visible');
         }
         // Set the height of svg
         if (wasVisible === true) {
-            $('#blockly-editor').hide();
-            $('.blocklyWidgetDiv').hide();
-            $('.blocklyTooltipDiv').hide();
-            $('.blocklyToolboxDiv').hide();
-            $('#blockly-editor svg').height($('#height-editor').height());
-            $('#blockly-editor').show();
-            $('.blocklyWidgetDiv').show();
-            $('.blocklyTooltipDiv').show();
-            $('.blocklyToolboxDiv').show();
+            $blocklyEditor.hide();
+            $blocklyWidgetDiv = $('.blocklyWidgetDiv');
+            $blocklyTooltipDiv = $('.blocklyTooltipDiv');
+            $blocklyToolboxDiv = $('.blocklyToolboxDiv');
+            $blocklyWidgetDiv.hide();
+            $blocklyTooltipDiv.hide();
+            $blocklyToolboxDiv.hide();
+            $blocklyEditor.find('svg').height($('#height-editor').height());
+            $blocklyEditor.show();
+            $blocklyWidgetDiv.show();
+            $blocklyTooltipDiv.show();
+            $blocklyToolboxDiv.show();
         } else {
-            $('#blockly-editor svg').height($('#height-editor').height());
+            $blocklyEditor.find('svg').height($('#height-editor').height());
         }
 
-        $('#blockly-editor').data('wasVisible', null);
+        $blocklyEditor.data('wasVisible', null);
 
         if (that.blocklyWorkspace) Blockly.svgResize(that.blocklyWorkspace);
 
@@ -417,6 +425,8 @@ function Scripts(main) {
             that.editor.getSession().setMode('ace/mode/javascript');
         } else if (that.currentEngine.match(/^[cC]offee[sS]cript/)) {
             that.editor.getSession().setMode('ace/mode/coffee');
+        } else if (that.currentEngine.match(/^[tT]ype[sS]cript/)) {
+            that.editor.getSession().setMode('ace/mode/typescript');
         }
     }
 
@@ -435,7 +445,7 @@ function Scripts(main) {
 
     function jsCode2Blockly(text) {
         text = text || '';
-        var lines = text.split(/[\r\n|\r|\n]+/g);
+        var lines = text.split(/[\r\n]+|\r|\n/g);
         var xml = '';
         for (var l = lines.length - 1; l >= 0; l--) {
             if (lines[l].substring(0, 2) === '//') {
@@ -460,7 +470,7 @@ function Scripts(main) {
 
     function removeBlocklyFromCode(text) {
         text = text || '';
-        var lines = text.split(/[\r\n|\r|\n]+/g);
+        var lines = text.split(/[\r\n]+|\r|\n/g);
         var xml = '';
         for (var l = lines.length - 1; l >= 0; l--) {
             if (lines[l].substring(0, 2) === '//') {
@@ -484,6 +494,245 @@ function Scripts(main) {
         return lines.join('\n');
     }
 
+    function buildRules() {
+        var rules_basic = {
+            condition: 'AND',
+            rules: [{
+                id: 'id',
+                operator: 'is',
+                value: 'abc'
+            }]
+        };
+        var $builderWidgets = $('#builder-widgets');
+        // Fix for Selectize
+        $builderWidgets.on('afterCreateRuleInput.queryBuilder', function(e, rule) {
+            if (rule.filter.plugin === 'selectize') {
+                rule.$el.find('.rule-value-container').css('min-width', '200px')
+                    .find('.selectize-control').removeClass('form-control');
+            }
+        }).queryBuilder({
+            //plugins: ['bt-tooltip-errors'],
+            operators: [
+                { type: 'equal', optgroup: 'basic' },
+                { type: 'not_equal', optgroup: 'basic' },
+                { type: 'is', optgroup: 'custom', nb_inputs: 2, multiple: false, apply_to: ['string'] }
+            ],
+            filters: [{
+                id:    'id',
+                label: _('Value of'),
+                type: 'string',
+                operators: ['is']
+            }, {
+                id:    'time',
+                label: _('Time'),
+                placeholder: 'HH:mm',
+                //input: 'select',
+                type: 'string',
+                validation: {
+                    format: /^\d{2}:\d{2}$/
+                },
+                operators: ['equal']
+            }, {
+                id:    'test',
+                label: _('test'),
+                placeholder: 'HH:mm',
+                //input: 'select',
+                type: 'string',
+                operators: ['is'],
+                input: function(rule, name) {
+                    var $container = rule.$el.find('.rule-value-container');
+
+                    $container.on('change', '[name='+ name +'_1]', function(){
+                        var h = '';
+
+                        switch ($(this).val()) {
+                            case 'A':
+                                h = '<option value="-1">-</option> <option value="1">1</option> <option value="2">2</option>';
+                                break;
+                            case 'B':
+                                h = '<option value="-1">-</option> <option value="3">3</option> <option value="4">4</option>';
+                                break;
+                            case 'C':
+                                h = '<option value="-1">-</option> <option value="5">5</option> <option value="6">6</option>';
+                                break;
+                        }
+
+                        $container.find('[name$=_2]')
+                            .html(h).toggle(!!h)
+                            .val('-1').trigger('change');
+                    });
+
+                    return '\
+                      <select name="' + name + '_id"> \
+                        <option value="-1">-</option> \
+                        <option value="A">A</option> \
+                        <option value="B">B</option> \
+                        <option value="C">C</option> \
+                      </select> \
+                      is \
+                      <input name="' + name + '_value" />';
+                },
+                valueGetter: function(rule) {
+                    return rule.$el.find('.rule-value-container [name$=_1]').val()
+                        +'.'+ rule.$el.find('.rule-value-container [name$=_2]').val();
+                },
+                valueSetter: function(rule, value) {
+                    if (rule.operator.nb_inputs > 0) {
+                        var val = value.split('.');
+
+                        rule.$el.find('.rule-value-container [name$=_1]').val(val[0]).trigger('change');
+                        rule.$el.find('.rule-value-container [name$=_2]').val(val[1]).trigger('change');
+                    }
+                }
+            }],
+            /*filters: [{
+             id: 'date',
+             label: 'Datepicker',
+             type: 'date',
+             validation: {
+             format: 'YYYY/MM/DD'
+             },
+             plugin: 'datepicker',
+             plugin_config: {
+             format: 'yyyy/mm/dd',
+             todayBtn: 'linked',
+             todayHighlight: true,
+             autoclose: true
+             }
+             }, {
+             id: 'rate',
+             label: 'Slider',
+             type: 'integer',
+             validation: {
+             min: 0,
+             max: 100
+             },
+             plugin: 'slider',
+             plugin_config: {
+             min: 0,
+             max: 100,
+             value: 0
+             },
+             valueSetter: function(rule, value) {
+             if (rule.operator.nb_inputs == 1) value = [value];
+             rule.$el.find('.rule-value-container input').each(function(i) {
+             //$(this).slider('setValue', value[i] || 0);
+             });
+             },
+             valueGetter: function(rule) {
+             var value = [];
+             rule.$el.find('.rule-value-container input').each(function() {
+             //value.push($(this).slider('getValue'));
+             });
+             return rule.operator.nb_inputs == 1 ? value[0] : value;
+             }
+             }, {
+             id: 'category',
+             label: 'Selectize',
+             type: 'string',
+             plugin: 'selectize',
+             plugin_config: {
+             valueField: 'id',
+             labelField: 'name',
+             searchField: 'name',
+             sortField: 'name',
+             create: true,
+             maxItems: 1,
+             plugins: ['remove_button'],
+             onInitialize: function() {
+             var that = this;
+
+             //if (localStorage.demoData === undefined) {
+             //    $.getJSON(baseurl + '/assets/demo-data.json', function(data) {
+             //        localStorage.demoData = JSON.stringify(data);
+             //        data.forEach(function(item) {
+             //            that.addOption(item);
+             //        });
+             //    });
+             //}
+             //else {
+             //    JSON.parse(localStorage.demoData).forEach(function(item) {
+             //        that.addOption(item);
+             //    });
+             //}
+             }
+             },
+             valueSetter: function(rule, value) {
+             rule.$el.find('.rule-value-container input')[0].selectize.setValue(value);
+             }
+             }, {
+             id: 'coord',
+             label: 'Coordinates',
+             type: 'string',
+             validation: {
+             format: /^[A-C]{1}.[1-6]{1}$/
+             },
+             input: function(rule, name) {
+             var $container = rule.$el.find('.rule-value-container');
+
+             $container.on('change', '[name='+ name +'_1]', function(){
+             var h = '';
+
+             switch ($(this).val()) {
+             case 'A':
+             h = '<option value="-1">-</option> <option value="1">1</option> <option value="2">2</option>';
+             break;
+             case 'B':
+             h = '<option value="-1">-</option> <option value="3">3</option> <option value="4">4</option>';
+             break;
+             case 'C':
+             h = '<option value="-1">-</option> <option value="5">5</option> <option value="6">6</option>';
+             break;
+             }
+
+             $container.find('[name$=_2]')
+             .html(h).toggle(!!h)
+             .val('-1').trigger('change');
+             });
+
+             return '\
+             <select name="'+ name +'_1"> \
+             <option value="-1">-</option> \
+             <option value="A">A</option> \
+             <option value="B">B</option> \
+             <option value="C">C</option> \
+             </select> \
+             <select name="'+ name +'_2" style="display:none;"></select>';
+             },
+             valueGetter: function(rule) {
+             return rule.$el.find('.rule-value-container [name$=_1]').val()
+             +'.'+ rule.$el.find('.rule-value-container [name$=_2]').val();
+             },
+             valueSetter: function(rule, value) {
+             if (rule.operator.nb_inputs > 0) {
+             var val = value.split('.');
+
+             rule.$el.find('.rule-value-container [name$=_1]').val(val[0]).trigger('change');
+             rule.$el.find('.rule-value-container [name$=_2]').val(val[1]).trigger('change');
+             }
+             }
+             }],*/
+
+            rules: rules_basic
+        });
+
+        $('#btn-reset').on('click', function() {
+            $builderWidgets.queryBuilder('reset');
+        });
+
+        $('#btn-set').on('click', function() {
+            $builderWidgets.queryBuilder('setRules', rules_basic);
+        });
+
+        $('#btn-get').on('click', function() {
+            var result = $builderWidgets.queryBuilder('getRules');
+
+            if (!$.isEmptyObject(result)) {
+                alert(JSON.stringify(result, null, 2));
+            }
+        });
+    }
+
     function editScript(id) {
         that.initEditor();
 
@@ -502,7 +751,7 @@ function Scripts(main) {
                             editScript(id);
                         }, 0);
                     } else {
-                        that.$grid.selectId('show', that.currentId);
+                        that.$grid.treeTable('show', that.currentId);
                     }
                 });
                 return;
@@ -535,22 +784,32 @@ function Scripts(main) {
 
             that.editor.getSession().setUseWrapMode($('#edit-wrap-lines').prop('checked'));
 
-            if (obj.common.engineType !== 'Blockly') {
+            var $editType = $('#edit-script-engine-type');
+            if (obj.common.engineType !== 'Blockly' && obj.common.engineType !== 'Rule') {
                 // remove Blockly from list
-                $('#edit-script-engine-type').find('option[value="Blockly"]').remove();
-            } else {
-                if (!$('#edit-script-engine-type').find('option[value="Blockly"]').length) {
-                    $('#edit-script-engine-type').prepend('<option value="Blockly">Blockly</option>');
+                $editType.find('option[value="Blockly"]').remove();
+                $editType.find('option[value="Rule"]').remove();
+            } else if (obj.common.engineType === 'Blockly') {
+                $editType.find('option[value="Rule"]').remove();
+                if (!$editType.find('option[value="Blockly"]').length) {
+                    $editType.prepend('<option value="Blockly">Blockly</option>');
+                }
+            } else if (obj.common.engineType === 'Rule') {
+                $editType.find('option[value="Blockly"]').remove();
+                if (!$editType.find('option[value="Rule"]').length) {
+                    $editType.prepend('<option value="Rule">' + _('Rule') + '</option>');
                 }
             }
             that.currentEngine = obj.common.engineType;
 
             // Add engine even if it is not installed
             if (that.engines.indexOf(obj.common.engineType) === -1) {
-                $('#edit-script-engine-type').append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
+                if (!$editType.find('option[value="' + obj.common.engineType + '"]').length) {
+                    $editType.append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
+                }
             }
 
-            $('#edit-script-engine-type').val(obj.common.engineType);
+            $editType.val(obj.common.engineType);
 
             if (obj.common.engineType === 'Blockly') {
                 that.editor.getSession().setMode('ace/mode/javascript');
@@ -580,229 +839,14 @@ function Scripts(main) {
                 that.editor.getSession().setUseWorker(true); // enable syntax check
                 that.editor.setReadOnly(false);
                 switchViews(false, obj.common.engineType);
+            } else if (obj.common.engineType && obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
+                that.editor.getSession().setMode('ace/mode/typescript');
+                that.editor.getSession().setUseWorker(true); // enable syntax check
+                that.editor.setReadOnly(false);
+                switchViews(false, obj.common.engineType);
             } else if(obj.common.engineType === 'Rule') {
                 switchViews(true, obj.common.engineType);
-                var rules_basic = {
-                    condition: 'AND',
-                    rules: [{
-                        id: 'price',
-                        operator: 'less',
-                        value: 10.25
-                    }, {
-                        condition: 'OR',
-                        rules: [{
-                            id: 'category',
-                            operator: 'equal',
-                            value: 2
-                        }, {
-                            id: 'category',
-                            operator: 'equal',
-                            value: 1
-                        }]
-                    }]
-                };
-
-                // Fix for Selectize
-                $('#builder-widgets').on('afterCreateRuleInput.queryBuilder', function(e, rule) {
-                    if (rule.filter.plugin === 'selectize') {
-                        rule.$el.find('.rule-value-container').css('min-width', '200px')
-                            .find('.selectize-control').removeClass('form-control');
-                    }
-                }).queryBuilder({
-                    //plugins: ['bt-tooltip-errors'],
-
-                    filters: [{
-                        id: 'name',
-                        label: 'Name',
-                        type: 'string'
-                    }, {
-                        id: 'category',
-                        label: 'Category',
-                        type: 'integer',
-                        input: 'select',
-                        values: {
-                            1: 'Books',
-                            2: 'Movies',
-                            3: 'Music',
-                            4: 'Tools',
-                            5: 'Goodies',
-                            6: 'Clothes'
-                        },
-                        operators: ['equal', 'not_equal', 'in', 'not_in', 'is_null', 'is_not_null']
-                    }, {
-                        id: 'in_stock',
-                        label: 'In stock',
-                        type: 'integer',
-                        input: 'radio',
-                        values: {
-                            1: 'Yes',
-                            0: 'No'
-                        },
-                        operators: ['equal']
-                    }, {
-                        id: 'price',
-                        label: 'Price',
-                        type: 'double',
-                        validation: {
-                            min: 0,
-                            step: 0.01
-                        }
-                    }, {
-                        id: 'id',
-                        label: 'Identifier',
-                        type: 'string',
-                        placeholder: '____-____-____',
-                        operators: ['equal', 'not_equal'],
-                        validation: {
-                            format: /^.{4}-.{4}-.{4}$/
-                        }
-                    }],
-                    /*filters: [{
-                        id: 'date',
-                        label: 'Datepicker',
-                        type: 'date',
-                        validation: {
-                            format: 'YYYY/MM/DD'
-                        },
-                        plugin: 'datepicker',
-                        plugin_config: {
-                            format: 'yyyy/mm/dd',
-                            todayBtn: 'linked',
-                            todayHighlight: true,
-                            autoclose: true
-                        }
-                    }, {
-                        id: 'rate',
-                        label: 'Slider',
-                        type: 'integer',
-                        validation: {
-                            min: 0,
-                            max: 100
-                        },
-                        plugin: 'slider',
-                        plugin_config: {
-                            min: 0,
-                            max: 100,
-                            value: 0
-                        },
-                        valueSetter: function(rule, value) {
-                            if (rule.operator.nb_inputs == 1) value = [value];
-                            rule.$el.find('.rule-value-container input').each(function(i) {
-                                //$(this).slider('setValue', value[i] || 0);
-                            });
-                        },
-                        valueGetter: function(rule) {
-                            var value = [];
-                            rule.$el.find('.rule-value-container input').each(function() {
-                                //value.push($(this).slider('getValue'));
-                            });
-                            return rule.operator.nb_inputs == 1 ? value[0] : value;
-                        }
-                    }, {
-                        id: 'category',
-                        label: 'Selectize',
-                        type: 'string',
-                        plugin: 'selectize',
-                        plugin_config: {
-                            valueField: 'id',
-                            labelField: 'name',
-                            searchField: 'name',
-                            sortField: 'name',
-                            create: true,
-                            maxItems: 1,
-                            plugins: ['remove_button'],
-                            onInitialize: function() {
-                                var that = this;
-
-                                //if (localStorage.demoData === undefined) {
-                                //    $.getJSON(baseurl + '/assets/demo-data.json', function(data) {
-                                //        localStorage.demoData = JSON.stringify(data);
-                                //        data.forEach(function(item) {
-                                //            that.addOption(item);
-                                //        });
-                                //    });
-                                //}
-                                //else {
-                                //    JSON.parse(localStorage.demoData).forEach(function(item) {
-                                //        that.addOption(item);
-                                //    });
-                                //}
-                            }
-                        },
-                        valueSetter: function(rule, value) {
-                            rule.$el.find('.rule-value-container input')[0].selectize.setValue(value);
-                        }
-                    }, {
-                        id: 'coord',
-                        label: 'Coordinates',
-                        type: 'string',
-                        validation: {
-                            format: /^[A-C]{1}.[1-6]{1}$/
-                        },
-                        input: function(rule, name) {
-                            var $container = rule.$el.find('.rule-value-container');
-
-                            $container.on('change', '[name='+ name +'_1]', function(){
-                                var h = '';
-
-                                switch ($(this).val()) {
-                                    case 'A':
-                                        h = '<option value="-1">-</option> <option value="1">1</option> <option value="2">2</option>';
-                                        break;
-                                    case 'B':
-                                        h = '<option value="-1">-</option> <option value="3">3</option> <option value="4">4</option>';
-                                        break;
-                                    case 'C':
-                                        h = '<option value="-1">-</option> <option value="5">5</option> <option value="6">6</option>';
-                                        break;
-                                }
-
-                                $container.find('[name$=_2]')
-                                    .html(h).toggle(!!h)
-                                    .val('-1').trigger('change');
-                            });
-
-                            return '\
-      <select name="'+ name +'_1"> \
-        <option value="-1">-</option> \
-        <option value="A">A</option> \
-        <option value="B">B</option> \
-        <option value="C">C</option> \
-      </select> \
-      <select name="'+ name +'_2" style="display:none;"></select>';
-                        },
-                        valueGetter: function(rule) {
-                            return rule.$el.find('.rule-value-container [name$=_1]').val()
-                                +'.'+ rule.$el.find('.rule-value-container [name$=_2]').val();
-                        },
-                        valueSetter: function(rule, value) {
-                            if (rule.operator.nb_inputs > 0) {
-                                var val = value.split('.');
-
-                                rule.$el.find('.rule-value-container [name$=_1]').val(val[0]).trigger('change');
-                                rule.$el.find('.rule-value-container [name$=_2]').val(val[1]).trigger('change');
-                            }
-                        }
-                    }],*/
-
-                    rules: rules_basic
-                });
-
-                $('#btn-reset').on('click', function() {
-                    $('#builder-widgets').queryBuilder('reset');
-                });
-
-                $('#btn-set').on('click', function() {
-                    $('#builder-widgets').queryBuilder('setRules', rules_basic);
-                });
-
-                $('#btn-get').on('click', function() {
-                    var result = $('#builder-widgets').queryBuilder('getRules');
-
-                    if (!$.isEmptyObject(result)) {
-                        alert(JSON.stringify(result, null, 2));
-                    }
-                });
+                buildRules()
             }
 
             that.changed = false;
@@ -832,8 +876,9 @@ function Scripts(main) {
             $('#edit-script-verbose').prop('checked', !!obj.common.verbose);
 
             that.changed = false;
-            $('#editor-scripts-textarea').height(100);
-            if ($('#editor-scripts-textarea').hasClass('ui-resizable')) $('#editor-scripts-textarea').resizable('destroy');
+            var $editorScriptsTextarea = $('#editor-scripts-textarea');
+            $editorScriptsTextarea.height(100);
+            if ($editorScriptsTextarea.hasClass('ui-resizable')) $('#editor-scripts-textarea').resizable('destroy');
 
             switchViews(false, null);
 
@@ -986,8 +1031,9 @@ function Scripts(main) {
         }
 
         if (elemName) {
-            var val = $('#' + elemName).val();
-            $('#' + elemName).html(text).val(val);
+            var $elemName = $('#' + elemName);
+            var val = $elemName.val();
+            $elemName.html(text).val(val);
         }
     }
 
@@ -1023,14 +1069,14 @@ function Scripts(main) {
                         });
                     }
                 } else {
-                    //var prefix;
+                    // var prefix;
 
-                    _obj.common.engineType = newCommon.engineType || _obj.common.engineType || 'Javascript/js';
-                    var parts = _obj.common.engineType.split('/');
+                    // var parts = _obj.common.engineType.split('/');
 
-                    //prefix = 'script.' + (parts[1] || parts[0]) + '.';
+                    // prefix = 'script.' + (parts[1] || parts[0]) + '.';
 
-                    if (_obj) {
+                    if (_obj && _obj.common) {
+                        _obj.common.engineType = newCommon.engineType || _obj.common.engineType || 'Javascript/js';
                         that.main.socket.emit('delObject', oldId, function (err) {
                             if (err) {
                                 that.main.showError(err);
@@ -1060,7 +1106,7 @@ function Scripts(main) {
                             that.init(true);
                         } else {
                             setTimeout(function () {
-                                that.$grid.selectId('show', newId);
+                                that.$grid.treeTable('show', newId);
                             }, 500);
                         }
                         cb && cb(err);
@@ -1095,6 +1141,8 @@ function Scripts(main) {
             if (isBlocklyView === undefined) {
                 isBlocklyView = !$('#script-editor').is(':visible');
             }
+            $('#edit-insert-id').hide();
+            $('.edit-cron-id').hide();
 
             if (isBlocklyView) {
 
@@ -1109,7 +1157,7 @@ function Scripts(main) {
                 $('.blocklyTooltipDiv').show();
                 $('.blocklyToolboxDiv').show();
                 $('.edit-wrap-lines').hide();
-                $('#edit-check-blocks').show();
+                 $('#edit-check-blocks').show();
                 $('#edit-export-blocks').show();
                 $('#edit-import-blocks').show();
                 if (that.blocklyWorkspace) Blockly.svgResize(that.blocklyWorkspace);
@@ -1131,6 +1179,8 @@ function Scripts(main) {
                 $('#edit-import-blocks').hide();
             }
         } else if (engineType === 'Rule') {
+            $('#edit-insert-id').hide();
+            $('.edit-cron-id').hide();
             $('#builder-widgets').show();
             $('#show-blockly-id').hide();
             $('#script-editor').hide();
@@ -1143,6 +1193,8 @@ function Scripts(main) {
             $('#edit-export-blocks').hide();
             $('#edit-import-blocks').hide();
         } else {
+            $('#edit-insert-id').show();
+            $('.edit-cron-id').show();
             $('#builder-widgets').hide();
             $('#show-blockly-id').hide();
             $('#script-editor').show();
@@ -1302,21 +1354,26 @@ function Scripts(main) {
         }
     };
 
-    function _deleteGroup(id, originalGroup, confirmed) {
-        confirmed.push(id);
+    function _deleteGroup(id, originalGroup, confirmed, deleted) {
+        if (confirmed.indexOf(id) === -1) {
+            confirmed.push(id);
+        }
+
         // find all elements
         for (var l = 0; l < that.list.length; l++) {
-            if (that.list[l].substring(0, id.length + 1) === id + '.') {
-                deleteId(that.list[l], id, confirmed);
+            if (that.list[l].substring(0, id.length + 1) === id + '.' && (!deleted || deleted.indexOf(that.list[l]) === -1)) {
+                deleteId(that.list[l], id, confirmed, deleted);
                 return;
             }
         }
+
         for (var g = 0; g < that.groups.length; g++) {
             if (that.groups[g].substring(0, id.length + 1) === id + '.') {
-                deleteId(that.groups[g], id, confirmed);
+                deleteId(that.groups[g], id, confirmed, deleted);
                 return;
             }
         }
+
         that.main.socket.emit('delObject', id, function (err) {
             if (err) {
                 if (err) {
@@ -1325,48 +1382,50 @@ function Scripts(main) {
                 }
             } else if (originalGroup !== id) {
                 setTimeout(function () {
-                    deleteId(originalGroup, null, confirmed);
+                    deleteId(originalGroup, null, confirmed, deleted);
                 }, 0);
             } else {
                 // finish
             }
         });
     }
-    function deleteId(id, originalGroup, confirmed) {
+    function deleteId(id, originalGroup, confirmed, deleted) {
         originalGroup = originalGroup || id;
-        confirmed = confirmed || [];
+        confirmed     = confirmed     || [];
+        deleted       = deleted       || [];
 
         if (that.main.objects[id] && that.main.objects[id].type === 'script') {
             that.main.confirmMessage(_('Are you sure to delete script %s?', that.main.objects[id].common.name), null, 'help', function (result) {
                 if (result) {
                     that.main.socket.emit('delObject', id, function (err) {
                         if (err) {
-                            if (err) {
-                                that.main.showError(err);
-                                that.init(true);
-                            }
+                            that.main.showError(err);
+                            that.init(true);
                         } else {
+                            deleted.push(id);
                             setTimeout(function () {
-                                deleteId(originalGroup, null, confirmed);
+                                deleteId(originalGroup, null, confirmed, deleted);
                             }, 0);
                         }
                     });
                 } else {
-
+                    // Do nothing
                 }
             });
         } else {
             var name = id;
             if (confirmed.indexOf(id) === -1) {
-                if (that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.name) name = that.main.objects[id].common.name;
+                if (that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.name) {
+                    name = that.main.objects[id].common.name;
+                }
 
                 that.main.confirmMessage(_('Are you sure to delete group <span style="color: blue">%s</span> and <span style="color: red">all</span> scripts in it?', name), null, 'help', function (result) {
                     if (result) {
-                        _deleteGroup(id, originalGroup, confirmed);
+                        _deleteGroup(id, originalGroup, confirmed, deleted);
                     }
                 });
             } else {
-                _deleteGroup(id, originalGroup, confirmed);
+                _deleteGroup(id, originalGroup, confirmed, deleted);
             }
         }
     }
@@ -1457,11 +1516,10 @@ function Scripts(main) {
                             }
                         });
                     }
-
                 });
             } else {
                 fillGroups('edit-script-group');
-                that.$grid.selectId('reinit');
+                that.$grid.treeTable('reinit');
                 applyResizableH(true, 1000);
                 cb && cb();
             }
@@ -1545,11 +1603,12 @@ function Scripts(main) {
         $dz.hide();
         var reader = new FileReader();
         reader.onload = function (evt) {
-            $('.import-file-name').html('<img src="zip.png" /><br><span style="color: black; font-weight: bold">[' + editGetReadableSize(file.size) + ']</span><br><span style="color: black; font-weight: bold">' + file.name + '</span>');
+            var $importFileName = $('.import-file-name');
+            $importFileName.html('<img src="zip.png" /><br><span style="color: black; font-weight: bold">[' + editGetReadableSize(file.size) + ']</span><br><span style="color: black; font-weight: bold">' + file.name + '</span>');
             // string has form data:;base64,TEXT==
-            $('.import-file-name').data('file', evt.target.result.split(',')[1]);
+            $importFileName.data('file', evt.target.result.split(',')[1]);
             $('.import-text-drop-plus').hide();
-            if ($('.import-file-name').data('file')) {
+            if ($importFileName.data('file')) {
                 $('#start_import_scripts').button('enable');
             } else {
                 $('#start_import_scripts').button('disable');
@@ -1613,7 +1672,7 @@ function Scripts(main) {
                 close: function () {
                     $('#dialog-export-blockly-textarea').val('');
                 },
-                open: function () {
+                open: function (event) {
                     $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                     $('#dialog-export-blockly-textarea').focus();
                 },
@@ -1733,15 +1792,16 @@ function Scripts(main) {
 
     this.init = function (update) {
         var that = this;
-        if (!this.main.objectsLoaded || !this.languageLoaded) {
+        if (!this.main.objectsLoaded || !this.languageLoaded[0] || !this.languageLoaded[1]) {
             setTimeout(function () {
                 that.init(update);
             }, 250);
             return;
         }
 
-        if (!$('#blockly-editor').data('inited')) {
-            $('#blockly-editor').data('inited', true);
+        var $blocklyEditor = $('#blockly-editor');
+        if (!$blocklyEditor.data('inited')) {
+            $blocklyEditor.data('inited', true);
             loadCustomBlockly(function () {
                 MSG.catSystem = Blockly.Words['System'][systemLang];
                 MSG.catSendto = Blockly.Words['Sendto'][systemLang];
@@ -1757,7 +1817,9 @@ function Scripts(main) {
                     // add blocks
                     blocks += '<category name="' + Blockly.Words[name][systemLang] + '" colour="' + Blockly[name].HUE + '">';
                     for (var _b in Blockly[name].blocks) {
-                        blocks += Blockly[name].blocks[_b];
+                        if (Blockly[name].blocks.hasOwnProperty(_b)) {
+                            blocks += Blockly[name].blocks[_b];
+                        }
                     }
                     blocks += '</category>';
                 }
@@ -1787,6 +1849,12 @@ function Scripts(main) {
                         }
                     }
                 );
+                if (that.currentId) {
+                    var obj = main.objects[that.currentId];
+                    if (obj && obj.common && obj.common.engineType === 'Blockly') {
+                        editScript(that.currentId);
+                    }
+                }
                 // Listen to events on master workspace.
                 that.blocklyWorkspace.addChangeListener(function (masterEvent) {
                     if (masterEvent.type === Blockly.Events.UI) {
@@ -1803,7 +1871,7 @@ function Scripts(main) {
                 modal:    true,
                 width: 550,
                 height: 170,
-                open: function ()  {
+                open: function (event)  {
                     $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                     $('#dialog-new-script').css({height: 170, overflow: 'hidden'});
                 },
@@ -1823,7 +1891,7 @@ function Scripts(main) {
 
             that.engines = this.fillEngines('edit-script-engine-type');
 
-            this.$grid.selectId('init', {
+            /*this.$grid.selectId('init', {
                 objects:        main.objects,
                 noDialog:       true,
                 texts:          {
@@ -1958,7 +2026,6 @@ function Scripts(main) {
                                 that.main.socket.emit('setObject', newId, obj, function (err, obj) {
                                     if (err) {
                                         that.main.showError(err);
-                                        return;
                                     }
                                 });
                             });
@@ -2064,7 +2131,217 @@ function Scripts(main) {
                     });
                 }
             }).selectId('show', update ? undefined : main.config['script-editor-current-id'] || undefined);
+*/
+            this.$grid.treeTable({
+                objects:    that.main.objects,
+                root:       'script.js',
+                widths:     ['calc(100% - 106px)', '20px'],
+                columns:    ['name', 'instance'],
+                name:       'scripts',
+                buttonsWidth: '86px',
+                buttonsStyle: 'text-align: left',
+                buttons:    [
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-play'
+                        },
+                        click: function (id) {
+                            if (this.length === 1) this.button('disable');
 
+                            var enabled = !(that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.enabled);
+                            // If script not saved ask about saving
+                            if (enabled && !$('#script-edit-button-save').hasClass('ui-button-disabled')) {
+                                that.main.confirmMessage(_('Do you want to save script %s?', that.main.objects[id].common.name), null, 'help', function (result) {
+                                    if (result) {
+                                        that.saveScript(function () {
+                                            // toggle state
+                                            enableScript(id, enabled);
+                                        });
+                                    } else {
+                                        // toggle state
+                                        enableScript(id, enabled);
+                                    }
+                                });
+                            } else {
+                                // toggle state
+                                enableScript(id, enabled);
+                            }
+                        },
+                        match: function (id) {
+                            if (that.main.objects[id] && that.main.objects[id].type ==='script') {
+                                if (that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.enabled) {
+                                    this.button('option', 'icons', {
+                                        primary:'ui-icon-pause'
+                                    }).attr('title', _('Activated. Click to stop.')).css({'background-color': 'lightgreen'});
+                                } else {
+                                    this.button('option', 'icons', {
+                                        primary:'ui-icon-play'
+                                    }).attr('title', _('Deactivated. Click to start.')).css({'background-color': '#FF9999'});
+                                }
+                            } else {
+                                this.hide();
+                            }
+                        },
+                        width: 26,
+                        height: 20
+                    },
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-trash'
+                        },
+                        click: function (id) {
+                            if (!that.main.objects[id] || that.main.objects[id].type !== 'script') {
+                                deleteId(id);
+                            } else {
+                                that.main.confirmMessage(_('Are you sure to delete script %s?', that.main.objects[id].common.name), null, 'help', function (result) {
+                                    if (result) that.main.socket.emit('delObject', id);
+                                });
+                            }
+                        },
+                        match: function (id) {
+                            if (id === 'script.js.global' || id === 'script.js.common' || !main.objects[id] || !main.objects[id].common || main.objects[id].common.nondeletable) this.hide();
+                        },
+                        width: 26,
+                        height: 20
+                    },
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-copy'
+                        },
+                        click: function (id) {
+                            that.main.socket.emit('getObject', id, function (err, obj) {
+                                if (err) {
+                                    that.main.showError(err);
+                                    return;
+                                }
+                                // find new name
+                                var i = 0;
+                                //build name
+                                var newId;
+                                do {
+                                    i++;
+                                    if (obj._id.match(/\(\d+\)/)) {
+                                        newId = obj._id.replace(/\(\d+\)/, '(' + i + ')');
+                                    } else {
+                                        newId = obj._id + '(' + i + ')';
+                                    }
+                                } while (that.list.indexOf(newId) !== -1);
+
+                                obj._id = newId;
+                                that.main.socket.emit('setObject', newId, obj, function (err, obj) {
+                                    if (err) {
+                                        that.main.showError(err);
+                                    }
+                                });
+                            });
+                        },
+                        match: function (id) {
+                            if (!that.main.objects[id] || that.main.objects[id].type !== 'script') this.hide();
+                        },
+                        width: 26,
+                        height: 20
+                    },
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-refresh'
+                        },
+                        click: function (id) {
+                            that.main.socket.emit('extendObject', id, {});
+                        },
+                        match: function (id) {
+                            if (!that.main.objects[id] || that.main.objects[id].type !== 'script') this.hide();
+                        },
+                        width: 26,
+                        height: 20
+                    }
+                ],
+                moveId:     function (oldId, newId, callback) {
+                    var obj = that.main.objects[oldId];
+                    if (obj === undefined) {
+                        callback && callback('Not found');
+                    } else {
+                        that.main.socket.emit('delObject', oldId, function (err) {
+                            obj._id = newId;
+                            that.main.socket.emit('setObject', newId, obj, callback);
+                        });
+                    }
+                },
+                panelButtons: [
+                    {
+                        text: false,
+                        title: _('New script'),
+                        icons: {
+                            primary: 'ui-icon-document'
+                        },
+                        click: function () {
+                            var group = that.currentId || 'script.js';
+                            if (that.main.objects[group] && that.main.objects[group].type === 'script') group = getGroup(group);
+
+                            addScript(group);
+                        }
+                    },
+                    {
+                        text: false,
+                        title: _('New group'),
+                        icons: {
+                            primary: 'ui-icon-circle-plus'
+                        },
+                        click: function () {
+                            addScriptInGroup(that.currentId);
+                        }
+                    },
+                    {
+                        text: false,
+                        title: _('Export'),
+                        icons: {
+                            primary: 'ui-icon-arrowthickstop-1-s'
+                        },
+                        click: function () {
+                            exportScripts();
+                        }
+                    },
+                    {
+                        text: false,
+                        title: _('Import'),
+                        icons: {
+                            primary: 'ui-icon-arrowthickstop-1-n'
+                        },
+                        click: function () {
+                            importScripts();
+                        }
+                    }
+                ],
+                onChange:   function (id, oldId) {
+                    if (id !== oldId || !that.editor) {
+                        editScript(id);
+                    } else {
+                        // focus again on editor
+                        that.editor.focus();
+                    }
+                },
+                onEdit: function (id, attr, value) {
+                    if (attr === 'instance') {
+                        that.main.socket.emit('getObject', id, function (err, obj) {
+                            if (obj) {
+                                obj.common.engine = 'system.adapter.javascript.' + value;
+                                that.main.socket.emit('setObject', obj._id, obj, function (err) {
+                                    if (err) {
+                                        that.main.showError(err);
+                                        that.init(true);
+                                    }
+                                });
+                            } else {
+                                window.alert('Object "' + id + '" not exists');
+                                that.init(true);
+                            }
+                        });
+                    }
+                }
+            }).treeTable('show', update ? undefined : main.config['script-editor-current-id'] || undefined);
             // Show add button
             setTimeout(function () {
                 // show blink on start
@@ -2085,7 +2362,7 @@ function Scripts(main) {
 
             if (this.main.config['script-editor-wrap-lines'])        $('#edit-wrap-lines').prop('checked', true);
             if (this.main.config['script-editor-dialog-wrap-lines']) $('#dialog-edit-wrap-lines').prop('checked', true);
-            
+
             $('#edit-check-blocks').button({
                 icons: {
                     primary: 'ui-icon-check'
@@ -2116,7 +2393,6 @@ function Scripts(main) {
                     showExportBlocklyDialog();
                 });
 
-
             $('#edit-import-blocks')
                 .button({
                     icons: {
@@ -2129,6 +2405,10 @@ function Scripts(main) {
                 .click(function () {
                     showImportBlocklyDialog();
                 });
+
+            if (!update && main.config['script-editor-current-id']) {
+                editScript(main.config['script-editor-current-id']);
+            }
         }
     };
 
@@ -2249,16 +2529,19 @@ function Scripts(main) {
 
             this.updateTimer = setTimeout(function () {
                 that.updateTimer = null;
-                that.$grid.selectId('reinit');
+                that.$grid.treeTable('reinit');
                 applyResizableH(true, 1000);
             }, 200);
 
-            if (this.$grid) this.$grid.selectId('object', id, obj);
+            if (this.$grid) {
+                this.$grid.treeTable('object', id, obj);
+            }
         } else
         if (id.match(/^system\.adapter\.[-\w\d]+\.[0-9]+$/)) {
-            var val = $('#edit-script-engine-type').val();
+            var $editScript = $('#edit-script-engine-type');
+            var val = $editScript.val();
             that.engines = that.fillEngines('edit-script-engine-type');
-            $('#edit-script-engine-type').val(val);
+            $editScript.val(val);
         }
         else
         if (id.match(/^system\.adapter\.[-\w\d]+\$/)) {
@@ -2371,7 +2654,7 @@ function Scripts(main) {
         }
 
         this.editorDialog.getSession().setUseWrapMode($('#dialog-edit-wrap-lines').prop('checked'));
-        
+
         this.$dialogScript
             .dialog('option', 'width',  width)
             .dialog('option', 'height', height)
@@ -2380,7 +2663,7 @@ function Scripts(main) {
         this.editorDialog.focus();
 
         that.editorDialog._isReturn = isReturn;
-        
+
         setTimeout(function () {
             that.editorDialog._changed = false;
             $('#dialog_script_save').button('disable');
@@ -2389,7 +2672,9 @@ function Scripts(main) {
 }
 
 var main = {
-    socket:         io.connect(),
+    socket:         io.connect(location.protocol + '//' + location.host, {
+        query: 'ws=true'
+    }),
     saveConfig:     function (attr, value) {
         if (!main.config) return;
         if (attr) main.config[attr] = value;
@@ -2548,7 +2833,7 @@ function getStates(callback) {
 }
 
 function getObjects(callback) {
-    main.socket.emit('getObjects', function (err, res) {
+    main.socket.emit('getAllObjects', function (err, res) {
         setTimeout(function () {
             var obj;
             main.objects = res;
@@ -2724,15 +3009,18 @@ function applyResizableH(install, timeout) {
             applyResizableH(install);
         }, timeout);
     } else {
-        if ($('#grid-scripts').hasClass('ui-resizable')) $('#grid-scripts').resizable('destroy');
+        var $gridScripts = $('#grid-scripts');
+        if ($gridScripts.hasClass('ui-resizable')) {
+            $gridScripts.resizable('destroy');
+        }
 
         if (!install) return;
 
         var width = parseInt(main.config['script-editor-width'] || '30%', 10);
 
-        $('#grid-scripts').width(width + '%').next().width(100 - width + '%');
+        $gridScripts.width(width + '%').next().width(100 - width + '%');
 
-        $('#grid-scripts').resizable({
+        $gridScripts.resizable({
             autoHide:   false,
             handles:    'e',
             start:      function (e, ui) {

@@ -18,7 +18,7 @@ Blockly.Trigger = {
 // --- ON Extended-----------------------------------------------------------
 
 Blockly.Words['on_onchange'] = {'en': 'was changed',                    'de': 'wurde geändert',                         'ru': 'изменился'};
-Blockly.Words['on_any']      = {'en': 'was updated',                    'de': 'wurde aktulaisiert',                     'ru': 'обновился'};
+Blockly.Words['on_any']      = {'en': 'was updated',                    'de': 'wurde aktualisiert',                     'ru': 'обновился'};
 Blockly.Words['on_gt']       = {'en': 'is greater than last',           'de': 'ist größer als letztes',                 'ru': 'больше прошлого'};
 Blockly.Words['on_ge']       = {'en': 'is greater or equal than last',  'de': 'ist gleich oder größer als letztes',     'ru': 'больше или равен прошлому'};
 Blockly.Words['on_lt']       = {'en': 'is less than last',              'de': 'ist kleiner als letztes',                'ru': 'меньше прошлого'};
@@ -417,7 +417,7 @@ Blockly.Blocks['on_source'] = {
     init: function() {
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['on_source_id'][systemLang],             '_id'],
+                [Blockly.Words['on_source_id'][systemLang],             'id'],
                 [Blockly.Words['on_source_name'][systemLang],           'common.name'],
                 [Blockly.Words['on_source_desc'][systemLang],           'common.desc'],
                 [Blockly.Words['on_source_channel_id'][systemLang],     'channelId'],
@@ -967,13 +967,13 @@ Blockly.Blocks['cron_builder'] = {
 
 Blockly.JavaScript['cron_builder'] = function(block) {
     var dow     = Blockly.JavaScript.valueToCode(block, 'DOW',     Blockly.JavaScript.ORDER_ATOMIC);
-    var minutes = Blockly.JavaScript.valueToCode(block, 'MONTHS',  Blockly.JavaScript.ORDER_ATOMIC);
-    var months  = Blockly.JavaScript.valueToCode(block, 'DAYS',    Blockly.JavaScript.ORDER_ATOMIC);
-    var days    = Blockly.JavaScript.valueToCode(block, 'HOURS',   Blockly.JavaScript.ORDER_ATOMIC);
-    var hours   = Blockly.JavaScript.valueToCode(block, 'MINUTES', Blockly.JavaScript.ORDER_ATOMIC);
+    var months  = Blockly.JavaScript.valueToCode(block, 'MONTHS',  Blockly.JavaScript.ORDER_ATOMIC);
+    var days    = Blockly.JavaScript.valueToCode(block, 'DAYS',    Blockly.JavaScript.ORDER_ATOMIC);
+    var hours   = Blockly.JavaScript.valueToCode(block, 'HOURS',   Blockly.JavaScript.ORDER_ATOMIC);
+    var minutes = Blockly.JavaScript.valueToCode(block, 'MINUTES', Blockly.JavaScript.ORDER_ATOMIC);
     var seconds = Blockly.JavaScript.valueToCode(block, 'SECONDS', Blockly.JavaScript.ORDER_ATOMIC);
     var withSeconds = block.getFieldValue('WITH_SECONDS');
 
-    var code = (withSeconds ? seconds + ' + ' : '') + minutes + ' + ' + hours + ' + ' + days + ' + ' + months + ' + ' + dow;
+    var code = ((withSeconds === 'TRUE') ? seconds + '.trim() + \' \' + ' : '') + minutes + '.trim() + \' \' + ' + hours + '.trim() + \' \' + ' + days + '.trim() + \' \' + ' + months + '.trim() + \' \' + ' + dow + '.trim()';
     return [code, Blockly.JavaScript.ORDER_ATOMIC]
 };
