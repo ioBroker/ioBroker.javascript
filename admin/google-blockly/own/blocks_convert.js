@@ -12,17 +12,10 @@ Blockly.Convert = {
     blocks: {}
 };
 
-Blockly.Words['Convert'] = {'en': 'Convert', 'de': 'Konvertierung', 'ru': 'Конвертация'};
-
-
 Blockly.Blocks.Convert = {};
 Blockly.JavaScript.Convert = {};
 
-
 // --- to Number --------------------------------------------------
-Blockly.Words['convert_tonumber']         = {'en': 'toNumber',                          'de': 'nach Zahl',                          'ru': 'в число'};
-Blockly.Words['convert_tonumber_tooltip'] = {'en': 'Cast input to number',              'de': 'Convert Eingang nach Zahl',          'ru': 'Преобразовать вход в число'};
-
 Blockly.Convert.blocks['convert_tonumber'] =
     '<block type="convert_tonumber">'
     + '     <value name="VALUE">'
@@ -45,9 +38,6 @@ Blockly.JavaScript.convert_tonumber = function (a) {
 };
 
 // --- to Boolean --------------------------------------------------
-Blockly.Words['convert_toboolean']         = {'en': 'toBoolean',                         'de': 'nach Logikwert',                       'ru': 'в булево значение'};
-Blockly.Words['convert_toboolean_tooltip'] = {'en': 'Cast input to boolean',             'de': 'Convert Eingang nach Logikwert',       'ru': 'Преобразовать вход в булево значение'};
-
 Blockly.Convert.blocks['convert_toboolean'] =
     '<block type="convert_toboolean">'
     + '     <value name="VALUE">'
@@ -68,9 +58,6 @@ Blockly.JavaScript.convert_toboolean = function (a) {
 };
 
 // --- to String --------------------------------------------------
-Blockly.Words['convert_tostring']         = {'en': 'toString',                          'de': 'nach String',                          'ru': 'в строку'};
-Blockly.Words['convert_tostring_tooltip'] = {'en': 'Cast input to number',              'de': 'Convert Eingang nach String',          'ru': 'Преобразовать вход в строку'};
-
 Blockly.Convert.blocks['convert_tostring'] =
     '<block type="convert_tostring">'
     + '     <value name="VALUE">'
@@ -91,9 +78,6 @@ Blockly.JavaScript.convert_tostring = function (a) {
 };
 
 // --- get type --------------------------------------------------
-Blockly.Words['convert_type']         = {'en': 'type of',                           'de': 'Typ von',                  'ru': 'взять тип'};
-Blockly.Words['convert_type_tooltip'] = {'en': 'Returns type of input',             'de': 'Typ von Eingang',          'ru': 'Взять тип входа'};
-
 Blockly.Convert.blocks['convert_type'] =
     '<block type="convert_type">'
     + '     <value name="ITEM">'
@@ -116,9 +100,6 @@ Blockly.JavaScript.convert_type = function (a) {
 };
 
 // --- to Date --------------------------------------------------
-Blockly.Words['convert_to_date']         = {'en': 'to Date/Time',                   'de': 'nach Datum/Zeit',            'ru': 'в дату/время'};
-Blockly.Words['convert_to_date_tooltip'] = {'en': 'Cast input to date',             'de': 'Convert Eingang nach Datum', 'ru': 'Преобразовать вход в дату'};
-
 Blockly.Convert.blocks['convert_to_date'] =
     '<block type="convert_to_date">'
     + '     <value name="VALUE">'
@@ -141,10 +122,6 @@ Blockly.JavaScript.convert_to_date = function (a) {
 };
 
 // --- from Date --------------------------------------------------
-Blockly.Words['convert_from_date']         = {'en': 'date/time',                     'de': 'Datum/Zeit',          'ru': 'дату/время'};
-Blockly.Words['convert_to']                = {'en': 'to',                            'de': 'nach',                'ru': 'в'};
-Blockly.Words['convert_from_date_tooltip'] = {'en': 'Cast input from date',          'de': 'Convert Eingang aus Datum', 'ru': 'Преобразовать вход из даты'};
-
 Blockly.Convert.blocks['convert_from_date'] =
     '<block type="convert_from_date">'
     + '     <value name="VALUE">'
@@ -306,9 +283,6 @@ Blockly.JavaScript.convert_from_date = function (block) {
 };
 
 // --- json2object --------------------------------------------------
-Blockly.Words['convert_json2object']         = {'en': 'JSON to object',     'de': 'JSON nach Objekt',           'ru': 'JSON в объект'};
-Blockly.Words['convert_json2object_tooltip'] = {'en': 'Parse JSON string',  'de': 'Parse JSON',           'ru': 'Преобразовать JSON в объект'};
-
 Blockly.Convert.blocks['convert_json2object'] =
     '<block type="convert_json2object">'
     + '     <value name="VALUE">'
@@ -331,10 +305,6 @@ Blockly.JavaScript.convert_json2object = function (a) {
 };
 
 // --- object2json --------------------------------------------------
-Blockly.Words['convert_object2json']          = {'en': 'object to JSON',   'de': 'Objekt nach JSON',           'ru': 'объект в JSON'};
-Blockly.Words['convert_object2json_tooltip']  = {'en': 'Strinify object',  'de': 'Objekt nach JSON',           'ru': 'Преобразовать объект в JSON'};
-Blockly.Words['convert_object2json_prettify'] = {'en': 'prettify',         'de': 'formatieren',                'ru': 'форматировать'};
-
 Blockly.Convert.blocks['convert_object2json'] =
     '<block type="convert_object2json">'
     + '     <value name="VALUE">'

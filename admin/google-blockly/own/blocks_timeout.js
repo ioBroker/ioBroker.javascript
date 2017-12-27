@@ -7,9 +7,6 @@ goog.require('Blockly.JavaScript');
 Blockly.CustomBlocks = Blockly.CustomBlocks || [];
 Blockly.CustomBlocks.push('Timeouts');
 
-Blockly.Words = Blockly.Words || {};
-Blockly.Words['Timeouts'] = {'en': 'Timeouts', 'de': 'Timeouts', 'ru': 'Timeouts'};
-
 Blockly.Timeouts = {
     HUE: 70,
     blocks: {}
@@ -78,15 +75,6 @@ Blockly.Timeouts.rename = function (name) {
 };
 
 // --- setTimeout -----------------------------------------------------------
-Blockly.Words['timeouts_settimeout']          = {'en': 'Execution',                         'de': 'Ausführen',                  'ru': 'Выполнить'};
-Blockly.Words['timeouts_settimeout_name']     = {'en': 'timeout',                           'de': 'Verzögerung',                'ru': 'Пауза'};
-Blockly.Words['timeouts_settimeout_in']       = {'en': 'in',                                'de': 'in',                         'ru': 'через'};
-Blockly.Words['timeouts_settimeout_ms']       = {'en': 'ms',                                'de': 'ms',                         'ru': 'мс'};
-Blockly.Words['timeouts_settimeout_sec']      = {'en': 'sec',                               'de': 'Sek',                        'ru': 'сек.'};
-Blockly.Words['timeouts_settimeout_min']      = {'en': 'min',                               'de': 'Min',                        'ru': 'мин.'};
-Blockly.Words['timeouts_settimeout_tooltip']  = {'en': 'Delay execution',                   'de': 'Ausführung verzögern',       'ru': 'Сделать паузу'};
-Blockly.Words['timeouts_settimeout_help']     = {'en': 'settimeout',                        'de': 'settimeout',                 'ru': 'settimeout'};
-
 Blockly.Timeouts.blocks['timeouts_settimeout'] =
     '<block type="timeouts_settimeout">'
     + '     <value name="NAME">'
@@ -149,10 +137,6 @@ Blockly.JavaScript['timeouts_settimeout'] = function(block) {
 };
 
 // --- clearTimeout -----------------------------------------------------------
-Blockly.Words['timeouts_cleartimeout']          = {'en': 'clear',                             'de': 'stop',                             'ru': 'остановить'};
-Blockly.Words['timeouts_cleartimeout_tooltip']  = {'en': 'Clear delay execution',             'de': 'Ausführungsverzögerung anhalten',  'ru': 'Отменить выполнение с паузой'};
-Blockly.Words['timeouts_cleartimeout_help']     = {'en': 'cleartimeout',                      'de': 'cleartimeout',                     'ru': 'cleartimeout'};
-
 Blockly.Timeouts.getAllTimeouts = function (workspace) {
     var blocks = workspace.getAllBlocks();
     var result = [];
@@ -197,13 +181,6 @@ Blockly.JavaScript['timeouts_cleartimeout'] = function(block) {
 };
 
 // --- setInterval -----------------------------------------------------------
-Blockly.Words['timeouts_setinterval']          = {'en': 'Execution',                         'de': 'Ausführen',                  'ru': 'Выполнить'};
-Blockly.Words['timeouts_setinterval_name']     = {'en': 'interval',                          'de': 'Intervall',                  'ru': 'интервал'};
-Blockly.Words['timeouts_setinterval_in']       = {'en': 'every',                             'de': 'alle',                       'ru': 'каждые'};
-Blockly.Words['timeouts_setinterval_ms']       = {'en': 'ms',                                'de': 'ms',                         'ru': 'мс'};
-Blockly.Words['timeouts_setinterval_tooltip']  = {'en': 'Cyclic execution',                  'de': 'Zyklische Ausführung',       'ru': 'Выполнять постоянно через интервал'};
-Blockly.Words['timeouts_setinterval_help']     = {'en': 'setinterval',                       'de': 'setinterval',                'ru': 'setinterval'};
-
 Blockly.Timeouts.blocks['timeouts_setinterval'] =
     '<block type="timeouts_setinterval">'
     + '     <value name="NAME">'
@@ -267,10 +244,6 @@ Blockly.JavaScript['timeouts_setinterval'] = function(block) {
 };
 
 // --- clearInterval -----------------------------------------------------------
-Blockly.Words['timeouts_clearinterval']          = {'en': 'clear interval',                    'de': 'stop zyklische Ausführung',        'ru': 'остановить постоянное выполнение'};
-Blockly.Words['timeouts_clearinterval_tooltip']  = {'en': 'Clear interval execution',          'de': 'Ausführungsintervall anhalten',    'ru': 'Отменить цикличное выполнение с интервалом'};
-Blockly.Words['timeouts_clearinterval_help']     = {'en': 'clearinterval',                     'de': 'clearinterval',                    'ru': 'clearinterval'};
-
 Blockly.Timeouts.blocks['timeouts_clearinterval'] =
     '<block type="timeouts_clearinterval">'
     + '     <value name="NAME">'

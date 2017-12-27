@@ -12,32 +12,7 @@ Blockly.Sendto = {
     blocks: {}
 };
 
-Blockly.Words['Sendto'] = {'en': 'Sendto', 'de': 'Sendto', 'ru': 'Sendto'};
-Blockly.Words['sendto_message'] = {'en': 'message', 'de': 'Meldung', 'ru': 'сообщение'};
-
 // --- sendTo Custom --------------------------------------------------
-Blockly.Words['sendto_custom']              = {'en': 'sendTo',      'de': 'sendTo',     'ru': 'sendTo'};
-Blockly.Words['sendto_custom_tooltip']      = {
-    'en': 'Text to speech',
-    'de': 'Text zu Sprache',
-    'ru': 'Произнести сообщение'
-};
-Blockly.Words['sendto_custom_help']         = {'en': 'sendto',      'de': 'sendto',     'ru': 'sendto'};
-Blockly.Words['sendto_custom_arguments']    = {'en': 'parameters',  'de': 'Parameter',  'ru': 'параметры'};
-Blockly.Words['sendto_custom_command']      = {'en': 'command',     'de': 'Kommando',   'ru': 'команда'};
-Blockly.Words['sendto_custom_argument']     = {'en': 'parameter',   'de': 'Parameter',  'ru': 'параметр'};
-Blockly.Words['sendto_custom_arg_tooltip']  = {
-    'en': 'Add parameter to sendTo object.',
-    'de': 'Parameter zum sendTo-Objekt hinzufügen',
-    'ru': 'Добавить параметр к sendTo объекту'
-};
-Blockly.Words['sendto_log']           = {'en': 'log level',                   'de': 'Loglevel',                           'ru': 'Протокол'};
-Blockly.Words['sendto_log_none']      = {'en': 'none',                        'de': 'keins',                              'ru': 'нет'};
-Blockly.Words['sendto_log_info']      = {'en': 'info',                        'de': 'info',                               'ru': 'инфо'};
-Blockly.Words['sendto_log_debug']     = {'en': 'debug',                       'de': 'debug',                              'ru': 'debug'};
-Blockly.Words['sendto_log_warn']      = {'en': 'warning',                     'de': 'warning',                            'ru': 'warning'};
-Blockly.Words['sendto_log_error']     = {'en': 'error',                       'de': 'error',                              'ru': 'ошибка'};
-
 Blockly.Sendto.blocks['sendto_custom'] =
     '<block type="sendto_custom">'
     + '     <value name="INSTANCE">'

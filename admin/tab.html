@@ -22,6 +22,7 @@
     <script type="text/javascript" src="google-blockly/blockly_compressed.js"></script>
     <script type="text/javascript" src="google-blockly/blocks_compressed.js"></script>
     <script type="text/javascript" src="google-blockly/javascript_compressed.js"></script>
+    <script type="text/javascript" src="google-blockly/own/blocks_words.js"></script>
     <script type="text/javascript" src="google-blockly/own/field_oid.js"></script>
     <script type="text/javascript" src="google-blockly/own/field_cron.js"></script>
     <script type="text/javascript" src="google-blockly/own/field_script.js"></script>
@@ -38,6 +39,8 @@
     <script type="text/javascript" src="treeTable.js"></script>
 
     <script type="text/javascript" src="cron2text.js"></script>
+    <script type="text/javascript" src="jquery.cron.words.js"></script>
+    <script type="text/javascript" src="jquery.cron.locale.js"></script>
     <script type="text/javascript" src="jquery.cron.js"></script>
 
     <link href="query-builder/bootstrap.css" rel="stylesheet">
@@ -189,30 +192,91 @@
         table.main-toolbar-table > tr > td {
             padding: 10px !important;
         }
+
+        /*loader*/
+        @keyframes colors {
+           0% { stroke: #17572b; }
+           25% { stroke: #1B9A59; }
+           50% { stroke: #009a63; }
+           75% { stroke: #6a9a00; }
+           100% { stroke: #00f060; }
+        }
+
+        @keyframes dash {
+            0% { stroke-dashoffset: 187px; }
+            50% {
+                stroke-dashoffset: 47px;
+                transform: rotate(135deg);
+            }
+            100% {
+                stroke-dashoffset: 187px;
+                transform: rotate(450deg);
+            }
+        }
+        @keyframes rotator {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(270deg); }
+        }
+
+        #connecting {
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 20000;
+        }
+        #connecting .connecting-div {
+            left: 40%;
+            top: 40%;
+            width: 20%;
+            height: 20%;
+            position: absolute;
+        }
+        #connecting .connecting-div .spinner {
+            animation: rotator 1.4s linear infinite;
+        }
+
+        #connecting .connecting-div .path {
+            stroke-dasharray: 187px;
+            stroke-dashoffset: 0;
+            transform-origin: center;
+            animation: dash 1.4s ease-in-out infinite, colors 5.2s ease-in-out infinite;
+        }
     </style>
 </head>
 
 <body>
     <div id="script-main" style="width: 100%; height: 100%; display: flex; flex-direction: row; flex-wrap: nowrap">
-        <div id="grid-scripts"   style="height: 100%; width: 30%; padding-right: 8px; overflow-x: hidden; background: #efefef"><span class="translate">Loading...</span></div>
-        <div id="editor-scripts" style="height: calc(100% - 8px); width: calc(70% - 15px); display: flex; flex-direction: column; flex-wrap: nowrap; display: none">
+        <div id="grid-scripts"   style="height: 100%; width: 30%; padding-right: 8px; overflow-x: hidden; background: #efefef">
+            <!-- Loading indicator -->
+            <div id="connecting">
+                <div class="connecting-div">
+                    <svg class="spinner" width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+                        <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div id="editor-scripts" style="height: calc(100% - 8px); width: calc(70% - 15px); flex-direction: column; flex-wrap: nowrap; display: none">
             <div style="height: 80%; width: 100%; padding-bottom: 8px; overflow: hidden;" class="ui-widget" id="editor-scripts-textarea">
                 <table style="width: 100%; height: 100%">
                     <tr>
                         <td colspan="2">
                             <table style="width: calc(100% - 20px); border: 0;"><tr>
                                 <td style="width: 410px;">
-                                    <span   style="display: inline-block; padding-right: 5px" class="translate">name</span>
+                                    <label  style="display: inline-block; padding-right: 5px" for="edit-script-group" class="translate">name</label>
                                     <select style="display: inline-block" id="edit-script-group"></select>
                                     <input  style="display: inline-block; width: 200px" id="edit-script-name">
                                 </td>
                                 <td id="script-buttons" style="width: calc(100% - 410px);">
-                                    <span   style="display: inline-block; padding-left: 25px" class="translate">debug</span>
+                                    <label for="edit-script-debug"  style="display: inline-block; padding-left: 25px" class="translate">debug</label>
                                     <input id="edit-script-debug" type="checkbox" />
-                                    <span   style="display: inline-block; padding-left: 15px" class="translate">verbose</span>
+                                    <label for="edit-script-verbose" style="display: inline-block; padding-left: 15px" class="translate">verbose</label>
                                     <input id="edit-script-verbose" type="checkbox" />
                                     <select style="float: right" id="edit-script-engine-type"></select>
-                                    <span style="float: right; padding-right: 5px" class="translate">engine type</span>
+                                    <label for="edit-script-engine-type" style="float: right; padding-right: 5px" class="translate">engine type</label>
                                 </td>
                             </tr></table>
                         </td>
@@ -223,7 +287,7 @@
                                 <td><button id="script-edit-button-save"></button></td>
                                 <td><button id="script-edit-button-cancel"></button></td>
                                 <td class="edit-wrap-lines"><input  id="edit-wrap-lines" type="checkbox"/></td>
-                                <td class="edit-wrap-lines"><div class="translate">Wrap&nbsp;lines</div></td>
+                                <td class="edit-wrap-lines"><label class="translate" for="edit-wrap-lines">Wrap&nbsp;lines</label></td>
                                 <td style="width: 100%"><span style="display: none; font-weight: bold; padding-left: 20px; text-decoration: none" id="global_hint"><a href="https://github.com/ioBroker/ioBroker.javascript#global-functions" target="_blank" class="translate" style="text-decoration: none; color: #40bf40">global_hint</a></span></td>
                                 <td><button id="edit-export-blocks" class="translate script-edit"></button></td>
                                 <td><button id="edit-import-blocks" class="translate script-edit"></button></td>
@@ -272,7 +336,7 @@
                 <td>
                     <button                            class="translate edit-cron-id">Cron</button>
                     <button id="dialog-edit-insert-id" class="translate">Insert ID</button>
-                    <div class="translate" style="padding-left: 20px; display: inline-block;">Wrap&nbsp;lines</div>
+                    <label class="translate" for="dialog-edit-wrap-lines" style="padding-left: 20px; display: inline-block;">Wrap&nbsp;lines</label>
                     <input id="dialog-edit-wrap-lines" type="checkbox"/>
                 </td>
             </tr>
@@ -287,11 +351,11 @@
     <div id="dialog-new-group" style="display: none">
         <table style="width: 100%">
             <tr>
-                <td class="translate">new group name</td>
+                <td><label for="edit-new-group-name" class="translate">new group name</label></td>
                 <td><input style="display: inline-block; width: 200px" id="edit-new-group-name"></td>
             </tr>
             <tr>
-                <td class="translate">Create in:</td>
+                <td><label for="edit-new-group-group" class="translate">Create in:</label></td>
                 <td><select id="edit-new-group-group"></select></td>
             </tr>
         </table>

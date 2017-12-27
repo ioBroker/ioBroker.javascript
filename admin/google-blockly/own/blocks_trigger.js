@@ -7,8 +7,6 @@ goog.require('Blockly.JavaScript');
 Blockly.CustomBlocks = Blockly.CustomBlocks || [];
 Blockly.CustomBlocks.push('Trigger');
 
-Blockly.Words = Blockly.Words || {};
-Blockly.Words['Trigger'] = {'en': 'Trigger', 'de': 'Trigger', 'ru': 'События'};
 
 Blockly.Trigger = {
     HUE: 330,
@@ -16,34 +14,6 @@ Blockly.Trigger = {
 };
 
 // --- ON Extended-----------------------------------------------------------
-
-Blockly.Words['on_onchange'] = {'en': 'was changed',                    'de': 'wurde geändert',                         'ru': 'изменился'};
-Blockly.Words['on_any']      = {'en': 'was updated',                    'de': 'wurde aktualisiert',                     'ru': 'обновился'};
-Blockly.Words['on_gt']       = {'en': 'is greater than last',           'de': 'ist größer als letztes',                 'ru': 'больше прошлого'};
-Blockly.Words['on_ge']       = {'en': 'is greater or equal than last',  'de': 'ist gleich oder größer als letztes',     'ru': 'больше или равен прошлому'};
-Blockly.Words['on_lt']       = {'en': 'is less than last',              'de': 'ist kleiner als letztes',                'ru': 'меньше прошлого'};
-Blockly.Words['on_le']       = {'en': 'is less or equal than last',     'de': 'ist gleich oder kleiner als letztes',    'ru': 'меньше или равен прошлому'};
-Blockly.Words['on_eq']       = {'en': 'is same as last',                'de': 'ist gleich wie letztes',                 'ru': 'равен прошлому'};
-Blockly.Words['on_true']     = {'en': 'is true',                        'de': 'ist wahr',                               'ru': 'равен true'};
-Blockly.Words['on_false']    = {'en': 'is false',                       'de': 'ist unwahr',                             'ru': 'равен false'};
-Blockly.Words['on_help']     = {
-    'en': 'on---subscribe-on-changes-or-updates-of-some-state',
-    'de': 'on---subscribe-on-changes-or-updates-of-some-state',
-    'ru': 'on---subscribe-on-changes-or-updates-of-some-state'
-};
-Blockly.Words['on_ack']      = {'en': 'Ack is',                         'de': 'anerkannt ist',                          'ru': 'Подтверждение'};
-Blockly.Words['on_ack_any']  = {'en': 'any',                            'de': 'egal',                                   'ru': 'не важно'};
-Blockly.Words['on_ack_true'] = {'en': 'update',                         'de': 'Update',                                 'ru': 'обновление'};
-Blockly.Words['on_ack_false'] = {'en': 'command',                       'de': 'Kommando',                               'ru': 'команда'};
-
-
-Blockly.Words['on_ext']             = {'en': 'Event: if objects',               'de': 'Falls Objekt',                           'ru': 'Событие: если объект'};
-Blockly.Words['on_ext_tooltip']     = {'en': 'If some state changed or updated', 'de': 'Auf Zustandsänderung',                  'ru': 'При изменении или обновлении состояния'};
-Blockly.Words['on_ext_oid']         = {'en': 'object ID',                       'de': 'Objekt ID',                              'ru': 'ID объекта'};
-Blockly.Words['on_ext_oid_tooltip'] = {'en': 'Object ID',                       'de': 'Objekt ID',                              'ru': 'ID объекта'};
-Blockly.Words['on_ext_on']          = {'en': 'trigger on',                      'de': 'falls Trigger auf',                      'ru': 'если cобытие'};
-Blockly.Words['on_ext_on_tooltip']  = {'en': 'trigger on',                      'de': 'falls Trigger auf',                      'ru': 'если cобытие'};
-
 Blockly.Trigger.blocks['on_ext'] =
     '<block type="on_ext">'
     + '     <value name="CONDITION">'
@@ -299,9 +269,6 @@ Blockly.JavaScript['on_ext'] = function(block) {
 };
 
 // --- ON -----------------------------------------------------------
-Blockly.Words['on']          = {'en': 'Event: if object',               'de': 'Falls Objekt',                           'ru': 'Событие: если объект'};
-Blockly.Words['on_tooltip']  = {'en': 'If some state changed or updated', 'de': 'Auf Zustandsänderung',                 'ru': 'При изменении или обновлении состояния'};
-
 Blockly.Trigger.blocks['on'] =
     '<block type="on">'
     + '     <value name="OID">'
@@ -374,35 +341,6 @@ Blockly.JavaScript['on'] = function(block) {
 };
 
 // --- get info about event -----------------------------------------------------------
-Blockly.Words['on_source']              = {'en': 'get',                'de': 'Nehme',                           'ru': 'взять'};
-Blockly.Words['on_source_of']           = {'en': 'of trigger',         'de': 'von Trigger',                     'ru': 'триггера'};
-Blockly.Words['on_source_tooltip']      = {'en': 'Get information about event', 'de': 'Bekommen die Information über Ereignis',      'ru': 'Получить информацию о событии'};
-Blockly.Words['on_source_id']           = {'en': 'object ID',                       'de': 'Objekt ID',          'ru': 'ID объекта'};
-Blockly.Words['on_source_name']         = {'en': 'name',                            'de': 'Name',               'ru': 'имя'};
-Blockly.Words['on_source_desc']         = {'en': 'description',                     'de': 'Beschreibung',       'ru': 'описание'};
-Blockly.Words['on_source_channel_id']   = {'en': 'channel ID',                      'de': 'Kanal ID',           'ru': 'ID канала'};
-Blockly.Words['on_source_channel_name'] = {'en': 'channel name',                    'de': 'Kanalname ID',       'ru': 'имя канала'};
-Blockly.Words['on_source_device_id']    = {'en': 'device ID',                       'de': 'Gerät ID ID',        'ru': 'ID устройства'};
-Blockly.Words['on_source_device_name']  = {'en': 'device name',                     'de': 'Gerätname',          'ru': 'имя устройства'};
-Blockly.Words['on_source_state_val']    = {'en': 'state value',                     'de': 'Wert',               'ru': 'значение'};
-Blockly.Words['on_source_state_ts']     = {'en': 'state timestamp',                 'de': 'Zeitstempel',        'ru': 'время'};
-Blockly.Words['on_source_state_q']      = {'en': 'state quality',                   'de': 'Qualität',           'ru': 'качество'};
-Blockly.Words['on_source_state_from']   = {'en': 'origin of value',                 'de': 'Ursrpung',           'ru': 'происхождение'};
-Blockly.Words['on_source_state_ack']    = {'en': 'is command or update',            'de': 'Kommando oder Aktualisierung', 'ru': 'команда или обновление'};
-Blockly.Words['on_source_state_lc']     = {'en': 'last change of state',            'de': 'letze Änderung',     'ru': 'последнее изменение'};
-Blockly.Words['on_source_oldstate_val'] = {'en': 'previous value',                  'de': 'vorheriges Wert',    'ru': 'предыдущее значение'};
-Blockly.Words['on_source_oldstate_ts']  = {'en': 'previous timestamp',              'de': 'vorheriger Zeitstempel', 'ru': 'предыдущее время'};
-Blockly.Words['on_source_oldstate_q']   = {'en': 'previous quality',                'de': 'vorherige Quialität', 'ru': 'предыдущее качество'};
-Blockly.Words['on_source_oldstate_from']= {'en': 'previous origin',                 'de': 'vorherige Ursrpung', 'ru': 'предыдущее происхождение'};
-Blockly.Words['on_source_oldstate_ack'] = {'en': 'previous command or update',      'de': 'vorheriges Ack',     'ru': 'предыдущее команда или обновление'};
-Blockly.Words['on_source_oldstate_lc']  = {'en': 'previous last change',            'de': 'vorherige letze Änderung', 'ru': 'предыдущее последнее изменение'};
-
-Blockly.Words['on_source_warning']      = {
-    'en': 'This block must be used only inside of event block',
-    'de': 'Dieser Block darf nur innerhalb \"Falls Objekt" Block verwendet werden',
-    'ru': 'Этот блок можно использовать только внутри блока \"Событие\"'
-};
-
 Blockly.Trigger.blocks['on_source'] =
     '<block type="on_source">'
     + '     <value name="ATTR">'
@@ -487,14 +425,6 @@ Blockly.JavaScript['on_source'] = function(block) {
 };
 
 // --- SCHEDULE -----------------------------------------------------------
-Blockly.Words['schedule']          = {'en': 'schedule',                      'de': 'Zeitplan',                       'ru': 'Cron расписание'};
-Blockly.Words['schedule_tooltip']  = {'en': 'Do something on cron schedule', 'de': 'Ausführen nach Zeitplan',        'ru': 'Выполнять по расписанию'};
-Blockly.Words['schedule_help']     = {
-    'en': 'schedule',
-    'de': 'schedule',
-    'ru': 'schedule'
-};
-
 Blockly.Trigger.blocks['schedule'] =
     '<block type="schedule">'
     + '     <value name="SCHEDULE">'
@@ -533,32 +463,6 @@ Blockly.JavaScript['schedule'] = function(block) {
 };
 
 // --- ASTRO -----------------------------------------------------------
-Blockly.Words['astro']                  = {'en': 'astro',                           'de': 'Astro',                          'ru': 'Астро'};
-Blockly.Words['astro_tooltip']          = {'en': 'Do something on astrological event', 'de': 'Ausführen nach Astro-Ereignis', 'ru': 'Выполнять по астро-событию'};
-Blockly.Words['astro_offset']           = {'en': ', offset',                        'de': ', Versatz',                      'ru': ', сдвиг'};
-Blockly.Words['astro_minutes']          = {'en': 'minutes',                         'de': 'Minuten',                        'ru': 'минут'};
-
-Blockly.Words['astro_sunriseText']       = {'en': 'sunrise',                         'de': 'Sonnenaufgang',                 'ru': 'восход солнца'};
-Blockly.Words['astro_sunriseEndText']    = {'en': 'sunrise end',                     'de': 'Sonnenaufgang-Ende',            'ru': 'конец восхода'};
-Blockly.Words['astro_goldenHourEndText'] = {'en': 'golden hour end',                 'de': '"Golden hour"-Ende',            'ru': 'конец золотого часа'};
-Blockly.Words['astro_solarNoonText']     = {'en': 'solar noon',                      'de': 'Sonnenmittag',                  'ru': 'солнечеый полдень'};
-Blockly.Words['astro_goldenHourText']    = {'en': 'golden hour',                     'de': '"Golden hour"',                 'ru': 'золотой час'};
-Blockly.Words['astro_sunsetStartText']   = {'en': 'sunset start',                    'de': 'Sonnenuntergang-Anfang',        'ru': 'начало захода солнца'};
-Blockly.Words['astro_sunsetText']        = {'en': 'sunset',                          'de': 'Sonnenuntergang',               'ru': 'конец захода солнца'};
-Blockly.Words['astro_duskText']          = {'en': 'dusk',                            'de': 'Abenddämmerung',                'ru': 'сумерки'};
-Blockly.Words['astro_nauticalDuskText']  = {'en': 'nautical dusk',                   'de': 'Nautische Abenddämmerung',      'ru': 'навигационные сумерки'};
-Blockly.Words['astro_nightText']         = {'en': 'night',                           'de': 'Nacht',                         'ru': 'ночь'};
-Blockly.Words['astro_nightEndText']      = {'en': 'night end',                       'de': 'Nachtsende',                    'ru': 'конец ночи'};
-Blockly.Words['astro_nauticalDawnText']  = {'en': 'nautical dawn',                   'de': 'Nautische Morgendämmerung',     'ru': 'навигационный рассвет'};
-Blockly.Words['astro_dawnText']          = {'en': 'dawn',                            'de': 'Morgendämmerung',               'ru': 'рассвет'};
-Blockly.Words['astro_nadirText']         = {'en': 'nadir',                           'de': 'Nadir',                         'ru': 'надир'};
-
-Blockly.Words['astro_help'] = {
-    'en': 'astro--function',
-    'de': 'astro--function',
-    'ru': 'astro--function'
-};
-
 Blockly.Trigger.blocks['astro'] =
     '<block type="astro">'
     + '     <value name="TYPE">'
@@ -624,12 +528,6 @@ Blockly.JavaScript['astro'] = function(block) {
 };
 
 // --- set named schedule -----------------------------------------------------------
-Blockly.Words['schedule_create']          = {'en': 'schedule',                          'de': 'Zeitplan',                   'ru': 'Расписание'};
-Blockly.Words['schedule_create_name']     = {'en': 'schedule',                          'de': 'Zeitplan',                   'ru': 'Расписание'};
-Blockly.Words['schedule_text']            = {'en': 'cron rule',                         'de': 'CRON Regel',                 'ru': 'cron правило'};
-Blockly.Words['schedule_create_tooltip']  = {'en': 'Delay execution',                   'de': 'Ausführung verzögern',       'ru': 'Сделать паузу'};
-Blockly.Words['schedule_create_help']     = {'en': 'settimeout',                        'de': 'settimeout',                 'ru': 'settimeout'};
-
 Blockly.Trigger.blocks['schedule_create'] =
     '<block type="schedule_create">'
     + '     <value name="NAME">'
@@ -743,10 +641,6 @@ Blockly.JavaScript['schedule_create'] = function(block) {
 };
 
 // --- clearSchedule -----------------------------------------------------------
-Blockly.Words['schedule_clear']          = {'en': 'clear',                             'de': 'stop',                             'ru': 'остановить'};
-Blockly.Words['schedule_clear_tooltip']  = {'en': 'Clear delay execution',             'de': 'Ausführungsverzögerung anhalten',  'ru': 'Отменить выполнение с паузой'};
-Blockly.Words['schedule_clear_help']     = {'en': 'cleartimeout',                      'de': 'cleartimeout',                     'ru': 'cleartimeout'};
-
 Blockly.Trigger.getAllSchedules = function (workspace) {
     var blocks = workspace.getAllBlocks();
     var result = [];
@@ -791,10 +685,6 @@ Blockly.JavaScript['schedule_clear'] = function(block) {
 };
 
 // --- CRON dialog --------------------------------------------------
-Blockly.Words['field_cron']         = {'en': 'CRON',          'de': 'CRON',     'ru': 'CRON'};
-Blockly.Words['field_cron_CRON']    = {'en': 'CRON',          'de': 'CRON',     'ru': 'CRON'};
-Blockly.Words['field_cron_tooltip'] = {'en': 'Create CRON rule with dialog',    'de': 'Erzeuge CRON Regel mit Dialog',   'ru': 'Создать CRON правило с помощью диалога'};
-
 Blockly.Trigger.blocks['field_cron'] =
     '<block type="field_cron">'
     + '     <value name="CRON">'
@@ -823,18 +713,6 @@ Blockly.JavaScript['field_cron'] = function(block) {
 };
 
 // --- CRON builder --------------------------------------------------
-Blockly.Words['cron_builder']         = {'en': 'CRON',          'de': 'CRON',     'ru': 'CRON'};
-Blockly.Words['cron_builder_CRON']    = {'en': 'CRON',          'de': 'CRON',     'ru': 'CRON'};
-Blockly.Words['cron_builder_tooltip'] = {'en': 'Create CRON rule with dialog',    'de': 'Erzeuge CRON Regel mit Dialog',   'ru': 'Создать CRON правило с помощью диалога'};
-Blockly.Words['cron_builder_with_seconds'] = {'en': 'with seconds',    'de': 'mit Sekunden',   'ru': 'с секундами'};
-Blockly.Words['cron_builder_dow']     = {'en': 'day of week',   'de': 'Wochentag',     'ru': 'день недели'};
-Blockly.Words['cron_builder_month']   = {'en': 'month',         'de': 'Monat',     'ru': 'месяц'};
-Blockly.Words['cron_builder_day']     = {'en': 'date',          'de': 'Datum',     'ru': 'число'};
-Blockly.Words['cron_builder_hour']    = {'en': 'hour',          'de': 'Stunde',    'ru': 'час'};
-Blockly.Words['cron_builder_minutes'] = {'en': 'minutes',       'de': 'Minuten',   'ru': 'минуты'};
-Blockly.Words['cron_builder_seconds'] = {'en': 'seconds',       'de': 'Sekunden',  'ru': 'секунды'};
-Blockly.Words['cron_builder_line']    = {'en': 'as line',       'de': 'Als Linie', 'ru': 'в линию'};
-
 Blockly.Trigger.blocks['cron_builder'] =
     '<block type="cron_builder">'
     + '     <value name="LINE">'

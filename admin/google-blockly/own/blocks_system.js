@@ -4,10 +4,6 @@ goog.provide('Blockly.JavaScript.System');
 
 goog.require('Blockly.JavaScript');
 
-// translations
-Blockly.Words = {};
-Blockly.Words['System'] = {'en': 'System', 'de': 'System', 'ru': 'Системные'};
-
 Blockly.CustomBlocks = Blockly.CustomBlocks || [];
 Blockly.CustomBlocks.push('System');
 
@@ -21,11 +17,7 @@ Blockly.System = {
 };
 
 // --- Debug output --------------------------------------------------
-Blockly.Words['debug']         = {'en': 'debug output', 'de': 'debug output',   'ru': 'debug output'};
-Blockly.Words['debug_tooltip'] = {'en': 'Debug',        'de': 'Debug',          'ru': 'Debug'};
-Blockly.Words['debug_help']    = {'en': 'log---gives-out-the-message-into-log', 'de': 'log---gives-out-the-message-into-log', 'ru': 'log---gives-out-the-message-into-log'};
-
-Blockly.System.blocks['debug'] = 
+Blockly.System.blocks['debug'] =
       '<block type="debug">'
     + '     <value name="TEXT">'
     + '         <shadow type="text">'
@@ -59,9 +51,6 @@ Blockly.JavaScript['debug'] = function(block) {
 };
 
 // --- comment --------------------------------------------------
-Blockly.Words['comment']         = {'en': 'comment',                           'de': 'Kommentar',      'ru': 'описание'};
-Blockly.Words['comment_tooltip'] = {'en': 'Enter comment to explain the code', 'de': 'Debug',          'ru': 'Debug'};
-
 Blockly.System.blocks['comment'] =
     '<block type="comment">'
     + '     <value name="COMMENT">'
@@ -87,16 +76,6 @@ Blockly.JavaScript['comment'] = function(block) {
 };
 
 // --- control -----------------------------------------------------------
-Blockly.Words['control']                = {'en': 'сontrol',        'de': 'steuere',             'ru': 'установить'};
-Blockly.Words['control_tooltip']        = {'en': 'Control state',  'de': 'Steuere Zustand',     'ru': 'Установить состояние'};
-Blockly.Words['control_help']           = {'en': 'setstate',       'de': 'setstate',            'ru': 'setstate'};
-Blockly.Words['control_with']           = {'en': 'with',           'de': 'mit',                 'ru': 'на'};
-Blockly.Words['control_delay']          = {'en': 'with delay',     'de': 'mit Verzögerung',     'ru': 'с задержкой'};
-Blockly.Words['control_ms']             = {'en': 'ms',             'de': 'ms',                  'ru': 'мс'};
-Blockly.Words['control_sec']            = {'en': 'sec',            'de': 'Sek',                 'ru': 'сек.'};
-Blockly.Words['control_min']            = {'en': 'min',            'de': 'Min',                 'ru': 'мин.'};
-Blockly.Words['control_clear_running']  = {'en': ', clear running',  'de': ', löschen falls läuft', 'ru': ', остановить уже запущенный'};
-
 Blockly.System.blocks['control'] =
     '<block type="control">'
     + '     <value name="OID">'
@@ -210,14 +189,6 @@ Blockly.JavaScript['control'] = function(block) {
 };
 
 // --- toggle -----------------------------------------------------------
-Blockly.Words['toggle']                = {'en': 'toggle',         'de': 'umschalten',             'ru': 'переключить'};
-Blockly.Words['toggle_tooltip']        = {'en': 'Toggle the state',  'de': 'Schalte Zustand um',     'ru': 'Изменить состояние'};
-Blockly.Words['toggle_help']           = {'en': 'setstate',       'de': 'setstate',            'ru': 'setstate'};
-Blockly.Words['toggle_with']           = {'en': 'with',           'de': 'mit',                 'ru': 'на'};
-Blockly.Words['toggle_delay']          = {'en': 'with delay',     'de': 'mit Verzögerung',     'ru': 'с задержкой'};
-Blockly.Words['toggle_ms']             = {'en': 'in ms',          'de': 'in ms',               'ru': 'в мс'};
-Blockly.Words['toggle_clear_running']  = {'en': ', clear running',  'de': ', löschen falls läuft', 'ru': ', остановить уже запущенный'};
-
 Blockly.System.blocks['toggle'] =
     '<block type="toggle">'
     + '     <value name="OID">'
@@ -344,13 +315,6 @@ Blockly.JavaScript['toggle'] = function(block) {
 };
 
 // --- update -----------------------------------------------------------
-Blockly.Words['update']         = {'en': 'update',          'de': 'aktualisiere',           'ru': 'обновить'};
-Blockly.Words['update_tooltip'] = {'en': 'Update state',    'de': 'Zustand aktualisieren',  'ru': 'Обновить состояние'};
-Blockly.Words['update_help']    = {'en': 'setstate',        'de': 'setstate',               'ru': 'setstate'};
-Blockly.Words['update_with']    = {'en': 'with',            'de': 'mit',                    'ru': 'с'};
-Blockly.Words['update_delay']   = {'en': 'with delay',      'de': 'mit Verzögerung',        'ru': 'с задержкой'};
-Blockly.Words['update_ms']      = {'en': 'in ms',           'de': 'in ms',                  'ru': 'в мс'};
-
 Blockly.System.blocks['update'] =
     '<block type="update">'
     + '     <value name="OID">'
@@ -462,13 +426,6 @@ Blockly.JavaScript['update'] = function(block) {
 };
 
 // --- direct binding -----------------------------------------------------------
-Blockly.Words['direct']                 = {'en': 'bind',           'de': 'binde',            'ru': 'связять'};
-Blockly.Words['direct_tooltip']         = {'en': 'Bind two states with each other',          'de': 'Binde zwei Zustände miteinander',     'ru': 'Связать два состояния между собой'};
-Blockly.Words['direct_help']            = {'en': 'setstate',       'de': 'setstate',         'ru': 'setstate'};
-Blockly.Words['direct_oid_src']         = {'en': '',               'de': '',                 'ru': ''};
-Blockly.Words['direct_only_changes']    = {'en': 'only changes',   'de': 'nur Änderungen',   'ru': 'только изменения'};
-Blockly.Words['direct_oid_dst']         = {'en': 'with',           'de': 'mit',              'ru': 'c'};
-
 Blockly.System.blocks['direct'] =
     '<block type="direct">'
     + '     <value name="OID_SRC">'
@@ -519,14 +476,6 @@ Blockly.JavaScript['direct'] = function(block) {
 };
 
 // --- control ex -----------------------------------------------------------
-Blockly.Words['control_ex']                = {'en': 'write',          'de': 'schreibe',            'ru': 'записать'};
-Blockly.Words['control_ex_tooltip']        = {'en': 'Control state',  'de': 'Steuere Zustand',     'ru': 'Установить состояние'};
-Blockly.Words['control_ex_control']        = {'en': 'сontrol',        'de': 'steuere',             'ru': 'установить'};
-Blockly.Words['control_ex_update']         = {'en': 'update',         'de': 'aktualisiere',        'ru': 'обновить'};
-Blockly.Words['control_ex_delay']          = {'en': 'delay in ms',    'de': 'Verzögerung in ms',   'ru': 'Задержка в мс'};
-Blockly.Words['control_ex_value']          = {'en': 'value',          'de': 'Wert',                'ru': 'значение'};
-Blockly.Words['control_ex_clear_running']  = {'en': 'clear running',  'de': 'löschen falls läuft', 'ru': 'остановить уже запущенный'};
-
 Blockly.System.blocks['control_ex'] =
     '<block type="control_ex">'
     + '     <value name="OID">'
@@ -596,11 +545,6 @@ Blockly.JavaScript['control_ex'] = function(block) {
 };
 
 // --- create state --------------------------------------------------
-Blockly.Words['create']         = {'en': 'create state',    'de': 'Zustand erzeugen',   'ru': 'создать состояние'};
-Blockly.Words['create_jsState'] = {'en': 'jsState',         'de': 'jsState',            'ru': 'jsState'};
-Blockly.Words['create_tooltip'] = {'en': 'create state',    'de': 'Zustand erzeugen',   'ru': 'создать состояние'};
-Blockly.Words['create_help']    = {'en': 'createstate',     'de': 'createstate',        'ru': 'createstate'};
-
 Blockly.System.blocks['create'] =
     '<block type="create">'
     + '     <value name="NAME">'
@@ -638,19 +582,6 @@ Blockly.JavaScript['create'] = function(block) {
 };
 
 // --- get value --------------------------------------------------
-Blockly.Words['get_value']         = {'en': 'Get state value',                  'de': 'Zustandswert nehmen',                'ru': 'Взять значение состояния'};
-Blockly.Words['get_value_OID']     = {'en': 'of Object ID',                     'de': 'vom Objekt ID',                      'ru': 'у объекта'};
-Blockly.Words['get_value_tooltip'] = {'en': 'Select object ID with dialog',     'de': 'Objekt ID mit Dialog selektieren',   'ru': 'Выбрать ID объекта'};
-Blockly.Words['get_value_help']    = {'en': 'getstate',                         'de': 'getstate',                           'ru': 'getstate'};
-Blockly.Words['get_value_default'] = {'en': 'select ID',                        'de': 'ID auswählen',                       'ru': 'Выбрать ID'};
-
-Blockly.Words['get_value_val']     = {'en': 'Value',                            'de': 'Wert',                               'ru': 'Значение'};
-Blockly.Words['get_value_ack']     = {'en': 'Acknowledge',                      'de': 'anerkannt',                          'ru': 'Подтверждение'};
-Blockly.Words['get_value_ts']      = {'en': 'Timestamp',                        'de': 'Zeitstempel',                        'ru': 'Время'};
-Blockly.Words['get_value_lc']      = {'en': 'Last change ',                     'de': 'Letze Änderung',                     'ru': 'Последнее изменеие'};
-Blockly.Words['get_value_q']       = {'en': 'Quality',                          'de': 'Qualität',                           'ru': 'Качество'};
-Blockly.Words['get_value_from']    = {'en': 'Source',                           'de': 'Quelle',                             'ru': 'Происхождение'};
-
 Blockly.System.blocks['get_value'] =
     '<block type="get_value">'
     + '     <value name="ATTR">'
@@ -694,8 +625,6 @@ Blockly.JavaScript['get_value'] = function(block) {
 };
 
 // --- get value async--------------------------------------------------
-Blockly.Words['get_value_async']         = {'en': 'Get state value',                  'de': 'Zustandswert nehmen',                'ru': 'Взять значение состояния'};
-
 Blockly.System.blocks['get_value_async'] =
     '<block type="get_value_async">'
     + '     <value name="ATTR">'
@@ -747,10 +676,6 @@ Blockly.JavaScript['get_value_async'] = function(block) {
 };
 
 // --- select OID --------------------------------------------------
-Blockly.Words['field_oid']         = {'en': 'Select OID',    'de': 'Zustand erzeugen',   'ru': 'создать состояние'};
-Blockly.Words['field_oid_OID']     = {'en': 'Object ID',         'de': 'Objekt ID',            'ru': 'ID объекта'};
-Blockly.Words['field_oid_tooltip'] = {'en': 'Select object ID with dialog',    'de': 'Objekt ID mit Dialog selektieren',   'ru': 'Выбрать ID объекта'};
-
 Blockly.System.blocks['field_oid'] =
     '<block type="field_oid">'
     + '     <value name="TEXT">'

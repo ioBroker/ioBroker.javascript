@@ -2752,9 +2752,10 @@ var main = {
         $dialogConfirm.dialog('option', 'title', title || _('Message'));
         $('#dialog-confirm-text').html(message);
         if (icon) {
-            $('#dialog-confirm-icon').show();
-            $('#dialog-confirm-icon').attr('class', '');
-            $('#dialog-confirm-icon').addClass('ui-icon ui-icon-' + icon);
+            $('#dialog-confirm-icon')
+                .show()
+                .attr('class', '')
+                .addClass('ui-icon ui-icon-' + icon);
         } else {
             $('#dialog-confirm-icon').hide();
         }

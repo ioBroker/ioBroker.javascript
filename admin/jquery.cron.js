@@ -10,73 +10,6 @@ $.fn.cron = function(options, setValue) {
         return this;
     }
 
-    var words = {
-        "Every %s seconds": {"en": "Every %s seconds",  "de": "Alle %s Sekunden",   "ru": "Каждые %s секунд(ы)"},
-        "Clear":            {"en": "Clear",             "de": "Löschen",            "ru": "Clear"},
-        "never":            {"en": "Never",             "de": "Nie",                "ru": "Никогда"},
-        "Day of Month":     {"en": "Day of Month",      "de": "Monatstag",          "ru": "День месяца"},
-
-        "Jan":              {"en": "Jan",               "de": "Jan",                "ru": "Янв"},
-        "Feb":              {"en": "Feb",               "de": "Feb",                "ru": "Фев"},
-        "March":            {"en": "March",             "de": "März",               "ru": "Март"},
-        "April":            {"en": "April",             "de": "April",              "ru": "Апр"},
-        "May":              {"en": "May",               "de": "Mai",                "ru": "Mай"},
-        "June":             {"en": "June",              "de": "Juni",               "ru": "Июнь"},
-        "July":             {"en": "July",              "de": "Juli",               "ru": "Июль"},
-        "Aug":              {"en": "Aug",               "de": "Aug",                "ru": "Авг"},
-        "Sept":             {"en": "Sept",              "de": "Sept",               "ru": "Сен"},
-        "Oct":              {"en": "Oct",               "de": "Okt",                "ru": "Окт"},
-        "Nov":              {"en": "Nov",               "de": "Nov",                "ru": "Ноя"},
-        "Dec":              {"en": "Dec",               "de": "Dez",                "ru": "Дек"},
-
-        "Sunday":           {"en": "Sunday",            "de": "Sonntag",            "ru": "Воскресение"},
-        "Monday":           {"en": "Monday",            "de": "Montag",             "ru": "Понедельник"},
-        "Tuesday":          {"en": "Tuesday",           "de": "Dienstag",           "ru": "Вторник"},
-        "Wednesday":        {"en": "Wednesday",         "de": "Mittwoch",           "ru": "Среда"},
-        "Thursday":         {"en": "Thursday",          "de": "Donnerstag",         "ru": "Четверг"},
-        "Friday":           {"en": "Friday",            "de": "Freitag",            "ru": "Пятница"},
-        "Saturday":         {"en": "Saturday",          "de": "Samstag",            "ru": "Суббота"},
-
-        "Second":           {"en": "Second",            "de": "Sekunden",           "ru": "Секунды"},
-        "Minute":           {"en": "Minute",            "de": "Minuten",            "ru": "Минуты"},
-        "Hour":             {"en": "Hour",              "de": "Stunden",            "ru": "Часы"},
-        "Month":            {"en": "Month",             "de": "Monate",             "ru": "Месяцы"},
-        "Day of Week":      {"en": "Day of Week",       "de": "Wochentage",         "ru": "Дни недели"},
-
-        "Use seconds:":     {"en": "Use seconds:",      "de": "Sekunden benutzen:", "ru": "Задействовать секунды:"},
-
-        "Every n seconds":  {"en": "Every n seconds",   "de": "Alle N Sekunden","ru": "Каждые N секунд"},
-        "Each selected second": {"en": "Each selected second", "de": "Jede ausgewählte Sekunde", "ru": "Каждую выбранную секунду"},
-        "Every n minutes":  {"en": "Every n minutes",   "de": "Alle N Minuten", "ru": "Каждые N минут"},
-        "Each selected minute": {"en": "Each selected minute", "de": "Jede ausgewählte Minute", "ru": "Каждую выбранную минуту"},
-        "Every n hours":    {"en": "Every n Hours",     "de": "Alle N Stunden", "ru": "Каждые N часов"},
-        "Each selected hour": {"en": "Each Selected Hour", "de": "Jede ausgewählte Stunde", "ru": "Каждый выбранный час"},
-
-        "Each day":         {"en": "Each Day",          "de": "Jeden Tag",      "ru": "Каждый день"},
-        "Each selected day": {"en": "Each selected Day", "de": "Jeden ausgewählten Tag", "ru": "Каждый выбранный день"},
-        "Each month":       {"en": "Each Month",        "de": "Jeden Monat",    "ru": "Каждый месяц"},
-        "Each selected month": {"en": "Each selected month", "de": "Jeden ausgewählten Monat", "ru": "Каждый выбранный месяц"},
-        "Each week day":    {"en": "Each Week",         "de": "Jeden Wochentag",     "ru": "Каждую неделю"},
-        "Each selected week day": {"en": "Each selected week day", "de": "Jeden ausgewählten Wochentag", "ru": "Каждый выбранный день недели"},
-
-        "CRON Every second": {"en": "Every second",     "de": "Jede Sekunde",   "ru": "Каждую секунду"},
-        "CRON Every minute": {"en": "Every minute",     "de": "Jede Minute",    "ru": "Каждую минуту"},
-        "CRON Every hour":  {"en": "Every hour",        "de": "Jede Stunde",    "ru": "Каждый час"},
-        "CRON Every day":   {"en": "Every day",         "de": "Jeden Tag",      "ru": "Каждый день"},
-        "CRON Every month": {"en": "Every month",       "de": "Jeden Monat",    "ru": "Каждый месяц"},
-        "CRON Every week day": {"en": "Every week day", "de": "Jeden Wochentag","ru": "Каждый день недели"},
-        "CRON Every":       {"en": "Every",             "de": "Alle",           "ru": "Каждые"},
-        "CRON second":      {"en": "second",            "de": "Sekunde",        "ru": "секунду"},
-        "CRON seconds":     {"en": "seconds",           "de": "Sekunden",       "ru": "секунд(ы)"},
-        "CRON minute":      {"en": "minute",            "de": "Minute",         "ru": "минуту"},
-        "CRON minutes":     {"en": "minutes",           "de": "Minuten",        "ru": "минут(ы)"},
-        "CRON hour":        {"en": "hour",              "de": "Stunde",         "ru": "час"},
-        "CRON hours":       {"en": "hours",             "de": "Stunden",        "ru": "часа(ов)"},
-        "CRON day":         {"en": "day",               "de": "Tag",            "ru": "день"},
-        "CRON days":        {"en": "days",              "de": "Tage",           "ru": "дней"},
-        "CRON month":       {"en": "month",             "de": "Monate",         "ru": "месяц"},
-        "CRON months":      {"en": "months",            "de": "Monaten",        "ru": "месяца"}
-    };
     var types = [
         'second',
         'minute',
@@ -85,155 +18,6 @@ $.fn.cron = function(options, setValue) {
         'month',
         'week'
     ];
-
-    var LOCALE = {};
-
-    LOCALE.en = {
-        ORDINALS: {
-            th: 'th',
-            st: 'st',
-            nd: 'nd',
-            rd: 'rd'
-        },
-        MONTH: [
-            'Jan',
-            'Feb',
-            'Mar',
-            'Apr',
-            'May',
-            'Jun',
-            'Jul',
-            'Aug',
-            'Sep',
-            'Oct',
-            'Nov',
-            'Dec'
-        ],
-        DOW: [
-            'Sun',
-            'Mon',
-            'Tue',
-            'Wed',
-            'Thu',
-            'Fri',
-            'Sat'
-        ],
-        'Every':            'Every', // start of expression
-        'and':              'and', // 1, 2, 3 and 15th
-        'every day':        'every day',
-        'minute past the':  'minute past the',
-        'hour':             'hour',
-        'minute':           'minute',
-        'minute of':        'minute of',
-        'second':           'second',
-        'second in minute': 'second in minute',
-        'second of every':  'second of every',
-        'minute every hour': 'minute every hour',
-        'on the':           'on the',
-        'of every month':   'of every month',
-        'and every':        'and every',
-        'At':               'At',
-        'on':               'on', // on sun, mon
-        'in':               'in' // in jan, apr
-    };
-
-    LOCALE.de = {
-        ORDINALS: {
-            th: '',
-            st: '',
-            nd: '',
-            rd: ''
-        },
-        MONTH: [
-            'Januar',
-            'Februar',
-            'März',
-            'April',
-            'Mai',
-            'Juni',
-            'Juli',
-            'August',
-            'September',
-            'Oktober',
-            'November',
-            'Dezember'
-        ],
-        DOW: [
-            'Sonntag',
-            'Montag',
-            'Dienstag',
-            'Mittwoch',
-            'Donnerstag',
-            'Freitag',
-            'Samstag'
-        ],
-        'Every':            'Jede(r)', // start of expression
-        'and':              'und', // 1, 2, 3 and 15th
-        'every day':        'jeden Tag',
-        'minute past the':  'Minuten nach',
-        'hour':             'Stunde',
-        'minute':           'Minute',
-        'minute of':        'Minuten von',
-        'second':           'Sekunde',
-        'second in minute': 'Sekunde in der Minute',
-        'second of every':  'Sekunde in',
-        'minute every hour': 'Minute jede Stunde',
-        'on the':           'am',
-        'of every month':   'im jeden Monat',
-        'and every':        'und am jeden',
-        'At':               'Um',
-        'on':               'am', // on sun, mon
-        'in':               'im' // in jan, apr
-    };
-
-    LOCALE.ru = {
-        ORDINALS: {
-            th: '',
-            st: '',
-            nd: '',
-            rd: ''
-        },
-        MONTH: [
-            'Январе',
-            'Феврале',
-            'Марте',
-            'Апреле',
-            'Майе',
-            'Июне',
-            'Июле',
-            'Августе',
-            'Сентябре',
-            'Октябре',
-            'Ноябре',
-            'Декабре'
-        ],
-        DOW: [
-            'воскресение',
-            'понедельник',
-            'вторник',
-            'среду',
-            'четверг',
-            'пятницу',
-            'субботу'
-        ],
-        'Every':            'Каждую(ый)', // start of expression
-        'and':              'и', // 1, 2, 3 and 15th
-        'every day':        'каждый день',
-        'minute past the':  'минуту в',
-        'hour':             'часа(ов)',
-        'minute':           'минуту',
-        'minute of':        'минут(у) в',
-        'second':           'секунду',
-        'second in minute': 'секунду в минуте',
-        'second of every':  'секунду каждой(го)',
-        'minute every hour': 'минуту каждый час',
-        'on the':           '',
-        'of every month':   'числа каждого месяца',
-        'and every':        'и каждый',
-        'At':               'В',
-        'on':               'в', // on sun, mon
-        'in':               'в' // in jan, apr
-    };
 
     var everyText = [
         'Every %s seconds',
@@ -244,8 +28,8 @@ $.fn.cron = function(options, setValue) {
     ];
 
     if (typeof systemDictionary !== 'undefined' && !systemDictionary['Every %s seconds']) {
-        for (var w in words) {
-            systemDictionary[w] = words[w];
+        for (var w in jQueryCronWords) {
+            systemDictionary[w] = jQueryCronWords[w];
         }
     }
 
@@ -513,7 +297,7 @@ $.fn.cron = function(options, setValue) {
             $(el).find('.cron-text').html(_('never'));
             return;
         }
-        var text = cronToText(value, $(el).find('.cron-checkbox-seconds').prop('checked'), LOCALE[systemLang]);
+        var text = cronToText(value, $(el).find('.cron-checkbox-seconds').prop('checked'), JQUERY_CRON_LOCALE[systemLang]);
 
         text = correctCasus(text, $(el).find('.cron-checkbox-seconds').prop('checked') ? cronArr[0] : null);
 
