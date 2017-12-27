@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "3.5.1",
+        "version": "3.6.0",
         "title": "Javascript/Blockly Script Engine",
         "titleLang": {
             "en": "Javascript/Blockly Script Engine",
@@ -14,6 +14,16 @@
             "Apollon77 <ingo@fischer-ka.de>"
         ],
         "news": {
+            "3.6.0": {
+                "en": "more translations are added\nupdate blockly engine",
+                "de": "Weitere Übersetzungen werden hinzugefügt\nUpdate Block-Engine",
+                "ru": "добавлено больше переводов\nобновить блок-механизм",
+                "pt": "são adicionadas mais traduções\natualize o mecanismo bloqueado",
+                "nl": "meer vertalingen zijn toegevoegd\nupdate blokmotor",
+                "fr": "plus de traductions sont ajoutées\nmettre à jour le moteur bloquant",
+                "it": "più traduzioni sono aggiunte\naggiornare il motore a blocchi",
+                "es": "se agregan más traducciones\nactualizar el motor blockly"
+            },
             "3.5.1": {
                 "en": "fixed: sometimes MSG is not defined\nTypeScript support (preparations)",
                 "de": "Korrigiert: manchmal ist MSG Objekt nicht definiert\nTypeScript Unterstützung(Vorberetung)",
