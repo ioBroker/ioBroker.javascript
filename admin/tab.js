@@ -16,6 +16,7 @@ function Scripts(main) {
     this.currentEngine  = '';
     this.languageLoaded = [false, false];
     this.blocklyWorkspace = null;
+    this.prepared       = false;
     
     function addScript(group) {
         $('#dialog-new-script').data('callback', function (type) {
@@ -163,6 +164,8 @@ function Scripts(main) {
     }
 
     this.prepare = function () {
+        if (this.prepared) return;
+        this.prepared = true;
         this.$dialogCron.dialog({
             autoOpen:   false,
             modal:      true,
@@ -1791,6 +1794,7 @@ function Scripts(main) {
     }
 
     this.init = function (update) {
+        if (this.inited && !update) return;
         var that = this;
         if (!this.main.objectsLoaded || !this.languageLoaded[0] || !this.languageLoaded[1]) {
             setTimeout(function () {
@@ -1798,6 +1802,7 @@ function Scripts(main) {
             }, 250);
             return;
         }
+        this.inited = true;
 
         var $blocklyEditor = $('#blockly-editor');
         if (!$blocklyEditor.data('inited')) {
@@ -1886,9 +1891,7 @@ function Scripts(main) {
             });
         }
 
-        if (typeof this.$grid !== 'undefined' && (!this.$grid.data('inited') || update)) {
-            this.$grid.data('inited', true);
-
+        if (typeof this.$grid !== 'undefined') {
             that.engines = this.fillEngines('edit-script-engine-type');
 
             /*this.$grid.selectId('init', {
@@ -2419,8 +2422,9 @@ function Scripts(main) {
         }
         var that = this;
         var obj = {};
-        var newId      = $('#edit-script-group').val() + '.' + $('#edit-script-name').val().replace(/["'\s.]/g, '_');
-        obj.name       = $('#edit-script-name').val();
+        var name = $('#edit-script-name').val();
+        var newId      = $('#edit-script-group').val() + '.' + name.replace(/["'\s.]/g, '_');
+        obj.name       = name;
         obj.engineType = $('#edit-script-engine-type').val() || '';
         obj.debug      = $('#edit-script-debug').prop('checked');
         obj.verbose    = $('#edit-script-verbose').prop('checked');
@@ -2507,8 +2511,9 @@ function Scripts(main) {
 
                 // if script type was changed
                 if (id === this.currentId) {
-                    if (obj.common.name !== $('#edit-script-name').val()) {
-                        $('#edit-script-name').val(obj.common.name);
+                    var $name = $('#edit-script-name');
+                    if (obj.common.name !== $name.val()) {
+                        $name.val(obj.common.name);
                     }
                     if (obj.common.engineType !== $('#edit-script-engine-type').val()) {
                         editScript(id);
@@ -2523,7 +2528,6 @@ function Scripts(main) {
                     editScript(null);
                 }
             }
-
 
             if (this.updateTimer) clearTimeout(this.updateTimer);
 
@@ -2702,9 +2706,10 @@ var main = {
         if (icon) {
             if (!icon.match(/^ui\-icon\-/)) icon = 'ui-icon-' + icon;
 
-            $('#dialog-message-icon').show();
-            $('#dialog-message-icon').attr('class', '');
-            $('#dialog-message-icon').addClass('ui-icon ' + icon);
+            $('#dialog-message-icon')
+                .show()
+                .attr('class', '')
+                .addClass('ui-icon ' + icon);
         } else {
             $('#dialog-message-icon').hide();
         }
@@ -2770,6 +2775,7 @@ var main = {
             noMultiselect: true,
             imgPath: '../../lib/css/fancytree/',
             filter: {type: 'state'},
+            getObjects: getObjects,
             texts: {
                 select:   _('Select'),
                 cancel:   _('Cancel'),
@@ -2789,6 +2795,18 @@ var main = {
             columns: ['image', 'name', 'role', 'room', 'value']
         });
         return main.selectId;
+    },
+    subscribe:      function (isSubscribe) {
+        if (!main.socket) return;
+        if (isSubscribe) {
+            main.socket.emit('subscribeObjects', 'script.*');
+            main.socket.emit('subscribeObjects', 'system.adapter.*');
+            main.socket.emit('requireLog', true);
+        } else {
+            main.socket.emit('unsubscribeObjects', 'script.*');
+            main.socket.emit('unsubscribeObjects', 'system.adapter.*');
+            main.socket.emit('requireLog', false);
+        }
     },
     objects:        {},
     states:         {},
@@ -2839,20 +2857,20 @@ function getObjects(callback) {
             var obj;
             main.objects = res;
             for (var id in main.objects) {
-                if (id.slice(0, 7) === '_design') continue;
+                if (!main.objects.hasOwnProperty(id) || id.slice(0, 7) === '_design') continue;
 
                 obj = res[id];
                 if (obj.type === 'instance') main.instances.push(id);
                 if (obj.type === 'script')   scripts.list.push(id);
                 if (obj.type === 'channel' && id.match(/^script\.js\./)) scripts.groups.push(id);
-                if (obj.type === 'host') scripts.hosts.push(id);
+                if (obj.type === 'host')     scripts.hosts.push(id);
             }
             main.objectsLoaded = true;
 
             scripts.prepare();
             scripts.init();
 
-            if (typeof callback === 'function') callback();
+            if (typeof callback === 'function') callback(null, res);
         }, 0);
     });
 }
@@ -2861,23 +2879,36 @@ function objectChange(id, obj) {
     // update main.objects cache
     if (obj) {
         if (obj._rev && main.objects[id]) main.objects[id]._rev = obj._rev;
-        if (!main.objects[id] || JSON.stringify(main.objects[id]) != JSON.stringify(obj)) {
+        if (!main.objects[id] || JSON.stringify(main.objects[id]) !== JSON.stringify(obj)) {
             main.objects[id] = obj;
+            if (obj.type === 'instance') {
+                pos = main.instances.indexOf(id);
+                if (pos === -1) main.instances.push(id);
+            } else
+            if (obj.type === 'script') {
+                pos = scripts.list.indexOf(id);
+                if (pos === -1) scripts.list.push(id);
+            } else
+            if (id.match(/^script\.js\./) && obj.type === 'channel') {
+                pos = scripts.groups.indexOf(id);
+                if (pos === -1) scripts.groups.push(id);
+            }
         }
     } else if (main.objects[id]) {
         var oldObj = {_id: id, type: main.objects[id].type};
         delete main.objects[id];
+        var pos;
         if (oldObj.type === 'instance') {
-            var pos = main.instances.indexOf(id);
+            pos = main.instances.indexOf(id);
             if (pos !== -1) main.instances.splice(pos, 1);
         } else
         if (oldObj.type === 'script') {
-            var pos = main.instances.indexOf(id);
-            if (pos !== -1) main.instances.splice(pos, 1);
+            pos = scripts.list.indexOf(id);
+            if (pos !== -1) scripts.list.splice(pos, 1);
         } else
         if (id.match(/^script\.js\./) && oldObj.type === 'channel') {
-            var pos = main.instances.indexOf(id);
-            if (pos !== -1) main.instances.splice(pos, 1);
+            pos = scripts.groups.indexOf(id);
+            if (pos !== -1) scripts.groups.splice(pos, 1);
         }
     }
 
@@ -2984,6 +3015,7 @@ main.socket.on('connect', function () {
             });
         });
     }
+    main.subscribe(true);
     if (main.waitForRestart) {
         location.reload();
     }
@@ -3025,8 +3057,9 @@ function applyResizableH(install, timeout) {
             autoHide:   false,
             handles:    'e',
             start:      function (e, ui) {
-                $('#blockly-editor').data('wasVisible', $('#blockly-editor').is(':visible'));
-                $('#blockly-editor').hide();
+                var $editor = $('#blockly-editor');
+                $editor.data('wasVisible', $editor.is(':visible'));
+                $editor.hide();
                 $('.blocklyWidgetDiv').hide();
                 $('.blocklyTooltipDiv').hide();
                 $('.blocklyToolboxDiv').hide();
@@ -3053,14 +3086,19 @@ function applyResizableH(install, timeout) {
 
 function applyResizableV() {
     var height = parseInt(main.config['script-editor-height'] || '80%', 10);
-    $('#editor-scripts-textarea').height(height + '%').next().height(100 - height + '%');
+    var $textarea = $('#editor-scripts-textarea');
+    $textarea
+            .height(height + '%')
+                .next()
+                .height(100 - height + '%');
 
-    $('#editor-scripts-textarea').resizable({
+    $textarea.resizable({
         autoHide:   false,
         handles:    's',
         start:      function (e, ui) {
-            $('#blockly-editor').data('wasVisible', $('#blockly-editor').is(':visible'));
-            $('#blockly-editor').hide();
+            var $editor = $('#blockly-editor');
+            $editor.data('wasVisible', $editor.is(':visible'));
+            $editor.hide();
             $('.blocklyWidgetDiv').hide();
             $('.blocklyTooltipDiv').hide();
             $('.blocklyToolboxDiv').hide();
@@ -3085,13 +3123,16 @@ function applyResizableV() {
     });
 }
 
-window.onbeforeunload = function(evt) {
+window.onbeforeunload = function (evt) {
     if (scripts.changed) {
         if (window.confirm(_('Script changes are not saved. Discard?'))) {
+            main.subscribe(false);
             return null;
         } else {
             return _('Configuration not saved.');
         }
     }
+    main.subscribe(false);
+
     return null;
 };
