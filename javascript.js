@@ -2108,7 +2108,7 @@
                     }
                 } else {
                     if (adapter.config.subscribe) {
-                        sandbox.log('Cannot use sync getState, use callback instead getState("' + id + '", function (err, state){});', 'error');
+                        sandbox.log('Cannot use sync getState, use callback instead getState("' + id + '", function (err, state){}); or disable the "Do not subscribe all states on start" option in instance configuration.', 'error');
                     } else {
                         if (states[id]) {
                             if (sandbox.verbose) sandbox.log('getState(id=' + id + ', timerId=' + timerId + ') => ' + JSON.stringify(states[id]), 'info');
