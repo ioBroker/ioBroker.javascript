@@ -223,7 +223,7 @@
     }
     Object.defineProperties(EventObj.prototype, eventObjectProperties);
 
-    var adapter = utils.adapter({
+    var adapter = new utils.Adapter({
 
         name: 'javascript',
 
