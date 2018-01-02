@@ -462,13 +462,13 @@ function startAdapter(objects, states, callback) {
         try {
             if (debug) {
                 // start controller
-                pid = child_process.exec('node node_modules/' + pkg.name + '/' + pkg.main + ' --console debug', {
+                pid = child_process.exec('node node_modules/' + pkg.name + '/' + pkg.main + ' --console silly', {
                     cwd: rootDir + 'tmp',
                     stdio: [0, 1, 2]
                 });
             } else {
                 // start controller
-                pid = child_process.fork('node_modules/' + pkg.name + '/' + pkg.main, ['--console', 'debug'], {
+                pid = child_process.fork('node_modules/' + pkg.name + '/' + pkg.main, ['--console', 'silly'], {
                     cwd:   rootDir + 'tmp',
                     stdio: [0, 1, 2, 'ipc']
                 });
@@ -485,7 +485,7 @@ function startAdapter(objects, states, callback) {
 function startController(isStartAdapter, onObjectChange, onStateChange, callback) {
     if (typeof isStartAdapter === 'function') {
         callback = onStateChange;
-        onStateChange = onObjectChange
+        onStateChange = onObjectChange;
         onObjectChange = isStartAdapter;
         isStartAdapter = true;
     }
@@ -515,6 +515,9 @@ function startController(isStartAdapter, onObjectChange, onStateChange, callback
                 "connectTimeout": 2000
             },
             logger: {
+                silly: function (msg) {
+                    console.log(msg);
+                },
                 debug: function (msg) {
                     console.log(msg);
                 },
@@ -555,9 +558,14 @@ function startController(isStartAdapter, onObjectChange, onStateChange, callback
                 }
             },
             logger: {
+                silly: function (msg) {
+                    console.log(msg);
+                },
                 debug: function (msg) {
+                    console.log(msg);
                 },
                 info: function (msg) {
+                    console.log(msg);
                 },
                 warn: function (msg) {
                     console.log(msg);
