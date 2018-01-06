@@ -419,7 +419,9 @@
                     }
 
                     adapter.objects.getObjectView('script', 'javascript', {}, function (err, doc) {
-                        globalScript = '';
+                        // we have to make sure the VM doesn't choke on `exports` when using TypeScript
+                        // even when there's no global script, this line has to exist:
+                        globalScript = "const exports = {};\n";
                         var count = 0;
                         if (doc && doc.rows && doc.rows.length) {
                             // assemble global script
@@ -463,9 +465,7 @@
                                                 } else {
                                                     adapter.log.info("TypeScript compilation successful");
                                                 }
-                                                // polyfill `exports` with an empty object so the vm doesn't choke
-                                                var code = "(function(exports){" + tsCompiled.result + "}({}));";
-                                                globalScript += code + '\n';
+                                                globalScript += tsCompiled.result + '\n';
                                             } else {
                                                 adapter.log.error("TypeScript compilation failed: \n" + errors);
                                             }
@@ -3230,9 +3230,7 @@
                     } else {
                         adapter.log.info(name + ': TypeScript compilation successful');
                     }
-                    // polyfill `exports` with an empty object so the vm doesn't choke
-                    var code = "(function(exports){" + tsCompiled.result + "}({}));";
-                    scripts[name] = compile(globalScript + '\n' + code, name);
+                    scripts[name] = compile(globalScript + '\n' + tsCompiled.result, name);
                     if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
                     if (typeof callback === 'function') callback(true, name);
                 } else {
