@@ -97,6 +97,21 @@ You can define the global scripts in the "global" folder.
 All global scripts are available on all instances. If global script is disabled, it will not be used.
 Global script will be just prepend to the normal script and compiled, so you cannot share data between scripts via global scrips. Use states for it.
 
+To use global functions in TypeScript, you have to `declare` them first, so the compiler knows about the global functions. Example:
+```typescript
+// global script:
+// ==============
+function globalFn(arg: string): void {
+    // actual implementation
+}
+
+// normal script:
+// ==============
+declare function globalFn(arg: string): void;
+// use as normal:
+globalFn("test");
+```
+
 #### Best practice:
 Create two instances of javascript adapter: one "test" and one "production".
 After the script is tested in the "test" instance, it can be moved to "production". By that you can restart the "test" instance as you want.
