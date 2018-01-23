@@ -22,6 +22,9 @@ Hier kann man die Beschreibung von [Blockly](doc/de/blockly.md) finden.
 
 
 ## Changelog
+### 3.6.1 (2018-01-23)
+* (bluefox) Pattern error is fixed
+
 ### 3.6.0 (2017-12-28)
 * (bluefox) more translations are added
 * (bluefox) update blockly engine

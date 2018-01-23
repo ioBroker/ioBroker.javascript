@@ -3345,7 +3345,7 @@
         });
     }
 
-    function getObjectEnums(idObj, callback, enumIds, enumNames) {
+    /*function getObjectEnums(idObj, callback, enumIds, enumNames) {
         if (!enumIds)   enumIds   = [];
         if (!enumNames) enumNames = [];
 
@@ -3384,7 +3384,7 @@
 
         cacheObjectEnums[idObj] = {enumIds: enumIds, enumNames: enumNames};
         if (typeof callback === 'function') callback(enumIds, enumNames);
-    }
+    }*/
 
     function getObjectEnumsSync(idObj, enumIds, enumNames) {
         if (!enumIds)   enumIds   = [];

@@ -6,5 +6,9 @@ test
 doc
 .idea
 .git
+.gitignore
 node_modules
 appveyor.yml
+package-lock.json
+iob_npm.dode
+CHANGELOG_OLD.md

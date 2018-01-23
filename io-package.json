@@ -1,12 +1,18 @@
 {
     "common": {
         "name": "javascript",
-        "version": "3.6.0",
-        "title": "Javascript/Blockly Script Engine",
+        "version": "3.6.1",
+        "title": "Script Engine",
         "titleLang": {
-            "en": "Javascript/Blockly Script Engine",
-            "de": "Javascript/Blockly Skriptausführung",
-            "ru": "Javascript/Blockly Скрипты"
+            "en": "Script Engine",
+            "de": "Skriptausführung",
+            "ru": "Скрипты",
+            "pt": "Script Engine",
+            "nl": "Script-engine",
+            "fr": "Moteur de script",
+            "it": "Motore di script",
+            "es": "Motor de script",
+            "pl": "Silnik skryptowy"
         },
         "authors": [
             "bluefox <dogafox@gmail.com>",
@@ -14,6 +20,17 @@
             "Apollon77 <ingo@fischer-ka.de>"
         ],
         "news": {
+            "3.6.1": {
+                "en": "Pattern error is fixed",
+                "de": "Musterfehler ist behoben",
+                "ru": "Исправлена ​​ошибка проверки событий",
+                "pt": "O erro de padrão é corrigido",
+                "nl": "Patroonfout is opgelost",
+                "fr": "L'erreur de modèle est fixe",
+                "it": "L'errore di modello è stato risolto",
+                "es": "Se solucionó el error de patrón",
+                "pl": "Błąd wzorca został naprawiony"
+            },
             "3.6.0": {
                 "en": "more translations are added\nupdate blockly engine",
                 "de": "Weitere Übersetzungen werden hinzugefügt\nUpdate Block-Engine",
@@ -83,6 +100,7 @@
             "blockly",
             "blokly"
         ],
+        "materialze": true,
         "readme": "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
         "enabled": true,
         "license": "MIT",

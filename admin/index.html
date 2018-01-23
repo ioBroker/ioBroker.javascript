@@ -14,14 +14,6 @@
 <script type="text/javascript" src="adminWords.js"></script>
 
 <style>
-    .table_header {
-        background-color: blue;
-        color: white;
-    }
-    .ip {
-        width: 150px;
-        text-align: right;
-    }
     .title {
         white-space: nowrap;
     }
@@ -159,25 +151,25 @@
             <td colspan="4"><h4 class="translate" style="width: 100%">Settings</h4></td>
         </tr>
         <tr>
-            <td style="width: 100px"><label for="libraries" class="translate title">Additional npm modules:</label></td>
+            <td style="width: 100px"><label for="libraries" class="translate">Additional npm modules:</label></td>
             <td class="admin-icon"></td>
-            <td style="width: 100%"><textarea id="libraries" class="value" style="width: 100%"></textarea></td>
+            <td style="width: 100%"><textarea id="libraries" class="value" style="width: 100%;     resize: vertical;"></textarea></td>
             <td class="admin-text" style="width: 150px"></td>
         </tr>
         <tr>
-            <td><label for="enableSetObject" class="translate title">Enable command "setObject":</label></td>
+            <td><label for="enableSetObject" class="translate">Enable command "setObject":</label></td>
             <td class="admin-icon"></td>
             <td><input id="enableSetObject" class="value" type="checkbox"/></td>
             <td class="admin-text"></td>
         </tr>
         <tr>
-            <td><label for="enableSendToHost" class="translate title">Enable command "sendToHost":</label></td>
+            <td><label for="enableSendToHost" class="translate">Enable command "sendToHost":</label></td>
             <td class="admin-icon"></td>
             <td><input id="enableSendToHost" class="value" type="checkbox"/></td>
             <td class="admin-text"></td>
         </tr>
         <tr>
-            <td><label for="enableExec" class="translate title">Enable command "exec":</label></td>
+            <td><label for="enableExec" class="translate">Enable command "exec":</label></td>
             <td class="admin-icon"></td>
             <td><input id="enableExec" class="value" type="checkbox"/></td>
             <td class="admin-text"></td>
@@ -187,16 +179,16 @@
             <td colspan="4"><h4 class="translate" style="width: 100%">Astro settings</h4></td>
         </tr>
         <tr>
-            <td><label for="useSystemGPS" class="translate title">Use system settings:</label></td><td class="admin-icon"></td><td><input id="useSystemGPS" type="checkbox" class="value" /></td><td class="admin-text"></td>
+            <td><label for="useSystemGPS" class="translate">Use system settings:</label></td><td class="admin-icon"></td><td><input id="useSystemGPS" type="checkbox" class="value" /></td><td class="admin-text"></td>
         </tr>
         <tr id="tr_latitude">
-            <td><label for="latitude" class="translate title">Latitude °:</label></td><td class="admin-icon"></td><td><input id="latitude" class="value" /></td><td class="admin-text"></td>
+            <td><label for="latitude" class="translate">Latitude °:</label></td><td class="admin-icon"></td><td><input id="latitude" class="value" /></td><td class="admin-text"></td>
         </tr>
         <tr id="tr_longitude">
-            <td><label for="longitude" class="translate title">Longitude °:</label></td><td class="admin-icon"></td><td><input id="longitude" class="value" /></td><td class="admin-text"></td>
+            <td><label for="longitude" class="translate">Longitude °:</label></td><td class="admin-icon"></td><td><input id="longitude" class="value" /></td><td class="admin-text"></td>
         </tr>
         <tr>
-            <td><label for="subscribe" class="translate title">Do not subscribe all states on start:</label></td><td class="admin-icon"></td><td><input type="checkbox" id="subscribe" class="value" /></td><td class="admin-text"></td>
+            <td><label for="subscribe" class="translate">Do not subscribe all states on start:</label></td><td class="admin-icon"></td><td><input type="checkbox" id="subscribe" class="value" /></td><td class="admin-text"></td>
         </tr>
     </table>
     <p class="translate">Help</p>

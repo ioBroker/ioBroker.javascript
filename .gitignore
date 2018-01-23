@@ -2,3 +2,5 @@ node_modules
 .idea
 tmp
 admin/18n
+package-lock.json
+iob_npm.dode
