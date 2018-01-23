@@ -104,7 +104,6 @@
         var key2 = '_0C1OplAUy7OXhiWLoZc3eY';
         var key = key1 + key2;
 
-        $('#system_address').attr('placeholder', _('Used only for coordinates detection'));
         // load google API
         $.ajax({
             // please do not miss use this api key!
@@ -131,7 +130,7 @@
         });
 
         showHideSettings();
-        libs2chips(settings.libraries || '', onChange);
+        list2chips('.libraries', settings.libraries || '', onChange);
 
         $('.tab-astro').on('click', function () {
             updateMap();
@@ -140,15 +139,15 @@
         onChange(false);
     }
 
-    function libs2chips(libs, onChange) {
-        var libraries = libs.split(/[,;\s]+/);
+    function list2chips(selector, list, onChange) {
+        var chips = list.split(/[,;\s]+/);
         var data = [];
-        for (var lib = 0; lib < libraries.length; lib++) {
-            if (libraries[lib] && libraries[lib].trim()) {
-                data.push({tag: libraries[lib].trim()});
+        for (var c = 0; c < chips.length; c++) {
+            if (chips[c] && chips[c].trim()) {
+                data.push({tag: chips[c].trim()});
             }
         }
-        $('.libraries').chips({
+        $(selector).chips({
             data: data,
             placeholder: _('Module names'),
             secondaryPlaceholder: _('Add module'),
@@ -157,8 +156,8 @@
         });
     }
 
-    function chips2libs() {
-        var data = $('.libraries').chips('getData');
+    function chips2list(selector) {
+        var data = $(selector).chips('getData');
         var text = [];
         for (var lib = 0; lib < data.length; lib++) {
             text.push(data[lib].tag);
@@ -213,7 +212,7 @@
                 obj[$this.attr('id')] = $this.val();
             }
         });
-        obj.libraries = chips2libs();
+        obj.libraries = chips2list('.libraries');
 
         if (obj.latitude.indexOf('°') !== -1) {
             if (!convertGrad(obj, 'latitude')) {
@@ -231,6 +230,15 @@
         callback(obj);
     }
 </script>
+    <style>
+        .top-padding {
+            padding: 1rem;
+        }
+        #map {
+            width: 100%;
+            height: calc(100% - 60px);
+        }
+    </style>
 </head>
 <body>
 <!-- you have to put your config page in a div with id adapter-container -->
@@ -238,8 +246,8 @@
     <div class="row">
         <div class="col s12">
             <ul class="tabs">
-                <li class="tab col s2"><a href="#tab-main" class="translate active">Main settings</a></li>
-                <li class="tab col s2 tab-astro"><a href="#tab-astro" class="translate">Astro settings</a></li>
+                <li class="tab col s5"><a href="#tab-main" class="translate active">Main settings</a></li>
+                <li class="tab col s5 tab-astro"><a href="#tab-astro" class="translate">Astro settings</a></li>
             </ul>
         </div>
         <div id="tab-main"  class="col s12 page">
@@ -280,7 +288,7 @@
             </div>
         </div>
         <div id="tab-astro" class="col s12 page">
-            <div class="row">
+            <div class="row top-padding">
                 <div class="col s12 m6">
                     <div class="row">
                         <div class="col s12">
@@ -307,7 +315,7 @@
                     </div>
                 </div>
                 <div class="col s12 m6 map">
-                    <div id="map" style="width: 100%; height: 100%"></div>
+                    <div id="map"></div>
                 </div>
             </div>
         </div>
