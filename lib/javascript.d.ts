@@ -164,6 +164,24 @@ declare global {
 		interface PartialOtherObject extends Partial<Pick<OtherObject, "_id" | "native" | "enums" | "type" /* | "acl"*/>> {
 			common?: Partial<ObjectCommon>;
 		}
+		interface ChangedStateObject extends StateObject {
+			common: StateCommon;
+			native?: any; // TODO: implement
+    			channelId?: string;
+    			channelName?: string;
+   			deviceId?: string;
+    			deviceName?: string;
+			/** assigned enum ids example: ["enum.functions.Licht","enum.rooms.Garten"] */
+			enumIds? : string[];
+			/** assigned enum names example: ["Licht","Garten"]*/
+    			enumNames? : string[];
+			/** new state */
+    			state: State;
+			/** @deprecated Use state instead **/			
+			newState: State;
+			/** previous state */
+			oldState: State;
+		}
 
 		type Object = StateObject | ChannelObject | DeviceObject | OtherObject;
 		type PartialObject = PartialStateObject | PartialChannelObject | PartialDeviceObject | PartialOtherObject;
@@ -171,8 +189,7 @@ declare global {
 		type GetStateCallback = (err: string | null, state?: State) => void;
 		type SetStateCallback = (err: string | null, id?: string) => void;
 		
-		type ChangedState = any; // TODO: implement
-		type StateChangeHandler = (obj: ChangedState) => void;
+		type StateChangeHandler = (obj: ChangedStateObject) => void;
 		
 		type SetObjectCallback = (err: string | null, obj: { id: string }) => void;
 		type GetObjectCallback = (err: string | null, obj: iobJS.Object) => void;
@@ -194,11 +211,105 @@ declare global {
 		}
 		type MessageCallback = (result?: any) => void;
 		
-		// TODO: Extend definition
-		// interface SubscribeOptions {
-		// 	id?: string | string[] | SubscribeOptions[] | RegExp | RegExp[];
-		// }
-		type SubscribeOptions = any;
+		type changeType ="eq" | "ne" | "gt" | "ge" | "lt" | "le" | "any";
+		type logicType ="and" | "or";
+		interface SubscribeOptions {
+			/** "and" or "or" logic to combine the conditions (default: "and") */
+			logic?: logicType;
+			/** name ist equal or matches to given one or name marches to any item in given list */
+		 	id?: string | string[] | SubscribeOptions[] | RegExp | RegExp[];
+			/** name ist equal or matches to given one */
+			name?: string | RegExp;
+			/** type of change */
+			change?: changeType;
+			val?: any;
+			/** New value must be not equal to given one */
+			valNe?: any;
+			/** New value must be greater than given one */
+			valGt?: any;
+			/** New value must be greater or equal to given one */
+			valGe?: any;
+			/** New value must be smaller than given one */
+			valLt?: any;
+			/** New value must be smaller or equal to given one */
+			valLe?: any;
+			/** Acknowledged state of new value is equal to given one */
+			ack?:boolean;
+			/** Previous value must be equal to given one */
+			oldVal?: any;
+			/** Previous value must be not equal to given one */
+			oldValNe?: any;
+			/** Previous value must be greater than given one */
+			oldValGt?: any;
+			/** Previous value must be greater or equal given one */
+			oldValGe?: any;
+			/** Previous value must be smaller than given one */
+			oldValLt?: any;
+			/** Previous value must be smaller or equal to given one */
+			oldValLe?: any;
+			/** Acknowledged state of previous value is equal to given one */
+			oldAck: boolean;
+			/** New value time stamp must be equal to given one (state.ts == ts) */
+			ts?: string;
+			/** New value time stamp must be not equal to the given one (state.ts != ts) */
+			tsGt?: string;
+			/** New value time stamp must be greater than given value (state.ts > ts) */
+			tsGe?: string;
+			/** New value time stamp must be greater or equal to given one (state.ts >= ts) */
+			tsLt?: string;
+			/** New value time stamp must be smaller than given one (state.ts < ts) */
+			tsLe?: string;
+			/** Previous time stamp must be equal to given one (oldState.ts == ts) */
+			oldTs?: string;
+			/** Previous time stamp must be not equal to the given one (oldState.ts != ts) */
+			oldTsGt?: string;
+			/** Previous time stamp must be greater than given value (oldState.ts > ts) */
+			oldTsGe?: string;
+			/** Previous time stamp must be greater or equal to given one (oldState.ts >= ts) */
+			oldTsLt?: string;
+			/** Previous time stamp must be smaller than given one (oldState.ts < ts) */
+			oldTsLe?: string;
+			/** Last change time stamp must be equal to given one (state.lc == lc) */
+			lc?: string;
+			/** Last change time stamp must be not equal to the given one (state.lc != lc) */
+			lcGt?: string;
+			/** Last change time stamp must be greater than given value (state.lc > lc) */
+			lcGe?: string;
+			/** Last change time stamp must be greater or equal to given one (state.lc >= lc) */
+			lcLt?: string;
+			/** Last change time stamp must be smaller than given one (state.lc < lc) */
+			lcLe?: string;
+			/** Previous last change time stamp must be equal to given one (oldState.lc == lc) */
+			oldLc?: string;
+			/** Previous last change time stamp must be not equal to the given one (oldState.lc != lc) */
+			oldLcGt?: string;
+			/** Previous last change time stamp must be greater than given value (oldState.lc > lc) */
+			oldLcGe?: string;
+			/** Previous last change time stamp must be greater or equal to given one (oldState.lc >= lc) */
+			oldLcLt?: string;
+			/** Previous last change time stamp must be smaller than given one (oldState.lc < lc) */
+			oldLcLe?: string;
+			/** Channel ID must be equal or match to given one */
+			channelId?: string | RegExp;
+			/** Channel name must be equal or match to given one */
+			channelName?: string | RegExp;
+			/** Device ID must be equal or match to given one */
+			deviceId?: string | RegExp;
+			/** Device name must be equal or match to given one */
+			deviceName?: string | RegExp;
+			/** State belongs to given enum or one enum ID of state satisfy the given regular expression */
+			enumId?: string | RegExp;
+			/** State belongs to given enum or one enum name of state satisfy the given regular expression */
+			enumName?: string | RegExp;
+			/** New value is from defined adapter */
+			from?: string;
+			/** New value is not from defined adapter */
+			fromNe?: string;
+			/** Old value is from defined adapter */
+			oldFrom?: string;
+			/** Old value is not from defined adapter */
+			oldFromNe?: string;
+		}
 
 		interface QueryResult {
 			/** State-ID */
