@@ -52,7 +52,7 @@ declare global {
 			/** Optional comment */
 			c?: string;
 		}
-		
+
 		type ObjectType = "state" | "channel" | "device";
 		type CommonType = "number" | "string" | "boolean" | "array" | "object" | "mixed" | "file";
 
@@ -164,20 +164,22 @@ declare global {
 		interface PartialOtherObject extends Partial<Pick<OtherObject, "_id" | "native" | "enums" | "type" /* | "acl"*/>> {
 			common?: Partial<ObjectCommon>;
 		}
+		/** Represents the change of a state */
 		interface ChangedStateObject extends StateObject {
 			common: StateCommon;
-			native?: any; // TODO: implement
-    			channelId?: string;
-    			channelName?: string;
+			native: Record<string, any>;
+			name?: string;
+			channelId?: string;
+			channelName?: string;
    			deviceId?: string;
-    			deviceName?: string;
-			/** assigned enum ids example: ["enum.functions.Licht","enum.rooms.Garten"] */
+			deviceName?: string;
+			/** The IDs of enums this state is assigned to. For example ["enum.functions.Licht","enum.rooms.Garten"] */
 			enumIds? : string[];
-			/** assigned enum names example: ["Licht","Garten"]*/
-    			enumNames? : string[];
+			/** The names of enums this state is assigned to. For example ["Licht","Garten"] */
+			enumNames? : string[];
 			/** new state */
-    			state: State;
-			/** @deprecated Use state instead **/			
+   			state: State;
+			/** @deprecated Use state instead **/
 			newState: State;
 			/** previous state */
 			oldState: State;
@@ -188,16 +190,16 @@ declare global {
 
 		type GetStateCallback = (err: string | null, state?: State) => void;
 		type SetStateCallback = (err: string | null, id?: string) => void;
-		
+
 		type StateChangeHandler = (obj: ChangedStateObject) => void;
-		
+
 		type SetObjectCallback = (err: string | null, obj: { id: string }) => void;
 		type GetObjectCallback = (err: string | null, obj: iobJS.Object) => void;
-		
+
 		type LogLevel = "silly" | "debug" | "info" | "warn" | "error";
 
 		type ReadFileCallback = (err: string | null, file?: Buffer | string, mimeType?: string) => void;
-		
+
 		/** Callback information for a passed message */
 		interface MessageCallbackInfo {
 			/** The original message payload */
@@ -210,20 +212,18 @@ declare global {
 			time: number;
 		}
 		type MessageCallback = (result?: any) => void;
-		
-		type changeType ="eq" | "ne" | "gt" | "ge" | "lt" | "le" | "any";
-		type logicType ="and" | "or";
+
 		interface SubscribeOptions {
 			/** "and" or "or" logic to combine the conditions (default: "and") */
-			logic?: logicType;
-			/** name ist equal or matches to given one or name marches to any item in given list */
+			logic?: "and" | "or";
+			/** name is equal or matches to given one or name marches to any item in given list */
 		 	id?: string | string[] | SubscribeOptions[] | RegExp | RegExp[];
-			/** name ist equal or matches to given one */
+			/** name is equal or matches to given one */
 			name?: string | RegExp;
 			/** type of change */
-			change?: changeType;
+			change?: "eq" | "ne" | "gt" | "ge" | "lt" | "le" | "any";
 			val?: any;
-			/** New value must be not equal to given one */
+			/** New value must not be equal to given one */
 			valNe?: any;
 			/** New value must be greater than given one */
 			valGt?: any;
@@ -234,7 +234,7 @@ declare global {
 			/** New value must be smaller or equal to given one */
 			valLe?: any;
 			/** Acknowledged state of new value is equal to given one */
-			ack?:boolean;
+			ack?: boolean;
 			/** Previous value must be equal to given one */
 			oldVal?: any;
 			/** Previous value must be not equal to given one */
@@ -248,7 +248,7 @@ declare global {
 			/** Previous value must be smaller or equal to given one */
 			oldValLe?: any;
 			/** Acknowledged state of previous value is equal to given one */
-			oldAck: boolean;
+			oldAck?: boolean;
 			/** New value time stamp must be equal to given one (state.ts == ts) */
 			ts?: string;
 			/** New value time stamp must be not equal to the given one (state.ts != ts) */
@@ -324,13 +324,13 @@ declare global {
 			each: (callback?: (id: string, index: number) => boolean) => this;
 
 			/**
-			 * Returns the first state found by this query. 
-			 * If the adapter is configured to subscribe to all states on start, 
+			 * Returns the first state found by this query.
+			 * If the adapter is configured to subscribe to all states on start,
 			 * this can be called synchronously and immediately returns the state.
 			 * Otherwise you need to provide a callback.
 			 */
 			getState: (callback?: GetStateCallback) => void | State;
-			
+
 			/**
 			 * Sets all queried states to the given value.
 			 */
@@ -344,7 +344,7 @@ declare global {
 
 		// TODO: implement
 		type SchedulePattern = any;
-		
+
 	} // end namespace iobJS
 
 	// =======================================================
@@ -384,13 +384,13 @@ declare global {
 	function exec(command: string, callback?: (err: Error, stdout: string, stderr: string) => void): child_process.ChildProcess;
 
 	/**
-	 * Sends an email using the email adapter. 
+	 * Sends an email using the email adapter.
 	 * See the adapter documentation for a description of the msg parameter.
 	 */
 	function email(msg: any): void;
 
 	/**
-	 * Sends a pushover message using the pushover adapter. 
+	 * Sends a pushover message using the pushover adapter.
 	 * See the adapter documentation for a description of the msg parameter.
 	 */
 	function pushover(msg: any): void;
@@ -404,7 +404,7 @@ declare global {
 	 * Causes all changes of the state with id1 to the state with id2
 	 */
 	function subscribe(id1: string, id2: string): any;
-	
+
 	/**
 	 * Subscribe to changes of the matched states.
 	 */
@@ -460,7 +460,7 @@ declare global {
 	 * @param clearRunning (optional) Whether an existing timeout for this state should be cleared
 	 */
 	function setStateDelayed(id: string, state: string | number | boolean | iobJS.State | Partial<iobJS.State>, ack: boolean, delay: number, clearRunning?: boolean, callback?: iobJS.SetStateCallback): any;
-	
+
 	/**
 	 * Clears a timer created by setStateDelayed
 	 * @param id The state id for which the timer should be cleared
@@ -470,7 +470,7 @@ declare global {
 
 	/**
 	 * Returns the state with the given ID.
-	 * If the adapter is configured to subscribe to all states on start, 
+	 * If the adapter is configured to subscribe to all states on start,
 	 * this can be called synchronously and immediately returns the state.
 	 * Otherwise you need to provide a callback.
 	 */
@@ -492,8 +492,8 @@ declare global {
 	 */
 	function getIdByName(name: string, forceArray?: boolean): string | string[];
 
-	/** 
-	 * Reads an object from the object db 
+	/**
+	 * Reads an object from the object db
 	 */
 	function getObject(id: string, enumName?: string): iobJS.Object;
 	/** Creates or overwrites an object in the object db */
@@ -513,7 +513,7 @@ declare global {
 	 * @param callback (optional) Called after the state was created
 	 */
 	function createState(name: string, initValue?: any, forceCreation?: boolean, common?: iobJS.StateCommon, native?: any, callback?: iobJS.SetStateCallback): void;
-	
+
 	/**
 	 * Deletes the state with the given ID
 	 * @param callback (optional) Is called after the state was deleted (or not).
@@ -531,7 +531,7 @@ declare global {
 	function sendTo(instanceName: string, message: string | object, callback?: iobJS.MessageCallback | iobJS.MessageCallbackInfo): void;
 	function sendTo(instanceName: string, command: string, message: string | object, callback?: iobJS.MessageCallback | iobJS.MessageCallbackInfo): void;
 
-	type CompareTimeOperations = 
+	type CompareTimeOperations =
 		"between" | "not between" |
 		">" | ">=" | "<" | "<=" | "==" | "<>"
 	;
@@ -555,7 +555,7 @@ declare global {
 	 * @param callback Is called when the operation has finished (successfully or not)
 	 */
 	function writeFile(id: string, name: string, data: Buffer | string, callback: ErrorCallback): void;
-	
+
 	/**
 	 * Reads a file.
 	 * @param id Name of the root directory. This should be the adapter instance, e.g. "admin.0"
@@ -563,7 +563,7 @@ declare global {
 	 * @param callback Is called when the operation has finished (successfully or not)
 	 */
 	function readFile(id: string, name: string, callback: iobJS.ReadFileCallback): void;
-	
+
 	/**
 	 * Deletes a file.
 	 * @param id Name of the root directory. This should be the adapter instance, e.g. "admin.0"
@@ -578,7 +578,7 @@ declare global {
 	 * @param callback Is called when the operation has finished (successfully or not)
 	 */
 	function delFile(id: string, name: string, callback: ErrorCallback): void;
-	
+
 	function getHistory(instance: any, options: any, callback: any): any;
 
 	/**
