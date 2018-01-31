@@ -22,6 +22,9 @@ Hier kann man die Beschreibung von [Blockly](doc/de/blockly.md) finden.
 
 
 ## Changelog
+### 3.6.2 (2018-01-31)
+* (bluefox) Fixing the CSS for CRON dialog
+
 ### 3.6.1 (2018-01-23)
 * (bluefox) Pattern error is fixed
 

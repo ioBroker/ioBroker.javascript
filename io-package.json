@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "3.6.1",
+        "version": "3.6.2",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -20,6 +20,17 @@
             "Apollon77 <ingo@fischer-ka.de>"
         ],
         "news": {
+            "3.6.2": {
+                "en": "Fixing the CSS for CRON dialog",
+                "de": "Korrigieren des CSS für den CRON-Dialog",
+                "ru": "Исправлен диалог CSS для CRON",
+                "pt": "Corrigindo o diálogo CSS para CRON",
+                "nl": "De CSS voor het CRON-dialoogvenster herstellen",
+                "fr": "Correction de la boîte de dialogue CSS pour CRON",
+                "it": "Correzione del CSS per la finestra di dialogo CRON",
+                "es": "Reparar el CSS para el diálogo CRON",
+                "pl": "Naprawianie okna dialogowego CSS dla CRON"
+            },
             "3.6.1": {
                 "en": "Pattern error is fixed",
                 "de": "Musterfehler ist behoben",
