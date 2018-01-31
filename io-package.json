@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "3.6.2",
+        "version": "3.6.3",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -20,16 +20,16 @@
             "Apollon77 <ingo@fischer-ka.de>"
         ],
         "news": {
-            "3.6.2": {
-                "en": "Fixing the CSS for CRON dialog",
-                "de": "Korrigieren des CSS für den CRON-Dialog",
-                "ru": "Исправлен диалог CSS для CRON",
-                "pt": "Corrigindo o diálogo CSS para CRON",
-                "nl": "De CSS voor het CRON-dialoogvenster herstellen",
-                "fr": "Correction de la boîte de dialogue CSS pour CRON",
-                "it": "Correzione del CSS per la finestra di dialogo CRON",
-                "es": "Reparar el CSS para el diálogo CRON",
-                "pl": "Naprawianie okna dialogowego CSS dla CRON"
+            "3.6.3": {
+                "en": "Fixing the CSS for CRON dialog\nFixing the reorder of scripts",
+                "de": "Korrigieren des CSS für den CRON-Dialog\nReparieren von Skripten",
+                "ru": "Исправлен диалог CSS для CRON\nИсправление переупорядочения скриптов",
+                "pt": "Corrigindo o diálogo CSS para CRON\nCorrigindo o reordenamento de scripts",
+                "nl": "De CSS voor het CRON-dialoogvenster herstellen\nDe volgorde van scripts corrigeren",
+                "fr": "Correction de la boîte de dialogue CSS pour CRON\nFixer la réorganisation des scripts",
+                "it": "Correzione del CSS per la finestra di dialogo CRON\nRisolvere il riordino degli script",
+                "es": "Reparar el CSS para el diálogo CRON\nCorregir el reordenamiento de scripts",
+                "pl": "Naprawianie okna dialogowego CSS dla CRON\nNaprawianie zmiany kolejności skryptów"
             },
             "3.6.1": {
                 "en": "Pattern error is fixed",

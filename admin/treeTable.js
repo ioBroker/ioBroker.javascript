@@ -288,7 +288,6 @@
             if (parts.length === 1) {
                 rows[pp]._class += ' treetable-root'
             }
-
         }
 
         if (withMembers) {

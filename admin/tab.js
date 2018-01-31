@@ -2264,6 +2264,10 @@ function Scripts(main) {
                 ],
                 moveId:     function (oldId, newId, callback) {
                     var obj = that.main.objects[oldId];
+                    if (newId[0] === '.') {
+                        newId = 'script.js' + newId;
+                    }
+
                     if (obj === undefined) {
                         callback && callback('Not found');
                     } else {
