@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "3.6.3",
+        "version": "3.6.4",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -20,6 +20,17 @@
             "Apollon77 <ingo@fischer-ka.de>"
         ],
         "news": {
+            "3.6.4": {
+                "en": "Pattern error is fixed",
+                "de": "Musterfehler ist behoben",
+                "ru": "Исправлена ​​ошибка проверки событий",
+                "pt": "O erro de padrão é corrigido",
+                "nl": "Patroonfout is opgelost",
+                "fr": "L'erreur de modèle est fixe",
+                "it": "L'errore di modello è stato risolto",
+                "es": "Se solucionó el error de patrón",
+                "pl": "Błąd wzorca został naprawiony"
+            },
             "3.6.3": {
                 "en": "Fixing the CSS for CRON dialog\nFixing the reorder of scripts",
                 "de": "Korrigieren des CSS für den CRON-Dialog\nReparieren von Skripten",

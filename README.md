@@ -21,6 +21,9 @@ Hier kann man die Beschreibung von [Blockly](doc/de/blockly.md) finden.
 Описание по [blockly](doc/ru/blockly.md) можно найти [здесь](doc/ru/blockl.md).
 
 ## Changelog
+### 3.6.4 (2018-02-05)
+* (bluefox) Pattern error is fixed
+
 ### 3.6.3 (2018-01-31)
 * (bluefox) Fixing the CSS for CRON dialog
 * (bluefox) Fixing the reorder of scripts
