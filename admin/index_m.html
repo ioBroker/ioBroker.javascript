@@ -137,6 +137,7 @@
         });
 
         onChange(false);
+        if (M) M.updateTextFields();
     }
 
     function list2chips(selector, list, onChange) {
@@ -252,7 +253,7 @@
         </div>
         <div id="tab-main"  class="col s12 page">
             <div class="row">
-                <div class="col s12 m4 l2">
+                <div class="col s6 m4 l2">
                     <img src="js.png" class="logo">
                 </div>
             </div>
@@ -263,25 +264,22 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col s12">
+                <div class="input-field col s12 m6">
                     <input id="enableSetObject" class="value" type="checkbox"/>
                     <span for="enableSetObject" class="translate">Enable command "setObject":</span>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col s12">
+
+                <div class="input-field col s12 m6">
                     <input id="enableSendToHost" class="value" type="checkbox"/>
                     <span for="enableSendToHost" class="translate">Enable command "sendToHost":</span>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col s12">
+
+                <div class="input-field col s12 m6">
                     <input id="enableExec" class="value" type="checkbox"/>
                     <span for="enableExec" class="translate">Enable command "exec":</span>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col s12">
+
+                <div class="input-field col s12 m6">
                     <input type="checkbox" id="subscribe" class="value" />
                     <span for="subscribe" class="translate">Do not subscribe all states on start:</span>
                 </div>
@@ -291,20 +289,20 @@
             <div class="row top-padding">
                 <div class="col s12 m6">
                     <div class="row">
-                        <div class="col s12">
+                        <div class="input-field col s12">
                             <input id="useSystemGPS" type="checkbox" class="value filled-in" />
                             <span for="useSystemGPS" class="translate">Use system settings:</span>
                         </div>
                     </div>
                     <div class="row local-coords">
-                        <div class="col s12">
-                            <input id="latitude" class="value" />
+                        <div class="input-field col s12">
+                            <input id="latitude" type="text" class="value" />
                             <label for="latitude" class="translate">Latitude °:</label>
                         </div>
                     </div>
                     <div class="row local-coords">
-                        <div class="col s12">
-                            <input id="longitude" class="value" />
+                        <div class="input-field col s12">
+                            <input id="longitude" type="text" class="value" />
                             <label for="longitude" class="translate">Longitude °:</label>
                         </div>
                     </div>
