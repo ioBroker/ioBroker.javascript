@@ -406,8 +406,9 @@ declare global {
 			year?: number | number[] | string | string[];
 			/**
 			 * timezone which should be used
+			 * https://github.com/moment/moment-timezone
 			 */
-			tz?: any;
+			tz?: string;
 		}
 
 		/**
@@ -426,8 +427,9 @@ declare global {
 			end?: Date | string | number;
 			/**
 			 * timezone which should be used
+			 * https://github.com/moment/moment-timezone
 			 */
-			tz?: any;
+			tz?: string;
 			/**
 			 * scheduling rule
 			 * schedule rule, a Data object or a dateString resp a number in milliseconds which can create a Date object
