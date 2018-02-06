@@ -373,37 +373,37 @@ declare global {
 			/**
 			 * Day of the month.
 			 */
-			date: number | number[] | string | string[];
+			date?: number | number[] | string | string[];
 
 			/**
 			 * Day of the week.
 			 */
-			dayOfWeek: number | number[] | string | string[];
+			dayOfWeek?: number | number[] | string | string[];
 
 			/**
 			 * Hour.
 			 */
-			hour: number | number[] | string | string[];
+			hour?: number | number[] | string | string[];
 
 			/**
 			 * Minute.
 			 */
-			minute: number | number[] | string | string[];
+			minute?: number | number[] | string | string[];
 
 			/**
 			 * Month.
 			 */
-			month: number | number[] | string | string[];
+			month?: number | number[] | string | string[];
 
 			/**
 			 * Second.
 			 */
-			second: number | number[] | string | string[];
+			second?: number | number[] | string | string[];
 
 			/**
 			 * Year.
 			 */
-			year: number | number[] | string | string[];
+			year?: number | number[] | string | string[];
 			/**
 			 * timezone which should be used
 			 */
