@@ -352,6 +352,11 @@ declare global {
 	// =======================================================
 
 	// TODO: find a way to expose the request module
+	
+	/**
+	 * The instance number of the JavaScript adapter this script runs in
+	 */
+	const instance: number;
 
 	/**
 	 * Queries all states with the given selector
