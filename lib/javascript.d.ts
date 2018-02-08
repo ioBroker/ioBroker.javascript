@@ -522,6 +522,8 @@ declare global {
 	function createState(name: string, initValue: any, forceCreation: boolean, callback?: iobJS.SetStateCallback): void;
 	function createState(name: string, initValue: any, forceCreation: boolean, common: iobJS.StateCommon, callback?: iobJS.SetStateCallback): void;
 	function createState(name: string, initValue: any, forceCreation: boolean, common: iobJS.StateCommon, native: any, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, common: iobJS.StateCommon, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, initValue: any, common: iobJS.StateCommon, callback?: iobJS.SetStateCallback): void;
 	function createState(name: string, common: iobJS.StateCommon, native: any, callback?: iobJS.SetStateCallback): void;
 	function createState(name: string, initValue: any, common: iobJS.StateCommon, native: any, callback?: iobJS.SetStateCallback): void;
 
