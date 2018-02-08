@@ -517,7 +517,13 @@ declare global {
 	 * @param native (optional) Native part of the state object
 	 * @param callback (optional) Called after the state was created
 	 */
-	function createState(name: string, initValue?: any, forceCreation?: boolean, common?: iobJS.StateCommon, native?: any, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, initValue: any, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, initValue: any, forceCreation: boolean, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, initValue: any, forceCreation: boolean, common: iobJS.StateCommon, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, initValue: any, forceCreation: boolean, common: iobJS.StateCommon, native: any, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, common: iobJS.StateCommon, native: any, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, initValue: any, common: iobJS.StateCommon, native: any, callback?: iobJS.SetStateCallback): void;
 
 	/**
 	 * Deletes the state with the given ID
