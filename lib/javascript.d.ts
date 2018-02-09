@@ -342,9 +342,106 @@ declare global {
 			on: (callback: StateChangeHandler) => this;
 		}
 
-		// TODO: implement
-		type SchedulePattern = any;
+		interface AstroSchedule {
+			/**
+			* "sunrise": sunrise (top edge of the sun appears on the horizon)
+			* "sunriseEnd": sunrise ends (bottom edge of the sun touches the horizon)
+			* "goldenHourEnd": morning golden hour (soft light, best time for photography) ends
+			* "solarNoon": solar noon (sun is in the highest position)
+			* "goldenHour": evening golden hour starts
+			* "sunsetStart": sunset starts (bottom edge of the sun touches the horizon)
+			* "sunset": sunset (sun disappears below the horizon, evening civil twilight starts)
+			* "dusk": dusk (evening nautical twilight starts)
+			* "nauticalDusk": nautical dusk (evening astronomical twilight starts)
+			* "night": night starts (dark enough for astronomical observations)
+			* "nightEnd": night ends (morning astronomical twilight starts)
+			* "nauticalDawn": nautical dawn (morning nautical twilight starts)
+			* "dawn": dawn (morning nautical twilight ends, morning civil twilight starts)
+			* "nadir": nadir (darkest moment of the night, sun is in the lowest position)
+			 */
+			astro: "sunrise" | "sunriseEnd" | "goldenHourEnd" | "solarNoon" | "goldenHour" | "sunsetStart" | "sunset" | "dusk" | "nauticalDusk" | "night" | "nightEnd" | "nauticalDawn" | "dawn" | "nadir";
+			/**
+			 * Shift to the astro schedule.
+			 */
+			shift?:number;
+		}
 
+		/**
+		 * from https://github.com/node-schedule/node-schedule
+		 */
+		interface ScheduleRule {
+			/**
+			 * Day of the month.
+			 */
+			date?: number | number[] | string | string[];
+
+			/**
+			 * Day of the week.
+			 */
+			dayOfWeek?: number | number[] | string | string[];
+
+			/**
+			 * Hour.
+			 */
+			hour?: number | number[] | string | string[];
+
+			/**
+			 * Minute.
+			 */
+			minute?: number | number[] | string | string[];
+
+			/**
+			 * Month.
+			 */
+			month?: number | number[] | string | string[];
+
+			/**
+			 * Second.
+			 */
+			second?: number | number[] | string | string[];
+
+			/**
+			 * Year.
+			 */
+			year?: number | number[] | string | string[];
+			/**
+			 * timezone which should be used
+			 * https://github.com/moment/moment-timezone
+			 */
+			tz?: string;
+		}
+
+		/**
+		 * from https://github.com/node-schedule/node-schedule
+		 */
+		interface ScheduleRuleConditional {
+			/**
+			 * set a start time for schedule
+			 * a Data object or a dateString resp a number in milliseconds which can create a Date object
+			 */
+			start?: Date | string | number;
+			/**
+			 * set an end time for schedule
+			 * a Data object or a dateString resp a number in milliseconds which can create a Date object
+			 */
+			end?: Date | string | number;
+			/**
+			 * timezone which should be used
+			 * https://github.com/moment/moment-timezone
+			 */
+			tz?: string;
+			/**
+			 * scheduling rule
+			 * schedule rule, a Data object or a dateString resp a number in milliseconds which can create a Date object
+			 */
+			rule: ScheduleRule | Date | string | number;
+		}
+
+		type SchedulePattern = ScheduleRule | ScheduleRuleConditional | Date | string | number;
+
+		interface SubscribeTime {
+			time : SchedulePattern;
+		}
 	} // end namespace iobJS
 
 	// =======================================================
@@ -413,11 +510,11 @@ declare global {
 	/**
 	 * Subscribe to changes of the matched states.
 	 */
-	function on(pattern: string | RegExp | iobJS.SubscribeOptions, handler: iobJS.StateChangeHandler): any;
+	function on(pattern: string | RegExp | iobJS.SubscribeOptions | iobJS.SubscribeTime | iobJS.AstroSchedule, handler: iobJS.StateChangeHandler): any;
 	/**
 	 * Subscribe to changes of the matched states.
 	 */
-	function subscribe(pattern: string | RegExp | iobJS.SubscribeOptions, handler: iobJS.StateChangeHandler): any;
+	function subscribe(pattern: string | RegExp | iobJS.SubscribeOptions | iobJS.SubscribeTime | iobJS.AstroSchedule, handler: iobJS.StateChangeHandler): any;
 
 	/**
 	 * Unsubscribe from changes of the given object ID(s) or handler(s)
@@ -432,7 +529,7 @@ declare global {
 	 * Schedules a function to be executed on a defined schedule.
 	 * The return value can be used to clear the schedule later.
 	 */
-	function schedule(pattern: string | iobJS.SchedulePattern, callback: () => void): any;
+	function schedule(pattern: string | Date | iobJS.SchedulePattern | iobJS.AstroSchedule, callback: () => void): any;
 	/**
 	 * Clears a schedule. Returns true if it was successful.
 	 */

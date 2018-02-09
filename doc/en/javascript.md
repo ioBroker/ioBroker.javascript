@@ -434,6 +434,16 @@ schedule("*/3 * * * * *", function () {
 ```
 
 The pattern can also be an object, it is used especially if seconds are required:
+
+the object could have the following properties:
+- `second`
+- `minute`
+- `hour`
+- `date`
+- `month`
+- `year`
+- `dayOfWeek`
+
 ```js
 schedule({second: [20, 25]}, function () {
     log("Will be triggered at xx:xx:20 and xx:xx:25 of every minute!");
@@ -444,6 +454,31 @@ schedule({hour: 12, minute: 30}, function () {
 });
 ```
 Pattern can be a Javascript Date object (some specific time point) - in this case only it will be triggered only one time.
+
+If start or end times for a schedule are needed this could also be implemented with usage of an object. In this scenario the object have the properties:
+- `start`
+- `end`
+- `rule`
+start and end defines a Date object a DateString or a number of milliseconds since 01 January 1970 00:00:00 UTC.
+Rule is a schedule string with [Cron-Syntax](http://en.wikipedia.org/wiki/Cron) or an object:
+```js
+let startTime = new Date(Date.now() + 5000);
+let endTime = new Date(startTime.getTime() + 5000);
+schedule({ start: startTime, end: endTime, rule: '*/1 * * * * *' }, function () {
+    log("It will run after 5 seconds and stop after 10 seconds.");
+});
+```
+
+The rule itself could be also an object:
+```js
+let today = new Date();
+let startTime = new Date(today.getFullYear(), today.getMonth(), today.getDate()+1);
+let endTime =  new Date(today.getFullYear(), today.getMonth(), today.getDate()+7);
+let ruleData = {hour: 12, minute: 30};
+schedule({ start: startTime, end: endTime, rule: ruleData }, function () {
+    log("Will be triggered at 12:30, starting tomorow, ending in 7 days");
+});
+```
 
 #### Astro- function
 
