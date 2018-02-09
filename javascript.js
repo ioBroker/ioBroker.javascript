@@ -409,7 +409,7 @@
             } catch (e) {
                 adapter.log.warn("Could not read TypeScript ambient declarations: " + e);
             }
-                    
+
             installLibraries(function () {
                 getData(function () {
                     adapter.subscribeForeignObjects('*');
@@ -1951,7 +1951,7 @@
                 if (!objects[id] && objects[adapter.namespace + '.' + id]) {
                     id = adapter.namespace + '.' + id;
                 }
-				
+
                 if (clearRunning === undefined) clearRunning = true;
 
                 if (sandbox.verbose) sandbox.log('setStateDelayed(id=' + id + ', state=' + state + ', isAck=' + isAck + ', delay=' + delay + ', clearRunning=' + clearRunning + ')', 'info');
@@ -1997,7 +1997,7 @@
 								}
 								if (!timers[_id].length) delete timers[_id];
 							}
-                            
+
                         }
                     }, delay, timerId, id, state, isAck);
 
@@ -2018,7 +2018,7 @@
                 if (!objects[id] && objects[adapter.namespace + '.' + id]) {
                     id = adapter.namespace + '.' + id;
                 }
-				
+
                 if (sandbox.verbose) sandbox.log('clearStateDelayed(id=' + id + ', timerId=' + timerId + ')', 'info');
 
                 if (timers[id]) {
@@ -2078,7 +2078,7 @@
                                 ack:        timers[id][tt].ack
                             });
 						}
-					} 
+					}
 					return result;
 				} else {
 					result = {};
@@ -2259,7 +2259,7 @@
                         if (typeof min !== 'number') {
                             min = parseFloat(min);
                             if (isNaN(min)) {
-                                err = 'Wrong type of ' + id + '.common.min';
+                                err = 'Wrong type of ' + name + '.common.min';
                                 sandbox.log(err, 'error');
                                 if (typeof callback === 'function') {
                                     try {
@@ -3299,7 +3299,7 @@
             if (!adapter.config.subscribe) {
                 states = res;
             }
-            
+
             addGetProperty(states);
 
             // remember all IDs
