@@ -18,7 +18,7 @@ Here you can find description of [blockly](doc/en/blockly.md).
 
 Hier kann man die Beschreibung von [Blockly](doc/de/blockly.md) finden.
 
-Описание по [blockly](doc/ru/blockly.md) можно найти [здесь](doc/ru/blockl.md).
+Описание по [blockly](doc/ru/blockly.md) можно найти [здесь](doc/ru/blockly.md).
 
 ## Changelog
 ### 3.6.4 (2018-02-05)
