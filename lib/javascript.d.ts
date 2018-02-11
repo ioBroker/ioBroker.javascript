@@ -168,6 +168,7 @@ declare global {
 		interface ChangedStateObject extends StateObject {
 			common: StateCommon;
 			native: Record<string, any>;
+			id?: string;
 			name?: string;
 			channelId?: string;
 			channelName?: string;
@@ -183,6 +184,14 @@ declare global {
 			newState: State;
 			/** previous state */
 			oldState: State;
+			/** Name of the adapter instance which set the value, e.g. "system.adapter.web.0" */
+			from?: string;
+			/** Unix timestamp. Default: current time */
+			ts?: number;
+			/** Unix timestamp of the last time the value changed */
+			lc?: number;
+			/** Direction flag: false for desired value and true for actual value. Default: false. */
+			ack?: boolean;
 		}
 
 		type Object = StateObject | ChannelObject | DeviceObject | OtherObject;
