@@ -250,7 +250,7 @@ Blockly.JavaScript['on_ext'] = function(block) {
         var id =  Blockly.JavaScript.valueToCode(block, 'OID' + n, Blockly.JavaScript.ORDER_COMMA);
         if (id) {
             firstID = id;
-            id = id.replace(/\./g, '\\\\.');
+            id = id.replace(/\./g, '\\\\.').replace(/\(/g, '\\\\(').replace(/\)/g, '\\\\)');
             if (oids.indexOf(id) === -1) oids.push(id);
         }
     }
