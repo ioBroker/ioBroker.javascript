@@ -2124,7 +2124,7 @@
 
                         if (sandbox.verbose) sandbox.log('getState(id=' + id + ', timerId=' + timerId + ') => not found', 'info');
 
-                        logWithLineInfo.warn('getState "' + id + '" not found (3)' + (states[id] !== undefined ? ' states[id]=' + states[id] : ''));     ///xxx
+                        //logWithLineInfo.warn('getState "' + id + '" not found (3)' + (states[id] !== undefined ? ' states[id]=' + states[id] : ''));     ///xxx
                         return {val: null, notExist: true};
                     }
                 }
