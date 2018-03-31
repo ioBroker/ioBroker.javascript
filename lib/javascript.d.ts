@@ -468,6 +468,10 @@ declare global {
 	 * The instance number of the JavaScript adapter this script runs in
 	 */
 	const instance: number;
+	/**
+	 * The name of the current script
+	 */
+	const name: string;
 
 	/**
 	 * Queries all states with the given selector
