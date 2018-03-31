@@ -222,6 +222,11 @@ declare global {
 		}
 		type MessageCallback = (result?: any) => void;
 
+		interface Subscription {
+			name: string;
+			pattern: string | RegExp | string[] | iobJS.SubscribeOptions | iobJS.SubscribeTime | iobJS.AstroSchedule;
+		}
+	
 		interface SubscribeOptions {
 			/** "and" or "or" logic to combine the conditions (default: "and") */
 			logic?: "and" | "or";
@@ -519,17 +524,22 @@ declare global {
 	/**
 	 * Subscribe to changes of the matched states.
 	 */
-	function on(pattern: string | RegExp, handler: iobJS.StateChangeHandler): any;
+	function on(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler): any;
 	function on(options: iobJS.SubscribeOptions, handler: iobJS.StateChangeHandler): any;
 	function on(schedule: iobJS.SubscribeTime, handler: iobJS.StateChangeHandler): any;
 	function on(astro: iobJS.AstroSchedule, handler: iobJS.StateChangeHandler): any;
 	/**
 	 * Subscribe to changes of the matched states.
 	 */
-	function subscribe(pattern: string | RegExp, handler: iobJS.StateChangeHandler): any;
+	function subscribe(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler): any;
 	function subscribe(options: iobJS.SubscribeOptions, handler: iobJS.StateChangeHandler): any;
 	function subscribe(schedule: iobJS.SubscribeTime, handler: iobJS.StateChangeHandler): any;
 	function subscribe(astro: iobJS.AstroSchedule, handler: iobJS.StateChangeHandler): any;
+
+	/**
+	 * Returns the list of all currently active subscriptions
+	 */
+	function getSubscriptions(): { [id: string]: iobJS.Subscription[] };
 
 	/**
 	 * Unsubscribe from changes of the given object ID(s) or handler(s)
