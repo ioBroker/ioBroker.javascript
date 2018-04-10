@@ -2172,6 +2172,7 @@ function Scripts(main) {
                             }
                         },
                         match: function (id) {
+                            if (typeof this.hide !== 'function') return;
                             if (that.main.objects[id] && that.main.objects[id].type ==='script') {
                                 if (that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.enabled) {
                                     this.button('option', 'icons', {
@@ -2204,6 +2205,7 @@ function Scripts(main) {
                             }
                         },
                         match: function (id) {
+                            if (typeof this.hide !== 'function') return;
                             if (id === 'script.js.global' || id === 'script.js.common' || !main.objects[id] || !main.objects[id].common || main.objects[id].common.nondeletable) this.hide();
                         },
                         width: 26,
@@ -2242,6 +2244,7 @@ function Scripts(main) {
                             });
                         },
                         match: function (id) {
+                            if (typeof this.hide !== 'function') return;
                             if (!that.main.objects[id] || that.main.objects[id].type !== 'script') this.hide();
                         },
                         width: 26,
@@ -2256,6 +2259,7 @@ function Scripts(main) {
                             that.main.socket.emit('extendObject', id, {});
                         },
                         match: function (id) {
+                            if (typeof this.hide !== 'function') return;
                             if (!that.main.objects[id] || that.main.objects[id].type !== 'script') this.hide();
                         },
                         width: 26,
@@ -2359,6 +2363,7 @@ function Scripts(main) {
                     }
                 }
             }).treeTable('show', update ? undefined : main.config['script-editor-current-id'] || undefined);
+
             // Show add button
             setTimeout(function () {
                 // show blink on start

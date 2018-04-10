@@ -6,7 +6,7 @@
     function nodeExpand() {
         var id = this.id;
         var $table = this.row.parent().parent(); // table > tbody > tr
-        var options = $table.data('data');
+        var options = $table.data('options');
 
         if (options.name) {
             options.expanded = options.expanded || [];
@@ -24,7 +24,7 @@
     function nodeCollapse() {
         var id = this.id;
         var $table = this.row.parent().parent(); // table > tbody > tr
-        var options = $table.data('data');
+        var options = $table.data('options');
 
         if (options.name && options.expanded) {
             var pos = options.expanded.indexOf(id);
@@ -96,8 +96,8 @@
         });
     }
 
-    function buildList(options) {
-        var table = '<div class="treetablelist-buttons"><button class="treetable-list-btn-ok"></button><button class="treetable-list-btn-cancel"></button></div>';
+    function buildList(options, noButtons) {
+        var table = noButtons ? '' : '<div class="treetablelist-buttons"><button class="treetable-list-btn-ok"></button><button class="treetable-list-btn-cancel"></button></div>';
         table += '<ul class="treetable-list">';
         var rows = options.rows;
         for (var i = 0; i < rows.length; i++) {
@@ -115,10 +115,14 @@
                 if (!found) break;
                 parents++;
             }
+            var title = rows[i].title;
+            if (typeof title === 'object') {
+                title = title[systemLang] || title.en;
+            }
             var isNotFolder = rows[i].instance === undefined ? 0 : 1;
             table += '<li data-id="' + rows[i].id + '" class="' + (!isNotFolder ? 'treetable-list-folder' : 'treetable-list-item') + '" style="margin-left: ' + (parents * 19) + 'px; width: calc(100% - ' + (parents * 15 + 2 + isNotFolder * 7) + 'px);' +
             (rows[i].id === 'script.js.global' ? 'color: rgb(0, 128, 0);' : '') + '">' +
-            (!isNotFolder ? '<span class="fancytree-expander"></span>' : '') + '<span class="fancytree-icon"></span>' + rows[i].title + '</li>';
+            (!isNotFolder ? '<span class="fancytree-expander"></span>' : '') + '<span class="fancytree-icon"></span>' + title + '</li>';
         }
         table += '</ul>';
         var $dlg = $(this);
@@ -135,15 +139,17 @@
 
         $list.sortable({
             cancel: '.treetable-list-folder',
-            axis: 'y'
-        });
+            axis:   'y'
+        }).data('options', options);
+
         var that = this;
+
         $buttons.find('.treetable-list-btn-ok').button({
             icons: {primary: 'ui-icon-check'},
             text: false
         })
         .css({width: 24, height: 24})
-        .click(function () {
+        .on('click', function () {
             // analyse new structure
             var currentFolder = '';
             var tasks = [];
@@ -168,18 +174,112 @@
             text: false
         })
         .css({width: 24, height: 24})
-        .click(function () {
+        .on('click', function () {
             buildTable.call(that, options);
         });
     }
 
+    function getIconFromObj(obj, imgPath, classes) {
+        var icon     = '';
+        var alt      = '';
+        var isCommon = obj && obj.common;
+
+        if (isCommon) {
+            if (isCommon.icon) {
+                if (!isCommon.icon.match(/^data:image\//)) {
+                    if (isCommon.icon.indexOf('.') !== -1) {
+                        var instance;
+                        if (obj.type === 'instance') {
+                            icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
+                        } else if (obj._id.match(/^system\.adapter\./)) {
+                            instance = obj._id.split('.', 3);
+                            if (obj.common.icon[0] === '/') {
+                                instance[2] += obj.common.icon;
+                            } else {
+                                instance[2] += '/' + obj.common.icon;
+                            }
+                            icon = '/adapter/' + instance[2];
+                        } else {
+                            instance = obj._id.split('.', 2);
+                            if (obj.common.icon[0] === '/') {
+                                instance[0] += obj.common.icon;
+                            } else {
+                                instance[0] += '/' + obj.common.icon;
+                            }
+                            icon = '/adapter/' + instance[0];
+                        }
+                    } else {
+                        return '<i class="material-icons ' + (classes || 'treetable-icon') + '">' + isCommon.icon + '</i>';
+                    }
+
+                } else {
+                    icon = isCommon.icon;
+                }
+                alt = obj.type;
+            } else {
+                imgPath = imgPath || 'lib/css/fancytree/';
+                if (obj.type === 'device') {
+                    icon = imgPath + 'device.png';
+                    alt  = 'device';
+                } else if (obj.type === 'channel') {
+                    icon = imgPath + 'channel.png';
+                    alt  = 'channel';
+                } else if (obj.type === 'state') {
+                    icon = imgPath + 'state.png';
+                    alt  = 'state';
+                }
+            }
+        }
+
+        if (icon) return '<img class="' + (classes || 'treetable-icon') + '" src="' + icon + '" alt="' + alt + '" />';
+        return '';
+    }
+
+    // https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
+    /*function invertColor(hex) {
+        if (hex.indexOf('#') === 0) {
+            hex = hex.slice(1);
+        }
+        // convert 3-digit hex to 6-digits.
+        if (hex.length === 3) {
+            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+        }
+        if (hex.length !== 6) {
+            return false;
+        }
+        var r = parseInt(hex.slice(0, 2), 16),
+            g = parseInt(hex.slice(2, 4), 16),
+            b = parseInt(hex.slice(4, 6), 16);
+        // http://stackoverflow.com/a/3943023/112731
+        return (r * 0.299 + g * 0.587 + b * 0.114) <= 186;
+    }*/
+    function getUsersGroups(objects, groups) {
+        var usersGroups = {};
+        for (var g = 0; g < groups.length; g++) {
+            if (objects[groups[g]] && objects[groups[g]].common && objects[groups[g]].common.members) {
+                var users = objects[groups[g]].common.members;
+                for (var u = 0; u < users.length; u++) {
+                    usersGroups[users[u]] = usersGroups[users[u]] || [];
+                    var name = objects[groups[g]].common.name;
+                    if (name && typeof name === 'object') {
+                        name = name[systemLang] || 'en';
+                    }
+                    usersGroups[users[u]].push({id: groups[g], name: name || id.replace('system.group.', '')});
+                }
+            }
+        }
+        return usersGroups;
+    }
+
     function buildTable(options) {
         var table = '';
+        // detect materialize
         var buttonTag = !options.isMaterial ? 'button' : 'a';
         if (options.panelButtons) {
             table += '<div class="row tree-table-buttons m">';
             for (var z = 0; z < options.panelButtons.length; z++) {
                 table += '<' + buttonTag + ' class="btn-floating waves-effect waves-light blue btn-custom-' + z + '" title="' + (options.panelButtons[z].title || '') + '" ' + (options.panelButtons[z].id ? 'id="' + options.panelButtons[z].id + '"' : '') + '>';
+                // detect materialize
                 if (options.isMaterial) {
                     table += '<i class="material-icons">' + (options.panelButtons[z].icon || '') + '</i>';
                 }
@@ -187,6 +287,7 @@
             }
             if (options.moveId) {
                 table += '<' + buttonTag + ' class="btn-floating waves-effect waves-light blue treetable-sort" title="' + _('reorder') + '">';
+                // detect materialize
                 if (options.isMaterial) {
                     table += '<i class="material-icons">import_export</i>';
                 }
@@ -208,8 +309,8 @@
             if (options.columns[ch] === 'name') {
                 table += '      <th' + (options.widths && options.widths[ch] ? ' class="treetable-th-name" style="width: ' + options.widths[ch] + '"' : '') + '>';
                 table += '          <input placeholder="' + _('name') + '" class="filter_name treetable-filter" />';
-                table += '      <button data-id="filter_name" role="button" class="filter-clear"></button>';
-                table += '</th>';
+                table += '          <button data-id="filter_name" role="button" class="filter-clear"></button>';
+                table += '      </th>';
             } else {
                 table += '      <th' + (options.widths && options.widths[ch] ? ' style="width: ' + options.widths[ch] + '"' : '') + '>' + _(options.columns[ch]) + '</th>';
             }
@@ -221,17 +322,22 @@
         table += '</thead>';
         // build body
         table += '<tbody>';
+
         // <tr data-tt-id="system.adapter.0" data-tt-branch='true'>
-        var rows = [];
-        var rootEx = options.root ? new RegExp('^' + options.root.replace(/\./g, '\\.') + '\\.') : null;
+        var rows        = [];
+        var rootEx      = options.root ? new RegExp('^' + options.root.replace(/\./g, '\\.') + '\\.') : null;
         var instances   = options.columns.indexOf('instance') !== -1 ? [] : null;
 
         for (var id in options.objects) {
             if (!options.objects.hasOwnProperty(id)) continue;
             var m;
-            if (instances && options.objects[id].type === 'instance' &&
-                (m = id.match(/^system\.adapter\.javascript\.(\d+)$/))) {
-                instances.push(m[1]);
+            if (instances && (
+                (options.objects[id].type === 'instance' && (m = id.match(/^system\.adapter\.javascript\.(\d+)$/))) ||
+                (options.objects[id].type === 'script' && options.objects[id].common && (m = options.objects[id].common.engine.match(/^system\.adapter\.javascript\.(\d+)$/)))
+                )) {
+                if (instances.indexOf(m[1]) === -1) {
+                    instances.push(m[1]);
+                }
             }
 
             if (rootEx && !rootEx.test(id)) continue;
@@ -258,6 +364,12 @@
                     }
                 }
             }
+            if (options.members) {
+                obj.members = common.members;
+            }
+            if (options.colors) {
+                obj.color = common.color;
+            }
 
             rows.push(obj);
         }
@@ -269,11 +381,11 @@
             return 0;
         });
 
-        // find parents and extend memebers
+        // find parents and extend members
         for (var pp = 0; pp < rows.length; pp++) {
             // find parent:
-            var parts = rows[pp].id.split('.');
-            var title = parts.pop();
+            var parts  = rows[pp].id.split('.');
+            var title  = parts.pop();
             var parent = parts.join('.');
             rows[pp].title = title;
             for (var p = 0; p < rows.length; p++) {
@@ -288,6 +400,18 @@
             if (parts.length === 1) {
                 rows[pp]._class += ' treetable-root'
             }
+
+        }
+        for (var ppp = 0; ppp < rows.length; ppp++) {
+            rows[ppp].realChildren = rows[ppp].children ? !!rows[ppp].children.length : false;
+        }
+
+        if (options.groups) {
+            var users = getUsersGroups(options.objects, options.groups);
+
+            for (var g = rows.length - 1; g >= 0; g--) {
+                rows[g].groups = users[rows[g].id] || [];
+            }
         }
 
         if (withMembers) {
@@ -299,7 +423,8 @@
                     members.sort();
                     for (var mm = 0; mm < members.length; mm++) {
                         obj = {
-                            id: members[mm],
+                            id:     members[mm],
+                            title:  members[mm],
                             parent: rows[k].id,
                             _class: 'treetable-member'
                         };
@@ -309,11 +434,15 @@
                             var ccommon = options.objects[obj.id].common;
                             if (ccommon) {
                                 for (var ccb = 0; ccb < options.columns.length; ccb++) {
-                                    if (options.columns[ccb] === 'members' || options.columns[ccb] === 'id') continue;
-                                    var vval = common[options.columns[ccb]];
+                                    var attr = options.columns[ccb];
+                                    if (attr === 'members' || attr === 'id' || attr === 'title' || attr === 'icon') continue;
+                                    var vval = ccommon[options.columns[ccb]];
                                     if (vval !== undefined) {
-                                        obj.name = vval;
+                                        obj[attr] = vval;
                                     }
+                                }
+                                if (options.colors) {
+                                    obj.color = common.color;
                                 }
                             }
                         }
@@ -328,35 +457,63 @@
 
         for (var i = 0; i < rows.length; i++) {
             // title
-            table += '<tr data-tt-id="' + rows[i].id + '"' + (!!rows[i].children ? ' data-tt-branch="true"' : '') + (rows[i].parent ? ' data-tt-parent-id="' + rows[i].parent + '"' : '');
+            table += '<tr data-tt-id="' + rows[i].id + '"' + (!!rows[i].children ? ' data-tt-branch="true"' : '') + (rows[i].parent ? ' data-tt-parent-id="' + rows[i].parent + '"' : '') + ' class="';
             if (rows[i]._class) {
-                table += ' class="' + rows[i]._class + '" ';
+                table += rows[i]._class + ' ';
+            }
+            if (options.draggable) {
+                table += options.draggable + ' ';
+            }
+            if (rows[i].children && rows[i].children.length) {
+                table += 'not-empty';
+            } else {
+                table += 'is-empty';
             }
 
-            table += '>';
+            table += '">';
             for (var c = 0; c < options.columns.length; c++) {
+                var aattr = options.columns[c];
                 if (options.columns[c] === 'members') {
                     continue;
                 }
                 var style = '';
-                var _class = '';
+                var _class = (options.classes && options.classes[c]) || '';
+
+                if (aattr === 'groups') {
+                    _class += ' m';
+                }
+
                 if (!c && rows[i].hasOwnProperty('children')) {
-                    _class = 'treetable-folder fancytree-exp-c fancytree-has-children fancytree-ico-cf';
+                    _class += ' treetable-folder fancytree-exp-c fancytree-has-children fancytree-ico-cf';
                     if (rows[i].id === 'script.js.global') {
-                            style += ' color: rgb(0, 128, 0);'
+                        style += ' color: rgb(0, 128, 0);'; // green
                     } else {
-                            style += ' color: rgb(0, 0, 128);'
+                        style += ' color: rgb(0, 0, 128);'
                     }
                     table += '<td style="' + style + '" class="' + _class + '">';
                     if (rows[i].children && rows[i].children.length) {
                         table += '<span class="treetable-counter">' + rows[i].children.length + '</span>';
                     }
                 } else {
-                    table += '<td style="' + style + '">';
+                    table += '<td style="' + style + '" class="' + _class + '">';
                 }
-
+                if (!c && options.colors && rows[i].color) {
+                    table += '<div style="background: ' + rows[i].color + '" class="treetable-color"></div>';
+                }
+                if (!c && options.icons) {
+                    table += getIconFromObj(options.objects[rows[i].id], options.imgPath) || '<div class="treetable-icon-empty">&nbsp;</div>';
+                }
+                if (aattr === 'enabled') {
+                    table += '<input data-attr="' + aattr + '" data-id="' + rows[i].id + '" class="treetable-input" type="checkbox" ' + (rows[i][aattr] ? 'checked' : '') + ' ' + (options.readOnly && options.readOnly[c] !== false ? 'disabled' : '') + '>';
+                } else
+                if (aattr === 'groups') {
+                    for (var gg = 0; gg < rows[i].groups.length; gg++) {
+                        var gId = rows[i].groups[gg].id;
+                        table += '<div class="chip">' + getIconFromObj(options.objects[gId], null, '') + rows[i].groups[gg].name + '</div>'; //<i class="close material-icons" data-group="' + rows[i].groups[gg].id + '" data-user="' + rows[i].id + '">close</i></div>';
+                    }
+                } else
                 // edit instance
-                if (options.columns[c] === 'instance') {
+                if (aattr === 'instance') {
                     if (rows[i].instance !== undefined && instances.length > 1) {
                         instSelect = '<select class="treetable-instance" data-id="' + rows[i].id + '">';
                         for (var ii = 0; ii < instances.length; ii++) {
@@ -366,10 +523,17 @@
 
                         table += instSelect;
                     } else {
-                        table += (rows[i].instance === undefined ? '' : rows[i].instance);
+                        table += '<span>' + (rows[i].instance === undefined ? '' : rows[i].instance) + '</span>';
                     }
+                } else if (aattr === 'icon') {
+                    table += getIconFromObj(options.objects[rows[i].id], options.imgPath);
                 } else {
-                    table += (rows[i][options.columns[c]] || '');
+                    var vall = rows[i][aattr] || '';
+                    if (vall && typeof vall === 'object' && vall.en) {
+                        vall = vall[systemLang] || vall.en;
+                    }
+
+                    table += '<span>' + vall + '</span>';
                 }
                 table += '</td>';
             }
@@ -378,11 +542,16 @@
                 table += '<td class="treetable-buttons" style="' + (options.buttonsStyle || '') + '">';
                 var text = '';
                 for (var jj = 0; jj < options.buttons.length; jj++) {
-                    text += '<' + buttonTag + ' data-id="' + rows[i].id + '" class="select-button-' + jj + ' select-button-custom td-button"  style="margin-right: 3px;'+ '" title="' + (options.buttons[jj].title || '') + '">';
-                    if (options.isMaterial) {
-                        text += '<i class="material-icons">' + (options.buttons[jj].icon || '') + '</i>';
+                    if (false && options.buttons[jj].match && !options.buttons[jj].match(rows[i].id, rows[i].parent)) {
+                        text += '<div class="treetable-button-empty">&nbsp;</div>';
+                    } else {
+                        text += '<' + buttonTag + ' data-id="' + rows[i].id + '" class="select-button-' + jj + ' select-button-custom td-button"  style="margin-right: 3px;'+ '" data-parent="' + rows[i].parent + '" data-children="' + !!rows[i].realChildren + '" title="' + (options.buttons[jj].title || '') + '">';
+                        // detect materialize
+                        if (window.M && window.M.toast) {
+                            text += '<i class="material-icons">' + (options.buttons[jj].icon || '') + '</i>';
+                        }
+                        text += '</' + buttonTag + '>';
                     }
-                    text += '</' + buttonTag + '>';
                 }
 
                 table += text + '</td>';
@@ -406,7 +575,7 @@
         var $treeTable = $($table[1]).find('>table');
         var $buttons   = $($table[0]);
 
-        $treeTable.data('data', options);
+        $treeTable.data('options', options);
 
         $treeTable.treetable({
             expandable:         true,
@@ -421,11 +590,11 @@
 
         var $tbody = $treeTable.find('tbody');
 
-        $tbody.on('mousedown', 'tr', function() {
+        $tbody.on('click', 'tr', function() {
             $('.selected').not(this).removeClass('selected');
             $(this).addClass('selected');
             var $table = $(this).parent().parent();
-            var options = $table.data('data');
+            var options = $table.data('options');
             var id = $(this).data('tt-id');
             options.onChange && options.onChange($(this).data('tt-id'), options.oldId);
             options.oldId = id;
@@ -433,10 +602,12 @@
 
         if (options.buttons) {
             for (var b = 0; b < options.buttons.length; b++) {
-                var $btn = $tbody.find('.select-button-' + b).button(options.buttons[b]).click(function () {
+                var $btn = $tbody.find('.select-button-' + b).button(options.buttons[b]).on('click', function () {
                     var cb = $(this).data('callback');
-                    if (cb) cb.call ($(this), $(this).data('id'));
-                }).data ('callback', options.buttons[b].click).attr('title', options.buttons[b].title || '');
+                    if (cb) {
+                        cb.call($(this), $(this).data('id'), $(this).data('children'), $(this).data('parent'));
+                    }
+                }).data('callback', options.buttons[b].click).attr('title', options.buttons[b].title || '');
 
                 if ($btn.length === 0) continue;
                 if (options.buttons[b].width)  $btn.css({width:  options.buttons[b].width});
@@ -453,9 +624,10 @@
             for (var zz = 0; zz < options.panelButtons.length; zz++) {
                 var $zz = $buttons.find('.btn-custom-' + zz);
                 $zz
-                    .click(options.panelButtons[zz].click)
+                    .on('click', options.panelButtons[zz].click)
                     .attr('title', options.panelButtons[zz].title || '');
 
+                // detect materialize
                 if (!options.isMaterial) {
                     $zz
                         .button(options.panelButtons[zz])
@@ -464,7 +636,7 @@
             }
         }
 
-        $treeTable.find('.filter_name').change(function () {
+        $treeTable.find('.filter_name').on('change', function () {
             var timer = $(this).data('timer');
             if (timer) {
                 clearTimeout(timer);
@@ -480,12 +652,12 @@
                 }
                 filter($($table[1]), $table.find('.filter_name').val());
             }));
-        }).keyup(function () {
+        }).on('keyup', function () {
             $(this).trigger('change');
         });
         $treeTable.find('.filter-clear')
             .button({icons: {primary: 'ui-icon-close'}, text: false})
-            .click(function () {
+            .on('click', function () {
                 var name = $(this).data('id');
                 $table.find('.' + name).val('').trigger('change');
             });
@@ -493,16 +665,38 @@
         $buttons.find('.treetable-sort')
             .button({icons: {primary: 'ui-icon-arrowthick-2-n-s'}, text: false})
             .css({width: 24, height: 24})
-            .click(function () {
+            .on('click', function () {
                 buildList.call(that, options);
             });
 
         if (options.onEdit) {
-            $treeTable.find('.treetable-instance').change(function () {
+            $treeTable.find('.treetable-instance').on('change', function () {
                 options.onEdit($(this).data('id'), 'instance', $(this).val());
+            });
+
+            $treeTable.find('.treetable-input').on('change', function (e) {
+                e.stopPropagation();
+                var val;
+                if ($(this).attr('type') === 'checkbox') {
+                    val = $(this).prop('checked');
+                } else {
+                    val = $(this).val();
+                }
+                var id = $(this).data('id');
+                if (options.onEdit) {
+                    if (options.onEdit(id, $(this).data('attr'), val) === false) {
+                        // todo support more types
+                        $(this).prop('checked', true);
+                    }
+                }
+            }).on('keyup', function () {
+                $(this).trigger('change');
             });
         } else {
             $treeTable.find('.treetable-instance').prop('disabled', true)
+        }
+        if (typeof options.onReady === 'function') {
+            options.onReady($treeTable);
         }
     }
 
@@ -516,7 +710,7 @@
             exIDs.push($(this).data('tt-id'));
         });
         var nameFilter = $table.find('.filter_name').val();
-        var options = $table.data('data');
+        var options = $table.data('options');
         buildTable.call(this, options);
         $table = $(this).find('.tree-table-main');
         for (var e = 0; e < exIDs.length; e++) {
@@ -535,6 +729,7 @@
 
     var methods = {
         init: function (options) {
+            options.imgPath = options.imgPath || 'lib/css/fancytree/';
             for (var i = 0; i < this.length; i++) {
                 buildTable.call(this[i], options);
 
@@ -553,6 +748,42 @@
                 }
             }
             return this;
+        },
+        destroy: function () {
+            for (var i = 0; i < this.length; i++) {
+                var $table = $(this[i]).find('.tree-table-main');
+                if ($table.length && $table.data('options')) {
+                    $table.data('options', null);
+                    $(this[i]).html('');
+                }
+            }
+        },
+        expand: function (id) {
+            for (var i = 0; i < this.length; i++) {
+                var $table = $(this[i]).find('.tree-table-main');
+                try {
+                    if (id) {
+                        $table.treetable('expandNode', id);
+                    } else {
+                        $table.treetable('expandAll', id);
+                    }
+                } catch (e) {
+                }
+            }
+        },
+        collapse: function (id) {
+            for (var i = 0; i < this.length; i++) {
+                var $table = $(this[i]).find('.tree-table-main');
+                try {
+                    if (id) {
+                        $table.treetable('collapseNode', id);
+                    } else {
+                        $table.treetable('collapseAll');
+                    }
+
+                } catch (e) {
+                }
+            }
         },
         show: function (currentId, filter, onSuccess) {
             if (typeof filter === 'function') {
@@ -588,7 +819,7 @@
                 if ($table.updateTimer) {
                     clearTimeout($table.updateTimer);
                 }
-                var options = $table.data('data');
+                var options = $table.data('options');
                 if (options && options.root && !id.match('^' + options.root.replace(/\./g, '\\.') + '\\.')) continue;
 
                 var elem = this[i];
