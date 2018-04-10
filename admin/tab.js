@@ -2320,6 +2320,16 @@ function Scripts(main) {
                         click: function () {
                             importScripts();
                         }
+                    },
+                    {
+                        text: false,
+                        title: _('Expert mode'),
+                        icons: {
+                            primary: 'ui-icon-arrowthickstop-1-n'
+                        },
+                        click: function () {
+
+                        }
                     }
                 ],
                 onChange:   function (id, oldId) {

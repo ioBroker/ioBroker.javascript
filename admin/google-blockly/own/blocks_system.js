@@ -33,7 +33,7 @@ Blockly.Blocks['debug'] = {
             .appendField(Blockly.Words['debug'][systemLang]);
 
         this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([["info", "log"], ["debug", "debug"], ["warning", "warn"], ["error", "error"]]), "Severity");
+            .appendField(new Blockly.FieldDropdown([['info', 'log'], ['debug', 'debug'], ['warning', 'warn'], ['error', 'error']]), 'Severity');
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -694,7 +694,7 @@ Blockly.Blocks['field_oid'] = {
 
         this.setInputsInline(true);
         this.setColour(Blockly.System.HUE);
-        this.setOutput(true, "String");
+        this.setOutput(true, 'String');
         this.setTooltip(Blockly.Words['field_oid_tooltip'][systemLang]);
     }
 };
@@ -702,5 +702,26 @@ Blockly.Blocks['field_oid'] = {
 Blockly.JavaScript['field_oid'] = function(block) {
     var oid = block.getFieldValue('oid');
     return ['\'' + oid + '\'', Blockly.JavaScript.ORDER_ATOMIC]
+};
+
+// --- Text new line --------------------------------------------------
+Blockly.Blocks['text_newline'] = {
+    // Checkbox.
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Words['text_newline'][systemLang]);
+
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown([['\\n', '\\n'], ['\\r\\n', '\\r\\n'], ['\\r', '\\r']]), 'Type');
+        this.setInputsInline(true);
+        this.setColour(Blockly.Blocks.texts.HUE);
+        this.setOutput(true, 'String');
+        this.setTooltip(Blockly.Words['text_newline_tooltip'][systemLang]);
+    }
+};
+
+Blockly.JavaScript['text_newline'] = function(block) {
+    var dropdown_type = block.getFieldValue('Type');
+    return ['\'' + dropdown_type + '\'', Blockly.JavaScript.ORDER_ATOMIC]
 };
 
