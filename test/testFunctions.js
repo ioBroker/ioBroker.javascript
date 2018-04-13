@@ -578,7 +578,7 @@ describe('Test JS', function() {
                 start = state.ts;
             } else if (state.val === 7) {
                 expect(start).to.be.not.equal(0);
-                expect(state.ts - start).to.be.least(950);
+                expect(state.ts - start).to.be.least(900);
                 onStateChanged = null;
                 setTimeout(done, 100);
             }
@@ -653,7 +653,7 @@ describe('Test JS', function() {
             }, 18);
         });
     });
-	
+
 	it('Test JS: test getStateDelayed single', function (done) {
         this.timeout(5000);
         // add script
@@ -687,7 +687,7 @@ describe('Test JS', function() {
 			}, 500);
         });
     });
-	
+
 	it('Test JS: test getStateDelayed all', function (done) {
         this.timeout(5000);
         // add script
