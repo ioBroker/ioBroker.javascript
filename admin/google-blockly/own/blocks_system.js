@@ -725,3 +725,25 @@ Blockly.JavaScript['text_newline'] = function(block) {
     return ['\'' + dropdown_type + '\'', Blockly.JavaScript.ORDER_ATOMIC]
 };
 
+// --- Round Number to n decimal places -------------------------------
+Blockly.Blocks['math_rndfixed'] = {
+    init: function() {
+        this.appendValueInput('x')
+            .setCheck('Number')
+            .appendField(Blockly.Words['math_rndfixed_round'][systemLang]);
+        this.appendDummyInput()
+            .appendField(Blockly.Words['math_rndfixed_to'][systemLang])
+            .appendField(new Blockly.FieldNumber(0, 1, 25), 'n')
+            .appendField(Blockly.Words['math_rndfixed_decplcs'][systemLang]);
+        this.setInputsInline(true);
+        this.setColour(Blockly.Blocks.math.HUE);
+        this.setOutput(true, 'Number');
+        this.setTooltip(Blockly.Words['math_rndfixed_tooltip'][systemLang]);
+  }
+};
+
+Blockly.JavaScript['math_rndfixed'] = function(block) {
+  var x = Blockly.JavaScript.valueToCode(block, 'x', Blockly.JavaScript.ORDER_ATOMIC);
+  const exp = Math.pow(10, block.getFieldValue('n'));  
+  return ['Math.round(' + x + '*' + exp + ')/' + exp, Blockly.JavaScript.ORDER_ATOMIC];
+};
