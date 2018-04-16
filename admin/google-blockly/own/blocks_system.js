@@ -407,7 +407,7 @@ Blockly.JavaScript['update'] = function(block) {
 
     var value_value  = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     var value_delay  = parseInt(block.getFieldValue('DELAY_MS'), 10);
-    var clearRunning = block.getFieldValue('CLEAR_RUNNING') === 'true' || block.getFieldValue('CLEAR_RUNNING') === true;
+    var clearRunning = block.getFieldValue('CLEAR_RUNNING') === 'TRUE';
     var unit  = block.getFieldValue('UNIT');
     if (unit === 'min') {
         value_delay *= 60000;
