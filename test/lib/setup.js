@@ -464,7 +464,7 @@ function setupController(cb) {
             console.log('ERROR reading/parsing system configuration. Ignore');
             objs = {'system.config': {}};
         }
-        if (!objs || !objs.system || !objs.system.config) {
+        if (!objs || !objs['system.config']) {
             objs = {'system.config': {}};
         }
 
