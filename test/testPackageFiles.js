@@ -74,9 +74,14 @@ describe('Test package.json and io-package.json', function() {
 
         expect(fs.existsSync(__dirname + '/../LICENSE'), 'A LICENSE must exist');
         var fileContentReadme = fs.readFileSync(__dirname + '/../README.md', 'utf8');
-        expect(fileContentReadme.indexOf('## License'), 'The README.md needs to have a section ## License').not.equal(-1);
-        expect(fileContentReadme.indexOf('## Changelog'), 'The README.md needs to have a section ## Changelog').not.equal(-1);
-        expect(fileContentReadme.indexOf('## Changelog'), 'The README.md needs to have a section ## License').to.be.below(fileContentReadme.indexOf('## License'));
+        if (fileContentReadme.indexOf('## License') === -1) {
+            console.log('Warning: The README.md should have a section ## License');
+            console.log();
+        }
+        if (fileContentReadme.indexOf('## Changelog') === -1) {
+            console.log('Warning: The README.md should have a section ## Changelog');
+            console.log();
+        }
         done();
     });
 });
