@@ -47,7 +47,6 @@ describe('Test package.json and io-package.json', function() {
             console.log();
         }
         expect(fs.existsSync(__dirname + '/../README.md'), 'ERROR: README.md needs to exist! Please create one with description, detail information and changelog. English is mandatory.').to.be.true;
-        expect(fs.existsSync(__dirname + '/../LICENSE'), 'ERROR: LICENSE needs to exist! Please create one.').to.be.true;
         if (!ioPackage.common.titleLang || typeof ioPackage.common.titleLang !== 'object') {
             console.log('WARNING: titleLang is not existing in io-package.json. Please add');
             console.log();
