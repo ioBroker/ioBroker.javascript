@@ -345,13 +345,13 @@
         },
 
         stateChange: function (id, state) {
-            if (id.startsWith('messagebox.') || id.startsWith('log.')) return;
+            if (!id || id.startsWith('messagebox.') || id.startsWith('log.')) return;
 
             var oldState = states[id];
             if (state) {
                 if (oldState) {
                     // enable or disable script
-                    if (!state.ack && id.startsWith(activeStr)) {
+                    if (!state.ack && id.startsWith(activeStr) && objects[id] && objects[id].native && objects[id].native.script) {
                         adapter.extendForeignObject(objects[id].native.script, {common: {enabled: state.val}});
                     }
 
@@ -391,7 +391,6 @@
                 }
             }
         },
-
 
         unload: function (callback) {
             callback();
