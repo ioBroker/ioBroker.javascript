@@ -21,6 +21,10 @@ Hier kann man die Beschreibung von [Blockly](doc/de/blockly.md) finden.
 Описание по [blockly](doc/ru/blockly.md) можно найти [здесь](doc/ru/blockly.md).
 
 ## Changelog
+### 3.7.0 (2018-05-05)
+* (bluefox) Used VM2 as sandbox. The script errors will be caught.
+* (bluefox) refactoring: split into many modules
+
 ### 3.6.4 (2018-02-05)
 * (bluefox) Pattern error is fixed
 

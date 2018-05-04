@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "3.6.4",
+        "version": "3.7.0",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -20,6 +20,17 @@
             "Apollon77 <ingo@fischer-ka.de>"
         ],
         "news": {
+            "3.7.0": {
+                "en": "Used VM2 as sandbox. The script errors will be caught.\nrefactoring: split into many modules",
+                "de": "Verwendete VM2 als Sandbox. Die Skriptfehler werden abgefangen.\nRefactoring: Aufteilung in viele Module",
+                "ru": "Используется VM2 как песочница. Ошибки скрипта будут обнаружены.\nрефакторинг: разделение на многие модули",
+                "pt": "Usado VM2 como sandbox. Os erros de script serão capturados.\nrefatoração: dividida em vários módulos",
+                "nl": "Gebruikte VM2 als sandbox. De scriptfouten worden gepakt.\nrefactoring: opgesplitst in vele modules",
+                "fr": "VM2 utilisé comme bac à sable. Les erreurs de script seront interceptées.\nrefactoring: divisé en plusieurs modules",
+                "it": "Usato VM2 come sandbox. Gli errori di script verranno catturati.\nrefactoring: suddiviso in molti moduli",
+                "es": "Usó VM2 como sandbox. Los errores de script serán capturados.\nrefactorización: dividida en muchos módulos",
+                "pl": "Używany VM2 jako sandbox. Błędy skryptu zostaną przechwycone.\nrefaktoryzacja: podzielona na wiele modułów"
+            },
             "3.6.4": {
                 "en": "Pattern error is fixed",
                 "de": "Musterfehler ist behoben",
@@ -137,11 +148,6 @@
             "singleton": true,
             "name": "Scripts"
         },
-        "dependencies": [
-            {
-                "js-controller": ">=0.10.0"
-            }
-        ],
         "docs": {
             "en": ["docs/en/javascript.md", "docs/en/blockly.md"],
             "ru": ["docs/ru/blockly.md"],
