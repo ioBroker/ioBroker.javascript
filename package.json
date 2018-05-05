@@ -21,6 +21,9 @@
     "type": "git",
     "url": "https://github.com/ioBroker/ioBroker.javascript"
   },
+  "optionalDependencies": {
+    "vm2": "^3.5.2"
+  },
   "dependencies": {
     "@types/node": "^8.0.34",
     "coffee-compiler": "^0.3.2",
@@ -30,7 +33,6 @@
     "suncalc": "^1.8.0",
     "typescript": "^2.8.3",
     "virtual-tsc": "^0.3.4",
-    "vm2": "^3.5.2",
     "wake_on_lan": "0.0.4"
   },
   "devDependencies": {

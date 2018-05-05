@@ -4,11 +4,21 @@
 /* jslint node: true */
 /* jshint shadow:true */
 'use strict';
-
-const VM2            = require('vm2');
+let NodeVM;
+let VMScript;
+let vm;
+if (true || process.versions.node.split('.')[0] < 6) {
+    vm = require('vm');
+} else {
+    try {
+        const VM2 = require('vm2');
+        NodeVM    = VM2.NodeVM;
+        VMScript  = VM2.VMScript;
+    } catch (e) {
+        vm = require('vm');
+    }
+}
 const fs             = require('fs');
-const NodeVM         = VM2.NodeVM;
-const VMScript       = VM2.VMScript;
 const coffeeCompiler = require('coffee-compiler');
 const tsc            = require('virtual-tsc');
 const typescript     = require('typescript');
@@ -662,14 +672,20 @@ function installLibraries(callback) {
 function compile(source, name) {
     source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + ' and ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ));\n";
     try {
-        /*let options = {
-            filename: name,
-            displayErrors: true
-            //lineOffset: globalScriptLines
-        };*/
-        return {
-            script: new VMScript(source, name)
-        };
+        if (VMScript) {
+            return {
+                script: new VMScript(source, name)
+            };
+        } else {
+            const options = {
+                filename: name,
+                displayErrors: true
+                //lineOffset: globalScriptLines
+            };
+            return {
+                script: vm.createScript(source, options)
+            };
+        }
     } catch (e) {
         context.logError(name + ' compile failed:\r\nat ', e);
         return false;
@@ -685,20 +701,33 @@ function execute(script, name, verbose, debug) {
     script.subscribes = {};
 
     let sandbox = sandBox(script, name, verbose, debug, context);
-    const vm = new NodeVM({
-        sandbox,
-        require: {
-            external: true,
-            builtin: ['*'],
-            root: '',
-            mock: mods
-        }
-    });
 
-    try {
-        vm.run(script.script, name);
-    } catch (e) {
-        context.logError(name, e);
+    if (NodeVM) {
+        const vm = new NodeVM({
+            sandbox,
+            require: {
+                external: true,
+                builtin: ['*'],
+                root: '',
+                mock: mods
+            }
+        });
+
+        try {
+            vm.run(script.script, name);
+        } catch (e) {
+            context.logError(name, e);
+        }
+    } else {
+        try {
+            script.script.runInNewContext(sandbox, {
+                filename:       name,
+                displayErrors:  true
+                //lineOffset: globalScriptLines
+            });
+        } catch (e) {
+            context.logError(name, e);
+        }
     }
 }
 
