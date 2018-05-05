@@ -255,7 +255,7 @@ let adapter = new utils.Adapter({
         }
         let _eventObj = eventObj.createEventObject(context, id, state, oldState);
 
-        // if this state matchs any subscriptions
+        // if this state matches any subscriptions
         for (let i = 0, l = context.subscriptions.length; i < l; i++) {
             let sub = context.subscriptions[i];
             if (sub && patternMatching(_eventObj, sub.patternCompareFunctions)) {
@@ -685,10 +685,18 @@ function execute(script, name, verbose, debug) {
     script.subscribes = {};
 
     let sandbox = sandBox(script, name, verbose, debug, context);
-    const vm = new NodeVM({sandbox});
+    const vm = new NodeVM({
+        sandbox,
+        require: {
+            external: true,
+            builtin: ['*'],
+            root: '',
+            mock: mods
+        }
+    });
 
     try {
-        vm.run(script.script);
+        vm.run(script.script, name);
     } catch (e) {
         context.logError(name, e);
     }
