@@ -253,13 +253,13 @@ let adapter = new utils.Adapter({
                 context.stateIds.splice(pos, 1);
             }
         }
-        let eventObj = eventObj.createEventObject(context, id, state, oldState);
+        let _eventObj = eventObj.createEventObject(context, id, state, oldState);
 
         // if this state matchs any subscriptions
         for (let i = 0, l = context.subscriptions.length; i < l; i++) {
             let sub = context.subscriptions[i];
-            if (sub && patternMatching(eventObj, sub.patternCompareFunctions)) {
-                sub.callback(eventObj);
+            if (sub && patternMatching(_eventObj, sub.patternCompareFunctions)) {
+                sub.callback(_eventObj);
             }
         }
     },
