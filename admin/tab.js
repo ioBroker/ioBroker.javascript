@@ -1212,6 +1212,63 @@ function Scripts(main) {
         }
     }
 
+    var funcNames = [
+        {score: 1001, meta: 'iobroker', value: 'getState'},
+        {score: 1001, meta: 'iobroker', value: 'setState'},
+        {score: 1000, meta: 'iobroker', value: 'request'},
+        {score: 1000, meta: 'iobroker', value: 'getObject'},
+        {score: 1000, meta: 'iobroker', value: 'setObject'},
+        {score: 1000, meta: 'iobroker', value: 'require'},
+        {score: 1000, meta: 'iobroker', value: 'console'},
+        {score: 1000, meta: 'iobroker', value: 'exec'},
+        {score: 1000, meta: 'iobroker', value: 'email'},
+        {score: 1000, meta: 'iobroker', value: 'pushover'},
+        {score: 1000, meta: 'iobroker', value: 'subscribe'},
+        {score: 1000, meta: 'iobroker', value: 'getSubscriptions'},
+        {score: 1000, meta: 'iobroker', value: 'adapterSubscribe'},
+        {score: 1000, meta: 'iobroker', value: 'adapterUnsubscribe'},
+        {score: 1000, meta: 'iobroker', value: 'unsubscribe'},
+        {score: 1000, meta: 'iobroker', value: 'on'},
+        {score: 1000, meta: 'iobroker', value: 'schedule'},
+        {score: 1000, meta: 'iobroker', value: 'getAstroDate'},
+        {score: 1000, meta: 'iobroker', value: 'isAstroDay'},
+        {score: 1000, meta: 'iobroker', value: 'clearSchedule'},
+        {score: 1000, meta: 'iobroker', value: 'setStateDelayed'},
+        {score: 1000, meta: 'iobroker', value: 'clearStateDelayed'},
+        {score: 1000, meta: 'iobroker', value: 'getStateDelayed'},
+        {score: 1000, meta: 'iobroker', value: 'existsState'},
+        {score: 1000, meta: 'iobroker', value: 'existsObject'},
+        {score: 1000, meta: 'iobroker', value: 'getIdByName'},
+        {score: 1000, meta: 'iobroker', value: 'extendObject'},
+        {score: 1000, meta: 'iobroker', value: 'getEnums'},
+        {score: 1000, meta: 'iobroker', value: 'createState'},
+        {score: 1000, meta: 'iobroker', value: 'deleteState'},
+        {score: 1000, meta: 'iobroker', value: 'sendTo'},
+        {score: 1000, meta: 'iobroker', value: 'sendToHost'},
+        {score: 1000, meta: 'iobroker', value: 'setInterval'},
+        {score: 1000, meta: 'iobroker', value: 'clearInterval'},
+        {score: 1000, meta: 'iobroker', value: 'setTimeout'},
+        {score: 1000, meta: 'iobroker', value: 'clearTimeout'},
+        {score: 1000, meta: 'iobroker', value: 'setImmediate'},
+        {score: 1000, meta: 'iobroker', value: 'compareTime'},
+        {score: 1000, meta: 'iobroker', value: 'onStop'},
+        {score: 1000, meta: 'iobroker', value: 'formatValue'},
+        {score: 1000, meta: 'iobroker', value: 'formatDate'},
+        {score: 1000, meta: 'iobroker', value: 'getDateObject'},
+        {score: 1000, meta: 'iobroker', value: 'writeFile'},
+        {score: 1000, meta: 'iobroker', value: 'readFile'},
+        {score: 1000, meta: 'iobroker', value: 'unlink'},
+        {score: 1000, meta: 'iobroker', value: 'delFile'},
+        {score: 1000, meta: 'iobroker', value: 'getHistory'},
+        {score: 1000, meta: 'iobroker', value: 'runScript'},
+        {score: 1000, meta: 'iobroker', value: 'startScript'},
+        {score: 1000, meta: 'iobroker', value: 'stopScript'},
+        {score: 1000, meta: 'iobroker', value: 'isScriptActive'},
+        {score: 1000, meta: 'iobroker', value: 'toInt'},
+        {score: 1000, meta: 'iobroker', value: 'toFloat'},
+        {score: 1000, meta: 'iobroker', value: 'toBoolean'}
+    ];
+
     this.initEditor = function () {
         if (!this.editor) {
             this.editor       = ace.edit('script-editor');
@@ -1219,9 +1276,21 @@ function Scripts(main) {
 
             //this.editor.setTheme("ace/theme/monokai");
             this.editor.getSession().setMode('ace/mode/javascript');
+            this.editor.setOptions({enableBasicAutocompletion: true});
             this.editor.$blockScrolling = Infinity;
+            this.editor.completers.push({
+                getCompletions: function (editor, session, pos, prefix, callback) {
+                    callback(null, funcNames);
+                }
+            });
 
             this.editorDialog.getSession().setMode('ace/mode/javascript');
+            this.editorDialog.setOptions({enableBasicAutocompletion: true});
+            this.editorDialog.completers.push({
+                getCompletions: function (editor, session, pos, prefix, callback) {
+                    callback(null, funcNames);
+                }
+            });
             this.editorDialog.$blockScrolling = Infinity;
 
             $('#dialog-edit-insert-id').button({
