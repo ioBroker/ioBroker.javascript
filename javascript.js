@@ -7,7 +7,7 @@
 let NodeVM;
 let VMScript;
 let vm;
-if (true || process.versions.node.split('.')[0] < 6) {
+if (true || parseInt(process.versions.node.split('.')[0]) < 6) {
     vm = require('vm');
 } else {
     try {
@@ -284,7 +284,6 @@ const adapter = new utils.Adapter({
         // todo
         context.errorLogFunction = webstormDebug ? console : adapter.log;
         activeStr = adapter.namespace + '.scriptEnabled.';
-        activeRegEx = new RegExp('^' + adapter.namespace.replace('.', '\\.') + '\\.scriptEnabled\\.');
 
         // try to read TS declarations
         try {
@@ -487,7 +486,6 @@ const attempts = {};
 let globalScript = '';
 let globalScriptLines = 0;
 const names = {};
-let activeRegEx = null;
 let activeStr = '';
 
 
