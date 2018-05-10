@@ -80,13 +80,9 @@ const tsCompilerOptions = {
     lib: ['lib.es6.d.ts']
 };
 
-// compiler instance for typescript
-function tsLog(msg, sev) {
-    if (adapter && adapter.log) adapter.log[sev || 'info'](msg);
-}
 // ambient declarations for typescript
 let tsAmbient;
-const tsServer = new tsc.Server(tsCompilerOptions, tsLog);
+let tsServer;
 
 const context = {
     mods,
@@ -488,6 +484,11 @@ let globalScriptLines = 0;
 const names = {};
 let activeStr = '';
 
+// compiler instance for typescript
+function tsLog(msg, sev) {
+    if (adapter && adapter.log) adapter.log[sev || 'info'](msg);
+}
+tsServer = new tsc.Server(tsCompilerOptions, tsLog);
 
 function addGetProperty(object) {
     Object.defineProperty(object, 'get', {
