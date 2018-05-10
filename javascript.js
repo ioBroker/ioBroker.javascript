@@ -12,19 +12,19 @@ if (true || process.versions.node.split('.')[0] < 6) {
 } else {
     try {
         const VM2 = require('vm2');
-        NodeVM    = VM2.NodeVM;
-        VMScript  = VM2.VMScript;
+        NodeVM = VM2.NodeVM;
+        VMScript = VM2.VMScript;
     } catch (e) {
         vm = require('vm');
     }
 }
-const fs             = require('fs');
+const nodeFS         = require('fs');
 const coffeeCompiler = require('coffee-compiler');
 const tsc            = require('virtual-tsc');
 const typescript     = require('typescript');
 const nodeSchedule   = require('node-schedule');
 
-let mods = {
+const mods = {
     fs:               {},
     dgram:            require('dgram'),
     crypto:           require('crypto'),
@@ -79,27 +79,32 @@ const tsCompilerOptions = {
     // can be dropped if we're targeting ES6 anyways
     lib: ['lib.es6.d.ts']
 };
+
+// compiler instance for typescript
+function tsLog(msg, sev) {
+    if (adapter && adapter.log) adapter.log[sev || 'info'](msg);
+}
 // ambient declarations for typescript
 let tsAmbient;
-let tsServer;
+const tsServer = new tsc.Server(tsCompilerOptions, tsLog);
 
-let context = {
+const context = {
     mods,
-    objects:          {},
-    states:           {},
-    stateIds:         [],
+    objects: {},
+    states: {},
+    stateIds: [],
     errorLogFunction: null,
-    subscriptions:    [],
-    adapterSubs:      {},
+    subscriptions: [],
+    adapterSubs: {},
     subscribedPatterns: {},
     cacheObjectEnums: {},
-    isEnums:          false, // If some subscription wants enum
-    channels:         null,
-    devices:          null,
-    logWithLineInfo:  null,
-    timers:           {},
-    enums:            [],
-    timerId:          0
+    isEnums: false, // If some subscription wants enum
+    channels: null,
+    devices: null,
+    logWithLineInfo: null,
+    timers: {},
+    enums: [],
+    timerId: 0
 };
 
 const regExEnum = /^enum\./;
@@ -110,7 +115,7 @@ function checkIsGlobal(obj) {
     return regExGlobalOld.test(obj.common.name) || regExGlobalNew.test(obj._id);
 }
 
-let adapter = new utils.Adapter({
+const adapter = new utils.Adapter({
 
     name: 'javascript',
 
@@ -202,8 +207,7 @@ let adapter = new utils.Adapter({
                 } else {
                     context.objects[id] = obj;
                 }
-            } else
-            if ((!context.objects[id].common.enabled && obj.common.enabled) ||
+            } else if ((!context.objects[id].common.enabled && obj.common.enabled) ||
                 (context.objects[id].common.engine !== 'system.adapter.' + adapter.namespace && obj.common.engine === 'system.adapter.' + adapter.namespace)) {
                 // Script enabled
                 context.objects[id] = obj;
@@ -229,12 +233,12 @@ let adapter = new utils.Adapter({
     stateChange: (id, state) => {
         if (!id || id.startsWith('messagebox.') || id.startsWith('log.')) return;
 
-        let oldState = context.states[id];
+        const oldState = context.states[id];
         if (state) {
             if (oldState) {
                 // enable or disable script
                 if (!state.ack && id.startsWith(activeStr) && context.objects[id] && context.objects[id].native && context.objects[id].native.script) {
-                    adapter.extendForeignObject(context.objects[id].native.script, {common: {enabled: state.val}});
+                    adapter.extendForeignObject(context.objects[id].native.script, { common: { enabled: state.val } });
                 }
 
                 // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
@@ -263,11 +267,11 @@ let adapter = new utils.Adapter({
                 context.stateIds.splice(pos, 1);
             }
         }
-        let _eventObj = eventObj.createEventObject(context, id, state, oldState);
+        const _eventObj = eventObj.createEventObject(context, id, state, oldState);
 
         // if this state matches any subscriptions
         for (let i = 0, l = context.subscriptions.length; i < l; i++) {
-            let sub = context.subscriptions[i];
+            const sub = context.subscriptions[i];
             if (sub && patternMatching(_eventObj, sub.patternCompareFunctions)) {
                 sub.callback(_eventObj);
             }
@@ -277,7 +281,7 @@ let adapter = new utils.Adapter({
     unload: callback => callback(),
 
     ready: function () {
-         // todo
+        // todo
         context.errorLogFunction = webstormDebug ? console : adapter.log;
         activeStr = adapter.namespace + '.scriptEnabled.';
         activeRegEx = new RegExp('^' + adapter.namespace.replace('.', '\\.') + '\\.scriptEnabled\\.');
@@ -285,7 +289,7 @@ let adapter = new utils.Adapter({
         // try to read TS declarations
         try {
             tsAmbient = {
-                'javascript.d.ts': fs.readFileSync(mods.path.join(__dirname, 'lib/javascript.d.ts'), 'utf8')
+                'javascript.d.ts': nodeFS.readFileSync(mods.path.join(__dirname, 'lib/javascript.d.ts'), 'utf8')
             };
             tsServer.provideAmbientDeclarations(tsAmbient);
         } catch (e) {
@@ -309,7 +313,7 @@ let adapter = new utils.Adapter({
                         // assemble global script
                         for (let g = 0; g < doc.rows.length; g++) {
                             if (checkIsGlobal(doc.rows[g].value)) {
-                                let obj = doc.rows[g].value;
+                                const obj = doc.rows[g].value;
 
                                 if (obj && obj.common.enabled) {
                                     if (obj.common.engineType.match(/^[cC]offee/)) {
@@ -334,12 +338,12 @@ let adapter = new utils.Adapter({
                                             }
                                         });
                                     } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
-                                        let tsCompiled = tsServer.compile(
+                                        const tsCompiled = tsServer.compile(
                                             mods.path.join(__dirname, 'global_' + g + '.ts'),
                                             obj.common.source
                                         );
 
-                                        let errors = tsCompiled.diagnostics.map(function (diag) {
+                                        const errors = tsCompiled.diagnostics.map(function (diag) {
                                             return diag.annotatedSource + '\n';
                                         }).join('\n');
 
@@ -393,109 +397,102 @@ function checkObjectsJson(file) {
 
 mods.fs.readFile = function () {
     checkObjectsJson(arguments[0]);
-    return fs.readFile.apply(this, arguments);
+    return nodeFS.readFile.apply(this, arguments);
 };
 mods.fs.readFileSync = function () {
     checkObjectsJson(arguments[0]);
-    return fs.readFileSync.apply(this, arguments);
+    return nodeFS.readFileSync.apply(this, arguments);
 };
 mods.fs.writeFile = function () {
     checkObjectsJson(arguments[0]);
-    return fs.writeFile.apply(this, arguments);
+    return nodeFS.writeFile.apply(this, arguments);
 };
 mods.fs.writeFileSync = function () {
     checkObjectsJson(arguments[0]);
-    return fs.writeFileSync.apply(this, arguments);
+    return nodeFS.writeFileSync.apply(this, arguments);
 };
 mods.fs.unlink = function () {
     checkObjectsJson(arguments[0]);
-    return fs.unlink.apply(this, arguments);
+    return nodeFS.unlink.apply(this, arguments);
 };
 mods.fs.unlinkSync = function () {
     checkObjectsJson(arguments[0]);
-    return fs.unlinkSync.apply(this, arguments);
+    return nodeFS.unlinkSync.apply(this, arguments);
 };
 mods.fs.appendFile = function () {
     checkObjectsJson(arguments[0]);
-    return fs.appendFile.apply(this, arguments);
+    return nodeFS.appendFile.apply(this, arguments);
 };
 mods.fs.appendFileSync = function () {
     checkObjectsJson(arguments[0]);
-    return fs.appendFileSync.apply(this, arguments);
+    return nodeFS.appendFileSync.apply(this, arguments);
 };
 mods.fs.chmod = function () {
     checkObjectsJson(arguments[0]);
-    return fs.chmod.apply(this, arguments);
+    return nodeFS.chmod.apply(this, arguments);
 };
 mods.fs.chmodSync = function () {
     checkObjectsJson(arguments[0]);
-    return fs.chmodSync.apply(this, arguments);
+    return nodeFS.chmodSync.apply(this, arguments);
 };
 mods.fs.chown = function () {
     checkObjectsJson(arguments[0]);
-    return fs.chmodSync.apply(this, arguments);
+    return nodeFS.chmodSync.apply(this, arguments);
 };
 mods.fs.chownSync = function () {
     checkObjectsJson(arguments[0]);
-    return fs.chownSync.apply(this, arguments);
+    return nodeFS.chownSync.apply(this, arguments);
 };
 mods.fs.copyFile = function () {
     checkObjectsJson(arguments[0]);
     checkObjectsJson(arguments[1]);
-    return fs.copyFile.apply(this, arguments);
+    return nodeFS.copyFile.apply(this, arguments);
 };
 mods.fs.copyFileSync = function () {
     checkObjectsJson(arguments[0]);
     checkObjectsJson(arguments[1]);
-    return fs.copyFileSync.apply(this, arguments);
+    return nodeFS.copyFileSync.apply(this, arguments);
 };
 mods.fs.open = function () {
     checkObjectsJson(arguments[0]);
-    return fs.open.apply(this, arguments);
+    return nodeFS.open.apply(this, arguments);
 };
 mods.fs.openSync = function () {
     checkObjectsJson(arguments[0]);
-    return fs.openSync.apply(this, arguments);
+    return nodeFS.openSync.apply(this, arguments);
 };
 mods.fs.rename = function () {
     checkObjectsJson(arguments[0]);
     checkObjectsJson(arguments[1]);
-    return fs.rename.apply(this, arguments);
+    return nodeFS.rename.apply(this, arguments);
 };
 mods.fs.renameSync = function () {
     checkObjectsJson(arguments[0]);
     checkObjectsJson(arguments[1]);
-    return fs.renameSync.apply(this, arguments);
+    return nodeFS.renameSync.apply(this, arguments);
 };
 mods.fs.truncate = function () {
     checkObjectsJson(arguments[0]);
-    return fs.truncate.apply(this, arguments);
+    return nodeFS.truncate.apply(this, arguments);
 };
 mods.fs.truncateSync = function () {
     checkObjectsJson(arguments[0]);
-    return fs.truncateSync.apply(this, arguments);
+    return nodeFS.truncateSync.apply(this, arguments);
 };
 
 context.adapter = adapter;
 
-let scripts =          {};
-let attempts =         {};
-let globalScript =     '';
+const scripts = {};
+const attempts = {};
+let globalScript = '';
 let globalScriptLines = 0;
-let names =            {};
-let activeRegEx =      null;
-let activeStr =        '';
-
-
-// compiler instance for typescript
-function tsLog(msg, sev) {
-    if (adapter && adapter.log) adapter.log[sev || 'info'](msg);
-}
-tsServer = new tsc.Server(tsCompilerOptions, tsLog);
+const names = {};
+let activeRegEx = null;
+let activeStr = '';
 
 
 function addGetProperty(object) {
-    Object.defineProperty (object, 'get', {
+    Object.defineProperty(object, 'get', {
         value: function (id) {
             return this[id] || this[adapter.namespace + '.' + id];
         },
@@ -507,7 +504,7 @@ function fixLineNo(line) {
     if (line.indexOf('javascript.js:') >= 0) return line;
     if (!/script[s]?\.js[.\\\/]/.test(line)) return line;
     if (/:([\d]+):/.test(line)) {
-    line = line.replace(/:([\d]+):/, function ($0, $1) {
+        line = line.replace(/:([\d]+):/, function ($0, $1) {
             return ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1) + ':';
         });
     } else {
@@ -530,16 +527,16 @@ context.logError = function (msg, e, offs) {
         if (!stack[i]) continue;
         if (stack[i].match(/runInNewContext|javascript\.js:/)) break;
         //adapter.log.error(fixLineNo(stack[i]));
-        context.errorLogFunction.error (fixLineNo(stack[i]));
+        context.errorLogFunction.error(fixLineNo(stack[i]));
     }
-}
+};
 
 function createActiveObject(id, enabled) {
     const idActive = adapter.namespace + '.scriptEnabled.' + id.substring('script.js.'.length);
 
     if (!context.objects[idActive]) {
         context.objects[idActive] = {
-            _id:    idActive,
+            _id: idActive,
             common: {
                 name: 'scriptEnabled.' + id.substring('script.js.'.length),
                 desc: 'controls script activity',
@@ -595,7 +592,7 @@ function removeFromNames(id) {
 
 function getName(id) {
     let pos;
-    for (let n in names) {
+    for (const n in names) {
         if (names[n] && typeof names[n] === 'object') {
             pos = names[n].indexOf(id);
             if (pos !== -1) return n;
@@ -619,7 +616,7 @@ function installNpm(npmLib, callback) {
 
     // System call used for update of js-controller itself,
     // because during installation npm packet will be deleted too, but some files must be loaded even during the install process.
-    let child = mods['child_process'].exec(cmd);
+    const child = mods['child_process'].exec(cmd);
 
     child.stdout.on('data', function (buf) {
         adapter.log.info(buf.toString('utf8'));
@@ -640,12 +637,12 @@ function installNpm(npmLib, callback) {
 function installLibraries(callback) {
     let allInstalled = true;
     if (adapter.config && adapter.config.libraries) {
-        let libraries = adapter.config.libraries.split(/[,;\s]+/);
+        const libraries = adapter.config.libraries.split(/[,;\s]+/);
 
         for (let lib = 0; lib < libraries.length; lib++) {
             if (libraries[lib] && libraries[lib].trim()) {
                 libraries[lib] = libraries[lib].trim();
-                if (!fs.existsSync(__dirname + '/node_modules/' + libraries[lib] + '/package.json')) {
+                if (!nodeFS.existsSync(__dirname + '/node_modules/' + libraries[lib] + '/package.json')) {
 
                     if (!attempts[libraries[lib]]) {
                         attempts[libraries[lib]] = 1;
@@ -693,14 +690,14 @@ function compile(source, name) {
 }
 
 function execute(script, name, verbose, debug) {
-    script.intervals  = [];
-    script.timeouts   = [];
-    script.schedules  = [];
-    script.name       = name;
-    script._id        = Math.floor(Math.random() * 0xFFFFFFFF);
+    script.intervals = [];
+    script.timeouts = [];
+    script.schedules = [];
+    script.name = name;
+    script._id = Math.floor(Math.random() * 0xFFFFFFFF);
     script.subscribes = {};
 
-    let sandbox = sandBox(script, name, verbose, debug, context);
+    const sandbox = sandBox(script, name, verbose, debug, context);
 
     if (NodeVM) {
         const vm = new NodeVM({
@@ -721,8 +718,8 @@ function execute(script, name, verbose, debug) {
     } else {
         try {
             script.script.runInNewContext(sandbox, {
-                filename:       name,
-                displayErrors:  true
+                filename: name,
+                displayErrors: true
                 //lineOffset: globalScriptLines
             });
         } catch (e) {
@@ -749,7 +746,7 @@ function unsubscribe(id) {
     const parts = id.split('.');
     const _adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
     if (context.objects[_adapter] && context.objects[_adapter].common && context.objects[_adapter].common.subscribable) {
-        const a     = parts[0] + '.' + parts[1];
+        const a = parts[0] + '.' + parts[1];
         const alive = 'system.adapter.' + a + '.alive';
         if (context.adapterSubs[alive]) {
             const pos = context.adapterSubs[alive].indexOf(id);
@@ -770,7 +767,7 @@ function stop(name, callback) {
         context.isEnums = false;
         if (adapter.config.subscribe) {
             // check all subscribed IDs
-            for (let id in scripts[name].subscribes) {
+            for (const id in scripts[name].subscribes) {
                 if (!scripts[name].subscribes.hasOwnProperty(id)) continue;
                 if (context.subscribedPatterns[id]) {
                     context.subscribedPatterns[id] -= scripts[name].subscribes[id];
@@ -783,7 +780,7 @@ function stop(name, callback) {
             }
         }
 
-        for (let i = context.subscriptions.length - 1; i >= 0 ; i--) {
+        for (let i = context.subscriptions.length - 1; i >= 0; i--) {
             if (context.subscriptions[i].name === name) {
                 const sub = context.subscriptions.splice(i, 1)[0];
                 if (sub) {
@@ -869,7 +866,7 @@ function prepareScript(obj, callback) {
             if (typeof callback === 'function') callback(true, name);
         } else if (obj.common.engineType.match(/^[cC]offee/)) {
             // CoffeeScript
-            coffeeCompiler.fromSource(obj.common.source, {sourceMap: false, bare: true}, function (err, js) {
+            coffeeCompiler.fromSource(obj.common.source, { sourceMap: false, bare: true }, function (err, js) {
                 if (err) {
                     adapter.log.error(name + ' coffee compile ' + err);
                     if (typeof callback === 'function') callback(false, name);
@@ -958,7 +955,7 @@ function getData(callback) {
         addGetProperty(context.states);
 
         // remember all IDs
-        for (let id in res) {
+        for (const id in res) {
             if (res.hasOwnProperty(id)) {
                 context.stateIds.push(id);
             }
@@ -970,7 +967,7 @@ function getData(callback) {
 
     adapter.log.info('requesting all objects');
 
-    adapter.objects.getObjectList({include_docs: true}, function (err, res) {
+    adapter.objects.getObjectList({ include_docs: true }, function (err, res) {
         res = res.rows;
         context.objects = {};
         for (let i = 0; i < res.length; i++) {
@@ -988,10 +985,10 @@ function getData(callback) {
         // try to use system coordinates
         if (adapter.config.useSystemGPS && context.objects['system.config'] &&
             context.objects['system.config'].common.latitude) {
-            adapter.config.latitude  = context.objects['system.config'].common.latitude;
+            adapter.config.latitude = context.objects['system.config'].common.latitude;
             adapter.config.longitude = context.objects['system.config'].common.longitude;
         }
-        adapter.config.latitude  = parseFloat(adapter.config.latitude);
+        adapter.config.latitude = parseFloat(adapter.config.latitude);
         adapter.config.longitude = parseFloat(adapter.config.longitude);
 
         objectsReady = true;
