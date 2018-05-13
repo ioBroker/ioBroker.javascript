@@ -18,6 +18,13 @@ function Scripts(main) {
     this.blocklyWorkspace = null;
     this.prepared       = false;
     
+    function setChanged(isChanged) {
+        that.changed = isChanged;
+        if (typeof parent !== 'undefined' && parent) {
+            parent.configNotSaved = isChanged;
+        }
+    }
+    
     function addScript(group) {
         $('#dialog-new-script').data('callback', function (type) {
             group = group || 'script.js.common';
@@ -418,7 +425,7 @@ function Scripts(main) {
 
         that.editor.setReadOnly(false);
 
-        that.changed = true;
+        that.setChanged(true);
         $('#script-edit-button-save').button('enable');
         $('#script-edit-button-cancel').button('enable');
 
@@ -744,12 +751,12 @@ function Scripts(main) {
                 that.main.confirmMessage(_('Script not saved'), _('Save?'), 'help', [_('Save'), _('Discard'), _('Cancel')], function (result) {
                     if (result === 0) {
                         that.saveScript();
-                        that.changed = false;
+                        setChanged(false);
                         setTimeout(function() {
                             editScript(id);
                         }, 0);
                     } else if (result === 1) {
-                        that.changed = false;
+                        setChanged(false);
                         setTimeout(function() {
                             editScript(id);
                         }, 0);
@@ -852,7 +859,7 @@ function Scripts(main) {
                 buildRules()
             }
 
-            that.changed = false;
+            setChanged(false);
 
             //$('#edit-script-source').val(obj.common.source);
             that.editor.setValue(obj.common.source, -1);
@@ -860,7 +867,7 @@ function Scripts(main) {
             applyResizableV();
 
             setTimeout(function () {
-                that.changed = false;
+                setChanged(false);
                 $('#script-edit-button-save').button('disable');
                 $('#script-edit-button-cancel').button('disable');
                 //that.editor.focus();
@@ -878,7 +885,7 @@ function Scripts(main) {
             $('#edit-script-debug').prop('checked', !!obj.common.debug);
             $('#edit-script-verbose').prop('checked', !!obj.common.verbose);
 
-            that.changed = false;
+            setChanged(false);
             var $editorScriptsTextarea = $('#editor-scripts-textarea');
             $editorScriptsTextarea.height(100);
             if ($editorScriptsTextarea.hasClass('ui-resizable')) $('#editor-scripts-textarea').resizable('destroy');
@@ -1352,7 +1359,7 @@ function Scripts(main) {
 
             this.editor.on('input', function() {
                 if (that.currentEngine !== 'Blockly') {
-                    that.changed = true;
+                    setChanged(true);
                     $('#script-edit-button-save').button('enable');
                     $('#script-edit-button-cancel').button('enable');
                 }
@@ -1364,7 +1371,7 @@ function Scripts(main) {
             });
 
             $('#edit-script-name').change(function () {
-                that.changed = true;
+                setChanged(true);
                 $('#script-edit-button-save').button('enable');
                 $('#script-edit-button-cancel').button('enable');
             }).keyup(function () {
@@ -1375,7 +1382,7 @@ function Scripts(main) {
                 if ($(this).prop('checked')) {
                     that.main.showMessage(_('debug_help'));
                 }
-                that.changed = true;
+                setChanged(true);
                 $('#script-edit-button-save').button('enable');
                 $('#script-edit-button-cancel').button('enable');
             });
@@ -1384,7 +1391,7 @@ function Scripts(main) {
                     that.main.showMessage(_('verbose_help'));
                 }
 
-                that.changed = true;
+                setChanged(true);
                 $('#script-edit-button-save').button('enable');
                 $('#script-edit-button-cancel').button('enable');
             });
@@ -1412,12 +1419,12 @@ function Scripts(main) {
                     switchViews(false, that.currentEngine);
                 }
 
-                that.changed = true;
+                setChanged(true);
                 $('#script-edit-button-save').button('enable');
                 $('#script-edit-button-cancel').button('enable');
             });
             $('#edit-script-group').change(function () {
-                that.changed = true;
+                setChanged(true);
                 $('#script-edit-button-save').button('enable');
                 $('#script-edit-button-cancel').button('enable');
             });
@@ -1934,7 +1941,7 @@ function Scripts(main) {
                     if (masterEvent.type === Blockly.Events.UI) {
                         return;  // Don't mirror UI events.
                     }
-                    that.changed = true;
+                    setChanged(true);
                     $('#script-edit-button-save').button('enable');
                     $('#script-edit-button-cancel').button('enable');
                 });
@@ -2544,7 +2551,7 @@ function Scripts(main) {
                             $('#edit-script-engine-type').prepend('<option value="Blockly">Blockly</option>');
                         }
                         $('#edit-script-engine-type').val(obj.engineType);
-                        that.changed = true;
+                        setChanged(true);
 
                         that.saveScript(true, function () {
                             setTimeout(function () {
@@ -2565,7 +2572,7 @@ function Scripts(main) {
             }
         }
 
-        that.changed = false;
+        setChanged(false);
         $('#script-edit-button-save').button('disable');
         $('#script-edit-button-cancel').button('disable');
 
@@ -2612,7 +2619,7 @@ function Scripts(main) {
                 var j = this.list.indexOf(id);
                 if (j !== -1) this.list.splice(j, 1);
                 if (id === this.currentId) {
-                    this.changed = false;
+                    setChanged(false);
                     editScript(null);
                 }
             }
