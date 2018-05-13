@@ -94,13 +94,15 @@ const context = {
     adapterSubs: {},
     subscribedPatterns: {},
     cacheObjectEnums: {},
-    isEnums: false, // If some subscription wants enum
-    channels: null,
-    devices: null,
-    logWithLineInfo: null,
-    timers: {},
-    enums: [],
-    timerId: 0
+    isEnums:          false, // If some subscription wants enum
+    channels:         null,
+    devices:          null,
+    logWithLineInfo:  null,
+    timers:           {},
+    enums:            [],
+    timerId:          0,
+    names:            {},
+    scripts:          {}
 };
 
 const regExEnum = /^enum\./;
@@ -477,12 +479,11 @@ mods.fs.truncateSync = function () {
 
 context.adapter = adapter;
 
-const scripts = {};
-const attempts = {};
-let globalScript = '';
+let attempts =         {};
+let globalScript =     '';
 let globalScriptLines = 0;
-const names = {};
-let activeStr = '';
+let activeRegEx =      null;
+let activeStr =        '';
 
 // compiler instance for typescript
 function tsLog(msg, sev) {
@@ -563,11 +564,13 @@ function addToNames(obj) {
         const name = obj.common.name;
         if (typeof name !== 'string') return;
 
-        if (!names[name]) {
-            names[name] = id;
+        if (!context.names[name]) {
+            context.names[name] = id;
         } else {
-            if (typeof names[name] === 'string') names[name] = [names[name]];
-            names[name].push(id);
+            if (typeof context.names[name] === 'string') {
+                context.names[name] = [context.names[name]];
+            }
+            context.names[name].push(id);
         }
     }
 }
@@ -577,26 +580,30 @@ function removeFromNames(id) {
 
     if (n) {
         let pos;
-        if (names[n] === 'object') {
-            pos = names[n].indexOf(id);
+        if (context.names[n] === 'object') {
+            pos = context.names[n].indexOf(id);
             if (pos !== -1) {
-                names[n].splice(pos, 1);
-                if (names[n].length) names[n] = names[n][0];
+                context.names[n].splice(pos, 1);
+                if (context.names[n].length) {
+                    context.names[n] = context.names[n][0];
+                }
             }
         } else {
-            delete names[n];
+            delete context.names[n];
         }
     }
 }
 
 function getName(id) {
     let pos;
-    for (const n in names) {
-        if (names[n] && typeof names[n] === 'object') {
-            pos = names[n].indexOf(id);
-            if (pos !== -1) return n;
-        } else if (names[n] === id) {
-            return n;
+    for (const n in context.names) {
+        if (context.names.hasOwnProperty(n)) {
+            if (context.names[n] && typeof context.names[n] === 'object') {
+                pos = context.names[n].indexOf(id);
+                if (pos !== -1) return n;
+            } else if (context.names[n] === id) {
+                return n;
+            }
         }
     }
     return null;
@@ -761,15 +768,15 @@ function stop(name, callback) {
 
     adapter.setState('scriptEnabled.' + name.substring('script.js.'.length), false, true);
 
-    if (scripts[name]) {
+    if (context.scripts[name]) {
         // Remove from subscriptions
         context.isEnums = false;
         if (adapter.config.subscribe) {
             // check all subscribed IDs
-            for (const id in scripts[name].subscribes) {
-                if (!scripts[name].subscribes.hasOwnProperty(id)) continue;
+            for (const id in context.scripts[name].subscribes) {
+                if (!context.scripts[name].subscribes.hasOwnProperty(id)) continue;
                 if (context.subscribedPatterns[id]) {
-                    context.subscribedPatterns[id] -= scripts[name].subscribes[id];
+                    context.subscribedPatterns[id] -= context.scripts[name].subscribes[id];
                     if (context.subscribedPatterns[id] <= 0) {
                         adapter.unsubscribeForeignStates(id);
                         delete context.subscribedPatterns[id];
@@ -791,41 +798,41 @@ function stop(name, callback) {
         }
 
         // Stop all timeouts
-        for (let i = 0; i < scripts[name].timeouts.length; i++) {
-            clearTimeout(scripts[name].timeouts[i]);
+        for (let i = 0; i < context.scripts[name].timeouts.length; i++) {
+            clearTimeout(context.scripts[name].timeouts[i]);
         }
         // Stop all intervals
-        for (let i = 0; i < scripts[name].intervals.length; i++) {
-            clearInterval(scripts[name].intervals[i]);
+        for (let i = 0; i < context.scripts[name].intervals.length; i++) {
+            clearInterval(context.scripts[name].intervals[i]);
         }
         // Stop all scheduled jobs
-        for (let i = 0; i < scripts[name].schedules.length; i++) {
-            if (scripts[name].schedules[i]) {
-                const _name = scripts[name].schedules[i].name;
-                if (!nodeSchedule.cancelJob(scripts[name].schedules[i])) {
+        for (let i = 0; i < context.scripts[name].schedules.length; i++) {
+            if (context.scripts[name].schedules[i]) {
+                const _name = context.scripts[name].schedules[i].name;
+                if (!nodeSchedule.cancelJob(context.scripts[name].schedules[i])) {
                     adapter.log.error('Error by canceling scheduled job "' + _name + '"');
                 }
             }
         }
 
         // if callback for on stop
-        if (typeof scripts[name].onStopCb === 'function') {
-            scripts[name].onStopTimeout = parseInt(scripts[name].onStopTimeout, 10) || 1000;
+        if (typeof context.scripts[name].onStopCb === 'function') {
+            context.scripts[name].onStopTimeout = parseInt(context.scripts[name].onStopTimeout, 10) || 1000;
 
             let timeout = setTimeout(function () {
                 if (timeout) {
                     timeout = null;
-                    delete scripts[name];
+                    delete context.scripts[name];
                     if (typeof callback === 'function') callback(true, name);
                 }
-            }, scripts[name].onStopTimeout);
+            }, context.scripts[name].onStopTimeout);
 
             try {
-                scripts[name].onStopCb(function () {
+                context.scripts[name].onStopCb(function () {
                     if (timeout) {
                         clearTimeout(timeout);
                         timeout = null;
-                        delete scripts[name];
+                        delete context.scripts[name];
                         if (typeof callback === 'function') callback(true, name);
                     }
                 });
@@ -834,7 +841,7 @@ function stop(name, callback) {
             }
 
         } else {
-            delete scripts[name];
+            delete context.scripts[name];
             if (typeof callback === 'function') callback(true, name);
         }
     } else {
@@ -860,8 +867,8 @@ function prepareScript(obj, callback) {
                 const fn = name.replace(/^script.js./, '').replace(/\./g, '/');
                 sourceFn = mods.path.join(webstormDebug, fn + '.js');
             }
-            scripts[name] = compile(globalScript + obj.common.source, sourceFn);
-            if (scripts[name]) execute(scripts[name], sourceFn, obj.common.verbose, obj.common.debug);
+            context.scripts[name] = compile(globalScript + obj.common.source, sourceFn);
+            if (context.scripts[name]) execute(context.scripts[name], sourceFn, obj.common.verbose, obj.common.debug);
             if (typeof callback === 'function') callback(true, name);
         } else if (obj.common.engineType.match(/^[cC]offee/)) {
             // CoffeeScript
@@ -872,8 +879,8 @@ function prepareScript(obj, callback) {
                     return;
                 }
                 adapter.log.info('Start coffescript ' + name);
-                scripts[name] = compile(globalScript + '\n' + js, name);
-                if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
+                context.scripts[name] = compile(globalScript + '\n' + js, name);
+                if (context.scripts[name]) execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
                 if (typeof callback === 'function') callback(true, name);
             });
         } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
@@ -895,8 +902,8 @@ function prepareScript(obj, callback) {
                 } else {
                     adapter.log.info(name + ': TypeScript compilation successful');
                 }
-                scripts[name] = compile(globalScript + '\n' + tsCompiled.result, name);
-                if (scripts[name]) execute(scripts[name], name, obj.common.verbose, obj.common.debug);
+                context.scripts[name] = compile(globalScript + '\n' + tsCompiled.result, name);
+                if (context.scripts[name]) execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
                 if (typeof callback === 'function') callback(true, name);
             } else {
                 adapter.log.error(name + ': TypeScript compilation failed: \n' + errors);
@@ -966,7 +973,7 @@ function getData(callback) {
 
     adapter.log.info('requesting all objects');
 
-    adapter.objects.getObjectList({ include_docs: true }, function (err, res) {
+    adapter.objects.getObjectList({include_docs: true}, (err, res) => {
         res = res.rows;
         context.objects = {};
         for (let i = 0; i < res.length; i++) {
@@ -984,10 +991,10 @@ function getData(callback) {
         // try to use system coordinates
         if (adapter.config.useSystemGPS && context.objects['system.config'] &&
             context.objects['system.config'].common.latitude) {
-            adapter.config.latitude = context.objects['system.config'].common.latitude;
+            adapter.config.latitude  = context.objects['system.config'].common.latitude;
             adapter.config.longitude = context.objects['system.config'].common.longitude;
         }
-        adapter.config.latitude = parseFloat(adapter.config.latitude);
+        adapter.config.latitude  = parseFloat(adapter.config.latitude);
         adapter.config.longitude = parseFloat(adapter.config.longitude);
 
         objectsReady = true;

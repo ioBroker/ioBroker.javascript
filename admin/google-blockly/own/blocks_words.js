@@ -157,6 +157,43 @@ Blockly.Words['field_oid']                            = {'en': 'Select OID',    
 Blockly.Words['field_oid_OID']                        = {'en': 'Object ID',                                       'de': 'Objekt ID',                                       'ru': 'ID объекта',                                      'pt': 'ID do objeto',                                    'nl': 'Object ID',                                       'fr': 'ID de l\'objet',                                  'it': 'ID oggetto',                                      'es': 'ID del objeto'};
 Blockly.Words['field_oid_tooltip']                    = {'en': 'Select object ID with dialog',                    'de': 'Objekt ID mit Dialog selektieren',                'ru': 'Выбрать ID объекта',                              'pt': 'Selecione ID do objeto com diálogo',              'nl': 'Selecteer object-ID met dialoogvenster',          'fr': 'Sélectionnez l\'ID d\'objet avec la boîte de dialogue', 'it': 'Seleziona ID oggetto con finestra di dialogo',    'es': 'Seleccionar ID de objeto con diálogo'};
 
+// --- get attribute --------------------------------------------------
+Blockly.Words['get_attr']                             = {
+    "en": "Get attribute",
+    "de": "Attribut erhalten",
+    "ru": "Получить атрибут",
+    "pt": "Obter atributo",
+    "nl": "Attribuut ophalen",
+    "fr": "Obtenir l'attribut",
+    "it": "Ottieni attributo",
+    "es": "Obtener atributo",
+    "pl": "Uzyskaj atrybut"
+};
+Blockly.Words['get_attr_path']                        =  {
+    "en": "Attribute",
+    "de": "Attribut",
+    "ru": "Атрибут",
+    "pt": "Atributo",
+    "nl": "Attribuut",
+    "fr": "Attribut",
+    "it": "Attributo",
+    "es": "Atributo",
+    "pl": "Atrybut"
+};
+Blockly.Words['get_attr_by']                          = {'en': 'of Object',                                       'de': 'vom Objekt',                                      'ru': 'у объекта',                                       'pt': 'do objeto',                                       'nl': 'van Object',                                      'fr': 'd\'objet',                                        'it': 'di oggetto',                                      'es': 'de Object'};
+Blockly.Words['get_attr_tooltip']                     = {
+    "en": "Get attribute of object or JSON by path, like: 'attr1.attr'",
+    "de": "Erhalte Attribut des Objekts oder JSON nach Pfad, wie: 'attr1.attr'",
+    "ru": "Получить атрибут объекта или JSON по пути, например: 'attr1.attr'",
+    "pt": "Obter atributo de objeto ou JSON por caminho, como: 'attr1.attr'",
+    "nl": "Krijg een attribuut van het object of JSON per pad, zoals: 'attr1.attr'",
+    "fr": "Obtenir l'attribut d'objet ou JSON par chemin, comme: 'attr1.attr'",
+    "it": "Ottieni attributo di oggetto o JSON per percorso, ad esempio: 'attr1.attr'",
+    "es": "Obtenga el atributo de objeto o JSON por ruta, como: 'attr1.attr'",
+    "pl": "Uzyskaj atrybut obiektu lub JSON według ścieżki, na przykład: \"attr1.attr\""
+};
+Blockly.Words['get_attr_help']                        = {'en': 'getattr', 'de': 'getattr', 'ru': 'getattr', 'pt': 'getattr', 'nl': 'getattr', 'fr': 'getattr', 'it': 'getattr', 'es': 'getattr'};
+
 // --- text new line --------------------------------------------------
 Blockly.Words['text_newline']                         = {'en': 'New line',                                        'de': 'Neue Zeile',                                      'ru': 'Новая строка',                                    'pt': 'Nova linha',                                      'nl': 'Nieuwe lijn',                                     'fr': 'Nouvelle ligne',                                  'it': 'Nuova linea',                                     'es': 'Nueva línea',                            'pl': 'Nowa linia'};
 Blockly.Words['text_newline_tooltip']                 = {'en': 'Places new line in text',                         'de': 'Platziert eine neue Zeile im Text',               'ru': 'Размещение новой строки в тексте',                'pt': 'Coloca nova linha no texto',                      'nl': 'Plaatst nieuwe regel in tekst',                   'fr': 'Place une nouvelle ligne dans le texte',          'it': 'Inserisce una nuova riga nel testo',              'es': 'Coloca una nueva línea en el texto',     'pl': 'Umieszcza nową linię w tekście'};

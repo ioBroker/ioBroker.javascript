@@ -17,6 +17,7 @@
         - [Astro- function](#astro--function)
 
     - [clearSchedule](#clearschedule)
+    - [getAttr](#getattr)
     - [getAstroDate](#getastrodate)
     - [isAstroDay](#isastroday)
     - [compareTime](#comparetime)
@@ -540,6 +541,14 @@ var sch = schedule("*/2 * * * *", function () { /* ... */ });
 // later:
 clearSchedule(sch);
 ```
+
+### getAttr
+```js
+getAttr({attr1: {attr2: 5}}, 'attr1.attr2');
+```
+Returns an attribute of the object. Path to attribute can be nested, like in the example.
+
+If the first attribute is string, the function will try to parse the string as JSON string.
 
 ### getAstroDate
 ```js

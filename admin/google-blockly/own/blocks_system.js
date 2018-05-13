@@ -704,6 +704,45 @@ Blockly.JavaScript['field_oid'] = function(block) {
     return ['\'' + oid + '\'', Blockly.JavaScript.ORDER_ATOMIC]
 };
 
+
+// --- get attribute --------------------------------------------------
+Blockly.System.blocks['get_attr'] =
+    '<block type="get_attr">'
+    + '     <value name="PATH">'
+    + '         <shadow type="text">'
+    + '             <field name="PATH">attr1.attr2</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="OBJECT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['get_attr'] = {
+    init: function() {
+
+        this.appendValueInput('PATH')
+            .setCheck(null)
+            .appendField(Blockly.Words['get_attr_path'][systemLang]);
+
+//        this.appendDummyInput()
+
+        this.appendValueInput('OBJECT')
+            .appendField(Blockly.Words['get_attr_by'][systemLang]);
+
+        this.setInputsInline(true);
+        this.setOutput(true);
+        this.setColour(Blockly.System.HUE);
+        this.setTooltip(Blockly.Words['get_attr_tooltip'][systemLang]);
+        this.setHelpUrl(getHelp('get_attr_help'));
+    }
+};
+
+Blockly.JavaScript['get_attr'] = function(block) {
+    var path = Blockly.JavaScript.valueToCode(block, 'PATH', Blockly.JavaScript.ORDER_ATOMIC);
+    var obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
+    return ['getAttr(' + obj + ', ' + path + ')', Blockly.JavaScript.ORDER_ATOMIC];
+};
+
 // --- Text new line --------------------------------------------------
 Blockly.Blocks['text_newline'] = {
     // Checkbox.
