@@ -997,9 +997,10 @@ name can be: state, channel or device
 "idfilter" can have wildcards '*'
 
 Prefixes ***(not implemented - should be discussed)*** :
- # - take by name and not by id
- . - filter by role
- § - filter by room
+
+* \# - take by name and not by id
+* . - filter by role
+* § - filter by room
 
 ***Example***:
 
@@ -1014,7 +1015,7 @@ Prefixes ***(not implemented - should be discussed)*** :
 - `$('.switch §"Living room")` - Take states with all switches in 'Living room' ***(not implemented - should be discussed)***
 - `$('channel .switch §"Living room")` - Take states with all switches in 'Living room' ***(not implemented - should be discussed)***
 
-*** Explanation ***
+***Explanation***
 Lets take a look at:
 ```js
 $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').on(function (obj) {
