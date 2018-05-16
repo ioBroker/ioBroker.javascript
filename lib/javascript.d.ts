@@ -9,10 +9,6 @@ type GenericCallback<T> = (err: string | null, result?: T) => void;
 // tslint:disable:no-namespace
 declare global {
 
-	interface DictionaryLike<T> {
-		[id: string]: T;
-	}
-
 	namespace iobJS {
 
 		enum StateQuality {
@@ -56,7 +52,7 @@ declare global {
 		type ObjectType = "state" | "channel" | "device";
 		type CommonType = "number" | "string" | "boolean" | "array" | "object" | "mixed" | "file";
 
-		// Maybe this should extend DictionaryLike<any>,
+		// Maybe this should extend Record<string, any>,
 		// but the extra properties aren't defined anywhere,
 		// so I'd rather force the user to explicitly state
 		// he knows what he's doing by casting to any
@@ -105,7 +101,7 @@ declare global {
 			 * In old ioBroker versions, this could also be a string of the form
 			 * "val1:text1;val2:text2" (now deprecated)
 			 */
-			states?: DictionaryLike<string> | string;
+			states?: Record<string, string> | string;
 
 			/** ID of a helper state indicating if the handler of this state is working */
 			workingID?: string;
@@ -124,8 +120,8 @@ declare global {
 		interface BaseObject {
 			/** The ID of this object */
 			_id?: string;
-			native: DictionaryLike<any>;
-			enums?: DictionaryLike<string>;
+			native: Record<string, any>;
+			enums?: Record<string, string>;
 			type: string; // specified in the derived interfaces
 			common: ObjectCommon;
 			// acl?: ObjectACL;
@@ -226,7 +222,7 @@ declare global {
 			name: string;
 			pattern: string | RegExp | string[] | iobJS.SubscribeOptions | iobJS.SubscribeTime | iobJS.AstroSchedule;
 		}
-	
+
 		interface SubscribeOptions {
 			/** "and" or "or" logic to combine the conditions (default: "and") */
 			logic?: "and" | "or";
@@ -356,28 +352,38 @@ declare global {
 			on: (callback: StateChangeHandler) => this;
 		}
 
+		/**
+		 * * "sunrise": sunrise (top edge of the sun appears on the horizon)
+		 * * "sunriseEnd": sunrise ends (bottom edge of the sun touches the horizon)
+		 * * "goldenHourEnd": morning golden hour (soft light, best time for photography) ends
+		 * * "solarNoon": solar noon (sun is in the highest position)
+		 * * "goldenHour": evening golden hour starts
+		 * * "sunsetStart": sunset starts (bottom edge of the sun touches the horizon)
+		 * * "sunset": sunset (sun disappears below the horizon, evening civil twilight starts)
+		 * * "dusk": dusk (evening nautical twilight starts)
+		 * * "nauticalDusk": nautical dusk (evening astronomical twilight starts)
+		 * * "night": night starts (dark enough for astronomical observations)
+		 * * "nightEnd": night ends (morning astronomical twilight starts)
+		 * * "nauticalDawn": nautical dawn (morning nautical twilight starts)
+		 * * "dawn": dawn (morning nautical twilight ends, morning civil twilight starts)
+		 * * "nadir": nadir (darkest moment of the night, sun is in the lowest position)
+		 */
+		type AstroPattern = "sunrise" | "sunriseEnd" | "goldenHourEnd" | "solarNoon" | "goldenHour" | "sunsetStart" | "sunset" | "dusk" | "nauticalDusk" | "night" | "nightEnd" | "nauticalDawn" | "dawn" | "nadir";
+
 		interface AstroSchedule {
-			/**
-			 * * "sunrise": sunrise (top edge of the sun appears on the horizon)
-			 * * "sunriseEnd": sunrise ends (bottom edge of the sun touches the horizon)
-			 * * "goldenHourEnd": morning golden hour (soft light, best time for photography) ends
-			 * * "solarNoon": solar noon (sun is in the highest position)
-			 * * "goldenHour": evening golden hour starts
-			 * * "sunsetStart": sunset starts (bottom edge of the sun touches the horizon)
-			 * * "sunset": sunset (sun disappears below the horizon, evening civil twilight starts)
-			 * * "dusk": dusk (evening nautical twilight starts)
-			 * * "nauticalDusk": nautical dusk (evening astronomical twilight starts)
-			 * * "night": night starts (dark enough for astronomical observations)
-			 * * "nightEnd": night ends (morning astronomical twilight starts)
-			 * * "nauticalDawn": nautical dawn (morning nautical twilight starts)
-			 * * "dawn": dawn (morning nautical twilight ends, morning civil twilight starts)
-			 * * "nadir": nadir (darkest moment of the night, sun is in the lowest position)
-			 */
-			astro: "sunrise" | "sunriseEnd" | "goldenHourEnd" | "solarNoon" | "goldenHour" | "sunsetStart" | "sunset" | "dusk" | "nauticalDusk" | "night" | "nightEnd" | "nauticalDawn" | "dawn" | "nadir";
+			astro: AstroPattern;
 			/**
 			 * Shift to the astro schedule.
 			 */
 			shift?: number;
+		}
+
+		interface AstroDate {
+			astro: AstroPattern;
+			/** Offset to the astro event in minutes */
+			offset?: number;
+			/** Date for which the astro time is wanted */
+			date?: Date;
 		}
 
 		/**
@@ -463,7 +469,7 @@ declare global {
 	// =======================================================
 
 	// TODO: find a way to expose the request module
-	
+
 	/**
 	 * The instance number of the JavaScript adapter this script runs in
 	 */
@@ -682,7 +688,17 @@ declare global {
 		"between" | "not between" |
 		">" | ">=" | "<" | "<=" | "==" | "<>"
 		;
-	function compareTime(startTime: any, endTime: any, operation: CompareTimeOperations, time: any): boolean;
+
+	/**
+	 * Compares two or more times
+	 * @param timeToCompare - The time to compare with startTime and/or endTime. If none is given, the current time is used
+	 */
+	function compareTime(
+		startTime: string | number | Date | iobJS.AstroDate,
+		endTime: string | number | Date | iobJS.AstroDate,
+		operation: CompareTimeOperations,
+		timeToCompare?: string | number | Date | iobJS.AstroDate,
+	): boolean;
 
 	/** Sets up a callback which is called when the script stops */
 	function onStop(callback: () => void, timeout?: number): void;
