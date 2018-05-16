@@ -331,7 +331,7 @@ declare global {
 			 * Executes a function for each state id in the result array
 			 * The execution is canceled if a callback returns false
 			 */
-			each: (callback?: (id: string, index: number) => boolean) => this;
+			each: (callback?: (id: string, index: number) => boolean | void) => this;
 
 			/**
 			 * Returns the first state found by this query.
