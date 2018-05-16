@@ -153,12 +153,14 @@ declare global {
 			common?: Partial<ObjectCommon>;
 		}
 
+		// TODO: specify definitions for each object type
+		// I grouped them together because I'm lazy...
 		interface OtherObject extends BaseObject {
 			type: "adapter" | "config" | "enum" | "group" | "host" | "info" | "instance" | "meta" | "script" | "user";
 			common: OtherCommon;
 		}
 		interface PartialOtherObject extends Partial<Pick<OtherObject, "_id" | "native" | "enums" | "type" /* | "acl"*/>> {
-			common?: Partial<ObjectCommon>;
+			common?: Partial<OtherCommon>;
 		}
 		/** Represents the change of a state */
 		interface ChangedStateObject extends StateObject {
