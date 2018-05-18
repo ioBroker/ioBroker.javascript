@@ -17,11 +17,6 @@ function Scripts(main) {
     this.languageLoaded = [false, false];
     this.blocklyWorkspace = null;
     this.prepared       = false;
-    // Ambient declarations for the new editor
-    this.typings = {
-        nodeJS: '', // NodeJS functions
-        ioBroker: '', // ioBroker functions
-    };
     
     function setChanged(isChanged) {
         that.changed = isChanged;
@@ -370,12 +365,10 @@ function Scripts(main) {
         if (scriptAdapterInstance != null) {
             scriptAdapterInstance = scriptAdapterInstance.substr(scriptAdapterInstance.indexOf('javascript.'));
             that.main.socket.emit('sendTo', scriptAdapterInstance, 'loadTypings', null, (result) => {
-                if (result.error) {
-                    console.error(`failed to load typings: ${result.error}`);
+                if (result.typings) {
+                    setEditorTypings(result.typings);
                 } else {
-                    if (result.nodeJS != null) that.typings.nodeJS = result.nodeJS;
-                    if (result.ioBroker != null) that.typings.ioBroker = result.ioBroker;
-                    setEditorTypings(that.typings);
+                    console.error(`failed to load typings: ${result.error}`);
                 }
             });
         }
@@ -481,21 +474,14 @@ function Scripts(main) {
     }
 
     function setEditorTypings(typings) {
-        const nodeTypingsPath = 'node_modules/@types/node/index.d.ts';
-        const ioBrokerTypingsPath = 'node_modules/@types/iobroker/index.d.ts';
-
-        try {
-            monaco.languages.typescript.javascriptDefaults.addExtraLib(typings.nodeJS, nodeTypingsPath);
-        } catch (e) { /* might be added already */}
-        try {
-            monaco.languages.typescript.javascriptDefaults.addExtraLib(typings.ioBroker, ioBrokerTypingsPath);
-        } catch (e) { /* might be added already */}
-        try {
-            monaco.languages.typescript.typescriptDefaults.addExtraLib(typings.nodeJS, nodeTypingsPath);
-        } catch (e) { /* might be added already */}
-        try {
-            monaco.languages.typescript.typescriptDefaults.addExtraLib(typings.ioBroker, ioBrokerTypingsPath);
-        } catch (e) { /* might be added already */}
+        for (const path of Object.keys(typings)) {
+            try {
+                monaco.languages.typescript.javascriptDefaults.addExtraLib(typings[path], path);
+            } catch (e) { /* might be added already */}
+            try {
+                monaco.languages.typescript.typescriptDefaults.addExtraLib(typings[path], path);
+            } catch (e) { /* might be added already */}
+        }
     }
 
     function insertTextIntoEditor(text) {
@@ -1409,7 +1395,8 @@ function Scripts(main) {
             // compiler options
             const compilerOptions = {
                 target: monaco.languages.typescript.ScriptTarget.ES6,
-                lib: ["es6"],
+                lib: [],
+                noLib: true, // we manually provide the lib files because the editor includes the DOM typings
                 allowNonTsExtensions: true,
                 moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
                 module: monaco.languages.typescript.ModuleKind.CommonJS,
@@ -1419,7 +1406,6 @@ function Scripts(main) {
             monaco.languages.typescript.typescriptDefaults.setCompilerOptions(compilerOptions);
 
             setTypeCheck(true);
-            setEditorTypings(this.typings);
 
             this.editor = monaco.editor.create(document.getElementById('script-editor'), {
                 language: 'javascript',

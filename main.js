@@ -437,21 +437,42 @@ const adapter = new utils.Adapter({
         if (obj) {
             switch (obj.command) {
                 case 'loadTypings': { // Load typings for the editor
-                    const ret = {
-                        nodeJS: '',
-                        ioBroker: '',
-                    };
+                    const typings = {};
+
+                    // try to load TypeScript lib files from disk
+                    const libFiles = [
+                        // This is lib.es2015.d.ts:
+                        'lib.es5.d.ts',
+                        'lib.es2015.core.d.ts',
+                        'lib.es2015.collection.d.ts',
+                        'lib.es2015.generator.d.ts',
+                        'lib.es2015.promise.d.ts',
+                        'lib.es2015.iterable.d.ts',
+                        'lib.es2015.proxy.d.ts',
+                        'lib.es2015.reflect.d.ts',
+                        'lib.es2015.symbol.d.ts',
+                        'lib.es2015.symbol.wellknown.d.ts'
+                    ];
+                    for (const libFile of libFiles) {
+                        try {
+                            const libPath = require.resolve(`typescript/lib/${libFile}`);
+                            const lib = nodeFS.readFileSync(libPath, 'utf8');
+                            typings[libFile] = lib;
+                        } catch (e) { /* ok, no lib then */ }
+                    }
+
                     // try to load nodejs typings from disk
                     try {
                         const nodeTypingsPath = require.resolve('@types/node/index.d.ts');
                         const nodeTypings = nodeFS.readFileSync(nodeTypingsPath, 'utf8');
-                        ret.nodeJS = nodeTypings;
+                        typings['node_modules/@types/node/index.d.ts'] = nodeTypings;
                     } catch (e) { /* ok, no typings then */ }
+
                     // provide the already-loaded ioBroker typings
-                    ret.ioBroker = tsAmbient['javascript.d.ts'];
-                    console.log("found typings: " + JSON.stringify(ret));
+                    typings['node_modules/@types/iobroker/index.d.ts'] = tsAmbient['javascript.d.ts'];
+
                     if (obj.callback) {
-                        adapter.sendTo(obj.from, obj.command, ret, obj.callback);
+                        adapter.sendTo(obj.from, obj.command, { typings }, obj.callback);
                     }
                     break;
                 }
