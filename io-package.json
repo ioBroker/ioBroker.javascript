@@ -154,7 +154,8 @@
             "ru": ["docs/ru/blockly.md"],
             "de": ["docs/de/usage.md", "docs/de/blockly.md"]
         },
-        "type": "logic"
+        "type": "logic",
+        "messagebox": true
     },
     "native": {
         "latitude": "",

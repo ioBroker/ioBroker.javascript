@@ -431,6 +431,32 @@ const adapter = new utils.Adapter({
                 });
             });
         });
+    },
+
+    message: (obj) => {
+        if (obj) {
+            switch (obj.command) {
+                case 'loadTypings': { // Load typings for the editor
+                    const ret = {
+                        nodeJS: '',
+                        ioBroker: '',
+                    };
+                    // try to load nodejs typings from disk
+                    try {
+                        const nodeTypingsPath = require.resolve('@types/node/index.d.ts');
+                        const nodeTypings = nodeFS.readFileSync(nodeTypingsPath, 'utf8');
+                        ret.nodeJS = nodeTypings;
+                    } catch (e) { /* ok, no typings then */ }
+                    // provide the already-loaded ioBroker typings
+                    ret.ioBroker = tsAmbient['javascript.d.ts'];
+                    console.log("found typings: " + JSON.stringify(ret));
+                    if (obj.callback) {
+                        adapter.sendTo(obj.from, obj.command, ret, obj.callback);
+                    }
+                    break;
+                }
+            }
+        }
     }
 });
 

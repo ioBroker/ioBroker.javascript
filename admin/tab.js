@@ -17,6 +17,11 @@ function Scripts(main) {
     this.languageLoaded = [false, false];
     this.blocklyWorkspace = null;
     this.prepared       = false;
+    // Ambient declarations for the new editor
+    this.typings = {
+        nodeJS: '', // NodeJS functions
+        ioBroker: '', // ioBroker functions
+    };
     
     function setChanged(isChanged) {
         that.changed = isChanged;
@@ -189,7 +194,7 @@ function Scripts(main) {
                         that.$dialogCron.dialog('close');
 
                         if (!$('#dialog-script').is(':visible')) {
-                            that.editor.insert('"' + val + '"');
+                            insertTextIntoEditor('"' + val + '"');
                             that.editor.focus();
                         } else {
                             that.editorDialog.insert('"' + val + '"');
@@ -310,7 +315,10 @@ function Scripts(main) {
 
         $('#edit-wrap-lines').change(function () {
             that.main.saveConfig('script-editor-wrap-lines', $(this).prop('checked'));
-            if (that.editor) that.editor.getSession().setUseWrapMode($(this).prop('checked'));
+            setEditorOptions({
+                lineWrap: $(this).prop('checked')
+            });
+            // if (that.editor) that.editor.getSession().setUseWrapMode($(this).prop('checked'));
         });
 
         $('#dialog-edit-wrap-lines').change(function () {
@@ -355,6 +363,22 @@ function Scripts(main) {
         });
 
         window.addEventListener('resize', this.resize, false);
+
+        // Load typings for the JS editor
+        /** @type {string} */
+        let scriptAdapterInstance = that.main.instances.find(inst => /javascript\.\d+$/.test(inst));
+        if (scriptAdapterInstance != null) {
+            scriptAdapterInstance = scriptAdapterInstance.substr(scriptAdapterInstance.indexOf('javascript.'));
+            that.main.socket.emit('sendTo', scriptAdapterInstance, 'loadTypings', null, (result) => {
+                if (result.error) {
+                    console.error(`failed to load typings: ${result.error}`);
+                } else {
+                    if (result.nodeJS != null) that.typings.nodeJS = result.nodeJS;
+                    if (result.ioBroker != null) that.typings.ioBroker = result.ioBroker;
+                    setEditorTypings(that.typings);
+                }
+            });
+        }
 
         // load blockly language
         var fileLang = document.createElement('script');
@@ -416,27 +440,106 @@ function Scripts(main) {
 
         if (that.blocklyWorkspace) Blockly.svgResize(that.blocklyWorkspace);
 
-        if (that.editor) that.editor.resize();
+        if (that.editor) that.editor.layout();
     };
+
+    /**
+     * Sets the language of the code editor
+     * @param {"javascript" | "typescript" | "coffee"} language 
+     */
+    function setEditorLanguage(language) {
+        monaco.editor.setModelLanguage(
+            that.editor.getModel(),
+            language
+        );
+    }
+
+    /**
+     * Sets some options of the code editor
+     * @param {Partial<{readOnly: boolean, lineWrap: boolean, language: "javascript" | "typescript" | "coffee", typeCheck: boolean}>} options
+     */
+    function setEditorOptions(options) {
+        if (!options) return;
+        if (!that.editor) return;
+        if (options.language != null) setEditorLanguage(options.language);
+        if (options.readOnly != null) that.editor.updateOptions({readOnly: options.readOnly});
+        if (options.lineWrap != null) that.editor.updateOptions({wordWrap: options.lineWrap ? 'on' : 'off'});
+        if (options.typeCheck != null) setTypeCheck(options.typeCheck);
+    }
+
+    /**
+     * Enables or disables the type checking in the editor
+     * @param {boolean} enabled - Whether type checking is enabled or not
+     */
+    function setTypeCheck(enabled) {
+        const options = {
+            noSemanticValidation: !enabled, // toggle the type checking
+            noSyntaxValidation: false // always check the syntax
+        };
+        monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions(options);
+        monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions(options);
+    }
+
+    function setEditorTypings(typings) {
+        const nodeTypingsPath = 'node_modules/@types/node/index.d.ts';
+        const ioBrokerTypingsPath = 'node_modules/@types/iobroker/index.d.ts';
+
+        try {
+            monaco.languages.typescript.javascriptDefaults.addExtraLib(typings.nodeJS, nodeTypingsPath);
+        } catch (e) { /* might be added already */}
+        try {
+            monaco.languages.typescript.javascriptDefaults.addExtraLib(typings.ioBroker, ioBrokerTypingsPath);
+        } catch (e) { /* might be added already */}
+        try {
+            monaco.languages.typescript.typescriptDefaults.addExtraLib(typings.nodeJS, nodeTypingsPath);
+        } catch (e) { /* might be added already */}
+        try {
+            monaco.languages.typescript.typescriptDefaults.addExtraLib(typings.ioBroker, ioBrokerTypingsPath);
+        } catch (e) { /* might be added already */}
+    }
+
+    function insertTextIntoEditor(text) {
+        const selection = that.editor.getSelection();
+        const range = new monaco.Range(
+            selection.startLineNumber, selection.startColumn,
+            selection.endLineNumber, selection.endColumn
+        );
+        that.editor.executeEdits("", [{range: range, text: text, forceMoveMarkers: true}]);
+    }
 
     function blockly2JS(oneWay) {
         $('#edit-script-engine-type').find('option[value="Blockly"]').remove();
         blocklyCode2JSCode(oneWay);
 
-        that.editor.setReadOnly(false);
+        setEditorOptions({
+            readOnly: false
+        });
+        // that.editor.setReadOnly(false);
 
-        that.setChanged(true);
+        setChanged(true);
         $('#script-edit-button-save').button('enable');
         $('#script-edit-button-cancel').button('enable');
 
         switchViews(false, that.currentEngine);
 
         if (that.currentEngine.match(/^[jJ]ava[sS]cript/)) {
-            that.editor.getSession().setMode('ace/mode/javascript');
+            //that.editor.getSession().setMode('ace/mode/javascript');
+            setEditorOptions({
+                language: 'javascript',
+                typeCheck: true // not suppported
+            });
         } else if (that.currentEngine.match(/^[cC]offee[sS]cript/)) {
-            that.editor.getSession().setMode('ace/mode/coffee');
+            // that.editor.getSession().setMode('ace/mode/coffee');
+            setEditorOptions({
+                language: 'coffee',
+                typeCheck: false // not suppported
+            });
         } else if (that.currentEngine.match(/^[tT]ype[sS]cript/)) {
-            that.editor.getSession().setMode('ace/mode/typescript');
+            // that.editor.getSession().setMode('ace/mode/typescript');
+            setEditorOptions({
+                language: 'typescript',
+                typeCheck: true // not suppported
+            });
         }
     }
 
@@ -449,7 +552,7 @@ function Scripts(main) {
             code += '//' + btoa(encodeURIComponent(text));
         }
 
-        if (!justConvert) that.editor.setValue(code, -1);
+        if (!justConvert) that.editor.setValue(code /*, -1*/);
         return code;
     }
 
@@ -791,8 +894,11 @@ function Scripts(main) {
 
             $('#edit-script-debug').prop('checked', !!obj.common.debug);
             $('#edit-script-verbose').prop('checked', !!obj.common.verbose);
-
-            that.editor.getSession().setUseWrapMode($('#edit-wrap-lines').prop('checked'));
+            
+            setEditorOptions({
+                lineWrap: $('#edit-wrap-lines').prop('checked')
+            });
+            // that.editor.getSession().setUseWrapMode($('#edit-wrap-lines').prop('checked'));
 
             var $editType = $('#edit-script-engine-type');
             if (obj.common.engineType !== 'Blockly' && obj.common.engineType !== 'Rule') {
@@ -822,9 +928,14 @@ function Scripts(main) {
             $editType.val(obj.common.engineType);
 
             if (obj.common.engineType === 'Blockly') {
-                that.editor.getSession().setMode('ace/mode/javascript');
-                that.editor.setReadOnly(true);
-                that.editor.getSession().setUseWorker(false); // disable syntax check
+                // that.editor.getSession().setMode('ace/mode/javascript');
+                setEditorOptions({
+                    language: 'javascript',
+                    readOnly: true,
+                    typeCheck: false,
+                });
+                // that.editor.setReadOnly(true);
+                // that.editor.getSession().setUseWorker(false); // disable syntax check
                 switchViews(true, obj.common.engineType);
                 if (!that.blocklyWorkspace) return;
 
@@ -838,31 +949,46 @@ function Scripts(main) {
                     console.error(e);
                     window.alert('Cannot extract Blockly code!');
                 }
-            } else
-            if (obj.common.engineType && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
-                that.editor.getSession().setMode('ace/mode/javascript');
-                that.editor.getSession().setUseWorker(true); // enable syntax check
-                that.editor.setReadOnly(false);
+            } else if (obj.common.engineType && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
+                setEditorOptions({
+                    language: 'javascript',
+                    readOnly: false,
+                    typeCheck: true
+                });
+                // that.editor.getSession().setMode('ace/mode/javascript');
+                // that.editor.getSession().setUseWorker(true); // enable syntax check
+                // that.editor.setReadOnly(false);
                 switchViews(false, obj.common.engineType);
             } else if (obj.common.engineType && obj.common.engineType.match(/^[cC]offee[sS]cript/)) {
-                that.editor.getSession().setMode('ace/mode/coffee');
-                that.editor.getSession().setUseWorker(true); // enable syntax check
-                that.editor.setReadOnly(false);
+                setEditorOptions({
+                    language: 'coffee',
+                    readOnly: false,
+                    typeCheck: false // not supported
+                });
+                // that.editor.getSession().setMode('ace/mode/coffee');
+                // that.editor.getSession().setUseWorker(true); // enable syntax check
+                // that.editor.setReadOnly(false);
                 switchViews(false, obj.common.engineType);
             } else if (obj.common.engineType && obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
-                that.editor.getSession().setMode('ace/mode/typescript');
-                that.editor.getSession().setUseWorker(true); // enable syntax check
-                that.editor.setReadOnly(false);
+                setEditorOptions({
+                    language: 'typescript',
+                    readOnly: false,
+                    typeCheck: true
+                });
+                // that.editor.getSession().setMode('ace/mode/typescript');
+                // that.editor.getSession().setUseWorker(true); // enable syntax check
+                // that.editor.setReadOnly(false);
                 switchViews(false, obj.common.engineType);
             } else if(obj.common.engineType === 'Rule') {
                 switchViews(true, obj.common.engineType);
-                buildRules()
+                buildRules();
             }
 
             setChanged(false);
 
             //$('#edit-script-source').val(obj.common.source);
-            that.editor.setValue(obj.common.source, -1);
+            // that.editor.setValue(obj.common.source, -1);
+            that.editor.setValue(obj.common.source);
 
             applyResizableV();
 
@@ -872,8 +998,7 @@ function Scripts(main) {
                 $('#script-edit-button-cancel').button('disable');
                 //that.editor.focus();
             }, 100);
-        } else
-        if (id && main.objects[id] && main.objects[id].type === 'channel' && id !== 'script.js.global' && id !== 'script.js.common') {
+        } else if (id && main.objects[id] && main.objects[id].type === 'channel' && id !== 'script.js.global' && id !== 'script.js.common') {
             $('#editor-scripts').show();
 
             var obj = main.objects[id];
@@ -1278,23 +1403,40 @@ function Scripts(main) {
 
     this.initEditor = function () {
         if (!this.editor) {
-            this.editor       = ace.edit('script-editor');
-            this.editorDialog = ace.edit('dialog-script-editor');
 
             //this.editor.setTheme("ace/theme/monokai");
-            this.editor.getSession().setMode('ace/mode/javascript');
-            this.editor.setOptions({
-                enableBasicAutocompletion: true,
-                enableSnippets: true,
-                enableLiveAutocompletion: true
-            });
-            this.editor.$blockScrolling = Infinity;
-            this.editor.completers && this.editor.completers.push({
-                getCompletions: function (editor, session, pos, prefix, callback) {
-                    callback(null, funcNames);
-                }
+
+            // compiler options
+            const compilerOptions = {
+                target: monaco.languages.typescript.ScriptTarget.ES6,
+                lib: ["es6"],
+                allowNonTsExtensions: true,
+                moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+                module: monaco.languages.typescript.ModuleKind.CommonJS,
+                typeRoots: [ 'node_modules/@types' ],
+            };
+            monaco.languages.typescript.javascriptDefaults.setCompilerOptions(compilerOptions);
+            monaco.languages.typescript.typescriptDefaults.setCompilerOptions(compilerOptions);
+
+            setTypeCheck(true);
+            setEditorTypings(this.typings);
+
+            this.editor = monaco.editor.create(document.getElementById('script-editor'), {
+                language: 'javascript',
+                lineNumbers: 'on'
             });
 
+            // this.editor       = ace.edit('script-editor');
+            // this.editor.getSession().setMode('ace/mode/javascript');
+            // this.editor.setOptions({enableBasicAutocompletion: true});
+            // this.editor.$blockScrolling = Infinity;
+            // this.editor.completers.push({
+            //     getCompletions: function (editor, session, pos, prefix, callback) {
+            //         callback(null, funcNames);
+            //     }
+            // });
+
+            this.editorDialog = ace.edit('dialog-script-editor');
             this.editorDialog.getSession().setMode('ace/mode/javascript');
             this.editorDialog.setOptions({
                 enableBasicAutocompletion: true,
@@ -1323,7 +1465,7 @@ function Scripts(main) {
             }).css('height', '30px').click(function () {
                 var sid = that.main.initSelectId();
                 sid.selectId('show', function (newId) {
-                    that.editor.insert('"' + newId + '"' + ((that.main.objects[newId] && that.main.objects[newId].common && that.main.objects[newId].common.name) ? ('/*' + that.main.objects[newId].common.name + '*/') : ''));
+                    insertTextIntoEditor('"' + newId + '"' + ((that.main.objects[newId] && that.main.objects[newId].common && that.main.objects[newId].common.name) ? ('/*' + that.main.objects[newId].common.name + '*/') : ''));
                     that.editor.focus();
                 });
             });
@@ -1333,7 +1475,8 @@ function Scripts(main) {
             }).css('height', '30px').click(function () {
                 var text;
                 if (!$('#dialog-script').is(':visible')) {
-                    text = that.editor.getSession().doc.getTextRange(that.editor.selection.getRange());
+                    text = that.editor.getModel().getValueInRange(that.editor.getSelection());
+                    // text = that.editor.getSession().doc.getTextRange(that.editor.selection.getRange());
                 } else {
                     text = that.editorDialog.getSession().doc.getTextRange(that.editor.selection.getRange());
                 }
@@ -1365,7 +1508,8 @@ function Scripts(main) {
                 }
             });
 
-            this.editor.on('input', function() {
+            // this.editor.on('input', function() {
+            this.editor.onDidChangeModelContent((e) => {
                 if (that.currentEngine !== 'Blockly') {
                     setChanged(true);
                     $('#script-edit-button-save').button('enable');
@@ -1437,7 +1581,11 @@ function Scripts(main) {
                 $('#script-edit-button-cancel').button('enable');
             });
 
-            this.editor.getSession().setUseWrapMode($('#edit-wrap-lines').prop('checked'));
+            // this.editor.getSession().setUseWrapMode($('#edit-wrap-lines').prop('checked'));
+            setEditorOptions({
+                lineWrap: $('#edit-wrap-lines').prop('checked')
+            });
+
         }
     };
 
@@ -2569,7 +2717,7 @@ function Scripts(main) {
                     } else {
                         // remove blockly text
                         obj.source = removeBlocklyFromCode(obj.source);
-                        that.editor.setValue(obj.source, -1);
+                        that.editor.setValue(obj.source /*, -1*/);
                         // wait till editor script updates
                         setTimeout(function () {
                             that.saveScript();
