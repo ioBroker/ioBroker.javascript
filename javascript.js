@@ -302,9 +302,7 @@ const adapter = new utils.Adapter({
                 }
 
                 adapter.objects.getObjectView('script', 'javascript', {}, (err, doc) => {
-                    // we have to make sure the VM doesn't choke on `exports` when using TypeScript
-                    // even when there's no global script, this line has to exist:
-                    globalScript = '';//'const exports = {};\n';
+                    globalScript = '';
                     let count = 0;
                     if (doc && doc.rows && doc.rows.length) {
                         // assemble global script
