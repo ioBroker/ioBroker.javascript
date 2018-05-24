@@ -32,7 +32,7 @@
     "request": "^2.85.0",
     "suncalc": "^1.8.0",
     "typescript": "^2.8.3",
-    "virtual-tsc": "^0.4.0",
+    "virtual-tsc": "^0.4.1",
     "wake_on_lan": "0.0.4"
   },
   "devDependencies": {
