@@ -73,15 +73,17 @@ if (process.argv) {
 const tsCompilerOptions = {
     // don't compile faulty scripts
     noEmitOnError: true,
-    // change this to "es6" if we're dropping support for NodeJS 4.x
-    target: typescript.ScriptTarget.ES5,
-    // we need this for the native promise support in NodeJS 4.x.
-    // can be dropped if we're targeting ES6 anyways
-    lib: ['lib.es6.d.ts']
+    // emit declarations for global scripts
+    declaration: true,
+    // support for NodeJS 6+. Consider changing it to
+    // a higher version when support for NodeJS 6 is dropped
+    target: typescript.ScriptTarget.ES2015,
 };
 
 // ambient declarations for typescript
+/** @type {Record<string, string>} */
 let tsAmbient;
+/** @type {tsc.Server} */
 let tsServer;
 
 const context = {
@@ -303,6 +305,7 @@ const adapter = new utils.Adapter({
 
                 adapter.objects.getObjectView('script', 'javascript', {}, (err, doc) => {
                     globalScript = '';
+                    globalDeclarations = '';
                     let count = 0;
                     if (doc && doc.rows && doc.rows.length) {
                         // assemble global script
@@ -333,6 +336,7 @@ const adapter = new utils.Adapter({
                                             }
                                         });
                                     } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
+                                        // compile the current global script
                                         const tsCompiled = tsServer.compile(
                                             mods.path.join(__dirname, 'global_' + g + '.ts'),
                                             obj.common.source
@@ -349,6 +353,19 @@ const adapter = new utils.Adapter({
                                                 adapter.log.info('TypeScript compilation successful');
                                             }
                                             globalScript += tsCompiled.result + '\n';
+
+                                            // if declarations were generated, remember them
+                                            if (tsCompiled.declarations != null) {
+                                                globalDeclarations += tsCompiled.declarations + '\n';
+                                                // remember all previously generated global declarations,
+                                                // so global scripts can reference each other
+                                                const globalDeclarationPath = mods.path.join(__dirname, 'global.d.ts');
+                                                tsAmbient[globalDeclarationPath] = globalDeclarations;
+                                                // make sure the next script compilation has access to the updated declarations
+                                                tsServer.provideAmbientDeclarations({
+                                                    [globalDeclarationPath]: globalDeclarations
+                                                });
+                                            }
                                         } else {
                                             adapter.log.error('TypeScript compilation failed: \n' + errors);
                                         }
@@ -477,11 +494,13 @@ mods.fs.truncateSync = function () {
 
 context.adapter = adapter;
 
-let attempts =         {};
-let globalScript =     '';
-let globalScriptLines = 0;
-let activeRegEx =      null;
-let activeStr =        '';
+let attempts           = {};
+let globalScript       = '';
+/** Generated declarations for global TypeScripts */
+let globalDeclarations = '';
+let globalScriptLines  = 0;
+let activeRegEx        = null;
+let activeStr          = '';
 
 // compiler instance for typescript
 function tsLog(msg, sev) {
