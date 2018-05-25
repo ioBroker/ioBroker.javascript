@@ -137,6 +137,7 @@
         "materializeTab": true,
         "readme": "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
         "enabled": true,
+        "main": "main.js",
         "license": "MIT",
         "engineTypes": [
             "Blockly",
