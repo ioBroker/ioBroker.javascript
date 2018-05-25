@@ -468,8 +468,8 @@ const adapter = new utils.Adapter({
                         typings['node_modules/@types/node/index.d.ts'] = nodeTypings;
                     } catch (e) { /* ok, no typings then */ }
 
-                    // provide the already-loaded ioBroker typings
-                    typings['node_modules/@types/iobroker/index.d.ts'] = tsAmbient['javascript.d.ts'];
+                    // provide the already-loaded ioBroker typings and global script declarations
+                    Object.assign(typings, tsAmbient);
 
                     if (obj.callback) {
                         adapter.sendTo(obj.from, obj.command, { typings }, obj.callback);
