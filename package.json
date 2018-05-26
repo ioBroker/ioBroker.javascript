@@ -44,7 +44,7 @@
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.javascript/issues"
   },
-  "main": "javascript.js",
+  "main": "main.js",
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha --exit"
   }
