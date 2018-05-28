@@ -70,6 +70,7 @@ if (process.argv) {
     }
 }
 
+/** @type {typescript.CompilerOptions} */
 const tsCompilerOptions = {
     // don't compile faulty scripts
     noEmitOnError: true,
@@ -78,6 +79,7 @@ const tsCompilerOptions = {
     // support for NodeJS 6+. Consider changing it to
     // a higher version when support for NodeJS 6 is dropped
     target: typescript.ScriptTarget.ES2015,
+    lib: ['lib.es2015.d.ts'],
 };
 const jsDeclarationCompilerOptions = Object.assign(
     {}, tsCompilerOptions,
@@ -539,8 +541,13 @@ let activeRegEx        = null;
 let activeStr          = '';
 
 // compiler instance for typescript
+/** @param {string} sev */
 function tsLog(msg, sev) {
-    if (adapter && adapter.log) adapter.log[sev || 'info'](msg);
+    if (adapter && adapter.log) {
+        adapter.log[sev || 'info'](msg);
+    } else {
+        console.log(`[${sev.toUpperCase()}] ${msg}`);
+    }
 }
 tsServer = new tsc.Server(tsCompilerOptions, tsLog);
 // compiler instance for global JS declarations
