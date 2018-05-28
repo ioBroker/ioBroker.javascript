@@ -79,6 +79,7 @@ const tsCompilerOptions = {
     // support for NodeJS 6+. Consider changing it to
     // a higher version when support for NodeJS 6 is dropped
     target: typescript.ScriptTarget.ES2015,
+    lib: ['lib.es2015.d.ts'],
 };
 const jsDeclarationCompilerOptions = Object.assign(
     {}, tsCompilerOptions,
