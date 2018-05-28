@@ -17,6 +17,8 @@ function Scripts(main) {
     this.languageLoaded = [false, false];
     this.blocklyWorkspace = null;
     this.prepared       = false;
+    this.typings        = {}; // TypeScript declarations
+    this.globalTypingHandles  = []; // Handles to the global typings added to the editor
     
     function setChanged(isChanged) {
         that.changed = isChanged;
@@ -366,7 +368,8 @@ function Scripts(main) {
             scriptAdapterInstance = scriptAdapterInstance.substr(scriptAdapterInstance.indexOf('javascript.'));
             that.main.socket.emit('sendTo', scriptAdapterInstance, 'loadTypings', null, (result) => {
                 if (result.typings) {
-                    setEditorTypings(result.typings);
+                    that.typings = result.typings;
+                    setEditorTypings();
                 } else {
                     console.error(`failed to load typings: ${result.error}`);
                 }
@@ -473,14 +476,41 @@ function Scripts(main) {
         monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions(options);
     }
 
-    function setEditorTypings(typings) {
-        for (const path of Object.keys(typings)) {
-            try {
-                monaco.languages.typescript.javascriptDefaults.addExtraLib(typings[path], path);
-            } catch (e) { /* might be added already */}
-            try {
-                monaco.languages.typescript.typescriptDefaults.addExtraLib(typings[path], path);
-            } catch (e) { /* might be added already */}
+    /**
+     * Adds the given declaration file to the editor
+     * @param {string} path The file path of the typings to add
+     * @param {string} typings The declaration file to add
+     * @param {boolean} [isGlobal=false] Whethere the file is a global declaration file
+     * @returns {void}
+     */
+    function addTypingsToEditor(path, typings, isGlobal) {
+        try {
+            const handle = monaco.languages.typescript.javascriptDefaults.addExtraLib(typings, path);
+            if (isGlobal) that.globalTypingHandles.push(handle);
+        } catch (e) { /* might be added already */}
+        try {
+            const handle = monaco.languages.typescript.typescriptDefaults.addExtraLib(typings, path);
+            if (isGlobal) that.globalTypingHandles.push(handle);
+        } catch (e) { /* might be added already */}
+    }
+
+    function setEditorTypings() {
+        // clear previously added global typings
+        for (const handle of that.globalTypingHandles) {
+            if (handle != null) handle.dispose();
+        }
+
+        const isGlobalScript = isIdOfGlobalScript(that.currentId);
+        // The filename of the declarations this script can see if it is a global script
+        const partialDeclarationsPath = that.currentId + '.d.ts';
+        for (const path of Object.keys(that.typings)) {
+            // global scripts don't get to see all other global scripts
+            // but only a part of them
+            if (isGlobalScript) {
+                if (path === 'global.d.ts') continue;
+                if (path.startsWith('script.js.global') && path !== partialDeclarationsPath) continue;
+            }
+            addTypingsToEditor(path, that.typings[path], isGlobalScript);
         }
     }
 
@@ -490,7 +520,7 @@ function Scripts(main) {
             selection.startLineNumber, selection.startColumn,
             selection.endLineNumber, selection.endColumn
         );
-        that.editor.executeEdits("", [{range: range, text: text, forceMoveMarkers: true}]);
+        that.editor.executeEdits('', [{range: range, text: text, forceMoveMarkers: true}]);
     }
 
     function blockly2JS(oneWay) {
@@ -868,7 +898,7 @@ function Scripts(main) {
 
             $('.script-edit').show();
 
-            if (id.match(/^script\.js\.global/)) {
+            if (isIdOfGlobalScript(id)) {
                 $('#global_hint').show();
             } else {
                 $('#global_hint').hide();
@@ -912,6 +942,8 @@ function Scripts(main) {
             }
 
             $editType.val(obj.common.engineType);
+
+            setEditorTypings();
 
             if (obj.common.engineType === 'Blockly') {
                 // that.editor.getSession().setMode('ace/mode/javascript');
@@ -2910,6 +2942,15 @@ function Scripts(main) {
             $('#dialog_script_save').button('disable');
         }, 100);
     };
+}
+
+/**
+ * Tests if the given ID belongs to a global script
+ * @param {string} id
+ * @returns {boolean}
+ */
+function isIdOfGlobalScript(id) {
+    return /^script\.js\.global\./.test(id);
 }
 
 var main = {

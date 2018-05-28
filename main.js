@@ -102,13 +102,20 @@ let tsServer;
 let jsDeclarationServer;
 
 /**
+ * @param {string} scriptID - The current script the declarations were generated from
  * @param {string} declarations 
  */
-function provideDeclarationsForGlobalScript(declarations) {
+function provideDeclarationsForGlobalScript(scriptID, declarations) {
+    // Remember which declarations this global script had access to
+    // we need this so the editor doesn't show a duplicate identifier error
+    if (globalDeclarations != null && globalDeclarations != '') {
+        knownGlobalDeclarationsByScript[scriptID] = globalDeclarations;
+    }
+    // and concatenate the global declarations for the next scripts
     globalDeclarations += declarations + '\n';
     // remember all previously generated global declarations,
     // so global scripts can reference each other
-    const globalDeclarationPath = mods.path.join(__dirname, 'global.d.ts');
+    const globalDeclarationPath = 'global.d.ts';
     tsAmbient[globalDeclarationPath] = globalDeclarations;
     // make sure the next script compilation has access to the updated declarations
     tsServer.provideAmbientDeclarations({
@@ -117,6 +124,14 @@ function provideDeclarationsForGlobalScript(declarations) {
     jsDeclarationServer.provideAmbientDeclarations({
         [globalDeclarationPath]: globalDeclarations
     });
+}
+
+/**
+ * Translates a script ID to a filename for the compiler
+ * @param {string} scriptID The ID of the script
+ */
+function scriptIdToTSFilename(scriptID) {
+    return scriptID.replace(/^script.js./, '').replace(/\./g, '/') + '.ts';
 }
 
 const context = {
@@ -340,6 +355,7 @@ const adapter = new utils.Adapter({
                 adapter.objects.getObjectView('script', 'javascript', {}, (err, doc) => {
                     globalScript = '';
                     globalDeclarations = '';
+                    knownGlobalDeclarationsByScript = {};
                     let count = 0;
                     if (doc && doc.rows && doc.rows.length) {
                         // assemble global script
@@ -371,10 +387,8 @@ const adapter = new utils.Adapter({
                                         });
                                     } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
                                         // compile the current global script
-                                        const tsCompiled = tsServer.compile(
-                                            mods.path.join(__dirname, 'global_' + g + '.ts'),
-                                            obj.common.source
-                                        );
+                                        const filename = scriptIdToTSFilename(obj._id);
+                                        const tsCompiled = tsServer.compile(filename, obj.common.source);
 
                                         const errors = tsCompiled.diagnostics.map(function (diag) {
                                             return diag.annotatedSource + '\n';
@@ -382,7 +396,7 @@ const adapter = new utils.Adapter({
 
                                         if (tsCompiled.success) {
                                             if (errors.length > 0) {
-                                                adapter.log.warn('TypeScript compilation had errors: \n' + errors);
+                                                adapter.log.warn('TypeScript compilation completed with errors: \n' + errors);
                                             } else {
                                                 adapter.log.info('TypeScript compilation successful');
                                             }
@@ -390,7 +404,7 @@ const adapter = new utils.Adapter({
 
                                             // if declarations were generated, remember them
                                             if (tsCompiled.declarations != null) {
-                                                provideDeclarationsForGlobalScript(tsCompiled.declarations);
+                                                provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
                                             }
                                         } else {
                                             adapter.log.error('TypeScript compilation failed: \n' + errors);
@@ -401,13 +415,11 @@ const adapter = new utils.Adapter({
 
                                         // try to compile the declarations so TypeScripts can use 
                                         // functions defined in global JavaScripts
-                                        const tsCompiled = jsDeclarationServer.compile(
-                                            mods.path.join(__dirname, 'global_' + g + '.ts'),
-                                            sourceCode
-                                        );
+                                        const filename = scriptIdToTSFilename(obj._id);
+                                        const tsCompiled = jsDeclarationServer.compile(filename, sourceCode);
                                         // if declarations were generated, remember them
                                         if (tsCompiled.success && tsCompiled.declarations != null) {
-                                            provideDeclarationsForGlobalScript(tsCompiled.declarations);
+                                            provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
                                         }
                                     }
                                 }
@@ -470,6 +482,10 @@ const adapter = new utils.Adapter({
 
                     // provide the already-loaded ioBroker typings and global script declarations
                     Object.assign(typings, tsAmbient);
+                    // also provide the known global declarations for each global script
+                    for (const globalScriptPaths of Object.keys(knownGlobalDeclarationsByScript)) {
+                        typings[globalScriptPaths + '.d.ts'] = knownGlobalDeclarationsByScript[globalScriptPaths];
+                    }
 
                     if (obj.callback) {
                         adapter.sendTo(obj.from, obj.command, { typings }, obj.callback);
@@ -583,6 +599,9 @@ let attempts           = {};
 let globalScript       = '';
 /** Generated declarations for global TypeScripts */
 let globalDeclarations = '';
+// Remember which definitions the global scripts
+// have access to, because it depends on the compile order
+let knownGlobalDeclarationsByScript = {};
 let globalScriptLines  = 0;
 let activeRegEx        = null;
 let activeStr          = '';
@@ -1002,11 +1021,8 @@ function prepareScript(obj, callback) {
         } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
             // TypeScript
             adapter.log.info(name + ': compiling TypeScript source...');
-            const filename = name.replace(/^script.js./, '').replace(/\./g, '/') + '.ts';
-            const tsCompiled = tsServer.compile(
-                mods.path.join(__dirname, filename),
-                obj.common.source
-            );
+            const filename = scriptIdToTSFilename(name);
+            const tsCompiled = tsServer.compile(filename, obj.common.source);
 
             const errors = tsCompiled.diagnostics.map(function (diag) {
                 return diag.annotatedSource + '\n';
