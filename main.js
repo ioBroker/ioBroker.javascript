@@ -540,15 +540,22 @@ let globalScriptLines  = 0;
 let activeRegEx        = null;
 let activeStr          = '';
 
-// compiler instance for typescript
-/** @param {string} sev */
+/**
+ * Redirects the virtual-tsc log output to the ioBroker log
+ * @param {string} sev
+ */
 function tsLog(msg, sev) {
+    // shift the severities around, we don't care about the small details
+    if (sev == null || sev === 'info') sev = 'debug';
+    else if (sev === 'debug') sev = 'silly';
+
     if (adapter && adapter.log) {
-        adapter.log[sev || 'info'](msg);
+        adapter.log[sev](msg);
     } else {
         console.log(`[${sev.toUpperCase()}] ${msg}`);
     }
 }
+// compiler instance for typescript
 tsServer = new tsc.Server(tsCompilerOptions, tsLog);
 // compiler instance for global JS declarations
 jsDeclarationServer = new tsc.Server(jsDeclarationCompilerOptions);
