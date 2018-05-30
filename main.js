@@ -70,19 +70,54 @@ if (process.argv) {
     }
 }
 
+/** @type {typescript.CompilerOptions} */
 const tsCompilerOptions = {
     // don't compile faulty scripts
     noEmitOnError: true,
-    // change this to "es6" if we're dropping support for NodeJS 4.x
-    target: typescript.ScriptTarget.ES5,
-    // we need this for the native promise support in NodeJS 4.x.
-    // can be dropped if we're targeting ES6 anyways
-    lib: ['lib.es6.d.ts']
+    // emit declarations for global scripts
+    declaration: true,
+    // support for NodeJS 6+. Consider changing it to
+    // a higher version when support for NodeJS 6 is dropped
+    target: typescript.ScriptTarget.ES2015,
+    lib: ['lib.es2015.d.ts'],
 };
+const jsDeclarationCompilerOptions = Object.assign(
+    {}, tsCompilerOptions,
+    {
+        // we only care about the declarations
+        emitDeclarationOnly: true,
+        // allow errors
+        noEmitOnError: false,
+        noImplicitAny: false,
+        strict: false,
+    }
+);
 
 // ambient declarations for typescript
+/** @type {Record<string, string>} */
 let tsAmbient;
+/** @type {tsc.Server} */
 let tsServer;
+/** @type {tsc.Server} */
+let jsDeclarationServer;
+
+/**
+ * @param {string} declarations 
+ */
+function provideDeclarationsForGlobalScript(declarations) {
+    globalDeclarations += declarations + '\n';
+    // remember all previously generated global declarations,
+    // so global scripts can reference each other
+    const globalDeclarationPath = mods.path.join(__dirname, 'global.d.ts');
+    tsAmbient[globalDeclarationPath] = globalDeclarations;
+    // make sure the next script compilation has access to the updated declarations
+    tsServer.provideAmbientDeclarations({
+        [globalDeclarationPath]: globalDeclarations
+    });
+    jsDeclarationServer.provideAmbientDeclarations({
+        [globalDeclarationPath]: globalDeclarations
+    });
+}
 
 const context = {
     mods,
@@ -289,6 +324,7 @@ const adapter = new utils.Adapter({
                 'javascript.d.ts': nodeFS.readFileSync(mods.path.join(__dirname, 'lib/javascript.d.ts'), 'utf8')
             };
             tsServer.provideAmbientDeclarations(tsAmbient);
+            jsDeclarationServer.provideAmbientDeclarations(tsAmbient);
         } catch (e) {
             adapter.log.warn('Could not read TypeScript ambient declarations: ' + e);
         }
@@ -303,6 +339,7 @@ const adapter = new utils.Adapter({
 
                 adapter.objects.getObjectView('script', 'javascript', {}, (err, doc) => {
                     globalScript = '';
+                    globalDeclarations = '';
                     let count = 0;
                     if (doc && doc.rows && doc.rows.length) {
                         // assemble global script
@@ -333,6 +370,7 @@ const adapter = new utils.Adapter({
                                             }
                                         });
                                     } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
+                                        // compile the current global script
                                         const tsCompiled = tsServer.compile(
                                             mods.path.join(__dirname, 'global_' + g + '.ts'),
                                             obj.common.source
@@ -349,11 +387,28 @@ const adapter = new utils.Adapter({
                                                 adapter.log.info('TypeScript compilation successful');
                                             }
                                             globalScript += tsCompiled.result + '\n';
+
+                                            // if declarations were generated, remember them
+                                            if (tsCompiled.declarations != null) {
+                                                provideDeclarationsForGlobalScript(tsCompiled.declarations);
+                                            }
                                         } else {
                                             adapter.log.error('TypeScript compilation failed: \n' + errors);
                                         }
                                     } else { // javascript
-                                        globalScript += doc.rows[g].value.common.source + '\n';
+                                        const sourceCode = obj.common.source;
+                                        globalScript += sourceCode + '\n';
+
+                                        // try to compile the declarations so TypeScripts can use 
+                                        // functions defined in global JavaScripts
+                                        const tsCompiled = jsDeclarationServer.compile(
+                                            mods.path.join(__dirname, 'global_' + g + '.ts'),
+                                            sourceCode
+                                        );
+                                        // if declarations were generated, remember them
+                                        if (tsCompiled.success && tsCompiled.declarations != null) {
+                                            provideDeclarationsForGlobalScript(tsCompiled.declarations);
+                                        }
                                     }
                                 }
                             }
@@ -477,17 +532,33 @@ mods.fs.truncateSync = function () {
 
 context.adapter = adapter;
 
-let attempts =         {};
-let globalScript =     '';
-let globalScriptLines = 0;
-let activeRegEx =      null;
-let activeStr =        '';
+let attempts           = {};
+let globalScript       = '';
+/** Generated declarations for global TypeScripts */
+let globalDeclarations = '';
+let globalScriptLines  = 0;
+let activeRegEx        = null;
+let activeStr          = '';
 
-// compiler instance for typescript
+/**
+ * Redirects the virtual-tsc log output to the ioBroker log
+ * @param {string} sev
+ */
 function tsLog(msg, sev) {
-    if (adapter && adapter.log) adapter.log[sev || 'info'](msg);
+    // shift the severities around, we don't care about the small details
+    if (sev == null || sev === 'info') sev = 'debug';
+    else if (sev === 'debug') sev = 'silly';
+
+    if (adapter && adapter.log) {
+        adapter.log[sev](msg);
+    } else {
+        console.log(`[${sev.toUpperCase()}] ${msg}`);
+    }
 }
+// compiler instance for typescript
 tsServer = new tsc.Server(tsCompilerOptions, tsLog);
+// compiler instance for global JS declarations
+jsDeclarationServer = new tsc.Server(jsDeclarationCompilerOptions);
 
 function addGetProperty(object) {
     Object.defineProperty(object, 'get', {
