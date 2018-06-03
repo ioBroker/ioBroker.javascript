@@ -470,7 +470,8 @@ declare global {
 	// available functions in the sandbox
 	// =======================================================
 
-	// TODO: find a way to expose the request module
+	// The already pre-loaded request module
+	const request: typeof import("request");
 
 	/**
 	 * The instance number of the JavaScript adapter this script runs in
@@ -762,4 +763,18 @@ declare global {
 	 */
 	function stopScript(scriptName, callback?: GenericCallback<boolean>): boolean;
 	function isScriptActive(scriptName): boolean;
+
+	/** Converts a value to an integer */
+	function toInt(val: any): number;
+	/** Converts a value to a floating point number */
+	function toFloat(val: any): number;
+	/** Converts a value to a boolean */
+	function toBoolean(val: any): boolean;
+
+	/**
+	 * Digs in an object for the property value at the given path.
+	 * @param obj The object to dig in
+	 * @param path The path of the property to dig for in the given object
+	 */
+	function getAttr(obj: string | Record<string, any>, path: string | string[]): any;
 }
