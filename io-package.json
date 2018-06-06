@@ -134,7 +134,7 @@
             "blokly"
         ],
         "materialize": true,
-        "materializeTab": true,
+        "materializeTabN": true,
         "readme": "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
         "enabled": true,
         "main": "main.js",

@@ -1283,17 +1283,25 @@ function Scripts(main) {
 
             //this.editor.setTheme("ace/theme/monokai");
             this.editor.getSession().setMode('ace/mode/javascript');
-            this.editor.setOptions({enableBasicAutocompletion: true});
+            this.editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: true
+            });
             this.editor.$blockScrolling = Infinity;
-            this.editor.completers.push({
+            this.editor.completers && this.editor.completers.push({
                 getCompletions: function (editor, session, pos, prefix, callback) {
                     callback(null, funcNames);
                 }
             });
 
             this.editorDialog.getSession().setMode('ace/mode/javascript');
-            this.editorDialog.setOptions({enableBasicAutocompletion: true});
-            this.editorDialog.completers.push({
+            this.editorDialog.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: true
+            });
+            this.editorDialog.completers && this.editorDialog.completers.push({
                 getCompletions: function (editor, session, pos, prefix, callback) {
                     callback(null, funcNames);
                 }
