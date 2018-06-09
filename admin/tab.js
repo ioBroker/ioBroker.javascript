@@ -1,4 +1,5 @@
 /// <reference path="./monaco-editor/monaco.d.ts" />
+/* global _, monaco */
 
 function Scripts(main) {
     /** @type {Scripts} */
@@ -194,10 +195,10 @@ function Scripts(main) {
                         that.$dialogCron.dialog('close');
 
                         if (!$('#dialog-script').is(':visible')) {
-                            insertTextIntoEditor('"' + val + '"');
+                            insertTextIntoEditor(that.editor, '"' + val + '"');
                             that.editor.focus();
                         } else {
-                            that.editorDialog.insert('"' + val + '"');
+                            insertTextIntoEditor(that.editorDialog, '"' + val + '"');
                             that.editorDialog.focus();
                         }
                     }
@@ -224,6 +225,10 @@ function Scripts(main) {
             ]
         });
 
+        // used to store the size difference between the dialog and the editor
+        // the monaco editor has problems automatically resizing to a smaller size
+        let dialogSizeDelta = {};
+
         this.$dialogScript.dialog({
             autoOpen:   false,
             modal:      true,
@@ -234,7 +239,24 @@ function Scripts(main) {
             resize:     function () {
                 that.main.saveConfig('script-edit-width',  $(this).parent().width());
                 that.main.saveConfig('script-edit-height', $(this).parent().height() + 10);
-                that.editorDialog.resize();
+                if (that.editorDialog) {
+                    // restore the editor layout using the stored values
+                    that.editorDialog.layout({
+                        width: that.$dialogScript.width() - dialogSizeDelta.width,
+                        height: that.$dialogScript.height() - dialogSizeDelta.height
+                    });
+                }
+            },
+            open: function() {
+                that.$dialogScript.css('overflow', 'hidden');
+                if (that.editorDialog) {
+                    that.editorDialog.layout();
+                    // remember how the editor is arranged in the dialog
+                    dialogSizeDelta = {
+                        width: that.$dialogScript.width() - $('#dialog-script-editor').width(),
+                        height: that.$dialogScript.height() - $('#dialog-script-editor').height()
+                    };
+                }
             },
             beforeClose:      function () {
                 if (that.editorDialog._changed) {
@@ -254,7 +276,7 @@ function Scripts(main) {
                         that.editorDialog._changed = false;
                         that.$dialogScript.dialog('close');
 
-                        var val = that.editorDialog.getValue();
+                        const val = that.editorDialog.getValue();
                         var cb = that.$dialogScript.data('callback');
                         that.$dialogScript.data('callback', null);
 
@@ -315,15 +337,16 @@ function Scripts(main) {
 
         $('#edit-wrap-lines').change(function () {
             that.main.saveConfig('script-editor-wrap-lines', $(this).prop('checked'));
-            setEditorOptions({
+            setEditorOptions(that.editor, {
                 lineWrap: $(this).prop('checked')
             });
-            // if (that.editor) that.editor.getSession().setUseWrapMode($(this).prop('checked'));
         });
 
         $('#dialog-edit-wrap-lines').change(function () {
             that.main.saveConfig('script-editor-dialog-wrap-lines', $(this).prop('checked'));
-            if (that.editorDialog) that.editorDialog.getSession().setUseWrapMode($(this).prop('checked'));
+            setEditorOptions(that.editorDialog, {
+                lineWrap: $(this).prop('checked')
+            });
         });
         
         fillGroups('edit-script-group');
@@ -446,25 +469,27 @@ function Scripts(main) {
 
     /**
      * Sets the language of the code editor
+     * @param {monaco.editor.IStandaloneCodeEditor} editorInstance The editor instance to change the options for
      * @param {EditorLanguage} language 
      */
-    function setEditorLanguage(language) {
+    function setEditorLanguage(editorInstance, language) {
         monaco.editor.setModelLanguage(
-            that.editor.getModel(),
+            editorInstance.getModel(),
             language
         );
     }
 
     /**
      * Sets some options of the code editor
+     * @param {monaco.editor.IStandaloneCodeEditor} editorInstance The editor instance to change the options for
      * @param {Partial<{readOnly: boolean, lineWrap: boolean, language: EditorLanguage, typeCheck: boolean}>} options
      */
-    function setEditorOptions(options) {
+    function setEditorOptions(editorInstance, options) {
         if (!options) return;
-        if (!that.editor) return;
-        if (options.language != null) setEditorLanguage(options.language);
-        if (options.readOnly != null) that.editor.updateOptions({readOnly: options.readOnly});
-        if (options.lineWrap != null) that.editor.updateOptions({wordWrap: options.lineWrap ? 'on' : 'off'});
+        if (!editorInstance) return;
+        if (options.language != null) setEditorLanguage(editorInstance, options.language);
+        if (options.readOnly != null) editorInstance.updateOptions({readOnly: options.readOnly});
+        if (options.lineWrap != null) editorInstance.updateOptions({wordWrap: options.lineWrap ? 'on' : 'off'});
         if (options.typeCheck != null) setTypeCheck(options.typeCheck);
     }
 
@@ -519,20 +544,25 @@ function Scripts(main) {
         }
     }
 
-    function insertTextIntoEditor(text) {
-        const selection = that.editor.getSelection();
+    /**
+     * Inserts some text into the given editor
+     * @param {monaco.editor.IStandaloneCodeEditor} editorInstance The editor instance to add the code into
+     * @param {string} text The text to add
+     */
+    function insertTextIntoEditor(editorInstance, text) {
+        const selection = editorInstance.getSelection();
         const range = new monaco.Range(
             selection.startLineNumber, selection.startColumn,
             selection.endLineNumber, selection.endColumn
         );
-        that.editor.executeEdits('', [{range: range, text: text, forceMoveMarkers: true}]);
+        editorInstance.executeEdits('', [{range: range, text: text, forceMoveMarkers: true}]);
     }
 
     function blockly2JS(oneWay) {
         $('#edit-script-engine-type').find('option[value="Blockly"]').remove();
         blocklyCode2JSCode(oneWay);
 
-        setEditorOptions({
+        setEditorOptions(that.editor, {
             readOnly: false
         });
         // that.editor.setReadOnly(false);
@@ -545,19 +575,19 @@ function Scripts(main) {
 
         if (that.currentEngine.match(/^[jJ]ava[sS]cript/)) {
             //that.editor.getSession().setMode('ace/mode/javascript');
-            setEditorOptions({
+            setEditorOptions(that.editor, {
                 language: 'javascript',
                 typeCheck: true // not suppported
             });
         } else if (that.currentEngine.match(/^[cC]offee[sS]cript/)) {
             // that.editor.getSession().setMode('ace/mode/coffee');
-            setEditorOptions({
+            setEditorOptions(that.editor, {
                 language: 'coffee',
                 typeCheck: false // not suppported
             });
         } else if (that.currentEngine.match(/^[tT]ype[sS]cript/)) {
             // that.editor.getSession().setMode('ace/mode/typescript');
-            setEditorOptions({
+            setEditorOptions(that.editor, {
                 language: 'typescript',
                 typeCheck: true // not suppported
             });
@@ -898,7 +928,7 @@ function Scripts(main) {
 
         if (id && main.objects[id] && main.objects[id].type === 'script') {
             $('#editor-scripts').show();
-            applyResizableV('editor-scripts-textarea');
+            applyResizableV();
             var obj = main.objects[id];
 
             $('.script-edit').show();
@@ -916,10 +946,9 @@ function Scripts(main) {
             $('#edit-script-debug').prop('checked', !!obj.common.debug);
             $('#edit-script-verbose').prop('checked', !!obj.common.verbose);
             
-            setEditorOptions({
+            setEditorOptions(that.editor, {
                 lineWrap: $('#edit-wrap-lines').prop('checked')
             });
-            // that.editor.getSession().setUseWrapMode($('#edit-wrap-lines').prop('checked'));
 
             var $editType = $('#edit-script-engine-type');
             if (obj.common.engineType !== 'Blockly' && obj.common.engineType !== 'Rule') {
@@ -951,14 +980,12 @@ function Scripts(main) {
             setEditorTypings();
 
             if (obj.common.engineType === 'Blockly') {
-                // that.editor.getSession().setMode('ace/mode/javascript');
-                setEditorOptions({
+                setEditorOptions(that.editor, {
                     language: 'javascript',
                     readOnly: true,
                     typeCheck: false,
                 });
-                // that.editor.setReadOnly(true);
-                // that.editor.getSession().setUseWorker(false); // disable syntax check
+
                 switchViews(true, obj.common.engineType);
                 if (!that.blocklyWorkspace) return;
 
@@ -973,34 +1000,25 @@ function Scripts(main) {
                     window.alert('Cannot extract Blockly code!');
                 }
             } else if (obj.common.engineType && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
-                setEditorOptions({
+                setEditorOptions(that.editor, {
                     language: 'javascript',
                     readOnly: false,
                     typeCheck: true
                 });
-                // that.editor.getSession().setMode('ace/mode/javascript');
-                // that.editor.getSession().setUseWorker(true); // enable syntax check
-                // that.editor.setReadOnly(false);
                 switchViews(false, obj.common.engineType);
             } else if (obj.common.engineType && obj.common.engineType.match(/^[cC]offee[sS]cript/)) {
-                setEditorOptions({
+                setEditorOptions(that.editor, {
                     language: 'coffee',
                     readOnly: false,
                     typeCheck: false // not supported
                 });
-                // that.editor.getSession().setMode('ace/mode/coffee');
-                // that.editor.getSession().setUseWorker(true); // enable syntax check
-                // that.editor.setReadOnly(false);
                 switchViews(false, obj.common.engineType);
             } else if (obj.common.engineType && obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
-                setEditorOptions({
+                setEditorOptions(that.editor, {
                     language: 'typescript',
                     readOnly: false,
                     typeCheck: true
                 });
-                // that.editor.getSession().setMode('ace/mode/typescript');
-                // that.editor.getSession().setUseWorker(true); // enable syntax check
-                // that.editor.setReadOnly(false);
                 switchViews(false, obj.common.engineType);
             } else if(obj.common.engineType === 'Rule') {
                 switchViews(true, obj.common.engineType);
@@ -1426,7 +1444,7 @@ function Scripts(main) {
         {score: 1000, meta: 'iobroker', value: 'toBoolean'}
     ];
 
-    this.initEditor = function () {
+    this.initEditor = () => {
         if (!this.editor) {
 
             // compiler options
@@ -1449,38 +1467,42 @@ function Scripts(main) {
                 lineNumbers: 'on'
             });
 
+            this.editorDialog = monaco.editor.create(document.getElementById('dialog-script-editor'), {
+                language: 'javascript',
+                lineNumbers: 'on'
+            });
 
-            this.editorDialog = ace.edit('dialog-script-editor');
-            this.editorDialog.getSession().setMode('ace/mode/javascript');
-            this.editorDialog.setOptions({
-                enableBasicAutocompletion: true,
-                enableSnippets: true,
-                enableLiveAutocompletion: true
-            });
-            this.editorDialog.completers && this.editorDialog.completers.push({
-                getCompletions: function (editor, session, pos, prefix, callback) {
-                    callback(null, funcNames);
-                }
-            });
-            this.editorDialog.$blockScrolling = Infinity;
+            // this.editorDialog = ace.edit('dialog-script-editor');
+            // this.editorDialog.getSession().setMode('ace/mode/javascript');
+            // this.editorDialog.setOptions({
+            //     enableBasicAutocompletion: true,
+            //     enableSnippets: true,
+            //     enableLiveAutocompletion: true
+            // });
+            // this.editorDialog.completers && this.editorDialog.completers.push({
+            //     getCompletions: function (editor, session, pos, prefix, callback) {
+            //         callback(null, funcNames);
+            //     }
+            // });
+            // this.editorDialog.$blockScrolling = Infinity;
 
             $('#dialog-edit-insert-id').button({
                 icons: {primary: 'ui-icon-note'}
-            }).css('height', '30px').click(function () {
-                var sid = that.main.initSelectId();
-                sid.selectId('show', function (newId) {
-                    that.editorDialog.insert('"' + newId + '"' + ((that.main.objects[newId] && that.main.objects[newId].common && that.main.objects[newId].common.name) ? ('/*' + that.main.objects[newId].common.name + '*/') : ''));
-                    that.editorDialog.focus();
+            }).css('height', '30px').click(() => {
+                var sid = this.main.initSelectId();
+                sid.selectId('show', (newId) => {
+                    insertTextIntoEditor(this.editorDialog, '"' + newId + '"' + ((this.main.objects[newId] && this.main.objects[newId].common && this.main.objects[newId].common.name) ? ('/*' + this.main.objects[newId].common.name + '*/') : ''));
+                    this.editorDialog.focus();
                 });
             });
 
             $('#edit-insert-id').button({
                 icons: {primary: 'ui-icon-note'}
-            }).css('height', '30px').click(function () {
-                var sid = that.main.initSelectId();
-                sid.selectId('show', function (newId) {
-                    insertTextIntoEditor('"' + newId + '"' + ((that.main.objects[newId] && that.main.objects[newId].common && that.main.objects[newId].common.name) ? ('/*' + that.main.objects[newId].common.name + '*/') : ''));
-                    that.editor.focus();
+            }).css('height', '30px').click(() => {
+                var sid = this.main.initSelectId();
+                sid.selectId('show', (newId) => {
+                    insertTextIntoEditor(this.editor, '"' + newId + '"' + ((this.main.objects[newId] && this.main.objects[newId].common && this.main.objects[newId].common.name) ? ('/*' + this.main.objects[newId].common.name + '*/') : ''));
+                    this.editor.focus();
                 });
             });
 
@@ -1490,9 +1512,8 @@ function Scripts(main) {
                 var text;
                 if (!$('#dialog-script').is(':visible')) {
                     text = that.editor.getModel().getValueInRange(that.editor.getSelection());
-                    // text = that.editor.getSession().doc.getTextRange(that.editor.selection.getRange());
                 } else {
-                    text = that.editorDialog.getSession().doc.getTextRange(that.editor.selection.getRange());
+                    text = that.editorDialog.getModel().getValueInRange(that.editorDialog.getSelection());
                 }
                 if (text) {
                     text = text.replace(/\"/g, '').replace(/\'/g, '');
@@ -1531,7 +1552,7 @@ function Scripts(main) {
                 }
             });
 
-            this.editorDialog.on('input', function() {
+            this.editorDialog.onDidChangeModelContent((e) => {
                 that.editorDialog._changed = true;
                 $('#dialog_script_save').button('enable');
             });
@@ -1595,8 +1616,7 @@ function Scripts(main) {
                 $('#script-edit-button-cancel').button('enable');
             });
 
-            // this.editor.getSession().setUseWrapMode($('#edit-wrap-lines').prop('checked'));
-            setEditorOptions({
+            setEditorOptions(that.editor, {
                 lineWrap: $('#edit-wrap-lines').prop('checked')
             });
 
@@ -2905,8 +2925,8 @@ function Scripts(main) {
         this.$dialogCron.dialog('open');
     };
 
-    this.showScriptDialog = function (value, args, isReturn, cb) {
-        this.editorDialog.setValue(value || '', -1);
+    this.showScriptDialog = (value, args, isReturn, cb) => {
+        this.editorDialog.setValue(value || '');
 
         var width  = 700;
         var height = 550;
@@ -2922,7 +2942,9 @@ function Scripts(main) {
             this.$dialogScript.dialog('option', 'title', _('Edit script'));
         }
 
-        this.editorDialog.getSession().setUseWrapMode($('#dialog-edit-wrap-lines').prop('checked'));
+        setEditorOptions(this.editorDialog, {
+            lineWrap: $('#dialog-edit-wrap-lines').prop('checked'),
+        });
 
         this.$dialogScript
             .dialog('option', 'width',  width)
