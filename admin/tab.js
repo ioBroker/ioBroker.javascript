@@ -1,5 +1,8 @@
+/// <reference path="./monaco-editor/monaco.d.ts" />
+
 function Scripts(main) {
-    var that            = this;
+    /** @type {Scripts} */
+    const that            = this;
     this.list           = [];
     this.groups         = [];
     this.hosts          = [];
@@ -439,9 +442,11 @@ function Scripts(main) {
         if (that.editor) that.editor.layout();
     };
 
+    /** @typedef {"javascript" | "typescript" | "coffee"} EditorLanguage */
+
     /**
      * Sets the language of the code editor
-     * @param {"javascript" | "typescript" | "coffee"} language 
+     * @param {EditorLanguage} language 
      */
     function setEditorLanguage(language) {
         monaco.editor.setModelLanguage(
@@ -452,7 +457,7 @@ function Scripts(main) {
 
     /**
      * Sets some options of the code editor
-     * @param {Partial<{readOnly: boolean, lineWrap: boolean, language: "javascript" | "typescript" | "coffee", typeCheck: boolean}>} options
+     * @param {Partial<{readOnly: boolean, lineWrap: boolean, language: EditorLanguage, typeCheck: boolean}>} options
      */
     function setEditorOptions(options) {
         if (!options) return;
@@ -1322,6 +1327,7 @@ function Scripts(main) {
                 // update script editor
                 $('#builder-widgets').hide();
                 $('#script-editor').show();
+                if (that.editor) that.editor.layout();
                 $('#blockly-editor').hide();
                 $('.blocklyWidgetDiv').hide();
                 $('.blocklyTooltipDiv').hide();
@@ -1351,6 +1357,7 @@ function Scripts(main) {
             $('#builder-widgets').hide();
             $('#show-blockly-id').hide();
             $('#script-editor').show();
+            if (that.editor) that.editor.layout();
             $('#blockly-editor').hide();
             $('.edit-wrap-lines').show();
             $('.blocklyWidgetDiv').hide();
@@ -1422,8 +1429,6 @@ function Scripts(main) {
     this.initEditor = function () {
         if (!this.editor) {
 
-            //this.editor.setTheme("ace/theme/monokai");
-
             // compiler options
             const compilerOptions = {
                 target: monaco.languages.typescript.ScriptTarget.ES6,
@@ -1444,15 +1449,6 @@ function Scripts(main) {
                 lineNumbers: 'on'
             });
 
-            // this.editor       = ace.edit('script-editor');
-            // this.editor.getSession().setMode('ace/mode/javascript');
-            // this.editor.setOptions({enableBasicAutocompletion: true});
-            // this.editor.$blockScrolling = Infinity;
-            // this.editor.completers.push({
-            //     getCompletions: function (editor, session, pos, prefix, callback) {
-            //         callback(null, funcNames);
-            //     }
-            // });
 
             this.editorDialog = ace.edit('dialog-script-editor');
             this.editorDialog.getSession().setMode('ace/mode/javascript');
