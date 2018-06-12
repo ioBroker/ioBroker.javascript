@@ -1,5 +1,9 @@
+/// <reference path="./monaco-editor/monaco.d.ts" />
+/* global _, monaco */
+
 function Scripts(main) {
-    var that            = this;
+    /** @type {Scripts} */
+    const that            = this;
     this.list           = [];
     this.groups         = [];
     this.hosts          = [];
@@ -17,6 +21,8 @@ function Scripts(main) {
     this.languageLoaded = [false, false];
     this.blocklyWorkspace = null;
     this.prepared       = false;
+    this.typings        = {}; // TypeScript declarations
+    this.globalTypingHandles  = []; // Handles to the global typings added to the editor
     
     function setChanged(isChanged) {
         that.changed = isChanged;
@@ -189,10 +195,10 @@ function Scripts(main) {
                         that.$dialogCron.dialog('close');
 
                         if (!$('#dialog-script').is(':visible')) {
-                            that.editor.insert('"' + val + '"');
+                            insertTextIntoEditor(that.editor, '"' + val + '"');
                             that.editor.focus();
                         } else {
-                            that.editorDialog.insert('"' + val + '"');
+                            insertTextIntoEditor(that.editorDialog, '"' + val + '"');
                             that.editorDialog.focus();
                         }
                     }
@@ -219,6 +225,10 @@ function Scripts(main) {
             ]
         });
 
+        // used to store the size difference between the dialog and the editor
+        // the monaco editor has problems automatically resizing to a smaller size
+        let dialogSizeDelta = {};
+
         this.$dialogScript.dialog({
             autoOpen:   false,
             modal:      true,
@@ -229,7 +239,24 @@ function Scripts(main) {
             resize:     function () {
                 that.main.saveConfig('script-edit-width',  $(this).parent().width());
                 that.main.saveConfig('script-edit-height', $(this).parent().height() + 10);
-                that.editorDialog.resize();
+                if (that.editorDialog) {
+                    // restore the editor layout using the stored values
+                    that.editorDialog.layout({
+                        width: that.$dialogScript.width() - dialogSizeDelta.width,
+                        height: that.$dialogScript.height() - dialogSizeDelta.height
+                    });
+                }
+            },
+            open: function() {
+                that.$dialogScript.css('overflow', 'hidden');
+                if (that.editorDialog) {
+                    that.editorDialog.layout();
+                    // remember how the editor is arranged in the dialog
+                    dialogSizeDelta = {
+                        width: that.$dialogScript.width() - $('#dialog-script-editor').width(),
+                        height: that.$dialogScript.height() - $('#dialog-script-editor').height()
+                    };
+                }
             },
             beforeClose:      function () {
                 if (that.editorDialog._changed) {
@@ -249,7 +276,7 @@ function Scripts(main) {
                         that.editorDialog._changed = false;
                         that.$dialogScript.dialog('close');
 
-                        var val = that.editorDialog.getValue();
+                        const val = that.editorDialog.getValue();
                         var cb = that.$dialogScript.data('callback');
                         that.$dialogScript.data('callback', null);
 
@@ -310,12 +337,16 @@ function Scripts(main) {
 
         $('#edit-wrap-lines').change(function () {
             that.main.saveConfig('script-editor-wrap-lines', $(this).prop('checked'));
-            if (that.editor) that.editor.getSession().setUseWrapMode($(this).prop('checked'));
+            setEditorOptions(that.editor, {
+                lineWrap: $(this).prop('checked')
+            });
         });
 
         $('#dialog-edit-wrap-lines').change(function () {
             that.main.saveConfig('script-editor-dialog-wrap-lines', $(this).prop('checked'));
-            if (that.editorDialog) that.editorDialog.getSession().setUseWrapMode($(this).prop('checked'));
+            setEditorOptions(that.editorDialog, {
+                lineWrap: $(this).prop('checked')
+            });
         });
         
         fillGroups('edit-script-group');
@@ -355,6 +386,21 @@ function Scripts(main) {
         });
 
         window.addEventListener('resize', this.resize, false);
+
+        // Load typings for the JS editor
+        /** @type {string} */
+        let scriptAdapterInstance = that.main.instances.find(inst => /javascript\.\d+$/.test(inst));
+        if (scriptAdapterInstance != null) {
+            scriptAdapterInstance = scriptAdapterInstance.substr(scriptAdapterInstance.indexOf('javascript.'));
+            that.main.socket.emit('sendTo', scriptAdapterInstance, 'loadTypings', null, (result) => {
+                if (result.typings) {
+                    that.typings = result.typings;
+                    setEditorTypings();
+                } else {
+                    console.error(`failed to load typings: ${result.error}`);
+                }
+            });
+        }
 
         // load blockly language
         var fileLang = document.createElement('script');
@@ -416,27 +462,135 @@ function Scripts(main) {
 
         if (that.blocklyWorkspace) Blockly.svgResize(that.blocklyWorkspace);
 
-        if (that.editor) that.editor.resize();
+        if (that.editor) that.editor.layout();
     };
+
+    /** @typedef {"javascript" | "typescript" | "coffee"} EditorLanguage */
+
+    /**
+     * Sets the language of the code editor
+     * @param {monaco.editor.IStandaloneCodeEditor} editorInstance The editor instance to change the options for
+     * @param {EditorLanguage} language 
+     */
+    function setEditorLanguage(editorInstance, language) {
+        monaco.editor.setModelLanguage(
+            editorInstance.getModel(),
+            language
+        );
+    }
+
+    /**
+     * Sets some options of the code editor
+     * @param {monaco.editor.IStandaloneCodeEditor} editorInstance The editor instance to change the options for
+     * @param {Partial<{readOnly: boolean, lineWrap: boolean, language: EditorLanguage, typeCheck: boolean}>} options
+     */
+    function setEditorOptions(editorInstance, options) {
+        if (!options) return;
+        if (!editorInstance) return;
+        if (options.language != null) setEditorLanguage(editorInstance, options.language);
+        if (options.readOnly != null) editorInstance.updateOptions({readOnly: options.readOnly});
+        if (options.lineWrap != null) editorInstance.updateOptions({wordWrap: options.lineWrap ? 'on' : 'off'});
+        if (options.typeCheck != null) setTypeCheck(options.typeCheck);
+    }
+
+    /**
+     * Enables or disables the type checking in the editor
+     * @param {boolean} enabled - Whether type checking is enabled or not
+     */
+    function setTypeCheck(enabled) {
+        const options = {
+            noSemanticValidation: !enabled, // toggle the type checking
+            noSyntaxValidation: false // always check the syntax
+        };
+        monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions(options);
+        monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions(options);
+    }
+
+    /**
+     * Adds the given declaration file to the editor
+     * @param {string} path The file path of the typings to add
+     * @param {string} typings The declaration file to add
+     * @param {boolean} [isGlobal=false] Whethere the file is a global declaration file
+     * @returns {void}
+     */
+    function addTypingsToEditor(path, typings, isGlobal) {
+        try {
+            const handle = monaco.languages.typescript.javascriptDefaults.addExtraLib(typings, path);
+            if (isGlobal) that.globalTypingHandles.push(handle);
+        } catch (e) { /* might be added already */}
+        try {
+            const handle = monaco.languages.typescript.typescriptDefaults.addExtraLib(typings, path);
+            if (isGlobal) that.globalTypingHandles.push(handle);
+        } catch (e) { /* might be added already */}
+    }
+
+    function setEditorTypings() {
+        // clear previously added global typings
+        for (const handle of that.globalTypingHandles) {
+            if (handle != null) handle.dispose();
+        }
+
+        const isGlobalScript = isIdOfGlobalScript(that.currentId);
+        // The filename of the declarations this script can see if it is a global script
+        const partialDeclarationsPath = that.currentId + '.d.ts';
+        for (const path of Object.keys(that.typings)) {
+            // global scripts don't get to see all other global scripts
+            // but only a part of them
+            if (isGlobalScript) {
+                if (path === 'global.d.ts') continue;
+                if (path.startsWith('script.js.global') && path !== partialDeclarationsPath) continue;
+            }
+            addTypingsToEditor(path, that.typings[path], isGlobalScript);
+        }
+    }
+
+    /**
+     * Inserts some text into the given editor
+     * @param {monaco.editor.IStandaloneCodeEditor} editorInstance The editor instance to add the code into
+     * @param {string} text The text to add
+     */
+    function insertTextIntoEditor(editorInstance, text) {
+        const selection = editorInstance.getSelection();
+        const range = new monaco.Range(
+            selection.startLineNumber, selection.startColumn,
+            selection.endLineNumber, selection.endColumn
+        );
+        editorInstance.executeEdits('', [{range: range, text: text, forceMoveMarkers: true}]);
+    }
 
     function blockly2JS(oneWay) {
         $('#edit-script-engine-type').find('option[value="Blockly"]').remove();
         blocklyCode2JSCode(oneWay);
 
-        that.editor.setReadOnly(false);
+        setEditorOptions(that.editor, {
+            readOnly: false
+        });
+        // that.editor.setReadOnly(false);
 
-        that.setChanged(true);
+        setChanged(true);
         $('#script-edit-button-save').button('enable');
         $('#script-edit-button-cancel').button('enable');
 
         switchViews(false, that.currentEngine);
 
         if (that.currentEngine.match(/^[jJ]ava[sS]cript/)) {
-            that.editor.getSession().setMode('ace/mode/javascript');
+            //that.editor.getSession().setMode('ace/mode/javascript');
+            setEditorOptions(that.editor, {
+                language: 'javascript',
+                typeCheck: true // not suppported
+            });
         } else if (that.currentEngine.match(/^[cC]offee[sS]cript/)) {
-            that.editor.getSession().setMode('ace/mode/coffee');
+            // that.editor.getSession().setMode('ace/mode/coffee');
+            setEditorOptions(that.editor, {
+                language: 'coffee',
+                typeCheck: false // not suppported
+            });
         } else if (that.currentEngine.match(/^[tT]ype[sS]cript/)) {
-            that.editor.getSession().setMode('ace/mode/typescript');
+            // that.editor.getSession().setMode('ace/mode/typescript');
+            setEditorOptions(that.editor, {
+                language: 'typescript',
+                typeCheck: true // not suppported
+            });
         }
     }
 
@@ -449,7 +603,7 @@ function Scripts(main) {
             code += '//' + btoa(encodeURIComponent(text));
         }
 
-        if (!justConvert) that.editor.setValue(code, -1);
+        if (!justConvert) that.editor.setValue(code /*, -1*/);
         return code;
     }
 
@@ -774,12 +928,12 @@ function Scripts(main) {
 
         if (id && main.objects[id] && main.objects[id].type === 'script') {
             $('#editor-scripts').show();
-            applyResizableV('editor-scripts-textarea');
+            applyResizableV();
             var obj = main.objects[id];
 
             $('.script-edit').show();
 
-            if (id.match(/^script\.js\.global/)) {
+            if (isIdOfGlobalScript(id)) {
                 $('#global_hint').show();
             } else {
                 $('#global_hint').hide();
@@ -791,8 +945,10 @@ function Scripts(main) {
 
             $('#edit-script-debug').prop('checked', !!obj.common.debug);
             $('#edit-script-verbose').prop('checked', !!obj.common.verbose);
-
-            that.editor.getSession().setUseWrapMode($('#edit-wrap-lines').prop('checked'));
+            
+            setEditorOptions(that.editor, {
+                lineWrap: $('#edit-wrap-lines').prop('checked')
+            });
 
             var $editType = $('#edit-script-engine-type');
             if (obj.common.engineType !== 'Blockly' && obj.common.engineType !== 'Rule') {
@@ -821,10 +977,15 @@ function Scripts(main) {
 
             $editType.val(obj.common.engineType);
 
+            setEditorTypings();
+
             if (obj.common.engineType === 'Blockly') {
-                that.editor.getSession().setMode('ace/mode/javascript');
-                that.editor.setReadOnly(true);
-                that.editor.getSession().setUseWorker(false); // disable syntax check
+                setEditorOptions(that.editor, {
+                    language: 'javascript',
+                    readOnly: true,
+                    typeCheck: false,
+                });
+
                 switchViews(true, obj.common.engineType);
                 if (!that.blocklyWorkspace) return;
 
@@ -838,31 +999,37 @@ function Scripts(main) {
                     console.error(e);
                     window.alert('Cannot extract Blockly code!');
                 }
-            } else
-            if (obj.common.engineType && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
-                that.editor.getSession().setMode('ace/mode/javascript');
-                that.editor.getSession().setUseWorker(true); // enable syntax check
-                that.editor.setReadOnly(false);
+            } else if (obj.common.engineType && obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
+                setEditorOptions(that.editor, {
+                    language: 'javascript',
+                    readOnly: false,
+                    typeCheck: true
+                });
                 switchViews(false, obj.common.engineType);
             } else if (obj.common.engineType && obj.common.engineType.match(/^[cC]offee[sS]cript/)) {
-                that.editor.getSession().setMode('ace/mode/coffee');
-                that.editor.getSession().setUseWorker(true); // enable syntax check
-                that.editor.setReadOnly(false);
+                setEditorOptions(that.editor, {
+                    language: 'coffee',
+                    readOnly: false,
+                    typeCheck: false // not supported
+                });
                 switchViews(false, obj.common.engineType);
             } else if (obj.common.engineType && obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
-                that.editor.getSession().setMode('ace/mode/typescript');
-                that.editor.getSession().setUseWorker(true); // enable syntax check
-                that.editor.setReadOnly(false);
+                setEditorOptions(that.editor, {
+                    language: 'typescript',
+                    readOnly: false,
+                    typeCheck: true
+                });
                 switchViews(false, obj.common.engineType);
             } else if(obj.common.engineType === 'Rule') {
                 switchViews(true, obj.common.engineType);
-                buildRules()
+                buildRules();
             }
 
             setChanged(false);
 
             //$('#edit-script-source').val(obj.common.source);
-            that.editor.setValue(obj.common.source, -1);
+            // that.editor.setValue(obj.common.source, -1);
+            that.editor.setValue(obj.common.source);
 
             applyResizableV();
 
@@ -872,8 +1039,7 @@ function Scripts(main) {
                 $('#script-edit-button-cancel').button('disable');
                 //that.editor.focus();
             }, 100);
-        } else
-        if (id && main.objects[id] && main.objects[id].type === 'channel' && id !== 'script.js.global' && id !== 'script.js.common') {
+        } else if (id && main.objects[id] && main.objects[id].type === 'channel' && id !== 'script.js.global' && id !== 'script.js.common') {
             $('#editor-scripts').show();
 
             var obj = main.objects[id];
@@ -1179,6 +1345,7 @@ function Scripts(main) {
                 // update script editor
                 $('#builder-widgets').hide();
                 $('#script-editor').show();
+                if (that.editor) that.editor.layout();
                 $('#blockly-editor').hide();
                 $('.blocklyWidgetDiv').hide();
                 $('.blocklyTooltipDiv').hide();
@@ -1208,6 +1375,7 @@ function Scripts(main) {
             $('#builder-widgets').hide();
             $('#show-blockly-id').hide();
             $('#script-editor').show();
+            if (that.editor) that.editor.layout();
             $('#blockly-editor').hide();
             $('.edit-wrap-lines').show();
             $('.blocklyWidgetDiv').hide();
@@ -1276,55 +1444,65 @@ function Scripts(main) {
         {score: 1000, meta: 'iobroker', value: 'toBoolean'}
     ];
 
-    this.initEditor = function () {
+    this.initEditor = () => {
         if (!this.editor) {
-            this.editor       = ace.edit('script-editor');
-            this.editorDialog = ace.edit('dialog-script-editor');
 
-            //this.editor.setTheme("ace/theme/monokai");
-            this.editor.getSession().setMode('ace/mode/javascript');
-            this.editor.setOptions({
-                enableBasicAutocompletion: true,
-                enableSnippets: true,
-                enableLiveAutocompletion: true
-            });
-            this.editor.$blockScrolling = Infinity;
-            this.editor.completers && this.editor.completers.push({
-                getCompletions: function (editor, session, pos, prefix, callback) {
-                    callback(null, funcNames);
-                }
+            // compiler options
+            const compilerOptions = {
+                target: monaco.languages.typescript.ScriptTarget.ES6,
+                lib: [],
+                noLib: true, // we manually provide the lib files because the editor includes the DOM typings
+                allowNonTsExtensions: true,
+                moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+                module: monaco.languages.typescript.ModuleKind.CommonJS,
+                typeRoots: [ 'node_modules/@types' ],
+            };
+            monaco.languages.typescript.javascriptDefaults.setCompilerOptions(compilerOptions);
+            monaco.languages.typescript.typescriptDefaults.setCompilerOptions(compilerOptions);
+
+            setTypeCheck(true);
+
+            this.editor = monaco.editor.create(document.getElementById('script-editor'), {
+                language: 'javascript',
+                lineNumbers: 'on'
             });
 
-            this.editorDialog.getSession().setMode('ace/mode/javascript');
-            this.editorDialog.setOptions({
-                enableBasicAutocompletion: true,
-                enableSnippets: true,
-                enableLiveAutocompletion: true
+            this.editorDialog = monaco.editor.create(document.getElementById('dialog-script-editor'), {
+                language: 'javascript',
+                lineNumbers: 'on'
             });
-            this.editorDialog.completers && this.editorDialog.completers.push({
-                getCompletions: function (editor, session, pos, prefix, callback) {
-                    callback(null, funcNames);
-                }
-            });
-            this.editorDialog.$blockScrolling = Infinity;
+
+            // this.editorDialog = ace.edit('dialog-script-editor');
+            // this.editorDialog.getSession().setMode('ace/mode/javascript');
+            // this.editorDialog.setOptions({
+            //     enableBasicAutocompletion: true,
+            //     enableSnippets: true,
+            //     enableLiveAutocompletion: true
+            // });
+            // this.editorDialog.completers && this.editorDialog.completers.push({
+            //     getCompletions: function (editor, session, pos, prefix, callback) {
+            //         callback(null, funcNames);
+            //     }
+            // });
+            // this.editorDialog.$blockScrolling = Infinity;
 
             $('#dialog-edit-insert-id').button({
                 icons: {primary: 'ui-icon-note'}
-            }).css('height', '30px').click(function () {
-                var sid = that.main.initSelectId();
-                sid.selectId('show', function (newId) {
-                    that.editorDialog.insert('"' + newId + '"' + ((that.main.objects[newId] && that.main.objects[newId].common && that.main.objects[newId].common.name) ? ('/*' + that.main.objects[newId].common.name + '*/') : ''));
-                    that.editorDialog.focus();
+            }).css('height', '30px').click(() => {
+                var sid = this.main.initSelectId();
+                sid.selectId('show', (newId) => {
+                    insertTextIntoEditor(this.editorDialog, '"' + newId + '"' + ((this.main.objects[newId] && this.main.objects[newId].common && this.main.objects[newId].common.name) ? ('/*' + this.main.objects[newId].common.name + '*/') : ''));
+                    this.editorDialog.focus();
                 });
             });
 
             $('#edit-insert-id').button({
                 icons: {primary: 'ui-icon-note'}
-            }).css('height', '30px').click(function () {
-                var sid = that.main.initSelectId();
-                sid.selectId('show', function (newId) {
-                    that.editor.insert('"' + newId + '"' + ((that.main.objects[newId] && that.main.objects[newId].common && that.main.objects[newId].common.name) ? ('/*' + that.main.objects[newId].common.name + '*/') : ''));
-                    that.editor.focus();
+            }).css('height', '30px').click(() => {
+                var sid = this.main.initSelectId();
+                sid.selectId('show', (newId) => {
+                    insertTextIntoEditor(this.editor, '"' + newId + '"' + ((this.main.objects[newId] && this.main.objects[newId].common && this.main.objects[newId].common.name) ? ('/*' + this.main.objects[newId].common.name + '*/') : ''));
+                    this.editor.focus();
                 });
             });
 
@@ -1333,9 +1511,9 @@ function Scripts(main) {
             }).css('height', '30px').click(function () {
                 var text;
                 if (!$('#dialog-script').is(':visible')) {
-                    text = that.editor.getSession().doc.getTextRange(that.editor.selection.getRange());
+                    text = that.editor.getModel().getValueInRange(that.editor.getSelection());
                 } else {
-                    text = that.editorDialog.getSession().doc.getTextRange(that.editor.selection.getRange());
+                    text = that.editorDialog.getModel().getValueInRange(that.editorDialog.getSelection());
                 }
                 if (text) {
                     text = text.replace(/\"/g, '').replace(/\'/g, '');
@@ -1365,7 +1543,8 @@ function Scripts(main) {
                 }
             });
 
-            this.editor.on('input', function() {
+            // this.editor.on('input', function() {
+            this.editor.onDidChangeModelContent((e) => {
                 if (that.currentEngine !== 'Blockly') {
                     setChanged(true);
                     $('#script-edit-button-save').button('enable');
@@ -1373,7 +1552,7 @@ function Scripts(main) {
                 }
             });
 
-            this.editorDialog.on('input', function() {
+            this.editorDialog.onDidChangeModelContent((e) => {
                 that.editorDialog._changed = true;
                 $('#dialog_script_save').button('enable');
             });
@@ -1437,7 +1616,10 @@ function Scripts(main) {
                 $('#script-edit-button-cancel').button('enable');
             });
 
-            this.editor.getSession().setUseWrapMode($('#edit-wrap-lines').prop('checked'));
+            setEditorOptions(that.editor, {
+                lineWrap: $('#edit-wrap-lines').prop('checked')
+            });
+
         }
     };
 
@@ -2569,7 +2751,7 @@ function Scripts(main) {
                     } else {
                         // remove blockly text
                         obj.source = removeBlocklyFromCode(obj.source);
-                        that.editor.setValue(obj.source, -1);
+                        that.editor.setValue(obj.source /*, -1*/);
                         // wait till editor script updates
                         setTimeout(function () {
                             that.saveScript();
@@ -2743,8 +2925,8 @@ function Scripts(main) {
         this.$dialogCron.dialog('open');
     };
 
-    this.showScriptDialog = function (value, args, isReturn, cb) {
-        this.editorDialog.setValue(value || '', -1);
+    this.showScriptDialog = (value, args, isReturn, cb) => {
+        this.editorDialog.setValue(value || '');
 
         var width  = 700;
         var height = 550;
@@ -2760,7 +2942,9 @@ function Scripts(main) {
             this.$dialogScript.dialog('option', 'title', _('Edit script'));
         }
 
-        this.editorDialog.getSession().setUseWrapMode($('#dialog-edit-wrap-lines').prop('checked'));
+        setEditorOptions(this.editorDialog, {
+            lineWrap: $('#dialog-edit-wrap-lines').prop('checked'),
+        });
 
         this.$dialogScript
             .dialog('option', 'width',  width)
@@ -2776,6 +2960,15 @@ function Scripts(main) {
             $('#dialog_script_save').button('disable');
         }, 100);
     };
+}
+
+/**
+ * Tests if the given ID belongs to a global script
+ * @param {string} id
+ * @returns {boolean}
+ */
+function isIdOfGlobalScript(id) {
+    return /^script\.js\.global\./.test(id);
 }
 
 var main = {
