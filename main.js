@@ -76,9 +76,14 @@ const tsCompilerOptions = {
     noEmitOnError: true,
     // emit declarations for global scripts
     declaration: true,
-    // support for NodeJS 6+. Consider changing it to
-    // a higher version when support for NodeJS 6 is dropped
-    target: typescript.ScriptTarget.ES2015,
+    // In order to run scripts as a NodeJS vm.Script, 
+    // we need to target ES5, otherwise the compiled
+    // scripts may include `import` keywords, which are not
+    // supported by vm.Script.
+    target: typescript.ScriptTarget.ES5,
+    // NodeJS 4+ supports the features of ES2015
+    // When upgrading the minimum supported version to NodeJS 8 or higher,
+    // consider changing this, so we get to support the newest features too
     lib: ['lib.es2015.d.ts'],
 };
 const jsDeclarationCompilerOptions = Object.assign(
