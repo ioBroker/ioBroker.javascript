@@ -3,8 +3,43 @@ var setup  = require(__dirname + '/lib/setup');
 
 var objects = null;
 var states  = null;
-var onStateChanged = null;
-var onObjectChanged = null;
+
+const stateChangedHandlers = new Set();
+function onStateChanged(id, state) {
+    stateChangedHandlers.forEach(handler => handler(id, state));
+}
+/**
+ * Adds a state change handler for tests
+ * @param {(id: string, state: any) => void} handler The handler callback for the state change
+ */
+function addStateChangedHandler(handler) {
+    stateChangedHandlers.add(handler);
+}
+/**
+ * Removes a state change handler from the list
+ * @param {(id: string, state: any) => void} handler The handler callback to be removed
+ */
+function removeStateChangedHandler(handler) {
+    stateChangedHandlers.delete(handler);
+}
+const objectChangedHandlers = new Set();
+function onObjectChanged(id, obj) {
+    objectChangedHandlers.forEach(handler => handler(id, obj));
+}
+/**
+ * Adds an object change handler for tests
+ * @param {(id: string, obj: any) => void} handler The handler callback for the state change
+ */
+function addObjectChangedHandler(handler) {
+    objectChangedHandlers.add(handler);
+}
+/**
+ * Removes an object change handler from the list
+ * @param {(id: string, obj: any) => void} handler The handler callback to be removed
+ */
+function removeObjectChangedHandler(handler) {
+    objectChangedHandlers.delete(handler);
+}
 
 function checkConnectionOfAdapter(cb, counter) {
     counter = counter || 0;
@@ -156,10 +191,10 @@ describe('Test JS', function() {
             "_id":              "script.js.check_compareTime",
             "native": {}
         };
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (id === 'javascript.0.test10') {
                 if (state.val === 9) {
-                    onStateChanged = null;
+                    removeStateChangedHandler(onStateChanged);
                     states.getState('javascript.0.test10', function (err, state) {
                         expect(err).to.be.not.ok;
                         expect(state.val).to.be.equal(9);
@@ -171,6 +206,8 @@ describe('Test JS', function() {
                 }
             }
         };
+        addStateChangedHandler(onStateChanged);
+
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
         });
@@ -196,12 +233,14 @@ describe('Test JS', function() {
             "_id":              "script.js.check_request_error",
             "native": {}
         };
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (id === 'javascript.0.check_request_error' && state.val === true) {
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 done();
             }
         };
+        addStateChangedHandler(onStateChanged);
+
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
         });
@@ -222,9 +261,9 @@ describe('Test JS', function() {
             "_id":              "script.js.check_creation_of_state",
             "native": {}
         };
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (id === 'javascript.0.test1' && state.val === 5) {
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 states.getState('javascript.0.test1', function (err, state) {
                     expect(err).to.be.not.ok;
                     expect(state.val).to.be.equal(5);
@@ -237,6 +276,7 @@ describe('Test JS', function() {
                 });
             }
         };
+        addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
         });
@@ -257,9 +297,9 @@ describe('Test JS', function() {
             "_id":              "script.js.check_creation_of_foreign_state",
             "native": {}
         };
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (id === 'javascript.1.test1' && state.val === 6) {
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 states.getState('javascript.1.test1', function (err, state) {
                     expect(err).to.be.not.ok;
                     expect(state).to.be.ok;
@@ -272,6 +312,7 @@ describe('Test JS', function() {
                 });
             }
         };
+        addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
         });
@@ -301,9 +342,9 @@ describe('Test JS', function() {
                 expect(state).to.be.ok;
                 expect(state.val).to.be.equal(5);
 
-                onStateChanged = function (id, state) {
+                const onStateChanged = function (id, state) {
                     if (id === 'javascript.0.test1' && state === null) {
-                        onStateChanged = null;
+                        removeStateChangedHandler(onStateChanged);
                         states.getState('javascript.0.test1', function (err, state) {
                             expect(err).to.be.not.ok;
                             expect(state).to.be.equal(undefined);
@@ -315,6 +356,7 @@ describe('Test JS', function() {
                         });
                     }
                 };
+                addStateChangedHandler(onStateChanged);
 
                 objects.setObject(script._id, script, function (err) {
                     expect(err).to.be.not.ok;
@@ -384,12 +426,13 @@ describe('Test JS', function() {
             "native": {}
         };
 
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (id === 'javascript.0.error' && state.val === 'Error: Permission denied') {
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 done();
             }
         };
+        addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
@@ -411,12 +454,13 @@ describe('Test JS', function() {
             "_id":              "script.js.open_objects",
             "native": {}
         };
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (id === 'javascript.0.error1' && state.val === 'Error: Permission denied') {
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 done();
             }
         };
+        addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
         });
@@ -497,12 +541,12 @@ describe('Test JS', function() {
         }
 
         var typesChanged = {};
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (types.indexOf(id.substring('javascript.0.'.length)) !== -1) {
                 typesChanged[id] = true;
                 console.log('State change '+ id + ' / ' + Object.keys(typesChanged).length + '-' + types.length + '  = ' + JSON.stringify(state))
                 if (Object.keys(typesChanged).length === types.length) {
-                    onStateChanged = null;
+                    removeStateChangedHandler(onStateChanged);
 
                     var count = types.length;
                     for (var t = 0; t < types.length; t++) {
@@ -518,6 +562,7 @@ describe('Test JS', function() {
                 }
             }
         };
+        addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
@@ -541,17 +586,18 @@ describe('Test JS', function() {
         };
 
         var start = 0;
-        onStateChanged = function (id, state){
+        const onStateChanged = function (id, state){
             if (id !== 'javascript.0.delayed') return;
             if (state.val === 4) {
                 start = state.ts;
             } else if (state.val === 5) {
                 expect(start).to.be.not.equal(0);
                 expect(state.ts - start).to.be.least(950);
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 setTimeout(done, 100);
             }
         };
+        addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script);
     });
 
@@ -572,17 +618,18 @@ describe('Test JS', function() {
         };
 
         var start = 0;
-        onStateChanged = function (id, state){
+        const onStateChanged = function (id, state){
             if (id !== 'javascript.0.delayed') return;
             if (state.val === 6) {
                 start = state.ts;
             } else if (state.val === 7) {
                 expect(start).to.be.not.equal(0);
                 expect(state.ts - start).to.be.least(900);
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 setTimeout(done, 100);
             }
         };
+        addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script);
     });
 
@@ -872,17 +919,18 @@ describe('Test JS', function() {
             "native": {}
         };
 
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (id === 'javascript.0.testVar' && state.val === 0) {
                 states.setState('javascript.0.testVar', 6, function (err) {
                     expect(err).to.be.not.ok;
                 });
             }
             if (id === 'javascript.0.testResponse' && state.val === 6) {
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 done();
             }
         };
+        addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
@@ -905,7 +953,7 @@ describe('Test JS', function() {
             "native": {}
         };
 
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (id === 'javascript.0.testVar1' && state.val === 1) {
                 setTimeout(function () {
                     states.setState('javascript.0.testVar1', 1, function (err) {
@@ -914,10 +962,11 @@ describe('Test JS', function() {
                 }, 1000);
             }
             if (id === 'javascript.0.testResponse1' && state.val === 1) {
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 done();
             }
         };
+        addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
@@ -1108,7 +1157,7 @@ describe('Test JS', function() {
             //     objects.setObject('system.adapter.javascript.0', function(err, obj) {
             var cnt = 0;
 
-            onStateChanged = function (id, state) {
+            const onStateChanged = function (id, state) {
                 if (id === 'javascript.0.testResults' && state.val) {
                     cnt += 1;
                     var ar = /^(OK;no=[\d]+)/.exec(state.val) || ['', state.val];
@@ -1116,7 +1165,7 @@ describe('Test JS', function() {
                     expect(ar[1]).to.be.equal('OK;no=' + cnt);
 
                     if (cnt >= recs.length) {
-                        onStateChanged = null;
+                        removeStateChangedHandler(onStateChanged);
                         done ();
                     }
                 }
@@ -1149,12 +1198,13 @@ describe('Test JS', function() {
             "native": {}
         };
 
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (id === 'javascript.0.testScheduleResponse' && state.val === true) {
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 done();
             }
         };
+        addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
@@ -1180,12 +1230,13 @@ describe('Test JS', function() {
             "native": {}
         };
 
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (id === 'javascript.0.testScheduleResponse1' && state.val === true) {
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 done();
             }
         };
+        addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
@@ -1208,12 +1259,13 @@ describe('Test JS', function() {
             "native": {}
         };
 
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (id === 'javascript.0.testScheduleResponse2' && state.val === true) {
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 done();
             }
         };
+        addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
@@ -1236,12 +1288,13 @@ describe('Test JS', function() {
             "native": {}
         };
 
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (id === 'javascript.0.testScheduleResponse2' && state.val === 'test') {
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 done();
             }
         };
+        addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
@@ -1264,12 +1317,13 @@ describe('Test JS', function() {
             "native": {}
         };
 
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (id === 'javascript.0.testScheduleResponse2' && state.val === true) {
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 done();
             }
         };
+        addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
@@ -1292,12 +1346,13 @@ describe('Test JS', function() {
             "native": {}
         };
 
-        onStateChanged = function (id, state) {
+        const onStateChanged = function (id, state) {
             if (id === 'javascript.0.testScheduleResponse2' && state.val === 'test') {
-                onStateChanged = null;
+                removeStateChangedHandler(onStateChanged);
                 done();
             }
         };
+        addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
