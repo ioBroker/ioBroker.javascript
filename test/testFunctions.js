@@ -150,7 +150,7 @@ describe('Test JS', function() {
     });
 
     it('Test JS: check compareTime between', function (done) {
-        this.timeout(4000);
+        this.timeout(10000);
         // add script
         var script = {
             "common": {
