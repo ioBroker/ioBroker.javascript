@@ -1170,6 +1170,7 @@ describe('Test JS', function() {
                     }
                 }
             };
+            addStateChangedHandler(onStateChanged);
 
             objects.setObject(script._id, script, function (err) {
                 expect(err).to.be.not.ok;
