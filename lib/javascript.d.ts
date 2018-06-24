@@ -704,7 +704,7 @@ declare global {
 	): boolean;
 
 	/** Sets up a callback which is called when the script stops */
-	function onStop(callback: () => void, timeout?: number): void;
+	function onStop(callback: (cb?: ()=>void) => void, timeout?: number): void;
 
 	function formatValue(value: number | string, format?: any): string;
 	function formatValue(value: number | string, decimals: number, format?: any): string;
