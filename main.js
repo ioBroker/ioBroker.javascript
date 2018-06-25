@@ -42,10 +42,10 @@ const mods = {
     wake_on_lan:      require('wake_on_lan')
 };
 
-const utils    = require(__dirname + '/lib/utils'); // Get common adapter utils
-const words    = require(__dirname + '/lib/words');
-const sandBox  = require(__dirname + '/lib/sandbox');
-const eventObj = require(__dirname + '/lib/eventObj');
+const utils    = require('./lib/utils'); // Get common adapter utils
+const words    = require('./lib/words');
+const sandBox  = require('./lib/sandbox');
+const eventObj = require('./lib/eventObj');
 
 // for node version <= 0.12
 if (''.startsWith === undefined) {
