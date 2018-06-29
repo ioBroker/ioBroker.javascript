@@ -235,12 +235,13 @@ You can use following parameters to specify the trigger:
 |-----------  |-------     |-------------------                                                                                     |
 | logic       | string     |       "and" or "or" logic to combine the conditions \(default: "and"\)                                 |
 |             |            |                                                                                                        |
-| id          | string     |       name ist equal to given one                                                                      |
-|             | RegExp     |       name matched to regular expression
-|             | Array      |       name matched to a list of given one                                                         |
+| id          | string     |       id is equal to given one                                                                         |
+|             | RegExp     |       id matched to regular expression                                                                 |
+|             | Array      |       id matched to a list of allowed IDs                                                              |
 |             |            |                                                                                                        |
-| name        | string     |       name ist equal to given one                                                                      |
+| name        | string     |       name is equal to given one                                                                       |
 |             | RegExp     |       name matched to regular expression                                                               |
+|             | Array      |       name matched to a list of allowed names                                                          |
 |             |            |                                                                                                        |
 | change      | string     |       "eq", "ne", "gt", "ge", "lt", "le", "any"                                                        |
 |             |   "eq"     |       (equal)            New value must be equal to old one (state.val == oldState.val)                |
@@ -295,15 +296,19 @@ You can use following parameters to specify the trigger:
 |             |            |                                                                                                        |
 | channelId   | string     |       Channel ID must be equal to given one                                                            |
 |             | RegExp     |       Channel ID matched to regular expression                                                         |
+|             | Array      |       Channel ID matched to a list of allowed channel IDs                                              |
 |             |            |                                                                                                        |
 | channelName | string     |       Channel name must be equal to given one                                                          |
 |             | RegExp     |       Channel name matched to regular expression                                                       |
+|             | Array      |       Channel name matched to a list of allowed channel names                                          |
 |             |            |                                                                                                        |
 | deviceId    | string     |       Device ID must be equal to given one                                                             |
 |             | RegExp     |       Device ID matched to regular expression                                                          |
+|             | Array      |       Device ID matched to a list of allowed device IDs                                                |
 |             |            |                                                                                                        |
 | deviceName  | string     |       Device name must be equal to given one                                                           |
 |             | RegExp     |       Device name matched to regular expression                                                        |
+|             | Array      |       Device name matched to a list of allowed device names                                            |
 |             |            |                                                                                                        |
 | enumId      | string     |       State belongs to given enum                                                                      |
 |             | RegExp     |       One enum ID of state satisfy the given regular expression                                        |
@@ -312,9 +317,20 @@ You can use following parameters to specify the trigger:
 |             | RegExp     |       One enum name of state satisfy the given regular expression                                      |
 |             |            |                                                                                                        |
 | from        | string     |       New value is from defined adapter                                                                |
+|             | RegExp     |       New value is from an adapter that matches the regular expression                                 |
+|             | Array      |       New value is from an adapter that appears in the given list of allowed adapters                  |
+|             |            |                                                                                                        |
 | fromNe      | string     |       New value is not from defined adapter                                                            |
+|             | RegExp     |       New value is not from an adapter that matches the regular expression                             |
+|             | Array      |       New value is not from an adapter that appears in the given list of forbidden adapters            |
+|             |            |                                                                                                        |
 | oldFrom     | string     |       Old value is from defined adapter                                                                |
+|             | RegExp     |       Old value is from an adapter that matches the regular expression                                 |
+|             | Array      |       Old value is from an adapter that appears in the given list of allowed adapters                  |
+|             |            |                                                                                                        |
 | oldFromNe   | string     |       Old value is not from defined adapter                                                            |
+|             | RegExp     |       Old value is not from an adapter that matches the regular expression                             |
+|             | Array      |       Old value is not from an adapter that appears in the given list of forbidden adapters            |
 
 Examples:
 Trigger on all states with ID `'*.STATE'` if they are acknowledged and have new value `true`.
