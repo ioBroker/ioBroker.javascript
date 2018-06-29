@@ -310,9 +310,9 @@ declare global {
 			/** Device name must be equal or match to given one */
 			deviceName?: string | string[] | RegExp;
 			/** State belongs to given enum or one enum ID of state satisfy the given regular expression */
-			enumId?: string | RegExp;
+			enumId?: string | string[] | RegExp;
 			/** State belongs to given enum or one enum name of state satisfy the given regular expression */
-			enumName?: string | RegExp;
+			enumName?: string | string[] | RegExp;
 			/** New value is from defined adapter */
 			from?: string | string[] | RegExp;
 			/** New value is not from defined adapter */
@@ -704,7 +704,7 @@ declare global {
 	): boolean;
 
 	/** Sets up a callback which is called when the script stops */
-	function onStop(callback: (cb?: ()=>void) => void, timeout?: number): void;
+	function onStop(callback: (cb?: () => void) => void, timeout?: number): void;
 
 	function formatValue(value: number | string, format?: any): string;
 	function formatValue(value: number | string, decimals: number, format?: any): string;

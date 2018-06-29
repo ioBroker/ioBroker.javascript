@@ -311,10 +311,12 @@ You can use following parameters to specify the trigger:
 |             | Array      |       Device name matched to a list of allowed device names                                            |
 |             |            |                                                                                                        |
 | enumId      | string     |       State belongs to given enum                                                                      |
-|             | RegExp     |       One enum ID of state satisfy the given regular expression                                        |
+|             | RegExp     |       One enum ID of the state satisfies the given regular expression                                  |
+|             | Array      |       One enum ID of the state is in the given list of enum IDs                                        |
 |             |            |                                                                                                        |
 | enumName    | string     |       State belongs to given enum                                                                      |
-|             | RegExp     |       One enum name of state satisfy the given regular expression                                      |
+|             | RegExp     |       One enum name of the state satisfies the given regular expression                                |
+|             | Array      |       One enum name of the state is in the given list of enum names                                    |
 |             |            |                                                                                                        |
 | from        | string     |       New value is from defined adapter                                                                |
 |             | RegExp     |       New value is from an adapter that matches the regular expression                                 |
