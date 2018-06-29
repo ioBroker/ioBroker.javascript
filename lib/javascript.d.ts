@@ -231,7 +231,7 @@ declare global {
 			/** name is equal or matches to given one or name marches to any item in given list */
 			id?: string | string[] | SubscribeOptions[] | RegExp | RegExp[];
 			/** name is equal or matches to given one */
-			name?: string | RegExp;
+			name?: string | string[] | RegExp;
 			/** type of change */
 			change?: "eq" | "ne" | "gt" | "ge" | "lt" | "le" | "any";
 			val?: any;
@@ -302,25 +302,25 @@ declare global {
 			/** Previous last change time stamp must be smaller than given one (oldState.lc < lc) */
 			oldLcLe?: string;
 			/** Channel ID must be equal or match to given one */
-			channelId?: string | RegExp;
+			channelId?: string | string[] | RegExp;
 			/** Channel name must be equal or match to given one */
-			channelName?: string | RegExp;
+			channelName?: string | string[] | RegExp;
 			/** Device ID must be equal or match to given one */
-			deviceId?: string | RegExp;
+			deviceId?: string | string[] | RegExp;
 			/** Device name must be equal or match to given one */
-			deviceName?: string | RegExp;
+			deviceName?: string | string[] | RegExp;
 			/** State belongs to given enum or one enum ID of state satisfy the given regular expression */
 			enumId?: string | RegExp;
 			/** State belongs to given enum or one enum name of state satisfy the given regular expression */
 			enumName?: string | RegExp;
 			/** New value is from defined adapter */
-			from?: string;
+			from?: string | string[] | RegExp;
 			/** New value is not from defined adapter */
-			fromNe?: string;
+			fromNe?: string | string[] | RegExp;
 			/** Old value is from defined adapter */
-			oldFrom?: string;
+			oldFrom?: string | string[] | RegExp;
 			/** Old value is not from defined adapter */
-			oldFromNe?: string;
+			oldFromNe?: string | string[] | RegExp;
 		}
 
 		interface QueryResult {
