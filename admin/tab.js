@@ -389,10 +389,10 @@ function Scripts(main) {
 
         // Load typings for the JS editor
         /** @type {string} */
-        let scriptAdapterInstance = that.main.instances.find(inst => /javascript\.\d+$/.test(inst));
+        let scriptAdapterInstance = that.main.instances.find(function (inst) {return /javascript\.\d+$/.test(inst)});
         if (scriptAdapterInstance != null) {
             scriptAdapterInstance = scriptAdapterInstance.substr(scriptAdapterInstance.indexOf('javascript.'));
-            that.main.socket.emit('sendTo', scriptAdapterInstance, 'loadTypings', null, (result) => {
+            that.main.socket.emit('sendTo', scriptAdapterInstance, 'loadTypings', null, function (result) {
                 if (result.typings) {
                     that.typings = result.typings;
                     setEditorTypings();
@@ -1387,7 +1387,8 @@ function Scripts(main) {
         }
     }
 
-    var funcNames = [
+    // used for ace editor
+    /*var funcNames = [
         {score: 1001, meta: 'iobroker', value: 'getState'},
         {score: 1001, meta: 'iobroker', value: 'setState'},
         {score: 1000, meta: 'iobroker', value: 'request'},
@@ -1442,9 +1443,9 @@ function Scripts(main) {
         {score: 1000, meta: 'iobroker', value: 'toInt'},
         {score: 1000, meta: 'iobroker', value: 'toFloat'},
         {score: 1000, meta: 'iobroker', value: 'toBoolean'}
-    ];
+    ];*/
 
-    this.initEditor = () => {
+    this.initEditor = function () {
         if (!this.editor) {
 
             // compiler options
@@ -1485,24 +1486,23 @@ function Scripts(main) {
             //     }
             // });
             // this.editorDialog.$blockScrolling = Infinity;
-
             $('#dialog-edit-insert-id').button({
                 icons: {primary: 'ui-icon-note'}
-            }).css('height', '30px').click(() => {
-                var sid = this.main.initSelectId();
-                sid.selectId('show', (newId) => {
-                    insertTextIntoEditor(this.editorDialog, '"' + newId + '"' + ((this.main.objects[newId] && this.main.objects[newId].common && this.main.objects[newId].common.name) ? ('/*' + this.main.objects[newId].common.name + '*/') : ''));
-                    this.editorDialog.focus();
+            }).css('height', '30px').click(function () {
+                var sid = that.main.initSelectId();
+                sid.selectId('show', function (newId) {
+                    insertTextIntoEditor(that.editorDialog, '"' + newId + '"' + ((that.main.objects[newId] && that.main.objects[newId].common && that.main.objects[newId].common.name) ? ('/*' + that.main.objects[newId].common.name + '*/') : ''));
+                    that.editorDialog.focus();
                 });
             });
 
             $('#edit-insert-id').button({
                 icons: {primary: 'ui-icon-note'}
-            }).css('height', '30px').click(() => {
-                var sid = this.main.initSelectId();
-                sid.selectId('show', (newId) => {
-                    insertTextIntoEditor(this.editor, '"' + newId + '"' + ((this.main.objects[newId] && this.main.objects[newId].common && this.main.objects[newId].common.name) ? ('/*' + this.main.objects[newId].common.name + '*/') : ''));
-                    this.editor.focus();
+            }).css('height', '30px').click(function () {
+                var sid = that.main.initSelectId();
+                sid.selectId('show', function (newId) {
+                    insertTextIntoEditor(that.editor, '"' + newId + '"' + ((that.main.objects[newId] && that.main.objects[newId].common && that.main.objects[newId].common.name) ? ('/*' + that.main.objects[newId].common.name + '*/') : ''));
+                    that.editor.focus();
                 });
             });
 
@@ -1516,7 +1516,7 @@ function Scripts(main) {
                     text = that.editorDialog.getModel().getValueInRange(that.editorDialog.getSelection());
                 }
                 if (text) {
-                    text = text.replace(/\"/g, '').replace(/\'/g, '');
+                    text = text.replace(/"/g, '').replace(/'/g, '');
                     if (text) {
                         try {
                             $('#div-cron').cron('value', text);
@@ -1544,7 +1544,7 @@ function Scripts(main) {
             });
 
             // this.editor.on('input', function() {
-            this.editor.onDidChangeModelContent((e) => {
+            this.editor.onDidChangeModelContent(function (e) {
                 if (that.currentEngine !== 'Blockly') {
                     setChanged(true);
                     $('#script-edit-button-save').button('enable');
@@ -1552,7 +1552,7 @@ function Scripts(main) {
                 }
             });
 
-            this.editorDialog.onDidChangeModelContent((e) => {
+            this.editorDialog.onDidChangeModelContent(function (e) {
                 that.editorDialog._changed = true;
                 $('#dialog_script_save').button('enable');
             });
@@ -2925,7 +2925,7 @@ function Scripts(main) {
         this.$dialogCron.dialog('open');
     };
 
-    this.showScriptDialog = (value, args, isReturn, cb) => {
+    this.showScriptDialog = function (value, args, isReturn, cb) {
         this.editorDialog.setValue(value || '');
 
         var width  = 700;

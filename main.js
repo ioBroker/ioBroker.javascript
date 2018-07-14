@@ -113,7 +113,7 @@ let jsDeclarationServer;
 function provideDeclarationsForGlobalScript(scriptID, declarations) {
     // Remember which declarations this global script had access to
     // we need this so the editor doesn't show a duplicate identifier error
-    if (globalDeclarations != null && globalDeclarations != '') {
+    if (globalDeclarations != null && globalDeclarations !== '') {
         knownGlobalDeclarationsByScript[scriptID] = globalDeclarations;
     }
     // and concatenate the global declarations for the next scripts
@@ -249,6 +249,11 @@ const adapter = new utils.Adapter({
                 return;
             }
 
+            if (obj.common && obj.common.engine === 'system.adapter.' + adapter.namespace) {
+                // create states for scripts
+                createActiveObject(id, obj.common.enabled);
+            }
+
             if ((context.objects[id].common.enabled && !obj.common.enabled) ||
                 (context.objects[id].common.engine === 'system.adapter.' + adapter.namespace && obj.common.engine !== 'system.adapter.' + adapter.namespace)) {
 
@@ -364,7 +369,7 @@ const adapter = new utils.Adapter({
                 context.errorLogFunction && context.errorLogFunction[level](fixLineNo(stack[i]));
             }
         };
-        
+
         context.logWithLineInfo.warn  = context.logWithLineInfo.bind(1, 'warn');
         context.logWithLineInfo.error = context.logWithLineInfo.bind(1, 'error');
         context.logWithLineInfo.info  = context.logWithLineInfo.bind(1, 'info');
@@ -401,7 +406,7 @@ const adapter = new utils.Adapter({
                                             }
                                             globalScript += js + '\n';
                                             if (!--count) {
-                                                globalScriptLines = globalScript.split(/[\r\n|\n|\r]/g).length;
+                                                globalScriptLines = globalScript.split(/\r\n|\n|\r/g).length;
                                                 // load all scripts
                                                 for (let i = 0; i < doc.rows.length; i++) {
                                                     if (!checkIsGlobal(doc.rows[i].value)) {
@@ -415,9 +420,7 @@ const adapter = new utils.Adapter({
                                         const filename = scriptIdToTSFilename(obj._id);
                                         const tsCompiled = tsServer.compile(filename, obj.common.source);
 
-                                        const errors = tsCompiled.diagnostics.map(function (diag) {
-                                            return diag.annotatedSource + '\n';
-                                        }).join('\n');
+                                        const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
 
                                         if (tsCompiled.success) {
                                             if (errors.length > 0) {
@@ -626,12 +629,13 @@ let globalDeclarations = '';
 // have access to, because it depends on the compile order
 let knownGlobalDeclarationsByScript = {};
 let globalScriptLines  = 0;
-let activeRegEx        = null;
+// let activeRegEx        = null;
 let activeStr          = '';
 
 /**
  * Redirects the virtual-tsc log output to the ioBroker log
- * @param {string} sev
+ * @param {string} msg message
+ * @param {string} sev severity (info, silly, debug, warn, error)
  */
 function tsLog(msg, sev) {
     // shift the severities around, we don't care about the small details
@@ -689,7 +693,7 @@ context.logError = function (msg, e, offs) {
     }
 };
 
-function createActiveObject(id, enabled) {
+function createActiveObject(id, enabled, cb) {
     const idActive = adapter.namespace + '.scriptEnabled.' + id.substring('script.js.'.length);
 
     if (!context.objects[idActive]) {
@@ -707,13 +711,21 @@ function createActiveObject(id, enabled) {
             },
             type: 'state'
         };
-        adapter.setForeignObject(idActive, context.objects[idActive], function (err) {
+        adapter.setForeignObject(idActive, context.objects[idActive], err => {
             if (!err) {
-                adapter.setForeignState(idActive, enabled, true);
+                adapter.setForeignState(idActive, enabled, true, cb);
+            } else if (cb) {
+                cb();
             }
         });
     } else {
-        adapter.setForeignState(idActive, enabled, true);
+        adapter.getForeignState(idActive, (err, state) => {
+            if (state && state.val !== enabled) {
+                adapter.setForeignState(idActive, enabled, true, cb);
+            } else if (cb) {
+                cb();
+            }
+        });
     }
 }
 
@@ -1078,14 +1090,17 @@ function prepareScript(obj, callback) {
 
 function load(nameOrObject, callback) {
     if (typeof nameOrObject === 'object') {
-        return prepareScript(nameOrObject, callback);
+        // create states for scripts
+        createActiveObject(nameOrObject._id, nameOrObject && nameOrObject.common && nameOrObject.common.enabled, () => {
+            return prepareScript(nameOrObject, callback);
+        });
     } else {
         adapter.getForeignObject(nameOrObject, function (err, obj) {
             if (!obj || err) {
                 if (err) adapter.log.error('Invalid script "' + nameOrObject + '": ' + err);
                 if (typeof callback === 'function') callback(false, nameOrObject);
             } else {
-                return prepareScript(obj, callback);
+                return load(obj, callback);
             }
         });
     }
