@@ -23,7 +23,8 @@ function Scripts(main) {
     this.prepared       = false;
     this.typings        = {}; // TypeScript declarations
     this.globalTypingHandles  = []; // Handles to the global typings added to the editor
-    
+    this.alive          = false;
+
     function setChanged(isChanged) {
         that.changed = isChanged;
         if (typeof parent !== 'undefined' && parent) {
@@ -161,13 +162,13 @@ function Scripts(main) {
                 }
             });
 
-            $('#edit-new-group-name').change(function () {
+            $('#edit-new-group-name').on('change', function () {
                 if ($(this).val()) {
                     $('#script-group-button-save').button('enable');
                 } else {
                     $('#script-group-button-save').button('disable');
                 }
-            }).keyup(function (e) {
+            }).on('keyup', function (e) {
                 $(this).trigger('change');
                 if (e.keyCode === 13) $('#script-group-button-save').trigger('click');
             });
@@ -335,14 +336,14 @@ function Scripts(main) {
             if (that.$parentOutput) that.$parentOutput.scrollTop($('#script-output').height());
         }).attr('title', _('Scroll down'));
 
-        $('#edit-wrap-lines').change(function () {
+        $('#edit-wrap-lines').on('change', function () {
             that.main.saveConfig('script-editor-wrap-lines', $(this).prop('checked'));
             setEditorOptions(that.editor, {
                 lineWrap: $(this).prop('checked')
             });
         });
 
-        $('#dialog-edit-wrap-lines').change(function () {
+        $('#dialog-edit-wrap-lines').on('change', function () {
             that.main.saveConfig('script-editor-dialog-wrap-lines', $(this).prop('checked'));
             setEditorOptions(that.editorDialog, {
                 lineWrap: $(this).prop('checked')
@@ -351,7 +352,7 @@ function Scripts(main) {
         
         fillGroups('edit-script-group');
 
-        $('.import-drop-file').change(function (e) {
+        $('.import-drop-file').on('change', function (e) {
             fileHandler(e);
         });
         $('.import-text-drop').click(function (e) {
@@ -393,6 +394,8 @@ function Scripts(main) {
         if (scriptAdapterInstance != null) {
             scriptAdapterInstance = scriptAdapterInstance.substr(scriptAdapterInstance.indexOf('javascript.'));
             that.main.socket.emit('sendTo', scriptAdapterInstance, 'loadTypings', null, function (result) {
+                that.alive = true;
+                setTypeCheck(that.alive);
                 if (result.typings) {
                     that.typings = result.typings;
                     setEditorTypings();
@@ -499,8 +502,8 @@ function Scripts(main) {
      */
     function setTypeCheck(enabled) {
         const options = {
-            noSemanticValidation: !enabled, // toggle the type checking
-            noSyntaxValidation: false // always check the syntax
+            noSemanticValidation: !that.alive || !enabled, // toggle the type checking
+            noSyntaxValidation: !that.alive // always check the syntax
         };
         monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions(options);
         monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions(options);
@@ -1167,13 +1170,17 @@ function Scripts(main) {
 
     function fillGroups(elemName) {
         var groups = ['script.js', 'script.js.common', 'script.js.global'];
-
+        var g;
         for (var i = 0; i < that.list.length; i++) {
-            var g = getGroup(that.list[i]);
-            if (groups.indexOf(g) === -1 ) groups.push(g);
+            g = getGroup(that.list[i]);
+            if (groups.indexOf(g) === -1 ) {
+                groups.push(g);
+            }
         }
         for (var j = 0; j < that.groups.length; j++) {
-            if (groups.indexOf(that.groups[j]) === -1) groups.push(that.groups[j]);
+            if (groups.indexOf(that.groups[j]) === -1) {
+                groups.push(that.groups[j]);
+            }
         }
         var text = '';
 
@@ -1188,6 +1195,15 @@ function Scripts(main) {
             if (that.main.objects[groups[g]] && that.main.objects[groups[g]].common && that.main.objects[groups[g]].common.name) {
                 name = that.main.objects[groups[g]].common.name;
             }
+            if (name.indexOf('.') === -1) {
+                var parts = groups[g].split('.');
+                if (parts.length > 3) {
+                    parts.splice(0, 2);
+                    parts.pop();
+                    name = parts.join('/') + '/' + name;
+                }
+            }
+
 
             text += '<option value="' + groups[g] + '">' + name + '</option>\n';
             // create group if not exists
@@ -1456,21 +1472,23 @@ function Scripts(main) {
                 allowNonTsExtensions: true,
                 moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
                 module: monaco.languages.typescript.ModuleKind.CommonJS,
-                typeRoots: [ 'node_modules/@types' ],
+                typeRoots: ['node_modules/@types'],
             };
             monaco.languages.typescript.javascriptDefaults.setCompilerOptions(compilerOptions);
             monaco.languages.typescript.typescriptDefaults.setCompilerOptions(compilerOptions);
 
-            setTypeCheck(true);
+            setTypeCheck(!that.alive);
 
             this.editor = monaco.editor.create(document.getElementById('script-editor'), {
                 language: 'javascript',
-                lineNumbers: 'on'
+                lineNumbers: 'on',
+                scrollBeyondLastLine: false
             });
 
             this.editorDialog = monaco.editor.create(document.getElementById('dialog-script-editor'), {
                 language: 'javascript',
-                lineNumbers: 'on'
+                lineNumbers: 'on',
+                scrollBeyondLastLine: false
             });
 
             // this.editorDialog = ace.edit('dialog-script-editor');
@@ -1557,15 +1575,15 @@ function Scripts(main) {
                 $('#dialog_script_save').button('enable');
             });
 
-            $('#edit-script-name').change(function () {
+            $('#edit-script-name').on('change', function () {
                 setChanged(true);
                 $('#script-edit-button-save').button('enable');
                 $('#script-edit-button-cancel').button('enable');
-            }).keyup(function () {
+            }).on('keyup', function () {
                 $(this).trigger('change');
             });
 
-            $('#edit-script-debug').change(function () {
+            $('#edit-script-debug').on('change', function () {
                 if ($(this).prop('checked')) {
                     that.main.showMessage(_('debug_help'));
                 }
@@ -1573,7 +1591,7 @@ function Scripts(main) {
                 $('#script-edit-button-save').button('enable');
                 $('#script-edit-button-cancel').button('enable');
             });
-            $('#edit-script-verbose').change(function () {
+            $('#edit-script-verbose').on('change', function () {
                 if ($(this).prop('checked')) {
                     that.main.showMessage(_('verbose_help'));
                 }
@@ -1583,7 +1601,7 @@ function Scripts(main) {
                 $('#script-edit-button-cancel').button('enable');
             });
 
-            $('#edit-script-engine-type').change(function () {
+            $('#edit-script-engine-type').on('change', function () {
                 if (that.currentEngine === 'Blockly' && that.editor.getValue()) {
                     main.confirmMessage(_('You cannot go back!'), null, null, function (result) {
                         if (result) {
@@ -1610,7 +1628,7 @@ function Scripts(main) {
                 $('#script-edit-button-save').button('enable');
                 $('#script-edit-button-cancel').button('enable');
             });
-            $('#edit-script-group').change(function () {
+            $('#edit-script-group').on('change', function () {
                 setChanged(true);
                 $('#script-edit-button-save').button('enable');
                 $('#script-edit-button-cancel').button('enable');
@@ -2705,9 +2723,9 @@ function Scripts(main) {
             cb = isConvert;
             isConvert = false;
         }
-        var that = this;
-        var obj = {};
-        var name = $('#edit-script-name').val();
+        var that       = this;
+        var obj        = {};
+        var name       = $('#edit-script-name').val();
         var newId      = $('#edit-script-group').val() + '.' + name.replace(/["'\s.]/g, '_');
         obj.name       = name;
         obj.engineType = $('#edit-script-engine-type').val() || '';
@@ -2845,7 +2863,9 @@ function Scripts(main) {
 
         if (id.match(/^script\.js\./) && obj && obj.type === 'channel') {
             scripts.groups.push(id);
-            if (!that.renaming) fillGroups('edit-script-group');
+            if (!that.renaming) {
+                fillGroups('edit-script-group');
+            }
         }
     };
 

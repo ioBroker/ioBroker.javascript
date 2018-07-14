@@ -14,8 +14,8 @@
     <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
     <script type="text/javascript" src="../../lib/js/loStorage.js"></script>
     <!-- original editor -->
-    <script type="text/javascript" src="../../lib/js/ace-1.2.0/ace.js"></script>
-    <script type="text/javascript" src="../../lib/js/ace-1.2.0/ext-language_tools.js"></script>
+    <!--script type="text/javascript" src="../../lib/js/ace-1.2.0/ace.js"></script>
+    <script type="text/javascript" src="../../lib/js/ace-1.2.0/ext-language_tools.js"></script-->
     <!-- improved VSCode editor -->
     <script type="text/javascript" src="monaco-editor/monaco-editor.bundle.js"></script>
 
@@ -274,10 +274,9 @@
                     <tr>
                         <td colspan="2">
                             <table style="width: calc(100% - 20px); border: 0;"><tr>
-                                <td style="width: 410px;">
+                                <td style="width: 500px;">
                                     <label  style="display: inline-block; padding-right: 5px" for="edit-script-group" class="translate">name</label>
-                                    <select style="display: inline-block" id="edit-script-group"></select>
-                                    <input  style="display: inline-block; width: 200px" id="edit-script-name">
+                                    <select style="display: inline-block" id="edit-script-group"></select><label style="display: inline-block;" for="edit-script-name">/</label><input  style="display: inline-block; width: 200px" id="edit-script-name"/>
                                 </td>
                                 <td id="script-buttons" style="width: calc(100% - 410px);">
                                     <label for="edit-script-debug"  style="display: inline-block; padding-left: 25px" class="translate">debug</label>
