@@ -291,7 +291,7 @@ const adapter = new utils.Adapter({
             if (oldState) {
                 // enable or disable script
                 if (!state.ack && id.startsWith(activeStr) && context.objects[id] && context.objects[id].native && context.objects[id].native.script) {
-                    adapter.extendForeignObject(context.objects[id].native.script, { common: { enabled: state.val } });
+                    adapter.extendForeignObject(context.objects[id].native.script, {common: {enabled: state.val}});
                 }
 
                 // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
@@ -348,6 +348,26 @@ const adapter = new utils.Adapter({
         } catch (e) {
             adapter.log.warn('Could not read TypeScript ambient declarations: ' + e);
         }
+
+        context.logWithLineInfo = function (level, msg) {
+            if (msg === undefined) {
+                return context.logWithLineInfo ('info', msg);
+            }
+
+            context.errorLogFunction && context.errorLogFunction[level](msg);
+
+            const stack = (new Error().stack).split('\n');
+
+            for (let i = 3; i < stack.length; i++) {
+                if (!stack[i]) continue;
+                if (stack[i].match(/runInContext|runInNewContext|javascript\.js:/)) break;
+                context.errorLogFunction && context.errorLogFunction[level](fixLineNo(stack[i]));
+            }
+        };
+        
+        context.logWithLineInfo.warn  = context.logWithLineInfo.bind(1, 'warn');
+        context.logWithLineInfo.error = context.logWithLineInfo.bind(1, 'error');
+        context.logWithLineInfo.info  = context.logWithLineInfo.bind(1, 'info');
 
         installLibraries(() => {
             getData(() => {
@@ -473,16 +493,14 @@ const adapter = new utils.Adapter({
                     for (const libFile of libFiles) {
                         try {
                             const libPath = require.resolve(`typescript/lib/${libFile}`);
-                            const lib = nodeFS.readFileSync(libPath, 'utf8');
-                            typings[libFile] = lib;
+                            typings[libFile] = nodeFS.readFileSync(libPath, 'utf8');
                         } catch (e) { /* ok, no lib then */ }
                     }
 
-                    // try to load nodejs typings from disk
+                    // try to load node.js typings from disk
                     try {
                         const nodeTypingsPath = require.resolve('@types/node/index.d.ts');
-                        const nodeTypings = nodeFS.readFileSync(nodeTypingsPath, 'utf8');
-                        typings['node_modules/@types/node/index.d.ts'] = nodeTypings;
+                        typings['node_modules/@types/node/index.d.ts'] = nodeFS.readFileSync(nodeTypingsPath, 'utf8');
                     } catch (e) { /* ok, no typings then */ }
 
                     // provide the already-loaded ioBroker typings and global script declarations
@@ -681,7 +699,8 @@ function createActiveObject(id, enabled) {
                 name: 'scriptEnabled.' + id.substring('script.js.'.length),
                 desc: 'controls script activity',
                 type: 'boolean',
-                role: 'switch.active'
+                role: 'switch.active',
+                expert: true
             },
             native: {
                 script: id
