@@ -366,6 +366,14 @@ All changes of *stateId1* will be written to *stateId2*.
 
 Please note, that by default "change" is equal to "any", except when only id as string is set (like `on("id", function (){});`). In last case change will be set to "ne".
 
+If the `value` parameter is set in combination with state id as the second parameter, on any change the state will filled with the `value`.
+```js
+on('stateId1', 'stateId2', 'triggered');
+setState('stateId1', 'new value');
+
+// stateId2 will be set to 'triggered'.
+```
+
 Function "on" returns handler back. This handler can be used by unsubscribe.
 
 ### subscribe - same as **[on](#on---subscribe-on-changes-or-updates-of-some-state)**
