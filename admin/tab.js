@@ -465,7 +465,17 @@ function Scripts(main) {
 
         if (that.blocklyWorkspace) Blockly.svgResize(that.blocklyWorkspace);
 
-        if (that.editor) that.editor.layout();
+        if (that.editor) {
+            that.editor.layout();
+        }
+        var $scriptEditor = $('#script-editor');
+        wasVisible = $scriptEditor.data('wasVisible');
+        if (wasVisible !== true && wasVisible !== false) {
+            wasVisible = $scriptEditor.is(':visible');
+        }
+        if (wasVisible === true) {
+            $scriptEditor.show();
+        }
     };
 
     /** @typedef {"javascript" | "typescript" | "coffee"} EditorLanguage */
@@ -1482,13 +1492,15 @@ function Scripts(main) {
             this.editor = monaco.editor.create(document.getElementById('script-editor'), {
                 language: 'javascript',
                 lineNumbers: 'on',
-                scrollBeyondLastLine: false
+                scrollBeyondLastLine: false,
+                automaticLayout: true
             });
 
             this.editorDialog = monaco.editor.create(document.getElementById('dialog-script-editor'), {
                 language: 'javascript',
                 lineNumbers: 'on',
-                scrollBeyondLastLine: false
+                scrollBeyondLastLine: false,
+                automaticLayout: true
             });
 
             // this.editorDialog = ace.edit('dialog-script-editor');
@@ -3374,6 +3386,9 @@ function applyResizableH(install, timeout) {
             handles:    'e',
             start:      function (e, ui) {
                 var $editor = $('#blockly-editor');
+                $editor.data('wasVisible', $editor.is(':visible'));
+                $editor.hide();
+                $editor = $('#script-editor');
                 $editor.data('wasVisible', $editor.is(':visible'));
                 $editor.hide();
                 $('.blocklyWidgetDiv').hide();
