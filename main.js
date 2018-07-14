@@ -585,12 +585,27 @@ mods.fs.chownSync = function () {
 mods.fs.copyFile = function () {
     checkObjectsJson(arguments[0]);
     checkObjectsJson(arguments[1]);
-    return nodeFS.copyFile.apply(this, arguments);
+    if (nodeFS.copyFile) {
+        return nodeFS.copyFile.apply(this, arguments);
+    } else {
+        const cb = arguments[2];
+        return nodeFS.readFile(arguments[0], (err, data) => {
+            if (err) {
+                cb && cb(err);
+            } else {
+                nodeFS.writeFile(arguments[1], data, err => cb && cb(err));
+            }
+        });
+    }
 };
 mods.fs.copyFileSync = function () {
     checkObjectsJson(arguments[0]);
     checkObjectsJson(arguments[1]);
-    return nodeFS.copyFileSync.apply(this, arguments);
+    if (nodeFS.copyFileSync) {
+        return nodeFS.copyFileSync.apply(this, arguments);
+    } else {
+        return nodeFS.writeFileSync(arguments[1], nodeFS.readFileSync(arguments[0]));
+    }
 };
 mods.fs.open = function () {
     checkObjectsJson(arguments[0]);
