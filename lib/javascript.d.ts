@@ -481,6 +481,10 @@ declare global {
 	 * The name of the current script
 	 */
 	const name: string;
+	/**
+	 * The name of the current script
+	 */
+	const scriptName: string;
 
 	/**
 	 * Queries all states with the given selector
