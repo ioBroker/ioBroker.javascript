@@ -718,6 +718,8 @@ function createActiveObject(id, enabled, cb) {
                 name: 'scriptEnabled.' + id.substring('script.js.'.length),
                 desc: 'controls script activity',
                 type: 'boolean',
+                write: true,
+                read: true,
                 role: 'switch.active',
                 expert: true
             },
