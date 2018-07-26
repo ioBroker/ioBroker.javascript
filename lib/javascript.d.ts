@@ -481,6 +481,10 @@ declare global {
 	 * The name of the current script
 	 */
 	const name: string;
+	/**
+	 * The name of the current script
+	 */
+	const scriptName: string;
 
 	/**
 	 * Queries all states with the given selector
@@ -533,6 +537,21 @@ declare global {
 	 * Causes all changes of the state with id1 to the state with id2
 	 */
 	function subscribe(id1: string, id2: string): any;
+
+	/**
+	 * Watches the state with id1 for changes and overwrites the state with id2 with value2 when any occur.
+	 * @param id1 The state to watch for changes
+	 * @param id2 The state to update when changes occur
+	 * @param value2 The value to write into state `id2` when `id1` gets changed
+	 */
+	function on(id1: string, id2: string, value2: any): any;
+	/**
+	 * Watches the state with id1 for changes and overwrites the state with id2 with value2 when any occur.
+	 * @param id1 The state to watch for changes
+	 * @param id2 The state to update when changes occur
+	 * @param value2 The value to write into state `id2` when `id1` gets changed
+	 */
+	function subscribe(id1: string, id2: string, value2: any): any;
 
 	/**
 	 * Subscribe to changes of the matched states.
