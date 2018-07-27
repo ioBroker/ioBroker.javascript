@@ -1191,3 +1191,18 @@ function getData(callback) {
     });
 }
 
+// Catch unhandled errors originating from callbacks in scripts
+// These are not caught by wrapping the execution code in try-catch
+process.on("uncaughtException", e => {
+    const scriptCodeMarker = "script.js.";
+    if (typeof e.stack === "string" && e.stack.indexOf(scriptCodeMarker) > -1) {
+        // This is a script error
+        let scriptName = e.stack.substr(e.stack.indexOf(scriptCodeMarker));
+        scriptName = scriptName.substr(0, scriptName.indexOf(":"));
+        context.logError(scriptName, e);
+        // TODO: should we stop the script execution now?
+    } else {
+        // Don't silently swallow all errors
+        throw e;
+    }
+});
