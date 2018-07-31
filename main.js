@@ -356,7 +356,7 @@ const adapter = new utils.Adapter({
 
         context.logWithLineInfo = function (level, msg) {
             if (msg === undefined) {
-                return context.logWithLineInfo ('info', msg);
+                return context.logWithLineInfo('info', msg);
             }
 
             context.errorLogFunction && context.errorLogFunction[level](msg);
@@ -519,6 +519,30 @@ const adapter = new utils.Adapter({
                     break;
                 }
             }
+        }
+    },
+
+    /**
+     * If the JS-Controller catches an unhandled error, this will be called
+     * so we have a chance to handle it ourself.
+     * @param {Error} err
+     */
+    error: (err) => {
+        // Identify unhandled errors originating from callbacks in scripts
+        // These are not caught by wrapping the execution code in try-catch
+        const scriptCodeMarker = 'script.js.';
+        if (typeof err.stack === 'string' && err.stack.indexOf(scriptCodeMarker) > -1) {
+            // This is a script error
+            let scriptName = err.stack.substr(err.stack.indexOf(scriptCodeMarker));
+            scriptName = scriptName.substr(0, scriptName.indexOf(':'));
+            context.logError(scriptName, err);
+            // Leave the script running for now
+
+            // TODO: Add a marker that the script has problems:
+            // https://github.com/ioBroker/ioBroker.javascript/issues/162
+
+            // signal to the JS-Controller that we handled the error ourselves
+            return true;
         }
     }
 });
@@ -1191,18 +1215,3 @@ function getData(callback) {
     });
 }
 
-// Catch unhandled errors originating from callbacks in scripts
-// These are not caught by wrapping the execution code in try-catch
-process.on("uncaughtException", e => {
-    const scriptCodeMarker = "script.js.";
-    if (typeof e.stack === "string" && e.stack.indexOf(scriptCodeMarker) > -1) {
-        // This is a script error
-        let scriptName = e.stack.substr(e.stack.indexOf(scriptCodeMarker));
-        scriptName = scriptName.substr(0, scriptName.indexOf(":"));
-        context.logError(scriptName, e);
-        // TODO: should we stop the script execution now?
-    } else {
-        // Don't silently swallow all errors
-        throw e;
-    }
-});
