@@ -1688,6 +1688,7 @@ function Scripts(main) {
             }
         });
     }
+
     function deleteId(id, originalGroup, confirmed, deleted) {
         originalGroup = originalGroup || id;
         confirmed     = confirmed     || [];
@@ -3428,6 +3429,9 @@ function applyResizableV() {
         handles:    's',
         start:      function (e, ui) {
             var $editor = $('#blockly-editor');
+            $editor.data('wasVisible', $editor.is(':visible'));
+            $editor.hide();
+            $editor = $('#script-editor');
             $editor.data('wasVisible', $editor.is(':visible'));
             $editor.hide();
             $('.blocklyWidgetDiv').hide();
