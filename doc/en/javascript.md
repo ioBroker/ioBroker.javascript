@@ -650,7 +650,7 @@ Structure of astro object.
 setState(id, state, ack, callback);
 ```
 
-**Note**: Following commands are identical
+**Note**: The following commands are identical
 
 ```
 setState('myState', 1, false);
