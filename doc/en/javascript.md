@@ -650,6 +650,14 @@ Structure of astro object.
 setState(id, state, ack, callback);
 ```
 
+**Note**: Following commands are identical
+
+```
+setState('myState', 1, false);
+setState('myState', {val: 1, ack: false});
+setState('myState', 1);
+```
+
 Please refer to https://github.com/ioBroker/ioBroker/wiki/Adapter-Development-Documentation#commands-and-statuses for usage of "ack".
 Short:
 - `ack` = false : Script wants to send a command to be executed by the target device/adapter
