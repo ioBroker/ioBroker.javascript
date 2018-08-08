@@ -11,7 +11,9 @@ function Scripts(main) {
     this.$dialogCron    = $('#dialog-cron');
     this.$dialogScript  = $('#dialog-script');
     this.$dialogExport  = $('#dialog-export-blockly');
+    /** @type {monaco.editor.IStandaloneCodeEditor} */
     this.editor         = null;
+    /** @type {monaco.editor.IStandaloneCodeEditor} */
     this.editorDialog   = null;
     this.changed        = false;
     this.main           = main;
@@ -491,7 +493,10 @@ function Scripts(main) {
         const model = editorInstance.getModel();
         const code = model.getValue();
         const uri = model.uri.path;
-        const filenameWithoutExtension = uri != null ? uri.substr(0, uri.lastIndexOf(".")) : "index";
+        const filenameWithoutExtension = 
+            typeof uri === "string" && uri.indexOf(".") > -1
+            ? uri.substr(0, uri.lastIndexOf(".")) 
+            : "index";
         const extension =
             language === "javascript" ? "js"
             : language === "typescript" ? "ts"
