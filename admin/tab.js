@@ -1487,22 +1487,20 @@ function Scripts(main) {
     this.initEditor = function () {
         if (!this.editor) {
 
-            // compiler options
-            const compilerOptions = {
-                target: monaco.languages.typescript.ScriptTarget.ES6,
-                lib: [],
-                noLib: true, // we manually provide the lib files because the editor includes the DOM typings
-                allowNonTsExtensions: true,
-                allowJS: true,
-                checkJS: true,
-                moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-                module: monaco.languages.typescript.ModuleKind.CommonJS,
-                typeRoots: ['node_modules/@types'],
-            };
+            // For some reason we have to get the original compiler options
+            // and assign new properties one by one
+            const compilerOptions = monaco.languages.typescript.typescriptDefaults['getCompilerOptions']();
+            compilerOptions.target = monaco.languages.typescript.ScriptTarget.ES2015;
+            compilerOptions.allowJs = true;
+            compilerOptions.checkJs = true;
+            compilerOptions.noLib = true;
+            compilerOptions.lib = [];
+            compilerOptions.moduleResolution = monaco.languages.typescript.ModuleResolutionKind.NodeJs;
             monaco.languages.typescript.typescriptDefaults.setCompilerOptions(compilerOptions);
 
             setTypeCheck(!that.alive);
 
+            // Create the editor instances
             this.editor = monaco.editor.create(document.getElementById('script-editor'), {
                 lineNumbers: 'on',
                 scrollBeyondLastLine: false,
@@ -1514,6 +1512,14 @@ function Scripts(main) {
                 scrollBeyondLastLine: false,
                 automaticLayout: true
             });
+
+            // Create a default empty model for both
+            this.editor.setModel(monaco.editor.createModel(
+                "", "typescript", monaco.Uri.from({path: '__empty.js'})
+            ));
+            this.editorDialog.setModel(monaco.editor.createModel(
+                "", "typescript", monaco.Uri.from({path: '__empty_dialog.js'})
+            ));
 
             $('#dialog-edit-insert-id').button({
                 icons: {primary: 'ui-icon-note'}
