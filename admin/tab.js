@@ -11,7 +11,9 @@ function Scripts(main) {
     this.$dialogCron    = $('#dialog-cron');
     this.$dialogScript  = $('#dialog-script');
     this.$dialogExport  = $('#dialog-export-blockly');
+    /** @type {monaco.editor.IStandaloneCodeEditor} */
     this.editor         = null;
+    /** @type {monaco.editor.IStandaloneCodeEditor} */
     this.editorDialog   = null;
     this.changed        = false;
     this.main           = main;
@@ -486,10 +488,29 @@ function Scripts(main) {
      * @param {EditorLanguage} language 
      */
     function setEditorLanguage(editorInstance, language) {
-        monaco.editor.setModelLanguage(
-            editorInstance.getModel(),
-            language
-        );
+        // we need to recreate the model when changing languages,
+        // so remember its settings
+        const model = editorInstance.getModel();
+        const code = model.getValue();
+        const uri = model.uri.path;
+        const filenameWithoutExtension = 
+            typeof uri === "string" && uri.indexOf(".") > -1
+            ? uri.substr(0, uri.lastIndexOf(".")) 
+            : "index";
+        const extension =
+            language === "javascript" ? "js"
+            : language === "typescript" ? "ts"
+            : language === "coffee" ? "coffee"
+            : language;
+        // get rid of the original model
+        model.dispose();
+        // Both JS and TS need the model to work in TypeScript as the script type
+        // is inferred from the file extension
+        const newLanguage = (language === "javascript" || language === "typescript") ? "typescript" : language;
+        const newModel = monaco.editor.createModel(
+            code, newLanguage, monaco.Uri.from({path: `${filenameWithoutExtension}.${extension}`})
+        )
+        editorInstance.setModel(newModel);
     }
 
     /**
@@ -515,7 +536,6 @@ function Scripts(main) {
             noSemanticValidation: !that.alive || !enabled, // toggle the type checking
             noSyntaxValidation: !that.alive // always check the syntax
         };
-        monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions(options);
         monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions(options);
     }
 
@@ -527,10 +547,6 @@ function Scripts(main) {
      * @returns {void}
      */
     function addTypingsToEditor(path, typings, isGlobal) {
-        try {
-            const handle = monaco.languages.typescript.javascriptDefaults.addExtraLib(typings, path);
-            if (isGlobal) that.globalTypingHandles.push(handle);
-        } catch (e) { /* might be added already */}
         try {
             const handle = monaco.languages.typescript.typescriptDefaults.addExtraLib(typings, path);
             if (isGlobal) that.globalTypingHandles.push(handle);
@@ -587,22 +603,19 @@ function Scripts(main) {
         switchViews(false, that.currentEngine);
 
         if (that.currentEngine.match(/^[jJ]ava[sS]cript/)) {
-            //that.editor.getSession().setMode('ace/mode/javascript');
             setEditorOptions(that.editor, {
                 language: 'javascript',
-                typeCheck: true // not suppported
+                typeCheck: true // supported
             });
         } else if (that.currentEngine.match(/^[cC]offee[sS]cript/)) {
-            // that.editor.getSession().setMode('ace/mode/coffee');
             setEditorOptions(that.editor, {
                 language: 'coffee',
-                typeCheck: false // not suppported
+                typeCheck: false // not supported
             });
         } else if (that.currentEngine.match(/^[tT]ype[sS]cript/)) {
-            // that.editor.getSession().setMode('ace/mode/typescript');
             setEditorOptions(that.editor, {
                 language: 'typescript',
-                typeCheck: true // not suppported
+                typeCheck: true // supported
             });
         }
     }
@@ -1474,48 +1487,40 @@ function Scripts(main) {
     this.initEditor = function () {
         if (!this.editor) {
 
-            // compiler options
-            const compilerOptions = {
-                target: monaco.languages.typescript.ScriptTarget.ES6,
-                lib: [],
-                noLib: true, // we manually provide the lib files because the editor includes the DOM typings
-                allowNonTsExtensions: true,
-                moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-                module: monaco.languages.typescript.ModuleKind.CommonJS,
-                typeRoots: ['node_modules/@types'],
-            };
-            monaco.languages.typescript.javascriptDefaults.setCompilerOptions(compilerOptions);
+            // For some reason we have to get the original compiler options
+            // and assign new properties one by one
+            const compilerOptions = monaco.languages.typescript.typescriptDefaults['getCompilerOptions']();
+            compilerOptions.target = monaco.languages.typescript.ScriptTarget.ES2015;
+            compilerOptions.allowJs = true;
+            compilerOptions.checkJs = true;
+            compilerOptions.noLib = true;
+            compilerOptions.lib = [];
+            compilerOptions.moduleResolution = monaco.languages.typescript.ModuleResolutionKind.NodeJs;
             monaco.languages.typescript.typescriptDefaults.setCompilerOptions(compilerOptions);
 
             setTypeCheck(!that.alive);
 
+            // Create the editor instances
             this.editor = monaco.editor.create(document.getElementById('script-editor'), {
-                language: 'javascript',
                 lineNumbers: 'on',
                 scrollBeyondLastLine: false,
                 automaticLayout: true
             });
 
             this.editorDialog = monaco.editor.create(document.getElementById('dialog-script-editor'), {
-                language: 'javascript',
                 lineNumbers: 'on',
                 scrollBeyondLastLine: false,
                 automaticLayout: true
             });
 
-            // this.editorDialog = ace.edit('dialog-script-editor');
-            // this.editorDialog.getSession().setMode('ace/mode/javascript');
-            // this.editorDialog.setOptions({
-            //     enableBasicAutocompletion: true,
-            //     enableSnippets: true,
-            //     enableLiveAutocompletion: true
-            // });
-            // this.editorDialog.completers && this.editorDialog.completers.push({
-            //     getCompletions: function (editor, session, pos, prefix, callback) {
-            //         callback(null, funcNames);
-            //     }
-            // });
-            // this.editorDialog.$blockScrolling = Infinity;
+            // Create a default empty model for both
+            this.editor.setModel(monaco.editor.createModel(
+                "", "typescript", monaco.Uri.from({path: '__empty.js'})
+            ));
+            this.editorDialog.setModel(monaco.editor.createModel(
+                "", "typescript", monaco.Uri.from({path: '__empty_dialog.js'})
+            ));
+
             $('#dialog-edit-insert-id').button({
                 icons: {primary: 'ui-icon-note'}
             }).css('height', '30px').click(function () {
