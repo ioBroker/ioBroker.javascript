@@ -4,7 +4,7 @@
 // it has to be loaded after monaco-editor/loader.js
 
 // Set the correct root path
-require.config({ paths: { 'vs': 'monaco-editor/' }});
+require.config({ paths: { 'vs': 'vs' }});
 
 // Allow localisation
 
@@ -15,7 +15,7 @@ function findLanguage() {
     if (navigator.languages && Array.isArray(navigator.languages)) {
         return navigator.languages.find(lang => availableLanguages.indexOf(lang) > -1);
     }
-    const lang = navigator.language || navigator.userLanguage;
+    let lang = navigator.language || navigator.userLanguage;
     if (typeof lang === 'string') {
         // first try the long version
         if (availableLanguages.indexOf(lang) > -1) return lang;

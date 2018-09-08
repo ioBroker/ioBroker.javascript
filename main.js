@@ -678,8 +678,11 @@ let activeStr          = '';
  */
 function tsLog(msg, sev) {
     // shift the severities around, we don't care about the small details
-    if (sev == null || sev === 'info') sev = 'debug';
-    else if (sev === 'debug') sev = 'silly';
+    if (sev == null || sev === 'info') {
+        sev = 'debug';
+    } else if (sev === 'debug') {
+        sev = 'silly';
+    }
 
     if (adapter && adapter.log) {
         adapter.log[sev](msg);
