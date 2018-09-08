@@ -14,8 +14,9 @@
         ],
         "linebreak-style": [
             "error",
-            "windows"
+            "unix"
         ],
+        "no-console": "off",
         "no-var": "error",
         "prefer-const": "error",
         "quotes": [
