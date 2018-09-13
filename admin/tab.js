@@ -3133,10 +3133,12 @@ var main = {
     subscribe:      function (isSubscribe) {
         if (!main.socket) return;
         if (isSubscribe) {
+            console.log('Subscribe logs');
             main.socket.emit('subscribeObjects', 'script.*');
             main.socket.emit('subscribeObjects', 'system.adapter.*');
             main.socket.emit('requireLog', true);
         } else {
+            console.log('Unsubscribe logs');
             main.socket.emit('unsubscribeObjects', 'script.*');
             main.socket.emit('unsubscribeObjects', 'system.adapter.*');
             main.socket.emit('requireLog', false);
