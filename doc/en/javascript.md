@@ -260,6 +260,7 @@ You can use following parameters to specify the trigger:
 | valLe       | mixed      |       New value must be smaller or equal to given one                                                  |
 |             |            |                                                                                                        |
 | ack         | boolean    |       Acknowledged state of new value is equal to given one                                            |
+| q           | number     |       Quality code state of new value is equal to given one. You can use '*' for matching to any code  |
 |             |            |                                                                                                        |
 | oldVal      | mixed      |       Previous value must be equal to given one                                                        |
 | oldValNe    | mixed      |       Previous value must be not equal to given one                                                    |
@@ -269,6 +270,7 @@ You can use following parameters to specify the trigger:
 | oldValLe    | mixed      |       Previous value must be smaller or equal to given one                                             |
 |             |            |                                                                                                        |
 | oldAck      | bool       |       Acknowledged state of previous value is equal to given one                                       |
+| oldQ        | number     |       Quality code state of previous value is equal to given one. You can use '*' for matching to any code  |
 |             |            |                                                                                                        |
 | ts          | string     |       New value time stamp must be equal to given one (state.ts == ts)                                 |
 | tsGt        | string     |       New value time stamp must be not equal to the given one (state.ts != ts)                         |
@@ -375,6 +377,8 @@ setState('stateId1', 'new value');
 ```
 
 Function "on" returns handler back. This handler can be used by unsubscribe.
+
+*Notice:* by default only states with quality 0x00 will be passed to callback function. If you want to get all events, add {q: '*'} to pattern structure.
 
 ### subscribe - same as **[on](#on---subscribe-on-changes-or-updates-of-some-state)**
 
