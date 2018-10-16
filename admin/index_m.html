@@ -17,6 +17,8 @@
     var gSettings;
     var mapTimer;
     var mapLoaded;
+    var useOpenLayers = true;
+    var OSM = null;
 
     function setValue(id, value, onChange) {
         var $value = $('#' + id + '.value');
@@ -25,6 +27,7 @@
                 var id = $(this).attr('id');
                 if (id === 'useSystemGPS') {
                     showHideSettings();
+                    updateMap();
                 }
                 gSettings[id] = $(this).prop('checked');
                 onChange();
@@ -48,50 +51,117 @@
         updateMap(true);
     }
 
-    function updateMap(immediately) {
-        if (!mapLoaded) return;
-        if (!immediately) {
-            clearTimeout(mapTimer);
-            mapTimer = setTimeout(function () {
-                updateMap(true);
-            }, 1000);
-            return;
-        }
-        if (mapTimer) {
-            clearTimeout(mapTimer);
-            mapTimer = null;
-        }
+    function positionReady(position) {
+        $('#latitude').val(position.coords.latitude.toFixed(8));
+        $('#longitude').val(position.coords.longitude.toFixed(8)).trigger('change');
+        M.updateTextFields();
+        updateMap();
+    }
 
+    function updateMap(immediately) {
         var lng;
         var lat;
-        if (gSettings.useSystemGPS) {
+        if ($('#useSystemGPS').prop('checked')) {
             if (systemConfig && systemConfig.common && (systemConfig.common.longitude || systemConfig.common.latitude)) {
                 lng = systemConfig.common.longitude;
                 lat = systemConfig.common.latitude;
             }
         } else {
-            lng = gSettings.longitude;
-            lat = gSettings.latitude;
+            lng = $('#longitude').val();
+            lat = $('#latitude').val();
+            if (!lng || !lat) {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(positionReady);
+                }
+            }
         }
         lng = lng || 0;
         lat = lat || 0;
 
-        if (lat || lng) {
-            var map = new google.maps.Map(document.getElementById('map'), {
-                zoom:       14,
-                center:     {lat: parseFloat(lat), lng: parseFloat(lng)}
-            });
+        if (useOpenLayers) {
+            // OPEN STREET MAPS
+            if (typeof ol === 'undefined') {
+                return setTimeout(updateMap, 200);
+            }
 
-            var marker = new google.maps.Marker({
-                position:   {lat: parseFloat(lat), lng: parseFloat(lng)},
-                map:        map,
-                title:      _('Your home')
-            });
+            var point = ol.proj.fromLonLat([parseFloat(lng), parseFloat(lat)]);
+            if (!OSM) {
+                OSM = {};
+                OSM.markerSource = new ol.source.Vector();
+
+                OSM.markerStyle = new ol.style.Style({
+                    image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+                        anchor: [0.5, 49],
+                        anchorXUnits: 'fraction',
+                        anchorYUnits: 'pixels',
+                        opacity: 0.75,
+                        src: '../../img/pin.png'
+                    }))
+                });
+
+                OSM.oMap = new ol.Map({
+                    target: 'map',
+                    layers: [
+                        new ol.layer.Tile({source: new ol.source.OSM()}),
+                        new ol.layer.Vector({
+                            source: OSM.markerSource,
+                            style:  OSM.markerStyle,
+                        })
+                    ],
+                    view: new ol.View({center: point, zoom: 17})
+                });
+
+                OSM.marker = new ol.Feature({
+                    geometry: new ol.geom.Point(point),
+                    name:  _('Your home')
+                });
+
+                OSM.markerSource.addFeature(OSM.marker);
+
+                OSM.oMap.on('singleclick', function (event){
+                    if (!$('#useSystemGPS').prop('checked')) {
+                        var lonLat = ol.proj.toLonLat(event.coordinate);
+                        $('#longitude').val(Math.round(lonLat[0] * 1000000) / 1000000);
+                        $('#latitude').val(Math.round(lonLat[1] * 1000000) / 1000000).trigger('change');
+                        M.updateTextFields();
+                    }
+                });
+                
+            }
+            var zoom = OSM.oMap.getView().getZoom();
+            OSM.marker.setGeometry(new ol.geom.Point(point));
+            OSM.oMap.setView(new ol.View({center: point, zoom: zoom}));
+        } else {
+            //  GOOGLE MAPS
+            if (!mapLoaded) return;
+            if (!immediately) {
+                clearTimeout(mapTimer);
+                mapTimer = setTimeout(function () {
+                    updateMap(true);
+                }, 1000);
+                return;
+            }
+            if (mapTimer) {
+                clearTimeout(mapTimer);
+                mapTimer = null;
+            }
+
+            if (lat || lng) {
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 14,
+                    center: {lat: parseFloat(lat), lng: parseFloat(lng)}
+                });
+
+                var marker = new google.maps.Marker({
+                    position: {lat: parseFloat(lat), lng: parseFloat(lng)},
+                    map: map,
+                    title: _('Your home')
+                });
+            }
         }
     }
 
     function showHideSettings() {
-        updateMap();
         if ($('#useSystemGPS').prop('checked')) {
             $('.local-coords').hide();
         } else {
@@ -100,17 +170,36 @@
     }
 
     function load(settings, onChange) {
-        var key1 = 'AIzaSyCIrBRZfZAE';
-        var key2 = '_0C1OplAUy7OXhiWLoZc3eY';
-        var key = key1 + key2;
+        if (!useOpenLayers) {
+            var key1 = 'AIzaSyCIrBRZfZAE';
+            var key2 = '_0C1OplAUy7OXhiWLoZc3eY';
+            var key = key1 + key2;
 
-        // load google API
-        $.ajax({
-            // please do not miss use this api key!
-            url: 'https://maps.googleapis.com/maps/api/js?key=' + key + '&signed_in=true&callback=initMap',
-            dataType: 'script',
-            cache: true
-        });
+            // load google API
+            $.ajax({
+                // please do not miss use this api key!
+                url: 'https://maps.googleapis.com/maps/api/js?key=' + key + '&signed_in=true&callback=initMap',
+                dataType: 'script',
+                cache: true
+            });
+        } else {
+            mapLoaded = true;
+            // load OSM
+            $.ajax({
+                url: '../../lib/js/ol.js',
+                dataType: 'script',
+                cache: true
+            }).done(function() {
+                //setTimeout(updateMap, 500);
+            });
+
+            $.ajax({
+                url: '../../lib/css/ol.css',
+                success: function(data){
+                    $('head').append('<style>' + data + '</style>');
+                }
+            });
+        }
 
         if (settings.useSystemGPS === undefined) {
             settings.useSystemGPS = (systemConfig.common.longitude && systemConfig.common.latitude);
@@ -134,10 +223,13 @@
 
         $('.tab-astro').on('click', function () {
             updateMap();
+            setTimeout(function() {
+                OSM && OSM.oMap && OSM.oMap.updateSize();
+            }, 400);
         });
 
         onChange(false);
-        if (M) M.updateTextFields();
+        M.updateTextFields();
     }
 
     function list2chips(selector, list, onChange) {
