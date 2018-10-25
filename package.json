@@ -25,7 +25,7 @@
     "vm2": "^3.5.2"
   },
   "dependencies": {
-    "@types/node": "^8.10.29",
+    "@types/node": "^8.10.36",
     "@types/request": "^2.47.0",
     "coffee-compiler": "^0.3.2",
     "coffee-script": ">=1.12.3",
@@ -37,10 +37,18 @@
     "wake_on_lan": "0.0.4"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "eslint": "^4.19.1",
+    "chai": "^4.2.0",
+    "eslint": "5.6.0",
     "gulp": "^3.9.1",
-    "mocha": "^5.1.1"
+    "mocha": "^5.2.0",
+    "gulp-copy": "^4.0.1",
+    "gulp-connect": "^5.6.1",
+    "gulp-exec": "^3.0.2",
+    "gulp-watch": "^5.0.1",
+    "del": "^3.0.0",
+    "gulp-uglify": "^3.0.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-sourcemaps": "^2.6.4"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.javascript/issues"
