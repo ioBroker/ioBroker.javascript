@@ -494,22 +494,22 @@ function Scripts(main) {
         const code = model.getValue();
         const uri = model.uri.path;
         const filenameWithoutExtension = 
-            typeof uri === "string" && uri.indexOf(".") > -1
-            ? uri.substr(0, uri.lastIndexOf(".")) 
-            : "index";
+            typeof uri === 'string' && uri.indexOf('.') > -1
+            ? uri.substr(0, uri.lastIndexOf('.'))
+            : 'index';
         const extension =
-            language === "javascript" ? "js"
-            : language === "typescript" ? "ts"
-            : language === "coffee" ? "coffee"
+            language === 'javascript' ? 'js'
+            : language === 'typescript' ? 'ts'
+            : language === 'coffee' ? 'coffee'
             : language;
         // get rid of the original model
         model.dispose();
         // Both JS and TS need the model to work in TypeScript as the script type
         // is inferred from the file extension
-        const newLanguage = (language === "javascript" || language === "typescript") ? "typescript" : language;
+        const newLanguage = (language === 'javascript' || language === 'typescript') ? 'typescript' : language;
         const newModel = monaco.editor.createModel(
             code, newLanguage, monaco.Uri.from({path: `${filenameWithoutExtension}.${extension}`})
-        )
+        );
         editorInstance.setModel(newModel);
     }
 
