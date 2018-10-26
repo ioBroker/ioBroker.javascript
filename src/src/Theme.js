@@ -11,5 +11,11 @@ export default {
     menu: {
         width: 300,
         depthOffset: 20
+    },
+    colors: {
+        selected: {
+            background: '#008fff',
+            color: 'white'
+        }
     }
 };

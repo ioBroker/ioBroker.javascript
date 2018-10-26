@@ -1,0 +1,21 @@
+-
+Environment values
+Favorites
+Functions
+Listening...
+No elements
+Nothing here
+Off
+On
+Others
+Rooms
+SABOTAGE
+SET_TEMPERATURE
+Show %s values
+Speech recognition running...
+closed
+fire
+opened
+sent
+tilted
+unknown

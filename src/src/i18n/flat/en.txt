@@ -1,0 +1,21 @@
+-
+Umwelt
+Favorites
+Functions
+Listening...
+No elements
+Nothing here
+Off
+On
+Others
+Rooms
+Sabotage
+Set temperature
+Show %s values
+Speech recognition running...
+closed
+fire
+opened
+sent
+tilted
+unknown

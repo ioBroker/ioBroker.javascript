@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import './App.css';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import {withStyles} from '@material-ui/core/styles';
 import SideMenu from './SideMenu';
 import Theme from './Theme';
+import Connection from './Connection';
+import {PROGRESS} from './Connection';
 
 const styles = theme => ({
     root: Theme.root,
@@ -33,6 +33,44 @@ const styles = theme => ({
 });
 
 class App extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            connected: false,
+            progress: 0,
+            ready: false,
+            updateScripts: 0
+        };
+
+        this.socket = new Connection({
+            onProgress: progress => {
+                if (progress === PROGRESS.CONNECTING) {
+                    this.setState({connected: false});
+                } else if (progress === PROGRESS.READY) {
+                    this.setState({connected: true, progress: 100});
+                } else {
+                    this.setState({connected: true, progress: Math.round(PROGRESS.READY / progress * 100)});
+                }
+            },
+            onReady: (objects) => {
+                this.objects = objects;
+                this.setState({ready: true});
+            }
+        });
+    }
+
+    onNewScript(id, name) {
+
+    }
+
+    onRename(oldId, newId, newName) {
+
+    }
+
+    onDelete(id) {
+
+    }
+
     render() {
         const {classes} = this.props;
         return (
@@ -45,7 +83,7 @@ class App extends Component {
                     </Toolbar>
                 </AppBar>
                 <nav className={classes.appSideMenu}>
-                    <SideMenu/>
+                    <SideMenu objects={this.objects} update={this.state.updateScripts}/>
                 </nav>
                 <main className={classes.content}>
                     <div className={classes.contentInner}>
