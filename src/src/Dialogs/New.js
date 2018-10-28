@@ -1,12 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
 import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+
 import I18n from '../i18n';
 
 class DialogNew extends React.Component {
@@ -14,12 +18,14 @@ class DialogNew extends React.Component {
         super(props);
         this.state = {
             name: props.name || 'Script',
-            id: this.getId(props.name || 'Script')
+            id: this.getId(props.name || 'Script'),
+            instance: props.instance || 0
         };
+        this.isShowInstance = !props.folder && props.instances && (props.instance || props.instances[0] || props.instances.length > 1);
     }
 
     getId(name) {
-        name = (name || '').replace(/[\\\/\]\[*,;'"`<>?\s]/g, '_');
+        name = (name || '').replace(/[\\/\][*,;'"`<>?\s]/g, '_');
         return this.props.parent + '.' + name;
     }
 
@@ -34,7 +40,7 @@ class DialogNew extends React.Component {
     };
 
     handleOk = () => {
-        this.props.onAdd(this.getId(this.state.name), this.state.name);
+        this.props.onAdd(this.getId(this.state.name), this.state.name, this.state.instance);
         this.props.onClose();
     };
 
@@ -71,6 +77,19 @@ class DialogNew extends React.Component {
                             disabled={true}
                             margin="normal"
                         />
+                        {
+                            this.isShowInstance && (
+                                <FormControl>
+                                <InputLabel htmlFor="instance">{I18n.t('Instance')}</InputLabel>
+                                <Select
+                                    value={this.state.instance}
+                                    onChange={e => this.setState({instance: parseInt(e.target.value, 10)})}
+                                    inputProps={{name: 'instance', id: 'instance',}}
+                                >
+                                    {this.props.instances.map(instance => (<MenuItem value={instance}>{instance || '0'}</MenuItem>))}
+                                </Select>
+                            </FormControl>)
+                        }
                     </form>
                 </DialogContent>
                 <DialogActions>
@@ -88,6 +107,9 @@ DialogNew.propTypes = {
     name: PropTypes.string,
     title: PropTypes.string,
     parent: PropTypes.string,
+    instance: PropTypes.number,
+    instances: PropTypes.array,
+    folder: PropTypes.bool,
 };
 
 export default DialogNew;

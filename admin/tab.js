@@ -1750,7 +1750,7 @@ function Scripts(main) {
                 if (that.list[l].substring(0, id.length + 1) === id + '.') _list.push(that.list[l]);
             }
             for (var g = 0; g < that.groups.length; g++) {
-                if (that.groups[g].substring(0, id.length + 1) === id + '.') _list.push(that.list[l]);
+                if (that.groups[g].substring(0, id.length + 1) === id + '.') _list.push(that.list[g]);
             }
 
             that.main.socket.emit('getObject', id, function (err, obj) {

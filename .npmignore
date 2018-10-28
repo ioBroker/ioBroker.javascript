@@ -4,6 +4,7 @@ tasks
 test
 .travis.yml
 doc
+src
 .idea
 .git
 .gitignore

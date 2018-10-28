@@ -17,5 +17,8 @@ export default {
             background: '#008fff',
             color: 'white'
         }
+    },
+    toolbar: {
+        height: 48
     }
 };

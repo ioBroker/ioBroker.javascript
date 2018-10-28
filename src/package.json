@@ -12,7 +12,9 @@
     "react-fullscreen": "^0.1.0",
     "react-i18next": "^8.1.1",
     "react-icons": "^3.2.2",
+    "react-monaco-editor": "^0.20.0",
     "react-scripts": "2.0.5",
+    "react-splitter-layout": "^3.0.1",
     "react-treeview-mui": "^0.1.2"
   },
   "scripts": {

@@ -29,10 +29,6 @@ const styles = {
     },
 };
 class DialogAddNew extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     handleCancel = () => {
         this.props.onClose();
     };
