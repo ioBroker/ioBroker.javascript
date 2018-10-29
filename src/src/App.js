@@ -213,9 +213,9 @@ class App extends Component {
                             visible={!this.state.dragging}
                             onChange={(id, common) => this.onUpdateScript(id, common)}
                             key="editor"
-                            id={this.state.selected}
+                            id={this.state.selected && this.objects[this.state.selected] && this.objects[this.state.selected].type === 'script' ? this.state.selected : ''}
                             script={this.state.selected && JSON.parse(JSON.stringify(this.objects[this.state.selected].common))}
-                        />)}
+                        />
                         <Log key="log"/>
                     </SplitterLayout>
                 </div>

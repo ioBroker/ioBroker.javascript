@@ -40,7 +40,8 @@ class Editor extends React.Component {
 
         this.state = {
             changed: window.editorStore[this.id] !== this.script.source,
-            isDark: window.localStorage ? (window.localStorage.getItem('Editor.dark') === 'true') : false
+            isDark: window.localStorage ? (window.localStorage.getItem('Editor.dark') === 'true') : false,
+            visible: props.visible
         };
     }
 
@@ -49,13 +50,24 @@ class Editor extends React.Component {
             this.id = nextProps.id;
             this.script = nextProps.script || {source: '', engineType: 'Javascript/js'};
             window.editorStore[this.id] = this.script.source;
+            this.state.changed && this.setState({changed: false});
+        } else {
+            if (!this.state.changed) {
+                this.script = nextProps.script || {source: '', engineType: 'Javascript/js'};
+                window.editorStore[this.id] = this.script.source;
+                this.forceUpdate();
+            }
+        }
+        if (this.state.visible !== nextProps.visible) {
+
         }
     }
 
     onSave() {
         this.script.source = window.editorStore[this.props.id];
-        delete window.editorStore[this.props.id];
-        this.props.onChange && this.props.onChange(this.props.id, this.script);
+        this.setState({changed: false}, () => {
+            this.props.onChange && this.props.onChange(this.props.id, this.script);
+        });
     }
 
     onCancel() {
@@ -79,22 +91,26 @@ class Editor extends React.Component {
     }
 
     onChange(newValue) {
-        this.changedCode = newValue;
-        const changed = this.script.source !== this.changedCode;
+        window.editorStore[this.props.id] = newValue;
+        const changed = this.script.source !== window.editorStore[this.props.id];
         if (changed !== this.state.changed) {
             this.setState({changed})
         }
     }
 
     getScriptEditor() {
-        return (<div className={this.props.classes.editorDiv} key="editor">
-            <ScriptEditor
-                code={window.editorStore[this.props.id]}
-                isDark={this.state.isDark}
-                onChange={newValue => this.onChange(newValue)}
-                language={this.script.engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
-            />
-        </div>);
+        if (this.id) {
+            return (<div className={this.props.classes.editorDiv} key="editor">
+                <ScriptEditor
+                    code={window.editorStore[this.props.id]}
+                    isDark={this.state.isDark}
+                    onChange={newValue => this.onChange(newValue)}
+                    language={this.script.engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
+                />
+            </div>);
+        } else {
+            return null;
+        }
     }
 
     render() {

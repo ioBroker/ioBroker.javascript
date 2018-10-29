@@ -14,6 +14,7 @@ class ScriptEditor extends React.Component {
         };
         this.originalCode = props.code || '';
     }
+
     componentWillReceiveProps(nextProps) {
         if (this.originalCode !== nextProps.code) {
             this.forceUpdate();
