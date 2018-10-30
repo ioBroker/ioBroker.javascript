@@ -182,6 +182,14 @@ class Connection {
         }
     }
 
+    setObject(id, obj) {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('setObject', id, obj, err => {
+                err ? reject(err) : resolve();
+            });
+        });
+    }
+
     updateScript(oldId, newId, newCommon) {
         return new Promise((resolve, reject) => {
             this.socket.emit('getObject', oldId, (err, _obj) => {
@@ -418,4 +426,5 @@ Connection.Connection = {
     onReady: PropTypes.func,
     onProgress: PropTypes.func,
 };
+
 export default Connection;

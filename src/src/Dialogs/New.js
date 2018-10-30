@@ -18,15 +18,16 @@ class DialogNew extends React.Component {
         super(props);
         this.state = {
             name: props.name || 'Script',
-            id: this.getId(props.name || 'Script'),
-            instance: props.instance || 0
+            instance: props.instance || 0,
+            parent: props.parent
         };
         this.isShowInstance = !props.folder && props.instances && (props.instance || props.instances[0] || props.instances.length > 1);
     }
 
     getId(name) {
-        name = (name || '').replace(/[\\/\][*,;'"`<>?\s]/g, '_');
-        return this.props.parent + '.' + name;
+        name = name || this.state.name || '';
+        name = name.replace(/[\\/\][*,;'"`<>?\s]/g, '_');
+        return (this.state ? this.state.parent : this.props.parent) + '.' + name;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -40,7 +41,7 @@ class DialogNew extends React.Component {
     };
 
     handleOk = () => {
-        this.props.onAdd(this.getId(this.state.name), this.state.name, this.state.instance);
+        this.props.onAdd(this.getId(this.state.name), this.state.name, this.state.instance, this.props.type);
         this.props.onClose();
     };
 
@@ -69,11 +70,22 @@ class DialogNew extends React.Component {
                             onChange={e => this.handleChange(e.target.value)}
                             margin="normal"
                         />
+                        <FormControl style={{minWidth: 100}}>
+                            <InputLabel htmlFor="parent">{I18n.t('Folder')}</InputLabel>
+                            <Select
+                                style={{width: '100%'}}
+                                value={this.state.parent}
+                                onChange={e => this.setState({parent: e.target.value})}
+                                inputProps={{name: 'parent', id: 'parent',}}
+                            >
+                                {this.props.parents.map(parent => (<MenuItem value={parent.id}>{parent.name}</MenuItem>))}
+                            </Select>
+                        </FormControl>
                         <TextField
                             id="standard-name-id"
                             style={{width: '100%'}}
                             label={I18n.t('ID')}
-                            value={this.state.id}
+                            value={this.getId()}
                             disabled={true}
                             margin="normal"
                         />
@@ -109,7 +121,9 @@ DialogNew.propTypes = {
     parent: PropTypes.string,
     instance: PropTypes.number,
     instances: PropTypes.array,
+    parents: PropTypes.array,
     folder: PropTypes.bool,
+    type: PropTypes.string,
 };
 
 export default DialogNew;

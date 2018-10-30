@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import {withStyles} from '@material-ui/core/styles';
 import SplitterLayout from 'react-splitter-layout';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import SideMenu from './SideMenu';
 import Log from './Log';
@@ -10,6 +9,7 @@ import Editor from './Editor';
 import Theme from './Theme';
 import Connection from './Connection';
 import {PROGRESS} from './Connection';
+import I18n from './i18n';
 
 const styles = theme => ({
     root: Theme.root,
@@ -23,13 +23,15 @@ const styles = theme => ({
     },
     content: {
         width: '100%',
-        marginTop: Theme.appBar.height,
-        height: `calc(100% - ${Theme.appBar.height}px)`,
+        height: '100%',
         backgroundColor: theme.palette.background.default
     },
     splitterDiv: {
         width: `calc(100% - ${Theme.menu.width}px)`,
-        height: `calc(100% - ${Theme.appBar.height}px)`
+        height: '100%'
+    },
+    progress: {
+        margin: 100
     }
 });
 
@@ -46,7 +48,7 @@ class App extends Component {
             instances: [],
             updating: false,
             dragging: false,
-            selected: null
+            selected: null,
         };
         this.logSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.logSize')) || 150 : 150;
         this.scripts = {};
@@ -122,7 +124,6 @@ class App extends Component {
         }
     }
 
-
     onNewScript(id, name) {
 
     }
@@ -169,18 +170,68 @@ class App extends Component {
 
     }
 
+    onEdit(id) {
+        if (this.state.selected !== id) {
+            this.setState({selected: id});
+        }
+    }
+
+    onAddNew(id, name, isFolder, instance, type) {
+        if (this.objects[id]) {
+            this.showError(I18n.t('Yet exists!'));
+            return;
+        }
+
+        if (isFolder) {
+            this.socket.setObject(id, {
+                common: {
+                    name,
+                },
+                type: 'channel'
+            }).then(() => {
+
+            }).catch(err => {
+                this.showError(err);
+            });
+        } else {
+            this.socket.setObject(id, {
+                common: {
+                    name,
+                    engineType: type,
+                    engine: 'system.adapter.javascript.' + (instance || 0),
+                    source: '',
+                    debug: false,
+                    verbose: false
+                },
+                type: 'script'
+            }).then(() => {
+
+            }).catch(err => {
+                this.showError(err);
+            });
+        }
+    }
+
+    onEnableDisable(id, enabled) {
+        if (this.scripts[id] && this.scripts[id].type === 'script') {
+            const common = this.objects[id].common;
+            common.enabled = enabled;
+            this.socket.updateScript(id, id, common)
+                .then(() => {})
+                .catch(err => err !== 'canceled' && this.showError(err));
+        }
+    }
+
     render() {
         const {classes} = this.props;
+
+        if (!this.state.ready) {
+            return (<CircularProgress className={classes.progress} size={50} />);
+        }
+
+
         return (
             <div className={classes.root}>
-                <AppBar
-                    key="appbar"
-                    position="absolute"
-                    className={classes.appBar}>
-                    <Toolbar>
-                        <p color="inherit">Permanent drawer</p>
-                    </Toolbar>
-                </AppBar>
                 <nav className={classes.appSideMenu}
                      key="menu"
                 >
@@ -192,6 +243,9 @@ class App extends Component {
                         update={this.state.updateScripts}
                         onRename={this.onRename.bind(this)}
                         onSelect={this.onSelect.bind(this)}
+                        onEdit={this.onEdit.bind(this)}
+                        onAddNew={this.onAddNew.bind(this)}
+                        onEnableDisable={this.onEnableDisable.bind(this)}
                     />
                 </nav>
                 <div className={classes.content}
@@ -212,9 +266,14 @@ class App extends Component {
                         <Editor
                             visible={!this.state.dragging}
                             onChange={(id, common) => this.onUpdateScript(id, common)}
+                            onSelectedChange={id => {
+                                if (id !== this.state.selected) {
+                                    this.setState({selected: id});
+                                }
+                            }}
                             key="editor"
-                            id={this.state.selected && this.objects[this.state.selected] && this.objects[this.state.selected].type === 'script' ? this.state.selected : ''}
-                            script={this.state.selected && JSON.parse(JSON.stringify(this.objects[this.state.selected].common))}
+                            selected={this.state.selected && this.objects[this.state.selected] && this.objects[this.state.selected].type === 'script' ? this.state.selected : ''}
+                            objects={this.objects}
                         />
                         <Log key="log"/>
                     </SplitterLayout>
