@@ -49,7 +49,9 @@ class App extends Component {
             updating: false,
             resizing: false,
             selected: null,
+            logMessage: {}
         };
+        this.logIndex = 0;
         this.logSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.logSize')) || 150 : 150;
         this.scripts = {};
 
@@ -70,6 +72,12 @@ class App extends Component {
             onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
             onError: err => {
                 console.error(err);
+            },
+            onLog: message => {
+                if (this.state.selected && message.message.indexOf(this.state.selected) !== -1) {
+                    this.logIndex++;
+                    this.setState({logMessage: {index: this.logIndex, message}})
+                }
             }
         });
     }
@@ -276,7 +284,7 @@ class App extends Component {
                             selected={this.state.selected && this.objects[this.state.selected] && this.objects[this.state.selected].type === 'script' ? this.state.selected : ''}
                             objects={this.objects}
                         />
-                        <Log key="log"/>
+                        <Log key="log" addLine={this.state.logMessage}/>
                     </SplitterLayout>
                 </div>
             </div>

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {EVERY} from 'data/constants'
+import {EVERY} from '../../../data/constants'
 import {mount} from 'enzyme'
 import Select from 'react-select'
 import {getValues} from 'utils'

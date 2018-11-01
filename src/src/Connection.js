@@ -74,7 +74,10 @@ class Connection {
             }
         });
         this.socket.on('reauthenticate', () => window.location.reload());
-        this.socket.on('log', message => this.props.onLog && this.props.onLog(message));
+        this.socket.on('log', message => {
+            this.props.onLog && this.props.onLog(message);
+            this.onLogHandler && this.onLogHandler(message);
+        });
 
         this.socket.on('permissionError', err =>
             this.props.onError && this.props.onError({message: 'no permission', operation: err.operation, type: err.type, id: (err.id || '')}));
@@ -191,6 +194,14 @@ class Connection {
             this.socket.emit('unsubscribeObjects', 'system.adapter.javascript.*');
             this.socket.emit('requireLog', false);
         }
+    }
+
+    setObject(id, obj) {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('setObject', id, obj, err => {
+                err ? reject(err) : resolve();
+            });
+        });
     }
 
     updateScript(oldId, newId, newCommon) {
@@ -422,6 +433,14 @@ class Connection {
             }
         });
     }
+
+    registerLogHandler(handler) {
+        this.onLogHandler = handler;
+    }
+    unregisterLogHandler(handler) {
+        this.onLogHandler = null;
+    }
+
 }
 
 Connection.Connection = {
@@ -429,4 +448,5 @@ Connection.Connection = {
     onReady: PropTypes.func,
     onProgress: PropTypes.func,
 };
+
 export default Connection;

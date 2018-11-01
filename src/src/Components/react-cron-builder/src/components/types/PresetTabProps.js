@@ -4,5 +4,6 @@ import type {CronExpression} from 'types/CronExpression'
 
 export type PresetTabProps = {
     styleNameFactory: any,
-    expression: CronExpression
+    expression: CronExpression,
+    onChange: any
 }

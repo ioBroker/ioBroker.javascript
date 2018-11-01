@@ -1,7 +1,7 @@
 // @flow
 
 import React from 'react'
-import {toOptions, addLeadingZeroToOption, defaultTo, ensureMultiple, rangeHoursToSingle} from 'utils'
+import {toOptions, addLeadingZeroToOption, defaultTo, ensureMultiple, rangeHoursToSingle} from '../utils'
 import range from 'lodash/range'
 import PresetTab from './PresetTab'
 import TimeInput from './components/TimeInput'

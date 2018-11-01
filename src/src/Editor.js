@@ -12,6 +12,8 @@ import {MdSave as IconSave} from 'react-icons/md';
 import {MdCancel as IconCancel} from 'react-icons/md';
 import {MdClose as IconClose} from 'react-icons/md';
 import {MdInput as IconDoEdit} from 'react-icons/md';
+import {FaClock as IconCron} from 'react-icons/fa';
+import {FaClipboardList as IconSelectId} from 'react-icons/fa';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
@@ -24,6 +26,7 @@ import ScriptEditor from './ScriptEditor';
 import BlocklyEditor from './BlocklyEditor';
 import DialogConfirm from './Dialogs/Confirmation';
 import DialogSelectID from './Dialogs/SelectID';
+import DialogCron from './Dialogs/Cron';
 
 const images = {
     'Blockly': ImgBlockly,
@@ -93,8 +96,6 @@ class Editor extends React.Component {
             editing.push(selected);
         }
 
-        this.loaded = false;
-
         this.state = {
             selected: selected,
             editing: editing,
@@ -102,6 +103,7 @@ class Editor extends React.Component {
             blockly: null,
             showBlocklyCode: false,
             showSelectId: false,
+            showCron: false,
             insert: '',
             isDark: window.localStorage ? (window.localStorage.getItem('Editor.dark') === 'true') : false,
             visible: props.visible
@@ -116,6 +118,11 @@ class Editor extends React.Component {
         if (this.state.selected && props.objects[this.state.selected]) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(props.objects[this.state.selected].common));
             this.state.blockly = this.scripts[this.state.selected].engineType === 'Blockly';
+        }
+
+        // to enable logging
+        if (this.props.onSelectedChange && this.state.selected) {
+            setTimeout(() => this.props.onSelectedChange(this.state.selected));
         }
     }
 
@@ -187,10 +194,13 @@ class Editor extends React.Component {
                                 }}>
                         <IconDark /></IconButton>)}
 
-                    {!this.state.blockly && !this.state.showBlocklyCode && (<Button key="select-id" aria-label="select ID"
-                                                                 className={this.props.classes.toolbarButtons}
-                                                         onClick={() => this.setState({showSelectId: true})}>
-                        Select ID</Button>)}
+                    {!this.state.blockly && !this.state.showBlocklyCode && (<IconButton key="select-cron" aria-label="select ID"
+                        className={this.props.classes.toolbarButtons}
+                        onClick={() => this.setState({showCron: true})}><IconCron/></IconButton>)}
+
+                    {!this.state.blockly && !this.state.showBlocklyCode && (<IconButton key="select-id" aria-label="select ID"
+                        className={this.props.classes.toolbarButtons}
+                        onClick={() => this.setState({showSelectId: true})}><IconSelectId/></IconButton>)}
 
                     {this.state.blockly && this.state.showBlocklyCode && (<Button key={"convert2js"} aria-label="convert to javascript"
                         onClick={() => this.onConvert2JS()}
@@ -309,9 +319,6 @@ class Editor extends React.Component {
             }
         }
     }
-    insertTextIntoEditor(text) {
-        this.setState({insert: text});
-    }
 
     getTabs() {
         if (this.state.editing.length) {
@@ -391,6 +398,19 @@ class Editor extends React.Component {
             return null;
         }
     }
+
+    getCronDialog() {
+        if (this.state.showCron) {
+            return (<DialogCron
+                cron={''}
+                onClose={() => this.setState({showCron: false})}
+                onOk={cron => this.setState({insert: `'${cron}'`})}
+            />);
+        } else {
+            return null;
+        }
+    }
+
     render() {
         if (this.state.selected && this.props.objects[this.state.selected] && this.state.blockly === null) {
             setTimeout(() => this.setState({blockly: this.scripts[this.state.selected].engineType === 'Blockly', showBlocklyCode: false}), 100);
@@ -402,7 +422,8 @@ class Editor extends React.Component {
             this.getScriptEditor(),
             this.getBlocklyEditor(),
             this.getConfirmDialog(),
-            this.getSelectIdDialog()
+            this.getSelectIdDialog(),
+            this.getCronDialog()
         ];
     }
 }

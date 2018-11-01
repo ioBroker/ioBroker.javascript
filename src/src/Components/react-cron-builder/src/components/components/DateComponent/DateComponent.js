@@ -2,21 +2,22 @@
 
 import React, {PureComponent, Children} from 'react'
 import {If, Then} from 'react-if'
-import {EVERY} from 'data/constants'
+import {EVERY} from '../../../data/constants'
 import head from 'lodash/head'
 import type {Option} from 'types/Option'
-import {getValues} from 'utils'
+import {getValues} from '../../../utils'
 import Select from '../Select'
 import {DayOfWeek, DayOfMonth, Month} from './index'
 
 type Props = {
     styleNameFactory: any,
-    children?: any
-}
+    children?: any,
+    inline?: any
+};
 
 type State = {
     activeComponent: React.Children
-}
+};
 
 export default class DateComponent extends PureComponent {
     static defaultProps = {
@@ -59,35 +60,31 @@ export default class DateComponent extends PureComponent {
             <div
                 style={{position: 'relative'}}
             >
-                <label {...styleNameFactory('label')} >
-                    On:
-                </label>
                 <div {...styleNameFactory('row', 'items-end')} >
+                    <label {...styleNameFactory('label')} style={{width: this.props.inline ? undefined : 100}}>On:</label>
                     {Children.map(children, (child: React.Children) => {
                         const {value, onChange} = child.props;
                         const {getOptions} = child.type;
-                        return (
-                            <If condition={child.type.className === activeComponent} >
-                                <Then>
-                                    <div
-                                        {...styleNameFactory('input')}
-                                    >
-                                        <Select
-                                            style={{minWidth: 120}}
-                                            value={value}
-                                            options={getOptions()}
-                                            multi
-                                            autosize
-                                            onChange={this.onChange(onChange)}
-                                        />
-                                    </div>
-                                </Then>
-                            </If>
-                        )
+                        if (child.type.className === activeComponent) {
+                            return (<div
+                                {...styleNameFactory('input')}
+                            >
+                                <Select
+                                    style={{minWidth: 120}}
+                                    value={value}
+                                    options={getOptions()}
+                                    multi
+                                    autosize
+                                    onChange={this.onChange(onChange)}
+                                />
+                            </div>);
+                        } else {
+                            return null;
+                        }
                     })}
                 </div>
                 <div
-                    style={{position: 'absolute'}}
+                    style={{paddingLeft: 100}}
                     {...styleNameFactory('link')}
                 >
                     <select onChange={this.setActiveComponent} >

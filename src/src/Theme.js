@@ -1,7 +1,4 @@
 export default {
-    appBar: {
-        height: 64
-    },
     root: {
         flexGrow: 1,
         display: 'flex',
@@ -19,6 +16,9 @@ export default {
         }
     },
     toolbar: {
+        height: 48
+    },
+    tabs: {
         height: 48
     }
 };

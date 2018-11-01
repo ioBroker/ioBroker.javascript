@@ -1,7 +1,7 @@
 // @flow
 
 import {PureComponent} from 'react'
-import {toOptions} from 'utils'
+import {toOptions} from '../../../../utils'
 import range from 'lodash/range'
 
 const options = [

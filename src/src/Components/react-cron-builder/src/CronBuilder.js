@@ -3,7 +3,7 @@
 import React, {PureComponent} from 'react'
 import BEMHelper from 'react-bem-helper'
 import {If, Then} from 'react-if'
-import {generateCronExpression, parseCronExpression} from 'utils'
+import {generateCronExpression, parseCronExpression} from './utils'
 import cronsTrue from 'cronstrue'
 import noop from 'lodash/noop'
 import Tab from './components/Tab'
@@ -25,7 +25,7 @@ type State = {
     activeIndex: number,
     Component: any,
     generatedExpression: string
-}
+};
 
 const components = [PeriodicallyTab, PeriodicallyFrameTab, FixedTimeTab];
 const getActiveTabIndex = (props: Props) => {
@@ -50,9 +50,9 @@ export default class CronBuilder extends PureComponent {
         const activeIndex = getActiveTabIndex(props);
         this.state = {
             activeIndex,
-            Component: components[activeIndex],
             generatedExpression: ''
         };
+        setTimeout(() => this.generateExpression(), 100);
     }
 
     state: State;
@@ -73,15 +73,17 @@ export default class CronBuilder extends PureComponent {
     selectTab = (activeIndex: number) => {
         return () => {
             this.setState({
-                activeIndex,
-                Component: components[activeIndex]
+                activeIndex
+            }, () => {
+                this.generateExpression();
             })
         }
     };
 
     render() {
         const {cronExpression, showResult} = this.props;
-        const {activeIndex, Component, generatedExpression} = this.state;
+        const {activeIndex, generatedExpression} = this.state;
+        const Component = components[activeIndex];
         return (
             <div {...styleNameFactory()} >
                 <fieldset {...styleNameFactory('fieldset')} >
@@ -111,34 +113,19 @@ export default class CronBuilder extends PureComponent {
                     <Component
                         styleNameFactory={styleNameFactory}
                         ref={(component: any) => this.presetComponent = component}
+                        onChange={() => this.generateExpression()}
                         expression={parseCronExpression(cronExpression)}
                     />
                 </fieldset>
-                <div style={{textAlign: 'center'}} >
-                    <button
-                        type="button"
-                        {...styleNameFactory('action')}
-                        onClick={this.generateExpression}
-                        data-action
-                    >
-                        Generate cron expression
-                    </button>
-                </div>
-                <If condition={!!generatedExpression && showResult}>
-                    <Then>
-                        <div data-result >
-                            <hr
-                                {...styleNameFactory('hr')}
-                            />
-                            <PrettyExpression expression={generatedExpression} />
-                            <div
-                                {...styleNameFactory('result')}
-                            >
-                                {generatedExpression}
-                            </div>
+                {!!generatedExpression && showResult &&
+                    (<div data-result>
+                        <hr{...styleNameFactory('hr')}/>
+                        <PrettyExpression expression={generatedExpression}/>
+                        <div{...styleNameFactory('result')}>
+                            {generatedExpression}
                         </div>
-                    </Then>
-                </If>
+                    </div>)
+                }
             </div>
         )
     }

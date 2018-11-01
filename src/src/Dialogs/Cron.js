@@ -1,14 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {withStyles} from '@material-ui/core/styles/index';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
+import CronBuilder from '../Components/react-cron-builder/src/index';
+import 'react-cron-builder/dist/bundle.css'
 
 import I18n from '../i18n';
 import SelectID from '../Components/SelectID';
-import {withStyles} from "@material-ui/core/styles/index";
+
+// Generate cron expression
 
 const styles = theme => ({
     headerID: {
@@ -21,8 +25,7 @@ class DialogCron extends React.Component {
     constructor(props) {
         super(props);
         this.state =  {
-            selected: this.props.selected || '',
-            name:     ''
+            cron: this.props.cron || '* * * * *',
         };
     }
 
@@ -31,39 +34,25 @@ class DialogCron extends React.Component {
     };
 
     handleOk() {
-        this.props.onOk(this.state.selected, this.state.name);
+        this.props.onOk(this.state.cron);
         this.props.onClose();
     };
 
     render() {
-        let title;
-        if (this.state.name) {
-            title = [(<span key="selected">{I18n.t('Selected')} </span>), (<span key="id" className={this.props.classes.headerID}>{this.state.name}</span>)];
-        } else {
-            title = this.props.title || I18n.t('Please select object ID...');
-        }
-
         return (
             <Dialog
                 disableBackdropClick
                 disableEscapeKeyDown
                 maxWidth="lg"
-                fullWidth={true}
                 open={true}
-                aria-labelledby="selectid-dialog-title"
+                aria-labelledby="cron-dialog-title"
             >
-                <DialogTitle id="selectid-dialog-title">{title}</DialogTitle>
+                <DialogTitle id="cron-dialog-title">{this.props.title || I18n.t('Define cron...')}</DialogTitle>
                 <DialogContent>
-                    <SelectID
-                        statesOnly={this.props.statesOnly}
-                        style={{width: '100%', height: '100%'}}
-                        connection={this.props.connection}
-                        selected={this.state.selected}
-                        name={this.state.name}
-                        onSelect={(selected, name, isDouble) => {
-                            selected !== this.state.selected && this.setState({selected, name});
-                            isDouble && this.handleOk();
-                        }}
+                    <CronBuilder
+                        cronExpression={this.state.cron}
+                        onChange={cron => this.setState({cron})}
+                        showResult={true}
                     />
                 </DialogContent>
                 <DialogActions>
@@ -80,9 +69,7 @@ DialogCron.propTypes = {
     onClose: PropTypes.func,
     onOk: PropTypes.func.isRequire,
     title: PropTypes.string,
-    selected: PropTypes.string,
-    statesOnly: PropTypes.bool,
-    connection: PropTypes.object.isRequire,
+    cron: PropTypes.string,
     cancel: PropTypes.string,
     ok: PropTypes.string
 

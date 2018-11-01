@@ -2,7 +2,7 @@
 
 import React from 'react'
 import range from 'lodash/range'
-import {toOptions, defaultTo, ensureMultiple} from 'utils'
+import {toOptions, defaultTo, ensureMultiple} from '../utils'
 import type {Option} from 'types/Option'
 import PresetTab from './PresetTab'
 import MultipleSwitcher from './MultipleSwitcher'
@@ -90,18 +90,14 @@ export default class PeriodicallyFrameTab extends PresetTab {
         const {styleNameFactory} = this.props;
         const {minutes, hoursFrom, hoursTo, dayOfWeek, dayOfMonth, month} = this.state;
         return (
-            <div
-                {...styleNameFactory('preset')}
-            >
+            <div{...styleNameFactory('preset')}>
                 <div>
                     <MultipleSwitcher
                         styleNameFactory={styleNameFactory}
                         isMultiple={this.isMinutesMultiple()}
-                        onChange={this.changeDateType}
+                        onChange={this.changeMinutesType}
                     />
-                    <div
-                        {...styleNameFactory('row', 'main')}
-                    >
+                    <div{...styleNameFactory('row', 'main')}>
                         <TimeInput
                             options={minutesOptions}
                             onChange={this.selectMinutes}
@@ -112,15 +108,9 @@ export default class PeriodicallyFrameTab extends PresetTab {
                         />
                     </div>
                 </div>
-                <div
-                    {...styleNameFactory('row', 'hours-range')}
-                >
+                <div{...styleNameFactory('row', 'hours-range')}>
                     <div>
-                        <div
-                            {...styleNameFactory('label')}
-                        >
-                            Starting at:
-                        </div>
+                        <div{...styleNameFactory('label')}>Starting at:</div>
                         <TimeInput
                             styleNameFactory={styleNameFactory}
                             options={hoursOptions}
@@ -130,11 +120,7 @@ export default class PeriodicallyFrameTab extends PresetTab {
                         />
                     </div>
                     <div>
-                        <div
-                            {...styleNameFactory('label')}
-                        >
-                            Ending at:
-                        </div>
+                        <div{...styleNameFactory('label')}>Ending at:</div>
                         <TimeInput
                             styleNameFactory={styleNameFactory}
                             options={hoursOptions}
@@ -144,21 +130,10 @@ export default class PeriodicallyFrameTab extends PresetTab {
                         />
                     </div>
                 </div>
-                <DateComponent
-                    styleNameFactory={styleNameFactory}
-                >
-                    <DayOfWeek
-                        value={dayOfWeek}
-                        onChange={this.selectDayOfWeek}
-                    />
-                    <DayOfMonth
-                        value={dayOfMonth}
-                        onChange={this.selectDayOfMonth}
-                    />
-                    <Month
-                        value={month}
-                        onChange={this.selectMonth}
-                    />
+                <DateComponent styleNameFactory={styleNameFactory} inline={true}>
+                    <DayOfWeek  value={dayOfWeek}  onChange={this.selectDayOfWeek}/>
+                    <DayOfMonth value={dayOfMonth} onChange={this.selectDayOfMonth}/>
+                    <Month      value={month}      onChange={this.selectMonth}/>
                 </DateComponent>
             </div>
         )

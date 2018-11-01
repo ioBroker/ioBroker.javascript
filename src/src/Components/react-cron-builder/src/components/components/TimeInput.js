@@ -2,7 +2,7 @@
 
 import React, {PureComponent} from 'react'
 import type {Option} from 'types/Option'
-import {parseTimeValue, getValues, getValue} from 'utils'
+import {parseTimeValue, getValues, getValue} from '../../utils'
 import Select from './Select'
 
 type Props = {

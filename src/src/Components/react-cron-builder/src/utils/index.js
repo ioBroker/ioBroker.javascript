@@ -6,7 +6,7 @@ import type {CronExpression} from 'types/CronExpression'
 import head from 'lodash/head'
 import values from 'lodash/values'
 import get from 'lodash/get'
-import {MINUTES, HOURS, EVERY} from 'data/constants'
+import {MINUTES, HOURS, EVERY} from '../data/constants'
 
 export const toggleMultiple = (value: any) => {
     if(value instanceof Array) {

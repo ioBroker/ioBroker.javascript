@@ -2,8 +2,8 @@
 
 import React from 'react'
 import {If, Then, Else} from 'react-if'
-import {MINUTES} from 'data/constants'
-import {isMultiple, toggleDateType, toOptions, rangeHoursToSingle} from 'utils'
+import {MINUTES, EVERY} from '../data/constants'
+import {isMultiple, toggleDateType, toOptions, rangeHoursToSingle} from '../utils'
 import range from 'lodash/range'
 import MultipleSwitcher from './MultipleSwitcher'
 import TimeInput from './components/TimeInput'
@@ -27,86 +27,70 @@ export default class PeriodicallyTab extends PresetTab {
     }
 
 
-    toggleActiveTime = () => {
-        this.setState(({activeTime}: PresetTabState) => ({
-            activeTime: toggleDateType(activeTime)
-        }))
-    };
+    /*toggleActiveTime() {
+        this.setState({activeTime: toggleDateType(this.state.activeTime)}, () => {
+            this.props.onChange && this.props.onChange()
+        });
+
+    };*/
 
     isMultiple = () => {
         const {activeTime, minutesMultiple, hoursMultiple} = this.state;
-        if(activeTime === MINUTES) {
-            return minutesMultiple
+        if (activeTime === MINUTES) {
+            return minutesMultiple;
         } else {
-            return hoursMultiple
+            return hoursMultiple;
         }
     };
 
     render() {
         const {styleNameFactory} = this.props;
-        const {activeTime, minutes, hours, dayOfWeek, dayOfMonth, month} = this.state;
+        const {minutes, hours, dayOfWeek, dayOfMonth, month} = this.state;
         return (
-            <div {...styleNameFactory('preset')} >
+            <div {...styleNameFactory('preset')} style={{display: 'block'}}>
                 <div>
-                    <MultipleSwitcher
-                        styleNameFactory={styleNameFactory}
-                        isMultiple={this.isMultiple()}
-                        onChange={this.changeDateType}
-                    />
-                    <div
-                        {...styleNameFactory('row', 'main')}
-                    >
-                        <If condition={isMinutes(activeTime)}>
-                            <Then>
-                                <TimeInput
-                                    options={minutesOptions}
-                                    value={minutes}
-                                    styleNameFactory={styleNameFactory}
-                                    onChange={this.selectMinutes}
-                                    multi={isMultiple(minutes)}
-                                    {...timeInputProps}
-                                />
-                            </Then>
-                            <Else>
-                                <TimeInput
-                                    options={hoursOptions}
-                                    value={hours}
-                                    styleNameFactory={styleNameFactory}
-                                    multi={isMultiple(hours)}
-                                    onChange={this.selectHours}
-                                    {...timeInputProps}
-                                />
-                            </Else>
-                        </If>
-                        <div
-                            style={{width: 150}}
-                        >
-                            <MultipleSwitcher
+                    <div {...styleNameFactory('row', 'main')}>
+                        <div {...styleNameFactory('label')} style={{width: 100}}>Minutes:</div>
+                        <MultipleSwitcher
+                            styleNameFactory={styleNameFactory}
+                            isMultiple={this.state.minutesMultiple}
+                            onChange={this.changeHoursType}
+                        />
+                            <TimeInput
+                                options={minutesOptions}
+                                value={minutes}
                                 styleNameFactory={styleNameFactory}
-                                isMultiple={!isMinutes(activeTime)}
-                                onChange={this.toggleActiveTime}
-                                single="minutes"
-                                multiple="hours"
+                                onChange={this.selectMinutes}
+                                multi={isMultiple(minutes)}
+                                {...timeInputProps}
                             />
-                        </div>
                     </div>
                 </div>
-                <DateComponent
-                    styleNameFactory={styleNameFactory}
-                >
-                    <DayOfWeek
-                        value={dayOfWeek}
-                        onChange={this.selectDayOfWeek}
-                    />
-                    <DayOfMonth
-                        value={dayOfMonth}
-                        onChange={this.selectDayOfMonth}
-                    />
-                    <Month
-                        value={month}
-                        onChange={this.selectMonth}
-                    />
-                </DateComponent>
+                <div>
+                    <div {...styleNameFactory('row', 'main')}>
+                        <div {...styleNameFactory('label')} style={{width: 100}}>Hours:</div>
+                        <MultipleSwitcher
+                            styleNameFactory={styleNameFactory}
+                            isMultiple={this.state.hoursMultiple}
+                            onChange={this.changeMinutesType}
+                        />
+                        <TimeInput
+                            options={hoursOptions}
+                            value={hours}
+                            styleNameFactory={styleNameFactory}
+                            multi={isMultiple(hours)}
+                            onChange={this.selectHours}
+                            {...timeInputProps}
+                        />
+                    </div>
+                </div>
+                <div>
+                    <DateComponent styleNameFactory={styleNameFactory}>
+                        <DayOfWeek  value={dayOfWeek}  onChange={this.selectDayOfWeek}/>
+                        <DayOfMonth value={dayOfMonth} onChange={this.selectDayOfMonth}/>
+                        <Month      value={month}      onChange={this.selectMonth}/>
+                    </DateComponent>
+                </div>
             </div>
         )
     }

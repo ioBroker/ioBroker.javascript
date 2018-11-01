@@ -2,28 +2,32 @@
 
 import {PureComponent} from 'react'
 import pick from 'lodash/pick'
-import {MINUTES, EVERY} from 'data/constants'
-import {isMultiple, ensureMultiple, replaceEvery} from 'utils'
+import {MINUTES, EVERY} from '../data/constants'
+import {isMultiple, ensureMultiple, replaceEvery} from '../utils'
 import type {PresetTabState} from './types/PresetTabState'
 import type {PresetTabProps} from './types/PresetTabProps'
 
 export const ensureEveryOn = (value: any, multiple: boolean) => {
     const process = (item: any) => {
-        if(item === EVERY) {
+        if (item === null) {
+            return EVERY;
+        }
+        if (item === EVERY) {
             return item
         }
-        if(item.includes('-')) {
+        if (item.includes('-')) {
             return item
         }
-        if(multiple && item.includes('/')) {
+        if (multiple && item.includes('/')) {
             return replaceEvery(item)
         }
-        if(!multiple && !item.includes('/')) {
+        if (!multiple && !item.includes('/')) {
             return `*/${item}`
         }
-        return item
+        return item;
     };
-    if(value instanceof Array) {
+
+    if (value instanceof Array) {
         return value.map(process)
     } else {
         return process(value)
@@ -54,34 +58,34 @@ export default class PresetTab extends PureComponent {
     selectMinutes = (value: string) => {
         this.setState({
             minutes: value
-        })
+        }, () => this.props.onChange && this.props.onChange())
     };
 
     selectHours = (value: string) => {
         this.setState({
             hours: value
-        })
+        }, () => this.props.onChange && this.props.onChange())
     };
 
     selectDayOfWeek = (value: string) => {
         this.setState({
             dayOfWeek: value
-        })
+        }, () => this.props.onChange && this.props.onChange())
     };
 
     selectDayOfMonth = (value: string) => {
         this.setState({
             dayOfMonth: value
-        })
+        }, () => this.props.onChange && this.props.onChange())
     };
 
     selectMonth = (value: string) => {
         this.setState({
             month: value
-        })
+        }, () => this.props.onChange && this.props.onChange())
     };
 
-    changeDateType = () => {
+    /*changeDateType = () => {
         const {state} = this;
         const {activeTime} = state;
         const field = activeTime.toLowerCase();
@@ -90,7 +94,23 @@ export default class PresetTab extends PureComponent {
         this.setState({
             [key]: value,
             [field]: ensureMultiple(state[field], value)
-        })
+        }, () => this.props.onChange && this.props.onChange())
+    };*/
+
+    changeHoursType = () => {
+        const value = !this.state.hoursMultiple;
+        this.setState({
+            hoursMultiple: value,
+            hours: ensureMultiple(this.state.hours, value)
+        }, () => this.props.onChange && this.props.onChange())
+    };
+
+    changeMinutesType = () => {
+        const value = !this.state.minutesMultiple;
+        this.setState({
+            minutesMultiple: value,
+            minutes: ensureMultiple(this.state.minutes, value)
+        }, () => this.props.onChange && this.props.onChange())
     };
 
     getExpression() {
