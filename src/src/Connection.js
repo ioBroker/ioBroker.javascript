@@ -15,7 +15,7 @@ class Connection {
             window.location.protocol + '//' + window.location.host.replace('3000', 8081),
             {query: 'ws=true'});
         this.states = {};
-        this.objects = {};
+        this.objects = null;
         this.scripts = {
             list: [],
             hosts: [],
@@ -85,6 +85,8 @@ class Connection {
 
     objectChange(id, obj) {
         // update main.objects cache
+        if (!this.objects) return;
+
         let changed = false;
         if (obj) {
             if (obj._rev && this.objects[id]) {
@@ -141,11 +143,20 @@ class Connection {
         this.socket.emit('getStates', (err, res) => {
             this.states = res;
             this.props.onProgress(PROGRESS.STATES_LOADED);
-            cb && setTimeout(() => cb(), 0);
+            cb && setTimeout(() => cb(this.states), 0);
         });
     }
 
-    getObjects(cb) {
+    getObjects(refresh, cb) {
+        if (typeof refresh === 'function') {
+            cb = refresh;
+            refresh = false;
+        }
+
+        if (!refresh && this.objects) {
+            return setTimeout(() => cb && cb(this.objects), 0);
+        }
+
         this.socket.emit('getAllObjects', (err, res) => {
             setTimeout(() => {
                 let obj;
@@ -161,7 +172,7 @@ class Connection {
                 }
                 this.props.onProgress(PROGRESS.OBJECTS_LOADED);
 
-                cb && cb();
+                cb && cb(this.objects);
             }, 0);
         });
     }

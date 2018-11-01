@@ -1,0 +1,84 @@
+{
+    "extends": "airbnb",
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaVersion": 7,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "classes": true
+        }
+    },
+    "plugins": [
+        "flowtype"
+    ],
+    "env": {
+        "browser": true,
+        "node": true,
+        "jest": true
+    },
+    "globals": {
+        "DEBUG": false
+    },
+    "rules": {
+        "indent": ["error", 4, {"SwitchCase": 1}],
+        "import/prefer-default-export": "off",
+        "import/no-extraneous-dependencies": 0,
+        "jsx-a11y/label-has-for": "off",
+        "jsx-a11y/no-static-element-interactions": "off",
+        "object-curly-spacing": ["error", "never"],
+        "comma-dangle": ["error", "never"],
+        "class-methods-use-this": [
+            "warn", {
+                "exceptMethods": ["render"]
+            }
+        ],
+        "max-len": ["error", 120, 2, {
+            "ignoreUrls": true,
+            "ignoreComments": false,
+            "ignoreRegExpLiterals": true,
+            "ignoreStrings": true,
+            "ignoreTemplateLiterals": true
+        }],
+        "no-use-before-define": ["error", {"functions": false}],
+        "no-underscore-dangle": ["off"],
+        "react/jsx-indent": ["error", 4],
+        "react/jsx-indent-props": ["error", 4],
+        "react/forbid-prop-types": ["error", {"forbid": ["any", "array"]}],
+        "react/prefer-stateless-function": ["off", {"ignorePureComponents": true}],
+        "react/prop-types": [
+            "warn", {
+                "ignore": [
+                    "children",
+                    "location",
+                    "props"
+                ], "customValidators": []
+            }
+        ],
+        "semi": 0,
+        "import/extensions": 0,
+        "react/jsx-filename-extension": 0,
+        "react/no-unused-prop-types": 0,
+        "keyword-spacing": 0,
+        "no-else-return": 0,
+        "arrow-body-style": 0,
+        "newline-per-chained-call": 0,
+        "react/sort-comp": 0,
+        "no-plusplus": 0,
+        "no-return-assign": 0,
+        "one-var": 0,
+        "eqeqeq": 0,
+        "import/first": 0
+    },
+    "settings": {
+        "import/resolver": {
+            "webpack": {
+                "config": {
+                    "resolve": {
+                        "modules": ["src", "node_modules"],
+                        "extensions": [".js", ".jsx"]
+                    }
+                }
+            }
+        }
+    }
+}

@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import MonacoEditor from 'react-monaco-editor';
 
-import I18n from './i18n';
-
 class ScriptEditor extends React.Component {
     constructor(props) {
         super(props);
@@ -12,6 +10,9 @@ class ScriptEditor extends React.Component {
             language: props.language || 'javascript',
             readOnly: props.readOnly || false
         };
+        this.editor = null;
+        this.monaco = null;
+        this.insert = '';
         this.originalCode = props.code || '';
     }
 
@@ -27,19 +28,46 @@ class ScriptEditor extends React.Component {
         } else if (this.state.isDark !== (nextProps.isDark || false)) {
             this.setState({isDark: nextProps.isDark || false});
         }
+
+        if (this.insert !== nextProps.insert) {
+            this.insert = nextProps.insert;
+            nextProps.insert && this.insertTextIntoEditor(nextProps.insert);
+            if (nextProps.insert) {
+                setTimeout(() => this.props.onInserted && this.props.onInserted(), 100);
+            }
+        }
     }
+
+    /**
+     * Inserts some text into the given editor
+     * @param {string} text The text to add
+     */
+    insertTextIntoEditor(text) {
+        const selection = this.editor.getSelection();
+        const range = new this.monaco.Range(
+            selection.startLineNumber, selection.startColumn,
+            selection.endLineNumber, selection.endColumn
+        );
+        this.editor.executeEdits('', [{range: range, text: text, forceMoveMarkers: true}]);
+    }
+
+
     editorDidMount(editor, monaco) {
+        this.monaco = monaco;
         this.editor = editor;
         editor.focus();
     }
+
     onChange(newValue, e) {
         this.props.onChange && this.props.onChange(newValue);
     }
+
     render() {
         const options = {
             selectOnLineNumbers: true,
             scrollBeyondLastLine: false,
-            automaticLayout: true
+            automaticLayout: true,
+            readOnly: this.state.readOnly
         };
         return (
             <MonacoEditor
@@ -58,7 +86,9 @@ class ScriptEditor extends React.Component {
 
 ScriptEditor.propTypes = {
     onChange: PropTypes.func,
+    onInserted: PropTypes.func,
     isDark: PropTypes.bool,
+    readOnly: PropTypes.bool,
     code: PropTypes.string,
     language: PropTypes.string
 };

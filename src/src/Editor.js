@@ -4,108 +4,231 @@ import Toolbar from '@material-ui/core/Toolbar';
 import {withStyles} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 
 import {MdPalette as IconDark} from 'react-icons/md';
 import {MdSave as IconSave} from 'react-icons/md';
 import {MdCancel as IconCancel} from 'react-icons/md';
+import {MdClose as IconClose} from 'react-icons/md';
+import {MdInput as IconDoEdit} from 'react-icons/md';
+
+import ImgJS from './assets/js.png';
+import ImgBlockly from './assets/blockly.png';
+import ImgTypeScript from './assets/typescript.png';
+import ImgBlockly2Js from './assets/blockly2js.png'
 
 import I18n from './i18n';
 import Theme from './Theme';
 import ScriptEditor from './ScriptEditor';
+import BlocklyEditor from './BlocklyEditor';
+import DialogConfirm from './Dialogs/Confirmation';
+import DialogSelectID from './Dialogs/SelectID';
+
+const images = {
+    'Blockly': ImgBlockly,
+    'Javascript/js': ImgJS,
+    def: ImgJS,
+    'TypeScript/ts': ImgTypeScript,
+};
 
 const styles = theme => ({
     toolbar: {
         minHeight: Theme.toolbar.height,
         boxShadow: '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)'
     },
+    toolbarButtons: {
+
+    },
     editorDiv: {
-        height: `calc(100% - ${Theme.toolbar.height}px)`,
+        height: `calc(100% - ${Theme.toolbar.height + Theme.toolbar.height + 1}px)`,
         width: '100%',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        position: 'relative'
     },
     textButton: {
         marginRight: 10
+    },
+    tabIcon: {
+        width: 24,
+        height: 24,
+        verticalAlign: 'middle',
+        marginBottom: 2,
+        marginRight: 2
+    },
+    hintIcon: {
+        //fontSize: 32,
+        padding: '0 8px 0 8px'
+    },
+    hintText: {
+        //fontSize: 18
+    },
+    hintButton: {
+        marginTop: 8,
+        marginLeft: 10
+    },
+    tabChanged: {
+        color: theme.palette.secondary.main
+    },
+    tabText: {
+        maxWidth: 160,
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
     }
 });
 
 class Editor extends React.Component {
     constructor(props) {
         super(props);
-        window.editorStore = window.editorStore || {};
 
-        this.script = this.props.script || {source: '', engineType: 'Javascript/js'};
-        this.id = this.props.id;
+        const selected = window.localStorage.getItem('Editor.selected') || '';
+        let editing = window.localStorage.getItem('Editor.editing') || '[]';
+        try {
+            editing = JSON.parse(editing);
+        } catch (e) {
+            editing = [];
+        }
+        if (selected && editing.indexOf(selected) === -1) {
+            editing.push(selected);
+        }
 
-        window.editorStore[this.id] = window.editorStore[this.id] || this.script.source;
+        this.loaded = false;
 
         this.state = {
-            changed: window.editorStore[this.id] !== this.script.source,
+            selected: selected,
+            editing: editing,
+            changed: false,
+            blockly: null,
+            showBlocklyCode: false,
+            showSelectId: false,
+            insert: '',
             isDark: window.localStorage ? (window.localStorage.getItem('Editor.dark') === 'true') : false,
             visible: props.visible
         };
+
+        this.scripts = {};
+
+        if (!this.state.selected && this.state.editing.length) {
+            this.state.selected = this.state.editing[0];
+        }
+
+        if (this.state.selected && props.objects[this.state.selected]) {
+            this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(props.objects[this.state.selected].common));
+            this.state.blockly = this.scripts[this.state.selected].engineType === 'Blockly';
+        }
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.id !== nextProps.id) {
-            this.id = nextProps.id;
-            this.script = nextProps.script || {source: '', engineType: 'Javascript/js'};
-            window.editorStore[this.id] = this.script.source;
-            this.state.changed && this.setState({changed: false});
-        } else {
-            if (!this.state.changed) {
-                this.script = nextProps.script || {source: '', engineType: 'Javascript/js'};
-                window.editorStore[this.id] = this.script.source;
-                this.forceUpdate();
+        if (this.state.selected !== nextProps.selected && nextProps.selected) {
+            if (nextProps.selected) {
+                this.scripts[nextProps.selected] = this.scripts[nextProps.selected] || JSON.parse(JSON.stringify(this.props.objects[nextProps.selected].common));
             }
-        }
-        if (this.state.visible !== nextProps.visible) {
 
+            const nextCommon = this.props.objects[nextProps.selected] && this.props.objects[nextProps.selected].common;
+
+            const changed = nextCommon && JSON.stringify(this.scripts[nextProps.selected]) !== JSON.stringify(nextCommon);
+
+            const editing = JSON.parse(JSON.stringify(this.state.editing));
+            if (nextProps.selected && editing.indexOf(nextProps.selected) === -1) {
+                editing.push(nextProps.selected);
+                window.localStorage && window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
+            }
+
+            this.setState({
+                changed,
+                editing,
+                selected: nextProps.selected,
+                blockly: this.scripts[nextProps.selected].engineType === 'Blockly',
+                showBlocklyCode: false
+            });
+        } else {
+
+        }
+
+        if (this.state.visible !== nextProps.visible) {
+            this.setState({visible: nextProps.visible});
         }
     }
 
     onSave() {
-        this.script.source = window.editorStore[this.props.id];
         this.setState({changed: false}, () => {
-            this.props.onChange && this.props.onChange(this.props.id, this.script);
+            this.props.onChange && this.props.onChange(this.state.selected, this.scripts[this.state.selected]);
         });
     }
 
     onCancel() {
-        window.editorStore[this.props.id] = this.script.source;
+        this.scripts[this.state.selected] = JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
         this.setState({changed: false});
     }
 
+    onConvert2JS() {
+        this.showConfirmDialog(I18n.t('It will not be possible to revert this operation.'), result => {
+            if (result) {
+
+            }
+        });
+    }
+
     getToolbar() {
-        return (
-            <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
-                {this.state.changed && (<Button key="save" variant="contained" color="secondary" className={this.props.classes.textButton} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave /></Button>)}
-                {this.state.changed && (<Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel /></Button>)}
-                <IconButton key="dark" aria-label="Dark style"
-                            color={this.state.isDark ? 'secondary' : 'inherit'}
-                            onClick={() => {
-                                this.setState({isDark: !this.state.isDark});
-                                window.localStorage && window.localStorage.setItem('Editor.dark', this.state.isDark ? 'false' : 'true');
-                            }}>
-                                <IconDark /></IconButton>
-            </Toolbar>);
+        if (this.state.selected) {
+            return (
+                <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
+                    {this.state.changed && (<Button key="save" variant="contained" color="secondary" className={this.props.classes.textButton} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave /></Button>)}
+                    {this.state.changed && (<Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel /></Button>)}
+                    <div style={{flex: 2}}/>
+
+                    {!this.state.blockly && (<IconButton key="dark" aria-label="Dark style"
+                                color={this.state.isDark ? 'secondary' : 'inherit'}
+                                className={this.props.classes.toolbarButtons}
+                                onClick={() => {
+                                    this.setState({isDark: !this.state.isDark});
+                                    window.localStorage && window.localStorage.setItem('Editor.dark', this.state.isDark ? 'false' : 'true');
+                                }}>
+                        <IconDark /></IconButton>)}
+
+                    {!this.state.blockly && !this.state.showBlocklyCode && (<Button key="select-id" aria-label="select ID"
+                                                                 className={this.props.classes.toolbarButtons}
+                                                         onClick={() => this.setState({showSelectId: true})}>
+                        Select ID</Button>)}
+
+                    {this.state.blockly && this.state.showBlocklyCode && (<Button key={"convert2js"} aria-label="convert to javascript"
+                        onClick={() => this.onConvert2JS()}
+                    >Blockly=>JS</Button>)}
+
+                    {this.state.blockly && (<Button key="blockly-code" aria-label="blockly"
+                                                    className={this.props.classes.toolbarButtons}
+                                                    color={this.state.showBlocklyCode ? 'secondary' : 'inherit'}
+                                                    style={{padding: '0 5px'}}
+                                                    onClick={() => this.setState({showBlocklyCode: !this.state.showBlocklyCode})}>
+                        <img alt="blockly2js" src={ImgBlockly2Js} /></Button>)}
+                </Toolbar>);
+        } else {
+            return null;
+        }
     }
 
     onChange(newValue) {
-        window.editorStore[this.props.id] = newValue;
-        const changed = this.script.source !== window.editorStore[this.props.id];
+        this.scripts[this.state.selected].source = newValue;
+        const changed = JSON.stringify(this.scripts[this.state.selected]) !== JSON.stringify(this.props.objects[this.state.selected].common);
         if (changed !== this.state.changed) {
             this.setState({changed})
         }
     }
 
     getScriptEditor() {
-        if (this.id) {
+        if (this.state.selected && this.props.objects[this.state.selected] && (!this.state.blockly || this.state.showBlocklyCode)) {
+            this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
+
             return (<div className={this.props.classes.editorDiv} key="editor">
                 <ScriptEditor
-                    code={window.editorStore[this.props.id]}
+                    insert={this.state.insert}
+                    onInserted={() => this.setState({insert: ''})}
+                    readOnly={this.state.showBlocklyCode}
+                    code={this.scripts[this.state.selected].source || ''}
                     isDark={this.state.isDark}
                     onChange={newValue => this.onChange(newValue)}
-                    language={this.script.engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
+                    language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
                 />
             </div>);
         } else {
@@ -113,18 +236,184 @@ class Editor extends React.Component {
         }
     }
 
+    getBlocklyEditor() {
+        if (this.state.selected && this.props.objects[this.state.selected] && (this.state.blockly && !this.state.showBlocklyCode) && this.state.visible) {
+            this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
+
+            return (<div className={this.props.classes.editorDiv} key="editor">
+                <BlocklyEditor
+                    resizing={this.props.resizing}
+                    code={this.scripts[this.state.selected].source || ''}
+                    onChange={newValue => this.onChange(newValue)}
+                />
+            </div>);
+        } else {
+            return null;
+        }
+    }
+
+    onTabChange(event, selected) {
+        window.localStorage && window.localStorage.setItem('Editor.selected', selected);
+        const common = this.scripts[selected] || (this.props.objects[selected] && this.props.objects[selected].common);
+        this.setState({selected, blockly: common.engineType === 'Blockly', showBlocklyCode: false});
+        this.props.onSelectedChange && this.props.onSelectedChange(selected);
+    }
+
+    isScriptChanged(id) {
+        return this.scripts[id] && JSON.stringify(this.scripts[id]) !== JSON.stringify(this.props.objects[id].common);
+    }
+
+    onTabClose(id, e) {
+        e && e.stopPropagation();
+
+        const pos = this.state.editing.indexOf(id);
+        if (this.state.editing.indexOf(id) !== -1) {
+            if (this.isScriptChanged(id)) {
+                this.showConfirmDialog(I18n.t('Discard changes for %s', this.props.objects[id].common.name), ok => {
+                    if (ok) {
+                        delete this.scripts[id];
+                        this.onTabClose(id);
+                    }
+                });
+            } else {
+                const editing = JSON.parse(JSON.stringify(this.state.editing));
+                editing.splice(pos, 1);
+                const newState = {editing};
+                if (id === this.state.selected) {
+                    if (editing.length) {
+                        if (pos === 0 || editing.length === 1) {
+                            newState.selected = editing[0];
+                        } else {
+                            newState.selected = editing[pos - 1];
+                        }
+                    } else {
+                        newState.selected = '';
+                    }
+                } else if (this.state.selected && !editing.length) {
+                    newState.selected = '';
+                }
+                window.localStorage && window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
+                if (newState.selected !== undefined) {
+                    newState.changed = this.isScriptChanged(newState.selected);
+                    const common = newState.selected && (this.scripts[newState.selected] || this.props.objects[newState.selected].common);
+                    newState.blockly = common ? common.engineType === 'Blockly' : false;
+                    newState.showBlocklyCode = false;
+                }
+
+                this.setState(newState, () =>  {
+                    if (newState.selected !== undefined) {
+                        this.props.onSelectedChange && this.props.onSelectedChange(newState.selected);
+                        window.localStorage && window.localStorage.setItem('Editor.selected', newState.selected);
+                    }
+                });
+            }
+        }
+    }
+    insertTextIntoEditor(text) {
+        this.setState({insert: text});
+    }
+
+    getTabs() {
+        if (this.state.editing.length) {
+            return (<Tabs
+                value={this.state.selected}
+                onChange={(event, value) => this.onTabChange(event, value)}
+                indicatorColor="primary"
+                textColor="primary"
+                scrollable
+                scrollButtons="auto"
+            >
+                {this.state.editing.map(id => {
+                    if (!this.props.objects[id]) {
+                        return (<Tab key={id} label={id.split('.').pop()} value={id}/>);
+                    } else {
+                        let text = this.props.objects[id].common.name;
+                        let title = '';
+                        if (text.length > 18) {
+                            title = text;
+                            text = text.substring(0, 15) + '...';
+                        }
+                        const label = [
+                            (<img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon}/>),
+                            (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{text}</span>),
+                            (<IconButton key="close" onClick={e => this.onTabClose(id, e)}><IconClose fontSize="small" /></IconButton>)];
+
+                        return (<Tab key={id} label={label} value={id} title={title}/>);
+                    }
+                })}
+            </Tabs>)
+        } else {
+            return (<div className={this.props.classes.toolbar}>
+                <Button disabled={true} className={this.props.classes.hintButton}>{I18n.t('Click on this icon')}<IconDoEdit className={this.props.classes.hintIcon}/>{I18n.t('for edit or create script')}</Button></div>);
+        }
+    }
+
+    showConfirmDialog(question, cb) {
+        this.confirmCallback = cb;
+        this.setState({confirm: question});
+    }
+
+    getConfirmDialog() {
+        if (this.state.confirm) {
+            return (<DialogConfirm
+                question={this.state.confirm}
+                onClose={() => {
+                    this.setState({confirm: ''});
+                    if (this.confirmCallback) {
+                        const cb = this.confirmCallback;
+                        this.confirmCallback = null;
+                        cb(false);
+                    }
+                }}
+                onOk={() => {
+                    if (this.confirmCallback) {
+                        const cb = this.confirmCallback;
+                        this.confirmCallback = null;
+                        cb(true);
+                    }
+                }}
+            />);
+        } else {
+            return null;
+        }
+    }
+
+    getSelectIdDialog() {
+        if (this.state.showSelectId) {
+            return (<DialogSelectID
+                connection={this.props.connection}
+                selected={''}
+                statesOnly={true}
+                onClose={() => this.setState({showSelectId: false})}
+                onOk={(selected, name) => this.setState({insert: `'${selected}'/*${name}*/`})}
+            />);
+        } else {
+            return null;
+        }
+    }
     render() {
+        if (this.state.selected && this.props.objects[this.state.selected] && this.state.blockly === null) {
+            setTimeout(() => this.setState({blockly: this.scripts[this.state.selected].engineType === 'Blockly', showBlocklyCode: false}), 100);
+        }
+
         return [
-                this.getToolbar(),
-                this.getScriptEditor()
-            ];
+            this.getTabs(),
+            this.getToolbar(),
+            this.getScriptEditor(),
+            this.getBlocklyEditor(),
+            this.getConfirmDialog(),
+            this.getSelectIdDialog()
+        ];
     }
 }
 
 Editor.propTypes = {
-    script: PropTypes.object.isRequired,
+    objects: PropTypes.object.isRequired,
+    selected: PropTypes.string.isRequired,
+    onSelectedChange: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
-    visible: PropTypes.bool
+    visible: PropTypes.bool,
+    connection: PropTypes.object
 };
 
 export default withStyles(styles)(Editor);
