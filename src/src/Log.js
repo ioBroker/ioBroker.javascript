@@ -36,11 +36,13 @@ const styles = theme => ({
     logBox: {
         width: '100%',
         height: '100%',
-        position: 'relative'
+        position: 'relative',
+        overflow: 'hidden'
     },
     logBoxInner: {
-        width: '100%',
+        width: `calc(100% - ${TOOLBOX_WIDTH}px)`,
         height: '100%',
+        marginLeft: TOOLBOX_WIDTH,
         overflow: 'auto',
         position: 'relative'
     },
@@ -67,8 +69,8 @@ const styles = theme => ({
     },
     table: {
         fontFamily: 'monospace',
-        width: `calc(100% - ${TOOLBOX_WIDTH}px)`,
-        marginLeft: TOOLBOX_WIDTH
+        width: '100%',
+
     },
     toolbox: {
         position: 'absolute',
@@ -86,6 +88,21 @@ const styles = theme => ({
         fontWeight: 'bold'
     }
 });
+
+function copyToClipboard(str) {
+    const el = window.document.createElement('textarea');
+    el.value = str;
+    window.document.body.appendChild(el);
+    el.select();
+    window.document.execCommand('copy');
+    window.document.body.removeChild(el);
+}
+
+function paddingMs(ms) {
+    if (ms < 10) return '00' + ms;
+    if (ms < 100) return '0' + ms;
+    return ms;
+}
 
 class Log extends React.Component {
     constructor(props) {
@@ -125,7 +142,8 @@ class Log extends React.Component {
                 if (severity === 'info' || severity === 'warn') {
                     severity += ' ';
                 }
-                this.text.push(new Date(nextProps.addLine.message.ts) + '\t[' + severity + ']: ' + nextProps.addLine.message.message);
+                const date = new Date(nextProps.addLine.message.ts);
+                this.text.push(`${date.toLocaleString()}.${paddingMs(date.getMilliseconds())}\t[${severity}]: ${nextProps.addLine.message.message}`);
                 if (lines.length > 300) {
                     lines.splice(0, lines.length - 300);
                     this.text.splice(0, lines.length - 300);
@@ -136,15 +154,18 @@ class Log extends React.Component {
     }
 
     onCopy() {
-
+        copyToClipboard(this.text.join('\n'));
     }
 
     render() {
         return (
             <div className={this.props.classes.logBox}>
                 <div className={this.props.classes.toolbox}>
-                    <IconButton onClick={() => this.setState({goBottom: !!this.state.goBottom})} color={this.state.goBottom ? 'secondary' : 'primary'}><IconBottom/></IconButton>
-                    {this.state.lines.length ? (<IconButton onClick={() => this.setState({lines: []})}><IconDelete/></IconButton>) : null}
+                    <IconButton onClick={() => this.setState({goBottom: !this.state.goBottom})} color={this.state.goBottom ? 'secondary' : 'primary'}><IconBottom/></IconButton>
+                    {this.state.lines.length ? (<IconButton onClick={() => {
+                        this.setState({lines: []});
+                        this.text = [];
+                    }}><IconDelete/></IconButton>) : null}
                     {this.state.lines.length ? (<IconButton onClick={() => this.onCopy()}><IconCopy/></IconButton>) : null}
                 </div>
                 <div className={this.props.classes.logBoxInner}>
