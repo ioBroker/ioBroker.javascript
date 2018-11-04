@@ -108,10 +108,11 @@ class Log extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            lines: [],
-            goBottom: true
+            lines: {},
+            goBottom: true,
+            selected: null,
         };
-        this.text = [];
+        this.text = {};
         this.lastIndex = null;
         this.messagesEnd = React.createRef();
     }
@@ -125,7 +126,7 @@ class Log extends React.Component {
     }
 
     scrollToBottom() {
-        this.messagesEnd.current.scrollIntoView({behavior: "smooth"});
+        this.messagesEnd && this.messagesEnd.current && this.messagesEnd.current.scrollIntoView({behavior: 'smooth'});
     }
 
     componentDidUpdate() {
@@ -133,47 +134,70 @@ class Log extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        if (nextProps.selected !== this.state.selected) {
+            let selected = nextProps.selected;
+            let allLines = this.state.lines;
+            this.state.lines[selected] = this.state.lines[selected] || [];
+            this.text[selected] = this.text[selected] || [];
+            this.setState({selected});
+        }
         if (nextProps.addLine && nextProps.addLine.index !== this.lastIndex) {
             this.lastIndex = nextProps.addLine.index;
             if (nextProps.addLine.message) {
-                const lines = this.state.lines;
+                let allLines = this.state.lines;
+                const selected = Object.keys(this.state.lines).find(id => nextProps.addLine.message.message.indexOf(id) !== -1);
+                if (!selected) return;
+
+                let lines = this.state.lines[selected] || [];
+                let text = this.text[selected] || [];
+
                 lines.push(this.generateLine(nextProps.addLine.message));
                 let severity = nextProps.addLine.message.severity;
                 if (severity === 'info' || severity === 'warn') {
                     severity += ' ';
                 }
                 const date = new Date(nextProps.addLine.message.ts);
-                this.text.push(`${date.toLocaleString()}.${paddingMs(date.getMilliseconds())}\t[${severity}]: ${nextProps.addLine.message.message}`);
+                text.push(`${date.toLocaleString()}.${paddingMs(date.getMilliseconds())}\t[${severity}]: ${nextProps.addLine.message.message}`);
                 if (lines.length > 300) {
                     lines.splice(0, lines.length - 300);
-                    this.text.splice(0, lines.length - 300);
+                    text.splice(0, lines.length - 300);
                 }
-                this.setState({lines});
+                this.text[selected] = text;
+
+                this.setState({lines: allLines});
             }
         }
     }
 
     onCopy() {
-        copyToClipboard(this.text.join('\n'));
+        copyToClipboard((this.text[this.state.selected] || []).join('\n'));
+    }
+
+    clearLog() {
+        let allLines = this.state.lines;
+        if (allLines[this.state.selected]) {
+            allLines[this.state.selected] = [];
+        }
+        if (this.text[this.state.selected]) {
+            this.text[this.state.selected] = [];
+        }
+        this.setState({lines: allLines});
     }
 
     render() {
+        const lines = this.state.selected && this.state.lines[this.state.selected];
         return (
             <div className={this.props.classes.logBox}>
                 <div className={this.props.classes.toolbox}>
-                    <IconButton onClick={() => this.setState({goBottom: !this.state.goBottom})} color={this.state.goBottom ? 'secondary' : 'primary'}><IconBottom/></IconButton>
-                    {this.state.lines.length ? (<IconButton onClick={() => {
-                        this.setState({lines: []});
-                        this.text = [];
-                    }}><IconDelete/></IconButton>) : null}
-                    {this.state.lines.length ? (<IconButton onClick={() => this.onCopy()}><IconCopy/></IconButton>) : null}
+                    <IconButton onClick={() => this.setState({goBottom: !this.state.goBottom})} color={this.state.goBottom ? 'secondary' : ''}><IconBottom/></IconButton>
+                    {lines && lines.length ? (<IconButton onClick={() => this.clearLog()}><IconDelete/></IconButton>) : null}
+                    {lines && lines.length ? (<IconButton onClick={() => this.onCopy()}><IconCopy/></IconButton>) : null}
                 </div>
-                <div className={this.props.classes.logBoxInner}>
-                    <table className={this.props.classes.table} >
-                        {this.state.lines}
-                    </table>
-                    <div ref={this.messagesEnd} style={{ float:"left", clear: "both" }}/>
-                </div>
+                {this.state.selected ?
+                    (<div className={this.props.classes.logBoxInner}>
+                        <table className={this.props.classes.table} >{lines}</table>
+                        <div ref={this.messagesEnd} style={{float: 'left', clear: 'both'}}/>
+                    </div>) : null}
             </div>
         );
     }
@@ -181,7 +205,8 @@ class Log extends React.Component {
 
 Log.propTypes = {
     classes: PropTypes.object.isRequire,
-    addLine: PropTypes.object
+    addLine: PropTypes.object,
+    selected: PropTypes.string
 };
 
 export default withStyles(styles)(Log);
