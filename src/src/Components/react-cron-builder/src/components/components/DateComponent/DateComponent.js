@@ -1,7 +1,6 @@
 // @flow
 
 import React, {PureComponent, Children} from 'react'
-import {If, Then} from 'react-if'
 import {EVERY} from '../../../data/constants'
 import head from 'lodash/head'
 import type {Option} from 'types/Option'

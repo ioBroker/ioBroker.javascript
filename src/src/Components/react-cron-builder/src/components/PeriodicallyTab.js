@@ -1,7 +1,6 @@
 // @flow
 
 import React from 'react'
-import {If, Then, Else} from 'react-if'
 import {MINUTES, EVERY} from '../data/constants'
 import {isMultiple, toggleDateType, toOptions, rangeHoursToSingle} from '../utils'
 import range from 'lodash/range'

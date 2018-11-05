@@ -2,7 +2,6 @@
 
 import React, {PureComponent} from 'react'
 import BEMHelper from 'react-bem-helper'
-import {If, Then} from 'react-if'
 import {generateCronExpression, parseCronExpression} from './utils'
 import cronsTrue from 'cronstrue'
 import noop from 'lodash/noop'

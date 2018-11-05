@@ -16,7 +16,11 @@
     "react-monaco-editor": "^0.20.0",
     "react-scripts": "2.0.5",
     "react-splitter-layout": "^3.0.1",
-    "react-treeview-mui": "^0.1.2"
+    "react-treeview-mui": "^0.1.2",
+    "classnames": "^2.2.5",
+    "cronstrue": "^0.10.3",
+    "react-bem-helper": "^1.4.1",
+    "react-select": "^1.0.0-rc.2"
   },
   "scripts": {
     "start": "react-scripts start",
