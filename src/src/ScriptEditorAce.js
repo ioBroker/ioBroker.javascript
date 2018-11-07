@@ -55,6 +55,10 @@ class ScriptEditor extends React.Component {
     editorDidMount(editor, monaco) {
         this.monaco = monaco;
         this.editor = editor;
+        this.monaco.MonacoEnvironment.getWorkerUrl = function(workerId, label) {
+            console.log(workerId + ' '  + label);
+            return 'monaco-editor-worker-loader-proxy.js';
+        };
         editor.focus();
     }
 
@@ -73,7 +77,6 @@ class ScriptEditor extends React.Component {
             <MonacoEditor
                 width="100%"
                 height="100%"
-                languages={['javascript', 'typescript']}
                 language={this.state.language}
                 theme={this.state.isDark ? 'vs-dark': ''}
                 value={this.originalCode}

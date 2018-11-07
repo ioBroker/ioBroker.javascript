@@ -22,7 +22,7 @@ import ImgBlockly2Js from './assets/blockly2js.png'
 
 import I18n from './i18n';
 import Theme from './Theme';
-import ScriptEditor from './ScriptEditor';
+import ScriptEditor from './ScriptEditorVanilaMonaco';
 import BlocklyEditor from './BlocklyEditor';
 import DialogConfirm from './Dialogs/Confirmation';
 import DialogSelectID from './Dialogs/SelectID';
@@ -232,6 +232,7 @@ class Editor extends React.Component {
 
             return (<div className={this.props.classes.editorDiv} key="editor">
                 <ScriptEditor
+                    name={this.state.selected}
                     insert={this.state.insert}
                     onInserted={() => this.setState({insert: ''})}
                     readOnly={this.state.showBlocklyCode}

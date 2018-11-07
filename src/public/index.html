@@ -349,5 +349,11 @@
       <category name="{catFunctions}" colour="290" custom="PROCEDURE"></category>
     </xml>
 
+    <!--
+      improved VSCode editor. This has to be down here, or we get conflicts
+      between loader.js and require calls in jQuery and other loaded modules
+  -->
+    <script type="text/javascript" src="vs/loader.js"></script>
+    <script type="text/javascript" src="vs/configure.js"></script>
   </body>
 </html>
