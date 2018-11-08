@@ -11,6 +11,7 @@ import {MdPalette as IconDark} from 'react-icons/md';
 import {MdSave as IconSave} from 'react-icons/md';
 import {MdCancel as IconCancel} from 'react-icons/md';
 import {MdClose as IconClose} from 'react-icons/md';
+import {MdRefresh as IconRestart} from 'react-icons/md';
 import {MdInput as IconDoEdit} from 'react-icons/md';
 import {FaClock as IconCron} from 'react-icons/fa';
 import {FaClipboardList as IconSelectId} from 'react-icons/fa';
@@ -37,11 +38,12 @@ const images = {
 
 const styles = theme => ({
     toolbar: {
-        minHeight: Theme.toolbar.height,
+        minHeight: 38,//Theme.toolbar.height,
         boxShadow: '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)'
     },
     toolbarButtons: {
-
+        padding: 4,
+        marginLeft: 4
     },
     editorDiv: {
         height: `calc(100% - ${Theme.toolbar.height + Theme.toolbar.height + 1}px)`,
@@ -78,6 +80,9 @@ const styles = theme => ({
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
+    },
+    closeButton: {
+        padding: 8,
     }
 });
 
@@ -98,7 +103,7 @@ class Editor extends React.Component {
 
         this.state = {
             selected: selected,
-            editing: editing,
+            editing: editing, // array of opened scripts
             changed: false,
             blockly: null,
             showBlocklyCode: false,
@@ -122,7 +127,7 @@ class Editor extends React.Component {
 
         // to enable logging
         if (this.props.onSelectedChange && this.state.selected) {
-            setTimeout(() => this.props.onSelectedChange(this.state.selected));
+            setTimeout(() => this.props.onSelectedChange(this.state.selected, this.state.editing));
         }
     }
 
@@ -139,6 +144,7 @@ class Editor extends React.Component {
             const editing = JSON.parse(JSON.stringify(this.state.editing));
             if (nextProps.selected && editing.indexOf(nextProps.selected) === -1) {
                 editing.push(nextProps.selected);
+                this.props.onSelectedChange(nextProps.selected, editing);
                 window.localStorage && window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
             }
 
@@ -158,10 +164,15 @@ class Editor extends React.Component {
         }
     }
 
+    onRestart() {
+        this.props.onRestart && this.props.onRestart(this.state.selected);
+    }
+
     onSave() {
-        this.setState({changed: false}, () => {
-            this.props.onChange && this.props.onChange(this.state.selected, this.scripts[this.state.selected]);
-        });
+        if (this.state.changed) {
+            this.setState({changed: false}, () =>
+                this.props.onChange && this.props.onChange(this.state.selected, this.scripts[this.state.selected]));
+        }
     }
 
     onCancel() {
@@ -177,89 +188,11 @@ class Editor extends React.Component {
         });
     }
 
-    getToolbar() {
-        if (this.state.selected) {
-            return (
-                <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
-                    {this.state.changed && (<Button key="save" variant="contained" color="secondary" className={this.props.classes.textButton} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave /></Button>)}
-                    {this.state.changed && (<Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel /></Button>)}
-                    <div style={{flex: 2}}/>
-
-                    {!this.state.blockly && (<IconButton key="dark" aria-label="Dark style"
-                                color={this.state.isDark ? 'secondary' : 'inherit'}
-                                className={this.props.classes.toolbarButtons}
-                                onClick={() => {
-                                    this.setState({isDark: !this.state.isDark});
-                                    window.localStorage && window.localStorage.setItem('Editor.dark', this.state.isDark ? 'false' : 'true');
-                                }}>
-                        <IconDark /></IconButton>)}
-
-                    {!this.state.blockly && !this.state.showBlocklyCode && (<IconButton key="select-cron" aria-label="select ID"
-                        className={this.props.classes.toolbarButtons}
-                        onClick={() => this.setState({showCron: true})}><IconCron/></IconButton>)}
-
-                    {!this.state.blockly && !this.state.showBlocklyCode && (<IconButton key="select-id" aria-label="select ID"
-                        className={this.props.classes.toolbarButtons}
-                        onClick={() => this.setState({showSelectId: true})}><IconSelectId/></IconButton>)}
-
-                    {this.state.blockly && this.state.showBlocklyCode && (<Button key={"convert2js"} aria-label="convert to javascript"
-                        onClick={() => this.onConvert2JS()}
-                    >Blockly=>JS</Button>)}
-
-                    {this.state.blockly && (<Button key="blockly-code" aria-label="blockly"
-                                                    className={this.props.classes.toolbarButtons}
-                                                    color={this.state.showBlocklyCode ? 'secondary' : 'inherit'}
-                                                    style={{padding: '0 5px'}}
-                                                    onClick={() => this.setState({showBlocklyCode: !this.state.showBlocklyCode})}>
-                        <img alt="blockly2js" src={ImgBlockly2Js} /></Button>)}
-                </Toolbar>);
-        } else {
-            return null;
-        }
-    }
-
     onChange(newValue) {
         this.scripts[this.state.selected].source = newValue;
         const changed = JSON.stringify(this.scripts[this.state.selected]) !== JSON.stringify(this.props.objects[this.state.selected].common);
         if (changed !== this.state.changed) {
-            this.setState({changed})
-        }
-    }
-
-    getScriptEditor() {
-        if (this.state.selected && this.props.objects[this.state.selected] && (!this.state.blockly || this.state.showBlocklyCode)) {
-            this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
-
-            return (<div className={this.props.classes.editorDiv} key="editor">
-                <ScriptEditor
-                    name={this.state.selected}
-                    insert={this.state.insert}
-                    onInserted={() => this.setState({insert: ''})}
-                    readOnly={this.state.showBlocklyCode}
-                    code={this.scripts[this.state.selected].source || ''}
-                    isDark={this.state.isDark}
-                    onChange={newValue => this.onChange(newValue)}
-                    language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
-                />
-            </div>);
-        } else {
-            return null;
-        }
-    }
-
-    getBlocklyEditor() {
-        if (this.state.selected && this.props.objects[this.state.selected] && (this.state.blockly && !this.state.showBlocklyCode) && this.state.visible) {
-            this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
-
-            return (<div className={this.props.classes.editorDiv} key="editor">
-                <BlocklyEditor
-                    resizing={this.props.resizing}
-                    code={this.scripts[this.state.selected].source || ''}
-                    onChange={newValue => this.onChange(newValue)}
-                />
-            </div>);
-        } else {
-            return null;
+            this.setState({changed});
         }
     }
 
@@ -267,7 +200,7 @@ class Editor extends React.Component {
         window.localStorage && window.localStorage.setItem('Editor.selected', selected);
         const common = this.scripts[selected] || (this.props.objects[selected] && this.props.objects[selected].common);
         this.setState({selected, blockly: common.engineType === 'Blockly', showBlocklyCode: false});
-        this.props.onSelectedChange && this.props.onSelectedChange(selected);
+        this.props.onSelectedChange && this.props.onSelectedChange(selected, this.state.editing);
     }
 
     isScriptChanged(id) {
@@ -313,8 +246,10 @@ class Editor extends React.Component {
 
                 this.setState(newState, () =>  {
                     if (newState.selected !== undefined) {
-                        this.props.onSelectedChange && this.props.onSelectedChange(newState.selected);
+                        this.props.onSelectedChange && this.props.onSelectedChange(newState.selected, this.state.editing);
                         window.localStorage && window.localStorage.setItem('Editor.selected', newState.selected);
+                    } else {
+                        this.props.onSelectedChange && this.props.onSelectedChange(this.state.selected, this.state.editing);
                     }
                 });
             }
@@ -344,7 +279,7 @@ class Editor extends React.Component {
                         const label = [
                             (<img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon}/>),
                             (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{text}</span>),
-                            (<IconButton key="close" onClick={e => this.onTabClose(id, e)}><IconClose fontSize="small" /></IconButton>)];
+                            (<IconButton key="close" onClick={e => this.onTabClose(id, e)} className={this.props.classes.closeButton}><IconClose fontSize="small" /></IconButton>)];
 
                         return (<Tab key={id} label={label} value={id} title={title}/>);
                     }
@@ -353,6 +288,87 @@ class Editor extends React.Component {
         } else {
             return (<div className={this.props.classes.toolbar}>
                 <Button disabled={true} className={this.props.classes.hintButton}>{I18n.t('Click on this icon')}<IconDoEdit className={this.props.classes.hintIcon}/>{I18n.t('for edit or create script')}</Button></div>);
+        }
+    }
+
+    getToolbar() {
+        if (this.state.selected) {
+            return (
+                <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
+                    {!this.state.changed && (<IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>)}
+                    {this.state.changed && (<Button key="save" variant="contained" color="secondary" className={this.props.classes.textButton} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave /></Button>)}
+                    {this.state.changed && (<Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel /></Button>)}
+                    <div style={{flex: 2}}/>
+
+                    {!this.state.blockly && (<IconButton key="dark" aria-label="Dark style"
+                                                         color={this.state.isDark ? 'secondary' : 'inherit'}
+                                                         className={this.props.classes.toolbarButtons}
+                                                         onClick={() => {
+                                                             this.setState({isDark: !this.state.isDark});
+                                                             window.localStorage && window.localStorage.setItem('Editor.dark', this.state.isDark ? 'false' : 'true');
+                                                         }}>
+                        <IconDark /></IconButton>)}
+
+                    {!this.state.blockly && !this.state.showBlocklyCode && (<IconButton key="select-cron" aria-label="select ID"
+                                                                                        className={this.props.classes.toolbarButtons}
+                                                                                        onClick={() => this.setState({showCron: true})}><IconCron/></IconButton>)}
+
+                    {!this.state.blockly && !this.state.showBlocklyCode && (<IconButton key="select-id" aria-label="select ID"
+                                                                                        className={this.props.classes.toolbarButtons}
+                                                                                        onClick={() => this.setState({showSelectId: true})}><IconSelectId/></IconButton>)}
+
+                    {this.state.blockly && this.state.showBlocklyCode && (<Button key={"convert2js"} aria-label="convert to javascript"
+                                                                                  onClick={() => this.onConvert2JS()}
+                    >Blockly=>JS</Button>)}
+
+                    {this.state.blockly && (<Button key="blockly-code" aria-label="blockly"
+                                                    className={this.props.classes.toolbarButtons}
+                                                    color={this.state.showBlocklyCode ? 'secondary' : 'inherit'}
+                                                    style={{padding: '0 5px'}}
+                                                    onClick={() => this.setState({showBlocklyCode: !this.state.showBlocklyCode})}>
+                        <img alt="blockly2js" src={ImgBlockly2Js} /></Button>)}
+                </Toolbar>);
+        } else {
+            return null;
+        }
+    }
+
+    getScriptEditor() {
+        if (this.state.selected && this.props.objects[this.state.selected] && (!this.state.blockly || this.state.showBlocklyCode)) {
+            this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
+
+            return (<div className={this.props.classes.editorDiv} key="editor">
+                <ScriptEditor
+                    name={this.state.selected}
+                    insert={this.state.insert}
+                    onInserted={() => this.setState({insert: ''})}
+                    onForceSave={() => this.onSave()}
+                    readOnly={this.state.showBlocklyCode}
+                    code={this.scripts[this.state.selected].source || ''}
+                    isDark={this.state.isDark}
+                    connection={this.props.connection}
+                    onChange={newValue => this.onChange(newValue)}
+                    language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
+                />
+            </div>);
+        } else {
+            return null;
+        }
+    }
+
+    getBlocklyEditor() {
+        if (this.state.selected && this.props.objects[this.state.selected] && (this.state.blockly && !this.state.showBlocklyCode) && this.state.visible) {
+            this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
+
+            return (<div className={this.props.classes.editorDiv} key="editor">
+                <BlocklyEditor
+                    resizing={this.props.resizing}
+                    code={this.scripts[this.state.selected].source || ''}
+                    onChange={newValue => this.onChange(newValue)}
+                />
+            </div>);
+        } else {
+            return null;
         }
     }
 
@@ -433,6 +449,7 @@ Editor.propTypes = {
     objects: PropTypes.object.isRequired,
     selected: PropTypes.string.isRequired,
     onSelectedChange: PropTypes.func.isRequired,
+    onRestart: PropTypes.func,
     onChange: PropTypes.func.isRequired,
     visible: PropTypes.bool,
     connection: PropTypes.object

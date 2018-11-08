@@ -49,7 +49,8 @@ class App extends Component {
             updating: false,
             resizing: false,
             selected: null,
-            logMessage: {}
+            logMessage: {},
+            editing: []
         };
         this.logIndex = 0;
         this.logSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.logSize')) || 150 : 150;
@@ -74,8 +75,8 @@ class App extends Component {
                 console.error(err);
             },
             onLog: message => {
-                this.logIndex++;
-                this.setState({logMessage: {index: this.logIndex, message}})
+                //this.logIndex++;
+                //this.setState({logMessage: {index: this.logIndex, message}})
             }
         });
     }
@@ -238,9 +239,7 @@ class App extends Component {
 
         return (
             <div className={classes.root}>
-                <nav className={classes.appSideMenu}
-                     key="menu"
-                >
+                <nav className={classes.appSideMenu} key="menu">
                     <SideMenu
                         key="sidemenu"
                         scripts={this.scripts}
@@ -273,16 +272,25 @@ class App extends Component {
                             visible={!this.state.resizing}
                             connection={this.socket}
                             onChange={(id, common) => this.onUpdateScript(id, common)}
-                            onSelectedChange={id => {
+                            onSelectedChange={(id, editing) => {
+                                const newState = {};
+                                let changed = false;
                                 if (id !== this.state.selected) {
-                                    this.setState({selected: id});
+                                    changed = true;
+                                    newState.selected = id;
                                 }
+                                if (JSON.stringify(editing) !== JSON.stringify(this.state.editing)) {
+                                    changed = true;
+                                    newState.editing = JSON.parse(JSON.stringify(editing));
+                                }
+                                changed && this.setState(newState);
                             }}
+                            onRestart={id => this.socket.extendObject(id, {})}
                             key="editor"
                             selected={this.state.selected && this.objects[this.state.selected] && this.objects[this.state.selected].type === 'script' ? this.state.selected : ''}
                             objects={this.objects}
                         />
-                        <Log key="log" addLine={this.state.logMessage} selected={this.state.selected}/>
+                        <Log key="log" editing={this.state.editing} connection={this.socket} selected={this.state.selected}/>
                     </SplitterLayout>
                 </div>
             </div>

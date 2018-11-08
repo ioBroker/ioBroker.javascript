@@ -29,6 +29,7 @@ type Props = {
   height?: number,
   rowHeight?: number,
   onScroll?: (scrollTop: number) => void,
+  onRowClick?: (data: object) => void,
   className?: string,
 };
 
@@ -61,6 +62,7 @@ export default class TreeDataTable extends Component<Props, State> {
                    classNameRow={classNameRow}
                    classNameColumn={classNameColumn}
                    classNameMover={classNameMover}
+                   onRowClick={this.props.onRowClick}
                    classNameInner={classNameInner}
         ref={elem => {this.virtualList = elem}}
 

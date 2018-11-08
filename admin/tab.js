@@ -392,7 +392,7 @@ function Scripts(main) {
 
         // Load typings for the JS editor
         /** @type {string} */
-        let scriptAdapterInstance = that.main.instances.find(function (inst) {return /javascript\.\d+$/.test(inst)});
+        var scriptAdapterInstance = that.main.instances.find(function (inst) {return /javascript\.\d+$/.test(inst)});
         if (scriptAdapterInstance != null) {
             scriptAdapterInstance = scriptAdapterInstance.substr(scriptAdapterInstance.indexOf('javascript.'));
             that.main.socket.emit('sendTo', scriptAdapterInstance, 'loadTypings', null, function (result) {
@@ -2888,7 +2888,7 @@ function Scripts(main) {
     };
 
     function getTimeString(d) {
-        var text = '';
+        var text;
         var i = d.getHours();
         if (i < 10) i = '0' + i.toString();
         text = i + ':';

@@ -168,7 +168,10 @@ class Connection {
                     if (!this.objects.hasOwnProperty(id) || id.slice(0, 7) === '_design') continue;
 
                     obj = res[id];
-                    if (obj.type === 'instance' && id.startsWith('system.adapter.javascript.')) this.scripts.instances.push(parseInt(id.split('.').pop()));
+                    if (obj.type === 'instance') {
+                        console.log(id);
+                        id.startsWith('system.adapter.javascript.') && this.scripts.instances.push(parseInt(id.split('.').pop()));
+                    }
                     if (obj.type === 'script')   this.scripts.list.push(id);
                     if (obj.type === 'channel' && id.match(/^script\.js\./)) this.scripts.groups.push(id);
                     if (obj.type === 'host')     this.scripts.hosts.push(id);
@@ -432,6 +435,17 @@ class Connection {
                 }
             }
         });
+    }
+
+    getScripts() {
+        return this.scripts;
+    }
+
+    sendTo(instance, command, data, cb) {
+        this.socket.emit('sendTo', instance, command, data, cb);
+    }
+    extendObject(id, obj, cb) {
+        this.socket.emit('extendObject', id, obj, cb);
     }
 
     registerLogHandler(handler) {

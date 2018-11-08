@@ -17,6 +17,7 @@ type Props = {
   index: number,
   selected?: string,
   onToggle: () => void,
+  onRowClick: (data: object) => void,
 };
 
 type State = {
@@ -42,6 +43,8 @@ export default class VirtualListRow extends Component<Props, State> {
       <div className={'cp_tree-table_row ' + (classNameRow || '') + (selected === row.data.id ? ' ' + classNameSelected : '')}
         style={{ ...STYLE_ROW, height: row.getHeight() + 'px' }}
         data-rindex={index}
+        onClick={() => this.props.onRowClick && this.props.onRowClick(row.data, metadata, onToggle)}
+        onDoubleClick={() => this.props.onRowClick && this.props.onRowClick(row.data, metadata, onToggle, true)}
         data-depth={row.depth} >
       
         {Children.toArray(columns).map((column, index) => {
@@ -60,7 +63,7 @@ export default class VirtualListRow extends Component<Props, State> {
 }
 
 const STYLE_ROW = {
-  display: 'flex',
+  // display: 'flex',
 
   boxSizing: 'border-box',
   position: 'relative',

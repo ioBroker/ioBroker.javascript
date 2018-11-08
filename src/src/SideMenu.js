@@ -11,6 +11,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
 
+import red from '@material-ui/core/colors/red';
+import green from '@material-ui/core/colors/green';
+
 import {MdFolder as IconFolder} from 'react-icons/md';
 // import {MdDelete as IconDelete} from 'react-icons/md';
 import {MdInput as IconDoEdit} from 'react-icons/md';
@@ -46,6 +49,11 @@ const styles = theme => ({
         height: Theme.toolbar.height
     },
     toolbarButtons: {
+    },
+    iconButtons: {
+        width: 32,
+        height: 32,
+        padding: 2
     },
     menu: {
         width: '100%',
@@ -313,12 +321,12 @@ class SideDrawer extends React.Component {
         if (this.state.reorder) return null;
         if (item.type !== 'folder') {
             return [
-                (<IconButton onClick={e => {
+                (<IconButton className={this.props.classes.iconButtons} onClick={e => {
                     e.stopPropagation();
                     this.props.onEnableDisable && this.props.onEnableDisable(item.id, !item.enabled)
                 }}
                      key="restart"
-                     style={{color: item.enabled ? '#589458' : 'red'}}>
+                     style={{color: item.enabled ? green[400] : red[400]}}>
                     {item.enabled ? (<IconPause/>) : (<IconPlay/>)}
                 </IconButton>),
                 (<IconButton key="edit" onClick={e => this.onEdit(item, e)}><IconDoEdit/></IconButton>)
@@ -454,7 +462,7 @@ class SideDrawer extends React.Component {
         const result = [];
         items.forEach(item => !item.parent && result.push(this.renderOneItem(items, item, dragging)));
 
-        return (<List dense={true}>{result}</List>);
+        return (<List dense={true} disablePadding={true}>{result}</List>);
     }
 
     onAddNew(e) {

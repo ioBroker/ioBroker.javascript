@@ -7,7 +7,6 @@ import {MdContentCopy as IconCopy} from 'react-icons/md';
 
 import I18n from './i18n';
 import {withStyles} from "@material-ui/core/styles/index";
-import Theme from "./Theme";
 
 function getTimeString(d) {
     let text;
@@ -30,7 +29,7 @@ function getTimeString(d) {
     text += i;
     return text;
 }
-const TOOLBOX_WIDTH = 48;
+const TOOLBOX_WIDTH = 34;
 
 const styles = theme => ({
     logBox: {
@@ -76,6 +75,7 @@ const styles = theme => ({
         position: 'absolute',
         top: 0,
         left: 0,
+        marginLeft: 2,
         width: TOOLBOX_WIDTH,
         height: '100%',
         boxShadow: '2px 0px 4px -1px rgba(0, 0, 0, 0.2), 4px 0px 5px 0px rgba(0, 0, 0, 0.14), 1px 0px 10px 0px rgba(0, 0, 0, 0.12)'
@@ -86,6 +86,11 @@ const styles = theme => ({
     trSeverity: {
         width: 40,
         fontWeight: 'bold'
+    },
+    iconButtons: {
+        width: 32,
+        height: 32,
+        padding: 4
     }
 });
 
@@ -111,10 +116,12 @@ class Log extends React.Component {
             lines: {},
             goBottom: true,
             selected: null,
+            editing: this.props.editing || []
         };
         this.text = {};
         this.lastIndex = null;
         this.messagesEnd = React.createRef();
+        this.logHandlerBound = this.logHandler.bind(this);
     }
 
     generateLine(message) {
@@ -128,6 +135,38 @@ class Log extends React.Component {
     scrollToBottom() {
         this.messagesEnd && this.messagesEnd.current && this.messagesEnd.current.scrollIntoView({behavior: 'smooth'});
     }
+    logHandler(message) {
+        let allLines = this.state.lines;
+        const selected = this.state.editing.find(id => message.message.indexOf(id) !== -1);
+        if (!selected) return;
+
+        let lines = allLines[selected] || [];
+        let text = this.text[selected] || [];
+
+        lines.push(this.generateLine(message));
+        let severity = message.severity;
+        if (severity === 'info' || severity === 'warn') {
+            severity += ' ';
+        }
+        const date = new Date(message.ts);
+        text.push(`${date.toLocaleString()}.${paddingMs(date.getMilliseconds())}\t[${severity}]: ${message.message}`);
+        if (lines.length > 300) {
+            lines.splice(0, lines.length - 300);
+            text.splice(0, lines.length - 300);
+        }
+        this.text[selected] = text;
+        allLines[selected] = lines;
+
+        this.setState({lines: allLines});
+    }
+
+    componentDidMount() {
+        this.props.connection.registerLogHandler(this.logHandlerBound);
+    }
+
+    componentWillUnmount() {
+        this.props.connection.unregisterLogHandler(this.logHandlerBound);
+    }
 
     componentDidUpdate() {
         this.state.goBottom && this.scrollToBottom();
@@ -137,35 +176,24 @@ class Log extends React.Component {
         if (nextProps.selected !== this.state.selected) {
             let selected = nextProps.selected;
             let allLines = this.state.lines;
-            this.state.lines[selected] = this.state.lines[selected] || [];
+            allLines[selected] = allLines[selected] || [];
             this.text[selected] = this.text[selected] || [];
             this.setState({selected});
         }
-        if (nextProps.addLine && nextProps.addLine.index !== this.lastIndex) {
-            this.lastIndex = nextProps.addLine.index;
-            if (nextProps.addLine.message) {
-                let allLines = this.state.lines;
-                const selected = Object.keys(this.state.lines).find(id => nextProps.addLine.message.message.indexOf(id) !== -1);
-                if (!selected) return;
 
-                let lines = this.state.lines[selected] || [];
-                let text = this.text[selected] || [];
-
-                lines.push(this.generateLine(nextProps.addLine.message));
-                let severity = nextProps.addLine.message.severity;
-                if (severity === 'info' || severity === 'warn') {
-                    severity += ' ';
+        if (JSON.stringify(nextProps.editing) !== JSON.stringify(this.state.editing)) {
+            const editing = JSON.parse(JSON.stringify(nextProps.editing));
+            let allLines = this.state.lines;
+            for (const id in this.text) {
+                if (this.text.hasOwnProperty(id)) {
+                    if (editing.indexOf(id) === -1) {
+                        delete this.text[id];
+                        delete allLines[id];
+                    }
                 }
-                const date = new Date(nextProps.addLine.message.ts);
-                text.push(`${date.toLocaleString()}.${paddingMs(date.getMilliseconds())}\t[${severity}]: ${nextProps.addLine.message.message}`);
-                if (lines.length > 300) {
-                    lines.splice(0, lines.length - 300);
-                    text.splice(0, lines.length - 300);
-                }
-                this.text[selected] = text;
-
-                this.setState({lines: allLines});
             }
+
+            this.setState({editing});
         }
     }
 
@@ -189,15 +217,15 @@ class Log extends React.Component {
         return (
             <div className={this.props.classes.logBox}>
                 <div className={this.props.classes.toolbox}>
-                    <IconButton onClick={() => this.setState({goBottom: !this.state.goBottom})} color={this.state.goBottom ? 'secondary' : ''}><IconBottom/></IconButton>
+                    <IconButton className={this.props.classes.iconButtons} onClick={() => this.setState({goBottom: !this.state.goBottom})} color={this.state.goBottom ? 'secondary' : ''}><IconBottom/></IconButton>
                     {lines && lines.length ? (<IconButton onClick={() => this.clearLog()}><IconDelete/></IconButton>) : null}
                     {lines && lines.length ? (<IconButton onClick={() => this.onCopy()}><IconCopy/></IconButton>) : null}
                 </div>
-                {this.state.selected ?
+                {this.state.selected && lines && lines.length?
                     (<div className={this.props.classes.logBoxInner}>
                         <table className={this.props.classes.table} >{lines}</table>
                         <div ref={this.messagesEnd} style={{float: 'left', clear: 'both'}}/>
-                    </div>) : null}
+                    </div>) : (<div className={this.props.classes.logBoxInner} style={{paddingLeft: 10}}>{I18n.t('Log outputs')}</div>)}
             </div>
         );
     }
@@ -205,7 +233,6 @@ class Log extends React.Component {
 
 Log.propTypes = {
     classes: PropTypes.object.isRequire,
-    addLine: PropTypes.object,
     selected: PropTypes.string
 };
 

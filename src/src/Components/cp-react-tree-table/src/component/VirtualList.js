@@ -15,6 +15,7 @@ type Props = {
 
   height: number,
   onToggle: (row: Row) => void,
+  onRowClick: (data: object) => void,
   onScroll: (scrollTop: number) => void,
   className?: string,
   classNameColumn?: string,
@@ -98,6 +99,7 @@ export default class VirtualList extends Component<Props, State> {
           row={data.row}
           columns={columns}
           selected={selected}
+          onRowClick={this.props.onRowClick}
           classNameSelected={classNameSelected}
           classNameColumn={classNameColumn}
           classNameRow={classNameRow}

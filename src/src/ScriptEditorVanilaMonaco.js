@@ -1,6 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+
+function isIdOfGlobalScript(id) {
+    return /^script\.js\.global\./.test(id);
+}
+let index = 0;
 class ScriptEditor extends React.Component {
     constructor(props) {
         super(props);
@@ -42,19 +47,39 @@ class ScriptEditor extends React.Component {
                 automaticLayout: true
             });
 
-            // Create a default empty model for both
-            this.editor.setModel(this.monaco.editor.createModel(
-                '', 'typescript', this.monaco.Uri.from({path: '__empty.js'})
-            ));
-            this.editor.focus();
-            const options = {
-                selectOnLineNumbers: true,
-                scrollBeyondLastLine: false,
-                automaticLayout: true,
-                readOnly: this.state.readOnly
-            };
-            this.setEditorOptions(options);
+            this.editor.onDidChangeModelContent(e => {
+                this.onChange(this.editor.getValue());
+            });
+
+            // Load typings for the JS editor
+            /** @type {string} */
+            let scriptAdapterInstance = this.props.connection.getScripts().instances[0];
+            if (scriptAdapterInstance || scriptAdapterInstance === 0) {
+                this.props.connection.sendTo('javascript.' + scriptAdapterInstance, 'loadTypings', null, result => {
+                    this.setState({alive: true});
+                    this.setTypeCheck(true);
+                    if (result.typings) {
+                        this.typings = result.typings;
+                        this.setEditorTypings();
+                    } else {
+                        console.error(`failed to load typings: ${result.error}`);
+                    }
+                });
+            }
+            this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.KEY_S, () =>
+                this.onForceSave()
+            );
         }
+        const options = {
+            selectOnLineNumbers: true,
+            scrollBeyondLastLine: false,
+            automaticLayout: true,
+            readOnly: this.state.readOnly,
+            language: this.state.language,
+            isDark: this.state.isDark
+        };
+        this.setEditorOptions(options);
+        this.editor.focus();
         this.editor.setValue(this.originalCode);
     }
 
@@ -65,10 +90,11 @@ class ScriptEditor extends React.Component {
      */
     setEditorOptions(options) {
         if (!options) return;
-        if (options.language != null) this.setEditorLanguage(options.language);
-        if (options.readOnly != null) this.editor.updateOptions({readOnly: options.readOnly});
-        if (options.lineWrap != null) this.editor.updateOptions({wordWrap: options.lineWrap ? 'on' : 'off'});
-        if (options.typeCheck != null) this.setTypeCheck(options.typeCheck);
+        if (options.language) this.setEditorLanguage(options.language);
+        if (options.readOnly !== undefined) this.editor.updateOptions({readOnly: options.readOnly});
+        if (options.lineWrap !== undefined) this.editor.updateOptions({wordWrap: options.lineWrap ? 'on' : 'off'});
+        if (options.typeCheck !== undefined) this.setTypeCheck(options.typeCheck);
+        if (options.isDark !== undefined) this.monaco.editor.setTheme(options.isDark ? 'vs-dark' : 'vs');
     }
 
     componentWillUnmount() {
@@ -105,8 +131,9 @@ class ScriptEditor extends React.Component {
         // Both JS and TS need the model to work in TypeScript as the script type
         // is inferred from the file extension
         const newLanguage = (language === 'javascript' || language === 'typescript') ? 'typescript' : language;
+
         const newModel = this.monaco.editor.createModel(
-            code, newLanguage, this.monaco.Uri.from({path: `${filenameWithoutExtension}.${extension}`})
+            code, newLanguage, this.monaco.Uri.from({path: `${filenameWithoutExtension}${index++}.${extension}`})
         );
         this.editor.setModel(newModel);
     }
@@ -136,17 +163,14 @@ class ScriptEditor extends React.Component {
             if (isGlobal) this.globalTypingHandles.push(handle);
         } catch (e) { /* might be added already */}
     }
-    isIdOfGlobalScript(id) {
-        return /^script\.js\.global\./.test(id);
-    }
 
     setEditorTypings() {
         // clear previously added global typings
         for (const handle of this.globalTypingHandles) {
-            if (handle != null) handle.dispose();
+            handle && handle.dispose();
         }
 
-        const isGlobalScript = this.isIdOfGlobalScript(this.state.name);
+        const isGlobalScript = isIdOfGlobalScript(this.state.name);
         // The filename of the declarations this script can see if it is a global script
         const partialDeclarationsPath = this.state.name + '.d.ts';
         for (const path of Object.keys(this.typings)) {
@@ -162,45 +186,50 @@ class ScriptEditor extends React.Component {
 
     /**
      * Inserts some text into the given editor
-     * @param {monaco.editor.IStandaloneCodeEditor} editorInstance The editor instance to add the code into
      * @param {string} text The text to add
      */
-    insertTextIntoEditor(editorInstance, text) {
-        const selection = editorInstance.getSelection();
+    insertTextIntoEditor(text) {
+        const selection = this.editor.getSelection();
         const range = new this.monaco.Range(
             selection.startLineNumber, selection.startColumn,
             selection.endLineNumber, selection.endColumn
         );
-        editorInstance.executeEdits('', [{range: range, text: text, forceMoveMarkers: true}]);
+        this.editor.executeEdits('', [{range: range, text: text, forceMoveMarkers: true}]);
+        this.editor.focus();
     }
 
     componentWillReceiveProps(nextProps) {
+        const options = {};
         if (this.state.name !== nextProps.name) {
             this.setState({name: nextProps.name});
-        }
-        if (this.originalCode !== nextProps.code) {
-            this.forceUpdate();
             this.originalCode = nextProps.code || '';
-        } else
+            this.editor.setValue(nextProps.code);
+        }
+
         if (this.state.language !== (nextProps.language || 'javascript')) {
             this.setState({language: nextProps.language || 'javascript'});
+            options.language = nextProps.language || 'javascript';
         } else if (this.state.readOnly !== (nextProps.readOnly || false)) {
             this.setState({readOnly: nextProps.readOnly || false});
+            options.readOnly = nextProps.readOnly;
         } else if (this.state.isDark !== (nextProps.isDark || false)) {
             this.setState({isDark: nextProps.isDark || false});
+            options.isDark = nextProps.isDark;
         }
+
+        this.setEditorOptions(options);
 
         if (this.insert !== nextProps.insert) {
             this.insert = nextProps.insert;
-            nextProps.insert && this.insertTextIntoEditor(nextProps.insert);
             if (nextProps.insert) {
+                this.insertTextIntoEditor(nextProps.insert);
                 setTimeout(() => this.props.onInserted && this.props.onInserted(), 100);
             }
         }
     }
 
     onChange(newValue, e) {
-        this.props.onChange && this.props.onChange(newValue);
+        this.props.onChange && this.props.onChange(this.editor.getValue());
     }
 
     render() {
@@ -211,8 +240,10 @@ class ScriptEditor extends React.Component {
 }
 
 ScriptEditor.propTypes = {
+    connection: PropTypes.object,
     name: PropTypes.string,
     onChange: PropTypes.func,
+    onForceSave: PropTypes.func,
     onInserted: PropTypes.func,
     isDark: PropTypes.bool,
     readOnly: PropTypes.bool,

@@ -8,6 +8,7 @@ import type { RowMetadata } from '../model/row';
 type Props = {
   grow?: number,
   basis?: string, // <length> | auto
+  width?: string, // <length> | auto
 
   renderCell: (rowData: any, rowMetadata: RowMetadata, toggleChildren: () => void) => Node,
   className?: string,

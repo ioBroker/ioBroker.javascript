@@ -1,12 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
+//import Button from '@material-ui/core/Button';
 import TreeDataTable from './cp-react-tree-table/src';
 import {withStyles} from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
+
 import {FaFolder as IconClosed} from 'react-icons/fa';
 import {FaFolderOpen as IconOpen} from 'react-icons/fa';
+import {FaFileAlt as IconState} from 'react-icons/fa';
+import {FaFile as IconDocument} from 'react-icons/fa';
+import IconDefaultState from './assets/state.png';
+import IconDefaultChannel from './assets/channel.png';
+import IconDefaultDevice from './assets/device.png';
+import IconDefault from './assets/empty.png';
+
 import I18n from '../i18n';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Utils from './Utils';
 
 const styles = theme => ({
@@ -16,9 +29,20 @@ const styles = theme => ({
         borderBottom: '1px solid #999'
     },
     treeTableRow: {
-        boxShadow: 'inset 0 1px 0 #eeeeee'
+        boxShadow: 'inset 0 1px 0 #eeeeee',
+        display: 'block'
     },
-
+    cellDiv: {
+        display: 'inline-block',
+        fontSize: 12,
+        height: 26,
+        verticalAlign: 'top'
+    },
+    cellDivId: {
+        display: 'inline-block',
+        height: 26,
+        verticalAlign: 'top'
+    },
     cellWrapper: {
         display: 'flex',
         alignItems: 'center',
@@ -26,17 +50,21 @@ const styles = theme => ({
         fontSize: 13,
         height: '100%',
         width: '100%',
-        fontFamily: "'SF Mono', 'Segoe UI Mono', 'Roboto Mono', Menlo, Courier, monospace"
+//        fontFamily: "'SF Mono', 'Segoe UI Mono', 'Roboto Mono', Menlo, Courier, monospace",
+        lineHeight: '1em'
     },
-
+    selectNone: {
+        opacity: 0.5,
+    },
     cellWrapperElement: {
-        flexGrow: 1
+        flexGrow: 1,
+        cursor: 'default'
     },
 
     toggleButtonWrapper: {
         width: 16,
         flexGrow: 0,
-        color: '#0f55eb',
+        color: '#008fff',
         cursor: 'pointer',
         padding: 1,
         borderRadius: 3
@@ -47,15 +75,30 @@ const styles = theme => ({
     }*/
     
     selectSpan: {
-        fontFamily: "'SF Mono', 'Segoe UI Mono', 'Roboto Mono', Menlo, Courier, monospace",
+//        fontFamily: "'SF Mono', 'Segoe UI Mono', 'Roboto Mono', Menlo, Courier, monospace",
         background: '#efefef',
         border: '1px solid #e5e5e5',
         padding: 2,
         borderRadius: 3
     },
     selected: {
-        background: '#0f55eb',
+        background: '#008fff',
         color: 'white'
+    },
+    icon: {
+        width: 20,
+        height: 20,
+        paddingTop: 2,
+        paddingRight: 2
+    },
+    header: {
+        width: '100%'
+    },
+    headerCell: {
+        display: 'inline-block'
+    },
+    headerCellInput: {
+        width: 'calc(100% - 5px)'
     }
 });
 
@@ -429,12 +472,90 @@ function formatValue(id, state, obj, texts) {
     };
 }
 
+function getSelectIdIcon(objects, id, prefix) {
+    prefix = prefix || 'http://localhost:8081';
+    let icon = '';
+    let alt  = '';
+    const _id_ = 'system.adapter.' + id;
+    if (id && objects[_id_] && objects[_id_].common && objects[_id_].common.icon) {
+        // if not BASE64
+        if (!objects[_id_].common.icon.match(/^data:image\//)) {
+            if (objects[_id_].common.icon.indexOf('.') !== -1) {
+                icon = prefix + '/adapter/' + objects[_id_].common.name + '/' + objects[_id_].common.icon;
+            } else {
+                return null; //'<i class="material-icons iob-list-icon">' + objects[_id_].common.icon + '</i>';
+            }
+        } else {
+            icon = objects[_id_].common.icon;
+        }
+    } else {
+        const obj = objects[id];
+
+        if (obj && obj.common) {
+            if (obj.common.icon) {
+                if (!obj.common.icon.match(/^data:image\//)) {
+                    if (obj.common.icon.indexOf('.') !== -1) {
+                        var instance;
+                        if (obj.type === 'instance') {
+                            icon = prefix + '/adapter/' + obj.common.name + '/' + obj.common.icon;
+                        } else if (id && id.match(/^system\.adapter\./)) {
+                            instance = id.split('.', 3);
+                            if (obj.common.icon[0] === '/') {
+                                instance[2] += obj.common.icon;
+                            } else {
+                                instance[2] += '/' + obj.common.icon;
+                            }
+                            icon = prefix + '/adapter/' + instance[2];
+                        } else {
+                            instance = id.split('.', 2);
+                            if (obj.common.icon[0] === '/') {
+                                instance[0] += obj.common.icon;
+                            } else {
+                                instance[0] += '/' + obj.common.icon;
+                            }
+                            icon = prefix + '/adapter/' + instance[0];
+                        }
+                    } else {
+                        return null; // '<i class="material-icons iob-list-icon">' + obj.common.icon + '</i>';
+                    }
+                } else {
+                    // base 64 image
+                    icon = obj.common.icon;
+                }
+            } else if (obj.type === 'device') {
+                icon = IconDefaultDevice;
+                alt  = 'device';
+            } else if (obj.type === 'channel') {
+                icon = IconDefaultChannel;
+                alt  = 'channel';
+            } else if (obj.type === 'state') {
+                icon = IconDefaultState;
+                alt  = 'state';
+            }
+        }
+    }
+
+    if (icon) {
+        return {src: icon, alt};
+    } else {
+        return  {src: IconDefault, alt: ''};
+    }
+}
+
+
 class SelectID extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             loaded: false,
-            selected: this.props.selected
+            selected: this.props.selected,
+            filter: {
+                id: '',
+                name: '',
+                room: '',
+                func:  '',
+                role: ''
+            }
         };
         this.root = null;
         this.lang = I18n.getLanguage();
@@ -479,26 +600,36 @@ class SelectID extends React.Component {
 
     renderIndexColumn(data, metadata, toggleChildren) {
         const selected = this.state.selected === data.id;
+        const isExist = !!this.objects[data.id];
+        const isState = isExist && this.objects[data.id].type === 'state';
+        const isChannel = isExist && !isState && this.objects[data.id].type === 'channel';
+        // const isDevice = isExist && !isChannel && !isState && this.objects[data.id].type === 'device';
+
+        const padding = (metadata.depth * 25) + 'px';
+        const width = `calc(100% - ${padding})`;
         return (
-            <div style={{paddingLeft: (metadata.depth * 25) + 'px'}}
+            <div style={{paddingLeft: padding, width: width}}
                  className={this.props.classes.cellWrapper}
-                 onClick={() => this.onSelect(data.id)}
-                 onDoubleClick={() => this.onDoubleClick(data, metadata, toggleChildren)}
+//                 onClick={() => this.onSelect(data.id)}
+//                 onDoubleClick={() => this.onDoubleClick(data, metadata, toggleChildren)}
             >
                 <span className={(selected ? this.props.classes.selected : '') + ' ' + this.props.classes.toggleButtonWrapper}>
                   {metadata.hasChildren
                       ? (<span onClick={toggleChildren}>{metadata.hasVisibleChildren ? (<IconOpen/>) : (<IconClosed/>)}</span>)
-                      : ''
+                      : (isState ? (<IconState/>) : (<IconDocument/>))
                   }
                 </span>
-                <span className={this.props.classes.cellWrapperElement}>{data.name}</span>
+                <span className={this.props.classes.cellWrapperElement} style={{fontWeight: metadata.hasChildren ? 'bold' : 'normal'}}>{data.name}</span>
             </div>
         );
     }
 
     renderColumnName(data, metadata, toggleChildren) {
-        if (!data.obj) return null;
-        return (<span className={this.props.classes.cellWrapper}>{Utils.getObjectName(this.objects, data.obj._id, null, {language: this.lang})}</span>);
+        const icon = getSelectIdIcon(this.objects, data.id);
+        return (<span className={this.props.classes.cellWrapper}>
+            <img src={icon.src} className={this.props.classes.icon} alt={icon.alt}/>
+            {data.obj && Utils.getObjectName(this.objects, data.obj._id, null, {language: this.lang})}
+            </span>);
     }
     renderColumnRole(data, metadata, toggleChildren) {
         if (!data.obj) return null;
@@ -509,7 +640,6 @@ class SelectID extends React.Component {
         const list = findRoomsForObject(this.info, data.obj._id, this.lang, true) || [];
         return (<span className={this.props.classes.cellWrapper}>{list.join(', ')}</span>);
     }
-
     renderColumnFunc(data, metadata, toggleChildren) {
         if (!data.obj) return null;
         const list = findFunctionsForObject(this.info, data.obj._id, this.lang, true) || [];
@@ -523,28 +653,86 @@ class SelectID extends React.Component {
         return (<span className={this.props.classes.cellWrapper} style={info.style} title={info.valFull}>{info.valText}</span>);
     }
 
+    onFilter(name, value) {
+        const filter = JSON.parse(JSON.stringify(this.state.filter));
+        filter[name] = value;
+        this.setState({filter});
+    }
+
+    getFilterInput(name) {
+        return (<TextField
+                id={name}
+                placeholder={I18n.t('filter_' + name)}
+                className={this.props.classes.headerCellInput}
+                value={this.state.filter[name]}
+                onChange={e => this.onFilter(name, e.target.value)}
+                style={{marginTop: 0, marginBottom: 0}}
+                autoComplete="off"
+                margin="dense"
+            />);
+    }
+    getFilterSelect(name, fields) {
+        //<!--InputLabel htmlFor="demo-controlled-open-select">Age</InputLabel-->
+        return (
+            <Select className={this.props.classes.headerCellInput}
+                value={this.state.filter[name]}
+                onChange={e => this.onFilter(name, e.target.value)}
+                inputProps={{name, id: name,}}
+                displayEmpty={true}
+            >
+                <MenuItem value=""><span className={this.props.classes.selectNone}>{I18n.t('filter_' + name)}</span></MenuItem>
+                <MenuItem value={10}>Ten</MenuItem>
+                <MenuItem value={20}>Twenty</MenuItem>
+                <MenuItem value={30}>Thirty</MenuItem>
+            </Select>)
+    }
+    getFilterSelectRole() {
+        return this.getFilterSelect('role');
+    }
+    getFilterSelectRoom() {
+        return this.getFilterSelect('room');
+
+    }
+    getFilterSelectFunction() {
+        return this.getFilterSelect('func');
+
+    }
+
     render() {
         if (!this.state.loaded) {
             return (<CircularProgress/>);
         } else {
             const classes = this.props.classes;
-            return (
+            const idWidth = 300;
+            const width = `calc(20% - ${idWidth / 5}px)`;
+            return [
+                (<div key="header" className={classes.header}>
+                    <div className={classes.headerCell} style={{width: idWidth}}>{this.getFilterInput('id')}</div>
+                    <div className={classes.headerCell} style={{width: width}}>{this.getFilterInput('name')}</div>
+                    <div className={classes.headerCell} style={{width: width}}>{this.getFilterSelectRole()}</div>
+                    <div className={classes.headerCell} style={{width: width}}>{this.getFilterSelectRoom()}</div>
+                    <div className={classes.headerCell} style={{width: width}}>{this.getFilterSelectFunction()}</div>
+                    <div className={classes.headerCell} style={{width: width}}>{this.getFilterInput('id')}</div>
+                </div>),
+                (
                 <TreeDataTable
+                    key="table"
                     data={this.root.children}
                     height={'100%'}
                     selected={this.state.selected}
                     classNameSelected={classes.selected}
                     className={classes.treeTable}
                     classNameRow={classes.treeTableRow}
+                    onRowClick={(data, metadata, toggleChildren, isDoubleClick) => isDoubleClick ? this.onDoubleClick(data, metadata, toggleChildren) : this.onSelect(data.id)}
                 >
-                    <TreeDataTable.Column grow={0} renderCell={this.renderIndexColumn.bind(this)} basis="300px" />
-                    <TreeDataTable.Column grow={1} renderCell={this.renderColumnName.bind(this)}/>
-                    <TreeDataTable.Column grow={1} renderCell={this.renderColumnRole.bind(this)}/>
-                    <TreeDataTable.Column grow={1} renderCell={this.renderColumnRoom.bind(this)}/>
-                    <TreeDataTable.Column grow={1} renderCell={this.renderColumnFunc.bind(this)}/>
-                    <TreeDataTable.Column grow={1} renderCell={this.renderColumnValue.bind(this)}/>
+                    <TreeDataTable.Column grow={0} renderCell={this.renderIndexColumn.bind(this)} className={classes.cellDivId} width={idWidth} />
+                    <TreeDataTable.Column grow={1} renderCell={this.renderColumnName.bind(this)}  className={classes.cellDiv} width={width}/>
+                    <TreeDataTable.Column grow={1} renderCell={this.renderColumnRole.bind(this)}  className={classes.cellDiv} width={width}/>
+                    <TreeDataTable.Column grow={1} renderCell={this.renderColumnRoom.bind(this)}  className={classes.cellDiv} width={width}/>
+                    <TreeDataTable.Column grow={1} renderCell={this.renderColumnFunc.bind(this)}  className={classes.cellDiv} width={width}/>
+                    <TreeDataTable.Column grow={1} renderCell={this.renderColumnValue.bind(this)} className={classes.cellDiv} width={width}/>
                 </TreeDataTable>
-            );
+            )];
         }
     }
 }
