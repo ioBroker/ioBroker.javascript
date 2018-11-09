@@ -1,21 +1,26 @@
 -
-Environment values
-Favorites
-Functions
-Listening...
-No elements
-Nothing here
-Off
-On
-Others
-Rooms
-SABOTAGE
-SET_TEMPERATURE
-Show %s values
-Speech recognition running...
-closed
-fire
-opened
-sent
-tilted
-unknown
+Delete %s
+ID
+Rename
+Restart
+Log outputs
+Click on this icon
+for edit or create script
+Discard changes for %s
+Are you sure?
+Cancel
+Ok
+Save
+Please select object ID...
+tooltip_value
+tooltip_ack
+tooltip_ts
+tooltip_lc
+tooltip_from
+tooltip_user
+tooltip_quality
+filter_id
+filter_name
+filter_role
+filter_room
+filter_func

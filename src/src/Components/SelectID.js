@@ -7,8 +7,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import TextField from '@material-ui/core/TextField';
+import Input from '@material-ui/core/Input';
 
 import {FaFolder as IconClosed} from 'react-icons/fa';
 import {FaFolderOpen as IconOpen} from 'react-icons/fa';
@@ -55,6 +54,11 @@ const styles = theme => ({
     },
     selectNone: {
         opacity: 0.5,
+    },
+    selectIcon: {
+        width: 16,
+        height: 16,
+        paddingRight: 5
     },
     cellWrapperElement: {
         flexGrow: 1,
@@ -125,6 +129,46 @@ function walkTree(tree, func) {
     }
 }
 
+function applyFilter(item, filters, lang, context) {
+    let filteredOut = false;
+    if (!context) {
+        context = {};
+        if (filters.id) {
+            context.id = filters.id.toLowerCase();
+        }
+        if (filters.name) {
+            context.name = filters.name.toLowerCase();
+        }
+    }
+
+    if (item.data.id) {
+        if (context.id) {
+            if (item.data.fID === undefined) {
+                item.data.fID = item.data.id.toLowerCase();
+            }
+            filteredOut = item.data.fID.indexOf(context.id) === -1;
+        }
+        if (!filteredOut && context.name) {
+            if (item.data.fName === undefined) {
+                item.data.fName = (item.data.obj && item.data.obj.common && getName(item.data.obj.common.name, lang)) || '';
+                item.data.fName = item.data.name.toLowerCase();
+            }
+            filteredOut = item.data.fName.indexOf(context.name) === -1;
+        }
+    }
+    item.data.visible = !filteredOut;
+    item.data.hasVisibleChildren = false;
+    if (item.children) {
+        item.children.forEach(item => {
+            const visible = applyFilter(item, filters, lang, context);
+            if (visible) {
+                item.data.hasVisibleChildren = true;
+            }
+        });
+    }
+    return item.data.visible || item.data.hasVisibleChildren;
+}
+
 function buildTree(objects, options) {
     options = options || {};
 
@@ -163,7 +207,7 @@ function buildTree(objects, options) {
                 }
             } else if (id.startsWith('enum.rooms.')) {
                 info.roomEnums.push(id);
-            } else if (id.startsWith('enum.funcs.')) {
+            } else if (id.startsWith('enum.functions.')) {
                 info.funcEnums.push(id);
             }
         }
@@ -227,9 +271,10 @@ function buildTree(objects, options) {
         } while(repeat);
     }
 
-    /*walkTree(root, item => {
-        console.log(item.data.id);
-    })*/
+    info.roomEnums.sort();
+    info.funcEnums.sort();
+    info.roles.sort();
+
     return {info, root};
 }
 
@@ -542,7 +587,6 @@ function getSelectIdIcon(objects, id, prefix) {
     }
 }
 
-
 class SelectID extends React.Component {
     constructor(props) {
         super(props);
@@ -654,47 +698,77 @@ class SelectID extends React.Component {
     }
 
     onFilter(name, value) {
-        const filter = JSON.parse(JSON.stringify(this.state.filter));
-        filter[name] = value;
-        this.setState({filter});
+        if (this.state.filter[name] !== value) {
+            const filter = JSON.parse(JSON.stringify(this.state.filter));
+            filter[name] = value;
+            this.filterTimer && clearTimeout(this.filterTimer);
+            this.filterTimer = setTimeout(() => {
+                applyFilter(this.root, filter, this.lang);
+                this.forceUpdate();
+            }, 400);
+            this.setState({filter});
+        }
     }
 
     getFilterInput(name) {
-        return (<TextField
+        return (<FormControl className={this.props.classes.headerCellInput} style={{marginTop: 0, marginBottom: 0}} margin="dense">
+            <Input
+                classes={{underline: 'no-underline'}}
                 id={name}
                 placeholder={I18n.t('filter_' + name)}
-                className={this.props.classes.headerCellInput}
                 value={this.state.filter[name]}
                 onChange={e => this.onFilter(name, e.target.value)}
-                style={{marginTop: 0, marginBottom: 0}}
                 autoComplete="off"
-                margin="dense"
-            />);
+            />
+        </FormControl>);
     }
-    getFilterSelect(name, fields) {
+    getFilterSelect(name, values) {
         //<!--InputLabel htmlFor="demo-controlled-open-select">Age</InputLabel-->
         return (
-            <Select className={this.props.classes.headerCellInput}
+            <Select className={this.props.classes.headerCellInput + ' ' + 'no-underline'}
                 value={this.state.filter[name]}
                 onChange={e => this.onFilter(name, e.target.value)}
                 inputProps={{name, id: name,}}
                 displayEmpty={true}
             >
                 <MenuItem value=""><span className={this.props.classes.selectNone}>{I18n.t('filter_' + name)}</span></MenuItem>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                {values.map(item => {
+                    let id;
+                    let name;
+                    let icon;
+                    if (typeof item === 'object') {
+                        id = item.value;
+                        name = item.name;
+                        icon = getSelectIdIcon(this.objects, id);
+                    } else {
+                        id = item;
+                        name = item;
+                    }
+
+                    return (
+                        <MenuItem value={id}>
+                            {icon && (<img className={this.props.classes.selectIcon} src={icon.src} alt={name}/>)}
+                            {name}
+                        </MenuItem>)
+                })}
             </Select>)
     }
     getFilterSelectRole() {
-        return this.getFilterSelect('role');
+        return this.getFilterSelect('role', this.info.roles);
     }
     getFilterSelectRoom() {
-        return this.getFilterSelect('room');
+        const rooms = this.info.roomEnums.map(id => {
+            return {name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()), value: id};
+        });
+
+        return this.getFilterSelect('room', rooms);
 
     }
     getFilterSelectFunction() {
-        return this.getFilterSelect('func');
+        const func = this.info.funcEnums.map(id => {
+            return {name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()), value: id};
+        });
+        return this.getFilterSelect('func', func);
 
     }
 
@@ -739,10 +813,10 @@ class SelectID extends React.Component {
 
 SelectID.propTypes = {
     classes: PropTypes.object,
-    statesOnly: PropTypes.boolean,
+    statesOnly: PropTypes.bool,
     selected: PropTypes.string,
-    onSelect: PropTypes.string,
-    connection: PropTypes.object.isRequire,
+    onSelect: PropTypes.func,
+    connection: PropTypes.object,
 };
 
 export default withStyles(styles)(SelectID);

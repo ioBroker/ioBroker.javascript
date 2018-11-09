@@ -1,21 +1,26 @@
 -
-Umwelt
-Favorites
-Functions
-Listening...
-No elements
-Nothing here
-Off
-On
-Others
-Rooms
-Sabotage
-Set temperature
-Show %s values
-Speech recognition running...
-closed
-fire
-opened
-sent
-tilted
-unknown
+Delete %s...
+ID
+Rename
+Restart
+Log outputs
+Click on this icon
+for edit or create script
+Discard changes for %s
+Are you sure?
+Cancel
+Ok
+Save
+Please select object ID...
+Value
+Acknowledge
+Timestamp
+Last changed
+From
+User
+Quality
+ID
+Name
+Role
+Room
+Function

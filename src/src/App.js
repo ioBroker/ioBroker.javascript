@@ -253,10 +253,9 @@ class App extends Component {
                         onEnableDisable={this.onEnableDisable.bind(this)}
                     />
                 </nav>
-                <div className={classes.content}
-                     key="main"
-                >
+                <div className={classes.content} key="main">
                     <SplitterLayout
+                        key="splitterLayout"
                         vertical={true}
                         primaryMinSize={100}
                         secondaryInitialSize={this.logSize}
@@ -269,6 +268,7 @@ class App extends Component {
                         }}
                     >
                         <Editor
+                            key="editor"
                             visible={!this.state.resizing}
                             connection={this.socket}
                             onChange={(id, common) => this.onUpdateScript(id, common)}
@@ -286,7 +286,6 @@ class App extends Component {
                                 changed && this.setState(newState);
                             }}
                             onRestart={id => this.socket.extendObject(id, {})}
-                            key="editor"
                             selected={this.state.selected && this.objects[this.state.selected] && this.objects[this.state.selected].type === 'script' ? this.state.selected : ''}
                             objects={this.objects}
                         />

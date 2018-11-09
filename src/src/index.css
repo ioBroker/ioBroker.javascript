@@ -29,3 +29,7 @@ body {
   top: 0 !important;
   height: 100% !important;
 }
+
+.no-underline:before {
+  border-bottom: 0 !important;
+}

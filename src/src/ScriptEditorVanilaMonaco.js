@@ -233,6 +233,14 @@ class ScriptEditor extends React.Component {
     }
 
     render() {
+        if (!this.monaco) {
+            setTimeout(() => {
+                this.monaco = window.monaco;
+                this.forceUpdate()
+            }, 200);
+            return null;
+        }
+
         return (
             <div ref={el => this.monacoDiv = el} style={{width: '100%', height: '100%', overflow: 'hidden', position: 'relative'}}/>
         );

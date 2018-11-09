@@ -92,9 +92,10 @@ export default class VirtualList extends Component<Props, State> {
       }
     });
 
-    let visibleRows = [], relativeIndex = 0;
+    let visibleRows = [];
+    let relativeIndex = 0;
     visibleRowsData.forEach((data: RowData) => {
-      visibleRows.push(
+        (data.row.data.visible === undefined || data.row.data.visible || data.row.data.hasVisibleChildren) && visibleRows.push(
         <VirtualListRow
           row={data.row}
           columns={columns}

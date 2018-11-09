@@ -1,21 +1,26 @@
 -
-Umwelt
-Favorite
-Funktionen
-Höre...
-Keine Elemente
-Nichts hier
-aus
-an
-Andere
-Räume
-Sabotage
-Solltemperatur
-Zeige %s Werte
-Spracherkennung läuft...
-zu
-Feuer
-auf
-gesendet
-gekippt
-unbekannt
+Löschen %s...
+ID
+Umbenennen
+Neustart
+Protokoll
+Klicken Sie auf dieses Symbol
+zum Bearbeiten oder Erstellen eines Skripts
+verwerfen Sie die Änderungen für %s
+Sind Sie sicher?
+Abbrechen
+Ok
+Speichern
+Bitte Objekt-ID auswählen ...
+Wert
+Bestätigt
+Zeitstempel
+Zuletzt geändert
+Von
+Benutzer
+Qualität
+ID
+Name
+Rolle
+Zimmer
+Funktion

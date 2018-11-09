@@ -39,9 +39,11 @@ export default class VirtualListRow extends Component<Props, State> {
 
     const metadata = { ...row.getMetadata(), hasVisibleChildren: hasVisibleChildren };
 
+    const style = {...STYLE_ROW, height: row.getHeight() + 'px'};
+
     return (
       <div className={'cp_tree-table_row ' + (classNameRow || '') + (selected === row.data.id ? ' ' + classNameSelected : '')}
-        style={{ ...STYLE_ROW, height: row.getHeight() + 'px' }}
+        style={style}
         data-rindex={index}
         onClick={() => this.props.onRowClick && this.props.onRowClick(row.data, metadata, onToggle)}
         onDoubleClick={() => this.props.onRowClick && this.props.onRowClick(row.data, metadata, onToggle, true)}

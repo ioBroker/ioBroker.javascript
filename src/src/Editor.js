@@ -83,6 +83,8 @@ const styles = theme => ({
     },
     closeButton: {
         padding: 8,
+        verticalAlign: 'middle',
+        cursor: 'grabbing'
     }
 });
 
@@ -256,9 +258,15 @@ class Editor extends React.Component {
         }
     }
 
+    showConfirmDialog(question, cb) {
+        this.confirmCallback = cb;
+        this.setState({confirm: question});
+    }
+
     getTabs() {
         if (this.state.editing.length) {
             return (<Tabs
+                key="tabs"
                 value={this.state.selected}
                 onChange={(event, value) => this.onTabChange(event, value)}
                 indicatorColor="primary"
@@ -279,7 +287,7 @@ class Editor extends React.Component {
                         const label = [
                             (<img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon}/>),
                             (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{text}</span>),
-                            (<IconButton key="close" onClick={e => this.onTabClose(id, e)} className={this.props.classes.closeButton}><IconClose fontSize="small" /></IconButton>)];
+                            (<IconClose key="close" onClick={e => this.onTabClose(id, e)} className={this.props.classes.closeButton} fontSize="small"/>)];
 
                         return (<Tab key={id} label={label} value={id} title={title}/>);
                     }
@@ -317,7 +325,7 @@ class Editor extends React.Component {
                                                                                         className={this.props.classes.toolbarButtons}
                                                                                         onClick={() => this.setState({showSelectId: true})}><IconSelectId/></IconButton>)}
 
-                    {this.state.blockly && this.state.showBlocklyCode && (<Button key={"convert2js"} aria-label="convert to javascript"
+                    {this.state.blockly && this.state.showBlocklyCode && (<Button key="convert2js" aria-label="convert to javascript"
                                                                                   onClick={() => this.onConvert2JS()}
                     >Blockly=>JS</Button>)}
 
@@ -337,8 +345,9 @@ class Editor extends React.Component {
         if (this.state.selected && this.props.objects[this.state.selected] && (!this.state.blockly || this.state.showBlocklyCode)) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
 
-            return (<div className={this.props.classes.editorDiv} key="editor">
+            return (<div className={this.props.classes.editorDiv} key="scriptEditorDiv">
                 <ScriptEditor
+                    key="scriptEditor"
                     name={this.state.selected}
                     insert={this.state.insert}
                     onInserted={() => this.setState({insert: ''})}
@@ -360,8 +369,9 @@ class Editor extends React.Component {
         if (this.state.selected && this.props.objects[this.state.selected] && (this.state.blockly && !this.state.showBlocklyCode) && this.state.visible) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
 
-            return (<div className={this.props.classes.editorDiv} key="editor">
+            return (<div className={this.props.classes.editorDiv} key="BlocklyEditorDiv">
                 <BlocklyEditor
+                    key="BlocklyEditor"
                     resizing={this.props.resizing}
                     code={this.scripts[this.state.selected].source || ''}
                     onChange={newValue => this.onChange(newValue)}
@@ -372,14 +382,10 @@ class Editor extends React.Component {
         }
     }
 
-    showConfirmDialog(question, cb) {
-        this.confirmCallback = cb;
-        this.setState({confirm: question});
-    }
-
     getConfirmDialog() {
         if (this.state.confirm) {
             return (<DialogConfirm
+                key="DialogConfirm"
                 question={this.state.confirm}
                 onClose={() => {
                     this.setState({confirm: ''});
@@ -405,6 +411,7 @@ class Editor extends React.Component {
     getSelectIdDialog() {
         if (this.state.showSelectId) {
             return (<DialogSelectID
+                key="DialogSelectID"
                 connection={this.props.connection}
                 selected={''}
                 statesOnly={true}
@@ -419,6 +426,7 @@ class Editor extends React.Component {
     getCronDialog() {
         if (this.state.showCron) {
             return (<DialogCron
+                key="DialogCron"
                 cron={''}
                 onClose={() => this.setState({showCron: false})}
                 onOk={cron => this.setState({insert: `'${cron}'`})}

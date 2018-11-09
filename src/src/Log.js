@@ -108,7 +108,6 @@ function paddingMs(ms) {
     if (ms < 100) return '0' + ms;
     return ms;
 }
-
 class Log extends React.Component {
     constructor(props) {
         super(props);
@@ -125,10 +124,10 @@ class Log extends React.Component {
     }
 
     generateLine(message) {
-        return (<tr className={this.props.classes[message.severity]}>
-            <td className={this.props.classes.trTime}>{getTimeString(new Date(message.ts))}</td>
-            <td className={this.props.classes.trSeverity}>{message.severity}</td>
-            <td>{message.message}</td>
+        return (<tr key={'tr_' + message.ts} className={this.props.classes[message.severity]}>
+            <td key="tdTime" className={this.props.classes.trTime}>{getTimeString(new Date(message.ts))}</td>
+            <td key="tdSeverity" className={this.props.classes.trSeverity}>{message.severity}</td>
+            <td key="tdMessage">{message.message}</td>
         </tr>);
     }
 
@@ -216,23 +215,24 @@ class Log extends React.Component {
         const lines = this.state.selected && this.state.lines[this.state.selected];
         return (
             <div className={this.props.classes.logBox}>
-                <div className={this.props.classes.toolbox}>
+                <div className={this.props.classes.toolbox} key="toolbox">
                     <IconButton className={this.props.classes.iconButtons} onClick={() => this.setState({goBottom: !this.state.goBottom})} color={this.state.goBottom ? 'secondary' : ''}><IconBottom/></IconButton>
-                    {lines && lines.length ? (<IconButton onClick={() => this.clearLog()}><IconDelete/></IconButton>) : null}
-                    {lines && lines.length ? (<IconButton onClick={() => this.onCopy()}><IconCopy/></IconButton>) : null}
+                    {lines && lines.length ? (<IconButton className={this.props.classes.iconButtons} onClick={() => this.clearLog()}><IconDelete/></IconButton>) : null}
+                    {lines && lines.length ? (<IconButton className={this.props.classes.iconButtons} onClick={() => this.onCopy()}><IconCopy/></IconButton>) : null}
                 </div>
-                {this.state.selected && lines && lines.length?
-                    (<div className={this.props.classes.logBoxInner}>
-                        <table className={this.props.classes.table} >{lines}</table>
-                        <div ref={this.messagesEnd} style={{float: 'left', clear: 'both'}}/>
-                    </div>) : (<div className={this.props.classes.logBoxInner} style={{paddingLeft: 10}}>{I18n.t('Log outputs')}</div>)}
+                {this.state.selected && lines && lines.length ?
+                    (<div className={this.props.classes.logBoxInner} key="logList">
+                        <table key="logTable" className={this.props.classes.table}><tbody>{lines}</tbody></table>
+                        <div key="logScrollPoint" ref={this.messagesEnd} style={{float: 'left', clear: 'both'}}/>
+                    </div>) :
+                    (<div key="logList" className={this.props.classes.logBoxInner} style={{paddingLeft: 10}}>{I18n.t('Log outputs')}</div>)
+                }
             </div>
         );
     }
 }
 
 Log.propTypes = {
-    classes: PropTypes.object.isRequire,
     selected: PropTypes.string
 };
 

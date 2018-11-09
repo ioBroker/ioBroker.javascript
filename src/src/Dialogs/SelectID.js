@@ -81,7 +81,7 @@ DialogSelectID.propTypes = {
     onOk: PropTypes.func.isRequire,
     title: PropTypes.string,
     selected: PropTypes.string,
-    statesOnly: PropTypes.bool,
+    statesOnly: PropTypes.boolean,
     connection: PropTypes.object.isRequire,
     cancel: PropTypes.string,
     ok: PropTypes.string
