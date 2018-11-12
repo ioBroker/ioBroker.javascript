@@ -24,3 +24,28 @@ Name
 Rolle
 Zimmer
 Funktion
+Cron definieren ...
+Wiederholen
+einfach
+Cron
+Einmal
+Intervall
+Intervall zwischen
+Bestimmte Zeit
+Zeitraum
+Jeden
+Sekunden
+Protokoll
+Std
+von
+bis
+Zeit
+Datum
+An Wochentagen
+Samstag
+Montag
+Dienstag
+Mittwoch
+Donnerstag
+Freitag
+Sonntag

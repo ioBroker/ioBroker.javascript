@@ -182,6 +182,10 @@ class Editor extends React.Component {
         this.setState({changed: false});
     }
 
+    onRegisterSelect(func) {
+        this.getSelect = func;
+    }
+
     onConvert2JS() {
         this.showConfirmDialog(I18n.t('It will not be possible to revert this operation.'), result => {
             if (result) {
@@ -352,6 +356,7 @@ class Editor extends React.Component {
                     insert={this.state.insert}
                     onInserted={() => this.setState({insert: ''})}
                     onForceSave={() => this.onSave()}
+                    onRegisterSelect={func => this.onRegisterSelect(func)}
                     readOnly={this.state.showBlocklyCode}
                     code={this.scripts[this.state.selected].source || ''}
                     isDark={this.state.isDark}
@@ -427,7 +432,7 @@ class Editor extends React.Component {
         if (this.state.showCron) {
             return (<DialogCron
                 key="DialogCron"
-                cron={''}
+                cron={this.getSelect ? this.getSelect() : '* * * * *'}
                 onClose={() => this.setState({showCron: false})}
                 onOk={cron => this.setState({insert: `'${cron}'`})}
             />);

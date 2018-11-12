@@ -22,11 +22,12 @@ class ScriptEditor extends React.Component {
         this.insert = '';
         this.originalCode = props.code || '';
         this.globalTypingHandles  = [];
-        this.typings        = {}; // TypeScript declarations
+        this.typings = {}; // TypeScript declarations
     }
 
     componentDidMount() {
         if (!this.editor) {
+            this.props.onRegisterSelect && this.props.onRegisterSelect(() => this.editor.getModel().getValueInRange(this.editor.getSelection()));
             // For some reason we have to get the original compiler options
             // and assign new properties one by one
             const compilerOptions = this.monaco.languages.typescript.typescriptDefaults['getCompilerOptions']();
@@ -99,6 +100,7 @@ class ScriptEditor extends React.Component {
 
     componentWillUnmount() {
         if (this.editor) {
+            this.props.onRegisterSelect && this.props.onRegisterSelect(null);
             this.editor.dispose();
             this.editor = null;
         }
@@ -256,7 +258,8 @@ ScriptEditor.propTypes = {
     isDark: PropTypes.bool,
     readOnly: PropTypes.bool,
     code: PropTypes.string,
-    language: PropTypes.string
+    language: PropTypes.string,
+    onRegisterSelect: PropTypes.func,
 };
 
 export default ScriptEditor;

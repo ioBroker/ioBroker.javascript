@@ -24,3 +24,28 @@ Name
 Role
 Room
 Function
+Define cron...
+Repeat
+simple
+cron
+once
+Interval
+Interval Between
+Specific time
+Period
+Every
+seconds
+minutes
+hours
+from
+to
+time
+date
+On weekdays
+Saturday
+Monday
+Tuesday
+Wednesday
+Thursday
+Friday
+Sunday

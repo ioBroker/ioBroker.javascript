@@ -6,11 +6,15 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+
 import CronBuilder from '../Components/react-cron-builder/src/index';
-import 'react-cron-builder/dist/bundle.css'
+import '../Components/react-cron-builder/dist/bundle.css'
+import SimpleCron from '../Components/simple-cron/SimpleCron';
 
 import I18n from '../i18n';
-import SelectID from '../Components/SelectID';
 
 // Generate cron expression
 
@@ -19,13 +23,17 @@ const styles = theme => ({
         fontWeight: 'bold',
         fontStyle: 'italic'
     },
+    radio: {
+        display: 'inline-block'
+    }
 });
 
 class DialogCron extends React.Component {
     constructor(props) {
         super(props);
         this.state =  {
-            cron: this.props.cron || '* * * * *',
+            cron: (this.props.cron || '* * * * *').replace(/['"]/g, '').trim(),
+            simple: this.props.simple || !!SimpleCron.cron2state(this.props.cron || '* * * * *')
         };
     }
 
@@ -49,11 +57,33 @@ class DialogCron extends React.Component {
             >
                 <DialogTitle id="cron-dialog-title">{this.props.title || I18n.t('Define cron...')}</DialogTitle>
                 <DialogContent>
-                    <CronBuilder
+
+                    {!this.props.simple && (<div>
+                        <Radio
+                            key="simple"
+                            checked={this.state.simple}
+                            onChange={e => this.setState({simple: true})}
+                            value={this.state.simple}
+                        /><label onClick={e => this.setState({simple: true})}
+                                 style={!this.state.simple ? {color: 'lightgrey'} : {}}>{I18n.t('sc_simple')}</label>
+                        <Radio
+                            key="complex"
+                            checked={!this.state.simple}
+                            onChange={e => this.setState({simple: false})}
+                            value={!this.state.simple}
+                        /><label onClick={e => this.setState({simple: false})} style={this.state.simple ? {color: 'lightgrey'} : {}}>{I18n.t('sc_cron')}</label></div>)}
+                    {this.state.simple ?
+                        (<SimpleCron
+                            cronExpression={this.state.cron}
+                            onChange={cron => this.setState({cron})}
+                            language={I18n.getLanguage()}
+                        />) :
+                        (<CronBuilder
                         cronExpression={this.state.cron}
                         onChange={cron => this.setState({cron})}
                         showResult={true}
-                    />
+                    />)
+                    }
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => this.handleCancel()} color="primary">{this.props.cancel || I18n.t('Cancel')}</Button>
@@ -71,7 +101,9 @@ DialogCron.propTypes = {
     title: PropTypes.string,
     cron: PropTypes.string,
     cancel: PropTypes.string,
-    ok: PropTypes.string
+    ok: PropTypes.string,
+    simple: PropTypes.bool,
+    language: PropTypes.string
 
 };
 

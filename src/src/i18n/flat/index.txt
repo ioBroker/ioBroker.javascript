@@ -24,3 +24,28 @@ filter_name
 filter_role
 filter_room
 filter_func
+Define cron...
+Repeat
+sc_simple
+sc_cron
+sc_once
+sc_interval
+sc_intervalBetween
+sc_specific
+sc_period
+sc_every
+sc_seconds
+sc_minutes
+sc_hours
+sc_from
+sc_to
+sc_time
+sc_date
+On weekdays
+Saturday
+Monday
+Tuesday
+Wednesday
+Thursday
+Friday
+Sunday

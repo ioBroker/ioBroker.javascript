@@ -298,9 +298,7 @@ function Scripts(main) {
             ]
         });
         
-        $('#div-cron').cron({
-            value: '* * * * *'
-        });
+        $('#div-cron').cron({value: '* * * * *'});
 
         $('#script-edit-button-save').button({
             icons: {
