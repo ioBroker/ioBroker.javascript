@@ -11,6 +11,7 @@ type Props = {
   columns: ChildrenArray<Element<typeof Column>>,
 
   hasVisibleChildren: boolean, // Metadata
+  classNamePartlyVisible?: string,
   classNameColumn?: string,
   classNameSelected?: string,
   classNameRow?: string,

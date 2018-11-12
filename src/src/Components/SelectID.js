@@ -73,7 +73,9 @@ const styles = theme => ({
         padding: 1,
         borderRadius: 3
     },
-    
+    partlyVisible: {
+        opacity: 0.3
+    },
     /*.toggle-button-wrapper > span:hover {
         background: #d7d7d7;
     }*/
@@ -139,6 +141,9 @@ function applyFilter(item, filters, lang, context) {
         if (filters.name) {
             context.name = filters.name.toLowerCase();
         }
+        if (filters.role) {
+            context.name = filters.name.toLowerCase();
+        }
     }
 
     if (item.data.id) {
@@ -155,12 +160,19 @@ function applyFilter(item, filters, lang, context) {
             }
             filteredOut = item.data.fName.indexOf(context.name) === -1;
         }
+        if (!filteredOut && filters.role) {
+            if (item.data.fName === undefined) {
+                item.data.fName = (item.data.obj && item.data.obj.common && getName(item.data.obj.common.name, lang)) || '';
+                item.data.fName = item.data.name.toLowerCase();
+            }
+            filteredOut = item.data.fName.indexOf(context.name) === -1;
+        }
     }
     item.data.visible = !filteredOut;
     item.data.hasVisibleChildren = false;
     if (item.children) {
-        item.children.forEach(item => {
-            const visible = applyFilter(item, filters, lang, context);
+        item.children.forEach(_item => {
+            const visible = applyFilter(_item, filters, lang, context);
             if (visible) {
                 item.data.hasVisibleChildren = true;
             }
@@ -786,7 +798,7 @@ class SelectID extends React.Component {
                     <div className={classes.headerCell} style={{width: width}}>{this.getFilterSelectRole()}</div>
                     <div className={classes.headerCell} style={{width: width}}>{this.getFilterSelectRoom()}</div>
                     <div className={classes.headerCell} style={{width: width}}>{this.getFilterSelectFunction()}</div>
-                    <div className={classes.headerCell} style={{width: width}}>{this.getFilterInput('id')}</div>
+                    <div className={classes.headerCell} style={{width: width}}>{I18n.t('Value')}</div>
                 </div>),
                 (
                 <TreeDataTable
@@ -795,6 +807,7 @@ class SelectID extends React.Component {
                     height={'100%'}
                     selected={this.state.selected}
                     classNameSelected={classes.selected}
+                    classNamePartlyVisible={classes.partlyVisible}
                     className={classes.treeTable}
                     classNameRow={classes.treeTableRow}
                     onRowClick={(data, metadata, toggleChildren, isDoubleClick) => isDoubleClick ? this.onDoubleClick(data, metadata, toggleChildren) : this.onSelect(data.id)}

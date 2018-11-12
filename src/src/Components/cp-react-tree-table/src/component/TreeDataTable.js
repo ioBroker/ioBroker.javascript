@@ -21,6 +21,7 @@ type Props = {
   data: Array<TreeDataRow>,
   children: ChildrenArray<Element<typeof Column>>,
   classNameColumn?: string,
+  classNamePartlyVisible?: string,
   classNameMover?: string,
   classNameInner?: string,
   classNameRow?: string,
@@ -52,7 +53,7 @@ export default class TreeDataTable extends Component<Props, State> {
   }
 
   render() {
-    const { height, children, onScroll, className, classNameRow, classNameColumn, classNameMover, classNameInner, selected, classNameSelected } = this.props;
+    const { height, children, onScroll, className, classNameRow, classNamePartlyVisible, classNameColumn, classNameMover, classNameInner, selected, classNameSelected } = this.props;
     
     const baseClass = className ? `cp_tree-table ${className}`: 'cp_tree-table';
     return (
@@ -60,6 +61,7 @@ export default class TreeDataTable extends Component<Props, State> {
                    classNameSelected={classNameSelected}
                    selected={selected}
                    classNameRow={classNameRow}
+                   classNamePartlyVisible={classNamePartlyVisible}
                    classNameColumn={classNameColumn}
                    classNameMover={classNameMover}
                    onRowClick={this.props.onRowClick}

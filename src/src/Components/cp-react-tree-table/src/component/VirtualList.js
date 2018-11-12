@@ -18,6 +18,7 @@ type Props = {
   onRowClick: (data: object) => void,
   onScroll: (scrollTop: number) => void,
   className?: string,
+  classNamePartlyVisible?: string,
   classNameColumn?: string,
   classNameMover?: string,
   classNameRow?: string,
@@ -61,7 +62,7 @@ export default class VirtualList extends Component<Props, State> {
   }
 
   render() {
-    const { root, columns, onToggle, className, classNameColumn, classNameMover, classNameRow, selected, classNameSelected, classNameInner} = this.props;
+    const { root, columns, onToggle, className, classNameColumn, onRowClick, classNamePartlyVisible, classNameMover, classNameRow, selected, classNameSelected, classNameInner} = this.props;
     const { overscanHeight, height, topOffset } = this.state;
 
     const startYMax = Math.max(0, root.getHeight() - height - (overscanHeight * 2));
@@ -100,10 +101,10 @@ export default class VirtualList extends Component<Props, State> {
           row={data.row}
           columns={columns}
           selected={selected}
-          onRowClick={this.props.onRowClick}
+          onRowClick={onRowClick}
           classNameSelected={classNameSelected}
           classNameColumn={classNameColumn}
-          classNameRow={classNameRow}
+          classNameRow={classNameRow + (!data.row.data.visible && classNamePartlyVisible && data.row.data.hasVisibleChildren ? ' ' + classNamePartlyVisible : '')}
           hasVisibleChildren={data.hasVisibleChildren}
           index={relativeIndex}
           key={relativeIndex++}
@@ -147,7 +148,7 @@ export default class VirtualList extends Component<Props, State> {
         topOffset: scrollTop
       });
     }
-  }
+  };
 
   // virtual scroll
   _setHeight = () => {
