@@ -193,6 +193,7 @@ class App extends Component {
             this.socket.setObject(id, {
                 common: {
                     name,
+                    expert: true
                 },
                 type: 'channel'
             }).then(() => {
@@ -204,6 +205,7 @@ class App extends Component {
             this.socket.setObject(id, {
                 common: {
                     name,
+                    expert: true,
                     engineType: type,
                     engine: 'system.adapter.javascript.' + (instance || 0),
                     source: '',
@@ -223,6 +225,7 @@ class App extends Component {
         if (this.scripts[id] && this.scripts[id].type === 'script') {
             const common = this.objects[id].common;
             common.enabled = enabled;
+            common.expert = true;
             this.socket.updateScript(id, id, common)
                 .then(() => {})
                 .catch(err => err !== 'canceled' && this.showError(err));

@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Button from '@material-ui/core/Button';
 
+import {MdGTranslate as IconNoCheck} from 'react-icons/md';
+import I18n from './i18n';
 
 function isIdOfGlobalScript(id) {
     return /^script\.js\.global\./.test(id);
@@ -14,7 +17,8 @@ class ScriptEditor extends React.Component {
             isDark: props.isDark || false,
             language: props.language || 'javascript',
             readOnly: props.readOnly || false,
-            alive: true
+            alive: true,
+            check: false,
         };
         this.monacoDiv = null; //ref
         this.editor = null;
@@ -39,7 +43,7 @@ class ScriptEditor extends React.Component {
             compilerOptions.moduleResolution = this.monaco.languages.typescript.ModuleResolutionKind.NodeJs;
             this.monaco.languages.typescript.typescriptDefaults.setCompilerOptions(compilerOptions);
 
-            this.setTypeCheck(true);
+            this.setTypeCheck(false);
 
             // Create the editor instances
             this.editor = this.monaco.editor.create(this.monacoDiv, {
@@ -57,7 +61,7 @@ class ScriptEditor extends React.Component {
             let scriptAdapterInstance = this.props.connection.getScripts().instances[0];
             if (scriptAdapterInstance || scriptAdapterInstance === 0) {
                 this.props.connection.sendTo('javascript.' + scriptAdapterInstance, 'loadTypings', null, result => {
-                    this.setState({alive: true});
+                    this.setState({alive: true, check: true});
                     this.setTypeCheck(true);
                     if (result.typings) {
                         this.typings = result.typings;
@@ -244,7 +248,14 @@ class ScriptEditor extends React.Component {
         }
 
         return (
-            <div ref={el => this.monacoDiv = el} style={{width: '100%', height: '100%', overflow: 'hidden', position: 'relative'}}/>
+            <div ref={el => this.monacoDiv = el} style={{width: '100%', height: '100%', overflow: 'hidden', position: 'relative'}}>
+                {!this.state.check && (<Button
+                    mini
+                    title={I18n.t('Check is not active, becuase javascript adapter is disabled')}
+                    style={{bottom: 10, right: 10, opacity: 0.5, position: 'absolute', zIndex: 1, background: 'red'}}
+                    variant="fab"
+                    color="secondary"><IconNoCheck/></Button>)}
+            </div>
         );
     }
 }

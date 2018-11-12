@@ -15,6 +15,13 @@ const styles = theme => ({
         fontWeight: 'bold',
         fontStyle: 'italic'
     },
+    dialog: {
+        height: '95%'
+    },
+    content: {
+        height: '100%',
+        overflow: 'hidden'
+    }
 });
 
 class DialogSelectID extends React.Component {
@@ -48,12 +55,14 @@ class DialogSelectID extends React.Component {
                 disableBackdropClick
                 disableEscapeKeyDown
                 maxWidth="lg"
+                className="full-height-dialog"
+                classes={{paper: this.props.classes.dialog}}
                 fullWidth={true}
                 open={true}
                 aria-labelledby="selectid-dialog-title"
             >
                 <DialogTitle id="selectid-dialog-title">{title}</DialogTitle>
-                <DialogContent>
+                <DialogContent className={this.props.classes.content}>
                     <SelectID
                         statesOnly={this.props.statesOnly}
                         style={{width: '100%', height: '100%'}}
@@ -68,7 +77,7 @@ class DialogSelectID extends React.Component {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => this.handleCancel()} color="primary">{this.props.cancel || I18n.t('Cancel')}</Button>
-                    <Button onClick={() => this.handleOk()} color="primary">{this.props.ok || I18n.t('Ok')}</Button>
+                    <Button onClick={() => this.handleOk()} disabled={!this.state.selected} color="primary">{this.props.ok || I18n.t('Ok')}</Button>
                 </DialogActions>
             </Dialog>
         );

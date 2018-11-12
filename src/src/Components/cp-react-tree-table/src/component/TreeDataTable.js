@@ -46,7 +46,7 @@ export default class TreeDataTable extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     const { rowHeight } = props;
-
+    this.depth = 0;
     this.state = {
       root: new BTRoot(processData(this.props.data, rowHeight)),
     };
@@ -162,9 +162,48 @@ export default class TreeDataTable extends Component<Props, State> {
     }
   }
 
+  _walkOne(root: BTRoot, depth: number) {
+    let hasChanged;
+    if (root.rows) {
+        for (let i = 0; i < root.rows.length; i++) {
+          if (root.rows[i].depth <= depth) {
+            if (!root.rows[i].isVisible()) {
+              hasChanged = true;
+              root.rows[i].show();
+            }
+          } else if (root.rows[i].isVisible()) {
+              hasChanged = true;
+              root.rows[i].hide();
+          }
+        }
+    } else if (root.children) {
+        for (let i = 0; i < root.children.length; i++) {
+            const changed = this._walkOne(root.children[i], depth);
+            if (changed) {
+                hasChanged = true;
+            }
+        }
+    }
+    return hasChanged;
+  }
+
   // Public API
-  expandAll() { // _showRowsInRange alias with the default arguments
-    this._showRowsInRange();
+  expandAll(expandOrCollapse?: boolean) { // _showRowsInRange alias with the default arguments
+    if (expandOrCollapse === undefined) {
+        this._showRowsInRange();
+    } else {
+      if (expandOrCollapse === true || expandOrCollapse === false) {
+          this.depth = expandOrCollapse ? this.depth + 1 : this.depth - 1;
+      } else {
+          this.depth = expandOrCollapse;
+      }
+      if (this.depth < 0) {
+          this.depth = 0;
+      }
+        if (this._walkOne(this.state.root, this.depth)) {
+            this.setState({root: this.state.root});
+        }
+    }
   }
 
   // Hides rows in the given range that don't represent root nodes (row.depth == 0)

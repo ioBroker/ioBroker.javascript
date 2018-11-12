@@ -395,6 +395,8 @@ class SimpleCron extends React.Component {
                     settings.period = parseInt(e.target.value, 10);
                     this.setState({[type]: settings}, () => this.recalcCron());
                 }}
+                min={1}
+                max={60}
                 type="number"
                 InputLabelProps={{shrink: true,}}
                 margin="normal"
@@ -525,7 +527,7 @@ class SimpleCron extends React.Component {
         return (
             <div className={this.props.classes.mainDiv}>
                 <div style={{paddingLeft: 8, width: '100%'}}><TextField style={{width: '100%'}} value={this.state.cron} disabled={true}/></div>
-                <div style={{paddingLeft: 8, width: '100%'}}>{convertCronToText(this.state.cron, this.props.language || 'en')}</div>
+                <div style={{paddingLeft: 8, width: '100%', height: 60}}>{convertCronToText(this.state.cron, this.props.language || 'en')}</div>
                 <div><FormControl style={{marginLeft: 8, marginTop: 8}} className={this.props.classes.formControl}>
                     <InputLabel>{I18n.t('Repeat')}</InputLabel>
                     <Select

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-//import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Toolbar from '@material-ui/core/Toolbar';
 import TreeDataTable from './cp-react-tree-table/src';
 import {withStyles} from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -13,6 +14,8 @@ import {FaFolder as IconClosed} from 'react-icons/fa';
 import {FaFolderOpen as IconOpen} from 'react-icons/fa';
 import {FaFileAlt as IconState} from 'react-icons/fa';
 import {FaFile as IconDocument} from 'react-icons/fa';
+import {MdPerson as IconExpert} from 'react-icons/md';
+import {MdContentCopy as IconCopy} from 'react-icons/md';
 import IconDefaultState from './assets/state.png';
 import IconDefaultChannel from './assets/channel.png';
 import IconDefaultDevice from './assets/device.png';
@@ -22,6 +25,14 @@ import I18n from '../i18n';
 import Utils from './Utils';
 
 const styles = theme => ({
+    toolbar: {
+        minHeight: 38,//Theme.toolbar.height,
+//        boxShadow: '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)'
+    },
+    toolbarButtons: {
+        padding: 4,
+        marginLeft: 4
+    },
     treeTable: {
         background: '#ffffff',
         borderTop: '1px solid #999',
@@ -30,6 +41,16 @@ const styles = theme => ({
     treeTableRow: {
         boxShadow: 'inset 0 1px 0 #eeeeee',
         display: 'block'
+    },
+    mainDiv: {
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden'
+    },
+    tableDiv: {
+        width: '100%',
+        height: 'calc(100% - 34px - 38px)',
+        overflow: 'auto'
     },
     cellDiv: {
         display: 'inline-block',
@@ -105,6 +126,26 @@ const styles = theme => ({
     },
     headerCellInput: {
         width: 'calc(100% - 5px)'
+    },
+    visibleButtons: {
+        color: '#2196f3',
+        opacity: 0.7
+    },
+    depth: {
+        position: 'absolute',
+        top: 8,
+        left: 10,
+        color: 'black',
+        fontSize: 14
+    },
+    cellCopy: {
+        position: 'absolute',
+        top: 5,
+        right: 10,
+        width: 16,
+        height: 16,
+        background: 'lightblue',
+        cursor: 'grab'
     }
 });
 
@@ -131,7 +172,7 @@ function walkTree(tree, func) {
     }
 }
 
-function applyFilter(item, filters, lang, context) {
+function applyFilter(item, filters, lang, objects, context) {
     let filteredOut = false;
     if (!context) {
         context = {};
@@ -142,12 +183,21 @@ function applyFilter(item, filters, lang, context) {
             context.name = filters.name.toLowerCase();
         }
         if (filters.role) {
-            context.name = filters.name.toLowerCase();
+            context.role = filters.role.toLowerCase();
+        }
+        if (filters.room) {
+            context.room = (objects[filters.room] && objects[filters.room].common && objects[filters.room].common.members) || [];
+        }
+        if (filters.func) {
+            context.func = (objects[filters.func] && objects[filters.func].common && objects[filters.func].common.members) || [];
         }
     }
 
     if (item.data.id) {
-        if (context.id) {
+        if (!filters.expert) {
+            filteredOut = item.data.id === 'system' || item.data.id.startsWith('system.') || (item.data.obj && item.data.obj.common && item.data.obj.common.expert);
+        }
+        if (!filteredOut && context.id) {
             if (item.data.fID === undefined) {
                 item.data.fID = item.data.id.toLowerCase();
             }
@@ -161,18 +211,20 @@ function applyFilter(item, filters, lang, context) {
             filteredOut = item.data.fName.indexOf(context.name) === -1;
         }
         if (!filteredOut && filters.role) {
-            if (item.data.fName === undefined) {
-                item.data.fName = (item.data.obj && item.data.obj.common && getName(item.data.obj.common.name, lang)) || '';
-                item.data.fName = item.data.name.toLowerCase();
-            }
-            filteredOut = item.data.fName.indexOf(context.name) === -1;
+            filteredOut = !(item.data && item.data.obj && item.data.obj.common && item.data.obj.common.role && item.data.obj.common.role.startsWith(context.role));
+        }
+        if (!filteredOut && context.room) {
+            filteredOut = !context.room.find(id => id === item.data.id || item.data.id.startsWith(id + '.'));
+        }
+        if (!filteredOut && context.func) {
+            filteredOut = !context.func.find(id => id === item.data.id || item.data.id.startsWith(id + '.'));
         }
     }
     item.data.visible = !filteredOut;
     item.data.hasVisibleChildren = false;
     if (item.children) {
         item.children.forEach(_item => {
-            const visible = applyFilter(_item, filters, lang, context);
+            const visible = applyFilter(_item, filters, lang, objects, context);
             if (visible) {
                 item.data.hasVisibleChildren = true;
             }
@@ -239,7 +291,7 @@ function buildTree(objects, options) {
                     for (let k = currentPathLen; k < parts.length - 1; k++) {
                         curPath += (curPath ? '.' : '') + parts[k];
                         if (!binarySearch(info.ids, curPath)) {
-                            const _croot = {data: {name: parts[k], parent: croot, id: curPath}};
+                            const _croot = {data: {name: parts[k], parent: croot, id: curPath, obj: objects[curPath]}};
                             croot.children = croot.children || [];
                             croot.children.push(_croot);
                             croot = _croot;
@@ -347,10 +399,10 @@ function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
     funcs = funcs || [];
     for (let i = 0; i < data.funcEnums.length; i++) {
         const common = data.objects[data.funcEnums[i]] && data.objects[data.funcEnums[i]].common;
-        const name = getName(common.name);
+        const name = getName(common.name, lang);
         if (common && common.members && common.members.indexOf(id) !== -1 && funcs.indexOf(name) === -1) {
             if (!withParentInfo) {
-                funcs.push(name, lang);
+                funcs.push(name);
             } else {
                 funcs.push({name: name, origin: id});
             }
@@ -610,9 +662,13 @@ class SelectID extends React.Component {
                 name: '',
                 room: '',
                 func:  '',
-                role: ''
-            }
+                role: '',
+                expert: false
+            },
+            depth: 0
         };
+        this.treeTableRef = React.createRef();
+        this.mainRef = React.createRef();
         this.root = null;
         this.lang = I18n.getLanguage();
 
@@ -623,6 +679,7 @@ class SelectID extends React.Component {
                 const {info, root} = buildTree(this.objects, this.props);
                 this.root = root;
                 this.info = info;
+                applyFilter(this.root, this.state.filter, this.lang, this.objects);
                 this.setState({loaded: true});
 
                 this.state.selected && this.onSelect(this.state.selected);
@@ -654,6 +711,41 @@ class SelectID extends React.Component {
         }
     }
 
+    onCopy(e, id) {
+        const el = window.document.createElement('textarea');
+        el.value = id;
+        window.document.body.appendChild(el);
+        el.select();
+        window.document.execCommand('copy');
+        window.document.body.removeChild(el);
+        console.log(id);
+    }
+
+    componentDidUpdate() {
+        if (!this.mainRef.current) return;
+        const rows = this.mainRef.current.getElementsByClassName('add-copy-button');
+        for (let i = 0; i < rows.length; i++) {
+            if (!rows[i].__installed) {
+                rows[i].addEventListener('mouseenter', e => {
+                    const copy = e.target.getElementsByClassName(this.props.classes.cellCopy);
+                    if (!copy || !copy.length) {
+                        const div = document.createElement('div');
+                        div.className = this.props.classes.cellCopy;
+                        div.addEventListener('click', e => this.onCopy(e, e.target.parentNode.dataset.index), false);
+                        e.target.appendChild(div);
+                    }
+                }, false);
+                rows[i].addEventListener('mouseleave', e => {
+                    const copy = e.target.getElementsByClassName(this.props.classes.cellCopy);
+                    if (copy && copy.length) {
+                        e.target.removeChild(copy[0]);
+                    }
+                }, false);
+                rows[i].__installed = true;
+            }
+        }
+    }
+
     renderIndexColumn(data, metadata, toggleChildren) {
         const selected = this.state.selected === data.id;
         const isExist = !!this.objects[data.id];
@@ -665,9 +757,8 @@ class SelectID extends React.Component {
         const width = `calc(100% - ${padding})`;
         return (
             <div style={{paddingLeft: padding, width: width}}
-                 className={this.props.classes.cellWrapper}
-//                 onClick={() => this.onSelect(data.id)}
-//                 onDoubleClick={() => this.onDoubleClick(data, metadata, toggleChildren)}
+                 data-index={data.id}
+                 className={this.props.classes.cellWrapper + ' add-copy-button'}
             >
                 <span className={(selected ? this.props.classes.selected : '') + ' ' + this.props.classes.toggleButtonWrapper}>
                   {metadata.hasChildren
@@ -693,12 +784,12 @@ class SelectID extends React.Component {
     }
     renderColumnRoom(data, metadata, toggleChildren) {
         if (!data.obj) return null;
-        const list = findRoomsForObject(this.info, data.obj._id, this.lang, true) || [];
+        const list = findRoomsForObject(this.info, data.obj._id, this.lang) || [];
         return (<span className={this.props.classes.cellWrapper}>{list.join(', ')}</span>);
     }
     renderColumnFunc(data, metadata, toggleChildren) {
         if (!data.obj) return null;
-        const list = findFunctionsForObject(this.info, data.obj._id, this.lang, true) || [];
+        const list = findFunctionsForObject(this.info, data.obj._id, this.lang) || [];
         return (<span className={this.props.classes.cellWrapper}>{list.join(', ')}</span>);
     }
     renderColumnValue(data, metadata, toggleChildren) {
@@ -715,7 +806,7 @@ class SelectID extends React.Component {
             filter[name] = value;
             this.filterTimer && clearTimeout(this.filterTimer);
             this.filterTimer = setTimeout(() => {
-                applyFilter(this.root, filter, this.lang);
+                applyFilter(this.root, filter, this.lang, this.objects);
                 this.forceUpdate();
             }, 400);
             this.setState({filter});
@@ -783,6 +874,39 @@ class SelectID extends React.Component {
         return this.getFilterSelect('func', func);
 
     }
+    onExpandAll() {
+        this.treeTableRef.current.expandAll();
+    }
+    onCollapseAll() {
+        this.treeTableRef.current.collapseAll();
+    }
+    onExpandVisible() {
+        if (this.state.depth < 9) {
+            const depth = this.state.depth + 1;
+            this.setState({depth: depth}, () => {
+                this.treeTableRef.current.expandAll(depth);
+            });
+        }
+    }
+    onCollapseVisible() {
+        if (this.state.depth > 0) {
+            const depth = this.state.depth - 1;
+            this.setState({depth: depth}, () => {
+                this.treeTableRef.current.expandAll(depth);
+            });
+        }
+    }
+
+    getToolbar() {
+        return (
+            <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
+                <IconButton key="expert" variant="contained" className={this.props.classes.toolbarButtons} color={this.state.filter.expert ? 'secondary' : 'primary'} onClick={() => this.onFilter('expert', !this.state.filter.expert)}><IconExpert /></IconButton>
+                <IconButton key="expandAll" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onExpandAll()}><IconOpen /></IconButton>
+                <IconButton key="collapseAll" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onCollapseAll()}><IconClosed /></IconButton>
+                <IconButton key="expandVisible" variant="contained" className={this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={() => this.onExpandVisible()}><IconOpen />{this.state.depth ? (<div className={this.props.classes.depth}>{this.state.depth}</div>) : null}</IconButton>
+                <IconButton key="collapseVisible" variant="contained" className={this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={() => this.onCollapseVisible()}><IconClosed />{this.state.depth ? (<div className={this.props.classes.depth}>{this.state.depth}</div>) : null}</IconButton>
+            </Toolbar>);
+    }
 
     render() {
         if (!this.state.loaded) {
@@ -791,17 +915,19 @@ class SelectID extends React.Component {
             const classes = this.props.classes;
             const idWidth = 300;
             const width = `calc(20% - ${idWidth / 5}px)`;
-            return [
-                (<div key="header" className={classes.header}>
+            return (<div className={classes.mainDiv} ref={this.mainRef}>
+                {this.getToolbar()}
+                <div key="header" className={classes.header}>
                     <div className={classes.headerCell} style={{width: idWidth}}>{this.getFilterInput('id')}</div>
                     <div className={classes.headerCell} style={{width: width}}>{this.getFilterInput('name')}</div>
                     <div className={classes.headerCell} style={{width: width}}>{this.getFilterSelectRole()}</div>
                     <div className={classes.headerCell} style={{width: width}}>{this.getFilterSelectRoom()}</div>
                     <div className={classes.headerCell} style={{width: width}}>{this.getFilterSelectFunction()}</div>
                     <div className={classes.headerCell} style={{width: width}}>{I18n.t('Value')}</div>
-                </div>),
-                (
+                </div>
+                <div className={classes.tableDiv}>
                 <TreeDataTable
+                    ref={this.treeTableRef}
                     key="table"
                     data={this.root.children}
                     height={'100%'}
@@ -818,8 +944,8 @@ class SelectID extends React.Component {
                     <TreeDataTable.Column grow={1} renderCell={this.renderColumnRoom.bind(this)}  className={classes.cellDiv} width={width}/>
                     <TreeDataTable.Column grow={1} renderCell={this.renderColumnFunc.bind(this)}  className={classes.cellDiv} width={width}/>
                     <TreeDataTable.Column grow={1} renderCell={this.renderColumnValue.bind(this)} className={classes.cellDiv} width={width}/>
-                </TreeDataTable>
-            )];
+                </TreeDataTable></div>
+            </div>);
         }
     }
 }

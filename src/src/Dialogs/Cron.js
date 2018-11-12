@@ -51,7 +51,8 @@ class DialogCron extends React.Component {
             <Dialog
                 disableBackdropClick
                 disableEscapeKeyDown
-                maxWidth="lg"
+                maxWidth="md"
+                fullWidth={true}
                 open={true}
                 aria-labelledby="cron-dialog-title"
             >
