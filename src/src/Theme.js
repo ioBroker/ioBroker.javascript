@@ -10,6 +10,9 @@ export default {
         depthOffset: 20
     },
     colors: {
+        secondary: {
+
+        },
         selected: {
             background: '#008fff',
             color: 'white'

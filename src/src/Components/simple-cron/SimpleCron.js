@@ -63,6 +63,7 @@ class SimpleCron extends React.Component {
         const state = SimpleCron.cron2state(this.props.cronExpression || '* * * * *') || DEFAULT_STATE;
 
         this.state = {
+            extended: false,
             cron: SimpleCron.state2cron(state),
             mode: 'interval',
             once: {
@@ -88,8 +89,9 @@ class SimpleCron extends React.Component {
         Object.assign(this.state, state);
     }
 
-    static weekdays2text(list) {
-        if (list.length === 7) {
+    static periodArray2text(list, max) {
+        max = max || 7;
+        if (list.length === max) {
             return '*'
         } else {
             let text = [];
@@ -286,20 +288,33 @@ class SimpleCron extends React.Component {
     static state2cron(state) {
         let cron = '* * * * *';
         if (state.mode === PERIODIC.interval) {
-            const settings = state.interval;
+            const settings = state.interval || {};
             if (settings.period > 60) settings.period = 60;
             if (settings.period < 1) settings.period = 1;
-            switch (settings.unit) {
-                case PERIODIC_TYPES.seconds:
-                    cron = `${settings.period > 1 ? '*/' + settings.period : '*'} * * * * *`;
-                    break;
-                case PERIODIC_TYPES.minutes:
-                    cron = `${settings.period > 1 ? '*/' + settings.period : '*'} * * * *`;
-                    break;
+
+            if (settings.minutes > 60) settings.minutes = 60;
+            if (settings.minutes < 1) settings.minutes = 1;
+
+            if (settings.hours > 24) settings.hours = 24;
+            if (settings.hours < 1) settings.hours = 1;
+
+            if (state.extended) {
+                cron = `${settings.minutes > 1 ? '*/' + settings.minutes : '*'} ${settings.hours > 1 ? '*/' + settings.hours : '*'} * * *`;
+            } else {
+                switch (settings.unit) {
+                    case PERIODIC_TYPES.seconds:
+                        cron = `${settings.period > 1 ? '*/' + settings.period : '*'} * * * * *`;
+                        break;
+                    case PERIODIC_TYPES.minutes:
+                        cron = `${settings.period > 1 ? '*/' + settings.period : '*'} * * * *`;
+                        break;
+                }
             }
         } else if (state.mode === PERIODIC.intervalBetween) {
-            const settings = state.intervalBetween;
+            const settings = state.intervalBetween || {};
             let hours;
+            settings.timeFrom = settings.timeFrom || 0;
+            settings.timeTo = settings.timeTo === undefined ? 24 : settings.timeTo;
             if (settings.timeFrom === 0 && settings.timeTo === 24) {
                 hours = '*'
             } else {
@@ -307,17 +322,18 @@ class SimpleCron extends React.Component {
             }
             if (settings.period > 60) settings.period = 60;
             if (settings.period < 1) settings.period = 1;
+            settings.unit = settings.unit || PERIODIC_TYPES.minutes;
             switch (settings.unit) {
                 case PERIODIC_TYPES.seconds:
-                    cron = `${settings.period > 1 ? '*/' + settings.period : '*'} * ${hours} * * ${this.weekdays2text(settings.weekdays)}`;
+                    cron = `${settings.period > 1 ? '*/' + settings.period : '*'} * ${hours} * * ${this.periodArray2text(settings.weekdays)}`;
                     break;
                 case PERIODIC_TYPES.minutes:
-                    cron = `${settings.period > 1 ? '*/' + settings.period : '*'} ${hours} * * ${this.weekdays2text(settings.weekdays)}`;
+                    cron = `${settings.period > 1 ? '*/' + settings.period : '*'} ${hours} * * ${this.periodArray2text(settings.weekdays)}`;
                     break;
             }
         } else if (state.mode === PERIODIC.specific) {
-            const settings = state.specific;
-            const parts = settings.time.split(':');
+            const settings = state.specific || {};
+            const parts = (settings.time || '00:00').split(':');
             let minutes = parseInt(parts[1], 10) || 0;
             if (minutes > 59) minutes = 59;
             if (minutes < 0) minutes = 0;
@@ -325,13 +341,13 @@ class SimpleCron extends React.Component {
             if (hours > 23) hours = 59;
             if (hours < 0) hours = 0;
 
-            cron = `${minutes} ${hours} * * ${this.weekdays2text(settings.weekdays)}`;
+            cron = `${minutes} ${hours} * * ${this.periodArray2text(settings.weekdays || [])}`;
         } else if (state.mode === PERIODIC.once) {
-            const settings = state.once;
+            const settings = state.once || {};
             if (!settings.date) {
                 settings.date = new Date().getDate() + '.' + padding(new Date().getMonth() + 1);
             }
-            const parts = settings.time.split(':');
+            const parts = (settings.time || '00:00').split(':');
             const partsDate = settings.date.split('.');
             let minutes = parseInt(parts[1], 10) || 0;
             if (minutes > 59) minutes = 59;
@@ -383,24 +399,62 @@ class SimpleCron extends React.Component {
 
     getControlsPeriodElements(type) {
         const settings = this.state[type];
-        return (<div key="period" style={{paddingLeft: 8}}>
-            <h5 style={{marginBottom: 5}}>{I18n.t('sc_period')}</h5>
-            <TextField
-                style={{marginTop: 0, marginBottom: 0, verticalAlign: 'bottom'}}
-                key="value"
-                label={I18n.t('sc_every')}
-                value={settings.period}
-                onChange={e => {
-                    const settings = JSON.parse(JSON.stringify(this.state[type]));
-                    settings.period = parseInt(e.target.value, 10);
-                    this.setState({[type]: settings}, () => this.recalcCron());
-                }}
-                min={1}
-                max={60}
-                type="number"
-                InputLabelProps={{shrink: true,}}
-                margin="normal"
-            /><Select
+
+        if (this.state.extended) {
+            return (<div key="period" style={{paddingLeft: 8, display: 'inline-block'}}>
+                <h5 style={{marginBottom: 5}}>{I18n.t('sc_period')}</h5>
+                <TextField
+                    style={{marginTop: 0, marginBottom: 0, verticalAlign: 'bottom'}}
+                    key="value"
+                    label={I18n.t('sc_minutes')}
+                    value={settings.minutes}
+                    onChange={e => {
+                        const settings = JSON.parse(JSON.stringify(this.state[type]));
+                        settings.minutes = parseInt(e.target.value, 10);
+                        this.setState({[type]: settings}, () => this.recalcCron());
+                    }}
+                    min={1}
+                    max={60}
+                    type="number"
+                    InputLabelProps={{shrink: true,}}
+                    margin="normal"
+                />
+                <TextField
+                    style={{marginTop: 0, marginBottom: 0, verticalAlign: 'bottom'}}
+                    key="value"
+                    label={I18n.t('sc_hours')}
+                    value={settings.hours}
+                    onChange={e => {
+                        const settings = JSON.parse(JSON.stringify(this.state[type]));
+                        settings.hours = parseInt(e.target.value, 10);
+                        this.setState({[type]: settings}, () => this.recalcCron());
+                    }}
+                    min={1}
+                    max={24}
+                    type="number"
+                    InputLabelProps={{shrink: true,}}
+                    margin="normal"
+                />
+            </div>);
+        } else {
+            return (<div key="period" style={{paddingLeft: 8, display: 'inline-block'}}>
+                <h5 style={{marginBottom: 5}}>{I18n.t('sc_period')}</h5>
+                <TextField
+                    style={{marginTop: 0, marginBottom: 0, verticalAlign: 'bottom'}}
+                    key="value"
+                    label={I18n.t('sc_every')}
+                    value={settings.period}
+                    onChange={e => {
+                        const settings = JSON.parse(JSON.stringify(this.state[type]));
+                        settings.period = parseInt(e.target.value, 10);
+                        this.setState({[type]: settings}, () => this.recalcCron());
+                    }}
+                    min={1}
+                    max={60}
+                    type="number"
+                    InputLabelProps={{shrink: true,}}
+                    margin="normal"
+                /><Select
                 style={{verticalAlign: 'bottom'}}
                 value={settings.unit}
                 onChange={e => {
@@ -409,7 +463,9 @@ class SimpleCron extends React.Component {
                     this.setState({[type]: settings}, () => this.recalcCron());
                 }}>
                 {Object.keys(PERIODIC_TYPES).map(mode => (<MenuItem key={PERIODIC_TYPES[mode]} value={PERIODIC_TYPES[mode]}>{I18n.t('sc_' + PERIODIC_TYPES[mode])}</MenuItem>))}
-        </Select></div>);
+            </Select></div>);
+        }
+
     }
 
     getControlsTime(type) {
@@ -470,7 +526,7 @@ class SimpleCron extends React.Component {
         const settings = this.state.intervalBetween;
         return [
             this.getControlsPeriodElements('intervalBetween'),
-            (<div key="between" style={{paddingLeft: 8}}>
+            (<div key="between" style={{paddingLeft: 8, display: 'inline-block', verticalAlign: 'top'}}>
                 <h5 style={{marginBottom: 5}}>{I18n.t('sc_hours')}</h5>
                 <FormControl className={this.props.classes.formControl}>
                     <InputLabel shrink htmlFor="age-label-placeholder">{I18n.t('sc_from')}</InputLabel>

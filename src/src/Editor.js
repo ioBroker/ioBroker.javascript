@@ -115,6 +115,40 @@ class Editor extends React.Component {
             isDark: window.localStorage ? (window.localStorage.getItem('Editor.dark') === 'true') : false,
             visible: props.visible
         };
+        /* ----------------------- */
+        // required by selectIdDialog in Blockly
+        this.selectId = {
+            initValue: null,
+            callback: null
+        };
+        this.cron = {
+            initValue: null,
+            callback: null
+        };
+
+        const instances = [];
+        for (let id in this.props.objects) {
+            if (this.props.objects.hasOwnProperty(id) && id.startsWith('system.adapter.') && this.props.objects[id] && this.props.objects[id].type === 'instance') {
+                instances.push(id);
+            }
+        }
+
+        window.systemLang = I18n.getLanguage();
+        window.main = {
+            objects: this.props.objects,
+            instances: [],
+            selectIdDialog: (initValue, cb) => {
+                this.selectId.callback = cb;
+                this.selectId.initValue = initValue;
+                this.setState({showSelectId: true});
+            },
+            cronDialog: (initValue, cb) => {
+                this.cron.callback = cb;
+                this.cron.initValue = initValue;
+                this.setState({showCron: true});
+            }
+        };
+        /* ----------------------- */
 
         this.scripts = {};
 
@@ -418,10 +452,18 @@ class Editor extends React.Component {
             return (<DialogSelectID
                 key="DialogSelectID"
                 connection={this.props.connection}
-                selected={''}
+                selected={this.selectId.callback ? this.selectId.initValue || '' : this.getSelect ? this.getSelect() : ''}
                 statesOnly={true}
                 onClose={() => this.setState({showSelectId: false})}
-                onOk={(selected, name) => this.setState({insert: `'${selected}'/*${name}*/`})}
+                onOk={(selected, name) => {
+                    this.selectId.initValue = null;
+                    if (this.selectId.callback) {
+                        this.selectId.callback(selected);
+                        this.selectId.callback = null;
+                    } else {
+                        this.setState({insert: `'${selected}'/*${name}*/`})
+                    }
+                }}
             />);
         } else {
             return null;
@@ -432,9 +474,17 @@ class Editor extends React.Component {
         if (this.state.showCron) {
             return (<DialogCron
                 key="DialogCron"
-                cron={this.getSelect ? this.getSelect() : '* * * * *'}
+                cron={this.cron.callback ? this.cron.initValue || '' : this.getSelect ? this.getSelect() : '* * * * *'}
                 onClose={() => this.setState({showCron: false})}
-                onOk={cron => this.setState({insert: `'${cron}'`})}
+                onOk={cron => {
+                    this.cron.initValue = null;
+                    if (this.cron.callback) {
+                        this.cron.callback(cron);
+                        this.cron.callback = null;
+                    } else {
+                        this.setState({insert: `'${cron}'`})
+                    }
+                }}
             />);
         } else {
             return null;

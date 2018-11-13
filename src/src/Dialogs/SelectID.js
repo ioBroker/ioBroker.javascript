@@ -8,7 +8,7 @@ import Dialog from '@material-ui/core/Dialog';
 
 import I18n from '../i18n';
 import SelectID from '../Components/SelectID';
-import {withStyles} from "@material-ui/core/styles/index";
+import {withStyles} from '@material-ui/core/styles/index';
 
 const styles = theme => ({
     headerID: {
@@ -44,8 +44,10 @@ class DialogSelectID extends React.Component {
 
     render() {
         let title;
-        if (this.state.name) {
-            title = [(<span key="selected">{I18n.t('Selected')} </span>), (<span key="id" className={this.props.classes.headerID}>{this.state.name}</span>)];
+        if (this.state.name || this.state.selected) {
+            title = [(<span key="selected">{I18n.t('Selected')} </span>), (<span key="id" className={this.props.classes.headerID}>{
+                (this.state.name || this.state.selected) + (this.state.name ? ' [' + this.state.selected + ']' : '')
+            }</span>)];
         } else {
             title = this.props.title || I18n.t('Please select object ID...');
         }

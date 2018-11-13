@@ -9,6 +9,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
+import secondary from '@material-ui/core/colors/orange';
 
 import {FaFolder as IconClosed} from 'react-icons/fa';
 import {FaFolderOpen as IconOpen} from 'react-icons/fa';
@@ -23,6 +24,9 @@ import IconDefault from './assets/empty.png';
 
 import I18n from '../i18n';
 import Utils from './Utils';
+import Theme from '../Theme';
+
+import CopyContentImg from '../assets/copy-content.svg';
 
 const styles = theme => ({
     toolbar: {
@@ -140,12 +144,18 @@ const styles = theme => ({
     },
     cellCopy: {
         position: 'absolute',
-        top: 5,
+        top: 3,
         right: 10,
         width: 16,
         height: 16,
         background: 'lightblue',
-        cursor: 'grab'
+        cursor: 'grab',
+        borderRadius: 2,
+        padding: 2,
+    },
+    cellCopyPressed: {
+        cursor: 'grabbing',
+        background: secondary.A700,
     }
 });
 
@@ -340,6 +350,36 @@ function buildTree(objects, options) {
     info.roles.sort();
 
     return {info, root};
+}
+
+function findNode(root, id, _parts, _path, _level) {
+    if (root.data.id === id) {
+        return root;
+    }
+    if (!_parts) {
+        _parts = id.split('.');
+        _level = 0;
+        _path = _parts[_level];
+    }
+    if (!root.children && root.data.id !== id) {
+        return null;
+    } else {
+        let found;
+        for (let i = 0; i< root.children.length; i++) {
+            const _id = root.children[i].data.id;
+            if (_id === _path) {
+                found = root.children[i];
+                break;
+            } else
+            if (_id < _path) continue;
+            if (_id > _path) break;
+        }
+        if (found) {
+            return findNode(found, id, _parts, _path + '.' + _parts[_level + 1], _level + 1);
+        } else {
+            return null;
+        }
+    }
 }
 
 function getName(name, lang) {
@@ -656,7 +696,7 @@ class SelectID extends React.Component {
         super(props);
         this.state = {
             loaded: false,
-            selected: this.props.selected,
+            selected: this.props.selected || '',
             filter: {
                 id: '',
                 name: '',
@@ -667,6 +707,8 @@ class SelectID extends React.Component {
             },
             depth: 0
         };
+        this.selectedFound = false;
+        this.copyContentImg = CopyContentImg;
         this.treeTableRef = React.createRef();
         this.mainRef = React.createRef();
         this.root = null;
@@ -719,9 +761,11 @@ class SelectID extends React.Component {
         window.document.execCommand('copy');
         window.document.body.removeChild(el);
         console.log(id);
+        e.stopPropagation();
+        e.preventDefault();
     }
 
-    componentDidUpdate() {
+    installCopyButtons() {
         if (!this.mainRef.current) return;
         const rows = this.mainRef.current.getElementsByClassName('add-copy-button');
         for (let i = 0; i < rows.length; i++) {
@@ -730,8 +774,28 @@ class SelectID extends React.Component {
                     const copy = e.target.getElementsByClassName(this.props.classes.cellCopy);
                     if (!copy || !copy.length) {
                         const div = document.createElement('div');
+                        const img = document.createElement('img');
+                        img.src = this.copyContentImg;
+                        img.width = 16;
+                        img.height = 16;
+                        img.color = secondary.A200;
+                        div.appendChild(img);
                         div.className = this.props.classes.cellCopy;
                         div.addEventListener('click', e => this.onCopy(e, e.target.parentNode.dataset.index), false);
+                        div.addEventListener('mousedown', e => {
+                            if (e.target.parentNode.className.indexOf(this.props.classes.cellCopyPressed) === -1) {
+                                e.target.parentNode.className += ' ' + this.props.classes.cellCopyPressed;
+                            }
+                        }, false);
+                        div.addEventListener('mouseup', e => {
+                            let className = e.target.parentNode.className.split(' ');
+                            let pos = className.indexOf(this.props.classes.cellCopyPressed);
+                            while (pos !== -1) {
+                                className.splice(pos);
+                                pos = className.indexOf(this.props.classes.cellCopyPressed);
+                            }
+                            e.target.parentNode.className = className.join(' ');
+                        }, false);
                         e.target.appendChild(div);
                     }
                 }, false);
@@ -742,6 +806,17 @@ class SelectID extends React.Component {
                     }
                 }, false);
                 rows[i].__installed = true;
+            }
+        }
+    }
+
+    componentDidUpdate() {
+        this.installCopyButtons();
+        if (!this.selectedFound) {
+            if (this.props.selected && this.treeTableRef.current) {
+                const node = findNode(this.root, this.props.selected);
+                this.treeTableRef.current.scrollIntoView(node);
+                this.selectedFound = true;
             }
         }
     }
@@ -854,7 +929,7 @@ class SelectID extends React.Component {
                             {name}
                         </MenuItem>)
                 })}
-            </Select>)
+            </Select>);
     }
     getFilterSelectRole() {
         return this.getFilterSelect('role', this.info.roles);
@@ -936,7 +1011,9 @@ class SelectID extends React.Component {
                     classNamePartlyVisible={classes.partlyVisible}
                     className={classes.treeTable}
                     classNameRow={classes.treeTableRow}
-                    onRowClick={(data, metadata, toggleChildren, isDoubleClick) => isDoubleClick ? this.onDoubleClick(data, metadata, toggleChildren) : this.onSelect(data.id)}
+                    onRowClick={(data, metadata, toggleChildren, isDoubleClick) => isDoubleClick ?
+                        this.onDoubleClick(data, metadata, toggleChildren) :
+                        this.onSelect(data.id)}
                 >
                     <TreeDataTable.Column grow={0} renderCell={this.renderIndexColumn.bind(this)} className={classes.cellDivId} width={idWidth} />
                     <TreeDataTable.Column grow={1} renderCell={this.renderColumnName.bind(this)}  className={classes.cellDiv} width={width}/>

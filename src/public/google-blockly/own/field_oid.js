@@ -43,10 +43,8 @@ goog.require('goog.userAgent');
  * @extends {Blockly.Field}
  * @constructor
  */
-Blockly.FieldOID = function(text, oid_dialog, objects) {
-    Blockly.FieldOID.superClass_.constructor.call(this, text, oid_dialog);
-    this.oid_dialog = oid_dialog;
-    this.objects    = objects;
+Blockly.FieldOID = function(text) {
+    Blockly.FieldOID.superClass_.constructor.call(this, text);
 };
 goog.inherits(Blockly.FieldOID, Blockly.Field);
 
@@ -95,10 +93,7 @@ Blockly.FieldOID.prototype.setValue = function(text) {
  */
 Blockly.FieldOID.prototype.showEditor_ = function(opt_quietInput) {
     this.workspace_ = this.sourceBlock_.workspace;
-    var that = this;
-    this.oid_dialog.selectId('show', that.getValue(), function (newId) {
-        that.setValue(newId);
-    });
+    window.main && window.main.selectIdDialog && window.main.selectIdDialog(this.getValue(), newId => newId !== null && this.setValue(newId));
 };
 
 /**
@@ -152,7 +147,11 @@ Blockly.FieldOID.prototype.updateTextNode_ = function() {
         // Not rendered yet.
         return;
     }
-    var text = this.objects && this.objects[this.text_] && this.objects[this.text_].common && this.objects[this.text_].common.name ? this.objects[this.text_].common.name : this.text_;
+    const objects = window.main.objects;
+    var text = objects && objects[this.text_] && objects[this.text_].common && objects[this.text_].common.name ? objects[this.text_].common.name : this.text_;
+    if (typeof text === 'object') {
+        text = text[systemLang] || text.en;
+    }
     if (text.length > this.maxDisplayLength) {
         // Truncate displayed string and add an ellipsis ('...').
         text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';

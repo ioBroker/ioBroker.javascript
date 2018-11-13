@@ -75,6 +75,9 @@ Blockly.Blocks['sendto_custom'] = {
                     options.push([id, id]);
                 }
             }
+            if (!options.length) {
+                options.push([Blockly.Words['sendto_no_instances'][systemLang], '']);
+            }
             /*for (var h = 0; h < scripts.hosts.length; h++) {
                 options.push([scripts.hosts[h], scripts.hosts[h]]);
             }*/

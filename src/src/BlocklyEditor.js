@@ -23,11 +23,6 @@ class BlocklyEditor extends React.Component {
             changed: false,
         };
         this.originalCode = props.code || '';
-        window.systemLang = I18n.getLanguage();
-        window.main = {
-            objects: {},
-            initSelectId: function () {}
-        };
 
         this.onResizeBind = this.onResize.bind(this);
 
@@ -148,6 +143,7 @@ class BlocklyEditor extends React.Component {
         }
 
         if (this.blocklyWorkspace) return;
+
         window.addEventListener('resize', this.onResizeBind, false);
         toolboxText = toolboxText || this.getToolbox();
         toolboxXml = toolboxXml || window.Blockly.Xml.textToDom(toolboxText);
@@ -188,6 +184,11 @@ class BlocklyEditor extends React.Component {
         // Move toolbar to the valid position
         const toolbar = document.getElementsByClassName('blocklyToolboxDiv')[0];
         this.blockly.appendChild(toolbar);
+
+        // for blockly itself
+        window.scripts = {
+            blocklyWorkspace: this.blocklyWorkspace
+        };
     }
 
     componentWillUnmount() {

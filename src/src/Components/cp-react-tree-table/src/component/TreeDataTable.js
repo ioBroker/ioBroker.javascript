@@ -27,6 +27,7 @@ type Props = {
   classNameRow?: string,
   selected?: string,
   classNameSelected?: string,
+  selected?: string,
   height?: number,
   rowHeight?: number,
   onScroll?: (scrollTop: number) => void,

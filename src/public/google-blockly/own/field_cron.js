@@ -94,7 +94,7 @@ Blockly.FieldCRON.prototype.setValue = function(text) {
 Blockly.FieldCRON.prototype.showEditor_ = function(opt_quietInput) {
     this.workspace_ = this.sourceBlock_.workspace;
     var that = this;
-    scripts.showCronDialog(that.getValue(), function (newId) {
+    main.cronDialog(that.getValue(), function (newId) {
         if (newId !== undefined && newId !== null) that.setValue(newId);
     });
 };

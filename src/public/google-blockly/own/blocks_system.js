@@ -99,7 +99,7 @@ Blockly.Blocks['control'] = {
             .appendField(Blockly.Words['control'][systemLang]);
 
         this.appendDummyInput('OID')
-            .appendField(new Blockly.FieldOID('Object ID', main.initSelectId(), main.objects), 'OID');
+            .appendField(new Blockly.FieldOID('Object ID'), 'OID');
 
         this.appendValueInput('VALUE')
             .setCheck(null)
@@ -210,7 +210,7 @@ Blockly.Blocks['toggle'] = {
             .appendField(Blockly.Words['toggle'][systemLang]);
 
         this.appendDummyInput('OID')
-            .appendField(new Blockly.FieldOID('Object ID', main.initSelectId(), main.objects), 'OID');
+            .appendField(new Blockly.FieldOID('Object ID'), 'OID');
 
         this.appendDummyInput('WITH_DELAY')
             .appendField(Blockly.Words['toggle_delay'][systemLang])
@@ -338,7 +338,7 @@ Blockly.Blocks['update'] = {
             .appendField(Blockly.Words['update'][systemLang]);
 
         this.appendDummyInput('OID')
-            .appendField(new Blockly.FieldOID("Object ID", main.initSelectId(), main.objects), 'OID');
+            .appendField(new Blockly.FieldOID('Object ID'), 'OID');
 
 
         this.appendValueInput('VALUE')
@@ -608,7 +608,7 @@ Blockly.Blocks['get_value'] = {
             .appendField(Blockly.Words['get_value_OID'][systemLang]);
 
         this.appendDummyInput()
-            .appendField(new Blockly.FieldOID(Blockly.Words['get_value_default'][systemLang], main.initSelectId(), main.objects), 'OID');
+            .appendField(new Blockly.FieldOID(Blockly.Words['get_value_default'][systemLang]), 'OID');
 
         this.setInputsInline(true);
         this.setOutput(true);
@@ -653,7 +653,7 @@ Blockly.Blocks['get_value_async'] = {
             .appendField(Blockly.Words['get_value_OID'][systemLang]);
 
         this.appendDummyInput()
-            .appendField(new Blockly.FieldOID(Blockly.Words['get_value_default'][systemLang], main.initSelectId(), main.objects), 'OID');
+            .appendField(new Blockly.FieldOID(Blockly.Words['get_value_default'][systemLang]), 'OID');
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -690,7 +690,7 @@ Blockly.Blocks['field_oid'] = {
             .appendField(Blockly.Words['field_oid_OID'][systemLang]);
 
         this.appendDummyInput()
-            .appendField(new Blockly.FieldOID('default', main.initSelectId(), main.objects), 'oid');
+            .appendField(new Blockly.FieldOID('default'), 'oid');
 
         this.setInputsInline(true);
         this.setColour(Blockly.System.HUE);

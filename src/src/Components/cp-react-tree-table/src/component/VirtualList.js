@@ -131,7 +131,7 @@ export default class VirtualList extends Component<Props, State> {
 
   scrollTop(posY: number = 0) {
     if (this.container) {
-      this.container.scrollTop = posY;
+      this.container.parentNode.scrollTop = posY;
     }
   }
 

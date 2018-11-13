@@ -287,7 +287,7 @@ Blockly.Blocks['on'] = {
             .appendField(Blockly.Words['on'][systemLang]);
 
         this.appendDummyInput('OID')
-            .appendField(new Blockly.FieldOID('Object ID', main.initSelectId(), main.objects), 'OID');
+            .appendField(new Blockly.FieldOID('Object ID'), 'OID');
 
         this.appendDummyInput('CONDITION')
             .appendField(new Blockly.FieldDropdown([
