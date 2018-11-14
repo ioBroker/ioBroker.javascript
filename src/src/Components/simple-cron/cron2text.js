@@ -115,7 +115,7 @@ function cronToText(cronspec, withSeconds, locale) {
         // if there are any existing day of week constraints that
         // aren't equal to the one we're adding, create a new
         // composite schedule
-        if (curSched.d && !curSched.dc || curSched.dc && curSched.dc.indexOf(hash) < 0) {
+        if ((curSched.d && !curSched.dc) || (curSched.dc && curSched.dc.indexOf(hash) < 0)) {
             schedules.push(cloneSchedule(curSched));
             curSched = schedules[schedules.length - 1];
         }

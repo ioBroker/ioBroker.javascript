@@ -9,6 +9,7 @@ import Editor from './Editor';
 import Theme from './Theme';
 import Connection from './Connection';
 import {PROGRESS} from './Connection';
+import Loader from './Components/Loader'
 import I18n from './i18n';
 
 const styles = theme => ({
@@ -236,7 +237,8 @@ class App extends Component {
         const {classes} = this.props;
 
         if (!this.state.ready) {
-            return (<CircularProgress className={classes.progress} size={50} />);
+            //return (<CircularProgress className={classes.progress} size={50} />);
+            return (<Loader />);
         }
 
 
