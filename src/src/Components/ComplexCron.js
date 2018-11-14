@@ -2,10 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
-import Slider from '@material-ui/lab/Slider';
 import Button from '@material-ui/core/Button';
 
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
