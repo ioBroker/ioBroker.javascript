@@ -6,11 +6,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
 
 import CronBuilder from '../Components/react-cron-builder/src/index';
+import ComplexCron from '../Components/ComplexCron';
 import '../Components/react-cron-builder/dist/bundle.css'
 import SimpleCron from '../Components/simple-cron/SimpleCron';
 
@@ -79,11 +78,15 @@ class DialogCron extends React.Component {
                             onChange={cron => this.setState({cron})}
                             language={I18n.getLanguage()}
                         />) :
-                        (<CronBuilder
+                        /*(<CronBuilder
                         cronExpression={this.state.cron}
                         onChange={cron => this.setState({cron})}
                         showResult={true}
-                    />)
+                    />)*/(<ComplexCron
+                            cronExpression={this.state.cron}
+                            onChange={cron => this.setState({cron})}
+                            language={I18n.getLanguage()}
+                        />)
                     }
                 </DialogContent>
                 <DialogActions>

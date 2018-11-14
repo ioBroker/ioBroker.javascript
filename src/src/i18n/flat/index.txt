@@ -1,51 +1,75 @@
 -
-Delete %s
-ID
-Rename
-Restart
-Log outputs
-Click on this icon
-for edit or create script
-Discard changes for %s
 Are you sure?
 Cancel
+Click on this icon
+Define cron...
+Delete %s
+Discard changes for %s
+Friday
+ID
+Log outputs
+Monday
 Ok
-Save
+On weekdays
 Please select object ID...
-tooltip_value
-tooltip_ack
-tooltip_ts
-tooltip_lc
-tooltip_from
-tooltip_user
-tooltip_quality
+Rename
+Repeat
+Restart
+Saturday
+Save
+Sunday
+Thursday
+Tuesday
+Wednesday
+filter_func
 filter_id
 filter_name
 filter_role
 filter_room
-filter_func
-Define cron...
-Repeat
-sc_simple
+for edit or create script
 sc_cron
-sc_once
+sc_date
+sc_every
+sc_from
+sc_hours
 sc_interval
 sc_intervalBetween
-sc_specific
-sc_period
-sc_every
-sc_seconds
 sc_minutes
-sc_hours
-sc_from
-sc_to
+sc_once
+sc_period
+sc_seconds
+sc_simple
+sc_specific
 sc_time
-sc_date
-On weekdays
-Saturday
-Monday
-Tuesday
-Wednesday
-Thursday
-Friday
-Sunday
+sc_to
+Deselect all
+Select all
+sc_dates
+sc_dows
+sc_everyN_seconds
+sc_everyN_dates
+sc_everyN_dows
+sc_everyN_hours
+sc_everyN_minutes
+sc_everyN_months
+sc_every_seconds
+sc_every_dates
+sc_every_dows
+sc_every_hours
+sc_every_minutes
+sc_every_months
+sc_months
+sc_specific_dates
+sc_specific_dows
+sc_specific_hours
+sc_specific_minutes
+sc_specific_months
+sc_specific_seconds
+use seconds
+tooltip_ack
+tooltip_from
+tooltip_lc
+tooltip_quality
+tooltip_ts
+tooltip_user
+tooltip_value

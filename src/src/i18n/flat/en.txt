@@ -1,51 +1,75 @@
 -
-Delete %s...
-ID
-Rename
-Restart
-Log outputs
-Click on this icon
-for edit or create script
-Discard changes for %s
 Are you sure?
 Cancel
+Click on this icon
+Define cron...
+Delete %s...
+Discard changes for %s
+Friday
+ID
+Log outputs
+Monday
 Ok
-Save
+On weekdays
 Please select object ID...
-Value
-Acknowledge
-Timestamp
-Last changed
-From
-User
-Quality
+Rename
+Repeat
+Restart
+Saturday
+Save
+Sunday
+Thursday
+Tuesday
+Wednesday
+Function
 ID
 Name
 Role
 Room
-Function
-Define cron...
-Repeat
-simple
-cron
-once
-Interval
-Interval Between
-Specific time
-Period
+for edit or create script
+CRON
+Date
 Every
-seconds
-minutes
-hours
-from
-to
-time
-date
-On weekdays
-Saturday
-Monday
-Tuesday
-Wednesday
-Thursday
-Friday
-Sunday
+From
+Hours
+Interval
+Interval between
+Minutes
+Once
+Period
+Seconds
+Simple
+Specific time
+Time
+To
+Deselect all
+Select all
+Dates
+Day of week
+every N seconds
+every N days
+every N day of week
+every N hours
+every N minutes
+every N months
+every second
+every day
+every day of the week
+every hour
+every minute
+every month
+months
+specific dates
+specific day of weeks
+specific hours
+specific minutes
+specific months
+specific seconds
+use seconds
+Acknowledge
+From
+Last changed
+Quality
+Timestamp
+User
+Value

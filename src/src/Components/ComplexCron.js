@@ -7,38 +7,43 @@ import Button from '@material-ui/core/Button';
 
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import convertCronToText from './cronText';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import I18n from '../../i18n';
+import I18n from '../i18n';
+import TextField from "@material-ui/core/TextField";
+import convertCronToText from './simple-cron/cronText';
 
 const styles = theme => ({
     mainDiv: {
         width: '100%',
         height: '100%'
     },
-    formControl: {
-        margin: 0,
-        minWidth: 120,
+    periodSelect: {
+        //margin: '0 10px 60px 10px',
+        display: 'block',
+        width: 200
     },
+    slider: {
+        marginTop: 20,
+        display: 'block',
+        width: '100%'
+    },
+    tabContent: {
+        padding: 20
+    },
+    numberButton: {
+        padding: 4,
+        minWidth: 40,
+        margin: 5
+    },
+    numberButtonBreak: {
+        display: 'block'
+    }
 });
 
-const PERIODIC = {
-    once: 'once',
-    interval: 'interval',
-    intervalBetween: 'intervalBetween',
-    specific: 'specific'
-};
-const PERIODIC_TYPES = {
-    seconds: 'seconds',
-    minutes: 'minutes',
-    //hours: 'hours',
-};
 const WEEKDAYS = [
     'Sunday',
     'Monday',
@@ -49,59 +54,162 @@ const WEEKDAYS = [
     'Saturday',
     'Sunday',
 ];
+const MONTHS = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+];
 
-function padding(num) {
-    if (num < 10) return '0' + num;
-    return '' + num;
-}
-function periodArray2text(list, max) {
-    max = max || 7;
-    if (list.length === max) {
-        return '*'
-    } else {
-        let text = [];
-        let start = null;
-        let end = null;
-        for (let i = 0; i < list.length; i++) {
-            if (start === null) {
-                start = list[i];
-                end = list[i];
-            } else if (list[i - 1] + 1 === list[i]) {
-                end = list[i];
-            } else {
-                if (start !== end) {
-                    text.push(start + '-' + end);
-                } else {
-                    text.push(start);
-                }
-                start = list[i];
-                end = list[i];
-            }
+// 5-7,9-11 => [5,6,7,9,10,11]
+function convertMinusIntoArray(value, max) {
+    let result = [];
+    if (value === '*') {
+        for (let i = 1; i <= max; i++) {
+            result.push(i);
         }
-        if (start !== end) {
-            text.push(start + '-' + end);
-        } else {
-            text.push(start);
-        }
-        return text.join(',');
+        return result; // array with entries max
     }
+    const parts = (value || '').toString().split(',');
+    for (let p = 0; p < parts.length; p++) {
+        if (! parts[p].trim().length) continue;
+        const items = parts[p].trim().split('-');
+        if (items.length > 1) {
+            let iMax = parseInt(items[1], 10);
+            for (let i = parseInt(items[0], 10); i <= iMax; i++) {
+                result.push(i);
+            }
+        } else {
+            result.push(parseInt(parts[p], 10));
+        }
+    }
+    result = result.map(a => parseInt(a, 10));
+
+    result.sort();
+
+
+    // remove double entries
+    for (let p = result.length - 1; p >= 0; p--) {
+        if (result[p] === result[p + 1]) {
+            result.splice(p + 1, 1);
+        }
+    }
+
+
+    return result;
+}
+
+// [5,6,7,9,10,11] => 5-7,9-11
+function convertArrayIntoMinus(value, max) {
+    if (typeof value !== 'object') {
+        value = [value];
+    }
+    if (value.length === max) {
+        return '*';
+    }
+    const newParts = [];
+    if (!value.length) {
+        return '';
+    }
+    value = value.map(a => parseInt(a, 10));
+
+    value.sort((a, b) => a -b);
+
+    let start = value[0];
+    let end = value[0];
+    for (let p = 1; p < value.length; p++) {
+        if (value[p] - 1 !== parseInt(value[p - 1], 10)) {
+            if (start === end) {
+                newParts.push(start)
+            } else if (end - 1 === start) {
+                newParts.push(start + ',' + end);
+            } else {
+                newParts.push(start + '-' + end);
+            }
+            start = value[p];
+            end = value[p];
+        } else {
+            end = value[p];
+        }
+    }
+
+    if (start === end) {
+        newParts.push(start)
+    } else if (end - 1 === start) {
+        newParts.push(start + ',' + end);
+    } else {
+        newParts.push(start + '-' + end);
+    }
+
+    return newParts.join(',');
 }
 
 class ComplexCron extends React.Component {
     constructor(props) {
         super(props);
-        const state = ComplexCron.cron2state(this.props.cronExpression || '* * * * *') || DEFAULT_STATE;
+        const state = ComplexCron.cron2state(this.props.cronExpression || '* * * * *');
 
         this.state = {
             extended: false,
+            tab: state.seconds !== false ? 1 : 0,
             cron: ComplexCron.state2cron(state),
-            seconds: false,
+            modes: {
+                seconds: null,
+                minutes: null,
+                hours: null,
+                dates: null,
+                months: null,
+                dows: null
+            }
         };
         Object.assign(this.state, state);
     }
-    recalcCron() {
 
+    static cron2state(cron) {
+        cron = cron.replace(/['"]/g, '').trim();
+        const cronParts = cron.split(' ').map(p => p.trim());
+        const options = {};
+
+        if (cronParts.length === 6) {
+            options.seconds = cronParts[0] || '*';
+            options.minutes = cronParts[1] || '*';
+            options.hours = cronParts[2] || '*';
+            options.dates = cronParts[3] || '*';
+            options.months = cronParts[4] || '*';
+            options.dows = cronParts[5] || '*';
+        } else {
+            options.seconds = false;
+            options.minutes = cronParts[0] || '*';
+            options.hours = cronParts[1] || '*';
+            options.dates = cronParts[2] || '*';
+            options.months = cronParts[3] || '*';
+            options.dows = cronParts[4] || '*';
+        }
+        return options;
     }
+    static state2cron(state) {
+        let text = `${state.minutes} ${state.hours} ${state.dates} ${state.months} ${state.dows}`;
+        if (state.seconds !== false) {
+            text = state.seconds + ' ' + text;
+        }
+        return text;
+    }
+
+    recalcCron() {
+        let cron = ComplexCron.state2cron(this.state);
+        if (cron !== this.state.cron) {
+            this.setState({cron});
+        }
+    }
+
     onChange(cron) {
         if (cron !== this.state.cron) {
             this.setState({cron});
@@ -109,73 +217,153 @@ class ComplexCron extends React.Component {
         }
     }
 
+    onToggle(i, type, max) {
+        if (i === true) {
+            this.setState({[type]: '*'}, () => this.recalcCron());
+        } else if (i === false) {
+            this.setState({[type]: ''}, () => this.recalcCron());
+        } else {
+            let nums = convertMinusIntoArray(this.state[type], max);
+            const pos = nums.indexOf(i);
+            if (pos !== -1) {
+                nums.splice(pos, 1);
+            } else {
+                nums.push(i);
+                nums.sort();
+            }
+            this.setState({[type]: convertArrayIntoMinus(nums, max)}, () => this.recalcCron());
+        }
+    }
 
     getDigitsSelector(type, max) {
-        const values = [];
-        for (let i = 1; i <= max; i++) {
-            values.push(i);
+        let values = [];
+        if (max === 7) {
+            values = [1,2,3,4,5,6,0];
+        } else {
+            for (let i = 1; i <= max; i++) {
+                values.push(i);
+            }
         }
-        return (
-{!every && !everyN && values.map(i => {
-<Button variant="outlined" className={classes.button} variant="contained" color="secondary">{i}</Button>
-})
+        const parts = convertMinusIntoArray(this.state[type], max);
+        return [
+            (<Button
+                key="removeall"
+                variant={'outlined'}
+                className={this.props.classes.numberButton}
+                style={{paddingBottom: 20}}
+                color={'primary'}
+                onClick={() => this.onToggle(false, type, max)}>{I18n.t('Deselect all')}</Button>),
+            (<Button
+                key="addall"
+                variant={'contained'}
+                style={{paddingBottom: 20}}
+                className={this.props.classes.numberButton}
+                color={'secondary'}
+                onClick={() => this.onToggle(true, type, max)}>{I18n.t('Select all')}</Button>),
+            (<div key="all">
+                {values.map(i =>
+                    [((max === 7 && i === 4) ||
+                    (max === 12 && i === 7) ||
+                    (max === 31 && !((i - 1) % 10)) ||
+                    (max === 60 && !((i - 1) % 10)) ||
+                    (max === 24 && !((i - 1) % 6))) &&
+                    (<div key={'allInner' + i} style={{width: '100%'}}/>),
+                        (<Button
+                            key={'_' + i}
+                            variant={parts.indexOf(i) !== -1 ? 'contained' : 'outlined'}
+                            className={this.props.classes.numberButton}
+                            color={parts.indexOf(i) !== -1 ? 'secondary' : 'primary'}
+                            onClick={() => this.onToggle(i, type, max)}>{max === 7 ? I18n.t(WEEKDAYS[i]) : (max === 12 ? MONTHS[i - 1] : i)}</Button>
+                    )])}
+                    </div>)];
     }
-    getPeriodsTab(type, max) {
-        const value = this.state[type];
-        const every = value === '*';
-        const everyN = value.indexOf('/') !== -1 ;
-        const select = every ? 'every' : (everyN ? 'everyN' : 'specific');
 
+    getPeriodsTab(type, max) {
+        let value = this.state[type];
+        let every = value === '*';
+        let everyN = value.toString().indexOf('/') !== -1;
+        let select;
+        if (this.state.modes[type] === null) {
+            this.state.modes[type] = every ? 'every' : (everyN ? 'everyN' : select);
+            select = every ? 'every' : (everyN ? 'everyN' : 'specific');
+        } else {
+            every = this.state.modes[type] === 'every';
+            everyN = this.state.modes[type] === 'everyN';
+            select = this.state.modes[type];
+        }
+
+        if (everyN) {
+            value = parseInt(value.replace('*/', ''), 10) || 1;
+        }
 
         return (<div>
             <Select
+                className={this.props.classes.periodSelect}
                 style={{verticalAlign: 'bottom'}}
                 value={select}
                 onChange={e => {
+                    const modes = JSON.parse(JSON.stringify(this.state.modes));
+                    modes[type] = e.target.value;
                     if (e.target.value === 'every') {
-                        this.setState({[type]: '*'}, () => this.recalcCron());
+                        this.setState({[type]: '*', modes}, () => this.recalcCron());
                     } else if (e.target.value === 'everyN') {
-                        const num = parseInt(this.state[type].replace('*/', ''), 10) || 1;
-                        this.setState({[type]: '*/' + num}, () => this.recalcCron());
+                        const num = parseInt(this.state[type].toString().replace('*/', ''), 10) || 1;
+                        this.setState({[type]: '*/' + num, modes}, () => this.recalcCron());
                     } else if (e.target.value === 'specific') {
-                        const num = parseInt(this.state[type] || '1').split(',');
-                        this.setState({[type]: periodArray2text(num, max)}, () => this.recalcCron());
+                        const num = parseInt(this.state[type].split(',')[0]) || 1;
+                        this.setState({[type]: convertArrayIntoMinus(num, max), modes}, () => this.recalcCron());
                     }
                 }}>
-                    <MenuItem key='every' value='every'>{I18n.t('sc_every_' + name)}</MenuItem>
-                    <MenuItem key='everyN' value='everyN'>{I18n.t('sc_everyN_' + name)}</MenuItem>
-                    <MenuItem key='specific' value='specific'>{I18n.t('sc_specific_' + name)}</MenuItem>
+                <MenuItem key='every' value='every'>{I18n.t('sc_every_' + type)}</MenuItem>
+                <MenuItem key='everyN' value='everyN'>{I18n.t('sc_everyN_' + type)}</MenuItem>
+                <MenuItem key='specific' value='specific'>{I18n.t('sc_specific_' + type)}</MenuItem>
             </Select>
-            {everyN && this.getDigitsSelector(type, max)}
+            {everyN && false && (<span>{value}</span>)}
+            {everyN && (<TextField
+                key="interval"
+                label={I18n.t('sc_' + type)}
+                value={value}
+                min={1}
+                max={max}
+                onChange={e => {
+                    this.setState({[type]: '*/' + e.target.value}, () => this.recalcCron());
+                }}
+                InputLabelProps={{shrink: true,}}
+                type="number"
+                margin="normal"
+            />)}
+            {!every && !everyN && this.getDigitsSelector(type, max)}
         </div>);
     }
-    getSecondsTab(type) {
-        return this.getPeriodsTab('seconds', 60);
-    }
-    getMinutesTab(type) {
-        return this.getPeriodsTab('minutes', 60);
-    }
-    getHoursTab(type) {
-        return this.getPeriodsTab('hours', 24);
-    }
+
     render() {
+        const tab = this.state.seconds !== false ? this.state.tab : this.state.tab + 1;
         return (
             <div className={this.props.classes.mainDiv}>
+                <div style={{paddingLeft: 8, width: '100%'}}><TextField style={{width: '100%'}} value={this.state.cron} disabled={true}/></div>
+                <div style={{paddingLeft: 8, width: '100%', height: 60}}>{convertCronToText(this.state.cron, this.props.language || 'en')}</div>
                 <FormControlLabel
-                    control={<Checkbox checked={this.state.seconds} onChange={e => this.setState({seconds: e.target.checked})}/>}
+                    control={<Checkbox checked={this.state.seconds}
+                                       onChange={e => this.setState({seconds: e.target.checked ? '*' : false})}/>}
                     label={I18n.t('use seconds')}
                 />
                 <AppBar position="static">
-                    <Tabs value={this.state.tab} onChange={active => this.setState({tab: active})}>
-                        <Tab label={I18n.t('sc_seconds')} />
-                        <Tab label={I18n.t('sc_minutes')} />
-                        <Tab label={I18n.t('sc_hours')} />
+                    <Tabs value={this.state.tab} onChange={(active, tab) =>
+                        this.setState({tab: tab})}>
+                        {this.state.seconds !== false && <Tab id="sc_seconds" label={I18n.t('sc_seconds')}/>}
+                        <Tab  id="minutes" label={I18n.t('sc_minutes')}/>
+                        <Tab  id="hours" label={I18n.t('sc_hours')}/>
+                        <Tab  id="dates" label={I18n.t('sc_dates')}/>
+                        <Tab  id="months" label={I18n.t('sc_months')}/>
+                        <Tab  id="dows" label={I18n.t('sc_dows')}/>
                     </Tabs>
                 </AppBar>
-                {this.state.tab === 'seconds' && (<TabContainer>{this.getSecondsTab()}</TabContainer>)}
-                {this.state.tab === 'minutes' && (<TabContainer>{this.getMinutesTab()}</TabContainer>)}
-                {this.state.tab === 'hours'   && (<TabContainer>{this.getHoursTab()}</TabContainer>)}
-            </div>
+                {tab === 0 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('seconds', 60)}</div>)}
+                {tab === 1 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('minutes', 60)}</div>)}
+                {tab === 2 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('hours', 24)}</div>)}
+                {tab === 3 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('dates', 31)}</div>)}
+                {tab === 4 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('months', 12)}</div>)}
+                {tab === 5 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('dows', 7)}</div>)}
             </div>
         );
     }

@@ -1,51 +1,75 @@
 -
-Löschen %s...
-ID
-Umbenennen
-Neustart
-Protokoll
-Klicken Sie auf dieses Symbol
-zum Bearbeiten oder Erstellen eines Skripts
-verwerfen Sie die Änderungen für %s
 Sind Sie sicher?
 Abbrechen
+Klicken Sie auf dieses Symbol
+Cron definieren ...
+Löschen %s...
+verwerfen Sie die Änderungen für %s
+Freitag
+ID
+Protokoll
+Montag
 Ok
-Speichern
+An Wochentagen
 Bitte Objekt-ID auswählen ...
-Wert
-Bestätigt
-Zeitstempel
-Zuletzt geändert
-Von
-Benutzer
-Qualität
+Umbenennen
+Wiederholen
+Neustart
+Samstag
+Speichern
+Sonntag
+Donnerstag
+Dienstag
+Mittwoch
+Funktion
 ID
 Name
 Rolle
 Zimmer
-Funktion
-Cron definieren ...
-Wiederholen
-einfach
-Cron
-Einmal
+zum Bearbeiten oder Erstellen eines Skripts
+CRON
+Datum
+Jeden
+Von
+Stunden
 Intervall
 Intervall zwischen
-Bestimmte Zeit
-Zeitraum
-Jeden
-Sekunden
 Protokoll
-Std
-von
-bis
+Einmal
+Zeitraum
+Sekunden
+Einfach
+Bestimmte Zeit
 Zeit
-Datum
-An Wochentagen
-Samstag
-Montag
-Dienstag
-Mittwoch
-Donnerstag
-Freitag
-Sonntag
+Bis
+Alle abwählen
+Wählen Sie Alle
+Termine
+Wochentag
+alle N Sekunden
+alle N Tag
+alle N Wochentag
+alle N Stunden
+alle N Minuten
+alle N Monate
+jede Sekunde
+jeden Tag
+jeden tag der woche
+jede Stunde
+jede Minute
+jeden Monat
+Monate
+bestimmte Termine
+bestimmten Wochentag
+bestimmte Stunden
+bestimmte Minuten
+bestimmte Monate
+bestimmte Sekunden
+Sekunden verwenden
+Bestätigt
+Von
+Zuletzt geändert
+Qualität
+Zeitstempel
+Benutzer
+Wert
