@@ -74,11 +74,31 @@
     }
 }
 @keyframes logo-spin { 100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
-.logo-wait {
-    animation: logo-spin 1.5s linear infinite;
+@keyframes logo-color-inside {
+    0% {
+        background: #FEFEFE;
+    }
+    100% {
+        background: #3399CC;
+    }
 }
-.logo-circle {
-    display:inline-block;
+@keyframes logo-color-outside {
+    0% {
+        border-color: #FEFEFE;
+    }
+    100% {
+        border-top-color: #3399CC;
+        border-left-color: #164477;
+        border-bottom-color: #164477;
+        border-right-color: #164477;
+    }
+}
+
+.logo-animate-wait {
+    animation: logo-color-outside 1.5s, logo-spin 1.5s linear infinite;
+}
+.logo-animate-grow {
+    display: inline-block;
     text-align: center;
     z-index: 1;
     top: 50%;
@@ -92,4 +112,10 @@
     border-radius: 50%;
     position: absolute;
     animation: logo-grow 1s 1 ease forwards;
+}
+.logo-animate-color-inside {
+    animation: logo-color-inside 2.5s;
+}
+.logo-animate-color-outside {
+    animation: logo-color-outside 1.5s;
 }

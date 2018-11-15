@@ -18,12 +18,12 @@ class Loader extends React.Component {
                 <div className="logo-div" style={{width: 234, height: 234}}>
                     <div className="logo-top logo-background" style={{left: '37%'}}/>
                     <div className="logo-top logo-background" style={{left: '57%'}}/>
-                    <div className="logo-border logo-background logo-wait" style={{borderWidth: 31}}/>
-                    <div className="logo-i"/>
-                    <div className="logo-i-top" style={{top: '17.5%'}}/>
-                    <div className="logo-i-top" style={{bottom: '17.5%'}}/>
+                    <div className="logo-border logo-background logo-animate-wait" style={{borderWidth: 31}}/>
+                    <div className="logo-i logo-animate-color-inside"/>
+                    <div className="logo-i-top logo-animate-color-inside" style={{top: '17.5%'}}/>
+                    <div className="logo-i-top logo-animate-color-inside" style={{bottom: '17.5%'}}/>
                 </div>
-                <div className="logo-circle"/>
+                <div className="logo-animate-grow"/>
             </div>
         );
     }

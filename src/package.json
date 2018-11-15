@@ -4,10 +4,13 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^3.3.1",
+    "classnames": "^2.2.5",
+    "cronstrue": "^0.10.3",
     "eslint": "5.6.0",
     "monaco-editor": "^0.14.3",
     "react": "^16.5.2",
     "react-beautiful-dnd": "^9.0.2",
+    "react-bem-helper": "^1.4.1",
     "react-cron-builder": "^1.0.3",
     "react-dom": "^16.5.2",
     "react-dropzone": "^6.2.4",
@@ -16,12 +19,10 @@
     "react-icons": "^3.2.2",
     "react-monaco-editor": "^0.20.0",
     "react-scripts": "2.0.5",
+    "react-select": "^1.0.0-rc.2",
     "react-splitter-layout": "^3.0.1",
-    "react-treeview-mui": "^0.1.2",
-    "classnames": "^2.2.5",
-    "cronstrue": "^0.10.3",
-    "react-bem-helper": "^1.4.1",
-    "react-select": "^1.0.0-rc.2"
+    "react-text-mask": "^5.4.3",
+    "react-treeview-mui": "^0.1.2"
   },
   "scripts": {
     "start": "react-scripts start",

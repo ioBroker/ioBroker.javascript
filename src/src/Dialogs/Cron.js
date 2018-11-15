@@ -8,10 +8,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
 import Radio from '@material-ui/core/Radio';
 
-import CronBuilder from '../Components/react-cron-builder/src/index';
 import ComplexCron from '../Components/ComplexCron';
-import '../Components/react-cron-builder/dist/bundle.css'
 import SimpleCron from '../Components/simple-cron/SimpleCron';
+import Schedule from '../Components/Schedule';
 
 import I18n from '../i18n';
 
@@ -32,7 +31,11 @@ class DialogCron extends React.Component {
         super(props);
         this.state =  {
             cron: (this.props.cron || '* * * * *').replace(/['"]/g, '').trim(),
-            simple: this.props.simple || !!SimpleCron.cron2state(this.props.cron || '* * * * *')
+            mode: this.props.simple ?
+                'simple' :
+                (typeof this.props.cron === 'object' || this.props.cron[0] === '{' ?
+                    'advanced' :
+                    (SimpleCron.cron2state(this.props.cron || '* * * * *') ? 'simple' : 'complex'))
         };
     }
 
@@ -60,38 +63,46 @@ class DialogCron extends React.Component {
 
                     {!this.props.simple && (<div>
                         <Radio
+                            key="advanced"
+                            checked={this.state.mode === 'advanced'}
+                            onChange={e => this.setState({mode: 'advanced'})}
+                        /><label onClick={e => this.setState({mode: 'advanced'})}
+                                 style={this.state.mode !== 'advanced' ? {color: 'lightgrey'} : {}}>{I18n.t('sc_advanced')}</label>
+
+                        <Radio
                             key="simple"
-                            checked={this.state.simple}
-                            onChange={e => this.setState({simple: true})}
-                            value={this.state.simple}
-                        /><label onClick={e => this.setState({simple: true})}
-                                 style={!this.state.simple ? {color: 'lightgrey'} : {}}>{I18n.t('sc_simple')}</label>
+                            checked={this.state.mode === 'simple'}
+                            onChange={e => this.setState({mode: 'simple'})}
+                        /><label onClick={e => this.setState({mode: 'simple'})}
+                                 style={this.state.mode !== 'simple' ? {color: 'lightgrey'} : {}}>{I18n.t('sc_simple')}</label>
                         <Radio
                             key="complex"
-                            checked={!this.state.simple}
-                            onChange={e => this.setState({simple: false})}
-                            value={!this.state.simple}
-                        /><label onClick={e => this.setState({simple: false})} style={this.state.simple ? {color: 'lightgrey'} : {}}>{I18n.t('sc_cron')}</label></div>)}
-                    {this.state.simple ?
-                        (<SimpleCron
-                            cronExpression={this.state.cron}
-                            onChange={cron => this.setState({cron})}
-                            language={I18n.getLanguage()}
-                        />) :
-                        /*(<CronBuilder
+                            checked={this.state.mode === 'complex'}
+                            onChange={e => this.setState({mode: 'complex'})}
+                        /><label onClick={e => this.setState({mode: 'complex'})} style={this.state.mode !== 'complex' ? {color: 'lightgrey'} : {}}>{I18n.t('sc_cron')}</label></div>)}
+
+                    {this.state.mode === 'simple' &&
+                    (<SimpleCron
                         cronExpression={this.state.cron}
                         onChange={cron => this.setState({cron})}
-                        showResult={true}
-                    />)*/(<ComplexCron
-                            cronExpression={this.state.cron}
+                        language={I18n.getLanguage()}
+                    />)}
+                    {this.state.mode === 'advanced' &&
+                        (<Schedule
+                            schedule={this.state.cron}
                             onChange={cron => this.setState({cron})}
                             language={I18n.getLanguage()}
-                        />)
-                    }
+                        />)}
+                    {this.state.mode === 'complex' &&
+                    (<ComplexCron
+                        cronExpression={this.state.cron}
+                        onChange={cron => this.setState({cron})}
+                        language={I18n.getLanguage()}
+                    />)}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => this.handleCancel()} color="primary">{this.props.cancel || I18n.t('Cancel')}</Button>
-                    <Button onClick={() => this.handleOk()} color="primary">{this.props.ok || I18n.t('Ok')}</Button>
+                    <Button onClick={() => this.handleOk()}     color="primary">{this.props.ok || I18n.t('Ok')}</Button>
                 </DialogActions>
             </Dialog>
         );
