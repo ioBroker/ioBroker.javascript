@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import SplitterLayout from 'react-splitter-layout';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 import SideMenu from './SideMenu';
 import Log from './Log';

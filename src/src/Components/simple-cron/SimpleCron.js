@@ -15,7 +15,8 @@ import I18n from '../../i18n';
 const styles = theme => ({
     mainDiv: {
         width: '100%',
-        height: '100%'
+        height: '100%',
+        overflow: 'auto'
     },
     formControl: {
         margin: 0,
@@ -60,7 +61,11 @@ const DEFAULT_STATE = {
 class SimpleCron extends React.Component {
     constructor(props) {
         super(props);
-        const state = SimpleCron.cron2state(this.props.cronExpression || '* * * * *') || DEFAULT_STATE;
+        let cron = (typeof this.props.cronExpression === 'string') ? this.props.cronExpression.replace(/^["']/, '').replace(/["']\n?$/, '') : '';
+        if (cron[0] === '{') {
+            cron = '';
+        }
+        const state = SimpleCron.cron2state(cron || '* * * * *') || DEFAULT_STATE;
 
         this.state = {
             extended: false,
@@ -308,6 +313,8 @@ class SimpleCron extends React.Component {
                     case PERIODIC_TYPES.minutes:
                         cron = `${settings.period > 1 ? '*/' + settings.period : '*'} * * * *`;
                         break;
+                    default:
+                        break;
                 }
             }
         } else if (state.mode === PERIODIC.intervalBetween) {
@@ -329,6 +336,8 @@ class SimpleCron extends React.Component {
                     break;
                 case PERIODIC_TYPES.minutes:
                     cron = `${settings.period > 1 ? '*/' + settings.period : '*'} ${hours} * * ${this.periodArray2text(settings.weekdays)}`;
+                    break;
+                default:
                     break;
             }
         } else if (state.mode === PERIODIC.specific) {

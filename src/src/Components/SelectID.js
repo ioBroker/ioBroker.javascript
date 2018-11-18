@@ -16,7 +16,7 @@ import {FaFolderOpen as IconOpen} from 'react-icons/fa';
 import {FaFileAlt as IconState} from 'react-icons/fa';
 import {FaFile as IconDocument} from 'react-icons/fa';
 import {MdPerson as IconExpert} from 'react-icons/md';
-import {MdContentCopy as IconCopy} from 'react-icons/md';
+//import {MdContentCopy as IconCopy} from 'react-icons/md';
 import IconDefaultState from './assets/state.png';
 import IconDefaultChannel from './assets/channel.png';
 import IconDefaultDevice from './assets/device.png';
@@ -24,7 +24,6 @@ import IconDefault from './assets/empty.png';
 
 import I18n from '../i18n';
 import Utils from './Utils';
-import Theme from '../Theme';
 
 import CopyContentImg from '../assets/copy-content.svg';
 
@@ -175,13 +174,13 @@ function binarySearch(d, t, s, e) {
     if (t < d[m]) return binarySearch(d, t, s, m);
 }
 
-function walkTree(tree, func) {
+/* function walkTree(tree, func) {
     func(tree);
     if (tree.children) {
         tree.children.forEach(item => walkTree(item, func));
     }
 }
-
+*/
 function applyFilter(item, filters, lang, objects, context) {
     let filteredOut = false;
     if (!context) {
@@ -417,7 +416,7 @@ function findRoomsForObject(data, id, lang, withParentInfo, rooms) {
     return rooms;
 }
 
-function findRoomsForObjectAsIds(data, id, rooms) {
+/* function findRoomsForObjectAsIds(data, id, rooms) {
     if (!id) {
         return [];
     }
@@ -431,7 +430,7 @@ function findRoomsForObjectAsIds(data, id, rooms) {
     }
     return rooms;
 }
-
+*/
 function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
     if (!id) {
         return [];
@@ -458,13 +457,13 @@ function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
     return funcs;
 }
 
-function findFunctionsForObjectAsIds(data, id, funcs) {
+/*function findFunctionsForObjectAsIds(data, id, funcs) {
     if (!id) {
         return [];
     }
     funcs = funcs || [];
-    for (var i = 0; i < data.funcEnums.length; i++) {
-        var common = data.objects[data.funcEnums[i]] && data.objects[data.funcEnums[i]].common;
+    for (let i = 0; i < data.funcEnums.length; i++) {
+        const common = data.objects[data.funcEnums[i]] && data.objects[data.funcEnums[i]].common;
         if (common && common.members && common.members.indexOf(id) !== -1 &&
             funcs.indexOf(data.funcEnums[i]) === -1) {
             funcs.push(data.funcEnums[i]);
@@ -473,7 +472,7 @@ function findFunctionsForObjectAsIds(data, id, funcs) {
 
     return funcs;
 }
-
+*/
 function getStates(obj) {
     let states;
     if (obj &&
@@ -825,7 +824,7 @@ class SelectID extends React.Component {
         const selected = this.state.selected === data.id;
         const isExist = !!this.objects[data.id];
         const isState = isExist && this.objects[data.id].type === 'state';
-        const isChannel = isExist && !isState && this.objects[data.id].type === 'channel';
+        // const isChannel = isExist && !isState && this.objects[data.id].type === 'channel';
         // const isDevice = isExist && !isChannel && !isState && this.objects[data.id].type === 'device';
 
         const padding = (metadata.depth * 25) + 'px';
@@ -903,7 +902,7 @@ class SelectID extends React.Component {
     getFilterSelect(name, values) {
         //<!--InputLabel htmlFor="demo-controlled-open-select">Age</InputLabel-->
         return (
-            <Select className={this.props.classes.headerCellInput + ' ' + 'no-underline'}
+            <Select className={this.props.classes.headerCellInput + ' no-underline'}
                 value={this.state.filter[name]}
                 onChange={e => this.onFilter(name, e.target.value)}
                 inputProps={{name, id: name,}}

@@ -1,15 +1,26 @@
 -
+Апрель
 Уверены ли вы?
+Август
 Отмена
 Нажмите на этот значок
+Декабрь
 Задать правило ...
 Удалить %s...
 Убрать выделение
 Отменить изменения для %s
+Февраль
 пятница
 ID
+Январь
+Июль
+Июнь
 Журнал
+Март
+Май
 понедельник
+Ноябрь
+Октябрь
 Ok
 По дням недели
 Пожалуйста, выберите ID объекта ...
@@ -19,6 +30,7 @@ Ok
 суббота
 Сохранить
 Выбрать все
+Сентябрь
 Воскресенье
 Четверг
 вторник
@@ -66,26 +78,61 @@ CRON
 Время
 До
 sc_wizard
-sch_astroDay
-sch_astroNight
-sch_astro_dawn
-sch_astro_dusk
-sch_astro_goldenHour
-sch_astro_goldenHourEnd
-sch_astro_nadir
-sch_astro_nauticalDawn
-sch_astro_nauticalDusk
-sch_astro_night
-sch_astro_nightEnd
-sch_astro_solarNoon
-sch_astro_sunrise
-sch_astro_sunriseEnd
-sch_astro_sunset
-sch_astro_sunsetStart
+все
+днём
+ночью
+Рассвет
+Сумерки
+Золотой час
+Конец золотого часа
+Надир
+Морской рассвет
+Морские сумерки
+Ночь
+Конец ночи
+Солнечный полдень
+Восход
+Восход солнца
+Заход солнца
+Начало заката
+sch_desc_atTime
+sch_desc_everyDay
+sch_desc_everyHour
+sch_desc_everyMinute
+sch_desc_everyMonth
+sch_desc_everyNDay
+sch_desc_everyNHours
+sch_desc_everyNMinutes
+sch_desc_everyNMonths
+sch_desc_everyNWeeks
+sch_desc_everyWeek
+sch_desc_intervalFromTo
+sch_desc_never
+sch_desc_onDate
+sch_desc_onDates
+sch_desc_onEveryDate
+sch_desc_onMonth
+sch_desc_onMonths
+sch_desc_onWeekday
+sch_desc_onWeekdays
+sch_desc_onWeekends
+sch_desc_onWorkdays
+sch_desc_onceInPast
+sch_desc_once_on
+sch_desc_validFrom
+sch_desc_validFromTo
+sch_desc_validTo
+sch_desc_everyYear
+sch_desc_everyNYears
+sch_desc_onDate
 sch_every
 sch_exactTime
 sch_from
+От и до
 sch_intervalTime
+инвертировать
+никакой
+
 sch_period
 sch_periodDaily
 sch_periodDates
@@ -97,6 +144,7 @@ sch_periodEveryWeek
 sch_periodEveryYear
 sch_periodHours
 sch_periodMinutes
+месяц
 sch_periodMonthly
 sch_periodOnce
 sch_periodSpecificMonths
@@ -114,35 +162,7 @@ sch_valid
 sch_validFrom
 sch_validTo
 sch_wholeDay
-sch_desc_atTime
-sch_desc_everyMinute
-sch_desc_everyNMinutes
-sch_desc_everyHour
-sch_desc_everyNHours
-sch_desc_intervalFromTo
-sch_desc_onceInPast
-sch_desc_once
-sch_desc_onEveryDay
-sch_desc_onEveryNDays
-sch_desc_onWeekends
-sch_desc_onWorkdays
-sch_desc_onWeekday
-sch_desc_onWeekdays
-sch_desc_onEveryWeek
-sch_desc_onEveryNWeeks
-sch_desc_onDate
-sch_desc_onDates
-sch_desc_onEveryMonth
-sch_desc_onEveryNMonths
-sch_desc_onMonth
-sch_desc_onMonths
-sch_desc_onEveryYear
-sch_desc_onEveryNYears
-От и до
-все
-никакой
-инвертировать
-месяц
+каждый месяц
 Подтверждено
 От
 Последнее изменение
@@ -151,15 +171,3 @@ sch_desc_onEveryNYears
 Пользователь
 Значение
 использовать секунды
-Январь
-Февраль
-Март
-Апрель
-Май
-Июнь
-Июль
-Август
-Сентябрь
-Октябрь
-Ноябрь
-Декабрь

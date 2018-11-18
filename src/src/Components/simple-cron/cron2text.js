@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Given a cronspec, return the human-readable string.
  * @param {string} cronspec
@@ -367,7 +365,7 @@ function cronToText(cronspec, withSeconds, locale) {
         const lastVal = '' + numbers.pop();
         let outputText = '';
 
-        for (let i = 0, value; value = numbers[i]; i++) {
+        for (let i = 0, value; (value = numbers[i]); i++) {
             if (outputText.length > 0) {
                 outputText += ', ';
             }

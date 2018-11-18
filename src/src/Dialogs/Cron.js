@@ -23,6 +23,9 @@ const styles = theme => ({
     },
     radio: {
         display: 'inline-block'
+    },
+    dialogPaper: {
+        height: 'calc(100% - 96px)'
     }
 });
 
@@ -30,11 +33,15 @@ class DialogCron extends React.Component {
     constructor(props) {
         super(props);
         let cron;
-        if (this.props.cron && typeof this.props.cron === 'string' && this.props.cron[1] !== '{') {
-            cron = this.props.cron.replace(/['"]/g, '').trim()
+        if (this.props.cron && typeof this.props.cron === 'string' && this.props.cron.replace(/^["']/, '')[0] !== '{') {
+            cron = this.props.cron.replace(/['"]/g, '').trim();
         } else {
             cron = this.props.cron || '{}';
+            if (typeof cron === 'string') {
+                cron = cron.replace(/^["']/, '').replace(/["']\n?$/, '');
+            }
         }
+
         this.state =  {
             cron,
             mode: this.props.simple ?
@@ -61,12 +68,12 @@ class DialogCron extends React.Component {
                 disableEscapeKeyDown
                 maxWidth="md"
                 fullWidth={true}
+                classes={{paper: this.props.classes.dialogPaper}}
                 open={true}
                 aria-labelledby="cron-dialog-title"
             >
-                <DialogTitle id="cron-dialog-title">{this.props.title || I18n.t('Define cron...')}</DialogTitle>
-                <DialogContent>
-
+                <DialogTitle id="cron-dialog-title">{this.props.title || I18n.t('Define schedule...')}</DialogTitle>
+                <DialogContent style={{height: '100%', overflow: 'hidden'}}>
                     {!this.props.simple && (<div>
                         <Radio
                             key="wizard"
@@ -107,8 +114,8 @@ class DialogCron extends React.Component {
                     />)}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.handleCancel()} color="primary">{this.props.cancel || I18n.t('Cancel')}</Button>
                     <Button onClick={() => this.handleOk()}     color="primary">{this.props.ok || I18n.t('Ok')}</Button>
+                    <Button onClick={() => this.handleCancel()} color="secondary">{this.props.cancel || I18n.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>
         );

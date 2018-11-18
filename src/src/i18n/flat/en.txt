@@ -1,15 +1,26 @@
 -
+April
 Are you sure?
+August
 Cancel
 Click on this icon
+December
 Define cron...
 Delete %s...
 Deselect all
 Discard changes for %s
+February
 Friday
 ID
+January
+July
+June
 Log outputs
+March
+May
 Monday
+November
+October
 Ok
 On weekdays
 Please select object ID...
@@ -19,6 +30,7 @@ Restart
 Saturday
 Save
 Select all
+September
 Sunday
 Thursday
 Tuesday
@@ -66,6 +78,7 @@ specific seconds
 Time
 To
 sc_wizard
+all
 Astro day
 Astro night
 Dawn
@@ -82,10 +95,44 @@ Sunrise
 Sunrise end
 Sunset
 Sunset start
+at %s
+every day
+every hour
+every minute
+every month
+every %s day
+every %s hours
+every %s minutes
+every %s months
+every %s weeks
+every week
+from %s to %s
+never
+on %s of
+on %s and %s of
+on every date of
+%s
+%s and %s
+on %s
+on %s and %s
+on weekends
+on working days
+will ne be not executed any more, because start is in the past
+on %s
+from %s
+Execute from to
+to %s
+every year
+every %s year
+on %s of %s
 every
 Specific time
 from
+From-to
 Interval time
+invert
+none
+on
 Period
 Daily
 Dates
@@ -97,6 +144,7 @@ Every week
 Every year
 Hours
 Minutes
+month
 Monthly
 Once
 Specific months
@@ -108,41 +156,13 @@ Workdays
 Year
 Yearly
 Specific time
-time
+Time
 to
 Valid
 from
 to
 Whole day
-at %s
-every minute
-every %s minutes
-every hour
-every %s hours
-from %s to %s
-will ne be not executed any more, because start is in the past
-only once
-every day
-every %s days
-on weekends
-on workdays
-on %s
-on %s and %s
-every week
-every %s weeks
-on %s
-on %s and %s
 every month
-every %s months
-on %s
-on %s and %s
-every year
-every %s years
-From-to
-all
-none
-invert
-month
 Acknowledge
 From
 Last changed
@@ -151,15 +171,3 @@ Timestamp
 User
 Value
 use seconds
-January
-February
-March
-April
-May
-June
-July
-August
-September
-October
-November
-December

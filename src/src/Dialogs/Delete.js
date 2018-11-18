@@ -49,8 +49,8 @@ class DialogDelete extends React.Component {
                     <h2>{I18n.t('Delete %s', this.state.name)}</h2>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={this.handleCancel} color="primary">{I18n.t('Cancel')}</Button>
                     <Button onClick={this.handleOk} color="primary">{I18n.t('Ok')}</Button>
+                    <Button onClick={this.handleCancel} color="primary">{I18n.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>
         );

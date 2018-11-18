@@ -17,7 +17,8 @@ import convertCronToText from './simple-cron/cronText';
 const styles = theme => ({
     mainDiv: {
         width: '100%',
-        height: '100%'
+        height: '100%',
+        overflow: 'auto'
     },
     periodSelect: {
         //margin: '0 10px 60px 10px',
@@ -153,7 +154,11 @@ function convertArrayIntoMinus(value, max) {
 class ComplexCron extends React.Component {
     constructor(props) {
         super(props);
-        const state = ComplexCron.cron2state(this.props.cronExpression || '* * * * *');
+        let cron = (typeof this.props.cronExpression === 'string') ? this.props.cronExpression.replace(/^["']/, '').replace(/["']\n?$/, '') : '';
+        if (cron[0] === '{') {
+            cron = '';
+        }
+        const state = ComplexCron.cron2state(cron || '* * * * *');
 
         this.state = {
             extended: false,
@@ -282,8 +287,10 @@ class ComplexCron extends React.Component {
         let everyN = value.toString().indexOf('/') !== -1;
         let select;
         if (this.state.modes[type] === null) {
-            this.state.modes[type] = every ? 'every' : (everyN ? 'everyN' : select);
             select = every ? 'every' : (everyN ? 'everyN' : 'specific');
+            const modes = JSON.parse(JSON.stringify(this.state.modes));
+            modes[type] = select;
+            return setTimeout(() => this.setState({modes}), 100);
         } else {
             every = this.state.modes[type] === 'every';
             everyN = this.state.modes[type] === 'everyN';

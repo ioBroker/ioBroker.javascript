@@ -1,15 +1,26 @@
 -
+April
 Are you sure?
+August
 Cancel
 Click on this icon
+December
 Define cron...
 Delete %s
 Deselect all
 Discard changes for %s
+February
 Friday
 ID
+January
+July
+June
 Log outputs
+March
+May
 Monday
+November
+October
 Ok
 On weekdays
 Please select object ID...
@@ -19,6 +30,7 @@ Restart
 Saturday
 Save
 Select all
+September
 Sunday
 Thursday
 Tuesday
@@ -66,6 +78,7 @@ sc_specific_seconds
 sc_time
 sc_to
 sc_wizard
+sch_all
 sch_astroDay
 sch_astroNight
 sch_astro_dawn
@@ -82,10 +95,44 @@ sch_astro_sunrise
 sch_astro_sunriseEnd
 sch_astro_sunset
 sch_astro_sunsetStart
+sch_desc_atTime
+sch_desc_everyDay
+sch_desc_everyHour
+sch_desc_everyMinute
+sch_desc_everyMonth
+sch_desc_everyNDay
+sch_desc_everyNHours
+sch_desc_everyNMinutes
+sch_desc_everyNMonths
+sch_desc_everyNWeeks
+sch_desc_everyWeek
+sch_desc_intervalFromTo
+sch_desc_never
+sch_desc_onDate
+sch_desc_onDates
+sch_desc_onEveryDate
+sch_desc_onMonth
+sch_desc_onMonths
+sch_desc_onWeekday
+sch_desc_onWeekdays
+sch_desc_onWeekends
+sch_desc_onWorkdays
+sch_desc_onceInPast
+sch_desc_once_on
+sch_desc_validFrom
+sch_desc_validFromTo
+sch_desc_validTo
+sch_desc_everyYear
+sch_desc_everyNYears
+sch_desc_onDate
 sch_every
 sch_exactTime
 sch_from
+sch_fromTo
 sch_intervalTime
+sch_invert
+sch_no_one
+sch_on
 sch_period
 sch_periodDaily
 sch_periodDates
@@ -97,6 +144,7 @@ sch_periodEveryWeek
 sch_periodEveryYear
 sch_periodHours
 sch_periodMinutes
+sch_periodMonth
 sch_periodMonthly
 sch_periodOnce
 sch_periodSpecificMonths
@@ -114,35 +162,7 @@ sch_valid
 sch_validFrom
 sch_validTo
 sch_wholeDay
-sch_desc_atTime
-sch_desc_everyMinute
-sch_desc_everyNMinutes
-sch_desc_everyHour
-sch_desc_everyNHours
-sch_desc_intervalFromTo
-sch_desc_onceInPast
-sch_desc_once
-sch_desc_onEveryDay
-sch_desc_onEveryNDays
-sch_desc_onWeekends
-sch_desc_onWorkdays
-sch_desc_onWeekday
-sch_desc_onWeekdays
-sch_desc_onEveryWeek
-sch_desc_onEveryNWeeks
-sch_desc_onDate
-sch_desc_onDates
-sch_desc_onEveryMonth
-sch_desc_onEveryNMonths
-sch_desc_onMonth
-sch_desc_onMonths
-sch_desc_onEveryYear
-sch_desc_onEveryNYears
-sch_fromTo
-sch_all
-sch_no_one
-sch_invert
-sch_periodMonth
+sch_yearEveryMonth
 tooltip_ack
 tooltip_from
 tooltip_lc
@@ -151,15 +171,3 @@ tooltip_ts
 tooltip_user
 tooltip_value
 use seconds
-January
-February
-March
-April
-May
-June
-July
-August
-September
-October
-November
-December
