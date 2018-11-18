@@ -459,7 +459,7 @@ Blockly.JavaScript['schedule'] = function(block) {
     var schedule = block.getFieldValue('SCHEDULE');
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    return 'schedule("' + schedule +'", function () {\n' + statements_name + '});\n';
+    return 'schedule(\'' + schedule +'\', function () {\n' + statements_name + '});\n';
 };
 
 // --- ASTRO -----------------------------------------------------------
@@ -632,10 +632,13 @@ Blockly.Blocks['schedule_create'] = {
     }
 };
 
-Blockly.JavaScript['schedule_create'] = function(block) {
+Blockly.JavaScript['schedule_create'] = function (block) {
     var name  = block.getFieldValue('NAME');
     var schedule = Blockly.JavaScript.valueToCode(block, 'SCHEDULE', Blockly.JavaScript.ORDER_ATOMIC);
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    schedule = schedule.replace(/^"/, '').replace(/"$/, '');
+    schedule = "'" + schedule + "'";
 
     return name + ' = schedule(' + schedule + ', function () {\n' + statements_name + '});\n';
 };
@@ -708,8 +711,8 @@ Blockly.Blocks['field_cron'] = {
 };
 
 Blockly.JavaScript['field_cron'] = function(block) {
-    var oid = block.getFieldValue('CRON');
-    return ['\'' + oid + '\'', Blockly.JavaScript.ORDER_ATOMIC]
+    var cron = block.getFieldValue('CRON');
+    return ['\'' + cron + '\'', Blockly.JavaScript.ORDER_ATOMIC]
 };
 
 // --- CRON builder --------------------------------------------------

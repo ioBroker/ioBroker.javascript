@@ -42,10 +42,11 @@ const mods = {
     wake_on_lan:      require('wake_on_lan')
 };
 
-const utils    = require('./lib/utils'); // Get common adapter utils
-const words    = require('./lib/words');
-const sandBox  = require('./lib/sandbox');
-const eventObj = require('./lib/eventObj');
+const utils     = require('./lib/utils'); // Get common adapter utils
+const words     = require('./lib/words');
+const sandBox   = require('./lib/sandbox');
+const eventObj  = require('./lib/eventObj');
+const Scheduler = require('./lib/scheduler');
 
 // for node version <= 0.12
 if (''.startsWith === undefined) {
@@ -153,6 +154,7 @@ const context = {
     channels:         null,
     devices:          null,
     logWithLineInfo:  null,
+    scheduler:        null,
     timers:           {},
     enums:            [],
     timerId:          0,
@@ -373,6 +375,8 @@ const adapter = new utils.Adapter({
         context.logWithLineInfo.warn  = context.logWithLineInfo.bind(1, 'warn');
         context.logWithLineInfo.error = context.logWithLineInfo.bind(1, 'error');
         context.logWithLineInfo.info  = context.logWithLineInfo.bind(1, 'info');
+
+        context.scheduler = new Scheduler(adapter.log);
 
         installLibraries(() => {
             getData(() => {
@@ -914,6 +918,7 @@ function execute(script, name, verbose, debug) {
     script.intervals = [];
     script.timeouts = [];
     script.schedules = [];
+    script.wizards = [];
     script.name = name;
     script._id = Math.floor(Math.random() * 0xFFFFFFFF);
     script.subscribes = {};
@@ -1027,6 +1032,13 @@ function stop(name, callback) {
                 if (!nodeSchedule.cancelJob(context.scripts[name].schedules[i])) {
                     adapter.log.error('Error by canceling scheduled job "' + _name + '"');
                 }
+            }
+        }
+
+        // Stop all time wizards jobs
+        for (let i = 0; i < context.scripts[name].wizards.length; i++) {
+            if (context.scripts[name].wizards[i]) {
+                context.scheduler.remove(context.scripts[name].wizards[i]);
             }
         }
 

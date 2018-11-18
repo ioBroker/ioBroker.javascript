@@ -983,7 +983,7 @@ class Schedule extends React.Component {
             <Select value={this.state.schedule.time.mode}
                     onChange={e => {
                         const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
-                        _schedule.period.mode = e.target.value;
+                        _schedule.time.mode = e.target.value;
                         this.onChange(_schedule);
                     }}
             >
