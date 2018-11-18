@@ -29,12 +29,18 @@ const styles = theme => ({
 class DialogCron extends React.Component {
     constructor(props) {
         super(props);
+        let cron;
+        if (this.props.cron && typeof this.props.cron === 'string' && this.props.cron[1] !== '{') {
+            cron = this.props.cron.replace(/['"]/g, '').trim()
+        } else {
+            cron = this.props.cron || '{}';
+        }
         this.state =  {
-            cron: (this.props.cron || '* * * * *').replace(/['"]/g, '').trim(),
+            cron,
             mode: this.props.simple ?
                 'simple' :
-                (typeof this.props.cron === 'object' || this.props.cron[0] === '{' ?
-                    'advanced' :
+                (typeof cron === 'object' || cron[0] === '{' ?
+                    'wizard' :
                     (SimpleCron.cron2state(this.props.cron || '* * * * *') ? 'simple' : 'complex'))
         };
     }
@@ -63,11 +69,11 @@ class DialogCron extends React.Component {
 
                     {!this.props.simple && (<div>
                         <Radio
-                            key="advanced"
-                            checked={this.state.mode === 'advanced'}
-                            onChange={e => this.setState({mode: 'advanced'})}
-                        /><label onClick={e => this.setState({mode: 'advanced'})}
-                                 style={this.state.mode !== 'advanced' ? {color: 'lightgrey'} : {}}>{I18n.t('sc_advanced')}</label>
+                            key="wizard"
+                            checked={this.state.mode === 'wizard'}
+                            onChange={e => this.setState({mode: 'wizard'})}
+                        /><label onClick={e => this.setState({mode: 'wizard'})}
+                                 style={this.state.mode !== 'wizard' ? {color: 'lightgrey'} : {}}>{I18n.t('sc_wizard')}</label>
 
                         <Radio
                             key="simple"
@@ -87,7 +93,7 @@ class DialogCron extends React.Component {
                         onChange={cron => this.setState({cron})}
                         language={I18n.getLanguage()}
                     />)}
-                    {this.state.mode === 'advanced' &&
+                    {this.state.mode === 'wizard' &&
                         (<Schedule
                             schedule={this.state.cron}
                             onChange={cron => this.setState({cron})}

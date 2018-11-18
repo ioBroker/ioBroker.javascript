@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Given a cronspec, return the human-readable string.
  * @param {string} cronspec
@@ -5,17 +7,17 @@
  * @param {Object=} locale
  */
 function cronToText(cronspec, withSeconds, locale) {
-    'use strict';
+
 
     // Constant array to convert valid names to values
-    var NAMES = {
+    const NAMES = {
         JAN: 1, FEB: 2, MAR: 3, APR: 4, MAY: 5, JUN: 6, JUL: 7, AUG: 8,
         SEP: 9, OCT: 10, NOV: 11, DEC: 12,
         SUN: 1, MON: 2, TUE: 3, WED: 4, THU: 5, FRI: 6, SAT: 7
     };
 
     // Parsable replacements for common expressions
-    var REPLACEMENTS = {
+    const REPLACEMENTS = {
         '* * * * * *': '0/1 * * * * *',
         '@YEARLY': '0 0 1 1 *',
         '@ANNUALLY': '0 0 1 1 *',
@@ -26,7 +28,7 @@ function cronToText(cronspec, withSeconds, locale) {
     };
 
     // Contains the index, min, and max for each of the constraints
-    var FIELDS = {
+    const FIELDS = {
         s: [0, 0, 59], // seconds
         m: [1, 0, 59], // minutes
         h: [2, 0, 23], // hours
@@ -47,8 +49,8 @@ function cronToText(cronspec, withSeconds, locale) {
      * @returns {Number|null}
      */
     function getValue(value) {
-        var offset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
-        var max = arguments.length <= 2 || arguments[2] === undefined ? 9999 : arguments[2];
+        const offset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+        const max = arguments.length <= 2 || arguments[2] === undefined ? 9999 : arguments[2];
 
         return isNaN(value) ? NAMES[value] || null : Math.min(+value + offset, max);
     }
@@ -61,8 +63,8 @@ function cronToText(cronspec, withSeconds, locale) {
      * @returns {Object}
      */
     function cloneSchedule(sched) {
-        var clone = {},
-            field;
+        const clone = {};
+        let field;
 
         for (field in sched) {
             if (field !== 'dc' && field !== 'd') {
@@ -80,12 +82,11 @@ function cronToText(cronspec, withSeconds, locale) {
      * @param {String} name: Name of constraint to add
      * @param {Number} min: Minimum value for this constraint
      * @param {Number} max: Maximum value for this constraint
-     * @param {Number=} inc: The increment to use between min and max
      */
     function add(sched, name, min, max) {
-        var inc = arguments.length <= 4 || arguments[4] === undefined ? 0 : arguments[4];
+        const inc = arguments.length <= 4 || arguments[4] === undefined ? 0 : arguments[4];
 
-        var i = min;
+        let i = min;
 
         if (!sched[name]) {
             sched[name] = [];
@@ -131,7 +132,7 @@ function cronToText(cronspec, withSeconds, locale) {
      * @param {Number} value
      */
     function addWeekday(s, curSched, value) {
-        var except1 = {},
+        const except1 = {},
             except2 = {};
         if (value === 1) {
             // cron doesn't pass month boundaries, so if 1st is a
@@ -169,13 +170,13 @@ function cronToText(cronspec, withSeconds, locale) {
      */
     function addRange(item, curSched, name, min, max, offset) {
         // parse range/x
-        var incSplit = item.split('/'),
+        const incSplit = item.split('/'),
             inc = +incSplit[1],
             range = incSplit[0];
 
         // parse x-y or * or 0
         if (range !== '*' && range !== '0') {
-            var rangeSplit = range.split('-');
+            const rangeSplit = range.split('-');
             min = getValue(rangeSplit[0], offset, max);
 
             // fix for issue #13, range may be single digit
@@ -196,7 +197,7 @@ function cronToText(cronspec, withSeconds, locale) {
      * @param {Number} offset: The offset to apply to the cron value
      */
     function parse(item, s, name, min, max, offset) {
-        var value,
+        let value,
             split,
             schedules = s.schedules,
             curSched = schedules[schedules.length - 1];
@@ -249,12 +250,12 @@ function cronToText(cronspec, withSeconds, locale) {
      * @param {String} expr: The cron expression to parse
      */
     function parseExpr(expr) {
-        var schedule = { schedules: [{}], exceptions: [] },
-            components = expr.replace(/(\s)+/g, ' ').split(' '),
-            field,
-            f,
-            component,
-            items;
+        const schedule = { schedules: [{}], exceptions: [] };
+        const components = expr.replace(/(\s)+/g, ' ').split(' ');
+        let field;
+        let f;
+        let component;
+        let items;
 
         for (field in FIELDS) {
             f = FIELDS[field];
@@ -264,8 +265,8 @@ function cronToText(cronspec, withSeconds, locale) {
                 // schedule clones to handle # won't contain all of the
                 // other constraints
                 items = component.split(',').sort(itemSorter);
-                var i,
-                    length = items.length;
+                let i;
+                const length = items.length;
                 for (i = 0; i < length; i++) {
                     parse(items[i], schedule, field, f[1], f[2], f[3]);
                 }
@@ -281,16 +282,16 @@ function cronToText(cronspec, withSeconds, locale) {
      * @param {String} expr: The cron expression to prepare
      */
     function prepareExpr(expr) {
-        var prepared = expr.toUpperCase();
+        const prepared = expr.toUpperCase();
         return REPLACEMENTS[prepared] || prepared;
     }
 
     function parseCron(expr, hasSeconds) {
-        var e = prepareExpr(expr);
+        const e = prepareExpr(expr);
         return parseExpr(hasSeconds ? e : '0 ' + e);
     }
 
-    var schedule = parseCron(cronspec, withSeconds);
+    const schedule = parseCron(cronspec, withSeconds);
 
     function absFloor(number) {
         if (number < 0) {
@@ -301,8 +302,8 @@ function cronToText(cronspec, withSeconds, locale) {
     }
 
     function toInt(argumentForCoercion) {
-        var coercedNumber = +argumentForCoercion,
-            value = 0;
+        const coercedNumber = +argumentForCoercion;
+        let value = 0;
 
         if (coercedNumber !== 0 && isFinite(coercedNumber)) {
             value = absFloor(coercedNumber);
@@ -312,7 +313,7 @@ function cronToText(cronspec, withSeconds, locale) {
     }
 
     function ordinal(number) {
-        var b = number % 10,
+        const b = number % 10,
             output = (toInt(number % 100 / 10) === 1) ? locale.ORDINALS.th :
                 (b === 1) ? locale.ORDINALS.st :
                     (b === 2) ? locale.ORDINALS.nd :
@@ -332,7 +333,7 @@ function cronToText(cronspec, withSeconds, locale) {
             return ordinal(numbers);
         }
 
-        var lastVal = numbers.pop();
+        const lastVal = numbers.pop();
         return numbers.join(', ') + ' ' + locale['and'] + ' ' + ordinal(lastVal);
     }
 
@@ -363,10 +364,10 @@ function cronToText(cronspec, withSeconds, locale) {
             return numberToDateName('' + numbers[0], type);
         }
 
-        var lastVal = '' + numbers.pop();
-        var outputText = '';
+        const lastVal = '' + numbers.pop();
+        let outputText = '';
 
-        for (var i = 0, value; value = numbers[i]; i++) {
+        for (let i = 0, value; value = numbers[i]; i++) {
             if (outputText.length > 0) {
                 outputText += ', ';
             }
@@ -389,19 +390,20 @@ function cronToText(cronspec, withSeconds, locale) {
     /**
      * Given a schedule, generate a friendly sentence description.
      * @param {Object} schedule
+     * @param {boolean} withSeconds
      * @returns {string}
      */
     function scheduleToSentence(schedule, withSeconds) {
-        var outputText = locale.Every + ' ';
+        let outputText = locale.Every + ' ';
 
         if (schedule['h'] && schedule['m'] && schedule['h'].length <= 2 && schedule['m'].length <= 2 && withSeconds && schedule['s'] && schedule['s'].length <= 2 ) {
             // If there are only one or two specified values for
             // hour or minute, print them in HH:MM:SS format
 
-            var hm = [];
-            for (var i = 0; i < schedule['h'].length; i++) {
-                for (var j = 0; j < schedule['m'].length; j++) {
-                    for (var k = 0; k < schedule['s'].length; k++) {
+            const hm = [];
+            for (let i = 0; i < schedule['h'].length; i++) {
+                for (let j = 0; j < schedule['m'].length; j++) {
+                    for (let k = 0; k < schedule['s'].length; k++) {
                         hm.push(zeroPad(schedule['h'][i]) + ':' + zeroPad(schedule['m'][j]) + ':' + zeroPad(schedule['s'][k]));
                     }
                 }
@@ -409,7 +411,7 @@ function cronToText(cronspec, withSeconds, locale) {
             if (hm.length < 2) {
                 outputText = locale['At'] + ' ' + hm[0];
             } else {
-                var lastVal = hm.pop();
+                const lastVal = hm.pop();
                 outputText = locale['At'] + ' ' + hm.join(', ') + ' ' + locale.and + ' ' + lastVal;
             }
             if (!schedule['d'] && !schedule['D']) {
@@ -420,18 +422,19 @@ function cronToText(cronspec, withSeconds, locale) {
             // If there are only one or two specified values for
             // hour or minute, print them in HH:MM format
 
-            var hm = [];
-            for (var i = 0; i < schedule['h'].length; i++) {
-                for (var j = 0; j < schedule['m'].length; j++) {
+            const hm = [];
+            for (let i = 0; i < schedule['h'].length; i++) {
+                for (let j = 0; j < schedule['m'].length; j++) {
                     hm.push(zeroPad(schedule['h'][i]) + ':' + zeroPad(schedule['m'][j]));
                 }
             }
             if (hm.length < 2) {
                 outputText = locale['At'] + ' ' + hm[0];
             } else {
-                var lastVal = hm.pop();
+                const lastVal = hm.pop();
                 outputText = locale['At'] + ' ' + hm.join(', ') + ' ' + locale.and + ' ' + lastVal;
             }
+
             if (!schedule['d'] && !schedule['D']) {
                 outputText += ' ' + locale['every day'] + ' ';
             }

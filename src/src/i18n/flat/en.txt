@@ -4,6 +4,7 @@ Cancel
 Click on this icon
 Define cron...
 Delete %s...
+Deselect all
 Discard changes for %s
 Friday
 ID
@@ -17,6 +18,7 @@ Repeat
 Restart
 Saturday
 Save
+Select all
 Sunday
 Thursday
 Tuesday
@@ -29,43 +31,118 @@ Room
 for edit or create script
 CRON
 Date
-Every
-From
-Hours
-Interval
-Interval between
-Minutes
-Once
-Period
-Seconds
-Simple
-Specific time
-Time
-To
-Deselect all
-Select all
 Dates
 Day of week
-every N seconds
+Every
 every N days
 every N day of week
 every N hours
 every N minutes
 every N months
-every second
+every N seconds
 every day
 every day of the week
 every hour
 every minute
 every month
+every second
+From
+Hours
+Interval
+Interval between
+Minutes
 months
+Once
+Period
+Seconds
+Simple
+Specific time
 specific dates
 specific day of weeks
 specific hours
 specific minutes
 specific months
 specific seconds
-use seconds
+Time
+To
+sc_wizard
+Astro day
+Astro night
+Dawn
+Dusk
+Golden hour
+Golden hour end
+Nadir
+Nautical dawn
+Nautical dusk
+Night
+Night end
+Solar noon
+Sunrise
+Sunrise end
+Sunset
+Sunset start
+every
+Specific time
+from
+Interval time
+Period
+Daily
+Dates
+Day
+Every
+Every day
+Every month
+Every week
+Every year
+Hours
+Minutes
+Monthly
+Once
+Specific months
+Week
+Weekdays
+Weekend
+Weekly
+Workdays
+Year
+Yearly
+Specific time
+time
+to
+Valid
+from
+to
+Whole day
+at %s
+every minute
+every %s minutes
+every hour
+every %s hours
+from %s to %s
+will ne be not executed any more, because start is in the past
+only once
+every day
+every %s days
+on weekends
+on workdays
+on %s
+on %s and %s
+every week
+every %s weeks
+on %s
+on %s and %s
+every month
+every %s months
+on %s
+on %s and %s
+every year
+every %s years
+From-to
+all
+none
+invert
+month
 Acknowledge
 From
 Last changed
@@ -73,3 +150,16 @@ Quality
 Timestamp
 User
 Value
+use seconds
+January
+February
+March
+April
+May
+June
+July
+August
+September
+October
+November
+December

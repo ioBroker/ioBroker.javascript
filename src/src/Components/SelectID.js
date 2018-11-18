@@ -909,7 +909,7 @@ class SelectID extends React.Component {
                 inputProps={{name, id: name,}}
                 displayEmpty={true}
             >
-                <MenuItem value=""><span className={this.props.classes.selectNone}>{I18n.t('filter_' + name)}</span></MenuItem>
+                <MenuItem key="empty" value=""><span className={this.props.classes.selectNone}>{I18n.t('filter_' + name)}</span></MenuItem>
                 {values.map(item => {
                     let id;
                     let name;
@@ -924,7 +924,7 @@ class SelectID extends React.Component {
                     }
 
                     return (
-                        <MenuItem value={id}>
+                        <MenuItem key={id} value={id}>
                             {icon && (<img className={this.props.classes.selectIcon} src={icon.src} alt={name}/>)}
                             {name}
                         </MenuItem>)

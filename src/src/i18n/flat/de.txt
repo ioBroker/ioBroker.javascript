@@ -4,6 +4,7 @@ Abbrechen
 Klicken Sie auf dieses Symbol
 Cron definieren ...
 Löschen %s...
+Alle abwählen
 verwerfen Sie die Änderungen für %s
 Freitag
 ID
@@ -17,6 +18,7 @@ Wiederholen
 Neustart
 Samstag
 Speichern
+Wählen Sie Alle
 Sonntag
 Donnerstag
 Dienstag
@@ -29,43 +31,118 @@ Zimmer
 zum Bearbeiten oder Erstellen eines Skripts
 CRON
 Datum
-Jeden
-Von
-Stunden
-Intervall
-Intervall zwischen
-Protokoll
-Einmal
-Zeitraum
-Sekunden
-Einfach
-Bestimmte Zeit
-Zeit
-Bis
-Alle abwählen
-Wählen Sie Alle
 Termine
 Wochentag
-alle N Sekunden
+Jeden
 alle N Tag
 alle N Wochentag
 alle N Stunden
 alle N Minuten
 alle N Monate
-jede Sekunde
+alle N Sekunden
 jeden Tag
 jeden tag der woche
 jede Stunde
 jede Minute
 jeden Monat
+jede Sekunde
+Von
+Stunden
+Intervall
+Intervall zwischen
+Protokoll
 Monate
+Einmal
+Zeitraum
+Sekunden
+Einfach
+Bestimmte Zeit
 bestimmte Termine
 bestimmten Wochentag
 bestimmte Stunden
 bestimmte Minuten
 bestimmte Monate
 bestimmte Sekunden
-Sekunden verwenden
+Zeit
+Bis
+sc_wizard
+sch_astroDay
+sch_astroNight
+sch_astro_dawn
+sch_astro_dusk
+sch_astro_goldenHour
+sch_astro_goldenHourEnd
+sch_astro_nadir
+sch_astro_nauticalDawn
+sch_astro_nauticalDusk
+sch_astro_night
+sch_astro_nightEnd
+sch_astro_solarNoon
+sch_astro_sunrise
+sch_astro_sunriseEnd
+sch_astro_sunset
+sch_astro_sunsetStart
+sch_every
+sch_exactTime
+sch_from
+sch_intervalTime
+sch_period
+sch_periodDaily
+sch_periodDates
+sch_periodDay
+sch_periodEvery
+sch_periodEveryDay
+sch_periodEveryMonth
+sch_periodEveryWeek
+sch_periodEveryYear
+sch_periodHours
+sch_periodMinutes
+sch_periodMonthly
+sch_periodOnce
+sch_periodSpecificMonths
+sch_periodWeek
+sch_periodWeekdays
+sch_periodWeekend
+sch_periodWeekly
+sch_periodWorkdays
+sch_periodYear
+sch_periodYearly
+sch_specificTime
+sch_time
+sch_to
+sch_valid
+sch_validFrom
+sch_validTo
+sch_wholeDay
+sch_desc_atTime
+sch_desc_everyMinute
+sch_desc_everyNMinutes
+sch_desc_everyHour
+sch_desc_everyNHours
+sch_desc_intervalFromTo
+sch_desc_onceInPast
+sch_desc_once
+sch_desc_onEveryDay
+sch_desc_onEveryNDays
+sch_desc_onWeekends
+sch_desc_onWorkdays
+sch_desc_onWeekday
+sch_desc_onWeekdays
+sch_desc_onEveryWeek
+sch_desc_onEveryNWeeks
+sch_desc_onDate
+sch_desc_onDates
+sch_desc_onEveryMonth
+sch_desc_onEveryNMonths
+sch_desc_onMonth
+sch_desc_onMonths
+sch_desc_onEveryYear
+sch_desc_onEveryNYears
+Von-bis
+alle
+keins
+invertieren
+month
 Bestätigt
 Von
 Zuletzt geändert
@@ -73,3 +150,16 @@ Qualität
 Zeitstempel
 Benutzer
 Wert
+Sekunden verwenden
+Januar
+Februar
+März
+April
+Mai
+Juni
+Juli
+August
+September
+Oktober
+November
+Dezember
