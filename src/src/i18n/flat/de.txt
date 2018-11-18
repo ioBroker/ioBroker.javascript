@@ -95,6 +95,7 @@ Sonnenaufgang
 Sonnenaufgangende
 Sonnenuntergang
 Sonnenuntergangstart
+am
 sch_desc_atTime
 sch_desc_everyDay
 sch_desc_everyHour
@@ -105,7 +106,9 @@ sch_desc_everyNHours
 sch_desc_everyNMinutes
 sch_desc_everyNMonths
 sch_desc_everyNWeeks
+sch_desc_everyNYears
 sch_desc_everyWeek
+sch_desc_everyYear
 sch_desc_intervalFromTo
 sch_desc_never
 sch_desc_onDate
@@ -122,9 +125,6 @@ sch_desc_once_on
 sch_desc_validFrom
 sch_desc_validFromTo
 sch_desc_validTo
-sch_desc_everyYear
-sch_desc_everyNYears
-sch_desc_onDate
 sch_every
 sch_exactTime
 sch_from

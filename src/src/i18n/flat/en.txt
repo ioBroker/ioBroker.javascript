@@ -95,6 +95,7 @@ Sunrise
 Sunrise end
 Sunset
 Sunset start
+at
 at %s
 every day
 every hour
@@ -105,10 +106,12 @@ every %s hours
 every %s minutes
 every %s months
 every %s weeks
+every %s year
 every week
+every year
 from %s to %s
 never
-on %s of
+on %s of %s
 on %s and %s of
 on every date of
 %s
@@ -122,9 +125,6 @@ on %s
 from %s
 Execute from to
 to %s
-every year
-every %s year
-on %s of %s
 every
 Specific time
 from
