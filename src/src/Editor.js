@@ -127,11 +127,17 @@ class Editor extends React.Component {
         };
 
         const instances = [];
-        for (let id in this.props.objects) {
+        /*for (let id in this.props.objects) {
             if (this.props.objects.hasOwnProperty(id) && id.startsWith('system.adapter.') && this.props.objects[id] && this.props.objects[id].type === 'instance') {
                 instances.push(id);
             }
         }
+        // remove non-existing scripts
+        for (let i = editing.length; i >= 0; i --) {
+            if (!this.props.objects[editing[i]]) {
+                editing.splice(i, 1);
+            }
+        }*/
 
         window.systemLang = I18n.getLanguage();
         window.main = {
@@ -148,17 +154,13 @@ class Editor extends React.Component {
                 this.setState({showCron: true});
             }
         };
+        this.objects = props.objects;
         /* ----------------------- */
 
         this.scripts = {};
 
         if (!this.state.selected && this.state.editing.length) {
             this.state.selected = this.state.editing[0];
-        }
-
-        if (this.state.selected && props.objects[this.state.selected]) {
-            this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(props.objects[this.state.selected].common));
-            this.state.blockly = this.scripts[this.state.selected].engineType === 'Blockly';
         }
 
         // to enable logging
@@ -194,6 +196,35 @@ class Editor extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        const newState = {};
+        let _changed = false;
+        // if objects read
+        if (this.objects !== nextProps.objects) {
+            this.objects = nextProps.objects;
+            window.main.objects = nextProps.objects;
+
+            // if script is blockly
+            if (this.state.selected && this.objects[this.state.selected]) {
+                this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.objects[this.state.selected].common));
+                newState.blockly = this.scripts[this.state.selected].engineType === 'Blockly';
+            }
+
+            // remove non-existing scripts
+            const editing = JSON.parse(JSON.stringify(this.state.editing));
+            for (let i = editing.length - 1; i >= 0; i--) {
+                if (!this.objects[editing[i]]) {
+                    _changed = true;
+                    editing.splice(i, 1);
+                }
+            }
+            if (this.state.selected && !this.objects[this.state.selected]) {
+                this.state.selected = editing[0] || '';
+            }
+            if (_changed) {
+                newState.editing = editing;
+            }
+        }
+
         if (this.state.selected !== nextProps.selected && nextProps.selected) {
             if (nextProps.selected) {
                 this.scripts[nextProps.selected] = this.scripts[nextProps.selected] || JSON.parse(JSON.stringify(this.props.objects[nextProps.selected].common));
@@ -210,20 +241,21 @@ class Editor extends React.Component {
                 window.localStorage && window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
             }
 
-            this.setState({
-                changed,
-                editing,
-                selected: nextProps.selected,
-                blockly: this.scripts[nextProps.selected].engineType === 'Blockly',
-                showBlocklyCode: false
-            });
+            _changed = true;
+            newState.changed = changed;
+            newState.editing = editing;
+            newState.selected = nextProps.selected;
+            newState.blockly = this.scripts[nextProps.selected].engineType === 'Blockly';
+            newState.showBlocklyCode = false;
         } else {
 
         }
 
         if (this.state.visible !== nextProps.visible) {
-            this.setState({visible: nextProps.visible});
+            _changed = true;
+            newState.visible = nextProps.visible;
         }
+        _changed && this.setState(newState);
     }
 
     onRestart() {
@@ -270,7 +302,7 @@ class Editor extends React.Component {
     }
 
     isScriptChanged(id) {
-        return this.scripts[id] && JSON.stringify(this.scripts[id]) !== JSON.stringify(this.props.objects[id].common);
+        return this.scripts[id] && this.props.objects[id] && JSON.stringify(this.scripts[id]) !== JSON.stringify(this.props.objects[id].common);
     }
 
     onTabClose(id, e) {

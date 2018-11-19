@@ -29,7 +29,6 @@ import {MdCreateNewFolder as IconAddFolder} from 'react-icons/md';
 import {MdPause as IconPause} from 'react-icons/md';
 import {MdSwapVert as IconReorder} from 'react-icons/md';
 import {MdEdit as IconEdit} from 'react-icons/md';
-//import {MdRefresh as IconRestart} from 'react-icons/md';
 import {MdGpsFixed as IconFind} from 'react-icons/md';
 import {MdPersonPin as IconExpert} from 'react-icons/md';
 

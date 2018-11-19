@@ -77,7 +77,7 @@ specific months
 specific seconds
 Time
 To
-sc_wizard
+Wizard
 all
 Astro day
 Astro night

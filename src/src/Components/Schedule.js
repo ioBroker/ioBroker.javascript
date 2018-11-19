@@ -348,7 +348,7 @@ class Schedule extends React.Component {
             //
             if (once < now) {
                 // will ne be not executed any more, because start is in the past
-                desc.push(I18n.t('sch_desc_onceInPast'));
+                return I18n.t('sch_desc_onceInPast');
             } else {
                 // only once
                 desc.push(I18n.t('sch_desc_once_on', schedule.period.once));
@@ -504,107 +504,6 @@ class Schedule extends React.Component {
                 desc.push(I18n.t('sch_desc_intervalFromTo', start, end));
             }
         }
-/*
-        // period
-        const isOnce = !schedule.period.dows && !schedule.period.months && !schedule.period.dates && !schedule.period.years && !schedule.period.days && !schedule.period.weeks;
-        if (isOnce) {
-            const _validFromNextDay = new Date(validFrom);
-            _validFromNextDay.setDate(_validFromNextDay.getDate() + 1);
-
-            //
-            if (_validFromNextDay < Date.now()) {
-                // will ne be not executed any more, because start is in the past
-                desc.push(I18n.t('sch_desc_onceInPast'));
-            } else {
-                // only once
-                desc.push(I18n.t('sch_desc_once'));
-            }
-        } else {
-            if (schedule.period.days) {
-                if (schedule.period.days === 1) {
-                    // every day
-                    desc.push(I18n.t('sch_desc_onEveryDay'));
-                } else {
-                    // on every N days
-                    desc.push(I18n.t('sch_desc_onEveryNDays', schedule.period.days));
-                }
-            }
-            if (schedule.period.dows) {
-                const dows = JSON.parse(schedule.period.dows);
-                if (dows.length === 2 && dows[0] === 0 && dows[1] === 6) {
-                    // on weekends
-                    desc.push(I18n.t('sch_desc_onWeekends'));
-                } else if (dows.length === 5 && dows[0] === 1 && dows[1] === 2 && dows[2] === 3 && dows[3] === 4 && dows[4] === 5) {
-                    // on workdays
-                    desc.push(I18n.t('sch_desc_onWorkdays'));
-                } else {
-                    const tDows = dows.map(day => I18n.t(WEEKDAYS[day]));
-                    if (tDows.length === 1) {
-                        // on Monday
-                        desc.push(I18n.t('sch_desc_onWeekday', tDows[0]));
-                    } else {
-                        const last = tDows.pop();
-                        // on Monday and Sunday
-                        desc.push(I18n.t('sch_desc_onWeekdays', tDows.join(', '), last));
-                    }
-
-                }
-            }
-            if (schedule.period.weeks) {
-                if (schedule.period.weeks === 1) {
-                    // every day
-                    desc.push(I18n.t('sch_desc_onEveryWeek'));
-                } else {
-                    // on every N days
-                    desc.push(I18n.t('sch_desc_onEveryNWeeks', schedule.period.weeks));
-                }
-            }
-
-            if (schedule.period.dates) {
-                const dates = JSON.parse(schedule.period.dates);
-                if (dates.length === 1) {
-                    // in 1 of month
-                    desc.push(I18n.t('sch_desc_onDate', dates[0]));
-                } else {
-                    const last = dates.pop();
-                    // in 1 and 4 of month
-                    desc.push(I18n.t('sch_desc_onDates', dates.join(', '), last));
-                }
-            }
-
-            if (schedule.period.months) {
-                if (typeof schedule.period.months === 'number') {
-                    if (schedule.period.months === 1) {
-                        // every day
-                        desc.push(I18n.t('sch_desc_onEveryMonth'));
-                    } else {
-                        // on every N days
-                        desc.push(I18n.t('sch_desc_onEveryNMonths', schedule.period.months));
-                    }
-                } else {
-                    const months = JSON.parse(schedule.period.months);
-                    const tMonths = months.map(month => I18n.t(MONTHS[month]));
-                    if (tMonths.length === 1) {
-                        // in January
-                        desc.push(I18n.t('sch_desc_onMonth', tMonths[0]));
-                    } else {
-                        const last = tMonths.pop();
-                        // in January and May
-                        desc.push(I18n.t('sch_desc_onMonths', tMonths.join(', '), last));
-                    }
-                }
-            }
-
-            if (schedule.period.years) {
-                if (schedule.period.years === 1) {
-                    // every day
-                    desc.push(I18n.t('sch_desc_onEveryYear'));
-                } else {
-                    // on every N days
-                    desc.push(I18n.t('sch_desc_onEveryNYears', schedule.period.years));
-                }
-            }
-        }*/
 
         if (!schedule.period.once) {
             // valid
@@ -801,7 +700,7 @@ class Schedule extends React.Component {
                         onChange={e => {
                             const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
                             const date = this.string2date(e.target.value);
-                            _schedule.time.once = padding(date.getDate()) + '.' + padding(date.getMonth() + 1) + '.' + date.getFullYear();
+                            _schedule.period.once = padding(date.getDate()) + '.' + padding(date.getMonth() + 1) + '.' + date.getFullYear();
                             this.onChange(_schedule);
                         }}
                         InputLabelProps={{shrink: true,}}

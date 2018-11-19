@@ -40,6 +40,9 @@ const styles = theme => ({
     },
     numberButtonBreak: {
         display: 'block'
+    },
+    appBar: {
+        color: 'white'
     }
 });
 
@@ -352,9 +355,9 @@ class ComplexCron extends React.Component {
                                        onChange={e => this.setState({seconds: e.target.checked ? '*' : false})}/>}
                     label={I18n.t('use seconds')}
                 />
-                <AppBar position="static">
-                    <Tabs value={this.state.tab} onChange={(active, tab) =>
-                        this.setState({tab: tab})}>
+                <AppBar position="static" classes={{root: this.props.classes.appBar}} color="secondary">
+                    <Tabs value={this.state.tab} className={this.props.classes.appBar} color="secondary" onChange={(active, tab) =>
+                        this.setState({tab})}>
                         {this.state.seconds !== false && <Tab id="sc_seconds" label={I18n.t('sc_seconds')}/>}
                         <Tab  id="minutes" label={I18n.t('sc_minutes')}/>
                         <Tab  id="hours" label={I18n.t('sc_hours')}/>

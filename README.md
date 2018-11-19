@@ -20,6 +20,15 @@ Hier kann man die Beschreibung von [Blockly](doc/de/blockly.md) finden.
 
 Описание по [blockly](doc/ru/blockly.md) можно найти [здесь](doc/ru/blockly.md).
 
+## Todo
+- save on exit
+- show that scrip is not enabled
+- search in all files
+- disk mirror (low prior)
+- new rule editor (future releases)
+- be heating profile (future releases)
+- ...
+
 ## Changelog
 ### 3.7.0 (2018-05-05)
 * (bluefox) Used VM2 as sandbox. The script errors will be caught.

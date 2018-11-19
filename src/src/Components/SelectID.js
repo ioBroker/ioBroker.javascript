@@ -695,7 +695,7 @@ class SelectID extends React.Component {
         super(props);
         this.state = {
             loaded: false,
-            selected: this.props.selected || '',
+            selected: (this.props.selected || '').replace(/["']/g, ''),
             filter: {
                 id: '',
                 name: '',

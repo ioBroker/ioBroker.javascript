@@ -83,7 +83,7 @@ export default class TreeDataTable extends Component<Props, State> {
   scrollIntoView(node: TreeDataRow, expandAncestors: boolean = true) {
     const { root } = this.state;
 
-    const row = findNodeData(root, node);
+    const row = node && findNodeData(root, node);
     if (row) {
       const rowIndex = root.getRowIndex(row);
       if (expandAncestors && !row.isVisible()) {
