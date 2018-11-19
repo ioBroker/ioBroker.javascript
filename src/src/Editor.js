@@ -15,6 +15,9 @@ import {MdRefresh as IconRestart} from 'react-icons/md';
 import {MdInput as IconDoEdit} from 'react-icons/md';
 import {FaClock as IconCron} from 'react-icons/fa';
 import {FaClipboardList as IconSelectId} from 'react-icons/fa';
+import {FaFileExport as IconExport} from 'react-icons/fa';
+import {FaFileImport as IconImport} from 'react-icons/fa';
+import {FaFlagCheckered as IconCheck} from 'react-icons/fa';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
@@ -113,7 +116,8 @@ class Editor extends React.Component {
             showCron: false,
             insert: '',
             isDark: window.localStorage ? (window.localStorage.getItem('Editor.dark') === 'true') : false,
-            visible: props.visible
+            visible: props.visible,
+            cmdToBlockly: ''
         };
         /* ----------------------- */
         // required by selectIdDialog in Blockly
@@ -183,6 +187,7 @@ class Editor extends React.Component {
             JSON.stringify(this.scripts[id]) !== JSON.stringify(this.props.objects[this.state.selected].common));
 
         if (!!isChanged) {
+            console.log('Script ' + JSON.stringify(isChanged));
             const message = I18n.t('Configuration not saved.');
             e = e || window.event;
             // For IE and Firefox
@@ -359,6 +364,12 @@ class Editor extends React.Component {
         this.setState({confirm: question});
     }
 
+    sendCommandToBlockly(cmd) {
+        this.setState({cmdToBlockly: cmd}, () =>
+            setTimeout(() =>
+                this.setState({cmdToBlockly: ''}), 200));
+    }
+
     getTabs() {
         if (this.state.editing.length) {
             return (<Tabs
@@ -412,6 +423,27 @@ class Editor extends React.Component {
                                                              window.localStorage && window.localStorage.setItem('Editor.dark', this.state.isDark ? 'false' : 'true');
                                                          }}>
                         <IconDark /></IconButton>)}
+
+                    {this.state.blockly && !this.state.showBlocklyCode &&
+                        (<IconButton key="export" aria-label="Export Blocks"
+                                     title={I18n.t('Export blocks')}
+                             className={this.props.classes.toolbarButtons}
+                             onClick={() => this.sendCommandToBlockly('export')}>
+                        <IconExport /></IconButton>)}
+
+                    {this.state.blockly && !this.state.showBlocklyCode &&
+                        (<IconButton key="import" aria-label="Import Blocks"
+                                     title={I18n.t('Import blocks')}
+                                     className={this.props.classes.toolbarButtons}
+                                     onClick={() => this.sendCommandToBlockly('import')}>
+                            <IconImport /></IconButton>)}
+
+                    {this.state.blockly && !this.state.showBlocklyCode &&
+                        (<IconButton key="check" aria-label="Check code"
+                                     title={I18n.t('Check blocks')}
+                                     className={this.props.classes.toolbarButtons}
+                                     onClick={() => this.sendCommandToBlockly('check')}>
+                            <IconCheck /></IconButton>)}
 
                     {!this.state.blockly && !this.state.showBlocklyCode && (<IconButton key="select-cron" aria-label="select ID"
                                                                                         className={this.props.classes.toolbarButtons}
@@ -468,6 +500,7 @@ class Editor extends React.Component {
 
             return (<div className={this.props.classes.editorDiv} key="BlocklyEditorDiv">
                 <BlocklyEditor
+                    command={this.state.cmdToBlockly}
                     key="BlocklyEditor"
                     resizing={this.props.resizing}
                     code={this.scripts[this.state.selected].source || ''}

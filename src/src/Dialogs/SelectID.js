@@ -57,7 +57,6 @@ class DialogSelectID extends React.Component {
                 disableBackdropClick
                 disableEscapeKeyDown
                 maxWidth="lg"
-                className="full-height-dialog"
                 classes={{paper: this.props.classes.dialog}}
                 fullWidth={true}
                 open={true}

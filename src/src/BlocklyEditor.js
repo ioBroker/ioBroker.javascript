@@ -1,7 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import DialogMessage from './Dialogs/Message';
+import DialogError from './Dialogs/Error';
 
 import I18n from './i18n';
+import DialogExport from "./Dialogs/Export";
+import DialogImport from "./Dialogs/Import";
 
 let languageBlocklyLoaded = false;
 let languageOwnLoaded = false;
@@ -21,14 +25,46 @@ class BlocklyEditor extends React.Component {
             languageOwnLoaded,
             languageBlocklyLoaded,
             changed: false,
+            message: '',
+            error: '',
+            exportText: '',
+            importText: false
         };
         this.originalCode = props.code || '';
 
         this.onResizeBind = this.onResize.bind(this);
 
+        this.lastCommand = '';
+        this.blinkBlock = null;
         this.loadLanguages();
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.command && this.lastCommand !== nextProps.command) {
+            this.lastCommand = nextProps.command;
+            setTimeout(() => this.lastCommand = '', 300);
+            if (this.lastCommand === 'check') {
+                this.blocklyCheckBlocks((err, badBlock) => {
+                    if (!err) {
+                        this.setState({message: I18n.t('Ok')});
+                    } else {
+                        badBlock && this.blocklyBlinkBlock(badBlock);
+                        this.setState({error: {text: I18n.t(err), title: I18n.t('Error was found')}});
+                        this.blinkBlock = badBlock;
+                    }
+                });
+            } else if (this.lastCommand === 'export') {
+                this.exportBlocks();
+            } else if (this.lastCommand === 'import') {
+                this.importBlocks();
+            }
+        }
+        if (this.originalCode !== nextProps.code) {
+            this.originalCode = nextProps.code || '';
+            this.loadCode();
+        }
+
+    }
     loadLanguages() {
         // load blockly language
         if (!languageBlocklyLoaded) {
@@ -99,6 +135,66 @@ class BlocklyEditor extends React.Component {
         }
     }
 
+    blocklyBlinkBlock(block) {
+        for (let i = 300; i < 3000; i = i + 300) {
+            setTimeout(() => block.select(), i);
+            setTimeout(() => block.unselect(), i + 150);
+        }
+    }
+
+    blocklyCheckBlocks(cb) {
+        let warningText;
+        if (!this.blocklyWorkspace || this.blocklyWorkspace.getAllBlocks().length === 0) {
+            cb && cb('no blocks found');
+            return;
+        }
+        let badBlock = this.blocklyGetUnconnectedBlock();
+        if (badBlock) {
+            warningText = 'not properly connected';
+        } else {
+            badBlock = this.blocklyGetBlockWithWarning();
+            if (badBlock) warningText = 'warning on this block';
+        }
+
+        if (badBlock) {
+            if (cb) {
+                cb(warningText, badBlock);
+            } else {
+                this.blocklyBlinkBlock(badBlock);
+            }
+            return false;
+        }
+
+        cb();
+
+        return true;
+    }
+
+    // get unconnected block
+    blocklyGetUnconnectedBlock () {
+        const blocks = this.blocklyWorkspace.getAllBlocks();
+        for (let i = 0, block; block = blocks[i]; i++) {
+            const connections = block.getConnections_(true);
+            for (let j = 0, conn; conn = connections[j]; j++) {
+                if (!conn.sourceBlock_ || ((conn.type === this.Blockly.INPUT_VALUE || conn.type === this.Blockly.OUTPUT_VALUE) && !conn.targetConnection && !conn._optional)) {
+                    return block;
+                }
+            }
+        }
+        return null;
+    }
+
+    // get block with warning
+    blocklyGetBlockWithWarning() {
+        const blocks = this.blocklyWorkspace.getAllBlocks();
+        for (let i = 0, block; block = blocks[i]; i++) {
+            if (block.warning) {
+                return block;
+            }
+        }
+        return null;
+    }
+
     blocklyCode2JSCode(oneWay) {
         let code = this.Blockly.JavaScript.workspaceToCode(this.blocklyWorkspace);
         if (!oneWay) {
@@ -109,6 +205,47 @@ class BlocklyEditor extends React.Component {
         }
 
         return code;
+    }
+
+    exportBlocks() {
+        let exportText;
+        if (this.Blockly.selected) {
+            const xmlBlock = this.Blockly.Xml.blockToDom(this.Blockly.selected);
+            if (this.Blockly.dragMode_ !== this.Blockly.DRAG_FREE) {
+                this.Blockly.Xml.deleteNext(xmlBlock);
+            }
+            // Encode start position in XML.
+            const xy = this.Blockly.selected.getRelativeToSurfaceXY();
+            xmlBlock.setAttribute('x', this.Blockly.selected.RTL ? -xy.x : xy.x);
+            xmlBlock.setAttribute('y', xy.y);
+
+            exportText = this.Blockly.Xml.domToPrettyText(xmlBlock);
+        } else {
+            const dom = this.Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
+            exportText = this.Blockly.Xml.domToPrettyText(dom);
+        }
+        this.setState({exportText});
+    }
+    
+    importBlocks() {
+        this.setState({importText: true});
+    }
+    
+    onImportBlocks(xml) {
+        if ((xml || '').trim()) {
+            try {
+                let xmlBlocks = this.Blockly.Xml.textToDom(xml);
+                if (xmlBlocks.nodeName === 'xml') {
+                    for (let b = 0; b < xmlBlocks.children.length; b++) {
+                        this.blocklyWorkspace.paste(xmlBlocks.children[b]);
+                    }
+                } else {
+                    this.blocklyWorkspace.paste(xmlBlocks);
+                }
+            } catch (e) {
+                this.setState({error: {text: e, title: I18n.t('Import error')}});
+            }
+        }
     }
 
     loadCode() {
@@ -126,13 +263,6 @@ class BlocklyEditor extends React.Component {
             window.alert('Cannot extract Blockly code!');
         }
         setTimeout(() => this.ignoreChanges = false, 100);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (this.originalCode !== nextProps.code) {
-            this.originalCode = nextProps.code || '';
-            this.loadCode();
-        }
     }
 
     componentDidUpdate() {
@@ -228,12 +358,40 @@ class BlocklyEditor extends React.Component {
         if (this.state.languageBlocklyLoaded && this.state.languageOwnLoaded) {
             this.didUpdate = setTimeout(() => {
                 this.didUpdate = null;
-                this.componentDidUpdate()
+                this.componentDidUpdate();
             }, 100);
 
-            return (
-                <div ref={el => this.blockly = el} style={{width: '100%', height: '100%', overflow: 'hidden', position: 'relative'}}/>
-            );
+            return [
+                (<div ref={el => this.blockly = el} style={{width: '100%', height: '100%', overflow: 'hidden', position: 'relative'}}/>),
+
+                this.state.message ?
+                    (<DialogMessage
+                        text={typeof this.state.message === 'object' ? this.state.message.text : this.state.message}
+                        title={typeof this.state.message === 'object' ? this.state.message.title : ''}
+                        onClose={() => this.setState({message: ''})}
+                    />) :
+                    null,
+
+                this.state.error ?
+                    (<DialogError
+                        text={typeof this.state.error === 'object' ? this.state.error.text : this.state.error}
+                        title={typeof this.state.error === 'object' ? this.state.error.title : ''}
+                        onClose={() => {
+                            if (this.blinkBlock) {
+                                this.blocklyBlinkBlock(this.blinkBlock);
+                                this.blinkBlock = null;
+                            }
+                            this.setState({error: ''});
+                        }}/>) :
+                    null,
+                
+                this.state.exportText ? (<DialogExport onClose={() => this.setState({exportText: ''})} text={this.state.exportText}/>) : null,
+                
+                this.state.importText ? (<DialogImport onClose={text => {
+                    this.setState({importText: false});
+                    this.onImportBlocks(text);
+                }}/>) : null
+            ];
         } else {
             return null;
         }
@@ -241,6 +399,7 @@ class BlocklyEditor extends React.Component {
 }
 
 BlocklyEditor.propTypes = {
+    command: PropTypes.string,
     onChange: PropTypes.func
 };
 

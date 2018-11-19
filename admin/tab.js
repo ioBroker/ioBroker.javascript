@@ -2034,7 +2034,7 @@ function Scripts(main) {
         } else {
             var dom = Blockly.Xml.workspaceToDom(that.blocklyWorkspace);
             var text = Blockly.Xml.domToPrettyText(dom);
-            $('#dialog-export-blockly-textarea').val(text).prop('readonly', true).select()
+            $('#dialog-export-blockly-textarea').val(text).prop('readonly', true).select();
         }
         $('#blockly-export-button-ok').hide();
         that.$dialogExport.dialog('open');

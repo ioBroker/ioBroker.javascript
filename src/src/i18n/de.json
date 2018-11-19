@@ -42,7 +42,6 @@
   "filter_role": "Rolle",
   "filter_room": "Zimmer",
   "for edit or create script": "zum Bearbeiten oder Erstellen eines Skripts",
-  "sc_wizard": "Wizard",
   "sc_cron": "CRON",
   "sc_date": "Datum",
   "sc_dates": "Termine",
@@ -79,6 +78,7 @@
   "sc_specific_seconds": "bestimmte Sekunden",
   "sc_time": "Zeit",
   "sc_to": "Bis",
+  "sc_wizard": "Wizard",
   "sch_all": "alle",
   "sch_astroDay": "Tag",
   "sch_astroNight": "Nachts",
@@ -175,5 +175,8 @@
   "Check is not active, because javascript adapter is disabled": "Syntax-Check ist nicht aktiv, weil javascript adapter läuft nicht.",
   "Delete": "Löschen",
   "Cannot delete non empty item!": "Kann nicht gelöscht werden, weil noch einige Elementen sind drin!",
-  "Error": "Fehler"
+  "Error": "Fehler",
+  "no blocks found": "Keine Blöcke gefunden",
+  "no group": "KEINE GRUPPE",
+  "not properly connected": "Dieser Block ist mit anderen nicht richtig verbunden."
 }

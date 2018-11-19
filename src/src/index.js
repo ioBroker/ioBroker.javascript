@@ -2,9 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
-import primary from '@material-ui/core/colors/blue';
-import secondary from '@material-ui/core/colors/orange';
-
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';

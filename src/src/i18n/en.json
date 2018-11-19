@@ -42,7 +42,6 @@
   "filter_role": "Role",
   "filter_room": "Room",
   "for edit or create script": "for edit or create script",
-  "sc_wizard": "Wizard",
   "sc_cron": "CRON",
   "sc_date": "Date",
   "sc_dates": "Dates",
@@ -79,6 +78,7 @@
   "sc_specific_seconds": "specific seconds",
   "sc_time": "Time",
   "sc_to": "To",
+  "sc_wizard": "Wizard",
   "sch_all": "all",
   "sch_astroDay": "Astro day",
   "sch_astroNight": "Astro night",
@@ -107,7 +107,7 @@
   "sch_desc_everyNMinutes": "every %s minutes",
   "sch_desc_everyNMonths": "every %s months",
   "sch_desc_everyNWeeks": "every %s weeks",
-  "sch_desc_everyNYears": "every %s year",
+  "sch_desc_everyNYears": "every %s years",
   "sch_desc_everyWeek": "every week",
   "sch_desc_everyYear": "every year",
   "sch_desc_intervalFromTo": "from %s to %s",
@@ -175,5 +175,8 @@
   "Check is not active, because javascript adapter is disabled": "Check is not active, because javascript adapter is disabled",
   "Delete": "Delete",
   "Cannot delete non empty item!": "Cannot delete non empty item!",
-  "Error": "Error"
+  "Error": "Error",
+  "no blocks found": "No blocks found",
+  "no group": "NO GROUP",
+  "not properly connected": "This block is not properly connected to other blocks."
 }

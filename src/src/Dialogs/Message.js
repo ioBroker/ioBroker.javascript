@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -9,21 +8,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import I18n from '../i18n';
-import Themes from '../Theme';
 
-const styles = theme => ({
-    titleBackground: {
-        background: Themes.colors.error.background
-    },
-    titleColor: {
-        color: Themes.colors.error.color,
-        '&>h2': {
-            color: Themes.colors.error.color,
-        }
-    },
-});
-
-class DialogError extends React.Component {
+class DialogMessage extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -39,30 +25,28 @@ class DialogError extends React.Component {
                 maxWidth="sm"
                 fullWidth={true}
                 onClose={() => this.handleOk()}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
+                aria-labelledby="message-dialog-title"
+                aria-describedby="message-dialog-description"
             >
-                <DialogTitle className={this.props.classes.titleBackground}
-                             classes={{root: this.props.classes.titleColor}}
-                             id="alert-dialog-title">{this.props.title || I18n.t('Error')}</DialogTitle>
+                <DialogTitle id="message-dialog-title">{this.props.title || I18n.t('Message')}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        {this.props.text || I18n.t('Unknown error!')}
+                    <DialogContentText id="message-dialog-description">
+                        {this.props.text}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('Ok')}</Button>
+                    <Button onClick={() => this.handleOk()} color="primary" autoFocus>{I18n.t('Close')}</Button>
                 </DialogActions>
             </Dialog>
         );
     }
 }
 
-DialogError.propTypes = {
+DialogMessage.propTypes = {
     onClose: PropTypes.func,
     title: PropTypes.string,
     text: PropTypes.string,
     icon: PropTypes.object
 };
 
-export default withStyles(styles)(DialogError);
+export default DialogMessage;

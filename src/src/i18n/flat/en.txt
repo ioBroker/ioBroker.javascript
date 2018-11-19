@@ -175,3 +175,6 @@ Check is not active, because javascript adapter is disabled
 Delete
 Cannot delete non empty item!
 Error
+No blocks found
+NO GROUP
+This block is not properly connected to other blocks.

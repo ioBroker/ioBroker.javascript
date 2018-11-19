@@ -42,7 +42,6 @@
   "filter_role": "роль",
   "filter_room": "комната",
   "for edit or create script": "для редактирования или создайте новый скрипт",
-  "sc_wizard": "Форма",
   "sc_cron": "CRON",
   "sc_date": "Дата",
   "sc_dates": "Даты",
@@ -79,6 +78,7 @@
   "sc_specific_seconds": "конкретные секунды",
   "sc_time": "Время",
   "sc_to": "До",
+  "sc_wizard": "Форма",
   "sch_all": "все",
   "sch_astroDay": "днём",
   "sch_astroNight": "ночью",
@@ -175,5 +175,8 @@
   "Check is not active, because javascript adapter is disabled": "Проверка неактивна, потому что адаптер javascript отключен",
   "Delete": "Удалить",
   "Cannot delete non empty item!": "Не удается удалить непустой элемент!",
-  "Error": "Ошибка"
+  "Error": "Ошибка",
+  "no blocks found": "Блоков нет",
+  "no group": "Нет группы",
+  "not properly connected": "Этот блок неправильно соединён или не соединён с другими блоками"
 }
