@@ -76,7 +76,8 @@ const styles = theme => ({
     },
     scriptIcon: {
         width: 18,
-        height: 18
+        height: 18,
+        borderRadius: 2
     },
     gripHandle: {
         paddingRight: 13

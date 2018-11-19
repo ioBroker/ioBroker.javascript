@@ -62,7 +62,8 @@ const styles = theme => ({
         height: 24,
         verticalAlign: 'middle',
         marginBottom: 2,
-        marginRight: 2
+        marginRight: 2,
+        borderRadius: 3
     },
     hintIcon: {
         //fontSize: 32,
