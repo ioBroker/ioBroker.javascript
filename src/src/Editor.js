@@ -165,6 +165,32 @@ class Editor extends React.Component {
         if (this.props.onSelectedChange && this.state.selected) {
             setTimeout(() => this.props.onSelectedChange(this.state.selected, this.state.editing));
         }
+        this.onBrowserCloseBound = this.onBrowserClose.bind(this);
+    }
+
+    componentDidMount() {
+        window.addEventListener('beforeunload', this.onBrowserCloseBound, false);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('beforeunload', this.onBrowserCloseBound);
+    }
+
+    onBrowserClose(e) {
+        const isChanged = Object.keys(this.scripts).find(id =>
+            JSON.stringify(this.scripts[id]) !== JSON.stringify(this.props.objects[this.state.selected].common));
+
+        if (!!isChanged) {
+            const message = I18n.t('Configuration not saved.');
+            e = e || window.event;
+            // For IE and Firefox
+            if (e) {
+                e.returnValue = message;
+            }
+
+            // For Safari
+            return message;
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -279,7 +305,7 @@ class Editor extends React.Component {
                 window.localStorage && window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
                 if (newState.selected !== undefined) {
                     newState.changed = this.isScriptChanged(newState.selected);
-                    const common = newState.selected && (this.scripts[newState.selected] || this.props.objects[newState.selected].common);
+                    const common = newState.selected && (this.scripts[newState.selected] || (this.props.objects[newState.selected] && this.props.objects[newState.selected].common));
                     newState.blockly = common ? common.engineType === 'Blockly' : false;
                     newState.showBlocklyCode = false;
                 }

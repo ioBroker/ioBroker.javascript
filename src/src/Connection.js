@@ -11,6 +11,8 @@ class Connection {
     constructor(props) {
         props = props || {};
         this.props = props;
+        this.autoSubscribes = this.props.autoSubscribes || [];
+        this.autoSubscribeLog = this.props.autoSubscribeLog;
         this.socket = window.io.connect(
             window.location.protocol + '//' + window.location.host.replace('3000', 8081),
             {query: 'ws=true'});
@@ -26,12 +28,15 @@ class Connection {
         this.firstConnect = true;
         this.waitForRestart = false;
         this.systemLang = 'en';
-        this.props.onProgress = this.props.onProgress || function () {};
-        this.props.onError = this.props.onError || function (err) {console.error(err);};
+        this.connected = false;
+        this.statesSubscribes = {}; // subscribe for states
+        this.onProgress = this.props.onProgress || function () {};
+        this.onError = this.props.onError || function (err) {console.error(err);};
 
         this.socket.on('connect', () => {
+            this.connected = true;
             if (this.firstConnect) {
-                this.props.onProgress(PROGRESS.CONNECTED);
+                this.onProgress(PROGRESS.CONNECTED);
                 this.firstConnect = false;
                 this.socket.emit('getUserPermissions', (err, acl) => {
                     this.acl = acl;
@@ -51,24 +56,28 @@ class Connection {
                         this.props.onLanguage && this.props.onLanguage(this.systemLang);
 
                         this.getObjects(() => {
-                            this.props.onProgress(PROGRESS.READY);
+                            this.onProgress(PROGRESS.READY);
                             this.props.onReady && this.props.onReady(this.objects, this.scripts);
                         });
                     });
                 });
             } else {
-                this.props.onProgress(PROGRESS.READY);
+                this.onProgress(PROGRESS.READY);
             }
 
-            this.subscribeLog(true);
+            this.subscribe(true);
 
             if (this.waitForRestart) {
                 window.location.reload();
             }
         });
-        this.socket.on('disconnect', () => this.props.onProgress(PROGRESS.CONNECTING));
+        this.socket.on('disconnect', () => {
+            this.connected = false;
+            this.subscribed = false;
+            this.onProgress(PROGRESS.CONNECTING)
+        });
         this.socket.on('reconnect', () => {
-            this.props.onProgress(PROGRESS.READY);
+            this.onProgress(PROGRESS.READY);
             if (this.waitForRestart) {
                 window.location.reload();
             }
@@ -80,10 +89,22 @@ class Connection {
         });
 
         this.socket.on('permissionError', err =>
-            this.props.onError && this.props.onError({message: 'no permission', operation: err.operation, type: err.type, id: (err.id || '')}));
+            this.onError({message: 'no permission', operation: err.operation, type: err.type, id: (err.id || '')}));
 
         this.socket.on('objectChange', (id, obj) => setTimeout(() => this.objectChange(id, obj), 0));
         this.socket.on('stateChange', (id, state) => setTimeout(() => this.stateChange(id, state), 0))
+    }
+
+    subscribeState(id, cb) {
+        if (!this.statesSubscribes[id]) {
+            this.statesSubscribes[id] = {reg: new RegExp(id.replace(/\./g, '\.').replace(/\*/g, '.*')), cbs: []};
+            this.statesSubscribes[id].cbs.push(cb);
+            if (this.connected) {
+                this.socket.emit('subscribe', id);
+            }
+        } else {
+            this.statesSubscribes[id].cbs.indexOf(cb) === -1 && this.statesSubscribes[id].cbs.push(cb);
+        }
     }
 
     objectChange(id, obj) {
@@ -139,13 +160,17 @@ class Connection {
 
     stateChange(id, state) {
         id = id ? id.replace(/[\s'"]/g, '_') : '';
-
+        for (const task in this.statesSubscribes) {
+            if (this.statesSubscribes.hasOwnProperty(task) && this.statesSubscribes[task].reg.test(id)) {
+                this.statesSubscribes[task].cbs.forEach(cb => cb(id, state));
+            }
+        }
     }
 
     getStates(cb) {
         this.socket.emit('getStates', (err, res) => {
             this.states = res;
-            this.props.onProgress(PROGRESS.STATES_LOADED);
+            this.onProgress(PROGRESS.STATES_LOADED);
             cb && setTimeout(() => cb(this.states), 0);
         });
     }
@@ -176,27 +201,37 @@ class Connection {
                     if (obj.type === 'channel' && id.match(/^script\.js\./)) this.scripts.groups.push(id);
                     if (obj.type === 'host')     this.scripts.hosts.push(id);
                 }
-                this.props.onProgress(PROGRESS.OBJECTS_LOADED);
+                this.onProgress(PROGRESS.OBJECTS_LOADED);
 
                 cb && cb(this.objects);
             }, 0);
         });
     }
 
-    subscribeLog(isEnable) {
+    subscribe(isEnable) {
         if (isEnable && !this.subscribed) {
             this.subscribed = true;
             console.log('Subscribe logs');
-            this.socket.emit('subscribeObjects', 'script.*');
-            this.socket.emit('subscribeObjects', 'system.adapter.javascript.*');
-            this.socket.emit('requireLog', true);
+            this.autoSubscribes.forEach(id => this.socket.emit('subscribeObjects', id));
+            this.autoSubscribeLog && this.socket.emit('requireLog', true);
+
+            Object.keys(this.statesSubscribes).forEach(id => this.socket.emit('subscribe', id));
         } else if (!isEnable && this.subscribed) {
             this.subscribed = false;
             console.log('Unsubscribe logs');
-            this.socket.emit('unsubscribeObjects', 'script.*');
-            this.socket.emit('unsubscribeObjects', 'system.adapter.javascript.*');
-            this.socket.emit('requireLog', false);
+            this.autoSubscribes.forEach(id => this.socket.emit('unsubscribeObjects', id));
+            this.autoSubscribeLog && this.socket.emit('requireLog', false);
+
+            Object.keys(this.statesSubscribes).forEach(id => this.socket.emit('unsubscribe', id));
         }
+    }
+
+    delObject(id) {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('delObject', id, err => {
+                err ? reject(err) : resolve();
+            });
+        });
     }
 
     setObject(id, obj) {

@@ -251,7 +251,7 @@ class ScriptEditor extends React.Component {
             <div ref={el => this.monacoDiv = el} style={{width: '100%', height: '100%', overflow: 'hidden', position: 'relative'}}>
                 {!this.state.check && (<Button
                     mini
-                    title={I18n.t('Check is not active, becuase javascript adapter is disabled')}
+                    title={I18n.t('Check is not active, because javascript adapter is disabled')}
                     style={{bottom: 10, right: 10, opacity: 0.5, position: 'absolute', zIndex: 1, background: 'red'}}
                     variant="fab"
                     color="secondary"><IconNoCheck/></Button>)}

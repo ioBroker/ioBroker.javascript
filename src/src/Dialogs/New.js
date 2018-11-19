@@ -78,7 +78,25 @@ class DialogNew extends React.Component {
                                 onChange={e => this.setState({parent: e.target.value})}
                                 inputProps={{name: 'parent', id: 'parent',}}
                             >
-                                {this.props.parents.map(parent => (<MenuItem value={parent.id}>{parent.name}</MenuItem>))}
+                                {this.props.parents.map(parent => {
+                                    const parts = parent.id.split('.');
+                                    parts.splice(0, 2); // remove script.js
+                                    const names = [];
+                                    let id = 'script.js';
+                                    parts.forEach((n, i) => {
+                                        id += '.' + n;
+                                        const el = this.props.parents.find(item => item.id === id);
+                                        if (el) {
+                                            names.push(el.name);
+                                        } else {
+                                            names.push(n);
+                                        }
+                                    });
+                                    if (!names.length) {
+                                        names.push(parent.name);
+                                    }
+                                    return (<MenuItem key={parent.id} value={parent.id}>{names.join(' / ')}</MenuItem>)
+                                })}
                             </Select>
                         </FormControl>
                         <TextField

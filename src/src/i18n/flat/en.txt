@@ -106,7 +106,7 @@ every %s hours
 every %s minutes
 every %s months
 every %s weeks
-every %s year
+every %s years
 every week
 every year
 from %s to %s
@@ -171,3 +171,7 @@ Timestamp
 User
 Value
 use seconds
+Check is not active, because javascript adapter is disabled
+Delete
+Cannot delete non empty item!
+Error

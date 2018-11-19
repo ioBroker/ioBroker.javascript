@@ -171,3 +171,7 @@ tooltip_ts
 tooltip_user
 tooltip_value
 use seconds
+Check is not active, because javascript adapter is disabled
+Delete
+Cannot delete non empty item!
+Error

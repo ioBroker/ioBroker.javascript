@@ -96,6 +96,7 @@
   "sch_astro_sunriseEnd": "Sunrise end",
   "sch_astro_sunset": "Sunset",
   "sch_astro_sunsetStart": "Sunset start",
+  "sch_at": "at",
   "sch_desc_atTime": "at %s",
   "sch_desc_everyDay": "every day",
   "sch_desc_everyHour": "every hour",
@@ -163,7 +164,6 @@
   "sch_validTo": "to",
   "sch_wholeDay": "Whole day",
   "sch_yearEveryMonth": "every month",
-  "sch_at": "at",
   "tooltip_ack": "Acknowledge",
   "tooltip_from": "From",
   "tooltip_lc": "Last changed",
@@ -171,5 +171,9 @@
   "tooltip_ts": "Timestamp",
   "tooltip_user": "User",
   "tooltip_value": "Value",
-  "use seconds": "use seconds"
+  "use seconds": "use seconds",
+  "Check is not active, because javascript adapter is disabled": "Check is not active, because javascript adapter is disabled",
+  "Delete": "Delete",
+  "Cannot delete non empty item!": "Cannot delete non empty item!",
+  "Error": "Error"
 }

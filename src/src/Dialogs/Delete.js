@@ -5,6 +5,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
+import {MdDelete as IconDelete} from 'react-icons/md';
+
 import I18n from '../i18n';
 
 class DialogDelete extends React.Component {
@@ -46,7 +48,8 @@ class DialogDelete extends React.Component {
             >
                 <DialogTitle id="confirmation-dialog-title">{I18n.t('Are you sure?')}</DialogTitle>
                 <DialogContent>
-                    <h2>{I18n.t('Delete %s', this.state.name)}</h2>
+                    <IconDelete/>
+                    <span style={{fontSize: 14, fontWeight: 'bold'}}>{I18n.t('Delete %s', this.state.name)}</span>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleOk} color="primary">{I18n.t('Ok')}</Button>

@@ -10,12 +10,15 @@ export default {
         depthOffset: 20
     },
     colors: {
-        secondary: {
-
-        },
+        primary: '#3399CC',
+        secondary: '#164477',
         selected: {
-            background: '#008fff',
+            background: '#164477',
             color: 'white'
+        },
+        error: {
+            background: '#dc0300',
+            color: '#FFFFFF'
         }
     },
     toolbar: {

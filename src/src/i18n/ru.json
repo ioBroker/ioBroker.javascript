@@ -96,6 +96,7 @@
   "sch_astro_sunriseEnd": "Восход солнца",
   "sch_astro_sunset": "Заход солнца",
   "sch_astro_sunsetStart": "Начало заката",
+  "sch_at": "дата",
   "sch_desc_atTime": "sch_desc_atTime",
   "sch_desc_everyDay": "sch_desc_everyDay",
   "sch_desc_everyHour": "sch_desc_everyHour",
@@ -163,7 +164,6 @@
   "sch_validTo": "sch_validTo",
   "sch_wholeDay": "sch_wholeDay",
   "sch_yearEveryMonth": "каждый месяц",
-  "sch_at": "дата",
   "tooltip_ack": "Подтверждено",
   "tooltip_from": "От",
   "tooltip_lc": "Последнее изменение",
@@ -171,5 +171,9 @@
   "tooltip_ts": "Время",
   "tooltip_user": "Пользователь",
   "tooltip_value": "Значение",
-  "use seconds": "использовать секунды"
+  "use seconds": "использовать секунды",
+  "Check is not active, because javascript adapter is disabled": "Проверка неактивна, потому что адаптер javascript отключен",
+  "Delete": "Удалить",
+  "Cannot delete non empty item!": "Не удается удалить непустой элемент!",
+  "Error": "Ошибка"
 }

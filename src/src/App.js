@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import SplitterLayout from 'react-splitter-layout';
+import {MdMenu as IconMenuClosed} from 'react-icons/md';
+import {MdClose as IconMenuOpened} from 'react-icons/md';
 
 import SideMenu from './SideMenu';
 import Log from './Log';
@@ -10,28 +12,65 @@ import Connection from './Connection';
 import {PROGRESS} from './Connection';
 import Loader from './Components/Loader'
 import I18n from './i18n';
+import DialogError from './Dialogs/Error';
 
 const styles = theme => ({
     root: Theme.root,
-    appSideMenu: {
+    menuTransition: {
+        transitionProperty: 'margin-left',
+        transitionDuration: '0.3s'
+    },
+    appSideMenuWithMenu: {
+        marginLeft: 0,
         width: Theme.menu.width,
         height: '100%',
     },
-    appBar: {
+    appSideMenuWithoutMenu: {
+        marginLeft: -Theme.menu.width,
+        width: Theme.menu.width,
+        height: '100%',
+    },
+    /*appBarWithMenu: {
         width: `calc(100% - ${Theme.menu.width}px)`,
         marginLeft: Theme.menu.width,
     },
+    appBarWithoutMenu: {
+        width: `100%`,
+        marginLeft: 0,
+    },*/
     content: {
         width: '100%',
         height: '100%',
-        backgroundColor: theme.palette.background.default
+        backgroundColor: theme.palette.background.default,
+        position: 'relative'
     },
-    splitterDiv: {
+    splitterDivWithMenu: {
         width: `calc(100% - ${Theme.menu.width}px)`,
+        height: '100%'
+    },
+    splitterDivWithoutMenu: {
+        width: `100%`,
         height: '100%'
     },
     progress: {
         margin: 100
+    },
+    menuOpenCloseButton: {
+        position: 'absolute',
+        left: 0,
+        borderRadius: '0 5px 5px 0',
+        top: 6,
+        paddingTop: 8,
+        cursor: 'pointer',
+        zIndex: 1,
+        height: 25,
+        width: 20,
+        background: Theme.colors.secondary,
+        color: Theme.colors.primary,
+        paddingLeft: 3,
+        '&:hover': {
+            color: 'white'
+        }
     }
 });
 
@@ -50,13 +89,20 @@ class App extends Component {
             resizing: false,
             selected: null,
             logMessage: {},
-            editing: []
+            editing: [],
+            menuOpened: window.localStorage ? window.localStorage.getItem('App.menuOpened') !== 'false' : true,
+            menuSelectId: '',
+            errorText: '',
+            expertMode: window.localStorage ? window.localStorage.getItem('App.expertMode') === 'true' : false,
+            runningInstances: {}
         };
-        this.logIndex = 0;
+        // this.logIndex = 0;
         this.logSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.logSize')) || 150 : 150;
         this.scripts = {};
 
         this.socket = new Connection({
+            autoSubscribes: ['script.*', 'system.adapter.javascript.*'],
+            autoSubscribeLog: true,
             onProgress: progress => {
                 if (progress === PROGRESS.CONNECTING) {
                     this.setState({connected: false});
@@ -77,6 +123,14 @@ class App extends Component {
             onLog: message => {
                 //this.logIndex++;
                 //this.setState({logMessage: {index: this.logIndex, message}})
+            }
+        });
+
+        this.socket.subscribeState('system.adapter.javascript.*.alive', (id, state) => {
+            if (this.state.runningInstances[id] !== (state ? state.val : false)) {
+                const runningInstances = JSON.parse(JSON.stringify(this.state.runningInstances));
+                runningInstances[id] = (state ? state.val : false);
+                this.setState({runningInstances});
             }
         });
     }
@@ -131,10 +185,6 @@ class App extends Component {
         }
     }
 
-    onNewScript(id, name) {
-
-    }
-
     onRename(oldId, newId, newName, newInstance) {
         console.log(`Rename ${oldId} => ${newId}`);
         let promise;
@@ -165,16 +215,28 @@ class App extends Component {
 
     onSelect(selected) {
         if (this.objects[selected] && this.objects[selected].common && this.objects[selected].type === 'script') {
-            this.setState({selected});
+            this.setState({selected, menuSelectId: selected}, () =>
+                setTimeout(() => this.setState({menuSelectId: ''})), 300);
+        }
+    }
+
+    onExpertModeChange(expertMode) {
+        if (this.state.expertMode !== expertMode) {
+            window.localStorage && window.localStorage.setItem('App.expertMode', expertMode ? 'true' : 'false');
+            this.setState({expertMode});
         }
     }
 
     showError(err) {
-         console.error(err);
+        this.setState({errorText: err});
     }
 
     onDelete(id) {
-
+        this.socket.delObject(id)
+        .then(() => {})
+        .catch(err => {
+            this.showError(err);
+        });
     }
 
     onEdit(id) {
@@ -197,7 +259,8 @@ class App extends Component {
                 },
                 type: 'channel'
             }).then(() => {
-
+                setTimeout(() => this.setState({menuSelectId: id}, () =>
+                    setTimeout(() => this.setState({menuSelectId: ''})), 300), 1000);
             }).catch(err => {
                 this.showError(err);
             });
@@ -214,7 +277,7 @@ class App extends Component {
                 },
                 type: 'script'
             }).then(() => {
-
+                setTimeout(() => this.onSelect(id), 1000);
             }).catch(err => {
                 this.showError(err);
             });
@@ -240,10 +303,9 @@ class App extends Component {
             return (<Loader />);
         }
 
-
         return (
             <div className={classes.root}>
-                <nav className={classes.appSideMenu} key="menu">
+                <nav className={classes.menuTransition + ' ' + (this.state.menuOpened ? classes.appSideMenuWithMenu : classes.appSideMenuWithoutMenu)} key="menu">
                     <SideMenu
                         key="sidemenu"
                         scripts={this.scripts}
@@ -252,18 +314,30 @@ class App extends Component {
                         update={this.state.updateScripts}
                         onRename={this.onRename.bind(this)}
                         onSelect={this.onSelect.bind(this)}
+                        selectId={this.state.menuSelectId}
                         onEdit={this.onEdit.bind(this)}
+                        expertMode={this.state.expertMode}
+                        runningInstances={this.state.runningInstances}
+                        onExpertModeChange={this.onExpertModeChange.bind(this)}
+                        onDelete={this.onDelete.bind(this)}
                         onAddNew={this.onAddNew.bind(this)}
                         onEnableDisable={this.onEnableDisable.bind(this)}
                     />
                 </nav>
                 <div className={classes.content} key="main">
+                    <div className={classes.menuOpenCloseButton} onClick={() => {
+                        window.localStorage && window.localStorage.setItem('App.menuOpened', this.state.menuOpened ? 'false' : 'true');
+                        this.setState({menuOpened: !this.state.menuOpened, resizing: true});
+                        setTimeout(() => this.setState({resizing: false}), 300);
+                    }}>
+                        {this.state.menuOpened ? (<IconMenuOpened />) : (<IconMenuClosed />)}
+                    </div>
                     <SplitterLayout
                         key="splitterLayout"
                         vertical={true}
                         primaryMinSize={100}
                         secondaryInitialSize={this.logSize}
-                        customClassName={classes.splitterDiv}
+                        customClassName={classes.menuTransition + ' ' + classes.splitterDivWithoutMenu}
                         onDragStart={() => this.setState({resizing: true})}
                         onSecondaryPaneSizeChange={size => this.logSize = parseFloat(size)}
                         onDragEnd={() => {
@@ -275,6 +349,7 @@ class App extends Component {
                             key="editor"
                             visible={!this.state.resizing}
                             connection={this.socket}
+                            runningInstances={this.state.runningInstances}
                             onChange={(id, common) => this.onUpdateScript(id, common)}
                             onSelectedChange={(id, editing) => {
                                 const newState = {};
@@ -296,6 +371,7 @@ class App extends Component {
                         <Log key="log" editing={this.state.editing} connection={this.socket} selected={this.state.selected}/>
                     </SplitterLayout>
                 </div>
+                {this.state.errorText ? (<DialogError onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/>) : null}
             </div>
         );
     }

@@ -10,12 +10,15 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import red from '@material-ui/core/colors/red';
 import green from '@material-ui/core/colors/green';
 
+import {MdMoreVert as IconMore} from 'react-icons/md';
 import {MdFolder as IconFolder} from 'react-icons/md';
-// import {MdDelete as IconDelete} from 'react-icons/md';
+import {MdDelete as IconDelete} from 'react-icons/md';
 import {MdInput as IconDoEdit} from 'react-icons/md';
 import {MdDragHandle as IconGrip} from 'react-icons/md';
 import {MdExpandMore as IconExpand} from 'react-icons/md';
@@ -28,6 +31,7 @@ import {MdSwapVert as IconReorder} from 'react-icons/md';
 import {MdEdit as IconEdit} from 'react-icons/md';
 //import {MdRefresh as IconRestart} from 'react-icons/md';
 import {MdGpsFixed as IconFind} from 'react-icons/md';
+import {MdPersonPin as IconExpert} from 'react-icons/md';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
@@ -39,6 +43,9 @@ import DialogRename from './Dialogs/Rename';
 import DialogDelete from './Dialogs/Delete';
 import DialogAddNewScript from './Dialogs/AddNewScript';
 import DialogNew from './Dialogs/New';
+import DialogError from './Dialogs/Error';
+
+const MENU_ITEM_HEIGHT = 48;
 
 const styles = theme => ({
     drawerPaper: {
@@ -54,6 +61,9 @@ const styles = theme => ({
         width: 32,
         height: 32,
         padding: 2
+    },
+    iconDropdownMenu: {
+        paddingRight: 5
     },
     menu: {
         width: '100%',
@@ -217,19 +227,58 @@ class SideDrawer extends React.Component {
             renaming: null,
             deleting: null,
             choosingType: null,
-            instances: props.instances || []
+            errorText: '',
+            instances: props.instances || [],
+            menuOpened: false,
+            menuAnchorEl: null,
+            expertMode: this.props.expertMode,
         };
+
+        const newExp = this.ensureSelectedIsVisible();
+        if (newExp) {
+            this.state.expanded = newExp;
+        }
 
         this.scriptsHash = props.scriptsHash;
 
         this.state.isAllZeroInstances = this.getIsAllZeroInstances();
     }
 
+    ensureSelectedIsVisible(selected, expanded) {
+        expanded = JSON.parse(JSON.stringify(expanded || this.state.expanded));
+        selected = selected || this.state.selected;
+        let changed = false;
+        // ensure that the item is visible
+        let el = typeof selected === 'object' ? selected : this.state.listItems.find(it => it.id === selected);
+        do {
+            el = el && el.parent && this.state.listItems.find(it => it.id === el.parent);
+            if (el) {
+                if (expanded.indexOf(el.id) === -1) {
+                    expanded.push(el.id);
+                    changed = true;
+                }
+            }
+        } while (el);
+        return changed && expanded;
+    }
+
     componentWillReceiveProps(nextProps) {
+        if (this.expertMode !== nextProps.expertMode) {
+            this.setState({expertMode: nextProps.expertMode});
+        }
         if (this.scriptsHash !== nextProps.scriptsHash && nextProps.scripts) {
             const listItems = prepareList(nextProps.scripts || {});
             const isAllZeroInstances = this.getIsAllZeroInstances(listItems, nextProps.instances || []);
-            this.setState({listItems, isAllZeroInstances});
+            const newExp = this.ensureSelectedIsVisible();
+            const newState = {listItems, isAllZeroInstances};
+            if (newExp) {
+                newState.expanded = newExp;
+            }
+            this.setState(newState);
+        }
+
+        if (nextProps.selectId && this.state.selected !== nextProps.selectId) {
+            this.onClick(this.state.listItems.find(item => item.id === nextProps.selectId));
         }
     }
 
@@ -250,6 +299,10 @@ class SideDrawer extends React.Component {
 
     saveExpanded(expanded) {
         window.localStorage.setItem('SideMenu.expanded', JSON.stringify(expanded || this.state.expanded));
+    }
+
+    showError(err) {
+        this.setState({errorText: err});
     }
 
     onExpand(id, e) {
@@ -335,7 +388,13 @@ class SideDrawer extends React.Component {
     }
 
     onDelete(item) {
-        this.setState({deleting: item.id});
+        return new Promise(resolve => {
+            if (typeof item !== 'object') {
+                this.setState({deleting: item});
+            } else {
+                this.setState({deleting: item.id});
+            }
+        });
     }
 
     onEdit(item, e) {
@@ -381,9 +440,14 @@ class SideDrawer extends React.Component {
 
     onClick(item, e) {
         e && e.stopPropagation();
-        if (!this.state.reorder) {
-            this.setState({selected: item.id});
-            window.localStorage.setItem('SideMenu.selected', item.id);
+        if (!this.state.reorder && item) {
+            const expanded = this.ensureSelectedIsVisible(item);
+            const newState = {selected: item.id};
+            if (expanded) {
+                newState.expanded = expanded;
+            }
+            this.setState(newState);
+            window.localStorage && window.localStorage.setItem('SideMenu.selected', item.id);
         }
     }
 
@@ -405,6 +469,10 @@ class SideDrawer extends React.Component {
     renderOneItem(items, item) {
         let children = items.filter(i => i.parent === item.id);
 
+        if (item.id === 'script.js.global' && !this.state.expertMode) {
+            return;
+        }
+
         const depthPx = this.state.reorder ?
             8 + (this.state.draggedId === item.id ? this.state.dragDepth : item.depth) * Theme.menu.depthOffset :
             item.depth * Theme.menu.depthOffset;
@@ -415,13 +483,19 @@ class SideDrawer extends React.Component {
                 <span key="title">{title}</span>)];
         }
 
+        const style = Object.assign({
+            paddingLeft: depthPx,
+            cursor: item.type === 'folder' && this.state.reorder ? 'default' : 'inherit'
+        }, item.id === this.state.selected && !this.state.reorder ? Theme.colors.selected : {});
+
+        if (item.id === 'script.js.global' && item.id !== this.state.selected) {
+            style.color = '#00a200';
+        }
+
         const inner = (
             <ListItem
                 key={item.id}
-                style={Object.assign({
-                    paddingLeft: depthPx,
-                    cursor: item.type === 'folder' && this.state.reorder ? 'default' : 'inherit'
-                }, item.id === this.state.selected && !this.state.reorder ? Theme.colors.selected : {})}
+                style={style}
                 className={(item.type === 'folder' ? this.props.classes.folder : this.props.classes.element) + ' ' + (this.state.reorder ? this.props.classes.reorder : '')}
                 onClick={e => this.onClick(item, e)}
                 onDoubleClick={e => this.onDblClick(item, e)}
@@ -493,7 +567,6 @@ class SideDrawer extends React.Component {
 
         this.parent = parent;
         this.setState({creatingFolder: true});
-
     }
 
     onRename(e) {
@@ -524,6 +597,58 @@ class SideDrawer extends React.Component {
         const result = [];
         const classes = this.props.classes;
         if (!this.state.reorder) {
+            // Menu
+            result.push((<IconButton
+                key="menuButton"
+                aria-label="More"
+                aria-owns={this.state.menuOpened ? 'long-menu' : undefined}
+                aria-haspopup="true"
+                onClick={event => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    this.setState({menuOpened: true, menuAnchorEl: event.currentTarget});
+                }}
+            >
+                <IconMore />
+            </IconButton>));
+
+            result.push((<Menu
+                key="menu"
+                id="long-menu"
+                anchorEl={this.state.menuAnchorEl}
+                open={this.state.menuOpened}
+                onClose={() => this.setState({menuOpened: false, menuAnchorEl: null})}
+                PaperProps={{
+                    style: {
+                        maxHeight: MENU_ITEM_HEIGHT * 4.5,
+                        width: 200,
+                    },
+                }}
+            >
+                <MenuItem
+                    key="deleted"
+                    disabled={!this.state.selected || this.state.selected === 'script.js.global' || this.state.selected === 'script.js.common'}
+                    onClick={event => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        if (this.state.listItems.find(item => item.parent === this.state.selected)) {
+                            this.showError(I18n.t('Cannot delete non empty item!'));
+                            return;
+                        }
+
+                        this.setState({menuOpened: false, menuAnchorEl: null}, () =>
+                            this.onDelete(this.state.selected).then(() => {}));
+                    }}><IconDelete className={this.props.classes.iconDropdownMenu}  style={{color: 'red'}}/>{I18n.t('Delete')}
+                </MenuItem>
+                <MenuItem key="expertMode" selected={this.state.expertMode}
+                          onClick={event => {
+                              event.stopPropagation();
+                              event.preventDefault();
+                              this.props.onExpertModeChange && this.props.onExpertModeChange(!this.state.expertMode);
+                          }}><IconExpert className={this.props.classes.iconDropdownMenu} style={{color: 'orange'}}/>{I18n.t('ExpertMode')}
+                </MenuItem>
+            </Menu>));
+
             // New Script
             result.push((<IconButton
                 key="new-script"
@@ -661,7 +786,9 @@ class SideDrawer extends React.Component {
                 instances={this.props.instances}
                 type={this.state.creatingScript}
                 parent={this.parent}
-                onAdd={(id, name, instance, type) => this.props.onAddNew && this.props.onAddNew(id, name, false, instance, type)}
+                onAdd={(id, name, instance, type) => {
+                    this.props.onAddNew && this.props.onAddNew(id, name, false, instance, type);
+                }}
             />) : null,
             this.state.creatingFolder ? (<DialogNew
                 key="dialog-new-folder"
@@ -670,8 +797,11 @@ class SideDrawer extends React.Component {
                 parents={this.getFolders()}
                 name={this.getUniqueFolderName()}
                 parent={this.parent}
-                onAdd={(id, name) => this.props.onAddNew && this.props.onAddNew(id, name, true)}
-            />) : null
+                onAdd={(id, name) => {
+                    this.props.onAddNew && this.props.onAddNew(id, name, true);
+                }}
+            />) : null,
+            this.state.errorText ? (<DialogError onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/>) : null
         ];
     }
 }
@@ -682,6 +812,9 @@ SideDrawer.propTypes = {
     scripts: PropTypes.object.isRequired,
     scriptsHash: PropTypes.number,
     onEdit: PropTypes.func,
+    selectId: PropTypes.string,
+    expertMode: PropTypes.boolean,
+    onExpertModeChange: PropTypes.func,
     onEnableDisable: PropTypes.func,
     onSelect: PropTypes.func,
     onAddNew: PropTypes.func,

@@ -171,3 +171,7 @@ Zeitstempel
 Benutzer
 Wert
 Sekunden verwenden
+Syntax-Check ist nicht aktiv, weil javascript adapter läuft nicht.
+Löschen
+Kann nicht gelöscht werden, weil noch einige Elementen sind drin!
+Fehler

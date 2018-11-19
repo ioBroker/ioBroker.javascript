@@ -96,6 +96,7 @@
   "sch_astro_sunriseEnd": "Sonnenaufgangende",
   "sch_astro_sunset": "Sonnenuntergang",
   "sch_astro_sunsetStart": "Sonnenuntergangstart",
+  "sch_at": "am",
   "sch_desc_atTime": "sch_desc_atTime",
   "sch_desc_everyDay": "sch_desc_everyDay",
   "sch_desc_everyHour": "sch_desc_everyHour",
@@ -163,7 +164,6 @@
   "sch_validTo": "sch_validTo",
   "sch_wholeDay": "sch_wholeDay",
   "sch_yearEveryMonth": "jedes Monat",
-  "sch_at": "am",
   "tooltip_ack": "Bestätigt",
   "tooltip_from": "Von",
   "tooltip_lc": "Zuletzt geändert",
@@ -171,5 +171,9 @@
   "tooltip_ts": "Zeitstempel",
   "tooltip_user": "Benutzer",
   "tooltip_value": "Wert",
-  "use seconds": "Sekunden verwenden"
+  "use seconds": "Sekunden verwenden",
+  "Check is not active, because javascript adapter is disabled": "Syntax-Check ist nicht aktiv, weil javascript adapter läuft nicht.",
+  "Delete": "Löschen",
+  "Cannot delete non empty item!": "Kann nicht gelöscht werden, weil noch einige Elementen sind drin!",
+  "Error": "Fehler"
 }
