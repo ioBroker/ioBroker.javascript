@@ -173,9 +173,11 @@ class BlocklyEditor extends React.Component {
     // get unconnected block
     blocklyGetUnconnectedBlock () {
         const blocks = this.blocklyWorkspace.getAllBlocks();
-        for (let i = 0, block; block = blocks[i]; i++) {
+        let block;
+        for (let i = 0; (block = blocks[i]); i++) {
             const connections = block.getConnections_(true);
-            for (let j = 0, conn; conn = connections[j]; j++) {
+            let conn;
+            for (let j = 0; (conn = connections[j]); j++) {
                 if (!conn.sourceBlock_ || ((conn.type === this.Blockly.INPUT_VALUE || conn.type === this.Blockly.OUTPUT_VALUE) && !conn.targetConnection && !conn._optional)) {
                     return block;
                 }
@@ -187,7 +189,8 @@ class BlocklyEditor extends React.Component {
     // get block with warning
     blocklyGetBlockWithWarning() {
         const blocks = this.blocklyWorkspace.getAllBlocks();
-        for (let i = 0, block; block = blocks[i]; i++) {
+        let block;
+        for (let i = 0; (block = blocks[i]); i++) {
             if (block.warning) {
                 return block;
             }

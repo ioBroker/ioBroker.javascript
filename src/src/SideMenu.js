@@ -31,6 +31,8 @@ import {MdSwapVert as IconReorder} from 'react-icons/md';
 import {MdEdit as IconEdit} from 'react-icons/md';
 import {MdGpsFixed as IconFind} from 'react-icons/md';
 import {MdPersonPin as IconExpert} from 'react-icons/md';
+import {FaFileExport as IconExport} from 'react-icons/fa';
+import {FaFileImport as IconImport} from 'react-icons/fa';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
@@ -232,6 +234,7 @@ class SideDrawer extends React.Component {
             menuOpened: false,
             menuAnchorEl: null,
             expertMode: this.props.expertMode,
+            runningInstances: this.props.runningInstances || {}
         };
 
         const newExp = this.ensureSelectedIsVisible();
@@ -251,6 +254,7 @@ class SideDrawer extends React.Component {
         // ensure that the item is visible
         let el = typeof selected === 'object' ? selected : this.state.listItems.find(it => it.id === selected);
         do {
+            // eslint-disable-next-line
             el = el && el.parent && this.state.listItems.find(it => it.id === el.parent);
             if (el) {
                 if (expanded.indexOf(el.id) === -1) {
@@ -280,6 +284,34 @@ class SideDrawer extends React.Component {
         if (nextProps.selectId && this.state.selected !== nextProps.selectId) {
             this.onClick(this.state.listItems.find(item => item.id === nextProps.selectId));
         }
+        /*
+        const newState = {};
+        let changed = false;
+        if (this.expertMode !== nextProps.expertMode) {
+            changed = true;
+            newState.expertMode = nextProps.expertMode;
+        }
+        if (JSON.stringify(nextProps.runningInstances) !== JSON.stringify(this.state.runningInstances)) {
+            changed = true;
+            newState.runningInstances = nextProps.runningInstances;
+        }
+        if (this.scriptsHash !== nextProps.scriptsHash && nextProps.scripts) {
+            const listItems = prepareList(nextProps.scripts || {});
+            const isAllZeroInstances = this.getIsAllZeroInstances(listItems, nextProps.instances || []);
+            const newExp = this.ensureSelectedIsVisible();
+            if (newExp) {
+                newState.expanded = newExp;
+            }
+            this.setState(newState);
+            newState.listItems = nextProps.listItems;
+            newState.isAllZeroInstances = nextProps.isAllZeroInstances;
+            changed = true;
+        }
+
+        if (nextProps.selectId && this.state.selected !== nextProps.selectId) {
+            this.onClick(this.state.listItems.find(item => item.id === nextProps.selectId));
+        }
+        changed && this.setState(newState);*/
     }
 
     getIsAllZeroInstances(listItems, instances) {
@@ -644,9 +676,26 @@ class SideDrawer extends React.Component {
                           onClick={event => {
                               event.stopPropagation();
                               event.preventDefault();
-                              this.props.onExpertModeChange && this.props.onExpertModeChange(!this.state.expertMode);
+                              this.setState({menuOpened: false, menuAnchorEl: null}, () =>
+                                  this.props.onExpertModeChange && this.props.onExpertModeChange(!this.state.expertMode));
                           }}><IconExpert className={this.props.classes.iconDropdownMenu} style={{color: 'orange'}}/>{I18n.t('ExpertMode')}
                 </MenuItem>
+                {this.props.onExport && (<MenuItem key="exportAll"
+                          onClick={event => {
+                              event.stopPropagation();
+                              event.preventDefault();
+                              this.setState({menuOpened: false, menuAnchorEl: null}, () =>
+                                  this.props.onExport && this.props.onExport());
+                          }}><IconExport className={this.props.classes.iconDropdownMenu} />{I18n.t('Export all scripts')}
+                </MenuItem>)}
+                {this.props.onImport && (<MenuItem key="import"
+                          onClick={event => {
+                              event.stopPropagation();
+                              event.preventDefault();
+                              this.setState({menuOpened: false, menuAnchorEl: null}, () =>
+                                  this.props.onImport && this.props.onImport());
+                          }}><IconImport className={this.props.classes.iconDropdownMenu} />{I18n.t('Import scripts')}
+                </MenuItem>)}
             </Menu>));
 
             // New Script
@@ -813,13 +862,16 @@ SideDrawer.propTypes = {
     scriptsHash: PropTypes.number,
     onEdit: PropTypes.func,
     selectId: PropTypes.string,
-    expertMode: PropTypes.boolean,
+    expertMode: PropTypes.bool,
     onExpertModeChange: PropTypes.func,
     onEnableDisable: PropTypes.func,
+    runningInstances: PropTypes.object,
     onSelect: PropTypes.func,
     onAddNew: PropTypes.func,
     onRename: PropTypes.func,
     onDelete: PropTypes.func,
+    onImport: PropTypes.func,
+    onExport: PropTypes.func,
 };
 
 export default withStyles(styles)(SideDrawer);

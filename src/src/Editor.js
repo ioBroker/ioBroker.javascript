@@ -89,6 +89,9 @@ const styles = theme => ({
         padding: 8,
         verticalAlign: 'middle',
         cursor: 'grabbing'
+    },
+    notRunning: {
+        color: '#ffbc00'
     }
 });
 
@@ -118,7 +121,8 @@ class Editor extends React.Component {
             insert: '',
             isDark: window.localStorage ? (window.localStorage.getItem('Editor.dark') === 'true') : false,
             visible: props.visible,
-            cmdToBlockly: ''
+            cmdToBlockly: '',
+            runningInstances: this.props.runningInstances || {}
         };
         /* ----------------------- */
         // required by selectIdDialog in Blockly
@@ -131,8 +135,8 @@ class Editor extends React.Component {
             callback: null
         };
 
-        const instances = [];
-        /*for (let id in this.props.objects) {
+        /*const instances = [];
+        for (let id in this.props.objects) {
             if (this.props.objects.hasOwnProperty(id) && id.startsWith('system.adapter.') && this.props.objects[id] && this.props.objects[id].type === 'instance') {
                 instances.push(id);
             }
@@ -204,6 +208,11 @@ class Editor extends React.Component {
     componentWillReceiveProps(nextProps) {
         const newState = {};
         let _changed = false;
+        if (JSON.stringify(nextProps.runningInstances) !== JSON.stringify(this.state.runningInstances)) {
+            _changed = true;
+            newState.runningInstances = nextProps.runningInstances;
+        }
+
         // if objects read
         if (this.objects !== nextProps.objects) {
             this.objects = nextProps.objects;
@@ -224,7 +233,7 @@ class Editor extends React.Component {
                 }
             }
             if (this.state.selected && !this.objects[this.state.selected]) {
-                this.state.selected = editing[0] || '';
+                newState.selected = editing[0] || '';
             }
             if (_changed) {
                 newState.editing = editing;
@@ -408,10 +417,15 @@ class Editor extends React.Component {
     }
 
     getToolbar() {
+        const isInstanceRunning = this.selected && this.scripts[this.selected] && this.scripts[this.selected].engine && this.state.runningInstances[this.scripts[this.selected].engine];
+        const isScriptRunning = this.selected && this.scripts[this.selected] && this.scripts[this.selected].enabled;
+
         if (this.state.selected) {
             return (
                 <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
-                    {!this.state.changed && (<IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>)}
+                    {!this.state.changed && !isScriptRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>)}
+                    {!this.state.changed && isScriptRunning && !isInstanceRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>)}
+                    {!this.state.changed && isInstanceRunning && (<IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>)}
                     {this.state.changed && (<Button key="save" variant="contained" color="secondary" className={this.props.classes.textButton} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave /></Button>)}
                     {this.state.changed && (<Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel /></Button>)}
                     <div style={{flex: 2}}/>
@@ -607,6 +621,7 @@ Editor.propTypes = {
     onRestart: PropTypes.func,
     onChange: PropTypes.func.isRequired,
     visible: PropTypes.bool,
+    runningInstances: PropTypes.object,
     connection: PropTypes.object
 };
 

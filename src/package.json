@@ -11,9 +11,7 @@
     "react": "^16.5.2",
     "react-beautiful-dnd": "^9.0.2",
     "react-bem-helper": "^1.4.1",
-    "react-cron-builder": "^1.0.3",
     "react-dom": "^16.5.2",
-    "react-dropzone": "^6.2.4",
     "react-fullscreen": "^0.1.0",
     "react-i18next": "^8.1.1",
     "react-icons": "^3.2.2",
@@ -40,6 +38,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "monaco-editor": "^0.14.3"
+    "monaco-editor": "^0.14.3",
+    "react-dropzone": "^6.2.4"
   }
 }

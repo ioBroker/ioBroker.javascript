@@ -24,10 +24,6 @@ const styles = theme => ({
 });
 
 class DialogError extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     handleOk = () => {
         this.props.onClose && this.props.onClose();
     };

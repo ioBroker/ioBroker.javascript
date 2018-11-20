@@ -10,9 +10,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import I18n from '../i18n';
 
 class DialogMessage extends React.Component {
-    constructor(props) {
-        super(props);
-    }
 
     handleOk = () => {
         this.props.onClose && this.props.onClose();

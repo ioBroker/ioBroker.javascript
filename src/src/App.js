@@ -12,7 +12,10 @@ import Connection from './Connection';
 import {PROGRESS} from './Connection';
 import Loader from './Components/Loader'
 import I18n from './i18n';
+import DialogMessage from './Dialogs/Message';
 import DialogError from './Dialogs/Error';
+import DialogConfirm from './Dialogs/Confirmation';
+import DialogImportFile from "./Dialogs/ImportFile";
 
 const styles = theme => ({
     root: Theme.root,
@@ -94,11 +97,16 @@ class App extends Component {
             menuSelectId: '',
             errorText: '',
             expertMode: window.localStorage ? window.localStorage.getItem('App.expertMode') === 'true' : false,
-            runningInstances: {}
+            runningInstances: {},
+            confirm: '',
+            importFile: false,
+            message: ''
         };
         // this.logIndex = 0;
         this.logSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.logSize')) || 150 : 150;
         this.scripts = {};
+        this.hosts = [];
+        this.importFile = null;
 
         this.socket = new Connection({
             autoSubscribes: ['script.*', 'system.adapter.javascript.*'],
@@ -142,6 +150,7 @@ class App extends Component {
 
         scripts.list.forEach(id => nScripts[id] = objects[id]);
         scripts.groups.forEach(id => nScripts[id] = objects[id]);
+        this.hosts = scripts.hosts;
 
         let scriptsHash = this.state.scriptsHash;
         if (this.compareScripts(scripts)) {
@@ -231,6 +240,10 @@ class App extends Component {
         this.setState({errorText: err});
     }
 
+    showMessage(message) {
+        this.setState({message});
+    }
+
     onDelete(id) {
         this.socket.delObject(id)
         .then(() => {})
@@ -295,6 +308,105 @@ class App extends Component {
         }
     }
 
+    getLiveHost(cb, _list) {
+        if (!_list) {
+            _list = JSON.parse(JSON.stringify(this.hosts)) || [];
+        }
+
+        if (_list.length) {
+            const id = _list.shift();
+            this.socket.getState(id + '.alive', (err, state) => {
+                if (!err && state && state.val) {
+                    cb(id);
+                } else {
+                    setTimeout(() => this.getLiveHost(cb, _list));
+                }
+            });
+        } else {
+            cb();
+        }
+    }
+
+    onExport() {
+        this.getLiveHost(host => {
+            if (!host) {
+                this.showError(I18n.t('No active host found'));
+                return;
+            }
+
+            const d = new Date();
+            let date = d.getFullYear();
+            let m = d.getMonth() + 1;
+            if (m < 10) m = '0' + m;
+            date += '-' + m;
+            m = d.getDate();
+            if (m < 10) m = '0' + m;
+            date += '-' + m + '-';
+
+            this.socket.socket.emit('sendToHost', host, 'readObjectsAsZip', {
+                adapter: 'javascript',
+                id: 'script.js',
+                link: date + 'scripts.zip' // request link to file and not the data itself
+            }, data => {
+                if (typeof data === 'string') {
+                    // it is a link to created file
+                    const a = document.createElement('a');
+                    a.href = '/zip/' + date + 'scripts.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                } else {
+                    data.error && this.showError(data.error);
+                    if (data.data) {
+                        const a = document.createElement('a');
+                        a.href = 'data: application/zip;base64,' + data.data;
+                        a.download = date + 'scripts.zip';
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                    }
+                }
+            });
+        });
+    }
+
+    onImport(data) {
+        this.importFile = data;
+        if (data) {
+            this.setState({importFile: false, confirm: I18n.t('Existing scripts will be overwritten.')});
+        } else {
+            this.setState({importFile: false});
+        }
+    }
+
+    onImportConfirmed(ok) {
+        let data = this.importFile;
+        this.importFile = null;
+        this.setState({confirm: ''});
+        if (ok && data) {
+            data = data.split(',')[1];
+            this.getLiveHost(host => {
+                if (!host) {
+                    this.showError(I18n.t('No active host found'));
+                    return;
+                }
+                this.socket.socket.emit('sendToHost', host, 'writeObjectsAsZip', {
+                    data: data,
+                    adapter: 'javascript',
+                    id: 'script.js'
+                }, data => {
+                    if (data === 'permissionError') {
+                        this.showError(I18n.t(data));
+                    } else if (!data || data.error) {
+                        this.showError(data ? I18n.t(data.error) : I18n.t('Unknown error'));
+                    } else {
+                        this.showMessage(I18n.t('Done'));
+                    }
+                });
+            });
+        }
+    }
+
     render() {
         const {classes} = this.props;
 
@@ -322,6 +434,8 @@ class App extends Component {
                         onDelete={this.onDelete.bind(this)}
                         onAddNew={this.onAddNew.bind(this)}
                         onEnableDisable={this.onEnableDisable.bind(this)}
+                        onExport={this.onExport.bind(this)}
+                        onImport={() => this.setState({importFile: true})}
                     />
                 </nav>
                 <div className={classes.content} key="main">
@@ -371,7 +485,10 @@ class App extends Component {
                         <Log key="log" editing={this.state.editing} connection={this.socket} selected={this.state.selected}/>
                     </SplitterLayout>
                 </div>
+                {this.state.message ? (<DialogMessage onClose={() => this.setState({message: ''})} text={this.state.message}/>) : null}
                 {this.state.errorText ? (<DialogError onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/>) : null}
+                {this.state.importFile ? (<DialogImportFile onClose={data => this.onImport(data)} />) : null}
+                {this.state.confirm ? (<DialogConfirm onClose={() => this.onImportConfirmed()} onOk={() => this.onImportConfirmed(true)} question={this.state.confirm}/>) : null}
             </div>
         );
     }

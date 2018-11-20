@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "3.7.0",
+        "version": "4.0.0",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -20,6 +20,17 @@
             "Apollon77 <ingo@fischer-ka.de>"
         ],
         "news": {
+            "4.0.0": {
+                "en": "Material GUI",
+                "de": "Material GUI",
+                "ru": "Material GUI",
+                "pt": "Material GUI",
+                "nl": "Material GUI",
+                "fr": "Material GUI",
+                "it": "Material GUI",
+                "es": "Material GUI",
+                "pl": "Material GUI"
+            },
             "3.7.0": {
                 "en": "Used VM2 as sandbox. The script errors will be caught.\nrefactoring: split into many modules",
                 "de": "Verwendete VM2 als Sandbox. Die Skriptfehler werden abgefangen.\nRefactoring: Aufteilung in viele Module",

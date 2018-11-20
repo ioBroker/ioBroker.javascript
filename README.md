@@ -30,6 +30,10 @@ Hier kann man die Beschreibung von [Blockly](doc/de/blockly.md) finden.
 - ...
 
 ## Changelog
+### 4.0.0 (2018-11-20)
+* (bluefox) Material UI
+* (AlCalzone) monaco javascript editor
+
 ### 3.7.0 (2018-05-05)
 * (bluefox) Used VM2 as sandbox. The script errors will be caught.
 * (bluefox) refactoring: split into many modules

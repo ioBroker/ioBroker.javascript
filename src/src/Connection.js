@@ -97,7 +97,7 @@ class Connection {
 
     subscribeState(id, cb) {
         if (!this.statesSubscribes[id]) {
-            this.statesSubscribes[id] = {reg: new RegExp(id.replace(/\./g, '\.').replace(/\*/g, '.*')), cbs: []};
+            this.statesSubscribes[id] = {reg: new RegExp(id.replace(/\./g, '\\.').replace(/\*/g, '.*')), cbs: []};
             this.statesSubscribes[id].cbs.push(cb);
             if (this.connected) {
                 this.socket.emit('subscribe', id);
@@ -173,6 +173,15 @@ class Connection {
             this.onProgress(PROGRESS.STATES_LOADED);
             cb && setTimeout(() => cb(this.states), 0);
         });
+    }
+
+    getState(id, cb) {
+        if (!cb) {
+            return new Promise((resolve, reject) =>
+                this.getState(id, (err, state) => err ? reject(err) : resolve(state)));
+        } else {
+            this.socket.emit('getState', id, cb);
+        }
     }
 
     getObjects(refresh, cb) {
