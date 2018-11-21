@@ -23,6 +23,7 @@ const coffeeCompiler = require('coffee-compiler');
 const tsc            = require('virtual-tsc');
 const typescript     = require('typescript');
 const nodeSchedule   = require('node-schedule');
+const Mirror         = require('./lib/mirror');
 
 const mods = {
     fs:               {},
@@ -107,6 +108,8 @@ let tsServer;
 /** @type {tsc.Server} */
 let jsDeclarationServer;
 
+let mirror;
+
 /**
  * @param {string} scriptID - The current script the declarations were generated from
  * @param {string} declarations 
@@ -181,6 +184,9 @@ const adapter = new utils.Adapter({
             // clear cache
             context.cacheObjectEnums = {};
         }
+
+        // send changes to disk mirror
+        mirror && mirror.onObjectChange(id, obj);
 
         if (!obj) {
             // object deleted
@@ -472,6 +478,15 @@ const adapter = new utils.Adapter({
                             }
                         }
                     }
+
+                    if (adapter.config.mirrorPath) {
+                        mirror = new Mirror({
+                            adapter,
+                            log: adapter.log,
+                            diskRoot: adapter.config.mirrorPath
+                        });
+                    }
+
                 });
             });
         });

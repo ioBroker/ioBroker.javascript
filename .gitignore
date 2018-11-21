@@ -3,6 +3,6 @@ node_modules
 tmp
 admin-config/i18n/*/flat.txt
 admin-config/i18n/flat.txt
-asmin
+admin
 package-lock.json
 iob_npm.dode

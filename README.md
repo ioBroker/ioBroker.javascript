@@ -1,4 +1,4 @@
-![Logo](admin/js.jpeg)
+![Logo](admin-config/javascript.png)
 # Javascript Script Engine
 ==================
 

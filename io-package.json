@@ -176,7 +176,8 @@
         "enableExec": false,
         "libraries": "",
         "subscribe": false,
-        "useSystemGPS": true
+        "useSystemGPS": true,
+        "mirrorPath": ""
     },
     "objects": [
         {
