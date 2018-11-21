@@ -1,0 +1,197 @@
+<html>
+
+<head>
+<!-- these 4 files always have to be included -->
+<link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
+<script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+<script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
+
+<!-- these two file always have to be included -->
+<link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
+<script type="text/javascript" src="../../js/translate.js"></script>
+<script type="text/javascript" src="../../js/adapter-settings.js"></script>
+<script type="text/javascript" src="adminWords.js"></script>
+
+<style>
+    .title {
+        white-space: nowrap;
+    }
+    .admin-text {
+        white-space: nowrap;
+    }
+</style>
+<!-- you have to define 2 functions in the global scope: -->
+<script type="text/javascript">
+    function setValue(id, value, onChange) {
+        var $value = $('#' + id + '.value');
+        if ($value.attr('type') === 'checkbox') {
+            $value.prop('checked', value).change(function() {
+                var id = $(this).attr('id');
+                if (id === 'useSystemGPS') showHideSettings();
+                onChange();
+            });
+        } else {
+            $value.val(value).change(function() {
+                onChange();
+            }).keyup(function() {
+                onChange();
+            });
+        }
+    }
+
+    function showHideSettings() {
+        if ($('#useSystemGPS').prop('checked')) {
+            $('#tr_latitude').hide();
+            $('#tr_longitude').hide();
+        } else {
+            $('#tr_latitude').show();
+            $('#tr_longitude').show();
+        }
+    }
+    // the function loadSettings has to exist ...
+    function load(settings, onChange) {
+        if (settings.useSystemGPS === undefined) {
+            settings.useSystemGPS = (systemConfig.common.longitude && systemConfig.common.latitude);
+        }
+        if (settings.enableSendToHost === undefined) {
+            settings.enableSendToHost = false;
+        }
+        if (settings.enableExec === undefined) {
+            settings.enableExec = false;
+        }
+
+        $('.value').each(function () {
+            var id = $(this).attr('id');
+            setValue(id, settings[id] || '', onChange);
+        });
+
+        showHideSettings();
+
+        onChange(false);
+    }
+
+    function convertGrad(obj, attr) {
+        // Extract ° " and '
+        var m = obj[attr].match(/([0-9]+)°(\s*)(([0-9]+)')?(\s*)(([0-9]+)")?(\s*)([A-Z]+)?/);
+        if (m) {
+            var grad = m[1];
+            var min  = m[4];
+            var sec  = m[7];
+            var dir  = m[9];
+
+            if (grad !== undefined && grad !== null) {
+                // Graddez = Grad + ( Minuten * 60 + Sekunden ) / 3600
+                var result = parseInt(grad, 10);
+                if (min !== undefined && min !== null) {
+                    result += parseInt(min, 10) / 60;
+                    if (sec !== undefined && sec !== null) {
+                        result += parseInt(sec, 10) / 3600;
+                    }
+                }
+                if (dir) {
+                    dir = dir.toLowerCase();
+                    if (dir === 's' || dir === 'w') {
+                        result = (-1) * result;
+                    }
+                }
+                obj[attr] = result.toFixed(6);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            showMessage(_('Invalid format. Use A°B\'C"D'));
+            return false;
+        }
+
+    }
+    // ... and the function save has to exist.
+    // you have to make sure the callback is called with the settings object as first param!
+    function save(callback) {
+        var obj = {};
+
+        $('.value').each(function () {
+            var $this = $(this);
+            if ($this.attr('type') === 'checkbox') {
+                obj[$this.attr('id')] = $this.prop('checked');
+            } else {
+                obj[$this.attr('id')] = $this.val();
+            }
+        });
+
+        if (obj.latitude.indexOf('°') !== -1) {
+            if (!convertGrad(obj, 'latitude')) {
+                return;
+            }
+            $('#latitude').val(obj.latitude);
+        }
+        if (obj.longitude.indexOf('°') !== -1) {
+            if (!convertGrad(obj, 'longitude')) {
+                return;
+            }
+            $('#longitude').val(obj.longitude);
+        }
+
+        callback(obj);
+    }
+</script>
+</head>
+<body>
+<!-- you have to put your config page in a div with id adapter-container -->
+<div id="adapter-container">
+
+    <table><tr>
+        <td><img src="javascript.png" style="width: 64px"/></td>
+        <td style="padding-top: 20px;padding-left: 10px"><h3 class="translate">Javascript scripts adapter settings</h3></td>
+    </tr></table>
+
+    <table style="width: calc(100% - 20px); padding: 5px;">
+        <tr>
+            <td colspan="4"><h4 class="translate" style="width: 100%">Settings</h4></td>
+        </tr>
+        <tr>
+            <td style="width: 100px"><label for="libraries" class="translate">Additional npm modules:</label></td>
+            <td class="admin-icon"></td>
+            <td style="width: 100%"><textarea id="libraries" class="value" style="width: 100%;     resize: vertical;"></textarea></td>
+            <td class="admin-text" style="width: 150px"></td>
+        </tr>
+        <tr>
+            <td><label for="enableSetObject" class="translate">Enable command "setObject":</label></td>
+            <td class="admin-icon"></td>
+            <td><input id="enableSetObject" class="value" type="checkbox"/></td>
+            <td class="admin-text"></td>
+        </tr>
+        <tr>
+            <td><label for="enableSendToHost" class="translate">Enable command "sendToHost":</label></td>
+            <td class="admin-icon"></td>
+            <td><input id="enableSendToHost" class="value" type="checkbox"/></td>
+            <td class="admin-text"></td>
+        </tr>
+        <tr>
+            <td><label for="enableExec" class="translate">Enable command "exec":</label></td>
+            <td class="admin-icon"></td>
+            <td><input id="enableExec" class="value" type="checkbox"/></td>
+            <td class="admin-text"></td>
+        </tr>
+        <tr><td colspan="4" style="height:10px"></td></tr>
+        <tr>
+            <td colspan="4"><h4 class="translate" style="width: 100%">Astro settings</h4></td>
+        </tr>
+        <tr>
+            <td><label for="useSystemGPS" class="translate">Use system settings:</label></td><td class="admin-icon"></td><td><input id="useSystemGPS" type="checkbox" class="value" /></td><td class="admin-text"></td>
+        </tr>
+        <tr id="tr_latitude">
+            <td><label for="latitude" class="translate">Latitude °:</label></td><td class="admin-icon"></td><td><input id="latitude" class="value" /></td><td class="admin-text"></td>
+        </tr>
+        <tr id="tr_longitude">
+            <td><label for="longitude" class="translate">Longitude °:</label></td><td class="admin-icon"></td><td><input id="longitude" class="value" /></td><td class="admin-text"></td>
+        </tr>
+        <tr>
+            <td><label for="subscribe" class="translate">Do not subscribe all states on start:</label></td><td class="admin-icon"></td><td><input type="checkbox" id="subscribe" class="value" /></td><td class="admin-text"></td>
+        </tr>
+    </table>
+    <p class="translate">Help</p>
+</div>
+</body>
+</html>
