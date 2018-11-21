@@ -20,13 +20,16 @@ Hier kann man die Beschreibung von [Blockly](doc/de/blockly.md) finden.
 
 Описание по [blockly](doc/ru/blockly.md) можно найти [здесь](doc/ru/blockly.md).
 
+## How to build (only for developers)
+Just run "npm i" in the root and in the src folders.
+
+And then call "npm run build".
+
 ## Todo
-- save on exit
-- show that scrip is not enabled
 - search in all files
 - disk mirror (low prior)
 - new rule editor (future releases)
-- be heating profile (future releases)
+- heating profile (future releases)
 - ...
 
 ## Changelog

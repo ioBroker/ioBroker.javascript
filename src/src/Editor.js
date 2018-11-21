@@ -18,6 +18,7 @@ import {FaClipboardList as IconSelectId} from 'react-icons/fa';
 import {FaFileExport as IconExport} from 'react-icons/fa';
 import {FaFileImport as IconImport} from 'react-icons/fa';
 import {FaFlagCheckered as IconCheck} from 'react-icons/fa';
+import {MdGpsFixed as IconLocate} from 'react-icons/md';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
@@ -417,12 +418,13 @@ class Editor extends React.Component {
     }
 
     getToolbar() {
-        const isInstanceRunning = this.selected && this.scripts[this.selected] && this.scripts[this.selected].engine && this.state.runningInstances[this.scripts[this.selected].engine];
-        const isScriptRunning = this.selected && this.scripts[this.selected] && this.scripts[this.selected].enabled;
+        const isInstanceRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].engine && this.state.runningInstances[this.scripts[this.state.selected].engine];
+        const isScriptRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].enabled;
 
         if (this.state.selected) {
             return (
                 <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
+                    {this.props.onLocate && (<IconButton key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate/></IconButton>)}
                     {!this.state.changed && !isScriptRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>)}
                     {!this.state.changed && isScriptRunning && !isInstanceRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>)}
                     {!this.state.changed && isInstanceRunning && (<IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>)}
@@ -621,6 +623,7 @@ Editor.propTypes = {
     onRestart: PropTypes.func,
     onChange: PropTypes.func.isRequired,
     visible: PropTypes.bool,
+    onLocate: PropTypes.func,
     runningInstances: PropTypes.object,
     connection: PropTypes.object
 };

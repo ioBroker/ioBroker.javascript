@@ -9,13 +9,11 @@
 const gulp       = require('gulp');
 const exec       = require('gulp-exec');
 const fs         = require('fs');
-const copy       = require('gulp-copy');
 const connect    = require('gulp-connect');
 const watch      = require('gulp-watch');
+const rename     = require('gulp-rename');
+const replace    = require('gulp-replace');
 const del        = require('del');
-const uglify     = require('gulp-uglify');
-const concat     = require('gulp-concat');
-const sourcemaps = require('gulp-sourcemaps');
 
 const pkg       = require('./package.json');
 const iopackage = require('./io-package.json');
@@ -94,13 +92,14 @@ gulp.task('flat=>i18n', done => {
 
 gulp.task('clean', () => {
     return del([
-        'src/node_modules/**/*',
-        'src/build/**/*',
-        'src/src/version.js',
-        'src/package-lock.json'
+//        'src/node_modules/**/*',
+        'admin/**/*',
+        'admin/*',
+        'src/build/**/*'
     ]).then(del([
-        'src/node_modules',
-        'src/build'
+//        'src/node_modules',
+        'src/build',
+        'admin/'
     ]));
 });
 
@@ -178,65 +177,36 @@ function build() {
 
 gulp.task('3-build', () => build());
 
-gulp.task('3-build-dep', ['2-npm', 'icons', 'version', 'vendorJS'], () => build());
-
-gulp.task('version', done => {
-    const pack = require('./package');
-    fs.writeFileSync(__dirname + '/src/src/version.js', 'export default \'' + pack.version + '\';');
-    done();
-});
-
-function getHash(data) {
-    const md5 = crypto.createHash('md5');
-    md5.update(data);
-
-    return md5.digest('hex');
-}
-
-function modifyServiceWorker() {
-    return new Promise(resolve => {
-        try {
-            let text = fs.readFileSync(__dirname + '/src/build/service-worker.js');
-            if (text.toString().indexOf('vendor.js') === -1) {
-                const hash = getHash(text);
-                text = text.toString().replace('precacheConfig=[["./index.html"', 'precacheConfig=[["./vendor.js","' + hash + '"],["./index.html"');
-                fs.writeFileSync(__dirname + '/src/build/service-worker.js', text);
-            }
-        } catch (e) {
-            console.error('Cannot modify service-worker.js' + e);
-        }
-        resolve();
-    });
-}
-gulp.task('4-modifyServiceWorker-dep', ['3-build-dep'], () => {
-    return modifyServiceWorker();
-});
-
-gulp.task('4-modifyServiceWorker', () => {
-    return modifyServiceWorker();
-});
+gulp.task('3-build-dep', ['2-npm'], () => build());
 
 function copyFiles() {
     return del([
-        'www/**/*'
+        'admin/**/*'
     ]).then(() => {
-        gulp.src([
-            'src/build/*/**',
-            'src/build/*',
-            '!src/build/vendor/conn.js',
-            '!src/build/vendor/detector.js',
-            '!src/build/_socket',
-            '!src/build/_socket/info.js'
-        ])
-            .pipe(gulp.dest('www/'));
+        return Promise.all([
+            gulp.src([
+                'src/build/**/*',
+                'src/build/!index.html',
+                'admin-config/*'
+            ])
+                .pipe(gulp.dest('admin/')),
+
+            gulp.src([
+                'src/build/index.html',
+            ])
+                .pipe(replace('href="/', 'href="'))
+                .pipe(replace('src="/', 'src="'))
+                .pipe(rename('tab.html'))
+                .pipe(gulp.dest('admin/')),
+        ]);
     });
 }
 
-gulp.task('5-copy', ['vendorJS', '4-modifyServiceWorker'], () => {
+gulp.task('5-copy', ['3-build'], () => {
     return copyFiles();
 });
 
-gulp.task('5-copy-dep', ['vendorJS', '4-modifyServiceWorker-dep'], () => {
+gulp.task('5-copy-dep', ['3-build-dep'], () => {
     return copyFiles();
 });
 
@@ -255,7 +225,7 @@ gulp.task('watch', ['webserver'], () => {
 gulp.task('default', ['5-copy-dep']);
 
 // you can write here: words.js, jquery.cron.words.js or adminWords.js
-const fileName = 'words.js';
+const fileName = 'adminWords.js';
 const languages =  {
     en: {},
     de: {},
@@ -264,7 +234,8 @@ const languages =  {
     nl: {},
     fr: {},
     it: {},
-    es: {}
+    es: {},
+    pl: {}
 };
 
 function lang2data(lang, isFlat) {
@@ -581,8 +552,8 @@ function languages2words(src) {
 }
 
 gulp.task('blockly2languagesFlat', done => {
-    const src = './admin/';
-    const data = require('./admin/google-blockly/own/blocks_words.js').Words;
+    const src = './src/public/';
+    const data = require('./src/public/google-blockly/own/blocks_words.js').Words;
     const langs = Object.assign({}, languages);
     if (data) {
         for (const word in data) {
@@ -630,7 +601,7 @@ gulp.task('blockly2languagesFlat', done => {
 });
 
 gulp.task('blocklyLanguagesFlat2words', done => {
-    const src = './admin/';
+    const src = './src/public/';
     const dirs = fs.readdirSync(src + 'i18n/');
     const langs = {};
     const bigOne = {};
@@ -672,7 +643,7 @@ gulp.task('blocklyLanguagesFlat2words', done => {
         }
     }
     // read actual words.js
-    const aWords = require('./admin/google-blockly/own/blocks_words.js').Words;
+    const aWords = require('./src/public/google-blockly/own/blocks_words.js').Words;
 
     const temporaryIgnore = ['pt', 'fr', 'nl', 'es', 'flat.txt'];
     if (aWords) {
@@ -732,30 +703,30 @@ gulp.task('blocklyLanguagesFlat2words', done => {
             text += line + '};\n';
         }
     }
-    fs.writeFileSync('./admin/google-blockly/own/blocks_words.js', text);
+    fs.writeFileSync('./src/public/google-blockly/own/blocks_words.js', text);
 
     done();
 });
 
 gulp.task('adminWords2languages', done => {
-    words2languages('./admin/');
+    words2languages('./admin-config/');
     done();
 });
-
+gulp.task('adminLanguages2words', done => {
+    languages2words('./admin-config/');
+    done();
+});
 gulp.task('adminWords2languagesFlat', done => {
-    words2languagesFlat('./admin/');
+    words2languagesFlat('./admin-config/');
     done();
 });
 
 gulp.task('adminLanguagesFlat2words', done => {
-    languagesFlat2words('./admin/');
+    languagesFlat2words('./admin-config/');
     done();
 });
 
-gulp.task('adminLanguages2words', done => {
-    languages2words('./admin/');
-    done();
-});
+
 
 
 gulp.task('updatePackages', done => {
@@ -800,4 +771,4 @@ gulp.task('updateReadme', done => {
     done();
 });
 
-gulp.task('default', ['updatePackages', 'updateReadme']);
+gulp.task('default', ['5-copy-dep']);

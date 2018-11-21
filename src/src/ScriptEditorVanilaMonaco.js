@@ -30,6 +30,13 @@ class ScriptEditor extends React.Component {
     }
 
     componentDidMount() {
+        if (!this.monaco) {
+            this.monaco = window.monaco;
+            if (!this.monaco) {
+                console.log('wait for monaco loaded');
+                return setTimeout(() => this.forceUpdate(), 100);
+            }
+        }
         if (!this.editor) {
             this.props.onRegisterSelect && this.props.onRegisterSelect(() => this.editor.getModel().getValueInRange(this.editor.getSelection()));
             // For some reason we have to get the original compiler options

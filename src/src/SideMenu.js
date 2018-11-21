@@ -29,7 +29,7 @@ import {MdCreateNewFolder as IconAddFolder} from 'react-icons/md';
 import {MdPause as IconPause} from 'react-icons/md';
 import {MdSwapVert as IconReorder} from 'react-icons/md';
 import {MdEdit as IconEdit} from 'react-icons/md';
-import {MdGpsFixed as IconFind} from 'react-icons/md';
+import {MdSearch as IconFind} from 'react-icons/md';
 import {MdPersonPin as IconExpert} from 'react-icons/md';
 import {FaFileExport as IconExport} from 'react-icons/fa';
 import {FaFileImport as IconImport} from 'react-icons/fa';

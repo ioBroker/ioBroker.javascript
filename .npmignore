@@ -3,6 +3,7 @@ gulpfile.js
 tasks
 test
 .travis.yml
+admin-config
 doc
 src
 .idea

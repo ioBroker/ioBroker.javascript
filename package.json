@@ -25,7 +25,7 @@
     "vm2": "^3.6.4"
   },
   "dependencies": {
-    "@types/node": "^8.10.36",
+    "@types/node": "^8.10.38",
     "@types/request": "^2.47.0",
     "coffee-compiler": "^0.3.2",
     "coffee-script": "^1.12.7",
@@ -38,17 +38,15 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "del": "^3.0.0",
     "eslint": "5.6.0",
     "gulp": "^3.9.1",
-    "mocha": "^5.2.0",
-    "gulp-copy": "^4.0.1",
     "gulp-connect": "^5.6.1",
     "gulp-exec": "^3.0.2",
+    "gulp-rename": "^1.4.0",
+    "gulp-replace": "^1.0.0",
     "gulp-watch": "^5.0.1",
-    "del": "^3.0.0",
-    "gulp-uglify": "^3.0.1",
-    "gulp-concat": "^2.6.1",
-    "gulp-sourcemaps": "^2.6.4"
+    "mocha": "^5.2.0"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.javascript/issues"
@@ -56,6 +54,8 @@
   "main": "main.js",
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha --exit",
-    "postinstall": "node ./install/installTypings.js"
+    "postinstall": "node ./install/installTypings.js",
+    "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
+    "build": "node node_modules/gulp/bin/gulp.js"
   }
 }

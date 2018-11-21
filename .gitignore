@@ -1,7 +1,8 @@
 node_modules
 .idea
 tmp
-admin/i18n/*/flat.txt
-admin/i18n/flat.txt
+admin-config/i18n/*/flat.txt
+admin-config/i18n/flat.txt
+asmin
 package-lock.json
 iob_npm.dode

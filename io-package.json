@@ -131,8 +131,8 @@
         "platform": "Javascript/Node.js",
         "mode": "daemon",
         "loglevel": "info",
-        "icon": "js.jpeg",
-        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin/js.jpeg",
+        "icon": "javascript.png",
+        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin-config/javascript.png",
         "keywords": [
             "js",
             "javascript",
