@@ -123,6 +123,7 @@ class Editor extends React.Component {
             isDark: window.localStorage ? (window.localStorage.getItem('Editor.dark') === 'true') : false,
             visible: props.visible,
             cmdToBlockly: '',
+            menuOpened: !!this.props.menuOpened,
             runningInstances: this.props.runningInstances || {}
         };
         /* ----------------------- */
@@ -190,10 +191,10 @@ class Editor extends React.Component {
 
     onBrowserClose(e) {
         const isChanged = Object.keys(this.scripts).find(id =>
-            JSON.stringify(this.scripts[id]) !== JSON.stringify(this.props.objects[this.state.selected].common));
+            JSON.stringify(this.scripts[id]) !== JSON.stringify(this.props.objects[id].common));
 
         if (!!isChanged) {
-            console.log('Script ' + JSON.stringify(isChanged));
+            console.log('Script ' + console.log('Script ' + JSON.stringify(this.scripts[isChanged])));
             const message = I18n.t('Configuration not saved.');
             e = e || window.event;
             // For IE and Firefox
@@ -212,6 +213,10 @@ class Editor extends React.Component {
         if (JSON.stringify(nextProps.runningInstances) !== JSON.stringify(this.state.runningInstances)) {
             _changed = true;
             newState.runningInstances = nextProps.runningInstances;
+        }
+
+        if (this.state.menuOpened !== nextProps.menuOpened) {
+            newState.menuOpened = nextProps.menuOpened;
         }
 
         // if objects read
@@ -424,7 +429,7 @@ class Editor extends React.Component {
         if (this.state.selected) {
             return (
                 <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
-                    {this.props.onLocate && (<IconButton key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate/></IconButton>)}
+                    {this.state.menuOpened && this.props.onLocate && (<IconButton className={this.props.classes.toolbarButtons} key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate/></IconButton>)}
                     {!this.state.changed && !isScriptRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>)}
                     {!this.state.changed && isScriptRunning && !isInstanceRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>)}
                     {!this.state.changed && isInstanceRunning && (<IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>)}
@@ -623,6 +628,7 @@ Editor.propTypes = {
     onRestart: PropTypes.func,
     onChange: PropTypes.func.isRequired,
     visible: PropTypes.bool,
+    menuOpened: PropTypes.bool,
     onLocate: PropTypes.func,
     runningInstances: PropTypes.object,
     connection: PropTypes.object

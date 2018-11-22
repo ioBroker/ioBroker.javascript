@@ -466,6 +466,7 @@ class App extends Component {
                             connection={this.socket}
                             onLocate={menuSelectId => this.setState({menuSelectId})}
                             runningInstances={this.state.runningInstances}
+                            menuOpened={this.state.menuOpened}
                             onChange={(id, common) => this.onUpdateScript(id, common)}
                             onSelectedChange={(id, editing) => {
                                 const newState = {};
