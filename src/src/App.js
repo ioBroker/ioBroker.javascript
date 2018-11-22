@@ -25,12 +25,12 @@ const styles = theme => ({
     },
     appSideMenuWithMenu: {
         marginLeft: 0,
-        width: Theme.menu.width,
+        width: '100%',
         height: '100%',
     },
     appSideMenuWithoutMenu: {
-        marginLeft: -Theme.menu.width,
-        width: Theme.menu.width,
+        //marginLeft: -Theme.menu.width,
+        width: '100%',
         height: '100%',
     },
     /*appBarWithMenu: {
@@ -104,6 +104,7 @@ class App extends Component {
         };
         // this.logIndex = 0;
         this.logSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.logSize')) || 150 : 150;
+        this.menuSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.menuSize')) || 500 : 500;
         this.scripts = {};
         this.hosts = [];
         this.importFile = null;
@@ -408,6 +409,65 @@ class App extends Component {
         }
     }
 
+    renderMain() {
+        const {classes} = this.props;
+        return [
+            (<div className={classes.content} key="main">
+                <div className={classes.menuOpenCloseButton} onClick={() => {
+                    window.localStorage && window.localStorage.setItem('App.menuOpened', this.state.menuOpened ? 'false' : 'true');
+                    this.setState({menuOpened: !this.state.menuOpened, resizing: true});
+                    setTimeout(() => this.setState({resizing: false}), 300);
+                }}>
+                    {this.state.menuOpened ? (<IconMenuOpened />) : (<IconMenuClosed />)}
+                </div>
+                <SplitterLayout
+                    key="splitterLayout"
+                    vertical={true}
+                    primaryMinSize={100}
+                    secondaryInitialSize={this.logSize}
+                    //customClassName={classes.menuTransition + ' ' + classes.splitterDivWithoutMenu}
+                    onDragStart={() => this.setState({resizing: true})}
+                    onSecondaryPaneSizeChange={size => this.logSize = parseFloat(size)}
+                    onDragEnd={() => {
+                        this.setState({resizing: false});
+                        window.localStorage && window.localStorage.setItem('App.logSize', this.logSize.toString());
+                    }}
+                >
+                    <Editor
+                        key="editor"
+                        visible={!this.state.resizing}
+                        connection={this.socket}
+                        onLocate={menuSelectId => this.setState({menuSelectId})}
+                        runningInstances={this.state.runningInstances}
+                        menuOpened={this.state.menuOpened}
+                        onChange={(id, common) => this.onUpdateScript(id, common)}
+                        onSelectedChange={(id, editing) => {
+                            const newState = {};
+                            let changed = false;
+                            if (id !== this.state.selected) {
+                                changed = true;
+                                newState.selected = id;
+                            }
+                            if (JSON.stringify(editing) !== JSON.stringify(this.state.editing)) {
+                                changed = true;
+                                newState.editing = JSON.parse(JSON.stringify(editing));
+                            }
+                            changed && this.setState(newState);
+                        }}
+                        onRestart={id => this.socket.extendObject(id, {})}
+                        selected={this.state.selected && this.objects[this.state.selected] && this.objects[this.state.selected].type === 'script' ? this.state.selected : ''}
+                        objects={this.objects}
+                    />
+                    <Log key="log" editing={this.state.editing} connection={this.socket} selected={this.state.selected}/>
+                </SplitterLayout>
+            </div>),
+            this.state.message ? (<DialogMessage key="DialogMessage" onClose={() => this.setState({message: ''})} text={this.state.message}/>) : null,
+            this.state.errorText ? (<DialogError key="DialogError" onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/>) : null,
+            this.state.importFile ? (<DialogImportFile key="DialogImportFile" onClose={data => this.onImport(data)} />) : null,
+            this.state.confirm ? (<DialogConfirm key="DialogConfirm" onClose={() => this.onImportConfirmed()} onOk={() => this.onImportConfirmed(true)} question={this.state.confirm}/>) : null,
+        ];
+    }
+
     render() {
         const {classes} = this.props;
 
@@ -418,80 +478,45 @@ class App extends Component {
 
         return (
             <div className={classes.root}>
-                <nav className={classes.menuTransition + ' ' + (this.state.menuOpened ? classes.appSideMenuWithMenu : classes.appSideMenuWithoutMenu)} key="menu">
-                    <SideMenu
-                        key="sidemenu"
-                        scripts={this.scripts}
-                        scriptsHash={this.state.scriptsHash}
-                        instances={this.state.instances}
-                        update={this.state.updateScripts}
-                        onRename={this.onRename.bind(this)}
-                        onSelect={this.onSelect.bind(this)}
-                        selectId={this.state.menuSelectId}
-                        onEdit={this.onEdit.bind(this)}
-                        expertMode={this.state.expertMode}
-                        runningInstances={this.state.runningInstances}
-                        onExpertModeChange={this.onExpertModeChange.bind(this)}
-                        onDelete={this.onDelete.bind(this)}
-                        onAddNew={this.onAddNew.bind(this)}
-                        onEnableDisable={this.onEnableDisable.bind(this)}
-                        onExport={this.onExport.bind(this)}
-                        onImport={() => this.setState({importFile: true})}
-                    />
-                </nav>
-                <div className={classes.content} key="main">
-                    <div className={classes.menuOpenCloseButton} onClick={() => {
-                        window.localStorage && window.localStorage.setItem('App.menuOpened', this.state.menuOpened ? 'false' : 'true');
-                        this.setState({menuOpened: !this.state.menuOpened, resizing: true});
-                        setTimeout(() => this.setState({resizing: false}), 300);
-                    }}>
-                        {this.state.menuOpened ? (<IconMenuOpened />) : (<IconMenuClosed />)}
-                    </div>
-                    <SplitterLayout
-                        key="splitterLayout"
-                        vertical={true}
-                        primaryMinSize={100}
-                        secondaryInitialSize={this.logSize}
-                        customClassName={classes.menuTransition + ' ' + classes.splitterDivWithoutMenu}
-                        onDragStart={() => this.setState({resizing: true})}
-                        onSecondaryPaneSizeChange={size => this.logSize = parseFloat(size)}
-                        onDragEnd={() => {
-                            this.setState({resizing: false});
-                            window.localStorage && window.localStorage.setItem('App.logSize', this.logSize.toString());
-                        }}
-                    >
-                        <Editor
-                            key="editor"
-                            visible={!this.state.resizing}
-                            connection={this.socket}
-                            onLocate={menuSelectId => this.setState({menuSelectId})}
+                (<SplitterLayout
+                    key="menuSplitter"
+                    vertical={false}
+                    primaryMinSize={300}
+                    primaryIndex={1}
+                    secondaryMinSize={300}
+                    secondaryInitialSize={this.menuSize}
+                    
+                    // customClassName={classes.menuTransition + ' ' + classes.splitterDivWithoutMenu}
+                    onDragStart={() => this.setState({resizing: true})}
+                    onSecondaryPaneSizeChange={size => this.menuSize = parseFloat(size)}
+                    onDragEnd={() => {
+                        this.setState({resizing: false});
+                        window.localStorage && window.localStorage.setItem('App.menuSize', this.menuSize.toString());
+                    }}
+                >
+                    <div className={classes.menuTransition + ' ' + (this.state.menuOpened ? classes.appSideMenuWithMenu : classes.appSideMenuWithoutMenu)} key="menu">
+                        <SideMenu
+                            key="sidemenu"
+                            scripts={this.scripts}
+                            scriptsHash={this.state.scriptsHash}
+                            instances={this.state.instances}
+                            update={this.state.updateScripts}
+                            onRename={this.onRename.bind(this)}
+                            onSelect={this.onSelect.bind(this)}
+                            selectId={this.state.menuSelectId}
+                            onEdit={this.onEdit.bind(this)}
+                            expertMode={this.state.expertMode}
                             runningInstances={this.state.runningInstances}
-                            menuOpened={this.state.menuOpened}
-                            onChange={(id, common) => this.onUpdateScript(id, common)}
-                            onSelectedChange={(id, editing) => {
-                                const newState = {};
-                                let changed = false;
-                                if (id !== this.state.selected) {
-                                    changed = true;
-                                    newState.selected = id;
-                                }
-                                if (JSON.stringify(editing) !== JSON.stringify(this.state.editing)) {
-                                    changed = true;
-                                    newState.editing = JSON.parse(JSON.stringify(editing));
-                                }
-                                changed && this.setState(newState);
-                            }}
-                            onRestart={id => this.socket.extendObject(id, {})}
-                            selected={this.state.selected && this.objects[this.state.selected] && this.objects[this.state.selected].type === 'script' ? this.state.selected : ''}
-                            objects={this.objects}
+                            onExpertModeChange={this.onExpertModeChange.bind(this)}
+                            onDelete={this.onDelete.bind(this)}
+                            onAddNew={this.onAddNew.bind(this)}
+                            onEnableDisable={this.onEnableDisable.bind(this)}
+                            onExport={this.onExport.bind(this)}
+                            onImport={() => this.setState({importFile: true})}
                         />
-                        <Log key="log" editing={this.state.editing} connection={this.socket} selected={this.state.selected}/>
-                    </SplitterLayout>
-                </div>
-                {this.state.message ? (<DialogMessage onClose={() => this.setState({message: ''})} text={this.state.message}/>) : null}
-                {this.state.errorText ? (<DialogError onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/>) : null}
-                {this.state.importFile ? (<DialogImportFile onClose={data => this.onImport(data)} />) : null}
-                {this.state.confirm ? (<DialogConfirm onClose={() => this.onImportConfirmed()} onOk={() => this.onImportConfirmed(true)} question={this.state.confirm}/>) : null}
+                    </div>
+                    {this.renderMain()}}
+                </SplitterLayout>
             </div>
         );
     }

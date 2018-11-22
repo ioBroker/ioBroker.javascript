@@ -51,7 +51,7 @@ const MENU_ITEM_HEIGHT = 48;
 const styles = theme => ({
     drawerPaper: {
         position: 'relative',
-        width: Theme.menu.width,
+        width: '100%'//Theme.menu.width,
     },
     toolbar: {
         height: Theme.toolbar.height
