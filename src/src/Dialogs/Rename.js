@@ -78,6 +78,13 @@ class DialogRename extends React.Component {
                             id="standard-name"
                             label={I18n.t('Name')}
                             value={this.state.name}
+                            onKeyPress={(ev) => {
+                                if (ev.key === 'Enter') {
+                                    // Do code here
+                                    ev.preventDefault();
+                                    setTimeout(() => this.handleOk(), 200);
+                                }
+                            }}
                             onChange={e => this.handleChange(e.target.value)}
                             margin="normal"
                         />

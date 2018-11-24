@@ -28,15 +28,44 @@ class BlocklyEditor extends React.Component {
             message: '',
             error: '',
             exportText: '',
-            importText: false
+            importText: false,
+            searchText: this.props.searchText || '',
         };
         this.originalCode = props.code || '';
+
+        this.someSelected = false;
 
         this.onResizeBind = this.onResize.bind(this);
 
         this.lastCommand = '';
         this.blinkBlock = null;
         this.loadLanguages();
+    }
+
+    searchBlocks(text) {
+        const dom = this.Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
+        let exportText = this.Blockly.Xml.domToPrettyText(dom).toLowerCase();
+        const blocks = exportText.match(/<shadow type="field_oid" id="[^"]+">\n\s*<field name="oid">[^<]+<\/field>/gi);
+        if (blocks) {
+            const ids = blocks.map(b => {
+                const m = b.match(/id="([^"]+)"/g);
+                return m && m[0].substring(4, m[0].length - 1);
+            }).filter(id => !!id);
+            const allBlocks = this.blocklyWorkspace.getAllBlocks();
+            return allBlocks.filter(b => {
+                return ids.indexOf(b.id.toLowerCase()) !== -1;
+            });
+        } else {
+            return [];
+        }
+    }
+
+    searchId() {
+        const blocks = this.lastSearch && this.searchBlocks(this.lastSearch);
+        if (blocks && blocks.length) {
+            this.someSelected = true;
+            blocks.forEach(b => b.addSelect());
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -59,12 +88,19 @@ class BlocklyEditor extends React.Component {
                 this.importBlocks();
             }
         }
+
+        if (nextProps.searchText !== this.lastSearch) {
+            this.lastSearch = nextProps.searchText;
+            this.searchId();
+        }
+
         if (this.originalCode !== nextProps.code) {
             this.originalCode = nextProps.code || '';
             this.loadCode();
+            this.lastSearch && this.searchId();
         }
-
     }
+
     loadLanguages() {
         // load blockly language
         if (!languageBlocklyLoaded) {
@@ -305,6 +341,12 @@ class BlocklyEditor extends React.Component {
         );
         // Listen to events on master workspace.
         this.blocklyWorkspace.addChangeListener(masterEvent => {
+            if (this.someSelected) {
+                const allBlocks = this.blocklyWorkspace.getAllBlocks();
+                this.someSelected = false;
+                allBlocks.forEach(b => b.removeSelect());
+            }
+
             if (masterEvent.type === window.Blockly.Events.UI || masterEvent.type === window.Blockly.Events.CREATE) {
                 return;  // Don't mirror UI events.
             }
@@ -403,7 +445,8 @@ class BlocklyEditor extends React.Component {
 
 BlocklyEditor.propTypes = {
     command: PropTypes.string,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    searchText: PropTypes.string
 };
 
 export default BlocklyEditor;

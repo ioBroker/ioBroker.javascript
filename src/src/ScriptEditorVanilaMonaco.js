@@ -19,6 +19,7 @@ class ScriptEditor extends React.Component {
             readOnly: props.readOnly || false,
             alive: true,
             check: false,
+            searchText: this.props.searchText || ''
         };
         this.monacoDiv = null; //ref
         this.editor = null;
@@ -27,6 +28,7 @@ class ScriptEditor extends React.Component {
         this.originalCode = props.code || '';
         this.globalTypingHandles  = [];
         this.typings = {}; // TypeScript declarations
+        this.lastSearch = '';
     }
 
     componentDidMount() {
@@ -97,7 +99,7 @@ class ScriptEditor extends React.Component {
 
     /**
      * Sets some options of the code editor
-     * @param {monaco.editor.IStandaloneCodeEditor} editorInstance The editor instance to change the options for
+     * @param {object} options The editor options to change
      * @param {Partial<{readOnly: boolean, lineWrap: boolean, language: EditorLanguage, typeCheck: boolean}>} options
      */
     setEditorOptions(options) {
@@ -211,12 +213,42 @@ class ScriptEditor extends React.Component {
         this.editor.focus();
     }
 
+    highlightText(text) {
+        let range = this.editor.getModel().findMatches(text);
+        if (range && range.length) {
+            range.forEach(r => this.editor.setSelection(r.range));
+            //range = range[0].range;
+            this.editor.revealLine(range[0].range.startLineNumber);
+        } else {
+            const row = this.editor.getPosition().lineNumber;
+            const col = this.editor.getPosition().column;
+            this.editor.setSelection(new this.monaco.Range(row,col,row,col));
+        }
+    }
+
     componentWillReceiveProps(nextProps) {
         const options = {};
         if (this.state.name !== nextProps.name) {
             this.setState({name: nextProps.name});
             this.originalCode = nextProps.code || '';
             this.editor.setValue(nextProps.code);
+            if (this.lastSearch) {
+                this.highlightText(this.lastSearch);
+            }
+
+        }
+
+        if (nextProps.searchText !== this.lastSearch) {
+            this.lastSearch = nextProps.searchText;
+            let range = this.lastSearch && this.editor.getModel().findMatches(this.lastSearch);
+            if (range && range.length) {
+                range = range[0].range;
+                this.editor.setSelection(range);
+                //this.editor.getAction('actions.find').run();
+                // this.editor.trigger('blabla', 'actions.find');
+            } else {
+                this.highlightText(this.lastSearch);
+            }
         }
 
         if (this.state.language !== (nextProps.language || 'javascript')) {
@@ -278,6 +310,7 @@ ScriptEditor.propTypes = {
     code: PropTypes.string,
     language: PropTypes.string,
     onRegisterSelect: PropTypes.func,
+    searchText: PropTypes.string
 };
 
 export default ScriptEditor;

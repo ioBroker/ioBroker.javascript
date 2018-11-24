@@ -245,6 +245,10 @@ class ComplexCron extends React.Component {
         let values = [];
         if (max === 7) {
             values = [1,2,3,4,5,6,0];
+        } else if (max === 60 || max === 24) {
+            for (let i = 0; i < max; i++) {
+                values.push(i);
+            }
         } else {
             for (let i = 1; i <= max; i++) {
                 values.push(i);
@@ -256,13 +260,13 @@ class ComplexCron extends React.Component {
                 key="removeall"
                 variant={'outlined'}
                 className={this.props.classes.numberButton}
-                style={{paddingBottom: 20}}
+                //style={{paddingBottom: 20}}
                 color={'primary'}
                 onClick={() => this.onToggle(false, type, max)}>{I18n.t('Deselect all')}</Button>),
             (<Button
                 key="addall"
                 variant={'contained'}
-                style={{paddingBottom: 20}}
+                //style={{paddingBottom: 20}}
                 className={this.props.classes.numberButton}
                 color={'secondary'}
                 onClick={() => this.onToggle(true, type, max)}>{I18n.t('Select all')}</Button>),
@@ -271,9 +275,9 @@ class ComplexCron extends React.Component {
                     [((max === 7 && i === 4) ||
                     (max === 12 && i === 7) ||
                     (max === 31 && !((i - 1) % 10)) ||
-                    (max === 60 && !((i - 1) % 10)) ||
-                    (max === 24 && !((i - 1) % 6))) &&
-                    (<div key={'allInner' + i} style={{width: '100%'}}/>),
+                    (max === 60 && i && !(i % 10)) ||
+                    (max === 24 && i && !(i % 6))) ?
+                    (<div key={'allInner' + i} style={{width: '100%'}}/>) : null,
                         (<Button
                             key={'_' + i}
                             variant={parts.indexOf(i) !== -1 ? 'contained' : 'outlined'}
@@ -318,7 +322,10 @@ class ComplexCron extends React.Component {
                         const num = parseInt(this.state[type].toString().replace('*/', ''), 10) || 1;
                         this.setState({[type]: '*/' + num, modes}, () => this.recalcCron());
                     } else if (e.target.value === 'specific') {
-                        const num = parseInt(this.state[type].split(',')[0]) || 1;
+                        let num = parseInt(this.state[type].split(',')[0]) || 0;
+                        if (!num && type === 'month' || type === 'date') {
+                            num = 1;
+                        }
                         this.setState({[type]: convertArrayIntoMinus(num, max), modes}, () => this.recalcCron());
                     }
                 }}>

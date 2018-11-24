@@ -120,6 +120,7 @@ class Editor extends React.Component {
             showSelectId: false,
             showCron: false,
             insert: '',
+            searchText: '',
             isDark: window.localStorage ? (window.localStorage.getItem('Editor.dark') === 'true') : false,
             visible: props.visible,
             cmdToBlockly: '',
@@ -217,6 +218,13 @@ class Editor extends React.Component {
 
         if (this.state.menuOpened !== nextProps.menuOpened) {
             newState.menuOpened = nextProps.menuOpened;
+            _changed = true;
+        }
+
+        // update search text
+        if (this.state.searchText !== nextProps.searchText) {
+            newState.searchText = nextProps.searchText;
+            _changed = true;
         }
 
         // if objects read
@@ -502,6 +510,7 @@ class Editor extends React.Component {
                     insert={this.state.insert}
                     onInserted={() => this.setState({insert: ''})}
                     onForceSave={() => this.onSave()}
+                    searchText={this.state.searchText}
                     onRegisterSelect={func => this.onRegisterSelect(func)}
                     readOnly={this.state.showBlocklyCode}
                     code={this.scripts[this.state.selected].source || ''}
@@ -524,6 +533,7 @@ class Editor extends React.Component {
                 <BlocklyEditor
                     command={this.state.cmdToBlockly}
                     key="BlocklyEditor"
+                    searchText={this.state.searchText}
                     resizing={this.props.resizing}
                     code={this.scripts[this.state.selected].source || ''}
                     onChange={newValue => this.onChange(newValue)}
@@ -631,7 +641,8 @@ Editor.propTypes = {
     menuOpened: PropTypes.bool,
     onLocate: PropTypes.func,
     runningInstances: PropTypes.object,
-    connection: PropTypes.object
+    connection: PropTypes.object,
+    searchText: PropTypes.string
 };
 
 export default withStyles(styles)(Editor);

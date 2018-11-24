@@ -19,19 +19,20 @@ import DialogImportFile from "./Dialogs/ImportFile";
 
 const styles = theme => ({
     root: Theme.root,
-    menuTransition: {
-        transitionProperty: 'margin-left',
-        transitionDuration: '0.3s'
+    menuDiv: {
+        overflow: 'hidden',
     },
-    appSideMenuWithMenu: {
-        marginLeft: 0,
+    splitterDivs: {
+        '&>div': {
+            overflow: 'hidden',
+            width: '100%',
+            height: '100%',
+        }
+    },
+    mainDiv: {
         width: '100%',
         height: '100%',
-    },
-    appSideMenuWithoutMenu: {
-        //marginLeft: -Theme.menu.width,
-        width: '100%',
-        height: '100%',
+        overflow: 'hidden',
     },
     /*appBarWithMenu: {
         width: `calc(100% - ${Theme.menu.width}px)`,
@@ -51,9 +52,13 @@ const styles = theme => ({
         width: `calc(100% - ${Theme.menu.width}px)`,
         height: '100%'
     },
-    splitterDivWithoutMenu: {
-        width: `100%`,
-        height: '100%'
+    menuDivWithoutMenu: {
+        '&>div:first-child': {
+            display: 'none'
+        },
+        '&>.layout-splitter': {
+            display: 'none'
+        },
     },
     progress: {
         margin: 100
@@ -100,7 +105,8 @@ class App extends Component {
             runningInstances: {},
             confirm: '',
             importFile: false,
-            message: ''
+            message: '',
+            searchText: ''
         };
         // this.logIndex = 0;
         this.logSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.logSize')) || 150 : 150;
@@ -425,7 +431,7 @@ class App extends Component {
                     vertical={true}
                     primaryMinSize={100}
                     secondaryInitialSize={this.logSize}
-                    //customClassName={classes.menuTransition + ' ' + classes.splitterDivWithoutMenu}
+                    //customClassName={classes.menuDiv + ' ' + classes.splitterDivWithoutMenu}
                     onDragStart={() => this.setState({resizing: true})}
                     onSecondaryPaneSizeChange={size => this.logSize = parseFloat(size)}
                     onDragEnd={() => {
@@ -440,6 +446,7 @@ class App extends Component {
                         onLocate={menuSelectId => this.setState({menuSelectId})}
                         runningInstances={this.state.runningInstances}
                         menuOpened={this.state.menuOpened}
+                        searchText={this.state.searchText}
                         onChange={(id, common) => this.onUpdateScript(id, common)}
                         onSelectedChange={(id, editing) => {
                             const newState = {};
@@ -485,8 +492,7 @@ class App extends Component {
                     primaryIndex={1}
                     secondaryMinSize={300}
                     secondaryInitialSize={this.menuSize}
-                    
-                    // customClassName={classes.menuTransition + ' ' + classes.splitterDivWithoutMenu}
+                    customClassName={classes.splitterDivs + ' ' + (!this.state.menuOpened ? classes.menuDivWithoutMenu : '')}
                     onDragStart={() => this.setState({resizing: true})}
                     onSecondaryPaneSizeChange={size => this.menuSize = parseFloat(size)}
                     onDragEnd={() => {
@@ -494,10 +500,11 @@ class App extends Component {
                         window.localStorage && window.localStorage.setItem('App.menuSize', this.menuSize.toString());
                     }}
                 >
-                    <div className={classes.menuTransition + ' ' + (this.state.menuOpened ? classes.appSideMenuWithMenu : classes.appSideMenuWithoutMenu)} key="menu">
+                    <div className={classes.mainDiv} key="menu">
                         <SideMenu
                             key="sidemenu"
                             scripts={this.scripts}
+                            objects={this.objects}
                             scriptsHash={this.state.scriptsHash}
                             instances={this.state.instances}
                             update={this.state.updateScripts}
@@ -513,6 +520,7 @@ class App extends Component {
                             onEnableDisable={this.onEnableDisable.bind(this)}
                             onExport={this.onExport.bind(this)}
                             onImport={() => this.setState({importFile: true})}
+                            onSearch={searchText => this.setState({searchText})}
                         />
                     </div>
                     {this.renderMain()}}
