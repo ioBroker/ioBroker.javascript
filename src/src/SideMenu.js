@@ -769,6 +769,7 @@ class SideDrawer extends React.Component {
                     key="menuButton"
                     aria-label="More"
                     aria-owns={this.state.menuOpened ? 'long-menu' : undefined}
+                    title={I18n.t('Menu')}
                     aria-haspopup="true"
                     onClick={event => {
                         event.stopPropagation();
@@ -814,7 +815,7 @@ class SideDrawer extends React.Component {
                                   event.preventDefault();
                                   this.setState({menuOpened: false, menuAnchorEl: null}, () =>
                                       this.props.onExpertModeChange && this.props.onExpertModeChange(!this.state.expertMode));
-                              }}><IconExpert className={this.props.classes.iconDropdownMenu} style={{color: 'orange'}}/>{I18n.t('ExpertMode')}
+                              }}><IconExpert className={this.props.classes.iconDropdownMenu} style={{color: 'orange'}}/>{I18n.t('Expert mode')}
                     </MenuItem>
                     {this.props.onExport && (<MenuItem key="exportAll"
                                                        onClick={event => {
@@ -837,6 +838,7 @@ class SideDrawer extends React.Component {
                 // New Script
                 result.push((<IconButton
                     key="new-script"
+                    title={I18n.t('Create new script')}
                     className={classes.toolbarButtons}
                     style={{color: this.state.reorder ? 'red' : 'inherit'}}
                     onClick={e => this.onAddNew(e)}
@@ -845,6 +847,7 @@ class SideDrawer extends React.Component {
                 // New Folder
                 result.push((<IconButton
                     key="new-folder"
+                    title={I18n.t('Create new folder')}
                     className={classes.toolbarButtons}
                     style={{color: this.state.reorder ? 'red' : 'inherit'}}
                     onClick={() => this.onAddNewFolder()}
@@ -856,6 +859,7 @@ class SideDrawer extends React.Component {
                 key="search"
                 disabled={this.state.reorder}
                 className={classes.toolbarButtons}
+                title={I18n.t('Search in scripts')}
                 style={{float: 'right'}}
                 onClick={e => {
                     e.stopPropagation();
@@ -866,6 +870,7 @@ class SideDrawer extends React.Component {
             // Reorder button
             result.push((<IconButton
                 key="reorder"
+                title={I18n.t('Reorder scripts in folders')}
                 className={classes.toolbarButtons}
                 style={{color: this.state.reorder ? 'red' : 'inherit', float: 'right'}}
                 onClick={e => {
@@ -877,6 +882,7 @@ class SideDrawer extends React.Component {
             if (!this.state.reorder && this.state.selected && this.state.selected !== 'script.js.global' && this.state.selected !== 'script.js.common') {
                 // Rename
                 result.push((<IconButton className={classes.toolbarButtons}
+                                         title={I18n.t('Rename')}
                                          key="rename"
                                          onClick={e => this.onRename(e)}
                 ><IconEdit/></IconButton>));
@@ -942,6 +948,7 @@ class SideDrawer extends React.Component {
             renamingItem ? (<DialogRename
                 key="dialog-rename"
                 name={renamingItem.title}
+                title={I18n.t('Rename')}
                 id={this.state.renaming}
                 folder={renamingItem.type === 'folder'}
                 instance={renamingItem.instance}

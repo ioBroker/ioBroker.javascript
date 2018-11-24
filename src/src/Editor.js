@@ -397,7 +397,7 @@ class Editor extends React.Component {
     getTabs() {
         if (this.state.editing.length) {
             return (<Tabs
-                key="tabs"
+                key="tabs1"
                 value={this.state.selected}
                 onChange={(event, value) => this.onTabChange(event, value)}
                 indicatorColor="primary"
@@ -425,8 +425,13 @@ class Editor extends React.Component {
                 })}
             </Tabs>)
         } else {
-            return (<div className={this.props.classes.toolbar}>
-                <Button disabled={true} className={this.props.classes.hintButton}>{I18n.t('Click on this icon')}<IconDoEdit className={this.props.classes.hintIcon}/>{I18n.t('for edit or create script')}</Button></div>);
+            return (<div key="tabs2" className={this.props.classes.toolbar}>
+                <Button key="select1" disabled={true} className={this.props.classes.hintButton}>
+                    <span key="select2">{I18n.t('Click on this icon')}</span>
+                    <IconDoEdit key="select3" className={this.props.classes.hintIcon}/>
+                    <span key="select4">{I18n.t('for edit or create script')}</span>
+                </Button>
+            </div>);
         }
     }
 
@@ -436,7 +441,7 @@ class Editor extends React.Component {
 
         if (this.state.selected) {
             return (
-                <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
+                <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
                     {this.state.menuOpened && this.props.onLocate && (<IconButton className={this.props.classes.toolbarButtons} key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate/></IconButton>)}
                     {!this.state.changed && !isScriptRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>)}
                     {!this.state.changed && isScriptRunning && !isInstanceRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>)}
@@ -446,6 +451,7 @@ class Editor extends React.Component {
                     <div style={{flex: 2}}/>
 
                     {!this.state.blockly && (<IconButton key="dark" aria-label="Dark style"
+                                                         title={I18n.t('Dark style')}
                                                          color={this.state.isDark ? 'secondary' : 'inherit'}
                                                          className={this.props.classes.toolbarButtons}
                                                          onClick={() => {
@@ -476,18 +482,22 @@ class Editor extends React.Component {
                             <IconCheck /></IconButton>)}
 
                     {!this.state.blockly && !this.state.showBlocklyCode && (<IconButton key="select-cron" aria-label="select ID"
+                                                                                        title={I18n.t('Create or edit CRON or time wizard')}
                                                                                         className={this.props.classes.toolbarButtons}
                                                                                         onClick={() => this.setState({showCron: true})}><IconCron/></IconButton>)}
 
                     {!this.state.blockly && !this.state.showBlocklyCode && (<IconButton key="select-id" aria-label="select ID"
+                                                                                        title={I18n.t('Insert object ID')}
                                                                                         className={this.props.classes.toolbarButtons}
                                                                                         onClick={() => this.setState({showSelectId: true})}><IconSelectId/></IconButton>)}
 
                     {this.state.blockly && this.state.showBlocklyCode && (<Button key="convert2js" aria-label="convert to javascript"
+                                                                                  title={I18n.t('Convert blockly to javascript for ever.')}
                                                                                   onClick={() => this.onConvert2JS()}
                     >Blockly=>JS</Button>)}
 
                     {this.state.blockly && (<Button key="blockly-code" aria-label="blockly"
+                                                    title={I18n.t('Show javascript code')}
                                                     className={this.props.classes.toolbarButtons}
                                                     color={this.state.showBlocklyCode ? 'secondary' : 'inherit'}
                                                     style={{padding: '0 5px'}}
@@ -529,7 +539,7 @@ class Editor extends React.Component {
         if (this.state.selected && this.props.objects[this.state.selected] && (this.state.blockly && !this.state.showBlocklyCode) && this.state.visible) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
 
-            return (<div className={this.props.classes.editorDiv} key="BlocklyEditorDiv">
+            return (<div className={this.props.classes.editorDiv} key="blocklyEditorDiv">
                 <BlocklyEditor
                     command={this.state.cmdToBlockly}
                     key="BlocklyEditor"
@@ -547,7 +557,7 @@ class Editor extends React.Component {
     getConfirmDialog() {
         if (this.state.confirm) {
             return (<DialogConfirm
-                key="DialogConfirm"
+                key="dialogConfirm1"
                 question={this.state.confirm}
                 onClose={() => {
                     this.setState({confirm: ''});
@@ -573,7 +583,7 @@ class Editor extends React.Component {
     getSelectIdDialog() {
         if (this.state.showSelectId) {
             return (<DialogSelectID
-                key="DialogSelectID"
+                key="dialogSelectID1"
                 connection={this.props.connection}
                 selected={this.selectId.callback ? this.selectId.initValue || '' : this.getSelect ? this.getSelect() : ''}
                 statesOnly={true}
@@ -596,7 +606,7 @@ class Editor extends React.Component {
     getCronDialog() {
         if (this.state.showCron) {
             return (<DialogCron
-                key="DialogCron"
+                key="dialogCron1"
                 cron={this.cron.callback ? this.cron.initValue || '' : this.getSelect ? this.getSelect() : '* * * * *'}
                 onClose={() => this.setState({showCron: false})}
                 onOk={cron => {

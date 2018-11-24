@@ -130,6 +130,8 @@ class App extends Component {
             onReady: (objects, scripts) => {
                 this.setState({ready: true});
                 this.onObjectChange(objects, scripts);
+                I18n.setLanguage(this.socket.systemLang);
+                window.systemLang = this.socket.systemLang;
             },
             onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
             onError: err => {
@@ -419,7 +421,7 @@ class App extends Component {
         const {classes} = this.props;
         return [
             (<div className={classes.content} key="main">
-                <div className={classes.menuOpenCloseButton} onClick={() => {
+                <div key="closeMenu" className={classes.menuOpenCloseButton} onClick={() => {
                     window.localStorage && window.localStorage.setItem('App.menuOpened', this.state.menuOpened ? 'false' : 'true');
                     this.setState({menuOpened: !this.state.menuOpened, resizing: true});
                     setTimeout(() => this.setState({resizing: false}), 300);
@@ -468,10 +470,10 @@ class App extends Component {
                     <Log key="log" editing={this.state.editing} connection={this.socket} selected={this.state.selected}/>
                 </SplitterLayout>
             </div>),
-            this.state.message ? (<DialogMessage key="DialogMessage" onClose={() => this.setState({message: ''})} text={this.state.message}/>) : null,
-            this.state.errorText ? (<DialogError key="DialogError" onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/>) : null,
-            this.state.importFile ? (<DialogImportFile key="DialogImportFile" onClose={data => this.onImport(data)} />) : null,
-            this.state.confirm ? (<DialogConfirm key="DialogConfirm" onClose={() => this.onImportConfirmed()} onOk={() => this.onImportConfirmed(true)} question={this.state.confirm}/>) : null,
+            this.state.message ? (<DialogMessage key="dialogMessage" onClose={() => this.setState({message: ''})} text={this.state.message}/>) : null,
+            this.state.errorText ? (<DialogError key="dialogError" onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/>) : null,
+            this.state.importFile ? (<DialogImportFile key="dialogImportFile" onClose={data => this.onImport(data)} />) : null,
+            this.state.confirm ? (<DialogConfirm key="dialogConfirm" onClose={() => this.onImportConfirmed()} onOk={() => this.onImportConfirmed(true)} question={this.state.confirm}/>) : null,
         ];
     }
 

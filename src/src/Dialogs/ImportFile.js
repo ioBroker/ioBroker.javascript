@@ -94,11 +94,11 @@ class DialogImportFile extends React.Component {
         };
         reader.onabort = () => {
             console.error('file reading was aborted');
-            cb('file reading was aborted');
+            cb(I18n.t('file reading was aborted'));
         };
         reader.onerror = (e) => {
             console.error('file reading has failed');
-            cb('file reading has failed: ' + e);
+            cb(I18n.t('file reading has failed: %s', e));
         };
 
         reader.readAsDataURL(file)

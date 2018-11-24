@@ -3,12 +3,16 @@ April
 Are you sure?
 August
 Cancel
+Cannot delete non empty item!
+Check is not active, because javascript adapter is disabled
 Click on this icon
 December
 Define cron...
+Delete
 Delete %s
 Deselect all
 Discard changes for %s
+Error
 February
 Friday
 ID
@@ -41,6 +45,9 @@ filter_name
 filter_role
 filter_room
 for edit or create script
+no blocks found
+no group
+not properly connected
 sc_cron
 sc_date
 sc_dates
@@ -171,10 +178,58 @@ tooltip_ts
 tooltip_user
 tooltip_value
 use seconds
-Check is not active, because javascript adapter is disabled
-Delete
-Cannot delete non empty item!
-Error
-no blocks found
-no group
-not properly connected
+Expert mode
+Export all scripts
+Import scripts
+Locate file
+Script is not running
+Instance is disabled
+copy
+Script
+Folder
+Search...
+End search mode
+Clear search input
+Menu
+Create new script
+Create new folder
+Create new
+Search in scripts
+Reorder scripts in folders
+Root folder
+No active host found
+Yet exists!
+Existing scripts will be overwritten.
+Unknown error
+Unknown error!
+Done
+Configuration not saved.
+It will not be possible to revert this operation.
+Export blocks
+Import blocks
+Check blocks
+Create or edit CRON or time wizard
+Insert object ID
+Convert blockly to javascript for ever.
+Dark style
+Show javascript code
+Error was found
+Import error
+JS description
+Add
+Learn More
+TS description
+Blockly description
+Add new script
+Export selected blocks
+Copy to clipboard
+Close
+Export
+file reading was aborted
+file reading has failed: %s
+Some files will be rejected
+All files will be accepted
+Drop some files here or click...
+Message
+Instance
+Name

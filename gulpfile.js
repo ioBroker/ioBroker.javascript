@@ -34,7 +34,7 @@ gulp.task('i18n=>flat', done => {
     files.forEach(file => {
         const lang = file.replace(/\.json$/, '');
         langs.push(lang);
-        let text = require(dir + file);
+        const text = require(dir + file);
 
         for (const id in text) {
             if (text.hasOwnProperty(id)) {
@@ -68,6 +68,7 @@ gulp.task('flat=>i18n', done => {
         return done();
     }
     const keys = fs.readFileSync(dir + '/flat/index.txt').toString().split(/[\r\n]/);
+    while (!keys[keys.length - 1]) keys.splice(keys.length - 1, 1);
 
     const files = fs.readdirSync(dir + '/flat/').filter(name => name.match(/\.txt$/) && name !== 'index.txt');
     const index = {};
@@ -75,7 +76,7 @@ gulp.task('flat=>i18n', done => {
     files.forEach(file => {
         const lang = file.replace(/\.txt$/, '');
         langs.push(lang);
-        let lines = fs.readFileSync(dir + '/flat/' + file).toString().split(/[\r\n]/);
+        const lines = fs.readFileSync(dir + '/flat/' + file).toString().split(/[\r\n]/);
         lines.forEach((word, i) => {
             index[keys[i]] = index[keys[i]] || {};
             index[keys[i]][lang] = word;
@@ -83,7 +84,10 @@ gulp.task('flat=>i18n', done => {
     });
     langs.forEach(lang => {
         const words = {};
-        keys.forEach(key => {
+        keys.forEach((key, line) => {
+            if (!index[key]) {
+                console.log('No word ' + key + ', ' + lang + ', line: ' + line);
+            }
             words[key] = index[key][lang];
         });
         fs.writeFileSync(dir + '/' + lang + '.json', JSON.stringify(words, null, 2));
@@ -92,12 +96,12 @@ gulp.task('flat=>i18n', done => {
 
 gulp.task('clean', () => {
     return del([
-//        'src/node_modules/**/*',
+        // 'src/node_modules/**/*',
         'admin/**/*',
         'admin/*',
         'src/build/**/*'
     ]).then(del([
-//        'src/node_modules',
+        // 'src/node_modules',
         'src/build',
         'admin/'
     ]));
@@ -473,7 +477,7 @@ function languagesFlat2words(src) {
             if (aWords.hasOwnProperty(w)) {
                 if (!bigOne[w]) {
                     console.warn('Take from actual words.js: ' + w);
-                    bigOne[w] = aWords[w]
+                    bigOne[w] = aWords[w];
                 }
                 dirs.forEach(lang => {
                     if (temporaryIgnore.indexOf(lang) !== -1) return;
@@ -535,7 +539,7 @@ function languages2words(src) {
             if (aWords.hasOwnProperty(w)) {
                 if (!bigOne[w]) {
                     console.warn('Take from actual words.js: ' + w);
-                    bigOne[w] = aWords[w]
+                    bigOne[w] = aWords[w];
                 }
                 dirs.forEach(lang => {
                     if (temporaryIgnore.indexOf(lang) !== -1) return;
@@ -652,7 +656,7 @@ gulp.task('blocklyLanguagesFlat2words', done => {
             if (aWords.hasOwnProperty(w)) {
                 if (!bigOne[w]) {
                     console.warn('Take from actual words.js: ' + w);
-                    bigOne[w] = aWords[w]
+                    bigOne[w] = aWords[w];
                 }
                 dirs.forEach(lang => {
                     if (temporaryIgnore.indexOf(lang) !== -1) return;
