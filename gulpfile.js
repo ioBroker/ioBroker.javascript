@@ -202,6 +202,11 @@ function copyFiles() {
                 .pipe(replace('src="/', 'src="'))
                 .pipe(rename('tab.html'))
                 .pipe(gulp.dest('admin/')),
+            gulp.src([
+                'src/build/static/js/main.*',
+            ])
+                .pipe(replace('s.p+"static/media/copy-content', '"./static/media/copy-content'))
+                .pipe(gulp.dest('admin/static/js/')),
         ]);
     });
 }

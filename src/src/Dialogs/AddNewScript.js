@@ -27,6 +27,9 @@ const styles = {
     media: {
         height: 100,
     },
+    text: {
+        maxWidth: 200,
+    }
 };
 class DialogAddNew extends React.Component {
     handleCancel = () => {
@@ -53,7 +56,7 @@ class DialogAddNew extends React.Component {
                 />
                 <CardContent>
                     <h2>Javascript</h2>
-                    <p>{I18n.t('JS description')}</p>
+                    <div className={this.props.classes.text}>{I18n.t('JS description')}</div>
                 </CardContent>
             </CardActionArea>
             <CardActions>
@@ -73,7 +76,7 @@ class DialogAddNew extends React.Component {
                 />
                 <CardContent>
                     <h2>Typescript</h2>
-                    <p>{I18n.t('TS description')}</p>
+                    <div className={this.props.classes.text}>{I18n.t('TS description')}</div>
                 </CardContent>
             </CardActionArea>
             <CardActions>
@@ -92,7 +95,7 @@ class DialogAddNew extends React.Component {
                 />
                 <CardContent>
                     <h2>Blockly</h2>
-                    <p>{I18n.t('Blockly description')}</p>
+                    <div className={this.props.classes.text}>{I18n.t('Blockly description')}</div>
                 </CardContent>
             </CardActionArea>
             <CardActions>

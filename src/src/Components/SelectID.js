@@ -621,7 +621,7 @@ function formatValue(id, state, obj, texts) {
 }
 
 function getSelectIdIcon(objects, id, prefix) {
-    prefix = prefix || 'http://localhost:8081';
+    prefix = prefix || '.';//http://localhost:8081';
     let icon = '';
     let alt  = '';
     const _id_ = 'system.adapter.' + id;

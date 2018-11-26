@@ -19,12 +19,13 @@ import red from '@material-ui/core/colors/red';
 import green from '@material-ui/core/colors/green';
 
 import {MdMoreVert as IconMore} from 'react-icons/md';
-import {MdFolder as IconFolder} from 'react-icons/md';
+import {FaFolder as IconFolder} from 'react-icons/fa';
+import {FaFolderOpen as IconFolderOpened} from 'react-icons/fa';
 import {MdDelete as IconDelete} from 'react-icons/md';
 import {MdInput as IconDoEdit} from 'react-icons/md';
 import {MdDragHandle as IconGrip} from 'react-icons/md';
 import {MdExpandMore as IconExpand} from 'react-icons/md';
-import {MdExpandLess as IconCollapse} from 'react-icons/md';
+import {MdKeyboardArrowRight as IconCollapse} from 'react-icons/md';
 import {MdClose as IconClear} from 'react-icons/md';
 import {MdFormatClear as IconClose} from 'react-icons/md';
 import {MdPlayArrow as IconPlay} from 'react-icons/md';
@@ -515,7 +516,7 @@ class SideDrawer extends React.Component {
         this.props.onEdit && this.props.onEdit(item.id);
     }
 
-    renderFolderButtons(item, children) {
+    renderFolderButtons(item, children, isExpanded) {
         if (this.state.reorder) {
             if (item.type !== 'folder') {
                 return (<IconGrip className={this.props.classes.gripHandle}/>);
@@ -524,7 +525,6 @@ class SideDrawer extends React.Component {
             }
         }
         if (children && children.length) {
-            const isExpanded = this.state.expanded.indexOf(item.id) !== -1;
             return (
                 <IconButton className={this.props.classes.expandButton}
                             onClick={isExpanded ? e => this.onCollapse(item.id, e) : e => this.onExpand(item.id, e)}>
@@ -620,6 +620,10 @@ class SideDrawer extends React.Component {
             style.color = '#00a200';
         }
 
+        let isExpanded = false;
+        if (children && children.length) {
+            isExpanded = this.state.expanded.indexOf(item.id) !== -1;
+        }
 
         const inner =
             (<ListItem
@@ -629,10 +633,9 @@ class SideDrawer extends React.Component {
                 onClick={e => this.onClick(item, e)}
                 onDoubleClick={e => this.onDblClick(item, e)}
             >
-                {this.renderFolderButtons(item, children)}
-                <ListItemIcon>{item.type === 'folder' ? (<IconFolder/>) : (
-                    <img className={this.props.classes.scriptIcon} alt={item.type}
-                         src={images[item.type] || images.def}/>)}</ListItemIcon>
+                {this.renderFolderButtons(item, children, isExpanded)}
+                <ListItemIcon>{item.type === 'folder' ? (isExpanded ? (<IconFolderOpened/>) : (<IconFolder/>)) : (
+                    <img className={this.props.classes.scriptIcon} alt={item.type} src={images[item.type] || images.def}/>)}</ListItemIcon>
                 <ListItemText
                     classes={{primary: item.id === this.state.selected && !this.state.reorder ? this.props.classes.selected : undefined}}
                     style={this.getTextStyle(item)} primary={title}/>

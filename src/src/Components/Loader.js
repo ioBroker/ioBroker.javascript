@@ -24,8 +24,8 @@ class Loader extends React.Component {
                         style={{borderWidth: this.size * 0.132}}
                     />
                     <div className="logo-i logo-animate-color-inside"/>
-                    <div className="logo-i-top logo-animate-color-inside" style={{top: '17.5%'}}/>
-                    <div className="logo-i-top logo-animate-color-inside" style={{bottom: '17.5%'}}/>
+                    <div className="logo-i-top logo-animate-color-inside" style={{top: '18%'}}/>
+                    <div className="logo-i-top logo-animate-color-inside" style={{bottom: '18%'}}/>
                 </div>
                 <div className="logo-animate-grow"
                      style={{width: this.size + 11, height: this.size + 11}}

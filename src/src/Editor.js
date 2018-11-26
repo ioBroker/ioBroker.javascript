@@ -56,7 +56,9 @@ const styles = theme => ({
         position: 'relative'
     },
     textButton: {
-        marginRight: 10
+        marginRight: 10,
+        minHeight: 24,
+        padding: '6px 16px'
     },
     tabIcon: {
         width: 24,
@@ -93,6 +95,9 @@ const styles = theme => ({
     },
     notRunning: {
         color: '#ffbc00'
+    },
+    tabButton: {
+
     }
 });
 
@@ -219,6 +224,29 @@ class Editor extends React.Component {
         if (this.state.menuOpened !== nextProps.menuOpened) {
             newState.menuOpened = nextProps.menuOpened;
             _changed = true;
+        }
+
+        // check if all opened files still exists
+        if (this.state.editing && nextProps.objects['system.config']) {
+            const isAnyNonExists = this.state.editing.find(id => !nextProps.objects[id]);
+
+            if (isAnyNonExists) {
+                // remove non-existing scripts
+                const editing = JSON.parse(JSON.stringify(this.state.editing));
+                for (let i = editing.length - 1; i >= 0; i--) {
+                    if (!this.objects[editing[i]]) {
+                        _changed = true;
+                        editing.splice(i, 1);
+                    }
+                }
+                if (_changed) {
+                    newState.editing = editing;
+                }
+                if (this.state.selected && !this.objects[this.state.selected]) {
+                    _changed = true;
+                    newState.selected = editing[0] || '';
+                }
+            }
         }
 
         // update search text
@@ -401,13 +429,17 @@ class Editor extends React.Component {
                 value={this.state.selected}
                 onChange={(event, value) => this.onTabChange(event, value)}
                 indicatorColor="primary"
+                style={{position: 'relative'}}
                 textColor="primary"
                 scrollable
                 scrollButtons="auto"
             >
                 {this.state.editing.map(id => {
                     if (!this.props.objects[id]) {
-                        return (<Tab key={id} label={id.split('.').pop()} value={id}/>);
+                        const label = [
+                            (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</span>),
+                            (<span className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
+                        return (<Tab  component={'div'} key={id} label={label} value={id}/>);
                     } else {
                         let text = this.props.objects[id].common.name;
                         let title = '';
@@ -418,9 +450,9 @@ class Editor extends React.Component {
                         const label = [
                             (<img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon}/>),
                             (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{text}</span>),
-                            (<IconClose key="close" onClick={e => this.onTabClose(id, e)} className={this.props.classes.closeButton} fontSize="small"/>)];
+                            (<span className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
 
-                        return (<Tab key={id} label={label} value={id} title={title}/>);
+                        return (<Tab component={'div'} key={id} label={label} className={this.props.classes.tabButton} value={id} title={title}/>);
                     }
                 })}
             </Tabs>)
