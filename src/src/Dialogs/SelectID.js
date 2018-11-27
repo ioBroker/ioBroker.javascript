@@ -65,6 +65,7 @@ class DialogSelectID extends React.Component {
                 <DialogTitle id="selectid-dialog-title">{title}</DialogTitle>
                 <DialogContent className={this.props.classes.content}>
                     <SelectID
+                        prefix={this.props.prefix}
                         statesOnly={this.props.statesOnly}
                         style={{width: '100%', height: '100%'}}
                         connection={this.props.connection}
@@ -94,6 +95,7 @@ DialogSelectID.propTypes = {
     statesOnly: PropTypes.boolean,
     connection: PropTypes.object.isRequire,
     cancel: PropTypes.string,
+    prefix: PropTypes.string,
     ok: PropTypes.string
 
 };

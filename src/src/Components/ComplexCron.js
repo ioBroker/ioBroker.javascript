@@ -323,7 +323,7 @@ class ComplexCron extends React.Component {
                         this.setState({[type]: '*/' + num, modes}, () => this.recalcCron());
                     } else if (e.target.value === 'specific') {
                         let num = parseInt(this.state[type].split(',')[0]) || 0;
-                        if (!num && type === 'month' || type === 'date') {
+                        if (!num && (type === 'month' || type === 'date')) {
                             num = 1;
                         }
                         this.setState({[type]: convertArrayIntoMinus(num, max), modes}, () => this.recalcCron());

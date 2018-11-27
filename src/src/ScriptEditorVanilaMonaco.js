@@ -217,7 +217,6 @@ class ScriptEditor extends React.Component {
         let range = this.editor.getModel().findMatches(text);
         if (range && range.length) {
             range.forEach(r => this.editor.setSelection(r.range));
-            //range = range[0].range;
             this.editor.revealLine(range[0].range.startLineNumber);
         } else {
             const row = this.editor.getPosition().lineNumber;
@@ -232,23 +231,14 @@ class ScriptEditor extends React.Component {
             this.setState({name: nextProps.name});
             this.originalCode = nextProps.code || '';
             this.editor.setValue(nextProps.code);
-            if (this.lastSearch) {
-                this.highlightText(this.lastSearch);
-            }
-
         }
 
         if (nextProps.searchText !== this.lastSearch) {
             this.lastSearch = nextProps.searchText;
-            let range = this.lastSearch && this.editor.getModel().findMatches(this.lastSearch);
-            if (range && range.length) {
-                range = range[0].range;
-                this.editor.setSelection(range);
-                //this.editor.getAction('actions.find').run();
-                // this.editor.trigger('blabla', 'actions.find');
-            } else {
+            if (this.lastSearch) {
                 this.highlightText(this.lastSearch);
             }
+
         }
 
         if (this.state.language !== (nextProps.language || 'javascript')) {

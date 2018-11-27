@@ -32,8 +32,6 @@ import BlocklyEditor from './BlocklyEditor';
 import DialogConfirm from './Dialogs/Confirmation';
 import DialogSelectID from './Dialogs/SelectID';
 import DialogCron from './Dialogs/Cron';
-import RootRef from "@material-ui/core/RootRef/RootRef";
-import Input from "@material-ui/core/Input/Input";
 
 const images = {
     'Blockly': ImgBlockly,
@@ -431,7 +429,7 @@ class Editor extends React.Component {
 
     getTabs() {
         if (this.state.editing.length) {
-            return (<RootRef rootRef={this.tabsRef}><Tabs
+            return (<Tabs
                 key="tabs1"
                 value={this.state.selected}
                 onChange={(event, value) => this.onTabChange(event, value)}
@@ -446,7 +444,7 @@ class Editor extends React.Component {
                         const label = [
                             (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</span>),
                             (<span className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
-                        return (<Tab  component={'div'} key={id} label={label} value={id}/>);
+                        return (<Tab component={'div'} key={id} label={label} value={id}/>);
                     } else {
                         let text = this.props.objects[id].common.name;
                         let title = '';
@@ -462,7 +460,7 @@ class Editor extends React.Component {
                         return (<Tab component={'div'} key={id} label={label} className={this.props.classes.tabButton} value={id} title={title}/>);
                     }
                 })}
-            </Tabs></RootRef>)
+            </Tabs>)
         } else {
             return (<div key="tabs2" className={this.props.classes.toolbar}>
                 <Button key="select1" disabled={true} className={this.props.classes.hintButton}>
@@ -623,6 +621,7 @@ class Editor extends React.Component {
         if (this.state.showSelectId) {
             return (<DialogSelectID
                 key="dialogSelectID1"
+                prefix={'../..'}
                 connection={this.props.connection}
                 selected={this.selectId.callback ? this.selectId.initValue || '' : this.getSelect ? this.getSelect() : ''}
                 statesOnly={true}

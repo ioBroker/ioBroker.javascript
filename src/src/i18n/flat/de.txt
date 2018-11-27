@@ -1,44 +1,99 @@
 -
+Hinzufügen
+Neues Skript hinzufügen
+Alle Dateien werden akzeptiert
 April
 Sind Sie sicher?
 August
+Erstellen von Regeln durch Grafikblöcke
 Abbrechen
 Kann nicht gelöscht werden, weil noch einige Elementen sind drin!
+Blöcke prüfen
 Syntax-Check ist nicht aktiv, weil Javascript adapter läuft nicht.
+Sucheingabe löschen
 Klicken Sie auf dieses Symbol
+Schließen
+Konfiguration nicht gespeichert
+Blockly in Javascript für immer konvertieren.
+In die Zwischenablage kopieren
+Erstelle neu
+Neuen Ordner erstellen
+Neues Skript erstellen
+Erstellen oder bearbeiten Sie den CRON- oder Zeit-Assistenten
+Dunkler Stil
 Dezember
 Cron definieren ...
 Löschen
 Löschen %s...
 Alle abwählen
 verwerfen Sie die Änderungen für %s
+Erledigt
+Legen Sie einige Dateien hier ab oder klicken Sie ...
+Suchmodus beenden
 Fehler
+Fehler wurde gefunden
+Vorhandene Skripte werden überschrieben.
+Expertenmodus
+Export
+Exportieren Sie alle Skripte
+Blöcke exportieren
+Ausgewählte Blöcke exportieren
 Februar
+Mappe
 Freitag
 ID
+Blöcke importieren
+Fehler beim Importieren
+Skripts importieren
+Objekt-ID einfügen
+Instanz
+Instanz ist deaktiviert
+Dieser Vorgang kann nicht rückgängig gemacht werden.
+Regeln erstellen, indem Sie Javascript schreiben
 Januar
 Juli
 Juni
+Mehr erfahren
+Datei zeigen
 Protokoll
 März
 Mai
+Menu
+Meldung
 Montag
+Name
+Kein aktiver Host gefunden
 November
 Oktober
 Ok
 An Wochentagen
 Bitte Objekt-ID auswählen ...
 Umbenennen
+Skripte in Ordnern neu ordnen
 Wiederholen
 Neustart
+Root-Verzeichnis
 Samstag
 Speichern
+Skript
+Skript läuft nicht
+Suche in Skripten
+Suche...
 Wählen Sie Alle
 September
+Javascript-Code anzeigen
+Einige Dateien werden abgelehnt
 Sonntag
+Regeln erstellen, indem Sie Typescript schreiben
 Donnerstag
 Dienstag
+Unbekannter Fehler
+Unbekannter Fehler!
 Mittwoch
+Existiert doch!
+Kopieren
+Das Lesen der Datei ist fehlgeschlagen: %s
+Das Lesen der Datei wurde abgebrochen
 Funktion
 ID
 Name
@@ -178,58 +233,7 @@ Zeitstempel
 Benutzer
 Wert
 Sekunden verwenden
-Expertenmodus
-Exportieren Sie alle Skripte
-Skripts importieren
-Datei zeigen
-Skript läuft nicht
-Instanz ist deaktiviert
-Kopieren
-Skript
-Mappe
-Suche...
-Suchmodus beenden
-Sucheingabe löschen
-Menu
-Neues Skript erstellen
-Neuen Ordner erstellen
-Erstelle neu
-Suche in Skripten
-Skripte in Ordnern neu ordnen
-Root-Verzeichnis
-Kein aktiver Host gefunden
-Existiert doch!
-Vorhandene Skripte werden überschrieben.
-Unbekannter Fehler
-Unbekannter Fehler!
-Erledigt
-Konfiguration nicht gespeichert
-Dieser Vorgang kann nicht rückgängig gemacht werden.
-Blöcke exportieren
-Blöcke importieren
-Blöcke prüfen
-Erstellen oder bearbeiten Sie den CRON- oder Zeit-Assistenten
-Objekt-ID einfügen
-Blockly in Javascript für immer konvertieren.
-Dunkler Stil
-Javascript-Code anzeigen
-Fehler wurde gefunden
-Fehler beim Importieren
-Regeln erstellen, indem Sie Javascript schreiben
-Hinzufügen
-Mehr erfahren
-Regeln erstellen, indem Sie Typescript schreiben
-Erstellen von Regeln durch Grafikblöcke
-Neues Skript hinzufügen
-Ausgewählte Blöcke exportieren
-In die Zwischenablage kopieren
-Schließen
-Export
-Das Lesen der Datei wurde abgebrochen
-Das Lesen der Datei ist fehlgeschlagen: %s
-Einige Dateien werden abgelehnt
-Alle Dateien werden akzeptiert
-Legen Sie einige Dateien hier ab oder klicken Sie ...
-Meldung
-Instanz
-Name
+Skript bearbeiten oder einfach doppelklicken
+Skript anhalten
+Skript ausführen
+Skript löschen

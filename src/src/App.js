@@ -157,18 +157,28 @@ class App extends Component {
         this.objects = objects;
         // extract scripts and instances
         const nScripts = {};
+        const newState = {};
 
         scripts.list.forEach(id => nScripts[id] = objects[id]);
         scripts.groups.forEach(id => nScripts[id] = objects[id]);
         this.hosts = scripts.hosts;
+
+        if (window.localStorage && window.localStorage.getItem('App.expertMode') !== 'true' && window.localStorage.getItem('App.expertMode') !== 'false') {
+            // detect if some global scripts exists
+            if (scripts.list.find(id => id.startsWith('script.js.global.'))) {
+                newState.expertMode = true;
+            }
+        }
 
         let scriptsHash = this.state.scriptsHash;
         if (this.compareScripts(scripts)) {
             scriptsHash++;
         }
         this.scripts = nScripts;
+        newState.instances = scripts.instances;
+        newState.scriptsHash = scriptsHash;
 
-        this.setState({instances: scripts.instances, scriptsHash});
+        this.setState(newState);
     }
 
     compareScripts(newScripts) {
@@ -521,6 +531,7 @@ class App extends Component {
                             onAddNew={this.onAddNew.bind(this)}
                             onEnableDisable={this.onEnableDisable.bind(this)}
                             onExport={this.onExport.bind(this)}
+                            width={this.menuSize}
                             onImport={() => this.setState({importFile: true})}
                             onSearch={searchText => this.setState({searchText})}
                         />

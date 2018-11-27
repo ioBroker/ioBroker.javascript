@@ -846,7 +846,7 @@ class SelectID extends React.Component {
     }
 
     renderColumnName(data, metadata, toggleChildren) {
-        const icon = getSelectIdIcon(this.objects, data.id);
+        const icon = getSelectIdIcon(this.objects, data.id, this.props.prefix);
         return (<span className={this.props.classes.cellWrapper}>
             <img src={icon.src} className={this.props.classes.icon} alt={icon.alt}/>
             {data.obj && Utils.getObjectName(this.objects, data.obj._id, null, {language: this.lang})}
@@ -916,7 +916,7 @@ class SelectID extends React.Component {
                     if (typeof item === 'object') {
                         id = item.value;
                         name = item.name;
-                        icon = getSelectIdIcon(this.objects, id);
+                        icon = getSelectIdIcon(this.objects, id, this.props.prefix);
                     } else {
                         id = item;
                         name = item;
@@ -1032,6 +1032,7 @@ SelectID.propTypes = {
     selected: PropTypes.string,
     onSelect: PropTypes.func,
     connection: PropTypes.object,
+    prefix: PropTypes.string
 };
 
 export default withStyles(styles)(SelectID);

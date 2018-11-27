@@ -191,6 +191,7 @@ function copyFiles() {
             gulp.src([
                 'src/build/**/*',
                 'src/build/!index.html',
+                '!src/build/static/js/main.*.chunk.js',
                 'admin-config/*'
             ])
                 .pipe(gulp.dest('admin/')),
@@ -203,7 +204,7 @@ function copyFiles() {
                 .pipe(rename('tab.html'))
                 .pipe(gulp.dest('admin/')),
             gulp.src([
-                'src/build/static/js/main.*',
+                'src/build/static/js/main.*.chunk.js',
             ])
                 .pipe(replace('s.p+"static/media/copy-content', '"./static/media/copy-content'))
                 .pipe(gulp.dest('admin/static/js/')),
@@ -211,7 +212,7 @@ function copyFiles() {
     });
 }
 
-gulp.task('5-copy', ['3-build'], () => {
+gulp.task('5-copy', [/*'3-build'*/], () => {
     return copyFiles();
 });
 

@@ -248,6 +248,7 @@ class SideDrawer extends React.Component {
             searchMode: false,
             expertMode: this.props.expertMode,
             searchText: '',
+            width: this.props.width || 300,
             runningInstances: this.props.runningInstances || {}
         };
 
@@ -347,8 +348,11 @@ class SideDrawer extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        const newState = {};
+        let changed = false;
         if (this.expertMode !== nextProps.expertMode) {
-            this.setState({expertMode: nextProps.expertMode});
+            changed = true;
+            newState.expertMode = nextProps.expertMode;
         }
         if (this.scriptsHash !== nextProps.scriptsHash && nextProps.scripts) {
             const listItems = prepareList(nextProps.scripts || {});
@@ -356,12 +360,20 @@ class SideDrawer extends React.Component {
 
             const isAllZeroInstances = this.getIsAllZeroInstances(listItems, nextProps.instances || []);
             const newExp = this.ensureSelectedIsVisible();
-            const newState = {listItems, isAllZeroInstances};
+            newState.listItems = listItems;
+            newState.isAllZeroInstances = isAllZeroInstances;
             if (newExp) {
                 newState.expanded = newExp;
             }
+            changed = true;
             this.setState(newState);
         }
+
+        if (this.state.width !== nextProps.width) {
+            changed = true;
+            newState.width = nextProps.width;
+        }
+        changed && this.setState(newState);
 
         if (nextProps.selectId && this.state.selected !== nextProps.selectId) {
             this.onClick(this.state.listItems.find(item => item.id === nextProps.selectId));
@@ -488,20 +500,28 @@ class SideDrawer extends React.Component {
         if (this.state.reorder) return null;
         if (item.type !== 'folder') {
             return [
-                (<IconButton className={this.props.classes.iconButtons} onClick={e => {
-                    e.stopPropagation();
-                    this.props.onEnableDisable && this.props.onEnableDisable(item.id, !item.enabled)
-                }}
-                     key="restart"
-                     style={{color: item.enabled ? green[400] : red[400]}}>
-                    {item.enabled ? (<IconPause/>) : (<IconPlay/>)}
+                (<IconButton className={this.props.classes.iconButtons}
+                             onClick={e => {
+                                e.stopPropagation();
+                                this.props.onEnableDisable && this.props.onEnableDisable(item.id, !item.enabled)
+                             }}
+                            title={item.enabled ? I18n.t('Pause script') : I18n.t('Run script')}
+                            key="startStop"
+                            style={{color: item.enabled ? green[400] : red[400]}}>
+                            {item.enabled ? (<IconPause/>) : (<IconPlay/>)}
                 </IconButton>),
-                (<IconButton key="edit" onClick={e => this.onEdit(item, e)}><IconDoEdit/></IconButton>)
+                this.state.width > 350 ? (<IconButton
+                    key="delete"
+                    title={I18n.t('Delete script')}
+                    disabled={item.id === 'script.js.global' || item.id === 'script.js.common'}
+                    onClick={e => this.onDelete(item, e)}><IconDelete/></IconButton>) : null,
+                (<IconButton key="openInedit" title={I18n.t('Edit script or just double click')} onClick={e => this.onEdit(item, e)}><IconDoEdit/></IconButton>),
             ];
         }
     }
 
-    onDelete(item) {
+    onDelete(item, e) {
+        e && e.stopPropagation();
         return new Promise(resolve => {
             if (typeof item !== 'object') {
                 this.setState({deleting: item});
@@ -793,11 +813,11 @@ class SideDrawer extends React.Component {
                     PaperProps={{
                         style: {
                             maxHeight: MENU_ITEM_HEIGHT * 4.5,
-                            width: 200,
+                            //width: 200,
                         },
                     }}
                 >
-                    <MenuItem
+                    {this.state.width <= 350 ? (<MenuItem
                         key="deleted"
                         disabled={!this.state.selected || this.state.selected === 'script.js.global' || this.state.selected === 'script.js.common'}
                         onClick={event => {
@@ -811,7 +831,7 @@ class SideDrawer extends React.Component {
                             this.setState({menuOpened: false, menuAnchorEl: null}, () =>
                                 this.onDelete(this.state.selected).then(() => {}));
                         }}><IconDelete className={this.props.classes.iconDropdownMenu}  style={{color: 'red'}}/>{I18n.t('Delete')}
-                    </MenuItem>
+                    </MenuItem>) : null}
                     <MenuItem key="expertMode" selected={this.state.expertMode}
                               onClick={event => {
                                   event.stopPropagation();
@@ -1022,7 +1042,8 @@ SideDrawer.propTypes = {
     onImport: PropTypes.func,
     onExport: PropTypes.func,
     objects: PropTypes.object,
-    onSearch: PropTypes.func
+    onSearch: PropTypes.func,
+    width: PropTypes.number
 };
 
 export default withStyles(styles)(SideDrawer);
