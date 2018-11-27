@@ -32,6 +32,8 @@ import BlocklyEditor from './BlocklyEditor';
 import DialogConfirm from './Dialogs/Confirmation';
 import DialogSelectID from './Dialogs/SelectID';
 import DialogCron from './Dialogs/Cron';
+import RootRef from "@material-ui/core/RootRef/RootRef";
+import Input from "@material-ui/core/Input/Input";
 
 const images = {
     'Blockly': ImgBlockly,
@@ -89,8 +91,11 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     closeButton: {
+        position: 'absolute',
+        top: 8,
+        right: 0,
+        zIndex: 10,
         padding: 8,
-        verticalAlign: 'middle',
         cursor: 'grabbing'
     },
     notRunning: {
@@ -115,6 +120,8 @@ class Editor extends React.Component {
         if (selected && editing.indexOf(selected) === -1) {
             editing.push(selected);
         }
+
+        this.tabsRef = React.createRef();
 
         this.state = {
             selected: selected,
@@ -424,7 +431,7 @@ class Editor extends React.Component {
 
     getTabs() {
         if (this.state.editing.length) {
-            return (<Tabs
+            return (<RootRef rootRef={this.tabsRef}><Tabs
                 key="tabs1"
                 value={this.state.selected}
                 onChange={(event, value) => this.onTabChange(event, value)}
@@ -455,7 +462,7 @@ class Editor extends React.Component {
                         return (<Tab component={'div'} key={id} label={label} className={this.props.classes.tabButton} value={id} title={title}/>);
                     }
                 })}
-            </Tabs>)
+            </Tabs></RootRef>)
         } else {
             return (<div key="tabs2" className={this.props.classes.toolbar}>
                 <Button key="select1" disabled={true} className={this.props.classes.hintButton}>
