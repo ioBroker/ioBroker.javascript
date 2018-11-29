@@ -11,7 +11,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import I18n from '../i18n';
-import TextField from "@material-ui/core/TextField";
+import TextField from '@material-ui/core/TextField';
 import convertCronToText from './simple-cron/cronText';
 
 const styles = theme => ({
@@ -75,8 +75,14 @@ const MONTHS = [
 function convertMinusIntoArray(value, max) {
     let result = [];
     if (value === '*') {
-        for (let i = 1; i <= max; i++) {
-            result.push(i);
+        if (max === 24 || max === 60 || max === 7) {
+            for (let i = 0; i < max; i++) {
+                result.push(i);
+            }
+        } else {
+            for (let i = 1; i <= max; i++) {
+                result.push(i);
+            }
         }
         return result; // array with entries max
     }
@@ -119,7 +125,7 @@ function convertArrayIntoMinus(value, max) {
     }
     const newParts = [];
     if (!value.length) {
-        return '';
+        return '-';
     }
     value = value.map(a => parseInt(a, 10));
 
@@ -227,7 +233,11 @@ class ComplexCron extends React.Component {
         if (i === true) {
             this.setState({[type]: '*'}, () => this.recalcCron());
         } else if (i === false) {
-            this.setState({[type]: ''}, () => this.recalcCron());
+            if (max === 60 || max === 24) {
+                this.setState({[type]: '0'}, () => this.recalcCron());
+            } else {
+                this.setState({[type]: '1'}, () => this.recalcCron());
+            }
         } else {
             let nums = convertMinusIntoArray(this.state[type], max);
             const pos = nums.indexOf(i);
@@ -297,7 +307,7 @@ class ComplexCron extends React.Component {
             select = every ? 'every' : (everyN ? 'everyN' : 'specific');
             const modes = JSON.parse(JSON.stringify(this.state.modes));
             modes[type] = select;
-            return setTimeout(() => this.setState({modes}), 100);
+            return setTimeout(() => this.setState({modes}, () => this.recalcCron()), 100);
         } else {
             every = this.state.modes[type] === 'every';
             everyN = this.state.modes[type] === 'everyN';
@@ -322,8 +332,9 @@ class ComplexCron extends React.Component {
                         const num = parseInt(this.state[type].toString().replace('*/', ''), 10) || 1;
                         this.setState({[type]: '*/' + num, modes}, () => this.recalcCron());
                     } else if (e.target.value === 'specific') {
-                        let num = parseInt(this.state[type].split(',')[0]) || 0;
-                        if (!num && (type === 'month' || type === 'date')) {
+                        let num = parseInt(this.state[type].split(',')[0], 10) || 0;
+                        console.log(num);
+                        if (!num && (type === 'months' || type === 'dates')) {
                             num = 1;
                         }
                         this.setState({[type]: convertArrayIntoMinus(num, max), modes}, () => this.recalcCron());
@@ -351,15 +362,23 @@ class ComplexCron extends React.Component {
         </div>);
     }
 
+    convertCronToText(cron, lang) {
+        if (cron.split(' ').indexOf('-') !== -1) {
+            return I18n.t('Invalid CRON');
+        } else {
+            return convertCronToText(cron, lang);
+        }
+    }
+
     render() {
         const tab = this.state.seconds !== false ? this.state.tab : this.state.tab + 1;
         return (
             <div className={this.props.classes.mainDiv}>
                 <div style={{paddingLeft: 8, width: '100%'}}><TextField style={{width: '100%'}} value={this.state.cron} disabled={true}/></div>
-                <div style={{paddingLeft: 8, width: '100%', height: 60}}>{convertCronToText(this.state.cron, this.props.language || 'en')}</div>
+                <div style={{paddingLeft: 8, width: '100%', height: 60}}>{this.convertCronToText(this.state.cron, this.props.language || 'en')}</div>
                 <FormControlLabel
                     control={<Checkbox checked={this.state.seconds}
-                                       onChange={e => this.setState({seconds: e.target.checked ? '*' : false})}/>}
+                                       onChange={e => this.setState({seconds: e.target.checked ? '*' : false}, () => this.recalcCron())}/>}
                     label={I18n.t('use seconds')}
                 />
                 <AppBar position="static" classes={{root: this.props.classes.appBar}} color="secondary">

@@ -15,7 +15,7 @@ import I18n from './i18n';
 import DialogMessage from './Dialogs/Message';
 import DialogError from './Dialogs/Error';
 import DialogConfirm from './Dialogs/Confirmation';
-import DialogImportFile from "./Dialogs/ImportFile";
+import DialogImportFile from './Dialogs/ImportFile';
 
 const styles = theme => ({
     root: Theme.root,
@@ -27,6 +27,9 @@ const styles = theme => ({
             overflow: 'hidden',
             width: '100%',
             height: '100%',
+        },
+        '& .layout-splitter': {
+           background: Theme.type === 'dark' ? '#595858' : '#ccc;'
         }
     },
     mainDiv: {
@@ -106,7 +109,8 @@ class App extends Component {
             confirm: '',
             importFile: false,
             message: '',
-            searchText: ''
+            searchText: '',
+            themeType: window.localStorage ? window.localStorage.getItem('App.theme') || 'light' : 'light',
         };
         // this.logIndex = 0;
         this.logSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.logSize')) || 150 : 150;
@@ -459,6 +463,7 @@ class App extends Component {
                         runningInstances={this.state.runningInstances}
                         menuOpened={this.state.menuOpened}
                         searchText={this.state.searchText}
+                        theme={this.state.themeType}
                         onChange={(id, common) => this.onUpdateScript(id, common)}
                         onSelectedChange={(id, editing) => {
                             const newState = {};
@@ -491,54 +496,59 @@ class App extends Component {
         const {classes} = this.props;
 
         if (!this.state.ready) {
-            //return (<CircularProgress className={classes.progress} size={50} />);
-            return (<Loader />);
+            // return (<CircularProgress className={classes.progress} size={50} />);
+            return (<Loader theme={this.state.themeType}/>);
         }
 
         return (
-            <div className={classes.root}>
-                (<SplitterLayout
-                    key="menuSplitter"
-                    vertical={false}
-                    primaryMinSize={300}
-                    primaryIndex={1}
-                    secondaryMinSize={300}
-                    secondaryInitialSize={this.menuSize}
-                    customClassName={classes.splitterDivs + ' ' + (!this.state.menuOpened ? classes.menuDivWithoutMenu : '')}
-                    onDragStart={() => this.setState({resizing: true})}
-                    onSecondaryPaneSizeChange={size => this.menuSize = parseFloat(size)}
-                    onDragEnd={() => {
-                        this.setState({resizing: false});
-                        window.localStorage && window.localStorage.setItem('App.menuSize', this.menuSize.toString());
-                    }}
-                >
-                    <div className={classes.mainDiv} key="menu">
-                        <SideMenu
-                            key="sidemenu"
-                            scripts={this.scripts}
-                            objects={this.objects}
-                            scriptsHash={this.state.scriptsHash}
-                            instances={this.state.instances}
-                            update={this.state.updateScripts}
-                            onRename={this.onRename.bind(this)}
-                            onSelect={this.onSelect.bind(this)}
-                            selectId={this.state.menuSelectId}
-                            onEdit={this.onEdit.bind(this)}
-                            expertMode={this.state.expertMode}
-                            runningInstances={this.state.runningInstances}
-                            onExpertModeChange={this.onExpertModeChange.bind(this)}
-                            onDelete={this.onDelete.bind(this)}
-                            onAddNew={this.onAddNew.bind(this)}
-                            onEnableDisable={this.onEnableDisable.bind(this)}
-                            onExport={this.onExport.bind(this)}
-                            width={this.menuSize}
-                            onImport={() => this.setState({importFile: true})}
-                            onSearch={searchText => this.setState({searchText})}
-                        />
-                    </div>
-                    {this.renderMain()}}
-                </SplitterLayout>
-            </div>
+                <div className={classes.root}>
+                    (<SplitterLayout
+                        key="menuSplitter"
+                        vertical={false}
+                        primaryMinSize={300}
+                        primaryIndex={1}
+                        secondaryMinSize={300}
+                        secondaryInitialSize={this.menuSize}
+                        customClassName={classes.splitterDivs + ' ' + (!this.state.menuOpened ? classes.menuDivWithoutMenu : '')}
+                        onDragStart={() => this.setState({resizing: true})}
+                        onSecondaryPaneSizeChange={size => this.menuSize = parseFloat(size)}
+                        onDragEnd={() => {
+                            this.setState({resizing: false});
+                            window.localStorage && window.localStorage.setItem('App.menuSize', this.menuSize.toString());
+                        }}
+                    >
+                        <div className={classes.mainDiv} key="menu">
+                            <SideMenu
+                                key="sidemenu"
+                                scripts={this.scripts}
+                                objects={this.objects}
+                                scriptsHash={this.state.scriptsHash}
+                                instances={this.state.instances}
+                                update={this.state.updateScripts}
+                                onRename={this.onRename.bind(this)}
+                                onSelect={this.onSelect.bind(this)}
+                                selectId={this.state.menuSelectId}
+                                onEdit={this.onEdit.bind(this)}
+                                expertMode={this.state.expertMode}
+                                theme={this.state.themeType}
+                                onThemeChange={theme => {
+                                    window.localStorage && window.localStorage.setItem('App.theme', theme);
+                                    this.setState({themeType: theme}, () => this.props.onThemeChange(theme))
+                                }}
+                                runningInstances={this.state.runningInstances}
+                                onExpertModeChange={this.onExpertModeChange.bind(this)}
+                                onDelete={this.onDelete.bind(this)}
+                                onAddNew={this.onAddNew.bind(this)}
+                                onEnableDisable={this.onEnableDisable.bind(this)}
+                                onExport={this.onExport.bind(this)}
+                                width={this.menuSize}
+                                onImport={() => this.setState({importFile: true})}
+                                onSearch={searchText => this.setState({searchText})}
+                            />
+                        </div>
+                        {this.renderMain()}}
+                    </SplitterLayout>
+                </div>
         );
     }
 }

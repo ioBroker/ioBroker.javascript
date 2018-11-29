@@ -1,4 +1,5 @@
 export default {
+    type: 'dark',
     root: {
         flexGrow: 1,
         display: 'flex',

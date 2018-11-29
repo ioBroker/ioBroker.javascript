@@ -25,10 +25,12 @@ December
 Define cron...
 Delete
 Delete %s...
+Delete script
 Deselect all
 Discard changes for %s
 Done
 Drop some files here or click...
+Edit script or just double click
 End search mode
 Error
 Error was found
@@ -67,12 +69,14 @@ November
 October
 Ok
 On weekdays
+Pause script
 Please select object ID...
 Rename
 Reorder scripts in folders
 Repeat
 Restart
 Root folder
+Run script
 Saturday
 Save
 Script
@@ -233,7 +237,5 @@ Timestamp
 User
 Value
 use seconds
-Edit script or just double click
-Pause script
-Run script
-Delete script
+Define schedule...
+Invalid CRON

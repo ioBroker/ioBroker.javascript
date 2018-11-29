@@ -24,8 +24,8 @@ import {FaFolderOpen as IconFolderOpened} from 'react-icons/fa';
 import {MdDelete as IconDelete} from 'react-icons/md';
 import {MdInput as IconDoEdit} from 'react-icons/md';
 import {MdDragHandle as IconGrip} from 'react-icons/md';
-import {MdExpandMore as IconExpand} from 'react-icons/md';
-import {MdKeyboardArrowRight as IconCollapse} from 'react-icons/md';
+import {MdExpandMore as IconCollapse} from 'react-icons/md';
+import {MdKeyboardArrowRight as IconExpand} from 'react-icons/md';
 import {MdClose as IconClear} from 'react-icons/md';
 import {MdFormatClear as IconClose} from 'react-icons/md';
 import {MdPlayArrow as IconPlay} from 'react-icons/md';
@@ -38,6 +38,7 @@ import {MdSearch as IconFind} from 'react-icons/md';
 import {MdPersonPin as IconExpert} from 'react-icons/md';
 import {FaFileExport as IconExport} from 'react-icons/fa';
 import {FaFileImport as IconImport} from 'react-icons/fa';
+import {MdPalette as IconDark} from 'react-icons/md';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
@@ -98,7 +99,7 @@ const styles = theme => ({
         width: 29
     },
     folder: {
-        background: '#e2e2e2',
+        background: theme.palette.type === 'dark' ? '#6a6a6a' : '#e2e2e2',
         cursor: 'pointer',
         padding: 0,
         userSelect: 'none'
@@ -233,6 +234,7 @@ class SideDrawer extends React.Component {
             listItems: prepareList(props.scripts || {}),
             expanded: expanded,
             reorder: false,
+            theme: this.props.theme,
             dragDepth: 0,
             draggedId: null,
             selected: window.localStorage ? window.localStorage.getItem('SideMenu.selected') || null : null,
@@ -372,6 +374,10 @@ class SideDrawer extends React.Component {
         if (this.state.width !== nextProps.width) {
             changed = true;
             newState.width = nextProps.width;
+        }
+        if (this.state.theme !== nextProps.theme) {
+            changed = true;
+            newState.theme = nextProps.theme;
         }
         changed && this.setState(newState);
 
@@ -631,7 +637,7 @@ class SideDrawer extends React.Component {
         }
 
         const style = Object.assign({
-            paddingLeft: depthPx,
+            marginLeft: depthPx,
             cursor: item.type === 'folder' && this.state.reorder ? 'default' : 'inherit',
             opacity: item.filteredPartly ? 0.5 : 1
         }, item.id === this.state.selected && !this.state.reorder ? Theme.colors.selected : {});
@@ -645,6 +651,13 @@ class SideDrawer extends React.Component {
             isExpanded = this.state.expanded.indexOf(item.id) !== -1;
         }
 
+        let iconStyle = {};
+        if (item.id === 'script.js.global') {
+            iconStyle.color = '#356956';
+        } else if (item.id === 'script.js.common') {
+            iconStyle.color = '#4899e1';
+        }
+
         const inner =
             (<ListItem
                 key={item.id}
@@ -654,7 +667,7 @@ class SideDrawer extends React.Component {
                 onDoubleClick={e => this.onDblClick(item, e)}
             >
                 {this.renderFolderButtons(item, children, isExpanded)}
-                <ListItemIcon>{item.type === 'folder' ? (isExpanded ? (<IconFolderOpened/>) : (<IconFolder/>)) : (
+                <ListItemIcon>{item.type === 'folder' ? (isExpanded ? (<IconFolderOpened style={iconStyle}/>) : (<IconFolder style={iconStyle}/>)) : (
                     <img className={this.props.classes.scriptIcon} alt={item.type} src={images[item.type] || images.def}/>)}</ListItemIcon>
                 <ListItemText
                     classes={{primary: item.id === this.state.selected && !this.state.reorder ? this.props.classes.selected : undefined}}
@@ -784,7 +797,6 @@ class SideDrawer extends React.Component {
                     this.setState({searchText: ''});
                 }}
             ><IconClear fontSize="small"/></IconButton>));
-
         } else {
             if (!this.state.reorder) {
                 // Open Menu
@@ -812,7 +824,7 @@ class SideDrawer extends React.Component {
                     onClose={() => this.setState({menuOpened: false, menuAnchorEl: null})}
                     PaperProps={{
                         style: {
-                            maxHeight: MENU_ITEM_HEIGHT * 4.5,
+                            maxHeight: MENU_ITEM_HEIGHT * 5.5,
                             //width: 200,
                         },
                     }}
@@ -844,17 +856,22 @@ class SideDrawer extends React.Component {
                                                        onClick={event => {
                                                            event.stopPropagation();
                                                            event.preventDefault();
-                                                           this.setState({menuOpened: false, menuAnchorEl: null}, () =>
-                                                               this.props.onExport && this.props.onExport());
+                                                           this.setState({menuOpened: false, menuAnchorEl: null}, () => this.props.onExport());
                                                        }}><IconExport className={this.props.classes.iconDropdownMenu} />{I18n.t('Export all scripts')}
                     </MenuItem>)}
                     {this.props.onImport && (<MenuItem key="import"
                                                        onClick={event => {
                                                            event.stopPropagation();
                                                            event.preventDefault();
-                                                           this.setState({menuOpened: false, menuAnchorEl: null}, () =>
-                                                               this.props.onImport && this.props.onImport());
+                                                           this.setState({menuOpened: false, menuAnchorEl: null}, () => this.props.onImport());
                                                        }}><IconImport className={this.props.classes.iconDropdownMenu} />{I18n.t('Import scripts')}
+                    </MenuItem>)}
+                    {this.props.onThemeChange && (<MenuItem key="dark"
+                                                       onClick={event => {
+                                                           //event.stopPropagation();
+                                                           //event.preventDefault();
+                                                           this.props.onThemeChange(this.state.theme === 'dark' ? 'light' : 'dark');
+                                                       }}><IconDark className={this.props.classes.iconDropdownMenu} />{I18n.t('Dark Theme')}
                     </MenuItem>)}
                 </Menu>));
 
@@ -1035,6 +1052,7 @@ SideDrawer.propTypes = {
     onExpertModeChange: PropTypes.func,
     onEnableDisable: PropTypes.func,
     runningInstances: PropTypes.object,
+    theme: PropTypes.string,
     onSelect: PropTypes.func,
     onAddNew: PropTypes.func,
     onRename: PropTypes.func,
@@ -1043,6 +1061,7 @@ SideDrawer.propTypes = {
     onExport: PropTypes.func,
     objects: PropTypes.object,
     onSearch: PropTypes.func,
+    onThemeChange: PropTypes.func,
     width: PropTypes.number
 };
 

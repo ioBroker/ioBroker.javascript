@@ -131,7 +131,7 @@ class Editor extends React.Component {
             showCron: false,
             insert: '',
             searchText: '',
-            isDark: window.localStorage ? (window.localStorage.getItem('Editor.dark') === 'true') : false,
+            theme: this.props.theme,
             visible: props.visible,
             cmdToBlockly: '',
             menuOpened: !!this.props.menuOpened,
@@ -228,6 +228,11 @@ class Editor extends React.Component {
 
         if (this.state.menuOpened !== nextProps.menuOpened) {
             newState.menuOpened = nextProps.menuOpened;
+            _changed = true;
+        }
+
+        if (this.state.theme !== nextProps.theme) {
+            newState.theme = nextProps.theme;
             _changed = true;
         }
 
@@ -430,37 +435,37 @@ class Editor extends React.Component {
     getTabs() {
         if (this.state.editing.length) {
             return (<Tabs
-                key="tabs1"
-                value={this.state.selected}
-                onChange={(event, value) => this.onTabChange(event, value)}
-                indicatorColor="primary"
-                style={{position: 'relative'}}
-                textColor="primary"
-                scrollable
-                scrollButtons="auto"
-            >
-                {this.state.editing.map(id => {
-                    if (!this.props.objects[id]) {
-                        const label = [
-                            (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</span>),
-                            (<span className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
-                        return (<Tab component={'div'} key={id} label={label} value={id}/>);
-                    } else {
-                        let text = this.props.objects[id].common.name;
-                        let title = '';
-                        if (text.length > 18) {
-                            title = text;
-                            text = text.substring(0, 15) + '...';
-                        }
-                        const label = [
-                            (<img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon}/>),
-                            (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{text}</span>),
-                            (<span className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
+                    key="tabs1"
+                    value={this.state.selected}
+                    onChange={(event, value) => this.onTabChange(event, value)}
+                    indicatorColor="primary"
+                    style={{position: 'relative'}}
+                    textColor="primary"
+                    scrollable
+                    scrollButtons="auto"
+                >
+                    {this.state.editing.map(id => {
+                        if (!this.props.objects[id]) {
+                            const label = [
+                                (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</span>),
+                                (<span className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
+                            return (<Tab component={'div'} key={id} label={label} value={id}/>);
+                        } else {
+                            let text = this.props.objects[id].common.name;
+                            let title = '';
+                            if (text.length > 18) {
+                                title = text;
+                                text = text.substring(0, 15) + '...';
+                            }
+                            const label = [
+                                (<img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon}/>),
+                                (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{text}</span>),
+                                (<span className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
 
-                        return (<Tab component={'div'} key={id} label={label} className={this.props.classes.tabButton} value={id} title={title}/>);
-                    }
-                })}
-            </Tabs>)
+                            return (<Tab component={'div'} key={id} label={label} className={this.props.classes.tabButton} value={id} title={title}/>);
+                        }
+                    })}
+                </Tabs>);
         } else {
             return (<div key="tabs2" className={this.props.classes.toolbar}>
                 <Button key="select1" disabled={true} className={this.props.classes.hintButton}>
@@ -486,16 +491,6 @@ class Editor extends React.Component {
                     {this.state.changed && (<Button key="save" variant="contained" color="secondary" className={this.props.classes.textButton} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave /></Button>)}
                     {this.state.changed && (<Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel /></Button>)}
                     <div style={{flex: 2}}/>
-
-                    {!this.state.blockly && (<IconButton key="dark" aria-label="Dark style"
-                                                         title={I18n.t('Dark style')}
-                                                         color={this.state.isDark ? 'secondary' : 'inherit'}
-                                                         className={this.props.classes.toolbarButtons}
-                                                         onClick={() => {
-                                                             this.setState({isDark: !this.state.isDark});
-                                                             window.localStorage && window.localStorage.setItem('Editor.dark', this.state.isDark ? 'false' : 'true');
-                                                         }}>
-                        <IconDark /></IconButton>)}
 
                     {this.state.blockly && !this.state.showBlocklyCode &&
                         (<IconButton key="export" aria-label="Export Blocks"
@@ -561,7 +556,7 @@ class Editor extends React.Component {
                     onRegisterSelect={func => this.onRegisterSelect(func)}
                     readOnly={this.state.showBlocklyCode}
                     code={this.scripts[this.state.selected].source || ''}
-                    isDark={this.state.isDark}
+                    isDark={this.state.theme === 'dark'}
                     connection={this.props.connection}
                     onChange={newValue => this.onChange(newValue)}
                     language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
@@ -690,7 +685,8 @@ Editor.propTypes = {
     onLocate: PropTypes.func,
     runningInstances: PropTypes.object,
     connection: PropTypes.object,
-    searchText: PropTypes.string
+    searchText: PropTypes.string,
+    theme: PropTypes.string
 };
 
 export default withStyles(styles)(Editor);

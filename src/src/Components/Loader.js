@@ -15,19 +15,19 @@ class Loader extends React.Component {
 
     render() {
         return (
-            <div className="logo-back logo-background">
+            <div className={'logo-back logo-background-' + this.props.theme}>
                 <div className="logo-div" style={{width: this.size, height: this.size}}>
-                    <div className="logo-top logo-background" style={{left: '37%'}}/>
-                    <div className="logo-top logo-background" style={{left: '57%'}}/>
+                    <div className={'logo-top logo-background-' + this.props.theme} style={{left: '37%'}}/>
+                    <div className={'logo-top logo-background-' + this.props.theme} style={{left: '57%'}}/>
                     <div
-                        className="logo-border logo-background logo-animate-wait"
+                        className={'logo-border logo-background-' + this.props.theme + ' logo-animate-wait'}
                         style={{borderWidth: this.size * 0.132}}
                     />
-                    <div className="logo-i logo-animate-color-inside"/>
-                    <div className="logo-i-top logo-animate-color-inside" style={{top: '18%'}}/>
-                    <div className="logo-i-top logo-animate-color-inside" style={{bottom: '18%'}}/>
+                    <div className={'logo-i logo-animate-color-inside-' + this.props.theme}/>
+                    <div className={'logo-i-top logo-animate-color-inside-' + this.props.theme} style={{top: '18%'}}/>
+                    <div className={'logo-i-top logo-animate-color-inside-' + this.props.theme} style={{bottom: '18%'}}/>
                 </div>
-                <div className="logo-animate-grow"
+                <div className={'logo-animate-grow logo-animate-grow-' + this.props.theme}
                      style={{width: this.size + 11, height: this.size + 11}}
                 />
             </div>
@@ -36,7 +36,8 @@ class Loader extends React.Component {
 }
 
 Loader.propTypes = {
-    size: PropTypes.number
+    size: PropTypes.number,
+    theme: PropTypes.string
 };
 
 export default withStyles(styles)(Loader);

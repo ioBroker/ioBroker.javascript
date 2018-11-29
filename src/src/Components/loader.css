@@ -1,5 +1,8 @@
-.logo-background {
+.logo-background-light {
     background: white;
+}
+.logo-background-dark {
+    background: black;
 }
 .logo-div {
     position: absolute;
@@ -74,7 +77,7 @@
     }
 }
 @keyframes logo-spin { 100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
-@keyframes logo-color-inside {
+@keyframes logo-color-inside-light {
     0% {
         background: #FEFEFE;
     }
@@ -82,9 +85,29 @@
         background: #3399CC;
     }
 }
-@keyframes logo-color-outside {
+@keyframes logo-color-inside-dark {
+    0% {
+        background: #030303;
+    }
+    100% {
+        background: #3399CC;
+    }
+}
+
+@keyframes logo-color-outside-light {
     0% {
         border-color: #FEFEFE;
+    }
+    100% {
+        border-top-color: #3399CC;
+        border-left-color: #164477;
+        border-bottom-color: #164477;
+        border-right-color: #164477;
+    }
+}
+@keyframes logo-color-outside-dark  {
+    0% {
+        border-color: #040404;
     }
     100% {
         border-top-color: #3399CC;
@@ -97,6 +120,14 @@
 .logo-animate-wait {
     animation: logo-color-outside 1.5s, logo-spin 1.5s linear infinite;
 }
+.logo-animate-grow-light {
+    background: #DDD;
+}
+
+.logo-animate-grow-dark {
+    background: #1d1d1d;
+}
+
 .logo-animate-grow {
     display: inline-block;
     text-align: center;
@@ -106,16 +137,21 @@
     -ms-transform: translateX(-50%) translateY(-50%);
     -webkit-transform: translate(-50%,-50%);
     transform: translate(-50%,-50%);
-    background: #DDD;
     width: 245px;
     height: 245px;
     border-radius: 50%;
     position: absolute;
     animation: logo-grow 1s 1 ease forwards;
 }
-.logo-animate-color-inside {
-    animation: logo-color-inside 2.5s;
+.logo-animate-color-inside-light {
+    animation: logo-color-inside-light 2.5s;
 }
-.logo-animate-color-outside {
-    animation: logo-color-outside 1.5s;
+.logo-animate-color-outside-light {
+    animation: logo-color-outside-light 1.5s;
+}
+.logo-animate-color-inside-dark {
+    animation: logo-color-inside-dark 2.5s;
+}
+.logo-animate-color-outside-dark {
+    animation: logo-color-outside-dark 1.5s;
 }

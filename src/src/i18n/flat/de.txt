@@ -25,10 +25,12 @@ Dezember
 Cron definieren ...
 Löschen
 Löschen %s...
+Skript löschen
 Alle abwählen
 verwerfen Sie die Änderungen für %s
 Erledigt
 Legen Sie einige Dateien hier ab oder klicken Sie ...
+Skript bearbeiten oder einfach doppelklicken
 Suchmodus beenden
 Fehler
 Fehler wurde gefunden
@@ -67,12 +69,14 @@ November
 Oktober
 Ok
 An Wochentagen
+Skript anhalten
 Bitte Objekt-ID auswählen ...
 Umbenennen
 Skripte in Ordnern neu ordnen
 Wiederholen
 Neustart
 Root-Verzeichnis
+Skript ausführen
 Samstag
 Speichern
 Skript
@@ -105,7 +109,7 @@ KEINE GRUPPE
 Dieser Block ist mit anderen nicht richtig verbunden.
 CRON
 Datum
-Termine
+Daten
 Wochentag
 Jeden
 alle N Tag
@@ -124,14 +128,14 @@ Von
 Stunden
 Intervall
 Intervall zwischen
-Protokoll
+Minuten
 Monate
 Einmal
 Zeitraum
 Sekunden
 Einfach
 Bestimmte Zeit
-bestimmte Termine
+bestimmte Daten
 bestimmten Wochentag
 bestimmte Stunden
 bestimmte Minuten
@@ -197,7 +201,7 @@ keiner
 auf
 Zeitraum
 Täglich
-Termine
+Daten
 Tag
 Jeden
 Jeden Tag
@@ -233,7 +237,5 @@ Zeitstempel
 Benutzer
 Wert
 Sekunden verwenden
-Skript bearbeiten oder einfach doppelklicken
-Skript anhalten
-Skript ausführen
-Skript löschen
+Zeitplan definieren ...
+Ungültiger CRON
