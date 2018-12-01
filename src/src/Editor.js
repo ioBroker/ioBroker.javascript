@@ -7,7 +7,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
-import {MdPalette as IconDark} from 'react-icons/md';
 import {MdSave as IconSave} from 'react-icons/md';
 import {MdCancel as IconCancel} from 'react-icons/md';
 import {MdClose as IconClose} from 'react-icons/md';
@@ -27,8 +26,8 @@ import ImgBlockly2Js from './assets/blockly2js.png'
 
 import I18n from './i18n';
 import Theme from './Theme';
-import ScriptEditor from './ScriptEditorVanilaMonaco';
-import BlocklyEditor from './BlocklyEditor';
+import ScriptEditor from './Components/ScriptEditorVanilaMonaco';
+import BlocklyEditor from './Components/BlocklyEditor';
 import DialogConfirm from './Dialogs/Confirmation';
 import DialogSelectID from './Dialogs/SelectID';
 import DialogCron from './Dialogs/Cron';
@@ -187,7 +186,7 @@ class Editor extends React.Component {
 
         // to enable logging
         if (this.props.onSelectedChange && this.state.selected) {
-            setTimeout(() => this.props.onSelectedChange(this.state.selected, this.state.editing));
+            setTimeout(() => this.props.onSelectedChange(this.state.selected, this.state.editing), 100);
         }
         this.onBrowserCloseBound = this.onBrowserClose.bind(this);
     }
@@ -270,10 +269,21 @@ class Editor extends React.Component {
             this.objects = nextProps.objects;
             window.main.objects = nextProps.objects;
 
+            // update all scripts
+            for (const id in this.scripts) {
+                if (!this.scripts.hasOwnProperty(id)) continue;
+                const source = this.scripts[id].source;
+                this.scripts[id] = JSON.parse(JSON.stringify(this.objects[id].common));
+                this.scripts[id].source = source;
+            }
+
             // if script is blockly
             if (this.state.selected && this.objects[this.state.selected]) {
                 this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.objects[this.state.selected].common));
-                newState.blockly = this.scripts[this.state.selected].engineType === 'Blockly';
+                if (this.state.blockly !== (this.scripts[this.state.selected].engineType === 'Blockly')) {
+                    newState.blockly = this.scripts[this.state.selected].engineType === 'Blockly';
+                    _changed = true;
+                }
             }
 
             // remove non-existing scripts
@@ -289,6 +299,50 @@ class Editor extends React.Component {
             }
             if (_changed) {
                 newState.editing = editing;
+            }
+        } else {
+            // update all scripts
+            for (const id in this.scripts) {
+                if (!this.scripts.hasOwnProperty(id)) continue;
+                if (this.objects[id] && this.objects[id].common) {
+                    const source = this.scripts[id].source;
+                    const commonLocal = JSON.parse(JSON.stringify(this.scripts[id]));
+                    commonLocal.source = this.objects[id].common.source;
+                    if (JSON.stringify(commonLocal) !== JSON.stringify(this.objects[id].common)) {
+                        this.scripts[id] = JSON.parse(JSON.stringify(this.objects[id].common));
+                        this.scripts[id].source = source;
+                    }
+
+                    if (id === nextProps.selected) {
+                        if (this.scripts[id].source !== this.objects[id].common.source) {
+                            if (!this.state.changed) {
+                                newState.changed = true;
+                                _changed = true;
+                            }
+                        } else {
+                            if (this.state.changed) {
+                                newState.changed = false;
+                                _changed = true;
+                            }
+                        }
+                    }
+
+                } else {
+                    delete this.scripts[id];
+                    if (this.state.selected === id) {
+                        if (this.state.editing.indexOf(id) !== -1) {
+                            const editing = JSON.parse(JSON.stringify(this.state.editing));
+                            const pos = editing.indexOf(id);
+                            if (id !== -1) {
+                                editing.splice(pos, 1);
+                                newState.editing = editing;
+                                _changed = true;
+                            }
+                        }
+                        newState.selected = this.state.editing[0] || '';
+                        _changed = true;
+                    }
+                }
             }
         }
 
@@ -348,7 +402,16 @@ class Editor extends React.Component {
     onConvert2JS() {
         this.showConfirmDialog(I18n.t('It will not be possible to revert this operation.'), result => {
             if (result) {
-
+                this.scripts[this.state.selected].engineType = 'Javascript/js';
+                let source = this.scripts[this.state.selected].source;
+                const lines = source.split('\n');
+                lines.pop();
+                this.scripts[this.state.selected].source = lines.join('\n');
+                const nowSelected = this.state.selected;
+                this.setState({changed: true, blockly: false, selected: ''}, () => {
+                    // force update of the editor
+                    setTimeout(() => this.setState({selected: nowSelected}), 100);
+                });
             }
         });
     }
@@ -448,7 +511,7 @@ class Editor extends React.Component {
                         if (!this.props.objects[id]) {
                             const label = [
                                 (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</span>),
-                                (<span className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
+                                (<span key="icon" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
                             return (<Tab component={'div'} key={id} label={label} value={id}/>);
                         } else {
                             let text = this.props.objects[id].common.name;
@@ -460,7 +523,7 @@ class Editor extends React.Component {
                             const label = [
                                 (<img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon}/>),
                                 (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{text}</span>),
-                                (<span className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
+                                (<span key="icon2" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
 
                             return (<Tab component={'div'} key={id} label={label} className={this.props.classes.tabButton} value={id} title={title}/>);
                         }
@@ -575,6 +638,7 @@ class Editor extends React.Component {
                 <BlocklyEditor
                     command={this.state.cmdToBlockly}
                     key="BlocklyEditor"
+                    theme={this.state.theme}
                     searchText={this.state.searchText}
                     resizing={this.props.resizing}
                     code={this.scripts[this.state.selected].source || ''}

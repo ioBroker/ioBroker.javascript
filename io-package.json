@@ -150,6 +150,7 @@
         "enabled": true,
         "main": "main.js",
         "license": "MIT",
+        "compact": true,
         "engineTypes": [
             "Blockly",
             "Javascript/js",

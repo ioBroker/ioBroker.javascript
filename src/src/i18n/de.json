@@ -24,6 +24,7 @@
   "Dark style": "Dunkler Stil",
   "December": "Dezember",
   "Define cron...": "Cron definieren ...",
+  "Define schedule...": "Zeitplan definieren ...",
   "Delete": "Löschen",
   "Delete %s": "Löschen %s...",
   "Delete script": "Skript löschen",
@@ -51,6 +52,7 @@
   "Insert object ID": "Objekt-ID einfügen",
   "Instance": "Instanz",
   "Instance is disabled": "Instanz ist deaktiviert",
+  "Invalid CRON": "Ungültiger CRON",
   "It will not be possible to revert this operation.": "Dieser Vorgang kann nicht rückgängig gemacht werden.",
   "JS description": "Regeln erstellen, indem Sie Javascript schreiben",
   "January": "Januar",
@@ -238,6 +240,5 @@
   "tooltip_user": "Benutzer",
   "tooltip_value": "Wert",
   "use seconds": "Sekunden verwenden",
-  "Define schedule...": "Zeitplan definieren ...",
-  "Invalid CRON": "Ungültiger CRON"
+  "Dark Theme": "Dunkles Thema"
 }

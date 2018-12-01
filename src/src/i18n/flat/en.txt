@@ -23,6 +23,7 @@ Create or edit CRON or time wizard
 Dark style
 December
 Define cron...
+Define schedule...
 Delete
 Delete %s...
 Delete script
@@ -50,6 +51,7 @@ Import scripts
 Insert object ID
 Instance
 Instance is disabled
+Invalid CRON
 It will not be possible to revert this operation.
 Creating rules by writing Javascript
 January
@@ -237,5 +239,4 @@ Timestamp
 User
 Value
 use seconds
-Define schedule...
-Invalid CRON
+Dark theme

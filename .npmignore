@@ -6,6 +6,7 @@ test
 admin-config
 doc
 src
+old-admin
 .idea
 .git
 .gitignore

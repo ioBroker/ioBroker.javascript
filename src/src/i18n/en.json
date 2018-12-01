@@ -24,6 +24,7 @@
   "Dark style": "Dark style",
   "December": "December",
   "Define cron...": "Define cron...",
+  "Define schedule...": "Define schedule...",
   "Delete": "Delete",
   "Delete %s": "Delete %s...",
   "Delete script": "Delete script",
@@ -51,6 +52,7 @@
   "Insert object ID": "Insert object ID",
   "Instance": "Instance",
   "Instance is disabled": "Instance is disabled",
+  "Invalid CRON": "Invalid CRON",
   "It will not be possible to revert this operation.": "It will not be possible to revert this operation.",
   "JS description": "Creating rules by writing Javascript",
   "January": "January",
@@ -238,6 +240,5 @@
   "tooltip_user": "User",
   "tooltip_value": "Value",
   "use seconds": "use seconds",
-  "Define schedule...": "Define schedule...",
-  "Invalid CRON": "Invalid CRON"
+  "Dark Theme": "Dark theme"
 }

@@ -63,6 +63,7 @@ const styles = theme => ({
         height: Theme.toolbar.height
     },
     toolbarButtons: {
+        color: theme.palette.type === 'dark'? 'white !important' : 'black !important'
     },
     toolbarSearch: {
         width: 'calc(100% - 105px)',

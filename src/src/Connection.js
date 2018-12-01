@@ -154,6 +154,11 @@ class Connection {
             changed = true;
         }
 
+        if (id.match(/^system\.adapter\.[-\w\d]+\$/)) {
+            if (obj[id].common && obj[id].common.blockly) {
+                this.props.onBlocklyChanges(id);
+            }
+        }
         if (changed) {
             this.props.onObjectChange && this.props.onObjectChange(this.objects, this.scripts);
         }
@@ -204,7 +209,6 @@ class Connection {
 
                     obj = res[id];
                     if (obj.type === 'instance') {
-                        console.log(id);
                         id.startsWith('system.adapter.javascript.') && this.scripts.instances.push(parseInt(id.split('.').pop()));
                     }
                     if (obj.type === 'script')   this.scripts.list.push(id);

@@ -16,6 +16,7 @@ import DialogMessage from './Dialogs/Message';
 import DialogError from './Dialogs/Error';
 import DialogConfirm from './Dialogs/Confirmation';
 import DialogImportFile from './Dialogs/ImportFile';
+import BlocklyEditor from './Components/BlocklyEditor';
 
 const styles = theme => ({
     root: Theme.root,
@@ -141,6 +142,10 @@ class App extends Component {
             onError: err => {
                 console.error(err);
             },
+            onBlocklyChanges: () => {
+                this.confirmCallback = result => result && window.location.reload();
+                this.setState({confirm: I18n.t('Some blocks were updated. Reload admin?')});
+            },
             onLog: message => {
                 //this.logIndex++;
                 //this.setState({logMessage: {index: this.logIndex, message}})
@@ -181,6 +186,8 @@ class App extends Component {
         this.scripts = nScripts;
         newState.instances = scripts.instances;
         newState.scriptsHash = scriptsHash;
+
+        BlocklyEditor.loadCustomBlockly(objects);
 
         this.setState(newState);
     }
@@ -397,6 +404,7 @@ class App extends Component {
     onImport(data) {
         this.importFile = data;
         if (data) {
+            this.confirmCallback = this.onImportConfirmed.bind(this);
             this.setState({importFile: false, confirm: I18n.t('Existing scripts will be overwritten.')});
         } else {
             this.setState({importFile: false});
@@ -406,7 +414,6 @@ class App extends Component {
     onImportConfirmed(ok) {
         let data = this.importFile;
         this.importFile = null;
-        this.setState({confirm: ''});
         if (ok && data) {
             data = data.split(',')[1];
             this.getLiveHost(host => {
@@ -488,7 +495,15 @@ class App extends Component {
             this.state.message ? (<DialogMessage key="dialogMessage" onClose={() => this.setState({message: ''})} text={this.state.message}/>) : null,
             this.state.errorText ? (<DialogError key="dialogError" onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/>) : null,
             this.state.importFile ? (<DialogImportFile key="dialogImportFile" onClose={data => this.onImport(data)} />) : null,
-            this.state.confirm ? (<DialogConfirm key="dialogConfirm" onClose={() => this.onImportConfirmed()} onOk={() => this.onImportConfirmed(true)} question={this.state.confirm}/>) : null,
+            this.state.confirm ? (<DialogConfirm key="dialogConfirm" onClose={() => {
+                this.setState({confirm: ''});
+                this.confirmCallback();
+                this.confirmCallback = null;
+            }} onOk={() => {
+                this.setState({confirm: ''});
+                this.confirmCallback(true);
+                this.confirmCallback = null;
+            }} question={this.state.confirm}/>) : null,
         ];
     }
 

@@ -24,6 +24,7 @@
   "Dark style": "Темный стиль",
   "December": "Декабрь",
   "Define cron...": "Задать правило ...",
+  "Define schedule...": "Задать расписание...",
   "Delete": "Удалить",
   "Delete %s": "Удалить %s...",
   "Delete script": "Удалить скрипт",
@@ -51,6 +52,7 @@
   "Insert object ID": "Вставить ID объекта",
   "Instance": "Экземпляр",
   "Instance is disabled": "Экземпляр отключен",
+  "Invalid CRON": "Неправильный CRON",
   "It will not be possible to revert this operation.": "Невозможно вернуть эту операцию.",
   "JS description": "Создание правил путём написания Javascript",
   "January": "Январь",
@@ -238,6 +240,5 @@
   "tooltip_user": "Пользователь",
   "tooltip_value": "Значение",
   "use seconds": "использовать секунды",
-  "Define schedule...": "Задать расписание...",
-  "Invalid CRON": "Неправильный CRON"
+  "Dark Theme": "Тёмная тема"
 }

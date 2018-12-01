@@ -39,6 +39,7 @@ const styles = theme => ({
         overflow: 'hidden'
     },
     logBoxInner: {
+        color: theme.palette.type === 'dark' ? 'white' : 'black',
         width: `calc(100% - ${TOOLBOX_WIDTH}px)`,
         height: '100%',
         marginLeft: TOOLBOX_WIDTH,
@@ -46,25 +47,26 @@ const styles = theme => ({
         position: 'relative'
     },
     info: {
-        background: 'lightgrey',
+        background: theme.palette.type === 'dark' ? 'darkgrey' : 'lightgrey',
+        color: theme.palette.type === 'dark' ?  'black' : 'white'
     },
     error: {
-        background: 'red',
-        color: 'white'
+        background: '#FF0000',
+        color: theme.palette.type === 'dark' ?  'black' : 'white'
     },
     warn: {
-        background: 'orange',
-        color: 'white'
+        background: '#FF8000',
+        color: theme.palette.type === 'dark' ?  'black' : 'white'
     },
     debug: {
         background: 'gray',
         opacity: 0.8,
-        color: 'white'
+        color: theme.palette.type === 'dark' ?  'black' : 'white'
     },
     silly: {
         background: 'gray',
         opacity: 0.6,
-        color: 'white'
+        color: theme.palette.type === 'dark' ? 'black' : 'white'
     },
     table: {
         fontFamily: 'monospace',

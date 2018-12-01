@@ -50,6 +50,8 @@ const sandBox   = require('./lib/sandbox');
 const eventObj  = require('./lib/eventObj');
 const Scheduler = require('./lib/scheduler');
 
+const adapterName = require(__dirname + '/package.json').name.split('.').pop();
+
 // for node version <= 0.12
 if (''.startsWith === undefined) {
     String.prototype.startsWith = function (s) {
@@ -174,398 +176,407 @@ function checkIsGlobal(obj) {
     return regExGlobalOld.test(obj.common.name) || regExGlobalNew.test(obj._id);
 }
 
-const adapter = new utils.Adapter({
+let adapter;
 
-    name: 'javascript',
+function startAdapter(options) {
+    options = options || {};
+    Object.assign(options, {
 
-    useFormatDate: true, // load float formatting
+        name: adapterName,
 
-    objectChange: (id, obj) => {
-        if (regExEnum.test(id)) {
-            // clear cache
-            context.cacheObjectEnums = {};
-        }
+        useFormatDate: true, // load float formatting
 
-        // send changes to disk mirror
-        mirror && mirror.onObjectChange(id, obj);
-
-        if (!obj) {
-            // object deleted
-            if (!context.objects[id]) return;
-
-            // Script deleted => remove it
-            if (context.objects[id].type === 'script' && context.objects[id].common.engine === 'system.adapter.' + adapter.namespace) {
-                stop(id);
-
-                const idActive = 'scriptEnabled.' + id.substring('script.js.'.length);
-                adapter.delObject(idActive);
-                adapter.delState(idActive);
+        objectChange: (id, obj) => {
+            if (regExEnum.test(id)) {
+                // clear cache
+                context.cacheObjectEnums = {};
             }
 
-            removeFromNames(id);
-            delete context.objects[id];
-        } else if (!context.objects[id]) {
-            // New object
-            context.objects[id] = obj;
+            // send changes to disk mirror
+            mirror && mirror.onObjectChange(id, obj);
 
-            addToNames(obj);
+            if (!obj) {
+                // object deleted
+                if (!context.objects[id]) return;
 
-            if (obj.type === 'script' && obj.common.engine === 'system.adapter.' + adapter.namespace) {
-                // create states for scripts
-                createActiveObject(id, obj.common.enabled);
-
-                if (obj.common.enabled) {
-                    if (checkIsGlobal(obj)) {
-                        // restart adapter
-                        adapter.getForeignObject('system.adapter.' + adapter.namespace, (err, _obj) => {
-                            if (_obj) adapter.setForeignObject('system.adapter.' + adapter.namespace, _obj);
-                        });
-                        return;
-                    }
-
-                    // Start script
-                    load(id);
-                }
-            }
-            // added new script to this engine
-        } else if (context.objects[id].common) {
-            const n = getName(id);
-
-            if (n !== context.objects[id].common.name) {
-                if (n) removeFromNames(id);
-                if (context.objects[id].common.name) addToNames(obj);
-            }
-
-            // Object just changed
-            if (obj.type !== 'script') {
-                context.objects[id] = obj;
-
-                if (id === 'system.config') {
-                    // set langugae for debug messages
-                    if (context.objects['system.config'].common.language) words.setLanguage(context.objects['system.config'].common.language);
-                }
-
-                return;
-            }
-
-            if (checkIsGlobal(context.objects[id])) {
-                // restart adapter
-                adapter.getForeignObject('system.adapter.' + adapter.namespace, function (err, obj) {
-                    if (obj) {
-                        adapter.setForeignObject('system.adapter.' + adapter.namespace, obj);
-                    }
-                });
-                return;
-            }
-
-            if (obj.common && obj.common.engine === 'system.adapter.' + adapter.namespace) {
-                // create states for scripts
-                createActiveObject(id, obj.common.enabled);
-            }
-
-            if ((context.objects[id].common.enabled && !obj.common.enabled) ||
-                (context.objects[id].common.engine === 'system.adapter.' + adapter.namespace && obj.common.engine !== 'system.adapter.' + adapter.namespace)) {
-
-                // Script disabled
-                if (context.objects[id].common.enabled && context.objects[id].common.engine === 'system.adapter.' + adapter.namespace) {
-                    // Remove it from executing
-                    context.objects[id] = obj;
+                // Script deleted => remove it
+                if (context.objects[id].type === 'script' && context.objects[id].common.engine === 'system.adapter.' + adapter.namespace) {
                     stop(id);
-                } else {
+
+                    const idActive = 'scriptEnabled.' + id.substring('script.js.'.length);
+                    adapter.delObject(idActive);
+                    adapter.delState(idActive);
+                }
+
+                removeFromNames(id);
+                delete context.objects[id];
+            } else if (!context.objects[id]) {
+                // New object
+                context.objects[id] = obj;
+
+                addToNames(obj);
+
+                if (obj.type === 'script' && obj.common.engine === 'system.adapter.' + adapter.namespace) {
+                    // create states for scripts
+                    createActiveObject(id, obj.common.enabled);
+
+                    if (obj.common.enabled) {
+                        if (checkIsGlobal(obj)) {
+                            // restart adapter
+                            adapter.getForeignObject('system.adapter.' + adapter.namespace, (err, _obj) => {
+                                if (_obj) adapter.setForeignObject('system.adapter.' + adapter.namespace, _obj);
+                            });
+                            return;
+                        }
+
+                        // Start script
+                        load(id);
+                    }
+                }
+                // added new script to this engine
+            } else if (context.objects[id].common) {
+                const n = getName(id);
+
+                if (n !== context.objects[id].common.name) {
+                    if (n) removeFromNames(id);
+                    if (context.objects[id].common.name) addToNames(obj);
+                }
+
+                // Object just changed
+                if (obj.type !== 'script') {
                     context.objects[id] = obj;
-                }
-            } else if ((!context.objects[id].common.enabled && obj.common.enabled) ||
-                (context.objects[id].common.engine !== 'system.adapter.' + adapter.namespace && obj.common.engine === 'system.adapter.' + adapter.namespace)) {
-                // Script enabled
-                context.objects[id] = obj;
 
-                if (context.objects[id].common.enabled && context.objects[id].common.engine === 'system.adapter.' + adapter.namespace) {
-                    // Start script
-                    load(id);
-                }
-            } else { //if (obj.common.source !== context.objects[id].common.source) {
-                context.objects[id] = obj;
+                    if (id === 'system.config') {
+                        // set langugae for debug messages
+                        if (context.objects['system.config'].common.language) words.setLanguage(context.objects['system.config'].common.language);
+                    }
 
-                // Source changed => restart it
-                stop(id, function (res, _id) {
-                    load(_id);
-                });
-            } /*else {
+                    return;
+                }
+
+                if (checkIsGlobal(context.objects[id])) {
+                    // restart adapter
+                    adapter.getForeignObject('system.adapter.' + adapter.namespace, function (err, obj) {
+                        if (obj) {
+                            adapter.setForeignObject('system.adapter.' + adapter.namespace, obj);
+                        }
+                    });
+                    return;
+                }
+
+                if (obj.common && obj.common.engine === 'system.adapter.' + adapter.namespace) {
+                    // create states for scripts
+                    createActiveObject(id, obj.common.enabled);
+                }
+
+                if ((context.objects[id].common.enabled && !obj.common.enabled) ||
+                    (context.objects[id].common.engine === 'system.adapter.' + adapter.namespace && obj.common.engine !== 'system.adapter.' + adapter.namespace)) {
+
+                    // Script disabled
+                    if (context.objects[id].common.enabled && context.objects[id].common.engine === 'system.adapter.' + adapter.namespace) {
+                        // Remove it from executing
+                        context.objects[id] = obj;
+                        stop(id);
+                    } else {
+                        context.objects[id] = obj;
+                    }
+                } else if ((!context.objects[id].common.enabled && obj.common.enabled) ||
+                    (context.objects[id].common.engine !== 'system.adapter.' + adapter.namespace && obj.common.engine === 'system.adapter.' + adapter.namespace)) {
+                    // Script enabled
+                    context.objects[id] = obj;
+
+                    if (context.objects[id].common.enabled && context.objects[id].common.engine === 'system.adapter.' + adapter.namespace) {
+                        // Start script
+                        load(id);
+                    }
+                } else { //if (obj.common.source !== context.objects[id].common.source) {
+                    context.objects[id] = obj;
+
+                    // Source changed => restart it
+                    stop(id, function (res, _id) {
+                        load(_id);
+                    });
+                } /*else {
                 // Something changed or not for us
                 objects[id] = obj;
             }*/
-        }
-    },
+            }
+        },
 
-    stateChange: (id, state) => {
-        if (!id || id.startsWith('messagebox.') || id.startsWith('log.')) return;
+        stateChange: (id, state) => {
+            if (!id || id.startsWith('messagebox.') || id.startsWith('log.')) return;
 
-        const oldState = context.states[id];
-        if (state) {
-            if (oldState) {
-                // enable or disable script
-                if (!state.ack && id.startsWith(activeStr) && context.objects[id] && context.objects[id].native && context.objects[id].native.script) {
-                    adapter.extendForeignObject(context.objects[id].native.script, {common: {enabled: state.val}});
-                }
+            const oldState = context.states[id];
+            if (state) {
+                if (oldState) {
+                    // enable or disable script
+                    if (!state.ack && id.startsWith(activeStr) && context.objects[id] && context.objects[id].native && context.objects[id].native.script) {
+                        adapter.extendForeignObject(context.objects[id].native.script, {common: {enabled: state.val}});
+                    }
 
-                // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
-                if (/*oldState && */oldState.val === false && state.val && id.endsWith('.alive')) {
-                    if (context.adapterSubs[id]) {
-                        const parts = id.split('.');
-                        const a = parts[2] + '.' + parts[3];
-                        for (let t = 0; t < context.adapterSubs[id].length; t++) {
-                            adapter.log.info('Detected coming adapter "' + a + '". Send subscribe: ' + context.adapterSubs[id][t]);
-                            adapter.sendTo(a, 'subscribe', context.adapterSubs[id][t]);
+                    // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
+                    if (/*oldState && */oldState.val === false && state.val && id.endsWith('.alive')) {
+                        if (context.adapterSubs[id]) {
+                            const parts = id.split('.');
+                            const a = parts[2] + '.' + parts[3];
+                            for (let t = 0; t < context.adapterSubs[id].length; t++) {
+                                adapter.log.info('Detected coming adapter "' + a + '". Send subscribe: ' + context.adapterSubs[id][t]);
+                                adapter.sendTo(a, 'subscribe', context.adapterSubs[id][t]);
+                            }
                         }
                     }
+                } else {
+                    if (/*!oldState && */context.stateIds.indexOf(id) === -1) {
+                        context.stateIds.push(id);
+                        context.stateIds.sort();
+                    }
                 }
+                context.states[id] = state;
             } else {
-                if (/*!oldState && */context.stateIds.indexOf(id) === -1) {
-                    context.stateIds.push(id);
-                    context.stateIds.sort();
+                if (oldState) delete context.states[id];
+                state = {};
+                const pos = context.stateIds.indexOf(id);
+                if (pos !== -1) {
+                    context.stateIds.splice(pos, 1);
                 }
             }
-            context.states[id] = state;
-        } else {
-            if (oldState) delete context.states[id];
-            state = {};
-            const pos = context.stateIds.indexOf(id);
-            if (pos !== -1) {
-                context.stateIds.splice(pos, 1);
+            const _eventObj = eventObj.createEventObject(context, id, state, oldState);
+
+            // if this state matches any subscriptions
+            for (let i = 0, l = context.subscriptions.length; i < l; i++) {
+                const sub = context.subscriptions[i];
+                if (sub && patternMatching(_eventObj, sub.patternCompareFunctions)) {
+                    sub.callback(_eventObj);
+                }
             }
-        }
-        const _eventObj = eventObj.createEventObject(context, id, state, oldState);
+        },
 
-        // if this state matches any subscriptions
-        for (let i = 0, l = context.subscriptions.length; i < l; i++) {
-            const sub = context.subscriptions[i];
-            if (sub && patternMatching(_eventObj, sub.patternCompareFunctions)) {
-                sub.callback(_eventObj);
+        unload: callback => callback(),
+
+        ready: function () {
+            // todo
+            context.errorLogFunction = webstormDebug ? console : adapter.log;
+            activeStr = adapter.namespace + '.scriptEnabled.';
+
+            // try to read TS declarations
+            try {
+                tsAmbient = {
+                    'javascript.d.ts': nodeFS.readFileSync(mods.path.join(__dirname, 'lib/javascript.d.ts'), 'utf8')
+                };
+                tsServer.provideAmbientDeclarations(tsAmbient);
+                jsDeclarationServer.provideAmbientDeclarations(tsAmbient);
+            } catch (e) {
+                adapter.log.warn('Could not read TypeScript ambient declarations: ' + e);
             }
-        }
-    },
 
-    unload: callback => callback(),
+            context.logWithLineInfo = function (level, msg) {
+                if (msg === undefined) {
+                    return context.logWithLineInfo('info', msg);
+                }
 
-    ready: function () {
-        // todo
-        context.errorLogFunction = webstormDebug ? console : adapter.log;
-        activeStr = adapter.namespace + '.scriptEnabled.';
+                context.errorLogFunction && context.errorLogFunction[level](msg);
 
-        // try to read TS declarations
-        try {
-            tsAmbient = {
-                'javascript.d.ts': nodeFS.readFileSync(mods.path.join(__dirname, 'lib/javascript.d.ts'), 'utf8')
+                const stack = (new Error().stack).split('\n');
+
+                for (let i = 3; i < stack.length; i++) {
+                    if (!stack[i]) continue;
+                    if (stack[i].match(/runInContext|runInNewContext|javascript\.js:/)) break;
+                    context.errorLogFunction && context.errorLogFunction[level](fixLineNo(stack[i]));
+                }
             };
-            tsServer.provideAmbientDeclarations(tsAmbient);
-            jsDeclarationServer.provideAmbientDeclarations(tsAmbient);
-        } catch (e) {
-            adapter.log.warn('Could not read TypeScript ambient declarations: ' + e);
-        }
 
-        context.logWithLineInfo = function (level, msg) {
-            if (msg === undefined) {
-                return context.logWithLineInfo('info', msg);
-            }
+            context.logWithLineInfo.warn  = context.logWithLineInfo.bind(1, 'warn');
+            context.logWithLineInfo.error = context.logWithLineInfo.bind(1, 'error');
+            context.logWithLineInfo.info  = context.logWithLineInfo.bind(1, 'info');
 
-            context.errorLogFunction && context.errorLogFunction[level](msg);
+            context.scheduler = new Scheduler(adapter.log);
 
-            const stack = (new Error().stack).split('\n');
+            installLibraries(() => {
+                getData(() => {
+                    adapter.subscribeForeignObjects('*');
 
-            for (let i = 3; i < stack.length; i++) {
-                if (!stack[i]) continue;
-                if (stack[i].match(/runInContext|runInNewContext|javascript\.js:/)) break;
-                context.errorLogFunction && context.errorLogFunction[level](fixLineNo(stack[i]));
-            }
-        };
+                    if (!adapter.config.subscribe) {
+                        adapter.subscribeForeignStates('*');
+                    }
 
-        context.logWithLineInfo.warn  = context.logWithLineInfo.bind(1, 'warn');
-        context.logWithLineInfo.error = context.logWithLineInfo.bind(1, 'error');
-        context.logWithLineInfo.info  = context.logWithLineInfo.bind(1, 'info');
+                    adapter.objects.getObjectView('script', 'javascript', {}, (err, doc) => {
+                        globalScript = '';
+                        globalDeclarations = '';
+                        knownGlobalDeclarationsByScript = {};
+                        let count = 0;
+                        if (doc && doc.rows && doc.rows.length) {
+                            // assemble global script
+                            for (let g = 0; g < doc.rows.length; g++) {
+                                if (checkIsGlobal(doc.rows[g].value)) {
+                                    const obj = doc.rows[g].value;
 
-        context.scheduler = new Scheduler(adapter.log);
-
-        installLibraries(() => {
-            getData(() => {
-                adapter.subscribeForeignObjects('*');
-
-                if (!adapter.config.subscribe) {
-                    adapter.subscribeForeignStates('*');
-                }
-
-                adapter.objects.getObjectView('script', 'javascript', {}, (err, doc) => {
-                    globalScript = '';
-                    globalDeclarations = '';
-                    knownGlobalDeclarationsByScript = {};
-                    let count = 0;
-                    if (doc && doc.rows && doc.rows.length) {
-                        // assemble global script
-                        for (let g = 0; g < doc.rows.length; g++) {
-                            if (checkIsGlobal(doc.rows[g].value)) {
-                                const obj = doc.rows[g].value;
-
-                                if (obj && obj.common.enabled) {
-                                    if (obj.common.engineType.match(/^[cC]offee/)) {
-                                        count++;
-                                        coffeeCompiler.fromSource(obj.common.source, {
-                                            sourceMap: false,
-                                            bare: true
-                                        }, function (err, js) {
-                                            if (err) {
-                                                adapter.log.error('coffee compile ' + err);
-                                                return;
-                                            }
-                                            globalScript += js + '\n';
-                                            if (!--count) {
-                                                globalScriptLines = globalScript.split(/\r\n|\n|\r/g).length;
-                                                // load all scripts
-                                                for (let i = 0; i < doc.rows.length; i++) {
-                                                    if (!checkIsGlobal(doc.rows[i].value)) {
-                                                        load(doc.rows[i].value._id);
+                                    if (obj && obj.common.enabled) {
+                                        if (obj.common.engineType.match(/^[cC]offee/)) {
+                                            count++;
+                                            coffeeCompiler.fromSource(obj.common.source, {
+                                                sourceMap: false,
+                                                bare: true
+                                            }, function (err, js) {
+                                                if (err) {
+                                                    adapter.log.error('coffee compile ' + err);
+                                                    return;
+                                                }
+                                                globalScript += js + '\n';
+                                                if (!--count) {
+                                                    globalScriptLines = globalScript.split(/\r\n|\n|\r/g).length;
+                                                    // load all scripts
+                                                    for (let i = 0; i < doc.rows.length; i++) {
+                                                        if (!checkIsGlobal(doc.rows[i].value)) {
+                                                            load(doc.rows[i].value._id);
+                                                        }
                                                     }
                                                 }
-                                            }
-                                        });
-                                    } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
-                                        // compile the current global script
-                                        const filename = scriptIdToTSFilename(obj._id);
-                                        const tsCompiled = tsServer.compile(filename, obj.common.source);
+                                            });
+                                        } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
+                                            // compile the current global script
+                                            const filename = scriptIdToTSFilename(obj._id);
+                                            const tsCompiled = tsServer.compile(filename, obj.common.source);
 
-                                        const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
+                                            const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
 
-                                        if (tsCompiled.success) {
-                                            if (errors.length > 0) {
-                                                adapter.log.warn('TypeScript compilation completed with errors: \n' + errors);
+                                            if (tsCompiled.success) {
+                                                if (errors.length > 0) {
+                                                    adapter.log.warn('TypeScript compilation completed with errors: \n' + errors);
+                                                } else {
+                                                    adapter.log.info('TypeScript compilation successful');
+                                                }
+                                                globalScript += tsCompiled.result + '\n';
+
+                                                // if declarations were generated, remember them
+                                                if (tsCompiled.declarations != null) {
+                                                    provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
+                                                }
                                             } else {
-                                                adapter.log.info('TypeScript compilation successful');
+                                                adapter.log.error('TypeScript compilation failed: \n' + errors);
                                             }
-                                            globalScript += tsCompiled.result + '\n';
+                                        } else { // javascript
+                                            const sourceCode = obj.common.source;
+                                            globalScript += sourceCode + '\n';
 
+                                            // try to compile the declarations so TypeScripts can use
+                                            // functions defined in global JavaScripts
+                                            const filename = scriptIdToTSFilename(obj._id);
+                                            const tsCompiled = jsDeclarationServer.compile(filename, sourceCode);
                                             // if declarations were generated, remember them
-                                            if (tsCompiled.declarations != null) {
+                                            if (tsCompiled.success && tsCompiled.declarations != null) {
                                                 provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
                                             }
-                                        } else {
-                                            adapter.log.error('TypeScript compilation failed: \n' + errors);
-                                        }
-                                    } else { // javascript
-                                        const sourceCode = obj.common.source;
-                                        globalScript += sourceCode + '\n';
-
-                                        // try to compile the declarations so TypeScripts can use 
-                                        // functions defined in global JavaScripts
-                                        const filename = scriptIdToTSFilename(obj._id);
-                                        const tsCompiled = jsDeclarationServer.compile(filename, sourceCode);
-                                        // if declarations were generated, remember them
-                                        if (tsCompiled.success && tsCompiled.declarations != null) {
-                                            provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
                                         }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    if (!count) {
-                        globalScript = globalScript.replace(/\r\n/g, '\n');
-                        globalScriptLines = globalScript.split(/\n/g).length - 1;
+                        if (!count) {
+                            globalScript = globalScript.replace(/\r\n/g, '\n');
+                            globalScriptLines = globalScript.split(/\n/g).length - 1;
 
-                        if (doc && doc.rows && doc.rows.length) {
-                            // load all scripts
-                            for (let i = 0; i < doc.rows.length; i++) {
-                                if (!checkIsGlobal(doc.rows[i].value)) {
-                                    load(doc.rows[i].value);
+                            if (doc && doc.rows && doc.rows.length) {
+                                // load all scripts
+                                for (let i = 0; i < doc.rows.length; i++) {
+                                    if (!checkIsGlobal(doc.rows[i].value)) {
+                                        load(doc.rows[i].value);
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    if (adapter.config.mirrorPath) {
-                        mirror = new Mirror({
-                            adapter,
-                            log: adapter.log,
-                            diskRoot: adapter.config.mirrorPath
-                        });
-                    }
+                        if (adapter.config.mirrorPath) {
+                            mirror = new Mirror({
+                                adapter,
+                                log: adapter.log,
+                                diskRoot: adapter.config.mirrorPath
+                            });
+                        }
 
+                    });
                 });
             });
-        });
-    },
+        },
 
-    message: (obj) => {
-        if (obj) {
-            switch (obj.command) {
-                case 'loadTypings': { // Load typings for the editor
-                    const typings = {};
+        message: (obj) => {
+            if (obj) {
+                switch (obj.command) {
+                    case 'loadTypings': { // Load typings for the editor
+                        const typings = {};
 
-                    // try to load TypeScript lib files from disk
-                    const libFiles = [
-                        // This is lib.es2015.d.ts:
-                        'lib.es5.d.ts',
-                        'lib.es2015.core.d.ts',
-                        'lib.es2015.collection.d.ts',
-                        'lib.es2015.generator.d.ts',
-                        'lib.es2015.promise.d.ts',
-                        'lib.es2015.iterable.d.ts',
-                        'lib.es2015.proxy.d.ts',
-                        'lib.es2015.reflect.d.ts',
-                        'lib.es2015.symbol.d.ts',
-                        'lib.es2015.symbol.wellknown.d.ts'
-                    ];
-                    for (const libFile of libFiles) {
+                        // try to load TypeScript lib files from disk
+                        const libFiles = [
+                            // This is lib.es2015.d.ts:
+                            'lib.es5.d.ts',
+                            'lib.es2015.core.d.ts',
+                            'lib.es2015.collection.d.ts',
+                            'lib.es2015.generator.d.ts',
+                            'lib.es2015.promise.d.ts',
+                            'lib.es2015.iterable.d.ts',
+                            'lib.es2015.proxy.d.ts',
+                            'lib.es2015.reflect.d.ts',
+                            'lib.es2015.symbol.d.ts',
+                            'lib.es2015.symbol.wellknown.d.ts'
+                        ];
+                        for (const libFile of libFiles) {
+                            try {
+                                const libPath = require.resolve(`typescript/lib/${libFile}`);
+                                typings[libFile] = nodeFS.readFileSync(libPath, 'utf8');
+                            } catch (e) { /* ok, no lib then */ }
+                        }
+
+                        // try to load node.js typings from disk
                         try {
-                            const libPath = require.resolve(`typescript/lib/${libFile}`);
-                            typings[libFile] = nodeFS.readFileSync(libPath, 'utf8');
-                        } catch (e) { /* ok, no lib then */ }
-                    }
+                            const nodeTypingsPath = require.resolve('@types/node/index.d.ts');
+                            typings['node_modules/@types/node/index.d.ts'] = nodeFS.readFileSync(nodeTypingsPath, 'utf8');
+                        } catch (e) { /* ok, no typings then */ }
 
-                    // try to load node.js typings from disk
-                    try {
-                        const nodeTypingsPath = require.resolve('@types/node/index.d.ts');
-                        typings['node_modules/@types/node/index.d.ts'] = nodeFS.readFileSync(nodeTypingsPath, 'utf8');
-                    } catch (e) { /* ok, no typings then */ }
+                        // provide the already-loaded ioBroker typings and global script declarations
+                        Object.assign(typings, tsAmbient);
+                        // also provide the known global declarations for each global script
+                        for (const globalScriptPaths of Object.keys(knownGlobalDeclarationsByScript)) {
+                            typings[globalScriptPaths + '.d.ts'] = knownGlobalDeclarationsByScript[globalScriptPaths];
+                        }
 
-                    // provide the already-loaded ioBroker typings and global script declarations
-                    Object.assign(typings, tsAmbient);
-                    // also provide the known global declarations for each global script
-                    for (const globalScriptPaths of Object.keys(knownGlobalDeclarationsByScript)) {
-                        typings[globalScriptPaths + '.d.ts'] = knownGlobalDeclarationsByScript[globalScriptPaths];
+                        if (obj.callback) {
+                            adapter.sendTo(obj.from, obj.command, { typings }, obj.callback);
+                        }
+                        break;
                     }
-
-                    if (obj.callback) {
-                        adapter.sendTo(obj.from, obj.command, { typings }, obj.callback);
-                    }
-                    break;
                 }
             }
+        },
+
+        /**
+         * If the JS-Controller catches an unhandled error, this will be called
+         * so we have a chance to handle it ourself.
+         * @param {Error} err
+         */
+        error: (err) => {
+            // Identify unhandled errors originating from callbacks in scripts
+            // These are not caught by wrapping the execution code in try-catch
+            const scriptCodeMarker = 'script.js.';
+            if (typeof err.stack === 'string' && err.stack.indexOf(scriptCodeMarker) > -1) {
+                // This is a script error
+                let scriptName = err.stack.substr(err.stack.indexOf(scriptCodeMarker));
+                scriptName = scriptName.substr(0, scriptName.indexOf(':'));
+                context.logError(scriptName, err);
+                // Leave the script running for now
+
+                // TODO: Add a marker that the script has problems:
+                // https://github.com/ioBroker/ioBroker.javascript/issues/162
+
+                // signal to the JS-Controller that we handled the error ourselves
+                return true;
+            }
         }
-    },
+    });
+    adapter = new utils.Adapter(options);
 
-    /**
-     * If the JS-Controller catches an unhandled error, this will be called
-     * so we have a chance to handle it ourself.
-     * @param {Error} err
-     */
-    error: (err) => {
-        // Identify unhandled errors originating from callbacks in scripts
-        // These are not caught by wrapping the execution code in try-catch
-        const scriptCodeMarker = 'script.js.';
-        if (typeof err.stack === 'string' && err.stack.indexOf(scriptCodeMarker) > -1) {
-            // This is a script error
-            let scriptName = err.stack.substr(err.stack.indexOf(scriptCodeMarker));
-            scriptName = scriptName.substr(0, scriptName.indexOf(':'));
-            context.logError(scriptName, err);
-            // Leave the script running for now
-
-            // TODO: Add a marker that the script has problems:
-            // https://github.com/ioBroker/ioBroker.javascript/issues/162
-
-            // signal to the JS-Controller that we handled the error ourselves
-            return true;
-        }
-    }
-});
+    context.adapter = adapter;
+    return adapter;
+}
 
 function checkObjectsJson(file) {
     if (mods.path.normalize(file).replace(/\\/g, '/').indexOf('-data/objects.json') !== -1) {
@@ -678,7 +689,7 @@ mods.fs.truncateSync = function () {
     return nodeFS.truncateSync.apply(this, arguments);
 };
 
-context.adapter = adapter;
+
 
 let attempts           = {};
 let globalScript       = '';
@@ -1246,3 +1257,10 @@ function getData(callback) {
     });
 }
 
+// If started as allInOne mode => return function to create instance
+if (typeof module !== undefined && module.parent) {
+    module.exports = startAdapter;
+} else {
+    // or start the instance directly
+    startAdapter();
+}

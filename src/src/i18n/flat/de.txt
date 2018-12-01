@@ -23,6 +23,7 @@ Erstellen oder bearbeiten Sie den CRON- oder Zeit-Assistenten
 Dunkler Stil
 Dezember
 Cron definieren ...
+Zeitplan definieren ...
 Löschen
 Löschen %s...
 Skript löschen
@@ -50,6 +51,7 @@ Skripts importieren
 Objekt-ID einfügen
 Instanz
 Instanz ist deaktiviert
+Ungültiger CRON
 Dieser Vorgang kann nicht rückgängig gemacht werden.
 Regeln erstellen, indem Sie Javascript schreiben
 Januar
@@ -237,5 +239,4 @@ Zeitstempel
 Benutzer
 Wert
 Sekunden verwenden
-Zeitplan definieren ...
-Ungültiger CRON
+Dunkles Thema
