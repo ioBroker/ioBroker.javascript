@@ -183,6 +183,9 @@ class ComplexCron extends React.Component {
             }
         };
         Object.assign(this.state, state);
+        if (this.state.cron !== this.props.cronExpression) {
+            setTimeout(() => this.props.onChange && this.props.onChange(this.state.cron), 100);
+        }
     }
 
     static cron2state(cron) {
@@ -218,7 +221,9 @@ class ComplexCron extends React.Component {
     recalcCron() {
         let cron = ComplexCron.state2cron(this.state);
         if (cron !== this.state.cron) {
-            this.setState({cron});
+            this.setState({cron}, () => {
+                this.props.onChange && this.props.onChange(this.state.cron);
+            });
         }
     }
 

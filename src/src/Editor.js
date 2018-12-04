@@ -87,6 +87,10 @@ const styles = theme => ({
         whiteSpace: 'nowrap',
         overflow: 'hidden',
     },
+    tabChangedIcon: {
+        color: '#FF0000',
+        fontSize: 16
+    },
     closeButton: {
         position: 'absolute',
         top: 8,
@@ -128,6 +132,7 @@ class Editor extends React.Component {
             showBlocklyCode: false,
             showSelectId: false,
             showCron: false,
+            showScript: false,
             insert: '',
             searchText: '',
             theme: this.props.theme,
@@ -146,24 +151,26 @@ class Editor extends React.Component {
             initValue: null,
             callback: null
         };
+        this.scriptDialog = {
+            initValue: null,
+            callback: null,
+            args: null,
+            isReturn: false
+        };
 
-        /*const instances = [];
-        for (let id in this.props.objects) {
-            if (this.props.objects.hasOwnProperty(id) && id.startsWith('system.adapter.') && this.props.objects[id] && this.props.objects[id].type === 'instance') {
-                instances.push(id);
+        const instances = [];
+        if (this.props.objects) {
+            for (let id in this.props.objects) {
+                if (this.props.objects.hasOwnProperty(id) && id.startsWith('system.adapter.') && this.props.objects[id] && this.props.objects[id].type === 'instance') {
+                    instances.push(id);
+                }
             }
         }
-        // remove non-existing scripts
-        for (let i = editing.length; i >= 0; i --) {
-            if (!this.props.objects[editing[i]]) {
-                editing.splice(i, 1);
-            }
-        }*/
 
         window.systemLang = I18n.getLanguage();
         window.main = {
             objects: this.props.objects,
-            instances: [],
+            instances,
             selectIdDialog: (initValue, cb) => {
                 this.selectId.callback = cb;
                 this.selectId.initValue = initValue;
@@ -173,6 +180,13 @@ class Editor extends React.Component {
                 this.cron.callback = cb;
                 this.cron.initValue = initValue;
                 this.setState({showCron: true});
+            },
+            showScriptDialog: (value, args, isReturn, cb) => {
+                this.scriptDialog.callback = cb;
+                this.scriptDialog.initValue = value;
+                this.scriptDialog.args = args;
+                this.scriptDialog.isReturn = isReturn || false;
+                this.setState({showScript: true});
             }
         };
         this.objects = props.objects;
@@ -254,6 +268,10 @@ class Editor extends React.Component {
                 if (this.state.selected && !this.objects[this.state.selected]) {
                     _changed = true;
                     newState.selected = editing[0] || '';
+                    if (this.scripts[newState.selected] && this.state.blockly !== (this.scripts[newState.selected].engineType === 'Blockly')) {
+                        newState.blockly = this.scripts[newState.selected].engineType === 'Blockly';
+                        _changed = true;
+                    }
                 }
             }
         }
@@ -276,6 +294,14 @@ class Editor extends React.Component {
                 this.scripts[id] = JSON.parse(JSON.stringify(this.objects[id].common));
                 this.scripts[id].source = source;
             }
+
+            const instances = [];
+            for (let id in window.main.objects) {
+                if (window.main.objects.hasOwnProperty(id) && id.startsWith('system.adapter.') && window.main.objects[id] && window.main.objects[id].type === 'instance') {
+                    instances.push(id);
+                }
+            }
+            window.main.instances = instances;
 
             // if script is blockly
             if (this.state.selected && this.objects[this.state.selected]) {
@@ -520,9 +546,11 @@ class Editor extends React.Component {
                                 title = text;
                                 text = text.substring(0, 15) + '...';
                             }
+                            const changed = this.props.objects[id].common && this.scripts[id] && this.props.objects[id].common.source !== this.scripts[id].source;
                             const label = [
                                 (<img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon}/>),
                                 (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{text}</span>),
+                                changed ? (<span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span>) : null,
                                 (<span key="icon2" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
 
                             return (<Tab component={'div'} key={id} label={label} className={this.props.classes.tabButton} value={id} title={title}/>);
@@ -721,6 +749,14 @@ class Editor extends React.Component {
         }
     }
 
+    getEditorDialog() {
+        if (this.state.showCron) {
+            return null;
+        } else {
+            return null;
+        }
+    }
+
     render() {
         if (this.state.selected && this.props.objects[this.state.selected] && this.state.blockly === null) {
             setTimeout(() => this.setState({blockly: this.scripts[this.state.selected].engineType === 'Blockly', showBlocklyCode: false}), 100);
@@ -733,7 +769,8 @@ class Editor extends React.Component {
             this.getBlocklyEditor(),
             this.getConfirmDialog(),
             this.getSelectIdDialog(),
-            this.getCronDialog()
+            this.getCronDialog(),
+            this.getEditorDialog()
         ];
     }
 }

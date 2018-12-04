@@ -48,10 +48,10 @@ const styles = theme => ({
     },
     info: {
         background: theme.palette.type === 'dark' ? 'darkgrey' : 'lightgrey',
-        color: theme.palette.type === 'dark' ?  'black' : 'white'
+        color: theme.palette.type === 'dark' ?  'black' : 'black'
     },
     error: {
-        background: '#a24848',
+        background: '#FF0000',
         color: theme.palette.type === 'dark' ?  'black' : 'white'
     },
     warn: {

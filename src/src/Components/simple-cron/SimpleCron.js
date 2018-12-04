@@ -92,6 +92,10 @@ class SimpleCron extends React.Component {
             }
         };
         Object.assign(this.state, state);
+
+        if (this.state.cron !== this.props.cronExpression) {
+            setTimeout(() => this.props.onChange && this.props.onChange(this.state.cron), 100);
+        }
     }
 
     static periodArray2text(list, max) {

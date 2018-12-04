@@ -688,8 +688,22 @@ mods.fs.truncateSync = function () {
     checkObjectsJson(arguments[0]);
     return nodeFS.truncateSync.apply(this, arguments);
 };
-
-
+mods.fs.exists = function () {
+    checkObjectsJson(arguments[0]);
+    return nodeFS.exists.apply(this, arguments);
+};
+mods.fs.existsSync = function () {
+    checkObjectsJson(arguments[0]);
+    return nodeFS.existsSync.apply(this, arguments);
+};
+mods.fs.stat = function () {
+    checkObjectsJson(arguments[0]);
+    return nodeFS.stat.apply(this, arguments);
+};
+mods.fs.statSync = function () {
+    checkObjectsJson(arguments[0]);
+    return nodeFS.statSync.apply(this, arguments);
+};
 
 let attempts           = {};
 let globalScript       = '';

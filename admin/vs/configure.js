@@ -9,13 +9,13 @@ require.config({ paths: { 'vs': 'vs' }});
 // Allow localisation
 
 // All languages in monaco-editor
-const availableLanguages = ['de', 'fr', 'es', 'it', 'ja', 'ru', 'ko', 'zh-tw', 'zh-cn'];
+var availableLanguages = ['de', 'fr', 'es', 'it', 'ja', 'ru', 'ko', 'zh-tw', 'zh-cn'];
 // find the best match
 function findLanguage() {
     if (navigator.languages && Array.isArray(navigator.languages)) {
-        return navigator.languages.find(lang => availableLanguages.indexOf(lang) > -1);
+        return navigator.languages.find(function (lang) {return availableLanguages.indexOf(lang) > -1});
     }
-    let lang = navigator.language || navigator.userLanguage;
+    var lang = navigator.language || navigator.userLanguage;
     if (typeof lang === 'string') {
         // first try the long version
         if (availableLanguages.indexOf(lang) > -1) return lang;
@@ -25,7 +25,7 @@ function findLanguage() {
     }
 }
 
-const language = findLanguage();
+var language = findLanguage();
 // if we have a match, configure the editor
 if (language != null) {
     require.config({

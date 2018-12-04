@@ -16,7 +16,7 @@ let scriptsLoaded = [];
 const styles = theme => ({
     darkBackground: {
         stroke: '#3a3a3a !important',
-        fill: '#808080 !important'
+        fill: '#515151 !important'
     }
 });
 

@@ -93,7 +93,8 @@ Blockly.FieldOID.prototype.setValue = function(text) {
  */
 Blockly.FieldOID.prototype.showEditor_ = function(opt_quietInput) {
     this.workspace_ = this.sourceBlock_.workspace;
-    window.main && window.main.selectIdDialog && window.main.selectIdDialog(this.getValue(), newId => newId !== null && this.setValue(newId));
+    var that = this;
+    window.main && window.main.selectIdDialog && window.main.selectIdDialog(this.getValue(), function (newId){ newId !== null && that.setValue(newId);});
 };
 
 /**
@@ -147,7 +148,7 @@ Blockly.FieldOID.prototype.updateTextNode_ = function() {
         // Not rendered yet.
         return;
     }
-    const objects = window.main.objects;
+    var objects = window.main.objects;
     var text = objects && objects[this.text_] && objects[this.text_].common && objects[this.text_].common.name ? objects[this.text_].common.name : this.text_;
     if (typeof text === 'object') {
         text = text[systemLang] || text.en;

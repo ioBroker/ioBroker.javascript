@@ -21,6 +21,7 @@ import green from '@material-ui/core/colors/green';
 import {MdMoreVert as IconMore} from 'react-icons/md';
 import {FaFolder as IconFolder} from 'react-icons/fa';
 import {FaFolderOpen as IconFolderOpened} from 'react-icons/fa';
+import {MdContentCopy as IconCopy} from 'react-icons/md';
 import {MdDelete as IconDelete} from 'react-icons/md';
 import {MdInput as IconDoEdit} from 'react-icons/md';
 import {MdDragHandle as IconGrip} from 'react-icons/md';
@@ -169,7 +170,7 @@ const prepareList = data => {
         parts.pop();
         result.push({
             id: ids[i],
-            title: getObjectName(ids[i], obj, 'de'),
+            title: getObjectName(ids[i], obj),
             enabled: obj && obj.common && obj.common.enabled,
             depth: parts.length - 2,
             type: obj.type === 'script' ? obj.common.engineType : 'folder',
@@ -208,10 +209,37 @@ const prepareList = data => {
     // Fill all index
     result.forEach((item, i) => item.index = i);
 
+    let modified;
+    do {
+        modified = false;
+        // check if all parents exists
+        result.forEach(item => {
+            if (item.parent) {
+                const parent = result.find(it => it.id === item.parent);
+                if (!parent) {
+                    const parts = item.parent.split('.');
+                    parts.pop();
+                    result.push({
+                        id: item.parent,
+                        title: item.parent.replace(/^script\.js./, ''),
+                        depth: parts.length - 2,
+                        type: 'folder',
+                        parent: parts.length > 2 ? parts.join('.') : null
+                    });
+                    modified = true;
+                }
+            }
+        });
+    } while(modified);
+
+
     // Fill all parentIndex
     result.forEach(item => {
         if (item.parent) {
-            item.parentIndex = result.find(it => it.id === item.parent).index;
+            const parent = result.find(it => it.id === item.parent);
+            if (parent) {
+                item.parentIndex = parent.index;
+            }
         }
     });
 
@@ -241,6 +269,7 @@ class SideDrawer extends React.Component {
             selected: window.localStorage ? window.localStorage.getItem('SideMenu.selected') || null : null,
             creatingScript: false,
             creatingFolder: false,
+            copingScript: '',
             renaming: null,
             deleting: null,
             choosingType: null,
@@ -268,7 +297,7 @@ class SideDrawer extends React.Component {
         this.state.isAllZeroInstances = this.getIsAllZeroInstances();
     }
 
-    filterList(isDisable, listItems) {
+    filterList(isDisable, listItems, cb) {
         const noUpdate = !!listItems;
         listItems = listItems || JSON.parse(JSON.stringify(this.state.listItems));
         let changed = false;
@@ -328,7 +357,11 @@ class SideDrawer extends React.Component {
                 changed = true;
             }
         }
-        !noUpdate && changed && this.setState(newState);
+        if (!noUpdate && changed) {
+            this.setState(newState, () => cb && cb());
+        } else {
+            cb && cb()
+        }
     }
 
     ensureSelectedIsVisible(selected, expanded) {
@@ -522,8 +555,14 @@ class SideDrawer extends React.Component {
                     title={I18n.t('Delete script')}
                     disabled={item.id === 'script.js.global' || item.id === 'script.js.common'}
                     onClick={e => this.onDelete(item, e)}><IconDelete/></IconButton>) : null,
-                (<IconButton key="openInedit" title={I18n.t('Edit script or just double click')} onClick={e => this.onEdit(item, e)}><IconDoEdit/></IconButton>),
+                (<IconButton key="openInEdit" title={I18n.t('Edit script or just double click')} onClick={e => this.onEdit(item, e)}><IconDoEdit/></IconButton>),
             ];
+        } else if (this.state.width > 350) {
+             return (<IconButton
+                key="delete"
+                title={I18n.t('Delete folder')}
+                disabled={item.id === 'script.js.global' || item.id === 'script.js.common'}
+                onClick={e => this.onDelete(item, e)}><IconDelete/></IconButton>);
         }
     }
 
@@ -719,6 +758,21 @@ class SideDrawer extends React.Component {
         this.setState({choosingType: true});
     }
 
+    onCopy(e, id) {
+        e && e.stopPropagation();
+        let item = this.state.listItems.find(i => i.id === id);
+        let parent = 'script.js';
+        while (item && item.type !== 'folder') {
+            item = this.state.listItems[item.parentIndex];
+        }
+        if (item) {
+            parent = item.id;
+        }
+
+        this.parent = parent;
+        this.setState({copingScript: id});
+    }
+
     onAddNewFolder(e) {
         e && e.stopPropagation();
         let item = this.state.listItems.find(i => i.id === this.state.selected);
@@ -739,14 +793,26 @@ class SideDrawer extends React.Component {
         this.setState({renaming: this.state.selected});
     }
 
-    getUniqueName() {
+    getUniqueName(copyId) {
         let i = 1;
+        let word = I18n.t('Script') + ' ';
+        if (copyId) {
+            let name = getObjectName(copyId, this.props.objects[copyId]);
+            const m = name.match(/\d+$/);
+            if (m) {
+                word = name.replace(/\d+$/, '');
+                i = parseInt(m[0], 10) + 1;
+            } else {
+                word = name;
+            }
+        }
+
         // eslint-disable-next-line
-        while (this.state.listItems.find(it => it.id === this.parent + '.' + I18n.t('Script') + '_' + i)) {
+        while (this.state.listItems.find(it => it.id === this.parent + '.' + word.replace(/\s/g, '_') + i)) {
             i++;
         }
         /*ignore jslint end*/
-        return I18n.t('Script') + ' ' + i;
+        return word + i;
     }
 
     getUniqueFolderName() {
@@ -784,7 +850,7 @@ class SideDrawer extends React.Component {
                 title={I18n.t('End search mode')}
                 onClick={e => {
                     e.stopPropagation();
-                    this.filterList(false)
+                    this.filterList(false, null, () => this.props.onSearch && this.props.onSearch(this.state.searchText));
                 }}
             ><IconClose /></IconButton>));
             this.state.searchText && result.push((<IconButton
@@ -795,7 +861,7 @@ class SideDrawer extends React.Component {
                 style={{marginTop: 7, float: 'right'}}
                 onClick={e => {
                     e.stopPropagation();
-                    this.setState({searchText: ''});
+                    this.setState({searchText: ''}, () => this.props.onSearch && this.props.onSearch(this.state.searchText));
                 }}
             ><IconClear fontSize="small"/></IconButton>));
         } else {
@@ -815,6 +881,8 @@ class SideDrawer extends React.Component {
                 >
                     <IconMore />
                 </IconButton>));
+
+                const selectedItem = this.state.listItems.find(it => it.id === this.state.selected);
 
                 // Menu
                 result.push((<Menu
@@ -871,9 +939,18 @@ class SideDrawer extends React.Component {
                                                        onClick={event => {
                                                            //event.stopPropagation();
                                                            //event.preventDefault();
-                                                           this.props.onThemeChange(this.state.theme === 'dark' ? 'light' : 'dark');
+                                                           this.setState({menuOpened: false, menuAnchorEl: null}, () =>
+                                                               this.props.onThemeChange(this.state.theme === 'dark' ? 'light' : 'dark'));
                                                        }}><IconDark className={this.props.classes.iconDropdownMenu} />{I18n.t('Dark Theme')}
                     </MenuItem>)}
+                    {this.props.onAddNew && (<MenuItem key="dark"
+                                         disabled={!this.state.selected || !selectedItem || selectedItem.type === 'folder'}
+                                         onClick={event => {
+                                             const selected = this.state.selected;
+                                             this.setState({menuOpened: false, menuAnchorEl: null}, () => this.onCopy(event, selected))
+                                         }}>
+                        <IconCopy className={this.props.classes.iconDropdownMenu} />{I18n.t('Copy script')}
+                </MenuItem>)}
                 </Menu>));
 
                 // New Script
@@ -956,6 +1033,7 @@ class SideDrawer extends React.Component {
         const {classes} = this.props;
 
         const renamingItem = this.state.renaming && this.state.listItems.find(i => i.id === this.state.renaming);
+        const copingItem = this.state.copingScript && this.props.objects[this.state.copingScript];
 
         return [(
             <Drawer
@@ -1024,6 +1102,22 @@ class SideDrawer extends React.Component {
                 parent={this.parent}
                 onAdd={(id, name, instance, type) => {
                     this.props.onAddNew && this.props.onAddNew(id, name, false, instance, type);
+                }}
+            />) : null,
+            this.state.copingScript ? (<DialogNew
+                key="dialog-copy-script"
+                onClose={() => this.setState({copingScript: ''})}
+                title={I18n.t('Copy script')}
+                name={this.getUniqueName(this.state.copingScript)}
+                parents={this.getFolders()}
+                folder={false}
+                instance={parseInt((copingItem && copingItem.common && copingItem.common.engine && copingItem.common.engine.split('.').pop()) || 0, 10)}
+                instances={this.props.instances}
+                type={(copingItem && copingItem.common && copingItem.common.engineType) || 'Javascript/js'}
+                parent={this.parent}
+                onAdd={(id, name, instance, type) => {
+                    const copingItem = this.state.copingScript && this.props.objects[this.state.copingScript];
+                    this.props.onAddNew && this.props.onAddNew(id, name, false, instance, type, copingItem && copingItem.common && copingItem.common.source);
                 }}
             />) : null,
             this.state.creatingFolder ? (<DialogNew

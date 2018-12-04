@@ -183,6 +183,7 @@ class App extends Component {
         if (this.compareScripts(scripts)) {
             scriptsHash++;
         }
+        scripts.instances.sort();
         this.scripts = nScripts;
         newState.instances = scripts.instances;
         newState.scriptsHash = scriptsHash;
@@ -289,7 +290,7 @@ class App extends Component {
         }
     }
 
-    onAddNew(id, name, isFolder, instance, type) {
+    onAddNew(id, name, isFolder, instance, type, source) {
         if (this.objects[id]) {
             this.showError(I18n.t('Yet exists!'));
             return;
@@ -315,7 +316,7 @@ class App extends Component {
                     expert: true,
                     engineType: type,
                     engine: 'system.adapter.javascript.' + (instance || 0),
-                    source: '',
+                    source: source || '',
                     debug: false,
                     verbose: false
                 },
@@ -517,7 +518,7 @@ class App extends Component {
 
         return (
                 <div className={classes.root}>
-                    (<SplitterLayout
+                    <SplitterLayout
                         key="menuSplitter"
                         vertical={false}
                         primaryMinSize={300}

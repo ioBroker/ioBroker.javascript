@@ -251,6 +251,10 @@ class Schedule extends React.Component {
             schedule,
             desc: this.state2text(schedule)
         };
+
+        if (JSON.stringify(schedule) !== this.props.schedule) {
+            setTimeout(() => this.props.onChange && this.props.onChange(JSON.stringify(schedule)), 100);
+        }
     }
 
     onChange(schedule, force) {
