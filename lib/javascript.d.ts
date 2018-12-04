@@ -557,16 +557,18 @@ declare global {
 	 * Subscribe to changes of the matched states.
 	 */
 	function on(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler): any;
-	function on(options: iobJS.SubscribeOptions, handler: iobJS.StateChangeHandler): any;
-	function on(schedule: iobJS.SubscribeTime, handler: iobJS.StateChangeHandler): any;
-	function on(astro: iobJS.AstroSchedule, handler: iobJS.StateChangeHandler): any;
+	function on(
+		astroOrScheduleOrOptions: iobJS.AstroSchedule | iobJS.SubscribeTime | iobJS.SubscribeOptions, 
+		handler: iobJS.StateChangeHandler
+	): any;
 	/**
 	 * Subscribe to changes of the matched states.
 	 */
 	function subscribe(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler): any;
-	function subscribe(options: iobJS.SubscribeOptions, handler: iobJS.StateChangeHandler): any;
-	function subscribe(schedule: iobJS.SubscribeTime, handler: iobJS.StateChangeHandler): any;
-	function subscribe(astro: iobJS.AstroSchedule, handler: iobJS.StateChangeHandler): any;
+	function subscribe(
+		astroOrScheduleOrOptions: iobJS.AstroSchedule | iobJS.SubscribeTime | iobJS.SubscribeOptions, 
+		handler: iobJS.StateChangeHandler
+	): any;
 
 	/**
 	 * Returns the list of all currently active subscriptions
@@ -797,3 +799,4 @@ declare global {
 	 */
 	function getAttr(obj: string | Record<string, any>, path: string | string[]): any;
 }
+	
