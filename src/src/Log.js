@@ -51,7 +51,7 @@ const styles = theme => ({
         color: theme.palette.type === 'dark' ?  'black' : 'white'
     },
     error: {
-        background: '#FF0000',
+        background: '#a24848',
         color: theme.palette.type === 'dark' ?  'black' : 'white'
     },
     warn: {
