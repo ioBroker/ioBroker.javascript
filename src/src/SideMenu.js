@@ -609,7 +609,8 @@ class SideDrawer extends React.Component {
     getTextStyle(item) {
         if (!this.state.reorder && item.type !== 'folder') {
             return {
-                width: 130,
+                //width: 130,
+                width: 'calc(100% - 190px)',
                 overflow: 'hidden',
                 flex: 'none',
                 padding: '0 16px 0 0'
