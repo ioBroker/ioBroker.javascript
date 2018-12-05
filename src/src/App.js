@@ -133,10 +133,9 @@ class App extends Component {
                 }
             },
             onReady: (objects, scripts) => {
-                this.setState({ready: true});
-                this.onObjectChange(objects, scripts);
                 I18n.setLanguage(this.socket.systemLang);
                 window.systemLang = this.socket.systemLang;
+                this.onObjectChange(objects, scripts, true);
             },
             onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
             onError: err => {
@@ -162,7 +161,7 @@ class App extends Component {
         });
     }
 
-    onObjectChange(objects, scripts) {
+    onObjectChange(objects, scripts, isReady) {
         this.objects = objects;
         // extract scripts and instances
         const nScripts = {};
@@ -188,9 +187,11 @@ class App extends Component {
         newState.instances = scripts.instances;
         newState.scriptsHash = scriptsHash;
 
-        BlocklyEditor.loadCustomBlockly(objects);
+        if (isReady !== undefined) {
+            newState.ready = isReady;
+        }
 
-        this.setState(newState);
+        BlocklyEditor.loadCustomBlockly(objects, () => this.setState(newState));
     }
 
     compareScripts(newScripts) {

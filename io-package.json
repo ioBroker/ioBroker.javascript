@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.0.2",
+        "version": "4.0.3",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -20,7 +20,7 @@
             "Apollon77 <ingo@fischer-ka.de>"
         ],
         "news": {
-            "4.0.2": {
+            "4.0.3": {
                 "en": "Material GUI",
                 "de": "Material GUI",
                 "ru": "Material GUI",
@@ -189,6 +189,30 @@
                     "map": "function(doc) { if (doc.type === 'script' && doc.common.engineType.match(/^[jJ]ava[sS]cript|^[cC]offee[sS]cript|^[tT]ype[sS]cript|^Blockly/)) emit(doc.common.name, doc); }"
                 }
             }
+        },
+        {
+            "_id": "script.js",
+            "common": {
+                "name": "js"
+            },
+            "type": "device",
+            "native": {}
+        },
+        {
+            "_id": "script.js.common",
+            "common": {
+                "name": "common"
+            },
+            "type": "channel",
+            "native": {}
+        },
+        {
+            "_id": "script.js.global",
+            "common": {
+                "name": "global"
+            },
+            "type": "channel",
+            "native": {}
         }
     ]
 }

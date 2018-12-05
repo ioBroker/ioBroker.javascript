@@ -23,6 +23,7 @@
   "Create new script": "Neues Skript erstellen",
   "Create or edit CRON or time wizard": "Erstellen oder bearbeiten Sie den CRON- oder Zeit-Assistenten",
   "Dark style": "Dunkler Stil",
+  "Light style": "Heller Stil",
   "December": "Dezember",
   "Define cron...": "Cron definieren ...",
   "Define schedule...": "Zeitplan definieren ...",
@@ -47,6 +48,7 @@
   "February": "Februar",
   "Folder": "Mappe",
   "Friday": "Freitag",
+  "Function editor": "Funktion-Editor",
   "ID": "ID",
   "Import blocks": "Blöcke importieren",
   "Import": "Importieren",
@@ -242,6 +244,5 @@
   "tooltip_ts": "Zeitstempel",
   "tooltip_user": "Benutzer",
   "tooltip_value": "Wert",
-  "use seconds": "Sekunden verwenden",
-  "Dark Theme": "Dunkles Thema"
+  "use seconds": "Sekunden verwenden"
 }

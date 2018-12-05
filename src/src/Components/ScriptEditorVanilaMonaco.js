@@ -46,7 +46,7 @@ class ScriptEditor extends React.Component {
             const compilerOptions = this.monaco.languages.typescript.typescriptDefaults['getCompilerOptions']();
             compilerOptions.target = this.monaco.languages.typescript.ScriptTarget.ES2015;
             compilerOptions.allowJs = true;
-            compilerOptions.checkJs = true;
+            compilerOptions.checkJs = this.props.checkJs !== false;
             compilerOptions.noLib = true;
             compilerOptions.lib = [];
             compilerOptions.moduleResolution = this.monaco.languages.typescript.ModuleResolutionKind.NodeJs;
@@ -263,7 +263,9 @@ class ScriptEditor extends React.Component {
     }
 
     onChange(newValue, e) {
-        this.props.onChange && this.props.onChange(this.editor.getValue());
+        if (!this.props.readOnly) {
+            this.props.onChange && this.props.onChange(this.editor.getValue());
+        }
     }
 
     render() {
@@ -299,7 +301,8 @@ ScriptEditor.propTypes = {
     code: PropTypes.string,
     language: PropTypes.string,
     onRegisterSelect: PropTypes.func,
-    searchText: PropTypes.string
+    searchText: PropTypes.string,
+    checkJs: PropTypes.bool
 };
 
 export default ScriptEditor;

@@ -724,8 +724,8 @@ class SelectID extends React.Component {
                 this.setState({loaded: true});
 
                 this.state.selected && this.onSelect(this.state.selected);
-            });
-        });
+            }, true);
+        }, true);
 
         this.texts = {
             value:   I18n.t('tooltip_value'),

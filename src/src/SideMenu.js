@@ -558,11 +558,15 @@ class SideDrawer extends React.Component {
                 (<IconButton key="openInEdit" title={I18n.t('Edit script or just double click')} onClick={e => this.onEdit(item, e)}><IconDoEdit/></IconButton>),
             ];
         } else if (this.state.width > 350) {
-             return (<IconButton
-                key="delete"
-                title={I18n.t('Delete folder')}
-                disabled={item.id === 'script.js.global' || item.id === 'script.js.common'}
-                onClick={e => this.onDelete(item, e)}><IconDelete/></IconButton>);
+            if (item.id !== 'script.js' && item.id !== 'script.js.common' && item.id !== 'script.js.global' && (!children || !children.length)) {
+                return (<IconButton
+                    key="delete"
+                    title={I18n.t('Delete folder')}
+                    disabled={item.id === 'script.js.global' || item.id === 'script.js.common'}
+                    onClick={e => this.onDelete(item, e)}><IconDelete/></IconButton>);
+            } else {
+                return null;
+            }
         }
     }
 
@@ -883,6 +887,10 @@ class SideDrawer extends React.Component {
                 </IconButton>));
 
                 const selectedItem = this.state.listItems.find(it => it.id === this.state.selected);
+                let children;
+                if (selectedItem && this.state.width <= 350 && selectedItem.type === 'folder') {
+                    children = this.state.listItems.filter(i => i.parent === this.state.selected);
+                }
 
                 // Menu
                 result.push((<Menu
@@ -893,14 +901,14 @@ class SideDrawer extends React.Component {
                     onClose={() => this.setState({menuOpened: false, menuAnchorEl: null})}
                     PaperProps={{
                         style: {
-                            maxHeight: MENU_ITEM_HEIGHT * 5.5,
+                            maxHeight: MENU_ITEM_HEIGHT * 6.5,
                             //width: 200,
                         },
                     }}
                 >
                     {this.state.width <= 350 ? (<MenuItem
                         key="deleted"
-                        disabled={!this.state.selected || this.state.selected === 'script.js.global' || this.state.selected === 'script.js.common'}
+                        disabled={!this.state.selected || this.state.selected === 'script.js.global' || this.state.selected === 'script.js.common' || (children && children.length)}
                         onClick={event => {
                             event.stopPropagation();
                             event.preventDefault();
@@ -941,9 +949,9 @@ class SideDrawer extends React.Component {
                                                            //event.preventDefault();
                                                            this.setState({menuOpened: false, menuAnchorEl: null}, () =>
                                                                this.props.onThemeChange(this.state.theme === 'dark' ? 'light' : 'dark'));
-                                                       }}><IconDark className={this.props.classes.iconDropdownMenu} />{I18n.t('Dark Theme')}
+                                                       }}><IconDark className={this.props.classes.iconDropdownMenu} />{this.state.theme === 'dark' ? I18n.t('Light style') : I18n.t('Dark style')}
                     </MenuItem>)}
-                    {this.props.onAddNew && (<MenuItem key="dark"
+                    {this.props.onAddNew && (<MenuItem key="copy"
                                          disabled={!this.state.selected || !selectedItem || selectedItem.type === 'folder'}
                                          onClick={event => {
                                              const selected = this.state.selected;

@@ -173,10 +173,10 @@ class Connection {
         }
     }
 
-    getStates(cb) {
+    getStates(cb, disableProgressUdpate) {
         this.socket.emit('getStates', (err, res) => {
             this.states = res;
-            this.onProgress(PROGRESS.STATES_LOADED);
+            !disableProgressUdpate && this.onProgress(PROGRESS.STATES_LOADED);
             cb && setTimeout(() => cb(this.states), 0);
         });
     }
@@ -190,8 +190,9 @@ class Connection {
         }
     }
 
-    getObjects(refresh, cb) {
+    getObjects(refresh, cb, disableProgressUdpate) {
         if (typeof refresh === 'function') {
+            disableProgressUdpate = cb;
             cb = refresh;
             refresh = false;
         }
@@ -215,7 +216,7 @@ class Connection {
                     if (obj.type === 'channel' && id.match(/^script\.js\./)) this.scripts.groups.push(id);
                     if (obj.type === 'host')     this.scripts.hosts.push(id);
                 }
-                this.onProgress(PROGRESS.OBJECTS_LOADED);
+                disableProgressUdpate && this.onProgress(PROGRESS.OBJECTS_LOADED);
 
                 cb && cb(this.objects);
             }, 0);

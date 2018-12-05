@@ -33,7 +33,7 @@ And then call "npm run build".
 - ...
 
 ## Changelog
-### 4.0.2 (2018-11-24)
+### 4.0.3 (2018-12-05) Breaking changes - no IE support anymore
 * (bluefox) Material UI
 * (AlCalzone) monaco javascript editor
 

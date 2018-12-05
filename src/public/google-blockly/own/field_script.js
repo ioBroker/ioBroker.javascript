@@ -105,7 +105,7 @@ Blockly.FieldScript.prototype.showEditor_ = function(opt_quietInput) {
         isReturn = options[2];
     }
 
-    scripts.showScriptDialog(atob(base64 || ''), args, isReturn, function (newScript) {
+    window.main.showScriptDialog(atob(base64 || ''), args, isReturn, function (newScript) {
         if (newScript !== undefined && newScript !== null) that.setValue(btoa(newScript));
     });
 };

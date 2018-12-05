@@ -451,7 +451,8 @@ class BlocklyEditor extends React.Component {
     }
 
     onChange() {
-        this.props.onChange && this.props.onChange(this.blocklyCode2JSCode());
+        this.originalCode = this.blocklyCode2JSCode();
+        this.props.onChange && this.props.onChange(this.originalCode);
     }
 
     getToolbox() {

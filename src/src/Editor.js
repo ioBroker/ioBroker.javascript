@@ -31,6 +31,7 @@ import BlocklyEditor from './Components/BlocklyEditor';
 import DialogConfirm from './Dialogs/Confirmation';
 import DialogSelectID from './Dialogs/SelectID';
 import DialogCron from './Dialogs/Cron';
+import DialogScriptEditor from './Dialogs/ScriptEditor';
 
 const images = {
     'Blockly': ImgBlockly,
@@ -97,7 +98,7 @@ const styles = theme => ({
         right: 0,
         zIndex: 10,
         padding: 8,
-        cursor: 'grabbing'
+        cursor: 'pointer'
     },
     notRunning: {
         color: '#ffbc00'
@@ -633,7 +634,7 @@ class Editor extends React.Component {
     }
 
     getScriptEditor() {
-        if (this.state.selected && this.props.objects[this.state.selected] && (!this.state.blockly || this.state.showBlocklyCode)) {
+        if (this.state.selected && this.props.objects[this.state.selected] && this.state.blockly !== null && (!this.state.blockly || this.state.showBlocklyCode)) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
 
             return (<div className={this.props.classes.editorDiv} key="scriptEditorDiv">
@@ -750,8 +751,23 @@ class Editor extends React.Component {
     }
 
     getEditorDialog() {
-        if (this.state.showCron) {
-            return null;
+        if (this.state.showScript) {
+            return (<DialogScriptEditor
+                key="scriptEditorDialog"
+                source={this.scriptDialog.initValue}
+                args={this.scriptDialog.args ? this.scriptDialog.args.join(', ') : ''}
+                isReturn={this.scriptDialog.isReturn}
+                connection={this.props.connection}
+                theme={this.state.theme}
+                onClose={result => {
+                    this.scriptDialog.initValue = null;
+                    if (this.scriptDialog.callback) {
+                        result !== false && this.scriptDialog.callback(result || '');
+                        this.scriptDialog.callback = null;
+                    }
+                    this.setState({showScript: false});
+                }}
+            />);
         } else {
             return null;
         }
@@ -759,6 +775,7 @@ class Editor extends React.Component {
 
     render() {
         if (this.state.selected && this.props.objects[this.state.selected] && this.state.blockly === null) {
+            this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
             setTimeout(() => this.setState({blockly: this.scripts[this.state.selected].engineType === 'Blockly', showBlocklyCode: false}), 100);
         }
 
