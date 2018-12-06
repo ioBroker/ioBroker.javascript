@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.0.3",
+        "version": "4.0.4",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -20,7 +20,7 @@
             "Apollon77 <ingo@fischer-ka.de>"
         ],
         "news": {
-            "4.0.3": {
+            "4.0.4": {
                 "en": "Material GUI",
                 "de": "Material GUI",
                 "ru": "Material GUI",
