@@ -53,12 +53,13 @@ class BlocklyEditor extends React.Component {
 
     static loadJS(url, callback, location) {
         const scriptTag = document.createElement('script');
-        scriptTag.src = url;
-
-        scriptTag.onload = callback;
-        scriptTag.onreadystatechange = callback;
-
         try {
+            scriptTag.src = url;
+
+            scriptTag.onload = callback;
+            scriptTag.onreadystatechange = callback;
+            scriptTag.onerror = callback;
+
             (location || window.document.body).appendChild(scriptTag);
         } catch (e) {
             console.error('Cannot load ' + url + ': ' + e);

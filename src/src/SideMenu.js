@@ -610,13 +610,15 @@ class SideDrawer extends React.Component {
         if (!this.state.reorder && item.type !== 'folder') {
             return {
                 //width: 130,
-                width: 'calc(100% - 190px)',
+                width: `calc(100% - ${this.state.width > 350 ? 210 : 165}px)`,
                 overflow: 'hidden',
+                whiteSpace: 'nowrap',
                 flex: 'none',
                 padding: '0 16px 0 0'
             };
         } else {
             return {
+                whiteSpace: 'nowrap',
                 padding: '0 16px 0 0'
             };
         }
