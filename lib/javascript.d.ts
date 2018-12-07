@@ -49,6 +49,11 @@ declare global {
 			c?: string;
 		}
 
+		interface AbsentState {
+			val: null;
+			notExist: true;
+		}
+
 		type ObjectType = "state" | "channel" | "device";
 		type CommonType = "number" | "string" | "boolean" | "array" | "object" | "mixed" | "file";
 
@@ -341,7 +346,7 @@ declare global {
 			 * this can be called synchronously and immediately returns the state.
 			 * Otherwise you need to provide a callback.
 			 */
-			getState: (callback?: GetStateCallback) => void | State;
+			getState: (callback?: GetStateCallback) => void | State | AbsentState;
 
 			/**
 			 * Sets all queried states to the given value.
