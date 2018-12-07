@@ -497,7 +497,7 @@ declare global {
 	 * @param message The message to print
 	 * @param severity (optional) severity of the message. default = "info"
 	 */
-	function log(message: string, severity?: iobJS.LogLevel);
+	function log(message: string, severity?: iobJS.LogLevel): void;
 
 	// TODO: Do we need this?
 	// namespace console {
@@ -777,13 +777,14 @@ declare global {
 	 * Starts or restarts a script by name
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
 	 */
-	function startScript(scriptName, ignoreIfStarted, callback?: GenericCallback<boolean>): boolean;
+	function startScript(scriptName?: string, ignoreIfStarted?: boolean, callback?: GenericCallback<boolean>): boolean;
+	function startScript(scriptName?: string, callback?: GenericCallback<boolean>): boolean;
 	/**
 	 * Stops a script by name
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is stopped.
 	 */
-	function stopScript(scriptName, callback?: GenericCallback<boolean>): boolean;
-	function isScriptActive(scriptName): boolean;
+	function stopScript(scriptName: string, callback?: GenericCallback<boolean>): boolean;
+	function isScriptActive(scriptName: string): boolean;
 
 	/** Converts a value to an integer */
 	function toInt(val: any): number;
