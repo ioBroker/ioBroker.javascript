@@ -39,7 +39,7 @@ const mods = {
     path:             require('path'),
     util:             require('util'),
     child_process:    require('child_process'),
-    suncalc:          require('suncalc'),
+    suncalc:          require('suncalc2'),
     request:          require('request'),
     wake_on_lan:      require('wake_on_lan')
 };
