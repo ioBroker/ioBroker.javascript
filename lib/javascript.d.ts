@@ -23,7 +23,7 @@ declare global {
 			sensor_reports_error = 0x84,
 		}
 
-		interface State<T = any> {
+		interface State<T extends StateValue = any> {
 			/** The value of the state. */
 			val: T;
 
@@ -48,6 +48,14 @@ declare global {
 			/** Optional comment */
 			c?: string;
 		}
+
+		type ObjectTypeStateValue = Record<string, any>;
+
+		type PrimitiveTypeStateValue = string | number | boolean;
+
+		type ArrayTypeStateValue = Array<PrimitiveTypeStateValue>;
+
+		type StateValue = ObjectTypeStateValue | ArrayTypeStateValue;
 
 		interface AbsentState {
 			val: null;
@@ -168,7 +176,7 @@ declare global {
 			common?: Partial<OtherCommon>;
 		}
 		/** Represents the change of a state */
-		interface ChangedStateObject<T = any> extends StateObject {
+		interface ChangedStateObject<TOld extends StateValue = any, TNew extends StateValue = any> extends StateObject {
 			common: StateCommon;
 			native: Record<string, any>;
 			id?: string;
@@ -182,11 +190,11 @@ declare global {
 			/** The names of enums this state is assigned to. For example ["Licht","Garten"] */
 			enumNames?: string[];
 			/** new state */
-			state: State<T>;
+			state: State<TNew>;
 			/** @deprecated Use state instead **/
-			newState: State<T>;
+			newState: State<TNew>;
 			/** previous state */
-			oldState: State<T>;
+			oldState: State<TOld>;
 			/** Name of the adapter instance which set the value, e.g. "system.adapter.web.0" */
 			from?: string;
 			/** Unix timestamp. Default: current time */
@@ -200,10 +208,10 @@ declare global {
 		type Object = StateObject | ChannelObject | DeviceObject | OtherObject;
 		type PartialObject = PartialStateObject | PartialChannelObject | PartialDeviceObject | PartialOtherObject;
 
-		type GetStateCallback<T = any> = (err: string | null, state?: State<T>) => void;
-		type SetStateCallback<T = any> = (err: string | null, id?: string) => void;
+		type GetStateCallback<T = any> = (err: string | null, state?: State<T> | AbsentState) => void;
+		type SetStateCallback = (err: string | null, id?: string) => void;
 
-		type StateChangeHandler<T = any> = (obj: ChangedStateObject<T>) => void;
+		type StateChangeHandler= (obj: ChangedStateObject) => void;
 
 		type SetObjectCallback = (err: string | null, obj: { id: string }) => void;
 		type GetObjectCallback = (err: string | null, obj: iobJS.Object) => void;
@@ -346,17 +354,17 @@ declare global {
 			 * this can be called synchronously and immediately returns the state.
 			 * Otherwise you need to provide a callback.
 			 */
-			getState: <T = any>(callback?: GetStateCallback<T>) => void | State<T> | AbsentState;
+			getState: (<T = any>(callback: GetStateCallback<T>) => void) | (<T = any>() => State<T> | null | undefined);
 
 			/**
 			 * Sets all queried states to the given value.
 			 */
-			setState: <T extends string | number | boolean>(id: string, state: T | State<T> | Partial<State<T>>, ack?: boolean, callback?: SetStateCallback) => this;
+			setState: <T extends StateValue>(id: string, state: T | State<T> | Partial<State<T>>, ack?: boolean, callback?: SetStateCallback) => this;
 
 			/**
 			 * Subscribes the given callback to changes of the matched states.
 			 */
-			on: <T = any>(callback: StateChangeHandler<T>) => this;
+			on: (callback: StateChangeHandler) => this;
 		}
 
 		/**
@@ -561,18 +569,18 @@ declare global {
 	/**
 	 * Subscribe to changes of the matched states.
 	 */
-	function on<T = any>(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler<T>): any;
-	function on<T = any>(
+	function on(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler): any;
+	function on(
 		astroOrScheduleOrOptions: iobJS.AstroSchedule | iobJS.SubscribeTime | iobJS.SubscribeOptions, 
-		handler: iobJS.StateChangeHandler<T>
+		handler: iobJS.StateChangeHandler
 	): any;
 	/**
 	 * Subscribe to changes of the matched states.
 	 */
-	function subscribe<T = any>(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler<T>): any;
-	function subscribe<T = any>(
+	function subscribe(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler): any;
+	function subscribe(
 		astroOrScheduleOrOptions: iobJS.AstroSchedule | iobJS.SubscribeTime | iobJS.SubscribeOptions, 
-		handler: iobJS.StateChangeHandler<T>
+		handler: iobJS.StateChangeHandler
 	): any;
 
 	/**
@@ -618,8 +626,8 @@ declare global {
 	 * Sets a state to the given value
 	 * @param id The ID of the state to be set
 	 */
-	function setState(id: string, state: string | number | boolean | iobJS.State | Partial<iobJS.State>, callback?: iobJS.SetStateCallback): void;
-	function setState(id: string, state: string | number | boolean | iobJS.State | Partial<iobJS.State>, ack: boolean, callback?: iobJS.SetStateCallback): void;
+	function setState<T extends iobJS.StateValue>(id: string, state: T, callback?: iobJS.SetStateCallback): void;
+	function setState<T extends iobJS.StateValue>(id: string, state: T, ack: boolean, callback?: iobJS.SetStateCallback): void;
 
 	/**
 	 * Sets a state to the given value after a timeout has passed.
@@ -648,8 +656,8 @@ declare global {
 	 * this can be called synchronously and immediately returns the state.
 	 * Otherwise you need to provide a callback.
 	 */
-	function getState<T = any>(id: string, callback: iobJS.GetStateCallback<T>): void;
-	function getState<T = any>(id: string): iobJS.State<T>;
+	function getState<T extends iobJS.StateValue = any>(id: string, callback: iobJS.GetStateCallback<T>): void;
+	function getState<T extends iobJS.StateValue = any>(id: string): iobJS.State<T>;
 
 	/**
 	 * Checks if the state with the given ID exists
@@ -805,4 +813,3 @@ declare global {
 	 */
 	function getAttr(obj: string | Record<string, any>, path: string | string[]): any;
 }
-	
