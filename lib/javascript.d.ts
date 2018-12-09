@@ -346,7 +346,7 @@ declare global {
 			 * this can be called synchronously and immediately returns the state.
 			 * Otherwise you need to provide a callback.
 			 */
-			getState: (callback?: GetStateCallback) => void | State | AbsentState;
+			getState: ((callback: GetStateCallback) => void) | (() => State | null | undefined);
 
 			/**
 			 * Sets all queried states to the given value.
@@ -649,7 +649,7 @@ declare global {
 	 * Otherwise you need to provide a callback.
 	 */
 	function getState(id: string, callback: iobJS.GetStateCallback): void;
-	function getState(id: string): iobJS.State;
+	function getState(id: string): iobJS.State | iobJS.AbsentState;
 
 	/**
 	 * Checks if the state with the given ID exists
@@ -781,14 +781,22 @@ declare global {
 	/**
 	 * Starts or restarts a script by name
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
+	 * @param ignoreIfStarted If ignoreIfStarted set to true, nothing will be done if script yet running,
+	 * elsewise the script will be restarted.
+	 * @param callback (optional) Is called when the script has finished (successfully or not)
 	 */
-	function startScript(scriptName?: string, ignoreIfStarted?: boolean, callback?: GenericCallback<boolean>): boolean;
+	function startScript(scriptName: string | undefined, ignoreIfStarted: boolean, callback?: GenericCallback<boolean>): boolean;
+	/**
+	 * Starts or restarts a script by name
+	 * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
+	 * @param callback (optional) Is called when the script has finished (successfully or not)
+	 */
 	function startScript(scriptName?: string, callback?: GenericCallback<boolean>): boolean;
 	/**
 	 * Stops a script by name
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is stopped.
 	 */
-	function stopScript(scriptName: string, callback?: GenericCallback<boolean>): boolean;
+	function stopScript(scriptName: string | undefined, callback?: GenericCallback<boolean>): boolean;
 	function isScriptActive(scriptName: string): boolean;
 
 	/** Converts a value to an integer */
