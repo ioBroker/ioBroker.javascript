@@ -49,6 +49,11 @@ declare global {
 			c?: string;
 		}
 
+		interface AbsentState {
+			val: null;
+			notExist: true;
+		}
+
 		type ObjectType = "state" | "channel" | "device";
 		type CommonType = "number" | "string" | "boolean" | "array" | "object" | "mixed" | "file";
 
@@ -333,7 +338,7 @@ declare global {
 			 * Executes a function for each state id in the result array
 			 * The execution is canceled if a callback returns false
 			 */
-			each: (callback?: (id: string, index: number) => boolean | void) => this;
+			each(callback?: (id: string, index: number) => boolean | void): this;
 
 			/**
 			 * Returns the first state found by this query.
@@ -341,17 +346,18 @@ declare global {
 			 * this can be called synchronously and immediately returns the state.
 			 * Otherwise you need to provide a callback.
 			 */
-			getState: (callback?: GetStateCallback) => void | State;
+			getState(callback: GetStateCallback): void;
+			getState(): State | null | undefined;
 
 			/**
 			 * Sets all queried states to the given value.
 			 */
-			setState: (id: string, state: string | number | boolean | State | Partial<State>, ack?: boolean, callback?: SetStateCallback) => this;
+			setState(id: string, state: string | number | boolean | State | Partial<State>, ack?: boolean, callback?: SetStateCallback): this;
 
 			/**
 			 * Subscribes the given callback to changes of the matched states.
 			 */
-			on: (callback: StateChangeHandler) => this;
+			on(callback: StateChangeHandler): this;
 		}
 
 		/**
@@ -497,7 +503,7 @@ declare global {
 	 * @param message The message to print
 	 * @param severity (optional) severity of the message. default = "info"
 	 */
-	function log(message: string, severity?: iobJS.LogLevel);
+	function log(message: string, severity?: iobJS.LogLevel): void;
 
 	// TODO: Do we need this?
 	// namespace console {
@@ -644,7 +650,7 @@ declare global {
 	 * Otherwise you need to provide a callback.
 	 */
 	function getState(id: string, callback: iobJS.GetStateCallback): void;
-	function getState(id: string): iobJS.State;
+	function getState(id: string): iobJS.State | iobJS.AbsentState;
 
 	/**
 	 * Checks if the state with the given ID exists
@@ -776,14 +782,22 @@ declare global {
 	/**
 	 * Starts or restarts a script by name
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
+	 * @param ignoreIfStarted If set to true, running scripts will not be restarted.
+	 * @param callback (optional) Is called when the script has finished (successfully or not)
 	 */
-	function startScript(scriptName, ignoreIfStarted, callback?: GenericCallback<boolean>): boolean;
+	function startScript(scriptName: string | undefined, ignoreIfStarted: boolean, callback?: GenericCallback<boolean>): boolean;
+	/**
+	 * Starts or restarts a script by name
+	 * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
+	 * @param callback (optional) Is called when the script has finished (successfully or not)
+	 */
+	function startScript(scriptName?: string, callback?: GenericCallback<boolean>): boolean;
 	/**
 	 * Stops a script by name
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is stopped.
 	 */
-	function stopScript(scriptName, callback?: GenericCallback<boolean>): boolean;
-	function isScriptActive(scriptName): boolean;
+	function stopScript(scriptName: string | undefined, callback?: GenericCallback<boolean>): boolean;
+	function isScriptActive(scriptName: string): boolean;
 
 	/** Converts a value to an integer */
 	function toInt(val: any): number;
