@@ -782,8 +782,7 @@ declare global {
 	/**
 	 * Starts or restarts a script by name
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
-	 * @param ignoreIfStarted If ignoreIfStarted set to true, nothing will be done if script yet running,
-	 * elsewise the script will be restarted.
+	 * @param ignoreIfStarted If set to true, running scripts will not be restarted.
 	 * @param callback (optional) Is called when the script has finished (successfully or not)
 	 */
 	function startScript(scriptName: string | undefined, ignoreIfStarted: boolean, callback?: GenericCallback<boolean>): boolean;
