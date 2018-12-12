@@ -23,7 +23,7 @@ declare global {
 			sensor_reports_error = 0x84,
 		}
 
-		interface State<T extends StateValue = any> {
+		interface State<T extends StateValue = StateValue> {
 			/** The value of the state. */
 			val: T;
 
@@ -49,13 +49,9 @@ declare global {
 			c?: string;
 		}
 
-		type ObjectTypeStateValue = Record<string, any>;
-
 		type PrimitiveTypeStateValue = string | number | boolean;
 
-		type ArrayTypeStateValue = Array<PrimitiveTypeStateValue>;
-
-		type StateValue = ObjectTypeStateValue | ArrayTypeStateValue;
+		type StateValue = PrimitiveTypeStateValue | PrimitiveTypeStateValue[] | Record<string, any>;
 
 		interface AbsentState {
 			val: null;
@@ -176,7 +172,7 @@ declare global {
 			common?: Partial<OtherCommon>;
 		}
 		/** Represents the change of a state */
-		interface ChangedStateObject<TOld extends StateValue = any, TNew extends StateValue = any> extends StateObject {
+		interface ChangedStateObject<TOld extends StateValue = any, TNew extends StateValue = TOld> extends StateObject {
 			common: StateCommon;
 			native: Record<string, any>;
 			id?: string;
@@ -354,7 +350,8 @@ declare global {
 			 * this can be called synchronously and immediately returns the state.
 			 * Otherwise you need to provide a callback.
 			 */
-			getState: (<T = any>(callback: GetStateCallback<T>) => void) | (<T = any>() => State<T> | null | undefined);
+			getState<T = any>(callback: GetStateCallback<T>): void;
+			getState<T = any>(): State<T> | null | undefined;
 
 			/**
 			 * Sets all queried states to the given value.
@@ -626,8 +623,8 @@ declare global {
 	 * Sets a state to the given value
 	 * @param id The ID of the state to be set
 	 */
-	function setState<T extends iobJS.StateValue>(id: string, state: T, callback?: iobJS.SetStateCallback): void;
-	function setState<T extends iobJS.StateValue>(id: string, state: T, ack: boolean, callback?: iobJS.SetStateCallback): void;
+	function setState<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, callback?: iobJS.SetStateCallback): void;
+	function setState<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, ack: boolean, callback?: iobJS.SetStateCallback): void;
 
 	/**
 	 * Sets a state to the given value after a timeout has passed.
@@ -657,7 +654,7 @@ declare global {
 	 * Otherwise you need to provide a callback.
 	 */
 	function getState<T extends iobJS.StateValue = any>(id: string, callback: iobJS.GetStateCallback<T>): void;
-	function getState<T extends iobJS.StateValue = any>(id: string): iobJS.State<T>;
+	function getState<T extends iobJS.StateValue = any>(id: string): iobJS.State<T> | iobJS.AbsentState;
 
 	/**
 	 * Checks if the state with the given ID exists
