@@ -342,7 +342,7 @@ declare global {
 			 * Executes a function for each state id in the result array
 			 * The execution is canceled if a callback returns false
 			 */
-			each: (callback?: (id: string, index: number) => boolean | void) => this;
+			each(callback?: (id: string, index: number) => boolean | void): this;
 
 			/**
 			 * Returns the first state found by this query.
@@ -356,12 +356,12 @@ declare global {
 			/**
 			 * Sets all queried states to the given value.
 			 */
-			setState: <T extends StateValue>(id: string, state: T | State<T> | Partial<State<T>>, ack?: boolean, callback?: SetStateCallback) => this;
+			setState<T extends StateValue>(id: string, state: T | State<T> | Partial<State<T>>, ack?: boolean, callback?: SetStateCallback): this;
 
 			/**
 			 * Subscribes the given callback to changes of the matched states.
 			 */
-			on: (callback: StateChangeHandler) => this;
+			on(callback: StateChangeHandler): this;
 		}
 
 		/**
