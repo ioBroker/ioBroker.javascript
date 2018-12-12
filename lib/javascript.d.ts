@@ -786,14 +786,21 @@ declare global {
 	/**
 	 * Starts or restarts a script by name
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
+	 * @param ignoreIfStarted If set to true, running scripts will not be restarted.
+	 * @param callback (optional) Is called when the script has finished (successfully or not)
 	 */
-	function startScript(scriptName?: string, ignoreIfStarted?: boolean, callback?: GenericCallback<boolean>): boolean;
+	function startScript(scriptName: string | undefined, ignoreIfStarted: boolean, callback?: GenericCallback<boolean>): boolean;
+	/**
+	 * Starts or restarts a script by name
+	 * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
+	 * @param callback (optional) Is called when the script has finished (successfully or not)
+	 */
 	function startScript(scriptName?: string, callback?: GenericCallback<boolean>): boolean;
 	/**
 	 * Stops a script by name
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is stopped.
 	 */
-	function stopScript(scriptName: string, callback?: GenericCallback<boolean>): boolean;
+	function stopScript(scriptName: string | undefined, callback?: GenericCallback<boolean>): boolean;
 	function isScriptActive(scriptName: string): boolean;
 
 	/** Converts a value to an integer */
