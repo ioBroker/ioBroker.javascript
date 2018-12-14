@@ -540,31 +540,6 @@ declare global {
 	function pushover(msg: any): void;
 
 	/**
-	 * Causes all changes of the state with id1 to the state with id2.
-	 * The return value can be used to unsubscribe later
-	 */
-	function on(id1: string, id2: string): any;
-	/**
-	 * Causes all changes of the state with id1 to the state with id2
-	 */
-	function subscribe(id1: string, id2: string): any;
-
-	/**
-	 * Watches the state with id1 for changes and overwrites the state with id2 with value2 when any occur.
-	 * @param id1 The state to watch for changes
-	 * @param id2 The state to update when changes occur
-	 * @param value2 The value to write into state `id2` when `id1` gets changed
-	 */
-	function on(id1: string, id2: string, value2: any): any;
-	/**
-	 * Watches the state with id1 for changes and overwrites the state with id2 with value2 when any occur.
-	 * @param id1 The state to watch for changes
-	 * @param id2 The state to update when changes occur
-	 * @param value2 The value to write into state `id2` when `id1` gets changed
-	 */
-	function subscribe(id1: string, id2: string, value2: any): any;
-
-	/**
 	 * Subscribe to changes of the matched states.
 	 */
 	function on(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler): any;
@@ -580,6 +555,31 @@ declare global {
 		astroOrScheduleOrOptions: iobJS.AstroSchedule | iobJS.SubscribeTime | iobJS.SubscribeOptions, 
 		handler: iobJS.StateChangeHandler
 	): any;
+
+	/**
+	 * Causes all changes of the state with id1 to the state with id2.
+	 * The return value can be used to unsubscribe later
+	 */
+	function on(id1: string, id2: string): any;
+	/**
+	 * Watches the state with id1 for changes and overwrites the state with id2 with value2 when any occur.
+	 * @param id1 The state to watch for changes
+	 * @param id2 The state to update when changes occur
+	 * @param value2 The value to write into state `id2` when `id1` gets changed
+	 */
+	function on(id1: string, id2: string, value2: any): any;
+
+	/**
+	 * Causes all changes of the state with id1 to the state with id2
+	 */
+	function subscribe(id1: string, id2: string): any;
+	/**
+	 * Watches the state with id1 for changes and overwrites the state with id2 with value2 when any occur.
+	 * @param id1 The state to watch for changes
+	 * @param id2 The state to update when changes occur
+	 * @param value2 The value to write into state `id2` when `id1` gets changed
+	 */
+	function subscribe(id1: string, id2: string, value2: any): any;
 
 	/**
 	 * Returns the list of all currently active subscriptions
