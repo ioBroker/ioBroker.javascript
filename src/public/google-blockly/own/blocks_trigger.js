@@ -459,7 +459,10 @@ Blockly.JavaScript['schedule'] = function(block) {
     var schedule = block.getFieldValue('SCHEDULE');
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    return 'schedule(\'' + schedule +'\', function () {\n' + statements_name + '});\n';
+    if (schedule[0] === '{') {
+        schedule = "'" + schedule + "'";
+    }
+    return 'schedule(' + schedule + ', function () {\n' + statements_name + '});\n';
 };
 
 // --- ASTRO -----------------------------------------------------------
@@ -638,7 +641,9 @@ Blockly.JavaScript['schedule_create'] = function (block) {
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
     schedule = schedule.replace(/^"/, '').replace(/"$/, '');
-    schedule = "'" + schedule + "'";
+    if (schedule[0] === '{') {
+        schedule = "'" + schedule + "'";
+    }
 
     return name + ' = schedule(' + schedule + ', function () {\n' + statements_name + '});\n';
 };
