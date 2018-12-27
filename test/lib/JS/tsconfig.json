@@ -1,0 +1,18 @@
+/*
+	This file is used to test the embedded declarations in TS / strict mode.
+*/
+
+{
+	"files": [
+		"../../../lib/javascript.d.ts",
+		"./testDeclarations.js",
+	],
+	"compilerOptions": {
+		"allowJs": true,
+		"checkJs": true,
+		"noEmit": true,
+		"target": "es6",
+		"moduleResolution": "node",
+		"skipLibCheck": true
+	}
+}
