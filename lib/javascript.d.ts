@@ -23,7 +23,7 @@ declare global {
 			sensor_reports_error = 0x84,
 		}
 
-		interface State<T extends StateValue = StateValue> {
+		interface State<T extends StateValue = any> {
 			/** The value of the state. */
 			val: T;
 
@@ -47,6 +47,9 @@ declare global {
 
 			/** Optional comment */
 			c?: string;
+
+			/** Discriminant property to switch between AbsentState and State<T> */
+			notExist: undefined;
 		}
 
 		type PrimitiveTypeStateValue = string | number | boolean;
@@ -56,6 +59,14 @@ declare global {
 		interface AbsentState {
 			val: null;
 			notExist: true;
+
+			ack: undefined;
+			ts: undefined;
+			lc: undefined;
+			from: undefined;
+			expire: undefined;
+			q: undefined;
+			c: undefined;
 		}
 
 		type ObjectType = "state" | "channel" | "device";
@@ -173,7 +184,7 @@ declare global {
 			common?: Partial<OtherCommon>;
 		}
 		/** Represents the change of a state */
-		interface ChangedStateObject<TOld extends StateValue = StateValue, TNew extends StateValue = TOld> extends StateObject {
+		interface ChangedStateObject<TOld extends StateValue = any, TNew extends StateValue = TOld> extends StateObject {
 			common: StateCommon;
 			native: Record<string, any>;
 			id?: string;
@@ -205,10 +216,10 @@ declare global {
 		type Object = StateObject | ChannelObject | DeviceObject | OtherObject;
 		type PartialObject = PartialStateObject | PartialChannelObject | PartialDeviceObject | PartialOtherObject;
 
-		type GetStateCallback<T extends StateValue> = (err: string | null, state?: State<T> | AbsentState) => void;
+		type GetStateCallback<T extends StateValue = any> = (err: string | null, state?: State<T> | AbsentState) => void;
 		type SetStateCallback = (err: string | null, id?: string) => void;
 
-		type StateChangeHandler= (obj: ChangedStateObject) => void;
+		type StateChangeHandler<TOld extends StateValue = any, TNew extends TOld = any> = (obj: ChangedStateObject<TOld, TNew>) => void;
 
 		type SetObjectCallback = (err: string | null, obj: { id: string }) => void;
 		type GetObjectCallback = (err: string | null, obj: iobJS.Object) => void;
@@ -351,8 +362,8 @@ declare global {
 			 * this can be called synchronously and immediately returns the state.
 			 * Otherwise you need to provide a callback.
 			 */
-			getState<T extends StateValue = StateValue>(callback: GetStateCallback<T>): void;
-			getState<T extends StateValue = StateValue>(): State<T> | null | undefined;
+			getState<T extends StateValue = any>(callback: GetStateCallback<T>): void;
+			getState<T extends StateValue = any>(): State<T> | null | undefined;
 
 			/**
 			 * Sets all queried states to the given value.
@@ -491,6 +502,7 @@ declare global {
 	/**
 	 * The name of the current script
 	 */
+	// @ts-ignore We need this variable although it conflicts with lib.es6
 	const name: string;
 	/**
 	 * The name of the current script
@@ -654,8 +666,8 @@ declare global {
 	 * this can be called synchronously and immediately returns the state.
 	 * Otherwise you need to provide a callback.
 	 */
-	function getState<T extends iobJS.StateValue = iobJS.StateValue>(id: string, callback: iobJS.GetStateCallback<T>): void;
-	function getState<T extends iobJS.StateValue = iobJS.StateValue>(id: string): iobJS.State<T> | iobJS.AbsentState;
+	function getState<T extends iobJS.StateValue = any>(id: string, callback: iobJS.GetStateCallback<T>): void;
+	function getState<T extends iobJS.StateValue = any>(id: string): iobJS.State<T> | iobJS.AbsentState;
 
 	/**
 	 * Checks if the state with the given ID exists
