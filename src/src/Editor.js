@@ -108,6 +108,12 @@ const styles = theme => ({
     }
 });
 
+function setChangedInAdmin(isChanged) {
+    if (typeof window.parent !== 'undefined' && window.parent) {
+        window.parent.configNotSaved = isChanged;
+    }
+}
+
 class Editor extends React.Component {
     constructor(props) {
         super(props);
@@ -142,6 +148,8 @@ class Editor extends React.Component {
             menuOpened: !!this.props.menuOpened,
             runningInstances: this.props.runningInstances || {}
         };
+        
+        setChangedInAdmin(false);
         /* ----------------------- */
         // required by selectIdDialog in Blockly
         this.selectId = {
@@ -345,11 +353,13 @@ class Editor extends React.Component {
                             if (!this.state.changed) {
                                 newState.changed = true;
                                 _changed = true;
+                                setChangedInAdmin(true);
                             }
                         } else {
                             if (this.state.changed) {
                                 newState.changed = false;
                                 _changed = true;
+                                setChangedInAdmin(false);
                             }
                         }
                     }
@@ -395,6 +405,7 @@ class Editor extends React.Component {
             newState.selected = nextProps.selected;
             newState.blockly = this.scripts[nextProps.selected].engineType === 'Blockly';
             newState.showBlocklyCode = false;
+            setChangedInAdmin(newState.changed);
         } else {
 
         }
@@ -412,6 +423,7 @@ class Editor extends React.Component {
 
     onSave() {
         if (this.state.changed) {
+            setChangedInAdmin(false);
             this.setState({changed: false}, () =>
                 this.props.onChange && this.props.onChange(this.state.selected, this.scripts[this.state.selected]));
         }
@@ -419,6 +431,7 @@ class Editor extends React.Component {
 
     onCancel() {
         this.scripts[this.state.selected] = JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
+        setChangedInAdmin(false);
         this.setState({changed: false});
     }
 
@@ -435,6 +448,7 @@ class Editor extends React.Component {
                 lines.pop();
                 this.scripts[this.state.selected].source = lines.join('\n');
                 const nowSelected = this.state.selected;
+                setChangedInAdmin(true);
                 this.setState({changed: true, blockly: false, selected: ''}, () => {
                     // force update of the editor
                     setTimeout(() => this.setState({selected: nowSelected}), 100);
@@ -448,6 +462,7 @@ class Editor extends React.Component {
         const changed = JSON.stringify(this.scripts[this.state.selected]) !== JSON.stringify(this.props.objects[this.state.selected].common);
         if (changed !== this.state.changed) {
             this.setState({changed});
+            setChangedInAdmin(changed);
         }
     }
 
@@ -497,6 +512,7 @@ class Editor extends React.Component {
                     const common = newState.selected && (this.scripts[newState.selected] || (this.props.objects[newState.selected] && this.props.objects[newState.selected].common));
                     newState.blockly = common ? common.engineType === 'Blockly' : false;
                     newState.showBlocklyCode = false;
+                    setChangedInAdmin(newState.changed);
                 }
 
                 this.setState(newState, () =>  {

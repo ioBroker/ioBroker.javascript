@@ -704,6 +704,14 @@ mods.fs.statSync = function () {
     checkObjectsJson(arguments[0]);
     return nodeFS.statSync.apply(this, arguments);
 };
+mods.fs.readdir = function () {
+    checkObjectsJson(arguments[0]);
+    return nodeFS.readdir.apply(this, arguments);
+};
+mods.fs.readdirSync = function () {
+    checkObjectsJson(arguments[0]);
+    return nodeFS.readdirSync.apply(this, arguments);
+};
 
 let attempts           = {};
 let globalScript       = '';
