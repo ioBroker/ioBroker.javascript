@@ -123,7 +123,7 @@ After the script is tested in the "test" instance, it can be moved to "productio
 ```js
 var mod = require('module_name');
 ```
-Following modules are pre-loaded: `fs`, `crypto`, `wake_on_lan`, `request`, `suncalc`, `util`, `path`, `os`, `net`, `events`, `dns`.
+Following modules are pre-loaded: `fs`, `crypto`, `wake_on_lan`, `request`, `suncalc2`, `util`, `path`, `os`, `net`, `events`, `dns`.
 
 To use other modules, enter the name of the module in the configuration dialog. ioBroker will install the module, after which you can require and use it in your scripts.
 
@@ -544,8 +544,6 @@ Following values can be used as attribute in astro-function:
 - `"nadir"`: nadir (darkest moment of the night, sun is in the lowest position)
 
 **Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
-
-**Note:** On some places sometines it could be so, that no night/nightEnd exists. Please read [here](https://github.com/mourner/suncalc/issues/70) about it.
 
 **Note:** you can use "on" function for schedule with small modification:
 ```js
