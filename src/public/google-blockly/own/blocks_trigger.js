@@ -461,6 +461,8 @@ Blockly.JavaScript['schedule'] = function(block) {
 
     if (schedule[0] === '{') {
         schedule = "'" + schedule + "'";
+    } else {
+        schedule = '"' + schedule + '"';
     }
     return 'schedule(' + schedule + ', function () {\n' + statements_name + '});\n';
 };
@@ -639,11 +641,6 @@ Blockly.JavaScript['schedule_create'] = function (block) {
     var name  = block.getFieldValue('NAME');
     var schedule = Blockly.JavaScript.valueToCode(block, 'SCHEDULE', Blockly.JavaScript.ORDER_ATOMIC);
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-
-    schedule = schedule.replace(/^"/, '').replace(/"$/, '');
-    if (schedule[0] === '{') {
-        schedule = "'" + schedule + "'";
-    }
 
     return name + ' = schedule(' + schedule + ', function () {\n' + statements_name + '});\n';
 };
