@@ -718,7 +718,7 @@ sendTo('telegram', {user: 'UserName', text: 'Test message'};
 Some adapters could accept messages and give the answers on that. (e.g. history, sql, telegram)
 If the adapter supports answers, they are sent only if the instance of the adapter is specified in the sendTo().
 
-Example:
+Example with answer:
 
 ```
 sendTo('telegram.0', {user: 'UserName', text: 'Test message'}, function (res) {
