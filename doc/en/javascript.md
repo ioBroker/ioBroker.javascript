@@ -705,16 +705,23 @@ It is possible short type of createState:
 ### sendTo
     sendTo (adapter, command, message, callback)
 
-Send message to adapter instance.
-
-Some adapters could accept messages and give the answers on that. (e.g. history, sql, telegram)
+Send message to adapter or adapter instance.
 
 To get specific information about messages you must read the documentation for particular adapter.
 
 Example:
 
 ```
-sendTo('telegram', {user: 'UserName', text: 'Test message'}, function (res) {
+sendTo('telegram', {user: 'UserName', text: 'Test message'};
+```
+
+Some adapters could accept messages and give the answers on that. (e.g. history, sql, telegram)
+If the adapter supports answers, they are sent only if the instance of the adapter is specified in the sendTo().
+
+Example:
+
+```
+sendTo('telegram.0', {user: 'UserName', text: 'Test message'}, function (res) {
     console.log('Sent to ' + res + ' users');
 });
 ```
