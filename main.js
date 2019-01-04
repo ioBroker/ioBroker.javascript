@@ -7,12 +7,11 @@
 let NodeVM;
 let VMScript;
 let vm;
-if (true || parseInt(process.versions.node.split('.')[0]) < 6) {
+if (parseInt(process.versions.node.split('.')[0]) < 6) {
     vm = require('vm');
 } else {
     try {
-        const VM2 = requi92
-        re('vm2');
+        const VM2 = require('vm2');
         NodeVM = VM2.NodeVM;
         VMScript = VM2.VMScript;
     } catch (e) {

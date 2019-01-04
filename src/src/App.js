@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import SplitterLayout from 'react-splitter-layout';
 import {MdMenu as IconMenuClosed} from 'react-icons/md';
-import {MdClose as IconMenuOpened} from 'react-icons/md';
+import {MdArrowUpward as IconMenuOpened} from 'react-icons/md';
 
 import SideMenu from './SideMenu';
 import Log from './Log';
