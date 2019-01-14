@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.0.8",
+        "version": "4.0.9",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,17 +22,17 @@
             "AlCalzone"
         ],
         "news": {
-            "4.0.8": {
+            "4.0.9": {
                 "en": "getBinaryState/setBinaryState were added",
-                "de": "getBinaryState / setBinaryState wurden hinzugefügt",
-                "ru": "getBinaryState / setBinaryState были добавлены",
-                "pt": "getBinaryState / setBinaryState foram adicionados",
-                "nl": "getBinaryState / setBinaryState zijn toegevoegd",
-                "fr": "getBinaryState / setBinaryState ont été ajoutés",
-                "it": "getBinaryState / setBinaryState sono stati aggiunti",
-                "es": "Se agregaron getBinaryState / setBinaryState",
-                "pl": "getBinaryState / setBinaryState zostały dodane",
-                "zh-cn": "添加了getBinaryState / setBinaryState"
+                "de": "getBinaryState/setBinaryState wurden hinzugefügt",
+                "ru": "getBinaryState/setBinaryState были добавлены",
+                "pt": "getBinaryState/setBinaryState foram adicionados",
+                "nl": "getBinaryState/setBinaryState zijn toegevoegd",
+                "fr": "getBinaryState/setBinaryState ont été ajoutés",
+                "it": "getBinaryState/setBinaryState sono stati aggiunti",
+                "es": "Se agregaron getBinaryState/setBinaryState",
+                "pl": "getBinaryState/setBinaryState zostały dodane",
+                "zh-cn": "添加了getBinaryState/setBinaryState"
             },
             "4.0.7": {
                 "en": "Material GUI",
