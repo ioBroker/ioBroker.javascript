@@ -33,6 +33,9 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.0.8 (2019-01-14)
+* (bluefox) add set/getBinaraState
+
 ### 4.0.7 (2018-12-25) Breaking changes - no IE support anymore
 * (bluefox) Material UI
 * (AlCalzone) monaco javascript editor
@@ -181,6 +184,6 @@ And then call "npm run build".
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2018 bluefox <dogafox@gmail.com>,
+Copyright (c) 2014-2019 bluefox <dogafox@gmail.com>,
 
 Copyright (c) 2014      hobbyquaker

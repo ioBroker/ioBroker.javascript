@@ -1,18 +1,27 @@
+/*
+ * Javascript adapter
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014-2019 bluefox <dogafox@gmail.com>,
+ *
+ * Copyright (c) 2014      hobbyquaker
+*/
+
 /* jshint -W097 */
 /* jshint -W083 */
-/* jshint strict:false */
+/* jshint strict: false */
 /* jslint node: true */
-/* jshint shadow:true */
+/* jshint shadow: true */
 'use strict';
 let NodeVM;
 let VMScript;
 let vm;
-if (true || parseInt(process.versions.node.split('.')[0]) < 6) {
+if (parseInt(process.versions.node.split('.')[0]) < 6) {
     vm = require('vm');
 } else {
     try {
-        const VM2 = requi92
-        re('vm2');
+        const VM2 = require('vm2');
         NodeVM = VM2.NodeVM;
         VMScript = VM2.VMScript;
     } catch (e) {
