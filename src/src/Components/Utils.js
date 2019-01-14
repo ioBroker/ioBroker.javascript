@@ -55,7 +55,7 @@ class Utils {
             if (typeof text === 'object') {
                 text = text[options.language] || text.en;
             }
-            text = text.replace(/[_.]/g, ' ');
+            text = (text || '').toString().replace(/[_.]/g, ' ');
 
             if (text === text.toUpperCase()) {
                 text = text[0] + text.substring(1).toLowerCase();

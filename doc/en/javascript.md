@@ -22,6 +22,7 @@
     - [isAstroDay](#isastroday)
     - [compareTime](#comparetime)
     - [setState](#setstate)
+    - [setBinaryState](#setbinarystate)
     - [setStateDelayed](#setstatedelayed)
     - [clearStateDelayed](#clearstatedelayed)
     - [getStateDelayed](#getstatedelayed)
@@ -123,7 +124,7 @@ After the script is tested in the "test" instance, it can be moved to "productio
 ```js
 var mod = require('module_name');
 ```
-Following modules are pre-loaded: `fs`, `crypto`, `wake_on_lan`, `request`, `suncalc2`, `util`, `path`, `os`, `net`, `events`, `dns`.
+Following modules are pre-loaded: `fs`, `crypto`, `wake_on_lan`, `request`, `suncalc`, `util`, `path`, `os`, `net`, `events`, `dns`.
 
 To use other modules, enter the name of the module in the configuration dialog. ioBroker will install the module, after which you can require and use it in your scripts.
 
@@ -545,6 +546,8 @@ Following values can be used as attribute in astro-function:
 
 **Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
 
+**Note:** On some places sometines it could be so, that no night/nightEnd exists. Please read [here](https://github.com/mourner/suncalc/issues/70) about it.
+
 **Note:** you can use "on" function for schedule with small modification:
 ```js
 on({time: "*/2 * * * *"}, function () {
@@ -665,6 +668,15 @@ Short:
 - `ack` = false : Script wants to send a command to be executed by the target device/adapter
 - `ack` = true  : Command was successfully executed and state is updated as positive result
 
+### setBinaryState
+```js
+setBinaryState(id, state, callback);
+```
+Same as setState, but for the binary states, like files, images, buffers.
+The difference is that such a state has no ack, ts, lc, quality and so on flags und should be used only for binary things.
+The object's common.type must be equal to 'file'.
+
+
 ### setStateDelayed
 ```js
 setStateDelayed(id, state, isAck, delay, clearRunning, callback);
@@ -762,6 +774,15 @@ Returns state with the given id in the following form:
 ```
 
 If state does not exist, it will be returned following object: ```{val: null, notExist: true}```
+
+### getBinaryState
+```js
+getBinaryState(id, function (err, data) {});
+```
+Same as getState, but for the binary states, like files, images, buffers.
+The difference is that such a state has no ack, ts, lc, quality and so on flags und should be used only for binary "things".
+The object's common.type must be equal to 'file'.
+This function must be always used with callback. "data" is a buffer.
 
 ### getObject
 ```js

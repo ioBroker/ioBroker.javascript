@@ -7,11 +7,12 @@
 let NodeVM;
 let VMScript;
 let vm;
-if (parseInt(process.versions.node.split('.')[0]) < 6) {
+if (true || parseInt(process.versions.node.split('.')[0]) < 6) {
     vm = require('vm');
 } else {
     try {
-        const VM2 = require('vm2');
+        const VM2 = requi92
+        re('vm2');
         NodeVM = VM2.NodeVM;
         VMScript = VM2.VMScript;
     } catch (e) {
@@ -38,7 +39,7 @@ const mods = {
     path:             require('path'),
     util:             require('util'),
     child_process:    require('child_process'),
-    suncalc:          require('suncalc2'),
+    suncalc:          require('suncalc'),
     request:          require('request'),
     wake_on_lan:      require('wake_on_lan')
 };
@@ -49,7 +50,7 @@ const sandBox   = require('./lib/sandbox');
 const eventObj  = require('./lib/eventObj');
 const Scheduler = require('./lib/scheduler');
 
-const adapterName = require(__dirname + '/package.json').name.split('.').pop();
+const adapterName = require('./package.json').name.split('.').pop();
 
 // for node version <= 0.12
 if (''.startsWith === undefined) {
@@ -350,7 +351,7 @@ function startAdapter(options) {
             }
         },
 
-        unload: callback => callback(),
+        unload: callback => stopAllScripts(callback),
 
         ready: function () {
             // todo
@@ -577,6 +578,11 @@ function startAdapter(options) {
     return adapter;
 }
 
+function stopAllScripts(cb) {
+    Object.keys(context.scripts).forEach(id => stop(id));
+    setTimeout(() => cb(), 0);
+}
+
 function checkObjectsJson(file) {
     if (mods.path.normalize(file).replace(/\\/g, '/').indexOf('-data/objects.json') !== -1) {
         if (adapter) {
@@ -702,14 +708,6 @@ mods.fs.stat = function () {
 mods.fs.statSync = function () {
     checkObjectsJson(arguments[0]);
     return nodeFS.statSync.apply(this, arguments);
-};
-mods.fs.readdir = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.readdir.apply(this, arguments);
-};
-mods.fs.readdirSync = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.readdirSync.apply(this, arguments);
 };
 
 let attempts           = {};
@@ -1120,7 +1118,7 @@ function stop(name, callback) {
             if (typeof callback === 'function') callback(true, name);
         }
     } else {
-        if (typeof callback === 'function') callback(false, name);
+        typeof callback === 'function' && callback(false, name);
     }
 }
 
@@ -1279,7 +1277,7 @@ function getData(callback) {
 }
 
 // If started as allInOne mode => return function to create instance
-if (module.parent) {
+if (typeof module !== undefined && module.parent) {
     module.exports = startAdapter;
 } else {
     // or start the instance directly
