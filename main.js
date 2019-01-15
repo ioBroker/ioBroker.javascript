@@ -17,7 +17,7 @@
 let NodeVM;
 let VMScript;
 let vm;
-if (parseInt(process.versions.node.split('.')[0]) < 6) {
+if (true || parseInt(process.versions.node.split('.')[0]) < 6) {
     vm = require('vm');
 } else {
     try {
