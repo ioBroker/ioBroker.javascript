@@ -33,7 +33,7 @@ And then call "npm run build".
 - ...
 
 ## Changelog
-### 4.0.10 (2019-01-14)
+### 4.0.11 (2019-01-14)
 * (bluefox) add set/getBinaryState
 
 ### 4.0.7 (2018-12-25) Breaking changes - no IE support anymore

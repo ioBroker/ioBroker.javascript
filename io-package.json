@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.0.10",
+        "version": "4.0.11",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,7 +22,7 @@
             "AlCalzone"
         ],
         "news": {
-            "4.0.9": {
+            "4.0.11": {
                 "en": "getBinaryState/setBinaryState were added",
                 "de": "getBinaryState/setBinaryState wurden hinzugefügt",
                 "ru": "getBinaryState/setBinaryState были добавлены",
