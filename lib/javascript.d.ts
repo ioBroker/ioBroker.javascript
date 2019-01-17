@@ -197,6 +197,7 @@ declare global {
 
 		type GetStateCallback = (err: string | null, state?: State) => void;
 		type SetStateCallback = (err: string | null, id?: string) => void;
+		type GetBinaryStateCallback = (err: string | null, state?: Buffer) => void;
 
 		type StateChangeHandler = (obj: ChangedStateObject) => void;
 
@@ -344,9 +345,22 @@ declare global {
 			getState: (callback?: GetStateCallback) => void | State;
 
 			/**
+			 * Returns the first state found by this query.
+			 * If the adapter is configured to subscribe to all states on start,
+			 * this can be called synchronously and immediately returns the state.
+			 * Otherwise you need to provide a callback.
+			 */
+			getBinaryState: (callback?: GetBinaryStateCallback) => void | Buffer;
+
+			/**
 			 * Sets all queried states to the given value.
 			 */
 			setState: (id: string, state: string | number | boolean | State | Partial<State>, ack?: boolean, callback?: SetStateCallback) => this;
+
+			/**
+			 * Sets all queried binary states to the given value.
+			 */
+			setBinaryState: (id: string, state: Buffer, ack?: boolean, callback?: SetStateCallback) => this;
 
 			/**
 			 * Subscribes the given callback to changes of the matched states.
@@ -638,6 +652,12 @@ declare global {
 	function clearStateDelayed(id: string, timerID?: any): boolean;
 
 	/**
+	 * Sets a binary state to the given value
+	 * @param id The ID of the state to be set
+	 */
+	function setBinaryState(id: string, state: Buffer, callback?: iobJS.SetStateCallback): void;
+
+	/**
 	 * Returns the state with the given ID.
 	 * If the adapter is configured to subscribe to all states on start,
 	 * this can be called synchronously and immediately returns the state.
@@ -645,6 +665,15 @@ declare global {
 	 */
 	function getState(id: string, callback: iobJS.GetStateCallback): void;
 	function getState(id: string): iobJS.State;
+
+	/**
+	 * Returns the binary state with the given ID.
+	 * If the adapter is configured to subscribe to all states on start,
+	 * this can be called synchronously and immediately returns the state.
+	 * Otherwise you need to provide a callback.
+	 */
+	function getBinaryState(id: string, callback: iobJS.GetStateCallback): void;
+	function getBinaryState(id: string): Buffer;
 
 	/**
 	 * Checks if the state with the given ID exists
