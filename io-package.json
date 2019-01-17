@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.0.11",
+        "version": "4.0.12",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.0.12": {
+                "en": "Add Chinese support",
+                "de": "Chinesische Unterstützung hinzufügen",
+                "ru": "Добавить поддержку китайцев",
+                "pt": "Adicionar suporte chinês",
+                "nl": "Voeg Chinese ondersteuning toe",
+                "fr": "Ajouter un support chinois",
+                "it": "Aggiungi supporto cinese",
+                "es": "Añadir soporte chino",
+                "pl": "Dodaj chińskie wsparcie",
+                "zh-cn": "添加中文支持"
+            },
             "4.0.11": {
                 "en": "getBinaryState/setBinaryState were added",
                 "de": "getBinaryState/setBinaryState wurden hinzugefügt",

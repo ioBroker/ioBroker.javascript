@@ -33,6 +33,9 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.0.12 (2019-01-17)
+* (SchumyHao) Add Chinese support
+
 ### 4.0.11 (2019-01-14)
 * (bluefox) add set/getBinaryState
 
