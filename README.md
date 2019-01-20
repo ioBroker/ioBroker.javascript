@@ -33,6 +33,9 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.0.12 (2019-01-20)
+* (Apollon77/AlCalzone) fixes unwanted changes in last version
+
 ### 4.0.11 (2019-01-14)
 * (bluefox) add set/getBinaryState
 

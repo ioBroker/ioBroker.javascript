@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.0.11",
+        "version": "4.0.12",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.0.12": {
+                "en": "fixes unwanted changes in last version",
+                "de": "behebt unerwünschte Änderungen in der letzten Version",
+                "ru": "исправляет нежелательные изменения в последней версии",
+                "pt": "corrige alterações indesejadas na última versão",
+                "nl": "herstelt ongewenste wijzigingen in de laatste versie",
+                "fr": "corrige les modifications indésirables dans la dernière version",
+                "it": "corregge modifiche indesiderate nell'ultima versione",
+                "es": "corrige cambios no deseados en la última versión",
+                "pl": "naprawia niechciane zmiany w ostatniej wersji",
+                "zh-cn": "修复了上一版本中不需要的更改"
+            },
             "4.0.11": {
                 "en": "getBinaryState/setBinaryState were added",
                 "de": "getBinaryState/setBinaryState wurden hinzugefügt",
