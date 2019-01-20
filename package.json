@@ -34,11 +34,13 @@
     "request": "^2.88.0",
     "semver": "^5.6.0",
     "suncalc2": "^1.8.1",
-    "typescript": "^3.1.6",
+    "typescript": "^3.2.2",
     "virtual-tsc": "^0.4.6",
     "wake_on_lan": "^1.0.0"
   },
   "devDependencies": {
+    "@types/iobroker": "^1.4.3",
+    "alcalzone-shared": "^1.4.0",
     "chai": "^4.2.0",
     "del": "^3.0.0",
     "eslint": "5.6.0",
@@ -55,7 +57,9 @@
   },
   "main": "main.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --exit",
+    "test:declarations": "tsc -p test/lib/TS/tsconfig.json && tsc -p test/lib/JS/tsconfig.json",
+    "test:javascript": "node node_modules/mocha/bin/mocha --exit",
+    "test": "npm run test:declarations && npm run test:javascript",
     "postinstall": "node ./install/installTypings.js",
     "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
     "build": "node node_modules/gulp/bin/gulp.js"
