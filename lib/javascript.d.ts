@@ -23,9 +23,9 @@ declare global {
 			sensor_reports_error = 0x84,
 		}
 
-		interface State {
+		interface State<T extends StateValue = any> {
 			/** The value of the state. */
-			val: any;
+			val: T;
 
 			/** Direction flag: false for desired value and true for actual value. Default: false. */
 			ack: boolean;
@@ -47,6 +47,26 @@ declare global {
 
 			/** Optional comment */
 			c?: string;
+
+			/** Discriminant property to switch between AbsentState and State<T> */
+			notExist: undefined;
+		}
+
+		type PrimitiveTypeStateValue = string | number | boolean;
+
+		type StateValue = null | PrimitiveTypeStateValue | PrimitiveTypeStateValue[] | Record<string, any>;
+
+		interface AbsentState {
+			val: null;
+			notExist: true;
+
+			ack: undefined;
+			ts: undefined;
+			lc: undefined;
+			from: undefined;
+			expire: undefined;
+			q: undefined;
+			c: undefined;
 		}
 
 		type ObjectType = "state" | "channel" | "device";
@@ -68,6 +88,7 @@ declare global {
 			role?: string;
 		}
 
+		// TODO: def can be further restricted depending on the object type
 		interface StateCommon extends ObjectCommon {
 			/** Type of this state. See https://github.com/ioBroker/ioBroker/blob/master/doc/SCHEMA.md#state-commonrole for a detailed description */
 			type?: CommonType;
@@ -78,7 +99,7 @@ declare global {
 			/** unit of the value */
 			unit?: string;
 			/** the default value */
-			def?: any;
+			def?: StateValue;
 			/** description of this state */
 			desc?: string;
 
@@ -163,7 +184,7 @@ declare global {
 			common?: Partial<OtherCommon>;
 		}
 		/** Represents the change of a state */
-		interface ChangedStateObject extends StateObject {
+		interface ChangedStateObject<TOld extends StateValue = any, TNew extends StateValue = TOld> extends StateObject {
 			common: StateCommon;
 			native: Record<string, any>;
 			id?: string;
@@ -177,11 +198,11 @@ declare global {
 			/** The names of enums this state is assigned to. For example ["Licht","Garten"] */
 			enumNames?: string[];
 			/** new state */
-			state: State;
+			state: State<TNew>;
 			/** @deprecated Use state instead **/
-			newState: State;
+			newState: State<TNew>;
 			/** previous state */
-			oldState: State;
+			oldState: State<TOld>;
 			/** Name of the adapter instance which set the value, e.g. "system.adapter.web.0" */
 			from?: string;
 			/** Unix timestamp. Default: current time */
@@ -195,10 +216,11 @@ declare global {
 		type Object = StateObject | ChannelObject | DeviceObject | OtherObject;
 		type PartialObject = PartialStateObject | PartialChannelObject | PartialDeviceObject | PartialOtherObject;
 
-		type GetStateCallback = (err: string | null, state?: State) => void;
+		type GetStateCallback<T extends StateValue = any> = (err: string | null, state?: State<T> | AbsentState) => void;
 		type SetStateCallback = (err: string | null, id?: string) => void;
+		type GetBinaryStateCallback = (err: string | null, state?: Buffer) => void;
 
-		type StateChangeHandler = (obj: ChangedStateObject) => void;
+		type StateChangeHandler<TOld extends StateValue = any, TNew extends TOld = any> = (obj: ChangedStateObject<TOld, TNew>) => void;
 
 		type SetObjectCallback = (err: string | null, obj: { id: string }) => void;
 		type GetObjectCallback = (err: string | null, obj: iobJS.Object) => void;
@@ -234,73 +256,73 @@ declare global {
 			name?: string | string[] | RegExp;
 			/** type of change */
 			change?: "eq" | "ne" | "gt" | "ge" | "lt" | "le" | "any";
-			val?: any;
+			val?: StateValue;
 			/** New value must not be equal to given one */
-			valNe?: any;
+			valNe?: StateValue;
 			/** New value must be greater than given one */
-			valGt?: any;
+			valGt?: number;
 			/** New value must be greater or equal to given one */
-			valGe?: any;
+			valGe?: number;
 			/** New value must be smaller than given one */
-			valLt?: any;
+			valLt?: number;
 			/** New value must be smaller or equal to given one */
-			valLe?: any;
+			valLe?: number;
 			/** Acknowledged state of new value is equal to given one */
 			ack?: boolean;
 			/** Previous value must be equal to given one */
-			oldVal?: any;
+			oldVal?: StateValue;
 			/** Previous value must be not equal to given one */
-			oldValNe?: any;
+			oldValNe?: StateValue;
 			/** Previous value must be greater than given one */
-			oldValGt?: any;
+			oldValGt?: number;
 			/** Previous value must be greater or equal given one */
-			oldValGe?: any;
+			oldValGe?: number;
 			/** Previous value must be smaller than given one */
-			oldValLt?: any;
+			oldValLt?: number;
 			/** Previous value must be smaller or equal to given one */
-			oldValLe?: any;
+			oldValLe?: number;
 			/** Acknowledged state of previous value is equal to given one */
 			oldAck?: boolean;
 			/** New value time stamp must be equal to given one (state.ts == ts) */
-			ts?: string;
+			ts?: number;
 			/** New value time stamp must be not equal to the given one (state.ts != ts) */
-			tsGt?: string;
+			tsGt?: number;
 			/** New value time stamp must be greater than given value (state.ts > ts) */
-			tsGe?: string;
+			tsGe?: number;
 			/** New value time stamp must be greater or equal to given one (state.ts >= ts) */
-			tsLt?: string;
+			tsLt?: number;
 			/** New value time stamp must be smaller than given one (state.ts < ts) */
-			tsLe?: string;
+			tsLe?: number;
 			/** Previous time stamp must be equal to given one (oldState.ts == ts) */
-			oldTs?: string;
+			oldTs?: number;
 			/** Previous time stamp must be not equal to the given one (oldState.ts != ts) */
-			oldTsGt?: string;
+			oldTsGt?: number;
 			/** Previous time stamp must be greater than given value (oldState.ts > ts) */
-			oldTsGe?: string;
+			oldTsGe?: number;
 			/** Previous time stamp must be greater or equal to given one (oldState.ts >= ts) */
-			oldTsLt?: string;
+			oldTsLt?: number;
 			/** Previous time stamp must be smaller than given one (oldState.ts < ts) */
-			oldTsLe?: string;
+			oldTsLe?: number;
 			/** Last change time stamp must be equal to given one (state.lc == lc) */
-			lc?: string;
+			lc?: number;
 			/** Last change time stamp must be not equal to the given one (state.lc != lc) */
-			lcGt?: string;
+			lcGt?: number;
 			/** Last change time stamp must be greater than given value (state.lc > lc) */
-			lcGe?: string;
+			lcGe?: number;
 			/** Last change time stamp must be greater or equal to given one (state.lc >= lc) */
-			lcLt?: string;
+			lcLt?: number;
 			/** Last change time stamp must be smaller than given one (state.lc < lc) */
-			lcLe?: string;
+			lcLe?: number;
 			/** Previous last change time stamp must be equal to given one (oldState.lc == lc) */
-			oldLc?: string;
+			oldLc?: number;
 			/** Previous last change time stamp must be not equal to the given one (oldState.lc != lc) */
-			oldLcGt?: string;
+			oldLcGt?: number;
 			/** Previous last change time stamp must be greater than given value (oldState.lc > lc) */
-			oldLcGe?: string;
+			oldLcGe?: number;
 			/** Previous last change time stamp must be greater or equal to given one (oldState.lc >= lc) */
-			oldLcLt?: string;
+			oldLcLt?: number;
 			/** Previous last change time stamp must be smaller than given one (oldState.lc < lc) */
-			oldLcLe?: string;
+			oldLcLe?: number;
 			/** Channel ID must be equal or match to given one */
 			channelId?: string | string[] | RegExp;
 			/** Channel name must be equal or match to given one */
@@ -333,7 +355,7 @@ declare global {
 			 * Executes a function for each state id in the result array
 			 * The execution is canceled if a callback returns false
 			 */
-			each: (callback?: (id: string, index: number) => boolean | void) => this;
+			each(callback?: (id: string, index: number) => boolean | void): this;
 
 			/**
 			 * Returns the first state found by this query.
@@ -341,17 +363,32 @@ declare global {
 			 * this can be called synchronously and immediately returns the state.
 			 * Otherwise you need to provide a callback.
 			 */
-			getState: (callback?: GetStateCallback) => void | State;
+			getState<T extends StateValue = any>(callback: GetStateCallback<T>): void;
+			getState<T extends StateValue = any>(): State<T> | null | undefined;
+
+			/**
+			 * Returns the first state found by this query.
+			 * If the adapter is configured to subscribe to all states on start,
+			 * this can be called synchronously and immediately returns the state.
+			 * Otherwise you need to provide a callback.
+			 */
+			getBinaryState(callback: GetBinaryStateCallback): void;
+			getBinaryState(): Buffer | null | undefined;
 
 			/**
 			 * Sets all queried states to the given value.
 			 */
-			setState: (id: string, state: string | number | boolean | State | Partial<State>, ack?: boolean, callback?: SetStateCallback) => this;
+			setState<T extends StateValue>(id: string, state: T | State<T> | Partial<State<T>>, ack?: boolean, callback?: SetStateCallback): this;
+
+			/**
+			 * Sets all queried binary states to the given value.
+			 */
+			setBinaryState: (id: string, state: Buffer, ack?: boolean, callback?: SetStateCallback) => this;
 
 			/**
 			 * Subscribes the given callback to changes of the matched states.
 			 */
-			on: (callback: StateChangeHandler) => this;
+			on(callback: StateChangeHandler): this;
 		}
 
 		/**
@@ -480,6 +517,7 @@ declare global {
 	/**
 	 * The name of the current script
 	 */
+	// @ts-ignore We need this variable although it conflicts with lib.es6
 	const name: string;
 	/**
 	 * The name of the current script
@@ -497,7 +535,7 @@ declare global {
 	 * @param message The message to print
 	 * @param severity (optional) severity of the message. default = "info"
 	 */
-	function log(message: string, severity?: iobJS.LogLevel);
+	function log(message: string, severity?: iobJS.LogLevel): void;
 
 	// TODO: Do we need this?
 	// namespace console {
@@ -529,31 +567,6 @@ declare global {
 	function pushover(msg: any): void;
 
 	/**
-	 * Causes all changes of the state with id1 to the state with id2.
-	 * The return value can be used to unsubscribe later
-	 */
-	function on(id1: string, id2: string): any;
-	/**
-	 * Causes all changes of the state with id1 to the state with id2
-	 */
-	function subscribe(id1: string, id2: string): any;
-
-	/**
-	 * Watches the state with id1 for changes and overwrites the state with id2 with value2 when any occur.
-	 * @param id1 The state to watch for changes
-	 * @param id2 The state to update when changes occur
-	 * @param value2 The value to write into state `id2` when `id1` gets changed
-	 */
-	function on(id1: string, id2: string, value2: any): any;
-	/**
-	 * Watches the state with id1 for changes and overwrites the state with id2 with value2 when any occur.
-	 * @param id1 The state to watch for changes
-	 * @param id2 The state to update when changes occur
-	 * @param value2 The value to write into state `id2` when `id1` gets changed
-	 */
-	function subscribe(id1: string, id2: string, value2: any): any;
-
-	/**
 	 * Subscribe to changes of the matched states.
 	 */
 	function on(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler): any;
@@ -569,6 +582,31 @@ declare global {
 		astroOrScheduleOrOptions: iobJS.AstroSchedule | iobJS.SubscribeTime | iobJS.SubscribeOptions, 
 		handler: iobJS.StateChangeHandler
 	): any;
+
+	/**
+	 * Causes all changes of the state with id1 to the state with id2.
+	 * The return value can be used to unsubscribe later
+	 */
+	function on(id1: string, id2: string): any;
+	/**
+	 * Watches the state with id1 for changes and overwrites the state with id2 with value2 when any occur.
+	 * @param id1 The state to watch for changes
+	 * @param id2 The state to update when changes occur
+	 * @param value2 The value to write into state `id2` when `id1` gets changed
+	 */
+	function on(id1: string, id2: string, value2: any): any;
+
+	/**
+	 * Causes all changes of the state with id1 to the state with id2
+	 */
+	function subscribe(id1: string, id2: string): any;
+	/**
+	 * Watches the state with id1 for changes and overwrites the state with id2 with value2 when any occur.
+	 * @param id1 The state to watch for changes
+	 * @param id2 The state to update when changes occur
+	 * @param value2 The value to write into state `id2` when `id1` gets changed
+	 */
+	function subscribe(id1: string, id2: string, value2: any): any;
 
 	/**
 	 * Returns the list of all currently active subscriptions
@@ -613,8 +651,8 @@ declare global {
 	 * Sets a state to the given value
 	 * @param id The ID of the state to be set
 	 */
-	function setState(id: string, state: string | number | boolean | iobJS.State | Partial<iobJS.State>, callback?: iobJS.SetStateCallback): void;
-	function setState(id: string, state: string | number | boolean | iobJS.State | Partial<iobJS.State>, ack: boolean, callback?: iobJS.SetStateCallback): void;
+	function setState<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, callback?: iobJS.SetStateCallback): void;
+	function setState<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, ack: boolean, callback?: iobJS.SetStateCallback): void;
 
 	/**
 	 * Sets a state to the given value after a timeout has passed.
@@ -623,12 +661,12 @@ declare global {
 	 * @param delay The delay in milliseconds
 	 * @param clearRunning (optional) Whether an existing timeout for this state should be cleared
 	 */
-	function setStateDelayed(id: string, state: string | number | boolean | iobJS.State | Partial<iobJS.State>, delay: number, clearRunning: boolean, callback?: iobJS.SetStateCallback): any;
-	function setStateDelayed(id: string, state: string | number | boolean | iobJS.State | Partial<iobJS.State>, ack: boolean, clearRunning: boolean, callback?: iobJS.SetStateCallback): any;
-	function setStateDelayed(id: string, state: string | number | boolean | iobJS.State | Partial<iobJS.State>, ack: boolean, delay: number, callback?: iobJS.SetStateCallback): any;
-	function setStateDelayed(id: string, state: string | number | boolean | iobJS.State | Partial<iobJS.State>, delay: number, callback?: iobJS.SetStateCallback): any;
-	function setStateDelayed(id: string, state: string | number | boolean | iobJS.State | Partial<iobJS.State>, callback?: iobJS.SetStateCallback): any;
-	function setStateDelayed(id: string, state: string | number | boolean | iobJS.State | Partial<iobJS.State>, ack: boolean, delay: number, clearRunning: boolean, callback?: iobJS.SetStateCallback): any;
+	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, delay: number, clearRunning: boolean, callback?: iobJS.SetStateCallback): any;
+	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, ack: boolean, clearRunning: boolean, callback?: iobJS.SetStateCallback): any;
+	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, ack: boolean, delay: number, callback?: iobJS.SetStateCallback): any;
+	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, delay: number, callback?: iobJS.SetStateCallback): any;
+	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, callback?: iobJS.SetStateCallback): any;
+	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, ack: boolean, delay: number, clearRunning: boolean, callback?: iobJS.SetStateCallback): any;
 
 	/**
 	 * Clears a timer created by setStateDelayed
@@ -638,13 +676,28 @@ declare global {
 	function clearStateDelayed(id: string, timerID?: any): boolean;
 
 	/**
+	 * Sets a binary state to the given value
+	 * @param id The ID of the state to be set
+	 */
+	function setBinaryState(id: string, state: Buffer, callback?: iobJS.SetStateCallback): void;
+
+	/**
 	 * Returns the state with the given ID.
 	 * If the adapter is configured to subscribe to all states on start,
 	 * this can be called synchronously and immediately returns the state.
 	 * Otherwise you need to provide a callback.
 	 */
-	function getState(id: string, callback: iobJS.GetStateCallback): void;
-	function getState(id: string): iobJS.State;
+	function getState<T extends iobJS.StateValue = any>(id: string, callback: iobJS.GetStateCallback<T>): void;
+	function getState<T extends iobJS.StateValue = any>(id: string): iobJS.State<T> | iobJS.AbsentState;
+
+	/**
+	 * Returns the binary state with the given ID.
+	 * If the adapter is configured to subscribe to all states on start,
+	 * this can be called synchronously and immediately returns the state.
+	 * Otherwise you need to provide a callback.
+	 */
+	function getBinaryState(id: string, callback: iobJS.GetStateCallback): void;
+	function getBinaryState(id: string): Buffer;
 
 	/**
 	 * Checks if the state with the given ID exists
@@ -682,14 +735,14 @@ declare global {
 	 * @param callback (optional) Called after the state was created
 	 */
 	function createState(name: string, callback?: iobJS.SetStateCallback): void;
-	function createState(name: string, initValue: any, callback?: iobJS.SetStateCallback): void;
-	function createState(name: string, initValue: any, forceCreation: boolean, callback?: iobJS.SetStateCallback): void;
-	function createState(name: string, initValue: any, forceCreation: boolean, common: Partial<iobJS.StateCommon>, callback?: iobJS.SetStateCallback): void;
-	function createState(name: string, initValue: any, forceCreation: boolean, common: Partial<iobJS.StateCommon>, native: any, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, initValue: iobJS.StateValue, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, initValue: iobJS.StateValue, forceCreation: boolean, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, initValue: iobJS.StateValue, forceCreation: boolean, common: Partial<iobJS.StateCommon>, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, initValue: iobJS.StateValue, forceCreation: boolean, common: Partial<iobJS.StateCommon>, native: any, callback?: iobJS.SetStateCallback): void;
 	function createState(name: string, common: Partial<iobJS.StateCommon>, callback?: iobJS.SetStateCallback): void;
-	function createState(name: string, initValue: any, common: Partial<iobJS.StateCommon>, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, initValue: iobJS.StateValue, common: Partial<iobJS.StateCommon>, callback?: iobJS.SetStateCallback): void;
 	function createState(name: string, common: Partial<iobJS.StateCommon>, native: any, callback?: iobJS.SetStateCallback): void;
-	function createState(name: string, initValue: any, common: Partial<iobJS.StateCommon>, native: any, callback?: iobJS.SetStateCallback): void;
+	function createState(name: string, initValue: iobJS.StateValue, common: Partial<iobJS.StateCommon>, native: any, callback?: iobJS.SetStateCallback): void;
 
 	/**
 	 * Deletes the state with the given ID
@@ -776,14 +829,22 @@ declare global {
 	/**
 	 * Starts or restarts a script by name
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
+	 * @param ignoreIfStarted If set to true, running scripts will not be restarted.
+	 * @param callback (optional) Is called when the script has finished (successfully or not)
 	 */
-	function startScript(scriptName, ignoreIfStarted, callback?: GenericCallback<boolean>): boolean;
+	function startScript(scriptName: string | undefined, ignoreIfStarted: boolean, callback?: GenericCallback<boolean>): boolean;
+	/**
+	 * Starts or restarts a script by name
+	 * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
+	 * @param callback (optional) Is called when the script has finished (successfully or not)
+	 */
+	function startScript(scriptName?: string, callback?: GenericCallback<boolean>): boolean;
 	/**
 	 * Stops a script by name
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is stopped.
 	 */
-	function stopScript(scriptName, callback?: GenericCallback<boolean>): boolean;
-	function isScriptActive(scriptName): boolean;
+	function stopScript(scriptName: string | undefined, callback?: GenericCallback<boolean>): boolean;
+	function isScriptActive(scriptName: string): boolean;
 
 	/** Converts a value to an integer */
 	function toInt(val: any): number;
@@ -799,4 +860,3 @@ declare global {
 	 */
 	function getAttr(obj: string | Record<string, any>, path: string | string[]): any;
 }
-	

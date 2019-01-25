@@ -48,7 +48,7 @@ const mods = {
     path:             require('path'),
     util:             require('util'),
     child_process:    require('child_process'),
-    suncalc:          require('suncalc'),
+    suncalc:          require('suncalc2'),
     request:          require('request'),
     wake_on_lan:      require('wake_on_lan')
 };
@@ -718,6 +718,14 @@ mods.fs.statSync = function () {
     checkObjectsJson(arguments[0]);
     return nodeFS.statSync.apply(this, arguments);
 };
+mods.fs.readdir = function () {
+    checkObjectsJson(arguments[0]);
+    return nodeFS.readdir.apply(this, arguments);
+};
+mods.fs.readdirSync = function () {
+    checkObjectsJson(arguments[0]);
+    return nodeFS.readdirSync.apply(this, arguments);
+};
 
 let attempts           = {};
 let globalScript       = '';
@@ -1286,7 +1294,7 @@ function getData(callback) {
 }
 
 // If started as allInOne mode => return function to create instance
-if (typeof module !== undefined && module.parent) {
+if (module.parent) {
     module.exports = startAdapter;
 } else {
     // or start the instance directly

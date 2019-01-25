@@ -19,7 +19,12 @@ setState("id", 1);
 setState("id", 1, true);
 setState("id", 1, (id) => id!.toLowerCase());
 
-$("selector").getState<number>()!.val.toFixed();
+getBinaryState('id').readInt16LE(0);
+setBinaryState('id', new Buffer(0));
+
+const selected = $('selector');
+selected.getState<number>()!.val.toFixed();
+selected.getBinaryState()!.readInt16BE(0);
 
 schedule({astro: "night"}, () => { });
 
