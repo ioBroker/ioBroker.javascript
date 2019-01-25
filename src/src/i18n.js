@@ -19,6 +19,7 @@ class I18n {
         'en': require('./i18n/en'),
         'ru': require('./i18n/ru'),
         'de': require('./i18n/de'),
+        'zh-cn': require('./i18n/zh-cn'),
     };
 
     static lang = window.sysLang || 'en';

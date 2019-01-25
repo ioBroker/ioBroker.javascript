@@ -393,4 +393,53 @@ JQUERY_CRON_LOCALE.nl = {
     'in':                   'in'
 };
 
+JQUERY_CRON_LOCALE["zh-cn"] = {
+    ORDINALS: {
+        th: '',
+        st: '',
+        nd: '',
+        rd: ''
+    },
+    MONTH: [
+        '一月',
+        '二月',
+        '三月',
+        '四月',
+        '五月',
+        '六月',
+        '七月',
+        '八月',
+        '九月',
+        '十月',
+        '十一月',
+        '十二月'
+    ],
+    DOW: [
+        '星期日',
+        '星期一',
+        '星期二',
+        '星期三',
+        '星期四',
+        '星期五',
+        '星期六'
+    ],
+    'Every':            '每', // start of expression
+    'and':              '和', // 1, 2, 3 and 15th
+    'every day':        '每天',
+    'minute past the':  '分钟在每天第',
+    'hour':             '小时',
+    'minute':           '分钟',
+    'minute of':        '分钟的',
+    'second':           '秒',
+    'second in minute': '秒在分钟',
+    'second of every':  '秒在每',
+    'minute every hour': '分钟在每小时中',
+    'on the':           '在',
+    'of every month':   '日在每月',
+    'and every':        '且每',
+    'At':               '在',
+    'on':               '在', // on sun, mon
+    'in':               '在' // in jan, apr
+};
+
 export default JQUERY_CRON_LOCALE;
