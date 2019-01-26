@@ -753,7 +753,7 @@ Blockly.Blocks['text_newline'] = {
         this.appendDummyInput()
             .appendField(new Blockly.FieldDropdown([['\\n', '\\n'], ['\\r\\n', '\\r\\n'], ['\\r', '\\r']]), 'Type');
         this.setInputsInline(true);
-        this.setColour(Blockly.Blocks.texts.HUE);
+        this.setColour(Blockly.Msg['TEXTS_HUE']);
         this.setOutput(true, 'String');
         this.setTooltip(Blockly.Words['text_newline_tooltip'][systemLang]);
     }
@@ -775,7 +775,7 @@ Blockly.Blocks['math_rndfixed'] = {
             .appendField(new Blockly.FieldNumber(0, 1, 25), 'n')
             .appendField(Blockly.Words['math_rndfixed_decplcs'][systemLang]);
         this.setInputsInline(true);
-        this.setColour(Blockly.Blocks.math.HUE);
+        this.setColour(Blockly.Msg['MATH_HUE']);
         this.setOutput(true, 'Number');
         this.setTooltip(Blockly.Words['math_rndfixed_tooltip'][systemLang]);
   }

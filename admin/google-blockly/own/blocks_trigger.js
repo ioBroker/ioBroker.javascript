@@ -14,8 +14,10 @@ Blockly.Trigger = {
 };
 
 // --- ON Extended-----------------------------------------------------------
+
 Blockly.Trigger.blocks['on_ext'] =
     '<block type="on_ext">'
+    + '     <mutation items="1"></mutation>'
     + '     <value name="CONDITION">'
     + '     </value>'
     + '     <value name="ACK_CONDITION">'
@@ -64,8 +66,6 @@ Blockly.Blocks['on_ext_oid'] = {
 Blockly.Blocks['on_ext'] = {
     init: function() {
         this.itemCount_ = 1;
-        this.updateShape_();
-
         this.setMutator(new Blockly.Mutator(['on_ext_oid']));
 
         this.setPreviousStatement(true, null);
@@ -163,8 +163,10 @@ Blockly.Blocks['on_ext'] = {
      * @this Blockly.Block
      */
     updateShape_: function() {
-        this.removeInput('CONDITION');
-        this.removeInput('ACK_CONDITION');
+        if (this.getInput('CONDITION'))
+            this.removeInput('CONDITION');
+        if (this.getInput('ACK_CONDITION'))
+            this.removeInput('ACK_CONDITION');
         var input;
 
         for (var j = 0; input = this.inputList[j]; j++) {
@@ -175,6 +177,7 @@ Blockly.Blocks['on_ext'] = {
         }
 
         // Add new inputs.
+        
         for (var i = 0; i < this.itemCount_; i++) {
             var _input = this.getInput('OID' + i);
             if (!_input) {
@@ -185,16 +188,16 @@ Blockly.Blocks['on_ext'] = {
                 }
                 var shadow = this.workspace.newBlock('field_oid');
                 shadow.setShadow(true);
-                shadow.outputConnection.connect(_input.connection);
                 shadow.initSvg();
                 shadow.render();
+                shadow.outputConnection.connect(_input.connection);
             } else {
                 if (!_input.connection.isConnected()) {
                     var shadow = this.workspace.newBlock('field_oid');
                     shadow.setShadow(true);
-                    shadow.outputConnection.connect(_input.connection);
                     shadow.initSvg();
                     shadow.render();
+                    shadow.outputConnection.connect(_input.connection);
                 }
             }
         }
@@ -837,9 +840,9 @@ Blockly.Blocks['cron_builder'] = {
                 var _shadow = this.workspace.newBlock('text');
                 _shadow.setShadow(true);
                 _shadow.setFieldValue('*', 'TEXT');
-                _shadow.outputConnection.connect(_input.connection);
                 _shadow.initSvg();
                 _shadow.render();
+                _shadow.outputConnection.connect(_input.connection);
             }
         } else if (inputExists) {
             this.removeInput('SECONDS');
