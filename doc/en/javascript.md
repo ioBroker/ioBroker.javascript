@@ -895,16 +895,23 @@ simply delete variable if exists.
 sendTo(adapter, command, message, callback);
 ```
 
-Send message to adapter instance.
-
-Some adapters could accept messages and give the answers on that. (e.g. history, sql, telegram)
+Send message to a specific or all adapter instances. When using the adapter name the message is send to all instances.
 
 To get specific information about messages you must read the documentation for particular adapter.
 
 Example:
 
 ```js
-sendTo('telegram', {user: 'UserName', text: 'Test message'}, function (res) {
+sendTo('telegram', {user: 'UserName', text: 'Test message'};
+```
+
+Some adapters also support responses to the send messages. (e.g. history, sql, telegram)
+The response is only returned in the callback if the message is send to a specific instance!
+
+Example with response:
+
+```js
+sendTo('telegram.0', {user: 'UserName', text: 'Test message'}, function (res) {
     console.log('Sent to ' + res + ' users');
 });
 ```
