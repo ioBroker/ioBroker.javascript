@@ -705,7 +705,7 @@ It is possible short type of createState:
 ### sendTo
     sendTo (adapter, command, message, callback)
 
-Send message to adapter or adapter instance.
+Send message to a specific or all adapter instances. When using the adapter name the message is send to all instances.
 
 To get specific information about messages you must read the documentation for particular adapter.
 
@@ -715,10 +715,10 @@ Example:
 sendTo('telegram', {user: 'UserName', text: 'Test message'};
 ```
 
-Some adapters could accept messages and give the answers on that. (e.g. history, sql, telegram)
-If the adapter supports answers, they are sent only if the instance of the adapter is specified in the sendTo().
+Some adapters also support responses to the send messages. (e.g. history, sql, telegram)
+The response is only returned in the callback if the message is send to a specific instance!
 
-Example with answer:
+Example with response:
 
 ```
 sendTo('telegram.0', {user: 'UserName', text: 'Test message'}, function (res) {
