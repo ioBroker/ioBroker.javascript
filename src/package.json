@@ -1,0 +1,44 @@
+{
+  "name": "js",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^3.3.1",
+    "classnames": "^2.2.5",
+    "cronstrue": "^0.10.3",
+    "eslint": "5.6.0",
+    "monaco-editor": "^0.14.3",
+    "react": "^16.5.2",
+    "react-beautiful-dnd": "^9.0.2",
+    "react-bem-helper": "^1.4.1",
+    "react-dom": "^16.5.2",
+    "react-fullscreen": "^0.1.0",
+    "react-i18next": "^8.1.1",
+    "react-icons": "^3.2.2",
+    "react-monaco-editor": "^0.20.0",
+    "react-scripts": "2.0.5",
+    "react-select": "^1.0.0-rc.2",
+    "react-splitter-layout": "^3.0.1",
+    "react-text-mask": "^5.4.3",
+    "react-treeview-mui": "^0.1.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "monaco-editor": "^0.14.3",
+    "react-dropzone": "^6.2.4"
+  }
+}

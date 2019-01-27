@@ -1,4 +1,4 @@
-![Logo](admin/js.jpeg)
+![Logo](admin-config/javascript.png)
 # Javascript Script Engine
 ==================
 
@@ -18,13 +18,54 @@ Here you can find description of [blockly](doc/en/blockly.md).
 
 Hier kann man die Beschreibung von [Blockly](doc/de/blockly.md) finden.
 
-Описание по [blockly](doc/ru/blockly.md) можно найти [здесь](doc/ru/blockl.md).
+Описание по [blockly](doc/ru/blockly.md) можно найти [здесь](doc/ru/blockly.md).
 
+## How to build (only for developers)
+Just run "npm i" in the root and in the src folders.
+
+And then call "npm run build".
+
+## Todo
+- search in all files
+- disk mirror (low prior)
+- new rule editor (future releases)
+- heating profile (future releases)
+- ...
 
 ## Changelog
-### 3.5.0 (2017-11-14)
+### 4.0.12 (2019-01-20)
+* (Apollon77/AlCalzone) fixes unwanted changes in last version
+* (SchumyHao) Add Chinese support
+
+### 4.0.11 (2019-01-14)
+* (bluefox) add set/getBinaryState
+
+### 4.0.7 (2018-12-25) Breaking changes - no IE support anymore
+* (bluefox) Material UI
+* (AlCalzone) monaco javascript editor
+
+### 3.7.0 (2018-05-05)
+* (bluefox) Used VM2 as sandbox. The script errors will be caught.
+* (bluefox) refactoring: split into many modules
+* (AlCalzone) Change TypeScript version range to include TS 3.0+
+
+### 3.6.4 (2018-02-05)
+* (bluefox) Pattern error is fixed
+
+### 3.6.3 (2018-01-31)
+* (bluefox) Fixing the CSS for CRON dialog
+* (bluefox) Fixing the reorder of scripts
+
+### 3.6.1 (2018-01-23)
+* (bluefox) Pattern error is fixed
+
+### 3.6.0 (2017-12-28)
+* (bluefox) more translations are added
+* (bluefox) update blockly engine
+
+### 3.5.1 (2017-11-14)
 * (bluefox) fixed: sometimes MSG is not defined
-* (dominic.griesel) TypeScript support (preparations)
+* (AlCalzone) TypeScript support (preparations)
 * (bluefox) add sendToHost call
 * (bluefox) protect exec call
 * (bluefox) add getStateDelayed function
@@ -147,6 +188,6 @@ Hier kann man die Beschreibung von [Blockly](doc/de/blockly.md) finden.
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2017 bluefox <dogafox@gmail.com>,
+Copyright (c) 2014-2019 bluefox <dogafox@gmail.com>,
 
 Copyright (c) 2014      hobbyquaker

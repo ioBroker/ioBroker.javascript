@@ -1,0 +1,242 @@
+-
+Add
+Add new script
+All files will be accepted
+April
+Are you sure?
+August
+Creating rules by graphic blocks
+Cancel
+Cannot delete non empty item!
+Check blocks
+Check is not active, because Javascript adapter is disabled
+Clear search input
+Click on this icon
+Close
+Configuration not saved.
+Instantly convert blockly to Javascript.
+Copy to clipboard
+Create new
+Create new folder
+Create new script
+Create or edit CRON or time wizard
+Dark style
+December
+Define cron...
+Define schedule...
+Delete
+Delete %s...
+Delete script
+Deselect all
+Discard changes for %s
+Done
+Drop some files here or click...
+Edit script or just double click
+End search mode
+Error
+Error was found
+Existing scripts will be overwritten.
+Expert mode
+Export
+Export all scripts
+Export blocks
+Export selected blocks
+February
+Folder
+Friday
+ID
+Import blocks
+Import error
+Import scripts
+Insert object ID
+Instance
+Instance is disabled
+Invalid CRON
+It will not be possible to revert this operation.
+Creating rules by writing Javascript
+January
+July
+June
+Learn More
+Locate file
+Log outputs
+March
+May
+Menu
+Message
+Monday
+Name
+No active host found
+November
+October
+Ok
+On weekdays
+Pause script
+Please select object ID...
+Rename
+Reorder scripts in folders
+Repeat
+Restart
+Root folder
+Run script
+Saturday
+Save
+Script
+Script is not running
+Search in scripts
+Search...
+Select all
+September
+Show Javascript code
+Some files will be rejected
+Sunday
+Creating rules by writing Typescript
+Thursday
+Tuesday
+Unknown error
+Unknown error!
+Wednesday
+Yet exists!
+copy
+file reading has failed: %s
+file reading was aborted
+Function
+ID
+Name
+Role
+Room
+for edit or create script
+No blocks found
+NO GROUP
+This block is not properly connected to other blocks.
+CRON
+Date
+Dates
+Day of week
+Every
+every N days
+every N day of week
+every N hours
+every N minutes
+every N months
+every N seconds
+every day
+every day of the week
+every hour
+every minute
+every month
+every second
+From
+Hours
+Interval
+Interval between
+Minutes
+months
+Once
+Period
+Seconds
+Simple
+Specific time
+specific dates
+specific day of weeks
+specific hours
+specific minutes
+specific months
+specific seconds
+Time
+To
+Wizard
+all
+Astro day
+Astro night
+Dawn
+Dusk
+Golden hour
+Golden hour end
+Nadir
+Nautical dawn
+Nautical dusk
+Night
+Night end
+Solar noon
+Sunrise
+Sunrise end
+Sunset
+Sunset start
+at
+at %s
+every day
+every hour
+every minute
+every month
+every %s day
+every %s hours
+every %s minutes
+every %s months
+every %s weeks
+every %s years
+every week
+every year
+from %s to %s
+never
+on %s of %s
+on %s and %s of
+on every date of
+%s
+%s and %s
+on %s
+on %s and %s
+on weekends
+on working days
+will ne be not executed any more, because start is in the past
+on %s
+from %s
+Execute from to
+to %s
+every
+Specific time
+from
+From-to
+Interval time
+invert
+none
+on
+Period
+Daily
+Dates
+Day
+Every
+Every day
+Every month
+Every week
+Every year
+Hours
+Minutes
+month
+Monthly
+Once
+Specific months
+Week
+Weekdays
+Weekend
+Weekly
+Workdays
+Year
+Yearly
+Specific time
+Time
+to
+Valid
+from
+to
+Whole day
+every month
+Acknowledge
+From
+Last changed
+Quality
+Timestamp
+User
+Value
+use seconds
+Dark theme

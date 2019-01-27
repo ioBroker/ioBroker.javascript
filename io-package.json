@@ -1,20 +1,117 @@
 {
     "common": {
         "name": "javascript",
-        "version": "3.5.0",
-        "title": "Javascript/Blockly Script Engine",
+        "version": "4.0.12",
+        "title": "Script Engine",
         "titleLang": {
-            "en": "Javascript/Blockly Script Engine",
-            "de": "Javascript/Blockly Skriptausführung",
-            "ru": "Javascript/Blockly Скрипты"
+            "en": "Script Engine",
+            "de": "Skriptausführung",
+            "ru": "Скрипты",
+            "pt": "Script Engine",
+            "nl": "Script-engine",
+            "fr": "Moteur de script",
+            "it": "Motore di script",
+            "es": "Motor de script",
+            "pl": "Silnik skryptowy",
+            "zh-cn": "脚本引擎"
         },
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>",
-            "Apollon77 <ingo@fischer-ka.de>"
+            "Apollon77 <ingo@fischer-ka.de>",
+            "AlCalzone"
         ],
         "news": {
-            "3.5.0": {
+            "4.0.12": {
+                "en": "fixes unwanted changes in last version",
+                "de": "behebt unerwünschte Änderungen in der letzten Version",
+                "ru": "исправляет нежелательные изменения в последней версии",
+                "pt": "corrige alterações indesejadas na última versão",
+                "nl": "herstelt ongewenste wijzigingen in de laatste versie",
+                "fr": "corrige les modifications indésirables dans la dernière version",
+                "it": "corregge modifiche indesiderate nell'ultima versione",
+                "es": "corrige cambios no deseados en la última versión",
+                "pl": "naprawia niechciane zmiany w ostatniej wersji",
+                "zh-cn": "修复了上一版本中不需要的更改"
+            },
+            "4.0.11": {
+                "en": "getBinaryState/setBinaryState were added",
+                "de": "getBinaryState/setBinaryState wurden hinzugefügt",
+                "ru": "getBinaryState/setBinaryState были добавлены",
+                "pt": "getBinaryState/setBinaryState foram adicionados",
+                "nl": "getBinaryState/setBinaryState zijn toegevoegd",
+                "fr": "getBinaryState/setBinaryState ont été ajoutés",
+                "it": "getBinaryState/setBinaryState sono stati aggiunti",
+                "es": "Se agregaron getBinaryState/setBinaryState",
+                "pl": "getBinaryState/setBinaryState zostały dodane",
+                "zh-cn": "添加了getBinaryState/setBinaryState"
+            },
+            "4.0.7": {
+                "en": "Material GUI",
+                "de": "Material GUI",
+                "ru": "Material GUI",
+                "pt": "Material GUI",
+                "nl": "Material GUI",
+                "fr": "Material GUI",
+                "it": "Material GUI",
+                "es": "Material GUI",
+                "pl": "Material GUI"
+            },
+            "3.7.0": {
+                "en": "Used VM2 as sandbox. The script errors will be caught.\nrefactoring: split into many modules",
+                "de": "Verwendete VM2 als Sandbox. Die Skriptfehler werden abgefangen.\nRefactoring: Aufteilung in viele Module",
+                "ru": "Используется VM2 как песочница. Ошибки скрипта будут обнаружены.\nрефакторинг: разделение на многие модули",
+                "pt": "Usado VM2 como sandbox. Os erros de script serão capturados.\nrefatoração: dividida em vários módulos",
+                "nl": "Gebruikte VM2 als sandbox. De scriptfouten worden gepakt.\nrefactoring: opgesplitst in vele modules",
+                "fr": "VM2 utilisé comme bac à sable. Les erreurs de script seront interceptées.\nrefactoring: divisé en plusieurs modules",
+                "it": "Usato VM2 come sandbox. Gli errori di script verranno catturati.\nrefactoring: suddiviso in molti moduli",
+                "es": "Usó VM2 como sandbox. Los errores de script serán capturados.\nrefactorización: dividida en muchos módulos",
+                "pl": "Używany VM2 jako sandbox. Błędy skryptu zostaną przechwycone.\nrefaktoryzacja: podzielona na wiele modułów"
+            },
+            "3.6.4": {
+                "en": "Pattern error is fixed",
+                "de": "Musterfehler ist behoben",
+                "ru": "Исправлена ​​ошибка проверки событий",
+                "pt": "O erro de padrão é corrigido",
+                "nl": "Patroonfout is opgelost",
+                "fr": "L'erreur de modèle est fixe",
+                "it": "L'errore di modello è stato risolto",
+                "es": "Se solucionó el error de patrón",
+                "pl": "Błąd wzorca został naprawiony"
+            },
+            "3.6.3": {
+                "en": "Fixing the CSS for CRON dialog\nFixing the reorder of scripts",
+                "de": "Korrigieren des CSS für den CRON-Dialog\nReparieren von Skripten",
+                "ru": "Исправлен диалог CSS для CRON\nИсправление переупорядочения скриптов",
+                "pt": "Corrigindo o diálogo CSS para CRON\nCorrigindo o reordenamento de scripts",
+                "nl": "De CSS voor het CRON-dialoogvenster herstellen\nDe volgorde van scripts corrigeren",
+                "fr": "Correction de la boîte de dialogue CSS pour CRON\nFixer la réorganisation des scripts",
+                "it": "Correzione del CSS per la finestra di dialogo CRON\nRisolvere il riordino degli script",
+                "es": "Reparar el CSS para el diálogo CRON\nCorregir el reordenamiento de scripts",
+                "pl": "Naprawianie okna dialogowego CSS dla CRON\nNaprawianie zmiany kolejności skryptów"
+            },
+            "3.6.1": {
+                "en": "Pattern error is fixed",
+                "de": "Musterfehler ist behoben",
+                "ru": "Исправлена ​​ошибка проверки событий",
+                "pt": "O erro de padrão é corrigido",
+                "nl": "Patroonfout is opgelost",
+                "fr": "L'erreur de modèle est fixe",
+                "it": "L'errore di modello è stato risolto",
+                "es": "Se solucionó el error de patrón",
+                "pl": "Błąd wzorca został naprawiony"
+            },
+            "3.6.0": {
+                "en": "more translations are added\nupdate blockly engine",
+                "de": "Weitere Übersetzungen werden hinzugefügt\nUpdate Block-Engine",
+                "ru": "добавлено больше переводов\nобновить блок-механизм",
+                "pt": "são adicionadas mais traduções\natualize o mecanismo bloqueado",
+                "nl": "meer vertalingen zijn toegevoegd\nupdate blokmotor",
+                "fr": "plus de traductions sont ajoutées\nmettre à jour le moteur bloquant",
+                "it": "più traduzioni sono aggiunte\naggiornare il motore a blocchi",
+                "es": "se agregan más traducciones\nactualizar el motor blockly"
+            },
+            "3.5.1": {
                 "en": "fixed: sometimes MSG is not defined\nTypeScript support (preparations)",
                 "de": "Korrigiert: manchmal ist MSG Objekt nicht definiert\nTypeScript Unterstützung(Vorberetung)",
                 "ru": "Исправлено: иногда переменная MSG не инициализирована\nПоддержка TypeScript (подготовка)"
@@ -50,101 +147,6 @@
                 "en": "file and line info added to log outputs",
                 "de": "Datei- und Zeilen-Info zu Log-Ausgaben hinzugefügt",
                 "ru": "Информация о сроке в сообщении об ошибке"
-            },
-            "3.3.11": {
-                "en": "Fix build CRON block",
-                "de": "Korrigiere CRON block",
-                "ru": "Исправлен CRON блок"
-            },
-            "3.3.9": {
-                "en": "Add the toggle blockly block",
-                "de": "Umschaltblock hinzufügen ins Blockly",
-                "ru": "Добавлен блок переключение."
-            },
-            "3.3.8": {
-                "en": "Accept for subscribes arrays of IDs",
-                "de": "Arrays von IDs werden bei Subscribe akzeptiert",
-                "ru": "Можно задавать для on массивы индексов"
-            },
-            "3.3.6": {
-                "en": "add the genitive month for formatDate",
-                "de": "Genitiv Monat für formatDate hinzugefügt",
-                "ru": "Добавлены месяцы в дательном падеже для formatDate"
-            },
-            "3.3.4": {
-                "en": "Catch error by request if host unavailable",
-                "de": "Fange den Fehler ab, falls URL nicht online",
-                "ru": "Ловятся ошибки request, если адрес не доступен"
-            },
-            "3.3.3": {
-                "en": "Fix stopScript",
-                "de": "Korrigiere stopScript",
-                "ru": "Исправлен stopScript"
-            },
-            "3.3.2": {
-                "en": "Support of system coordinates",
-                "de": "Unterstützung von Systemkoordinaten",
-                "ru": "Поддержка системных настроек для координат"
-            },
-            "3.3.1": {
-                "en": "fix error if no scripts exists",
-                "de": "Korrigiere das Problem, falls keine Skripte existieren",
-                "ru": "Исправлена ошибка, если нет никаких скриптов"
-            },
-            "3.3.0": {
-                "en": "all callbacks in try/catch",
-                "de": "Alle Callbacks in try/catch",
-                "ru": "Все callbacks в try/catch"
-            },
-            "3.2.8": {
-                "en": "Translations",
-                "de": "Übersetzungen",
-                "ru": "Перевод"
-            },
-            "3.2.7": {
-                "en": "allow creation of states for other javascript instances",
-                "de": "Erlaube States-Erzeugung für andere Javascirpt-Instanzen",
-                "ru": "Можно создавать переменные для других Javascirpt экземпляров"
-            },
-            "3.2.6": {
-                "en": "Fix import of scripts\nAsk to save before start the script",
-                "de": "Korrigiere Skriptimport\nFrage um Speichern bevor Skriptstart",
-                "ru": "Исправлен импорт скриптов\nСохранение скриптов прежде, чем запустить их"
-            },
-            "3.2.5": {
-                "en": "Extend compareTime function with astro features",
-                "de": "Erweitere compareTime Funktion mit astro Möglichkeiten",
-                "ru": "Функция compareTime расширена astro возможностями"
-            },
-            "3.2.4": {
-                "en": "fix stopScript",
-                "de": "Korrigiere stopScript",
-                "ru": "Исправлен stopScript"
-            },
-            "3.2.3": {
-                "en": "Try to fix error with sayit",
-                "de": "Try to fix error with sayit",
-                "ru": "Try to fix error with sayit"
-            },
-            "3.2.2": {
-                "en": "Allow with stopScript() to stop itself",
-                "de": "Ermögliche mit stopScript() sich anzuhalten",
-                "ru": "Позволяет при помощи stopScript() остановить сам скрипт"
-            },
-            "3.2.1": {
-                "en": "Fix error with subscribe for only required states",
-                "de": "Korrigiere den Fahler mit dem Subscribe nur für benötigten States",
-                "ru": "Исправлена ошибка в подписвании только на необходимые объекты"
-            },
-            "3.2.0": {
-                "en": "Fix error with of blocks in adapters\nSupport of subscribe for only required states",
-                "de": "Korrigiere den Fahler mit Blöcken in Adaptern\nUnterstützung von Subscribe nur für benötigten States",
-                "ru": "Исправлена ошибка в блоках при драйверах\nПоддержка режима, что подписваются только на необходимые объекты"
-            },
-            "3.1.0": {
-                "en": "Support of blocks in adapters\nMove sendTo blocks into adapters",
-                "de": "Unterstützung von Blöcken in Adaptern\nVerschiebe sendTo Blöcke in Adaptern",
-                "ru": "Поддержка блоков в драйверах\nБлоки sendTo передвинуты в драйвера"
             }
         },
         "desc": {
@@ -155,8 +157,8 @@
         "platform": "Javascript/Node.js",
         "mode": "daemon",
         "loglevel": "info",
-        "icon": "js.jpeg",
-        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin/js.jpeg",
+        "icon": "javascript.png",
+        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin-config/javascript.png",
         "keywords": [
             "js",
             "javascript",
@@ -168,9 +170,13 @@
             "blockly",
             "blokly"
         ],
+        "materialize": true,
+        "materializeTabN": true,
         "readme": "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
         "enabled": true,
+        "main": "main.js",
         "license": "MIT",
+        "compact": true,
         "engineTypes": [
             "Blockly",
             "Javascript/js",
@@ -181,17 +187,13 @@
             "singleton": true,
             "name": "Scripts"
         },
-        "dependencies": [
-            {
-                "js-controller": ">=0.10.0"
-            }
-        ],
         "docs": {
             "en": ["docs/en/javascript.md", "docs/en/blockly.md"],
             "ru": ["docs/ru/blockly.md"],
             "de": ["docs/de/usage.md", "docs/de/blockly.md"]
         },
-        "type": "logic"
+        "type": "logic",
+        "messagebox": true
     },
     "native": {
         "latitude": "",
@@ -201,7 +203,8 @@
         "enableExec": false,
         "libraries": "",
         "subscribe": false,
-        "useSystemGPS": true
+        "useSystemGPS": true,
+        "mirrorPath": ""
     },
     "objects": [
         {
@@ -212,6 +215,30 @@
                     "map": "function(doc) { if (doc.type === 'script' && doc.common.engineType.match(/^[jJ]ava[sS]cript|^[cC]offee[sS]cript|^[tT]ype[sS]cript|^Blockly/)) emit(doc.common.name, doc); }"
                 }
             }
+        },
+        {
+            "_id": "script.js",
+            "common": {
+                "name": "js"
+            },
+            "type": "device",
+            "native": {}
+        },
+        {
+            "_id": "script.js.common",
+            "common": {
+                "name": "common"
+            },
+            "type": "channel",
+            "native": {}
+        },
+        {
+            "_id": "script.js.global",
+            "common": {
+                "name": "global"
+            },
+            "type": "channel",
+            "native": {}
         }
     ]
 }

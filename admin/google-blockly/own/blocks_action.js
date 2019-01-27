@@ -12,20 +12,7 @@ Blockly.Action = {
     blocks: {}
 };
 
-Blockly.Words['Action']         = {'en': 'Actions', 'de': 'Aktionen', 'ru': 'Действия'};
-
 // --- action exec --------------------------------------------------
-Blockly.Words['exec']               = {'en': 'exec',                        'de': 'exec',                               'ru': 'exec'};
-Blockly.Words['exec_statement']     = {'en': 'with results',                'de': 'mit Ergebnissen',                    'ru': 'анализировать результаты'};
-Blockly.Words['exec_command']       = {'en': 'command',                     'de': 'Kommando',                           'ru': 'команда'};
-Blockly.Words['exec_tooltip']       = {'en': 'Execute some command',        'de': 'Ein System-Kommando ausführen',      'ru': 'Выполнить системную команду'};
-Blockly.Words['exec_help']          = {'en': 'exec---execute-some-os-command-like-cp-file1-file2',                        'de': 'exec---execute-some-os-command-like-cp-file1-file2',                               'ru': 'exec---execute-some-os-command-like-cp-file1-file2'};
-Blockly.Words['exec_log']           = {'en': 'log level',                   'de': 'Loglevel',                           'ru': 'Протокол'};
-Blockly.Words['exec_log_none']      = {'en': 'none',                        'de': 'keins',                              'ru': 'нет'};
-Blockly.Words['exec_log_info']      = {'en': 'info',                        'de': 'info',                               'ru': 'инфо'};
-Blockly.Words['exec_log_debug']     = {'en': 'debug',                       'de': 'debug',                              'ru': 'debug'};
-Blockly.Words['exec_log_warn']      = {'en': 'warning',                     'de': 'warning',                            'ru': 'warning'};
-Blockly.Words['exec_log_error']     = {'en': 'error',                       'de': 'error',                              'ru': 'ошибка'};
 
 Blockly.Action.blocks['exec'] =
     '<block type="exec">'
@@ -124,18 +111,6 @@ Blockly.JavaScript['exec'] = function(block) {
 };
 
 // --- action request --------------------------------------------------
-Blockly.Words['request']               = {'en': 'request',                     'de': 'request',                            'ru': 'request'};
-Blockly.Words['request_url']           = {'en': 'URL',                         'de': 'URL',                                'ru': 'URL'};
-Blockly.Words['request_statement']     = {'en': 'with results',                'de': 'mit Ergebnissen',                    'ru': 'анализировать результаты'};
-Blockly.Words['request_tooltip']       = {'en': 'Request URL',                 'de': 'URL abfragen',                       'ru': 'Запросить URL'};
-Blockly.Words['request_help']          = {'en': 'https://github.com/request/request', 'de': 'https://github.com/request/request', 'ru': 'https://github.com/request/request'};
-Blockly.Words['request_log']           = {'en': 'log level',                   'de': 'Loglevel',                           'ru': 'Протокол'};
-Blockly.Words['request_log_none']      = {'en': 'none',                        'de': 'keins',                              'ru': 'нет'};
-Blockly.Words['request_log_info']      = {'en': 'info',                        'de': 'info',                               'ru': 'инфо'};
-Blockly.Words['request_log_debug']     = {'en': 'debug',                       'de': 'debug',                              'ru': 'debug'};
-Blockly.Words['request_log_warn']      = {'en': 'warning',                     'de': 'warning',                            'ru': 'warning'};
-Blockly.Words['request_log_error']     = {'en': 'error',                       'de': 'error',                              'ru': 'ошибка'};
-
 Blockly.Action.blocks['request'] =
     '<block type="request">'
     + '     <value name="URL">'
