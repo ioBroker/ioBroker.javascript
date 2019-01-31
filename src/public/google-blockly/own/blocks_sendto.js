@@ -212,8 +212,10 @@ Blockly.Blocks['sendto_custom'] = {
      * @this Blockly.Block
      */
     updateShape_: function (names, withStatement) {
-        this.removeInput('LOG');
-        this.removeInput('WITH_STATEMENT');
+        if (this.getInput('LOG'))
+            this.removeInput('LOG');
+        if (this.getInput('WITH_STATEMENT'))
+            this.removeInput('WITH_STATEMENT');
         names = names || [];
         var _input;
         // Add new inputs.
@@ -226,9 +228,9 @@ Blockly.Blocks['sendto_custom'] = {
 
                 var _shadow = this.workspace.newBlock('text');
                 _shadow.setShadow(true);
-                _shadow.outputConnection.connect(_input.connection);
                 _shadow.initSvg();
                 _shadow.render();
+                _shadow.outputConnection.connect(_input.connection);
                 //console.log('New ' + names[i]);
             } else {
                 _input.fieldRow[0].setValue(names[i]);
@@ -236,12 +238,10 @@ Blockly.Blocks['sendto_custom'] = {
                 if (!_input.connection.isConnected()) {
                     console.log('Create ' + names[i]);
                     var shadow = this.workspace.newBlock('text');
-
                     shadow.setShadow(true);
-
-                    shadow.outputConnection.connect(_input.connection);
                     shadow.initSvg();
                     shadow.render();
+                    shadow.outputConnection.connect(_input.connection);
                 }
             }
         }
