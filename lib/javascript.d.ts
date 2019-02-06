@@ -350,6 +350,8 @@ declare global {
 			[index: number]: string;
 			/** Number of matched states */
 			length: number;
+			/** Contains the error if one happened */
+			error?: string;
 
 			/**
 			 * Executes a function for each state id in the result array
@@ -582,6 +584,17 @@ declare global {
 		astroOrScheduleOrOptions: iobJS.AstroSchedule | iobJS.SubscribeTime | iobJS.SubscribeOptions, 
 		handler: iobJS.StateChangeHandler
 	): any;
+
+	/**
+	 * Registers a one-time subscription which automatically unsubscribes after the first invocation
+	 */
+	function once(
+		pattern: string | RegExp | string[] | iobJS.AstroSchedule | iobJS.SubscribeTime | iobJS.SubscribeOptions,
+		handler: iobJS.StateChangeHandler
+	): any;
+	function once(
+		pattern: string | RegExp | string[] | iobJS.AstroSchedule | iobJS.SubscribeTime | iobJS.SubscribeOptions
+	): Promise<iobJS.ChangedStateObject>;
 
 	/**
 	 * Causes all changes of the state with id1 to the state with id2.
