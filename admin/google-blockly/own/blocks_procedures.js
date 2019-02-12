@@ -154,10 +154,11 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
         }
 
         this.setInputsInline(true);
-        this.setColour(Blockly.Blocks.procedures.HUE);
+        this.setColour(Blockly.Msg['PROCEDURES_HUE']);
         this.setTooltip(Blockly.Msg.PROCEDURES_DEFRETURN_TOOLTIP);
         this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFRETURN_HELPURL);
         this.arguments_ = [];
+		this.argumentVarModels_ = [];
         this.setStatements_(false);
         this.statementConnection_ = null;
     },
@@ -296,10 +297,11 @@ Blockly.Blocks['procedures_defcustomnoreturn'] = {
         }
 
         this.setInputsInline(true);
-        this.setColour(Blockly.Blocks.procedures.HUE);
+        this.setColour(Blockly.Msg['PROCEDURES_HUE']);
         this.setTooltip(Blockly.Msg.PROCEDURES_DEFRETURN_TOOLTIP);
         this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFRETURN_HELPURL);
         this.arguments_ = [];
+		this.argumentVarModels_ = [];
         this.setStatements_(false);
         this.statementConnection_ = null;
     },
@@ -318,7 +320,7 @@ Blockly.Blocks['procedures_defcustomnoreturn'] = {
     callType_: 'procedures_callcustomnoreturn'
 };
 
-Blockly.JavaScript['procedures_defcustomnoreturn'] = Blockly.JavaScript['procedures_defcustomreturn'];
+Blockly.JavaScript['procedures_defcustomnoreturn'] = Blockly.JavaScript['procedures_defnoreturn'];
 
 Blockly.Blocks['procedures_callcustomnoreturn'] = {
     init: Blockly.Blocks['procedures_callnoreturn'].init,
