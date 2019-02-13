@@ -157,12 +157,12 @@ function scriptIdToTSFilename(scriptID) {
 
 const context = {
     mods,
-    objects: {},
-    states: {},
-    stateIds: [],
+    objects:          {},
+    states:           {},
+    stateIds:         [],
     errorLogFunction: null,
-    subscriptions: [],
-    adapterSubs: {},
+    subscriptions:    [],
+    adapterSubs:      {},
     subscribedPatterns: {},
     cacheObjectEnums: {},
     isEnums:          false, // If some subscription wants enum
@@ -232,9 +232,8 @@ function startAdapter(options) {
                     if (obj.common.enabled) {
                         if (checkIsGlobal(obj)) {
                             // restart adapter
-                            adapter.getForeignObject('system.adapter.' + adapter.namespace, (err, _obj) => {
-                                if (_obj) adapter.setForeignObject('system.adapter.' + adapter.namespace, _obj);
-                            });
+                            adapter.getForeignObject('system.adapter.' + adapter.namespace, (err, _obj) =>
+                                _obj && adapter.setForeignObject('system.adapter.' + adapter.namespace, _obj));
                             return;
                         }
 
@@ -256,20 +255,22 @@ function startAdapter(options) {
                     context.objects[id] = obj;
 
                     if (id === 'system.config') {
-                        // set langugae for debug messages
-                        if (context.objects['system.config'].common.language) words.setLanguage(context.objects['system.config'].common.language);
+                        // set language for debug messages
+                        if (obj.common && obj.common.language) {
+                            words.setLanguage(obj.common.language);
+                        }
                     }
 
                     return;
                 }
 
+                // Analyse type = 'script'
+
                 if (checkIsGlobal(context.objects[id])) {
                     // restart adapter
-                    adapter.getForeignObject('system.adapter.' + adapter.namespace, function (err, obj) {
-                        if (obj) {
-                            adapter.setForeignObject('system.adapter.' + adapter.namespace, obj);
-                        }
-                    });
+                    adapter.getForeignObject('system.adapter.' + adapter.namespace, (err, obj) =>
+                        obj && adapter.setForeignObject('system.adapter.' + adapter.namespace, obj));
+
                     return;
                 }
 
@@ -302,9 +303,8 @@ function startAdapter(options) {
                     context.objects[id] = obj;
 
                     // Source changed => restart it
-                    stop(id, function (res, _id) {
-                        load(_id);
-                    });
+                    stop(id, (res, _id) =>
+                        load(_id));
                 } /*else {
                 // Something changed or not for us
                 objects[id] = obj;
@@ -425,7 +425,7 @@ function startAdapter(options) {
                                             coffeeCompiler.fromSource(obj.common.source, {
                                                 sourceMap: false,
                                                 bare: true
-                                            }, function (err, js) {
+                                            }, (err, js) => {
                                                 if (err) {
                                                     adapter.log.error('coffee compile ' + err);
                                                     return;
@@ -775,13 +775,11 @@ function fixLineNo(line) {
     if (line.indexOf('javascript.js:') >= 0) return line;
     if (!/script[s]?\.js[.\\\/]/.test(line)) return line;
     if (/:([\d]+):/.test(line)) {
-        line = line.replace(/:([\d]+):/, function ($0, $1) {
-            return ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1) + ':';
-        });
+        line = line.replace(/:([\d]+):/, ($0, $1) =>
+            ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1) + ':');
     } else {
-        line = line.replace(/:([\d]+)$/, function ($0, $1) {
-            return ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1);
-        });
+        line = line.replace(/:([\d]+)$/, ($0, $1) =>
+            ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1));
     }
     return line;
 }
@@ -906,14 +904,13 @@ function installNpm(npmLib, callback) {
     // because during installation npm packet will be deleted too, but some files must be loaded even during the install process.
     const child = mods['child_process'].exec(cmd);
 
-    child.stdout.on('data', function (buf) {
-        adapter.log.info(buf.toString('utf8'));
-    });
-    child.stderr.on('data', function (buf) {
-        adapter.log.error(buf.toString('utf8'));
-    });
+    child.stdout.on('data', buf =>
+        adapter.log.info(buf.toString('utf8')));
 
-    child.on('exit', function (code /* , signal */) {
+    child.stderr.on('data', buf =>
+        adapter.log.error(buf.toString('utf8')));
+
+    child.on('exit', (code /* , signal */) => {
         if (code) {
             adapter.log.error('Cannot install ' + npmLib + ': ' + code);
         }
@@ -942,9 +939,9 @@ function installLibraries(callback) {
                         continue;
                     }
 
-                    installNpm(libraries[lib], function () {
-                        installLibraries(callback);
-                    });
+                    installNpm(libraries[lib], () =>
+                        installLibraries(callback));
+
                     allInstalled = false;
                     break;
                 }
@@ -1109,7 +1106,7 @@ function stop(name, callback) {
         if (typeof context.scripts[name].onStopCb === 'function') {
             context.scripts[name].onStopTimeout = parseInt(context.scripts[name].onStopTimeout, 10) || 1000;
 
-            let timeout = setTimeout(function () {
+            let timeout = setTimeout(() => {
                 if (timeout) {
                     timeout = null;
                     delete context.scripts[name];
@@ -1118,7 +1115,7 @@ function stop(name, callback) {
             }, context.scripts[name].onStopTimeout);
 
             try {
-                context.scripts[name].onStopCb(function () {
+                context.scripts[name].onStopCb(() => {
                     if (timeout) {
                         clearTimeout(timeout);
                         timeout = null;
@@ -1158,11 +1155,11 @@ function prepareScript(obj, callback) {
                 sourceFn = mods.path.join(webstormDebug, fn + '.js');
             }
             context.scripts[name] = compile(globalScript + obj.common.source, sourceFn);
-            if (context.scripts[name]) execute(context.scripts[name], sourceFn, obj.common.verbose, obj.common.debug);
+            context.scripts[name] && execute(context.scripts[name], sourceFn, obj.common.verbose, obj.common.debug);
             if (typeof callback === 'function') callback(true, name);
         } else if (obj.common.engineType.match(/^[cC]offee/)) {
             // CoffeeScript
-            coffeeCompiler.fromSource(obj.common.source, { sourceMap: false, bare: true }, function (err, js) {
+            coffeeCompiler.fromSource(obj.common.source, { sourceMap: false, bare: true }, (err, js) => {
                 if (err) {
                     adapter.log.error(name + ' coffee compile ' + err);
                     if (typeof callback === 'function') callback(false, name);
@@ -1170,8 +1167,8 @@ function prepareScript(obj, callback) {
                 }
                 adapter.log.info('Start coffescript ' + name);
                 context.scripts[name] = compile(globalScript + '\n' + js, name);
-                if (context.scripts[name]) execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
-                if (typeof callback === 'function') callback(true, name);
+                context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
+                typeof callback === 'function' && callback(true, name);
             });
         } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
             // TypeScript
@@ -1179,9 +1176,7 @@ function prepareScript(obj, callback) {
             const filename = scriptIdToTSFilename(name);
             const tsCompiled = tsServer.compile(filename, obj.common.source);
 
-            const errors = tsCompiled.diagnostics.map(function (diag) {
-                return diag.annotatedSource + '\n';
-            }).join('\n');
+            const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
 
             if (tsCompiled.success) {
                 if (errors.length > 0) {
@@ -1210,11 +1205,10 @@ function prepareScript(obj, callback) {
 function load(nameOrObject, callback) {
     if (typeof nameOrObject === 'object') {
         // create states for scripts
-        createActiveObject(nameOrObject._id, nameOrObject && nameOrObject.common && nameOrObject.common.enabled, () => {
-            return prepareScript(nameOrObject, callback);
-        });
+        createActiveObject(nameOrObject._id, nameOrObject && nameOrObject.common && nameOrObject.common.enabled, () =>
+            prepareScript(nameOrObject, callback));
     } else {
-        adapter.getForeignObject(nameOrObject, function (err, obj) {
+        adapter.getForeignObject(nameOrObject, (err, obj) => {
             if (!obj || err) {
                 if (err) adapter.log.error('Invalid script "' + nameOrObject + '": ' + err);
                 if (typeof callback === 'function') callback(false, nameOrObject);
@@ -1232,8 +1226,8 @@ function patternMatching(event, patternFunctions) {
             if (patternFunctions.logic === 'or') return true;
 
             matched = true;
-        } else {
-            if (patternFunctions.logic === 'and') return false;
+        } else if (patternFunctions.logic === 'and') {
+             return false;
         }
     }
     return matched;
@@ -1243,7 +1237,7 @@ function getData(callback) {
     let statesReady;
     let objectsReady;
     adapter.log.info('requesting all states');
-    adapter.getForeignStates('*', function (err, res) {
+    adapter.getForeignStates('*', (err, res) => {
         if (!adapter.config.subscribe) {
             context.states = res;
         }
@@ -1258,7 +1252,7 @@ function getData(callback) {
         }
         statesReady = true;
         adapter.log.info('received all states');
-        if (objectsReady && typeof callback === 'function') callback();
+        objectsReady && typeof callback === 'function' && callback();
     });
 
     adapter.log.info('requesting all objects');
@@ -1268,28 +1262,38 @@ function getData(callback) {
         context.objects = {};
         for (let i = 0; i < res.length; i++) {
             context.objects[res[i].doc._id] = res[i].doc;
-            if (res[i].doc.type === 'enum') context.enums.push(res[i].doc._id);
+            res[i].doc.type === 'enum' && context.enums.push(res[i].doc._id);
 
             // Collect all names
             addToNames(context.objects[res[i].doc._id]);
         }
         addGetProperty(context.objects);
 
+        const systemConfig = context.objects['system.config'];
+
         // set language for debug messages
-        if (context.objects['system.config'] && context.objects['system.config'].common.language) words.setLanguage(context.objects['system.config'].common.language);
+        if (systemConfig && systemConfig.common && systemConfig.common.language) {
+            words.setLanguage(systemConfig.common.language);
+        } else if (adapter.language) {
+            words.setLanguage(adapter.language);
+        }
 
         // try to use system coordinates
-        if (adapter.config.useSystemGPS && context.objects['system.config'] &&
-            context.objects['system.config'].common.latitude) {
-            adapter.config.latitude  = context.objects['system.config'].common.latitude;
-            adapter.config.longitude = context.objects['system.config'].common.longitude;
+        if (adapter.config.useSystemGPS) {
+            if (systemConfig && systemConfig.common && systemConfig.common.latitude) {
+                adapter.config.latitude  = systemConfig.common.latitude;
+                adapter.config.longitude = systemConfig.common.longitude;
+            } else if (adapter.latitude) {
+                adapter.config.latitude  = adapter.latitude;
+                adapter.config.longitude = adapter.longitude;
+            }
         }
         adapter.config.latitude  = parseFloat(adapter.config.latitude);
         adapter.config.longitude = parseFloat(adapter.config.longitude);
 
         objectsReady = true;
         adapter.log.info('received all objects');
-        if (statesReady && typeof callback === 'function') callback();
+        statesReady && typeof callback === 'function' && callback();
     });
 }
 
