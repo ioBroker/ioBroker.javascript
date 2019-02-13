@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.0.12",
+        "version": "4.1.0",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.1.0": {
+                "en": "Updated the blockly to the latest code\nscriptEnabled variables not only for experts",
+                "de": "Blockly auf den neuesten Code aktualisiert\nscriptEnabled-Variablen nicht nur für Experten",
+                "ru": "Обновлен blockly до последней версии\nПеременные scriptEnabled не только для экспертов",
+                "pt": "Atualizado o blockly para o código mais recente\nVariáveis ​​scriptEnabled não apenas para especialistas",
+                "nl": "De blockly is bijgewerkt naar de nieuwste code\nvariabelen scriptEnabled niet alleen voor experts",
+                "fr": "Mise à jour du blockly au dernier code\nvariables scriptEnabled non seulement pour les experts",
+                "it": "Aggiornato il codice blockly all'ultimo\nVariabili scriptEnabled non solo per esperti",
+                "es": "Actualizado el blockly al último código.\nVariables de script habilitado no solo para expertos",
+                "pl": "Zaktualizowano blockly do najnowszego kodu\nzmienne scriptEnabled nie tylko dla ekspertów",
+                "zh-cn": "块状地更新为最新代码\nscriptEnabled变量不仅适用于专家"
+            },
             "4.0.12": {
                 "en": "fixes unwanted changes in last version",
                 "de": "behebt unerwünschte Änderungen in der letzten Version",

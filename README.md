@@ -33,6 +33,10 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.1.0 (2019-02-12)
+* (jkuehner) Updated the blockly to the latest code
+* (bleufox) scriptEnabled variables not only for experts
+
 ### 4.0.12 (2019-01-20)
 * (Apollon77/AlCalzone) fixes unwanted changes in last version
 * (SchumyHao) Add Chinese support

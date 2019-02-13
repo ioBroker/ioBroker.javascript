@@ -812,8 +812,7 @@ function createActiveObject(id, enabled, cb) {
                 type: 'boolean',
                 write: true,
                 read: true,
-                role: 'switch.active',
-                expert: true
+                role: 'switch.active'
             },
             native: {
                 script: id
