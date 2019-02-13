@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "3.6.4",
+        "version": "3.6.5",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -20,6 +20,18 @@
             "Apollon77 <ingo@fischer-ka.de>"
         ],
         "news": {
+            "3.6.5": {
+                "en": "Error with formatDate was fixed",
+                "de": "Fehler bei formatDate wurde behoben",
+                "ru": "Ошибка с formatDate была исправлена",
+                "pt": "Erro com formatDate foi corrigido",
+                "nl": "Fout met formatDate is opgelost",
+                "fr": "Erreur avec formatDate a été corrigé",
+                "it": "Errore con formatDate risolto",
+                "es": "El error con formatDate fue corregido",
+                "pl": "Naprawiono błąd z formatDate",
+                "zh-cn": "修复了formatDate的错误"
+            },
             "3.6.4": {
                 "en": "Pattern error is fixed",
                 "de": "Musterfehler ist behoben",

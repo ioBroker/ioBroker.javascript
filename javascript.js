@@ -290,7 +290,9 @@
 
                     if (id === 'system.config') {
                         // set langugae for debug messages
-                        if (objects['system.config'].common.language) words.setLanguage(objects['system.config'].common.language);
+                        if (objects['system.config'].common && objects['system.config'].common.language) {
+                            words.setLanguage(objects['system.config'].common.language);
+                        }
                     }
 
                     return;
@@ -2697,19 +2699,37 @@
                 script.onStopTimeout = timeout || 1000;
             },
             formatValue: function (value, decimals, format) {
-                if (!format && objects['system.config']) {
-                    format = objects['system.config'].common.isFloatComma ?  '.,' : ',.';
+                if (!format) {
+                    if (adapter.isFloatComma !== undefined) {
+                        format = adapter.isFloatComm ?  '.,' : ',.';
+                    } else if (objects['system.config'] && objects['system.config'].common) {
+                        format = objects['system.config'].common.isFloatComma ?  '.,' : ',.';
+                    }
                 }
                 return adapter.formatValue(value, decimals, format);
             },
 
             formatDate: function (date, format, language) {
                 if (!format) {
-                    format = objects['system.config'] ? (objects['system.config'].common.dateFormat || 'DD.MM.YYYY') : 'DD.MM.YYYY';
+                    if (adapter.dateFormat) {
+                        format = adapter.dateFormat;
+                    } else if (objects['system.config'] && objects['system.config'].common) {
+                        format = objects['system.config'] ? (objects['system.config'].common.dateFormat || 'DD.MM.YYYY') : 'DD.MM.YYYY';
+                    }
+                    format = format || 'DD.MM.YYYY';
                 }
                 if (format.match(/W|Н|O|О/)) {
                     var text = adapter.formatDate(date, format);
-                    if (!language || !dayOfWeeksFull[language]) language = objects['system.config'].common.language;
+                    if (!language || !dayOfWeeksFull[language]) {
+                        if (adapter.language) {
+                            language = adapter.language;
+                        } else {
+                            language = objects['system.config'] && objects['system.config'].common && objects['system.config'].common.language;
+                        }
+                        if (!dayOfWeeksFull[language]) {
+                            language = 'de';
+                        }
+                    }
                     var d = date.getDay();
                     text = text.replace('WW', dayOfWeeksFull[language][d]);
                     text = text.replace('НН', dayOfWeeksFull[language][d]);
@@ -2826,7 +2846,11 @@
                 var timeoutMs = parseInt(options.timeout, 10) || 20000;
 
                 if (!instance) {
-                    instance = objects['system.config'] ? objects['system.config'].common.defaultHistory : null;
+                    if (adapter.defaultHistory) {
+                        instance = adapter.defaultHistory;
+                    } else {
+                        instance = objects['system.config'] && objects['system.config'].common ? objects['system.config'].common.defaultHistory : null;
+                    }
                 }
 
                 if (sandbox.verbose) sandbox.log('getHistory(instance=' + instance + ', options=' + JSON.stringify(options) + ')', 'debug');
@@ -3327,14 +3351,24 @@
             }
             addGetProperty(objects);
 
+            var systemConfig = objects['system.config'];
+
             // set language for debug messages
-            if (objects['system.config'] && objects['system.config'].common.language) words.setLanguage(objects['system.config'].common.language);
+            if (systemConfig && systemConfig.common && systemConfig.common.language) {
+                words.setLanguage(systemConfig.common.language);
+            } else if (adapter.language) {
+                words.setLanguage(adapter.language);
+            }
 
             // try to use system coordinates
-            if (adapter.config.useSystemGPS && objects['system.config'] &&
-                objects['system.config'].common.latitude) {
-                adapter.config.latitude  = objects['system.config'].common.latitude;
-                adapter.config.longitude = objects['system.config'].common.longitude;
+            if (adapter.config.useSystemGPS) {
+                if (systemConfig && systemConfig.common && systemConfig.common.latitude) {
+                    adapter.config.latitude  = systemConfig.common.latitude;
+                    adapter.config.longitude = systemConfig.common.longitude;
+                } else if (adapter.latitude) {
+                    adapter.config.latitude  = adapter.latitude;
+                    adapter.config.longitude = adapter.longitude;
+                }
             }
             adapter.config.latitude  = parseFloat(adapter.config.latitude);
             adapter.config.longitude = parseFloat(adapter.config.longitude);
