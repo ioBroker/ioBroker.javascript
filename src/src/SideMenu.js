@@ -192,7 +192,7 @@ const prepareList = data => {
         } else {
             // common and global are always at the end
             if ((a.id.startsWith('script.js.common') || a.id.startsWith('script.js.global')) &&
-                (a.id.startsWith('script.js.common') || a.id.startsWith('script.js.global'))) {
+                (b.id.startsWith('script.js.common') || b.id.startsWith('script.js.global'))) {
                 if (a.id === b.id) return 0;
                 return a.id > b.id ? 1 : -1;
             } else if (a.id.startsWith('script.js.common') || a.id.startsWith('script.js.global')) {
@@ -360,7 +360,7 @@ class SideDrawer extends React.Component {
         if (!noUpdate && changed) {
             this.setState(newState, () => cb && cb());
         } else {
-            cb && cb()
+            cb && cb();
         }
     }
 

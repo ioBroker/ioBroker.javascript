@@ -38,7 +38,6 @@ function correctCasus(text, seconds) {
     text = text.replace(/Jede\(r\) ([\d\sund,]+) Sekunde/, 'Jede $1 Sekunde');
     text = text.replace('Jede(r) Minute',       'Jede Minute');
     text = text.replace('Jede Minuten',         'Jede Minute');
-    text = text.replace('Jede Stunde',          'Jede Stunde');
     text = text.replace('Jede(r) Stunde',       'Jede Stunde');
     text = text.replace(/Jede\(r\) ([\d\sund,]+) Minute/, 'Jede $1 Minute');
     text = text.replace('Jede Sekunde in Minuten', 'Jede Sekunde in jeder Minute');

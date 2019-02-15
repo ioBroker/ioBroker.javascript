@@ -1,5 +1,4 @@
 import {createMuiTheme} from '@material-ui/core/styles';
-import Theme from './Theme';
 
 export default type => {
     if (type === 'dark') {

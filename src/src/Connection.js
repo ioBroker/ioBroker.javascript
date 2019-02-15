@@ -14,7 +14,7 @@ class Connection {
         this.autoSubscribes = this.props.autoSubscribes || [];
         this.autoSubscribeLog = this.props.autoSubscribeLog;
         this.socket = window.io.connect(
-            window.location.protocol + '//' + window.location.host.replace('3000', 8081),
+            window.location.protocol + '//' + window.location.host.replace('3000', '8081'),
             {query: 'ws=true'});
         this.states = {};
         this.objects = null;
@@ -92,7 +92,7 @@ class Connection {
             this.onError({message: 'no permission', operation: err.operation, type: err.type, id: (err.id || '')}));
 
         this.socket.on('objectChange', (id, obj) => setTimeout(() => this.objectChange(id, obj), 0));
-        this.socket.on('stateChange', (id, state) => setTimeout(() => this.stateChange(id, state), 0))
+        this.socket.on('stateChange', (id, state) => setTimeout(() => this.stateChange(id, state), 0));
     }
 
     subscribeState(id, cb) {

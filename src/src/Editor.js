@@ -370,7 +370,7 @@ class Editor extends React.Component {
                         if (this.state.editing.indexOf(id) !== -1) {
                             const editing = JSON.parse(JSON.stringify(this.state.editing));
                             const pos = editing.indexOf(id);
-                            if (id !== -1) {
+                            if (pos !== -1) {
                                 editing.splice(pos, 1);
                                 newState.editing = editing;
                                 _changed = true;
