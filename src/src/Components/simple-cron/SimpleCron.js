@@ -101,7 +101,7 @@ class SimpleCron extends React.Component {
     static periodArray2text(list, max) {
         max = max || 7;
         if (list.length === max) {
-            return '*'
+            return '*';
         } else {
             let text = [];
             let start = null;
@@ -326,7 +326,7 @@ class SimpleCron extends React.Component {
             settings.timeFrom = settings.timeFrom || 0;
             settings.timeTo = settings.timeTo === undefined ? 24 : settings.timeTo;
             if (settings.timeFrom === 0 && settings.timeTo === 24) {
-                hours = '*'
+                hours = '*';
             } else {
                 hours = settings.timeFrom !== settings.timeTo ? settings.timeFrom + '-' + settings.timeTo : '*';
             }

@@ -1019,7 +1019,7 @@ function unsubscribe(id) {
         return;
     }
 
-    if (typeof id === 'object' && id && id.constructor && id.constructor.name === 'RegExp') {
+    if (id.constructor && id.constructor.name === 'RegExp') {
         //adapter.log.warn('unsubscribe: todo - process regexp');
         return;
     }
