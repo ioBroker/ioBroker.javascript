@@ -42,9 +42,9 @@ class DialogConfirm extends React.Component {
 
 DialogConfirm.propTypes = {
     onClose: PropTypes.func,
-    onOk: PropTypes.func.isRequire,
+    onOk: PropTypes.func.isRequired,
     title: PropTypes.string,
-    question: PropTypes.string.isRequire,
+    question: PropTypes.string.isRequired,
     cancel: PropTypes.string,
     ok: PropTypes.string
 

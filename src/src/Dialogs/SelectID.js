@@ -89,11 +89,11 @@ class DialogSelectID extends React.Component {
 DialogSelectID.propTypes = {
     classes: PropTypes.object,
     onClose: PropTypes.func,
-    onOk: PropTypes.func.isRequire,
+    onOk: PropTypes.func.isRequired,
     title: PropTypes.string,
     selected: PropTypes.string,
-    statesOnly: PropTypes.boolean,
-    connection: PropTypes.object.isRequire,
+    statesOnly: PropTypes.bool,
+    connection: PropTypes.object.isRequired,
     cancel: PropTypes.string,
     prefix: PropTypes.string,
     ok: PropTypes.string

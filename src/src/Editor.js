@@ -7,7 +7,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
-import {MdSave as IconSave} from 'react-icons/md';
+import {
+    MdSave as IconSave
+} from 'react-icons/md';
 import {MdCancel as IconCancel} from 'react-icons/md';
 import {MdClose as IconClose} from 'react-icons/md';
 import {MdRefresh as IconRestart} from 'react-icons/md';
@@ -18,6 +20,7 @@ import {FaFileExport as IconExport} from 'react-icons/fa';
 import {FaFileImport as IconImport} from 'react-icons/fa';
 import {FaFlagCheckered as IconCheck} from 'react-icons/fa';
 import {MdGpsFixed as IconLocate} from 'react-icons/md';
+import {MdClearAll as IconCloseAll} from 'react-icons/md';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
@@ -77,7 +80,12 @@ const styles = theme => ({
     },
     hintButton: {
         marginTop: 8,
-        marginLeft: 10
+        marginLeft: 20
+    },
+    tabMenuButton: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
     },
     tabChanged: {
         color: theme.palette.secondary.main
@@ -146,6 +154,8 @@ class Editor extends React.Component {
             visible: props.visible,
             cmdToBlockly: '',
             menuOpened: !!this.props.menuOpened,
+            menuTabsOpened: false,
+            menuTabsAnchorEl: null,
             runningInstances: this.props.runningInstances || {}
         };
         
@@ -540,12 +550,12 @@ class Editor extends React.Component {
 
     getTabs() {
         if (this.state.editing.length) {
-            return (<Tabs
+            return [(<Tabs
                     key="tabs1"
                     value={this.state.selected}
                     onChange={(event, value) => this.onTabChange(event, value)}
                     indicatorColor="primary"
-                    style={{position: 'relative'}}
+                    style={{position: 'relative', width: this.state.editing.length > 1 ? 'calc(100% - 50px)' : '100%', display: 'inline-block'}}
                     textColor="primary"
                     scrollable
                     scrollButtons="auto"
@@ -573,7 +583,21 @@ class Editor extends React.Component {
                             return (<Tab component={'div'} key={id} label={label} className={this.props.classes.tabButton} value={id} title={title}/>);
                         }
                     })}
-                </Tabs>);
+                </Tabs>),
+                this.state.editing.length > 1 ? (<IconButton
+                    key="menuButton"
+                    aria-label="Close all but current"
+                    className={this.props.classes.tabMenuButton}
+                    title={I18n.t('Close all but current')}
+                    aria-haspopup="false"
+                    onClick={event => {
+                        window.localStorage && window.localStorage.setItem('Editor.editing', JSON.stringify([this.state.selected]));
+                        this.setState({menuTabsOpened: false, menuTabsAnchorEl: null, editing: [this.state.selected]});
+                    }}
+                >
+                    <IconCloseAll />
+                </IconButton>) : null
+            ];
         } else {
             return (<div key="tabs2" className={this.props.classes.toolbar}>
                 <Button key="select1" disabled={true} className={this.props.classes.hintButton}>

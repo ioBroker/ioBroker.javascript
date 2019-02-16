@@ -14,6 +14,8 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Input from '@material-ui/core/Input';
 import RootRef from '@material-ui/core/RootRef';
+import Checkbox from '@material-ui/core/Checkbox';
+import Badge from '@material-ui/core/Badge';
 
 import red from '@material-ui/core/colors/red';
 import green from '@material-ui/core/colors/green';
@@ -40,6 +42,8 @@ import {MdPersonPin as IconExpert} from 'react-icons/md';
 import {FaFileExport as IconExport} from 'react-icons/fa';
 import {FaFileImport as IconImport} from 'react-icons/fa';
 import {MdPalette as IconDark} from 'react-icons/md';
+import {MdFilter as IconFilter} from 'react-icons/md';
+import {MdArrowForward as IconExpandRight} from 'react-icons/md';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
@@ -54,6 +58,8 @@ import DialogNew from './Dialogs/New';
 import DialogError from './Dialogs/Error';
 
 const MENU_ITEM_HEIGHT = 48;
+const COLOR_RUN = green[400];
+const COLOR_PAUSE = red[400];
 
 const styles = theme => ({
     drawerPaper: {
@@ -79,6 +85,11 @@ const styles = theme => ({
     iconDropdownMenu: {
         paddingRight: 5
     },
+    iconOnTheRight: {
+        position: 'absolute',
+        right: 10,
+        top: 'calc(50% - 8px)'
+    },
     menu: {
         width: '100%',
         height: '100%'
@@ -88,6 +99,12 @@ const styles = theme => ({
         height: '100%',
         overflowX: 'hidden',
         overflowY: 'auto'
+    },
+    filterIcon: {
+        width: 18,
+        height: 18,
+        borderRadius: 2,
+        marginRight: 5
     },
     scriptIcon: {
         width: 18,
@@ -368,22 +385,6 @@ class SideDrawer extends React.Component {
             }
         }
 
-        if (this.state.typeFiler) {
-            listItems.forEach(item => {
-                if (!item.filtered && item.type !== this.state.typeFiler) {
-                    item.filtered = true;
-                    changed = true;
-                }
-            });
-        }
-        if (this.state.statusFilter !== null) {
-            listItems.forEach(item => {
-                if (!item.filtered && item.enabled !== this.state.statusFilter) {
-                    item.filtered = true;
-                    changed = true;
-                }
-            });
-        }
         if (!noUpdate && changed) {
             this.setState(newState, () => cb && cb());
         } else {
@@ -574,7 +575,7 @@ class SideDrawer extends React.Component {
                              }}
                             title={item.enabled ? I18n.t('Pause script') : I18n.t('Run script')}
                             key="startStop"
-                            style={{color: item.enabled ? green[400] : red[400]}}>
+                            style={{color: item.enabled ? COLOR_RUN : COLOR_PAUSE}}>
                             {item.enabled ? (<IconPause/>) : (<IconPlay/>)}
                 </IconButton>),
                 this.state.width > 350 ? (<IconButton
@@ -683,6 +684,14 @@ class SideDrawer extends React.Component {
         let children = items.filter(i => i.parent === item.id);
 
         if (item.filtered && !item.filteredPartly) return;
+
+        if (this.state.typeFiler && item.type !== 'folder' && item.type !== this.state.typeFiler) {
+            return;
+        }
+
+        if (this.state.statusFilter !== null && item.type !== 'folder' && item.enabled !== this.state.statusFilter) {
+            return;
+        }
 
         if (item.id === 'script.js.global' && !this.state.expertMode) {
             return;
@@ -862,6 +871,16 @@ class SideDrawer extends React.Component {
         this.setState({menuOpened: false, menuAnchorEl: null, filterMenuOpened: false, menuAnchorFilterEl: null}, cb);
     }
 
+    getFilterBadge() {
+        return [
+            this.state.statusFilter === true && (<IconPlay className={this.props.classes.filterIcon} style={{color: COLOR_RUN}}/>),
+            this.state.statusFilter === false && (<IconPause className={this.props.classes.filterIcon} style={{color: COLOR_PAUSE}}/>),
+            this.state.typeFiler === 'Blockly' && ('Bl'),
+            this.state.typeFiler === 'Javascript/js' && ('JS'),
+            this.state.typeFiler === 'TypeScript/ts' && ('TS'),
+        ]
+    }
+
     // render menu and toolbar
     getToolbarButtons() {
         const result = [];
@@ -906,20 +925,23 @@ class SideDrawer extends React.Component {
         } else {
             if (!this.state.reorder) {
                 // Open Menu
-                result.push((<IconButton
-                    key="menuButton"
-                    aria-label="More"
-                    aria-owns={this.state.menuOpened ? 'long-menu' : undefined}
-                    title={I18n.t('Menu')}
-                    aria-haspopup="true"
-                    onClick={event => {
-                        event.stopPropagation();
-                        event.preventDefault();
-                        this.setState({menuOpened: true, menuAnchorEl: event.currentTarget});
-                    }}
-                >
-                    <IconMore />
-                </IconButton>));
+                result.push((
+                    <IconButton
+                        key="menuButton"
+                        aria-label="More"
+                        aria-owns={this.state.menuOpened ? 'long-menu' : undefined}
+                        title={I18n.t('Menu')}
+                        aria-haspopup="true"
+                        onClick={event => {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            this.setState({menuOpened: true, menuAnchorEl: event.currentTarget});
+                        }}
+                    >
+                        <Badge className={classes.margin} badgeContent={this.getFilterBadge()}>
+                            <IconMore />
+                        </Badge>
+                    </IconButton>));
 
                 const selectedItem = this.state.listItems.find(it => it.id === this.state.selected);
                 let children;
@@ -996,13 +1018,14 @@ class SideDrawer extends React.Component {
                     </MenuItem>)}
                     {<MenuItem key="filter"
                                          onClick={event => {
-                                             this.setState({filterMenuOpened: !this.state.filterMenuOpened, menuAnchorFilterEl: this.state.filterMenuOpened ? null : event.currentTarget})
+                                             this.setState({filterMenuOpened: !this.state.filterMenuOpened, menuAnchorFilterEl: this.state.filterMenuOpened ? null : event.currentTarget.getElementsByClassName(this.props.classes.iconOnTheRight)[0]})
                                          }}>
-                            <IconCopy className={this.props.classes.iconDropdownMenu} />{I18n.t('Filter by')}
+                            <IconFilter className={this.props.classes.iconDropdownMenu} />{I18n.t('Filter by')}
+                            <IconExpandRight className={this.props.classes.iconOnTheRight} />
                     </MenuItem>}
                 </Menu>));
 
-                if (this.props.filterMenuOpened) {
+                if (this.state.filterMenuOpened) {
                     result.push((<Menu
                         key="menuFilter"
                         id="long-menu-filter"
@@ -1011,57 +1034,75 @@ class SideDrawer extends React.Component {
                         onClose={() => this.setState({filterMenuOpened: false, menuAnchorFilterEl: null})}
                         PaperProps={{
                             style: {
-                                maxHeight: MENU_ITEM_HEIGHT * 6.5,
+                                maxHeight: MENU_ITEM_HEIGHT * 7.5,
                                 //width: 200,
                             },
                         }}
                     >
-                        <MenuItem key="filterByRunning" selected={this.state.statusFilter === true}
+                        <MenuItem key="filterByRunning"
                                   onClick={event => {
                                       event.stopPropagation();
                                       event.preventDefault();
-                                      this.onCloseMenu(() => this.setState({statusFilter: this.state.statusFilter === true ? null : true}));
-                                  }}><IconExpert className={this.props.classes.iconDropdownMenu}
-                                                 style={{color: 'orange'}}/>{I18n.t('only running')}
+                                      const statusFilter = this.state.statusFilter === true ? null : true;
+                                      window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter === null ? 'null' : statusFilter === false ? 'false' : 'true');
+                                      this.onCloseMenu(() => this.setState({statusFilter}));
+                                  }}>
+                            <Checkbox checked={this.state.statusFilter === true}/>
+                            <IconPlay className={this.props.classes.filterIcon} style={{color: COLOR_RUN}}/>
+                            {I18n.t('only running')}
                         </MenuItem>
-
-                        <MenuItem key="filterByStopped" selected={this.state.statusFilter === false}
+                        <MenuItem key="filterByStopped"
                                   onClick={event => {
                                       event.stopPropagation();
                                       event.preventDefault();
-                                      this.onCloseMenu(() => this.setState({statusFilter: this.state.statusFilter === false ? null : true}));
-                                  }}><IconExpert className={this.props.classes.iconDropdownMenu}
-                                                 style={{color: 'orange'}}/>{I18n.t('only paused')}
+                                      const statusFilter = this.state.statusFilter === false ? null : false;
+                                      window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter === null ? 'null' : statusFilter === false ? 'false' : 'true');
+                                      this.onCloseMenu(() => this.setState({statusFilter}));
+                                  }}>
+                            <Checkbox checked={this.state.statusFilter === false}/>
+                            <IconPause className={this.props.classes.filterIcon} style={{color: COLOR_PAUSE}}/>
+                            {I18n.t('only paused')}
                         </MenuItem>
-
-                        <MenuItem key="filterByStopped" selected={this.state.typeFiler === 'Blockly'}
+                        <MenuItem key="filterBlockly"
                                   onClick={event => {
                                       event.stopPropagation();
                                       event.preventDefault();
-                                      this.onCloseMenu(() => this.setState({statusFilter: this.state.typeFiler === 'Blockly' ? '' : 'Blockly'}));
-                                  }}><IconExpert className={this.props.classes.iconDropdownMenu}
-                                                 style={{color: 'orange'}}/>{I18n.t('only blockly')}
+                                      const typeFiler = this.state.typeFiler === 'Blockly' ? '' : 'Blockly';
+                                      window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', typeFiler);
+                                      this.onCloseMenu(() => this.setState({typeFiler}));
+                                  }}>
+                            <Checkbox checked={this.state.typeFiler === 'Blockly'}/>
+                            <img className={this.props.classes.filterIcon} alt="Blockly" src={images.Blockly || images.def}/>
+                            {I18n.t('only blockly')}
                         </MenuItem>
-                        <MenuItem key="filterByStopped" selected={this.state.typeFiler === 'JS'}
+                        <MenuItem key="filterJS"
                                   onClick={event => {
                                       event.stopPropagation();
                                       event.preventDefault();
-                                      this.onCloseMenu(() => this.setState({statusFilter: this.state.typeFiler === 'JS' ? '' : 'JS'}));
-                                  }}><IconExpert className={this.props.classes.iconDropdownMenu}
-                                                 style={{color: 'orange'}}/>{I18n.t('only JS')}
+                                      const typeFiler = this.state.typeFiler === 'Javascript/js' ? '' : 'Javascript/js';
+                                      window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', typeFiler);
+                                      this.onCloseMenu(() => this.setState({typeFiler}));
+                                  }}>
+                            <Checkbox checked={this.state.typeFiler === 'Javascript/js'}/>
+                            <img className={this.props.classes.filterIcon} alt="Javascript" src={images['Javascript/js'] || images.def}/>
+                            {I18n.t('only JS')}
                         </MenuItem>
-                        <MenuItem key="filterByStopped" selected={this.state.typeFiler === 'TS'}
+                        <MenuItem key="filterTS"
                                   onClick={event => {
                                       event.stopPropagation();
                                       event.preventDefault();
-                                      this.onCloseMenu(() => this.setState({statusFilter: this.state.typeFiler === 'TS' ? '' : 'TS'}));
-                                  }}><IconExpert className={this.props.classes.iconDropdownMenu}
-                                                 style={{color: 'orange'}}/>{I18n.t('only TS')}
+                                      const typeFiler = this.state.typeFiler === 'TypeScript/ts' ? '' : 'TypeScript/ts';
+                                      window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', typeFiler);
+                                      this.onCloseMenu(() => this.setState({typeFiler}));
+                                  }}>
+                            <Checkbox checked={this.state.typeFiler === 'TypeScript/ts'}/>
+                            <img className={this.props.classes.filterIcon} alt="TypeScript" src={images['TypeScript/ts'] || images.def}/>
+                            {I18n.t('only TS')}
                         </MenuItem>
                     </Menu>));
                 }
 
-                        // New Script
+                // New Script
                 result.push((<IconButton
                     key="new-script"
                     title={I18n.t('Create new script')}
