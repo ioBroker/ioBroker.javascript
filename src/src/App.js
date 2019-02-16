@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import SplitterLayout from 'react-splitter-layout';
 import {MdMenu as IconMenuClosed} from 'react-icons/md';
-import {MdArrowUpward as IconMenuOpened} from 'react-icons/md';
+import {MdArrowBack as IconMenuOpened} from 'react-icons/md';
 
 import SideMenu from './SideMenu';
 import Log from './Log';
@@ -292,7 +292,9 @@ class App extends Component {
     }
 
     onAddNew(id, name, isFolder, instance, type, source) {
-        if (this.objects[id]) {
+        const reg = new RegExp(`^${id}\\.`);
+
+        if (Object.keys(this.objects).find(_id => id === _id || reg.test(id))) {
             this.showError(I18n.t('Yet exists!'));
             return;
         }
@@ -442,7 +444,20 @@ class App extends Component {
 
     renderMain() {
         const {classes} = this.props;
-        return [
+        const errorDialog = this.state.errorText ? (<DialogError key="dialogError" onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/>) : null;
+        const items = [
+            this.state.message ? (<DialogMessage key="dialogMessage" onClose={() => this.setState({message: ''})} text={this.state.message}/>) : null,
+            errorDialog,
+            this.state.importFile ? (<DialogImportFile key="dialogImportFile" onClose={data => this.onImport(data)} />) : null,
+            this.state.confirm ? (<DialogConfirm key="dialogConfirm" onClose={() => {
+                this.setState({confirm: ''});
+                this.confirmCallback();
+                this.confirmCallback = null;
+            }} onOk={() => {
+                this.setState({confirm: ''});
+                this.confirmCallback(true);
+                this.confirmCallback = null;
+            }} question={this.state.confirm}/>) : null,
             (<div className={classes.content} key="main">
                 <div key="closeMenu" className={classes.menuOpenCloseButton} onClick={() => {
                     window.localStorage && window.localStorage.setItem('App.menuOpened', this.state.menuOpened ? 'false' : 'true');
@@ -494,19 +509,8 @@ class App extends Component {
                     <Log key="log" editing={this.state.editing} connection={this.socket} selected={this.state.selected}/>
                 </SplitterLayout>
             </div>),
-            this.state.message ? (<DialogMessage key="dialogMessage" onClose={() => this.setState({message: ''})} text={this.state.message}/>) : null,
-            this.state.errorText ? (<DialogError key="dialogError" onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/>) : null,
-            this.state.importFile ? (<DialogImportFile key="dialogImportFile" onClose={data => this.onImport(data)} />) : null,
-            this.state.confirm ? (<DialogConfirm key="dialogConfirm" onClose={() => {
-                this.setState({confirm: ''});
-                this.confirmCallback();
-                this.confirmCallback = null;
-            }} onOk={() => {
-                this.setState({confirm: ''});
-                this.confirmCallback(true);
-                this.confirmCallback = null;
-            }} question={this.state.confirm}/>) : null,
         ];
+        return items;
     }
 
     render() {
@@ -563,7 +567,7 @@ class App extends Component {
                                 onSearch={searchText => this.setState({searchText})}
                             />
                         </div>
-                        {this.renderMain()}}
+                        {this.renderMain()}
                     </SplitterLayout>
                 </div>
         );

@@ -19,7 +19,8 @@ class DialogNew extends React.Component {
         this.state = {
             name: props.name || 'Script',
             instance: props.instance || 0,
-            parent: props.parent
+            parent: props.parent,
+            error: ''
         };
         this.isShowInstance = !props.folder && props.instances && (props.instance || props.instances[0] || props.instances.length > 1);
     }
@@ -46,7 +47,15 @@ class DialogNew extends React.Component {
     };
 
     handleChange = name => {
-        this.setState({name, id: this.getId(name)});
+        const id = this.getId(name);
+        if (!name) {
+            this.setState({name, id, error: I18n.t('Empty name is not allowed')});
+        } else
+        if (this.props.existingItems && this.props.existingItems.indexOf(id) !== -1) {
+            this.setState({name, id, error: I18n.t('Duplicate name')});
+        } else {
+            this.setState({name, id, error: ''});
+        }
     };
 
     render() {
@@ -65,8 +74,10 @@ class DialogNew extends React.Component {
                         <TextField
                             style={{width: '100%'}}
                             id="standard-name"
+                            error={!!this.state.error}
                             label={I18n.t('Name')}
                             value={this.state.name}
+                            helperText={this.state.error}
                             onKeyPress={(ev) => {
                                 if (ev.key === 'Enter') {
                                     // Do code here
@@ -123,14 +134,14 @@ class DialogNew extends React.Component {
                                     onChange={e => this.setState({instance: parseInt(e.target.value, 10)})}
                                     inputProps={{name: 'instance', id: 'instance',}}
                                 >
-                                    {this.props.instances.map(instance => (<MenuItem value={instance}>{instance || '0'}</MenuItem>))}
+                                    {this.props.instances.map(instance => (<MenuItem key={'instance' + instance} value={instance}>{instance || '0'}</MenuItem>))}
                                 </Select>
                             </FormControl>)
                         }
                     </form>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={this.handleOk} color="primary">{I18n.t('Ok')}</Button>
+                    <Button onClick={this.handleOk} disabled={!!this.state.error} color="primary">{I18n.t('Ok')}</Button>
                     <Button onClick={this.handleCancel} color="primary">{I18n.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>
@@ -147,6 +158,7 @@ DialogNew.propTypes = {
     instance: PropTypes.number,
     instances: PropTypes.array,
     parents: PropTypes.array,
+    existingItems: PropTypes.array,
     folder: PropTypes.bool,
     type: PropTypes.string,
 };

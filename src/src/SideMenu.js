@@ -256,6 +256,13 @@ class SideDrawer extends React.Component {
         } catch (e) {
             expanded = [];
         }
+        let statusFilter = window.localStorage ? window.localStorage.getItem('SideMenu.statusFilter') : null;
+        if (statusFilter === 'true') {
+            statusFilter = true;
+        } else
+        if (statusFilter === 'false') {
+            statusFilter = false;
+        }
 
         this.inputRef = new React.createRef();
 
@@ -281,6 +288,9 @@ class SideDrawer extends React.Component {
             expertMode: this.props.expertMode,
             searchText: '',
             width: this.props.width || 300,
+            filterMenuOpened: false,
+            typeFiler: window.localStorage ? window.localStorage.getItem('SideMenu.typeFiler') || '' : '', // blockly, js, ts
+            statusFilter: statusFilter, // running, stopped => true/false/null
             runningInstances: this.props.runningInstances || {}
         };
 
@@ -356,6 +366,23 @@ class SideDrawer extends React.Component {
                 newState.searchMode = false;
                 changed = true;
             }
+        }
+
+        if (this.state.typeFiler) {
+            listItems.forEach(item => {
+                if (!item.filtered && item.type !== this.state.typeFiler) {
+                    item.filtered = true;
+                    changed = true;
+                }
+            });
+        }
+        if (this.state.statusFilter !== null) {
+            listItems.forEach(item => {
+                if (!item.filtered && item.enabled !== this.state.statusFilter) {
+                    item.filtered = true;
+                    changed = true;
+                }
+            });
         }
         if (!noUpdate && changed) {
             this.setState(newState, () => cb && cb());
@@ -831,6 +858,11 @@ class SideDrawer extends React.Component {
         return I18n.t('Folder') + ' ' + i;
     }
 
+    onCloseMenu(cb) {
+        this.setState({menuOpened: false, menuAnchorEl: null, filterMenuOpened: false, menuAnchorFilterEl: null}, cb);
+    }
+
+    // render menu and toolbar
     getToolbarButtons() {
         const result = [];
         const classes = this.props.classes;
@@ -920,7 +952,7 @@ class SideDrawer extends React.Component {
                                 return;
                             }
 
-                            this.setState({menuOpened: false, menuAnchorEl: null}, () =>
+                            this.setState({menuOpened: false, menuAnchorEl: null, filterMenuOpened: false}, () =>
                                 this.onDelete(this.state.selected).then(() => {}));
                         }}><IconDelete className={this.props.classes.iconDropdownMenu}  style={{color: 'red'}}/>{I18n.t('Delete')}
                     </MenuItem>) : null}
@@ -928,7 +960,7 @@ class SideDrawer extends React.Component {
                               onClick={event => {
                                   event.stopPropagation();
                                   event.preventDefault();
-                                  this.setState({menuOpened: false, menuAnchorEl: null}, () =>
+                                  this.onCloseMenu(() =>
                                       this.props.onExpertModeChange && this.props.onExpertModeChange(!this.state.expertMode));
                               }}><IconExpert className={this.props.classes.iconDropdownMenu} style={{color: 'orange'}}/>{I18n.t('Expert mode')}
                     </MenuItem>
@@ -936,21 +968,21 @@ class SideDrawer extends React.Component {
                                                        onClick={event => {
                                                            event.stopPropagation();
                                                            event.preventDefault();
-                                                           this.setState({menuOpened: false, menuAnchorEl: null}, () => this.props.onExport());
+                                                           this.onCloseMenu(() => this.props.onExport());
                                                        }}><IconExport className={this.props.classes.iconDropdownMenu} />{I18n.t('Export all scripts')}
                     </MenuItem>)}
                     {this.props.onImport && (<MenuItem key="import"
                                                        onClick={event => {
                                                            event.stopPropagation();
                                                            event.preventDefault();
-                                                           this.setState({menuOpened: false, menuAnchorEl: null}, () => this.props.onImport());
+                                                           this.onCloseMenu(() => this.props.onImport());
                                                        }}><IconImport className={this.props.classes.iconDropdownMenu} />{I18n.t('Import scripts')}
                     </MenuItem>)}
                     {this.props.onThemeChange && (<MenuItem key="dark"
                                                        onClick={event => {
                                                            //event.stopPropagation();
                                                            //event.preventDefault();
-                                                           this.setState({menuOpened: false, menuAnchorEl: null}, () =>
+                                                           this.onCloseMenu(() =>
                                                                this.props.onThemeChange(this.state.theme === 'dark' ? 'light' : 'dark'));
                                                        }}><IconDark className={this.props.classes.iconDropdownMenu} />{this.state.theme === 'dark' ? I18n.t('Light style') : I18n.t('Dark style')}
                     </MenuItem>)}
@@ -958,13 +990,78 @@ class SideDrawer extends React.Component {
                                          disabled={!this.state.selected || !selectedItem || selectedItem.type === 'folder'}
                                          onClick={event => {
                                              const selected = this.state.selected;
-                                             this.setState({menuOpened: false, menuAnchorEl: null}, () => this.onCopy(event, selected))
+                                             this.onCloseMenu(() => this.onCopy(event, selected))
                                          }}>
-                        <IconCopy className={this.props.classes.iconDropdownMenu} />{I18n.t('Copy script')}
-                </MenuItem>)}
+                            <IconCopy className={this.props.classes.iconDropdownMenu} />{I18n.t('Copy script')}
+                    </MenuItem>)}
+                    {<MenuItem key="filter"
+                                         onClick={event => {
+                                             this.setState({filterMenuOpened: !this.state.filterMenuOpened, menuAnchorFilterEl: this.state.filterMenuOpened ? null : event.currentTarget})
+                                         }}>
+                            <IconCopy className={this.props.classes.iconDropdownMenu} />{I18n.t('Filter by')}
+                    </MenuItem>}
                 </Menu>));
 
-                // New Script
+                if (this.props.filterMenuOpened) {
+                    result.push((<Menu
+                        key="menuFilter"
+                        id="long-menu-filter"
+                        anchorEl={this.state.menuAnchorFilterEl}
+                        open={this.state.filterMenuOpened}
+                        onClose={() => this.setState({filterMenuOpened: false, menuAnchorFilterEl: null})}
+                        PaperProps={{
+                            style: {
+                                maxHeight: MENU_ITEM_HEIGHT * 6.5,
+                                //width: 200,
+                            },
+                        }}
+                    >
+                        <MenuItem key="filterByRunning" selected={this.state.statusFilter === true}
+                                  onClick={event => {
+                                      event.stopPropagation();
+                                      event.preventDefault();
+                                      this.onCloseMenu(() => this.setState({statusFilter: this.state.statusFilter === true ? null : true}));
+                                  }}><IconExpert className={this.props.classes.iconDropdownMenu}
+                                                 style={{color: 'orange'}}/>{I18n.t('only running')}
+                        </MenuItem>
+
+                        <MenuItem key="filterByStopped" selected={this.state.statusFilter === false}
+                                  onClick={event => {
+                                      event.stopPropagation();
+                                      event.preventDefault();
+                                      this.onCloseMenu(() => this.setState({statusFilter: this.state.statusFilter === false ? null : true}));
+                                  }}><IconExpert className={this.props.classes.iconDropdownMenu}
+                                                 style={{color: 'orange'}}/>{I18n.t('only paused')}
+                        </MenuItem>
+
+                        <MenuItem key="filterByStopped" selected={this.state.typeFiler === 'Blockly'}
+                                  onClick={event => {
+                                      event.stopPropagation();
+                                      event.preventDefault();
+                                      this.onCloseMenu(() => this.setState({statusFilter: this.state.typeFiler === 'Blockly' ? '' : 'Blockly'}));
+                                  }}><IconExpert className={this.props.classes.iconDropdownMenu}
+                                                 style={{color: 'orange'}}/>{I18n.t('only blockly')}
+                        </MenuItem>
+                        <MenuItem key="filterByStopped" selected={this.state.typeFiler === 'JS'}
+                                  onClick={event => {
+                                      event.stopPropagation();
+                                      event.preventDefault();
+                                      this.onCloseMenu(() => this.setState({statusFilter: this.state.typeFiler === 'JS' ? '' : 'JS'}));
+                                  }}><IconExpert className={this.props.classes.iconDropdownMenu}
+                                                 style={{color: 'orange'}}/>{I18n.t('only JS')}
+                        </MenuItem>
+                        <MenuItem key="filterByStopped" selected={this.state.typeFiler === 'TS'}
+                                  onClick={event => {
+                                      event.stopPropagation();
+                                      event.preventDefault();
+                                      this.onCloseMenu(() => this.setState({statusFilter: this.state.typeFiler === 'TS' ? '' : 'TS'}));
+                                  }}><IconExpert className={this.props.classes.iconDropdownMenu}
+                                                 style={{color: 'orange'}}/>{I18n.t('only TS')}
+                        </MenuItem>
+                    </Menu>));
+                }
+
+                        // New Script
                 result.push((<IconButton
                     key="new-script"
                     title={I18n.t('Create new script')}
@@ -1107,6 +1204,7 @@ class SideDrawer extends React.Component {
                 name={this.getUniqueName()}
                 parents={this.getFolders()}
                 folder={false}
+                existingItems={this.state.listItems.map(item => item.id)}
                 instance={this.props.instances[0] || 0}
                 instances={this.props.instances}
                 type={this.state.creatingScript}
