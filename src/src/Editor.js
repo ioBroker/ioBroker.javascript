@@ -590,9 +590,17 @@ class Editor extends React.Component {
                     className={this.props.classes.tabMenuButton}
                     title={I18n.t('Close all but current')}
                     aria-haspopup="false"
-                    onClick={event => {
-                        window.localStorage && window.localStorage.setItem('Editor.editing', JSON.stringify([this.state.selected]));
-                        this.setState({menuTabsOpened: false, menuTabsAnchorEl: null, editing: [this.state.selected]});
+                    onClick={_event => {
+                        const editing = [this.state.selected];
+                        // Do not close not saved tabs
+                        Object.keys(this.scripts).forEach(id =>
+                            id !== this.state.selected &&
+                            JSON.stringify(this.scripts[id]) !== JSON.stringify(this.props.objects[id].common) &&
+                            editing.push(id)
+                        );
+
+                        window.localStorage && window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
+                        this.setState({menuTabsOpened: false, menuTabsAnchorEl: null, editing: editing});
                     }}
                 >
                     <IconCloseAll />
