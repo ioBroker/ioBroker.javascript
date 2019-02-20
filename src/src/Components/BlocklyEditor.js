@@ -397,6 +397,11 @@ class BlocklyEditor extends React.Component {
                 }
             }
         );
+        // for blockly itself
+        window.scripts = {
+            blocklyWorkspace: this.blocklyWorkspace
+        };
+
         // Listen to events on master workspace.
         this.blocklyWorkspace.addChangeListener(masterEvent => {
             if (this.someSelected) {
@@ -417,11 +422,6 @@ class BlocklyEditor extends React.Component {
         // Move toolbar to the valid position
         const toolbar = document.getElementsByClassName('blocklyToolboxDiv')[0];
         this.blockly.appendChild(toolbar);
-
-        // for blockly itself
-        window.scripts = {
-            blocklyWorkspace: this.blocklyWorkspace
-        };
 
         this.updateBackground();
     }

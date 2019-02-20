@@ -675,7 +675,7 @@ Blockly.Blocks['schedule_clear'] = {
         this.appendDummyInput('NAME')
             .appendField(Blockly.Words['schedule_clear'][systemLang])
             .appendField(new Blockly.FieldDropdown(function () {
-                return Blockly.Trigger.getAllSchedules(scripts.blocklyWorkspace);
+                return scripts.blocklyWorkspace ? Blockly.Trigger.getAllSchedules(scripts.blocklyWorkspace) : [];
             }), 'NAME');
 
         this.setPreviousStatement(true, null);

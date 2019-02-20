@@ -163,7 +163,7 @@ Blockly.Blocks['timeouts_cleartimeout'] = {
         this.appendDummyInput('NAME')
             .appendField(Blockly.Words['timeouts_cleartimeout'][systemLang])
             .appendField(new Blockly.FieldDropdown(function () {
-                return Blockly.Timeouts.getAllTimeouts(scripts.blocklyWorkspace);
+                return scripts.blocklyWorkspace ? Blockly.Timeouts.getAllTimeouts(scripts.blocklyWorkspace) : [];
             }), 'NAME');
 
         this.setPreviousStatement(true, null);
@@ -271,7 +271,7 @@ Blockly.Blocks['timeouts_clearinterval'] = {
         this.appendDummyInput("NAME")
             .appendField(Blockly.Words['timeouts_clearinterval'][systemLang])
             .appendField(new Blockly.FieldDropdown(function () {
-                return Blockly.Timeouts.getAllIntervals(scripts.blocklyWorkspace);
+                return scripts.blocklyWorkspace ? Blockly.Timeouts.getAllIntervals(scripts.blocklyWorkspace) : [];
             }), "NAME");
 
         this.setPreviousStatement(true, null);
