@@ -279,6 +279,9 @@ class SideDrawer extends React.Component {
         } else
         if (statusFilter === 'false') {
             statusFilter = false;
+        } else
+        if (statusFilter === 'null') {
+            statusFilter = null;
         }
 
         this.inputRef = new React.createRef();
@@ -306,7 +309,7 @@ class SideDrawer extends React.Component {
             searchText: '',
             width: this.props.width || 300,
             filterMenuOpened: false,
-            typeFiler: window.localStorage ? window.localStorage.getItem('SideMenu.typeFiler') || '' : '', // blockly, js, ts
+            typeFilter: window.localStorage ? window.localStorage.getItem('SideMenu.typeFilter') || '' : '', // blockly, js, ts
             statusFilter: statusFilter, // running, stopped => true/false/null
             runningInstances: this.props.runningInstances || {}
         };
@@ -685,7 +688,7 @@ class SideDrawer extends React.Component {
 
         if (item.filtered && !item.filteredPartly) return;
 
-        if (this.state.typeFiler && item.type !== 'folder' && item.type !== this.state.typeFiler) {
+        if (this.state.typeFilter && item.type !== 'folder' && item.type !== this.state.typeFilter) {
             return;
         }
 
@@ -875,9 +878,9 @@ class SideDrawer extends React.Component {
         return [
             this.state.statusFilter === true && (<IconPlay className={this.props.classes.filterIcon} style={{color: COLOR_RUN}}/>),
             this.state.statusFilter === false && (<IconPause className={this.props.classes.filterIcon} style={{color: COLOR_PAUSE}}/>),
-            this.state.typeFiler === 'Blockly' && ('Bl'),
-            this.state.typeFiler === 'Javascript/js' && ('JS'),
-            this.state.typeFiler === 'TypeScript/ts' && ('TS'),
+            this.state.typeFilter === 'Blockly' && ('Bl'),
+            this.state.typeFilter === 'Javascript/js' && ('JS'),
+            this.state.typeFilter === 'TypeScript/ts' && ('TS'),
         ]
     }
 
@@ -958,7 +961,7 @@ class SideDrawer extends React.Component {
                     onClose={() => this.setState({menuOpened: false, menuAnchorEl: null})}
                     PaperProps={{
                         style: {
-                            maxHeight: MENU_ITEM_HEIGHT * 6.5,
+                            maxHeight: MENU_ITEM_HEIGHT * 7.5,
                             //width: 200,
                         },
                     }}
@@ -1067,11 +1070,11 @@ class SideDrawer extends React.Component {
                                   onClick={event => {
                                       event.stopPropagation();
                                       event.preventDefault();
-                                      const typeFiler = this.state.typeFiler === 'Blockly' ? '' : 'Blockly';
-                                      window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', typeFiler);
-                                      this.onCloseMenu(() => this.setState({typeFiler}));
+                                      const typeFilter = this.state.typeFilter === 'Blockly' ? '' : 'Blockly';
+                                      window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
+                                      this.onCloseMenu(() => this.setState({typeFilter}));
                                   }}>
-                            <Checkbox checked={this.state.typeFiler === 'Blockly'}/>
+                            <Checkbox checked={this.state.typeFilter === 'Blockly'}/>
                             <img className={this.props.classes.filterIcon} alt="Blockly" src={images.Blockly || images.def}/>
                             {I18n.t('only blockly')}
                         </MenuItem>
@@ -1079,11 +1082,11 @@ class SideDrawer extends React.Component {
                                   onClick={event => {
                                       event.stopPropagation();
                                       event.preventDefault();
-                                      const typeFiler = this.state.typeFiler === 'Javascript/js' ? '' : 'Javascript/js';
-                                      window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', typeFiler);
-                                      this.onCloseMenu(() => this.setState({typeFiler}));
+                                      const typeFilter = this.state.typeFilter === 'Javascript/js' ? '' : 'Javascript/js';
+                                      window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
+                                      this.onCloseMenu(() => this.setState({typeFilter}));
                                   }}>
-                            <Checkbox checked={this.state.typeFiler === 'Javascript/js'}/>
+                            <Checkbox checked={this.state.typeFilter === 'Javascript/js'}/>
                             <img className={this.props.classes.filterIcon} alt="Javascript" src={images['Javascript/js'] || images.def}/>
                             {I18n.t('only JS')}
                         </MenuItem>
@@ -1091,11 +1094,11 @@ class SideDrawer extends React.Component {
                                   onClick={event => {
                                       event.stopPropagation();
                                       event.preventDefault();
-                                      const typeFiler = this.state.typeFiler === 'TypeScript/ts' ? '' : 'TypeScript/ts';
-                                      window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', typeFiler);
-                                      this.onCloseMenu(() => this.setState({typeFiler}));
+                                      const typeFilter = this.state.typeFilter === 'TypeScript/ts' ? '' : 'TypeScript/ts';
+                                      window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
+                                      this.onCloseMenu(() => this.setState({typeFilter}));
                                   }}>
-                            <Checkbox checked={this.state.typeFiler === 'TypeScript/ts'}/>
+                            <Checkbox checked={this.state.typeFilter === 'TypeScript/ts'}/>
                             <img className={this.props.classes.filterIcon} alt="TypeScript" src={images['TypeScript/ts'] || images.def}/>
                             {I18n.t('only TS')}
                         </MenuItem>

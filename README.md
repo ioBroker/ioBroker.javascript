@@ -33,7 +33,7 @@ And then call "npm run build".
 - ...
 
 ## Changelog
-### 4.1.1 (2019-02-20)
+### 4.1.2 (2019-02-20)
 * (jkuehner) Updated the blockly to the latest code
 * (bleufox) scriptEnabled variables not only for experts
 * (bleufox) fixed one error with "cannot extract blockly"

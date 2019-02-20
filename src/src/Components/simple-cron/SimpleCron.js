@@ -268,7 +268,7 @@ class SimpleCron extends React.Component {
             options.months === '*') {
             state.mode = PERIODIC.specific;
             state.specific = {
-                time: padding(parseInt(options.minutes, 10)) + ':' + padding(parseInt(options.hours, 10)),
+                time: padding(parseInt(options.hours, 10)) + ':' + padding(parseInt(options.minutes, 10)),
                 weekdays: SimpleCron.text2weekdays(options.dow)
             };
         } else
@@ -280,10 +280,12 @@ class SimpleCron extends React.Component {
             parseInt(options.months, 10).toString() === options.months &&
             options.dow === '*') {
             state.mode = PERIODIC.once;
-            state.time = padding(parseInt(options.minutes, 10)) + ':' + padding(parseInt(options.hours, 10));
-            state.date = padding(parseInt(options.date, 10)) + '.' + padding(parseInt(options.months, 10));
+            state.once = {
+                time: padding(parseInt(options.hours, 10)) + ':' + padding(parseInt(options.minutes, 10)),
+                date: padding(parseInt(options.date, 10)) + '.' + padding(parseInt(options.months, 10)),
             // ignored
-            state.weekdays = SimpleCron.text2weekdays(options.dow);
+                weekdays: SimpleCron.text2weekdays(options.dow)
+            }
         }
 
         if (state.mode) {
