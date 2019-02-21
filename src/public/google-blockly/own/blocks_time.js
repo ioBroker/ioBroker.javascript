@@ -110,12 +110,20 @@ Blockly.Blocks['time_compare_ex'] = {
                     .appendField(Blockly.Words['time_compare_and'][systemLang]);
 
                 var input = this.appendValueInput('END_TIME');
-                var shadow = this.workspace.newBlock('text');
-                shadow.setShadow(true);
-                shadow.outputConnection.connect(input.connection);
-                shadow.setFieldValue('18:00', 'TEXT');
-                shadow.initSvg();
-                shadow.render();
+                var wp = this.workspace;
+                setTimeout(function () {
+                    if (!input.connection.isConnected()) {
+                        var shadow = wp.newBlock('text');
+                        shadow.setShadow(true);
+                        shadow.setFieldValue('18:00', 'TEXT');
+
+                        shadow.outputConnection.connect(input.connection);
+                        //input.connection.connect(shadow.outputConnection);
+
+                        shadow.initSvg();
+                        shadow.render();
+                    }
+                }, 100);
             }
         } else if (inputExists) {
             this.removeInput('END_TIME');
