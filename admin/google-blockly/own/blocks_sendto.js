@@ -218,6 +218,7 @@ Blockly.Blocks['sendto_custom'] = {
             this.removeInput('WITH_STATEMENT');
         names = names || [];
         var _input;
+        var wp = this.workspace;
         // Add new inputs.
         for (var i = 0; i < this.itemCount_; i++) {
             _input = this.getInput('ARG' + i);
@@ -225,24 +226,29 @@ Blockly.Blocks['sendto_custom'] = {
                 _input = this.appendValueInput('ARG' + i);
                 if (!names[i]) names[i] = Blockly.Words['sendto_custom_argument'][systemLang] + (i + 1);
                 _input.appendField(new Blockly.FieldTextInput(names[i]));
-
-                var _shadow = this.workspace.newBlock('text');
-                _shadow.setShadow(true);
-                _shadow.initSvg();
-                _shadow.render();
-                _shadow.outputConnection.connect(_input.connection);
-                //console.log('New ' + names[i]);
+                setTimeout(function (_input) {
+                    if (!_input.connection.isConnected()) {
+                        var _shadow = wp.newBlock('text');
+                        _shadow.setShadow(true);
+                        _shadow.initSvg();
+                        _shadow.render();
+                        _shadow.outputConnection.connect(_input.connection);
+                        //console.log('New ' + names[i]);
+                    }
+                }, 100, _input);
             } else {
                 _input.fieldRow[0].setValue(names[i]);
                 //console.log('Exist ' + names[i]);
-                if (!_input.connection.isConnected()) {
-                    console.log('Create ' + names[i]);
-                    var shadow = this.workspace.newBlock('text');
-                    shadow.setShadow(true);
-                    shadow.initSvg();
-                    shadow.render();
-                    shadow.outputConnection.connect(_input.connection);
-                }
+                setTimeout(function (_input, name) {
+                    if (!_input.connection.isConnected()) {
+                        console.log('Create ' + name);
+                        var shadow = wp.newBlock('text');
+                        shadow.setShadow(true);
+                        shadow.initSvg();
+                        shadow.render();
+                        shadow.outputConnection.connect(_input.connection);
+                    }
+                }, 100, _input, names[i]);
             }
         }
         // Remove deleted inputs.
