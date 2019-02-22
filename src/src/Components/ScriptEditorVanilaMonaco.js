@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
 
 import {MdGTranslate as IconNoCheck} from 'react-icons/md';
 import I18n from '../i18n';
@@ -279,12 +279,11 @@ class ScriptEditor extends React.Component {
 
         return (
             <div ref={el => this.monacoDiv = el} style={{width: '100%', height: '100%', overflow: 'hidden', position: 'relative'}}>
-                {!this.state.check && (<Button
-                    mini
+                {!this.state.check && (<Fab
+                    size="small"
                     title={I18n.t('Check is not active, because javascript adapter is disabled')}
                     style={{bottom: 10, right: 10, opacity: 0.5, position: 'absolute', zIndex: 1, background: 'red', color: 'white'}}
-                    variant="fab"
-                    color="secondary"><IconNoCheck/></Button>)}
+                    color="secondary"><IconNoCheck/></Fab>)}
             </div>
         );
     }

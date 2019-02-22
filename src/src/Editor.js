@@ -557,7 +557,7 @@ class Editor extends React.Component {
                     indicatorColor="primary"
                     style={{position: 'relative', width: this.state.editing.length > 1 ? 'calc(100% - 50px)' : '100%', display: 'inline-block'}}
                     textColor="primary"
-                    scrollable
+                    variant="scrollable"
                     scrollButtons="auto"
                 >
                     {this.state.editing.map(id => {

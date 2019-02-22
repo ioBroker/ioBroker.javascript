@@ -43,6 +43,7 @@ class BlocklyEditor extends React.Component {
         this.originalCode = props.code || '';
 
         this.someSelected = false;
+        this.changeTimer = null;
 
         this.onResizeBind = this.onResize.bind(this);
 
@@ -236,6 +237,26 @@ class BlocklyEditor extends React.Component {
         }
     }
 
+    blocklyRemoveOrphanedShadows() {
+        if (this.blocklyWorkspace) {
+            let blocks = this.blocklyWorkspace.getAllBlocks();
+            let block;
+            for (let i = 0; (block = blocks[i]); i++) {
+                if (block.isShadow()) {
+                    const connections = block.getConnections_(true);
+                    let conn;
+                    for (let j = 0; (conn = connections[j]); j++) {
+                        if (!conn.targetConnection) {
+                            // remove it
+                            block.dispose();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     blocklyCheckBlocks(cb) {
         let warningText;
         if (!this.blocklyWorkspace || this.blocklyWorkspace.getAllBlocks().length === 0) {
@@ -414,8 +435,14 @@ class BlocklyEditor extends React.Component {
                 return;  // Don't mirror UI events.
             }
             if (this.ignoreChanges) return;
-            this.setState({changed: true});
-            this.onChange();
+            this.changeTimer && clearTimeout(this.changeTimer);
+            this.changeTimer = setTimeout(() => {
+                this.changeTimer = null;
+                this.blocklyRemoveOrphanedShadows();
+                this.setState({changed: true});
+                this.onChange();
+            }, 200);
+
         });
         this.loadCode();
         this.onResize();
@@ -448,6 +475,8 @@ class BlocklyEditor extends React.Component {
         if (!this.blocklyWorkspace) return;
         this.blocklyWorkspace.dispose();
         this.blocklyWorkspace = null;
+        this.changeTimer && clearTimeout(this.changeTimer);
+        this.changeTimer = null;
         window.removeEventListener('resize', this.onResizeBind);
     }
 
