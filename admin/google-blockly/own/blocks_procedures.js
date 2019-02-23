@@ -46,45 +46,72 @@ Blockly.Procedures.allProcedures = function(root) {
 
 /**
  * Construct the blocks required by the flyout for the procedure category.
- * @param {!Blockly.Workspace} workspace The workspace contianing procedures.
+ * @param {!Blockly.Workspace} workspace The workspace containing procedures.
  * @return {!Array.<!Element>} Array of XML block elements.
  */
 Blockly.Procedures.flyoutCategory = function(workspace) {
     var xmlList = [];
-    var block;
     if (Blockly.Blocks['procedures_defnoreturn']) {
-        // <block type="procedures_defnoreturn" gap="16"></block>
-        block = goog.dom.createDom('block');
+        // <block type="procedures_defnoreturn" gap="16">
+        //     <field name="NAME">do something</field>
+        // </block>
+        var block = Blockly.Xml.utils.createElement('block');
         block.setAttribute('type', 'procedures_defnoreturn');
         block.setAttribute('gap', 16);
+        var nameField = Blockly.Xml.utils.createElement('field');
+        nameField.setAttribute('name', 'NAME');
+        nameField.appendChild(Blockly.Xml.utils.createTextNode(
+            Blockly.Msg['PROCEDURES_DEFNORETURN_PROCEDURE']));
+        block.appendChild(nameField);
         xmlList.push(block);
     }
     if (Blockly.Blocks['procedures_defreturn']) {
-        // <block type="procedures_defreturn" gap="16"></block>
-        block = goog.dom.createDom('block');
+        // <block type="procedures_defreturn" gap="16">
+        //     <field name="NAME">do something</field>
+        // </block>
+        var block = Blockly.Xml.utils.createElement('block');
         block.setAttribute('type', 'procedures_defreturn');
         block.setAttribute('gap', 16);
+        var nameField = Blockly.Xml.utils.createElement('field');
+        nameField.setAttribute('name', 'NAME');
+        nameField.appendChild(Blockly.Xml.utils.createTextNode(
+            Blockly.Msg['PROCEDURES_DEFRETURN_PROCEDURE']));
+        block.appendChild(nameField);
         xmlList.push(block);
     }
     if (Blockly.Blocks['procedures_ifreturn']) {
         // <block type="procedures_ifreturn" gap="16"></block>
-        block = goog.dom.createDom('block');
+        var block = Blockly.Xml.utils.createElement('block');
         block.setAttribute('type', 'procedures_ifreturn');
         block.setAttribute('gap', 16);
         xmlList.push(block);
     }
     if (Blockly.Blocks['procedures_defcustomnoreturn']) {
-        // <block type="procedures_defnoreturn" gap="16"></block>
-        block = goog.dom.createDom('block');
+        // <block type="procedures_defcustomnoreturn" gap="16">
+        //     <field name="NAME">do something</field>
+        // </block>
+        var block = Blockly.Xml.utils.createElement('block');
         block.setAttribute('type', 'procedures_defcustomnoreturn');
         block.setAttribute('gap', 16);
+        var nameField = Blockly.Xml.utils.createElement('field');
+        nameField.setAttribute('name', 'NAME');
+        nameField.appendChild(Blockly.Xml.utils.createTextNode(
+            Blockly.Msg['PROCEDURES_DEFNORETURN_PROCEDURE']));
+        block.appendChild(nameField);
         xmlList.push(block);
     }
     if (Blockly.Blocks['procedures_defcustomreturn']) {
-        // <block type="procedures_defnoreturn" gap="16"></block>
-        block = goog.dom.createDom('block');
+        // <block type="procedures_defcustomreturn" gap="16">
+        //     <field name="NAME">do something</field>
+        // </block>
+        var block = Blockly.Xml.utils.createElement('block');
         block.setAttribute('type', 'procedures_defcustomreturn');
         block.setAttribute('gap', 16);
+        var nameField = Blockly.Xml.utils.createElement('field');
+        nameField.setAttribute('name', 'NAME');
+        nameField.appendChild(Blockly.Xml.utils.createTextNode(
+            Blockly.Msg['PROCEDURES_DEFRETURN_PROCEDURE']));
+        block.appendChild(nameField);
         xmlList.push(block);
     }
     if (xmlList.length) {
@@ -101,14 +128,14 @@ Blockly.Procedures.flyoutCategory = function(workspace) {
             //     <arg name="x"></arg>
             //   </mutation>
             // </block>
-            var block = goog.dom.createDom('block');
+            var block = Blockly.Xml.utils.createElement('block');
             block.setAttribute('type', templateName);
             block.setAttribute('gap', 16);
-            var mutation = goog.dom.createDom('mutation');
+            var mutation = Blockly.Xml.utils.createElement('mutation');
             mutation.setAttribute('name', name);
             block.appendChild(mutation);
             for (var j = 0; j < args.length; j++) {
-                var arg = goog.dom.createDom('arg');
+                var arg = Blockly.Xml.utils.createElement('arg');
                 arg.setAttribute('name', args[j]);
                 mutation.appendChild(arg);
             }
@@ -123,9 +150,7 @@ Blockly.Procedures.flyoutCategory = function(workspace) {
     populateProcedures(tuple[3], 'procedures_callcustomreturn');
     return xmlList;
 };
-
 // ---------------------- custom function with return ------------------------------
-Blockly.Words['procedures_defcustomreturn_name']    = {'en': 'JS function with return',                         'de': 'JS-Funktion mit Ergebnis',                        'ru': 'JS функция с результатом'};
 
 Blockly.Blocks['procedures_defcustomreturn'] = {
     /**
@@ -133,34 +158,37 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
      * @this Blockly.Block
      */
     init: function() {
-        var nameField = new Blockly.FieldTextInput(
-            Blockly.Words['procedures_defcustomreturn_name'][systemLang],
+        var nameField = new Blockly.FieldTextInput('',
             Blockly.Procedures.rename);
-        
+
         nameField.setSpellcheck(false);
-        
         this.appendDummyInput()
-            .appendField(Blockly.Msg.PROCEDURES_DEFRETURN_TITLE)
+            // .appendField(Blockly.Msg['PROCEDURES_DEFRETURN_TITLE'])
+            .appendField(Blockly.Words['procedures_defcustomreturn_name'][systemLang])
             .appendField(nameField, 'NAME')
             .appendField('', 'PARAMS');
+        /*this.appendValueInput('RETURN')
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField(Blockly.Msg['PROCEDURES_DEFRETURN_RETURN']);*/
+        this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
+        if ((this.workspace.options.comments ||
+            (this.workspace.options.parentWorkspace &&
+                this.workspace.options.parentWorkspace.options.comments)) &&
+            Blockly.Msg['PROCEDURES_DEFRETURN_COMMENT']) {
+            this.setCommentText(Blockly.Msg['PROCEDURES_DEFRETURN_COMMENT']);
+        }
+        this.setStyle('procedure_blocks');
+        this.setTooltip(Blockly.Msg['PROCEDURES_DEFRETURN_TOOLTIP']);
+        this.setHelpUrl(Blockly.Msg['PROCEDURES_DEFRETURN_HELPURL']);
+        this.arguments_ = [];
+        this.argumentVarModels_ = [];
+        this.setStatements_(true);
+        this.statementConnection_ = null;
 
         this.appendDummyInput('SCRIPT')
             .appendField(new Blockly.FieldScript(btoa('return 0;')), 'SCRIPT');
-
-        this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
-
-        if (Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT) {
-            this.setCommentText(Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT);
-        }
-
         this.setInputsInline(true);
-        this.setColour(Blockly.Msg['PROCEDURES_HUE']);
-        this.setTooltip(Blockly.Msg.PROCEDURES_DEFRETURN_TOOLTIP);
-        this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFRETURN_HELPURL);
-        this.arguments_ = [];
-		this.argumentVarModels_ = [];
         this.setStatements_(false);
-        this.statementConnection_ = null;
     },
     setStatements_: Blockly.Blocks['procedures_defreturn'].setStatements_,
     updateParams_: Blockly.Blocks['procedures_defreturn'].updateParams_,
@@ -172,11 +200,19 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
      * @return {!Blockly.Block} Root block in mutator.
      * @this Blockly.Block
      */
-    decompose: function(workspace) {
+    decompose: function (workspace) {
         var containerBlock = workspace.newBlock('procedures_mutatorcontainer');
         containerBlock.initSvg();
 
         // Check/uncheck the allow statement box.
+        /*
+        if (this.getInput('RETURN')) {
+            containerBlock.setFieldValue(
+                this.hasStatements_ ? 'TRUE' : 'FALSE', 'STATEMENTS');
+        } else {
+            containerBlock.getInput('STATEMENT_INPUT').setVisible(false);
+        }
+        */
         containerBlock.getInput('STATEMENT_INPUT').setVisible(false);
 
         // Parameter list.
@@ -199,19 +235,53 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
      * @param {!Blockly.Block} containerBlock Root block in mutator.
      * @this Blockly.Block
      */
-    compose: function(containerBlock) {
+    compose: function (containerBlock) {
         // Parameter list.
         this.arguments_ = [];
         this.paramIds_ = [];
+        this.argumentVarModels_ = [];
         var paramBlock = containerBlock.getInputTargetBlock('STACK');
         while (paramBlock) {
-            this.arguments_.push(paramBlock.getFieldValue('NAME'));
+            var varName = paramBlock.getFieldValue('NAME');
+            this.arguments_.push(varName);
+            var variable = this.workspace.getVariable(varName, '');
+            if (variable != null) {
+                this.argumentVarModels_.push(variable);
+            } else {
+                console.log('Failed to get variable named ' + varName + ', ignoring.');
+            }
+
             this.paramIds_.push(paramBlock.id);
             paramBlock = paramBlock.nextConnection &&
                 paramBlock.nextConnection.targetBlock();
         }
         this.updateParams_();
         Blockly.Procedures.mutateCallers(this);
+        /*
+        // Show/hide the statement input.
+        var hasStatements = containerBlock.getFieldValue('STATEMENTS');
+        if (hasStatements !== null) {
+            hasStatements = hasStatements == 'TRUE';
+            if (this.hasStatements_ != hasStatements) {
+                if (hasStatements) {
+                    this.setStatements_(true);
+                    // Restore the stack, if one was saved.
+                    Blockly.Mutator.reconnect(this.statementConnection_, this, 'STACK');
+                    this.statementConnection_ = null;
+                } else {
+                    // Save the stack, then disconnect it.
+                    var stackConnection = this.getInput('STACK').connection;
+                    this.statementConnection_ = stackConnection.targetConnection;
+                    if (this.statementConnection_) {
+                        var stackBlock = stackConnection.targetBlock();
+                        stackBlock.unplug();
+                        stackBlock.bumpNeighbours_();
+                    }
+                    this.setStatements_(false);
+                }
+            }
+        }
+        */
     },
     /**
      * Return the signature of this procedure definition.
@@ -225,18 +295,24 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
         return [this.getFieldValue('NAME'), this.arguments_, true, true];
     },
     getVars: Blockly.Blocks['procedures_defreturn'].getVars,
+    getVarModels: Blockly.Blocks['procedures_defreturn'].getVarModels,
     renameVar: Blockly.Blocks['procedures_defreturn'].renameVar,
+    renameVarById: Blockly.Blocks['procedures_defreturn'].renameVarById,
+    updateVarName: Blockly.Blocks['procedures_defreturn'].updateVarName,
+    displayRenamedVar_: Blockly.Blocks['procedures_defreturn'].displayRenamedVar_,
     customContextMenu: Blockly.Blocks['procedures_defreturn'].customContextMenu,
     callType_: 'procedures_callcustomreturn'
 };
 
 Blockly.JavaScript['procedures_defcustomreturn'] = function(block) {
-    // Define a procedure with a return value.
-    var funcName = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('NAME'), Blockly.Procedures.NAME_TYPE);
+     // Define a procedure with a return value.
+    var funcName = Blockly.JavaScript.variableDB_.getName(
+        block.getFieldValue('NAME'), Blockly.Procedures.NAME_TYPE);
 
     var args = [];
     for (var i = 0; i < block.arguments_.length; i++) {
-        args[i] = Blockly.JavaScript.variableDB_.getName(block.arguments_[i], Blockly.Variables.NAME_TYPE);
+      args[i] = Blockly.JavaScript.variableDB_.getName(block.arguments_[i],
+        Blockly.Variables.NAME_TYPE);
     }
 
     var script = atob(block.getFieldValue('SCRIPT'));
@@ -249,7 +325,6 @@ Blockly.JavaScript['procedures_defcustomreturn'] = function(block) {
         lines.join('\n') + '\n}';
 
     code = Blockly.JavaScript.scrub_(block, code);
-
     // Add % so as not to collide with helper functions in definitions list.
     Blockly.JavaScript.definitions_['%' + funcName] = code;
     return null;
@@ -257,13 +332,13 @@ Blockly.JavaScript['procedures_defcustomreturn'] = function(block) {
 
 Blockly.Blocks['procedures_callcustomreturn'] = {
     init: Blockly.Blocks['procedures_callreturn'].init,
-    getProcedureCall:  Blockly.Blocks['procedures_callreturn'].getProcedureCall,
+    getProcedureCall: Blockly.Blocks['procedures_callreturn'].getProcedureCall,
     renameProcedure: Blockly.Blocks['procedures_callreturn'].renameProcedure,
     setProcedureParameters_: Blockly.Blocks['procedures_callreturn'].setProcedureParameters_,
     updateShape_: Blockly.Blocks['procedures_callreturn'].updateShape_,
     mutationToDom: Blockly.Blocks['procedures_callreturn'].mutationToDom,
     domToMutation: Blockly.Blocks['procedures_callreturn'].domToMutation,
-    renameVar: Blockly.Blocks['procedures_callreturn'].renameVar,
+    getVarModels: Blockly.Blocks['procedures_callreturn'].getVarModels,
     onchange: Blockly.Blocks['procedures_callreturn'].onchange,
     customContextMenu: Blockly.Blocks['procedures_callreturn'].customContextMenu,
     defType_: 'procedures_defcustomreturn'
@@ -272,38 +347,37 @@ Blockly.Blocks['procedures_callcustomreturn'] = {
 Blockly.JavaScript['procedures_callcustomreturn'] = Blockly.JavaScript['procedures_callreturn'];
 
 // ---------------------- custom function with no return ------------------------------
-Blockly.Words['procedures_defcustomnoreturn_name']    = {'en': 'Javascript function',                         'de': 'Javascript-Funktion',                        'ru': 'Javascript функция'};
 
 Blockly.Blocks['procedures_defcustomnoreturn'] = {
     init: function() {
-        var nameField = new Blockly.FieldTextInput(
-            Blockly.Words['procedures_defcustomnoreturn_name'][systemLang],
+        var nameField = new Blockly.FieldTextInput('',
             Blockly.Procedures.rename);
-
         nameField.setSpellcheck(false);
-
         this.appendDummyInput()
-            .appendField(Blockly.Msg.PROCEDURES_DEFRETURN_TITLE)
+            // .appendField(Blockly.Msg['PROCEDURES_DEFNORETURN_TITLE'])
+            .appendField(Blockly.Words['procedures_defcustomnoreturn_name'][systemLang])
             .appendField(nameField, 'NAME')
             .appendField('', 'PARAMS');
+        this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
+        if ((this.workspace.options.comments ||
+            (this.workspace.options.parentWorkspace &&
+                this.workspace.options.parentWorkspace.options.comments)) &&
+            Blockly.Msg['PROCEDURES_DEFNORETURN_COMMENT']) {
+            this.setCommentText(Blockly.Msg['PROCEDURES_DEFNORETURN_COMMENT']);
+        }
+        this.setStyle('procedure_blocks');
+        this.setColour(Blockly.Msg['PROCEDURES_HUE']);
+        this.setTooltip(Blockly.Msg['PROCEDURES_DEFNORETURN_TOOLTIP']);
+        this.setHelpUrl(Blockly.Msg['PROCEDURES_DEFNORETURN_HELPURL']);
+        this.arguments_ = [];
+        this.argumentVarModels_ = [];
+        this.setStatements_(true);
+        this.statementConnection_ = null;
 
         this.appendDummyInput('SCRIPT')
             .appendField(new Blockly.FieldScript(''), 'SCRIPT');
-
-        this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
-
-        if (Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT) {
-            this.setCommentText(Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT);
-        }
-
         this.setInputsInline(true);
-        this.setColour(Blockly.Msg['PROCEDURES_HUE']);
-        this.setTooltip(Blockly.Msg.PROCEDURES_DEFRETURN_TOOLTIP);
-        this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFRETURN_HELPURL);
-        this.arguments_ = [];
-		this.argumentVarModels_ = [];
         this.setStatements_(false);
-        this.statementConnection_ = null;
     },
     setStatements_: Blockly.Blocks['procedures_defnoreturn'].setStatements_,
     updateParams_: Blockly.Blocks['procedures_defnoreturn'].updateParams_,
@@ -315,12 +389,16 @@ Blockly.Blocks['procedures_defcustomnoreturn'] = {
         return [this.getFieldValue('NAME'), this.arguments_, false, true];
     },
     getVars: Blockly.Blocks['procedures_defnoreturn'].getVars,
+    getVarModels: Blockly.Blocks['procedures_defnoreturn'].getVarModels,
     renameVar: Blockly.Blocks['procedures_defnoreturn'].renameVar,
+    renameVarById: Blockly.Blocks['procedures_defnoreturn'].renameVarById,
+    updateVarName: Blockly.Blocks['procedures_defnoreturn'].updateVarName,
+    displayRenamedVar_: Blockly.Blocks['procedures_defnoreturn'].displayRenamedVar_,
     customContextMenu: Blockly.Blocks['procedures_defnoreturn'].customContextMenu,
     callType_: 'procedures_callcustomnoreturn'
 };
 
-Blockly.JavaScript['procedures_defcustomnoreturn'] = Blockly.JavaScript['procedures_defnoreturn'];
+Blockly.JavaScript['procedures_defcustomnoreturn'] = Blockly.JavaScript['procedures_defcustomreturn'];
 
 Blockly.Blocks['procedures_callcustomnoreturn'] = {
     init: Blockly.Blocks['procedures_callnoreturn'].init,
@@ -330,7 +408,6 @@ Blockly.Blocks['procedures_callcustomnoreturn'] = {
     updateShape_: Blockly.Blocks['procedures_callnoreturn'].updateShape_,
     mutationToDom: Blockly.Blocks['procedures_callnoreturn'].mutationToDom,
     domToMutation: Blockly.Blocks['procedures_callnoreturn'].domToMutation,
-    renameVar: Blockly.Blocks['procedures_callnoreturn'].renameVar,
     onchange: Blockly.Blocks['procedures_callnoreturn'].onchange,
     customContextMenu: Blockly.Blocks['procedures_callnoreturn'].customContextMenu,
     defType_: 'procedures_defcustomnoreturn'

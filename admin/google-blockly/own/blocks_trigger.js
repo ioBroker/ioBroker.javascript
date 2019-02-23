@@ -644,6 +644,10 @@ Blockly.Blocks['schedule_create'] = {
     isSchedule_: true,
     getVars: function () {
         return [this.getFieldValue('NAME')];
+    },
+    getVarModels: function () {
+        var name = this.getFieldValue('NAME');
+        return [{getId: function () {return name}, name: name}];
     }
 };
 

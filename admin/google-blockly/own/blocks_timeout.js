@@ -107,7 +107,7 @@ Blockly.Blocks['timeouts_settimeout'] = {
             ]), 'UNIT')
             .appendField(Blockly.Words['timeouts_settimeout_ms'][systemLang]);
 
-        this.appendStatementInput("STATEMENT")
+        this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
         this.setPreviousStatement(true, null);
@@ -120,6 +120,10 @@ Blockly.Blocks['timeouts_settimeout'] = {
     isTimeout_: true,
     getVars: function () {
         return [this.getFieldValue('NAME')];
+    },
+    getVarModels: function () {
+        var name = this.getFieldValue('NAME');
+        return [{getId: function () {return name}, name: name}];
     }
 };
 
@@ -147,7 +151,7 @@ Blockly.Timeouts.getAllTimeouts = function (workspace) {
             result.push([blocks[i].getFieldValue('NAME'), blocks[i].getFieldValue('NAME')]);
         }
     }
-    if (!result.length) result.push(['', '']);
+    !result.length && result.push(['', '']);
 
     return result;
 };
@@ -226,6 +230,10 @@ Blockly.Blocks['timeouts_setinterval'] = {
     isInterval_: true,
     getVars: function () {
         return [this.getFieldValue('NAME')];
+    },
+    getVarModels: function () {
+        var name = this.getFieldValue('NAME');
+        return [{getId: function () {return name}, name: name}];
     }
 };
 
