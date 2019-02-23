@@ -116,11 +116,18 @@ Blockly.FieldScript.prototype.showEditor_ = function(opt_quietInput) {
  * @private
  */
 Blockly.FieldScript.prototype.render_ = function() {
-    var width = 10;
+    var width = Blockly.BlockSvg.SEP_SPACE_X * 3;
     if (this.visible_) {
-        if (this.borderRect_) {
-            this.borderRect_.setAttribute('width', width + Blockly.BlockSvg.SEP_SPACE_X);
+        this.borderRect_ && this.borderRect_.setAttribute('width', width);
+        if (!this.textElement_.childNodes.length) {
+            var textNode = document.createTextNode('</>');
+            this.textElement_.appendChild(textNode);
+            this.textElement_.setAttribute('text-anchor', 'start');
+            this.textElement_.setAttribute('x', 0);
         }
+
+  //      this.size_.height = Blockly.BlockSvg.MIN_BLOCK_Y;
+//        this.size_.width = Blockly.Field.getCachedWidth(this.textElement_);
     } else {
         width = 0;
     }
@@ -132,6 +139,7 @@ Blockly.FieldScript.prototype.render_ = function() {
  * @private
  */
 Blockly.FieldScript.prototype.updateTextNode_ = function() {
+    var width = Blockly.BlockSvg.SEP_SPACE_X * 3;
     if (!this.textElement_) {
         // Not rendered yet.
         return;
@@ -143,7 +151,7 @@ Blockly.FieldScript.prototype.updateTextNode_ = function() {
     this.textElement_.appendChild(textNode);
 
     // Cached width is obsolete.  Clear it.
-    this.size_.width = 10;
+    this.size_.width = width;
 };
 
 /**

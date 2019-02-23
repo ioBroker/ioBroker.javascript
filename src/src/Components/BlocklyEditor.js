@@ -394,9 +394,9 @@ class BlocklyEditor extends React.Component {
 
         window.addEventListener('resize', this.onResizeBind, false);
         toolboxText = toolboxText || this.getToolbox();
-        toolboxXml = toolboxXml || window.Blockly.Xml.textToDom(toolboxText);
+        toolboxXml = toolboxXml || this.Blockly.Xml.textToDom(toolboxText);
 
-        this.blocklyWorkspace = window.Blockly.inject(
+        this.blocklyWorkspace = this.Blockly.inject(
             this.blockly,
             {
                 media: 'google-blockly/media/',
@@ -431,7 +431,7 @@ class BlocklyEditor extends React.Component {
                 allBlocks.forEach(b => b.removeSelect());
             }
 
-            if (masterEvent.type === window.Blockly.Events.UI || masterEvent.type === window.Blockly.Events.CREATE) {
+            if (masterEvent.type === this.Blockly.Events.UI || masterEvent.type === this.Blockly.Events.CREATE) {
                 return;  // Don't mirror UI events.
             }
             if (this.ignoreChanges) return;
