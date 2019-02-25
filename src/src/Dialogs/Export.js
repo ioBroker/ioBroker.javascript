@@ -62,6 +62,7 @@ class DialogExport extends React.Component {
 
         return (
             <Dialog
+                key="export-dialog"
                 disableBackdropClick
                 disableEscapeKeyDown
                 maxWidth="lg"
@@ -95,9 +96,7 @@ class DialogExport extends React.Component {
                             </Fade>
                         )}
                     </Popper>
-                    <textarea id="copy_input" readOnly={true} style={{position: 'absolute', left: -9999}} tabIndex={-1} aria-hidden={true}>
-                        {this.props.text}
-                    </textarea>
+                    <textarea id="copy_input" readOnly={true} style={{position: 'absolute', left: -9999}} tabIndex={-1} aria-hidden={true} value={this.props.text}/>}/>
                 </DialogActions>
             </Dialog>
         );

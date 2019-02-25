@@ -98,21 +98,52 @@ class BlocklyEditor extends React.Component {
         BlocklyEditor.loadScripts(toLoad, callback);
     }
 
-    searchBlocks(text) {
-        const dom = this.Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
-        let exportText = this.Blockly.Xml.domToPrettyText(dom).toLowerCase();
-        const blocks = exportText.match(/<shadow type="field_oid" id="[^"]+">\n\s*<field name="oid">[^<]+<\/field>/gi);
-        if (blocks) {
-            const ids = blocks.map(b => {
-                const m = b.match(/id="([^"]+)"/g);
-                return m && m[0].substring(4, m[0].length - 1);
-            }).filter(id => !!id);
-            const allBlocks = this.blocklyWorkspace.getAllBlocks();
-            return allBlocks.filter(b => {
-                return ids.indexOf(b.id.toLowerCase()) !== -1;
-            });
+    static loadXMLDoc(text) {
+        let parseXml;
+        if (window.DOMParser) {
+            parseXml = function(xmlStr) {
+                return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
+            };
+        } else if (typeof window.ActiveXObject != "undefined" && new window.ActiveXObject("Microsoft.XMLDOM")) {
+            parseXml = function(xmlStr) {
+                var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
+                xmlDoc.async = "false";
+                xmlDoc.loadXML(xmlStr);
+                return xmlDoc;
+            };
         } else {
-            return [];
+            parseXml = function() { return null; }
+        }
+        return parseXml(text);
+    }
+
+    static searchXml(root, text, _id, _result) {
+        _result = _result || [];
+        if (root.tagName === 'BLOCK') {
+            _id = root.id;
+        }
+        if (root.tagName === 'FIELD') {
+            for (let a = 0; a < root.attributes.length; a++) {
+                const val = (root.attributes[a].value || '').toLowerCase();
+                if (root.attributes[a].nodeName === 'name' && (val === 'oid' || val === 'text')) {
+                    if (root.innerText.toLowerCase().indexOf(text) !== -1) {
+                        _result.push(_id);
+                    }
+                }
+            }
+        }
+        root.childNodes.forEach(node => BlocklyEditor.searchXml(node, text, _id, _result));
+        return _result;
+    }
+
+    searchBlocks(text) {
+        if (this.blocklyWorkspace) {
+            const dom = this.Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
+            const ids = BlocklyEditor.searchXml(dom, text);
+            const allBlocks = this.blocklyWorkspace.getAllBlocks();
+            const result = [];
+            allBlocks.filter(b => ids.indexOf(b.id) !== -1).forEach(b => result.push(b));
+            return result;
         }
     }
 
@@ -350,8 +381,13 @@ class BlocklyEditor extends React.Component {
     }
     
     onImportBlocks(xml) {
-        if ((xml || '').trim()) {
+        xml = (xml || '').trim();
+        if (xml) {
             try {
+                if (!xml.startsWith('<xml')) {
+                    xml = '<xml xmlns="http://www.w3.org/1999/xhtml">' + xml + '</xml>';
+                }
+                xml = xml.replace(/[\n\r]/g, '').replace(/<variables>.*<\/variables>/g, '');
                 let xmlBlocks = this.Blockly.Xml.textToDom(xml);
                 if (xmlBlocks.nodeName === 'xml') {
                     for (let b = 0; b < xmlBlocks.children.length; b++) {
@@ -360,6 +396,7 @@ class BlocklyEditor extends React.Component {
                 } else {
                     this.blocklyWorkspace.paste(xmlBlocks);
                 }
+                this.onBlocklyChanged();
             } catch (e) {
                 this.setState({error: {text: e, title: I18n.t('Import error')}});
             }
@@ -381,6 +418,12 @@ class BlocklyEditor extends React.Component {
             window.alert('Cannot extract Blockly code!');
         }
         setTimeout(() => this.ignoreChanges = false, 100);
+    }
+
+    onBlocklyChanged() {
+        this.blocklyRemoveOrphanedShadows();
+        this.setState({changed: true});
+        this.onChange();
     }
 
     componentDidUpdate() {
@@ -438,9 +481,7 @@ class BlocklyEditor extends React.Component {
             this.changeTimer && clearTimeout(this.changeTimer);
             this.changeTimer = setTimeout(() => {
                 this.changeTimer = null;
-                this.blocklyRemoveOrphanedShadows();
-                this.setState({changed: true});
-                this.onChange();
+                this.onBlocklyChanged();
             }, 200);
 
         });
