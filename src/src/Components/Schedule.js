@@ -855,6 +855,8 @@ class Schedule extends React.Component {
                         <Input key="input" value={this.state.schedule.period.yearDate} className={this.props.classes.inputEvery} type="number" min="1" max="31" onChange={e => {
                             const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
                             _schedule.period.yearDate = parseInt(e.target.value, 10);
+                            if (_schedule.period.yearDate < 1) _schedule.period.yearDate = 31;
+                            if (_schedule.period.yearDate > 31) _schedule.period.yearDate = 1;
                             this.onChange(_schedule);
                         }} />
                         <Select value={schedule.period.yearMonth}
@@ -1140,6 +1142,7 @@ class Schedule extends React.Component {
                 {typeof schedule.period.months === 'number' && schedule.period.months > 1 && [(<Input value={schedule.period.months} className={this.props.classes.inputEvery} type="number" min="2" onChange={e => {
                     const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
                     _schedule.period.months = parseInt(e.target.value, 10);
+                    if (_schedule.period.months < 1) _schedule.period.months = 1;
                     this.onChange(_schedule);
                 }} />), (<span>{I18n.t('sch_periodMonth')}</span>)]}
             </div>),
@@ -1250,6 +1253,7 @@ class Schedule extends React.Component {
                 {schedule.period.years > 1 && [(<Input value={this.state.schedule.period.years} className={this.props.classes.inputEvery} type="number" min="2" onChange={e => {
                     const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
                     _schedule.period.years = parseInt(e.target.value, 10);
+                    if (_schedule.period.years < 1) _schedule.period.years = 1;
                     this.onChange(_schedule);
                 }} />), (<span>{I18n.t('sch_periodYear')}</span>)]}
             </div>),

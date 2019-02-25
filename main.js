@@ -367,6 +367,8 @@ function startAdapter(options) {
             context.errorLogFunction = webstormDebug ? console : adapter.log;
             activeStr = adapter.namespace + '.scriptEnabled.';
 
+            mods.fs = new require('./lib/protectFs')(adapter.log);
+
             // try to read TS declarations
             try {
                 tsAmbient = {
@@ -592,142 +594,7 @@ function stopAllScripts(cb) {
     setTimeout(() => cb(), 0);
 }
 
-function checkObjectsJson(file) {
-    if (mods.path.normalize(file).replace(/\\/g, '/').indexOf('-data/objects.json') !== -1) {
-        if (adapter) {
-            adapter.log.error('May not read ' + file);
-        } else {
-            console.error('May not read ' + file);
-        }
-        throw new Error('Permission denied');
-    }
-}
-
-mods.fs.readFile = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.readFile.apply(this, arguments);
-};
-mods.fs.readFileSync = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.readFileSync.apply(this, arguments);
-};
-mods.fs.writeFile = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.writeFile.apply(this, arguments);
-};
-mods.fs.writeFileSync = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.writeFileSync.apply(this, arguments);
-};
-mods.fs.unlink = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.unlink.apply(this, arguments);
-};
-mods.fs.unlinkSync = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.unlinkSync.apply(this, arguments);
-};
-mods.fs.appendFile = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.appendFile.apply(this, arguments);
-};
-mods.fs.appendFileSync = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.appendFileSync.apply(this, arguments);
-};
-mods.fs.chmod = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.chmod.apply(this, arguments);
-};
-mods.fs.chmodSync = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.chmodSync.apply(this, arguments);
-};
-mods.fs.chown = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.chmodSync.apply(this, arguments);
-};
-mods.fs.chownSync = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.chownSync.apply(this, arguments);
-};
-mods.fs.copyFile = function () {
-    checkObjectsJson(arguments[0]);
-    checkObjectsJson(arguments[1]);
-    if (nodeFS.copyFile) {
-        return nodeFS.copyFile.apply(this, arguments);
-    } else {
-        const cb = arguments[2];
-        return nodeFS.readFile(arguments[0], (err, data) => {
-            if (err) {
-                cb && cb(err);
-            } else {
-                nodeFS.writeFile(arguments[1], data, err => cb && cb(err));
-            }
-        });
-    }
-};
-mods.fs.copyFileSync = function () {
-    checkObjectsJson(arguments[0]);
-    checkObjectsJson(arguments[1]);
-    if (nodeFS.copyFileSync) {
-        return nodeFS.copyFileSync.apply(this, arguments);
-    } else {
-        return nodeFS.writeFileSync(arguments[1], nodeFS.readFileSync(arguments[0]));
-    }
-};
-mods.fs.open = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.open.apply(this, arguments);
-};
-mods.fs.openSync = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.openSync.apply(this, arguments);
-};
-mods.fs.rename = function () {
-    checkObjectsJson(arguments[0]);
-    checkObjectsJson(arguments[1]);
-    return nodeFS.rename.apply(this, arguments);
-};
-mods.fs.renameSync = function () {
-    checkObjectsJson(arguments[0]);
-    checkObjectsJson(arguments[1]);
-    return nodeFS.renameSync.apply(this, arguments);
-};
-mods.fs.truncate = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.truncate.apply(this, arguments);
-};
-mods.fs.truncateSync = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.truncateSync.apply(this, arguments);
-};
-mods.fs.exists = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.exists.apply(this, arguments);
-};
-mods.fs.existsSync = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.existsSync.apply(this, arguments);
-};
-mods.fs.stat = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.stat.apply(this, arguments);
-};
-mods.fs.statSync = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.statSync.apply(this, arguments);
-};
-mods.fs.readdir = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.readdir.apply(this, arguments);
-};
-mods.fs.readdirSync = function () {
-    checkObjectsJson(arguments[0]);
-    return nodeFS.readdirSync.apply(this, arguments);
-};
-
-let attempts           = {};
+const attempts         = {};
 let globalScript       = '';
 /** Generated declarations for global TypeScripts */
 let globalDeclarations = '';
@@ -1226,7 +1093,7 @@ function patternMatching(event, patternFunctions) {
 
             matched = true;
         } else if (patternFunctions.logic === 'and') {
-             return false;
+            return false;
         }
     }
     return matched;

@@ -534,7 +534,7 @@ class BlocklyEditor extends React.Component {
                 this.state.error ?
                     (<DialogError
                         key="dialogError"
-                        text={typeof this.state.error === 'object' ? this.state.error.text : this.state.error}
+                        text={typeof this.state.error === 'object' ? this.state.error.text.toString() : this.state.error}
                         title={typeof this.state.error === 'object' ? this.state.error.title : ''}
                         onClose={() => {
                             if (this.blinkBlock) {

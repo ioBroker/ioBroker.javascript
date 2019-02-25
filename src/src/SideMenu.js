@@ -42,7 +42,7 @@ import {MdPersonPin as IconExpert} from 'react-icons/md';
 import {FaFileExport as IconExport} from 'react-icons/fa';
 import {FaFileImport as IconImport} from 'react-icons/fa';
 import {MdPalette as IconDark} from 'react-icons/md';
-import {MdFilter as IconFilter} from 'react-icons/md';
+import {FaFilter as IconFilter} from 'react-icons/fa';
 import {MdArrowForward as IconExpandRight} from 'react-icons/md';
 
 import ImgJS from './assets/js.png';

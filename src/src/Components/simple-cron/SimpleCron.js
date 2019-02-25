@@ -22,6 +22,12 @@ const styles = theme => ({
         margin: 0,
         minWidth: 120,
     },
+    formControlMarginRight: {
+        marginRight: 5
+    },
+    formControlPaddingTop: {
+        paddingTop: 6.2
+    }
 });
 
 const PERIODIC = {
@@ -425,6 +431,7 @@ class SimpleCron extends React.Component {
                     onChange={e => {
                         const settings = JSON.parse(JSON.stringify(this.state[type]));
                         settings.minutes = parseInt(e.target.value, 10);
+                        if (settings.minutes < 1) settings.minutes = 1;
                         this.setState({[type]: settings}, () => this.recalcCron());
                     }}
                     min={1}
@@ -441,6 +448,7 @@ class SimpleCron extends React.Component {
                     onChange={e => {
                         const settings = JSON.parse(JSON.stringify(this.state[type]));
                         settings.hours = parseInt(e.target.value, 10);
+                        if (settings.hours < 1) settings.hours = 1;
                         this.setState({[type]: settings}, () => this.recalcCron());
                     }}
                     min={1}
@@ -461,6 +469,7 @@ class SimpleCron extends React.Component {
                     onChange={e => {
                         const settings = JSON.parse(JSON.stringify(this.state[type]));
                         settings.period = parseInt(e.target.value, 10);
+                        if (settings.period < 1) settings.period = 1;
                         this.setState({[type]: settings}, () => this.recalcCron());
                     }}
                     min={1}
@@ -479,16 +488,16 @@ class SimpleCron extends React.Component {
                 {Object.keys(PERIODIC_TYPES).map(mode => (<MenuItem key={PERIODIC_TYPES[mode]} value={PERIODIC_TYPES[mode]}>{I18n.t('sc_' + PERIODIC_TYPES[mode])}</MenuItem>))}
             </Select></div>);
         }
-
     }
 
     getControlsTime(type) {
         const settings = this.state[type];
-        return (<FormControl className={this.props.classes.formControl}>
+        return (<FormControl className={this.props.classes.formControl} classes={{root: this.props.classes.formControlMarginRight}}>
             <TextField
                 key="at"
                 label={I18n.t('sc_time')}
                 value={settings.time}
+                type="time"
                 onChange={e => {
                     const settings = JSON.parse(JSON.stringify(this.state[type]));
                     settings.time = e.target.value;
@@ -514,6 +523,8 @@ class SimpleCron extends React.Component {
                 key="date"
                 label={I18n.t('sc_date')}
                 value={settings.date}
+                type="text"
+                inputProps={{className: this.props.classes.formControlPaddingTop}}
                 onChange={e => {
                     const settings = JSON.parse(JSON.stringify(this.state[type]));
                     settings.date = e.target.value;
