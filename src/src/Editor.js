@@ -6,8 +6,12 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Badge from '@material-ui/core/Badge';
 
 import {
+    MdMoreVert as IconMore,
+    MdPause as IconPause,
+    MdPlayArrow as IconPlay,
     MdSave as IconSave
 } from 'react-icons/md';
 import {MdCancel as IconCancel} from 'react-icons/md';
@@ -21,6 +25,9 @@ import {FaFileImport as IconImport} from 'react-icons/fa';
 import {FaFlagCheckered as IconCheck} from 'react-icons/fa';
 import {MdGpsFixed as IconLocate} from 'react-icons/md';
 import {MdClearAll as IconCloseAll} from 'react-icons/md';
+import {MdBuild as IconDebugMenu} from 'react-icons/md';
+import {MdBugReport as IconDebug} from 'react-icons/md';
+import {MdPlaylistAddCheck as IconVerbose} from 'react-icons/md';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
@@ -35,6 +42,9 @@ import DialogConfirm from './Dialogs/Confirmation';
 import DialogSelectID from './Dialogs/SelectID';
 import DialogCron from './Dialogs/Cron';
 import DialogScriptEditor from './Dialogs/ScriptEditor';
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import Checkbox from "@material-ui/core/Checkbox";
 
 const images = {
     'Blockly': ImgBlockly,
@@ -42,6 +52,11 @@ const images = {
     def: ImgJS,
     'TypeScript/ts': ImgTypeScript,
 };
+
+const MENU_ITEM_HEIGHT = 48;
+const COLOR_DEBUG = '#02a102';
+const COLOR_VERBOSE = '#70aae9';
+
 
 const styles = theme => ({
 
@@ -114,7 +129,13 @@ const styles = theme => ({
     },
     tabButton: {
 
-    }
+    },
+    menuIcon: {
+        width: 18,
+        height: 18,
+        borderRadius: 2,
+        marginRight: 5
+    },
 });
 
 function setChangedInAdmin(isChanged) {
@@ -145,6 +166,8 @@ class Editor extends React.Component {
             editing: editing, // array of opened scripts
             changed: false,
             blockly: null,
+            debugEnabled: false,
+            verboseEnabled: false,
             showBlocklyCode: false,
             showSelectId: false,
             showCron: false,
@@ -157,7 +180,8 @@ class Editor extends React.Component {
             menuOpened: !!this.props.menuOpened,
             menuTabsOpened: false,
             menuTabsAnchorEl: null,
-            runningInstances: this.props.runningInstances || {}
+            runningInstances: this.props.runningInstances || {},
+            showDebugMenu: false,
         };
         
         setChangedInAdmin(false);
@@ -251,6 +275,48 @@ class Editor extends React.Component {
         }
     }
 
+    removeNonExistingScripts(nextProps, newState) {
+        nextProps = nextProps || this.props;
+        newState = newState || {};
+
+        let _changed = false;
+        if (this.state.editing && nextProps.objects['system.config']) {
+            const isAnyNonExists = this.state.editing.find(id => !nextProps.objects[id]);
+
+            if (isAnyNonExists) {
+                // remove non-existing scripts
+                const editing = JSON.parse(JSON.stringify(this.state.editing));
+                for (let i = editing.length - 1; i >= 0; i--) {
+                    if (!this.objects[editing[i]]) {
+                        _changed = true;
+                        editing.splice(i, 1);
+                    }
+                }
+                if (_changed) {
+                    newState.editing = editing;
+                }
+                if (this.state.selected && !this.objects[this.state.selected]) {
+                    _changed = true;
+                    newState.selected = editing[0] || '';
+                    if (this.scripts[newState.selected]) {
+                        if (this.state.blockly !== (this.scripts[newState.selected].engineType === 'Blockly')) {
+                            newState.blockly = this.scripts[newState.selected].engineType === 'Blockly';
+                            _changed = true;
+                        }
+                        if (this.state.verboseEnabled !== this.scripts[newState.selected].verbose) {
+                            newState.verboseEnabled = this.scripts[newState.selected].verbose;
+                            _changed = true;
+                        }
+                        if (this.state.debugEnabled !== this.scripts[newState.selected].debug) {
+                            newState.debugEnabled = this.scripts[newState.selected].debug;
+                            _changed = true;
+                        }
+                    }
+                }
+            }
+        }
+        return _changed;
+    }
     componentWillReceiveProps(nextProps) {
         const newState = {};
         let _changed = false;
@@ -270,30 +336,8 @@ class Editor extends React.Component {
         }
 
         // check if all opened files still exists
-        if (this.state.editing && nextProps.objects['system.config']) {
-            const isAnyNonExists = this.state.editing.find(id => !nextProps.objects[id]);
-
-            if (isAnyNonExists) {
-                // remove non-existing scripts
-                const editing = JSON.parse(JSON.stringify(this.state.editing));
-                for (let i = editing.length - 1; i >= 0; i--) {
-                    if (!this.objects[editing[i]]) {
-                        _changed = true;
-                        editing.splice(i, 1);
-                    }
-                }
-                if (_changed) {
-                    newState.editing = editing;
-                }
-                if (this.state.selected && !this.objects[this.state.selected]) {
-                    _changed = true;
-                    newState.selected = editing[0] || '';
-                    if (this.scripts[newState.selected] && this.state.blockly !== (this.scripts[newState.selected].engineType === 'Blockly')) {
-                        newState.blockly = this.scripts[newState.selected].engineType === 'Blockly';
-                        _changed = true;
-                    }
-                }
-            }
+        if (this.removeNonExistingScripts(nextProps, newState)) {
+            _changed = true;
         }
 
         // update search text
@@ -328,6 +372,14 @@ class Editor extends React.Component {
                 this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.objects[this.state.selected].common));
                 if (this.state.blockly !== (this.scripts[this.state.selected].engineType === 'Blockly')) {
                     newState.blockly = this.scripts[this.state.selected].engineType === 'Blockly';
+                    _changed = true;
+                }
+                if (this.state.verboseEnabled !== this.scripts[this.state.selected].verbose) {
+                    newState.verboseEnabled = this.scripts[this.state.selected].verbose;
+                    _changed = true;
+                }
+                if (this.state.debugEnabled !== this.scripts[this.state.selected].debug) {
+                    newState.debugEnabled = this.scripts[this.state.selected].debug;
                     _changed = true;
                 }
             }
@@ -415,6 +467,8 @@ class Editor extends React.Component {
             newState.editing = editing;
             newState.selected = nextProps.selected;
             newState.blockly = this.scripts[nextProps.selected].engineType === 'Blockly';
+            newState.verboseEnabled = this.scripts[nextProps.selected].verbose;
+            newState.debugEnabled = this.scripts[nextProps.selected].debug;
             newState.showBlocklyCode = false;
             setChangedInAdmin(newState.changed);
         } else {
@@ -468,8 +522,17 @@ class Editor extends React.Component {
         });
     }
 
-    onChange(newValue) {
-        this.scripts[this.state.selected].source = newValue;
+    onChange(options) {
+        options = options || {};
+        if (options.script !== undefined) {
+            this.scripts[this.state.selected].source = options.script;
+        }
+        if (options.debug !== undefined) {
+            this.scripts[this.state.selected].debug = options.debug;
+        }
+        if (options.verbose !== undefined) {
+            this.scripts[this.state.selected].verbose = options.verbose;
+        }
         const changed = JSON.stringify(this.scripts[this.state.selected]) !== JSON.stringify(this.props.objects[this.state.selected].common);
         if (changed !== this.state.changed) {
             this.setState({changed});
@@ -480,7 +543,7 @@ class Editor extends React.Component {
     onTabChange(event, selected) {
         window.localStorage && window.localStorage.setItem('Editor.selected', selected);
         const common = this.scripts[selected] || (this.props.objects[selected] && this.props.objects[selected].common);
-        this.setState({selected, blockly: common.engineType === 'Blockly', showBlocklyCode: false});
+        this.setState({selected, blockly: common.engineType === 'Blockly', showBlocklyCode: false, verboseEnabled: common.verbose, debugEnabled: common.debug});
         this.props.onSelectedChange && this.props.onSelectedChange(selected, this.state.editing);
     }
 
@@ -522,6 +585,8 @@ class Editor extends React.Component {
                     newState.changed = this.isScriptChanged(newState.selected);
                     const common = newState.selected && (this.scripts[newState.selected] || (this.props.objects[newState.selected] && this.props.objects[newState.selected].common));
                     newState.blockly = common ? common.engineType === 'Blockly' : false;
+                    newState.verboseEnabled = common ? common.verbose : false;
+                    newState.debugEnabled = common ? common.debug : false;
                     newState.showBlocklyCode = false;
                     setChangedInAdmin(newState.changed);
                 }
@@ -618,6 +683,54 @@ class Editor extends React.Component {
         }
     }
 
+    getDebugMenu() {
+        if (!this.state.showDebugMenu) return null;
+
+        return (<Menu
+            key="menuDebug"
+            id="menu-debug"
+            anchorEl={this.state.menuDebugAnchorEl}
+            open={this.state.showDebugMenu}
+            onClose={() => this.setState({showDebugMenu: false, menuDebugAnchorEl: null})}
+            PaperProps={{
+                style: {
+                    maxHeight: MENU_ITEM_HEIGHT * 7.5,
+                },
+            }}
+        >
+            <MenuItem key="debugEnabled"
+                      title={I18n.t('debug_help')}
+                      onClick={event => {
+                          event.stopPropagation();
+                          event.preventDefault();
+                          this.setState({showDebugMenu: false, menuDebugAnchorEl: null, debugEnabled: !this.state.debugEnabled}, () => this.onChange({debug: this.state.debugEnabled}));
+                      }}>
+                <Checkbox checked={this.state.debugEnabled}/>
+                <IconDebug className={this.props.classes.menuIcon} style={{color: COLOR_DEBUG}}/>
+                {I18n.t('debug')}
+            </MenuItem>
+            <MenuItem key="verboseEnabled"
+                      title={I18n.t('verbose_help')}
+                      onClick={event => {
+                          event.stopPropagation();
+                          event.preventDefault();
+                          this.setState({showDebugMenu: false, menuDebugAnchorEl: null, verboseEnabled: !this.state.verboseEnabled}, () => this.onChange({verbose: this.state.verboseEnabled}));
+                      }}>
+                <Checkbox checked={this.state.verboseEnabled}/>
+                <IconVerbose className={this.props.classes.menuIcon} style={{color: COLOR_VERBOSE}}/>
+                {I18n.t('verbose')}
+            </MenuItem>
+        </Menu>);
+    }
+
+    getDebugBadge() {
+        return [
+            this.state.debugEnabled && this.state.verboseEnabled && (<IconDebug className={this.props.classes.menuIcon} style={{color: COLOR_VERBOSE}}/>),
+            this.state.debugEnabled && !this.state.verboseEnabled && (<IconDebug className={this.props.classes.menuIcon} style={{color: COLOR_DEBUG}}/>),
+            !this.state.debugEnabled && this.state.verboseEnabled && (<IconVerbose className={this.props.classes.menuIcon} style={{color: COLOR_VERBOSE}}/>),
+        ]
+    }
+
     getToolbar() {
         const isInstanceRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].engine && this.state.runningInstances[this.scripts[this.state.selected].engine];
         const isScriptRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].enabled;
@@ -654,7 +767,7 @@ class Editor extends React.Component {
                                      onClick={() => this.sendCommandToBlockly('check')}>
                             <IconCheck /></IconButton>)}
 
-                    {!this.state.blockly && !this.state.showBlocklyCode && (<IconButton key="select-cron" aria-label="select ID"
+                    {!this.state.blockly && !this.state.showBlocklyCode && (<IconButton key="select-cron" aria-label="create CRON"
                                                                                         title={I18n.t('Create or edit CRON or time wizard')}
                                                                                         className={this.props.classes.toolbarButtons}
                                                                                         onClick={() => this.setState({showCron: true})}><IconCron/></IconButton>)}
@@ -676,6 +789,16 @@ class Editor extends React.Component {
                                                     style={{padding: '0 5px'}}
                                                     onClick={() => this.setState({showBlocklyCode: !this.state.showBlocklyCode})}>
                         <img alt="blockly2js" src={ImgBlockly2Js} /></Button>)}
+
+                    {!this.state.showBlocklyCode && (<IconButton key="debug" aria-label="Debug menu"
+                                                                 title={I18n.t('Debug options')}
+                                                                 className={this.props.classes.toolbarButtons}
+                                                                 onClick={e => this.setState({showDebugMenu: true, menuDebugAnchorEl: e.currentTarget})}>
+                        <Badge className={this.props.classes.badgeMargin} badgeContent={this.getDebugBadge()}>
+                            <IconDebugMenu />
+                        </Badge>
+                    </IconButton>)}
+
                 </Toolbar>);
         } else {
             return null;
@@ -699,7 +822,7 @@ class Editor extends React.Component {
                     code={this.scripts[this.state.selected].source || ''}
                     isDark={this.state.theme === 'dark'}
                     connection={this.props.connection}
-                    onChange={newValue => this.onChange(newValue)}
+                    onChange={newValue => this.onChange({script: newValue})}
                     language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
                 />
             </div>);
@@ -720,7 +843,7 @@ class Editor extends React.Component {
                     searchText={this.state.searchText}
                     resizing={this.props.resizing}
                     code={this.scripts[this.state.selected].source || ''}
-                    onChange={newValue => this.onChange(newValue)}
+                    onChange={newValue => this.onChange({script: newValue})}
                 />
             </div>);
         } else {
@@ -825,7 +948,18 @@ class Editor extends React.Component {
     render() {
         if (this.state.selected && this.props.objects[this.state.selected] && this.state.blockly === null) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
-            setTimeout(() => this.setState({blockly: this.scripts[this.state.selected].engineType === 'Blockly', showBlocklyCode: false}), 100);
+            setTimeout(() => {
+                const newState = {
+                    blockly: this.scripts[this.state.selected].engineType === 'Blockly',
+                    showBlocklyCode: false,
+                    debugEnabled: this.scripts[this.state.selected].debug,
+                    verboseEnabled: this.scripts[this.state.selected].verbose,
+                };
+
+                // check if all opened files still exists
+                this.removeNonExistingScripts(null, newState);
+                this.setState(newState);
+            }, 100);
         }
 
         return [
@@ -836,7 +970,8 @@ class Editor extends React.Component {
             this.getConfirmDialog(),
             this.getSelectIdDialog(),
             this.getCronDialog(),
-            this.getEditorDialog()
+            this.getEditorDialog(),
+            this.getDebugMenu(),
         ];
     }
 }

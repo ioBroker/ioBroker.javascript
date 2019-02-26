@@ -240,3 +240,7 @@ Benutzer
 Wert
 Sekunden verwenden
 Dunkles Thema
+Hilfe-Ausgaben
+Macht zusätzliche Ausgaben für einige Funktionen.
+Debug
+setState, writeFile werden deaktiviert

@@ -240,3 +240,5 @@ tooltip_user
 tooltip_value
 use seconds
 Dark Theme
+verbose
+verbose_help

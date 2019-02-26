@@ -576,7 +576,7 @@ function formatValue(id, state, obj, texts) {
     const states = getStates(obj);
     const isCommon = obj.common;
 
-    let valText = state.val;
+    let valText = state.val === null ? '' : state.val.toString();
     if (isCommon && isCommon.role && isCommon.role.match(/^value\.time|^date/)) {
         valText = valText ? (new Date(valText)).toString() : valText;
     }
@@ -590,26 +590,32 @@ function formatValue(id, state, obj, texts) {
         valText = '&nbsp;';
     } else {
         // if less 2000.01.01 00:00:00
-        if (state.ts < 946681200000) state.ts *= 1000;
-        if (state.lc < 946681200000) state.lc *= 1000;
+        if (state.ts && state.ts < 946681200000) state.ts *= 1000;
+        if (state.lc && state.lc < 946681200000) state.lc *= 1000;
 
         if (isCommon && isCommon.unit) {
              valText += ' ' + isCommon.unit;
         }
         valFull =           texts.value   + ': ' + state.val;
-        valFull += '\x0A' + texts.ack     + ': ' + state.ack;
-        valFull += '\x0A' + texts.ts      + ': ' + (state.ts ? formatDate(new Date(state.ts)) : '');
-        valFull += '\x0A' + texts.lc      + ': ' + (state.lc ? formatDate(new Date(state.lc)) : '');
-        valFull += '\x0A' + texts.from    + ': ' + (state.from || '');
+        if (state.ack !== undefined) {
+            valFull += '\x0A' + texts.ack     + ': ' + state.ack;
+        }
+        if (state.ts) {
+            valFull += '\x0A' + texts.ts + ': ' + (state.ts ? formatDate(new Date(state.ts)) : '');
+        }
+        if (state.lc) {
+            valFull += '\x0A' + texts.lc + ': ' + (state.lc ? formatDate(new Date(state.lc)) : '');
+        }
+        if (state.from) {
+            valFull += '\x0A' + texts.from + ': ' + (state.from || '');
+        }
         if (state.user) {
             valFull += '\x0A' + texts.user    + ': ' + (state.user || '');
         }
         valFull += '\x0A' + texts.quality + ': ' + quality2text(state.q || 0);
     }
-    if (valText === null || valText === '') {
-        valText = '&nbsp;';
-    }
-    if (typeof valText === 'string' && valText !== '&nbsp;') {
+
+    if (typeof valText === 'string' && valText !== '') {
         valText = valText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
@@ -704,7 +710,8 @@ class SelectID extends React.Component {
                 role: '',
                 expert: false
             },
-            depth: 0
+            depth: 0,
+            statesUpdate: 0,
         };
         this.selectedFound = false;
         this.copyContentImg = CopyContentImg;
@@ -712,10 +719,12 @@ class SelectID extends React.Component {
         this.mainRef = React.createRef();
         this.root = null;
         this.lang = I18n.getLanguage();
+        this.states = {};
+        this.subscribes = [];
 
         this.props.connection.getObjects(objects => {
-            this.props.connection.getStates(states => {
-                this.states = states;
+            //this.props.connection.getStates(states => {
+            //    this.states = states;
                 this.objects = objects;
                 const {info, root} = buildTree(this.objects, this.props);
                 this.root = root;
@@ -724,7 +733,7 @@ class SelectID extends React.Component {
                 this.setState({loaded: true});
 
                 this.state.selected && this.onSelect(this.state.selected);
-            }, true);
+            //}, true);
         }, true);
 
         this.texts = {
@@ -809,7 +818,7 @@ class SelectID extends React.Component {
         }
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps, prevState) {
         this.installCopyButtons();
         if (!this.selectedFound) {
             if (this.props.selected && this.treeTableRef.current) {
@@ -817,6 +826,28 @@ class SelectID extends React.Component {
                 this.treeTableRef.current.scrollIntoView(node);
                 this.selectedFound = true;
             }
+        }
+    }
+
+    componentWillUnmount() {
+        // remove all subscribes
+        this.subscribes.forEach(pattern => this.props.connection.unsubscribeStates(pattern));
+        this.subscribes = [];
+    }
+
+    subscribe(id) {
+        if (this.subscribes.indexOf(id) === -1) {
+            this.subscribes.push(id);
+            this.props.connection.subscribeState(id, (err, state) => {
+                this.states[id] = state;
+                if (!this.statesUpdateTimer) {
+                    this.statesUpdateTimer = setTimeout(() => {
+                        this.statesUpdateTimer = null;
+                        this.setState({statesUpdate: this.state.statesUpdate++});
+                    }, 300);
+                }
+
+            });
         }
     }
 
@@ -867,7 +898,16 @@ class SelectID extends React.Component {
         return (<span className={this.props.classes.cellWrapper}>{list.join(', ')}</span>);
     }
     renderColumnValue(data, metadata, toggleChildren) {
-        if (!data.obj || !data.obj._id || this.states || !this.states[data.obj._id]) return null;
+        if (!data.obj || !data.obj._id || !this.states) return null;
+
+        if (!this.states[data.obj._id]) {
+            if (data.obj.type === 'state') {
+                this.states[data.obj._id] = {val: null};
+                this.subscribe(data.obj._id);
+            }
+            return null;
+        }
+
         const id = data.obj._id;
         const state = this.states[id];
         const info = formatValue(id, state, data.obj, this.texts);

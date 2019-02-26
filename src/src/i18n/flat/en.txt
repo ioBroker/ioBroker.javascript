@@ -240,3 +240,7 @@ User
 Value
 use seconds
 Dark theme
+Verbose
+Output of additional information for some functions.
+Debug
+setState, writeFile will be disabled

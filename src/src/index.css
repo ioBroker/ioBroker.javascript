@@ -36,3 +36,6 @@ body {
 .no-underline:before {
   border-bottom: 0 !important;
 }
+.monaco-aria-container {
+  top: 0;
+}
