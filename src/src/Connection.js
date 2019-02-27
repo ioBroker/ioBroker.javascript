@@ -108,6 +108,19 @@ class Connection {
         this.getState(id, cb);
     }
 
+    unsubscribeState(id, cb) {
+        if (this.statesSubscribes[id]) {
+            const pos = this.statesSubscribes[id].cbs.indexOf(cb);
+            if (pos !== -1) {
+                this.statesSubscribes[id].cbs.splice(pos, 1);
+            }
+            if (!this.statesSubscribes[id].cbs.length) {
+                delete this.statesSubscribes[id];
+                this.connected && this.socket.emit('unsubscribe', id);
+            }
+        }
+    }
+
     objectChange(id, obj) {
         // update main.objects cache
         if (!this.objects) return;
@@ -168,7 +181,7 @@ class Connection {
         id = id ? id.replace(/[\s'"]/g, '_') : '';
         for (const task in this.statesSubscribes) {
             if (this.statesSubscribes.hasOwnProperty(task) && this.statesSubscribes[task].reg.test(id)) {
-                this.statesSubscribes[task].cbs.forEach(cb => cb(id, state));
+                this.statesSubscribes[task].cbs.forEach(cb => cb(null, state, id));
             }
         }
     }
@@ -184,9 +197,9 @@ class Connection {
     getState(id, cb) {
         if (!cb) {
             return new Promise((resolve, reject) =>
-                this.getState(id, (err, state) => err ? reject(err) : resolve(state)));
+                this.getState(id, (err, state, id) => err ? reject(err, id) : resolve(state, id)));
         } else {
-            this.socket.emit('getState', id, cb);
+            this.socket.emit('getState', id, (err, state) => cb(err, state, id));
         }
     }
 
@@ -504,7 +517,6 @@ class Connection {
     unregisterLogHandler(handler) {
         this.onLogHandler = null;
     }
-
 }
 
 Connection.Connection = {

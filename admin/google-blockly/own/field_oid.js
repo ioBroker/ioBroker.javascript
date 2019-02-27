@@ -77,12 +77,32 @@ Blockly.FieldOID.prototype.dispose = function() {
  * @param {?string} text New text.
  * @override
  */
-Blockly.FieldOID.prototype.setValue = function(text) {
+Blockly.FieldOID.prototype.setValue = function(id) {
     if (text === null) {
         return;  // No change if null.
     }
     
-    Blockly.Field.prototype.setValue.call(this, text);
+    Blockly.Field.prototype.setValue.call(this, id);
+
+    var objects = window.main.objects;
+    var text = objects && objects[id] && objects[id].common && objects[id].common.name ? objects[id].common.name : id;
+    if (typeof text === 'object') {
+        text = text[systemLang] || text.en;
+    }
+    if (text.length > this.maxDisplayLength) {
+        // Truncate displayed string and add an ellipsis ('...').
+        text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
+    }
+    // Replace whitespace with non-breaking spaces so the text doesn't collapse.
+    text = text.replace(/\s/g, Blockly.Field.NBSP);
+
+    if (!text) {
+        // Prevent the field from disappearing if empty.
+        text = Blockly.Field.NBSP;
+    }
+
+
+    this.setText(text);
 };
 
 /**

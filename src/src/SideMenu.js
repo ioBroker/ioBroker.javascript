@@ -44,6 +44,8 @@ import {FaFileImport as IconImport} from 'react-icons/fa';
 import {MdPalette as IconDark} from 'react-icons/md';
 import {FaFilter as IconFilter} from 'react-icons/fa';
 import {MdArrowForward as IconExpandRight} from 'react-icons/md';
+import {MdUnfoldMore as IconExpandAll} from 'react-icons/md';
+import {MdUnfoldLess as IconCollapseAll} from 'react-icons/md';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
@@ -96,7 +98,7 @@ const styles = theme => ({
     },
     innerMenu: {
         width: '100%',
-        height: '100%',
+        height: 'calc(100% - 72px)',
         overflowX: 'hidden',
         overflowY: 'auto'
     },
@@ -139,7 +141,27 @@ const styles = theme => ({
     instances: {
         color: 'gray',
         fontSize: 'smaller'
-    }
+    },
+    childrenCount: {
+        float: 'right',
+        marginRight: 5,
+        fontSize: 10,
+        opacity: 0.4,
+    },
+    footer: {
+        height: 24,
+        textAlign: 'right'
+    },
+    footerButtons: {
+        '&:hover': {
+            backgroundColor: '#dbdbdb'
+        },
+        cursor: 'pointer',
+        marginTop: 1,
+        marginRight: 2,
+        height: 22,
+        width: 22,
+    },
 });
 
 const images = {
@@ -757,7 +779,7 @@ class SideDrawer extends React.Component {
                     <img className={this.props.classes.scriptIcon} alt={item.type} src={images[item.type] || images.def}/>)}</ListItemIcon>
                 <ListItemText
                     classes={{primary: item.id === this.state.selected && !this.state.reorder ? this.props.classes.selected : undefined}}
-                    style={this.getTextStyle(item)} primary={title}/>
+                    style={this.getTextStyle(item)} primary={(<span>{title}{children.length && (<span className={this.props.classes.childrenCount}>{children.length}</span>)}</span>)}/>
                 <ListItemSecondaryAction>{this.renderItemButtons(item, children)}</ListItemSecondaryAction>
             </ListItem>);
 
@@ -1189,6 +1211,14 @@ class SideDrawer extends React.Component {
         return folders;
     }
 
+    onCollapseAll() {
+
+    }
+
+    onExpandAll() {
+
+    }
+
     render() {
         const {classes} = this.props;
 
@@ -1223,6 +1253,11 @@ class SideDrawer extends React.Component {
                         )}
                     </Droppable>
                 </DragDropContext>
+                <Divider/>
+                {/*<div className={classes.footer}>
+                    <IconCollapseAll className={classes.footerButtons} title={I18n.t('Collapse all')} onClick={() => this.onCollapseAll()}/>
+                    <IconExpandAll  className={classes.footerButtons} title={I18n.t('Expand all')} onClick={() => this.onExpandAll()}/>
+                </div>*/}
             </Drawer>),
             renamingItem ? (<DialogRename
                 key="dialog-rename"

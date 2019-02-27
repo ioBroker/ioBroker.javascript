@@ -215,7 +215,7 @@ function applyFilter(item, filters, lang, objects, context) {
         if (!filteredOut && context.name) {
             if (item.data.fName === undefined) {
                 item.data.fName = (item.data.obj && item.data.obj.common && getName(item.data.obj.common.name, lang)) || '';
-                item.data.fName = item.data.name.toLowerCase();
+                item.data.fName = item.data.fName.toLowerCase();
             }
             filteredOut = item.data.fName.indexOf(context.name) === -1;
         }
@@ -745,6 +745,8 @@ class SelectID extends React.Component {
             user:    I18n.t('tooltip_user'),
             quality: I18n.t('tooltip_quality')
         };
+
+        this.onStateChangeBound = this.onStateChange.bind(this);
     }
 
     onSelect(selected, isDouble) {
@@ -756,6 +758,7 @@ class SelectID extends React.Component {
     onDoubleClick(data, metadata, toggleChildren) {
         if (metadata.hasChildren) {
             toggleChildren();
+
         } else if (data.obj && data.obj.type === 'state') {
             this.onSelect(data.obj._id, true);
         }
@@ -764,9 +767,17 @@ class SelectID extends React.Component {
     onCopy(e, id) {
         const el = window.document.createElement('textarea');
         el.value = id;
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
         window.document.body.appendChild(el);
         el.select();
-        window.document.execCommand('copy');
+        var selection = window.document.getSelection();
+        var range = window.document.createRange();
+        range.selectNode(el);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        console.log('copy success', window.document.execCommand('copy'));
+        selection.removeAllRanges();
         window.document.body.removeChild(el);
         console.log(id);
         e.stopPropagation();
@@ -789,7 +800,8 @@ class SelectID extends React.Component {
                         img.color = secondary.A200;
                         div.appendChild(img);
                         div.className = this.props.classes.cellCopy;
-                        div.addEventListener('click', e => this.onCopy(e, e.target.parentNode.dataset.index), false);
+                        div.addEventListener('click', e =>
+                            this.onCopy(e, e.target.parentNode.dataset.index || e.target.parentNode.parentNode.dataset.index), false);
                         div.addEventListener('mousedown', e => {
                             if (e.target.parentNode.className.indexOf(this.props.classes.cellCopyPressed) === -1) {
                                 e.target.parentNode.className += ' ' + this.props.classes.cellCopyPressed;
@@ -828,26 +840,50 @@ class SelectID extends React.Component {
             }
         }
     }
+    checkUnsubscribes() {
+        // Remove unused subscribed
+        for (let i = this.subscribes.length - 1; i >= 0; i--) {
+            if (this.recordStates.indexOf(this.subscribes[i]) === -1) {
+                this.unsubscribe(this.subscribes[i]);
+            }
+        }
+        this.recordStates = [];
+    }
 
     componentWillUnmount() {
         // remove all subscribes
-        this.subscribes.forEach(pattern => this.props.connection.unsubscribeStates(pattern));
+        this.subscribes.forEach(pattern => {
+            console.log('- unsubscribe ' + pattern);
+            this.props.connection.unsubscribeState(pattern, this.onStateChangeBound);
+        });
         this.subscribes = [];
+    }
+
+    onStateChange(err, state, id) {
+        this.states[id] = state;
+        console.log('+ subscribe ' + id);
+        if (!this.statesUpdateTimer) {
+            this.statesUpdateTimer = setTimeout(() => {
+                this.statesUpdateTimer = null;
+                this.setState({statesUpdate: this.state.statesUpdate++});
+            }, 300);
+        }
     }
 
     subscribe(id) {
         if (this.subscribes.indexOf(id) === -1) {
             this.subscribes.push(id);
-            this.props.connection.subscribeState(id, (err, state) => {
-                this.states[id] = state;
-                if (!this.statesUpdateTimer) {
-                    this.statesUpdateTimer = setTimeout(() => {
-                        this.statesUpdateTimer = null;
-                        this.setState({statesUpdate: this.state.statesUpdate++});
-                    }, 300);
-                }
+            this.props.connection.subscribeState(id, this.onStateChangeBound);
+        }
+    }
 
-            });
+    unsubscribe(id) {
+        const pos = this.subscribes.indexOf(id);
+        if (pos !== -1) {
+            this.subscribes.splice(pos, 1);
+            if (this.states[id]) delete this.states[id];
+            console.log('- unsubscribe ' + id);
+            this.props.connection.unsubscribeState(id, this.onStateChangeBound);
         }
     }
 
@@ -902,10 +938,13 @@ class SelectID extends React.Component {
 
         if (!this.states[data.obj._id]) {
             if (data.obj.type === 'state') {
+                this.recordStates.push(data.obj._id);
                 this.states[data.obj._id] = {val: null};
                 this.subscribe(data.obj._id);
             }
             return null;
+        } else {
+            this.recordStates.push(data.obj._id);
         }
 
         const id = data.obj._id;
@@ -939,6 +978,7 @@ class SelectID extends React.Component {
             />
         </FormControl>);
     }
+
     getFilterSelect(name, values) {
         //<!--InputLabel htmlFor="demo-controlled-open-select">Age</InputLabel-->
         return (
@@ -970,6 +1010,7 @@ class SelectID extends React.Component {
                 })}
             </Select>);
     }
+
     getFilterSelectRole() {
         return this.getFilterSelect('role', this.info.roles);
     }
@@ -1023,6 +1064,13 @@ class SelectID extends React.Component {
     }
 
     render() {
+        console.log('render');
+        this.recordStates = [];
+        this.unsubscribeTimer && clearTimeout(this.unsubscribeTimer);
+        this.unsubscribeTimer = setTimeout(() => {
+            this.unsubscribeTimer = null;
+            this.checkUnsubscribes();
+        }, 200);
         if (!this.state.loaded) {
             return (<CircularProgress/>);
         } else {

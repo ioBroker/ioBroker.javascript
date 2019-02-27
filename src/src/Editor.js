@@ -725,9 +725,9 @@ class Editor extends React.Component {
 
     getDebugBadge() {
         return [
-            this.state.debugEnabled && this.state.verboseEnabled && (<IconDebug className={this.props.classes.menuIcon} style={{color: COLOR_VERBOSE}}/>),
-            this.state.debugEnabled && !this.state.verboseEnabled && (<IconDebug className={this.props.classes.menuIcon} style={{color: COLOR_DEBUG}}/>),
-            !this.state.debugEnabled && this.state.verboseEnabled && (<IconVerbose className={this.props.classes.menuIcon} style={{color: COLOR_VERBOSE}}/>),
+            this.state.debugEnabled && this.state.verboseEnabled  && (<IconDebug key="DebugVerbose" className={this.props.classes.menuIcon} style={{color: COLOR_VERBOSE}}/>),
+            this.state.debugEnabled && !this.state.verboseEnabled && (<IconDebug key="DebugNoVerbose" className={this.props.classes.menuIcon} style={{color: COLOR_DEBUG}}/>),
+            !this.state.debugEnabled && this.state.verboseEnabled && (<IconVerbose key="noDebugVerbose" className={this.props.classes.menuIcon} style={{color: COLOR_VERBOSE}}/>),
         ]
     }
 
