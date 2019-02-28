@@ -576,7 +576,17 @@ function formatValue(id, state, obj, texts) {
     const states = getStates(obj);
     const isCommon = obj.common;
 
-    let valText = state.val === null ? '' : state.val.toString();
+    let valText = state.val === null || state.val === undefined ? '' : state.val;
+    const type = typeof valText;
+    if (type === 'number') {
+        valText = Math.round(valText * 1000000) / 1000000; // remove 4.00000000000000001
+    } else if (type === 'object') {
+        valText = JSON.stringify(valText);
+    } else if (type !== 'string') {
+        valText = valText.toString();
+    }
+
+
     if (isCommon && isCommon.role && isCommon.role.match(/^value\.time|^date/)) {
         valText = valText ? (new Date(valText)).toString() : valText;
     }

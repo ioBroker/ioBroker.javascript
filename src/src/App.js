@@ -445,7 +445,7 @@ class App extends Component {
     renderMain() {
         const {classes} = this.props;
         const errorDialog = this.state.errorText ? (<DialogError key="dialogError" onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/>) : null;
-        const items = [
+        return [
             this.state.message ? (<DialogMessage key="dialogMessage" onClose={() => this.setState({message: ''})} text={this.state.message}/>) : null,
             errorDialog,
             this.state.importFile ? (<DialogImportFile key="dialogImportFile" onClose={data => this.onImport(data)} />) : null,
@@ -458,7 +458,7 @@ class App extends Component {
                 this.confirmCallback(true);
                 this.confirmCallback = null;
             }} question={this.state.confirm}/>) : null,
-            (<div className={classes.content} key="main">
+            (<div className={classes.content + ' iobVerticalSplitter'} key="main">
                 <div key="closeMenu" className={classes.menuOpenCloseButton} onClick={() => {
                     window.localStorage && window.localStorage.setItem('App.menuOpened', this.state.menuOpened ? 'false' : 'true');
                     this.setState({menuOpened: !this.state.menuOpened, resizing: true});
@@ -483,6 +483,7 @@ class App extends Component {
                         key="editor"
                         visible={!this.state.resizing}
                         connection={this.socket}
+
                         onLocate={menuSelectId => this.setState({menuSelectId})}
                         runningInstances={this.state.runningInstances}
                         menuOpened={this.state.menuOpened}
@@ -510,7 +511,6 @@ class App extends Component {
                 </SplitterLayout>
             </div>),
         ];
-        return items;
     }
 
     render() {

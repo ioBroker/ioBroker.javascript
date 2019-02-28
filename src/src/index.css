@@ -39,3 +39,7 @@ body {
 .monaco-aria-container {
   top: 0;
 }
+
+.iobVerticalSplitter .layout-pane-primary {
+  overflow: hidden;
+}
