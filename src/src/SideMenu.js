@@ -19,6 +19,7 @@ import Badge from '@material-ui/core/Badge';
 
 import red from '@material-ui/core/colors/red';
 import green from '@material-ui/core/colors/green';
+import yellow from '@material-ui/core/colors/yellow';
 
 import {MdMoreVert as IconMore} from 'react-icons/md';
 import {FaFolder as IconFolder} from 'react-icons/fa';
@@ -61,12 +62,15 @@ import DialogError from './Dialogs/Error';
 
 const MENU_ITEM_HEIGHT = 48;
 const COLOR_RUN = green[400];
+const COLOR_PROBLEM = yellow[400];
 const COLOR_PAUSE = red[400];
 
 const styles = theme => ({
     drawerPaper: {
         position: 'relative',
-        width: '100%'//Theme.menu.width,
+        width: '100%', //Theme.menu.width,
+        height: '100%',
+        overflow: 'hidden'
     },
     toolbar: {
         height: Theme.toolbar.height
@@ -98,7 +102,7 @@ const styles = theme => ({
     },
     innerMenu: {
         width: '100%',
-        height: 'calc(100% - 72px)',
+        height: 'calc(100% - 76px)',
         overflowX: 'hidden',
         overflowY: 'auto'
     },
@@ -150,7 +154,6 @@ const styles = theme => ({
     },
     footer: {
         height: 24,
-        textAlign: 'right'
     },
     footerButtons: {
         '&:hover': {
@@ -162,6 +165,9 @@ const styles = theme => ({
         height: 22,
         width: 22,
     },
+    footerButtonsRight: {
+        float: 'right'
+    }
 });
 
 const images = {
@@ -295,22 +301,13 @@ class SideDrawer extends React.Component {
         } catch (e) {
             expanded = [];
         }
-        let statusFilter = window.localStorage ? window.localStorage.getItem('SideMenu.statusFilter') : null;
-        if (statusFilter === 'true') {
-            statusFilter = true;
-        } else
-        if (statusFilter === 'false') {
-            statusFilter = false;
-        } else
-        if (statusFilter === 'null') {
-            statusFilter = null;
-        }
 
         this.inputRef = new React.createRef();
 
         this.state = {
             listItems: prepareList(props.scripts || {}),
             expanded: expanded,
+            problems: [],
             reorder: false,
             theme: this.props.theme,
             dragDepth: 0,
@@ -332,7 +329,7 @@ class SideDrawer extends React.Component {
             width: this.props.width || 300,
             filterMenuOpened: false,
             typeFilter: window.localStorage ? window.localStorage.getItem('SideMenu.typeFilter') || '' : '', // blockly, js, ts
-            statusFilter: statusFilter, // running, stopped => true/false/null
+            statusFilter: window.localStorage ? window.localStorage.getItem('SideMenu.statusFilter') || '' : '',
             runningInstances: this.props.runningInstances || {}
         };
 
@@ -347,6 +344,82 @@ class SideDrawer extends React.Component {
         this.filterTimer = null;
 
         this.state.isAllZeroInstances = this.getIsAllZeroInstances();
+
+        this.problems = null; //cache
+        this.problemsTimer = null;
+        this.onProblemUpdatedBound = this.onProblemUpdated.bind(this);
+    }
+
+    readProblems(cb, tasks) {
+        if (!tasks) {
+            tasks = Object.keys(this.props.scripts);
+        }
+        if (!tasks || !tasks.length) {
+            cb && cb();
+        } else {
+            const id = tasks.shift();
+            if (this.props.scripts[id] &&
+                this.props.scripts[id].type === 'script' &&
+                this.props.scripts[id].common &&
+                this.props.scripts[id].common.enabled &&
+                !id.match(/^script\.js\.global\./)
+            ) {
+                const instance = this.props.scripts[id].common.engine.split('.').pop();
+                const that = this; // sometimes lambda does not work
+                this.props.connection.getState('javascript.' + instance + '.scriptProblem.' + id.substring('script.js.'.length), (err, state, id) => {
+                    that.onProblemUpdated(err, state, id);
+                    setTimeout(() => that.readProblems(cb, tasks), 0);
+                });
+            } else {
+                setTimeout(() => this.readProblems(cb, tasks), 0);
+            }
+        }
+    }
+
+    componentDidMount() {
+        this.readProblems(() =>  {
+            this.props.instances.forEach(instance => {
+                this.props.connection.subscribeState('javascript.' + instance + '.scriptProblem.*', this.onProblemUpdatedBound);
+            });
+        });
+    }
+
+    componentWillUnmount() {
+        this.props.instances.forEach(instance => {
+            this.props.connection.unsubscribeState('javascript.' + instance + '.scriptProblem.*', this.onProblemUpdatedBound);
+        });
+    }
+
+    onProblemUpdated(err, state, id) {
+        err && console.error(err);
+        if (!state) return;
+        id = 'script.js.' + id.replace(/^javascript\.\d+\.scriptProblem\./, '');
+
+        if (!this.problems) {
+            this.problems = JSON.parse(JSON.stringify(this.state.problems));
+        }
+        let changed = false;
+
+        if (state.val) {
+            if (this.problems.indexOf(id) === -1) {
+                this.problems.push(id);
+                changed = true;
+            }
+        } else {
+            const pos = this.problems.indexOf(id);
+            if (pos !== -1) {
+                this.problems.splice(pos, 1);
+                changed = true;
+            }
+        }
+
+        if (changed && !this.problemsTimer) {
+            this.problemsTimer = setTimeout(() => {
+                this.problemsTimer = null;
+                this.setState({problems: this.problems});
+                this.problems = null;
+            }, 300);
+        }
     }
 
     filterList(isDisable, listItems, cb) {
@@ -592,6 +665,11 @@ class SideDrawer extends React.Component {
     renderItemButtons(item, children) {
         if (this.state.reorder) return null;
         if (item.type !== 'folder') {
+            let color = item.enabled ? COLOR_RUN : COLOR_PAUSE;
+            if (item.enabled && this.state.problems.indexOf(item.id) !== -1) {
+                color = COLOR_PROBLEM;
+            }
+
             return [
                 (<IconButton className={this.props.classes.iconButtons}
                              onClick={e => {
@@ -600,7 +678,7 @@ class SideDrawer extends React.Component {
                              }}
                             title={item.enabled ? I18n.t('Pause script') : I18n.t('Run script')}
                             key="startStop"
-                            style={{color: item.enabled ? COLOR_RUN : COLOR_PAUSE}}>
+                            style={{color}}>
                             {item.enabled ? (<IconPause/>) : (<IconPlay/>)}
                 </IconButton>),
                 this.state.width > 350 ? (<IconButton
@@ -705,20 +783,35 @@ class SideDrawer extends React.Component {
         }
     }
 
-    renderOneItem(items, item) {
-        let children = items.filter(i => i.parent === item.id);
-
-        if (item.filtered && !item.filteredPartly) return;
+    isFilteredOut(item) {
+        if (item.filtered && !item.filteredPartly) return true;
 
         if (this.state.typeFilter && item.type !== 'folder' && item.type !== this.state.typeFilter) {
+            return true;
+        }
+
+        if (this.state.statusFilter &&
+            item.type !== 'folder' &&
+            (
+                (this.state.statusFilter === 'running' && !item.enabled) ||
+                (this.state.statusFilter === 'paused' && item.enabled) ||
+                (this.state.statusFilter === 'problems' && (!item.enabled || this.state.problems.indexOf(item.id) === -1)))
+        ) {
+            return true;
+        }
+
+        return (item.id === 'script.js.global' && !this.state.expertMode);
+    }
+
+    renderOneItem(items, item) {
+        let childrenFiltered = (this.state.statusFilter || this.state.typeFilter) && items.filter(i => i.parent === item.id ? !this.isFilteredOut(i) : false);
+        let children = items.filter(i => i.parent === item.id);
+
+        if (this.isFilteredOut(item)) {
             return;
         }
 
-        if (this.state.statusFilter !== null && item.type !== 'folder' && item.enabled !== this.state.statusFilter) {
-            return;
-        }
-
-        if (item.id === 'script.js.global' && !this.state.expertMode) {
+        if (item.type === 'folder' && (this.state.statusFilter || this.state.typeFilter) && !childrenFiltered.length) {
             return;
         }
 
@@ -740,14 +833,15 @@ class SideDrawer extends React.Component {
         }
 
         if (!this.state.isAllZeroInstances && item.type !== 'folder') {
-            title = [(<span key="instance" className={this.props.classes.instances}>[{item.instance}] </span>), (
+            title = [(<span key="instance" title={I18n.t('Instance')} className={this.props.classes.instances}>[{item.instance}] </span>), (
                 <span key="title">{title}</span>)];
         }
 
         const style = Object.assign({
             marginLeft: depthPx,
             cursor: item.type === 'folder' && this.state.reorder ? 'default' : 'inherit',
-            opacity: item.filteredPartly ? 0.5 : 1
+            opacity: item.filteredPartly ? 0.5 : 1,
+            width: `calc(100% - ${depthPx}px)`
         }, item.id === this.state.selected && !this.state.reorder ? Theme.colors.selected : {});
 
         if (item.id === 'script.js.global' && item.id !== this.state.selected) {
@@ -779,7 +873,7 @@ class SideDrawer extends React.Component {
                     <img className={this.props.classes.scriptIcon} alt={item.type} src={images[item.type] || images.def}/>)}</ListItemIcon>
                 <ListItemText
                     classes={{primary: item.id === this.state.selected && !this.state.reorder ? this.props.classes.selected : undefined}}
-                    style={this.getTextStyle(item)} primary={(<span>{title}{children.length && (<span className={this.props.classes.childrenCount}>{children.length}</span>)}</span>)}/>
+                    style={this.getTextStyle(item)} primary={(<span>{title}{(childrenFiltered && childrenFiltered.length) || children.length ? (<span className={this.props.classes.childrenCount}>{childrenFiltered && childrenFiltered.length !== children.length ? `${childrenFiltered.length}(${children.length})` : children.length}</span>) : null}</span>)}/>
                 <ListItemSecondaryAction>{this.renderItemButtons(item, children)}</ListItemSecondaryAction>
             </ListItem>);
 
@@ -973,90 +1067,13 @@ class SideDrawer extends React.Component {
                                                }}>
                 <IconCopy className={this.props.classes.iconDropdownMenu} />{I18n.t('Copy script')}
             </MenuItem>)}
-            {<MenuItem key="filter"
+            {/*<MenuItem key="filter"
                        onClick={event => {
                            this.setState({filterMenuOpened: !this.state.filterMenuOpened, menuAnchorFilterEl: this.state.filterMenuOpened ? null : event.currentTarget.getElementsByClassName(this.props.classes.iconOnTheRight)[0]})
                        }}>
                 <IconFilter className={this.props.classes.iconDropdownMenu} />{I18n.t('Filter by')}
                 <IconExpandRight className={this.props.classes.iconOnTheRight} />
-            </MenuItem>}
-        </Menu>);
-    }
-
-    getFilterMenu() {
-        return (<Menu
-            key="menuFilter"
-            id="long-menu-filter"
-            anchorEl={this.state.menuAnchorFilterEl}
-            open={this.state.filterMenuOpened}
-            onClose={() => this.setState({filterMenuOpened: false, menuAnchorFilterEl: null})}
-            PaperProps={{
-                style: {
-                    maxHeight: MENU_ITEM_HEIGHT * 7.5,
-                    //width: 200,
-                },
-            }}
-        >
-            <MenuItem key="filterByRunning"
-                      onClick={event => {
-                          event.stopPropagation();
-                          event.preventDefault();
-                          const statusFilter = this.state.statusFilter === true ? null : true;
-                          window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter === null ? 'null' : statusFilter === false ? 'false' : 'true');
-                          this.onCloseMenu(() => this.setState({statusFilter}));
-                      }}>
-                <Checkbox checked={this.state.statusFilter === true}/>
-                <IconPlay className={this.props.classes.filterIcon} style={{color: COLOR_RUN}}/>
-                {I18n.t('only running')}
-            </MenuItem>
-            <MenuItem key="filterByStopped"
-                      onClick={event => {
-                          event.stopPropagation();
-                          event.preventDefault();
-                          const statusFilter = this.state.statusFilter === false ? null : false;
-                          window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter === null ? 'null' : statusFilter === false ? 'false' : 'true');
-                          this.onCloseMenu(() => this.setState({statusFilter}));
-                      }}>
-                <Checkbox checked={this.state.statusFilter === false}/>
-                <IconPause className={this.props.classes.filterIcon} style={{color: COLOR_PAUSE}}/>
-                {I18n.t('only paused')}
-            </MenuItem>
-            <MenuItem key="filterBlockly"
-                      onClick={event => {
-                          event.stopPropagation();
-                          event.preventDefault();
-                          const typeFilter = this.state.typeFilter === 'Blockly' ? '' : 'Blockly';
-                          window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
-                          this.onCloseMenu(() => this.setState({typeFilter}));
-                      }}>
-                <Checkbox checked={this.state.typeFilter === 'Blockly'}/>
-                <img className={this.props.classes.filterIcon} alt="Blockly" src={images.Blockly || images.def}/>
-                {I18n.t('only blockly')}
-            </MenuItem>
-            <MenuItem key="filterJS"
-                      onClick={event => {
-                          event.stopPropagation();
-                          event.preventDefault();
-                          const typeFilter = this.state.typeFilter === 'Javascript/js' ? '' : 'Javascript/js';
-                          window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
-                          this.onCloseMenu(() => this.setState({typeFilter}));
-                      }}>
-                <Checkbox checked={this.state.typeFilter === 'Javascript/js'}/>
-                <img className={this.props.classes.filterIcon} alt="Javascript" src={images['Javascript/js'] || images.def}/>
-                {I18n.t('only JS')}
-            </MenuItem>
-            <MenuItem key="filterTS"
-                      onClick={event => {
-                          event.stopPropagation();
-                          event.preventDefault();
-                          const typeFilter = this.state.typeFilter === 'TypeScript/ts' ? '' : 'TypeScript/ts';
-                          window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
-                          this.onCloseMenu(() => this.setState({typeFilter}));
-                      }}>
-                <Checkbox checked={this.state.typeFilter === 'TypeScript/ts'}/>
-                <img className={this.props.classes.filterIcon} alt="TypeScript" src={images['TypeScript/ts'] || images.def}/>
-                {I18n.t('only TS')}
-            </MenuItem>
+            </MenuItem>*/}
         </Menu>);
     }
 
@@ -1117,9 +1134,9 @@ class SideDrawer extends React.Component {
                             this.setState({menuOpened: true, menuAnchorEl: event.currentTarget});
                         }}
                     >
-                        <Badge className={classes.margin} badgeContent={this.getFilterBadge()}>
+                        {/*<Badge className={classes.margin} badgeContent={this.getFilterBadge()}>*/}
                             <IconMore />
-                        </Badge>
+                        {/*</Badge>*/}
                     </IconButton>));
 
                 const selectedItem = this.state.listItems.find(it => it.id === this.state.selected);
@@ -1212,11 +1229,97 @@ class SideDrawer extends React.Component {
     }
 
     onCollapseAll() {
-
+        this.setState({expanded: []});
+        this.saveExpanded([]);
     }
 
     onExpandAll() {
+        const expanded = [];
+        this.state.listItems.forEach(item => {
+            if (this.state.listItems.find(it => it.parent === item.id)) {
+                expanded.push(item.id);
+            }
+        });
+        this.setState({expanded});
+        this.saveExpanded(expanded);
+    }
 
+    getBottomButtons() {
+        return [
+            (<IconPause
+                key="filterByRunning"
+                className={this.props.classes.footerButtons}
+                style={{color: COLOR_RUN, opacity: this.state.statusFilter === 'running' ? 1 : 0.3, background: this.state.statusFilter === 'running' ? 'gray' : 'inherit'}}
+                title={I18n.t('Show only running scripts')}
+                onClick={event => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    const statusFilter = this.state.statusFilter === 'running' ? '' : 'running';
+                    window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
+                    this.setState({statusFilter});
+                }}
+            />),
+            (<IconPlay
+                key="filterByPaused"
+                title={I18n.t('Show only paused scripts')}
+                className={this.props.classes.footerButtons}
+                style={{color: COLOR_PAUSE, opacity: this.state.statusFilter === 'paused' ? 1 : 0.3, background: this.state.statusFilter === 'paused' ? 'gray' : 'inherit'}}
+                onClick={event => {
+                    const statusFilter = this.state.statusFilter === 'paused' ? '' : 'paused';
+                    window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
+                    this.setState({statusFilter});
+                }}
+            />),
+            (<IconPause
+                key="filterByProblem"
+                title={I18n.t('Show only scripts with problems')}
+                className={this.props.classes.footerButtons}
+                style={{color: COLOR_PROBLEM, opacity: this.state.statusFilter === 'problems' ? 1 : 0.3, background: this.state.statusFilter === 'problems' ? 'gray' : 'inherit'}}
+                onClick={event => {
+                    const statusFilter = this.state.statusFilter === 'problems' ? '' : 'problems';
+                    window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
+                    this.setState({statusFilter});
+                }}
+            />),
+            (<img
+                key="filterBlockly"
+                className={this.props.classes.footerButtons}
+                alt="Blockly"
+                style={{opacity: this.state.typeFilter === 'Blockly' ? 1 : 0.3, background: this.state.typeFilter === 'Blockly' ? 'gray' : 'inherit'}}
+                src={images.Blockly || images.def}
+                onClick={event => {
+                    const typeFilter = this.state.typeFilter === 'Blockly' ? '' : 'Blockly';
+                    window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
+                    this.setState({typeFilter});
+                }}
+            />),
+            (<img
+                key="filterJS"
+                className={this.props.classes.footerButtons}
+                alt="Javascript"
+                style={{opacity: this.state.typeFilter === 'Javascript/js' ? 1 : 0.3, background: this.state.typeFilter === 'Javascript/js' ? 'gray' : 'inherit'}}
+                src={images['Javascript/js'] || images.def}
+                onClick={event => {
+                    const typeFilter = this.state.typeFilter === 'Javascript/js' ? '' : 'Javascript/js';
+                    window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
+                    this.setState({typeFilter});
+                }}
+            />),
+            (<img
+                key="filterTS"
+                className={this.props.classes.footerButtons}
+                alt="TypeScript"
+                style={{opacity: this.state.typeFilter === 'TypeScript/ts' ? 1 : 0.3, background: this.state.typeFilter === 'TypeScript/ts' ? 'gray' : 'inherit'}}
+                src={images['TypeScript/ts'] || images.def}
+                onClick={event => {
+                    const typeFilter = this.state.typeFilter === 'TypeScript/ts' ? '' : 'TypeScript/ts';
+                    window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
+                this.setState({typeFilter});
+                }}
+            />),
+            (<IconExpandAll   key="expandAll"   className={this.props.classes.footerButtons + ' ' + this.props.classes.footerButtonsRight} title={I18n.t('Expand all')} onClick={() => this.onExpandAll()}/>),
+            this.state.expanded.length ? (<IconCollapseAll key="collapseAll" className={this.props.classes.footerButtons + ' ' + this.props.classes.footerButtonsRight} title={I18n.t('Collapse all')} onClick={() => this.onCollapseAll()}/>) : null,
+        ];
     }
 
     render() {
@@ -1254,10 +1357,9 @@ class SideDrawer extends React.Component {
                     </Droppable>
                 </DragDropContext>
                 <Divider/>
-                {/*<div className={classes.footer}>
-                    <IconCollapseAll className={classes.footerButtons} title={I18n.t('Collapse all')} onClick={() => this.onCollapseAll()}/>
-                    <IconExpandAll  className={classes.footerButtons} title={I18n.t('Expand all')} onClick={() => this.onExpandAll()}/>
-                </div>*/}
+                <div className={classes.footer}>{
+                    this.getBottomButtons()
+                }</div>
             </Drawer>),
             renamingItem ? (<DialogRename
                 key="dialog-rename"
@@ -1313,6 +1415,10 @@ class SideDrawer extends React.Component {
                 parent={this.parent}
                 onAdd={(id, name, instance, type) => {
                     const copingItem = this.state.copingScript && this.props.objects[this.state.copingScript];
+                    if (copingItem && copingItem.common) {
+                        // disable script by coping
+                        copingItem.common.enabled = false;
+                    }
                     this.props.onAddNew && this.props.onAddNew(id, name, false, instance, type, copingItem && copingItem.common && copingItem.common.source);
                 }}
             />) : null,
@@ -1343,6 +1449,7 @@ SideDrawer.propTypes = {
     onExpertModeChange: PropTypes.func,
     onEnableDisable: PropTypes.func,
     runningInstances: PropTypes.object,
+    connection: PropTypes.object,
     theme: PropTypes.string,
     onSelect: PropTypes.func,
     onAddNew: PropTypes.func,

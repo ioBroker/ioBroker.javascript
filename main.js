@@ -212,9 +212,15 @@ function startAdapter(options) {
                 if (context.objects[id].type === 'script' && context.objects[id].common.engine === 'system.adapter.' + adapter.namespace) {
                     stop(id);
 
+                    // delete scriptEnabled.blabla variable
                     const idActive = 'scriptEnabled.' + id.substring('script.js.'.length);
                     adapter.delObject(idActive);
                     adapter.delState(idActive);
+
+                    // delete scriptProblem.blabla variable
+                    const idProblem = 'scriptProblem.' + id.substring('script.js.'.length);
+                    adapter.delObject(idProblem);
+                    adapter.delState(idProblem);
                 }
 
                 removeFromNames(id);
@@ -227,7 +233,7 @@ function startAdapter(options) {
 
                 if (obj.type === 'script' && obj.common.engine === 'system.adapter.' + adapter.namespace) {
                     // create states for scripts
-                    createActiveObject(id, obj.common.enabled);
+                    createActiveObject(id, obj.common.enabled, () => createProblemObject(id));
 
                     if (obj.common.enabled) {
                         if (checkIsGlobal(obj)) {
@@ -276,7 +282,7 @@ function startAdapter(options) {
 
                 if (obj.common && obj.common.engine === 'system.adapter.' + adapter.namespace) {
                     // create states for scripts
-                    createActiveObject(id, obj.common.enabled);
+                    createActiveObject(id, obj.common.enabled, () => createProblemObject(id));
                 }
 
                 if ((context.objects[id].common.enabled && !obj.common.enabled) ||
@@ -603,7 +609,7 @@ let globalDeclarations = '';
 let knownGlobalDeclarationsByScript = {};
 let globalScriptLines  = 0;
 // let activeRegEx        = null;
-let activeStr          = '';
+let activeStr          = ''; // enabled state prefix
 
 /**
  * Redirects the virtual-tsc log output to the ioBroker log
@@ -697,6 +703,43 @@ function createActiveObject(id, enabled, cb) {
         adapter.getForeignState(idActive, (err, state) => {
             if (state && state.val !== enabled) {
                 adapter.setForeignState(idActive, enabled, true, cb);
+            } else if (cb) {
+                cb();
+            }
+        });
+    }
+}
+
+function createProblemObject(id, cb) {
+    const idProblem = adapter.namespace + '.scriptProblem.' + id.substring('script.js.'.length);
+
+    if (!context.objects[idProblem]) {
+        context.objects[idProblem] = {
+            _id: idProblem,
+            common: {
+                name: 'scriptProblem.' + id.substring('script.js.'.length),
+                desc: 'is the script has a problem',
+                type: 'boolean',
+                write: true,
+                read: true,
+                role: 'indicator.error'
+            },
+            native: {
+                script: id
+            },
+            type: 'state'
+        };
+        adapter.setForeignObject(idProblem, context.objects[idProblem], err => {
+            if (!err) {
+                adapter.setForeignState(idProblem, false, true, cb);
+            } else if (cb) {
+                cb();
+            }
+        });
+    } else {
+        adapter.getForeignState(idProblem, (err, state) => {
+            if (state && state.val !== false) {
+                adapter.setForeignState(idProblem, false, true, cb);
             } else if (cb) {
                 cb();
             }
@@ -848,6 +891,7 @@ function execute(script, name, verbose, debug) {
     script.name = name;
     script._id = Math.floor(Math.random() * 0xFFFFFFFF);
     script.subscribes = {};
+    adapter.setState('scriptProblem.' + name.substring('script.js.'.length), {val: false, ack: true, expire: 1000});
 
     const sandbox = sandBox(script, name, verbose, debug, context);
 
@@ -865,6 +909,7 @@ function execute(script, name, verbose, debug) {
         try {
             vm.run(script.script, name);
         } catch (e) {
+            adapter.setState('scriptProblem.' + name.substring('script.js.'.length), true, true);
             context.logError(name, e);
         }
     } else {
@@ -875,6 +920,7 @@ function execute(script, name, verbose, debug) {
                 //lineOffset: globalScriptLines
             });
         } catch (e) {
+            adapter.setState('scriptProblem.' + name.substring('script.js.'.length), true, true);
             context.logError(name, e);
         }
     }
@@ -1051,8 +1097,8 @@ function prepareScript(obj, callback) {
                     adapter.log.info(name + ': TypeScript compilation successful');
                 }
                 context.scripts[name] = compile(globalScript + '\n' + tsCompiled.result, name);
-                if (context.scripts[name]) execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
-                if (typeof callback === 'function') callback(true, name);
+                context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
+                typeof callback === 'function' && callback(true, name);
             } else {
                 adapter.log.error(name + ': TypeScript compilation failed: \n' + errors);
             }
@@ -1072,7 +1118,9 @@ function load(nameOrObject, callback) {
     if (typeof nameOrObject === 'object') {
         // create states for scripts
         createActiveObject(nameOrObject._id, nameOrObject && nameOrObject.common && nameOrObject.common.enabled, () =>
-            prepareScript(nameOrObject, callback));
+            createProblemObject(nameOrObject._id, () =>
+                prepareScript(nameOrObject, callback)));
+
     } else {
         adapter.getForeignObject(nameOrObject, (err, obj) => {
             if (!obj || err) {

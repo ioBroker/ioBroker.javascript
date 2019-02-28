@@ -12,6 +12,7 @@ import Select from '@material-ui/core/Select';
 import TextField from "@material-ui/core/TextField";
 
 import I18n from '../i18n';
+import Theme from '../Theme';
 
 const styles = theme => ({
     hr: {
@@ -75,34 +76,34 @@ const styles = theme => ({
     },
 
     rowDays: {
-        background: '#ddeaff'
+        background: theme.palette.type !== 'dark' ? '#ddeaff' :  '#4b5057'
     },
     rowDows: {
-        background: '#DDFFDD'
+        background: theme.palette.type !== 'dark' ? '#DDFFDD' :  '#52646c'
     },
     rowDates: {
-        background: '#DDDDFF'
+        background: theme.palette.type !== 'dark' ? '#DDDDFF' :  '#747a86'
     },
     rowWeeks: {
-        background: '#DDDDFF'
+        background: theme.palette.type !== 'dark' ? '#DDDDFF' :  '#717680'
     },
     rowMonths: {
-        background: '#DDFFFF'
+        background: theme.palette.type !== 'dark' ? '#DDFFFF' :  '#1f5557'
     },
     rowMonthsDates: {
-        background: '#EEFFFF',
+        background: theme.palette.type !== 'dark' ? '#EEFFFF' :  '#3c5737',
         maxWidth: 600
     },
     rowYears: {
-        background: '#fbffdd'
+        background: theme.palette.type !== 'dark' ? '#fbffdd' :  '#574b33'
     },
     rowDaysDows: {
-        background: '#EEEAFF',
+        background: theme.palette.type !== 'dark' ? '#EEEAFF' :  '#573544',
         paddingLeft: 10,
         paddingBottom: 10
     },
     rowDowsDows: {
-        background: '#EEFFEE',
+        background: theme.palette.type !== 'dark' ? '#EEFFEE' :  '#3d4c54',
         paddingLeft: 10,
         paddingBottom: 10
     }

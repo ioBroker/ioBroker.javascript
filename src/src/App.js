@@ -548,6 +548,7 @@ class App extends Component {
                                 update={this.state.updateScripts}
                                 onRename={this.onRename.bind(this)}
                                 onSelect={this.onSelect.bind(this)}
+                                connection={this.socket}
                                 selectId={this.state.menuSelectId}
                                 onEdit={this.onEdit.bind(this)}
                                 expertMode={this.state.expertMode}
