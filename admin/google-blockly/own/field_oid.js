@@ -74,15 +74,13 @@ Blockly.FieldOID.prototype.dispose = function() {
 
 /**
  * Set the text in this field.
- * @param {?string} text New text.
+ * @param {?string} id New ID.
  * @override
  */
 Blockly.FieldOID.prototype.setValue = function(id) {
-    if (text === null) {
+    if (id === null) {
         return;  // No change if null.
     }
-    
-    Blockly.Field.prototype.setValue.call(this, id);
 
     var objects = window.main.objects;
     var text = objects && objects[id] && objects[id].common && objects[id].common.name ? objects[id].common.name : id;
@@ -100,9 +98,34 @@ Blockly.FieldOID.prototype.setValue = function(id) {
         // Prevent the field from disappearing if empty.
         text = Blockly.Field.NBSP;
     }
+    this._idName = text;
 
+    Blockly.Field.prototype.setValue.call(this, id);
+};
 
-    this.setText(text);
+/**
+ * Get the text from this field as displayed on screen.  May differ from getText
+ * due to ellipsis, and other formatting.
+ * @return {string} Currently displayed text.
+ * @protected
+ */
+Blockly.FieldOID.prototype.getDisplayText_ = function() {
+    var text = this._idName || this.text_;
+    if (!text) {
+        // Prevent the field from disappearing if empty.
+        return Blockly.Field.NBSP;
+    }
+    if (text.length > this.maxDisplayLength) {
+        // Truncate displayed string and add an ellipsis ('...').
+        text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
+    }
+    // Replace whitespace with non-breaking spaces so the text doesn't collapse.
+    text = text.replace(/\s/g, Blockly.Field.NBSP);
+    if (this.sourceBlock_.RTL) {
+        // The SVG is LTR, force text to be RTL.
+        text += '\u200F';
+    }
+    return text;
 };
 
 /**
@@ -158,45 +181,7 @@ Blockly.FieldOID.prototype.onHtmlInputChange_ = function(e) {
     this.resizeEditor_();
     Blockly.svgResize(this.sourceBlock_.workspace);
 };
-
-/**
- * Update the text node of this field to display the current text.
- * @private
- */
-Blockly.FieldOID.prototype.updateTextNode_ = function() {
-    if (!this.textElement_) {
-        // Not rendered yet.
-        return;
-    }
-    var objects = window.main.objects;
-    var text = objects && objects[this.text_] && objects[this.text_].common && objects[this.text_].common.name ? objects[this.text_].common.name : this.text_;
-    if (typeof text === 'object') {
-        text = text[systemLang] || text.en;
-    }
-    if (text.length > this.maxDisplayLength) {
-        // Truncate displayed string and add an ellipsis ('...').
-        text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
-    }
-    // Empty the text element.
-    goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));
-    // Replace whitespace with non-breaking spaces so the text doesn't collapse.
-    text = text.replace(/\s/g, Blockly.Field.NBSP);
-    if (this.sourceBlock_.RTL && text) {
-        // The SVG is LTR, force text to be RTL.
-        text += '\u200F';
-    }
-    if (!text) {
-        // Prevent the field from disappearing if empty.
-        text = Blockly.Field.NBSP;
-    }
-    var textNode = document.createTextNode(text);
-    this.textElement_.appendChild(textNode);
-
-    // Cached width is obsolete.  Clear it.
-    this.size_.width = 0;
-};
-
-/**
+/*
  * Check to see if the contents of the editor validates.
  * Style the editor accordingly.
  * @private
