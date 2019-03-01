@@ -10,15 +10,15 @@
 
 Executes Javascript, Typescript and Coffescript Scripts.
 
-[Function documentation](doc/en/javascript.md)
+[Function documentation](docs/en/javascript.md)
 
-[Benutzung](doc/de/usage.md)
+[Benutzung](docs/de/usage.md)
 
-Here you can find description of [blockly](doc/en/blockly.md).
+Here you can find description of [blockly](docs/en/blockly.md).
 
-Hier kann man die Beschreibung von [Blockly](doc/de/blockly.md) finden.
+Hier kann man die Beschreibung von [Blockly](docs/de/blockly.md) finden.
 
-Описание по [blockly](doc/ru/blockly.md) можно найти [здесь](doc/ru/blockly.md).
+Описание по [blockly](docs/ru/blockly.md) можно найти [здесь](docs/ru/blockly.md).
 
 ## How to build (only for developers)
 Just run "npm i" in the root and in the src folders.
