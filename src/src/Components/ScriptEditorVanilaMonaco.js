@@ -82,6 +82,8 @@ class ScriptEditor extends React.Component {
             }
             this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.KEY_S, () =>
                 this.onForceSave());
+
+            setTimeout(() => this.highlightText(this.state.searchText));
         }
         const options = {
             selectOnLineNumbers: true,
@@ -213,14 +215,14 @@ class ScriptEditor extends React.Component {
     }
 
     highlightText(text) {
-        let range = this.editor.getModel().findMatches(text);
+        let range = text && this.editor.getModel().findMatches(text);
         if (range && range.length) {
             range.forEach(r => this.editor.setSelection(r.range));
             this.editor.revealLine(range[0].range.startLineNumber);
         } else {
             const row = this.editor.getPosition().lineNumber;
             const col = this.editor.getPosition().column;
-            this.editor.setSelection(new this.monaco.Range(row,col,row,col));
+            this.editor.setSelection(new this.monaco.Range(row, col, row, col));
         }
     }
 
@@ -234,10 +236,7 @@ class ScriptEditor extends React.Component {
 
         if (nextProps.searchText !== this.lastSearch) {
             this.lastSearch = nextProps.searchText;
-            if (this.lastSearch) {
-                this.highlightText(this.lastSearch);
-            }
-
+            this.highlightText(this.lastSearch);
         }
 
         if (this.state.language !== (nextProps.language || 'javascript')) {

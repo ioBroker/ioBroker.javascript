@@ -8,12 +8,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Badge from '@material-ui/core/Badge';
 
-import {
-    MdMoreVert as IconMore,
-    MdPause as IconPause,
-    MdPlayArrow as IconPlay,
-    MdSave as IconSave
-} from 'react-icons/md';
+import {MdSave as IconSave} from 'react-icons/md';
 import {MdCancel as IconCancel} from 'react-icons/md';
 import {MdClose as IconClose} from 'react-icons/md';
 import {MdRefresh as IconRestart} from 'react-icons/md';
