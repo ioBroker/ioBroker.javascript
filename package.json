@@ -26,7 +26,7 @@
     "vm2": "^3.6.4"
   },
   "dependencies": {
-    "@types/node": "^8.10.40",
+    "@types/node": "^8.10.42",
     "@types/request": "^2.47.0",
     "coffee-compiler": "^0.3.2",
     "coffee-script": "^1.12.7",
@@ -50,7 +50,8 @@
     "gulp-rename": "^1.4.0",
     "gulp-replace": "^1.0.0",
     "gulp-watch": "^5.0.1",
-    "mocha": "^5.2.0"
+    "mocha": "^6.0.2",
+    "@iobroker/adapter-core": "^1.0.3"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.javascript/issues"
