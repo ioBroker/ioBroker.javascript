@@ -720,7 +720,8 @@ function createProblemObject(id, cb) {
                 name: 'scriptProblem.' + id.substring('script.js.'.length),
                 desc: 'is the script has a problem',
                 type: 'boolean',
-                write: true,
+                expert: true,
+                write: false,
                 read: true,
                 role: 'indicator.error'
             },
