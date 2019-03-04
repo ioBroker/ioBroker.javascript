@@ -36,7 +36,8 @@
     "suncalc2": "^1.8.1",
     "typescript": "^3.2.2",
     "virtual-tsc": "^0.4.6",
-    "wake_on_lan": "^1.0.0"
+    "wake_on_lan": "^1.0.0",
+    "@iobroker/adapter-core": "^1.0.3"
   },
   "devDependencies": {
     "@types/iobroker": "^1.4.3",
@@ -50,8 +51,7 @@
     "gulp-rename": "^1.4.0",
     "gulp-replace": "^1.0.0",
     "gulp-watch": "^5.0.1",
-    "mocha": "^6.0.2",
-    "@iobroker/adapter-core": "^1.0.3"
+    "mocha": "^6.0.2"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.javascript/issues"
