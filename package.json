@@ -26,6 +26,7 @@
     "vm2": "^3.6.4"
   },
   "dependencies": {
+    "@iobroker/adapter-core": "^1.0.3",
     "@types/node": "^8.10.42",
     "@types/request": "^2.47.0",
     "coffee-compiler": "^0.3.2",
@@ -36,8 +37,7 @@
     "suncalc2": "^1.8.1",
     "typescript": "^3.2.2",
     "virtual-tsc": "^0.4.6",
-    "wake_on_lan": "^1.0.0",
-    "@iobroker/adapter-core": "^1.0.3"
+    "wake_on_lan": "^1.0.0"
   },
   "devDependencies": {
     "@types/iobroker": "^1.4.3",
