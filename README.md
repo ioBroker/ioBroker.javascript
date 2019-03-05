@@ -33,7 +33,7 @@ And then call "npm run build".
 - ...
 
 ## Changelog
-### 4.1.9 (2019-03-04)
+### 4.1.10 (2019-03-05)
 * (bleufox) Schedule was corrected
 
 ### 4.1.8 (2019-02-03)
