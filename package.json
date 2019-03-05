@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "4.1.8",
+  "version": "4.1.9",
   "description": "Javascript/Coffescript Script Engine for ioBroker",
   "author": "bluefox <dogafox@gmail.com>",
   "contributors": [
@@ -40,6 +40,7 @@
     "wake_on_lan": "^1.0.0"
   },
   "devDependencies": {
+    "@iobroker/adapter-core": "^1.0.3",
     "@types/iobroker": "^1.4.3",
     "alcalzone-shared": "^1.4.0",
     "chai": "^4.2.0",
@@ -51,7 +52,9 @@
     "gulp-rename": "^1.4.0",
     "gulp-replace": "^1.0.0",
     "gulp-watch": "^5.0.1",
-    "mocha": "^6.0.2"
+    "mocha": "^6.0.2",
+    "timekeeper": "^2.1.2",
+    "@iobroker/adapter-core": "^1.0.3"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.javascript/issues"

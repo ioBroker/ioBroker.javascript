@@ -624,52 +624,6 @@ Blockly.JavaScript['get_value'] = function(block) {
     return ['getState("' + oid + '").' + attr, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
-// --- get value var --------------------------------------------------
-Blockly.System.blocks['get_value_var'] =
-    '<block type="get_value_var">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '     <value name="OID">'
-    + '         <shadow type="text">'
-    + '             <field name="OID">zigbee.0.1234</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '</block>';
-
-Blockly.Blocks['get_value_var'] = {
-    // Checkbox.
-    init: function() {
-
-        this.appendDummyInput('ATTR')
-            .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['get_value_val'][systemLang],    'val'],
-                [Blockly.Words['get_value_ack'][systemLang],    'ack'],
-                [Blockly.Words['get_value_ts'][systemLang],     'ts'],
-                [Blockly.Words['get_value_lc'][systemLang],     'lc'],
-                [Blockly.Words['get_value_q'][systemLang] ,     'q'],
-                [Blockly.Words['get_value_from'][systemLang],   'from']
-            ]), 'ATTR');
-
-        this.appendDummyInput()
-            .appendField(Blockly.Words['get_value_OID'][systemLang]);
-
-        this.appendValueInput('OID')
-            .setCheck(null);
-
-        this.setInputsInline(true);
-        this.setOutput(true);
-        this.setColour(Blockly.System.HUE);
-        this.setTooltip(Blockly.Words['get_value_tooltip'][systemLang]);
-        this.setHelpUrl(getHelp('get_value_help'));
-    }
-};
-
-Blockly.JavaScript['get_value_var'] = function(block) {
-    var oid  = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
-    var attr = block.getFieldValue('ATTR');
-    return ['getState(' + oid + ').' + attr, Blockly.JavaScript.ORDER_ATOMIC];
-};
-
 // --- get value async--------------------------------------------------
 Blockly.System.blocks['get_value_async'] =
     '<block type="get_value_async">'

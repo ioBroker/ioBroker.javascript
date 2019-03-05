@@ -33,6 +33,9 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.1.9 (2019-03-04)
+* (bleufox) Schedule was corrected
+
 ### 4.1.8 (2019-02-03)
 * (jkuehner) Updated the blockly to the latest code
 * (bleufox) scriptEnabled variables not only for experts
