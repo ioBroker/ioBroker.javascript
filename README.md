@@ -59,6 +59,9 @@ And then call "npm run build".
 * (bluefox) refactoring: split into many modules
 * (AlCalzone) Change TypeScript version range to include TS 3.0+
 
+### 3.6.5 (2019-02-13)
+* (bluefox) Error with formatDate was fixed
+
 ### 3.6.4 (2018-02-05)
 * (bluefox) Pattern error is fixed
 
