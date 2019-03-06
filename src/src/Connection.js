@@ -97,7 +97,15 @@ class Connection {
 
     subscribeState(id, cb) {
         if (!this.statesSubscribes[id]) {
-            this.statesSubscribes[id] = {reg: new RegExp(id.replace(/\./g, '\\.').replace(/\*/g, '.*')), cbs: []};
+            const r = id
+                .replace(/\./g, '\\.')
+                .replace(/\*/g, '.*')
+                .replace(/\(/g, '\\(')
+                .replace(/\)/g, '\\)')
+                .replace(/\+/g, '\\+')
+                .replace(/\[/g, '\\[');
+
+            this.statesSubscribes[id] = {reg: new RegExp(r), cbs: []};
             this.statesSubscribes[id].cbs.push(cb);
             if (this.connected) {
                 this.socket.emit('subscribe', id);
