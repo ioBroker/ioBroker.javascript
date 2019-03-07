@@ -1,23 +1,22 @@
 {
   "name": "js",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^3.3.1",
-    "classnames": "^2.2.5",
-    "cronstrue": "^0.10.3",
-    "eslint": "^5.6.0",
-    "monaco-editor": "^0.14.3",
-    "react": "^16.5.2",
-    "react-beautiful-dnd": "^9.0.2",
+    "@material-ui/core": "^3.9.2",
+    "classnames": "^2.2.6",
+    "cronstrue": "^1.64.0",
+    "eslint": "5.12.0",
+    "monaco-editor": "^0.16.0",
+    "react": "^16.8.4",
+    "react-beautiful-dnd": "^10.0.4",
     "react-bem-helper": "^1.4.1",
-    "react-dom": "^16.5.2",
+    "react-dom": "^16.8.4",
     "react-fullscreen": "^0.1.0",
-    "react-i18next": "^8.1.1",
-    "react-icons": "^3.2.2",
-    "react-monaco-editor": "^0.20.0",
-    "react-scripts": "2.0.5",
-    "react-select": "^1.0.0-rc.2",
+    "react-i18next": "^10.3.0",
+    "react-icons": "^3.5.0",
+    "react-monaco-editor": "^0.25.1",
+    "react-scripts": "^2.1.8",
     "react-splitter-layout": "^3.0.1",
     "react-text-mask": "^5.4.3",
     "react-treeview-mui": "^0.1.2"
@@ -38,7 +37,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "monaco-editor": "^0.14.3",
-    "react-dropzone": "^6.2.4"
+    "monaco-editor": "^0.16.0",
+    "react-dropzone": "^10.0.0"
   }
 }

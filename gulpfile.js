@@ -144,7 +144,7 @@ gulp.task('2-npm', () => {
     }
 });
 
-gulp.task('2-npm-dep', ['clean'], () => {
+gulp.task('2-npm-dep', gulp.series('clean'), () => {
     if (fs.existsSync(__dirname + '/src/node_modules')) {
         return Promise.resolve();
     } else {
@@ -181,7 +181,7 @@ function build() {
 
 gulp.task('3-build', () => build());
 
-gulp.task('3-build-dep', ['2-npm'], () => build());
+gulp.task('3-build-dep', gulp.series('2-npm'), () => build());
 
 function copyFiles() {
     return del([
@@ -212,11 +212,11 @@ function copyFiles() {
     });
 }
 
-gulp.task('5-copy', [/*'3-build'*/], () => {
+gulp.task('5-copy', /*'3-build',*/ () => {
     return copyFiles();
 });
 
-gulp.task('5-copy-dep', ['3-build-dep'], () => {
+gulp.task('5-copy-dep', gulp.series('3-build-dep'), () => {
     return copyFiles();
 });
 
@@ -227,12 +227,12 @@ gulp.task('webserver', () => {
     });
 });
 
-gulp.task('watch', ['webserver'], () => {
+gulp.task('watch', gulp.series('webserver'), () => {
     // Callback mode, useful if any plugin in the pipeline depends on the `end`/`flush` event
     return watch(['src/src/*/**', 'src/src/*'], { ignoreInitial: true }, ['build']);
 });
 
-gulp.task('default', ['5-copy-dep']);
+gulp.task('default', gulp.series('5-copy-dep'));
 
 // you can write here: words.js, jquery.cron.words.js or adminWords.js
 const fileName = 'adminWords.js';
@@ -782,4 +782,4 @@ gulp.task('updateReadme', done => {
     done();
 });
 
-gulp.task('default', ['5-copy-dep']);
+gulp.task('default', gulp.series('5-copy-dep'));

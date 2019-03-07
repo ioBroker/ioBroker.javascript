@@ -34,6 +34,10 @@ const styles = theme => ({
         borderRadius: 10,
         height: 'calc(100% - 10px)'
     },
+    dropzoneDiv: {
+        width: '100%',
+        height: '100%'
+    },
     dropzoneRejected: {
         borderColor: '#970000',
     },
@@ -49,6 +53,12 @@ const styles = theme => ({
         left: '50%',
         transform: 'translate(-50%,-50%)',
         zIndex: 0,
+    },
+    iconError: {
+        color: '#ffc3c6',
+    },
+    iconOk: {
+        color: '#aaeebc',
     },
     text: {
         top: '50%',
@@ -148,33 +158,43 @@ class DialogImportFile extends React.Component {
                                 maxSize={50000000}
                                 acceptClassName={classes.dropzoneAccepted}
                                 rejectClassName={classes.dropzoneRejected}
-                                onDrop={files =>
-                                    this.handleDropFile(files)}
+                                onDrop={files => this.handleDropFile(files)}
                                 multiple={false}
                                 accept='application/x-zip-compressed'
                                 className={className}>
                         {
-                            ({isDragActive, isDragReject}) => {
-
+                            ({ getRootProps, getInputProps, isDragActive, isDragReject}) => {
                                 if (isDragReject) {
                                     if (this.state.imageStatus !== 'rejected') {
                                         this.setState({imageStatus: 'rejected'});
                                     }
-                                    return [(<span key="text" className={this.props.classes.text}>{I18n.t('Some files will be rejected')}</span>),
-                                        (<IconNo key="icon" className={this.props.classes.icon}/>)];
+                                    return (
+                                        <div className={this.props.classes.dropzoneDiv} {...getRootProps()}>
+                                            <input {...getInputProps()} />
+                                            <span key="text" className={this.props.classes.text}>{I18n.t('Some files will be rejected')}</span>
+                                            <IconNo key="icon" className={this.props.classes.icon + ' ' + this.props.classes.iconError}/>
+                                        </div>);
                                 } else if (isDragActive) {
                                     if (this.state.imageStatus !== 'accepted') {
                                         this.setState({imageStatus: 'accepted'});
                                     }
 
-                                    return [(<span key="text" className={this.props.classes.text}>{I18n.t('All files will be accepted')}</span>),
-                                        (<IconPlus key="icon" className={this.props.classes.icon}/>)];
+                                    return (
+                                        <div className={this.props.classes.dropzoneDiv} {...getRootProps()}>
+                                            <input {...getInputProps()} />
+                                            <span key="text" className={this.props.classes.text}>{I18n.t('All files will be accepted')}</span>
+                                            <IconPlus key="icon" className={this.props.classes.icon + ' ' + this.props.classes.iconOk}/>
+                                        </div>);
                                 } else {
                                     if (this.state.imageStatus !== 'wait') {
                                         this.setState({imageStatus: 'wait'});
                                     }
-                                    return [(<span key="text" className={this.props.classes.text}>{I18n.t('Drop some files here or click...')}</span>),
-                                        (<IconUpload key="icon" className={this.props.classes.icon}/>)];
+                                    return (
+                                        <div className={this.props.classes.dropzoneDiv} {...getRootProps()}>
+                                            <input {...getInputProps()} />
+                                            <span key="text" className={this.props.classes.text}>{I18n.t('Drop some files here or click...')}</span>
+                                            <IconUpload key="icon" className={this.props.classes.icon}/>
+                                        </div>);
                                 }
                             }
                         }

@@ -33,8 +33,8 @@ And then call "npm run build".
 - ...
 
 ## Changelog
-### 4.1.10 (2019-03-05)
-* (bleufox) Schedule was corrected
+### 4.1.11 (2019-03-07)
+* (bluefox) Schedule was corrected
 
 ### 4.1.8 (2019-02-03)
 * (jkuehner) Updated the blockly to the latest code
