@@ -144,13 +144,7 @@ gulp.task('2-npm', () => {
     }
 });
 
-gulp.task('2-npm-dep', gulp.series('clean'), () => {
-    if (fs.existsSync(__dirname + '/src/node_modules')) {
-        return Promise.resolve();
-    } else {
-        return npmInstall();
-    }
-});
+gulp.task('2-npm-dep', gulp.series('clean', '2-npm'));
 
 function build() {
     const options = {
@@ -181,7 +175,7 @@ function build() {
 
 gulp.task('3-build', () => build());
 
-gulp.task('3-build-dep', gulp.series('2-npm'), () => build());
+gulp.task('3-build-dep', gulp.series('2-npm', '3-build'));
 
 function copyFiles() {
     return del([
@@ -190,7 +184,7 @@ function copyFiles() {
         return Promise.all([
             gulp.src([
                 'src/build/**/*',
-                'src/build/!index.html',
+                '!src/build/index.html',
                 '!src/build/static/js/main.*.chunk.js',
                 'admin-config/*'
             ])
@@ -212,13 +206,9 @@ function copyFiles() {
     });
 }
 
-gulp.task('5-copy', /*'3-build',*/ () => {
-    return copyFiles();
-});
+gulp.task('5-copy', () => copyFiles());
 
-gulp.task('5-copy-dep', gulp.series('3-build-dep'), () => {
-    return copyFiles();
-});
+gulp.task('5-copy-dep', gulp.series('3-build-dep', '5-copy'));
 
 gulp.task('webserver', () => {
     connect.server({
@@ -227,10 +217,12 @@ gulp.task('webserver', () => {
     });
 });
 
-gulp.task('watch', gulp.series('webserver'), () => {
+gulp.task('prewatch', () => {
     // Callback mode, useful if any plugin in the pipeline depends on the `end`/`flush` event
     return watch(['src/src/*/**', 'src/src/*'], { ignoreInitial: true }, ['build']);
 });
+
+gulp.task('watch', gulp.series('webserver', 'prewatch'));
 
 gulp.task('default', gulp.series('5-copy-dep'));
 
