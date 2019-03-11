@@ -789,6 +789,43 @@ Blockly.JavaScript['get_attr'] = function(block) {
     return ['getAttr(' + obj + ', ' + path + ')', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
+
+
+// --- selector --------------------------------------------------
+Blockly.System.blocks['selector'] =
+    '<block type="selector">'
+    + '     <value name="TEXT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['selector'] = {
+    // Checkbox.
+    init: function() {
+
+        this.appendDummyInput()
+            .appendField("IDs from Selector $(");
+
+        this.appendDummyInput('TEXT')
+            .appendField(new Blockly.FieldTextInput('channel[state.id=*]'), 'TEXT');
+
+            this.appendDummyInput()
+            .appendField(")");
+
+        this.setInputsInline(true);
+        this.setColour(Blockly.System.HUE);
+        this.setOutput(true, 'Array');
+        this.setTooltip(Blockly.Words['field_oid_tooltip'][systemLang]);
+    }
+};
+
+Blockly.JavaScript['selector'] = function(block) {
+    var oid = block.getFieldValue('TEXT');
+    return ["Array.prototype.slice.apply($('" + oid + "'))", Blockly.JavaScript.ORDER_ATOMIC]
+};
+
+
+
+
 // --- Text new line --------------------------------------------------
 Blockly.Blocks['text_newline'] = {
     // Checkbox.
