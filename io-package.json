@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.1.7",
+        "version": "4.1.12",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,7 +22,19 @@
             "AlCalzone"
         ],
         "news": {
-            "4.1.7": {
+            "4.1.12": {
+                "en": "Schedule was corrected",
+                "de": "Zeitplan wurde korrigiert",
+                "ru": "Расписание было исправлено",
+                "pt": "Agenda foi corrigida",
+                "nl": "Planning is gecorrigeerd",
+                "fr": "L'horaire a été corrigé",
+                "it": "La pianificazione è stata corretta",
+                "es": "El horario fue corregido",
+                "pl": "Harmonogram został poprawiony",
+                "zh-cn": "附表已更正"
+            },
+            "4.1.8": {
                 "en": "Updated the blockly to the latest code\nscriptEnabled variables not only for experts",
                 "de": "Blockly auf den neuesten Code aktualisiert\nscriptEnabled-Variablen nicht nur für Experten",
                 "ru": "Обновлен blockly до последней версии\nПеременные scriptEnabled не только для экспертов",

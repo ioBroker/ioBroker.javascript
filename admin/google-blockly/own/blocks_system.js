@@ -13,7 +13,7 @@ function getHelp(word) {
 
 Blockly.System = {
     HUE: 210,
-    blocks: {}    
+    blocks: {}
 };
 
 // --- Debug output --------------------------------------------------
@@ -25,7 +25,7 @@ Blockly.System.blocks['debug'] =
     + '         </shadow>'
     + '     </value>'
     + '</block>';
-    
+
 Blockly.Blocks['debug'] = {
     init: function() {
         this.appendValueInput('TEXT')
@@ -142,7 +142,7 @@ Blockly.Blocks['control'] = {
                         [Blockly.Words['control_sec'][systemLang], 'sec'],
                         [Blockly.Words['control_min'][systemLang], 'min']
                     ]), 'UNIT');
-                    //.appendField(Blockly.Words['control_ms'][systemLang]);
+                //.appendField(Blockly.Words['control_ms'][systemLang]);
             }
         } else if (inputExists) {
             this.removeInput('DELAY');
@@ -248,7 +248,7 @@ Blockly.Blocks['toggle'] = {
                         [Blockly.Words['control_sec'][systemLang], 'sec'],
                         [Blockly.Words['control_min'][systemLang], 'min']
                     ]), 'UNIT');
-                    //.appendField(Blockly.Words['toggle_ms'][systemLang]);
+                //.appendField(Blockly.Words['toggle_ms'][systemLang]);
             }
         } else if (inputExists) {
             this.removeInput('DELAY');
@@ -306,9 +306,9 @@ Blockly.JavaScript['toggle'] = function(block) {
             '});\n';
     } else {
         code =
-        'getState("' + valueObjectID + '", function (err, state) {\n' +
-        setCommand +
-        '});\n';
+            'getState("' + valueObjectID + '", function (err, state) {\n' +
+            setCommand +
+            '});\n';
     }
 
     return code;
@@ -380,7 +380,7 @@ Blockly.Blocks['update'] = {
                         [Blockly.Words['control_sec'][systemLang], 'sec'],
                         [Blockly.Words['control_min'][systemLang], 'min']
                     ]), 'UNIT');
-                    //.appendField(Blockly.Words['update_ms'][systemLang]);
+                //.appendField(Blockly.Words['update_ms'][systemLang]);
             }
         } else if (inputExists) {
             this.removeInput('DELAY');
@@ -740,7 +740,7 @@ Blockly.Blocks['get_value_async'] = {
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        
+
         this.setInputsInline(true);
         this.setColour(Blockly.System.HUE);
         this.setTooltip(Blockly.Words['get_value_tooltip'][systemLang]);
@@ -895,11 +895,11 @@ Blockly.Blocks['math_rndfixed'] = {
         this.setColour(Blockly.Msg['MATH_HUE']);
         this.setOutput(true, 'Number');
         this.setTooltip(Blockly.Words['math_rndfixed_tooltip'][systemLang]);
-  }
+    }
 };
 
 Blockly.JavaScript['math_rndfixed'] = function(block) {
-  var x = Blockly.JavaScript.valueToCode(block, 'x', Blockly.JavaScript.ORDER_ATOMIC);
-  var exp = Math.pow(10, block.getFieldValue('n'));
-  return ['Math.round(' + x + '*' + exp + ')/' + exp, Blockly.JavaScript.ORDER_ATOMIC];
+    var x = Blockly.JavaScript.valueToCode(block, 'x', Blockly.JavaScript.ORDER_ATOMIC);
+    var exp = Math.pow(10, block.getFieldValue('n'));
+    return ['Math.round(' + x + '*' + exp + ')/' + exp, Blockly.JavaScript.ORDER_ATOMIC];
 };

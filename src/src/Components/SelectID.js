@@ -875,7 +875,7 @@ class SelectID extends React.Component {
         if (!this.statesUpdateTimer) {
             this.statesUpdateTimer = setTimeout(() => {
                 this.statesUpdateTimer = null;
-                this.setState({statesUpdate: this.state.statesUpdate++});
+                this.setState({statesUpdate: this.state.statesUpdate + 1});
             }, 300);
         }
     }

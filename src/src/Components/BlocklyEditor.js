@@ -42,12 +42,13 @@ class BlocklyEditor extends React.Component {
         };
         this.originalCode = props.code || '';
 
-        this.someSelected = false;
+        this.someSelected = null;
         this.changeTimer = null;
 
         this.onResizeBind = this.onResize.bind(this);
 
         this.lastCommand = '';
+        this.lastSearch = this.props.searchText || '';
         this.blinkBlock = null;
         this.loadLanguages();
     }
@@ -139,7 +140,7 @@ class BlocklyEditor extends React.Component {
     searchBlocks(text) {
         if (this.blocklyWorkspace) {
             const dom = this.Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
-            const ids = BlocklyEditor.searchXml(dom, text);
+            const ids = BlocklyEditor.searchXml(dom, text.toLowerCase());
             const allBlocks = this.blocklyWorkspace.getAllBlocks();
             const result = [];
             allBlocks.filter(b => ids.indexOf(b.id) !== -1).forEach(b => result.push(b));
@@ -150,8 +151,12 @@ class BlocklyEditor extends React.Component {
     searchId() {
         const blocks = this.lastSearch && this.searchBlocks(this.lastSearch);
         if (blocks && blocks.length) {
-            this.someSelected = true;
-            blocks.forEach(b => b.addSelect());
+            this.someSelected = blocks;
+            this.someSelected.forEach(b => b.addSelect());
+        } else if (this.someSelected) {
+            // remove selection
+            this.someSelected.forEach(b => b.removeSelect());
+            this.someSelected = null;
         }
     }
 
@@ -187,7 +192,7 @@ class BlocklyEditor extends React.Component {
         if (this.originalCode !== nextProps.code) {
             this.originalCode = nextProps.code || '';
             this.loadCode();
-            this.lastSearch && this.searchId();
+            this.searchId();
         }
     }
 
@@ -470,7 +475,7 @@ class BlocklyEditor extends React.Component {
         this.blocklyWorkspace.addChangeListener(masterEvent => {
             if (this.someSelected) {
                 const allBlocks = this.blocklyWorkspace.getAllBlocks();
-                this.someSelected = false;
+                this.someSelected = null;
                 allBlocks.forEach(b => b.removeSelect());
             }
 
@@ -492,6 +497,7 @@ class BlocklyEditor extends React.Component {
         this.blockly.appendChild(toolbar);
 
         this.updateBackground();
+        setTimeout(() => this.searchId(), 200); // select found blocks
     }
 
     updateBackground() {

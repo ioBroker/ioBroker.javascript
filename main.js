@@ -53,7 +53,7 @@ const mods = {
     wake_on_lan:      require('wake_on_lan')
 };
 
-const utils     = require('./lib/utils'); // Get common adapter utils
+const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const words     = require('./lib/words');
 const sandBox   = require('./lib/sandbox');
 const eventObj  = require('./lib/eventObj');
@@ -720,7 +720,8 @@ function createProblemObject(id, cb) {
                 name: 'scriptProblem.' + id.substring('script.js.'.length),
                 desc: 'is the script has a problem',
                 type: 'boolean',
-                write: true,
+                expert: true,
+                write: false,
                 read: true,
                 role: 'indicator.error'
             },
