@@ -781,8 +781,8 @@ class SelectID extends React.Component {
         el.style.left = '-9999px';
         window.document.body.appendChild(el);
         el.select();
-        var selection = window.document.getSelection();
-        var range = window.document.createRange();
+        const selection = window.document.getSelection();
+        const range = window.document.createRange();
         range.selectNode(el);
         selection.removeAllRanges();
         selection.addRange(range);
