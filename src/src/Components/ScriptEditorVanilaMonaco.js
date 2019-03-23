@@ -31,12 +31,28 @@ class ScriptEditor extends React.Component {
         this.lastSearch = '';
     }
 
+    waitForMonaco(cb) {
+        if (!this.monaco) {
+            this.monaco = window.monaco;
+            this.monacoCounter = this.monacoCounter || 0;
+            this.monacoCounter++;
+            if (!this.monaco && this.monacoCounter < 20) {
+                console.log('wait for monaco loaded');
+                return setTimeout(() => this.waitForMonaco(), 200);
+            } else if (this.monacoCounter >= 20) {
+                console.error('Cannot load monaco!');
+            }
+        } else {
+            cb && cb();
+        }
+    }
+
     componentDidMount() {
         if (!this.monaco) {
             this.monaco = window.monaco;
             if (!this.monaco) {
                 console.log('wait for monaco loaded');
-                return setTimeout(() => this.forceUpdate(), 100);
+                this.waitForMonaco(() => this.componentDidMount());
             }
         }
         if (!this.editor) {

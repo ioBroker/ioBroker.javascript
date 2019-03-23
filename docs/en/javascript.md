@@ -939,7 +939,7 @@ It is rather specific commands and are not required often.
 Example:
 
 ```js
-sendToHost('myComputer', cmdExec, 'ls /', function (res) {
+sendToHost('myComputer', 'cmdExec', {data: 'ls /'}, function (res) {
     console.log('List of files: ' + res.data);
 });
 ```
