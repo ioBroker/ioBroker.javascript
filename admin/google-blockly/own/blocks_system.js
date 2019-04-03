@@ -824,6 +824,35 @@ Blockly.JavaScript['get_attr'] = function(block) {
 };
 
 
+// --- regex --------------------------------------------------
+Blockly.System.blocks['regex'] =
+    '<block type="regex">'
+    + '     <value name="TEXT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['regex'] = {
+    // Checkbox.
+    init: function() {
+
+        this.appendDummyInput()
+            .appendField("RegExp");
+
+        this.appendDummyInput('TEXT')
+            .appendField(new Blockly.FieldTextInput('(.*)'), 'TEXT');
+
+        this.setInputsInline(true);
+        this.setColour(Blockly.System.HUE);
+        this.setOutput(true, 'Array');
+        this.setTooltip(Blockly.Words['field_oid_tooltip'][systemLang]);
+    }
+};
+
+Blockly.JavaScript['regex'] = function(block) {
+    var oid = block.getFieldValue('TEXT');
+    return ["new RegExp('" + oid + "')", Blockly.JavaScript.ORDER_ATOMIC]
+};
+
 
 // --- selector --------------------------------------------------
 Blockly.System.blocks['selector'] =
@@ -837,7 +866,7 @@ Blockly.Blocks['selector'] = {
     init: function() {
 
         this.appendDummyInput()
-            .appendField("IDs from Selector $(");
+            .appendField(Blockly.Words['selector'][systemlang] + " $(");
 
         this.appendDummyInput('TEXT')
             .appendField(new Blockly.FieldTextInput('channel[state.id=*]'), 'TEXT');
