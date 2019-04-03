@@ -106,6 +106,7 @@ class App extends Component {
             menuSelectId: '',
             errorText: '',
             expertMode: window.localStorage ? window.localStorage.getItem('App.expertMode') === 'true' : false,
+            logHorzLayout: window.localStorage ? window.localStorage.getItem('App.logHorzLayout') === 'true' : false,
             runningInstances: {},
             confirm: '',
             importFile: false,
@@ -442,6 +443,11 @@ class App extends Component {
         }
     }
 
+    toggleLogLayout() {
+        window.localStorage && window.localStorage.setItem('App.logHorzLayout', this.state.logHorzLayout ? 'false' : 'true');
+        this.setState({logHorzLayout: !this.state.logHorzLayout});
+    }
+
     renderMain() {
         const {classes} = this.props;
         const errorDialog = this.state.errorText ? (<DialogError key="dialogError" onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/>) : null;
@@ -468,7 +474,7 @@ class App extends Component {
                 </div>
                 <SplitterLayout
                     key="splitterLayout"
-                    vertical={true}
+                    vertical={!this.state.logHorzLayout}
                     primaryMinSize={100}
                     secondaryInitialSize={this.logSize}
                     //customClassName={classes.menuDiv + ' ' + classes.splitterDivWithoutMenu}
@@ -507,7 +513,7 @@ class App extends Component {
                         selected={this.state.selected && this.objects[this.state.selected] && this.objects[this.state.selected].type === 'script' ? this.state.selected : ''}
                         objects={this.objects}
                     />
-                    <Log key="log" editing={this.state.editing} connection={this.socket} selected={this.state.selected}/>
+                    <Log key="log" verticalLayout={!this.state.logHorzLayout} onLayoutChange={() => this.toggleLogLayout()} editing={this.state.editing} connection={this.socket} selected={this.state.selected}/>
                 </SplitterLayout>
             </div>),
         ];

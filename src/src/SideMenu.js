@@ -14,8 +14,6 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Input from '@material-ui/core/Input';
 import RootRef from '@material-ui/core/RootRef';
-import Checkbox from '@material-ui/core/Checkbox';
-import Badge from '@material-ui/core/Badge';
 
 import red from '@material-ui/core/colors/red';
 import green from '@material-ui/core/colors/green';
@@ -43,8 +41,6 @@ import {MdPersonPin as IconExpert} from 'react-icons/md';
 import {FaFileExport as IconExport} from 'react-icons/fa';
 import {FaFileImport as IconImport} from 'react-icons/fa';
 import {MdPalette as IconDark} from 'react-icons/md';
-import {FaFilter as IconFilter} from 'react-icons/fa';
-import {MdArrowForward as IconExpandRight} from 'react-icons/md';
 import {MdUnfoldMore as IconExpandAll} from 'react-icons/md';
 import {MdUnfoldLess as IconCollapseAll} from 'react-icons/md';
 
@@ -159,6 +155,7 @@ const styles = theme => ({
         '&:hover': {
             backgroundColor: '#dbdbdb'
         },
+        color: theme.palette.type === 'dark' ? '#ffffff' : '#111111',
         cursor: 'pointer',
         marginTop: 1,
         marginRight: 2,
@@ -448,6 +445,7 @@ class SideDrawer extends React.Component {
                     }
                 } else if (!item.filtered) {
                     item.filtered = true;
+                    console.log(item.id + ' filtered out');
                     changed = true;
                 }
             });
@@ -825,9 +823,9 @@ class SideDrawer extends React.Component {
             const pos = title.toLowerCase().indexOf(this.state.searchText.toLowerCase());
             if (pos !== -1) {
                 title = [
-                    (<span>{title.substring(0, pos)}</span>),
-                    (<span style={{color: 'orange'}}>{title.substring(pos, pos + this.state.searchText.length)}</span>),
-                    (<span>{title.substring(pos + this.state.searchText.length)}</span>),
+                    (<span key="first">{title.substring(0, pos)}</span>),
+                    (<span key="second" style={{color: 'orange'}}>{title.substring(pos, pos + this.state.searchText.length)}</span>),
+                    (<span key="third">{title.substring(pos + this.state.searchText.length)}</span>),
                 ];
             }
         }
@@ -1082,7 +1080,7 @@ class SideDrawer extends React.Component {
         const result = [];
         const classes = this.props.classes;
         if (this.state.searchMode) {
-            result.push((<RootRef rootRef={this.inputRef}><Input
+            result.push((<RootRef key="searchInputRoof" rootRef={this.inputRef}><Input
                 key="searchInput"
                 value={this.state.searchText}
                 className={classes.toolbarSearch}
@@ -1093,6 +1091,7 @@ class SideDrawer extends React.Component {
                     this.setState({searchText: e.target.value});
                     this.filterTimer && clearTimeout(this.filterTimer);
                     this.filterTimer = setTimeout(() => {
+                        this.filterList(true);
                         this.props.onSearch && this.props.onSearch(this.state.searchText);
                     }, 400);
                 }}
@@ -1115,7 +1114,10 @@ class SideDrawer extends React.Component {
                 style={{marginTop: 7, float: 'right'}}
                 onClick={e => {
                     e.stopPropagation();
-                    this.setState({searchText: ''}, () => this.props.onSearch && this.props.onSearch(this.state.searchText));
+                    this.setState({searchText: ''}, () => {
+                        this.filterList(true, '');
+                        this.props.onSearch && this.props.onSearch(this.state.searchText);
+                    });
                 }}
             ><IconClear fontSize="small"/></IconButton>));
         } else {
@@ -1317,7 +1319,7 @@ class SideDrawer extends React.Component {
                 this.setState({typeFilter});
                 }}
             />),
-            (<IconExpandAll   key="expandAll"   className={this.props.classes.footerButtons + ' ' + this.props.classes.footerButtonsRight} title={I18n.t('Expand all')} onClick={() => this.onExpandAll()}/>),
+            (<IconExpandAll   key="expandAll" className={this.props.classes.footerButtons + ' ' + this.props.classes.footerButtonsRight} title={I18n.t('Expand all')} onClick={() => this.onExpandAll()}/>),
             this.state.expanded.length ? (<IconCollapseAll key="collapseAll" className={this.props.classes.footerButtons + ' ' + this.props.classes.footerButtonsRight} title={I18n.t('Collapse all')} onClick={() => this.onCollapseAll()}/>) : null,
         ];
     }

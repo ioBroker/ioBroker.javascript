@@ -1,12 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
+
 import IconButton from '@material-ui/core/IconButton';
 import {MdDeleteForever as IconDelete} from 'react-icons/md';
 import {MdVerticalAlignBottom as IconBottom} from 'react-icons/md';
 import {MdContentCopy as IconCopy} from 'react-icons/md';
 
 import I18n from './i18n';
-import {withStyles} from "@material-ui/core/styles/index";
+import {withStyles} from '@material-ui/core/styles/index';
+
+// replace later with MdHorizontalSplit and MdVerticalSplit
+const IconVerticalSplit   = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAACFJREFUeAFjAIJRwP////8PYIKWHCigNQdKj/pn1D+jAABTG16wVQqVpQAAAABJRU5ErkJggg==';
+const IconHorizontalSplit = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAABtJREFUeAFjAIJRwP8fCj7QkENn/4z6Z5QzCgBjbWaoyx1PqQAAAABJRU5ErkJggg==';
 
 function getTimeString(d) {
     let text;
@@ -93,6 +99,10 @@ const styles = theme => ({
         width: 32,
         height: 32,
         padding: 4
+    },
+    layoutIcon: {
+        width: 32,
+        height: 32,
     }
 });
 
@@ -221,6 +231,7 @@ class Log extends React.Component {
                     <IconButton className={this.props.classes.iconButtons} onClick={() => this.setState({goBottom: !this.state.goBottom})} color={this.state.goBottom ? 'secondary' : ''}><IconBottom/></IconButton>
                     {lines && lines.length ? (<IconButton className={this.props.classes.iconButtons} onClick={() => this.clearLog()}><IconDelete/></IconButton>) : null}
                     {lines && lines.length ? (<IconButton className={this.props.classes.iconButtons} onClick={() => this.onCopy()}><IconCopy/></IconButton>) : null}
+                    {this.props.onLayoutChange ? (<IconButton className={this.props.classes.iconButtons} onClick={() => this.props.onLayoutChange()} title={I18n.t('Change layout')}><img className={this.props.classes.layoutIcon} alt="split" src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit} /></IconButton>) : null}
                 </div>
                 {this.state.selected && lines && lines.length ?
                     (<div className={this.props.classes.logBoxInner} key="logList">
@@ -235,7 +246,9 @@ class Log extends React.Component {
 }
 
 Log.propTypes = {
-    selected: PropTypes.string
+    selected: PropTypes.string,
+    onLayoutChange: PropTypes.func,
+    verticalLayout: PropTypes.bool
 };
 
 export default withStyles(styles)(Log);

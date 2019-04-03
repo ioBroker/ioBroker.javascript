@@ -77,6 +77,7 @@ class ScriptEditor extends React.Component {
                 language={this.state.language}
                 theme={this.state.isDark ? 'vs-dark': ''}
                 value={this.originalCode}
+                searchText={this.props.searchText}
                 options={options}
                 onChange={newValue => this.onChange(newValue)}
                 editorDidMount={(editor, monaco) => this.editorDidMount(editor, monaco)}
@@ -91,7 +92,8 @@ ScriptEditor.propTypes = {
     isDark: PropTypes.bool,
     readOnly: PropTypes.bool,
     code: PropTypes.string,
-    language: PropTypes.string
+    language: PropTypes.string,
+    searchText: PropTypes.string,
 };
 
 export default ScriptEditor;
