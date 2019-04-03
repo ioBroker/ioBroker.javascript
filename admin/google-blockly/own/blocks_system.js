@@ -866,7 +866,7 @@ Blockly.Blocks['selector'] = {
     init: function() {
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['selector'][systemlang] + " $(");
+            .appendField(Blockly.Words['selector'][systemLang] + " $(");
 
         this.appendDummyInput('TEXT')
             .appendField(new Blockly.FieldTextInput('channel[state.id=*]'), 'TEXT');
