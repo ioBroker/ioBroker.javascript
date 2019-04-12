@@ -593,23 +593,25 @@ Blockly.JavaScript['create'] = function(block) {
     var common = Blockly.JavaScript.valueToCode(block, 'COMMON', Blockly.JavaScript.ORDER_ATOMIC);
     var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    var paraV = "";
-    var paraC = "";
+    var paraV = '';
+    var paraC = '';
 
-    if(value != null && value != "")
+    if (value !== null && value !== '')
     {
-        if(isNaN(value))
-            paraV = ", " + value;
-        else
-            paraV = ", " + value;
+        if (isNaN(value)) {
+            paraV = ', ' + value;
+        } else {
+            paraV = ', ' + value;
+        }
     }
 
-    if(common != null && common != "")
+    if (common !== null && common !== '')
     {
-        if(typeof common === 'object')
+        if (typeof common === 'object') {
             paraC = ", JSON.parse(" + JSON.stringify(common) + ")";
-        else
+        } else {
             paraC = ", JSON.parse(" + common + ")";
+        }
     }
 
     return 'createState("' + name + '"' + paraV + paraC + ', function () {\n' + statement + '});\n';
@@ -836,7 +838,7 @@ Blockly.Blocks['regex'] = {
     init: function() {
 
         this.appendDummyInput()
-            .appendField("RegExp");
+            .appendField('RegExp');
 
         this.appendDummyInput('TEXT')
             .appendField(new Blockly.FieldTextInput('(.*)'), 'TEXT');
@@ -866,13 +868,13 @@ Blockly.Blocks['selector'] = {
     init: function() {
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['selector'][systemLang] + " $(");
+            .appendField(Blockly.Words['selector'][systemLang] + ' $(');
 
         this.appendDummyInput('TEXT')
             .appendField(new Blockly.FieldTextInput('channel[state.id=*]'), 'TEXT');
 
             this.appendDummyInput()
-            .appendField(")");
+            .appendField(')');
 
         this.setInputsInline(true);
         this.setColour(Blockly.System.HUE);
@@ -885,9 +887,6 @@ Blockly.JavaScript['selector'] = function(block) {
     var oid = block.getFieldValue('TEXT');
     return ["Array.prototype.slice.apply($('" + oid + "'))", Blockly.JavaScript.ORDER_ATOMIC]
 };
-
-
-
 
 // --- Text new line --------------------------------------------------
 Blockly.Blocks['text_newline'] = {
