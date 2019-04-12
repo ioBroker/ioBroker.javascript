@@ -596,8 +596,7 @@ Blockly.JavaScript['create'] = function(block) {
     var paraV = '';
     var paraC = '';
 
-    if (value !== null && value !== '')
-    {
+    if (value !== null && value !== '') {
         if (isNaN(value)) {
             paraV = ', ' + value;
         } else {
@@ -605,8 +604,7 @@ Blockly.JavaScript['create'] = function(block) {
         }
     }
 
-    if (common !== null && common !== '')
-    {
+    if (common !== null && common !== '') {
         if (typeof common === 'object') {
             paraC = ", JSON.parse(" + JSON.stringify(common) + ")";
         } else {
