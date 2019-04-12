@@ -549,6 +549,10 @@ Blockly.System.blocks['create'] =
     '<block type="create">'
     + '     <value name="NAME">'
     + '     </value>'
+    + '     <value name="VALUE">'
+    + '     </value>'
+    + '     <value name="COMMON">'
+    + '     </value>'
     + '     <value name="STATEMENT">'
     + '     </value>'
     + '</block>';
@@ -559,7 +563,16 @@ Blockly.Blocks['create'] = {
             .appendField(Blockly.Words['create'][systemLang]);
 
         this.appendDummyInput('NAME')
+            .appendField(Blockly.Words['create_oid'][systemLang])
             .appendField(new Blockly.FieldTextInput(Blockly.Words['create_jsState'][systemLang]), 'NAME');
+
+            this.appendValueInput("VALUE")
+            .setCheck(null)
+            .appendField(Blockly.Words['create_init'][systemLang]);
+            
+        this.appendValueInput("COMMON")
+            .setCheck(null)
+            .appendField(Blockly.Words['create_common'][systemLang]);
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -567,7 +580,7 @@ Blockly.Blocks['create'] = {
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
 
-        this.setInputsInline(true);
+        this.setInputsInline(false);
         this.setColour(Blockly.System.HUE);
         this.setTooltip(Blockly.Words['create_tooltip'][systemLang]);
         this.setHelpUrl(getHelp('create_help'));
@@ -576,9 +589,30 @@ Blockly.Blocks['create'] = {
 
 Blockly.JavaScript['create'] = function(block) {
     var name = block.getFieldValue('NAME');
+    var value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    var common = Blockly.JavaScript.valueToCode(block, 'COMMON', Blockly.JavaScript.ORDER_ATOMIC);
     var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    return 'createState("' + name + '", function () {\n' + statement + '});\n';
+    var paraV = '';
+    var paraC = '';
+
+    if (value !== null && value !== '') {
+        if (isNaN(value)) {
+            paraV = ', ' + value;
+        } else {
+            paraV = ', ' + value;
+        }
+    }
+
+    if (common !== null && common !== '') {
+        if (typeof common === 'object') {
+            paraC = ', JSON.parse(' + JSON.stringify(common) + ')';
+        } else {
+            paraC = ', JSON.parse(' + common + ')';
+        }
+    }
+
+    return 'createState("' + name + '"' + paraV + paraC + ', function () {\n' + statement + '});\n';
 };
 
 // --- get value --------------------------------------------------
@@ -787,6 +821,69 @@ Blockly.JavaScript['get_attr'] = function(block) {
     var path = Blockly.JavaScript.valueToCode(block, 'PATH', Blockly.JavaScript.ORDER_ATOMIC);
     var obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
     return ['getAttr(' + obj + ', ' + path + ')', Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+
+// --- regex --------------------------------------------------
+Blockly.System.blocks['regex'] =
+    '<block type="regex">'
+    + '     <value name="TEXT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['regex'] = {
+    // Checkbox.
+    init: function() {
+
+        this.appendDummyInput()
+            .appendField('RegExp');
+
+        this.appendDummyInput('TEXT')
+            .appendField(new Blockly.FieldTextInput('(.*)'), 'TEXT');
+
+        this.setInputsInline(true);
+        this.setColour(Blockly.System.HUE);
+        this.setOutput(true, 'Array');
+        this.setTooltip(Blockly.Words['field_oid_tooltip'][systemLang]);
+    }
+};
+
+Blockly.JavaScript['regex'] = function(block) {
+    var oid = block.getFieldValue('TEXT');
+    return ["new RegExp('" + oid + "')", Blockly.JavaScript.ORDER_ATOMIC]
+};
+
+
+// --- selector --------------------------------------------------
+Blockly.System.blocks['selector'] =
+    '<block type="selector">'
+    + '     <value name="TEXT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['selector'] = {
+    // Checkbox.
+    init: function() {
+
+        this.appendDummyInput()
+            .appendField(Blockly.Words['selector'][systemLang] + ' $(');
+
+        this.appendDummyInput('TEXT')
+            .appendField(new Blockly.FieldTextInput('channel[state.id=*]'), 'TEXT');
+
+            this.appendDummyInput()
+            .appendField(')');
+
+        this.setInputsInline(true);
+        this.setColour(Blockly.System.HUE);
+        this.setOutput(true, 'Array');
+        this.setTooltip(Blockly.Words['field_oid_tooltip'][systemLang]);
+    }
+};
+
+Blockly.JavaScript['selector'] = function(block) {
+    var oid = block.getFieldValue('TEXT');
+    return ["Array.prototype.slice.apply($('" + oid + "'))", Blockly.JavaScript.ORDER_ATOMIC]
 };
 
 // --- Text new line --------------------------------------------------
