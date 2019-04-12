@@ -606,9 +606,9 @@ Blockly.JavaScript['create'] = function(block) {
 
     if (common !== null && common !== '') {
         if (typeof common === 'object') {
-            paraC = ", JSON.parse(" + JSON.stringify(common) + ")";
+            paraC = ', JSON.parse(' + JSON.stringify(common) + ')';
         } else {
-            paraC = ", JSON.parse(" + common + ")";
+            paraC = ', JSON.parse(' + common + ')';
         }
     }
 
