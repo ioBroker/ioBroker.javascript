@@ -38,7 +38,7 @@ class ScriptEditor extends React.Component {
             this.monacoCounter++;
             if (!this.monaco && this.monacoCounter < 20) {
                 console.log('wait for monaco loaded');
-                return setTimeout(() => this.waitForMonaco(), 200);
+                return setTimeout(() => this.waitForMonaco(cb), 200);
             } else if (this.monacoCounter >= 20) {
                 console.error('Cannot load monaco!');
             }
@@ -52,7 +52,7 @@ class ScriptEditor extends React.Component {
             this.monaco = window.monaco;
             if (!this.monaco) {
                 console.log('wait for monaco loaded');
-                this.waitForMonaco(() => this.componentDidMount());
+                return this.waitForMonaco(() => this.componentDidMount());
             }
         }
         if (!this.editor) {
