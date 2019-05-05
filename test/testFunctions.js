@@ -921,9 +921,11 @@ describe('Test JS', function() {
 
         const onStateChanged = function (id, state) {
             if (id === 'javascript.0.testVar' && state.val === 0) {
-                states.setState('javascript.0.testVar', 6, function (err) {
-                    expect(err).to.be.not.ok;
-                });
+                setTimeout(function () {
+                    states.setState('javascript.0.testVar', 6, function (err) {
+                        expect(err).to.be.not.ok;
+                    });
+                }, 1000);
             }
             if (id === 'javascript.0.testResponse' && state.val === 6) {
                 removeStateChangedHandler(onStateChanged);
