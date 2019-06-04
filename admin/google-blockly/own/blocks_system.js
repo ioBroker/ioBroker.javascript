@@ -566,11 +566,11 @@ Blockly.Blocks['create'] = {
             .appendField(Blockly.Words['create_oid'][systemLang])
             .appendField(new Blockly.FieldTextInput(Blockly.Words['create_jsState'][systemLang]), 'NAME');
 
-            this.appendValueInput("VALUE")
+        this.appendValueInput('VALUE')
             .setCheck(null)
             .appendField(Blockly.Words['create_init'][systemLang]);
-            
-        this.appendValueInput("COMMON")
+
+        this.appendValueInput('COMMON')
             .setCheck(null)
             .appendField(Blockly.Words['create_common'][systemLang]);
 
@@ -850,7 +850,7 @@ Blockly.Blocks['regex'] = {
 
 Blockly.JavaScript['regex'] = function(block) {
     var oid = block.getFieldValue('TEXT');
-    return ["new RegExp('" + oid + "')", Blockly.JavaScript.ORDER_ATOMIC]
+    return ['new RegExp("' + oid + '")', Blockly.JavaScript.ORDER_ATOMIC]
 };
 
 
@@ -871,7 +871,7 @@ Blockly.Blocks['selector'] = {
         this.appendDummyInput('TEXT')
             .appendField(new Blockly.FieldTextInput('channel[state.id=*]'), 'TEXT');
 
-            this.appendDummyInput()
+        this.appendDummyInput()
             .appendField(')');
 
         this.setInputsInline(true);
@@ -883,7 +883,7 @@ Blockly.Blocks['selector'] = {
 
 Blockly.JavaScript['selector'] = function(block) {
     var oid = block.getFieldValue('TEXT');
-    return ["Array.prototype.slice.apply($('" + oid + "'))", Blockly.JavaScript.ORDER_ATOMIC]
+    return ['Array.prototype.slice.apply($("' + oid + '"))', Blockly.JavaScript.ORDER_ATOMIC]
 };
 
 // --- Text new line --------------------------------------------------

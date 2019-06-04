@@ -1,6 +1,5 @@
 ![Logo](admin-config/javascript.png)
 # Javascript Script Engine
-==================
 
 ![Number of Installations](http://iobroker.live/badges/javascript-installed.svg) ![Number of Installations](http://iobroker.live/badges/javascript-stable.svg) [![NPM version](http://img.shields.io/npm/v/iobroker.javascript.svg)](https://www.npmjs.com/package/iobroker.javascript)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.javascript.svg)](https://www.npmjs.com/package/iobroker.javascript)
@@ -33,6 +32,14 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.1.13 (2019-06-02) 
+* (bluefox) fixed Monaco Loading
+* (bluefox) added missing blockly element
+* (AlCalzone) Improved the warning message when assigning a variable of wrong type to a state
+* (thewhobox) Added selector blockly, language strings, regexp
+* (thewhobox) Fixed Blockly bug
+* (paul53) fixed for suncalc.getTimes between middle night and nadir
+
 ### 4.1.12 (2019-03-07)
 * (bluefox) Schedule was corrected
 
