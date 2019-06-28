@@ -636,12 +636,16 @@ tsServer = new tsc.Server(tsCompilerOptions, tsLog);
 jsDeclarationServer = new tsc.Server(jsDeclarationCompilerOptions);
 
 function addGetProperty(object) {
-    Object.defineProperty(object, 'get', {
-        value: function (id) {
-            return this[id] || this[adapter.namespace + '.' + id];
-        },
-        enumerable: false
-    });
+    try {
+        Object.defineProperty(object, 'get', {
+            value: function (id) {
+                return this[id] || this[adapter.namespace + '.' + id];
+            },
+            enumerable: false
+        });
+    } catch (e) {
+        console.error('Cannot install get property');
+    }
 }
 
 function fixLineNo(line) {
