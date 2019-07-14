@@ -47,7 +47,7 @@ function correctCasus(text, seconds) {
 
 function convertCronToText(cron, lang) {
     const withSeconds = cron.split(' ').length === 6;
-    let text = cronToText(cron, withSeconds, JQUERY_CRON_LOCALE[lang]);
+    let text = cronToText(cron, withSeconds, JQUERY_CRON_LOCALE[lang] || JQUERY_CRON_LOCALE.en);
     return correctCasus(text, withSeconds);
 }
 

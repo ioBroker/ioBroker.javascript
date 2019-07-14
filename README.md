@@ -32,6 +32,9 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.1.14 (2019-07-14) 
+* (bluefox) Fixed locale settings
+
 ### 4.1.13 (2019-06-02) 
 * (bluefox) fixed Monaco Loading
 * (bluefox) added missing blockly element

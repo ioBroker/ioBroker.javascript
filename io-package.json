@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.1.13",
+        "version": "4.1.14",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.1.14": {
+                "en": "Fixed locale settings",
+                "de": "Feste Gebietsschemaeinstellungen",
+                "ru": "Исправлены настройки локали",
+                "pt": "Configurações de local fixo",
+                "nl": "Vaste locale instellingen",
+                "fr": "Paramètres régionaux fixes",
+                "it": "Risolte le impostazioni locali",
+                "es": "Configuraciones locales fijas",
+                "pl": "Naprawiono ustawienia regionalne",
+                "zh-cn": "修复了区域设置"
+            },
             "4.1.13": {
                 "en": "fixed Monaco Loading\nadded missing blockly element\nImproved the warning message when assigning a variable of wrong type to a state\nAdded selector blockly, language strings, regexp\nFixed Blockly bug\nfixed for suncalc.getTimes between middle night and nadir",
                 "de": "Monaco Loading behoben\nfehlendes blockhaftes Element hinzugefügt\nDie Warnmeldung beim Zuweisen einer Variablen falschen Typs zu einem Status wurde verbessert\nSelektor blockweise hinzugefügt, Sprachstrings, Regexp\nBlockly Bug behoben\nbehoben für suncalc.getTimes zwischen Mitternacht und Nadir",

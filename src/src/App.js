@@ -4,6 +4,8 @@ import SplitterLayout from 'react-splitter-layout';
 import {MdMenu as IconMenuClosed} from 'react-icons/md';
 import {MdArrowBack as IconMenuOpened} from 'react-icons/md';
 
+import 'react-splitter-layout/lib/index.css';
+
 import SideMenu from './SideMenu';
 import Log from './Log';
 import Editor from './Editor';

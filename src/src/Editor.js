@@ -125,6 +125,9 @@ const styles = theme => ({
     tabButton: {
 
     },
+    tabButtonWrapper: {
+        display: 'inline-block',
+    },
     menuIcon: {
         width: 18,
         height: 18,
@@ -312,6 +315,7 @@ class Editor extends React.Component {
         }
         return _changed;
     }
+
     componentWillReceiveProps(nextProps) {
         const newState = {};
         let _changed = false;
@@ -612,6 +616,7 @@ class Editor extends React.Component {
     getTabs() {
         if (this.state.editing.length) {
             return [(<Tabs
+                    component={'div'}
                     key="tabs1"
                     value={this.state.selected}
                     onChange={(event, value) => this.onTabChange(event, value)}
@@ -626,7 +631,14 @@ class Editor extends React.Component {
                             const label = [
                                 (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</span>),
                                 (<span key="icon" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
-                            return (<Tab component={'div'} key={id} label={label} value={id}/>);
+                            return (<Tab
+                                component={'div'}
+                                href={'#' + id}
+                                key={id}
+                                label={label}
+                                value={id}
+                                classes={{wrapper: this.props.classes.tabButtonWrapper}}
+                            />);
                         } else {
                             let text = this.props.objects[id].common.name;
                             let title = '';
@@ -641,12 +653,22 @@ class Editor extends React.Component {
                                 changed ? (<span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span>) : null,
                                 (<span key="icon2" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
 
-                            return (<Tab component={'div'} key={id} label={label} className={this.props.classes.tabButton} value={id} title={title}/>);
+                            return (<Tab
+                                component={'div'}
+                                href={'#' + id}
+                                key={id}
+                                label={label}
+                                className={this.props.classes.tabButton}
+                                value={id}
+                                title={title}
+                                classes={{wrapper: this.props.classes.tabButtonWrapper}}
+                            />);
                         }
                     })}
                 </Tabs>),
                 this.state.editing.length > 1 ? (<IconButton
                     key="menuButton"
+                    href="#"
                     aria-label="Close all but current"
                     className={this.props.classes.tabMenuButton}
                     title={I18n.t('Close all but current')}
@@ -669,7 +691,7 @@ class Editor extends React.Component {
             ];
         } else {
             return (<div key="tabs2" className={this.props.classes.toolbar}>
-                <Button key="select1" disabled={true} className={this.props.classes.hintButton}>
+                <Button key="select1" disabled={true} className={this.props.classes.hintButton} href="">
                     <span key="select2">{I18n.t('Click on this icon')}</span>
                     <IconDoEdit key="select3" className={this.props.classes.hintIcon}/>
                     <span key="select4">{I18n.t('for edit or create script')}</span>
