@@ -41,6 +41,10 @@ class DialogAddNew extends React.Component {
     };
 
     openHtml(html) {
+        const lang = I18n.getLanguage();
+        if (lang === 'de' || lang === 'ru') {
+            html = html.replace(/\/en\//, lang);
+        }
         const win = window.open(html, '_blank');
         win.focus();
     }
@@ -61,7 +65,7 @@ class DialogAddNew extends React.Component {
             </CardActionArea>
             <CardActions>
                 <Button size="small" color="primary" onClick={() => this.props.onClose && this.props.onClose('Javascript/js')}>{I18n.t('Add')}</Button>
-                <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/doc/en/javascript.md')}>{I18n.t('Learn More')}</Button>
+                <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md')}>{I18n.t('Learn More')}</Button>
             </CardActions>
         </Card>);
     }
@@ -81,7 +85,7 @@ class DialogAddNew extends React.Component {
             </CardActionArea>
             <CardActions>
                 <Button size="small" color="primary" onClick={() => this.props.onClose && this.props.onClose('TypeScript/ts')}>{I18n.t('Add')}</Button>
-                <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/doc/en/javascript.md#global-functions')}>{I18n.t('Learn More')}</Button>
+                <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#global-functions')}>{I18n.t('Learn More')}</Button>
             </CardActions>
         </Card>);
     }
@@ -100,7 +104,7 @@ class DialogAddNew extends React.Component {
             </CardActionArea>
             <CardActions>
                 <Button size="small" color="primary" onClick={() => this.props.onClose && this.props.onClose('Blockly')}>{I18n.t('Add')}</Button>
-                <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/doc/en/blockly.md')}>{I18n.t('Learn More')}</Button>
+                <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/blockly.md')}>{I18n.t('Learn More')}</Button>
             </CardActions>
         </Card>);
     }

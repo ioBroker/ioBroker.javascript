@@ -295,6 +295,55 @@ JQUERY_CRON_LOCALE.pt = {
     'in':                   'dentro'
 };
 
+JQUERY_CRON_LOCALE.pl = {
+    ORDINALS: {
+        th: 'th',
+        st: 'st',
+        nd: 'nd',
+        rd: 'rd'
+    },
+    MONTH: [ //short or full names
+        'Sty', or 'Styczeń'
+        'Lut', or 'Luty'
+        'Mar', or 'Marzec'
+        'Kwi', or 'Kwiecień'
+        'Maj', or 'Maj'
+        'Cze', or 'Czerwiec'
+        'Lip', or 'Lipiec'
+        'Sie', or 'Sierpień'
+        'Wrz', or 'Wrzesień'
+        'Paź', or 'Październik'
+        'Lis', or 'Listopad'
+        'Gru'  or 'Grudzień'
+    ],
+    DOW: [ //short or full days name
+        'Nie', or 'Niedziela'
+        'Pon', or 'Poniedziałek'
+        'Wto', or 'Wtorek'
+        'Śro', or 'Środa'
+        'Czw', or 'Czwartek'
+        'Pią', or 'Piątek'
+        'Sob' or 'Sobota
+    ],
+    'Every':            'Każde(go)', // start of expression
+    'and':              'i', // 1, 2, 3 and 15th
+    'every day':        'codziennie',
+    'minute past the':  'minut po', //minute past the hour ?
+    'hour':             'godzina',
+    'minute':           'minut(a)',
+    'minute of':        'minut po',
+    'second':           'sekunda',
+    'second in minute': 'sekund na minutę',
+    'second of every':  'sekund co',
+    'minute every hour': 'minut co godzinę',
+    'on the':           'w',
+    'of every month':   'każdego miesiąca',
+    'and every':        'i każdego',
+    'At':               'O',
+    'on':               'w', // on sun, mon
+    'in':               'w' // in jan, apr
+};
+
 JQUERY_CRON_LOCALE.es = {
     ORDINALS: {
         th: '',
@@ -393,7 +442,7 @@ JQUERY_CRON_LOCALE.nl = {
     'in':                   'in'
 };
 
-JQUERY_CRON_LOCALE["zh-cn"] = {
+JQUERY_CRON_LOCALE['zh-cn'] = {
     ORDINALS: {
         th: '',
         st: '',
