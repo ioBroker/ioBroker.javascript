@@ -4,11 +4,16 @@ tasks
 test
 .travis.yml
 admin-config
-doc
+docs
 src
+tmp
 old-admin
 .idea
 .git
+.gitignore
+.vscode
+.eslintrc.json
+.gitattributes
 .gitignore
 node_modules
 appveyor.yml
