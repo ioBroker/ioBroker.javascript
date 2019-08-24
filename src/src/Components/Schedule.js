@@ -248,6 +248,10 @@ class Schedule extends React.Component {
         schedule = Object.assign({}, DEFAULT, schedule);
         schedule.valid.from = schedule.valid.from || this.now2string();
 
+        this.refFrom = React.createRef();
+        this.refTo = React.createRef();
+        this.refOnce = React.createRef();
+
         this.state = {
             schedule,
             desc: this.state2text(schedule)
@@ -699,14 +703,24 @@ class Schedule extends React.Component {
                     {<TextField
                         className={this.props.classes.inputDate}
                         type="date"
+                        ref={this.refOnce}
                         key="exactDateAt"
-                        value={string2USdate(schedule.period.once)}
+                        defaultValue={string2USdate(schedule.period.once)}
                         //InputProps={{inputComponent: TextTime}}
                         onChange={e => {
-                            const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
-                            const date = this.string2date(e.target.value);
-                            _schedule.period.once = padding(date.getDate()) + '.' + padding(date.getMonth() + 1) + '.' + date.getFullYear();
-                            this.onChange(_schedule);
+                            this.timerOnce && clearTimeout(this.timerOnce);
+
+                            this.refOnce.current.style.background = '#ff000030';
+                            this.timerOnce = setTimeout(value => {
+                                this.timerOnce = null;
+                                this.refOnce.current.style.background = '';
+                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const date = this.string2date(value);
+                                if (date.toString() !== 'Invalid Date') {
+                                    _schedule.period.once = padding(date.getDate()) + '.' + padding(date.getMonth() + 1) + '.' + date.getFullYear();
+                                    this.onChange(_schedule);
+                                }
+                            }, 1500, e.target.value);
                         }}
                         InputLabelProps={{shrink: true,}}
                         label={I18n.t('sch_at')}
@@ -1299,14 +1313,25 @@ class Schedule extends React.Component {
                         className={this.props.classes.inputDate}
                         style={{marginRight: 10}}
                         key="exactTimeFrom"
-                        value={string2USdate(schedule.valid.from)}
+                        inputRef={this.refFrom}
+                        defaultValue={string2USdate(schedule.valid.from)}
                         type="date"
                         //inputComponent={TextDate}
                         onChange={e => {
-                            const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
-                            const date = this.string2date(e.target.value);
-                            _schedule.valid.from = padding(date.getDate()) + '.' + padding(date.getMonth() + 1) + '.' + date.getFullYear();
-                            this.onChange(_schedule);
+                            this.timerFrom && clearTimeout(this.timerFrom);
+
+                            this.refFrom.current.style.background = '#ff000030';
+
+                            this.timerFrom = setTimeout(value => {
+                                this.timerFrom = null;
+                                this.refFrom.current.style.background = '';
+                                const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                const date = this.string2date(value);
+                                if (date.toString() !== 'Invalid Date') {
+                                    _schedule.valid.from = padding(date.getDate()) + '.' + padding(date.getMonth() + 1) + '.' + date.getFullYear();
+                                    this.onChange(_schedule);
+                                }
+                            }, 1500, e.target.value);
                         }}
                         InputLabelProps={{shrink: true,}}
                         margin="normal"
@@ -1319,17 +1344,27 @@ class Schedule extends React.Component {
                         label={I18n.t('sch_validTo')} />
                         {!!schedule.valid.to && (
                             <TextField
+                                inputRef={this.refTo}
                                 className={this.props.classes.inputDate}
                                 style={{marginRight: 10}}
                                 key="exactTimeFrom"
                                 type="date"
-                                value={string2USdate(schedule.valid.to)}
+                                defaultValue={string2USdate(schedule.valid.to)}
                                 //inputComponent={TextDate}
                                 onChange={e => {
-                                    const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
-                                    const date = this.string2date(e.target.value);
-                                    _schedule.valid.to = padding(date.getDate()) + '.' + padding(date.getMonth() + 1) + '.' + date.getFullYear();
-                                    this.onChange(_schedule);
+                                    this.timerTo && clearTimeout(this.timerTo);
+
+                                    this.refTo.current.style.background = '#ff000030';
+                                    this.timerTo = setTimeout(value => {
+                                        this.timerTo = null;
+                                        this.refTo.current.style.background = '';
+                                        const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                                        const date = this.string2date(value);
+                                        if (date.toString() !== 'Invalid Date') {
+                                            _schedule.valid.to = padding(date.getDate()) + '.' + padding(date.getMonth() + 1) + '.' + date.getFullYear();
+                                            this.onChange(_schedule);
+                                        }
+                                    }, 1500, e.target.value);
                                 }}
                                 InputLabelProps={{shrink: true,}}
                                 margin="normal"

@@ -24,7 +24,6 @@ const styles = theme => ({
     },
 });
 class DialogImport extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -88,6 +87,7 @@ DialogImport.propTypes = {
     classes: PropTypes.object.isRequired,
     onClose: PropTypes.func,
     text: PropTypes.string,
+    theme: PropTypes.string,
 };
 
 export default withStyles(styles)(DialogImport);

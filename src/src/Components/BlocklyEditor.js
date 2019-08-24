@@ -592,9 +592,9 @@ class BlocklyEditor extends React.Component {
                         }}/>) :
                     null,
                 
-                this.state.exportText ? (<DialogExport key="dialogExport" onClose={() => this.setState({exportText: ''})} text={this.state.exportText}/>) : null,
+                this.state.exportText ? (<DialogExport key="dialogExport" theme={this.props.theme} onClose={() => this.setState({exportText: ''})} text={this.state.exportText}/>) : null,
                 
-                this.state.importText ? (<DialogImport key="dialogImport" onClose={text => {
+                this.state.importText ? (<DialogImport key="dialogImport" theme={this.props.theme} onClose={text => {
                     this.setState({importText: false});
                     this.onImportBlocks(text);
                 }}/>) : null

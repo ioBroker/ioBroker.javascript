@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.1.15",
+        "version": "4.1.16",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.1.16": {
+                "en": "Fixed the errors in editor",
+                "de": "Fehler im Editor behoben",
+                "ru": "Исправлены ошибки в редакторе",
+                "pt": "Corrigidos erros no editor",
+                "nl": "De fouten in de editor zijn opgelost",
+                "fr": "Correction des erreurs dans l'éditeur",
+                "it": "Risolti gli errori nell'editor",
+                "es": "Se corrigieron los errores en el editor",
+                "pl": "Naprawiono błędy w edytorze",
+                "zh-cn": "修复了编辑器中的错误"
+            },
             "4.1.15": {
                 "en": "Added the polish language to CRON\nFixed the import of scripts",
                 "de": "Die polnische Sprache wurde zu CRON hinzugefügt\nDer Import von Skripten wurde behoben",

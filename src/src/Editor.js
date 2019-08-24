@@ -102,10 +102,12 @@ const styles = theme => ({
         color: theme.palette.secondary.main
     },
     tabText: {
-        maxWidth: 160,
+        maxWidth: 130,
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
+        display: 'inline-block',
+        verticalAlign: 'middle',
     },
     tabChangedIcon: {
         color: '#FF0000',
@@ -629,7 +631,7 @@ class Editor extends React.Component {
                     {this.state.editing.map(id => {
                         if (!this.props.objects[id]) {
                             const label = [
-                                (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</span>),
+                                (<div key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</div>),
                                 (<span key="icon" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
                             return (<Tab
                                 component={'div'}
@@ -649,7 +651,7 @@ class Editor extends React.Component {
                             const changed = this.props.objects[id].common && this.scripts[id] && this.props.objects[id].common.source !== this.scripts[id].source;
                             const label = [
                                 (<img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon}/>),
-                                (<span key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{text}</span>),
+                                (<div key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{text}</div>),
                                 changed ? (<span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span>) : null,
                                 (<span key="icon2" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
 
@@ -899,6 +901,7 @@ class Editor extends React.Component {
             return (<DialogSelectID
                 key="dialogSelectID1"
                 prefix={'../..'}
+                theme={this.props.theme}
                 connection={this.props.connection}
                 selected={this.selectId.callback ? this.selectId.initValue || '' : this.getSelect ? this.getSelect() : ''}
                 statesOnly={true}

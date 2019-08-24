@@ -177,7 +177,6 @@ const context = {
     scripts:          {}
 };
 
-const regExEnum = /^enum\./;
 const regExGlobalOld = /_global$/;
 const regExGlobalNew = /script\.js\.global\./;
 
@@ -196,9 +195,24 @@ function startAdapter(options) {
         useFormatDate: true, // load float formatting
 
         objectChange: (id, obj) => {
-            if (regExEnum.test(id)) {
+            if (id.startsWith('enum.')) {
                 // clear cache
                 context.cacheObjectEnums = {};
+
+                // update context.enums array
+                if (obj) {
+                    // If new
+                    if (context.enums.indexOf(id) === -1) {
+                        context.enums.push(id);
+                        context.enums.sort();
+                    }
+                } else {
+                    const pos = context.enums.indexOf(id);
+                    // if deleted
+                    if (pos !== -1) {
+                        context.enums.splice(pos, 1);
+                    }
+                }
             }
 
             // send changes to disk mirror

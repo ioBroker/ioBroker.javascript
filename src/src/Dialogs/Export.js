@@ -16,6 +16,8 @@ const styles = theme => ({
     textArea: {
         width: '100%',
         height: '100%',
+    },
+    textAreaLight: {
         background: 'lightgray'
     },
     dialog: {
@@ -75,7 +77,7 @@ class DialogExport extends React.Component {
                 <DialogContent>
                     <pre
                         id="export-text"
-                        className={classes.textArea}
+                        className={classes.textArea + ' ' + (this.props.theme === 'dark' ? '' : classes.textAreaLight)}
                     >{this.props.text}</pre>
                 </DialogContent>
                 <DialogActions>
@@ -96,7 +98,7 @@ class DialogExport extends React.Component {
                             </Fade>
                         )}
                     </Popper>
-                    <textarea id="copy_input" readOnly={true} style={{position: 'absolute', left: -9999}} tabIndex={-1} aria-hidden={true} value={this.props.text}/>}/>
+                    <textarea id="copy_input" readOnly={true} style={{position: 'absolute', left: -9999}} tabIndex={-1} aria-hidden={true} value={this.props.text}/>
                 </DialogActions>
             </Dialog>
         );
@@ -107,6 +109,7 @@ DialogExport.propTypes = {
     classes: PropTypes.object.isRequired,
     onClose: PropTypes.func,
     text: PropTypes.string,
+    theme: PropTypes.string,
 };
 
 export default withStyles(styles)(DialogExport);

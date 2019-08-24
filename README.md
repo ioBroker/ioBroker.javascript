@@ -32,6 +32,9 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.1.16 (2019-08-24) 
+* (bluefox) Fixed the errors in editor
+
 ### 4.1.15 (2019-08-24) 
 * (bluefox) Added the polish language to CRON
 * (bluefox) Fixed the import of scripts

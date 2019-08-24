@@ -41,6 +41,11 @@ const styles = theme => ({
         borderTop: '1px solid #999',
         borderBottom: '1px solid #999'
     },
+    treeTableDark: {
+        background: 'inherit',
+        borderTop: '1px solid #999',
+        borderBottom: '1px solid #999'
+    },
     treeTableRow: {
         boxShadow: 'inset 0 1px 0 #eeeeee',
         display: 'block'
@@ -586,8 +591,7 @@ function formatValue(id, state, obj, texts) {
         valText = valText.toString();
     }
 
-
-    if (isCommon && isCommon.role && isCommon.role.match(/^value\.time|^date/)) {
+    if (isCommon && isCommon.role && typeof isCommon.role === 'string' && isCommon.role.match(/^value\.time|^date/)) {
         valText = valText ? (new Date(valText)).toString() : valText;
     }
 
@@ -1107,7 +1111,7 @@ class SelectID extends React.Component {
                     selected={this.state.selected}
                     classNameSelected={classes.selected}
                     classNamePartlyVisible={classes.partlyVisible}
-                    className={classes.treeTable}
+                    className={this.props.theme === 'dark' ? classes.treeTableDark : classes.treeTable}
                     classNameRow={classes.treeTableRow}
                     onRowClick={(data, metadata, toggleChildren, isDoubleClick) => isDoubleClick ?
                         this.onDoubleClick(data, metadata, toggleChildren) :
@@ -1131,7 +1135,8 @@ SelectID.propTypes = {
     selected: PropTypes.string,
     onSelect: PropTypes.func,
     connection: PropTypes.object,
-    prefix: PropTypes.string
+    prefix: PropTypes.string,
+    theme: PropTypes.string,
 };
 
 export default withStyles(styles)(SelectID);
