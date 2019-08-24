@@ -303,27 +303,27 @@ JQUERY_CRON_LOCALE.pl = {
         rd: 'rd'
     },
     MONTH: [ //short or full names
-        'Sty', or 'Styczeń'
-        'Lut', or 'Luty'
-        'Mar', or 'Marzec'
-        'Kwi', or 'Kwiecień'
-        'Maj', or 'Maj'
-        'Cze', or 'Czerwiec'
-        'Lip', or 'Lipiec'
-        'Sie', or 'Sierpień'
-        'Wrz', or 'Wrzesień'
-        'Paź', or 'Październik'
-        'Lis', or 'Listopad'
-        'Gru'  or 'Grudzień'
+        'Sty', // or 'Styczeń'
+        'Lut', // or 'Luty'
+        'Mar', // or 'Marzec'
+        'Kwi', // or 'Kwiecień'
+        'Maj', // or 'Maj'
+        'Cze', // or 'Czerwiec'
+        'Lip', // or 'Lipiec'
+        'Sie', // or 'Sierpień'
+        'Wrz', // or 'Wrzesień'
+        'Paź', // or 'Październik'
+        'Lis', // or 'Listopad'
+        'Gru'  // or 'Grudzień'
     ],
     DOW: [ //short or full days name
-        'Nie', or 'Niedziela'
-        'Pon', or 'Poniedziałek'
-        'Wto', or 'Wtorek'
-        'Śro', or 'Środa'
-        'Czw', or 'Czwartek'
-        'Pią', or 'Piątek'
-        'Sob' or 'Sobota
+        'Nie', // or 'Niedziela'
+        'Pon', // or 'Poniedziałek'
+        'Wto', // or 'Wtorek'
+        'Śro', // or 'Środa'
+        'Czw', // or 'Czwartek'
+        'Pią', // or 'Piątek'
+        'Sob'  // or 'Sobota
     ],
     'Every':            'Każde(go)', // start of expression
     'and':              'i', // 1, 2, 3 and 15th

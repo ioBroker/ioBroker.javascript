@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.1.14",
+        "version": "4.1.15",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.1.15": {
+                "en": "Added the polish language to CRON\nFixed the import of scripts",
+                "de": "Die polnische Sprache wurde zu CRON hinzugefügt\nDer Import von Skripten wurde behoben",
+                "ru": "Добавлен польский язык в CRON\nИсправлен импорт скриптов",
+                "pt": "Adicionada a linguagem polonesa ao CRON\nCorrigida a importação de scripts",
+                "nl": "De Poolse taal toegevoegd aan CRON\nHet importeren van scripts is opgelost",
+                "fr": "Ajout du polonais à CRON\nCorrection de l'importation de scripts",
+                "it": "Aggiunta la lingua polacca a CRON\nRisolto il problema con l'importazione di script",
+                "es": "Se agregó el idioma polaco a CRON\nSe corrigió la importación de scripts.",
+                "pl": "Dodano język polski do CRON\nNaprawiono import skryptów",
+                "zh-cn": "为CRON添加了抛光语言\n修复了脚本的导入问题"
+            },
             "4.1.14": {
                 "en": "Fixed locale settings",
                 "de": "Feste Gebietsschemaeinstellungen",
@@ -115,86 +127,6 @@
                 "it": "Usato VM2 come sandbox. Gli errori di script verranno catturati.\nrefactoring: suddiviso in molti moduli",
                 "es": "Usó VM2 como sandbox. Los errores de script serán capturados.\nrefactorización: dividida en muchos módulos",
                 "pl": "Używany VM2 jako sandbox. Błędy skryptu zostaną przechwycone.\nrefaktoryzacja: podzielona na wiele modułów"
-            },
-            "3.6.4": {
-                "en": "Pattern error is fixed",
-                "de": "Musterfehler ist behoben",
-                "ru": "Исправлена ​​ошибка проверки событий",
-                "pt": "O erro de padrão é corrigido",
-                "nl": "Patroonfout is opgelost",
-                "fr": "L'erreur de modèle est fixe",
-                "it": "L'errore di modello è stato risolto",
-                "es": "Se solucionó el error de patrón",
-                "pl": "Błąd wzorca został naprawiony"
-            },
-            "3.6.3": {
-                "en": "Fixing the CSS for CRON dialog\nFixing the reorder of scripts",
-                "de": "Korrigieren des CSS für den CRON-Dialog\nReparieren von Skripten",
-                "ru": "Исправлен диалог CSS для CRON\nИсправление переупорядочения скриптов",
-                "pt": "Corrigindo o diálogo CSS para CRON\nCorrigindo o reordenamento de scripts",
-                "nl": "De CSS voor het CRON-dialoogvenster herstellen\nDe volgorde van scripts corrigeren",
-                "fr": "Correction de la boîte de dialogue CSS pour CRON\nFixer la réorganisation des scripts",
-                "it": "Correzione del CSS per la finestra di dialogo CRON\nRisolvere il riordino degli script",
-                "es": "Reparar el CSS para el diálogo CRON\nCorregir el reordenamiento de scripts",
-                "pl": "Naprawianie okna dialogowego CSS dla CRON\nNaprawianie zmiany kolejności skryptów"
-            },
-            "3.6.1": {
-                "en": "Pattern error is fixed",
-                "de": "Musterfehler ist behoben",
-                "ru": "Исправлена ​​ошибка проверки событий",
-                "pt": "O erro de padrão é corrigido",
-                "nl": "Patroonfout is opgelost",
-                "fr": "L'erreur de modèle est fixe",
-                "it": "L'errore di modello è stato risolto",
-                "es": "Se solucionó el error de patrón",
-                "pl": "Błąd wzorca został naprawiony"
-            },
-            "3.6.0": {
-                "en": "more translations are added\nupdate blockly engine",
-                "de": "Weitere Übersetzungen werden hinzugefügt\nUpdate Block-Engine",
-                "ru": "добавлено больше переводов\nобновить блок-механизм",
-                "pt": "são adicionadas mais traduções\natualize o mecanismo bloqueado",
-                "nl": "meer vertalingen zijn toegevoegd\nupdate blokmotor",
-                "fr": "plus de traductions sont ajoutées\nmettre à jour le moteur bloquant",
-                "it": "più traduzioni sono aggiunte\naggiornare il motore a blocchi",
-                "es": "se agregan más traducciones\nactualizar el motor blockly"
-            },
-            "3.5.1": {
-                "en": "fixed: sometimes MSG is not defined\nTypeScript support (preparations)",
-                "de": "Korrigiert: manchmal ist MSG Objekt nicht definiert\nTypeScript Unterstützung(Vorberetung)",
-                "ru": "Исправлено: иногда переменная MSG не инициализирована\nПоддержка TypeScript (подготовка)"
-            },
-            "3.4.5": {
-                "en": "added webstorm environment variable for debugging",
-                "de": "webstorm Umgebungsvariable zum debuggen hinzugefügt"
-            },
-            "3.4.4": {
-                "en": "added existsObject and existsState function",
-                "de": "existsObject und existsState Function hinzugefügt"
-            },
-            "3.4.3": {
-                "en": "typo error in line number correction fixed",
-                "de": "Tippfehler in Zeilennummernkorrektur behoben",
-                "ru": "Исправлена ошибка с сообщением об ошибке"
-            },
-            "3.4.2": {
-                "en": "Some enhancements and improvements",
-                "de": "Einige Erweiterungen und Optimierungen"
-            },
-            "3.4.1": {
-                "en": "patternMatching optimized",
-                "de": "patternMatching optimisiert",
-                "ru": "patternMatching оптимирован"
-            },
-            "3.4.0": {
-                "en": "Support of new admin",
-                "de": "Unterstützung von neuen Admin",
-                "ru": "Поддержка нового admin"
-            },
-            "3.3.12": {
-                "en": "file and line info added to log outputs",
-                "de": "Datei- und Zeilen-Info zu Log-Ausgaben hinzugefügt",
-                "ru": "Информация о сроке в сообщении об ошибке"
             }
         },
         "desc": {

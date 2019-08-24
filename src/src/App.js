@@ -458,8 +458,9 @@ class App extends Component {
             errorDialog,
             this.state.importFile ? (<DialogImportFile key="dialogImportFile" onClose={data => this.onImport(data)} />) : null,
             this.state.confirm ? (<DialogConfirm key="dialogConfirm" onClose={() => {
-                this.setState({confirm: ''});
-                this.confirmCallback();
+                // onClose is called directly after onOk
+                this.state.confirm && this.setState({confirm: ''});
+                this.confirmCallback && this.confirmCallback();
                 this.confirmCallback = null;
             }} onOk={() => {
                 this.setState({confirm: ''});
