@@ -676,7 +676,7 @@ function fixLineNo(line) {
 }
 
 context.logError = function (msg, e, offs) {
-    const stack = e.stack.split('\n');
+    const stack = e.stack ? e.stack.split('\n') : (e ? e.toString() : '');
     if (msg.indexOf('\n') < 0) {
         msg = msg.replace(/[: ]*$/, ': ');
     }

@@ -32,17 +32,20 @@ And then call "npm run build".
 - ...
 
 ## Changelog
-### 4.1.16 (2019-08-24) 
+### 4.1.17 (2019-08-xx)
+* (bluefox) Optimization: do not make useless iterations
+
+### 4.1.16 (2019-08-24)
 * (bluefox) Fixed the errors in editor
 
-### 4.1.15 (2019-08-24) 
+### 4.1.15 (2019-08-24)
 * (bluefox) Added the polish language to CRON
 * (bluefox) Fixed the import of scripts
 
-### 4.1.14 (2019-07-14) 
+### 4.1.14 (2019-07-14)
 * (bluefox) Fixed locale settings
 
-### 4.1.13 (2019-06-02) 
+### 4.1.13 (2019-06-02)
 * (bluefox) fixed Monaco Loading
 * (bluefox) added missing blockly element
 * (AlCalzone) Improved the warning message when assigning a variable of wrong type to a state
