@@ -164,7 +164,7 @@ function checkIsControllerInstalled(cb, counter) {
     try {
         var f = fs.readFileSync(dataDir + 'objects.json');
         var objects = JSON.parse(f.toString());
-        if (objects['system.adapter.admin.0']) {
+        if (objects['system.certificates']) {
             console.log('checkIsControllerInstalled: installed!');
             setTimeout(function () {
                 if (cb) cb();
