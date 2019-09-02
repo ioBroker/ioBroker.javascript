@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.1.17": {
+                "en": "Optimization: do not make useless iterations\nAllow to make requests to sites with self/signed certificates",
+                "de": "Optimierung: Machen Sie keine nutzlosen Iterationen\nAnfragen an Sites mit selbst signierten Zertifikaten zulassen",
+                "ru": "Оптимизация: не делайте бесполезных итераций\nРазрешить делать запросы к сайтам с самозаверяющими / подписанными сертификатами",
+                "pt": "Otimização: não faça iterações inúteis\nPermitir fazer solicitações para sites com certificados autoassinados",
+                "nl": "Optimalisatie: maak geen nutteloze iteraties\nToestaan om verzoeken te doen aan sites met zelf / ondertekende certificaten",
+                "fr": "Optimisation: ne faites pas d'itérations inutiles\nAutoriser à faire des demandes aux sites avec des certificats auto-signés",
+                "it": "Ottimizzazione: non effettuare iterazioni inutili\nConsentire di effettuare richieste a siti con certificati autofirmati",
+                "es": "Optimización: no hagas iteraciones inútiles\nPermitir realizar solicitudes a sitios con certificados autofirmados",
+                "pl": "Optymalizacja: nie rób bezużytecznych iteracji\nZezwól na wysyłanie żądań do witryn z samopodpisanymi certyfikatami",
+                "zh-cn": "优化：不要进行无用的迭代\n允许向具有自签名/签名证书的站点发出请求"
+            },
             "4.1.16": {
                 "en": "Fixed the errors in editor",
                 "de": "Fehler im Editor behoben",
@@ -196,7 +208,8 @@
         "libraries": "",
         "subscribe": false,
         "useSystemGPS": true,
-        "mirrorPath": ""
+        "mirrorPath": "",
+        "allowSelfSignedCerts": false
     },
     "objects": [
         {

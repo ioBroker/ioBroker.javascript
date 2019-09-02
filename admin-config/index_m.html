@@ -126,7 +126,7 @@
                         M.updateTextFields();
                     }
                 });
-                
+
             }
             var zoom = OSM.oMap.getView().getZoom();
             OSM.marker.setGeometry(new ol.geom.Point(point));
@@ -380,6 +380,12 @@
                 <div class="input-field col s12 m6">
                     <input type="checkbox" id="subscribe" class="value" />
                     <span for="subscribe" class="translate">Do not subscribe all states on start:</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input type="checkbox" id="allowSelfSignedCerts" class="value" />
+                    <span for="allowSelfSignedCerts" class="translate">Allow self signed certificates for URL requests</span>
                 </div>
             </div>
         </div>

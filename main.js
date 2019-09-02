@@ -90,7 +90,7 @@ const tsCompilerOptions = {
     noEmitOnError: true,
     // emit declarations for global scripts
     declaration: true,
-    // In order to run scripts as a NodeJS vm.Script, 
+    // In order to run scripts as a NodeJS vm.Script,
     // we need to target ES5, otherwise the compiled
     // scripts may include `import` keywords, which are not
     // supported by vm.Script.
@@ -124,7 +124,7 @@ let mirror;
 
 /**
  * @param {string} scriptID - The current script the declarations were generated from
- * @param {string} declarations 
+ * @param {string} declarations
  */
 function provideDeclarationsForGlobalScript(scriptID, declarations) {
     // Remember which declarations this global script had access to
@@ -429,6 +429,12 @@ function startAdapter(options) {
                     if (!adapter.config.subscribe) {
                         adapter.subscribeForeignStates('*');
                     }
+
+                    // Warning. It could have a side-effect in compact mode, so all adapters will accept self signed certificates
+                    if (adapter.config.allowSelfSignedCerts) {
+                        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+                    }
+
 
                     adapter.objects.getObjectView('script', 'javascript', {}, (err, doc) => {
                         globalScript = '';

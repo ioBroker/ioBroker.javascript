@@ -30,4 +30,16 @@ systemDictionary = {
     "tooltip_libraries": {                           "en": "Additional NPM libraries divided by comma. You can access them with require('name') in scripts.", "de": "Zusätzliche NPM Pakete mit Komma getrennt. Man kann die Pakete mit require('name') benutzen.", "ru": "Дополнительные NPM пакеты через запятую. Их можно использовать в скриптах, как require('name')", "pt": "Bibliotecas NPM adicionais divididas por vírgulas. Você pode acessá-los com o requerimento ('nome') em scripts.", "nl": "Extra NPM-bibliotheken gedeeld door een komma. U kunt ze benaderen met require ('name') in scripts.", "fr": "Bibliothèques NPM supplémentaires divisées par une virgule. Vous pouvez y accéder avec require ('nom') dans les scripts.", "it": "Ulteriori librerie NPM divise per virgola. Puoi accedervi con require ('name') negli script.", "es": "Bibliotecas adicionales de NPM divididas por comas. Puede acceder a ellos con require ('nombre') en las secuencias de comandos.", "pl": "Additional NPM libraries divided by comma. You can access them with require('name') in scripts.", "zh-cn": "增加外部NPM库, 请使用逗号分隔。您可以在脚本中使用require('name')调用它们。"},
     "tooltip_longitude": {                           "en": "Longitude as 5.345 to use astro functions",       "de": "Der Längengrad im Format 5.345 für Astro-Funktion", "ru": "Широта в виде 5.435 для астро функций",           "pt": "Longitude como 5.345 para usar funções astro",    "nl": "Lengtegraad als 5.345 om astro-functies te gebruiken", "fr": "Longitude comme 5.345 pour utiliser les fonctions astro", "it": "Longitudine come 5.345 per utilizzare le funzioni astro", "es": "Longitud como 5.345 para usar funciones astro",   "pl": "Longitude as 5.345 to use astro functions",       "zh-cn": "经度为5.345使用astro函数"},
     "tooltip_useSystemGPS": {                        "en": "Use coordinates from system settings",            "de": "Benutze die Koordinaten aus den Systemeinstellungen", "ru": "Использовать координаты из системных настроек",   "pt": "Use as coordenadas das configurações do sistema", "nl": "Gebruik coördinaten van systeeminstellingen",     "fr": "Utiliser les coordonnées des paramètres du système", "it": "Usa le coordinate dalle impostazioni di sistema", "es": "Usa las coordenadas de la configuración del sistema", "pl": "Use coordinates from system settings",            "zh-cn": "使用系统设置中的坐标"},
+    "Allow self signed certificates for URL requests": {
+        "en": "Allow self signed certificates for URL requests",
+        "de": "Erlaube selbstsignierte Zertifikate für URL-Anfragen",
+        "ru": "Разрешить самоподписанные сертификаты для запросов URL",
+        "pt": "Permitir certificados autoassinados para solicitações de URL",
+        "nl": "Sta zelf ondertekende certificaten toe voor URL-verzoeken",
+        "fr": "Autoriser les certificats auto-signés pour les demandes d'URL",
+        "it": "Consenti certificati autofirmati per richieste URL",
+        "es": "Permitir certificados autofirmados para solicitudes de URL",
+        "pl": "Zezwalaj na samopodpisane certyfikaty dla żądań URL",
+        "zh-cn": "允许URL请求的自签名证书"
+    },
 };
