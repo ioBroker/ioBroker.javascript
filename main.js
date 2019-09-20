@@ -174,7 +174,8 @@ const context = {
     enums:            [],
     timerId:          0,
     names:            {},
-    scripts:          {}
+    scripts:          {},
+    messageBusHandlers: {},
 };
 
 const regExGlobalOld = /_global$/;
@@ -536,9 +537,36 @@ function startAdapter(options) {
             });
         },
 
-        message: (obj) => {
+        message: obj => {
             if (obj) {
                 switch (obj.command) {
+                    // process messageTo commands
+                    case 'jsMessageBus':
+                        if (obj.instance === null ||
+                            obj.instance === undefined ||
+                            ('javascript.' + obj.instance === adapter.namespace) ||
+                            (obj.instance === adapter.namespace)
+                        ) {
+                            Object.keys(context.messageBusHandlers).forEach(name => {
+                                if ((!obj.script || obj.script === name) && context.messageBusHandlers[name][obj.message]) {
+                                    context.messageBusHandlers[name][obj.message].forEach(handler => {
+                                        try {
+                                            if (obj.callback) {
+                                                handler.cb.call(handler.sandbox, obj.data, result =>
+                                                    adapter.sendTo(obj.from, obj.command, result, obj.callback));
+                                            } else {
+                                                handler.cb.call(handler.sandbox, obj.data, (err, result) => {/* nop */});
+                                            }
+                                        } catch (e) {
+                                            adapter.setState('scriptProblem.' + name.substring('script.js.'.length), true, true);
+                                            context.logError('Error in callback', e);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        break;
+
                     case 'loadTypings': { // Load typings for the editor
                         const typings = {};
 
@@ -985,6 +1013,10 @@ function stop(name, callback) {
 
     adapter.setState('scriptEnabled.' + name.substring('script.js.'.length), false, true);
 
+    if (context.messageBusHandlers[name]) {
+        delete context.messageBusHandlers[name];
+    }
+
     if (context.scripts[name]) {
         // Remove from subscriptions
         context.isEnums = false;
@@ -1006,11 +1038,11 @@ function stop(name, callback) {
         for (let i = context.subscriptions.length - 1; i >= 0; i--) {
             if (context.subscriptions[i].name === name) {
                 const sub = context.subscriptions.splice(i, 1)[0];
-                if (sub) {
-                    unsubscribe(sub.pattern.id);
-                }
+                sub && unsubscribe(sub.pattern.id);
             } else {
-                if (!context.isEnums && context.subscriptions[i].pattern.enumName || context.subscriptions[i].pattern.enumId) context.isEnums = true;
+                if (!context.isEnums && context.subscriptions[i].pattern.enumName || context.subscriptions[i].pattern.enumId) {
+                    context.isEnums = true;
+                }
             }
         }
 

@@ -57,6 +57,8 @@
     - [isScriptActive](#isscriptactive)
     - [name](#name)
     - [instance](#instance)
+    - [messageTo](#messageto)
+    - [onMessage](#onmessage)
 
 - [Scripts activity](#scripts-activity)
 - [Changelog](#changelog)
@@ -686,10 +688,10 @@ Same as setState but with delay in milliseconds. You can clear all running delay
 
 ```js
 // Switch ON the light in the kitchen in one second
-setStateDelayed('Kitchen.Light.Lamp', true,  1000); 
+setStateDelayed('Kitchen.Light.Lamp', true,  1000);
 
 // Switch OFF the light in the kitchen in 5 seconds and let first timeout run.
-setStateDelayed('Kitchen.Light.Lamp', false, 5000, false, function () { 
+setStateDelayed('Kitchen.Light.Lamp', false, 5000, false, function () {
     log('Lamp is OFF');
 });
 ```
@@ -765,10 +767,10 @@ getState(id);
 Returns state with the given id in the following form:
 ```js
 {
-    val: value, 
-    ack: true/false, 
-    ts: timestamp, 
-    lc: lastchanged, 
+    val: value,
+    ack: true/false,
+    ts: timestamp,
+    lc: lastchanged,
     from: origin
 }
 ```
@@ -1297,6 +1299,49 @@ log('Script ' + name + ' started by ' + instance + '!');
 ```
 
 It is not a function. It is a variable with javascript instance, that is visible in script's scope.
+
+### messageTo
+```
+messageTo({instance: 'instance', script: 'scriptName', message: 'messageName'}, data, {timeout: 1000}, (err, result) =>
+    console.log('result'));
+```
+
+Sends via the message bus the message to some other script. Or even in the same script.
+
+The target could be shorted to:
+
+```
+messageTo('messageName', data, (err, result) =>
+    console.log('result'));
+```
+
+Callback and options are optional and timeout is by default 5000 milliseconds (if callback provided).
+
+```
+messageTo('messageName', dataWithNoResponse);
+```
+
+***Not implemented yet***
+
+### onMessage
+```
+onMessage('messageName', (data, callback) => {console.log(data); callback(null, Date.now())});
+```
+
+Subscribes on message bus and delivers response via callback.
+The response from script which sends response as first will be accepted as answer, all other answers will be ignored.
+
+***Not implemented yet***
+
+### onMessageUnregister
+```
+const id = onMessage('messageName', (data, callback) => {console.log(data); callback(Date.now())});
+
+// unsubscribe
+onMessageUnregister(id);
+```
+
+Unsubscribes from this message.
 
 ## Option - "Do not subscribe all states on start"
 There are two modes of subscribe on states:
