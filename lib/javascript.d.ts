@@ -138,6 +138,12 @@ declare global {
 			[propName: string]: any;
 		};
 
+		interface TargetObject {
+            instance: string; // javascript instance (optional)
+            script: string; // script name (optional)
+            message: string; // message name (required)
+		}
+
 		interface BaseObject {
 			/** The ID of this object */
 			_id?: string;
@@ -573,7 +579,7 @@ declare global {
 	 */
 	function on(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler): any;
 	function on(
-		astroOrScheduleOrOptions: iobJS.AstroSchedule | iobJS.SubscribeTime | iobJS.SubscribeOptions, 
+		astroOrScheduleOrOptions: iobJS.AstroSchedule | iobJS.SubscribeTime | iobJS.SubscribeOptions,
 		handler: iobJS.StateChangeHandler
 	): any;
 	/**
@@ -581,7 +587,7 @@ declare global {
 	 */
 	function subscribe(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler): any;
 	function subscribe(
-		astroOrScheduleOrOptions: iobJS.AstroSchedule | iobJS.SubscribeTime | iobJS.SubscribeOptions, 
+		astroOrScheduleOrOptions: iobJS.AstroSchedule | iobJS.SubscribeTime | iobJS.SubscribeOptions,
 		handler: iobJS.StateChangeHandler
 	): any;
 
@@ -723,6 +729,7 @@ declare global {
 
 	/**
 	 * Returns the IDs of the states with the given name
+	 * @param name Name of the state
 	 * @param forceArray (optional) Ensures that the return value is always an array, even if only one ID was found.
 	 */
 	function getIdByName(name: string, forceArray?: boolean): string | string[];
@@ -872,4 +879,14 @@ declare global {
 	 * @param path The path of the property to dig for in the given object
 	 */
 	function getAttr(obj: string | Record<string, any>, path: string | string[]): any;
+
+    /**
+     * Send message to other script.
+     * @param target Message name or target object
+     * @param data Any data, that should be sent to message bus
+     * @param options Actually only {timeout: X} is supported as option
+     * @param callback Callback to get the result from other script
+     */
+    function messageTo(target: iobJS.TargetObject | string, data: any, options?: any, callback?: GenericCallback<any>): number;
+
 }

@@ -1303,7 +1303,7 @@ It is not a function. It is a variable with javascript instance, that is visible
 ### messageTo
 ```
 messageTo({instance: 'instance', script: 'scriptName', message: 'messageName'}, data, {timeout: 1000}, (err, result) =>
-    console.log('result'));
+    console.log(JSON.stringify(result)));
 ```
 
 Sends via the message bus the message to some other script. Or even in the same script.
@@ -1312,7 +1312,7 @@ The target could be shorted to:
 
 ```
 messageTo('messageName', data, (err, result) =>
-    console.log('result'));
+    console.log(JSON.stringify(result)));
 ```
 
 Callback and options are optional and timeout is by default 5000 milliseconds (if callback provided).

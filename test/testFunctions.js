@@ -223,7 +223,8 @@ describe('Test JS', function() {
                 'source':       "var request = require('request');" +
                                 "createState('check_request_error', function () {" +
                                 "   request('http://google1456.com').on('error', function (error) { " +
-                                "       console.error(error); setState('check_request_error', true, true);" +
+                                "       console.error(error);" +
+                                "       setState('check_request_error', true, true);" +
                                 '   });' +
                                 '});',
                 'enabled':      true,
@@ -798,7 +799,6 @@ describe('Test JS', function() {
     });
 
     it('Test JS: test startScript', function (done) {
-        this.timeout(5000);
         // add script
         const script = {
             'common': {
@@ -825,7 +825,7 @@ describe('Test JS', function() {
             'native': {}
         };
 
-        objects.setObject(stopScript._id, stopScript, function (err) {
+        objects.setObject(stopScript._id, stopScript, err => {
             objects.getObject(stopScript._id, function (err, obj) {
                 expect(err).to.be.not.ok;
                 expect(obj.common.enabled).to.be.false;
@@ -841,10 +841,9 @@ describe('Test JS', function() {
                 });
             });
         });
-    });
+    }).timeout(5000);
 
-    it('Test JS: test global scripts New', function (done) {
-        this.timeout(5000);
+    it('Test JS: test global scripts New', done => {
         // add script
         const script = {
             'common': {
@@ -858,12 +857,12 @@ describe('Test JS', function() {
             '_id':              'script.js.TestGlobalNew.Script',
             'native': {}
         };
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
-            checkValueOfState('javascript.0.testGlobal', 16, function (err) {
+            checkValueOfState('javascript.0.testGlobal', 16, err => {
                 expect(err).to.be.not.ok;
 
-                states.getState('javascript.0.testGlobal', function (err, state) {
+                states.getState('javascript.0.testGlobal', (err, state) => {
                     expect(err).to.be.not.ok;
                     expect(state).to.be.ok;
                     expect(state.val).to.be.equal(16);
@@ -871,10 +870,9 @@ describe('Test JS', function() {
                 });
             }, 18);
         });
-    });
+    }).timeout(5000);
 
     it('Test JS: test global scripts Old', function (done) {
-        this.timeout(5000);
         // add script
         const script = {
             'common': {
@@ -901,10 +899,9 @@ describe('Test JS', function() {
                 });
             }, 18);
         });
-    });
+    }).timeout(5000);
 
     it('Test JS: test ON default', function (done) {
-        this.timeout(5000);
         // add script
         const script = {
             'common': {
@@ -937,10 +934,9 @@ describe('Test JS', function() {
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
         });
-    });
+    }).timeout(5000);
 
     it('Test JS: test ON any', function (done) {
-        this.timeout(5000);
         // add script
         const script = {
             'common': {
@@ -973,7 +969,7 @@ describe('Test JS', function() {
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
         });
-    });
+    }).timeout(5000);
 
     it('Test JS: test ON misc', function (done) {
 
@@ -1141,7 +1137,7 @@ describe('Test JS', function() {
 
         const recs = scriptFunction('recs');
         const TEST_VAR = scriptFunction('TEST_VAR');
-        this.timeout(5000 + 500*recs.length);
+        this.timeout(5000 + 500 * recs.length);
 
         function createObjects(callback) {
             const channel = TEST_VAR.replace(/\.[^.]+$/, '');
@@ -1183,7 +1179,6 @@ describe('Test JS', function() {
     });
 
     it('Test JS: test schedule for seconds', function (done) {
-        this.timeout(4000);
         const d = new Date();
 
         console.log('Must wait 2 seconds[' + ((d.getSeconds() + 2) % 60) + ' * * * * *]' + d.toISOString());
@@ -1212,7 +1207,7 @@ describe('Test JS', function() {
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
         });
-    });
+    }).timeout(4000);
 
     it('Test JS: test schedule for minutes', function (done) {
         const d = new Date();
@@ -1247,7 +1242,6 @@ describe('Test JS', function() {
     });
 
     it('Test JS: test write file to "javascript"', function (done) {
-        this.timeout(5000);
         // add script
         const script = {
             'common': {
@@ -1273,10 +1267,9 @@ describe('Test JS', function() {
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
         });
-    });
+    }).timeout(5000);
 
     it('Test JS: test read file from "javascript"', function (done) {
-        this.timeout(5000);
         // add script
         const script = {
             'common': {
@@ -1302,10 +1295,9 @@ describe('Test JS', function() {
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
         });
-    });
+    }).timeout(5000);
 
     it('Test JS: test write file  to "vis.0"', function (done) {
-        this.timeout(5000);
         // add script
         const script = {
             'common': {
@@ -1331,10 +1323,9 @@ describe('Test JS', function() {
         objects.setObject(script._id, script, function (err) {
             expect(err).to.be.not.ok;
         });
-    });
+    }).timeout(5000);
 
-    it('Test JS: test read file from "vis.0"', function (done) {
-        this.timeout(5000);
+    it('Test JS: test read file from "vis.0"',  done => {
         // add script
         const script = {
             'common': {
@@ -1357,15 +1348,56 @@ describe('Test JS', function() {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, function (err) {
-            expect(err).to.be.not.ok;
+        objects.setObject(script._id, script, err =>
+            expect(err).to.be.not.ok);
+    }).timeout(5000);
+
+
+    it('Test JS: messaging between scripts', done => {
+        // add script
+        const script = {
+            'common': {
+                'name':         'test ON any',
+                'engineType':   'Javascript/js',
+                'source':       `
+createState('interMessaging', false, () => {
+    createState('interMessaging1', false, () => {
+        onMessage('messageName', (data, callback) => {
+            setState('javascript.0.interMessaging1', data, true);
+            callback(5);
         });
+        messageTo('messageName', 6, result => setState('javascript.0.interMessaging', result, true));
     });
+});`,
+                'enabled':      true,
+                'engine':       'system.adapter.javascript.0'
+            },
+            'type':             'script',
+            '_id':              'script.js.test_read1',
+            'native': {}
+        };
+
+        let count = 2;
+        const onStateChanged = function (id, state) {
+            if ((id === 'javascript.0.interMessaging' && state.val === 5 && state.ack === true) ||
+                (id === 'javascript.0.interMessaging1' && state.val === 6 && state.ack === true)) {
+                if (!--count) {
+                    removeStateChangedHandler(onStateChanged);
+                    done();
+                }
+            }
+        };
+        addStateChangedHandler(onStateChanged);
+
+        objects.setObject(script._id, script, err =>
+            expect(err).to.be.not.ok);
+
+    }).timeout(5000);
 
     after('Test JS: Stop js-controller', function (done) {
         this.timeout(6000);
 
-        setup.stopController(function (normalTerminated) {
+        setup.stopController(normalTerminated => {
             console.log('Adapter normal terminated: ' + normalTerminated);
             done();
         });

@@ -449,7 +449,8 @@ function startAdapter(options) {
                                     const obj = doc.rows[g].value;
 
                                     if (obj && obj.common.enabled) {
-                                        if (obj.common.engineType.match(/^[cC]offee/)) {
+                                        const engineType = (obj.common.engineType || '').toLowerCase();
+                                        if (engineType.startsWith('coffee')) {
                                             count++;
                                             coffeeCompiler.fromSource(obj.common.source, {
                                                 sourceMap: false,
@@ -470,7 +471,7 @@ function startAdapter(options) {
                                                     }
                                                 }
                                             });
-                                        } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
+                                        } else if (engineType.startsWith('typescript')) {
                                             // compile the current global script
                                             const filename = scriptIdToTSFilename(obj._id);
                                             const tsCompiled = tsServer.compile(filename, obj.common.source);
@@ -542,20 +543,22 @@ function startAdapter(options) {
                 switch (obj.command) {
                     // process messageTo commands
                     case 'jsMessageBus':
-                        if (obj.instance === null ||
-                            obj.instance === undefined ||
+                        if (obj.message && (
+                            obj.message.instance === null ||
+                            obj.message.instance === undefined ||
                             ('javascript.' + obj.instance === adapter.namespace) ||
                             (obj.instance === adapter.namespace)
-                        ) {
+                        )) {
                             Object.keys(context.messageBusHandlers).forEach(name => {
-                                if ((!obj.script || obj.script === name) && context.messageBusHandlers[name][obj.message]) {
-                                    context.messageBusHandlers[name][obj.message].forEach(handler => {
+                                // script name could be script.js.xxx or only xxx
+                                if ((!obj.message.script || obj.message.script === name) && context.messageBusHandlers[name][obj.message.message]) {
+                                    context.messageBusHandlers[name][obj.message.message].forEach(handler => {
                                         try {
                                             if (obj.callback) {
-                                                handler.cb.call(handler.sandbox, obj.data, result =>
+                                                handler.cb.call(handler.sandbox, obj.message.data, result =>
                                                     adapter.sendTo(obj.from, obj.command, result, obj.callback));
                                             } else {
-                                                handler.cb.call(handler.sandbox, obj.data, (err, result) => {/* nop */});
+                                                handler.cb.call(handler.sandbox, obj.message.data, result => {/* nop */});
                                             }
                                         } catch (e) {
                                             adapter.setState('scriptProblem.' + name.substring('script.js.'.length), true, true);
@@ -1113,8 +1116,9 @@ function prepareScript(obj, callback) {
         const name = obj._id;
 
         adapter.setState('scriptEnabled.' + name.substring('script.js.'.length), true, true);
+        obj.common.engineType = obj.common.engineType || '';
 
-        if ((obj.common.engineType.match(/^[jJ]ava[sS]cript/) || obj.common.engineType === 'Blockly')) {
+        if ((obj.common.engineType.toLowerCase().startsWith('javascript') || obj.common.engineType === 'Blockly')) {
             // Javascript
             adapter.log.info('Start javascript ' + name);
 
@@ -1126,7 +1130,7 @@ function prepareScript(obj, callback) {
             context.scripts[name] = compile(globalScript + obj.common.source, sourceFn);
             context.scripts[name] && execute(context.scripts[name], sourceFn, obj.common.verbose, obj.common.debug);
             if (typeof callback === 'function') callback(true, name);
-        } else if (obj.common.engineType.match(/^[cC]offee/)) {
+        } else if (obj.common.engineType.toLowerCase().startsWith('coffee')) {
             // CoffeeScript
             coffeeCompiler.fromSource(obj.common.source, { sourceMap: false, bare: true }, (err, js) => {
                 if (err) {
@@ -1139,7 +1143,7 @@ function prepareScript(obj, callback) {
                 context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
                 typeof callback === 'function' && callback(true, name);
             });
-        } else if (obj.common.engineType.match(/^[tT]ype[sS]cript/)) {
+        } else if (obj.common.engineType.toLowerCase().startsWith('typescript')) {
             // TypeScript
             adapter.log.info(name + ': compiling TypeScript source...');
             const filename = scriptIdToTSFilename(name);
