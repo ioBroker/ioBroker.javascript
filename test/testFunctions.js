@@ -1360,13 +1360,18 @@ describe('Test JS', function() {
                 'name':         'test ON any',
                 'engineType':   'Javascript/js',
                 'source':       `
-createState('interMessaging', false, () => {
-    createState('interMessaging1', false, () => {
-        onMessage('messageName', (data, callback) => {
-            setState('javascript.0.interMessaging1', data, true);
-            callback(5);
+createState('onMessage', false, () => {
+    createState('messageTo', false, () => {
+        createState('messageDeleted', false, () => {
+            let id = onMessage('messageName', (data, callback) => {
+                setState('javascript.0.onMessage', data, true);
+                callback(5);
+            });
+            messageTo('messageName', 6, result => {
+                setState('javascript.0.messageTo', result, true);
+                setState('javascript.0.messageDeleted', onMessageUnregister(id), true);
+            });
         });
-        messageTo('messageName', 6, result => setState('javascript.0.interMessaging', result, true));
     });
 });`,
                 'enabled':      true,
@@ -1377,10 +1382,13 @@ createState('interMessaging', false, () => {
             'native': {}
         };
 
-        let count = 2;
+        let count = 3;
         const onStateChanged = function (id, state) {
-            if ((id === 'javascript.0.interMessaging' && state.val === 5 && state.ack === true) ||
-                (id === 'javascript.0.interMessaging1' && state.val === 6 && state.ack === true)) {
+            if (
+                (id === 'javascript.0.messageTo'   && state.val === 5    && state.ack === true) ||
+                (id === 'javascript.0.messageName' && state.val === true && state.ack === true) ||
+                (id === 'javascript.0.onMessage'   && state.val === 6    && state.ack === true)
+            ) {
                 if (!--count) {
                     removeStateChangedHandler(onStateChanged);
                     done();

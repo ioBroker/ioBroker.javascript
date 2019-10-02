@@ -436,7 +436,6 @@ function startAdapter(options) {
                         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
                     }
 
-
                     adapter.objects.getObjectView('script', 'javascript', {}, (err, doc) => {
                         globalScript = '';
                         globalDeclarations = '';

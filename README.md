@@ -32,6 +32,9 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.2.0 (2019-10-02)
+* (bluefox) implement inter-script communication.
+
 ### 4.1.17 (2019-08-xx)
 * (bluefox) Optimization: do not make useless iterations
 * (bluefox) Allow to make requests to sites with self/signed certificates

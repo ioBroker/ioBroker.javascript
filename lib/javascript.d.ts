@@ -5,6 +5,7 @@ import child_process = require("child_process");
 type EmptyCallback = () => void;
 type ErrorCallback = (err?: string) => void;
 type GenericCallback<T> = (err: string | null, result?: T) => void;
+type SimpleCallback<T> = (result?: T) => void;
 
 // tslint:disable:no-namespace
 declare global {
@@ -143,6 +144,8 @@ declare global {
             script: string; // script name (optional)
             message: string; // message name (required)
 		}
+
+		type MessageSubscribeID = number;
 
 		interface BaseObject {
 			/** The ID of this object */
@@ -545,17 +548,17 @@ declare global {
 	 */
 	function log(message: string, severity?: iobJS.LogLevel): void;
 
-	// TODO: Do we need this?
-	// namespace console {
-	// 	/** log message with debug level */
-	// 	function debug(message: string): void;
-	// 	/** log message with info level (default output level for all adapters) */
-	// 	function info(message: string): void;
-	// 	/** log message with warning severity */
-	// 	function warn(message: string): void;
-	// 	/** log message with error severity */
-	// 	function error(message: string): void;
-	// }
+	// console functions
+	namespace console {
+	 	/** log message with debug level */
+	 	function debug(message: string): void;
+	 	/** log message with info level (default output level for all adapters) */
+	 	function info(message: string): void;
+	 	/** log message with warning severity */
+	 	function warn(message: string): void;
+	 	/** log message with error severity */
+	 	function error(message: string): void;
+	}
 
 	/**
 	 * Executes a system command
@@ -886,7 +889,22 @@ declare global {
      * @param data Any data, that should be sent to message bus
      * @param options Actually only {timeout: X} is supported as option
      * @param callback Callback to get the result from other script
+     * @return ID of the subscription. It could be used for un-subscribe.
      */
-    function messageTo(target: iobJS.TargetObject | string, data: any, options?: any, callback?: GenericCallback<any>): number;
+    function messageTo(target: iobJS.TargetObject | string, data: any, options?: any, callback?: SimpleCallback<any>): iobJS.MessageSubscribeID;
+
+    /**
+     * Process message from other script.
+     * @param message Message name
+     * @param callback Callback to send the result to other script
+     */
+    function onMessage(message: string, callback?: SimpleCallback<any>);
+
+    /**
+     * Process message from other script.
+     * @param id Message subscription id from onMessage or by message name
+     * @return true if subscription exists and was deleted.
+     */
+    function onMessageUnregister(id: iobJS.MessageSubscribeID | string): boolean;
 
 }

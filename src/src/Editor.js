@@ -7,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Badge from '@material-ui/core/Badge';
+import Snackbar from '@material-ui/core/Snackbar';
 
 import {MdSave as IconSave} from 'react-icons/md';
 import {MdCancel as IconCancel} from 'react-icons/md';
@@ -182,8 +183,9 @@ class Editor extends React.Component {
             menuTabsAnchorEl: null,
             runningInstances: this.props.runningInstances || {},
             showDebugMenu: false,
+            toast: '',
         };
-        
+
         setChangedInAdmin(false);
         /* ----------------------- */
         // required by selectIdDialog in Blockly
@@ -414,10 +416,15 @@ class Editor extends React.Component {
 
                     if (id === nextProps.selected) {
                         if (this.scripts[id].source !== this.objects[id].common.source) {
+                            // take new script if it not yet changed
                             if (!this.state.changed) {
-                                newState.changed = true;
+                                /*newState.changed = true;
                                 _changed = true;
-                                setChangedInAdmin(true);
+                                setChangedInAdmin(true);*/
+                                this.scripts[id].source = source;
+                            } else {
+                                // show that script was changed from outside
+                                this.setState({toast: I18n.t('Script was modified from other places.')});
                             }
                         } else {
                             if (this.state.changed) {
@@ -965,6 +972,31 @@ class Editor extends React.Component {
         }
     }
 
+    getToast() {
+        return (<Snackbar
+            key="toast"
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+            }}
+            open={!!this.state.toast}
+            autoHideDuration={6000}
+            onClose={() => this.setState({toast: ''})}
+            ContentProps={{'aria-describedby': 'message-id',}}
+            message={<span id="message-id">{this.state.toast}</span>}
+            action={[
+                <IconButton
+                    key="close"
+                    aria-label="close"
+                    color="inherit"
+                    className={this.props.classes.closeToast}
+                    onClick={() => this.setState({toast: ''})}
+                ><CloseIcon />
+                </IconButton>,
+            ]}
+        />);
+    }
+
     render() {
         if (this.state.selected && this.props.objects[this.state.selected] && this.state.blockly === null) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
@@ -992,6 +1024,7 @@ class Editor extends React.Component {
             this.getCronDialog(),
             this.getEditorDialog(),
             this.getDebugMenu(),
+            this.getToast(),
         ];
     }
 }

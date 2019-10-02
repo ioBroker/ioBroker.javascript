@@ -1302,16 +1302,18 @@ It is not a function. It is a variable with javascript instance, that is visible
 
 ### messageTo
 ```
-messageTo({instance: 'instance', script: 'scriptName', message: 'messageName'}, data, {timeout: 1000}, (err, result) =>
+messageTo({instance: 'instance', script: 'script.js.common.scriptName', message: 'messageName'}, data, {timeout: 1000}, result =>
     console.log(JSON.stringify(result)));
 ```
 
-Sends via the message bus the message to some other script. Or even in the same script.
+Sends via the "message bus" the message to some other script. Or even to some handler in the same script.
+
+Timeout for callback is 5 seconds by default.
 
 The target could be shorted to:
 
 ```
-messageTo('messageName', data, (err, result) =>
+messageTo('messageName', data, result =>
     console.log(JSON.stringify(result)));
 ```
 
@@ -1321,24 +1323,22 @@ Callback and options are optional and timeout is by default 5000 milliseconds (i
 messageTo('messageName', dataWithNoResponse);
 ```
 
-***Not implemented yet***
-
 ### onMessage
 ```
-onMessage('messageName', (data, callback) => {console.log(data); callback(null, Date.now())});
+onMessage('messageName', (data, callback) => {console.log('Received data: ' + data); callback(null, Date.now())});
 ```
 
 Subscribes on message bus and delivers response via callback.
 The response from script which sends response as first will be accepted as answer, all other answers will be ignored.
 
-***Not implemented yet***
-
 ### onMessageUnregister
 ```
 const id = onMessage('messageName', (data, callback) => {console.log(data); callback(Date.now())});
 
-// unsubscribe
+// unsubscribe specific handler
 onMessageUnregister(id);
+// or unsubscribe by name
+onMessageUnregister('messageName');
 ```
 
 Unsubscribes from this message.
