@@ -7,7 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
 
-import I18n from '../i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
     textArea: {

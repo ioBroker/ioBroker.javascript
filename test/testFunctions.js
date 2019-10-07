@@ -1384,10 +1384,11 @@ createState('onMessage', false, () => {
 
         let count = 3;
         const onStateChanged = function (id, state) {
+            console.log('ON CHNAGE. ' + id  + ' ' + JSON.stringify(state));
             if (
-                (id === 'javascript.0.messageTo'   && state.val === 5    && state.ack === true) ||
-                (id === 'javascript.0.messageName' && state.val === true && state.ack === true) ||
-                (id === 'javascript.0.onMessage'   && state.val === 6    && state.ack === true)
+                (id === 'javascript.0.messageTo'      && state.val === 5    && state.ack === true) ||
+                (id === 'javascript.0.messageDeleted' && state.val === true && state.ack === true) ||
+                (id === 'javascript.0.onMessage'      && state.val === 6    && state.ack === true)
             ) {
                 if (!--count) {
                     removeStateChangedHandler(onStateChanged);

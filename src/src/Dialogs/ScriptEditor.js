@@ -9,7 +9,7 @@ import Dialog from '@material-ui/core/Dialog';
 
 import ScriptEditorComponent from '../Components/ScriptEditorVanilaMonaco';
 
-import I18n from '../i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
     textArea: {

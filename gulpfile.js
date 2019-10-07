@@ -2,7 +2,7 @@
  * Copyright 2018 bluefox <dogafox@gmail.com>
  *
  * MIT License
- * 
+ *
  **/
 'use strict';
 
@@ -92,6 +92,7 @@ gulp.task('flat=>i18n', done => {
         });
         fs.writeFileSync(dir + '/' + lang + '.json', JSON.stringify(words, null, 2));
     });
+    done();
 });
 
 gulp.task('clean', () => {

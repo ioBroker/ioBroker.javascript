@@ -1,0 +1,256 @@
+-
+Adicionar, acrescentar
+Adicionar novo script
+Todos os arquivos serão aceitos
+abril
+Você tem certeza?
+agosto
+Criando regras por blocos gráficos
+Cancelar
+Não é possível excluir o item não vazio!
+Alterar layout
+Verificar blocos
+A verificação não está ativa, porque o adaptador Javascript está desativado
+Limpar entrada de pesquisa
+Clique neste ícone
+Fechar
+Fechar tudo, menos atual
+Recolher todos
+Configuração não salva.
+Instantaneamente converta em bloco para Javascript.
+Copiar script
+Copiar para área de transferência
+Crie um novo
+Criar nova pasta
+Criar novo script
+Criar ou editar o CRON ou o assistente de horário
+Tema escuro
+Estilo escuro
+Opções de depuração
+dezembro
+Definir cron ...
+Definir agendamento ...
+Excluir
+Excluir %s ...
+Excluir pasta
+Excluir script
+Desmarcar todos
+Descartar alterações por %s
+Feito
+Solte alguns arquivos aqui ou clique em ...
+Edite o script ou clique duas vezes
+Finalizar modo de pesquisa
+Erro
+Erro encontrado
+Os scripts existentes serão substituídos.
+Expandir todos
+Modo especialista
+Exportação
+Exportar todos os scripts
+Blocos de exportação
+Exportar blocos selecionados
+fevereiro
+Pasta
+Sexta-feira
+Editor de funções
+EU IRIA
+Importar
+Blocos de importação
+Erro de importação
+Scripts de importação
+Inserir ID do objeto
+Instância
+Instância está desativada
+CRON inválido
+Não será possível reverter esta operação.
+Criando regras escrevendo Javascript
+janeiro
+Julho
+Junho
+Saber mais
+Estilo claro
+Localize o arquivo
+Saídas de log
+marcha
+Maio
+Cardápio
+mensagem
+Segunda-feira
+Nome
+Nenhum host ativo encontrado
+novembro
+Outubro
+Está bem
+Nos dias úteis
+Pausar script
+Selecione o ID do objeto ...
+Renomear
+Reordenar scripts em pastas
+Repetir
+Reiniciar
+Pasta raiz
+Executar script
+sábado
+Salve 
+Roteiro
+O script %s foi modificado no disco
+Script não está sendo executado
+Pesquisa em scripts
+Procurar...
+Selecionar tudo
+setembro
+Mostrar código Javascript
+Mostrar apenas scripts pausados
+Mostrar apenas scripts em execução
+Mostrar apenas scripts com problemas
+Alguns arquivos serão rejeitados
+domingo
+Criando regras escrevendo Typecript
+Quinta-feira
+terça
+Erro desconhecido
+Erro desconhecido!
+Quarta-feira
+Ainda existe!
+cópia de
+a leitura do arquivo falhou: %s
+a leitura do arquivo foi abortada
+Função
+EU IRIA
+Nome
+Função
+Sala
+para editar ou criar um novo script
+Nenhum bloco encontrado
+SEM GRUPO
+Este bloco não está conectado corretamente a outros blocos.
+CRON
+Encontro
+datas
+Dia da semana
+Cada
+a cada N dias
+todos os N dias da semana
+a cada N horas
+a cada N minutos
+a cada N meses
+a cada N segundos
+todo dia
+todos os dias da semana
+toda hora
+todo minuto
+todo mês
+todo segundo
+De
+Horas
+Intervalo
+Intervalo entre
+Minutos
+meses
+Uma vez
+Período
+Segundos
+Simples
+Tempo específico
+datas específicas
+dia específico de semanas
+horas específicas
+minutos específicos
+meses específicos
+segundos específicos
+Tempo
+Para
+bruxo
+tudo
+Astro day
+Noite Astro
+Alvorecer
+Crepúsculo
+Hora dourada
+Fim da hora de ouro
+Nadir
+Amanhecer náutico
+Crepúsculo náutico
+Noite
+Fim da noite
+Meio-dia solar
+Nascer do sol
+Fim do nascer do sol
+Pôr do sol
+Início do pôr do sol
+às
+em %s
+todo dia
+toda hora
+todo minuto
+todo mês
+a cada %s dia
+a cada %s horas
+a cada %s minutos
+a cada %s meses
+a cada %s semanas
+a cada %s anos
+toda semana
+todo ano
+de %s para %s
+Nunca
+em %s de %s
+em %s e %s de
+em toda data de
+%s
+%s e %s
+em %s
+em %s e %s
+nos fins de semana
+em dias úteis
+não será mais executado, porque o começo está no passado
+em %s
+de %s
+Executar de a
+para %s
+cada
+Tempo específico
+de
+De para
+Tempo de intervalo
+invertido
+Nenhum
+em
+Período
+Diariamente
+datas
+Dia
+Cada
+todo dia
+Todo mês
+Toda semana
+Todo ano
+Horas
+Minutos
+mês
+Por mês
+Uma vez
+Meses específicos
+Semana
+Dias úteis
+Final de semana
+Semanal
+Dias úteis
+Ano
+Anual
+Tempo específico
+Tempo
+para
+Válido
+de
+para
+Dia inteiro
+todo mês
+Reconhecer
+De
+Última alteração
+Qualidade
+Registro de data e hora
+Do utilizador
+Valor
+use segundos

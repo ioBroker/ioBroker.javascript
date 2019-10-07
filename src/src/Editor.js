@@ -8,6 +8,9 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Badge from '@material-ui/core/Badge';
 import Snackbar from '@material-ui/core/Snackbar';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Checkbox from '@material-ui/core/Checkbox';
 
 import {MdSave as IconSave} from 'react-icons/md';
 import {MdCancel as IconCancel} from 'react-icons/md';
@@ -30,17 +33,15 @@ import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
 import ImgBlockly2Js from './assets/blockly2js.png'
 
-import I18n from './i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 import Theme from './Theme';
 import ScriptEditor from './Components/ScriptEditorVanilaMonaco';
 import BlocklyEditor from './Components/BlocklyEditor';
-import DialogConfirm from './Dialogs/Confirmation';
-import DialogSelectID from './Dialogs/SelectID';
+import DialogConfirm from '@iobroker/adapter-react/Dialogs//Confirm';
+import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import DialogCron from './Dialogs/Cron';
 import DialogScriptEditor from './Dialogs/ScriptEditor';
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import Checkbox from "@material-ui/core/Checkbox";
+
 
 const images = {
     'Blockly': ImgBlockly,
@@ -139,12 +140,6 @@ const styles = theme => ({
     },
 });
 
-function setChangedInAdmin(isChanged) {
-    if (typeof window.parent !== 'undefined' && window.parent) {
-        window.parent.configNotSaved = isChanged;
-    }
-}
-
 class Editor extends React.Component {
     constructor(props) {
         super(props);
@@ -165,7 +160,7 @@ class Editor extends React.Component {
         this.state = {
             selected: selected,
             editing: editing, // array of opened scripts
-            changed: false,
+            changed: {}, // for every script
             blockly: null,
             debugEnabled: false,
             verboseEnabled: false,
@@ -186,7 +181,8 @@ class Editor extends React.Component {
             toast: '',
         };
 
-        setChangedInAdmin(false);
+        this.setChangedInAdmin();
+
         /* ----------------------- */
         // required by selectIdDialog in Blockly
         this.selectId = {
@@ -249,6 +245,14 @@ class Editor extends React.Component {
             setTimeout(() => this.props.onSelectedChange(this.state.selected, this.state.editing), 100);
         }
         this.onBrowserCloseBound = this.onBrowserClose.bind(this);
+    }
+
+    setChangedInAdmin() {
+        const isChanged = Object.keys(this.state.changed).find(id => this.state.changed[id]);
+
+        if (typeof window.parent !== 'undefined' && window.parent) {
+            window.parent.configNotSaved = isChanged;
+        }
     }
 
     componentDidMount() {
@@ -393,6 +397,10 @@ class Editor extends React.Component {
                 if (!this.objects[editing[i]]) {
                     _changed = true;
                     editing.splice(i, 1);
+                    if (this.state.changed[editing[i]] !== undefined) {
+                        newState.changed = newState.changed || JSON.parse(JSON.stringify(this.state.changed));
+                        delete newState.changed[editing[i]];
+                    }
                 }
             }
             if (this.state.selected && !this.objects[this.state.selected]) {
@@ -406,35 +414,34 @@ class Editor extends React.Component {
             for (const id in this.scripts) {
                 if (!this.scripts.hasOwnProperty(id)) continue;
                 if (this.objects[id] && this.objects[id].common) {
-                    const source = this.scripts[id].source;
+                    const oldSource = this.scripts[id].source;
                     const commonLocal = JSON.parse(JSON.stringify(this.scripts[id]));
                     commonLocal.source = this.objects[id].common.source;
+                    // if anything except source was changed
                     if (JSON.stringify(commonLocal) !== JSON.stringify(this.objects[id].common)) {
                         this.scripts[id] = JSON.parse(JSON.stringify(this.objects[id].common));
-                        this.scripts[id].source = source;
+                        this.scripts[id].source = oldSource;
                     }
 
-                    if (id === nextProps.selected) {
-                        if (this.scripts[id].source !== this.objects[id].common.source) {
-                            // take new script if it not yet changed
-                            if (!this.state.changed) {
-                                /*newState.changed = true;
-                                _changed = true;
-                                setChangedInAdmin(true);*/
-                                this.scripts[id].source = source;
-                            } else {
-                                // show that script was changed from outside
-                                this.setState({toast: I18n.t('Script was modified from other places.')});
-                            }
+                    if (oldSource !== this.objects[id].common.source) {
+                        // take new script if it not yet changed
+                        if (!this.state.changed[id]) {
+                            // just use new value
+                            this.scripts[id].source = this.objects[id].common.source;
                         } else {
-                            if (this.state.changed) {
-                                newState.changed = false;
-                                _changed = true;
-                                setChangedInAdmin(false);
+                            if (this.objects[id].from && this.objects[id].from.startsWith('system.adapter.javascript.')) {
+                                this.objects[id].from = 'system.adapter.admin.0';
+                                // show that script was changed from outside
+                                this.setState({toast: I18n.t('Script %s was modified on disk.', id.split('.').pop())});
                             }
                         }
+                    } else {
+                        if (this.state.changed[id]) {
+                            newState.changed = newState.changed || JSON.parse(JSON.stringify(this.state.changed));
+                            newState.changed[id] = false;
+                            _changed = true;
+                        }
                     }
-
                 } else {
                     delete this.scripts[id];
                     if (this.state.selected === id) {
@@ -471,14 +478,14 @@ class Editor extends React.Component {
             }
 
             _changed = true;
-            newState.changed = changed;
+            newState.changed = newState.changed || JSON.parse(JSON.stringify(this.state.changed));
+            newState.changed[nextProps.selected] = changed;
             newState.editing = editing;
             newState.selected = nextProps.selected;
             newState.blockly = this.scripts[nextProps.selected].engineType === 'Blockly';
             newState.verboseEnabled = this.scripts[nextProps.selected].verbose;
             newState.debugEnabled = this.scripts[nextProps.selected].debug;
             newState.showBlocklyCode = false;
-            setChangedInAdmin(newState.changed);
         } else {
 
         }
@@ -487,7 +494,7 @@ class Editor extends React.Component {
             _changed = true;
             newState.visible = nextProps.visible;
         }
-        _changed && this.setState(newState);
+        _changed && this.setState(newState, () => this.setChangedInAdmin());
     }
 
     onRestart() {
@@ -495,17 +502,23 @@ class Editor extends React.Component {
     }
 
     onSave() {
-        if (this.state.changed) {
-            setChangedInAdmin(false);
-            this.setState({changed: false}, () =>
-                this.props.onChange && this.props.onChange(this.state.selected, this.scripts[this.state.selected]));
+        if (this.state.changed[this.state.selected]) {
+            const changed = JSON.parse(JSON.stringify(this.state.changed));
+            changed[this.state.selected] = false;
+            this.setState({changed}, () => {
+                this.setChangedInAdmin();
+                this.props.onChange && this.props.onChange(this.state.selected, this.scripts[this.state.selected]);
+            });
         }
     }
 
     onCancel() {
         this.scripts[this.state.selected] = JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
-        setChangedInAdmin(false);
-        this.setState({changed: false});
+
+        const changed = JSON.parse(JSON.stringify(this.state.changed));
+        changed[this.state.selected] = false;
+
+        this.setState({changed}, () => this.setChangedInAdmin());
     }
 
     onRegisterSelect(func) {
@@ -521,8 +534,12 @@ class Editor extends React.Component {
                 lines.pop();
                 this.scripts[this.state.selected].source = lines.join('\n');
                 const nowSelected = this.state.selected;
-                setChangedInAdmin(true);
-                this.setState({changed: true, blockly: false, selected: ''}, () => {
+
+                const changed = JSON.parse(JSON.stringify(this.state.changed));
+                changed[this.state.selected] = true;
+
+                this.setState({changed, blockly: false, selected: ''}, () => {
+                    this.setChangedInAdmin();
                     // force update of the editor
                     setTimeout(() => this.setState({selected: nowSelected}), 100);
                 });
@@ -541,10 +558,14 @@ class Editor extends React.Component {
         if (options.verbose !== undefined) {
             this.scripts[this.state.selected].verbose = options.verbose;
         }
-        const changed = JSON.stringify(this.scripts[this.state.selected]) !== JSON.stringify(this.props.objects[this.state.selected].common);
-        if (changed !== this.state.changed) {
-            this.setState({changed});
-            setChangedInAdmin(changed);
+        const _changed = JSON.stringify(this.scripts[this.state.selected]) !== JSON.stringify(this.props.objects[this.state.selected].common);
+        if (_changed !== (this.state.changed[this.state.selected] || false)) {
+
+            const changed = JSON.parse(JSON.stringify(this.state.changed));
+            changed[this.state.selected] = _changed;
+            this.objects[this.state.selected].from = 'system.adapter.admin.0';
+            this.setState({changed}, () => this.setChangedInAdmin());
+
         }
     }
 
@@ -590,16 +611,18 @@ class Editor extends React.Component {
                 }
                 window.localStorage && window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
                 if (newState.selected !== undefined) {
-                    newState.changed = this.isScriptChanged(newState.selected);
+                    newState.changed = newState.changed || JSON.parse(JSON.stringify(this.state.changed));
+                    newState.changed[newState.selected] = this.isScriptChanged(newState.selected);
                     const common = newState.selected && (this.scripts[newState.selected] || (this.props.objects[newState.selected] && this.props.objects[newState.selected].common));
                     newState.blockly = common ? common.engineType === 'Blockly' : false;
                     newState.verboseEnabled = common ? common.verbose : false;
                     newState.debugEnabled = common ? common.debug : false;
                     newState.showBlocklyCode = false;
-                    setChangedInAdmin(newState.changed);
                 }
 
                 this.setState(newState, () =>  {
+                    this.setChangedInAdmin();
+
                     if (newState.selected !== undefined) {
                         this.props.onSelectedChange && this.props.onSelectedChange(newState.selected, this.state.editing);
                         window.localStorage && window.localStorage.setItem('Editor.selected', newState.selected);
@@ -762,14 +785,15 @@ class Editor extends React.Component {
         const isScriptRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].enabled;
 
         if (this.state.selected) {
+            const changed = this.state.changed[this.state.selected];
             return (
                 <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
                     {this.state.menuOpened && this.props.onLocate && (<IconButton className={this.props.classes.toolbarButtons} key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate/></IconButton>)}
-                    {!this.state.changed && isInstanceRunning && (<IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>)}
-                    {!this.state.changed && !isScriptRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>)}
-                    {!this.state.changed && isScriptRunning && !isInstanceRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>)}
-                    {this.state.changed && (<Button key="save" variant="contained" color="secondary" className={this.props.classes.textButton} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave /></Button>)}
-                    {this.state.changed && (<Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel /></Button>)}
+                    {!changed && isInstanceRunning && (<IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>)}
+                    {!changed && !isScriptRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>)}
+                    {!changed && isScriptRunning && !isInstanceRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>)}
+                    {changed && (<Button key="save" variant="contained" color="secondary" className={this.props.classes.textButton} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave /></Button>)}
+                    {changed && (<Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel /></Button>)}
                     <div style={{flex: 2}}/>
 
                     {this.state.blockly && !this.state.showBlocklyCode &&
@@ -845,6 +869,7 @@ class Editor extends React.Component {
                     searchText={this.state.searchText}
                     onRegisterSelect={func => this.onRegisterSelect(func)}
                     readOnly={this.state.showBlocklyCode}
+                    changed={this.state.changed[this.state.selected]}
                     code={this.scripts[this.state.selected].source || ''}
                     isDark={this.state.theme === 'dark'}
                     connection={this.props.connection}
@@ -881,21 +906,14 @@ class Editor extends React.Component {
         if (this.state.confirm) {
             return (<DialogConfirm
                 key="dialogConfirm1"
-                question={this.state.confirm}
-                onClose={() => {
+                text={this.state.confirm}
+                onClose={result => {
+                    if (this.confirmCallback) {
+                        const cb = this.confirmCallback;
+                        this.confirmCallback = null;
+                        cb(result);
+                    }
                     this.setState({confirm: ''});
-                    if (this.confirmCallback) {
-                        const cb = this.confirmCallback;
-                        this.confirmCallback = null;
-                        cb(false);
-                    }
-                }}
-                onOk={() => {
-                    if (this.confirmCallback) {
-                        const cb = this.confirmCallback;
-                        this.confirmCallback = null;
-                        cb(true);
-                    }
                 }}
             />);
         } else {
@@ -991,7 +1009,7 @@ class Editor extends React.Component {
                     color="inherit"
                     className={this.props.classes.closeToast}
                     onClick={() => this.setState({toast: ''})}
-                ><CloseIcon />
+                ><IconClose />
                 </IconButton>,
             ]}
         />);

@@ -12,7 +12,7 @@ import {MdFileUpload as IconUpload} from 'react-icons/md';
 import {MdCancel as IconNo} from 'react-icons/md';
 import {MdPlusOne as IconPlus} from 'react-icons/md';
 
-import I18n from '../i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
     dialog: {

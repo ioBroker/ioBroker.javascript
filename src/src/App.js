@@ -6,17 +6,18 @@ import {MdArrowBack as IconMenuOpened} from 'react-icons/md';
 
 import 'react-splitter-layout/lib/index.css';
 
+import Connection from '@iobroker/adapter-react/Connection';
+import {PROGRESS} from '@iobroker/adapter-react/Connection';
+import Loader from '@iobroker/adapter-react/Components/Loader'
+import I18n from '@iobroker/adapter-react/i18n';
+import DialogMessage from '@iobroker/adapter-react/Dialogs/Message';
+import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
+
 import SideMenu from './SideMenu';
 import Log from './Log';
 import Editor from './Editor';
 import Theme from './Theme';
-import Connection from './Connection';
-import {PROGRESS} from './Connection';
-import Loader from './Components/Loader'
-import I18n from './i18n';
-import DialogMessage from './Dialogs/Message';
 import DialogError from './Dialogs/Error';
-import DialogConfirm from './Dialogs/Confirmation';
 import DialogImportFile from './Dialogs/ImportFile';
 import BlocklyEditor from './Components/BlocklyEditor';
 
@@ -92,6 +93,21 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.objects = {};
+
+        // init translations
+        I18n.setTranslations({
+            'en': require('./i18n/en'),
+            'de': require('./i18n/de'),
+            'es': require('./i18n/es'),
+            'fr': require('./i18n/fr'),
+            'it': require('./i18n/it'),
+            'nl': require('./i18n/nl'),
+            'pl': require('./i18n/pl'),
+            'pt': require('./i18n/pt'),
+            'ru': require('./i18n/ru'),
+            'zh-cn': require('./i18n/zh-cn'),
+        });
+
         this.state = {
             connected: false,
             progress: 0,
@@ -457,16 +473,14 @@ class App extends Component {
             this.state.message ? (<DialogMessage key="dialogMessage" onClose={() => this.setState({message: ''})} text={this.state.message}/>) : null,
             errorDialog,
             this.state.importFile ? (<DialogImportFile key="dialogImportFile" onClose={data => this.onImport(data)} />) : null,
-            this.state.confirm ? (<DialogConfirm key="dialogConfirm" onClose={() => {
-                // onClose is called directly after onOk
-                this.state.confirm && this.setState({confirm: ''});
-                this.confirmCallback && this.confirmCallback();
-                this.confirmCallback = null;
-            }} onOk={() => {
-                this.setState({confirm: ''});
-                this.confirmCallback(true);
-                this.confirmCallback = null;
-            }} question={this.state.confirm}/>) : null,
+            this.state.confirm ? (<DialogConfirm
+                key="dialogConfirm"
+                onClose={result => {
+                    this.state.confirm && this.setState({confirm: ''});
+                    this.confirmCallback && this.confirmCallback(result);
+                    this.confirmCallback = null;
+                }}
+                text={this.state.confirm}/>) : null,
             (<div className={classes.content + ' iobVerticalSplitter'} key="main">
                 <div key="closeMenu" className={classes.menuOpenCloseButton} onClick={() => {
                     window.localStorage && window.localStorage.setItem('App.menuOpened', this.state.menuOpened ? 'false' : 'true');

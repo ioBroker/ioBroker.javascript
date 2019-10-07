@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { MuiThemeProvider} from '@material-ui/core/styles';
-import createTheme from './createTheme';
+import createTheme from '@iobroker/adapter-react/createTheme';
 
 import './index.css';
 import App from './App';

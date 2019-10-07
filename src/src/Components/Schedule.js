@@ -11,8 +11,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from "@material-ui/core/TextField";
 
-import I18n from '../i18n';
-import Theme from '../Theme';
+import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
     hr: {

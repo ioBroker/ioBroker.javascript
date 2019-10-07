@@ -7,7 +7,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
 import {MdDelete as IconDelete} from 'react-icons/md';
 
-import I18n from '../i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 
 class DialogDelete extends React.Component {
     constructor(props) {

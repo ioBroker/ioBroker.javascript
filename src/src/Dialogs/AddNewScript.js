@@ -16,7 +16,7 @@ import ImgJS from '../assets/tileJS.png';
 import ImgTS from '../assets/tileTS.png';
 import ImgBlockly from '../assets/tileBlockly.png';
 
-import I18n from '../i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = {
     card: {

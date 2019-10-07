@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.2.0",
+        "version": "4.2.1",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,8 +22,17 @@
             "AlCalzone"
         ],
         "news": {
-            "4.2.0": {
-
+            "4.2.1": {
+                "en": "Implemented inter-script communication.\nImplemented the mirroring on disk\nTranslation for other languages was added",
+                "de": "Implementierung der Kommunikation zwischen Skripten.\nImplementierte die Spiegelung auf der Festplatte\nÜbersetzung für andere Sprachen wurde hinzugefügt",
+                "ru": "Реализовано межскриптное общение.\nРеализовано зеркалирование на диске\nДобавлен перевод на другие языки",
+                "pt": "Comunicação entre scripts implementada.\nImplementado o espelhamento no disco\nTradução para outras línguas foi adicionada",
+                "nl": "Geïntegreerde communicatie tussen scripts.\nDe mirroring op schijf geïmplementeerd\nVertaling voor andere talen is toegevoegd",
+                "fr": "Implémentation de la communication inter-script.\nImplémenter la mise en miroir sur le disque\nLa traduction dans d'autres langues a été ajoutée",
+                "it": "Implementata comunicazione tra script.\nImplementato il mirroring su disco\nÈ stata aggiunta la traduzione per altre lingue",
+                "es": "Comunicación entre guiones implementada.\nImplementado la duplicación en disco\nSe agregó traducción para otros idiomas",
+                "pl": "Wdrożono komunikację między skryptami.\nZaimplementowano dublowanie na dysku\nDodano tłumaczenie na inne języki",
+                "zh-cn": "实现脚本间通信。\n在磁盘上实现镜像\n添加了其他语言的翻译"
             },
             "4.1.17": {
                 "en": "Optimization: do not make useless iterations\nAllow to make requests to sites with self/signed certificates",

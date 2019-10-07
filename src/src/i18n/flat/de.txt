@@ -8,24 +8,31 @@ August
 Erstellen von Regeln durch Grafikblöcke
 Abbrechen
 Kann nicht gelöscht werden, weil noch einige Elementen sind drin!
+Layout ändern
 Blöcke prüfen
 Syntax-Check ist nicht aktiv, weil Javascript adapter läuft nicht.
 Sucheingabe löschen
 Klicken Sie auf dieses Symbol
 Schließen
+Schließen Sie alle außer aktuell
+Alles einklappen
 Konfiguration nicht gespeichert
 Blockly in Javascript für immer konvertieren.
+Skript kopieren
 In die Zwischenablage kopieren
 Erstelle neu
 Neuen Ordner erstellen
 Neues Skript erstellen
 Erstellen oder bearbeiten Sie den CRON- oder Zeit-Assistenten
+Dunkles Thema
 Dunkler Stil
+Debug-Optionen
 Dezember
 Cron definieren ...
 Zeitplan definieren ...
 Löschen
 Löschen %s...
+Verzeichnis löschen
 Skript löschen
 Alle abwählen
 verwerfen Sie die Änderungen für %s
@@ -36,6 +43,7 @@ Suchmodus beenden
 Fehler
 Fehler wurde gefunden
 Vorhandene Skripte werden überschrieben.
+Alle erweitern
 Expertenmodus
 Export
 Exportieren Sie alle Skripte
@@ -44,7 +52,9 @@ Ausgewählte Blöcke exportieren
 Februar
 Mappe
 Freitag
+Funktion-Editor
 ID
+Importieren
 Blöcke importieren
 Fehler beim Importieren
 Skripts importieren
@@ -58,6 +68,7 @@ Januar
 Juli
 Juni
 Mehr erfahren
+Heller Stil
 Datei zeigen
 Protokoll
 März
@@ -82,12 +93,16 @@ Skript ausführen
 Samstag
 Speichern
 Skript
+Skript "%s" wurde auf der Festplatte geändert
 Skript läuft nicht
 Suche in Skripten
 Suche...
 Wählen Sie Alle
 September
 Javascript-Code anzeigen
+Nur angehaltene Skripte anzeigen
+Nur laufende Skripte anzeigen
+Zeige nur Skripte mit Problemen
 Einige Dateien werden abgelehnt
 Sonntag
 Regeln erstellen, indem Sie Typescript schreiben
@@ -105,17 +120,17 @@ ID
 Name
 Rolle
 Zimmer
-zum Bearbeiten oder Erstellen eines Skripts
+zum Bearbeiten oder Erstellen Sie ein neues Skript
 Keine Blöcke gefunden
 KEINE GRUPPE
 Dieser Block ist mit anderen nicht richtig verbunden.
 CRON
 Datum
-Daten
-Wochentag
+Tage
+Wochentage
 Jeden
-alle N Tag
-alle N Wochentag
+alle N Tage
+alle N Wochentage
 alle N Stunden
 alle N Minuten
 alle N Monate
@@ -137,7 +152,7 @@ Zeitraum
 Sekunden
 Einfach
 Bestimmte Zeit
-bestimmte Daten
+bestimmte Tage
 bestimmten Wochentag
 bestimmte Stunden
 bestimmte Minuten
@@ -179,8 +194,8 @@ jede Woche
 jedes Jahr
 von %s bis %s
 noch nie
-auf %s von %s
-auf %s und %s von
+am %s von %s
+am %s und %s von
 an jedem Datum von
 %s
 %s und %s
@@ -200,7 +215,7 @@ Von bis
 Zeitintervall
 umkehren
 keiner
-auf
+am
 Zeitraum
 Täglich
 Daten
@@ -239,8 +254,3 @@ Zeitstempel
 Benutzer
 Wert
 Sekunden verwenden
-Dunkles Thema
-Hilfe-Ausgaben
-Macht zusätzliche Ausgaben für einige Funktionen.
-Debug
-setState, writeFile werden deaktiviert

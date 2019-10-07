@@ -1,0 +1,256 @@
+-
+Añadir
+Agregar nuevo script
+Todos los archivos serán aceptados.
+abril
+¿Estás seguro?
+agosto
+Crear reglas por bloques gráficos
+Cancelar
+¡No se puede eliminar un elemento no vacío!
+Cambia el diseño
+Comprobar bloques
+La comprobación no está activa porque el adaptador Javascript está desactivado
+Borrar entrada de búsqueda
+Haga clic en este ícono
+Cerrar
+Cerrar todo menos el actual
+Desplegar todo
+Configuración no guardada.
+Convierta instantáneamente en bloque a Javascript.
+Copiar guion
+Copiar al portapapeles
+Crear nuevo
+Crear nueva carpeta
+Crear nuevo script
+Crear o editar CRON o asistente de tiempo
+Tema oscuro
+Estilo oscuro
+Opciones de depuración
+diciembre
+Definir cron ...
+Definir horario ...
+Eliminar
+Eliminar %s ...
+Eliminar carpeta
+Eliminar guión
+Deseleccionar todo
+Descartar cambios para %s
+Hecho
+Suelta algunos archivos aquí o haz clic ...
+Editar guión o simplemente hacer doble clic
+Fin del modo de búsqueda
+Error
+Error encontrado
+Los guiones existentes se sobrescribirán.
+Expandir todo
+Modo experto
+Exportar
+Exportar todos los scripts
+Exportar bloques
+Exportar bloques seleccionados
+febrero
+Carpeta
+viernes
+Editor de funciones
+CARNÉ DE IDENTIDAD
+Importar
+Importar bloques
+Error de importación
+Importar guiones
+Insertar ID de objeto
+Ejemplo
+La instancia está deshabilitada
+CRON inválido
+No será posible revertir esta operación.
+Crear reglas escribiendo Javascript
+enero
+julio
+junio
+Aprende más
+Estilo ligero
+Localizar el archivo
+Salidas de registro
+marzo
+Mayo
+Menú
+Mensaje
+lunes
+Nombre
+No se encontró un host activo
+noviembre
+octubre
+Okay
+De lunes a viernes
+Pausar guion
+Por favor, seleccione la ID del objeto ...
+Rebautizar
+Reordenar guiones en carpetas
+Repetir
+Reiniciar
+Carpeta raíz
+Ejecutar guión
+sábado
+Salvar
+Guión
+El script %s fue modificado en el disco
+El script no se está ejecutando
+Buscar en guiones
+Buscar...
+Seleccionar todo
+septiembre
+Mostrar código Javascript
+Mostrar solo secuencias de comandos pausadas
+Mostrar solo scripts en ejecución
+Mostrar solo guiones con problemas
+Algunos archivos serán rechazados
+domingo
+Crear reglas escribiendo el mecanografiado
+jueves
+martes
+Error desconocido
+¡Error desconocido!
+miércoles
+¡Sin embargo existe!
+Copiar
+la lectura del archivo ha fallado: %s
+la lectura del archivo fue abortada
+Función
+CARNÉ DE IDENTIDAD
+Nombre
+Papel
+Habitación
+para editar o crear un nuevo script
+No se encontraron bloques
+NO GRUPO
+Este bloque no está conectado correctamente a otros bloques.
+CRON
+Fecha
+fechas
+Día de la semana
+Cada
+cada N días
+cada N día de la semana
+cada N horas
+cada N minutos
+cada N meses
+cada N segundos
+cada día
+Cada día de la semana
+cada hora
+cada minuto
+cada mes
+cada segundo
+De
+Horas
+Intervalo
+Intervalo entre
+Minutos
+meses
+Una vez
+Período
+Segundos
+Sencillo
+Tiempo específico
+fechas especificas
+día específico de semanas
+horas específicas
+minutos específicos
+meses específicos
+segundos específicos
+Hora
+A
+Mago
+todas
+Día astro
+Noche astro
+Amanecer
+Oscuridad
+hora dorada
+Fin de la hora dorada
+Nadir
+Amanecer náutico
+Anochecer náutico
+Noche
+Fin de la noche
+Mediodía solar
+amanecer
+Fin del amanecer
+Puesta de sol
+Puesta de sol
+a
+en %s
+cada día
+cada hora
+cada minuto
+cada mes
+cada %s días
+cada %s horas
+cada %s minutos
+cada %s meses
+cada %s semanas
+cada %s años
+cada semana
+todos los años
+de %s a %s
+Nunca
+en %s de %s
+en %s y %s de
+en cada fecha de
+%s
+%s y %s
+en %s
+en %s y %s
+en los fines de semana
+en días laborables
+ya no se ejecutará más, porque el inicio está en el pasado
+en %s
+de %s
+Ejecutar desde hasta
+a %s
+cada
+Tiempo específico
+de
+De-a
+Tiempo de intervalo
+invertir; poner boca abajo o en la posición opuesta, orden o arreglo; Boca abajo
+ninguna
+en
+Período
+Diario
+fechas
+Día
+Cada
+Cada día
+Cada mes
+Cada semana
+Todos los años
+Horas
+Minutos
+mes
+Mensual
+Una vez
+Meses específicos
+Semana
+Días laborables
+Fin de semana
+Semanal
+Días laborables
+Año
+Anual
+Tiempo específico
+Hora
+a
+Válido
+de
+a
+Todo el dia
+cada mes
+Reconocer
+De
+Último cambio
+Calidad
+Marca de tiempo
+Usuario
+Valor
+usar segundos

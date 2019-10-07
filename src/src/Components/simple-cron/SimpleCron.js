@@ -10,7 +10,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import convertCronToText from './cronText';
 
-import I18n from '../../i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
     mainDiv: {

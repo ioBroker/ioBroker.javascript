@@ -32,8 +32,10 @@ And then call "npm run build".
 - ...
 
 ## Changelog
-### 4.2.0 (2019-10-02)
+### 4.2.1 (2019-10-07)
 * (bluefox) implement inter-script communication.
+* (bluefox) Implemented the mirroring on disk
+* (bluefox) Translation for other languages was added
 
 ### 4.1.17 (2019-08-xx)
 * (bluefox) Optimization: do not make useless iterations

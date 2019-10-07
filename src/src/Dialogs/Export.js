@@ -10,7 +10,7 @@ import Popper from '@material-ui/core/Popper';
 import Fade from '@material-ui/core/Fade';
 import Paper from '@material-ui/core/Paper';
 
-import I18n from '../i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
     textArea: {

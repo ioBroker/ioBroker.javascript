@@ -49,7 +49,7 @@ import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
 
 import Theme from './Theme';
-import I18n from './i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 import DialogRename from './Dialogs/Rename';
 import DialogDelete from './Dialogs/Delete';
 import DialogAddNewScript from './Dialogs/AddNewScript';
@@ -273,7 +273,6 @@ const prepareList = data => {
             }
         });
     } while(modified);
-
 
     // Fill all parentIndex
     result.forEach(item => {

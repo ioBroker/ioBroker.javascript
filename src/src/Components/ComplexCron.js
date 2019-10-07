@@ -10,7 +10,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import I18n from '../i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 import TextField from '@material-ui/core/TextField';
 import convertCronToText from './simple-cron/cronText';
 

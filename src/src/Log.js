@@ -7,7 +7,7 @@ import {MdDeleteForever as IconDelete} from 'react-icons/md';
 import {MdVerticalAlignBottom as IconBottom} from 'react-icons/md';
 import {MdContentCopy as IconCopy} from 'react-icons/md';
 
-import I18n from './i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 import {withStyles} from '@material-ui/core/styles/index';
 
 // replace later with MdHorizontalSplit and MdVerticalSplit

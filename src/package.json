@@ -4,9 +4,10 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.5.0",
+    "@iobroker/adapter-react": "^0.2.14",
     "classnames": "^2.2.6",
     "cronstrue": "^1.83.0",
-    "eslint": "^5.16.0",
+    "eslint": "^6.1.0",
     "monaco-editor": "^0.18.1",
     "react": "^16.10.1",
     "react-beautiful-dnd": "^11.0.5",

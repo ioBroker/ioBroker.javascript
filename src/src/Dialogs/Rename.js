@@ -11,7 +11,7 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import I18n from '../i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 
 class DialogRename extends React.Component {
     constructor(props) {

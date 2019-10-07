@@ -12,7 +12,7 @@ import ComplexCron from '../Components/ComplexCron';
 import SimpleCron from '../Components/simple-cron/SimpleCron';
 import Schedule from '../Components/Schedule';
 
-import I18n from '../i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 
 // Generate cron expression
 

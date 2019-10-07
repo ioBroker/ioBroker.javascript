@@ -8,7 +8,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-import I18n from '../i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 import Themes from '../Theme';
 
 const styles = theme => ({

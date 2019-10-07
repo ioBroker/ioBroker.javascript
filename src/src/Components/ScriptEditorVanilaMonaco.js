@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Fab from '@material-ui/core/Fab';
 
 import {MdGTranslate as IconNoCheck} from 'react-icons/md';
-import I18n from '../i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 
 function isIdOfGlobalScript(id) {
     return /^script\.js\.global\./.test(id);
@@ -77,9 +77,8 @@ class ScriptEditor extends React.Component {
                 automaticLayout: true
             });
 
-            this.editor.onDidChangeModelContent(e => {
-                this.onChange(this.editor.getValue());
-            });
+            this.editor.onDidChangeModelContent(e =>
+                this.onChange(this.editor.getValue()));
 
             // Load typings for the JS editor
             /** @type {string} */
@@ -250,6 +249,12 @@ class ScriptEditor extends React.Component {
             this.editor && this.editor.setValue(nextProps.code);
         }
 
+        // if the code not yet changed, update the new code
+        if (!nextProps.changed && nextProps.code !== this.originalCode) {
+            this.originalCode = nextProps.code;
+            this.editor.setValue(this.originalCode);
+        }
+
         if (nextProps.searchText !== this.lastSearch) {
             this.lastSearch = nextProps.searchText;
             this.highlightText(this.lastSearch);
@@ -316,7 +321,8 @@ ScriptEditor.propTypes = {
     language: PropTypes.string,
     onRegisterSelect: PropTypes.func,
     searchText: PropTypes.string,
-    checkJs: PropTypes.bool
+    checkJs: PropTypes.bool,
+    changed: PropTypes.bool,
 };
 
 export default ScriptEditor;

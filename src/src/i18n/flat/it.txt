@@ -1,0 +1,256 @@
+-
+Inserisci
+Aggiungi nuovo script
+Tutti i file saranno accettati
+aprile
+Sei sicuro?
+agosto
+Creazione di regole tramite blocchi grafici
+Annulla
+Impossibile eliminare l'elemento non vuoto!
+Cambia layout
+Controlla i blocchi
+Il controllo non è attivo perché l'adattatore Javascript è disabilitato
+Cancella input di ricerca
+Clicca su questa icona
+Vicino
+Chiudi tutto tranne corrente
+Comprimi tutto
+Configurazione non salvata.
+Converti istantaneamente a blocchi in Javascript.
+Copia script
+Copia negli appunti
+Creare nuovo
+Crea una nuova cartella
+Crea nuovo script
+Crea o modifica la procedura guidata CRON o time
+Tema scuro
+Stile scuro
+Opzioni di debug
+dicembre
+Definisci cron ...
+Definisci programma ...
+Elimina
+Elimina %s ...
+Elimina cartella
+Elimina script
+Deselezionare tutto
+Annulla modifiche per %s
+Fatto
+Trascina alcuni file qui o fai clic su ...
+Modifica lo script o fai doppio clic
+Termina la modalità di ricerca
+Errore
+Errore trovato
+Gli script esistenti verranno sovrascritti.
+Espandi tutto
+Modalità esperto
+Esportare
+Esporta tutti gli script
+Esporta blocchi
+Esporta i blocchi selezionati
+febbraio
+Cartella
+Venerdì
+Editor di funzioni
+ID
+Importare
+Importa blocchi
+Errore di importazione
+Importa script
+Inserisci l'ID oggetto
+Esempio
+L'istanza è disabilitata
+CRON non valido
+Non sarà possibile ripristinare questa operazione.
+Creare regole scrivendo Javascript
+gennaio
+luglio
+giugno
+Per saperne di più
+Stile leggero
+Localizza file
+Registra le uscite
+marzo
+Maggio
+Menu
+Messaggio
+Lunedi
+Nome
+Nessun host attivo trovato
+novembre
+ottobre
+Ok
+Nei giorni della settimana
+Metti in pausa lo script
+Seleziona l'ID oggetto ...
+Rinominare
+Riordina gli script nelle cartelle
+Ripetere
+Ricomincia
+Cartella root
+Esegui script
+Sabato
+Salva
+copione
+Lo script %s è stato modificato sul disco
+Lo script non è in esecuzione
+Cerca negli script
+Ricerca...
+Seleziona tutto
+settembre
+Mostra codice Javascript
+Mostra solo script in pausa
+Mostra solo gli script in esecuzione
+Mostra solo script con problemi
+Alcuni file verranno rifiutati
+Domenica
+Creare regole scrivendo dattiloscritto
+giovedi
+martedì
+Errore sconosciuto
+Errore sconosciuto!
+mercoledì
+Esiste ancora!
+copia
+lettura file non riuscita: %s
+la lettura del file è stata interrotta
+Funzione
+ID
+Nome
+Ruolo
+Camera
+per modificare o creare un nuovo script
+Nessun blocco trovato
+NESSUN GRUPPO
+Questo blocco non è correttamente collegato ad altri blocchi.
+CRON
+Data
+Date
+Giorno della settimana
+Ogni
+ogni N giorni
+ogni N giorno della settimana
+ogni N ore
+ogni N minuti
+ogni N mesi
+ogni N secondi
+ogni giorno
+Tutti i giorni della settimana
+ogni ora
+ogni minuto
+ogni mese
+ogni secondo
+A partire dal
+Ore
+Intervallo
+Intervallo tra
+Minuti
+mesi
+Una volta
+Periodo
+secondi
+Semplice
+Orario preciso
+date specifiche
+giorno specifico delle settimane
+orari specifici
+minuti specifici
+mesi specifici
+secondi specifici
+Tempo
+Per
+procedura guidata
+tutti
+Astro day
+Astro night
+Alba
+Crepuscolo
+Ora d'oro
+Fine dell'ora d'oro
+Nadir
+Alba nautica
+Crepuscolo nautico
+Notte
+Fine della notte
+Mezzogiorno solare
+Alba
+Fine dell'alba
+Tramonto
+Inizio del tramonto
+a
+a %s
+ogni giorno
+ogni ora
+ogni minuto
+ogni mese
+ogni %s giorno
+ogni %s ore
+ogni %s minuti
+ogni %s mesi
+ogni %s settimane
+ogni %s anni
+ogni settimana
+ogni anno
+da %s a %s
+mai
+su %s di %s
+su %s e %s di
+in ogni data di
+%s
+%s e %s
+su %s
+su %s e %s
+nei finesettimana
+nei giorni lavorativi
+non verrà più eseguito, perché start è nel passato
+su %s
+da %s
+Eseguire da a
+a %s
+ogni
+Orario preciso
+a partire dal
+Da A
+Intervallo di tempo
+invertire
+nessuna
+sopra
+Periodo
+Quotidiano
+Date
+Giorno
+Ogni
+Ogni giorno
+Ogni mese
+Ogni settimana
+Ogni anno
+Ore
+Minuti
+mese
+Mensile
+Una volta
+Mesi specifici
+Settimana
+Giorni della settimana
+Fine settimana
+settimanalmente
+giorni feriali
+Anno
+Annuale
+Orario preciso
+Tempo
+per
+Valido
+a partire dal
+per
+Giorno intero
+ogni mese
+Riconoscere
+A partire dal
+Ultima modifica
+Qualità
+timestamp
+Utente
+Valore
+usa i secondi

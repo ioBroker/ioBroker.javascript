@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
 
-import I18n from '../i18n';
-import DialogMessage from '../Dialogs/Message';
+import I18n from '@iobroker/adapter-react/i18n';
+import DialogMessage from '@iobroker/adapter-react/Dialogs/Message';
 import DialogError from '../Dialogs/Error';
 import DialogExport from '../Dialogs/Export';
 import DialogImport from '../Dialogs/Import';
@@ -380,11 +380,11 @@ class BlocklyEditor extends React.Component {
         }
         this.setState({exportText});
     }
-    
+
     importBlocks() {
         this.setState({importText: true});
     }
-    
+
     onImportBlocks(xml) {
         xml = (xml || '').trim();
         if (xml) {
@@ -591,9 +591,9 @@ class BlocklyEditor extends React.Component {
                             this.setState({error: ''});
                         }}/>) :
                     null,
-                
+
                 this.state.exportText ? (<DialogExport key="dialogExport" theme={this.props.theme} onClose={() => this.setState({exportText: ''})} text={this.state.exportText}/>) : null,
-                
+
                 this.state.importText ? (<DialogImport key="dialogImport" theme={this.props.theme} onClose={text => {
                     this.setState({importText: false});
                     this.onImportBlocks(text);

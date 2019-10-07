@@ -8,24 +8,31 @@ August
 Blockly description
 Cancel
 Cannot delete non empty item!
+Change layout
 Check blocks
 Check is not active, because javascript adapter is disabled
 Clear search input
 Click on this icon
 Close
+Close all but current
+Collapse all
 Configuration not saved.
 Convert blockly to javascript for ever.
+Copy script
 Copy to clipboard
 Create new
 Create new folder
 Create new script
 Create or edit CRON or time wizard
+Dark Theme
 Dark style
+Debug options
 December
 Define cron...
 Define schedule...
 Delete
 Delete %s
+Delete folder
 Delete script
 Deselect all
 Discard changes for %s
@@ -36,6 +43,7 @@ End search mode
 Error
 Error was found
 Existing scripts will be overwritten.
+Expand all
 Expert mode
 Export
 Export all scripts
@@ -44,7 +52,9 @@ Export selected blocks
 February
 Folder
 Friday
+Function editor
 ID
+Import
 Import blocks
 Import error
 Import scripts
@@ -58,6 +68,7 @@ January
 July
 June
 Learn More
+Light style
 Locate file
 Log outputs
 March
@@ -82,12 +93,16 @@ Run script
 Saturday
 Save
 Script
+Script %s was modified on disk
 Script is not running
 Search in scripts
 Search...
 Select all
 September
 Show javascript code
+Show only paused scripts
+Show only running scripts
+Show only scripts with problems
 Some files will be rejected
 Sunday
 TS description
@@ -239,6 +254,3 @@ tooltip_ts
 tooltip_user
 tooltip_value
 use seconds
-Dark Theme
-verbose
-verbose_help
