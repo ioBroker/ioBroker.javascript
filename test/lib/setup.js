@@ -55,7 +55,6 @@ function copyFolderRecursiveSync(source, target, ignore) {
 
     //copy
     if (fs.lstatSync(source).isDirectory()) {
-        console.log('Copy ' + source);
         files = fs.readdirSync(source);
         files.forEach(file => {
             if (ignore && ignore.indexOf(file) !== -1) {
