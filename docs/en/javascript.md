@@ -59,6 +59,9 @@
     - [instance](#instance)
     - [messageTo](#messageto)
     - [onMessage](#onmessage)
+    - [onMessageUnregister](#onmessageunregister)
+    - [onLog](#onlog)
+    - [onLogUnregister](#onlogunregister)
 
 - [Scripts activity](#scripts-activity)
 - [Changelog](#changelog)
@@ -904,7 +907,7 @@ To get specific information about messages you must read the documentation for p
 Example:
 
 ```js
-sendTo('telegram', {user: 'UserName', text: 'Test message'};
+sendTo('telegram', {user: 'UserName', text: 'Test message'});
 ```
 
 Some adapters also support responses to the send messages. (e.g. history, sql, telegram)
@@ -1342,6 +1345,50 @@ onMessageUnregister('messageName');
 ```
 
 Unsubscribes from this message.
+
+### onLog
+```
+onLog('error', data => {
+    sendTo('telegram.0', {user: 'UserName', text: data.message});
+    console.log('Following was sent to telegram: ' + data.message);
+});
+```
+
+Subscribes on logs with specified severity.
+
+*Important:* you cannot output logs in handler with the same severity to avoid infinite loops.
+
+E.g. this will produce no logs:
+```
+onLog('error', data => {
+    console.error('Error: ' + data.message);
+});
+```
+
+To receive all logs the `*` could be used. In this case the log output in handler will be disabled at all.
+
+```
+onLog('*', data => {
+    console.error('Error: ' + data.message); // will produce no logs
+});
+```
+
+### onLogUnregister
+```
+function logHandler(data) {
+    console.error('Error: ' + data.message);
+}
+const id = onLog('warn', logHandler);
+
+// unsubscribe by ID
+onLogUnregister(id);
+// or unsubscribe by function handler
+onLogUnregister(logHandler);
+// or unsubscribe all handlers with specific severity
+onLogUnregister('warn');
+```
+
+Unsubscribes from this logs.
 
 ## Option - "Do not subscribe all states on start"
 There are two modes of subscribe on states:

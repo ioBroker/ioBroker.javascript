@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.2.1",
+        "version": "4.3.0",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.3.0": {
+                "en": "Log handlers were implemented\nFixed the error with $ selector and with disabled subscribes",
+                "de": "Protokollhandler wurden implementiert\nDer Fehler mit $ Selector und mit deaktivierten Abonnements wurde behoben",
+                "ru": "Обработчики журнала были реализованы\nИсправлена ошибка с $ селектором и с отключенными подписками",
+                "pt": "Manipuladores de log foram implementados\nCorrigido o erro com o seletor $ e com inscrições desabilitadas",
+                "nl": "Log handlers werden geïmplementeerd\nDe fout met $ selector en met uitgeschakelde abonnementen is opgelost",
+                "fr": "Les gestionnaires de journaux ont été mis en œuvre\nCorrection de l'erreur avec le sélecteur $ et les abonnés désactivés",
+                "it": "I gestori di log sono stati implementati\nRisolto l'errore con $ selector e con le sottoscrizioni disabilitate",
+                "es": "Se implementaron controladores de registro\nSe corrigió el error con $ selector y con suscripciones deshabilitadas",
+                "pl": "Procedury obsługi dzienników zostały zaimplementowane\nNaprawiono błąd z selektorem $ i wyłączonymi subskrybentami",
+                "zh-cn": "日志处理程序已实现\n修复了$选择器和禁用订阅的错误"
+            },
             "4.2.1": {
                 "en": "Implemented inter-script communication.\nImplemented the mirroring on disk\nTranslation for other languages was added",
                 "de": "Implementierung der Kommunikation zwischen Skripten.\nImplementierte die Spiegelung auf der Festplatte\nÜbersetzung für andere Sprachen wurde hinzugefügt",
@@ -69,66 +81,6 @@
                 "es": "Se agregó el idioma polaco a CRON\nSe corrigió la importación de scripts.",
                 "pl": "Dodano język polski do CRON\nNaprawiono import skryptów",
                 "zh-cn": "为CRON添加了抛光语言\n修复了脚本的导入问题"
-            },
-            "4.1.14": {
-                "en": "Fixed locale settings",
-                "de": "Feste Gebietsschemaeinstellungen",
-                "ru": "Исправлены настройки локали",
-                "pt": "Configurações de local fixo",
-                "nl": "Vaste locale instellingen",
-                "fr": "Paramètres régionaux fixes",
-                "it": "Risolte le impostazioni locali",
-                "es": "Configuraciones locales fijas",
-                "pl": "Naprawiono ustawienia regionalne",
-                "zh-cn": "修复了区域设置"
-            },
-            "4.1.13": {
-                "en": "fixed Monaco Loading\nadded missing blockly element\nImproved the warning message when assigning a variable of wrong type to a state\nAdded selector blockly, language strings, regexp\nFixed Blockly bug\nfixed for suncalc.getTimes between middle night and nadir",
-                "de": "Monaco Loading behoben\nfehlendes blockhaftes Element hinzugefügt\nDie Warnmeldung beim Zuweisen einer Variablen falschen Typs zu einem Status wurde verbessert\nSelektor blockweise hinzugefügt, Sprachstrings, Regexp\nBlockly Bug behoben\nbehoben für suncalc.getTimes zwischen Mitternacht und Nadir",
-                "ru": "фиксированная загрузка Монако\nдобавлен отсутствующий блочный элемент\nУлучшено предупреждающее сообщение при назначении переменной неправильного типа состоянию\nДобавлен блочный селектор, языковые строки, регулярные выражения\nИсправлена ​​ошибка Blockly\nисправлено для suncalc.getTimes между серединой ночи и надиром",
-                "pt": "fixo Monaco Loading\nelemento em falta adicionado em bloco\nMelhorou a mensagem de aviso ao atribuir uma variável do tipo errado a um estado\nAdicionado seletor em bloco, strings de linguagem, regexp\nCorrigido erro no bloco\nfixo para suncalc.getTimes entre meio da noite e nadir",
-                "nl": "vast Monaco laden\ntoegevoegd ontbrekend blokelement\nVerbeterde waarschuwingsmelding bij toewijzing van een variabele van verkeerd type aan een staat\nKiezer selectief toegevoegd, taalstrings, regexp\nBug opgelost\ngefixeerd voor suncalc.getTimes tussen middennacht en nadir",
-                "fr": "fixe Monaco Chargement\nélément manquant ajouté\nAmélioration du message d'avertissement lors de l'affectation d'une variable de type incorrect à un état\nAjout d'un sélecteur de blocs, de chaînes de langue, d'expressions rationnelles\nCorrection du bug de Blockly\nfixe pour suncalc.getTimes entre la nuit moyenne et le nadir",
-                "it": "Risolto il carico di Monaco\naggiunto elemento di blocco mancante\nMigliorato il messaggio di avviso quando si assegna una variabile di tipo sbagliato a uno stato\nAggiunto selettore di blocco, stringhe di linguaggio, regexp\nRisolto bug di blocco\ncorretto per suncalc.getTimes tra middle night e nadir",
-                "es": "fijo Mónaco Cargando\nse ha agregado el elemento bloqueador\nSe mejoró el mensaje de advertencia al asignar una variable de tipo incorrecto a un estado\nSe ha agregado el selector en bloque, cadenas de idioma, regexp\nCorregido error de bloqueo\narreglado para suncalc.getTimes entre media noche y nadir",
-                "pl": "naprawiono ładowanie Monaco\ndodano brakujący element blokowy\nPoprawiono komunikat ostrzegawczy podczas przypisywania zmiennej niewłaściwego typu do stanu\nDodano blokowy selektor, łańcuchy językowe, wyrażenie regularne\nNaprawiono błąd blokujący\nnaprawiono dla suncalc.getTimes między środkową nocą a nadir",
-                "zh-cn": "固定摩纳哥装载\n添加了缺失的块状元素\n在将错误类型的变量分配给状态时改进了警告消息\n添加了选择器块，语言字符串，正则表达式\n修复了Blockly bug\n固定为中午和最低点之间的suncalc.getTimes"
-            },
-            "4.1.12": {
-                "en": "Schedule was corrected",
-                "de": "Zeitplan wurde korrigiert",
-                "ru": "Расписание было исправлено",
-                "pt": "Agenda foi corrigida",
-                "nl": "Planning is gecorrigeerd",
-                "fr": "L'horaire a été corrigé",
-                "it": "La pianificazione è stata corretta",
-                "es": "El horario fue corregido",
-                "pl": "Harmonogram został poprawiony",
-                "zh-cn": "附表已更正"
-            },
-            "4.1.8": {
-                "en": "Updated the blockly to the latest code\nscriptEnabled variables not only for experts",
-                "de": "Blockly auf den neuesten Code aktualisiert\nscriptEnabled-Variablen nicht nur für Experten",
-                "ru": "Обновлен blockly до последней версии\nПеременные scriptEnabled не только для экспертов",
-                "pt": "Atualizado o blockly para o código mais recente\nVariáveis ​​scriptEnabled não apenas para especialistas",
-                "nl": "De blockly is bijgewerkt naar de nieuwste code\nvariabelen scriptEnabled niet alleen voor experts",
-                "fr": "Mise à jour du blockly au dernier code\nvariables scriptEnabled non seulement pour les experts",
-                "it": "Aggiornato il codice blockly all'ultimo\nVariabili scriptEnabled non solo per esperti",
-                "es": "Actualizado el blockly al último código.\nVariables de script habilitado no solo para expertos",
-                "pl": "Zaktualizowano blockly do najnowszego kodu\nzmienne scriptEnabled nie tylko dla ekspertów",
-                "zh-cn": "块状地更新为最新代码\nscriptEnabled变量不仅适用于专家"
-            },
-            "4.0.12": {
-                "en": "fixes unwanted changes in last version",
-                "de": "behebt unerwünschte Änderungen in der letzten Version",
-                "ru": "исправляет нежелательные изменения в последней версии",
-                "pt": "corrige alterações indesejadas na última versão",
-                "nl": "herstelt ongewenste wijzigingen in de laatste versie",
-                "fr": "corrige les modifications indésirables dans la dernière version",
-                "it": "corregge modifiche indesiderate nell'ultima versione",
-                "es": "corrige cambios no deseados en la última versión",
-                "pl": "naprawia niechciane zmiany w ostatniej wersji",
-                "zh-cn": "修复了上一版本中不需要的更改"
             },
             "3.7.0": {
                 "en": "Used VM2 as sandbox. The script errors will be caught.\nrefactoring: split into many modules",
@@ -186,7 +138,8 @@
             "de": ["docs/de/usage.md", "docs/de/blockly.md"]
         },
         "type": "logic",
-        "messagebox": true
+        "messagebox": true,
+        "logTransporter": true
     },
     "native": {
         "latitude": "",

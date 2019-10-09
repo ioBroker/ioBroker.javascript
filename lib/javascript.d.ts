@@ -6,6 +6,7 @@ type EmptyCallback = () => void;
 type ErrorCallback = (err?: string) => void;
 type GenericCallback<T> = (err: string | null, result?: T) => void;
 type SimpleCallback<T> = (result?: T) => void;
+type LogCallback = (msg: any) => void;
 
 // tslint:disable:no-namespace
 declare global {
@@ -141,7 +142,7 @@ declare global {
 
 		interface TargetObject {
             instance: string; // javascript instance (optional)
-            script: string; // script name (optional)
+            script: string;   // script name (optional)
             message: string; // message name (required)
 		}
 
@@ -234,7 +235,7 @@ declare global {
 		type SetObjectCallback = (err: string | null, obj: { id: string }) => void;
 		type GetObjectCallback = (err: string | null, obj: iobJS.Object) => void;
 
-		type LogLevel = "silly" | "debug" | "info" | "warn" | "error";
+		type LogLevel = "silly" | "debug" | "info" | "warn" | "error" | "force";
 
 		type ReadFileCallback = (err: string | null, file?: Buffer | string, mimeType?: string) => void;
 
@@ -506,6 +507,13 @@ declare global {
 			 */
 			rule: ScheduleRule | Date | string | number;
 		}
+
+        interface LogMessage {
+            severity: LogLevel; // severity
+            ts: number; 		// timestamp as Date.now()
+            message: string; 	// message
+            from: string; 		// origin of the message
+        }
 
 		type SchedulePattern = ScheduleRule | ScheduleRuleConditional | Date | string | number;
 
@@ -901,10 +909,23 @@ declare global {
     function onMessage(message: string, callback?: SimpleCallback<any>);
 
     /**
-     * Process message from other script.
+     * Unregister onmessage handler
      * @param id Message subscription id from onMessage or by message name
      * @return true if subscription exists and was deleted.
      */
     function onMessageUnregister(id: iobJS.MessageSubscribeID | string): boolean;
 
+    /**
+     * Receives logs of specified severity level in script.
+     * @param severity Severity level
+     * @param callback Callback to send the result to other script
+     */
+    function onLog(severity: iobJS.LogLevel, callback: SimpleCallback<iobJS.LogMessage>);
+
+    /**
+     * Unsubscribe log handler.
+     * @param idOrCallbackOrSeverity Message subscription id from onLog or by callback function
+     * @return true if subscription exists and was deleted.
+     */
+    function onLogUnregister(idOrCallbackOrSeverity: iobJS.MessageSubscribeID | SimpleCallback<iobJS.LogMessage> | iobJS.LogLevel): boolean;
 }

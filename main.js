@@ -53,7 +53,7 @@ const mods = {
     wake_on_lan:      require('wake_on_lan')
 };
 
-const utils = require('@iobroker/adapter-core'); // Get common adapter utils
+const utils     = require('@iobroker/adapter-core'); // Get common adapter utils
 const words     = require('./lib/words');
 const sandBox   = require('./lib/sandbox');
 const eventObj  = require('./lib/eventObj');
@@ -122,6 +122,9 @@ let jsDeclarationServer;
 
 let mirror;
 
+/** @type {boolean} if logs are subscribed or not */
+let logSubscribed;
+
 /**
  * @param {string} scriptID - The current script the declarations were generated from
  * @param {string} declarations
@@ -176,6 +179,8 @@ const context = {
     names:            {},
     scripts:          {},
     messageBusHandlers: {},
+    logSubscriptions: {},
+    updateLogSubscriptions,
 };
 
 const regExGlobalOld = /_global$/;
@@ -218,6 +223,18 @@ function startAdapter(options) {
 
             // send changes to disk mirror
             mirror && mirror.onObjectChange(id, obj);
+
+            if (obj) {
+                // add state to state ID's list
+                if (obj.type === 'state' && context.stateIds.indexOf(id) === -1) {
+                    context.stateIds.push(id);
+                    context.stateIds.sort();
+                }
+            } else {
+                // delete object from state ID's list
+                const pos = context.stateIds.indexOf(id);
+                pos !== -1 && context.stateIds.splice(pos, 1);
+            }
 
             if (!obj) {
                 // object deleted
@@ -641,6 +658,18 @@ function startAdapter(options) {
     });
     adapter = new utils.Adapter(options);
 
+    // handler for logs
+    adapter.on('log', msg =>
+        Object.keys(context.logSubscriptions)
+            .forEach(name =>
+                context.logSubscriptions[name].forEach(handler => {
+                    if (typeof handler.cb === 'function' && (handler.severity === '*' || handler.severity === msg.severity)) {
+                        handler.sandbox.logHandler = handler.severity || '*';
+                        handler.cb.call(handler.sandbox, msg);
+                        handler.sandbox.logHandler = null;
+                    }
+                })));
+
     context.adapter = adapter;
     return adapter;
 }
@@ -1010,6 +1039,27 @@ function unsubscribe(id) {
     }
 }
 
+// Analyse if logs are still required or not
+function updateLogSubscriptions() {
+    let found = false;
+    // go through all scripts and check if some one script still require logs
+    Object.keys(context.logSubscriptions).forEach(name => {
+        if (!context.logSubscriptions[name] || !context.logSubscriptions[name].length) {
+            delete context.logSubscriptions[name];
+        } else {
+            found = true;
+        }
+    });
+
+    if (found && !logSubscribed) {
+        logSubscribed = true;
+        adapter.requireLog(logSubscribed);
+    } else if (!found && logSubscribed) {
+        logSubscribed = false;
+        adapter.requireLog(logSubscribed);
+    }
+}
+
 function stop(name, callback) {
     adapter.log.info('Stop script ' + name);
 
@@ -1017,6 +1067,11 @@ function stop(name, callback) {
 
     if (context.messageBusHandlers[name]) {
         delete context.messageBusHandlers[name];
+    }
+
+    if (context.logSubscriptions[name]) {
+        delete context.logSubscriptions[name];
+        updateLogSubscriptions();
     }
 
     if (context.scripts[name]) {

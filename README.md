@@ -32,6 +32,10 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.3.0 (2019-10-09)
+* (bluefox) log handlers were implemented
+* (bluefox) fixed the error with $ selector and with disabled subscribes
+
 ### 4.2.1 (2019-10-07)
 * (bluefox) implement inter-script communication.
 * (bluefox) Implemented the mirroring on disk
