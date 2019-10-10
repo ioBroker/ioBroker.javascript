@@ -1290,6 +1290,10 @@ function getData(callback) {
         res = res.rows;
         context.objects = {};
         for (let i = 0; i < res.length; i++) {
+            if (!res[i].doc) {
+                adapter.log.debug('Got empty object for index ' + i + ' (' + res[i].id + ')');
+                continue;
+            }
             context.objects[res[i].doc._id] = res[i].doc;
             res[i].doc.type === 'enum' && context.enums.push(res[i].doc._id);
 
