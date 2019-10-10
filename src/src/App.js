@@ -170,8 +170,9 @@ class App extends Component {
             }
         });
 
-        this.socket.subscribeState('system.adapter.javascript.*.alive', (err, state, id) => {
+        this.socket.subscribeState('system.adapter.javascript.*.alive', (id, state) => {
             id = id && id.substring(0, id.length - 6); // - .alive
+
             if (this.state.runningInstances[id] !== (state ? state.val : false)) {
                 const runningInstances = JSON.parse(JSON.stringify(this.state.runningInstances));
                 runningInstances[id] = (state ? state.val : false);

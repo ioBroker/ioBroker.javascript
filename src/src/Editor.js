@@ -37,7 +37,7 @@ import I18n from '@iobroker/adapter-react/i18n';
 import Theme from './Theme';
 import ScriptEditor from './Components/ScriptEditorVanilaMonaco';
 import BlocklyEditor from './Components/BlocklyEditor';
-import DialogConfirm from '@iobroker/adapter-react/Dialogs//Confirm';
+import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
 import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import DialogCron from './Dialogs/Cron';
 import DialogScriptEditor from './Dialogs/ScriptEditor';
@@ -324,7 +324,7 @@ class Editor extends React.Component {
         return _changed;
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         const newState = {};
         let _changed = false;
         if (JSON.stringify(nextProps.runningInstances) !== JSON.stringify(this.state.runningInstances)) {

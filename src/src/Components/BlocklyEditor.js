@@ -160,7 +160,7 @@ class BlocklyEditor extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps.command && this.lastCommand !== nextProps.command) {
             this.lastCommand = nextProps.command;
             setTimeout(() => this.lastCommand = '', 300);

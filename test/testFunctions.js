@@ -48,7 +48,7 @@ function checkConnectionOfAdapter(cb, counter) {
         return;
     }
 
-    states.getState('system.adapter.javascript.0.alive', function (err, state) {
+    states.getState('system.adapter.javascript.0.alive', (err, state) => {
         if (err) console.error(err);
         if (state && state.val) {
             cb && cb();
@@ -67,7 +67,7 @@ function checkValueOfState(id, value, cb, counter) {
         return;
     }
 
-    states.getState(id, function (err, state) {
+    states.getState(id, (err, state) => {
         if (err) console.error(err);
         if (value === null && !state) {
             cb && cb();
@@ -119,7 +119,7 @@ describe('Test JS', function() {
                     '_id':              'script.js.global.TestGlobalNew.Script',
                     'native': {}
                 };
-                objects.setObject(script._id, script, function (err) {
+                objects.setObject(script._id, script, err => {
                     expect(err).to.be.not.ok;
                     script = {
                         'common': {
@@ -133,7 +133,7 @@ describe('Test JS', function() {
                         '_id': 'script.js.global.TestGlobalOld.Script',
                         'native': {}
                     };
-                    objects.setObject(script._id, script, function (err) {
+                    objects.setObject(script._id, script, err => {
                         expect(err).to.be.not.ok;
                         setup.startAdapter(objects, states, function () {
                             _done();
@@ -195,7 +195,7 @@ describe('Test JS', function() {
             if (id === 'javascript.0.test10') {
                 if (state.val === 9) {
                     removeStateChangedHandler(onStateChanged);
-                    states.getState('javascript.0.test10', function (err, state) {
+                    states.getState('javascript.0.test10', (err, state) => {
                         expect(err).to.be.not.ok;
                         expect(state.val).to.be.equal(9);
                         done();
@@ -208,7 +208,7 @@ describe('Test JS', function() {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
         });
     });
@@ -242,7 +242,7 @@ describe('Test JS', function() {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
         });
     });
@@ -265,10 +265,10 @@ describe('Test JS', function() {
         const onStateChanged = function (id, state) {
             if (id === 'javascript.0.test1' && state.val === 5) {
                 removeStateChangedHandler(onStateChanged);
-                states.getState('javascript.0.test1', function (err, state) {
+                states.getState('javascript.0.test1', (err, state) => {
                     expect(err).to.be.not.ok;
                     expect(state.val).to.be.equal(5);
-                    objects.getObject('javascript.0.test1', function (err, obj) {
+                    objects.getObject('javascript.0.test1', (err, obj) => {
                         expect(err).to.be.not.ok;
                         expect(obj).to.be.ok;
 
@@ -278,7 +278,7 @@ describe('Test JS', function() {
             }
         };
         addStateChangedHandler(onStateChanged);
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
         });
     });
@@ -301,11 +301,11 @@ describe('Test JS', function() {
         const onStateChanged = function (id, state) {
             if (id === 'javascript.1.test1' && state.val === 6) {
                 removeStateChangedHandler(onStateChanged);
-                states.getState('javascript.1.test1', function (err, state) {
+                states.getState('javascript.1.test1', (err, state) => {
                     expect(err).to.be.not.ok;
                     expect(state).to.be.ok;
                     expect(state.val).to.be.equal(6);
-                    objects.getObject('javascript.1.test1', function (err, obj) {
+                    objects.getObject('javascript.1.test1', (err, obj) => {
                         expect(err).to.be.not.ok;
                         expect(obj).to.be.ok;
                         done();
@@ -314,7 +314,7 @@ describe('Test JS', function() {
             }
         };
         addStateChangedHandler(onStateChanged);
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
         });
     });
@@ -335,10 +335,10 @@ describe('Test JS', function() {
             'native': {}
         };
 
-        objects.getObject('javascript.0.test1', function (err, obj) {
+        objects.getObject('javascript.0.test1', (err, obj) => {
             expect(err).to.be.not.ok;
             expect(obj).to.be.ok;
-            states.getState('javascript.0.test1', function (err, state) {
+            states.getState('javascript.0.test1', (err, state) => {
                 expect(err).to.be.not.ok;
                 expect(state).to.be.ok;
                 expect(state.val).to.be.equal(5);
@@ -346,10 +346,12 @@ describe('Test JS', function() {
                 const onStateChanged = function (id, state) {
                     if (id === 'javascript.0.test1' && state === null) {
                         removeStateChangedHandler(onStateChanged);
-                        states.getState('javascript.0.test1', function (err, state) {
+                        
+                        states.getState('javascript.0.test1', (err, state) => {
                             expect(err).to.be.not.ok;
-                            expect(state).to.be.equal(undefined);
-                            objects.getObject('javascript.0.test1', function (err, obj) {
+                            expect(state).to.be.not.ok;
+                            
+                            objects.getObject('javascript.0.test1', (err, obj) => {
                                 expect(err).to.be.not.ok;
                                 expect(obj).to.be.not.ok;
                                 done();
@@ -359,7 +361,7 @@ describe('Test JS', function() {
                 };
                 addStateChangedHandler(onStateChanged);
 
-                objects.setObject(script._id, script, function (err) {
+                objects.setObject(script._id, script, err => {
                     expect(err).to.be.not.ok;
                 });
             });
@@ -382,20 +384,20 @@ describe('Test JS', function() {
             'native': {}
         };
 
-        objects.getObject('javascript.1.test1', function (err, obj) {
+        objects.getObject('javascript.1.test1', (err, obj) => {
             expect(err).to.be.not.ok;
             expect(obj).to.be.ok;
-            states.getState('javascript.1.test1', function (err, state) {
+            states.getState('javascript.1.test1', (err, state) => {
                 expect(err).to.be.not.ok;
                 expect(state).to.be.ok;
                 expect(state.val).to.be.equal(6);
 
                 // we cannot delete foreign object, even if we created it.
                 setTimeout(function () {
-                    objects.getObject('javascript.1.test1', function (err, obj) {
+                    objects.getObject('javascript.1.test1', (err, obj) => {
                         expect(err).to.be.not.ok;
                         expect(obj).to.be.ok;
-                        states.getState('javascript.1.test1', function (err, state) {
+                        states.getState('javascript.1.test1', (err, state) => {
                             expect(err).to.be.not.ok;
                             expect(state).to.be.ok;
                             expect(state.val).to.be.equal(6);
@@ -404,7 +406,7 @@ describe('Test JS', function() {
                     });
                 }, 400);
 
-                objects.setObject(script._id, script, function (err) {
+                objects.setObject(script._id, script, err => {
                     expect(err).to.be.not.ok;
                 });
             });
@@ -435,7 +437,7 @@ describe('Test JS', function() {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
         });
     });
@@ -462,7 +464,7 @@ describe('Test JS', function() {
             }
         };
         addStateChangedHandler(onStateChanged);
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
         });
     });
@@ -488,7 +490,7 @@ describe('Test JS', function() {
             'native': {}
         };
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
             setTimeout(function () {
                 if (!fs.existsSync(__dirname + '/../tmp/objects.json')) {
@@ -551,7 +553,7 @@ describe('Test JS', function() {
 
                     let count = types.length;
                     for (let t = 0; t < types.length; t++) {
-                        states.getState('javascript.0.' + types[t], function (err, state) {
+                        states.getState('javascript.0.' + types[t], (err, state) => {
                             expect(err).to.be.not.ok;
                             expect(state).to.be.ok;
                             expect(state.val).to.be.ok;
@@ -565,7 +567,7 @@ describe('Test JS', function() {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
         });
     });
@@ -650,16 +652,16 @@ describe('Test JS', function() {
             'native': {}
         };
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
-            checkValueOfState('javascript.0.delayed', 8, function (err) {
+            checkValueOfState('javascript.0.delayed', 8, err => {
                 expect(err).to.be.ok;
 
                 states.getState('javascript.0.delayed', function (err, stateStart) {
                     expect(err).to.be.not.ok;
                     expect(stateStart.val).to.be.not.equal(8);
 
-                    checkValueOfState('javascript.0.delayed', 9, function (err) {
+                    checkValueOfState('javascript.0.delayed', 9, err => {
                         expect(err).to.be.not.ok;
                         states.getState('javascript.0.delayed', function (err, stateStop) {
                             expect(err).to.be.not.ok;
@@ -687,10 +689,10 @@ describe('Test JS', function() {
             'native': {}
         };
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
 
-            checkValueOfState('javascript.0.delayed', 10, function (err) {
+            checkValueOfState('javascript.0.delayed', 10, err => {
                 expect(err).to.be.ok;
 
                 states.getState('javascript.0.delayed', function (err, stateStart) {
@@ -718,7 +720,7 @@ describe('Test JS', function() {
             'native': {}
         };
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
 
             setTimeout(function () {
@@ -752,7 +754,7 @@ describe('Test JS', function() {
             'native': {}
         };
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
 
             setTimeout(function () {
@@ -786,10 +788,10 @@ describe('Test JS', function() {
             'native': {}
         };
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
             setTimeout(function () {
-                objects.getObject(script._id, function (err, obj) {
+                objects.getObject(script._id, (err, obj) => {
                     expect(err).to.be.not.ok;
                     expect(obj.common.enabled).to.be.false;
                     done();
@@ -826,13 +828,13 @@ describe('Test JS', function() {
         };
 
         objects.setObject(stopScript._id, stopScript, err => {
-            objects.getObject(stopScript._id, function (err, obj) {
+            objects.getObject(stopScript._id, (err, obj) => {
                 expect(err).to.be.not.ok;
                 expect(obj.common.enabled).to.be.false;
-                objects.setObject(script._id, script, function (err) {
+                objects.setObject(script._id, script, err => {
                     expect(err).to.be.not.ok;
                     setTimeout(function () {
-                        objects.getObject(stopScript._id, function (err, obj) {
+                        objects.getObject(stopScript._id, (err, obj) => {
                             expect(err).to.be.not.ok;
                             expect(obj.common.enabled).to.be.true;
                             done();
@@ -886,12 +888,12 @@ describe('Test JS', function() {
             '_id':              'script.js.TestGlobalOld.Script',
             'native': {}
         };
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
-            checkValueOfState('javascript.0.testGlobalOld', 17, function (err) {
+            checkValueOfState('javascript.0.testGlobalOld', 17, err => {
                 expect(err).to.be.not.ok;
 
-                states.getState('javascript.0.testGlobalOld', function (err, state) {
+                states.getState('javascript.0.testGlobalOld', (err, state) => {
                     expect(err).to.be.not.ok;
                     expect(state).to.be.ok;
                     expect(state.val).to.be.equal(17);
@@ -919,7 +921,7 @@ describe('Test JS', function() {
         const onStateChanged = function (id, state) {
             if (id === 'javascript.0.testVar' && state.val === 0) {
                 setTimeout(function () {
-                    states.setState('javascript.0.testVar', 6, function (err) {
+                    states.setState('javascript.0.testVar', 6, err => {
                         expect(err).to.be.not.ok;
                     });
                 }, 1000);
@@ -931,7 +933,7 @@ describe('Test JS', function() {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
         });
     }).timeout(5000);
@@ -954,7 +956,7 @@ describe('Test JS', function() {
         const onStateChanged = function (id, state) {
             if (id === 'javascript.0.testVar1' && state.val === 1) {
                 setTimeout(function () {
-                    states.setState('javascript.0.testVar1', 1, function (err) {
+                    states.setState('javascript.0.testVar1', 1, err => {
                         expect(err).to.be.not.ok;
                     });
                 }, 1000);
@@ -966,7 +968,7 @@ describe('Test JS', function() {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
         });
     }).timeout(5000);
@@ -981,10 +983,10 @@ describe('Test JS', function() {
             const TEST_RESULTS = 'javascript.0.testResults';
 
             const recs = [
-                // request Options                                 // on options or iD                       // states to set
+                // request Options                                 // on options or iD                                         // states to set
                 [ { no:  1, cnt: 2, val: true },                   { id: /\.testVar$/, val: true },                            [ true, false, { val: true, ack: true } ] ],
                 [ { no:  2, cnt: 2, val: true },                   { id: 0, val: true },                                       [ true, false, { val: true, ack: true } ] ],
-                [ { no:  3, cnt: 2, val: false },                  { id: 0, val: false },                                      [ true, false, { val: true, ack: true }, { val: false, ack: true } ] ],
+                [ { no:  3, cnt: 2, val: false, tio: 1},           { id: 0, val: false },                                      [ true, false, { val: true, ack: true }, { val: false, ack: true } ] ],
                 [ { no:  4, cnt: 1, val: {val: true, ack: true }}, { id: 0, val: true, ack: true },                            [ true, false, { val: true, ack: true }, { val: false, ack: true } ] ],
                 [ { no:  5, cnt: 1, val: {val:false, ack: true }}, { id: 0, val: false, ack: true },                           [ true, false, { val: true, ack: true }, { val: false, ack: true } ] ],
                 [ { no:  6, cnt: 1, val: true },                   { id: 0, change: 'ne' },                                    [ false, true, true ]],
@@ -1058,15 +1060,17 @@ describe('Test JS', function() {
             createState(TEST_RESULTS, '', true, { name: 'Testresults', type: 'string' });
 
             function addResult(name, val) {
-                results += name + (val!==undefined ? '=' + val : '') + ';\r\n';
+                results += name + (val !== undefined ? '=' + val : '') + ';\r\n';
             }
 
             function handler(result, req, obj) {
                 //log ('handler: ' + JSON.stringify (req));
                 if (typeof result.val === 'object') {
                     for (const n in result.val) {
-                        addResult ('obj.state.' + n + '=' + obj.state[n] + ' val.' + n + '=' + result.val[n]);
-                        result.nok = result.nok || (result.val[n] !== obj.state[n]);
+                        if (result.val.hasOwnProperty(n)) {
+                            addResult ('obj.state.' + n + '=' + obj.state[n] + ' val.' + n + '=' + result.val[n]);
+                            result.nok = result.nok || (result.val[n] !== obj.state[n]);
+                        }
                     }
                 } else if (result.val !== undefined) {
                     addResult ('obj.state.val=' + obj.state.val + ' val=' + result.val);
@@ -1077,27 +1081,48 @@ describe('Test JS', function() {
 
             function createTest(req, obj, ar, callback) {
                 results = '';
-                if (obj.id === 0) obj.id = TEST_VAR;
-                if (req.before === undefined) req.before = false;
-                if (req.ack === undefined) req.ack = true;
-                if (req.tio === undefined) req.tio = 400; else req.tio *= 1000;
-                setState(TEST_VAR, req.before, req.ack, function (_err, _obj) {
+                if (obj.id === 0) {
+                    obj.id = TEST_VAR;
+                }
+                if (req.before === undefined) {
+                    req.before = false;
+                }
+                if (req.ack === undefined) {
+                    req.ack = true;
+                }
+                if (req.tio === undefined) {
+                    req.tio = 400;
+                } else {
+                    req.tio *= 1000;
+                }
+
+                setState(TEST_VAR, req.before, req.ack, (_err, _obj) => {
                     req.nok = false;
                     req.callCount = 0;
-                    if (req.cnt === undefined) req.cnt = 1;
+
+                    if (req.cnt === undefined) {
+                        req.cnt = 1;
+                    }
+
                     const sub = on (obj, handler.bind(1, req, obj));
-                    if (!ar) return doIt();
+                    if (!ar) {
+                        return doIt();
+                    }
                     let no = 0;
+
                     (function doIt() {
                         if (no >= ar.length) {
-                            setTimeout(function () {
+                            setTimeout(() => {
                                 unsubscribe(sub);
                                 results = ((req.callCount === req.cnt && req.nok === false) ? 'OK;' : 'NOK;') + 'no=' + req.no + ';' + results + 'callCount=' + req.callCount + ';cnt=' + req.cnt;
                                 setState(TEST_RESULTS, results, true, callback);
                             }, req.tio);
+
                             return;
                         }
+
                         let o = ar[no++];
+
                         if (typeof o !== 'object') {
                             o = { val: o };
                         }
@@ -1106,8 +1131,8 @@ describe('Test JS', function() {
                 });
             }
 
-            function runTests (id) {
-                createState(id, '', true, { name: 'Hello' }, function (err, obj) {
+            function runTests(id) {
+                createState(id, '', true, {name: 'Hello'}, (err, obj) => {
                     let cnt = 0;
                     (function doIt() {
                         if (cnt >= recs.length) return;
@@ -1142,13 +1167,13 @@ describe('Test JS', function() {
         function createObjects(callback) {
             const channel = TEST_VAR.replace(/\.[^.]+$/, '');
             const device = channel.replace(/\.[^.]+$/, '');
-            objects.setObject(device, { common: { name: 'Device', type: 'device'}}, function (err, obj) {
+            objects.setObject(device, { common: { name: 'Device', type: 'device'}}, (err, obj) => {
                 expect(err).to.be.not.ok;
                 objects.setObject(channel, { common: { name: 'Channel', type: 'channel'}}, callback);
             });
         }
 
-        createObjects(function (err, _obj) {
+        createObjects((err, _obj) => {
             expect(err).to.be.not.ok;
             // objects.getObject('system.adapter.javascript.0', function(err, obj) {
             //     obj.native.enableSetObject = true;
@@ -1170,12 +1195,9 @@ describe('Test JS', function() {
             };
             addStateChangedHandler(onStateChanged);
 
-            objects.setObject(script._id, script, function (err) {
-                expect(err).to.be.not.ok;
-            });
+            objects.setObject(script._id, script, err =>
+                expect(err).to.be.not.ok);
         });
-
-
     });
 
     it('Test JS: test schedule for seconds', function (done) {
@@ -1204,7 +1226,7 @@ describe('Test JS', function() {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
         });
     }).timeout(4000);
@@ -1236,7 +1258,7 @@ describe('Test JS', function() {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
         });
     });
@@ -1264,7 +1286,7 @@ describe('Test JS', function() {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
         });
     }).timeout(5000);
@@ -1292,7 +1314,7 @@ describe('Test JS', function() {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
         });
     }).timeout(5000);
@@ -1320,7 +1342,7 @@ describe('Test JS', function() {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, function (err) {
+        objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
         });
     }).timeout(5000);

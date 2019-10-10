@@ -326,15 +326,14 @@ class SideDrawer extends React.Component {
             filterMenuOpened: false,
             typeFilter: window.localStorage ? window.localStorage.getItem('SideMenu.typeFilter') || '' : '', // blockly, js, ts
             statusFilter: window.localStorage ? window.localStorage.getItem('SideMenu.statusFilter') || '' : '',
-            runningInstances: this.props.runningInstances || {}
+            runningInstances: this.props.runningInstances || {},
+            scriptsHash: props.scriptsHash,
         };
 
         const newExp = this.ensureSelectedIsVisible();
         if (newExp) {
             this.state.expanded = newExp;
         }
-
-        this.scriptsHash = props.scriptsHash;
 
         // debounce search process
         this.filterTimer = null;
@@ -362,8 +361,10 @@ class SideDrawer extends React.Component {
             ) {
                 const instance = this.props.scripts[id].common.engine.split('.').pop();
                 const that = this; // sometimes lambda does not work
-                this.props.connection.getState('javascript.' + instance + '.scriptProblem.' + id.substring('script.js.'.length), (err, state, id) => {
-                    that.onProblemUpdated(err, state, id);
+                const _id = 'javascript.' + instance + '.scriptProblem.' + id.substring('script.js.'.length);
+
+                this.props.connection.getState(_id, (err, state) => {
+                    that.onProblemUpdated(_id, state);
                     setTimeout(() => that.readProblems(cb, tasks), 0);
                 });
             } else {
@@ -386,9 +387,8 @@ class SideDrawer extends React.Component {
         });
     }
 
-    onProblemUpdated(err, state, id) {
-        err && console.error(err);
-        if (!state) return;
+    onProblemUpdated(id, state) {
+        if (!state || !id) return;
         id = 'script.js.' + id.replace(/^javascript\.\d+\.scriptProblem\./, '');
 
         if (!this.problems) {
@@ -418,23 +418,22 @@ class SideDrawer extends React.Component {
         }
     }
 
-    filterList(isDisable, listItems, cb) {
-        const noUpdate = !!listItems;
-        listItems = listItems || JSON.parse(JSON.stringify(this.state.listItems));
+    static filterListStatic(isDisable, listItems, noUpdate, searchMode, searchText, objects) {
+        listItems = JSON.parse(JSON.stringify(listItems));
         let changed = false;
         let newState = {listItems};
-        if (isDisable !== false && this.state.searchMode && this.state.searchText) {
-            const text = this.state.searchText.toLowerCase();
+        if (isDisable !== false && searchMode && searchText) {
+            const text = searchText.toLowerCase();
             listItems.forEach(item => {
                 const id = item.title.toLowerCase();
                 item.filteredPartly = false;
                 let found = id.indexOf(text) !== -1;
-                if (!found && (this.props.objects && this.props.objects[item.id] && this.props.objects[item.id].common && this.props.objects[item.id].common.source)) {
-                    if (this.props.objects[item.id].common.engineType === 'Blockly') {
-                        const pos = this.props.objects[item.id].common.source.lastIndexOf('//');
-                        found = this.props.objects[item.id].common.source.substring(0, pos).toLowerCase().indexOf(text) !== -1;
+                if (!found && (objects && objects[item.id] && objects[item.id].common && objects[item.id].common.source)) {
+                    if (objects[item.id].common.engineType === 'Blockly') {
+                        const pos = objects[item.id].common.source.lastIndexOf('//');
+                        found = objects[item.id].common.source.substring(0, pos).toLowerCase().indexOf(text) !== -1;
                     } else {
-                        found = this.props.objects[item.id].common.source.toLowerCase().indexOf(text) !== -1;
+                        found = objects[item.id].common.source.toLowerCase().indexOf(text) !== -1;
                     }
                 }
                 if (found) {
@@ -481,99 +480,112 @@ class SideDrawer extends React.Component {
         }
 
         if (!noUpdate && changed) {
+            return newState;
+        } else {
+            return null;
+        }
+    }
+
+    filterList(isDisable, listItems, cb) {
+        const noUpdate = !!listItems;
+        const newState = SideDrawer.filterListStatic(
+            isDisable,
+            listItems || this.state.listItems,
+            noUpdate,
+            this.state.searchMode,
+            this.state.searchText,
+            this.props.objects
+        );
+
+        if (!noUpdate && newState) {
             this.setState(newState, () => cb && cb());
         } else {
             cb && cb();
         }
     }
 
-    ensureSelectedIsVisible(selected, expanded) {
-        expanded = JSON.parse(JSON.stringify(expanded || this.state.expanded));
-        selected = selected || this.state.selected;
+    static ensureSelectedIsVisibleStatic(selected, expanded, listItems) {
+        expanded = JSON.parse(JSON.stringify(expanded));
         let changed = false;
+
         // ensure that the item is visible
-        let el = typeof selected === 'object' ? selected : this.state.listItems.find(it => it.id === selected);
+        let el = typeof selected === 'object' ? selected : listItems.find(it => it.id === selected);
         do {
             // eslint-disable-next-line
-            el = el && el.parent && this.state.listItems.find(it => it.id === el.parent);
+            el = el && el.parent && listItems.find(it => it.id === el.parent);
             if (el) {
                 if (expanded.indexOf(el.id) === -1) {
                     expanded.push(el.id);
                     changed = true;
                 }
             }
-        } while (el);
+        } while(el);
         return changed && expanded;
     }
 
-    componentWillReceiveProps(nextProps) {
+    ensureSelectedIsVisible(selected, expanded) {
+        SideDrawer.ensureSelectedIsVisibleStatic(selected || this.state.selected, expanded || this.state.expanded, this.state.listItems);
+    }
+
+    static getDerivedStateFromProps(props, state) {
         const newState = {};
         let changed = false;
-        if (this.expertMode !== nextProps.expertMode) {
+        if (state.expertMode !== props.expertMode) {
             changed = true;
-            newState.expertMode = nextProps.expertMode;
+            newState.expertMode = props.expertMode;
         }
-        if (this.scriptsHash !== nextProps.scriptsHash && nextProps.scripts) {
-            const listItems = prepareList(nextProps.scripts || {});
-            this.state.searchText && this.filterList(true, listItems);
+        if (state.scriptsHash !== props.scriptsHash && props.scripts) {
+            const listItems = prepareList(props.scripts || {});
+            if (state.searchText) {
+                const nState = SideDrawer.filterListStatic(true, listItems, true, state.searchMode, state.searchText, props.objects);
+                if (nState) {
+                    Object.assign(newState, nState);
+                }
+            }
 
-            const isAllZeroInstances = this.getIsAllZeroInstances(listItems, nextProps.instances || []);
-            const newExp = this.ensureSelectedIsVisible();
+            const isAllZeroInstances = SideDrawer.getIsAllZeroInstancesStatic(listItems, props.instances || []);
+
+            const newExp = SideDrawer.ensureSelectedIsVisibleStatic(state.selected, state.expanded, state.listItems);
+
             newState.listItems = listItems;
             newState.isAllZeroInstances = isAllZeroInstances;
             if (newExp) {
                 newState.expanded = newExp;
             }
             changed = true;
-            this.setState(newState);
         }
 
-        if (this.state.width !== nextProps.width) {
+        if (state.width !== props.width) {
             changed = true;
-            newState.width = nextProps.width;
+            newState.width = props.width;
         }
-        if (this.state.theme !== nextProps.theme) {
+        if (state.theme !== props.theme) {
             changed = true;
-            newState.theme = nextProps.theme;
+            newState.theme = props.theme;
         }
-        changed && this.setState(newState);
 
-        if (nextProps.selectId && this.state.selected !== nextProps.selectId) {
-            this.onClick(this.state.listItems.find(item => item.id === nextProps.selectId));
-        }
-        /*
-        const newState = {};
-        let changed = false;
-        if (this.expertMode !== nextProps.expertMode) {
-            changed = true;
-            newState.expertMode = nextProps.expertMode;
-        }
-        if (JSON.stringify(nextProps.runningInstances) !== JSON.stringify(this.state.runningInstances)) {
-            changed = true;
-            newState.runningInstances = nextProps.runningInstances;
-        }
-        if (this.scriptsHash !== nextProps.scriptsHash && nextProps.scripts) {
-            const listItems = prepareList(nextProps.scripts || {});
-            const isAllZeroInstances = this.getIsAllZeroInstances(listItems, nextProps.instances || []);
-            const newExp = this.ensureSelectedIsVisible();
-            if (newExp) {
-                newState.expanded = newExp;
+        if (props.selectId && state.selected !== props.selectId) {
+            const item = state.listItems.find(item => item.id === props.selectId);
+
+            if (!state.reorder && item) {
+                const expanded = SideDrawer.ensureSelectedIsVisibleStatic(item, state.expanded, state.listItems);
+                newState.selected = item.id;
+                if (expanded) {
+                    newState.expanded = expanded;
+                }
+                changed = true;
+                window.localStorage && window.localStorage.setItem('SideMenu.selected', item.id);
             }
-            this.setState(newState);
-            newState.listItems = nextProps.listItems;
-            newState.isAllZeroInstances = nextProps.isAllZeroInstances;
-            changed = true;
         }
 
-        if (nextProps.selectId && this.state.selected !== nextProps.selectId) {
-            this.onClick(this.state.listItems.find(item => item.id === nextProps.selectId));
+        if (changed) {
+            return newState;
+        } else {
+            return null;
         }
-        changed && this.setState(newState);*/
     }
 
-    getIsAllZeroInstances(listItems, instances) {
-        listItems = listItems || this.state.listItems;
-        instances = instances || this.state.instances;
+    static getIsAllZeroInstancesStatic(listItems, instances) {
         let isAllZeroInstances = !instances[0] && instances.length <= 1;
 
         if (isAllZeroInstances) {
@@ -584,6 +596,12 @@ class SideDrawer extends React.Component {
             });
         }
         return isAllZeroInstances;
+    }
+
+    getIsAllZeroInstances(listItems, instances) {
+        listItems = listItems || this.state.listItems;
+        instances = instances || this.state.instances;
+        return SideDrawer.getIsAllZeroInstancesStatic(listItems || this.state.listItems, instances || this.state.instances);
     }
 
     saveExpanded(expanded) {

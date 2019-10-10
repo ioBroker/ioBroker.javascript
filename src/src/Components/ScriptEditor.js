@@ -8,7 +8,7 @@ class ScriptEditor extends React.Component {
         this.state = {
             isDark: props.isDark || false,
             language: props.language || 'javascript',
-            readOnly: props.readOnly || false
+            readOnly: props.readOnly || false,
         };
         this.editor = null;
         this.monaco = null;
@@ -16,7 +16,7 @@ class ScriptEditor extends React.Component {
         this.originalCode = props.code || '';
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         if (this.originalCode !== nextProps.code) {
             this.forceUpdate();
             this.originalCode = nextProps.code || '';

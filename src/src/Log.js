@@ -120,6 +120,9 @@ function paddingMs(ms) {
     if (ms < 100) return '0' + ms;
     return ms;
 }
+
+let gText = {};
+
 class Log extends React.Component {
     constructor(props) {
         super(props);
@@ -129,7 +132,6 @@ class Log extends React.Component {
             selected: null,
             editing: this.props.editing || []
         };
-        this.text = {};
         this.lastIndex = null;
         this.messagesEnd = React.createRef();
         this.logHandlerBound = this.logHandler.bind(this);
@@ -152,7 +154,7 @@ class Log extends React.Component {
         if (!selected) return;
 
         let lines = allLines[selected] || [];
-        let text = this.text[selected] || [];
+        let text = gText[selected] || [];
 
         lines.push(this.generateLine(message));
         let severity = message.severity;
@@ -165,7 +167,7 @@ class Log extends React.Component {
             lines.splice(0, lines.length - 300);
             text.splice(0, lines.length - 300);
         }
-        this.text[selected] = text;
+        gText[selected] = text;
         allLines[selected] = lines;
 
         this.setState({lines: allLines});
@@ -183,33 +185,39 @@ class Log extends React.Component {
         this.state.goBottom && this.scrollToBottom();
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.selected !== this.state.selected) {
-            let selected = nextProps.selected;
-            let allLines = this.state.lines;
+    static getDerivedStateFromProps(props, state) {
+        let changed = false;
+        let newState = {};
+
+        if (props.selected !== state.selected) {
+            let selected = props.selected;
+            let allLines = state.lines;
             allLines[selected] = allLines[selected] || [];
-            this.text[selected] = this.text[selected] || [];
-            this.setState({selected});
+            gText[selected] = gText[selected] || [];
+            newState.selected = selected;
+            changed = true;
         }
 
-        if (JSON.stringify(nextProps.editing) !== JSON.stringify(this.state.editing)) {
-            const editing = JSON.parse(JSON.stringify(nextProps.editing));
-            let allLines = this.state.lines;
-            for (const id in this.text) {
-                if (this.text.hasOwnProperty(id)) {
+        if (JSON.stringify(props.editing) !== JSON.stringify(state.editing)) {
+            const editing = JSON.parse(JSON.stringify(props.editing));
+            let allLines = state.lines;
+
+            for (const id in gText) {
+                if (gText.hasOwnProperty(id)) {
                     if (editing.indexOf(id) === -1) {
-                        delete this.text[id];
+                        delete gText[id];
                         delete allLines[id];
                     }
                 }
             }
 
-            this.setState({editing});
+            newState.editing = editing;
         }
+        return changed ? newState : null;
     }
 
     onCopy() {
-        copyToClipboard((this.text[this.state.selected] || []).join('\n'));
+        copyToClipboard((gText[this.state.selected] || []).join('\n'));
     }
 
     clearLog() {
@@ -217,8 +225,8 @@ class Log extends React.Component {
         if (allLines[this.state.selected]) {
             allLines[this.state.selected] = [];
         }
-        if (this.text[this.state.selected]) {
-            this.text[this.state.selected] = [];
+        if (gText[this.state.selected]) {
+            gText[this.state.selected] = [];
         }
         this.setState({lines: allLines});
     }
