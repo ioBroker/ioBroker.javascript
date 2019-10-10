@@ -360,60 +360,16 @@ Blockly.Blocks['time_get'] = {
             if (!inputExists) {
                 var languages;
                 if (systemLang === 'en') {
-                    languages = [
-                        ['in english', 'en'],
-                        ['auf deutsch', 'de'],
-                        ['на русском', 'ru'],
-                        ['en español', 'es'],
-                        ['en français', 'fr'],
-                        ['po polsku', 'pl'],
-                        ['in het nederlands', 'nl'],
-                        ['in italiano', 'it'],
-                        ['em portugues', 'pt'],
-                        ['中文', 'zh-cn'],
-                    ];
+                    languages = [['in english', 'en'], ['auf deutsch', 'de'], ['на русском', 'ru']];
                 } else if (systemLang === 'de') {
-                    languages = [
-                        ['auf deutsch', 'de'],
-                        ['in english', 'en'],
-                        ['на русском', 'ru'],
-                        ['en español', 'es'],
-                        ['en français', 'fr'],
-                        ['po polsku', 'pl'],
-                        ['in het nederlands', 'nl'],
-                        ['in italiano', 'it'],
-                        ['em portugues', 'pt'],
-                        ['中文', 'zh-cn'],
-                    ];
+                    languages = [['auf deutsch', 'de'], ['in english', 'en'], ['на русском', 'ru']];
                 } else if (systemLang === 'ru') {
-                    languages = [
-                        ['на русском', 'ru'],
-                        ['in english', 'en'],
-                        ['auf deutsch', 'de'],
-                        ['en español', 'es'],
-                        ['en français', 'fr'],
-                        ['po polsku', 'pl'],
-                        ['in het nederlands', 'nl'],
-                        ['in italiano', 'it'],
-                        ['em portugues', 'pt'],
-                        ['中文', 'zh-cn'],
-                    ];
+                    languages = [['на русском', 'ru'], ['in english', 'en'], ['auf deutsch', 'de']];
                 } else {
-                    languages = [
-                        ['in english', 'en'],
-                        ['auf deutsch', 'de'],
-                        ['на русском', 'ru'],
-                        ['en español', 'es'],
-                        ['en français', 'fr'],
-                        ['po polsku', 'pl'],
-                        ['in het nederlands', 'nl'],
-                        ['in italiano', 'it'],
-                        ['em portugues', 'pt'],
-                        ['中文', 'zh-cn'],
-                    ];
+                    languages = [['in english', 'en'], ['auf deutsch', 'de'], ['на русском', 'ru']];
                 }
                 this.appendDummyInput('LANGUAGE')
-                    .appformatDateendField(new Blockly.FieldDropdown(languages), 'LANGUAGE');
+                    .appendField(new Blockly.FieldDropdown(languages), 'LANGUAGE');
             }
         } else if (inputExists) {
             this.removeInput('LANGUAGE');
