@@ -986,7 +986,7 @@ describe('Test JS', function() {
                 // request Options                                 // on options or iD                                         // states to set
                 [ { no:  1, cnt: 2, val: true },                   { id: /\.testVar$/, val: true },                            [ true, false, { val: true, ack: true } ] ],
                 [ { no:  2, cnt: 2, val: true },                   { id: 0, val: true },                                       [ true, false, { val: true, ack: true } ] ],
-                [ { no:  3, cnt: 2, val: false, tio: 1},           { id: 0, val: false },                                      [ true, false, { val: true, ack: true }, { val: false, ack: true } ] ],
+                [ { no:  3, cnt: 2, val: false, tio: 2},           { id: 0, val: false },                                      [ true, false, { val: true, ack: true }, { val: false, ack: true } ] ],
                 [ { no:  4, cnt: 1, val: {val: true, ack: true }}, { id: 0, val: true, ack: true },                            [ true, false, { val: true, ack: true }, { val: false, ack: true } ] ],
                 [ { no:  5, cnt: 1, val: {val:false, ack: true }}, { id: 0, val: false, ack: true },                           [ true, false, { val: true, ack: true }, { val: false, ack: true } ] ],
                 [ { no:  6, cnt: 1, val: true },                   { id: 0, change: 'ne' },                                    [ false, true, true ]],
@@ -1014,7 +1014,7 @@ describe('Test JS', function() {
 
                 [ { no: 27, cnt: 1, val: 1, before: false },       { id:0, oldVal: false },                                        [ 1, 1 ] ],
                 [ { no: 28, cnt: 1, val: 1, before: 2 },           { id:0, oldValGt: 1 },                                          [ 1, 1 ] ],
-                [ { no: 29, cnt: 2, val: 1, before: 2 },           { id:0, oldValGe: 1 },                                          [ 1, 1 ] ],
+                [ { no: 29, cnt: 2, val: 1, before: 2, tio: 2 },   { id:0, oldValGe: 1 },                                          [ 1, 1 ] ],
                 [ { no: 30, cnt: 1, before: 2 },                   { id:0, oldValNe: 1 },                                          [ 1, 0 ] ],
                 [ { no: 31, cnt: 1, before: 0 },                   { id:0, oldValLt: 1 },                                          [ 1, 0 ] ],
                 [ { no: 32, cnt: 2, before: 0 },                   { id:0, oldValLe: 1 },                                          [ 1, 2, 0] ],
@@ -1091,7 +1091,7 @@ describe('Test JS', function() {
                     req.ack = true;
                 }
                 if (req.tio === undefined) {
-                    req.tio = 400;
+                    req.tio = 1000;
                 } else {
                     req.tio *= 1000;
                 }
