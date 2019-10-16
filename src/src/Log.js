@@ -101,9 +101,11 @@ const styles = theme => ({
         padding: 4
     },
     layoutIcon: {
-        width: 32,
-        height: 32,
-    }
+        width: 24,
+        height: 24,
+        background: theme.palette.type === 'dark' ? '#9d9d9d' : undefined,
+        borderRadius: theme.palette.type === 'dark' ? 30 : undefined,
+    },
 });
 
 function copyToClipboard(str) {

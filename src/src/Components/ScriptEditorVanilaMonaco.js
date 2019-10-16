@@ -241,12 +241,13 @@ class ScriptEditor extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         const options = {};
         if (this.state.name !== nextProps.name) {
             this.setState({name: nextProps.name});
             this.originalCode = nextProps.code || '';
             this.editor && this.editor.setValue(nextProps.code);
+            this.highlightText(this.lastSearch);
         }
 
         // if the code not yet changed, update the new code

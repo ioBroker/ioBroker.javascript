@@ -153,6 +153,7 @@ class BlocklyEditor extends React.Component {
         if (blocks && blocks.length) {
             this.someSelected = blocks;
             this.someSelected.forEach(b => b.addSelect());
+            this.someSelectedTime = Date.now();
         } else if (this.someSelected) {
             // remove selection
             this.someSelected.forEach(b => b.removeSelect());
@@ -185,6 +186,7 @@ class BlocklyEditor extends React.Component {
             this.lastSearch = nextProps.searchText;
             this.searchId();
         }
+
         if (this.state.theme !== nextProps.theme) {
             this.setState({theme: nextProps.theme}, () => this.updateBackground());
         }
@@ -473,7 +475,7 @@ class BlocklyEditor extends React.Component {
 
         // Listen to events on master workspace.
         this.blocklyWorkspace.addChangeListener(masterEvent => {
-            if (this.someSelected) {
+            if (this.someSelected && Date.now() - this.someSelectedTime > 500) {
                 const allBlocks = this.blocklyWorkspace.getAllBlocks();
                 this.someSelected = null;
                 allBlocks.forEach(b => b.removeSelect());
