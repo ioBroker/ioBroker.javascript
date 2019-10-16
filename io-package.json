@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.3.0",
+        "version": "4.3.1",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.3.1": {
+                "en": "Corrected login with non-admin user\nCorrected log\nSome GUI fixes done",
+                "de": "Korrigierte Anmeldung mit Nicht-Administrator-Benutzer\nKorrigiertes Protokoll\nEinige GUI-Korrekturen wurden durchgeführt",
+                "ru": "Исправлен логин с не-администратором\nИсправленный журнал\nСделано несколько исправлений в GUI",
+                "pt": "Login corrigido com usuário não administrador\nLog corrigido\nAlgumas correções de GUI feitas",
+                "nl": "Gecorrigeerd inloggen met niet-admin gebruiker\nGecorrigeerd logboek\nEnkele GUI-fixes gedaan",
+                "fr": "Correction de la connexion avec un utilisateur non-administrateur\nJournal corrigé\nQuelques corrections de l'interface graphique effectuées",
+                "it": "Accesso corretto con utente non amministratore\nRegistro corretto\nAlcune correzioni della GUI eseguite",
+                "es": "Inicio de sesión corregido con usuario no administrador\nRegistro corregido\nAlgunas correcciones de GUI realizadas",
+                "pl": "Poprawione logowanie z użytkownikiem niebędącym administratorem\nPoprawiony dziennik\nNiektóre poprawki GUI wykonane",
+                "zh-cn": "更正了非管理员用户的登录\n更正的日志\n完成一些GUI修复"
+            },
             "4.3.0": {
                 "en": "Log handlers were implemented\nFixed the error with $ selector and with disabled subscribes",
                 "de": "Protokollhandler wurden implementiert\nDer Fehler mit $ Selector und mit deaktivierten Abonnements wurde behoben",

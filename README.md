@@ -32,6 +32,11 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.3.1 (2019-10-16)
+* (bluefox) Fixed login with non-admin user
+* (bluefox) fixed log
+* (bluefox) Some GUI fixes
+
 ### 4.3.0 (2019-10-09)
 * (bluefox) log handlers were implemented
 * (bluefox) fixed the error with $ selector and with disabled subscribes
