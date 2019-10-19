@@ -1066,14 +1066,13 @@ describe('Test JS', function() {
             function handler(result, req, obj) {
                 //log ('handler: ' + JSON.stringify (req));
                 if (typeof result.val === 'object') {
-                    for (const n in result.val) {
-                        if (result.val.hasOwnProperty(n)) {
-                            addResult ('obj.state.' + n + '=' + obj.state[n] + ' val.' + n + '=' + result.val[n]);
-                            result.nok = result.nok || (result.val[n] !== obj.state[n]);
-                        }
-                    }
+                    Object.keys(result.val).forEach(n => {
+                        addResult('obj.state.' + n + '=' + obj.state[n] + ' val.' + n + '=' + result.val[n]);
+                        result.nok = result.nok || (result.val[n] !== obj.state[n]);
+                    });
+
                 } else if (result.val !== undefined) {
-                    addResult ('obj.state.val=' + obj.state.val + ' val=' + result.val);
+                    addResult('obj.state.val=' + obj.state.val + ' val=' + result.val);
                     result.nok = result.nok || (result.val !== obj.state.val);
                 }
                 result.callCount += 1;
@@ -1104,7 +1103,7 @@ describe('Test JS', function() {
                         req.cnt = 1;
                     }
 
-                    const sub = on (obj, handler.bind(1, req, obj));
+                    const sub = on(obj, handler.bind(1, req, obj));
                     if (!ar) {
                         return doIt();
                     }
@@ -1126,6 +1125,7 @@ describe('Test JS', function() {
                         if (typeof o !== 'object') {
                             o = { val: o };
                         }
+
                         setState(TEST_VAR, o.val, o.ack, doIt);
                     })();
                 });
