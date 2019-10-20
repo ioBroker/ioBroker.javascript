@@ -351,7 +351,9 @@ function startAdapter(options) {
         },
 
         stateChange: (id, state) => {
-            if (!id || id.startsWith('messagebox.') || id.startsWith('log.')) return;
+            if (!id || id.startsWith('messagebox.') || id.startsWith('log.')) {
+                return;
+            }
 
             const oldState = context.states[id];
             if (state) {
@@ -372,11 +374,9 @@ function startAdapter(options) {
                             }
                         }
                     }
-                } else {
-                    if (/*!oldState && */context.stateIds.indexOf(id) === -1) {
-                        context.stateIds.push(id);
-                        context.stateIds.sort();
-                    }
+                } else if (/*!oldState && */context.stateIds.indexOf(id) === -1) {
+                    context.stateIds.push(id);
+                    context.stateIds.sort();
                 }
                 context.states[id] = state;
             } else {

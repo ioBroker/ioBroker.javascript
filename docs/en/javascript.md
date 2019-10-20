@@ -386,6 +386,8 @@ Function "on" returns handler back. This handler can be used by unsubscribe.
 
 *Notice:* by default only states with quality 0x00 will be passed to callback function. If you want to get all events, add {q: '*'} to pattern structure.
 
+*Notice:* from 4.3.2 it is possible to write type of trigger as second parameter: `on('my.id.0', 'any', obj => console.log(obj.state.val));`
+
 ### subscribe - same as **[on](#on---subscribe-on-changes-or-updates-of-some-state)**
 
 ### unsubscribe
