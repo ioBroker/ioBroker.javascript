@@ -173,6 +173,43 @@ function enumFilesRecursiveSync(rootDir, predicate) {
 }
 
 /**
+ * Resolves all TypeScript lib files for the editor
+ * @param {string} targetLib The lib to target (e.g. es2017)
+ */
+function resolveTypescriptLibs(targetLib) {
+    const typescriptLibRoot = nodePath.dirname(require.resolve(`typescript/lib/lib.d.ts`));
+    const ret = {};
+
+    const libReferenceRegex = /\/\/\/ <reference lib="([^"]+)" \/>/g;
+    function matchAllLibs(string) {
+        const ret = [];
+        let match;
+        do {
+            match = libReferenceRegex.exec(string);
+            if (match) ret.push(match[1]);
+        } while (match);
+        return ret;
+    }
+    
+    const libQueue = [targetLib];
+    while (libQueue.length > 0) {
+        const libName = libQueue.shift();
+        const filename = `lib.${libName}.d.ts`;
+        // Read the file and remember it in the return dictionary
+        const fileContent = nodeFS.readFileSync(nodePath.join(typescriptLibRoot, filename), 'utf8');
+        ret[filename] = fileContent;
+        // If this file references another lib file, we need to load that too
+        // A reference looks like this: /// <reference lib="es2015.core" />
+        // Find all libs we have not loaded yet
+        matchAllLibs(fileContent)
+            .filter(lib => !(`lib.${lib}.d.ts` in ret))
+            .forEach(lib => libQueue.push(lib))
+        ;
+    }
+    return ret;
+}
+
+/**
  * Translates a script ID to a filename for the compiler
  * @param {string} scriptID The ID of the script
  */
@@ -612,25 +649,12 @@ function startAdapter(options) {
                         const typings = {};
 
                         // try to load TypeScript lib files from disk
-                        const libFiles = [
-                            // This is lib.es2015.d.ts:
-                            'lib.es5.d.ts',
-                            'lib.es2015.core.d.ts',
-                            'lib.es2015.collection.d.ts',
-                            'lib.es2015.generator.d.ts',
-                            'lib.es2015.promise.d.ts',
-                            'lib.es2015.iterable.d.ts',
-                            'lib.es2015.proxy.d.ts',
-                            'lib.es2015.reflect.d.ts',
-                            'lib.es2015.symbol.d.ts',
-                            'lib.es2015.symbol.wellknown.d.ts'
-                        ];
-                        for (const libFile of libFiles) {
-                            try {
-                                const libPath = require.resolve(`typescript/lib/${libFile}`);
-                                typings[libFile] = nodeFS.readFileSync(libPath, 'utf8');
-                            } catch (e) { /* ok, no lib then */ }
-                        }
+                        // For Node.js 8+, we can use es2017
+                        const targetLib = 'es2017';
+                        try {
+                            const typescriptLibs = resolveTypescriptLibs(targetLib);
+                            Object.assign(typings, typescriptLibs);
+                        } catch (e) { /* ok, no lib then */ }
 
                         // try to load node.js typings from disk
                         try {
