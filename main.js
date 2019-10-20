@@ -29,6 +29,7 @@ if (true || parseInt(process.versions.node.split('.')[0]) < 6) {
     }
 }
 const nodeFS         = require('fs');
+const nodePath       = require('path');
 const coffeeCompiler = require('coffee-compiler');
 const tsc            = require('virtual-tsc');
 const typescript     = require('typescript');
@@ -148,6 +149,27 @@ function provideDeclarationsForGlobalScript(scriptID, declarations) {
     jsDeclarationServer.provideAmbientDeclarations({
         [globalDeclarationPath]: globalDeclarations
     });
+}
+
+/**
+ * Enumerates all files matching a given predicate
+ * @param {string} rootDir The directory to start in
+ * @param {(filename: string) => boolean} [predicate]
+ */
+function enumFilesRecursiveSync(rootDir, predicate) {
+    const ret = [];
+    const filesAndDirs = nodeFS.readdirSync(rootDir);
+    for (const f of filesAndDirs) {
+        const fullPath = nodePath.join(rootDir, f);
+        if (nodeFS.statSync(fullPath).isDirectory()) {
+            Array.prototype.push.apply(ret, enumFilesRecursiveSync(fullPath, predicate));
+        } else {
+            if (typeof predicate === 'function' && predicate(fullPath)) {
+                ret.push(fullPath);
+            }
+        }
+    }
+    return ret;
 }
 
 /**
@@ -612,8 +634,16 @@ function startAdapter(options) {
 
                         // try to load node.js typings from disk
                         try {
-                            const nodeTypingsPath = require.resolve('@types/node/index.d.ts');
-                            typings['node_modules/@types/node/index.d.ts'] = nodeFS.readFileSync(nodeTypingsPath, 'utf8');
+                            const nodeTypingsPath = nodePath.dirname(require.resolve('@types/node/package.json'));
+                            // We need to provide ALL .d.ts files as well as the package.json
+                            const allNodeTypingsFiles = enumFilesRecursiveSync(
+                                nodeTypingsPath, 
+                                filename => filename.endsWith('.d.ts') || filename.endsWith('package.json')
+                            );
+                            for (const file of allNodeTypingsFiles) {
+                                const relativePath = nodePath.relative(nodeTypingsPath, file).replace('\\\\', '/');
+                                typings[`@types/node/${relativePath}`] = nodeFS.readFileSync(file, 'utf8');
+                            }
                         } catch (e) { /* ok, no typings then */ }
 
                         // provide the already-loaded ioBroker typings and global script declarations
