@@ -140,10 +140,13 @@ declare global {
 			[propName: string]: any;
 		};
 
-		interface TargetObject {
-            instance: string; // javascript instance (optional)
-            script: string;   // script name (optional)
-            message: string; // message name (required)
+		interface MessageTarget {
+			/** Javascript Instance */
+			instance?: string;
+			/** Script name */
+			script?: string;
+			/** Message name */
+			message: string;
 		}
 
 		type MessageSubscribeID = number;
@@ -508,12 +511,12 @@ declare global {
 			rule: ScheduleRule | Date | string | number;
 		}
 
-        interface LogMessage {
-            severity: LogLevel; // severity
-            ts: number; 		// timestamp as Date.now()
-            message: string; 	// message
-            from: string; 		// origin of the message
-        }
+		interface LogMessage {
+			severity: LogLevel; // severity
+			ts: number; 		// timestamp as Date.now()
+			message: string; 	// message
+			from: string; 		// origin of the message
+		}
 
 		type SchedulePattern = ScheduleRule | ScheduleRuleConditional | Date | string | number;
 
@@ -557,15 +560,16 @@ declare global {
 	function log(message: string, severity?: iobJS.LogLevel): void;
 
 	// console functions
+	// @ts-ignore We need this variable although it conflicts with the node typings
 	namespace console {
-	 	/** log message with debug level */
-	 	function debug(message: string): void;
-	 	/** log message with info level (default output level for all adapters) */
-	 	function info(message: string): void;
-	 	/** log message with warning severity */
-	 	function warn(message: string): void;
-	 	/** log message with error severity */
-	 	function error(message: string): void;
+		/** log message with debug level */
+		function debug(message: string): void;
+		/** log message with info level (default output level for all adapters) */
+		function info(message: string): void;
+		/** log message with warning severity */
+		function warn(message: string): void;
+		/** log message with error severity */
+		function error(message: string): void;
 	}
 
 	/**
@@ -892,40 +896,40 @@ declare global {
 	function getAttr(obj: string | Record<string, any>, path: string | string[]): any;
 
     /**
-     * Send message to other script.
+     * Sends a message to another script.
      * @param target Message name or target object
      * @param data Any data, that should be sent to message bus
      * @param options Actually only {timeout: X} is supported as option
      * @param callback Callback to get the result from other script
      * @return ID of the subscription. It could be used for un-subscribe.
      */
-    function messageTo(target: iobJS.TargetObject | string, data: any, options?: any, callback?: SimpleCallback<any>): iobJS.MessageSubscribeID;
+	function messageTo(target: iobJS.MessageTarget | string, data: any, options?: any, callback?: SimpleCallback<any>): iobJS.MessageSubscribeID;
 
     /**
      * Process message from other script.
      * @param message Message name
      * @param callback Callback to send the result to other script
      */
-    function onMessage(message: string, callback?: SimpleCallback<any>);
+	function onMessage(message: string, callback?: SimpleCallback<any>);
 
     /**
      * Unregister onmessage handler
      * @param id Message subscription id from onMessage or by message name
      * @return true if subscription exists and was deleted.
      */
-    function onMessageUnregister(id: iobJS.MessageSubscribeID | string): boolean;
+	function onMessageUnregister(id: iobJS.MessageSubscribeID | string): boolean;
 
     /**
      * Receives logs of specified severity level in script.
      * @param severity Severity level
      * @param callback Callback to send the result to other script
      */
-    function onLog(severity: iobJS.LogLevel, callback: SimpleCallback<iobJS.LogMessage>);
+	function onLog(severity: iobJS.LogLevel, callback: SimpleCallback<iobJS.LogMessage>);
 
     /**
      * Unsubscribe log handler.
      * @param idOrCallbackOrSeverity Message subscription id from onLog or by callback function
      * @return true if subscription exists and was deleted.
      */
-    function onLogUnregister(idOrCallbackOrSeverity: iobJS.MessageSubscribeID | SimpleCallback<iobJS.LogMessage> | iobJS.LogLevel): boolean;
+	function onLogUnregister(idOrCallbackOrSeverity: iobJS.MessageSubscribeID | SimpleCallback<iobJS.LogMessage> | iobJS.LogLevel): boolean;
 }
