@@ -14,6 +14,7 @@
 /* jslint node: true */
 /* jshint shadow: true */
 'use strict';
+
 let NodeVM;
 let VMScript;
 let vm;
@@ -59,6 +60,11 @@ const words     = require('./lib/words');
 const sandBox   = require('./lib/sandbox');
 const eventObj  = require('./lib/eventObj');
 const Scheduler = require('./lib/scheduler');
+const { 
+    resolveTypescriptLibs,
+    resolveTypings,
+    scriptIdToTSFilename
+} = require('./lib/typescriptTools');
 
 const adapterName = require('./package.json').name.split('.').pop();
 
@@ -85,22 +91,27 @@ if (process.argv) {
     }
 }
 
+// NodeJS 8+ supports the features of ES2017
+// When upgrading the minimum supported version to NodeJS 10 or higher,
+// consider changing this, so we get to support the newest features too
+const targetTsLib = 'es2017';
+
 /** @type {typescript.CompilerOptions} */
 const tsCompilerOptions = {
     // don't compile faulty scripts
     noEmitOnError: true,
     // emit declarations for global scripts
     declaration: true,
+    // This enables TS users to `import * as ... from` and `import ... from`
+    esModuleInterop: true,
     // In order to run scripts as a NodeJS vm.Script,
     // we need to target ES5, otherwise the compiled
     // scripts may include `import` keywords, which are not
     // supported by vm.Script.
     target: typescript.ScriptTarget.ES5,
-    // NodeJS 4+ supports the features of ES2015
-    // When upgrading the minimum supported version to NodeJS 8 or higher,
-    // consider changing this, so we get to support the newest features too
-    lib: ['lib.es2015.d.ts'],
+    lib: [`lib.${targetTsLib}.d.ts`],
 };
+
 const jsDeclarationCompilerOptions = Object.assign(
     {}, tsCompilerOptions,
     {
@@ -151,71 +162,34 @@ function provideDeclarationsForGlobalScript(scriptID, declarations) {
     });
 }
 
-/**
- * Enumerates all files matching a given predicate
- * @param {string} rootDir The directory to start in
- * @param {(filename: string) => boolean} [predicate]
- */
-function enumFilesRecursiveSync(rootDir, predicate) {
-    const ret = [];
-    const filesAndDirs = nodeFS.readdirSync(rootDir);
-    for (const f of filesAndDirs) {
-        const fullPath = nodePath.join(rootDir, f);
-        if (nodeFS.statSync(fullPath).isDirectory()) {
-            Array.prototype.push.apply(ret, enumFilesRecursiveSync(fullPath, predicate));
-        } else {
-            if (typeof predicate === 'function' && predicate(fullPath)) {
-                ret.push(fullPath);
-            }
+function loadTypeScriptDeclarations() {
+    // try to load the typings on disk for all 3rd party modules
+    const packages = [
+        'node', // this provides auto completion for most builtins
+        'request', // preloaded by the adapter
+    ];
+    // Also include user-selected libraries
+    if (adapter.config && typeof adapter.config.libraries === 'string') {
+        const libraries = adapter.config.libraries.split(/[,;\s]+/).map(s => s.trim());
+        for (const lib of libraries) {
+            if (packages.indexOf(lib) === -1) packages.push(lib);
         }
     }
-    return ret;
-}
-
-/**
- * Resolves all TypeScript lib files for the editor
- * @param {string} targetLib The lib to target (e.g. es2017)
- */
-function resolveTypescriptLibs(targetLib) {
-    const typescriptLibRoot = nodePath.dirname(require.resolve(`typescript/lib/lib.d.ts`));
-    const ret = {};
-
-    const libReferenceRegex = /\/\/\/ <reference lib="([^"]+)" \/>/g;
-    function matchAllLibs(string) {
-        const ret = [];
-        let match;
-        do {
-            match = libReferenceRegex.exec(string);
-            if (match) ret.push(match[1]);
-        } while (match);
-        return ret;
+    for (const pkg of packages) {
+        const pkgTypings = resolveTypings(
+            pkg,
+            // node needs ambient typings, so we don't wrap it in declare module
+            pkg !== 'node'
+        );
+        adapter.log.debug(`Loaded TypeScript definitions for ${pkg}: ${JSON.stringify(Object.keys(pkgTypings))}`);
+        // remember the declarations for the editor
+        Object.assign(tsAmbient, pkgTypings);
+        // and give the language servers access to them
+        tsServer.provideAmbientDeclarations(pkgTypings);
+        jsDeclarationServer.provideAmbientDeclarations(pkgTypings);
     }
-    
-    const libQueue = [targetLib];
-    while (libQueue.length > 0) {
-        const libName = libQueue.shift();
-        const filename = `lib.${libName}.d.ts`;
-        // Read the file and remember it in the return dictionary
-        const fileContent = nodeFS.readFileSync(nodePath.join(typescriptLibRoot, filename), 'utf8');
-        ret[filename] = fileContent;
-        // If this file references another lib file, we need to load that too
-        // A reference looks like this: /// <reference lib="es2015.core" />
-        // Find all libs we have not loaded yet
-        matchAllLibs(fileContent)
-            .filter(lib => !(`lib.${lib}.d.ts` in ret))
-            .forEach(lib => libQueue.push(lib))
-        ;
-    }
-    return ret;
 }
 
-/**
- * Translates a script ID to a filename for the compiler
- * @param {string} scriptID The ID of the script
- */
-function scriptIdToTSFilename(scriptID) {
-    return scriptID.replace(/^script.js./, '').replace(/\./g, '/') + '.ts';
-}
 
 const context = {
     mods,
@@ -417,7 +391,7 @@ function startAdapter(options) {
                 if (oldState) {
                     // enable or disable script
                     if (!state.ack && id.startsWith(activeStr) && context.objects[id] && context.objects[id].native && context.objects[id].native.script) {
-                        adapter.extendForeignObject(context.objects[id].native.script, {common: {enabled: state.val}});
+                        adapter.extendForeignObject(context.objects[id].native.script, { common: { enabled: state.val } });
                     }
 
                     // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
@@ -493,13 +467,17 @@ function startAdapter(options) {
                 }
             };
 
-            context.logWithLineInfo.warn  = context.logWithLineInfo.bind(1, 'warn');
+            context.logWithLineInfo.warn = context.logWithLineInfo.bind(1, 'warn');
             context.logWithLineInfo.error = context.logWithLineInfo.bind(1, 'error');
-            context.logWithLineInfo.info  = context.logWithLineInfo.bind(1, 'info');
+            context.logWithLineInfo.info = context.logWithLineInfo.bind(1, 'info');
 
             context.scheduler = new Scheduler(adapter.log);
 
             installLibraries(() => {
+
+                // Load the TS declarations for Node.js and all 3rd party modules
+                loadTypeScriptDeclarations();
+
                 getData(() => {
                     adapter.subscribeForeignObjects('*');
 
@@ -633,7 +611,7 @@ function startAdapter(options) {
                                                 handler.cb.call(handler.sandbox, obj.message.data, result =>
                                                     adapter.sendTo(obj.from, obj.command, result, obj.callback));
                                             } else {
-                                                handler.cb.call(handler.sandbox, obj.message.data, result => {/* nop */});
+                                                handler.cb.call(handler.sandbox, obj.message.data, result => {/* nop */ });
                                             }
                                         } catch (e) {
                                             adapter.setState('scriptProblem.' + name.substring('script.js.'.length), true, true);
@@ -649,29 +627,14 @@ function startAdapter(options) {
                         const typings = {};
 
                         // try to load TypeScript lib files from disk
-                        // For Node.js 8+, we can use es2017
-                        const targetLib = 'es2017';
                         try {
-                            const typescriptLibs = resolveTypescriptLibs(targetLib);
+                            const typescriptLibs = resolveTypescriptLibs(targetTsLib);
                             Object.assign(typings, typescriptLibs);
                         } catch (e) { /* ok, no lib then */ }
 
-                        // try to load node.js typings from disk
-                        try {
-                            const nodeTypingsPath = nodePath.dirname(require.resolve('@types/node/package.json'));
-                            // We need to provide ALL .d.ts files as well as the package.json
-                            const allNodeTypingsFiles = enumFilesRecursiveSync(
-                                nodeTypingsPath, 
-                                filename => filename.endsWith('.d.ts') || filename.endsWith('package.json')
-                            );
-                            for (const file of allNodeTypingsFiles) {
-                                const relativePath = nodePath.relative(nodeTypingsPath, file).replace('\\\\', '/');
-                                typings[`@types/node/${relativePath}`] = nodeFS.readFileSync(file, 'utf8');
-                            }
-                        } catch (e) { /* ok, no typings then */ }
-
                         // provide the already-loaded ioBroker typings and global script declarations
                         Object.assign(typings, tsAmbient);
+
                         // also provide the known global declarations for each global script
                         for (const globalScriptPaths of Object.keys(knownGlobalDeclarationsByScript)) {
                             typings[globalScriptPaths + '.d.ts'] = knownGlobalDeclarationsByScript[globalScriptPaths];
@@ -1029,7 +992,7 @@ function execute(script, name, verbose, debug) {
     script.name = name;
     script._id = Math.floor(Math.random() * 0xFFFFFFFF);
     script.subscribes = {};
-    adapter.setState('scriptProblem.' + name.substring('script.js.'.length), {val: false, ack: true, expire: 1000});
+    adapter.setState('scriptProblem.' + name.substring('script.js.'.length), { val: false, ack: true, expire: 1000 });
 
     const sandbox = sandBox(script, name, verbose, debug, context);
 
@@ -1340,7 +1303,7 @@ function getData(callback) {
 
     adapter.log.info('requesting all objects');
 
-    adapter.objects.getObjectList({include_docs: true}, (err, res) => {
+    adapter.objects.getObjectList({ include_docs: true }, (err, res) => {
         res = res.rows;
         context.objects = {};
         for (let i = 0; i < res.length; i++) {
@@ -1368,14 +1331,14 @@ function getData(callback) {
         // try to use system coordinates
         if (adapter.config.useSystemGPS) {
             if (systemConfig && systemConfig.common && systemConfig.common.latitude) {
-                adapter.config.latitude  = systemConfig.common.latitude;
+                adapter.config.latitude = systemConfig.common.latitude;
                 adapter.config.longitude = systemConfig.common.longitude;
             } else if (adapter.latitude) {
-                adapter.config.latitude  = adapter.latitude;
+                adapter.config.latitude = adapter.latitude;
                 adapter.config.longitude = adapter.longitude;
             }
         }
-        adapter.config.latitude  = parseFloat(adapter.config.latitude);
+        adapter.config.latitude = parseFloat(adapter.config.latitude);
         adapter.config.longitude = parseFloat(adapter.config.longitude);
 
         objectsReady = true;
