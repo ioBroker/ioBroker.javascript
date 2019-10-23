@@ -32,6 +32,11 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### next version:
+* (AlCalzone) Fix syntax help for Node.js runtime methods (#418)
+* (AlCalzone) Target ES 2017 in TypeScript (#419)
+* (AlCalzone) Automatically load declarations for 3rd party modules (#422)
+
 ### 4.3.1 (2019-10-16)
 * (bluefox) Fixed login with non-admin user
 * (bluefox) fixed log
