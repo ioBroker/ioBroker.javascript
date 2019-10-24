@@ -1,0 +1,308 @@
+Ações
+IDs do seletor
+exec
+com resultados
+comando
+Executar um comando do sistema
+exec---execute-some-os-command-like-cp-file1-file2
+nível de log
+nenhum
+informação
+depurar
+atenção
+erro
+request
+URL
+com resultados
+URL solitado
+https://github.com/request/request
+nível de log
+Nenhum
+informação
+depurar
+atenção
+erro
+Converter
+por número
+Trasformar entrada para número
+para booleano
+Trasformar entrada para booleano
+para texto
+Trasformar entrada para texto
+tipo de
+Retorna o tipo da entrada
+até a data/hora
+Trasformar entrada para data
+data/hora
+para
+criar entrada pela data
+JSON para objeto
+Parse JSON
+Objeto para JSON
+Objeto para JSON
+formatar
+Enviar para
+mensagem
+enviar para
+Texto para Língua
+enviar para
+parâmetros
+comando
+parâmetro
+Adicionar parâmetros ao objeto "enviar para"
+Nenhuma instância
+nível de log
+nenhum
+informação
+depurar
+atenção
+erro
+Sistema
+saída de depuração
+Depurar
+log---gives-out-the-message-into-log
+comentário
+Digite um comentário para explicar o código
+controle
+Controle o estado
+setstate
+com
+com atraso
+ms
+seg
+min
+, excluir se estiver executando
+alternar
+Alternar o estado
+setstate
+com
+com atraso
+em ms
+, excluir se estiver executando
+atualizar
+Atualizar estado
+settate
+com
+com atraso
+em ms
+ligar
+Vincular dois estados juntos
+settate
+objeto
+apenas mudanças
+com
+escreva
+Controle o estado
+controle
+atualizar
+atraso em ms
+valor
+excluir se estiver executando
+Gerar ponto de dados
+jsState
+ID do objeto
+valor inicial
+Common
+Gerar ponto de dados
+createstate
+Tome o valor do estado
+pela ID do objeto
+Selecione ID do objeto com diálogo
+getstate
+selecione ID
+Valor
+confirmado
+Timestamp
+Última mudança
+Qualidade
+Fonte
+Tome o valor do estado
+Selecionar ponto de dados
+ID do objeto
+Selecione ID do objeto com diálogo
+Obter atributo
+Atributo
+do objeto
+Obter atributo do objeto ou JSON pelo caminho, como: 'attr1.attr'
+getattr
+Nova linha
+Coloca nova linha no texto
+Arredondar
+para
+casas decimais
+Arredonda o valor para n casas decimais
+Data e hora
+Hora atual
+Tempo
+é
+Tempo
+Compare o tempo
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+O horário atual é
+Compare com o horário atual
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+menor que
+igual ou menor do que
+maior que
+igual ou maior do que
+igual a
+entre
+não entre
+e
+Horário atual como
+aaaa.mm.dd hh:mm:ss.sss
+Todas as instâncias
+Enviar mensagem pelo Telegram
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Data objeto
+milissegundos
+segundos
+minutos
+Minutos desde o início do dia
+Segundos desde o início do dia
+horas
+dia do mês
+mês como número
+mês como texto
+mês como texto curto
+ano curto
+ano completo
+dia da semana como texto
+dia da semana como textocurto
+dia da semana como número
+formato personalizado
+aaaa.mm.dd
+aaaa/mm/dd
+yy.mm.dd
+aa/mm/dd
+dd.mm.yyyy
+dd/mm/aaaa
+dd.mm.yy
+dd/mm/aa
+mm/dd/aaaa
+mm/dd/aaa
+dd.mm.
+dd/mm
+mm.dd
+mm/dd
+hh:mm
+hh:mm:ss
+hh:mm:ss.sss
+Horário atual de
+Offset (minutos)
+AAAA.MM.DD hh:mm:ss.sss
+Receba o horário atual ou
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Timeouts
+Executar
+Atraso
+em
+ms
+seg
+min
+Execução com atraso
+settimeout
+parar
+Parar a execução com atraso
+cleartimeout
+Executar
+intervalo
+todo
+ms
+Execução cíclica
+setinterval
+parar
+Parar a execução cíclica
+clearinterval
+Trigger
+foi alterado
+foi atualizado
+é maior do que o último
+é maior ou igual que o último
+é menor do que o último
+é menor ou igual que o último
+é o mesmo que o último
+é verdade
+é falso
+on---subscribe-on-changes-or-updates-of-some-state
+confirmado é
+qualquer
+atualizar
+comando
+Se o objeto
+Se mudou o estado
+ID do objeto
+ID do objeto
+trigger no
+trigger no
+se o objeto
+se mudou o estado
+pege
+do trigger
+Obtenha as informações sobre o evento
+ID do objeto
+nome
+descrição
+ID do canal
+nome do canal
+ID do dispositivo
+nome do dispositivo
+valor
+timestamp
+qualidade
+origem
+é comando ou atualização
+última mudança
+valor anterior
+timestamp anterior
+qualidade anterior
+origem anterior
+comando ou atualização anterior
+última mudança anterior
+Este bloco só pode ser usado dentro do bloco "Se objeto"
+cronograma
+Execução por tempo
+cronograma
+astro
+Executar após o evento astro
+, offset
+minutos
+nascer do sol
+fim do nascer do sol
+fim da hora dourada
+meio-dia solar
+Hora dourada
+começo do por do sol
+por do sol
+anoitecer
+anoitecer náutico
+noite
+final da noite
+amanhecer náutico
+amanhecer
+nadir
+astro--function
+cronograma
+cronograma
+regra cron
+Atrasar a execução
+settimeout
+parar
+Parar a execução com atraso
+cleartimeout
+CRON
+CRON
+Criar regra CRON com diálogo
+CRON
+CRON
+Criar regra CRON com diálogo
+com segundos
+dia da semana
+mês
+data
+hora
+minutos
+segundos
+como linha
+Função JS com resultado
+Função JavaScript

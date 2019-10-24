@@ -669,7 +669,7 @@ gulp.task('blocklyLanguagesFlat2words', done => {
     }
 
     let text = 'if (typeof Blockly === \'undefined\') {\n';
-    text += '    const Blockly = {};\n';
+    text += '    var Blockly = {};\n';
     text += '}\n';
     text += '// translations\n';
     text += 'Blockly.Words = {};\n';

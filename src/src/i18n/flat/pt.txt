@@ -1,5 +1,5 @@
 -
-Adicionar, acrescentar
+Adicionar
 Adicionar novo script
 Todos os arquivos serão aceitos
 abril
@@ -7,57 +7,57 @@ Você tem certeza?
 agosto
 Criando regras por blocos gráficos
 Cancelar
-Não é possível excluir o item não vazio!
+Não pode ser deletar, porque não está vazio!
 Alterar layout
 Verificar blocos
-A verificação não está ativa, porque o adaptador Javascript está desativado
+A verificação de sintaxe não está ativa porque o adaptador javascript não está rodando.
 Limpar entrada de pesquisa
 Clique neste ícone
 Fechar
 Fechar tudo, menos atual
 Recolher todos
-Configuração não salva.
-Instantaneamente converta em bloco para Javascript.
+Configuração não esta salva.
+Converter Blockly em Javascript permanentemente.
 Copiar script
 Copiar para área de transferência
 Crie um novo
 Criar nova pasta
 Criar novo script
-Criar ou editar o CRON ou o assistente de horário
-Tema escuro
+Criar ou editar o assistente cron ou o assistente de horário
+Layout escuro
 Estilo escuro
 Opções de depuração
 dezembro
-Definir cron ...
+Definir cron...
 Definir agendamento ...
-Excluir
-Excluir %s ...
-Excluir pasta
-Excluir script
+Deletar
+Deletar %s...
+Deletar pasta
+Deletar script
 Desmarcar todos
-Descartar alterações por %s
-Feito
-Solte alguns arquivos aqui ou clique em ...
+Descartar alterações para %s
+Completo
+Solte alguns arquivos aqui ou clique em...
 Edite o script ou clique duas vezes
 Finalizar modo de pesquisa
 Erro
-Erro encontrado
+Erro foi encontrado
 Os scripts existentes serão substituídos.
 Expandir todos
-Modo especialista
+Modo de especialista
 Exportação
 Exportar todos os scripts
-Blocos de exportação
+Exportar blocos
 Exportar blocos selecionados
 fevereiro
 Pasta
-Sexta-feira
+sexta
 Editor de funções
-EU IRIA
+ID
 Importar
-Blocos de importação
+Importar blocos
 Erro de importação
-Scripts de importação
+Importar script
 Inserir ID do objeto
 Instância
 Instância está desativada
@@ -65,35 +65,35 @@ CRON inválido
 Não será possível reverter esta operação.
 Criando regras escrevendo Javascript
 janeiro
-Julho
-Junho
-Saber mais
+julho
+junho
+Aprender mais
 Estilo claro
 Localize o arquivo
 Saídas de log
-marcha
-Maio
-Cardápio
+março
+maio
+Menu
 mensagem
-Segunda-feira
+segunda
 Nome
 Nenhum host ativo encontrado
 novembro
-Outubro
-Está bem
+outubro
+Ok
 Nos dias úteis
 Pausar script
-Selecione o ID do objeto ...
+Selecione o ID do objeto...
 Renomear
 Reordenar scripts em pastas
 Repetir
 Reiniciar
-Pasta raiz
+Pasta principal
 Executar script
 sábado
-Salve 
-Roteiro
-O script %s foi modificado no disco
+Salve
+Script
+O script "%s" foi modificado no disco rígido
 Script não está sendo executado
 Pesquisa em scripts
 Procurar...
@@ -106,29 +106,29 @@ Mostrar apenas scripts com problemas
 Alguns arquivos serão rejeitados
 domingo
 Criando regras escrevendo Typecript
-Quinta-feira
+quinta
 terça
 Erro desconhecido
 Erro desconhecido!
-Quarta-feira
+quarta
 Ainda existe!
-cópia de
+copiar
 a leitura do arquivo falhou: %s
 a leitura do arquivo foi abortada
 Função
-EU IRIA
+ID
 Nome
-Função
-Sala
+Tipo
+Quarto
 para editar ou criar um novo script
 Nenhum bloco encontrado
 SEM GRUPO
-Este bloco não está conectado corretamente a outros blocos.
+Este bloco não está conectado corretamente com outros blocos.
 CRON
-Encontro
-datas
+Data
+Dias
 Dia da semana
-Cada
+todos
 a cada N dias
 todos os N dias da semana
 a cada N horas
@@ -141,50 +141,50 @@ toda hora
 todo minuto
 todo mês
 todo segundo
-De
-Horas
-Intervalo
-Intervalo entre
-Minutos
+de
+horas
+intervalo
+intervalo entre
+minutos
 meses
-Uma vez
-Período
-Segundos
-Simples
-Tempo específico
+uma vez
+período
+segundos
+simples
+tempo específico
 datas específicas
 dia específico de semanas
 horas específicas
 minutos específicos
 meses específicos
 segundos específicos
-Tempo
-Para
-bruxo
+tempo
+para
+assistente
 tudo
-Astro day
-Noite Astro
-Alvorecer
-Crepúsculo
-Hora dourada
-Fim da hora de ouro
-Nadir
+dia astral
+noite astral
+amanhecer
+anoitecer
+hora dourada
+Fim da hora dourada
+nadir
 Amanhecer náutico
-Crepúsculo náutico
-Noite
-Fim da noite
-Meio-dia solar
-Nascer do sol
-Fim do nascer do sol
-Pôr do sol
-Início do pôr do sol
+Anoitecer náutico
+noite
+fim da noite
+meio-dia solar
+nascer do sol
+fim do nascer do sol
+pôr do sol
+início do pôr do sol
 às
 em %s
 todo dia
 toda hora
 todo minuto
 todo mês
-a cada %s dia
+a cada %s dias
 a cada %s horas
 a cada %s minutos
 a cada %s meses
@@ -193,7 +193,7 @@ a cada %s anos
 toda semana
 todo ano
 de %s para %s
-Nunca
+nunca
 em %s de %s
 em %s e %s de
 em toda data de
@@ -206,51 +206,51 @@ em dias úteis
 não será mais executado, porque o começo está no passado
 em %s
 de %s
-Executar de a
-para %s
+Executar de até
+até %s
 cada
-Tempo específico
+tempo específico
 de
-De para
-Tempo de intervalo
+de a´t
+tempo de intervalo
 invertido
-Nenhum
+nenhum
 em
-Período
-Diariamente
+período
+diariamente
 datas
-Dia
-Cada
+dia
+todos
 todo dia
-Todo mês
-Toda semana
-Todo ano
-Horas
-Minutos
+todo mês
+toda semana
+todo ano
+horas
+minutos
 mês
-Por mês
-Uma vez
-Meses específicos
-Semana
-Dias úteis
-Final de semana
-Semanal
-Dias úteis
-Ano
-Anual
-Tempo específico
-Tempo
+por mês
+uma vez
+meses específicos
+semana
+dias úteis
+final de semana
+semanal
+dias úteis
+ano
+anual
+tempo específico
+tempo
 para
-Válido
+válido
 de
 para
-Dia inteiro
+dia inteiro
 todo mês
-Reconhecer
-De
+reconhecer
+de
 Última alteração
 Qualidade
-Registro de data e hora
-Do utilizador
-Valor
+timestamp
+usuário
+valor
 use segundos
