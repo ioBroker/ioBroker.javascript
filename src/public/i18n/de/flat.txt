@@ -1,0 +1,308 @@
+Aktionen
+IDs vom Selektor
+exec
+mit Ergebnissen
+Befehl
+Einen System-Befehl ausführen
+exec---execute-some-os-command-like-cp-file1-file2
+Loglevel
+keins
+info
+debug
+warning
+error
+request
+URL
+mit Ergebnissen
+URL abfragen
+https://github.com/request/request
+Loglevel
+keins
+info
+debug
+warning
+error
+Konvertierung
+nach Zahl
+Wandle Eingang nach Zahl
+nach Logikwert
+Wandle Input nach Logikwert
+nach String
+Wandle Input nach String
+Typ von
+Typ von Input
+nach Datum/Zeit
+Wandle Input nach Datum
+Datum/Zeit
+nach
+erzeuge Input aus Datum
+JSON nach Objekt
+Parse JSON
+Objekt nach JSON
+Objekt nach JSON
+formatieren
+Sendto
+Meldung
+sendTo
+Text zu Sprache
+sendto
+Parameter
+Befehl
+Parameter
+Parameter zum sendTo-Objekt hinzufügen
+Keine Instanzen
+Loglevel
+keins
+info
+debug
+warning
+error
+System
+debug output
+Debug
+log---gives-out-the-message-into-log
+Kommentar
+Debug
+steuere
+Steuere Zustand
+setstate
+mit
+mit Verzögerung
+ms
+Sek
+Min
+, löschen falls läuft
+umschalten
+Schalte Zustand um
+setstate
+mit
+mit Verzögerung
+in ms
+, löschen falls läuft
+aktualisiere
+Zustand aktualisieren
+setstate
+mit
+mit Verzögerung
+in ms
+binde
+Binde zwei Zustände miteinander
+setstate
+object
+nur Änderungen
+mit
+schreibe
+Steuere Zustand
+steuere
+aktualisiere
+Verzögerung in ms
+Wert
+löschen falls läuft
+Datenpunkt erzeugen
+jsState
+Objekt ID
+Init-Wert
+Common
+Datenpunkt erzeugen
+createstate
+Zustandswert nehmen
+vom Objekt ID
+Objekt ID mit Dialog selektieren
+getstate
+ID auswählen
+Wert
+anerkannt
+Zeitstempel
+Letze Änderung
+Qualität
+Quelle
+Zustandswert nehmen
+Datenpunkt auswählen
+Objekt ID
+Objekt ID mit Dialog selektieren
+Attribut erhalten
+Attribut
+vom Objekt
+Erhalte Attribut des Objekts oder JSON nach Pfad, wie: 'attr1.attr'
+getattr
+Neue Zeile
+Platziert eine neue Zeile im Text
+Runde
+auf
+Nachkommastellen
+Rundet den Wert auf n Dezimalstellen
+Datum und Zeit
+Aktuelle Zeit
+Zeit
+ist
+Zeit
+Zeit vergleichen
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Aktuelle Zeit ist
+Vergleiche mit aktueller Zeit
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+kleiner als
+gleich oder kleiner als
+größer als
+gleich oder größer als
+gleich mit
+zwischen
+nicht zwischen
+und
+Aktuelle Zeit als
+JJJJ.MM.TT SS:mm:ss.sss
+Alle Instanzen
+Sende eine Meldung über Telegram
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Datum-Objekt
+Millisekunden
+Sekunden
+Minuten
+Minuten seit Tagseanfang
+Sekunden seit Tagesanfang
+Stunden
+Monatsdatum
+Monat als Nummer
+Monat als Text
+Monat als Kurztext
+Jahr, kurz
+Jahr, voll
+Wochentag als Text
+Wochentag als Kurztext
+Wochentag als Nummer
+anwenderformatiert
+JJJJ.MM.TT
+JJJJ/MM/TT
+JJ.MM.TT
+JJ/MM/TT
+TT.MM.JJJJ
+TT/MM/JJJJ
+TT.MM.JJ
+TT/MM/JJ
+MM/TT/JJJJ
+MM/TT/JJ
+TT.MM.
+TT/MM
+MM.TT
+MM/TT
+SS:mm
+SS:mm:ss
+SS:mm:ss.sss
+Aktuelle Zeit von
+Offset (Minuten)
+JJJJ.MM.TT SS:mm:ss.sss
+Sende eine Meldung über Telegram
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Timeouts
+Ausführen
+Verzögerung
+in
+ms
+Sek
+Min
+Ausführung verzögern
+settimeout
+stop
+Ausführungsverzögerung anhalten
+cleartimeout
+Ausführen
+Intervall
+alle
+ms
+Zyklische Ausführung
+setinterval
+stop zyklische Ausführung
+Ausführungsintervall anhalten
+clearinterval
+Trigger
+wurde geändert
+wurde aktualisiert
+ist größer als letztes
+ist gleich oder größer als letztes
+ist kleiner als letztes
+ist gleich oder kleiner als letztes
+ist gleich wie letztes
+ist wahr
+ist unwahr
+on---subscribe-on-changes-or-updates-of-some-state
+anerkannt ist
+egal
+Update
+Befehl
+Falls Objekt
+Bei Zustandsänderung
+Objekt ID
+Objekt ID
+falls Trigger auf
+falls Trigger auf
+falls Objekt
+Bei Zustandsänderung
+Nehme
+von Trigger
+Hole die Information über Ereignis
+Objekt ID
+Name
+Beschreibung
+Kanal ID
+Kanalname
+Geräte ID
+Gerätename
+Wert
+Zeitstempel
+Qualität
+Ursprung
+Befehl oder Aktualisierung
+letzte Änderung
+vorheriger Wert
+vorheriger Zeitstempel
+vorherige Quialität
+vorherige Ursprung
+vorherige Bestätigung
+vorherige letzte Änderung
+Dieser Block darf nur innerhalb "Falls Objekt" Block verwendet werden
+Zeitplan
+Ausführen nach Zeitplan
+schedule
+Astro
+Ausführen nach Astro-Ereignis
+, Versatz
+Minuten
+Sonnenaufgang
+Sonnenaufgang-Ende
+"Golden hour"-Ende
+Sonnenmittag
+"Golden hour"
+Sonnenuntergang-Anfang
+Sonnenuntergang
+Abenddämmerung
+Nautische Abenddämmerung
+Nacht
+Nachtende
+Nautische Morgendämmerung
+Morgendämmerung
+Nadir
+astro--function
+Zeitplan
+Zeitplan
+CRON Regel
+Ausführung verzögern
+settimeout
+stop
+Ausführungsverzögerung anhalten
+cleartimeout
+CRON
+CRON
+Erzeuge CRON Regel mit Dialog
+CRON
+CRON
+Erzeuge CRON Regel mit Dialog
+mit Sekunden
+Wochentag
+Monat
+Datum
+Stunde
+Minuten
+Sekunden
+Als Linie
+JS-Funktion mit Ergebnis
+Javascript-Funktion

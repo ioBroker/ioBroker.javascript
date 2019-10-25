@@ -1,0 +1,308 @@
+Actions
+IDs from Selector
+exec
+with results
+command
+Execute some command
+exec---execute-some-os-command-like-cp-file1-file2
+log level
+none
+info
+debug
+warning
+error
+request
+URL
+with results
+Request URL
+https://github.com/request/request
+log level
+none
+info
+debug
+warning
+error
+Convert
+toNumber
+Cast input to number
+toBoolean
+Cast input to boolean
+toString
+Cast input to string
+type of
+Returns type of input
+to Date/Time
+Cast input to date
+date/time
+to
+Cast input from date
+JSON to object
+Parse JSON string
+object to JSON
+Stringify object
+prettify
+Sendto
+message
+sendTo
+Text to speech
+sendto
+parameters
+command
+parameter
+Add parameter to sendTo object.
+No instances
+log level
+none
+info
+debug
+warning
+error
+System
+debug output
+Debug
+log---gives-out-the-message-into-log
+comment
+Enter comment to explain the code
+сontrol
+Control state
+setstate
+with
+with delay
+ms
+sec
+min
+, clear running
+toggle
+Toggle the state
+setstate
+with
+with delay
+in ms
+, clear running
+update
+Update state
+setstate
+with
+with delay
+in ms
+bind
+Bind two states with each other
+setstate
+Object
+only changes
+with
+write
+Control state
+сontrol
+update
+delay in ms
+value
+clear running
+create state
+jsState
+Object ID
+Init value
+Common
+create state
+createstate
+Get state value
+of Object ID
+Select object ID with dialog
+getstate
+select ID
+Value
+Acknowledge
+Timestamp
+Last change 
+Quality
+Source
+Get state value
+Select OID
+Object ID
+Select object ID with dialog
+Get attribute
+Attribute
+of Object
+Get attribute of object or JSON by path, like: 'attr1.attr'
+getattr
+New line
+Places new line in text
+Round
+to
+decimal places
+Rounds value to n decimal places
+Date and Time
+Actual time
+Custom time
+is
+time
+Compare time
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Actual time is
+Compare current time
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+less than
+equal to or less than
+greater than
+equal to or greater than
+equal to
+between
+not between
+and
+Actual time as
+YYYY.MM.DD hh:mm:ss.sss
+all instances
+Send message to telegram
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Date object
+milliseconds
+seconds
+minutes
+minutes in day
+seconds in day
+hours
+day of month
+month as number
+month as text
+month as short text
+short year
+full year
+week day text
+short week day
+week day as number
+custom format
+yyyy.mm.dd
+yyyy/mm/dd
+yy.mm.dd
+yy/mm/dd
+dd.mm.yyyy
+dd/mm/yyyy
+dd.mm.yy
+dd/mm/yy
+mm/dd/yyyy
+mm/dd/yy
+dd.mm.
+dd/mm
+mm.dd
+mm/dd
+hh:mm
+hh:mm:ss
+hh:mm:ss.sss
+Actual time of
+Offset (minutes)
+YYYY.MM.DD hh:mm:ss.sss
+Get actual time or 
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Timeouts
+Execution
+timeout
+in
+ms
+sec
+min
+Delay execution
+settimeout
+clear
+Clear delay execution
+cleartimeout
+Execution
+interval
+every
+ms
+Cyclic execution
+setinterval
+clear interval
+Clear interval execution
+clearinterval
+Trigger
+was changed
+was updated
+is greater than last
+is greater or equal than last
+is less than last
+is less or equal than last
+is same as last
+is true
+is false
+on---subscribe-on-changes-or-updates-of-some-state
+Ack is
+any
+update
+command
+Event: if objects
+If some state changed or updated
+object ID
+Object ID
+trigger on
+trigger on
+Event: if object
+If some state changed or updated
+get
+of trigger
+Get information about event
+object ID
+name
+description
+channel ID
+channel name
+device ID
+device name
+state value
+state timestamp
+state quality
+origin of value
+is command or update
+last change of state
+previous value
+previous timestamp
+previous quality
+previous origin
+previous command or update
+previous last change
+This block must be used only inside of event block
+schedule
+Do something on cron schedule
+schedule
+astro
+Do something on astrological event
+, offset
+minutes
+sunrise
+sunrise end
+golden hour end
+solar noon
+golden hour
+sunset start
+sunset
+dusk
+nautical dusk
+night
+night end
+nautical dawn
+dawn
+nadir
+astro--function
+schedule
+schedule
+cron rule
+Delay execution
+settimeout
+clear
+Clear delay execution
+cleartimeout
+CRON
+CRON
+Create CRON rule with dialog
+CRON
+CRON
+Create CRON rule with dialog
+with seconds
+day of week
+month
+date
+hour
+minutes
+seconds
+as line
+JS function with return
+Javascript function

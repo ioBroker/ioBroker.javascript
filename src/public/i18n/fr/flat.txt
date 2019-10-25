@@ -1,0 +1,308 @@
+Actes
+ID du sélecteur
+exec
+avec des résultats
+commander
+Exécuter une commande
+exec---execute-some-os-command-like-cp-file1-file2
+niveau de journalisation
+aucun
+Info
+déboguer
+Attention
+Erreur
+demande
+URL
+avec des résultats
+Demander une URL
+https://github.com/request/request
+niveau de journalisation
+aucun
+Info
+déboguer
+Attention
+Erreur
+Convertir
+toNumber
+Transmettre l'entrée au numéro
+toBooléen
+Transmettre l'entrée au booléen
+toString
+Transmettre l'entrée au numéro
+Type de
+Renvoie le type d'entrée
+à date/heure
+Diffuser l'entrée à ce jour
+date/heure
+à
+Transmettre l'entrée de la date
+JSON à objet
+Parse JSON chaîne
+objet à JSON
+Strinify objet
+enjoliver
+Envoyer à
+message
+envoyer à
+Texte pour parler
+envoyer à
+paramètres
+commander
+paramètre
+Ajouter un paramètre à l'objet sendTo.
+No instances
+niveau de journalisation
+aucun
+Info
+déboguer
+Attention
+Erreur
+Système
+sortie de débogage
+Déboguer
+log---gives-out-the-message-into-log
+commentaire
+Entrez un commentaire pour expliquer le code
+contrôle
+Etat de contrôle
+setstate
+avec
+avec du retard
+Mme
+seconde
+min
+, course libre
+basculer
+Basculer l'état
+setstate
+avec
+avec du retard
+en ms
+, course libre
+mettre à jour
+Mettre à jour
+setstate
+avec
+avec du retard
+en ms
+lier
+Liez deux états l'un à l'autre
+setstate
+d'objet
+seulement des changements
+avec
+écrire
+Etat de contrôle
+contrôle
+mettre à jour
+retarder en ms
+valeur
+clair course
+créer un état
+jsState
+ID de l'objet
+Valeur init
+Common
+créer un état
+créature
+Obtenir la valeur de l'état
+d'identifiant d'objet
+Sélectionnez l'ID d'objet avec la boîte de dialogue
+getstate
+sélectionnez ID
+Valeur
+Reconnaître
+Horodatage
+Dernier changement
+Qualité
+La source
+Obtenir la valeur de l'état
+Sélectionnez OID
+ID de l'objet
+Sélectionnez l'ID d'objet avec la boîte de dialogue
+Obtenir l'attribut
+Attribut
+d'objet
+Obtenir l'attribut d'objet ou JSON par chemin, comme: 'attr1.attr'
+getattr
+Nouvelle ligne
+Place une nouvelle ligne dans le texte
+Arrondir
+à
+décimales
+Arrondit la valeur à n décimales
+Date et l'heure
+Heure actuelle
+Temps personnalisé
+est
+temps
+Comparer le temps
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+L'heure actuelle est
+Comparer l'heure actuelle
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+moins que
+égal ou inférieur à
+plus grand que
+égal ou supérieur à
+égal à
+entre
+pas entre
+et
+Heure réelle sous
+YYYY.MM.DD hh: mm: ss.sss
+toutes les instances
+Envoyer un message au télégramme
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Objet de date
+millisecondes
+secondes
+minutes
+minutes dans la journée
+secondes dans la journée
+heures
+jour du mois
+mois en nombre
+mois comme texte
+mois comme texte court
+année courte
+année complète
+texte de la semaine
+jour de la semaine courte
+jour de la semaine en nombre
+format personnalisé
+aaaa.mm.jj
+aaaa/mm/jj
+yy.mm.dd
+aa/mm/jj
+jj.mm.aaaa
+jj/mm/aaaa
+jj.mm.aa
+jj/mm/aa
+mm/jj/aaaa
+mm/jj/aa
+jj.mm.
+jj/mm
+mm.dd
+mm/jj
+hh:mm
+hh:mm:ss
+hh:mm:ss.sss
+Heure réelle de
+Décalage (minutes)
+YYYY.MM.DD hh:mm:ss.sss
+Obtenez le temps réel ou
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Délais
+Exécution
+temps libre
+dans
+Mme
+seconde
+min
+Retarder l'exécution
+settimeout
+clair
+Effacer l'exécution du délai
+cleartimeout
+Exécution
+intervalle
+chaque
+Mme
+Exécution cyclique
+setinterval
+intervalle clair
+Effacer l'intervalle d'exécution
+clearinterval
+Déclencheur
+a été changé
+a été mis à jour
+est plus grand que le dernier
+est supérieur ou égal à la dernière
+est moins que la dernière
+est inférieur ou égal à la dernière
+est le même que le dernier
+est vrai
+c'est faux
+on---subscribe-on-changes-or-updates-of-some-state
+Ack est
+tout
+mettre à jour
+commander
+Evénement: si des objets
+Si un état a été modifié ou mis à jour
+ID d'objet
+ID de l'objet
+déclencher
+déclencher
+Evénement: si objet
+Si un état a été modifié ou mis à jour
+obtenir
+de déclenchement
+Obtenir des informations sur l'événement
+ID d'objet
+prénom
+la description
+Identifiant de la chaine
+nom du canal
+Reference de l'appareil
+nom de l'appareil
+valeur d'état
+horodatage de l'état
+qualité de l'état
+origine de la valeur
+est la commande ou la mise à jour
+dernier changement d'état
+valeur précédente
+Horodatage précédent
+qualité précédente
+origine précédente
+commande précédente ou mise à jour
+précédent dernier changement
+Ce bloc doit être utilisé uniquement à l'intérieur du bloc d'événements
+programme
+Faire quelque chose sur le calendrier cron
+programme
+astro
+Faire quelque chose sur l'événement astrologique
+, décalage
+minutes
+lever du soleil
+fin du lever du soleil
+fin de l'heure d'or
+midi solaire
+heure d'or
+coucher de soleil début
+le coucher du soleil
+crépuscule
+crépuscule nautique
+nuit
+fin de nuit
+aube nautique
+Aube
+nadir
+astro--function
+programme
+programme
+règle cron
+Retarder l'exécution
+settimeout
+clair
+Effacer l'exécution du délai
+cleartimeout
+CRON
+CRON
+Créer une règle CRON avec dialogue
+CRON
+CRON
+Créer une règle CRON avec dialogue
+avec secondes
+jour de la semaine
+mois
+rendez-vous amoureux
+heure
+minutes
+secondes
+en ligne
+JS function with return
+Javascript function
