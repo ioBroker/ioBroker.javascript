@@ -315,7 +315,7 @@ Blockly.JavaScript['procedures_defcustomreturn'] = function(block) {
         Blockly.Variables.NAME_TYPE);
     }
 
-    var script = atob(block.getFieldValue('SCRIPT'));
+    var script = Blockly.b64DecodeUnicode(block.getFieldValue('SCRIPT') || '');
     var lines = script.split('\n');
     for (var l = 0; l < lines.length; l++) {
         lines[l] = '    ' + lines[l];

@@ -163,7 +163,7 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
 
         nameField.setSpellcheck(false);
         this.appendDummyInput()
-            // .appendField(Blockly.Msg['PROCEDURES_DEFRETURN_TITLE'])
+        // .appendField(Blockly.Msg['PROCEDURES_DEFRETURN_TITLE'])
             .appendField(Blockly.Words['procedures_defcustomreturn_name'][systemLang])
             .appendField(nameField, 'NAME')
             .appendField('', 'PARAMS');
@@ -305,17 +305,17 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
 };
 
 Blockly.JavaScript['procedures_defcustomreturn'] = function(block) {
-     // Define a procedure with a return value.
+    // Define a procedure with a return value.
     var funcName = Blockly.JavaScript.variableDB_.getName(
         block.getFieldValue('NAME'), Blockly.Procedures.NAME_TYPE);
 
     var args = [];
     for (var i = 0; i < block.arguments_.length; i++) {
-      args[i] = Blockly.JavaScript.variableDB_.getName(block.arguments_[i],
-        Blockly.Variables.NAME_TYPE);
+        args[i] = Blockly.JavaScript.variableDB_.getName(block.arguments_[i],
+            Blockly.Variables.NAME_TYPE);
     }
 
-    var script = atob(block.getFieldValue('SCRIPT'));
+    var script = Blockly.b64DecodeUnicode(block.getFieldValue('SCRIPT') || '');
     var lines = script.split('\n');
     for (var l = 0; l < lines.length; l++) {
         lines[l] = '    ' + lines[l];
@@ -354,7 +354,7 @@ Blockly.Blocks['procedures_defcustomnoreturn'] = {
             Blockly.Procedures.rename);
         nameField.setSpellcheck(false);
         this.appendDummyInput()
-            // .appendField(Blockly.Msg['PROCEDURES_DEFNORETURN_TITLE'])
+        // .appendField(Blockly.Msg['PROCEDURES_DEFNORETURN_TITLE'])
             .appendField(Blockly.Words['procedures_defcustomnoreturn_name'][systemLang])
             .appendField(nameField, 'NAME')
             .appendField('', 'PARAMS');

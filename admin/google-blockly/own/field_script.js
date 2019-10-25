@@ -32,6 +32,18 @@ goog.require('goog.asserts');
 goog.require('goog.dom');
 goog.require('goog.userAgent');
 
+Blockly.b64EncodeUnicode = function(text) {
+    return btoa(encodeURIComponent(text).replace(/%([0-9A-F]{2})/g, function(match, p) {
+        return String.fromCharCode(parseInt(p, 16))
+    }));
+};
+
+// Decoding base64 ⇢ UTF8
+Blockly.b64DecodeUnicode = function(text) {
+    return decodeURIComponent(Array.prototype.map.call(atob(text), function(s) {
+        return '%' + ('00' + s.charCodeAt(0).toString(16)).slice(-2)
+    }).join(''));
+};
 
 /**
  * Class for an editable text field.
@@ -81,7 +93,7 @@ Blockly.FieldScript.prototype.setValue = function (text) {
     if (text === null) {
         return;  // No change if null.
     }
-    
+
     Blockly.Field.prototype.setValue.call(this, text);
 };
 
@@ -105,8 +117,8 @@ Blockly.FieldScript.prototype.showEditor_ = function(opt_quietInput) {
         isReturn = options[2];
     }
 
-    window.main.showScriptDialog(atob(base64 || ''), args, isReturn, function (newScript) {
-        if (newScript !== undefined && newScript !== null) that.setValue(btoa(newScript));
+    window.main.showScriptDialog(Blockly.b64DecodeUnicode(base64 || ''), args, isReturn, function (newScript) {
+        newScript !== undefined && newScript !== null && that.setValue(Blockly.b64EncodeUnicode(newScript));
     });
 };
 
@@ -126,7 +138,7 @@ Blockly.FieldScript.prototype.render_ = function() {
             this.textElement_.setAttribute('x', 0);
         }
 
-  //      this.size_.height = Blockly.BlockSvg.MIN_BLOCK_Y;
+        //      this.size_.height = Blockly.BlockSvg.MIN_BLOCK_Y;
 //        this.size_.width = Blockly.Field.getCachedWidth(this.textElement_);
     } else {
         width = 0;
