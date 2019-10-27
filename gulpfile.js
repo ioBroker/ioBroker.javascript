@@ -187,6 +187,8 @@ function copyFiles() {
                 'src/build/**/*',
                 '!src/build/index.html',
                 '!src/build/static/js/main.*.chunk.js',
+                '!src/build/i18n/**/*',
+                '!src/build/i18n',
                 'admin-config/*'
             ])
                 .pipe(gulp.dest('admin/')),

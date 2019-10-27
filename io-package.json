@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.3.1",
+        "version": "4.3.2",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.3.2": {
+                "en": "Fixed syntax help for Node.js runtime methods (#418)\nTarget ES 2017 in TypeScript (#419)\nAutomatically load declarations for 3rd party modules (#422)\nFunctions with non latin text are working now",
+                "de": "Syntaxhilfe für Node.js Laufzeitmethoden behoben (# 418)\nTarget ES 2017 in TypeScript (Nr. 419)\nDeklarationen für Module von Drittanbietern automatisch laden (# 422)\nFunktionen mit nicht lateinischem Text funktionieren jetzt",
+                "ru": "Исправлена синтаксическая справка для методов выполнения Node.js (# 418)\nTarget ES 2017 в TypeScript (# 419)\nАвтоматически загружать объявления для сторонних модулей (# 422)\nФункции с нелатинским текстом теперь работают",
+                "pt": "Correção da ajuda de sintaxe para os métodos de tempo de execução do Node.js. (# 418)\nDestino ES 2017 em TypeScript (# 419)\nCarregar declarações automaticamente para módulos de terceiros (# 422)\nFunções com texto não latino estão funcionando agora",
+                "nl": "Syntax-help voor runtime-methoden van Node.js opgelost (# 418)\nTarget ES 2017 in TypeScript (# 419)\nLaad automatisch declaraties voor modules van derden (# 422)\nFuncties met niet-Latijnse tekst werken nu",
+                "fr": "Aide sur la syntaxe fixe pour les méthodes d'exécution Node.js (# 418)\nTarget ES 2017 en TypeScript (# 419)\nCharger automatiquement les déclarations pour les modules tiers (# 422)\nLes fonctions avec du texte non latin fonctionnent maintenant",
+                "it": "Guida alla sintassi corretta per i metodi di runtime Node.js (# 418)\nTarget ES 2017 in TypeScript (# 419)\nCarica automaticamente le dichiarazioni per i moduli di terze parti (# 422)\nLe funzioni con testo non latino ora funzionano",
+                "es": "Ayuda de sintaxis fija para los métodos de tiempo de ejecución de Node.js (# 418)\nTarget ES 2017 en TypeScript (# 419)\nCargar automáticamente declaraciones para módulos de terceros (# 422)\nLas funciones con texto no latino están funcionando ahora",
+                "pl": "Naprawiono pomoc dotyczącą składni metod środowiska wykonawczego Node.js (# 418)\nTarget ES 2017 w TypeScript (# 419)\nAutomatycznie ładuj deklaracje dla modułów zewnętrznych (# 422)\nDziałają teraz funkcje z tekstem innym niż łaciński",
+                "zh-cn": "修复了Node.js运行时方法的语法帮助（＃418）\n使用TypeScript的Target ES 2017（＃419）\n自动加载第三方模块的声明（＃422）\n非拉丁文字功能现在可以使用"
+            },
             "4.3.1": {
                 "en": "Corrected login with non-admin user\nCorrected log\nSome GUI fixes done",
                 "de": "Korrigierte Anmeldung mit Nicht-Administrator-Benutzer\nKorrigiertes Protokoll\nEinige GUI-Korrekturen wurden durchgeführt",

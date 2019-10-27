@@ -138,7 +138,7 @@ Blockly.FieldScript.prototype.render_ = function() {
             this.textElement_.setAttribute('x', 0);
         }
 
-        //      this.size_.height = Blockly.BlockSvg.MIN_BLOCK_Y;
+  //      this.size_.height = Blockly.BlockSvg.MIN_BLOCK_Y;
 //        this.size_.width = Blockly.Field.getCachedWidth(this.textElement_);
     } else {
         width = 0;
