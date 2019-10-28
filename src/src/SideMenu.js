@@ -323,7 +323,6 @@ class SideDrawer extends React.Component {
             expertMode: this.props.expertMode,
             searchText: '',
             width: this.props.width || 300,
-            filterMenuOpened: false,
             typeFilter: window.localStorage ? window.localStorage.getItem('SideMenu.typeFilter') || '' : '', // blockly, js, ts
             statusFilter: window.localStorage ? window.localStorage.getItem('SideMenu.statusFilter') || '' : '',
             runningInstances: this.props.runningInstances || {},
@@ -418,11 +417,11 @@ class SideDrawer extends React.Component {
         }
     }
 
-    static filterListStatic(isDisable, listItems, noUpdate, searchMode, searchText, objects) {
+    static filterListStatic(isSearchEnabled, listItems, searchMode, searchText, objects) {
         listItems = JSON.parse(JSON.stringify(listItems));
         let changed = false;
         let newState = {listItems};
-        if (isDisable !== false && searchMode && searchText) {
+        if (isSearchEnabled !== false && searchMode && searchText) {
             const text = searchText.toLowerCase();
             listItems.forEach(item => {
                 const id = item.title.toLowerCase();
@@ -472,35 +471,29 @@ class SideDrawer extends React.Component {
                     changed = true;
                 }
             });
-            if (isDisable === false) {
+            if (isSearchEnabled === false) {
                 newState.searchText = '';
                 newState.searchMode = false;
                 changed = true;
             }
         }
 
-        if (!noUpdate && changed) {
-            return newState;
-        } else {
-            return null;
-        }
+        return changed ? newState : null;
     }
 
-    filterList(isDisable, listItems, cb) {
-        const noUpdate = !!listItems;
+    filterList(isSearchEnabled, cb) {
         const newState = SideDrawer.filterListStatic(
-            isDisable,
-            listItems || this.state.listItems,
-            noUpdate,
+            isSearchEnabled,
+            this.state.listItems,
             this.state.searchMode,
             this.state.searchText,
             this.props.objects
         );
 
-        if (!noUpdate && newState) {
+        if (newState) {
             this.setState(newState, () => cb && cb());
-        } else {
-            cb && cb();
+        } else if (cb) {
+            cb();
         }
     }
 
@@ -536,18 +529,18 @@ class SideDrawer extends React.Component {
         }
         if (state.scriptsHash !== props.scriptsHash && props.scripts) {
             const listItems = prepareList(props.scripts || {});
+
+            newState.listItems = listItems;
+
             if (state.searchText) {
-                const nState = SideDrawer.filterListStatic(true, listItems, true, state.searchMode, state.searchText, props.objects);
-                if (nState) {
-                    Object.assign(newState, nState);
-                }
+                const nState = SideDrawer.filterListStatic(true, listItems, state.searchMode, state.searchText, props.objects);
+                nState && Object.assign(newState, nState);
             }
 
             const isAllZeroInstances = SideDrawer.getIsAllZeroInstancesStatic(listItems, props.instances || []);
 
             const newExp = SideDrawer.ensureSelectedIsVisibleStatic(state.selected, state.expanded, state.listItems);
 
-            newState.listItems = listItems;
             newState.isAllZeroInstances = isAllZeroInstances;
             if (newExp) {
                 newState.expanded = newExp;
@@ -1002,7 +995,7 @@ class SideDrawer extends React.Component {
     }
 
     onCloseMenu(cb) {
-        this.setState({menuOpened: false, menuAnchorEl: null, filterMenuOpened: false, menuAnchorFilterEl: null}, cb);
+        this.setState({menuOpened: false, menuAnchorEl: null, menuAnchorFilterEl: null}, cb);
     }
 
     getFilterBadge() {
@@ -1040,7 +1033,7 @@ class SideDrawer extends React.Component {
                         return;
                     }
 
-                    this.setState({menuOpened: false, menuAnchorEl: null, filterMenuOpened: false}, () =>
+                    this.setState({menuOpened: false, menuAnchorEl: null}, () =>
                         this.onDelete(this.state.selected).then(() => {}));
                 }}><IconDelete className={this.props.classes.iconDropdownMenu}  style={{color: 'red'}}/>{I18n.t('Delete')}
             </MenuItem>) : null}
@@ -1082,13 +1075,6 @@ class SideDrawer extends React.Component {
                                                }}>
                 <IconCopy className={this.props.classes.iconDropdownMenu} />{I18n.t('Copy script')}
             </MenuItem>)}
-            {/*<MenuItem key="filter"
-                       onClick={event => {
-                           this.setState({filterMenuOpened: !this.state.filterMenuOpened, menuAnchorFilterEl: this.state.filterMenuOpened ? null : event.currentTarget.getElementsByClassName(this.props.classes.iconOnTheRight)[0]})
-                       }}>
-                <IconFilter className={this.props.classes.iconDropdownMenu} />{I18n.t('Filter by')}
-                <IconExpandRight className={this.props.classes.iconOnTheRight} />
-            </MenuItem>*/}
         </Menu>);
     }
 
@@ -1108,6 +1094,7 @@ class SideDrawer extends React.Component {
                     this.setState({searchText: e.target.value});
                     this.filterTimer && clearTimeout(this.filterTimer);
                     this.filterTimer = setTimeout(() => {
+                        this.filterTimer = null;
                         this.filterList(true);
                         this.props.onSearch && this.props.onSearch(this.state.searchText);
                     }, 400);
@@ -1120,7 +1107,7 @@ class SideDrawer extends React.Component {
                 title={I18n.t('End search mode')}
                 onClick={e => {
                     e.stopPropagation();
-                    this.filterList(false, null, () => this.props.onSearch && this.props.onSearch(this.state.searchText));
+                    this.filterList(false, () => this.props.onSearch && this.props.onSearch(this.state.searchText));
                 }}
             ><IconClose /></IconButton>));
             this.state.searchText && result.push((<IconButton
@@ -1132,7 +1119,7 @@ class SideDrawer extends React.Component {
                 onClick={e => {
                     e.stopPropagation();
                     this.setState({searchText: ''}, () => {
-                        this.filterList(true, '');
+                        this.filterList(true);
                         this.props.onSearch && this.props.onSearch(this.state.searchText);
                     });
                 }}
@@ -1166,10 +1153,6 @@ class SideDrawer extends React.Component {
 
                 // Menu
                 result.push(this.getMainMenu(children, selectedItem));
-
-                if (this.state.filterMenuOpened) {
-                    result.push(this.getFilterMenu());
-                }
 
                 // New Script
                 result.push((<IconButton

@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.3.2",
+        "version": "4.3.3",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.3.3": {
+                "en": "Search in scripts was corrected",
+                "de": "Suche in Skripten wurde korrigiert",
+                "ru": "Поиск в скриптах был исправлен",
+                "pt": "A pesquisa nos scripts foi corrigida",
+                "nl": "Zoeken in scripts is gecorrigeerd",
+                "fr": "La recherche dans les scripts a été corrigée",
+                "it": "La ricerca negli script è stata corretta",
+                "es": "Se corrigió la búsqueda en guiones",
+                "pl": "Wyszukiwanie w skryptach zostało poprawione",
+                "zh-cn": "脚本搜索已更正"
+            },
             "4.3.2": {
                 "en": "Fixed syntax help for Node.js runtime methods (#418)\nTarget ES 2017 in TypeScript (#419)\nAutomatically load declarations for 3rd party modules (#422)\nFunctions with non latin text are working now",
                 "de": "Syntaxhilfe für Node.js Laufzeitmethoden behoben (# 418)\nTarget ES 2017 in TypeScript (Nr. 419)\nDeklarationen für Module von Drittanbietern automatisch laden (# 422)\nFunktionen mit nicht lateinischem Text funktionieren jetzt",
@@ -81,30 +93,6 @@
                 "es": "Optimización: no hagas iteraciones inútiles\nPermitir realizar solicitudes a sitios con certificados autofirmados",
                 "pl": "Optymalizacja: nie rób bezużytecznych iteracji\nZezwól na wysyłanie żądań do witryn z samopodpisanymi certyfikatami",
                 "zh-cn": "优化：不要进行无用的迭代\n允许向具有自签名/签名证书的站点发出请求"
-            },
-            "4.1.16": {
-                "en": "Fixed the errors in editor",
-                "de": "Fehler im Editor behoben",
-                "ru": "Исправлены ошибки в редакторе",
-                "pt": "Corrigidos erros no editor",
-                "nl": "De fouten in de editor zijn opgelost",
-                "fr": "Correction des erreurs dans l'éditeur",
-                "it": "Risolti gli errori nell'editor",
-                "es": "Se corrigieron los errores en el editor",
-                "pl": "Naprawiono błędy w edytorze",
-                "zh-cn": "修复了编辑器中的错误"
-            },
-            "4.1.15": {
-                "en": "Added the polish language to CRON\nFixed the import of scripts",
-                "de": "Die polnische Sprache wurde zu CRON hinzugefügt\nDer Import von Skripten wurde behoben",
-                "ru": "Добавлен польский язык в CRON\nИсправлен импорт скриптов",
-                "pt": "Adicionada a linguagem polonesa ao CRON\nCorrigida a importação de scripts",
-                "nl": "De Poolse taal toegevoegd aan CRON\nHet importeren van scripts is opgelost",
-                "fr": "Ajout du polonais à CRON\nCorrection de l'importation de scripts",
-                "it": "Aggiunta la lingua polacca a CRON\nRisolto il problema con l'importazione di script",
-                "es": "Se agregó el idioma polaco a CRON\nSe corrigió la importación de scripts.",
-                "pl": "Dodano język polski do CRON\nNaprawiono import skryptów",
-                "zh-cn": "为CRON添加了抛光语言\n修复了脚本的导入问题"
             },
             "3.7.0": {
                 "en": "Used VM2 as sandbox. The script errors will be caught.\nrefactoring: split into many modules",
