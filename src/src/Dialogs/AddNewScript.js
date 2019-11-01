@@ -43,7 +43,7 @@ class DialogAddNew extends React.Component {
     openHtml(html) {
         const lang = I18n.getLanguage();
         if (lang === 'de' || lang === 'ru') {
-            html = html.replace(/\/en\//, lang);
+            html = html.replace(/\/en\//, '/' + lang '/');
         }
         const win = window.open(html, '_blank');
         win.focus();
