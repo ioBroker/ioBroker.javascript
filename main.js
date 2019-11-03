@@ -168,11 +168,21 @@ function loadTypeScriptDeclarations() {
         'node', // this provides auto completion for most builtins
         'request', // preloaded by the adapter
     ];
-    // Also include user-selected libraries
-    if (adapter.config && typeof adapter.config.libraries === 'string') {
-        const libraries = adapter.config.libraries.split(/[,;\s]+/).map(s => s.trim());
-        for (const lib of libraries) {
-            if (packages.indexOf(lib) === -1) packages.push(lib);
+    // Also include user-selected libraries (but only those that are also installed)
+    if (
+        adapter.config
+        && typeof adapter.config.libraries === 'string'
+        && typeof adapter.config.libraryTypings === 'string'
+    ) {
+        const installedLibs = adapter.config.libraries.split(/[,;\s]+/).map(s => s.trim());
+        const wantsTypings = adapter.config.libraryTypings.split(/[,;\s]+/).map(s => s.trim());
+        for (const lib of installedLibs) {
+            if (
+                wantsTypings.indexOf(lib) > -1
+                && packages.indexOf(lib) === -1
+            ) {
+                packages.push(lib);
+            }
         }
     }
     for (const pkg of packages) {
