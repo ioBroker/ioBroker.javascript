@@ -160,7 +160,7 @@
         "enableSendToHost": false,
         "enableExec": false,
         "libraries": "",
-        "library-typings": "",
+        "libraryTypings": "",
         "subscribe": false,
         "useSystemGPS": true,
         "mirrorPath": "",
