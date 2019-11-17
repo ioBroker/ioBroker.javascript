@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.5.0",
-    "@iobroker/adapter-react": "^0.2.18",
+    "@iobroker/adapter-react": "^0.2.19",
     "classnames": "^2.2.6",
     "cronstrue": "^1.83.0",
     "eslint": "^6.1.0",
