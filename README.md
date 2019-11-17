@@ -32,6 +32,10 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.3.4 (2019-10-28)
+* (bluefox) Values are showed in select ID dialog
+* (bluefox) Allow select with $ the schedule objects
+
 ### 4.3.3 (2019-10-28)
 * (bluefox) Search in scripts was corrected
 
