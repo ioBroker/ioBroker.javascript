@@ -160,7 +160,7 @@ class DialogImportFile extends React.Component {
                                 rejectClassName={classes.dropzoneRejected}
                                 onDrop={files => this.handleDropFile(files)}
                                 multiple={false}
-                                accept='application/x-zip-compressed'
+                                accept='application/zip,application/x-zip-compressed'
                                 className={className}>
                         {
                             ({ getRootProps, getInputProps, isDragActive, isDragReject}) => {
