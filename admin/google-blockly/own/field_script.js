@@ -40,10 +40,16 @@ Blockly.b64EncodeUnicode = function(text) {
 
 // Decoding base64 ⇢ UTF8
 Blockly.b64DecodeUnicode = function(text) {
-    return decodeURIComponent(Array.prototype.map.call(atob(text), function(s) {
-        return '%' + ('00' + s.charCodeAt(0).toString(16)).slice(-2)
-    }).join(''));
+    try {
+        return decodeURIComponent(Array.prototype.map.call(atob(text), function(s) {
+            return '%' + ('00' + s.charCodeAt(0).toString(16)).slice(-2)
+        }).join(''));
+    } catch (e) {
+        // old style
+        return atob(text || '');
+    }
 };
+
 
 /**
  * Class for an editable text field.
