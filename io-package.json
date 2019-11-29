@@ -164,7 +164,17 @@
         "subscribe": false,
         "useSystemGPS": true,
         "mirrorPath": "",
-        "allowSelfSignedCerts": false
+        "allowSelfSignedCerts": false,
+
+        "sunriseEvent": "nightEnd",
+        "sunriseOffset": 0,
+        "sunriseLimitStart": "06:00",
+        "sunriseLimitEnd": "12:00",
+
+        "sunsetEvent": "dusk",
+        "sunsetOffset": 0,
+        "sunsetLimitStart": "18:00",
+        "sunsetLimitEnd": "23:00"
     },
     "objects": [
         {
@@ -199,6 +209,42 @@
             },
             "type": "channel",
             "native": {}
+        },
+        {
+            "_id": "variables",
+            "common": {
+                "name": "Useful variables"
+            },
+            "type": "channel",
+            "native": {}
+        },
+        {
+            "_id": "variables.isDayTime",
+            "common": {
+                "name": "Is day time",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "role": "indicator"
+            },
+            "type": "state",
+            "native": {}
+        },
+        {
+            "_id": "variables.dayTime",
+            "common": {
+                "name": "Actual day time",
+                "desc": "Like 13:34, you can set native.format12 to true to have 1:32",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "role": "state"
+            },
+            "type": "state",
+            "native": {
+                "format12": false,
+                "leadingZeros": true
+            }
         }
     ]
 }

@@ -201,6 +201,30 @@
             });
         }
 
+        if (settings.sunriseEvent === undefined) {
+            settings.sunriseEvent = "nightEnd";
+        }
+        if (settings.sunriseOffset === undefined) {
+            settings.sunriseOffset = 0;
+        }
+        if (settings.sunriseLimitStart === undefined) {
+            settings.sunriseLimitStart = '06:00';
+        }
+        if (settings.sunriseLimitEnd === undefined) {
+            settings.sunriseLimitEnd = '12:00';
+        }
+        if (settings.sunsetEvent === undefined) {
+            settings.sunsetEvent = 'dusk';
+        }
+        if (settings.sunsetOffset === undefined) {
+            settings.sunsetOffset = 0;
+        }
+        if (settings.sunsetLimitStart === undefined) {
+            settings.sunsetLimitStart = '18:00';
+        }
+        if (settings.sunsetLimitEnd === undefined) {
+            settings.sunsetLimitEnd = '23:00';
+        }
         if (settings.useSystemGPS === undefined) {
             settings.useSystemGPS = (systemConfig.common.longitude && systemConfig.common.latitude);
         }
@@ -413,6 +437,65 @@
                     <div class="row local-coords">
                         <div class="col s12">
                             <p class="translate">Help</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h6 class="translate">Day time settings</h6>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <div class="input-field col s4">
+                                <select id="sunriseEvent" class="value filled-in" >
+                                    <option value="sunrise" class="translate">sch_astro_sunrise</option>
+                                    <option value="sunriseEnd" class="translate">sch_astro_sunriseEnd</option>
+                                    <option value="nightEnd" class="translate">sch_astro_nightEnd</option>
+                                    <option value="nauticalDawn" class="translate">sch_astro_nauticalDawn</option>
+                                    <option value="dawn" class="translate">sch_astro_dawn</option>
+                                </select>
+                                <span for="sunriseEvent" class="translate">Used as start of the daytime</span>
+                            </div>
+                            <div class="input-field col s2">
+                                <input id="sunriseOffset" type="number" class="value" />
+                                <label for="sunriseOffset" class="translate">Offset</label>
+                                <span>± </span><span class="translate">in minutes</span>
+                            </div>
+                            <div class="input-field col s3">
+                                <input id="sunriseLimitStart" type="text" class="value" />
+                                <label for="sunriseLimitStart" class="translate">But not earlier then</label>
+                            </div>
+                            <div class="input-field col s3">
+                                <input id="sunriseLimitEnd" type="text" class="value" />
+                                <label for="sunriseLimitEnd" class="translate">And not later then</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <div class="input-field col s4">
+                                <select id="sunsetEvent" class="value filled-in">
+                                    <option value="sunset" class="translate">sch_astro_sunset</option>
+                                    <option value="sunsetStart" class="translate">sch_astro_sunsetStart</option>
+                                    <option value="goldenHour" class="translate">sch_astro_goldenHour</option>
+                                    <option value="goldenHourEnd" class="translate">sch_astro_goldenHourEnd</option>
+                                    <option value="dusk" class="translate">sch_astro_dusk</option>
+                                    <option value="nauticalDusk" class="translate">sch_astro_nauticalDusk</option>
+                                    <option value="night" class="translate">sch_astro_night</option>
+                                </select>
+                                <span for="sunsetEvent" class="translate">Used as end of the daytime</span>
+                            </div>
+                            <div class="input-field col s2">
+                                <input id="sunsetOffset" type="number" class="value" />
+                                <label for="sunsetOffset" class="translate">Offset</label>
+                                <span>± </span><span class="translate">in minutes</span>
+                            </div>
+                            <div class="input-field col s3">
+                                <input id="sunsetLimitStart" type="text" class="value" />
+                                <label for="sunsetLimitStart" class="translate">But not earlier then</label>
+                            </div>
+                            <div class="input-field col s3">
+                                <input id="sunsetLimitEnd" type="text" class="value" />
+                                <label for="sunsetLimitEnd" class="translate">And not later then</label>
+                            </div>
                         </div>
                     </div>
                 </div>

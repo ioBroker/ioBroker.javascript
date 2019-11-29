@@ -2,327 +2,351 @@
 
 <head>
     <!-- Materialze style -->
-<link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
-<link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
+    <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
+    <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
 
-<script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
-<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 
-<script type="text/javascript" src="../../js/translate.js"></script>
-<script type="text/javascript" src="../../lib/js/materialize.js"></script>
-<script type="text/javascript" src="../../js/adapter-settings.js"></script>
-<script type="text/javascript" src="adminWords.js"></script>
-<!-- you have to define 2 functions in the global scope: -->
-<script type="text/javascript">
-    var gSettings;
-    var mapTimer;
-    var mapLoaded;
-    var useOpenLayers = true;
-    var OSM = null;
+    <script type="text/javascript" src="../../js/translate.js"></script>
+    <script type="text/javascript" src="../../lib/js/materialize.js"></script>
+    <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+    <script type="text/javascript" src="adminWords.js"></script>
+    <!-- you have to define 2 functions in the global scope: -->
+    <script type="text/javascript">
+        var gSettings;
+        var mapTimer;
+        var mapLoaded;
+        var useOpenLayers = true;
+        var OSM = null;
 
-    function setValue(id, value, onChange) {
-        var $value = $('#' + id + '.value');
-        if ($value.attr('type') === 'checkbox') {
-            $value.prop('checked', value).on('change', function() {
-                var id = $(this).attr('id');
-                if (id === 'useSystemGPS') {
-                    showHideSettings();
-                    updateMap();
-                }
-                gSettings[id] = $(this).prop('checked');
-                onChange();
-            });
-        } else {
-            $value.val(value).on('change', function() {
-                var id = $(this).attr('id');
-                gSettings[id] = $(this).val();
-                if (id === 'longitude' || id === 'latitude') {
-                    updateMap();
-                }
-                onChange();
-            }).on('keyup', function() {
-                $(this).trigger('change');
-            });
-        }
-    }
-
-    function initMap() {
-        mapLoaded = true;
-        updateMap(true);
-    }
-
-    function positionReady(position) {
-        $('#latitude').val(position.coords.latitude.toFixed(8));
-        $('#longitude').val(position.coords.longitude.toFixed(8)).trigger('change');
-        M.updateTextFields();
-        updateMap();
-    }
-
-    function updateMap(immediately) {
-        var lng;
-        var lat;
-        if ($('#useSystemGPS').prop('checked')) {
-            if (systemConfig && systemConfig.common && (systemConfig.common.longitude || systemConfig.common.latitude)) {
-                lng = systemConfig.common.longitude;
-                lat = systemConfig.common.latitude;
-            }
-        } else {
-            lng = $('#longitude').val();
-            lat = $('#latitude').val();
-            if (!lng || !lat) {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(positionReady);
-                }
-            }
-        }
-        lng = lng || 0;
-        lat = lat || 0;
-
-        if (useOpenLayers) {
-            // OPEN STREET MAPS
-            if (typeof ol === 'undefined') {
-                return setTimeout(updateMap, 200);
-            }
-
-            var point = ol.proj.fromLonLat([parseFloat(lng), parseFloat(lat)]);
-            if (!OSM) {
-                OSM = {};
-                OSM.markerSource = new ol.source.Vector();
-
-                OSM.markerStyle = new ol.style.Style({
-                    image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-                        anchor: [0.5, 49],
-                        anchorXUnits: 'fraction',
-                        anchorYUnits: 'pixels',
-                        opacity: 0.75,
-                        src: '../../img/pin.png'
-                    }))
-                });
-
-                OSM.oMap = new ol.Map({
-                    target: 'map',
-                    layers: [
-                        new ol.layer.Tile({source: new ol.source.OSM()}),
-                        new ol.layer.Vector({
-                            source: OSM.markerSource,
-                            style:  OSM.markerStyle,
-                        })
-                    ],
-                    view: new ol.View({center: point, zoom: 17})
-                });
-
-                OSM.marker = new ol.Feature({
-                    geometry: new ol.geom.Point(point),
-                    name:  _('Your home')
-                });
-
-                OSM.markerSource.addFeature(OSM.marker);
-
-                OSM.oMap.on('singleclick', function (event){
-                    if (!$('#useSystemGPS').prop('checked')) {
-                        var lonLat = ol.proj.toLonLat(event.coordinate);
-                        $('#longitude').val(Math.round(lonLat[0] * 1000000) / 1000000);
-                        $('#latitude').val(Math.round(lonLat[1] * 1000000) / 1000000).trigger('change');
-                        M.updateTextFields();
+        function setValue(id, value, onChange) {
+            var $value = $('#' + id + '.value');
+            if ($value.attr('type') === 'checkbox') {
+                $value.prop('checked', value).on('change', function() {
+                    var id = $(this).attr('id');
+                    if (id === 'useSystemGPS') {
+                        showHideSettings();
+                        updateMap();
                     }
+                    gSettings[id] = $(this).prop('checked');
+                    onChange();
                 });
-
-            }
-            var zoom = OSM.oMap.getView().getZoom();
-            OSM.marker.setGeometry(new ol.geom.Point(point));
-            OSM.oMap.setView(new ol.View({center: point, zoom: zoom}));
-        } else {
-            //  GOOGLE MAPS
-            if (!mapLoaded) return;
-            if (!immediately) {
-                clearTimeout(mapTimer);
-                mapTimer = setTimeout(function () {
-                    updateMap(true);
-                }, 1000);
-                return;
-            }
-            if (mapTimer) {
-                clearTimeout(mapTimer);
-                mapTimer = null;
-            }
-
-            if (lat || lng) {
-                var map = new google.maps.Map(document.getElementById('map'), {
-                    zoom: 14,
-                    center: {lat: parseFloat(lat), lng: parseFloat(lng)}
-                });
-
-                var marker = new google.maps.Marker({
-                    position: {lat: parseFloat(lat), lng: parseFloat(lng)},
-                    map: map,
-                    title: _('Your home')
-                });
-            }
-        }
-    }
-
-    function showHideSettings() {
-        if ($('#useSystemGPS').prop('checked')) {
-            $('.local-coords').hide();
-        } else {
-            $('.local-coords').show();
-        }
-    }
-
-    function load(settings, onChange) {
-        if (!useOpenLayers) {
-            var key1 = 'AIzaSyCIrBRZfZAE';
-            var key2 = '_0C1OplAUy7OXhiWLoZc3eY';
-            var key = key1 + key2;
-
-            // load google API
-            $.ajax({
-                // please do not miss use this api key!
-                url: 'https://maps.googleapis.com/maps/api/js?key=' + key + '&signed_in=true&callback=initMap',
-                dataType: 'script',
-                cache: true
-            });
-        } else {
-            mapLoaded = true;
-            // load OSM
-            $.ajax({
-                url: '../../lib/js/ol.js',
-                dataType: 'script',
-                cache: true
-            }).done(function() {
-                //setTimeout(updateMap, 500);
-            });
-
-            $.ajax({
-                url: '../../lib/css/ol.css',
-                success: function(data){
-                    $('head').append('<style>' + data + '</style>');
-                }
-            });
-        }
-
-        if (settings.useSystemGPS === undefined) {
-            settings.useSystemGPS = (systemConfig.common.longitude && systemConfig.common.latitude);
-        }
-        if (settings.enableSendToHost === undefined) {
-            settings.enableSendToHost = false;
-        }
-        if (settings.enableExec === undefined) {
-            settings.enableExec = false;
-        }
-
-        gSettings = settings;
-
-        $('.value').each(function () {
-            var id = $(this).attr('id');
-            setValue(id, settings[id] || '', onChange);
-        });
-
-        showHideSettings();
-        list2chips('.libraries', settings.libraries || '', onChange);
-
-        $('.tab-astro').on('click', function () {
-            updateMap();
-            setTimeout(function() {
-                OSM && OSM.oMap && OSM.oMap.updateSize();
-            }, 400);
-        });
-
-        onChange(false);
-        M.updateTextFields();
-    }
-
-    function list2chips(selector, list, onChange) {
-        var chips = list.split(/[,;\s]+/);
-        var data = [];
-        for (var c = 0; c < chips.length; c++) {
-            if (chips[c] && chips[c].trim()) {
-                data.push({tag: chips[c].trim()});
-            }
-        }
-        $(selector).chips({
-            data: data,
-            placeholder: _('Module names'),
-            secondaryPlaceholder: _('Add module'),
-            onChipAdd: onChange,
-            onChipDelete: onChange
-        });
-    }
-
-    function chips2list(selector) {
-        var data = $(selector).chips('getData');
-        var text = [];
-        for (var lib = 0; lib < data.length; lib++) {
-            text.push(data[lib].tag);
-        }
-        return text.join(' ');
-    }
-
-    function convertGrad(obj, attr) {
-        // Extract ° " and '
-        var m = obj[attr].match(/([0-9]+)°(\s*)(([0-9]+)')?(\s*)(([0-9]+)")?(\s*)([A-Z]+)?/);
-        if (m) {
-            var grad = m[1];
-            var min  = m[4];
-            var sec  = m[7];
-            var dir  = m[9];
-
-            if (grad !== undefined && grad !== null) {
-                // Graddez = Grad + ( Minuten * 60 + Sekunden ) / 3600
-                var result = parseInt(grad, 10);
-                if (min !== undefined && min !== null) {
-                    result += parseInt(min, 10) / 60;
-                    if (sec !== undefined && sec !== null) {
-                        result += parseInt(sec, 10) / 3600;
-                    }
-                }
-                if (dir) {
-                    dir = dir.toLowerCase();
-                    if (dir === 's' || dir === 'w') {
-                        result = (-1) * result;
-                    }
-                }
-                obj[attr] = result.toFixed(6);
-                return true;
             } else {
+                $value.val(value).on('change', function() {
+                    var id = $(this).attr('id');
+                    gSettings[id] = $(this).val();
+                    if (id === 'longitude' || id === 'latitude') {
+                        updateMap();
+                    }
+                    onChange();
+                }).on('keyup', function() {
+                    $(this).trigger('change');
+                });
+            }
+        }
+
+        function initMap() {
+            mapLoaded = true;
+            updateMap(true);
+        }
+
+        function positionReady(position) {
+            $('#latitude').val(position.coords.latitude.toFixed(8));
+            $('#longitude').val(position.coords.longitude.toFixed(8)).trigger('change');
+            M.updateTextFields();
+            updateMap();
+        }
+
+        function updateMap(immediately) {
+            var lng;
+            var lat;
+            if ($('#useSystemGPS').prop('checked')) {
+                if (systemConfig && systemConfig.common && (systemConfig.common.longitude || systemConfig.common.latitude)) {
+                    lng = systemConfig.common.longitude;
+                    lat = systemConfig.common.latitude;
+                }
+            } else {
+                lng = $('#longitude').val();
+                lat = $('#latitude').val();
+                if (!lng || !lat) {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(positionReady);
+                    }
+                }
+            }
+            lng = lng || 0;
+            lat = lat || 0;
+
+            if (useOpenLayers) {
+                // OPEN STREET MAPS
+                if (typeof ol === 'undefined') {
+                    return setTimeout(updateMap, 200);
+                }
+
+                var point = ol.proj.fromLonLat([parseFloat(lng), parseFloat(lat)]);
+                if (!OSM) {
+                    OSM = {};
+                    OSM.markerSource = new ol.source.Vector();
+
+                    OSM.markerStyle = new ol.style.Style({
+                        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+                            anchor: [0.5, 49],
+                            anchorXUnits: 'fraction',
+                            anchorYUnits: 'pixels',
+                            opacity: 0.75,
+                            src: '../../img/pin.png'
+                        }))
+                    });
+
+                    OSM.oMap = new ol.Map({
+                        target: 'map',
+                        layers: [
+                            new ol.layer.Tile({source: new ol.source.OSM()}),
+                            new ol.layer.Vector({
+                                source: OSM.markerSource,
+                                style:  OSM.markerStyle,
+                            })
+                        ],
+                        view: new ol.View({center: point, zoom: 17})
+                    });
+
+                    OSM.marker = new ol.Feature({
+                        geometry: new ol.geom.Point(point),
+                        name:  _('Your home')
+                    });
+
+                    OSM.markerSource.addFeature(OSM.marker);
+
+                    OSM.oMap.on('singleclick', function (event){
+                        if (!$('#useSystemGPS').prop('checked')) {
+                            var lonLat = ol.proj.toLonLat(event.coordinate);
+                            $('#longitude').val(Math.round(lonLat[0] * 1000000) / 1000000);
+                            $('#latitude').val(Math.round(lonLat[1] * 1000000) / 1000000).trigger('change');
+                            M.updateTextFields();
+                        }
+                    });
+
+                }
+                var zoom = OSM.oMap.getView().getZoom();
+                OSM.marker.setGeometry(new ol.geom.Point(point));
+                OSM.oMap.setView(new ol.View({center: point, zoom: zoom}));
+            } else {
+                //  GOOGLE MAPS
+                if (!mapLoaded) return;
+                if (!immediately) {
+                    clearTimeout(mapTimer);
+                    mapTimer = setTimeout(function () {
+                        updateMap(true);
+                    }, 1000);
+                    return;
+                }
+                if (mapTimer) {
+                    clearTimeout(mapTimer);
+                    mapTimer = null;
+                }
+
+                if (lat || lng) {
+                    var map = new google.maps.Map(document.getElementById('map'), {
+                        zoom: 14,
+                        center: {lat: parseFloat(lat), lng: parseFloat(lng)}
+                    });
+
+                    var marker = new google.maps.Marker({
+                        position: {lat: parseFloat(lat), lng: parseFloat(lng)},
+                        map: map,
+                        title: _('Your home')
+                    });
+                }
+            }
+        }
+
+        function showHideSettings() {
+            if ($('#useSystemGPS').prop('checked')) {
+                $('.local-coords').hide();
+            } else {
+                $('.local-coords').show();
+            }
+        }
+
+        function load(settings, onChange) {
+            if (!useOpenLayers) {
+                var key1 = 'AIzaSyCIrBRZfZAE';
+                var key2 = '_0C1OplAUy7OXhiWLoZc3eY';
+                var key = key1 + key2;
+
+                // load google API
+                $.ajax({
+                    // please do not miss use this api key!
+                    url: 'https://maps.googleapis.com/maps/api/js?key=' + key + '&signed_in=true&callback=initMap',
+                    dataType: 'script',
+                    cache: true
+                });
+            } else {
+                mapLoaded = true;
+                // load OSM
+                $.ajax({
+                    url: '../../lib/js/ol.js',
+                    dataType: 'script',
+                    cache: true
+                }).done(function() {
+                    //setTimeout(updateMap, 500);
+                });
+
+                $.ajax({
+                    url: '../../lib/css/ol.css',
+                    success: function(data){
+                        $('head').append('<style>' + data + '</style>');
+                    }
+                });
+            }
+
+            if (settings.sunriseEvent === undefined) {
+                settings.sunriseEvent = "nightEnd";
+            }
+            if (settings.sunriseOffset === undefined) {
+                settings.sunriseOffset = 0;
+            }
+            if (settings.sunriseLimitStart === undefined) {
+                settings.sunriseLimitStart = '06:00';
+            }
+            if (settings.sunriseLimitEnd === undefined) {
+                settings.sunriseLimitEnd = '12:00';
+            }
+            if (settings.sunsetEvent === undefined) {
+                settings.sunsetEvent = 'dusk';
+            }
+            if (settings.sunsetOffset === undefined) {
+                settings.sunsetOffset = 0;
+            }
+            if (settings.sunsetLimitStart === undefined) {
+                settings.sunsetLimitStart = '18:00';
+            }
+            if (settings.sunsetLimitEnd === undefined) {
+                settings.sunsetLimitEnd = '23:00';
+            }
+            if (settings.useSystemGPS === undefined) {
+                settings.useSystemGPS = (systemConfig.common.longitude && systemConfig.common.latitude);
+            }
+            if (settings.enableSendToHost === undefined) {
+                settings.enableSendToHost = false;
+            }
+            if (settings.enableExec === undefined) {
+                settings.enableExec = false;
+            }
+
+            gSettings = settings;
+
+            $('.value').each(function () {
+                var id = $(this).attr('id');
+                setValue(id, settings[id] || '', onChange);
+            });
+
+            showHideSettings();
+            list2chips('.libraries', settings.libraries || '', onChange);
+
+            $('.tab-astro').on('click', function () {
+                updateMap();
+                setTimeout(function() {
+                    OSM && OSM.oMap && OSM.oMap.updateSize();
+                }, 400);
+            });
+
+            onChange(false);
+            M.updateTextFields();
+        }
+
+        function list2chips(selector, list, onChange) {
+            var chips = list.split(/[,;\s]+/);
+            var data = [];
+            for (var c = 0; c < chips.length; c++) {
+                if (chips[c] && chips[c].trim()) {
+                    data.push({tag: chips[c].trim()});
+                }
+            }
+            $(selector).chips({
+                data: data,
+                placeholder: _('Module names'),
+                secondaryPlaceholder: _('Add module'),
+                onChipAdd: onChange,
+                onChipDelete: onChange
+            });
+        }
+
+        function chips2list(selector) {
+            var data = $(selector).chips('getData');
+            var text = [];
+            for (var lib = 0; lib < data.length; lib++) {
+                text.push(data[lib].tag);
+            }
+            return text.join(' ');
+        }
+
+        function convertGrad(obj, attr) {
+            // Extract ° " and '
+            var m = obj[attr].match(/([0-9]+)°(\s*)(([0-9]+)')?(\s*)(([0-9]+)")?(\s*)([A-Z]+)?/);
+            if (m) {
+                var grad = m[1];
+                var min  = m[4];
+                var sec  = m[7];
+                var dir  = m[9];
+
+                if (grad !== undefined && grad !== null) {
+                    // Graddez = Grad + ( Minuten * 60 + Sekunden ) / 3600
+                    var result = parseInt(grad, 10);
+                    if (min !== undefined && min !== null) {
+                        result += parseInt(min, 10) / 60;
+                        if (sec !== undefined && sec !== null) {
+                            result += parseInt(sec, 10) / 3600;
+                        }
+                    }
+                    if (dir) {
+                        dir = dir.toLowerCase();
+                        if (dir === 's' || dir === 'w') {
+                            result = (-1) * result;
+                        }
+                    }
+                    obj[attr] = result.toFixed(6);
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                showMessage(_('Invalid format. Use A°B\'C"D'));
                 return false;
             }
-        } else {
-            showMessage(_('Invalid format. Use A°B\'C"D'));
-            return false;
+
         }
 
-    }
+        function save(callback) {
+            var obj = {};
 
-    function save(callback) {
-        var obj = {};
+            $('.value').each(function () {
+                var $this = $(this);
+                if ($this.attr('type') === 'checkbox') {
+                    obj[$this.attr('id')] = $this.prop('checked');
+                } else {
+                    obj[$this.attr('id')] = $this.val();
+                }
+            });
+            obj.libraries = chips2list('.libraries');
 
-        $('.value').each(function () {
-            var $this = $(this);
-            if ($this.attr('type') === 'checkbox') {
-                obj[$this.attr('id')] = $this.prop('checked');
-            } else {
-                obj[$this.attr('id')] = $this.val();
+            if (obj.latitude.indexOf('°') !== -1) {
+                if (!convertGrad(obj, 'latitude')) {
+                    return;
+                }
+                $('#latitude').val(obj.latitude);
             }
-        });
-        obj.libraries = chips2list('.libraries');
-
-        if (obj.latitude.indexOf('°') !== -1) {
-            if (!convertGrad(obj, 'latitude')) {
-                return;
+            if (obj.longitude.indexOf('°') !== -1) {
+                if (!convertGrad(obj, 'longitude')) {
+                    return;
+                }
+                $('#longitude').val(obj.longitude);
             }
-            $('#latitude').val(obj.latitude);
+
+            callback(obj);
         }
-        if (obj.longitude.indexOf('°') !== -1) {
-            if (!convertGrad(obj, 'longitude')) {
-                return;
-            }
-            $('#longitude').val(obj.longitude);
-        }
-
-        callback(obj);
-    }
-</script>
+    </script>
     <style>
         .top-padding {
             padding: 1rem;
@@ -413,6 +437,65 @@
                     <div class="row local-coords">
                         <div class="col s12">
                             <p class="translate">Help</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h6 class="translate">Day time settings</h6>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <div class="input-field col s4">
+                                <select id="sunriseEvent" class="value filled-in" >
+                                    <option value="sunrise" class="translate">sunrise</option>
+                                    <option value="sunriseEnd" class="translate">sunriseEnd</option>
+                                    <option value="nightEnd" class="translate">nightEnd</option>
+                                    <option value="nauticalDawn" class="translate">nauticalDawn</option>
+                                    <option value="dawn" class="translate">dawn</option>
+                                </select>
+                                <span for="sunriseEvent" class="translate">Used as start of the daytime</span>
+                            </div>
+                            <div class="input-field col s2">
+                                <input id="sunriseOffset" type="number" class="value" />
+                                <label for="sunriseOffset" class="translate">Offset</label>
+                                <span>± </span><span class="translate">in minutes</span>
+                            </div>
+                            <div class="input-field col s3">
+                                <input id="sunriseLimitStart" type="text" class="value" />
+                                <label for="sunriseLimitStart" class="translate">But not earlier then</label>
+                            </div>
+                            <div class="input-field col s3">
+                                <input id="sunriseLimitEnd" type="text" class="value" />
+                                <label for="sunriseLimitEnd" class="translate">And not later then</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <div class="input-field col s4">
+                                <select id="sunsetEvent" class="value filled-in">
+                                    <option value="sunset" class="translate">sunset</option>
+                                    <option value="sunsetStart" class="translate">sunsetStart</option>
+                                    <option value="goldenHour" class="translate">goldenHour</option>
+                                    <option value="goldenHourEnd" class="translate">goldenHourEnd</option>
+                                    <option value="dusk" class="translate">dusk</option>
+                                    <option value="nauticalDusk" class="translate">nauticalDusk</option>
+                                    <option value="night" class="translate">night</option>
+                                </select>
+                                <span for="sunsetEvent" class="translate">Used as end of the daytime</span>
+                            </div>
+                            <div class="input-field col s2">
+                                <input id="sunsetOffset" type="number" class="value" />
+                                <label for="sunsetOffset" class="translate">Offset</label>
+                                <span>± </span><span class="translate">in minutes</span>
+                            </div>
+                            <div class="input-field col s3">
+                                <input id="sunsetLimitStart" type="text" class="value" />
+                                <label for="sunsetLimitStart" class="translate">But not earlier then</label>
+                            </div>
+                            <div class="input-field col s3">
+                                <input id="sunsetLimitEnd" type="text" class="value" />
+                                <label for="sunsetLimitEnd" class="translate">And not later then</label>
+                            </div>
                         </div>
                     </div>
                 </div>

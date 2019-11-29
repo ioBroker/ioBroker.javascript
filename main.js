@@ -60,7 +60,7 @@ const words     = require('./lib/words');
 const sandBox   = require('./lib/sandbox');
 const eventObj  = require('./lib/eventObj');
 const Scheduler = require('./lib/scheduler');
-const { 
+const {
     resolveTypescriptLibs,
     resolveTypings,
     scriptIdToTSFilename
@@ -224,6 +224,10 @@ const context = {
     messageBusHandlers: {},
     logSubscriptions: {},
     updateLogSubscriptions,
+    timeSettings:     {
+        format12: false,
+        leadingZeros: true
+    }
 };
 
 const regExGlobalOld = /_global$/;
@@ -262,6 +266,12 @@ function startAdapter(options) {
                         context.enums.splice(pos, 1);
                     }
                 }
+            }
+
+            // update stored time format for variables.dayTime
+            if (id === adapter.namespace + '.variables.dayTime' && obj && obj.native) {
+                context.timeSettings.format12 = obj.native.format12 || false;
+                context.timeSettings.leadingZeros = obj.native.leadingZeros === undefined ? true : obj.native.leadingZeros;
             }
 
             // send changes to disk mirror
@@ -441,7 +451,10 @@ function startAdapter(options) {
             }
         },
 
-        unload: callback => stopAllScripts(callback),
+        unload: callback => {
+            stopTimeSchedules(adapter, context);
+            stopAllScripts(callback)
+        },
 
         ready: function () {
             // todo
@@ -482,6 +495,8 @@ function startAdapter(options) {
             context.logWithLineInfo.info = context.logWithLineInfo.bind(1, 'info');
 
             context.scheduler = new Scheduler(adapter.log);
+
+            initTimeSchedules(adapter, context);
 
             installLibraries(() => {
 
@@ -716,6 +731,106 @@ let knownGlobalDeclarationsByScript = {};
 let globalScriptLines  = 0;
 // let activeRegEx        = null;
 let activeStr          = ''; // enabled state prefix
+let timeVariableTimer  = null; // timer to update dayTime every minute
+let daySchedule    = null; // schedule for astrological day
+
+function getNextTimeEvent(time) {
+    const now = new Date();
+    let [timeHours, timeMinutes] = time.split(':');
+    timeHours = parseInt(timeHours, 10);
+    timeMinutes = parseInt(timeMinutes, 10);
+    if ((now.getHours() > timeHours) ||
+        (now.getHours() === timeHours && now.getMinutes() > timeMinutes)) {
+        now.setDate(now.getDate() + 1);
+    }
+
+    now.setHours(timeHours);
+    now.setMinutes(timeMinutes);
+    return now;
+}
+
+function getAstroEvent(astroEvent, start, end, offsetMinutes, isDayEnd) {
+    const now = new Date();
+    let ts = mods.suncalc.getTimes(now, adapter.config.latitude, adapter.config.longitude)[astroEvent];
+    if (ts.getTime().toString() === 'NaN') {
+        ts = isDayEnd ? getNextTimeEvent(end) ? getNextTimeEvent(start);
+    }
+    ts.setSeconds(0);
+    ts.setMilliseconds(0);
+
+    let [timeHoursStart, timeMinutesStart] = start.split(':');
+    timeHoursStart = parseInt(timeHoursStart, 10);
+    timeMinutesStart = parseInt(timeMinutesStart, 10) || 0;
+
+    if (ts.getHours() < timeHoursStart || (ts.getHours() === timeHoursStart && ts.getMinutes() < timeMinutesStart)) {
+        ts = getNextTimeEvent(start);
+    }
+
+    let [timeHoursEnd, timeMinutesEnd] = end.split(':');
+    timeHoursEnd = parseInt(timeHoursEnd, 10);
+    timeMinutesEnd = parseInt(timeMinutesEnd, 10) || 0;
+
+    if (ts.getHours() > timeHoursEnd || (ts.getHours() === timeHoursEnd && ts.getMinutes() > timeMinutesEnd)) {
+        ts = getNextTimeEvent(end);
+    }
+
+    // if event in the past
+    if (now > ts) {
+        // take next day
+        ts.setDate(ts.getDate() + 1);
+    }
+    return ts;
+}
+
+function daytimeSchedules(adapter, context) {
+    // get astro event
+    if (adapter.config.latitude === undefined || adapter.config.longitude === undefined ||
+        adapter.config.latitude === ''        || adapter.config.longitude === '' ||
+        adapter.config.latitude === null      || adapter.config.longitude === null) {
+        adapter.log.error('Longitude or latitude does not set. Cannot use astro.');
+        return;
+    }
+    const nextSunrise = getAstroEvent(adapter.config.sunriseEvent, adapter.config.sunriseLimitStart, adapter.config.sunriseLimitEnd, adapter.config.sunriseOffset, false);
+    const nextSunset  = getAstroEvent(adapter.config.sunsetEvent,  adapter.config.sunsetLimitStart,  adapter.config.sunsetLimitEnd,  adapter.config.sunsetOffset,  false);
+    const nowDate = new Date();
+
+    // Sunrise
+    let sunriseTimeout = nextSunrise.getTime() - nowDate.getTime();
+    if (sunriseTimeout > 3600000) {
+        sunriseTimeout = 3600000;
+    }
+
+    // Sunset
+    let sunsetTimeout = nextSunset.getTime() - nowDate.getTime();
+    if (sunsetTimeout > 3600000) {
+        sunsetTimeout = 3600000;
+    }
+
+    if (sunriseTimeout < 5000) {
+        adapter.setState('variables.isDayTime', true, true);
+    } else if (sunsetTimeout < 5000) {
+        adapter.setState('variables.isDayTime', false, true);
+    } else {
+        // check if in between
+        // todo
+    }
+
+    let nextTimeout = sunriseTimeout;
+    if (sunriseTimeout > sunsetTimeout) {
+        nextTimeout = sunsetTimeout;
+    }
+    nextTimeout = nextTimeout - 3000;
+    if (nextTimeout < 3000) {
+        nextTimeout = 3000;
+    }
+
+    daySchedule = setTimeout(daytimeSchedules, nextTimeout, adapter, context);
+}
+
+function stopTimeSchedules(adapter, context) {
+    daySchedule && clearTimeout(daySchedule);
+    timeVariableTimer && clearTimeout(timeVariableTimer);
+}
 
 /**
  * Redirects the virtual-tsc log output to the ioBroker log
