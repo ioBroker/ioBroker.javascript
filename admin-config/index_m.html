@@ -234,6 +234,11 @@
         if (settings.enableExec === undefined) {
             settings.enableExec = false;
         }
+        $('.astro-calc').on('change', function () {
+            updateAstroTimes();
+        }).on('keyup', function () {
+            $(this).attr('type') === 'text' && $(this).trigger('change');
+        })
 
         gSettings = settings;
 
@@ -251,6 +256,8 @@
                 OSM && OSM.oMap && OSM.oMap.updateSize();
             }, 400);
         });
+
+        updateAstroTimes();
 
         onChange(false);
         M.updateTextFields();
@@ -316,6 +323,37 @@
             return false;
         }
 
+    }
+
+    function formatTime(date) {
+        var hours = date.getHours();
+        if (hours < 10) {
+            hours = '0' + hours;
+        }
+        var minutes = date.getMinutes();
+        if (minutes < 10) {
+            minutes = '0' + minutes;
+        }
+        return hours + ':' + minutes;
+    }
+
+    function updateAstroTimes() {
+        const obj = {};
+        const useSystem = $('#useSystemGPS').prop('checked');
+        $('.astro-calc').each(function () {
+            var id = $(this).attr('id');
+            var val = $(this).val();
+            if (!useSystem || (id !== 'longitude' && id !== 'latitude')) {
+                obj[id] = val;
+            }
+        });
+        sendTo(null, 'calcAstro', obj, function (times) {
+            var nextSunset = new Date(times.nextSunset);
+            var nextSunrise = new Date(times.nextSunrise);
+
+            $('#nextSunset').html(formatTime(nextSunset));
+            $('#nextSunrise').html(formatTime(nextSunrise));
+        });
     }
 
     function save(callback) {
@@ -424,13 +462,13 @@
                     </div>
                     <div class="row local-coords">
                         <div class="input-field col s12">
-                            <input id="latitude" type="text" class="value" />
+                            <input id="latitude" type="text" class="value astro-calc" />
                             <label for="latitude" class="translate">Latitude °:</label>
                         </div>
                     </div>
                     <div class="row local-coords">
                         <div class="input-field col s12">
-                            <input id="longitude" type="text" class="value" />
+                            <input id="longitude" type="text" class="value astro-calc" />
                             <label for="longitude" class="translate">Longitude °:</label>
                         </div>
                     </div>
@@ -445,7 +483,7 @@
                     <div class="row">
                         <div class="input-field col s12">
                             <div class="input-field col s4">
-                                <select id="sunriseEvent" class="value filled-in" >
+                                <select id="sunriseEvent" class="value astro-calc" >
                                     <option value="sunrise" class="translate">sch_astro_sunrise</option>
                                     <option value="sunriseEnd" class="translate">sch_astro_sunriseEnd</option>
                                     <option value="nightEnd" class="translate">sch_astro_nightEnd</option>
@@ -455,24 +493,25 @@
                                 <span for="sunriseEvent" class="translate">Used as start of the daytime</span>
                             </div>
                             <div class="input-field col s2">
-                                <input id="sunriseOffset" type="number" class="value" />
+                                <input id="sunriseOffset" type="number" class="value astro-calc" />
                                 <label for="sunriseOffset" class="translate">Offset</label>
                                 <span>± </span><span class="translate">in minutes</span>
                             </div>
                             <div class="input-field col s3">
-                                <input id="sunriseLimitStart" type="text" class="value" />
-                                <label for="sunriseLimitStart" class="translate">But not earlier then</label>
+                                <input id="sunriseLimitStart" type="text" class="value astro-calc" />
+                                <label for="sunriseLimitStart" class="translate">But not earlier</label>
                             </div>
                             <div class="input-field col s3">
-                                <input id="sunriseLimitEnd" type="text" class="value" />
-                                <label for="sunriseLimitEnd" class="translate">And not later then</label>
+                                <input id="sunriseLimitEnd" type="text" class="value astro-calc" />
+                                <label for="sunriseLimitEnd" class="translate">And not later</label>
                             </div>
                         </div>
+                        <div><span class="translate">Next sunrise: </span><span id="nextSunrise"></span></div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
                             <div class="input-field col s4">
-                                <select id="sunsetEvent" class="value filled-in">
+                                <select id="sunsetEvent" class="value astro-calc">
                                     <option value="sunset" class="translate">sch_astro_sunset</option>
                                     <option value="sunsetStart" class="translate">sch_astro_sunsetStart</option>
                                     <option value="goldenHour" class="translate">sch_astro_goldenHour</option>
@@ -484,19 +523,22 @@
                                 <span for="sunsetEvent" class="translate">Used as end of the daytime</span>
                             </div>
                             <div class="input-field col s2">
-                                <input id="sunsetOffset" type="number" class="value" />
+                                <input id="sunsetOffset" type="number" class="value astro-calc" />
                                 <label for="sunsetOffset" class="translate">Offset</label>
                                 <span>± </span><span class="translate">in minutes</span>
                             </div>
                             <div class="input-field col s3">
-                                <input id="sunsetLimitStart" type="text" class="value" />
-                                <label for="sunsetLimitStart" class="translate">But not earlier then</label>
+                                <input id="sunsetLimitStart" type="text" class="value astro-calc" />
+                                <label for="sunsetLimitStart" class="translate">But not earlier</label>
                             </div>
                             <div class="input-field col s3">
-                                <input id="sunsetLimitEnd" type="text" class="value" />
-                                <label for="sunsetLimitEnd" class="translate">And not later then</label>
+                                <input id="sunsetLimitEnd" type="text" class="value astro-calc" />
+                                <label for="sunsetLimitEnd" class="translate">And not later</label>
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
+                        <div><span class="translate">Next sunset: </span><span id="nextSunset"></span></div>
                     </div>
                 </div>
                 <div class="col s12 m6 map">

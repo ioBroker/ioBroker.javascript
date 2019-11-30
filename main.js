@@ -496,7 +496,8 @@ function startAdapter(options) {
 
             context.scheduler = new Scheduler(adapter.log);
 
-            initTimeSchedules(adapter, context);
+            dayTimeSchedules(adapter, context);
+            timeSchedule(adapter, context);
 
             installLibraries(() => {
 
@@ -655,7 +656,8 @@ function startAdapter(options) {
                         try {
                             const typescriptLibs = resolveTypescriptLibs(targetTsLib);
                             Object.assign(typings, typescriptLibs);
-                        } catch (e) { /* ok, no lib then */ }
+                        } catch (e) { /* ok, no lib then */
+                        }
 
                         // provide the already-loaded ioBroker typings and global script declarations
                         Object.assign(typings, tsAmbient);
@@ -666,7 +668,42 @@ function startAdapter(options) {
                         }
 
                         if (obj.callback) {
-                            adapter.sendTo(obj.from, obj.command, { typings }, obj.callback);
+                            adapter.sendTo(obj.from, obj.command, {typings}, obj.callback);
+                        }
+                        break;
+                    }
+                    case 'calcAstro': {
+                        if (obj.message) {
+                            const sunriseOffset = parseInt(obj.message.sunriseOffset === undefined ? adapter.config.sunriseOffset : obj.message.sunriseOffset, 10) || 0;
+                            const sunsetOffset = parseInt(obj.message.sunsetOffset === undefined ? adapter.config.sunsetOffset : obj.message.sunsetOffset, 10) || 0;
+                            const longitude = parseFloat(obj.message.longitude === undefined ? adapter.config.longitude : obj.message.longitude) || 0;
+                            const latitude = parseFloat(obj.message.latitude === undefined ? adapter.config.latitude : obj.message.latitude) || 0;
+                            const now = new Date();
+                            const nextSunrise = getAstroEvent(
+                                now,
+                                obj.message.sunriseEvent || adapter.config.sunriseEvent,
+                                obj.message.sunriseLimitStart || adapter.config.sunriseLimitStart,
+                                obj.message.sunriseLimitEnd || adapter.config.sunriseLimitEnd,
+                                sunriseOffset,
+                                false,
+                                latitude,
+                                longitude
+                            );
+                            const nextSunset = getAstroEvent(
+                                now,
+                                obj.message.sunsetEvent || adapter.config.sunsetEvent,
+                                obj.message.sunsetLimitStart || adapter.config.sunsetLimitStart,
+                                obj.message.sunsetLimitEnd || adapter.config.sunsetLimitEnd,
+                                sunsetOffset,
+                                true,
+                                latitude,
+                                longitude
+                            );
+
+                            obj.callback && adapter.sendTo(obj.from, obj.command, {
+                                nextSunrise,
+                                nextSunset
+                            }, obj.callback);
                         }
                         break;
                     }
@@ -749,11 +786,10 @@ function getNextTimeEvent(time) {
     return now;
 }
 
-function getAstroEvent(astroEvent, start, end, offsetMinutes, isDayEnd) {
-    const now = new Date();
-    let ts = mods.suncalc.getTimes(now, adapter.config.latitude, adapter.config.longitude)[astroEvent];
+function getAstroEvent(now, astroEvent, start, end, offsetMinutes, isDayEnd, latitude, longitude) {
+    let ts = mods.suncalc.getTimes(now, latitude, longitude)[astroEvent];
     if (ts.getTime().toString() === 'NaN') {
-        ts = isDayEnd ? getNextTimeEvent(end) ? getNextTimeEvent(start);
+        ts = isDayEnd ? getNextTimeEvent(end) : getNextTimeEvent(start);
     }
     ts.setSeconds(0);
     ts.setMilliseconds(0);
@@ -782,17 +818,43 @@ function getAstroEvent(astroEvent, start, end, offsetMinutes, isDayEnd) {
     return ts;
 }
 
-function daytimeSchedules(adapter, context) {
-    // get astro event
+function timeSchedule(adapter, context) {
+    const now = new Date();
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+    if (context.timeSettings.format12) {
+        if (hours > 12) {
+            hours -= 12;
+        }
+    }
+    if (context.timeSettings.leadingZeros && hours < 10) {
+        hours = '0' + hours;
+    }
+    if (minutes < 10) {
+        minutes = '0' + minutes;
+    }
+    adapter.setState('variables.dayTime', hours + ':' + minutes, true);
+    now.setMinutes(now.getMinutes() + 1);
+    now.setSeconds(0);
+    now.setMilliseconds(0);
+    const interval = now.getTime() - Date.now();
+    setTimeout(timeSchedule, interval, adapter, context);
+}
+
+function dayTimeSchedules(adapter, context) {
+    // get astrological event
     if (adapter.config.latitude === undefined || adapter.config.longitude === undefined ||
         adapter.config.latitude === ''        || adapter.config.longitude === '' ||
         adapter.config.latitude === null      || adapter.config.longitude === null) {
         adapter.log.error('Longitude or latitude does not set. Cannot use astro.');
         return;
     }
-    const nextSunrise = getAstroEvent(adapter.config.sunriseEvent, adapter.config.sunriseLimitStart, adapter.config.sunriseLimitEnd, adapter.config.sunriseOffset, false);
-    const nextSunset  = getAstroEvent(adapter.config.sunsetEvent,  adapter.config.sunsetLimitStart,  adapter.config.sunsetLimitEnd,  adapter.config.sunsetOffset,  false);
+
+    // Calculate next event;
     const nowDate = new Date();
+
+    const nextSunrise = getAstroEvent(nowDate, adapter.config.sunriseEvent, adapter.config.sunriseLimitStart, adapter.config.sunriseLimitEnd, adapter.config.sunriseOffset, false, adapter.config.latitude, adapter.config.longitude);
+    const nextSunset  = getAstroEvent(nowDate, adapter.config.sunsetEvent,  adapter.config.sunsetLimitStart,  adapter.config.sunsetLimitEnd,  adapter.config.sunsetOffset,  true, adapter.config.latitude, adapter.config.longitude);
 
     // Sunrise
     let sunriseTimeout = nextSunrise.getTime() - nowDate.getTime();
@@ -806,14 +868,31 @@ function daytimeSchedules(adapter, context) {
         sunsetTimeout = 3600000;
     }
 
+    let isDay;
     if (sunriseTimeout < 5000) {
-        adapter.setState('variables.isDayTime', true, true);
+        isDay = true;
+
     } else if (sunsetTimeout < 5000) {
-        adapter.setState('variables.isDayTime', false, true);
+        isDay = false;
     } else {
         // check if in between
         // todo
+        const nowStartDate = new Date();
+        nowStartDate.setHours(0);
+        nowStartDate.setMinutes(0);
+        nowStartDate.setSeconds(0);
+        nowStartDate.setMilliseconds(0);
+        const todaySunrise = getAstroEvent(nowStartDate, adapter.config.sunriseEvent, adapter.config.sunriseLimitStart, adapter.config.sunriseLimitEnd, adapter.config.sunriseOffset, false);
+        const todaySunset  = getAstroEvent(nowStartDate, adapter.config.sunsetEvent,  adapter.config.sunsetLimitStart,  adapter.config.sunsetLimitEnd,  adapter.config.sunsetOffset,  false);
+        isDay = nowDate > todaySunrise && nowDate <= todaySunset;
     }
+
+    adapter.getState('variables.isDayTime', (err, state) => {
+        const val = state ? !!state.val : false;
+        if (val !== isDay) {
+            adapter.setState('variables.isDayTime', isDay, true);
+        }
+    });
 
     let nextTimeout = sunriseTimeout;
     if (sunriseTimeout > sunsetTimeout) {
@@ -824,10 +903,10 @@ function daytimeSchedules(adapter, context) {
         nextTimeout = 3000;
     }
 
-    daySchedule = setTimeout(daytimeSchedules, nextTimeout, adapter, context);
+    daySchedule = setTimeout(dayTimeSchedules, nextTimeout, adapter, context);
 }
 
-function stopTimeSchedules(adapter, context) {
+function stopTimeSchedules() {
     daySchedule && clearTimeout(daySchedule);
     timeVariableTimer && clearTimeout(timeVariableTimer);
 }

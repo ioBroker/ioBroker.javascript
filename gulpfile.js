@@ -323,6 +323,10 @@ function writeWordJs(data, src) {
             let line = '';
             for (const lang in data[word]) {
                 if (data[word].hasOwnProperty(lang)) {
+                    if (data[word][lang] === null || data[word][lang] === undefined) {
+                        console.log('Error');
+                    }
+
                     line += '"' + lang + '": "' + padRight(data[word][lang].replace(/"/g, '\\"') + '",', 50) + ' ';
                 }
             }
