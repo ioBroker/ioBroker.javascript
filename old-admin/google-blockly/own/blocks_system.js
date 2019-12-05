@@ -8,7 +8,7 @@ Blockly.CustomBlocks = Blockly.CustomBlocks || [];
 Blockly.CustomBlocks.push('System');
 
 function getHelp(word) {
-    return 'https://github.com/ioBroker/ioBroker.javascript/blob/master/README.md#' + Blockly.Words[word][systemLang];
+    return 'https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#' + Blockly.Words[word][systemLang];
 }
 
 Blockly.System = {
