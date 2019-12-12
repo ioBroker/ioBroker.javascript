@@ -30,7 +30,6 @@ if (true || parseInt(process.versions.node.split('.')[0]) < 6) {
     }
 }
 const nodeFS         = require('fs');
-const nodePath       = require('path');
 const coffeeCompiler = require('coffee-compiler');
 const tsc            = require('virtual-tsc');
 const typescript     = require('typescript');
