@@ -895,41 +895,41 @@ declare global {
 	 */
 	function getAttr(obj: string | Record<string, any>, path: string | string[]): any;
 
-    /**
-     * Sends a message to another script.
-     * @param target Message name or target object
-     * @param data Any data, that should be sent to message bus
-     * @param options Actually only {timeout: X} is supported as option
-     * @param callback Callback to get the result from other script
-     * @return ID of the subscription. It could be used for un-subscribe.
-     */
+	/**
+	 * Sends a message to another script.
+	 * @param target Message name or target object
+	 * @param data Any data, that should be sent to message bus
+	 * @param options Actually only {timeout: X} is supported as option
+	 * @param callback Callback to get the result from other script
+	 * @return ID of the subscription. It could be used for un-subscribe.
+	 */
 	function messageTo(target: iobJS.MessageTarget | string, data: any, options?: any, callback?: SimpleCallback<any>): iobJS.MessageSubscribeID;
 
-    /**
-     * Process message from other script.
-     * @param message Message name
-     * @param callback Callback to send the result to other script
-     */
+	/**
+	 * Process message from other script.
+	 * @param message Message name
+	 * @param callback Callback to send the result to other script
+	 */
 	function onMessage(message: string, callback?: SimpleCallback<any>);
 
-    /**
-     * Unregister onmessage handler
-     * @param id Message subscription id from onMessage or by message name
-     * @return true if subscription exists and was deleted.
-     */
+	/**
+	 * Unregister onmessage handler
+	 * @param id Message subscription id from onMessage or by message name
+	 * @return true if subscription exists and was deleted.
+	 */
 	function onMessageUnregister(id: iobJS.MessageSubscribeID | string): boolean;
 
-    /**
-     * Receives logs of specified severity level in script.
-     * @param severity Severity level
-     * @param callback Callback to send the result to other script
-     */
-	function onLog(severity: iobJS.LogLevel, callback: SimpleCallback<iobJS.LogMessage>);
+	/**
+	 * Receives logs of specified severity level in script.
+	 * @param severity Severity level
+	 * @param callback Callback to send the result to other script
+	 */
+	function onLog(severity: iobJS.LogLevel | "*", callback: SimpleCallback<iobJS.LogMessage>);
 
-    /**
-     * Unsubscribe log handler.
-     * @param idOrCallbackOrSeverity Message subscription id from onLog or by callback function
-     * @return true if subscription exists and was deleted.
-     */
-	function onLogUnregister(idOrCallbackOrSeverity: iobJS.MessageSubscribeID | SimpleCallback<iobJS.LogMessage> | iobJS.LogLevel): boolean;
+	/**
+	 * Unsubscribe log handler.
+	 * @param idOrCallbackOrSeverity Message subscription id from onLog or by callback function
+	 * @return true if subscription exists and was deleted.
+	 */
+	function onLogUnregister(idOrCallbackOrSeverity: iobJS.MessageSubscribeID | SimpleCallback<iobJS.LogMessage> | iobJS.LogLevel | "*"): boolean;
 }
