@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.3.5": {
+                "en": "fixed the load of zip files if more than one host",
+                "de": "Das Laden von ZIP-Dateien wurde behoben, wenn mehr als ein Host vorhanden war",
+                "ru": "исправлена загрузка zip-файлов, если несколько хостов",
+                "pt": "Corrigido o carregamento de arquivos zip se mais de um host",
+                "nl": "de belasting van zip-bestanden gerepareerd als meer dan één host",
+                "fr": "correction de la charge des fichiers zip si plusieurs hôtes",
+                "it": "corretto il caricamento dei file zip se più di un host",
+                "es": "reparó la carga de archivos zip si hay más de un host",
+                "pl": "naprawiono ładowanie plików zip, jeśli więcej niż jeden host",
+                "zh-cn": "如果一台以上的主机修复了zip文件的加载"
+            },
             "4.3.3": {
                 "en": "Search in scripts was corrected",
                 "de": "Suche in Skripten wurde korrigiert",

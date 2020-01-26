@@ -32,6 +32,9 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.3.5 (2020-01-26)
+* (bluefox) fixed the load of zip files if more than one host
+
 ### 4.3.4 (2019-10-28)
 * (bluefox) Values are showed in select ID dialog
 * (bluefox) Allow select with $ the schedule objects
