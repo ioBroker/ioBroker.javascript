@@ -184,7 +184,7 @@ function TextDate(props) {
             {...other}
             ref={inputRef}
             mask={[/[0-3]/, /[0-9]/, '.', /[0-1]/, /[0-9]/, '.', '2', '0', /[0-9]/, /[0-9]/]}
-            placeholderChar={props.placeholder || '01.01.2019'}
+            placeholderChar={props.placeholder || '01.01.2020'}
             showMask
         />
     );
