@@ -394,10 +394,14 @@ class App extends Component {
             const d = new Date();
             let date = d.getFullYear();
             let m = d.getMonth() + 1;
-            if (m < 10) m = '0' + m;
+            if (m < 10) {
+                m = '0' + m;
+            }
             date += '-' + m;
             m = d.getDate();
-            if (m < 10) m = '0' + m;
+            if (m < 10) {
+                m = '0' + m;
+            }
             date += '-' + m + '-';
 
             this.socket.socket.emit('sendToHost', host, 'readObjectsAsZip', {
@@ -408,7 +412,9 @@ class App extends Component {
                 if (typeof data === 'string') {
                     // it is a link to created file
                     const a = document.createElement('a');
-                    a.href = '/zip/' + date + 'scripts.zip';
+                    // the data is "system.host.HOST.zip.2020-01-26-scripts.zip"
+                    const parts = data.split('.zip.');
+                    a.href = '/zip/' + parts[0] + '/' + parts[1];
                     document.body.appendChild(a);
                     a.click();
                     a.remove();

@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.3.4",
+        "version": "4.3.5",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -149,6 +149,11 @@
             "ru": ["docs/ru/blockly.md"],
             "de": ["docs/de/usage.md", "docs/de/blockly.md"]
         },
+        "dependencies": [
+            {
+                "admin": ">=3.7.8"
+            }
+        ],
         "type": "logic",
         "messagebox": true,
         "logTransporter": true
