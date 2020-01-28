@@ -90,6 +90,8 @@ if (process.argv) {
     }
 }
 
+const isCI = !!process.env.CI;
+
 // NodeJS 8+ supports the features of ES2017
 // When upgrading the minimum supported version to NodeJS 10 or higher,
 // consider changing this, so we get to support the newest features too
@@ -920,6 +922,8 @@ function tsLog(msg, sev) {
     if (sev == null || sev === 'info') {
         sev = 'debug';
     } else if (sev === 'debug') {
+        // Don't spam build logs on Travis
+        if (isCI) return;
         sev = 'silly';
     }
 
@@ -932,7 +936,10 @@ function tsLog(msg, sev) {
 // compiler instance for typescript
 tsServer = new tsc.Server(tsCompilerOptions, tsLog);
 // compiler instance for global JS declarations
-jsDeclarationServer = new tsc.Server(jsDeclarationCompilerOptions);
+jsDeclarationServer = new tsc.Server(
+    jsDeclarationCompilerOptions,
+    isCI ? false : undefined
+);
 
 function addGetProperty(object) {
     try {
