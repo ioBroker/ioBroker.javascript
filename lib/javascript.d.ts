@@ -523,6 +523,14 @@ declare global {
 		interface SubscribeTime {
 			time: SchedulePattern;
 		}
+
+		interface StateTimer {
+			id: number;
+			left: number;
+			delay: number;
+			val: any;
+			ack: boolean;
+		}
 	} // end namespace iobJS
 
 	// =======================================================
@@ -694,20 +702,32 @@ declare global {
 	 * @param id The ID of the state to be set
 	 * @param delay The delay in milliseconds
 	 * @param clearRunning (optional) Whether an existing timeout for this state should be cleared
+	 * @returns If a delayed setState was scheduled, this returns the timer id, otherwise null.
 	 */
-	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, delay: number, clearRunning: boolean, callback?: iobJS.SetStateCallback): any;
-	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, ack: boolean, clearRunning: boolean, callback?: iobJS.SetStateCallback): any;
-	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, ack: boolean, delay: number, callback?: iobJS.SetStateCallback): any;
-	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, delay: number, callback?: iobJS.SetStateCallback): any;
-	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, callback?: iobJS.SetStateCallback): any;
-	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, ack: boolean, delay: number, clearRunning: boolean, callback?: iobJS.SetStateCallback): any;
+	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, delay: number, clearRunning: boolean, callback?: iobJS.SetStateCallback): number | null;
+	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, ack: boolean, clearRunning: boolean, callback?: iobJS.SetStateCallback): number | null;
+	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, ack: boolean, delay: number, callback?: iobJS.SetStateCallback): number | null;
+	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, delay: number, callback?: iobJS.SetStateCallback): number | null;
+	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, callback?: iobJS.SetStateCallback): number | null;
+	function setStateDelayed<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, ack: boolean, delay: number, clearRunning: boolean, callback?: iobJS.SetStateCallback): number | null;
 
 	/**
 	 * Clears a timer created by setStateDelayed
 	 * @param id The state id for which the timer should be cleared
 	 * @param timerID (optional) ID of the specific timer to clear. If none is given, all timers are cleared.
 	 */
-	function clearStateDelayed(id: string, timerID?: any): boolean;
+	function clearStateDelayed(id: string, timerID?: number): boolean;
+
+	/**
+	 * Returns information about a specific timer created with `setStateDelayed`.
+	 * @param timerId The timer id that was returned by `setStateDelayed`.
+	 */
+	function getStateDelayed(timerId: number): iobJS.StateTimer | null;
+	/**
+	 * Returns a list of all timers created with `setStateDelayed`. Can be limited to a specific state id.
+	 * @param id The state id for which the timers should be.
+	 */
+	function getStateDelayed(id?: string): iobJS.StateTimer[];
 
 	/**
 	 * Sets a binary state to the given value
