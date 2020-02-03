@@ -442,7 +442,6 @@ class SideDrawer extends React.Component {
                     }
                 } else if (!item.filtered) {
                     item.filtered = true;
-                    console.log(item.id + ' filtered out');
                     changed = true;
                 }
             });

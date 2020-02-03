@@ -517,7 +517,7 @@ function startAdapter(options) {
                         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
                     }
 
-                    adapter.objects.getObjectView('script', 'javascript', {}, (err, doc) => {
+                    adapter.getObjectView('script', 'javascript', {}, (err, doc) => {
                         globalScript = '';
                         globalDeclarations = '';
                         knownGlobalDeclarationsByScript = {};
@@ -1363,7 +1363,7 @@ function stop(name, callback) {
                 if (timeout) {
                     timeout = null;
                     delete context.scripts[name];
-                    if (typeof callback === 'function') callback(true, name);
+                    typeof callback === 'function' && callback(true, name);
                 }
             }, context.scripts[name].onStopTimeout);
 
@@ -1373,7 +1373,7 @@ function stop(name, callback) {
                         clearTimeout(timeout);
                         timeout = null;
                         delete context.scripts[name];
-                        if (typeof callback === 'function') callback(true, name);
+                        typeof callback === 'function' && callback(true, name);
                     }
                 });
             } catch (e) {
@@ -1382,7 +1382,7 @@ function stop(name, callback) {
 
         } else {
             delete context.scripts[name];
-            if (typeof callback === 'function') callback(true, name);
+            typeof callback === 'function' && callback(true, name);
         }
     } else {
         typeof callback === 'function' && callback(false, name);
@@ -1410,13 +1410,13 @@ function prepareScript(obj, callback) {
             }
             context.scripts[name] = compile(globalScript + obj.common.source, sourceFn);
             context.scripts[name] && execute(context.scripts[name], sourceFn, obj.common.verbose, obj.common.debug);
-            if (typeof callback === 'function') callback(true, name);
+            typeof callback === 'function' && callback(true, name);
         } else if (obj.common.engineType.toLowerCase().startsWith('coffee')) {
             // CoffeeScript
             coffeeCompiler.fromSource(obj.common.source, { sourceMap: false, bare: true }, (err, js) => {
                 if (err) {
                     adapter.log.error(name + ' coffee compile ' + err);
-                    if (typeof callback === 'function') callback(false, name);
+                    typeof callback === 'function' && callback(false, name);
                     return;
                 }
                 adapter.log.info('Start coffescript ' + name);
@@ -1451,8 +1451,8 @@ function prepareScript(obj, callback) {
             _name = obj._id;
             adapter.setState('scriptEnabled.' + _name.substring('script.js.'.length), false, true);
         }
-        if (!obj) adapter.log.error('Invalid script');
-        if (typeof callback === 'function') callback(false, _name);
+        !obj && adapter.log.error('Invalid script');
+        typeof callback === 'function' && callback(false, _name);
     }
 }
 
@@ -1466,8 +1466,8 @@ function load(nameOrObject, callback) {
     } else {
         adapter.getForeignObject(nameOrObject, (err, obj) => {
             if (!obj || err) {
-                if (err) adapter.log.error('Invalid script "' + nameOrObject + '": ' + err);
-                if (typeof callback === 'function') callback(false, nameOrObject);
+                err && adapter.log.error('Invalid script "' + nameOrObject + '": ' + err);
+                typeof callback === 'function' && callback(false, nameOrObject);
             } else {
                 return load(obj, callback);
             }

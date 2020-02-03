@@ -253,12 +253,25 @@ class App extends Component {
         console.log(`Rename ${oldId} => ${newId}`);
         let promise;
         this.setState({updating: true});
+
+        // Rename script.js.common.Skript_1 => script.js.common.New folder.Skript_1
+
         if (this.scripts[oldId] && this.scripts[oldId].type === 'script') {
             const common = JSON.parse(JSON.stringify(this.scripts[oldId].common));
             common.name = newName || common.name;
             if (newInstance !== undefined) {
                 common.engine = 'system.adapter.javascript.' + newInstance;
             }
+            // Check if the script is not a children of other script
+            const parts = newId.split('.');
+            parts.pop();
+            const parentID = parts.join('.');
+
+            if (this.scripts[parentID] && this.scripts[parentID].type === 'script') {
+                parts.pop();
+                newId = parts.join('.') + '.' + newId.split('.').pop();
+            }
+
             promise = this.socket.updateScript(oldId, newId, common);
         } else {
             promise = this.socket.renameGroup(oldId, newId, newName);
@@ -535,7 +548,7 @@ class App extends Component {
                             }
                             changed && this.setState(newState);
                         }}
-                        onRestart={id => this.socket.extendObject(id, {})}
+                        onRestart={id => this.socket.extendObject(id, {common: {enabled: true}})}
                         selected={this.state.selected && this.objects[this.state.selected] && this.objects[this.state.selected].type === 'script' ? this.state.selected : ''}
                         objects={this.objects}
                     />

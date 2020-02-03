@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.3.5",
+        "version": "4.3.6",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.3.6": {
+                "en": "Made adapter compatible with js-controller >= 2.2.x",
+                "de": "Adapter kompatibel mit js-controller> = 2.2.x gemacht",
+                "ru": "Сделан адаптер, совместимый с js-controller> = 2.2.x",
+                "pt": "Adaptador compatível com js-controller> = 2.2.x",
+                "nl": "Adapter compatibel gemaakt met js-controller> = 2.2.x",
+                "fr": "Adaptateur compatible avec js-controller> = 2.2.x",
+                "it": "Compatibile con l'adattatore con js-controller> = 2.2.x",
+                "es": "Adaptador hecho compatible con controlador js> = 2.2.x",
+                "pl": "Dostosowano adapter do kontrolera js> = 2.2.x",
+                "zh-cn": "使适配器与js-controller> = 2.2.x兼容"
+            },
             "4.3.5": {
                 "en": "fixed the load of zip files if more than one host",
                 "de": "Das Laden von ZIP-Dateien wurde behoben, wenn mehr als ein Host vorhanden war",

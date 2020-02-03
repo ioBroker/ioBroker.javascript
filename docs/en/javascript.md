@@ -30,6 +30,7 @@
     - [getObject](#getobject)
     - [setObject](#setobject)
     - [extendObject](#extendobject)
+    - [deleteObject](#deleteobject)
     - [getIdByName](#getidbyname)
     - [getEnums](#getenums)
     - [createState](#createstate)
@@ -832,6 +833,23 @@ Use it like this:
 // Stop instance
 extendObject('system.adapter.sayit.0', {common: {enabled: false}});
 ```
+
+### deleteObject
+```js
+deleteObject(id, isRecursive, callback);
+```
+
+Deletes object from DB by ID. If the object has type `state`, the state value will be deleted too. 
+
+Additional parameter `isRecursive` could be provided, so all children of given ID will be deleted. Very dangerous! 
+
+Use it like this:
+```js
+// Delete state
+deleteObject('javascript.0.createdState');
+```
+
+*Notice: `isRecursive` option is available only with js-controller >= 2.2.x* 
 
 ### getIdByName
 ```js
