@@ -444,7 +444,7 @@ class BlocklyEditor extends React.Component {
 
         window.addEventListener('resize', this.onResizeBind, false);
         toolboxText = toolboxText || this.getToolbox();
-        toolboxXml = toolboxXml || this.Blockly.Xml.textToDom(toolboxText);
+        toolboxXml  = toolboxXml  || this.Blockly.Xml.textToDom(toolboxText);
 
         this.blocklyWorkspace = this.Blockly.inject(
             this.blockly,
@@ -458,6 +458,11 @@ class BlocklyEditor extends React.Component {
                     maxScale:   3,
                     minScale:   0.3,
                     scaleSpeed: 1.2
+                },
+                move: {
+                    scrollbars: true,
+                    drag: true,
+                    wheel: true
                 },
                 trashcan: true,
                 grid: {
