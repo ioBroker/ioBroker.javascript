@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.3.6",
+        "version": "4.3.7",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -175,7 +175,8 @@
         },
         "dependencies": [
             {
-                "admin": ">=3.7.8"
+                "admin": ">=3.7.8",
+                "js-controller": ">=2.2.0"
             }
         ],
         "type": "logic",

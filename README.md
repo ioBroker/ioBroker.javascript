@@ -32,7 +32,7 @@ And then call "npm run build".
 - ...
 
 ## Changelog
-### 4.3.6 (2020-01-26)
+### 4.3.7 (2020-01-26)
 * (bluefox) Made adapter compatible with js-controller >= 2.2.x 
 
 ### 4.3.5 (2020-01-26)
