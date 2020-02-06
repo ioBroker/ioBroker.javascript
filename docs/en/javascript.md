@@ -14,7 +14,7 @@
     - [getSubscriptions](#getsubscriptions)
     - [schedule](#schedule)
         - [Time schedule](#time-schedule)
-        - [Astro- function](#astro--function)
+        - [Astro-function](#astro--function)
 
     - [clearSchedule](#clearschedule)
     - [getAttr](#getattr)
@@ -103,7 +103,7 @@ to be sure, that no callback will be called if script is deleted or modified.
 ## Global functions
 You can define the global scripts in the "global" folder.
 All global scripts are available on all instances. If global script is disabled, it will not be used.
-Global script will be just prepend to the normal script and compiled, so you cannot share data between scripts via global scrips. Use states for it.
+Global script will be just prepended to the normal script and compiled, so you cannot share data between scripts via global scripts. Use states for it.
 
 To use global functions in TypeScript, you have to `declare` them first, so the compiler knows about the global functions. Example:
 ```typescript
@@ -445,7 +445,7 @@ Example of result:
 schedule(pattern, callback);
 ```
 
-Time scheduler with astro function.
+Time scheduler with astro-function.
 
 #### Time schedule
 Pattern can be a string with [Cron-Syntax](http://en.wikipedia.org/wiki/Cron), which consists of 5 (without seconds) or 6 (with seconds) digits:
@@ -520,7 +520,7 @@ schedule({ start: startTime, end: endTime, rule: ruleData }, function () {
 });
 ```
 
-#### Astro- function
+#### Astro-function
 
 Astro-function can be used via "astro" attribute:
 
