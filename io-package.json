@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.3.7",
+        "version": "4.3.8",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,7 +22,19 @@
             "AlCalzone"
         ],
         "news": {
-            "4.3.6": {
+            "4.3.8": {
+                "en": "Fixed the authentication error detection",
+                "de": "Die Erkennung von Authentifizierungsfehlern wurde behoben",
+                "ru": "Исправлено обнаружение ошибки аутентификации",
+                "pt": "Corrigida a detecção de erros de autenticação",
+                "nl": "Detectie van authenticatiefouten opgelost",
+                "fr": "Correction de la détection d'erreur d'authentification",
+                "it": "Risolto il problema con il rilevamento degli errori di autenticazione",
+                "es": "Se corrigió la detección de errores de autenticación",
+                "pl": "Naprawiono wykrywanie błędu uwierzytelnienia",
+                "zh-cn": "修复了身份验证错误检测"
+            },
+            "4.3.7": {
                 "en": "Made adapter compatible with js-controller >= 2.2.x",
                 "de": "Adapter kompatibel mit js-controller> = 2.2.x gemacht",
                 "ru": "Сделан адаптер, совместимый с js-controller> = 2.2.x",

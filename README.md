@@ -32,6 +32,9 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.3.8 (2020-02-07)
+* (bluefox) Fixed the authentication error detection
+
 ### 4.3.7 (2020-01-26)
 * (bluefox) Made adapter compatible with js-controller >= 2.2.x 
 
