@@ -32,8 +32,8 @@ And then call "npm run build".
 - ...
 
 ## Changelog
-### 4.3.9 (2020-02-08)
-* (bluefox) Add new socket.io client library to prevent errors
+### 4.4.0 (2020-02-08)
+* (Apollon77) Add new socket.io client library to prevent errors
 
 ### 4.3.8 (2020-02-07)
 * (bluefox) Fixed the authentication error detection
