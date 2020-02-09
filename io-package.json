@@ -199,7 +199,9 @@
         },
         "dependencies": [
             {
-                "admin": ">=4.0.1",
+                "admin": ">=4.0.1"
+            },
+            {
                 "js-controller": ">=2.2.0"
             }
         ],
