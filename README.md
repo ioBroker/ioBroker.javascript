@@ -32,6 +32,10 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.4.1 (2020-02-09)
+* (Apollon77) Fix Astro functions and error message
+* (Apollon77) Also allow non standard ports
+
 ### 4.4.0 (2020-02-08)
 * (Apollon77) Add new socket.io client library to prevent errors
 

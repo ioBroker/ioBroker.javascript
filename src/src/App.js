@@ -139,7 +139,14 @@ class App extends Component {
         this.hosts = [];
         this.importFile = null;
 
+        const port = parseInt(window.location.port, 10);
+        // for debug purposes
+        if (port === 3000) {
+            port = 8081;
+        }
+
         this.socket = new Connection({
+            port,
             autoSubscribes: ['script.*', 'system.adapter.javascript.*'],
             autoSubscribeLog: true,
             onProgress: progress => {

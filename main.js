@@ -497,15 +497,15 @@ function startAdapter(options) {
 
             context.scheduler = new Scheduler(adapter.log);
 
-            dayTimeSchedules(adapter, context);
-            timeSchedule(adapter, context);
-
             installLibraries(() => {
 
                 // Load the TS declarations for Node.js and all 3rd party modules
                 loadTypeScriptDeclarations();
 
                 getData(() => {
+                    dayTimeSchedules(adapter, context);
+                    timeSchedule(adapter, context);
+
                     adapter.subscribeForeignObjects('*');
 
                     if (!adapter.config.subscribe) {
@@ -789,7 +789,7 @@ function getNextTimeEvent(time) {
 
 function getAstroEvent(now, astroEvent, start, end, offsetMinutes, isDayEnd, latitude, longitude) {
     let ts = mods.suncalc.getTimes(now, latitude, longitude)[astroEvent];
-    if (ts.getTime().toString() === 'NaN') {
+    if (!ts || ts.getTime().toString() === 'NaN') {
         ts = isDayEnd ? getNextTimeEvent(end) : getNextTimeEvent(start);
     }
     ts.setSeconds(0);
