@@ -139,9 +139,19 @@ class App extends Component {
         this.hosts = [];
         this.importFile = null;
 
-        const port = parseInt(window.location.port, 10);
-        // for debug purposes
-        if (port === 3000) {
+        let port = parseInt(window.location.port, 10);
+        if (isNaN(port)) {
+            switch (window.location.protocol) {
+                case 'https:':
+                    port = 443;
+                    break;
+                case 'http:':
+                    port = 80;
+                    break;
+            }
+        }
+        // for debug and fallback purposes
+        if (!port || port === 3000) {
             port = 8081;
         }
 

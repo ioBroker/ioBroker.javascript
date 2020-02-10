@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.4.1",
+        "version": "4.4.2",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,17 +22,17 @@
             "AlCalzone"
         ],
         "news": {
-            "4.4.1": {
-                "en": "Fixed the authentication error detection",
-                "de": "Die Erkennung von Authentifizierungsfehlern wurde behoben",
-                "ru": "Исправлено обнаружение ошибки аутентификации",
-                "pt": "Corrigida a detecção de erros de autenticação",
-                "nl": "Detectie van authenticatiefouten opgelost",
-                "fr": "Correction de la détection d'erreur d'authentification",
-                "it": "Risolto il problema con il rilevamento degli errori di autenticazione",
-                "es": "Se corrigió la detección de errores de autenticación",
-                "pl": "Naprawiono wykrywanie błędu uwierzytelnienia",
-                "zh-cn": "修复了身份验证错误检测"
+            "4.4.2": {
+                "en": "usage with all kinds of admin ports and reverse proxies optimized; problems with astro functions fixed",
+                "de": "Verwendung mit allen Arten von Admin-Ports und Reverse-Proxys optimiert; Probleme mit Astrofunktionen behoben",
+                "ru": "оптимизировано использование всех видов административных портов и обратных прокси; исправлены проблемы с астро-функциями",
+                "pt": "uso com todos os tipos de portas administrativas e proxies reversos otimizados; problemas com funções astro corrigidas",
+                "nl": "gebruik met allerlei beheerpoorten en geoptimaliseerde reverse-proxy's; problemen met astro-functies opgelost",
+                "fr": "utilisation avec toutes sortes de ports d'administration et de proxys inversés optimisés; problèmes avec les fonctions astro corrigés",
+                "it": "utilizzo ottimizzato con tutti i tipi di porte di amministrazione e proxy inversi; problemi con le funzioni astro risolti",
+                "es": "uso con todo tipo de puertos de administración y servidores proxy optimizados; problemas con las funciones astro solucionadas",
+                "pl": "korzystanie ze wszystkich rodzajów zoptymalizowanych portów administracyjnych i zwrotnych serwerów proxy; naprawiono problemy z funkcjami astro",
+                "zh-cn": "与各种管理端口和反向代理一起使用的优化；修复了astro功能的问题"
             },
             "4.4.0": {
                 "en": "Fixed the authentication error detection",
