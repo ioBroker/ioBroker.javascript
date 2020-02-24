@@ -1551,6 +1551,17 @@ function getData(callback) {
         adapter.config.latitude = parseFloat(adapter.config.latitude);
         adapter.config.longitude = parseFloat(adapter.config.longitude);
 
+        adapter.config.sunriseEvent = adapter.config.sunriseEvent || 'nightEnd';
+        adapter.config.sunriseOffset = adapter.config.sunriseOffset || 0;
+        adapter.config.sunriseLimitStart = adapter.config.sunriseLimitStart || '06:00';
+        adapter.config.sunriseLimitEnd = adapter.config.sunriseLimitEnd || '12:00';
+
+        adapter.config.sunsetEvent = adapter.config.sunsetEvent || 'dusk';
+        adapter.config.sunsetOffset = adapter.config.sunsetOffset || 0;
+        adapter.config.sunsetLimitStart = adapter.config.sunsetLimitStart || '18:00';
+        adapter.config.sunsetLimitEnd = adapter.config.sunsetLimitEnd || '23:00';
+
+
         objectsReady = true;
         adapter.log.info('received all objects');
         statesReady && typeof callback === 'function' && callback();
