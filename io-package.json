@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.4.2",
+        "version": "4.4.3",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.4.3": {
+                "en": "Added JSONata for Object conversion",
+                "de": "JSONata für die Objektkonvertierung hinzugefügt",
+                "ru": "Добавлена JSONata для преобразования объектов",
+                "pt": "Adicionado JSONata para conversão de objeto",
+                "nl": "JSONata toegevoegd voor objectconversie",
+                "fr": "Ajout de la conversion JSONata pour objet",
+                "it": "Aggiunto JSONata per la conversione di oggetti",
+                "es": "Se agregó JSONata para la conversión de objetos",
+                "pl": "Dodano JSONata do konwersji obiektów",
+                "zh-cn": "添加了用于对象转换的JSONata"
+            },
             "4.4.2": {
                 "en": "usage with all kinds of admin ports and reverse proxies optimized; problems with astro functions fixed",
                 "de": "Verwendung mit allen Arten von Admin-Ports und Reverse-Proxys optimiert; Probleme mit Astrofunktionen behoben",
@@ -69,78 +81,6 @@
                 "es": "reparó la carga de archivos zip si hay más de un host",
                 "pl": "naprawiono ładowanie plików zip, jeśli więcej niż jeden host",
                 "zh-cn": "如果一台以上的主机修复了zip文件的加载"
-            },
-            "4.3.3": {
-                "en": "Search in scripts was corrected",
-                "de": "Suche in Skripten wurde korrigiert",
-                "ru": "Поиск в скриптах был исправлен",
-                "pt": "A pesquisa nos scripts foi corrigida",
-                "nl": "Zoeken in scripts is gecorrigeerd",
-                "fr": "La recherche dans les scripts a été corrigée",
-                "it": "La ricerca negli script è stata corretta",
-                "es": "Se corrigió la búsqueda en guiones",
-                "pl": "Wyszukiwanie w skryptach zostało poprawione",
-                "zh-cn": "脚本搜索已更正"
-            },
-            "4.3.2": {
-                "en": "Fixed syntax help for Node.js runtime methods (#418)\nTarget ES 2017 in TypeScript (#419)\nAutomatically load declarations for 3rd party modules (#422)\nFunctions with non latin text are working now",
-                "de": "Syntaxhilfe für Node.js Laufzeitmethoden behoben (# 418)\nTarget ES 2017 in TypeScript (Nr. 419)\nDeklarationen für Module von Drittanbietern automatisch laden (# 422)\nFunktionen mit nicht lateinischem Text funktionieren jetzt",
-                "ru": "Исправлена синтаксическая справка для методов выполнения Node.js (# 418)\nTarget ES 2017 в TypeScript (# 419)\nАвтоматически загружать объявления для сторонних модулей (# 422)\nФункции с нелатинским текстом теперь работают",
-                "pt": "Correção da ajuda de sintaxe para os métodos de tempo de execução do Node.js. (# 418)\nDestino ES 2017 em TypeScript (# 419)\nCarregar declarações automaticamente para módulos de terceiros (# 422)\nFunções com texto não latino estão funcionando agora",
-                "nl": "Syntax-help voor runtime-methoden van Node.js opgelost (# 418)\nTarget ES 2017 in TypeScript (# 419)\nLaad automatisch declaraties voor modules van derden (# 422)\nFuncties met niet-Latijnse tekst werken nu",
-                "fr": "Aide sur la syntaxe fixe pour les méthodes d'exécution Node.js (# 418)\nTarget ES 2017 en TypeScript (# 419)\nCharger automatiquement les déclarations pour les modules tiers (# 422)\nLes fonctions avec du texte non latin fonctionnent maintenant",
-                "it": "Guida alla sintassi corretta per i metodi di runtime Node.js (# 418)\nTarget ES 2017 in TypeScript (# 419)\nCarica automaticamente le dichiarazioni per i moduli di terze parti (# 422)\nLe funzioni con testo non latino ora funzionano",
-                "es": "Ayuda de sintaxis fija para los métodos de tiempo de ejecución de Node.js (# 418)\nTarget ES 2017 en TypeScript (# 419)\nCargar automáticamente declaraciones para módulos de terceros (# 422)\nLas funciones con texto no latino están funcionando ahora",
-                "pl": "Naprawiono pomoc dotyczącą składni metod środowiska wykonawczego Node.js (# 418)\nTarget ES 2017 w TypeScript (# 419)\nAutomatycznie ładuj deklaracje dla modułów zewnętrznych (# 422)\nDziałają teraz funkcje z tekstem innym niż łaciński",
-                "zh-cn": "修复了Node.js运行时方法的语法帮助（＃418）\n使用TypeScript的Target ES 2017（＃419）\n自动加载第三方模块的声明（＃422）\n非拉丁文字功能现在可以使用"
-            },
-            "4.3.1": {
-                "en": "Corrected login with non-admin user\nCorrected log\nSome GUI fixes done",
-                "de": "Korrigierte Anmeldung mit Nicht-Administrator-Benutzer\nKorrigiertes Protokoll\nEinige GUI-Korrekturen wurden durchgeführt",
-                "ru": "Исправлен логин с не-администратором\nИсправленный журнал\nСделано несколько исправлений в GUI",
-                "pt": "Login corrigido com usuário não administrador\nLog corrigido\nAlgumas correções de GUI feitas",
-                "nl": "Gecorrigeerd inloggen met niet-admin gebruiker\nGecorrigeerd logboek\nEnkele GUI-fixes gedaan",
-                "fr": "Correction de la connexion avec un utilisateur non-administrateur\nJournal corrigé\nQuelques corrections de l'interface graphique effectuées",
-                "it": "Accesso corretto con utente non amministratore\nRegistro corretto\nAlcune correzioni della GUI eseguite",
-                "es": "Inicio de sesión corregido con usuario no administrador\nRegistro corregido\nAlgunas correcciones de GUI realizadas",
-                "pl": "Poprawione logowanie z użytkownikiem niebędącym administratorem\nPoprawiony dziennik\nNiektóre poprawki GUI wykonane",
-                "zh-cn": "更正了非管理员用户的登录\n更正的日志\n完成一些GUI修复"
-            },
-            "4.3.0": {
-                "en": "Log handlers were implemented\nFixed the error with $ selector and with disabled subscribes",
-                "de": "Protokollhandler wurden implementiert\nDer Fehler mit $ Selector und mit deaktivierten Abonnements wurde behoben",
-                "ru": "Обработчики журнала были реализованы\nИсправлена ошибка с $ селектором и с отключенными подписками",
-                "pt": "Manipuladores de log foram implementados\nCorrigido o erro com o seletor $ e com inscrições desabilitadas",
-                "nl": "Log handlers werden geïmplementeerd\nDe fout met $ selector en met uitgeschakelde abonnementen is opgelost",
-                "fr": "Les gestionnaires de journaux ont été mis en œuvre\nCorrection de l'erreur avec le sélecteur $ et les abonnés désactivés",
-                "it": "I gestori di log sono stati implementati\nRisolto l'errore con $ selector e con le sottoscrizioni disabilitate",
-                "es": "Se implementaron controladores de registro\nSe corrigió el error con $ selector y con suscripciones deshabilitadas",
-                "pl": "Procedury obsługi dzienników zostały zaimplementowane\nNaprawiono błąd z selektorem $ i wyłączonymi subskrybentami",
-                "zh-cn": "日志处理程序已实现\n修复了$选择器和禁用订阅的错误"
-            },
-            "4.2.1": {
-                "en": "Implemented inter-script communication.\nImplemented the mirroring on disk\nTranslation for other languages was added",
-                "de": "Implementierung der Kommunikation zwischen Skripten.\nImplementierte die Spiegelung auf der Festplatte\nÜbersetzung für andere Sprachen wurde hinzugefügt",
-                "ru": "Реализовано межскриптное общение.\nРеализовано зеркалирование на диске\nДобавлен перевод на другие языки",
-                "pt": "Comunicação entre scripts implementada.\nImplementado o espelhamento no disco\nTradução para outras línguas foi adicionada",
-                "nl": "Geïntegreerde communicatie tussen scripts.\nDe mirroring op schijf geïmplementeerd\nVertaling voor andere talen is toegevoegd",
-                "fr": "Implémentation de la communication inter-script.\nImplémenter la mise en miroir sur le disque\nLa traduction dans d'autres langues a été ajoutée",
-                "it": "Implementata comunicazione tra script.\nImplementato il mirroring su disco\nÈ stata aggiunta la traduzione per altre lingue",
-                "es": "Comunicación entre guiones implementada.\nImplementado la duplicación en disco\nSe agregó traducción para otros idiomas",
-                "pl": "Wdrożono komunikację między skryptami.\nZaimplementowano dublowanie na dysku\nDodano tłumaczenie na inne języki",
-                "zh-cn": "实现脚本间通信。\n在磁盘上实现镜像\n添加了其他语言的翻译"
-            },
-            "4.1.17": {
-                "en": "Optimization: do not make useless iterations\nAllow to make requests to sites with self/signed certificates",
-                "de": "Optimierung: Machen Sie keine nutzlosen Iterationen\nAnfragen an Sites mit selbst signierten Zertifikaten zulassen",
-                "ru": "Оптимизация: не делайте бесполезных итераций\nРазрешить делать запросы к сайтам с самозаверяющими / подписанными сертификатами",
-                "pt": "Otimização: não faça iterações inúteis\nPermitir fazer solicitações para sites com certificados autoassinados",
-                "nl": "Optimalisatie: maak geen nutteloze iteraties\nToestaan om verzoeken te doen aan sites met zelf / ondertekende certificaten",
-                "fr": "Optimisation: ne faites pas d'itérations inutiles\nAutoriser à faire des demandes aux sites avec des certificats auto-signés",
-                "it": "Ottimizzazione: non effettuare iterazioni inutili\nConsentire di effettuare richieste a siti con certificati autofirmati",
-                "es": "Optimización: no hagas iteraciones inútiles\nPermitir realizar solicitudes a sitios con certificados autofirmados",
-                "pl": "Optymalizacja: nie rób bezużytecznych iteracji\nZezwól na wysyłanie żądań do witryn z samopodpisanymi certyfikatami",
-                "zh-cn": "优化：不要进行无用的迭代\n允许向具有自签名/签名证书的站点发出请求"
             },
             "3.7.0": {
                 "en": "Used VM2 as sandbox. The script errors will be caught.\nrefactoring: split into many modules",

@@ -31,13 +31,14 @@
         - [Get actual time im specific format](#get-actual-time-im-specific-format)
         - [Get time of astro events for today](#get-time-of-astro-events-for-today)
     - [Convert blocks](#convert-blocks)
-        - [Convert to number](convert-to-number)
-        - [Convert to boolean](convert-to-boolean)
-        - [Get type of variable](get-type-of-variable)
-        - [Convert to date/time object](convert-to-datetime-object)
-        - [Convert date/time object to string](convert-datetime-object-to-string)    
-        - [Convert JSON to object](convert-json-to-object)
-        - [Convert object to JSON](convert-object-to-json)
+        - [Convert to number](#convert-to-number)
+        - [Convert to boolean](#convert-to-boolean)
+        - [Get type of variable](#get-type-of-variable)
+        - [Convert to date/time object](#convert-to-datetime-object)
+        - [Convert date/time object to string](#convert-datetime-object-to-string)    
+        - [Convert JSON to object](#convert-json-to-object)
+        - [Convert object to JSON](#convert-object-to-json)
+        - [Convert by JSONata Expression](#convert-by-jsonata-expression)
     - [Trigger](#trigger)
         - [Trigger on states change](#trigger-on-states-change)
         - [Trigger on state change](#trigger-on-state-change)
@@ -1423,11 +1424,25 @@ if not:
 {"a": 1, "b": 2}
 ```
 
+### Convert by JSONata Expression
+![Convert by JSONata Expression](img/convert_by_jsonata_en.png)
 
-&nbsp;
+Convert Javascript object by JSONata expression. You can read more about it here: [https://jsonata.org/](https://jsonata.org/)
 
+Example payload:
 
-&nbsp;
+```
+{"example": [{"value": 4},{"value": 7},{"value": 13}]}
+```
+
+Result: 
+
+```
+[{"value": 4},{"value": 7},{"value": 13}]
+24
+4
+13
+```
 
 ## Trigger
 

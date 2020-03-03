@@ -31,13 +31,14 @@
         - [Получение фактического формата времени](#get-actual-time-im-specific-format)
         - [Получение времени астрономических событий на сегодня](#get-time-of-astro-events-for-today)
     - [Преобразование блоков](#convert-blocks)
-        - [Преобразование к числовому формату](convert-to-number)
-        - [Преобразование к формату Boolean](convert-to-boolean)
-        - [Получение типа переменной](get-type-of-variable)
-        - [Преобразование в date/time object](convert-to-datetime-object)
-        - [Преобразование date/time object к string](convert-datetime-object-to-string)    
-        - [Преобразование JSON к object](convert-json-to-object)
-        - [Преобразование object к JSON](convert-object-to-json)
+        - [Преобразование к числовому формату](#convert-to-number)
+        - [Преобразование к формату Boolean](#convert-to-boolean)
+        - [Получение типа переменной](#get-type-of-variable)
+        - [Преобразование в date/time object](#convert-to-datetime-object)
+        - [Преобразование date/time object к string](#convert-datetime-object-to-string)    
+        - [Преобразование JSON к object](#convert-json-to-object)
+        - [Преобразование object к JSON](#convert-object-to-json)
+        - [Преобразование c JSONata выражением](#convert-by-jsonata-expression)
     - [Триггер](#trigger)
         - [Триггер по состояниям](#trigger-on-states-change)
         - [Триггер по изменению состояния](#trigger-on-state-change)
@@ -1274,6 +1275,28 @@ sendTo("sql.0", "getHistory", {
 ```
 {"a": 1, "b": 2}
 ```
+
+
+### Преобразование c JSONata выражением
+![Convert by JSONata Expression](img/convert_by_jsonata_en.png)
+
+Конвертировать объект Javascript по выражению JSONata. Вы можете прочитать больше об этом здесь: [https://jsonata.org/](https://jsonata.org/)
+
+Пример полезной нагрузки:
+
+```
+{"example": [{"value": 4},{"value": 7},{"value": 13}]}
+```
+
+Результат: 
+
+```
+[{"value": 4},{"value": 7},{"value": 13}]
+24
+4
+13
+```
+
 
 ## Триггер
 
