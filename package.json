@@ -37,7 +37,8 @@
     "suncalc2": "^1.8.1",
     "typescript": "^3.6.3",
     "virtual-tsc": "^0.5.0",
-    "wake_on_lan": "^1.0.0"
+    "wake_on_lan": "^1.0.0",
+    "jsonata": "^1.8.1"
   },
   "devDependencies": {
     "@types/iobroker": "^1.4.12",
