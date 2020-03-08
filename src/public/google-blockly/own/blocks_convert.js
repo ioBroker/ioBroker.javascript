@@ -334,3 +334,33 @@ Blockly.JavaScript.convert_object2json = function (block) {
     return ['JSON.stringify(' + Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + (prettify == 'TRUE' ? ', null, 2' : '') + ')', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
+// --- to single value -------------------------------------------
+Blockly.Convert.blocks['convert_jsonata'] =
+    '<block type="convert_jsonata">'
+    + '     <value name="EXPRESSION">'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">*</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="TARGET">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks.convert_jsonata = {
+    init: function () {
+
+        this.appendValueInput('EXPRESSION')
+            .appendField(Blockly.Words['convert_jsonata'][systemLang]);
+
+        this.appendValueInput('TARGET')
+            .appendField(Blockly.Words['convert_jsonata_target'][systemLang]);
+
+        this.setInputsInline(true);
+        this.setColour(Blockly.Convert.HUE);
+        this.setOutput(true, 'String');
+        this.setTooltip(Blockly.Words['convert_jsonata_tooltip'][systemLang])
+    }
+};
+Blockly.JavaScript.convert_jsonata = function (block) {
+    return ['jsonataExpression(' + Blockly.JavaScript.valueToCode(block, 'TARGET', Blockly.JavaScript.ORDER_ATOMIC) + ',' + Blockly.JavaScript.valueToCode(block, 'EXPRESSION', Blockly.JavaScript.ORDER_ATOMIC) + ')', Blockly.JavaScript.ORDER_ATOMIC];
+};
