@@ -249,6 +249,7 @@
 
         showHideSettings();
         list2chips('.libraries', settings.libraries || '', onChange);
+        list2chips('.libraryTypings', settings.libraryTypings || '', onChange);
 
         $('.tab-astro').on('click', function () {
             updateMap();
@@ -368,6 +369,7 @@
             }
         });
         obj.libraries = chips2list('.libraries');
+        obj.libraryTypings = chips2list('.libraryTypings');
 
         if (obj.latitude.indexOf('°') !== -1) {
             if (!convertGrad(obj, 'latitude')) {
@@ -415,6 +417,12 @@
                 <div class="col s12">
                     <label class="translate">Additional npm modules:</label>
                     <div class="chips libraries"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <label class="translate">Activate syntax help for these npm modules:</label>
+                    <div class="chips libraryTypings"></div>
                 </div>
             </div>
             <div class="row">
