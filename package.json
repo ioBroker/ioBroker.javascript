@@ -26,9 +26,9 @@
     "vm2": "^3.8.4"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^1.0.3",
+    "@iobroker/adapter-core": "^2.2.1",
     "@types/node": "^10.17.17",
-    "@types/request": "^2.48.3",
+    "@types/request": "^2.48.4",
     "coffee-compiler": "^0.3.2",
     "coffee-script": "^1.12.7",
     "jsonata": "^1.8.1",
@@ -36,23 +36,23 @@
     "request": "^2.88.0",
     "semver": "^6.3.0",
     "suncalc2": "^1.8.1",
-    "typescript": "^3.6.3",
+    "typescript": "^3.8.3",
     "virtual-tsc": "^0.5.0",
     "wake_on_lan": "^1.0.0"
   },
   "devDependencies": {
-    "@types/iobroker": "^1.4.12",
-    "alcalzone-shared": "^2.0.0",
+    "@types/iobroker": "^2.2.1",
+    "alcalzone-shared": "^2.2.0",
     "chai": "^4.2.0",
     "del": "^5.1.0",
-    "eslint": "^6.6.0",
+    "eslint": "^6.8.0",
     "gulp": "^4.0.2",
     "gulp-connect": "^5.7.0",
     "gulp-exec": "^4.0.0",
-    "gulp-rename": "^1.4.0",
+    "gulp-rename": "^2.0.0",
     "gulp-replace": "^1.0.0",
     "gulp-watch": "^5.0.1",
-    "mocha": "^6.2.2",
+    "mocha": "^7.1.1",
     "timekeeper": "^2.2.0"
   },
   "bugs": {
