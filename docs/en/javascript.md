@@ -796,8 +796,16 @@ This function must be always used with callback. "data" is a buffer.
 
 ### existsState
 ```js
-existsState(id);
+existsState(id, function (err, isExists) {});
 ```
+
+If option "Do not subscribe all states on start" is deactivated, you can use simplier call:
+
+```js
+existsState(id)
+```
+the function returns in this case true or false.
+
 Checks if a state exists.
 
 ### getObject
