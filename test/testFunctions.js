@@ -1064,7 +1064,7 @@ describe('Test JS', function() {
             }
 
             function handler(result, req, obj) {
-                //log ('handler: ' + JSON.stringify (req));
+                log ('handler: ' + JSON.stringify(req));
                 if (typeof result.val === 'object') {
                     Object.keys(result.val).forEach(n => {
                         addResult('obj.state.' + n + '=' + obj.state[n] + ' val.' + n + '=' + result.val[n]);
