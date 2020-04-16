@@ -1064,9 +1064,10 @@ describe('Test JS', function() {
             }
 
             function handler(result, req, obj) {
-                log ('handler: ' + JSON.stringify(req) + ' / ' + JSON.stringify(obj));
+                log ('handler: result=' + JSON.stringify(result) + ' / req=' + JSON.stringify(req) + ' / obj=' + JSON.stringify(obj));
                 if (obj.ts < result.initTs && obj.val === result.before && obj.ack === result.ack) {
                     // we got the value subscribe for the "start" value too, ignore it
+                    log('IGNORED');
                     return;
                 }
                 if (typeof result.val === 'object') {
