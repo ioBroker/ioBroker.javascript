@@ -1513,7 +1513,7 @@ function getData(callback) {
 
     adapter.log.info('requesting all objects');
 
-    adapter.objects.getObjectList({ include_docs: true }, (err, res) => {
+    adapter.getObjectList({ include_docs: true }, (err, res) => {
         res = res.rows;
         context.objects = {};
         for (let i = 0; i < res.length; i++) {
