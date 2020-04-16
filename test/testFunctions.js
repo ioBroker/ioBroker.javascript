@@ -1072,6 +1072,10 @@ describe('Test JS', function() {
                     });
 
                 } else if (result.val !== undefined) {
+                    if (result.ts < req.initTs && result.val === req.before && result.ack === req.ack) {
+                        // we got the value subscribe for the "start" value too, ignore it
+                        return;
+                    }
                     addResult('obj.state.val=' + obj.state.val + ' val=' + result.val);
                     result.nok = result.nok || (result.val !== obj.state.val);
                 }
@@ -1102,6 +1106,7 @@ describe('Test JS', function() {
                     if (req.cnt === undefined) {
                         req.cnt = 1;
                     }
+                    req.initTs = Date.now();
 
                     const sub = on(obj, handler.bind(1, req, obj));
                     if (!ar) {
