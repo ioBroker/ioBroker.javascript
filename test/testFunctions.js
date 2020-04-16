@@ -1064,7 +1064,11 @@ describe('Test JS', function() {
             }
 
             function handler(result, req, obj) {
-                log ('handler: ' + JSON.stringify(req));
+                log ('handler: ' + JSON.stringify(req) + ' / ' + JSON.stringify(obj));
+                if (obj.ts < result.initTs && obj.val === result.before && obj.ack === result.ack) {
+                    // we got the value subscribe for the "start" value too, ignore it
+                    return;
+                }
                 if (typeof result.val === 'object') {
                     Object.keys(result.val).forEach(n => {
                         addResult('obj.state.' + n + '=' + obj.state[n] + ' val.' + n + '=' + result.val[n]);
@@ -1072,10 +1076,6 @@ describe('Test JS', function() {
                     });
 
                 } else if (result.val !== undefined) {
-                    if (result.ts < req.initTs && result.val === req.before && result.ack === req.ack) {
-                        // we got the value subscribe for the "start" value too, ignore it
-                        return;
-                    }
                     addResult('obj.state.val=' + obj.state.val + ' val=' + result.val);
                     result.nok = result.nok || (result.val !== obj.state.val);
                 }
