@@ -1168,7 +1168,7 @@ describe('Test JS', function() {
 
         const recs = scriptFunction('recs');
         const TEST_VAR = scriptFunction('TEST_VAR');
-        this.timeout(10000 + 500 * recs.length);
+        this.timeout(10000 + 1000 * recs.length);
 
         function createObjects(callback) {
             const channel = TEST_VAR.replace(/\.[^.]+$/, '');
