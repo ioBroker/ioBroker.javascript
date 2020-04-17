@@ -1143,7 +1143,7 @@ describe('Test JS', function() {
                     (function doIt() {
                         if (cnt >= recs.length) return;
                         const rec = recs[cnt++];
-                        createTest(rec[0], rec[1], rec[2], doIt);
+                        createTest(rec[0], rec[1], rec[2], () => setTimeout(doIt, 1000));
                     })();
                 });
             }
@@ -1168,7 +1168,7 @@ describe('Test JS', function() {
 
         const recs = scriptFunction('recs');
         const TEST_VAR = scriptFunction('TEST_VAR');
-        this.timeout(10000 + 1000 * recs.length);
+        this.timeout(10000 + 2000 * recs.length);
 
         function createObjects(callback) {
             const channel = TEST_VAR.replace(/\.[^.]+$/, '');
