@@ -10,11 +10,11 @@ tmp
 old-admin
 .idea
 .git
+.github
 .gitignore
 .vscode
 .eslintrc.json
 .gitattributes
-.gitignore
 node_modules
 appveyor.yml
 package-lock.json
