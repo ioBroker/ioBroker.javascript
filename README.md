@@ -33,6 +33,13 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.5.0 (2020-04-17)
+* (Apollon77) Nodejs 10 is new minimum Version!
+* (Apollon77) Add Sentry for use in js-controller 3.0 and React component
+* (Apollon77) prevent warnings with js-controller 3.0
+* (Garfonso) fix enum object cache handling
+* (bluefox/Apollon77) enhance existsState
+
 ### 4.4.3 (2020-03-03)
 * (klein0r) Added JSONata for Object conversion
 

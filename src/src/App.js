@@ -145,7 +145,7 @@ class App extends Component {
                 case 'https:':
                     port = 443;
                     break;
-                case 'http:':
+                default:
                     port = 80;
                     break;
             }

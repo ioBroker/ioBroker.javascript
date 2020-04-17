@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import * as Sentry from '@sentry/browser';
+import * as SentryIntegrations from '@sentry/integrations';
 import { MuiThemeProvider} from '@material-ui/core/styles';
 import createTheme from '@iobroker/adapter-react/createTheme';
 
@@ -21,6 +23,13 @@ function build() {
     </MuiThemeProvider>, document.getElementById('root'));
 
 }
+
+Sentry.init({
+    dsn: "https://504499a725eb4898930d3b9e9da95740@sentry.iobroker.net/56",
+    integrations: [
+        new SentryIntegrations.Dedupe()
+    ]
+});
 
 build();
 // If you want your app to work offline and load faster, you can change
