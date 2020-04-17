@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.5.0",
+        "version": "4.5.1",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,7 +22,7 @@
             "AlCalzone"
         ],
         "news": {
-            "4.5.0": {
+            "4.5.1": {
                 "en": "REQUIRES node.js 10, js-controller 3.0 warnings prevented, Added Sentry for use with js-controller 3.0",
                 "de": "ERFORDERLICH node.js 10, Warnungen vor js-controller 3.0 verhindert, Sentry zur Verwendung mit js-controller 3.0 hinzugefügt",
                 "ru": "ТРЕБУЕТСЯ node.js 10, предупреждения js-controller 3.0 предотвращены, добавлен Sentry для использования с js-controller 3.0",
