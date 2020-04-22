@@ -9,7 +9,7 @@ require.config({ paths: { 'vs': 'vs' }});
 // Allow localisation
 
 // All languages in monaco-editor
-var availableLanguages = ['de', 'fr', 'es', 'it', 'ja', 'ru', 'ko', 'zh-tw', 'zh-cn'];
+var availableLanguages = ['de', 'en', 'fr', 'es', 'it', 'ja', 'ru', 'ko', 'zh-tw', 'zh-cn'];
 // find the best match
 function findLanguage() {
     if (navigator.languages && Array.isArray(navigator.languages)) {
