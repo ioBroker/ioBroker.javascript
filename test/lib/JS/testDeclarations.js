@@ -40,3 +40,6 @@ if (state1.ack) {
     let test2 = state1.val * 100;
     test2 += 100;
 }
+
+// Repro from #539
+$('*').setState(1);
