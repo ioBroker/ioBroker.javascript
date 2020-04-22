@@ -27,7 +27,7 @@ function findLanguage() {
 
 var language = findLanguage();
 // if we have a match, configure the editor
-if (language != null) {
+if (language != null && language !== 'en') {
     require.config({
         'vs/nls': {
             availableLanguages: {
