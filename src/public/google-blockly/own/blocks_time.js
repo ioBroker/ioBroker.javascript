@@ -1,8 +1,10 @@
 'use strict';
 
-goog.provide('Blockly.JavaScript.Time');
+if (typeof goog !== 'undefined') {
+    goog.provide('Blockly.JavaScript.Time');
 
-goog.require('Blockly.JavaScript');
+    goog.require('Blockly.JavaScript');
+}
 
 Blockly.CustomBlocks = Blockly.CustomBlocks || [];
 Blockly.CustomBlocks.push('Time');

@@ -24,13 +24,15 @@
  */
 'use strict';
 
-goog.provide('Blockly.FieldScript');
+if (typeof goog !== 'undefined') {
+    goog.provide('Blockly.FieldScript');
 
-goog.require('Blockly.Field');
-goog.require('Blockly.Msg');
-goog.require('goog.asserts');
-goog.require('goog.dom');
-goog.require('goog.userAgent');
+    goog.require('Blockly.Field');
+    goog.require('Blockly.Msg');
+    goog.require('goog.asserts');
+    goog.require('goog.dom');
+    goog.require('goog.userAgent');
+}
 
 Blockly.b64EncodeUnicode = function(text) {
     return btoa(encodeURIComponent(text).replace(/%([0-9A-F]{2})/g, function(match, p) {
@@ -50,7 +52,6 @@ Blockly.b64DecodeUnicode = function(text) {
     }
 };
 
-
 /**
  * Class for an editable text field.
  * @param {string} text The initial content of the field.
@@ -64,8 +65,11 @@ Blockly.b64DecodeUnicode = function(text) {
 Blockly.FieldScript = function(text) {
     Blockly.FieldScript.superClass_.constructor.call(this, text);
 };
-goog.inherits(Blockly.FieldScript, Blockly.Field);
-
+if (typeof goog !== 'undefined') {
+    goog.inherits(Blockly.FieldScript, Blockly.Field);
+} else {
+    Blockly.utils.object.inherits(Blockly.FieldScript, Blockly.Field);
+}
 /**
  * Point size of text.  Should match blocklyText's font-size in CSS.
  */
@@ -134,22 +138,22 @@ Blockly.FieldScript.prototype.showEditor_ = function(opt_quietInput) {
  * @private
  */
 Blockly.FieldScript.prototype.render_ = function() {
-    var width = Blockly.BlockSvg.SEP_SPACE_X * 3;
-    if (this.visible_) {
-        this.borderRect_ && this.borderRect_.setAttribute('width', width);
-        if (!this.textElement_.childNodes.length) {
-            var textNode = document.createTextNode('</>');
-            this.textElement_.appendChild(textNode);
-            this.textElement_.setAttribute('text-anchor', 'start');
-            this.textElement_.setAttribute('x', 0);
-        }
+    // the implementation is taken from field.js => Blockly.Field.prototype.updateSize_
+    var constants = this.getConstants();
+    var xOffset = this.borderRect_ ? this.getConstants().FIELD_BORDER_RECT_X_PADDING : 0;
+    var totalWidth = xOffset * 2 + 12;
+    var totalHeight = constants.FIELD_TEXT_HEIGHT;
 
-        //      this.size_.height = Blockly.BlockSvg.MIN_BLOCK_Y;
-//        this.size_.width = Blockly.Field.getCachedWidth(this.textElement_);
-    } else {
-        width = 0;
+    if (this.borderRect_) {
+        totalHeight = Math.max(totalHeight, constants.FIELD_BORDER_RECT_HEIGHT);
     }
-    this.size_.width = width;
+
+    this.size_.height = totalHeight;
+    this.size_.width = totalWidth;
+
+    this.positionTextElement_(xOffset, 12);
+    this.positionBorderRect_();
+    this.textElement_.textContent = '...';
 };
 
 /**
@@ -157,7 +161,7 @@ Blockly.FieldScript.prototype.render_ = function() {
  * @private
  */
 Blockly.FieldScript.prototype.updateTextNode_ = function() {
-    var width = Blockly.BlockSvg.SEP_SPACE_X * 3;
+    var width = (Blockly.BlockSvg.SEP_SPACE_X || 5) * 3;
     if (!this.textElement_) {
         // Not rendered yet.
         return;

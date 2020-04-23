@@ -2,14 +2,11 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.pl');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Dodaj Komentarz";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Nie można usunąć zmiennej '%1', ponieważ jest częścią definicji funkcji '%2'";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Zmień wartość:";
 Blockly.Msg["CLEAN_UP"] = "Uporządkuj Bloki";
+Blockly.Msg["COLLAPSED_WARNINGS_WARNING"] = "Collapsed blocks contain warnings.";  // untranslated
 Blockly.Msg["COLLAPSE_ALL"] = "Zwiń Bloki";
 Blockly.Msg["COLLAPSE_BLOCK"] = "Zwiń Klocek";
 Blockly.Msg["COLOUR_BLEND_COLOUR1"] = "kolor 1";
@@ -206,7 +203,7 @@ Blockly.Msg["MATH_ARITHMETIC_TOOLTIP_DIVIDE"] = "Zwróć iloraz dwóch liczb.";
 Blockly.Msg["MATH_ARITHMETIC_TOOLTIP_MINUS"] = "Zwróć różnicę dwóch liczb.";
 Blockly.Msg["MATH_ARITHMETIC_TOOLTIP_MULTIPLY"] = "Zwróć iloczyn dwóch liczb.";
 Blockly.Msg["MATH_ARITHMETIC_TOOLTIP_POWER"] = "Zwróć pierwszą liczbę podniesioną do potęgi o wykładniku drugiej liczby.";
-Blockly.Msg["MATH_ATAN2_HELPURL"] = "https://en.wikipedia.org/wiki/Atan2";  // untranslated
+Blockly.Msg["MATH_ATAN2_HELPURL"] = "https://en.wikipedia.org/wiki/Atan2";
 Blockly.Msg["MATH_ATAN2_TITLE"] = "atan2 of X:%1 Y:%2";  // untranslated
 Blockly.Msg["MATH_ATAN2_TOOLTIP"] = "Return the arctangent of point (X, Y) in degrees from -180 to 180.";  // untranslated
 Blockly.Msg["MATH_CHANGE_HELPURL"] = "https://en.wikipedia.org/wiki/Programming_idiom#Incrementing_a_counter";
@@ -392,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "usuń spacje z prawej strony";
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Zwraca kopię tekstu z usuniętymi spacjami z jednego lub z obu końców tekstu.";
 Blockly.Msg["TODAY"] = "Dzisiaj";
 Blockly.Msg["UNDO"] = "Cofnij";
+Blockly.Msg["UNNAMED_KEY"] = "bez nazwy";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "element";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Utwórz klocek 'ustaw %1'";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -402,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Wartości zmiennej i  wejście będą identyczne.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "Zmienna o nazwie '%1' już istnieje.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "Zmienna o nazwie '%1' już istnieje i jest typu '%2'.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Blockly Workspace";  // untranslated
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Powiedz coś...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];

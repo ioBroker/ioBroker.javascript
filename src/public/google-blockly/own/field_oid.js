@@ -24,14 +24,15 @@
  */
 'use strict';
 
-goog.provide('Blockly.FieldOID');
+if (typeof goog !== 'undefined') {
+    goog.provide('Blockly.FieldOID');
 
-goog.require('Blockly.Field');
-goog.require('Blockly.Msg');
-goog.require('goog.asserts');
-goog.require('goog.dom');
-goog.require('goog.userAgent');
-
+    goog.require('Blockly.Field');
+    goog.require('Blockly.Msg');
+    goog.require('goog.asserts');
+    goog.require('goog.dom');
+    goog.require('goog.userAgent');
+}
 
 /**
  * Class for an editable text field.
@@ -46,7 +47,11 @@ goog.require('goog.userAgent');
 Blockly.FieldOID = function(text) {
     Blockly.FieldOID.superClass_.constructor.call(this, text);
 };
-goog.inherits(Blockly.FieldOID, Blockly.Field);
+if (typeof goog !== 'undefined') {
+    goog.inherits(Blockly.FieldOID, Blockly.Field);
+} else {
+    Blockly.utils.object.inherits(Blockly.FieldOID, Blockly.Field);
+}
 
 /**
  * Point size of text.  Should match blocklyText's font-size in CSS.

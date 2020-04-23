@@ -24,12 +24,15 @@ function build() {
 
 }
 
-Sentry.init({
-    dsn: "https://504499a725eb4898930d3b9e9da95740@sentry.iobroker.net/56",
-    integrations: [
-        new SentryIntegrations.Dedupe()
-    ]
-});
+// if not local development
+if (window.location.host !== 'localhost:3000') {
+    Sentry.init({
+        dsn: "https://504499a725eb4898930d3b9e9da95740@sentry.iobroker.net/56",
+        integrations: [
+            new SentryIntegrations.Dedupe()
+        ]
+    });
+}
 
 build();
 // If you want your app to work offline and load faster, you can change

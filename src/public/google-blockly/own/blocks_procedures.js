@@ -51,16 +51,17 @@ Blockly.Procedures.allProcedures = function(root) {
  */
 Blockly.Procedures.flyoutCategory = function(workspace) {
     var xmlList = [];
+    var utils = (Blockly.Xml.utils ? Blockly.Xml.utils : Blockly.utils.xml);
     if (Blockly.Blocks['procedures_defnoreturn']) {
         // <block type="procedures_defnoreturn" gap="16">
         //     <field name="NAME">do something</field>
         // </block>
-        var block = Blockly.Xml.utils.createElement('block');
+        var block = utils.createElement('block');
         block.setAttribute('type', 'procedures_defnoreturn');
         block.setAttribute('gap', 16);
-        var nameField = Blockly.Xml.utils.createElement('field');
+        var nameField = utils.createElement('field');
         nameField.setAttribute('name', 'NAME');
-        nameField.appendChild(Blockly.Xml.utils.createTextNode(
+        nameField.appendChild((Blockly.Xml.utils ? Blockly.Xml.utils : Blockly.utils.xml).createTextNode(
             Blockly.Msg['PROCEDURES_DEFNORETURN_PROCEDURE']));
         block.appendChild(nameField);
         xmlList.push(block);
@@ -69,19 +70,19 @@ Blockly.Procedures.flyoutCategory = function(workspace) {
         // <block type="procedures_defreturn" gap="16">
         //     <field name="NAME">do something</field>
         // </block>
-        var block = Blockly.Xml.utils.createElement('block');
+        var block = utils.createElement('block');
         block.setAttribute('type', 'procedures_defreturn');
         block.setAttribute('gap', 16);
-        var nameField = Blockly.Xml.utils.createElement('field');
+        var nameField = utils.createElement('field');
         nameField.setAttribute('name', 'NAME');
-        nameField.appendChild(Blockly.Xml.utils.createTextNode(
+        nameField.appendChild((Blockly.Xml.utils ? Blockly.Xml.utils : Blockly.utils.xml).createTextNode(
             Blockly.Msg['PROCEDURES_DEFRETURN_PROCEDURE']));
         block.appendChild(nameField);
         xmlList.push(block);
     }
     if (Blockly.Blocks['procedures_ifreturn']) {
         // <block type="procedures_ifreturn" gap="16"></block>
-        var block = Blockly.Xml.utils.createElement('block');
+        var block = utils.createElement('block');
         block.setAttribute('type', 'procedures_ifreturn');
         block.setAttribute('gap', 16);
         xmlList.push(block);
@@ -90,12 +91,12 @@ Blockly.Procedures.flyoutCategory = function(workspace) {
         // <block type="procedures_defcustomnoreturn" gap="16">
         //     <field name="NAME">do something</field>
         // </block>
-        var block = Blockly.Xml.utils.createElement('block');
+        var block = utils.createElement('block');
         block.setAttribute('type', 'procedures_defcustomnoreturn');
         block.setAttribute('gap', 16);
-        var nameField = Blockly.Xml.utils.createElement('field');
+        var nameField = utils.createElement('field');
         nameField.setAttribute('name', 'NAME');
-        nameField.appendChild(Blockly.Xml.utils.createTextNode(
+        nameField.appendChild((Blockly.Xml.utils ? Blockly.Xml.utils : Blockly.utils.xml).createTextNode(
             Blockly.Msg['PROCEDURES_DEFNORETURN_PROCEDURE']));
         block.appendChild(nameField);
         xmlList.push(block);
@@ -104,12 +105,12 @@ Blockly.Procedures.flyoutCategory = function(workspace) {
         // <block type="procedures_defcustomreturn" gap="16">
         //     <field name="NAME">do something</field>
         // </block>
-        var block = Blockly.Xml.utils.createElement('block');
+        var block = utils.createElement('block');
         block.setAttribute('type', 'procedures_defcustomreturn');
         block.setAttribute('gap', 16);
-        var nameField = Blockly.Xml.utils.createElement('field');
+        var nameField = utils.createElement('field');
         nameField.setAttribute('name', 'NAME');
-        nameField.appendChild(Blockly.Xml.utils.createTextNode(
+        nameField.appendChild((Blockly.Xml.utils ? Blockly.Xml.utils : Blockly.utils.xml).createTextNode(
             Blockly.Msg['PROCEDURES_DEFRETURN_PROCEDURE']));
         block.appendChild(nameField);
         xmlList.push(block);
@@ -120,6 +121,7 @@ Blockly.Procedures.flyoutCategory = function(workspace) {
     }
 
     function populateProcedures(procedureList, templateName) {
+        var utils = (Blockly.Xml.utils ? Blockly.Xml.utils : Blockly.utils.xml);
         for (var i = 0; i < procedureList.length; i++) {
             var name = procedureList[i][0];
             var args = procedureList[i][1];
@@ -128,14 +130,14 @@ Blockly.Procedures.flyoutCategory = function(workspace) {
             //     <arg name="x"></arg>
             //   </mutation>
             // </block>
-            var block = Blockly.Xml.utils.createElement('block');
+            var block = utils.createElement('block');
             block.setAttribute('type', templateName);
             block.setAttribute('gap', 16);
-            var mutation = Blockly.Xml.utils.createElement('mutation');
+            var mutation = utils.createElement('mutation');
             mutation.setAttribute('name', name);
             block.appendChild(mutation);
             for (var j = 0; j < args.length; j++) {
-                var arg = Blockly.Xml.utils.createElement('arg');
+                var arg = utils.createElement('arg');
                 arg.setAttribute('name', args[j]);
                 mutation.appendChild(arg);
             }
@@ -296,7 +298,6 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
     },
     getVars: Blockly.Blocks['procedures_defreturn'].getVars,
     getVarModels: Blockly.Blocks['procedures_defreturn'].getVarModels,
-    renameVar: Blockly.Blocks['procedures_defreturn'].renameVar,
     renameVarById: Blockly.Blocks['procedures_defreturn'].renameVarById,
     updateVarName: Blockly.Blocks['procedures_defreturn'].updateVarName,
     displayRenamedVar_: Blockly.Blocks['procedures_defreturn'].displayRenamedVar_,
@@ -354,7 +355,6 @@ Blockly.Blocks['procedures_defcustomnoreturn'] = {
             Blockly.Procedures.rename);
         nameField.setSpellcheck(false);
         this.appendDummyInput()
-        // .appendField(Blockly.Msg['PROCEDURES_DEFNORETURN_TITLE'])
             .appendField(Blockly.Words['procedures_defcustomnoreturn_name'][systemLang])
             .appendField(nameField, 'NAME')
             .appendField('', 'PARAMS');
@@ -390,7 +390,6 @@ Blockly.Blocks['procedures_defcustomnoreturn'] = {
     },
     getVars: Blockly.Blocks['procedures_defnoreturn'].getVars,
     getVarModels: Blockly.Blocks['procedures_defnoreturn'].getVarModels,
-    renameVar: Blockly.Blocks['procedures_defnoreturn'].renameVar,
     renameVarById: Blockly.Blocks['procedures_defnoreturn'].renameVarById,
     updateVarName: Blockly.Blocks['procedures_defnoreturn'].updateVarName,
     displayRenamedVar_: Blockly.Blocks['procedures_defnoreturn'].displayRenamedVar_,

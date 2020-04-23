@@ -7,3 +7,4 @@ _admin
 package-lock.json
 iob_npm.dode
 /nbproject
+/src/blockly

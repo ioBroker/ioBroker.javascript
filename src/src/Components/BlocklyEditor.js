@@ -544,20 +544,23 @@ class BlocklyEditor extends React.Component {
         let toolboxText = window.document.getElementById('toolbox').outerHTML;
         toolboxText = toolboxText.replace(/{(\w+)}/g, (m, p1) => window.MSG[p1]);
 
-        let blocks = '';
-        const lang = I18n.getLanguage();
-        for (let cb = 0; cb < this.Blockly.CustomBlocks.length; cb++) {
-            const name = this.Blockly.CustomBlocks[cb];
-            // add blocks
-            blocks += '<category name="' + this.Blockly.Words[name][lang] + '" colour="' + this.Blockly[name].HUE + '">';
-            for (const _b in this.Blockly[name].blocks) {
-                if (this.Blockly[name].blocks.hasOwnProperty(_b)) {
-                    blocks += this.Blockly[name].blocks[_b];
+        if (this.Blockly.CustomBlocks) {
+            let blocks = '';
+            const lang = I18n.getLanguage();
+            for (let cb = 0; cb < this.Blockly.CustomBlocks.length; cb++) {
+                const name = this.Blockly.CustomBlocks[cb];
+                // add blocks
+                blocks += '<category name="' + this.Blockly.Words[name][lang] + '" colour="' + this.Blockly[name].HUE + '">';
+                for (const _b in this.Blockly[name].blocks) {
+                    if (this.Blockly[name].blocks.hasOwnProperty(_b)) {
+                        blocks += this.Blockly[name].blocks[_b];
+                    }
                 }
+                blocks += '</category>';
             }
-            blocks += '</category>';
+            toolboxText = toolboxText.replace('<category><block>%%CUSTOM_BLOCKS%%</block></category>', blocks);
         }
-        toolboxText = toolboxText.replace('<category><block>%%CUSTOM_BLOCKS%%</block></category>', blocks);
+
         return toolboxText;
     }
 

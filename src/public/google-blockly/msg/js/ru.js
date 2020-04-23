@@ -2,19 +2,16 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.ru');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Добавить комментарий";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Невозможно удалить переменную '%1', поскольку она является частью определения функции '%2'";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Измените значение:";
 Blockly.Msg["CLEAN_UP"] = "Убрать блоки";
+Blockly.Msg["COLLAPSED_WARNINGS_WARNING"] = "Свёрнутые блоки содержат предупреждения.";
 Blockly.Msg["COLLAPSE_ALL"] = "Свернуть блоки";
 Blockly.Msg["COLLAPSE_BLOCK"] = "Свернуть блок";
 Blockly.Msg["COLOUR_BLEND_COLOUR1"] = "цвет 1";
 Blockly.Msg["COLOUR_BLEND_COLOUR2"] = "цвет 2";
-Blockly.Msg["COLOUR_BLEND_HELPURL"] = "http://meyerweb.com/eric/tools/color-blend/";  // untranslated
+Blockly.Msg["COLOUR_BLEND_HELPURL"] = "https://meyerweb.com/eric/tools/color-blend/#:::rgbp";  // untranslated
 Blockly.Msg["COLOUR_BLEND_RATIO"] = "доля цвета 1";
 Blockly.Msg["COLOUR_BLEND_TITLE"] = "смешать";
 Blockly.Msg["COLOUR_BLEND_TOOLTIP"] = "Смешивает два цвета в заданном соотношении (0.0 - 1.0).";
@@ -25,7 +22,7 @@ Blockly.Msg["COLOUR_RANDOM_TITLE"] = "случайный цвет";
 Blockly.Msg["COLOUR_RANDOM_TOOLTIP"] = "Выбирает цвет случайным образом.";
 Blockly.Msg["COLOUR_RGB_BLUE"] = "синего";
 Blockly.Msg["COLOUR_RGB_GREEN"] = "зелёного";
-Blockly.Msg["COLOUR_RGB_HELPURL"] = "http://www.december.com/html/spec/colorper.html";  // untranslated
+Blockly.Msg["COLOUR_RGB_HELPURL"] = "https://www.december.com/html/spec/colorpercompact.html";  // untranslated
 Blockly.Msg["COLOUR_RGB_RED"] = "красного";
 Blockly.Msg["COLOUR_RGB_TITLE"] = "цвет из";
 Blockly.Msg["COLOUR_RGB_TOOLTIP"] = "Создаёт цвет с указанной пропорцией  красного, зеленого и синего.  Все значения должны быть между 0 и 100.";
@@ -392,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "обрезать пробелы сп�
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Возвращает копию текста с пробелами, удалёнными с одного или обоих концов.";
 Blockly.Msg["TODAY"] = "Сегодня";
 Blockly.Msg["UNDO"] = "Отменить";
+Blockly.Msg["UNNAMED_KEY"] = "без названия";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "элемент";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Создать блок \"присвоить\" для %1";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -402,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Присваивает переменной значение вставки.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "Переменная с именем '%1' уже существует.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "Название переменной '%1' уже используется другой типа: '%2'.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Рабочая область Blockly";
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Напишите здесь что-нибудь...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
