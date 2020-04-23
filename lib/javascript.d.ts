@@ -393,12 +393,12 @@ declare global {
 			/**
 			 * Sets all queried states to the given value.
 			 */
-			setState<T extends StateValue>(id: string, state: T | State<T> | Partial<State<T>>, ack?: boolean, callback?: SetStateCallback): this;
+			setState<T extends StateValue>(state: T | State<T> | Partial<State<T>>, ack?: boolean, callback?: SetStateCallback): this;
 
 			/**
 			 * Sets all queried binary states to the given value.
 			 */
-			setBinaryState: (id: string, state: Buffer, ack?: boolean, callback?: SetStateCallback) => this;
+			setBinaryState(state: Buffer, ack?: boolean, callback?: SetStateCallback): this;
 
 			/**
 			 * Subscribes the given callback to changes of the matched states.

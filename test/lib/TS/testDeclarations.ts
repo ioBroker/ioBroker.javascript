@@ -46,3 +46,6 @@ if (state1.notExist) {
 	let test1 = state1.val! * 100;
 	test1 += 100;
 }
+
+// Repro from #539
+$("*").setState(1);
