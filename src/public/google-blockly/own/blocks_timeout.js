@@ -4,6 +4,12 @@ if (typeof goog !== 'undefined') {
     goog.provide('Blockly.JavaScript.Timeouts');
 
     goog.require('Blockly.JavaScript');
+} else {
+    // define this object for blockly modules from adapters
+    window.goog = {
+        provide: function () {},
+        require: function () {},
+    }
 }
 
 Blockly.CustomBlocks = Blockly.CustomBlocks || [];
@@ -98,16 +104,16 @@ Blockly.Blocks['timeouts_settimeout'] = {
         nameField.setSpellcheck(false);
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['timeouts_settimeout'][systemLang])
+            .appendField(Blockly.Translate('timeouts_settimeout'))
             .appendField(nameField, 'NAME')
-            .appendField(Blockly.Words['timeouts_settimeout_in'][systemLang])
+            .appendField(Blockly.Translate('timeouts_settimeout_in'))
             .appendField(new Blockly.FieldTextInput(1000), "DELAY")
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['timeouts_settimeout_ms'][systemLang], 'ms'],
-                [Blockly.Words['timeouts_settimeout_sec'][systemLang], 'sec'],
-                [Blockly.Words['timeouts_settimeout_min'][systemLang], 'min']
+                [Blockly.Translate('timeouts_settimeout_ms'), 'ms'],
+                [Blockly.Translate('timeouts_settimeout_sec'), 'sec'],
+                [Blockly.Translate('timeouts_settimeout_min'), 'min']
             ]), 'UNIT')
-            .appendField(Blockly.Words['timeouts_settimeout_ms'][systemLang]);
+            .appendField(Blockly.Translate('timeouts_settimeout_ms'));
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -116,7 +122,7 @@ Blockly.Blocks['timeouts_settimeout'] = {
         this.setNextStatement(true, null);
         this.setInputsInline(false);
         this.setColour(Blockly.Timeouts.HUE);
-        this.setTooltip(Blockly.Words['timeouts_settimeout_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('timeouts_settimeout_tooltip'));
         this.setHelpUrl(getHelp('timeouts_settimeout_help'));
     },
     isTimeout_: true,
@@ -167,7 +173,7 @@ Blockly.Timeouts.blocks['timeouts_cleartimeout'] =
 Blockly.Blocks['timeouts_cleartimeout'] = {
     init: function() {
         this.appendDummyInput('NAME')
-            .appendField(Blockly.Words['timeouts_cleartimeout'][systemLang])
+            .appendField(Blockly.Translate('timeouts_cleartimeout'))
             .appendField(new Blockly.FieldDropdown(function () {
                 return scripts.blocklyWorkspace ? Blockly.Timeouts.getAllTimeouts(scripts.blocklyWorkspace) : [];
             }), 'NAME');
@@ -176,7 +182,7 @@ Blockly.Blocks['timeouts_cleartimeout'] = {
         this.setNextStatement(true, null);
         this.setInputsInline(true);
         this.setColour(Blockly.Timeouts.HUE);
-        this.setTooltip(Blockly.Words['timeouts_cleartimeout_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('timeouts_cleartimeout_tooltip'));
         this.setHelpUrl(getHelp('timeouts_cleartimeout_help'));
     }
 };
@@ -202,22 +208,22 @@ Blockly.Timeouts.blocks['timeouts_setinterval'] =
 Blockly.Blocks['timeouts_setinterval'] = {
     init: function() {
         var nameField = new Blockly.FieldTextInput(
-            Blockly.Timeouts.findLegalName(Blockly.Words['timeouts_setinterval_name'][systemLang], this),
+            Blockly.Timeouts.findLegalName(Blockly.Translate('timeouts_setinterval_name'), this),
             Blockly.Timeouts.rename);
 
         nameField.setSpellcheck(false);
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['timeouts_setinterval'][systemLang])
+            .appendField(Blockly.Translate('timeouts_setinterval'))
             .appendField(nameField, 'NAME')
-            .appendField(Blockly.Words['timeouts_setinterval_in'][systemLang])
+            .appendField(Blockly.Translate('timeouts_setinterval_in'))
             .appendField(new Blockly.FieldTextInput(1000), "INTERVAL")
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['timeouts_settimeout_ms'][systemLang], 'ms'],
-                [Blockly.Words['timeouts_settimeout_sec'][systemLang], 'sec'],
-                [Blockly.Words['timeouts_settimeout_min'][systemLang], 'min']
+                [Blockly.Translate('timeouts_settimeout_ms'), 'ms'],
+                [Blockly.Translate('timeouts_settimeout_sec'), 'sec'],
+                [Blockly.Translate('timeouts_settimeout_min'), 'min']
             ]), 'UNIT')
-            .appendField(Blockly.Words['timeouts_setinterval_ms'][systemLang]);
+            .appendField(Blockly.Translate('timeouts_setinterval_ms'));
 
         this.appendStatementInput("STATEMENT")
             .setCheck(null);
@@ -226,7 +232,7 @@ Blockly.Blocks['timeouts_setinterval'] = {
         this.setNextStatement(true, null);
         this.setInputsInline(false);
         this.setColour(Blockly.Timeouts.HUE);
-        this.setTooltip(Blockly.Words['timeouts_setinterval_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('timeouts_setinterval_tooltip'));
         this.setHelpUrl(getHelp('timeouts_setinterval_help'));
     },
     isInterval_: true,
@@ -279,7 +285,7 @@ Blockly.Timeouts.getAllIntervals = function (workspace) {
 Blockly.Blocks['timeouts_clearinterval'] = {
     init: function() {
         this.appendDummyInput("NAME")
-            .appendField(Blockly.Words['timeouts_clearinterval'][systemLang])
+            .appendField(Blockly.Translate('timeouts_clearinterval'))
             .appendField(new Blockly.FieldDropdown(function () {
                 return scripts.blocklyWorkspace ? Blockly.Timeouts.getAllIntervals(scripts.blocklyWorkspace) : [];
             }), "NAME");
@@ -288,7 +294,7 @@ Blockly.Blocks['timeouts_clearinterval'] = {
         this.setNextStatement(true, null);
         this.setInputsInline(true);
         this.setColour(Blockly.Timeouts.HUE);
-        this.setTooltip(Blockly.Words['timeouts_clearinterval_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('timeouts_clearinterval_tooltip'));
         this.setHelpUrl(getHelp('timeouts_clearinterval_help'));
     }
 };

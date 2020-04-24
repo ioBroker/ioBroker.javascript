@@ -1,8 +1,10 @@
 'use strict';
 
-goog.provide('Blockly.JavaScript.System');
+if (typeof goog !== 'undefined') {
+    goog.provide('Blockly.JavaScript.System');
 
-goog.require('Blockly.JavaScript');
+    goog.require('Blockly.JavaScript');
+}
 
 Blockly.CustomBlocks = Blockly.CustomBlocks || [];
 Blockly.CustomBlocks.push('System');
@@ -30,7 +32,7 @@ Blockly.Blocks['debug'] = {
     init: function() {
         this.appendValueInput('TEXT')
             .setCheck(null)
-            .appendField(Blockly.Words['debug'][systemLang]);
+            .appendField(Blockly.Translate('debug'));
 
         this.appendDummyInput()
             .appendField(new Blockly.FieldDropdown([['info', 'log'], ['debug', 'debug'], ['warning', 'warn'], ['error', 'error']]), 'Severity');
@@ -39,7 +41,7 @@ Blockly.Blocks['debug'] = {
         this.setNextStatement(true, null);
         this.setInputsInline(false);
         this.setColour(Blockly.System.HUE);
-        this.setTooltip(Blockly.Words['debug_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('debug_tooltip'));
         this.setHelpUrl(getHelp('debug_help'));
     }
 };
@@ -60,13 +62,13 @@ Blockly.System.blocks['comment'] =
 Blockly.Blocks['comment'] = {
     init: function() {
         this.appendDummyInput('COMMENT')
-            .appendField(new Blockly.FieldTextInput(Blockly.Words['comment'][systemLang]), 'COMMENT');
+            .appendField(new Blockly.FieldTextInput(Blockly.Translate('comment')), 'COMMENT');
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setInputsInline(false);
         this.setColour('#FFFF00');
-        this.setTooltip(Blockly.Words['comment_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('comment_tooltip'));
     }
 };
 
@@ -96,17 +98,17 @@ Blockly.System.blocks['control'] =
 Blockly.Blocks['control'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Words['control'][systemLang]);
+            .appendField(Blockly.Translate('control'));
 
         this.appendDummyInput('OID')
             .appendField(new Blockly.FieldOID('Object ID'), 'OID');
 
         this.appendValueInput('VALUE')
             .setCheck(null)
-            .appendField(Blockly.Words['control_with'][systemLang]);
+            .appendField(Blockly.Translate('control_with'));
 
         this.appendDummyInput('WITH_DELAY')
-            .appendField(Blockly.Words['control_delay'][systemLang])
+            .appendField(Blockly.Translate('control_delay'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function(option) {
                 var delayInput = (option == true);
                 this.sourceBlock_.updateShape_(delayInput);
@@ -117,7 +119,7 @@ Blockly.Blocks['control'] = {
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(Blockly.System.HUE);
-        this.setTooltip(Blockly.Words['control_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('control_tooltip'));
         this.setHelpUrl(getHelp('control_help'));
     },
     mutationToDom: function() {
@@ -138,11 +140,11 @@ Blockly.Blocks['control'] = {
                     .appendField(' ')
                     .appendField(new Blockly.FieldTextInput('1000'), 'DELAY_MS')
                     .appendField(new Blockly.FieldDropdown([
-                        [Blockly.Words['control_ms'][systemLang], 'ms'],
-                        [Blockly.Words['control_sec'][systemLang], 'sec'],
-                        [Blockly.Words['control_min'][systemLang], 'min']
+                        [Blockly.Translate('control_ms'), 'ms'],
+                        [Blockly.Translate('control_sec'), 'sec'],
+                        [Blockly.Translate('control_min'), 'min']
                     ]), 'UNIT');
-                //.appendField(Blockly.Words['control_ms'][systemLang]);
+                //.appendField(Blockly.Translate('control_ms'));
             }
         } else if (inputExists) {
             this.removeInput('DELAY');
@@ -153,7 +155,7 @@ Blockly.Blocks['control'] = {
         if (delayInput) {
             if (!inputExists) {
                 this.appendDummyInput('CLEAR_RUNNING_INPUT')
-                    .appendField(Blockly.Words['control_clear_running'][systemLang])
+                    .appendField(Blockly.Translate('control_clear_running'))
                     .appendField(new Blockly.FieldCheckbox(), 'CLEAR_RUNNING');
             }
         } else if (inputExists) {
@@ -207,13 +209,13 @@ Blockly.System.blocks['toggle'] =
 Blockly.Blocks['toggle'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Words['toggle'][systemLang]);
+            .appendField(Blockly.Translate('toggle'));
 
         this.appendDummyInput('OID')
             .appendField(new Blockly.FieldOID('Object ID'), 'OID');
 
         this.appendDummyInput('WITH_DELAY')
-            .appendField(Blockly.Words['toggle_delay'][systemLang])
+            .appendField(Blockly.Translate('toggle_delay'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function(option) {
                 var delayInput = (option == true);
                 this.sourceBlock_.updateShape_(delayInput);
@@ -223,7 +225,7 @@ Blockly.Blocks['toggle'] = {
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(Blockly.System.HUE);
-        this.setTooltip(Blockly.Words['toggle_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('toggle_tooltip'));
         this.setHelpUrl(getHelp('toggle_help'));
     },
     mutationToDom: function() {
@@ -244,11 +246,11 @@ Blockly.Blocks['toggle'] = {
                     .appendField(' ')
                     .appendField(new Blockly.FieldTextInput('1000'), 'DELAY_MS')
                     .appendField(new Blockly.FieldDropdown([
-                        [Blockly.Words['control_ms'][systemLang], 'ms'],
-                        [Blockly.Words['control_sec'][systemLang], 'sec'],
-                        [Blockly.Words['control_min'][systemLang], 'min']
+                        [Blockly.Translate('control_ms'), 'ms'],
+                        [Blockly.Translate('control_sec'), 'sec'],
+                        [Blockly.Translate('control_min'), 'min']
                     ]), 'UNIT');
-                //.appendField(Blockly.Words['toggle_ms'][systemLang]);
+                //.appendField(Blockly.Translate('toggle_ms'));
             }
         } else if (inputExists) {
             this.removeInput('DELAY');
@@ -259,7 +261,7 @@ Blockly.Blocks['toggle'] = {
         if (delayInput) {
             if (!inputExists) {
                 this.appendDummyInput('CLEAR_RUNNING_INPUT')
-                    .appendField(Blockly.Words['toggle_clear_running'][systemLang])
+                    .appendField(Blockly.Translate('toggle_clear_running'))
                     .appendField(new Blockly.FieldCheckbox(), 'CLEAR_RUNNING');
             }
         } else if (inputExists) {
@@ -335,7 +337,7 @@ Blockly.System.blocks['update'] =
 Blockly.Blocks['update'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Words['update'][systemLang]);
+            .appendField(Blockly.Translate('update'));
 
         this.appendDummyInput('OID')
             .appendField(new Blockly.FieldOID('Object ID'), 'OID');
@@ -343,10 +345,10 @@ Blockly.Blocks['update'] = {
 
         this.appendValueInput('VALUE')
             .setCheck(null)
-            .appendField(Blockly.Words['update_with'][systemLang]);
+            .appendField(Blockly.Translate('update_with'));
 
         this.appendDummyInput('WITH_DELAY')
-            .appendField(Blockly.Words['update_delay'][systemLang])
+            .appendField(Blockly.Translate('update_delay'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function(option) {
                 this.sourceBlock_.updateShape_(option == true);
             }), 'WITH_DELAY');
@@ -355,7 +357,7 @@ Blockly.Blocks['update'] = {
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(Blockly.System.HUE);
-        this.setTooltip(Blockly.Words['update_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('update_tooltip'));
         this.setHelpUrl(getHelp('update_help'));
     },
     mutationToDom: function() {
@@ -376,11 +378,11 @@ Blockly.Blocks['update'] = {
                     .appendField(' ')
                     .appendField(new Blockly.FieldTextInput('1000'), 'DELAY_MS')
                     .appendField(new Blockly.FieldDropdown([
-                        [Blockly.Words['control_ms'][systemLang], 'ms'],
-                        [Blockly.Words['control_sec'][systemLang], 'sec'],
-                        [Blockly.Words['control_min'][systemLang], 'min']
+                        [Blockly.Translate('control_ms'), 'ms'],
+                        [Blockly.Translate('control_sec'), 'sec'],
+                        [Blockly.Translate('control_min'), 'min']
                     ]), 'UNIT');
-                //.appendField(Blockly.Words['update_ms'][systemLang]);
+                //.appendField(Blockly.Translate('update_ms'));
             }
         } else if (inputExists) {
             this.removeInput('DELAY');
@@ -391,7 +393,7 @@ Blockly.Blocks['update'] = {
         if (delayInput) {
             if (!inputExists) {
                 this.appendDummyInput('CLEAR_RUNNING_INPUT')
-                    .appendField(Blockly.Words['control_clear_running'][systemLang])
+                    .appendField(Blockly.Translate('control_clear_running'))
                     .appendField(new Blockly.FieldCheckbox(), 'CLEAR_RUNNING');
             }
         } else if (inputExists) {
@@ -445,24 +447,24 @@ Blockly.System.blocks['direct'] =
 Blockly.Blocks['direct'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Words['direct'][systemLang]);
+            .appendField(Blockly.Translate('direct'));
 
         this.appendValueInput('OID_SRC')
             .setCheck('String')
-            .appendField(Blockly.Words['direct_oid_src'][systemLang]);
+            .appendField(Blockly.Translate('direct_oid_src'));
 
         this.appendValueInput('OID_DST')
             .setCheck('String')
-            .appendField(Blockly.Words['direct_oid_dst'][systemLang]);
+            .appendField(Blockly.Translate('direct_oid_dst'));
 
         this.appendDummyInput('ONLY_CHANGES')
-            .appendField(Blockly.Words['direct_only_changes'][systemLang])
+            .appendField(Blockly.Translate('direct_only_changes'))
             .appendField(new Blockly.FieldCheckbox('TRUE'), 'ONLY_CHANGES');
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(Blockly.System.HUE);
-        this.setTooltip(Blockly.Words['direct_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('direct_tooltip'));
         this.setHelpUrl(getHelp('direct_help'));
     }
 };
@@ -502,35 +504,35 @@ Blockly.System.blocks['control_ex'] =
 Blockly.Blocks['control_ex'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Words['control_ex'][systemLang]);
+            .appendField(Blockly.Translate('control_ex'));
 
         this.appendValueInput('OID')
             .setCheck('String')
-            .appendField(Blockly.Words['field_oid_OID'][systemLang]);
+            .appendField(Blockly.Translate('field_oid_OID'));
 
         this.appendDummyInput('TYPE')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['control_ex_control'][systemLang],   'false'],
-                [Blockly.Words['control_ex_update'][systemLang],    'true']
+                [Blockly.Translate('control_ex_control'),   'false'],
+                [Blockly.Translate('control_ex_update'),    'true']
             ]), 'TYPE');
 
         this.appendValueInput('VALUE')
             .setCheck(null)
-            .appendField(Blockly.Words['control_ex_value'][systemLang]);
+            .appendField(Blockly.Translate('control_ex_value'));
 
         this.appendValueInput('DELAY_MS')
             .setCheck('Number')
-            .appendField(Blockly.Words['control_ex_delay'][systemLang]);
+            .appendField(Blockly.Translate('control_ex_delay'));
 
         this.appendDummyInput('CLEAR_RUNNING_INPUT')
-            .appendField(Blockly.Words['control_ex_clear_running'][systemLang])
+            .appendField(Blockly.Translate('control_ex_clear_running'))
             .appendField(new Blockly.FieldCheckbox(), 'CLEAR_RUNNING');
 
         this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(Blockly.System.HUE);
-        this.setTooltip(Blockly.Words['control_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('control_tooltip'));
         this.setHelpUrl(getHelp('control_help'));
     }
 };
@@ -560,19 +562,19 @@ Blockly.System.blocks['create'] =
 Blockly.Blocks['create'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Words['create'][systemLang]);
+            .appendField(Blockly.Translate('create'));
 
         this.appendDummyInput('NAME')
-            .appendField(Blockly.Words['create_oid'][systemLang])
-            .appendField(new Blockly.FieldTextInput(Blockly.Words['create_jsState'][systemLang]), 'NAME');
+            .appendField(Blockly.Translate('create_oid'))
+            .appendField(new Blockly.FieldTextInput(Blockly.Translate('create_jsState')), 'NAME');
 
         this.appendValueInput('VALUE')
             .setCheck(null)
-            .appendField(Blockly.Words['create_init'][systemLang]);
+            .appendField(Blockly.Translate('create_init'));
 
         this.appendValueInput('COMMON')
             .setCheck(null)
-            .appendField(Blockly.Words['create_common'][systemLang]);
+            .appendField(Blockly.Translate('create_common'));
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -582,7 +584,7 @@ Blockly.Blocks['create'] = {
 
         this.setInputsInline(false);
         this.setColour(Blockly.System.HUE);
-        this.setTooltip(Blockly.Words['create_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('create_tooltip'));
         this.setHelpUrl(getHelp('create_help'));
     }
 };
@@ -630,24 +632,24 @@ Blockly.Blocks['get_value'] = {
 
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['get_value_val'][systemLang],    'val'],
-                [Blockly.Words['get_value_ack'][systemLang],    'ack'],
-                [Blockly.Words['get_value_ts'][systemLang],     'ts'],
-                [Blockly.Words['get_value_lc'][systemLang],     'lc'],
-                [Blockly.Words['get_value_q'][systemLang] ,     'q'],
-                [Blockly.Words['get_value_from'][systemLang],   'from']
+                [Blockly.Translate('get_value_val'),    'val'],
+                [Blockly.Translate('get_value_ack'),    'ack'],
+                [Blockly.Translate('get_value_ts'),     'ts'],
+                [Blockly.Translate('get_value_lc'),     'lc'],
+                [Blockly.Translate('get_value_q') ,     'q'],
+                [Blockly.Translate('get_value_from'),   'from']
             ]), 'ATTR');
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['get_value_OID'][systemLang]);
+            .appendField(Blockly.Translate('get_value_OID'));
 
         this.appendDummyInput()
-            .appendField(new Blockly.FieldOID(Blockly.Words['get_value_default'][systemLang]), 'OID');
+            .appendField(new Blockly.FieldOID(Blockly.Translate('get_value_default')), 'OID');
 
         this.setInputsInline(true);
         this.setOutput(true);
         this.setColour(Blockly.System.HUE);
-        this.setTooltip(Blockly.Words['get_value_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('get_value_tooltip'));
         this.setHelpUrl(getHelp('get_value_help'));
     }
 };
@@ -676,16 +678,16 @@ Blockly.Blocks['get_value_var'] = {
 
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['get_value_val'][systemLang],    'val'],
-                [Blockly.Words['get_value_ack'][systemLang],    'ack'],
-                [Blockly.Words['get_value_ts'][systemLang],     'ts'],
-                [Blockly.Words['get_value_lc'][systemLang],     'lc'],
-                [Blockly.Words['get_value_q'][systemLang] ,     'q'],
-                [Blockly.Words['get_value_from'][systemLang],   'from']
+                [Blockly.Translate('get_value_val'),    'val'],
+                [Blockly.Translate('get_value_ack'),    'ack'],
+                [Blockly.Translate('get_value_ts'),     'ts'],
+                [Blockly.Translate('get_value_lc'),     'lc'],
+                [Blockly.Translate('get_value_q') ,     'q'],
+                [Blockly.Translate('get_value_from'),   'from']
             ]), 'ATTR');
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['get_value_OID'][systemLang]);
+            .appendField(Blockly.Translate('get_value_OID'));
 
         this.appendValueInput('OID')
             .setCheck(null);
@@ -693,7 +695,7 @@ Blockly.Blocks['get_value_var'] = {
         this.setInputsInline(true);
         this.setOutput(true);
         this.setColour(Blockly.System.HUE);
-        this.setTooltip(Blockly.Words['get_value_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('get_value_tooltip'));
         this.setHelpUrl(getHelp('get_value_help'));
     }
 };
@@ -721,19 +723,19 @@ Blockly.Blocks['get_value_async'] = {
 
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['get_value_val'][systemLang],    'val'],
-                [Blockly.Words['get_value_ack'][systemLang],    'ack'],
-                [Blockly.Words['get_value_ts'][systemLang],     'ts'],
-                [Blockly.Words['get_value_lc'][systemLang],     'lc'],
-                [Blockly.Words['get_value_q'][systemLang] ,     'q'],
-                [Blockly.Words['get_value_from'][systemLang],   'from']
+                [Blockly.Translate('get_value_val'),    'val'],
+                [Blockly.Translate('get_value_ack'),    'ack'],
+                [Blockly.Translate('get_value_ts'),     'ts'],
+                [Blockly.Translate('get_value_lc'),     'lc'],
+                [Blockly.Translate('get_value_q') ,     'q'],
+                [Blockly.Translate('get_value_from'),   'from']
             ]), 'ATTR');
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['get_value_OID'][systemLang]);
+            .appendField(Blockly.Translate('get_value_OID'));
 
         this.appendDummyInput()
-            .appendField(new Blockly.FieldOID(Blockly.Words['get_value_default'][systemLang]), 'OID');
+            .appendField(new Blockly.FieldOID(Blockly.Translate('get_value_default')), 'OID');
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -743,7 +745,7 @@ Blockly.Blocks['get_value_async'] = {
 
         this.setInputsInline(true);
         this.setColour(Blockly.System.HUE);
-        this.setTooltip(Blockly.Words['get_value_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('get_value_tooltip'));
         this.setHelpUrl(getHelp('get_value_help'));
     }
 };
@@ -767,7 +769,7 @@ Blockly.Blocks['field_oid'] = {
     init: function() {
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['field_oid_OID'][systemLang]);
+            .appendField(Blockly.Translate('field_oid_OID'));
 
         this.appendDummyInput()
             .appendField(new Blockly.FieldOID('default'), 'oid');
@@ -775,7 +777,7 @@ Blockly.Blocks['field_oid'] = {
         this.setInputsInline(true);
         this.setColour(Blockly.System.HUE);
         this.setOutput(true, 'String');
-        this.setTooltip(Blockly.Words['field_oid_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     }
 };
 
@@ -802,17 +804,17 @@ Blockly.Blocks['get_attr'] = {
 
         this.appendValueInput('PATH')
             .setCheck(null)
-            .appendField(Blockly.Words['get_attr_path'][systemLang]);
+            .appendField(Blockly.Translate('get_attr_path'));
 
 //        this.appendDummyInput()
 
         this.appendValueInput('OBJECT')
-            .appendField(Blockly.Words['get_attr_by'][systemLang]);
+            .appendField(Blockly.Translate('get_attr_by'));
 
         this.setInputsInline(true);
         this.setOutput(true);
         this.setColour(Blockly.System.HUE);
-        this.setTooltip(Blockly.Words['get_attr_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('get_attr_tooltip'));
         this.setHelpUrl(getHelp('get_attr_help'));
     }
 };
@@ -844,7 +846,7 @@ Blockly.Blocks['regex'] = {
         this.setInputsInline(true);
         this.setColour(Blockly.System.HUE);
         this.setOutput(true, 'Array');
-        this.setTooltip(Blockly.Words['field_oid_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     }
 };
 
@@ -866,7 +868,7 @@ Blockly.Blocks['selector'] = {
     init: function() {
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['selector'][systemLang] + ' $(');
+            .appendField(Blockly.Translate('selector') + ' $(');
 
         this.appendDummyInput('TEXT')
             .appendField(new Blockly.FieldTextInput('channel[state.id=*]'), 'TEXT');
@@ -877,7 +879,7 @@ Blockly.Blocks['selector'] = {
         this.setInputsInline(true);
         this.setColour(Blockly.System.HUE);
         this.setOutput(true, 'Array');
-        this.setTooltip(Blockly.Words['field_oid_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     }
 };
 
@@ -891,14 +893,14 @@ Blockly.Blocks['text_newline'] = {
     // Checkbox.
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Words['text_newline'][systemLang]);
+            .appendField(Blockly.Translate('text_newline'));
 
         this.appendDummyInput()
             .appendField(new Blockly.FieldDropdown([['\\n', '\\n'], ['\\r\\n', '\\r\\n'], ['\\r', '\\r']]), 'Type');
         this.setInputsInline(true);
         this.setColour(Blockly.Msg['TEXTS_HUE']);
         this.setOutput(true, 'String');
-        this.setTooltip(Blockly.Words['text_newline_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('text_newline_tooltip'));
     }
 };
 
@@ -912,15 +914,15 @@ Blockly.Blocks['math_rndfixed'] = {
     init: function() {
         this.appendValueInput('x')
             .setCheck('Number')
-            .appendField(Blockly.Words['math_rndfixed_round'][systemLang]);
+            .appendField(Blockly.Translate('math_rndfixed_round'));
         this.appendDummyInput()
-            .appendField(Blockly.Words['math_rndfixed_to'][systemLang])
+            .appendField(Blockly.Translate('math_rndfixed_to'))
             .appendField(new Blockly.FieldNumber(0, 1, 25), 'n')
-            .appendField(Blockly.Words['math_rndfixed_decplcs'][systemLang]);
+            .appendField(Blockly.Translate('math_rndfixed_decplcs'));
         this.setInputsInline(true);
         this.setColour(Blockly.Msg['MATH_HUE']);
         this.setOutput(true, 'Number');
-        this.setTooltip(Blockly.Words['math_rndfixed_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('math_rndfixed_tooltip'));
     }
 };
 

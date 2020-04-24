@@ -272,7 +272,7 @@ const prepareList = data => {
                 }
             }
         });
-    } while(modified);
+    } while (modified);
 
     // Fill all parentIndex
     result.forEach(item => {
@@ -453,11 +453,11 @@ class SideDrawer extends React.Component {
                     if (!item.filtered || item.filteredPartly) {
                         let it = item;
                         do {
-                            if (it.parent) {
+                            if (it.parent && listItems[it.parentIndex]) {
                                 changed = true;
                                 listItems[it.parentIndex].filteredPartly = true;
                             }
-                            it = it.parent ? listItems[it.parentIndex] : null;
+                            it = it.parent && listItems[it.parentIndex] ? listItems[it.parentIndex] : null;
                         } while(it);
                     }
                 }

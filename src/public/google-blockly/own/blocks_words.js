@@ -392,6 +392,15 @@ Blockly.Words['logic_switch_tootltip']                = {'en': 'Does something i
 Blockly.Words['logic_switch_default_tootltip']        = {'en': 'This function will run if there aren\'t any matching cases.', 'de': 'Diese Funktion wird ausgeführt, wenn keine übereinstimmenden Fälle vorliegen.', 'ru': 'Эта функция будет запущена, если нет соответствующих случаев.', 'pt': 'Esta função será executada se não houver casos correspondentes.', 'nl': 'Deze functie wordt uitgevoerd als er geen overeenkomende gevallen zijn.', 'fr': 'Cette fonction s\'exécutera s\'il n\'y a pas de cas correspondants.', 'it': 'Questa funzione verrà eseguita se non ci sono casi corrispondenti.', 'es': 'Esta función se ejecutará si no hay casos coincidentes.', 'pl': 'Ta funkcja będzie działać, jeśli nie ma pasujących przypadków.', 'zh-cn': '如果没有匹配的情况，此功能将运行。'};
 Blockly.Words['logic_switch_control_case_tootltip']   = {'en': 'This is a variable for condition.',               'de': 'Dies ist eine Variable für die Bedingung.',       'ru': 'Это переменная для условия.',                     'pt': 'Esta é uma variável para a condição.',            'nl': 'Dit is een variabele voor conditie.',             'fr': 'Il s\'agit d\'une variable de condition.',        'it': 'Questa è una variabile per condizione.',          'es': 'Esta es una variable para la condición.',         'pl': 'Jest to zmienna warunku.',                        'zh-cn': '这是用于条件的变量。'};
 
+Blockly.Translate = function (word, lang) {
+    lang = lang || systemLang;
+    if (Blockly.Words && Blockly.Words[word]) {
+        return Blockly.Words[word][lang] || Blockly.Words[word].en;
+    } else {
+        return word;
+    }
+};
+
 if (typeof module !== 'undefined' && typeof module.parent !== 'undefined') {
     module.exports = Blockly;
 }

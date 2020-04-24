@@ -166,7 +166,7 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
         nameField.setSpellcheck(false);
         this.appendDummyInput()
         // .appendField(Blockly.Msg['PROCEDURES_DEFRETURN_TITLE'])
-            .appendField(Blockly.Words['procedures_defcustomreturn_name'][systemLang])
+            .appendField(Blockly.Translate('procedures_defcustomreturn_name'))
             .appendField(nameField, 'NAME')
             .appendField('', 'PARAMS');
         /*this.appendValueInput('RETURN')
@@ -355,7 +355,7 @@ Blockly.Blocks['procedures_defcustomnoreturn'] = {
             Blockly.Procedures.rename);
         nameField.setSpellcheck(false);
         this.appendDummyInput()
-            .appendField(Blockly.Words['procedures_defcustomnoreturn_name'][systemLang])
+            .appendField(Blockly.Translate('procedures_defcustomnoreturn_name'))
             .appendField(nameField, 'NAME')
             .appendField('', 'PARAMS');
         this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));

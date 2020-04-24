@@ -37,10 +37,10 @@ Blockly.Blocks['on_ext_oid_container'] = {
         this.setColour(Blockly.Trigger.HUE);
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['on_ext_on'][systemLang]);
+            .appendField(Blockly.Translate('on_ext_on'));
 
         this.appendStatementInput('STACK');
-        this.setTooltip(Blockly.Words['on_ext_on_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('on_ext_on_tooltip'));
         this.contextMenu = false;
     }
 };
@@ -54,12 +54,12 @@ Blockly.Blocks['on_ext_oid'] = {
         this.setColour(Blockly.Trigger.HUE);
 
         this.appendDummyInput('OID')
-            .appendField(Blockly.Words['on_ext_oid'][systemLang]);
+            .appendField(Blockly.Translate('on_ext_oid'));
 
         this.setPreviousStatement(true);
         this.setNextStatement(true);
 
-        this.setTooltip(Blockly.Words['on_ext_oid_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('on_ext_oid_tooltip'));
 
         this.contextMenu = false;
     }
@@ -74,7 +74,7 @@ Blockly.Blocks['on_ext'] = {
         this.setNextStatement(true, null);
         this.setInputsInline(false);
         this.setColour(Blockly.Trigger.HUE);
-        this.setTooltip(Blockly.Words['on_ext_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('on_ext_tooltip'));
         this.setHelpUrl(getHelp('on_help'));
     },
     /**
@@ -187,7 +187,7 @@ Blockly.Blocks['on_ext'] = {
                 _input = this.appendValueInput('OID' + i);
 
                 if (i === 0) {
-                    _input.appendField(Blockly.Words['on_ext'][systemLang]);
+                    _input.appendField(Blockly.Translate('on_ext'));
                 }
                 setTimeout(function (_input) {
                     if (!_input.connection.isConnected()) {
@@ -218,22 +218,22 @@ Blockly.Blocks['on_ext'] = {
 
         this.appendDummyInput('CONDITION')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['on_onchange'][systemLang], 'ne'],
-                [Blockly.Words['on_any'][systemLang], 'any'],
-                [Blockly.Words['on_gt'][systemLang], 'gt'],
-                [Blockly.Words['on_ge'][systemLang], 'ge'],
-                [Blockly.Words['on_lt'][systemLang], 'lt'],
-                [Blockly.Words['on_le'][systemLang], 'le'],
-                [Blockly.Words['on_true'][systemLang], 'true'],
-                [Blockly.Words['on_false'][systemLang], 'false']
+                [Blockly.Translate('on_onchange'), 'ne'],
+                [Blockly.Translate('on_any'), 'any'],
+                [Blockly.Translate('on_gt'), 'gt'],
+                [Blockly.Translate('on_ge'), 'ge'],
+                [Blockly.Translate('on_lt'), 'lt'],
+                [Blockly.Translate('on_le'), 'le'],
+                [Blockly.Translate('on_true'), 'true'],
+                [Blockly.Translate('on_false'), 'false']
             ]), 'CONDITION');
 
         this.appendDummyInput('ACK_CONDITION')
-            .appendField(Blockly.Words['on_ack'][systemLang])
+            .appendField(Blockly.Translate('on_ack'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['on_ack_any'][systemLang], ''],
-                [Blockly.Words['on_ack_true'][systemLang], 'true'],
-                [Blockly.Words['on_ack_false'][systemLang], 'false']
+                [Blockly.Translate('on_ack_any'), ''],
+                [Blockly.Translate('on_ack_true'), 'true'],
+                [Blockly.Translate('on_ack_false'), 'false']
             ]), 'ACK_CONDITION');
 
         if (input) {
@@ -296,29 +296,29 @@ Blockly.Trigger.blocks['on'] =
 Blockly.Blocks['on'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Words['on'][systemLang]);
+            .appendField(Blockly.Translate('on'));
 
         this.appendDummyInput('OID')
             .appendField(new Blockly.FieldOID('Object ID'), 'OID');
 
         this.appendDummyInput('CONDITION')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['on_onchange'][systemLang], 'ne'],
-                [Blockly.Words['on_any'][systemLang], 'any'],
-                [Blockly.Words['on_gt'][systemLang], 'gt'],
-                [Blockly.Words['on_ge'][systemLang], 'ge'],
-                [Blockly.Words['on_lt'][systemLang], 'lt'],
-                [Blockly.Words['on_le'][systemLang], 'le'],
-                [Blockly.Words['on_true'][systemLang], 'true'],
-                [Blockly.Words['on_false'][systemLang], 'false']
+                [Blockly.Translate('on_onchange'), 'ne'],
+                [Blockly.Translate('on_any'), 'any'],
+                [Blockly.Translate('on_gt'), 'gt'],
+                [Blockly.Translate('on_ge'), 'ge'],
+                [Blockly.Translate('on_lt'), 'lt'],
+                [Blockly.Translate('on_le'), 'le'],
+                [Blockly.Translate('on_true'), 'true'],
+                [Blockly.Translate('on_false'), 'false']
             ]), 'CONDITION');
 
         this.appendDummyInput('ACK_CONDITION')
-            .appendField(Blockly.Words['on_ack'][systemLang])
+            .appendField(Blockly.Translate('on_ack'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['on_ack_any'][systemLang], ''],
-                [Blockly.Words['on_ack_true'][systemLang], 'true'],
-                [Blockly.Words['on_ack_false'][systemLang], 'false']
+                [Blockly.Translate('on_ack_any'), ''],
+                [Blockly.Translate('on_ack_true'), 'true'],
+                [Blockly.Translate('on_ack_false'), 'false']
             ]), 'ACK_CONDITION');
 
         this.appendStatementInput('STATEMENT')
@@ -328,7 +328,7 @@ Blockly.Blocks['on'] = {
         this.setNextStatement(true, null);
         this.setInputsInline(false);
         this.setColour(Blockly.Trigger.HUE);
-        this.setTooltip(Blockly.Words['on_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('on_tooltip'));
         this.setHelpUrl(getHelp('on_help'));
     }
 };
@@ -367,31 +367,31 @@ Blockly.Blocks['on_source'] = {
     init: function() {
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['on_source_id'][systemLang],             'id'],
-                [Blockly.Words['on_source_name'][systemLang],           'common.name'],
-                [Blockly.Words['on_source_desc'][systemLang],           'common.desc'],
-                [Blockly.Words['on_source_channel_id'][systemLang],     'channelId'],
-                [Blockly.Words['on_source_channel_name'][systemLang],   'channelName'],
-                [Blockly.Words['on_source_device_id'][systemLang],      'deviceId'],
-                [Blockly.Words['on_source_device_name'][systemLang],    'deviceName'],
-                [Blockly.Words['on_source_state_val'][systemLang],      'state.val'],
-                [Blockly.Words['on_source_state_ts'][systemLang],       'state.ts'],
-                [Blockly.Words['on_source_state_q'][systemLang],        'state.q'],
-                [Blockly.Words['on_source_state_from'][systemLang],     'state.from'],
-                [Blockly.Words['on_source_state_ack'][systemLang],      'state.ack'],
-                [Blockly.Words['on_source_state_lc'][systemLang],       'state.lc'],
-                [Blockly.Words['on_source_oldstate_val'][systemLang],   'oldState.val'],
-                [Blockly.Words['on_source_oldstate_ts'][systemLang],    'oldState.ts'],
-                [Blockly.Words['on_source_oldstate_q'][systemLang],     'oldState.q'],
-                [Blockly.Words['on_source_oldstate_from'][systemLang],  'oldState.from'],
-                [Blockly.Words['on_source_oldstate_ack'][systemLang],   'oldState.ack'],
-                [Blockly.Words['on_source_oldstate_lc'][systemLang],    'oldState.lc']
+                [Blockly.Translate('on_source_id'),             'id'],
+                [Blockly.Translate('on_source_name'),           'common.name'],
+                [Blockly.Translate('on_source_desc'),           'common.desc'],
+                [Blockly.Translate('on_source_channel_id'),     'channelId'],
+                [Blockly.Translate('on_source_channel_name'),   'channelName'],
+                [Blockly.Translate('on_source_device_id'),      'deviceId'],
+                [Blockly.Translate('on_source_device_name'),    'deviceName'],
+                [Blockly.Translate('on_source_state_val'),      'state.val'],
+                [Blockly.Translate('on_source_state_ts'),       'state.ts'],
+                [Blockly.Translate('on_source_state_q'),        'state.q'],
+                [Blockly.Translate('on_source_state_from'),     'state.from'],
+                [Blockly.Translate('on_source_state_ack'),      'state.ack'],
+                [Blockly.Translate('on_source_state_lc'),       'state.lc'],
+                [Blockly.Translate('on_source_oldstate_val'),   'oldState.val'],
+                [Blockly.Translate('on_source_oldstate_ts'),    'oldState.ts'],
+                [Blockly.Translate('on_source_oldstate_q'),     'oldState.q'],
+                [Blockly.Translate('on_source_oldstate_from'),  'oldState.from'],
+                [Blockly.Translate('on_source_oldstate_ack'),   'oldState.ack'],
+                [Blockly.Translate('on_source_oldstate_lc'),    'oldState.lc']
             ]), 'ATTR');
 
         this.setInputsInline(true);
         this.setOutput(true);
         this.setColour(Blockly.Trigger.HUE);
-        this.setTooltip(Blockly.Words['on_source_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('on_source_tooltip'));
         this.setHelpUrl(getHelp('on_help'));
     },
     /**
@@ -415,7 +415,7 @@ Blockly.Blocks['on_source'] = {
         if (legal) {
             this.setWarningText(null);
         } else {
-            this.setWarningText(Blockly.Words['on_source_warning'][systemLang]);
+            this.setWarningText(Blockly.Translate('on_source_warning'));
         }
     },
     /**
@@ -451,7 +451,7 @@ Blockly.Trigger.blocks['schedule'] =
 Blockly.Blocks['schedule'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Words['schedule'][systemLang]);
+            .appendField(Blockly.Translate('schedule'));
 
         this.appendDummyInput('SCHEDULE')
             .appendField(new Blockly.FieldCRON('* * * * *'), 'SCHEDULE');
@@ -463,7 +463,7 @@ Blockly.Blocks['schedule'] = {
         this.setNextStatement(true, null);
         this.setInputsInline(false);
         this.setColour(Blockly.Trigger.HUE);
-        this.setTooltip(Blockly.Words['schedule_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('schedule_tooltip'));
         this.setHelpUrl(getHelp('schedule_help'));
     }
 };
@@ -496,34 +496,34 @@ Blockly.Trigger.blocks['astro'] =
 Blockly.Blocks['astro'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Words['astro'][systemLang]);
+            .appendField(Blockly.Translate('astro'));
 
         this.appendDummyInput("TYPE")
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['astro_sunriseText'][systemLang],         "sunrise"],
-                [Blockly.Words['astro_sunriseEndText'][systemLang],      "sunriseEnd"],
-                [Blockly.Words['astro_goldenHourEndText'][systemLang],   "goldenHourEnd"],
-                [Blockly.Words['astro_solarNoonText'][systemLang],       "solarNoon"],
-                [Blockly.Words['astro_goldenHourText'][systemLang],      "goldenHour"],
-                [Blockly.Words['astro_sunsetStartText'][systemLang],     "sunsetStart"],
-                [Blockly.Words['astro_sunsetText'][systemLang],          "sunset"],
-                [Blockly.Words['astro_duskText'][systemLang],            "dusk"],
-                [Blockly.Words['astro_nauticalDuskText'][systemLang],    "nauticalDusk"],
-                [Blockly.Words['astro_nightText'][systemLang],           "night"],
-                [Blockly.Words['astro_nightEndText'][systemLang],        "nightEnd"],
-                [Blockly.Words['astro_nauticalDawnText'][systemLang],    "nauticalDawn"],
-                [Blockly.Words['astro_dawnText'][systemLang],            "dawn"],
-                [Blockly.Words['astro_nadirText'][systemLang],           "nadir"]
+                [Blockly.Translate('astro_sunriseText'),         "sunrise"],
+                [Blockly.Translate('astro_sunriseEndText'),      "sunriseEnd"],
+                [Blockly.Translate('astro_goldenHourEndText'),   "goldenHourEnd"],
+                [Blockly.Translate('astro_solarNoonText'),       "solarNoon"],
+                [Blockly.Translate('astro_goldenHourText'),      "goldenHour"],
+                [Blockly.Translate('astro_sunsetStartText'),     "sunsetStart"],
+                [Blockly.Translate('astro_sunsetText'),          "sunset"],
+                [Blockly.Translate('astro_duskText'),            "dusk"],
+                [Blockly.Translate('astro_nauticalDuskText'),    "nauticalDusk"],
+                [Blockly.Translate('astro_nightText'),           "night"],
+                [Blockly.Translate('astro_nightEndText'),        "nightEnd"],
+                [Blockly.Translate('astro_nauticalDawnText'),    "nauticalDawn"],
+                [Blockly.Translate('astro_dawnText'),            "dawn"],
+                [Blockly.Translate('astro_nadirText'),           "nadir"]
             ]), 'TYPE');
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['astro_offset'][systemLang]);
+            .appendField(Blockly.Translate('astro_offset'));
 
         this.appendDummyInput("OFFSET")
             .appendField(new Blockly.FieldTextInput("0"), "OFFSET");
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['astro_minutes'][systemLang]);
+            .appendField(Blockly.Translate('astro_minutes'));
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -532,7 +532,7 @@ Blockly.Blocks['astro'] = {
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(Blockly.Trigger.HUE);
-        this.setTooltip(Blockly.Words['astro_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('astro_tooltip'));
         this.setHelpUrl(getHelp('astro_help'));
     }
 };
@@ -627,11 +627,11 @@ Blockly.Blocks['schedule_create'] = {
         nameField.setSpellcheck(false);
 
         this.appendDummyInput('NAME')
-            .appendField(Blockly.Words['schedule_create'][systemLang])
+            .appendField(Blockly.Translate('schedule_create'))
             .appendField(nameField, 'NAME');
 
         this.appendValueInput('SCHEDULE')
-            .appendField(Blockly.Words['schedule_text'][systemLang]);
+            .appendField(Blockly.Translate('schedule_text'));
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -640,7 +640,7 @@ Blockly.Blocks['schedule_create'] = {
         this.setNextStatement(true, null);
         this.setInputsInline(false);
         this.setColour(Blockly.Trigger.HUE);
-        this.setTooltip(Blockly.Words['schedule_create_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('schedule_create_tooltip'));
         this.setHelpUrl(getHelp('schedule_create_help'));
     },
     isSchedule_: true,
@@ -686,7 +686,7 @@ Blockly.Trigger.blocks['schedule_clear'] =
 Blockly.Blocks['schedule_clear'] = {
     init: function() {
         this.appendDummyInput('NAME')
-            .appendField(Blockly.Words['schedule_clear'][systemLang])
+            .appendField(Blockly.Translate('schedule_clear'))
             .appendField(new Blockly.FieldDropdown(function () {
                 return scripts.blocklyWorkspace ? Blockly.Trigger.getAllSchedules(scripts.blocklyWorkspace) : [];
             }), 'NAME');
@@ -695,7 +695,7 @@ Blockly.Blocks['schedule_clear'] = {
         this.setNextStatement(true, null);
         this.setInputsInline(true);
         this.setColour(Blockly.Trigger.HUE);
-        this.setTooltip(Blockly.Words['schedule_clear_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('schedule_clear_tooltip'));
         this.setHelpUrl(getHelp('schedule_clear_help'));
     }
 };
@@ -716,7 +716,7 @@ Blockly.Blocks['field_cron'] = {
     // Checkbox.
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Words['field_cron_CRON'][systemLang]);
+            .appendField(Blockly.Translate('field_cron_CRON'));
 
         this.appendDummyInput()
             .appendField(new Blockly.FieldCRON('* * * * *'), 'CRON');
@@ -724,7 +724,7 @@ Blockly.Blocks['field_cron'] = {
         this.setInputsInline(true);
         this.setColour(Blockly.Trigger.HUE);
         this.setOutput(true, 'String');
-        this.setTooltip(Blockly.Words['field_cron_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('field_cron_tooltip'));
     }
 };
 
@@ -758,16 +758,16 @@ Blockly.Blocks['cron_builder'] = {
     init: function() {
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['cron_builder_CRON'][systemLang]);
+            .appendField(Blockly.Translate('cron_builder_CRON'));
 
         this.appendDummyInput('LINE')
-            .appendField(Blockly.Words['cron_builder_line'][systemLang])
+            .appendField(Blockly.Translate('cron_builder_line'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
                 this.sourceBlock_.setInputsInline(option == true);
             }), 'LINE');
 
         var _input = this.appendValueInput('DOW')
-            .appendField(Blockly.Words['cron_builder_dow'][systemLang]);
+            .appendField(Blockly.Translate('cron_builder_dow'));
 
         var wp = this.workspace;
         setTimeout(function (_input) {
@@ -781,7 +781,7 @@ Blockly.Blocks['cron_builder'] = {
 
 
         _input = this.appendValueInput('MONTHS')
-            .appendField(Blockly.Words['cron_builder_month'][systemLang]);
+            .appendField(Blockly.Translate('cron_builder_month'));
         setTimeout(function (_input) {
             if (!_input.connection.isConnected()) {
                 var _shadow = wp.newBlock('text');
@@ -792,7 +792,7 @@ Blockly.Blocks['cron_builder'] = {
         }, 100, _input);
 
         _input = this.appendValueInput('DAYS')
-            .appendField(Blockly.Words['cron_builder_day'][systemLang]);
+            .appendField(Blockly.Translate('cron_builder_day'));
         setTimeout(function (_input) {
             if (!_input.connection.isConnected()) {
                 var _shadow = wp.newBlock('text');
@@ -804,7 +804,7 @@ Blockly.Blocks['cron_builder'] = {
 
 
         _input = this.appendValueInput('HOURS')
-            .appendField(Blockly.Words['cron_builder_hour'][systemLang]);
+            .appendField(Blockly.Translate('cron_builder_hour'));
         setTimeout(function (_input) {
             if (!_input.connection.isConnected()) {
                 var _shadow = wp.newBlock('text');
@@ -816,7 +816,7 @@ Blockly.Blocks['cron_builder'] = {
 
 
         _input = this.appendValueInput('MINUTES')
-            .appendField(Blockly.Words['cron_builder_minutes'][systemLang]);
+            .appendField(Blockly.Translate('cron_builder_minutes'));
         setTimeout(function (_input) {
             if (!_input.connection.isConnected()) {
                 var _shadow = wp.newBlock('text');
@@ -827,7 +827,7 @@ Blockly.Blocks['cron_builder'] = {
         }, 100, _input);
 
         this.appendDummyInput('WITH_SECONDS')
-            .appendField(Blockly.Words['cron_builder_with_seconds'][systemLang])
+            .appendField(Blockly.Translate('cron_builder_with_seconds'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
                 var withSeconds = option === true;
                 this.sourceBlock_.updateShape_(withSeconds);
@@ -838,7 +838,7 @@ Blockly.Blocks['cron_builder'] = {
         this.setInputsInline(this.as_line_);
         this.setColour(Blockly.Trigger.HUE);
         this.setOutput(true, 'String');
-        this.setTooltip(Blockly.Words['field_cron_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('field_cron_tooltip'));
     },
     /**
      * Create XML to represent number of text inputs.
@@ -870,7 +870,7 @@ Blockly.Blocks['cron_builder'] = {
         if (withSeconds) {
             if (!inputExists) {
                 var _input = this.appendValueInput('SECONDS');
-                _input.appendField(Blockly.Words['cron_builder_seconds'][systemLang]);
+                _input.appendField(Blockly.Translate('cron_builder_seconds'));
                 var wp = this.workspace;
                 setTimeout(function (_input) {
                     if (!_input.connection.isConnected()) {

@@ -8,8 +8,11 @@ import createTheme from '@iobroker/adapter-react/createTheme';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import {version} from '../package.json';
 
 let theme = window.localStorage ? window.localStorage.getItem('App.theme') || 'light' : 'light';
+
+console.log('iobroker.javascript@' + version);
 
 function build() {
     if (typeof Map === 'undefined') {
@@ -28,6 +31,7 @@ function build() {
 if (window.location.host !== 'localhost:3000') {
     Sentry.init({
         dsn: "https://504499a725eb4898930d3b9e9da95740@sentry.iobroker.net/56",
+        release: 'iobroker.javascript@' + version,
         integrations: [
             new SentryIntegrations.Dedupe()
         ]

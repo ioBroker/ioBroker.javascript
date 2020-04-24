@@ -1,8 +1,10 @@
 'use strict';
 
-goog.provide('Blockly.JavaScript.Time');
+if (typeof goog !== 'undefined') {
+    goog.provide('Blockly.JavaScript.Time');
 
-goog.require('Blockly.JavaScript');
+    goog.require('Blockly.JavaScript');
+}
 
 Blockly.CustomBlocks = Blockly.CustomBlocks || [];
 Blockly.CustomBlocks.push('Time');
@@ -42,7 +44,7 @@ Blockly.Time.blocks['time_compare_ex'] =
 Blockly.Blocks['time_compare_ex'] = {
     init: function() {
         this.appendDummyInput('TIME_TEXT')
-            .appendField(Blockly.Words['time_compare_ex'][systemLang]);
+            .appendField(Blockly.Translate('time_compare_ex'));
 
         this.appendDummyInput('USE_ACTUAL_TIME')
             .appendField(new Blockly.FieldCheckbox('TRUE', function (option) {
@@ -50,17 +52,17 @@ Blockly.Blocks['time_compare_ex'] = {
             }), 'USE_ACTUAL_TIME');
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['time_compare_is_ex'][systemLang]);
+            .appendField(Blockly.Translate('time_compare_is_ex'));
 
         this.appendDummyInput('OPTION')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['time_compare_lt'][systemLang], '<'],
-                [Blockly.Words['time_compare_le'][systemLang], '<='],
-                [Blockly.Words['time_compare_gt'][systemLang], '>'],
-                [Blockly.Words['time_compare_ge'][systemLang], '>='],
-                [Blockly.Words['time_compare_eq'][systemLang], '=='],
-                [Blockly.Words['time_compare_bw'][systemLang], 'between'],
-                [Blockly.Words['time_compare_nb'][systemLang], 'not between']
+                [Blockly.Translate('time_compare_lt'), '<'],
+                [Blockly.Translate('time_compare_le'), '<='],
+                [Blockly.Translate('time_compare_gt'), '>'],
+                [Blockly.Translate('time_compare_ge'), '>='],
+                [Blockly.Translate('time_compare_eq'), '=='],
+                [Blockly.Translate('time_compare_bw'), 'between'],
+                [Blockly.Translate('time_compare_nb'), 'not between']
             ], function (option) {
                 this.sourceBlock_.updateShape_((option === 'between' || option === 'not between'));
             }), 'OPTION');
@@ -77,8 +79,8 @@ Blockly.Blocks['time_compare_ex'] = {
         this.setOutput(true, 'Boolean');
 
         this.setColour(Blockly.Time.HUE);
-        this.setTooltip(Blockly.Words['time_compare_ex_tooltip'][systemLang]);
-        this.setHelpUrl(Blockly.Words['time_compare_ex_help'][systemLang]);
+        this.setTooltip(Blockly.Translate('time_compare_ex_tooltip'));
+        this.setHelpUrl(Blockly.Translate('time_compare_ex_help'));
     },
     mutationToDom: function() {
         var container = document.createElement('mutation');
@@ -107,7 +109,7 @@ Blockly.Blocks['time_compare_ex'] = {
                 }
 
                 this.appendDummyInput('AND')
-                    .appendField(Blockly.Words['time_compare_and'][systemLang]);
+                    .appendField(Blockly.Translate('time_compare_and'));
 
                 var input = this.appendValueInput('END_TIME');
                 var wp = this.workspace;
@@ -136,16 +138,16 @@ Blockly.Blocks['time_compare_ex'] = {
         inputExists = this.getInput('CUSTOM_TIME');
 
         if (!useActualTime) {
-            this.getInput('TIME_TEXT').fieldRow[0].setText(Blockly.Words['time_compare_custom_ex'][systemLang]);
+            this.getInput('TIME_TEXT').fieldRow[0].setText(Blockly.Translate('time_compare_custom_ex'));
 
             if (!inputExists) {
                 this.appendDummyInput('CUSTOM_TEXT')
-                    .appendField(Blockly.Words['time_compare_ex_custom'][systemLang]);
+                    .appendField(Blockly.Translate('time_compare_ex_custom'));
 
                 this.appendValueInput('CUSTOM_TIME');
             }
         } else if (inputExists) {
-            this.getInput('TIME_TEXT').fieldRow[0].setText(Blockly.Words['time_compare_ex'][systemLang]);
+            this.getInput('TIME_TEXT').fieldRow[0].setText(Blockly.Translate('time_compare_ex'));
             this.removeInput('CUSTOM_TIME');
             this.removeInput('CUSTOM_TEXT');
         }
@@ -178,17 +180,17 @@ Blockly.Time.blocks['time_compare'] =
 Blockly.Blocks['time_compare'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Words['time_compare'][systemLang]);
+            .appendField(Blockly.Translate('time_compare'));
 
         this.appendDummyInput('OPTION')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['time_compare_lt'][systemLang], "<"],
-                [Blockly.Words['time_compare_le'][systemLang], "<="],
-                [Blockly.Words['time_compare_gt'][systemLang], ">"],
-                [Blockly.Words['time_compare_ge'][systemLang], ">="],
-                [Blockly.Words['time_compare_eq'][systemLang], "=="],
-                [Blockly.Words['time_compare_bw'][systemLang], "between"],
-                [Blockly.Words['time_compare_nb'][systemLang], "not between"]
+                [Blockly.Translate('time_compare_lt'), "<"],
+                [Blockly.Translate('time_compare_le'), "<="],
+                [Blockly.Translate('time_compare_gt'), ">"],
+                [Blockly.Translate('time_compare_ge'), ">="],
+                [Blockly.Translate('time_compare_eq'), "=="],
+                [Blockly.Translate('time_compare_bw'), "between"],
+                [Blockly.Translate('time_compare_nb'), "not between"]
             ], function (option) {
                 this.sourceBlock_.updateShape_((option === 'between' || option === 'not between'));
             }), 'OPTION');
@@ -206,8 +208,8 @@ Blockly.Blocks['time_compare'] = {
         this.setOutput(true, 'Boolean');
 
         this.setColour(Blockly.Time.HUE);
-        this.setTooltip(Blockly.Words['time_compare_tooltip'][systemLang]);
-        this.setHelpUrl(Blockly.Words['time_compare_help'][systemLang]);
+        this.setTooltip(Blockly.Translate('time_compare_tooltip'));
+        this.setHelpUrl(Blockly.Translate('time_compare_help'));
     },
 
     mutationToDom: function() {
@@ -226,7 +228,7 @@ Blockly.Blocks['time_compare'] = {
         if (isBetween) {
             if (!inputExists) {
                 this.appendDummyInput('AND')
-                    .appendField(Blockly.Words['time_compare_and'][systemLang]);
+                    .appendField(Blockly.Translate('time_compare_and'));
 
                 this.appendDummyInput('END_TIME')
                     .appendField(new Blockly.FieldTextInput('18:00'), 'END_TIME');
@@ -280,44 +282,44 @@ Blockly.Time.blocks['time_get'] =
 Blockly.Blocks['time_get'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Words['time_get'][systemLang]);
+            .appendField(Blockly.Translate('time_get'));
 
         this.appendDummyInput('OPTION')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['time_get_object'][systemLang]        , 'object'],
-                [Blockly.Words['time_get_ms'][systemLang]            , 'ms'],
-                [Blockly.Words['time_get_s'][systemLang]             , 's'],
-                [Blockly.Words['time_get_sid'][systemLang]           , 'sid'],
-                [Blockly.Words['time_get_m'][systemLang]             , 'm'],
-                [Blockly.Words['time_get_mid'][systemLang]           , 'mid'],
-                [Blockly.Words['time_get_h'][systemLang]             , 'h'],
-                [Blockly.Words['time_get_d'][systemLang]             , 'd'],
-                [Blockly.Words['time_get_M'][systemLang]             , 'M'],
-                [Blockly.Words['time_get_Mt'][systemLang]            , 'Mt'],
-                [Blockly.Words['time_get_Mts'][systemLang]           , 'Mts'],
-                [Blockly.Words['time_get_y'][systemLang]             , 'y'],
-                [Blockly.Words['time_get_fy'][systemLang]            , 'fy'],
-                [Blockly.Words['time_get_wdt'][systemLang]           , 'wdt'],
-                [Blockly.Words['time_get_wdts'][systemLang]          , 'wdts'],
-                [Blockly.Words['time_get_wd'][systemLang]            , 'wd'],
-                [Blockly.Words['time_get_custom'][systemLang]        , 'custom'],
-                [Blockly.Words['time_get_yyyy.mm.dd'][systemLang]    , Blockly.Words['time_get_yyyy.mm.dd']  .format],
-                [Blockly.Words['time_get_yyyy/mm/dd'][systemLang]    , Blockly.Words['time_get_yyyy/mm/dd']  .format],
-                [Blockly.Words['time_get_yy.mm.dd'][systemLang]      , Blockly.Words['time_get_yy.mm.dd']    .format],
-                [Blockly.Words['time_get_yy/mm/dd'][systemLang]      , Blockly.Words['time_get_yy/mm/dd']    .format],
-                [Blockly.Words['time_get_dd.mm.yyyy'][systemLang]    , Blockly.Words['time_get_dd.mm.yyyy']  .format],
-                [Blockly.Words['time_get_dd/mm/yyyy'][systemLang]    , Blockly.Words['time_get_dd/mm/yyyy']  .format],
-                [Blockly.Words['time_get_dd.mm.yy'][systemLang]      , Blockly.Words['time_get_dd.mm.yy']    .format],
-                [Blockly.Words['time_get_dd/mm/yy'][systemLang]      , Blockly.Words['time_get_dd/mm/yy']    .format],
-                [Blockly.Words['time_get_mm/dd/yyyy'][systemLang]    , Blockly.Words['time_get_mm/dd/yyyy']  .format],
-                [Blockly.Words['time_get_mm/dd/yy'][systemLang]      , Blockly.Words['time_get_mm/dd/yy']    .format],
-                [Blockly.Words['time_get_dd.mm'][systemLang]         , Blockly.Words['time_get_dd.mm']       .format],
-                [Blockly.Words['time_get_dd/mm'][systemLang]         , Blockly.Words['time_get_dd/mm']       .format],
-                [Blockly.Words['time_get_mm.dd'][systemLang]         , Blockly.Words['time_get_mm.dd']       .format],
-                [Blockly.Words['time_get_mm/dd'][systemLang]         , Blockly.Words['time_get_mm/dd']       .format],
-                [Blockly.Words['time_get_hh_mm'][systemLang]         , Blockly.Words['time_get_hh_mm']       .format],
-                [Blockly.Words['time_get_hh_mm_ss'][systemLang]      , Blockly.Words['time_get_hh_mm_ss']    .format],
-                [Blockly.Words['time_get_hh_mm_ss.sss'][systemLang]  , Blockly.Words['time_get_hh_mm_ss.sss'].format]
+                [Blockly.Translate('time_get_object')        , 'object'],
+                [Blockly.Translate('time_get_ms')            , 'ms'],
+                [Blockly.Translate('time_get_s')             , 's'],
+                [Blockly.Translate('time_get_sid')           , 'sid'],
+                [Blockly.Translate('time_get_m')             , 'm'],
+                [Blockly.Translate('time_get_mid')           , 'mid'],
+                [Blockly.Translate('time_get_h')             , 'h'],
+                [Blockly.Translate('time_get_d')             , 'd'],
+                [Blockly.Translate('time_get_M')             , 'M'],
+                [Blockly.Translate('time_get_Mt')            , 'Mt'],
+                [Blockly.Translate('time_get_Mts')           , 'Mts'],
+                [Blockly.Translate('time_get_y')             , 'y'],
+                [Blockly.Translate('time_get_fy')            , 'fy'],
+                [Blockly.Translate('time_get_wdt')           , 'wdt'],
+                [Blockly.Translate('time_get_wdts')          , 'wdts'],
+                [Blockly.Translate('time_get_wd')            , 'wd'],
+                [Blockly.Translate('time_get_custom')        , 'custom'],
+                [Blockly.Translate('time_get_yyyy.mm.dd')    , Blockly.Words['time_get_yyyy.mm.dd']  .format],
+                [Blockly.Translate('time_get_yyyy/mm/dd')    , Blockly.Words['time_get_yyyy/mm/dd']  .format],
+                [Blockly.Translate('time_get_yy.mm.dd')      , Blockly.Words['time_get_yy.mm.dd']    .format],
+                [Blockly.Translate('time_get_yy/mm/dd')      , Blockly.Words['time_get_yy/mm/dd']    .format],
+                [Blockly.Translate('time_get_dd.mm.yyyy')    , Blockly.Words['time_get_dd.mm.yyyy']  .format],
+                [Blockly.Translate('time_get_dd/mm/yyyy')    , Blockly.Words['time_get_dd/mm/yyyy']  .format],
+                [Blockly.Translate('time_get_dd.mm.yy')      , Blockly.Words['time_get_dd.mm.yy']    .format],
+                [Blockly.Translate('time_get_dd/mm/yy')      , Blockly.Words['time_get_dd/mm/yy']    .format],
+                [Blockly.Translate('time_get_mm/dd/yyyy')    , Blockly.Words['time_get_mm/dd/yyyy']  .format],
+                [Blockly.Translate('time_get_mm/dd/yy')      , Blockly.Words['time_get_mm/dd/yy']    .format],
+                [Blockly.Translate('time_get_dd.mm')         , Blockly.Words['time_get_dd.mm']       .format],
+                [Blockly.Translate('time_get_dd/mm')         , Blockly.Words['time_get_dd/mm']       .format],
+                [Blockly.Translate('time_get_mm.dd')         , Blockly.Words['time_get_mm.dd']       .format],
+                [Blockly.Translate('time_get_mm/dd')         , Blockly.Words['time_get_mm/dd']       .format],
+                [Blockly.Translate('time_get_hh_mm')         , Blockly.Words['time_get_hh_mm']       .format],
+                [Blockly.Translate('time_get_hh_mm_ss')      , Blockly.Words['time_get_hh_mm_ss']    .format],
+                [Blockly.Translate('time_get_hh_mm_ss.sss')  , Blockly.Words['time_get_hh_mm_ss.sss'].format]
             ], function (option) {
                 this.sourceBlock_.updateShape_(option === 'custom', option === 'wdt' || option === 'wdts' || option === 'Mt' || option === 'Mts');
             }), 'OPTION');
@@ -327,8 +329,8 @@ Blockly.Blocks['time_get'] = {
         this.setOutput(true);
 
         this.setColour(Blockly.Time.HUE);
-        this.setTooltip(Blockly.Words['time_get_tooltip'][systemLang]);
-        this.setHelpUrl(Blockly.Words['time_get_help'][systemLang]);
+        this.setTooltip(Blockly.Translate('time_get_tooltip'));
+        this.setHelpUrl(Blockly.Translate('time_get_help'));
     },
     mutationToDom: function() {
         var container = document.createElement('mutation');
@@ -348,7 +350,7 @@ Blockly.Blocks['time_get'] = {
             if (!inputExists) {
                 this.appendDummyInput('FORMAT')
                     .appendField(' ')
-                    .appendField(new Blockly.FieldTextInput(Blockly.Words['time_get_default_format'][systemLang]), 'FORMAT');
+                    .appendField(new Blockly.FieldTextInput(Blockly.Translate('time_get_default_format')), 'FORMAT');
             }
         } else if (inputExists) {
             this.removeInput('FORMAT');
@@ -436,28 +438,28 @@ Blockly.Time.blocks['time_astro'] =
 Blockly.Blocks['time_astro'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Words['time_astro'][systemLang]);
+            .appendField(Blockly.Translate('time_astro'));
 
         this.appendDummyInput('TYPE')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['astro_sunriseText'][systemLang],         'sunrise'],
-                [Blockly.Words['astro_sunriseEndText'][systemLang],      'sunriseEnd'],
-                [Blockly.Words['astro_goldenHourEndText'][systemLang],   'goldenHourEnd'],
-                [Blockly.Words['astro_solarNoonText'][systemLang],       'solarNoon'],
-                [Blockly.Words['astro_goldenHourText'][systemLang],      'goldenHour'],
-                [Blockly.Words['astro_sunsetStartText'][systemLang],     'sunsetStart'],
-                [Blockly.Words['astro_sunsetText'][systemLang],          'sunset'],
-                [Blockly.Words['astro_duskText'][systemLang],            'dusk'],
-                [Blockly.Words['astro_nauticalDuskText'][systemLang],    'nauticalDusk'],
-                [Blockly.Words['astro_nightText'][systemLang],           'night'],
-                [Blockly.Words['astro_nightEndText'][systemLang],        'nightEnd'],
-                [Blockly.Words['astro_nauticalDawnText'][systemLang],    'nauticalDawn'],
-                [Blockly.Words['astro_dawnText'][systemLang],            'dawn'],
-                [Blockly.Words['astro_nadirText'][systemLang],           'nadir']
+                [Blockly.Translate('astro_sunriseText'),         'sunrise'],
+                [Blockly.Translate('astro_sunriseEndText'),      'sunriseEnd'],
+                [Blockly.Translate('astro_goldenHourEndText'),   'goldenHourEnd'],
+                [Blockly.Translate('astro_solarNoonText'),       'solarNoon'],
+                [Blockly.Translate('astro_goldenHourText'),      'goldenHour'],
+                [Blockly.Translate('astro_sunsetStartText'),     'sunsetStart'],
+                [Blockly.Translate('astro_sunsetText'),          'sunset'],
+                [Blockly.Translate('astro_duskText'),            'dusk'],
+                [Blockly.Translate('astro_nauticalDuskText'),    'nauticalDusk'],
+                [Blockly.Translate('astro_nightText'),           'night'],
+                [Blockly.Translate('astro_nightEndText'),        'nightEnd'],
+                [Blockly.Translate('astro_nauticalDawnText'),    'nauticalDawn'],
+                [Blockly.Translate('astro_dawnText'),            'dawn'],
+                [Blockly.Translate('astro_nadirText'),           'nadir']
             ]), 'TYPE');
 
         this.appendDummyInput('OFFSET')
-            .appendField(Blockly.Words['time_astro_offset'][systemLang])
+            .appendField(Blockly.Translate('time_astro_offset'))
             .appendField(new Blockly.FieldTextInput('0'), 'OFFSET');
 
         this.setInputsInline(true);
@@ -465,8 +467,8 @@ Blockly.Blocks['time_astro'] = {
         this.setOutput(true);
 
         this.setColour(Blockly.Time.HUE);
-        this.setTooltip(Blockly.Words['time_astro_tooltip'][systemLang]);
-        this.setHelpUrl(Blockly.Words['time_astro_help'][systemLang]);
+        this.setTooltip(Blockly.Translate('time_astro_tooltip'));
+        this.setHelpUrl(Blockly.Translate('time_astro_help'));
     }
 };
 

@@ -37,10 +37,10 @@ Blockly.Blocks['sendto_custom_container'] = {
         this.setColour(Blockly.Sendto.HUE);
 
         this.appendDummyInput()
-            .appendField(Blockly.Words['sendto_custom_arguments'][systemLang]);
+            .appendField(Blockly.Translate('sendto_custom_arguments'));
 
         this.appendStatementInput('STACK');
-        this.setTooltip(Blockly.Words['sendto_custom_arg_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('sendto_custom_arg_tooltip'));
         this.contextMenu = false;
     }
 };
@@ -54,11 +54,11 @@ Blockly.Blocks['sendto_custom_item'] = {
         this.setColour(Blockly.Sendto.HUE);
 
         this.appendDummyInput('NAME')
-            .appendField(Blockly.Words['sendto_custom_argument'][systemLang]);
+            .appendField(Blockly.Translate('sendto_custom_argument'));
 
         this.setPreviousStatement(true);
         this.setNextStatement(true);
-        this.setTooltip(Blockly.Words['sendto_custom_arg_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('sendto_custom_arg_tooltip'));
         this.contextMenu = false;
     }
 };
@@ -78,22 +78,22 @@ Blockly.Blocks['sendto_custom'] = {
                 }
             }
             if (!options.length) {
-                options.push([Blockly.Words['sendto_no_instances'][systemLang], '']);
+                options.push([Blockly.Translate('sendto_no_instances'), '']);
             }
             /*for (var h = 0; h < scripts.hosts.length; h++) {
                 options.push([scripts.hosts[h], scripts.hosts[h]]);
             }*/
             this.appendDummyInput('INSTANCE')
-                .appendField(Blockly.Words['sendto_custom'][systemLang])
+                .appendField(Blockly.Translate('sendto_custom'))
                 .appendField(new Blockly.FieldDropdown(options), 'INSTANCE');
         } else {
             this.appendDummyInput('INSTANCE')
-                .appendField(Blockly.Words['sendto_custom'][systemLang])
+                .appendField(Blockly.Translate('sendto_custom'))
                 .appendField(new Blockly.FieldTextInput('adapter.0'), 'INSTANCE');
         }
 
         this.appendDummyInput('COMMAND')
-            .appendField(Blockly.Words['sendto_custom_command'][systemLang])
+            .appendField(Blockly.Translate('sendto_custom_command'))
             .appendField(new Blockly.FieldTextInput('send'), 'COMMAND');
 
         this.setColour(Blockly.Sendto.HUE);
@@ -104,7 +104,7 @@ Blockly.Blocks['sendto_custom'] = {
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setMutator(new Blockly.Mutator(['sendto_custom_item']));
-        this.setTooltip(Blockly.Words['sendto_custom_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('sendto_custom_tooltip'));
         this.setHelpUrl(getHelp('sendto_custom_help'));
     },
     /**
@@ -226,7 +226,7 @@ Blockly.Blocks['sendto_custom'] = {
             _input = this.getInput('ARG' + i);
             if (!_input) {
                 _input = this.appendValueInput('ARG' + i);
-                if (!names[i]) names[i] = Blockly.Words['sendto_custom_argument'][systemLang] + (i + 1);
+                if (!names[i]) names[i] = Blockly.Translate('sendto_custom_argument') + (i + 1);
                 _input.appendField(new Blockly.FieldTextInput(names[i]));
                 setTimeout(function (_input) {
                     if (!_input.connection.isConnected()) {
@@ -273,20 +273,20 @@ Blockly.Blocks['sendto_custom'] = {
         }
 
         this.appendDummyInput('WITH_STATEMENT')
-            .appendField(Blockly.Words['request_statement'][systemLang])
+            .appendField(Blockly.Translate('request_statement'))
             .appendField(new Blockly.FieldCheckbox(withStatement ? 'TRUE': 'FALSE', function (option) {
                 var withStatement = (option == true);
                 this.sourceBlock_.updateShape_(this.sourceBlock_.getArgNames_(), withStatement);
             }), 'WITH_STATEMENT');
 
         this.appendDummyInput('LOG')
-            .appendField(Blockly.Words['sendto_log'][systemLang])
+            .appendField(Blockly.Translate('sendto_log'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['sendto_log_none'][systemLang],  ''],
-                [Blockly.Words['sendto_log_info'][systemLang],  'log'],
-                [Blockly.Words['sendto_log_debug'][systemLang], 'debug'],
-                [Blockly.Words['sendto_log_warn'][systemLang],  'warn'],
-                [Blockly.Words['sendto_log_error'][systemLang], 'error']
+                [Blockly.Translate('sendto_log_none'),  ''],
+                [Blockly.Translate('sendto_log_info'),  'log'],
+                [Blockly.Translate('sendto_log_debug'), 'debug'],
+                [Blockly.Translate('sendto_log_warn'),  'warn'],
+                [Blockly.Translate('sendto_log_error'), 'error']
             ]), 'LOG');
 
         // Add or remove a statement Input.

@@ -2,14 +2,11 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.pt');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Adicionar Comentário";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Não se pode eliminar a variável '%1' porque faz parte da definição da função '%2'";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Alterar valor:";
 Blockly.Msg["CLEAN_UP"] = "Limpar Blocos";
+Blockly.Msg["COLLAPSED_WARNINGS_WARNING"] = "Os blocos ocultados contêm avisos.";
 Blockly.Msg["COLLAPSE_ALL"] = "Ocultar Blocos";
 Blockly.Msg["COLLAPSE_BLOCK"] = "Ocultar Bloco";
 Blockly.Msg["COLOUR_BLEND_COLOUR1"] = "cor 1";
@@ -34,7 +31,7 @@ Blockly.Msg["CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK"] = "sair do ciclo";
 Blockly.Msg["CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE"] = "continuar com a próxima iteração do ciclo";
 Blockly.Msg["CONTROLS_FLOW_STATEMENTS_TOOLTIP_BREAK"] = "Sair do ciclo que está contido.";
 Blockly.Msg["CONTROLS_FLOW_STATEMENTS_TOOLTIP_CONTINUE"] = "Ignorar o resto deste ciclo, e continuar com a próxima iteração.";
-Blockly.Msg["CONTROLS_FLOW_STATEMENTS_WARNING"] = "Atenção: Este bloco só pode ser usado dentro de um ciclo.";
+Blockly.Msg["CONTROLS_FLOW_STATEMENTS_WARNING"] = "Aviso: Este bloco só pode ser usado dentro de um ciclo.";
 Blockly.Msg["CONTROLS_FOREACH_HELPURL"] = "https://github.com/google/blockly/wiki/Loops#for-each";  // untranslated
 Blockly.Msg["CONTROLS_FOREACH_TITLE"] = "para cada item %1 na lista %2";
 Blockly.Msg["CONTROLS_FOREACH_TOOLTIP"] = "Para cada item numa lista, define a variável \"%1\" para o item e então faz algumas instruções.";
@@ -309,11 +306,11 @@ Blockly.Msg["PROCEDURES_DEFNORETURN_TOOLTIP"] = "Cria uma função que não tem 
 Blockly.Msg["PROCEDURES_DEFRETURN_HELPURL"] = "http://en.wikipedia.org/wiki/Procedure_%28computer_science%29";
 Blockly.Msg["PROCEDURES_DEFRETURN_RETURN"] = "retorna";
 Blockly.Msg["PROCEDURES_DEFRETURN_TOOLTIP"] = "Cria uma função que possui um valor de retorno.";
-Blockly.Msg["PROCEDURES_DEF_DUPLICATE_WARNING"] = "Atenção: Esta função tem parâmetros duplicados.";
+Blockly.Msg["PROCEDURES_DEF_DUPLICATE_WARNING"] = "Aviso: Esta função tem parâmetros duplicados.";
 Blockly.Msg["PROCEDURES_HIGHLIGHT_DEF"] = "Destacar definição da função";
 Blockly.Msg["PROCEDURES_IFRETURN_HELPURL"] = "http://c2.com/cgi/wiki?GuardClause";  // untranslated
 Blockly.Msg["PROCEDURES_IFRETURN_TOOLTIP"] = "se o valor é verdadeiro, então retorna um segundo valor.";
-Blockly.Msg["PROCEDURES_IFRETURN_WARNING"] = "Atenção: Este bloco só pode ser utilizado dentro da definição de uma função.";
+Blockly.Msg["PROCEDURES_IFRETURN_WARNING"] = "Aviso: Este bloco só pode ser utilizado dentro da definição de uma função.";
 Blockly.Msg["PROCEDURES_MUTATORARG_TITLE"] = "nome da entrada:";
 Blockly.Msg["PROCEDURES_MUTATORARG_TOOLTIP"] = "Adicionar uma entrada para a função.";
 Blockly.Msg["PROCEDURES_MUTATORCONTAINER_TITLE"] = "entradas";
@@ -392,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "remover espaços à direita";
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Retorna uma cópia do texto com os espaços removidos de uma ou ambas as extremidades.";
 Blockly.Msg["TODAY"] = "Hoje";
 Blockly.Msg["UNDO"] = "Desfazer";
+Blockly.Msg["UNNAMED_KEY"] = "sem nome";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "item";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Criar \"definir %1\"";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -402,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Define esta variável para o valor inserido.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "Já existe uma variável com o nome de '%1'.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "Já existe uma variável chamada '%1' para outra do tipo: '%2'.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Espaço de trabalho de Blockly";
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Diz algo...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];

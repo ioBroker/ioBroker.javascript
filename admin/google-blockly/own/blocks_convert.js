@@ -1,8 +1,10 @@
 'use strict';
 
-goog.provide('Blockly.JavaScript.Convert');
+if (typeof goog !== 'undefined') {
+    goog.provide('Blockly.JavaScript.Convert');
 
-goog.require('Blockly.JavaScript');
+    goog.require('Blockly.JavaScript');
+}
 
 Blockly.CustomBlocks = Blockly.CustomBlocks || [];
 Blockly.CustomBlocks.push('Convert');
@@ -27,10 +29,10 @@ Blockly.Blocks.convert_tonumber = {
         this.setColour(Blockly.Convert.HUE);
 
         this.appendValueInput("VALUE")
-            .appendField(Blockly.Words['convert_tonumber'][systemLang]);
+            .appendField(Blockly.Translate('convert_tonumber'));
 
         this.setOutput(true, "Number");
-        this.setTooltip(Blockly.Words['convert_tonumber_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('convert_tonumber_tooltip'));
     }
 };
 Blockly.JavaScript.convert_tonumber = function (a) {
@@ -47,9 +49,9 @@ Blockly.Convert.blocks['convert_toboolean'] =
 Blockly.Blocks.convert_toboolean = {
     init: function () {
         this.setColour(Blockly.Convert.HUE);
-        this.appendValueInput("VALUE").appendField(Blockly.Words['convert_toboolean'][systemLang]);
+        this.appendValueInput("VALUE").appendField(Blockly.Translate('convert_toboolean'));
         this.setOutput(true, "Boolean");
-        this.setTooltip(Blockly.Words['convert_toboolean_tooltip'][systemLang])
+        this.setTooltip(Blockly.Translate('convert_toboolean_tooltip'))
     }
 };
 
@@ -67,9 +69,9 @@ Blockly.Convert.blocks['convert_tostring'] =
 Blockly.Blocks.convert_tostring = {
     init: function () {
         this.setColour(Blockly.Convert.HUE);
-        this.appendValueInput("VALUE").appendField(Blockly.Words['convert_tostring'][systemLang]);
+        this.appendValueInput("VALUE").appendField(Blockly.Translate('convert_tostring'));
         this.setOutput(true, "String");
-        this.setTooltip(Blockly.Words['convert_tostring_tooltip'][systemLang])
+        this.setTooltip(Blockly.Translate('convert_tostring_tooltip'))
     }
 };
 
@@ -89,10 +91,10 @@ Blockly.Blocks.convert_type = {
         this.setColour(Blockly.Convert.HUE);
 
         this.appendValueInput('ITEM')
-            .appendField(Blockly.Words['convert_type'][systemLang]);
+            .appendField(Blockly.Translate('convert_type'));
 
         this.setOutput(true, 'String');
-        this.setTooltip(Blockly.Words['convert_type_tooltip'][systemLang])
+        this.setTooltip(Blockly.Translate('convert_type_tooltip'))
     }
 };
 Blockly.JavaScript.convert_type = function (a) {
@@ -110,11 +112,11 @@ Blockly.Blocks.convert_to_date = {
     init: function () {
         
         this.appendValueInput('VALUE')
-            .appendField(Blockly.Words['convert_to_date'][systemLang]);
+            .appendField(Blockly.Translate('convert_to_date'));
 
         this.setColour(Blockly.Convert.HUE);
         this.setOutput(true, 'Date');
-        this.setTooltip(Blockly.Words['convert_to_date_tooltip'][systemLang])
+        this.setTooltip(Blockly.Translate('convert_to_date_tooltip'))
     }
 };
 Blockly.JavaScript.convert_to_date = function (a) {
@@ -139,45 +141,45 @@ Blockly.Blocks.convert_from_date = {
     init: function () {
         this.setColour(Blockly.Convert.HUE);
         this.appendValueInput('VALUE')
-            .appendField(Blockly.Words['convert_from_date'][systemLang]);
+            .appendField(Blockly.Translate('convert_from_date'));
 
         this.appendDummyInput('OPTION')
-            .appendField(Blockly.Words['convert_to'][systemLang])
+            .appendField(Blockly.Translate('convert_to'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['time_get_object'][systemLang]        , 'object'],
-                [Blockly.Words['time_get_ms'][systemLang]            , 'ms'],
-                [Blockly.Words['time_get_s'][systemLang]             , 's'],
-                [Blockly.Words['time_get_sid'][systemLang]           , 'sid'],
-                [Blockly.Words['time_get_m'][systemLang]             , 'm'],
-                [Blockly.Words['time_get_mid'][systemLang]           , 'mid'],
-                [Blockly.Words['time_get_h'][systemLang]             , 'h'],
-                [Blockly.Words['time_get_d'][systemLang]             , 'd'],
-                [Blockly.Words['time_get_M'][systemLang]             , 'M'],
-                [Blockly.Words['time_get_Mt'][systemLang]            , 'Mt'],
-                [Blockly.Words['time_get_Mts'][systemLang]           , 'Mts'],
-                [Blockly.Words['time_get_y'][systemLang]             , 'y'],
-                [Blockly.Words['time_get_fy'][systemLang]            , 'fy'],
-                [Blockly.Words['time_get_wdt'][systemLang]           , 'wdt'],
-                [Blockly.Words['time_get_wdts'][systemLang]          , 'wdts'],
-                [Blockly.Words['time_get_wd'][systemLang]            , 'wd'],
-                [Blockly.Words['time_get_custom'][systemLang]        , 'custom'],
-                [Blockly.Words['time_get_yyyy.mm.dd'][systemLang]    , Blockly.Words['time_get_yyyy.mm.dd']  .format],
-                [Blockly.Words['time_get_yyyy/mm/dd'][systemLang]    , Blockly.Words['time_get_yyyy/mm/dd']  .format],
-                [Blockly.Words['time_get_yy.mm.dd'][systemLang]      , Blockly.Words['time_get_yy.mm.dd']    .format],
-                [Blockly.Words['time_get_yy/mm/dd'][systemLang]      , Blockly.Words['time_get_yy/mm/dd']    .format],
-                [Blockly.Words['time_get_dd.mm.yyyy'][systemLang]    , Blockly.Words['time_get_dd.mm.yyyy']  .format],
-                [Blockly.Words['time_get_dd/mm/yyyy'][systemLang]    , Blockly.Words['time_get_dd/mm/yyyy']  .format],
-                [Blockly.Words['time_get_dd.mm.yy'][systemLang]      , Blockly.Words['time_get_dd.mm.yy']    .format],
-                [Blockly.Words['time_get_dd/mm/yy'][systemLang]      , Blockly.Words['time_get_dd/mm/yy']    .format],
-                [Blockly.Words['time_get_mm/dd/yyyy'][systemLang]    , Blockly.Words['time_get_mm/dd/yyyy']  .format],
-                [Blockly.Words['time_get_mm/dd/yy'][systemLang]      , Blockly.Words['time_get_mm/dd/yy']    .format],
-                [Blockly.Words['time_get_dd.mm'][systemLang]         , Blockly.Words['time_get_dd.mm']       .format],
-                [Blockly.Words['time_get_dd/mm'][systemLang]         , Blockly.Words['time_get_dd/mm']       .format],
-                [Blockly.Words['time_get_mm.dd'][systemLang]         , Blockly.Words['time_get_mm.dd']       .format],
-                [Blockly.Words['time_get_mm/dd'][systemLang]         , Blockly.Words['time_get_mm/dd']       .format],
-                [Blockly.Words['time_get_hh_mm'][systemLang]         , Blockly.Words['time_get_hh_mm']       .format],
-                [Blockly.Words['time_get_hh_mm_ss'][systemLang]      , Blockly.Words['time_get_hh_mm_ss']    .format],
-                [Blockly.Words['time_get_hh_mm_ss.sss'][systemLang]  , Blockly.Words['time_get_hh_mm_ss.sss'].format]
+                [Blockly.Translate('time_get_object')        , 'object'],
+                [Blockly.Translate('time_get_ms')            , 'ms'],
+                [Blockly.Translate('time_get_s')             , 's'],
+                [Blockly.Translate('time_get_sid')           , 'sid'],
+                [Blockly.Translate('time_get_m')             , 'm'],
+                [Blockly.Translate('time_get_mid')           , 'mid'],
+                [Blockly.Translate('time_get_h')             , 'h'],
+                [Blockly.Translate('time_get_d')             , 'd'],
+                [Blockly.Translate('time_get_M')             , 'M'],
+                [Blockly.Translate('time_get_Mt')            , 'Mt'],
+                [Blockly.Translate('time_get_Mts')           , 'Mts'],
+                [Blockly.Translate('time_get_y')             , 'y'],
+                [Blockly.Translate('time_get_fy')            , 'fy'],
+                [Blockly.Translate('time_get_wdt')           , 'wdt'],
+                [Blockly.Translate('time_get_wdts')          , 'wdts'],
+                [Blockly.Translate('time_get_wd')            , 'wd'],
+                [Blockly.Translate('time_get_custom')        , 'custom'],
+                [Blockly.Translate('time_get_yyyy.mm.dd')    , Blockly.Words['time_get_yyyy.mm.dd']  .format],
+                [Blockly.Translate('time_get_yyyy/mm/dd')    , Blockly.Words['time_get_yyyy/mm/dd']  .format],
+                [Blockly.Translate('time_get_yy.mm.dd')      , Blockly.Words['time_get_yy.mm.dd']    .format],
+                [Blockly.Translate('time_get_yy/mm/dd')      , Blockly.Words['time_get_yy/mm/dd']    .format],
+                [Blockly.Translate('time_get_dd.mm.yyyy')    , Blockly.Words['time_get_dd.mm.yyyy']  .format],
+                [Blockly.Translate('time_get_dd/mm/yyyy')    , Blockly.Words['time_get_dd/mm/yyyy']  .format],
+                [Blockly.Translate('time_get_dd.mm.yy')      , Blockly.Words['time_get_dd.mm.yy']    .format],
+                [Blockly.Translate('time_get_dd/mm/yy')      , Blockly.Words['time_get_dd/mm/yy']    .format],
+                [Blockly.Translate('time_get_mm/dd/yyyy')    , Blockly.Words['time_get_mm/dd/yyyy']  .format],
+                [Blockly.Translate('time_get_mm/dd/yy')      , Blockly.Words['time_get_mm/dd/yy']    .format],
+                [Blockly.Translate('time_get_dd.mm')         , Blockly.Words['time_get_dd.mm']       .format],
+                [Blockly.Translate('time_get_dd/mm')         , Blockly.Words['time_get_dd/mm']       .format],
+                [Blockly.Translate('time_get_mm.dd')         , Blockly.Words['time_get_mm.dd']       .format],
+                [Blockly.Translate('time_get_mm/dd')         , Blockly.Words['time_get_mm/dd']       .format],
+                [Blockly.Translate('time_get_hh_mm')         , Blockly.Words['time_get_hh_mm']       .format],
+                [Blockly.Translate('time_get_hh_mm_ss')      , Blockly.Words['time_get_hh_mm_ss']    .format],
+                [Blockly.Translate('time_get_hh_mm_ss.sss')  , Blockly.Words['time_get_hh_mm_ss.sss'].format]
             ], function (option) {
                 this.sourceBlock_.updateShape_(option === 'custom', option === 'wdts' || option === 'wdt' || option === 'Mt' || option === 'Mts');
             }), 'OPTION');
@@ -185,7 +187,7 @@ Blockly.Blocks.convert_from_date = {
 
         this.setInputsInline(true);
         this.setOutput(true);
-        this.setTooltip(Blockly.Words['convert_from_date_tooltip'][systemLang])
+        this.setTooltip(Blockly.Translate('convert_from_date_tooltip'))
     },
     mutationToDom: function() {
         var container = document.createElement('mutation');
@@ -205,7 +207,7 @@ Blockly.Blocks.convert_from_date = {
             if (!inputExists) {
                 this.appendDummyInput('FORMAT')
                     .appendField(' ')
-                    .appendField(new Blockly.FieldTextInput(Blockly.Words['time_get_default_format'][systemLang]), 'FORMAT');
+                    .appendField(new Blockly.FieldTextInput(Blockly.Translate('time_get_default_format')), 'FORMAT');
             }
         } else if (inputExists) {
             this.removeInput('FORMAT');
@@ -293,11 +295,11 @@ Blockly.Blocks.convert_json2object = {
     init: function () {
 
         this.appendValueInput('VALUE')
-            .appendField(Blockly.Words['convert_json2object'][systemLang]);
+            .appendField(Blockly.Translate('convert_json2object'));
 
         this.setColour(Blockly.Convert.HUE);
         this.setOutput(true);
-        this.setTooltip(Blockly.Words['convert_json2object_tooltip'][systemLang])
+        this.setTooltip(Blockly.Translate('convert_json2object_tooltip'))
     }
 };
 Blockly.JavaScript.convert_json2object = function (a) {
@@ -317,15 +319,15 @@ Blockly.Blocks.convert_object2json = {
     init: function () {
 
         this.appendValueInput('VALUE')
-            .appendField(Blockly.Words['convert_object2json'][systemLang]);
+            .appendField(Blockly.Translate('convert_object2json'));
 
         this.appendDummyInput('PRETTIFY')
-            .appendField(Blockly.Words['convert_object2json_prettify'][systemLang])
+            .appendField(Blockly.Translate('convert_object2json_prettify'))
             .appendField(new Blockly.FieldCheckbox('FALSE'), 'PRETTIFY');
 
         this.setColour(Blockly.Convert.HUE);
         this.setOutput(true, 'String');
-        this.setTooltip(Blockly.Words['convert_object2json_tooltip'][systemLang])
+        this.setTooltip(Blockly.Translate('convert_object2json_tooltip'))
     }
 };
 Blockly.JavaScript.convert_object2json = function (block) {
@@ -350,15 +352,15 @@ Blockly.Blocks.convert_jsonata = {
     init: function () {
 
         this.appendValueInput('EXPRESSION')
-            .appendField(Blockly.Words['convert_jsonata'][systemLang]);
+            .appendField(Blockly.Translate('convert_jsonata'));
 
         this.appendValueInput('TARGET')
-            .appendField(Blockly.Words['convert_jsonata_target'][systemLang]);
+            .appendField(Blockly.Translate('convert_jsonata_target'));
 
         this.setInputsInline(true);
         this.setColour(Blockly.Convert.HUE);
         this.setOutput(true, 'String');
-        this.setTooltip(Blockly.Words['convert_jsonata_tooltip'][systemLang])
+        this.setTooltip(Blockly.Translate('convert_jsonata_tooltip'))
     }
 };
 Blockly.JavaScript.convert_jsonata = function (block) {

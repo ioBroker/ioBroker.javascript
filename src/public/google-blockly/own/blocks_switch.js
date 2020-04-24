@@ -19,13 +19,13 @@ Blockly.Blocks['logic_switch_case'] = {
         this.setPreviousStatement(true);
         this.setNextStatement(true);
         this.appendValueInput('CONDITION')
-            .appendField(Blockly.Words['logic_switch_case_is'][systemLang]);
+            .appendField(Blockly.Translate('logic_switch_case_is'));
         this.appendValueInput('CASECONDITION0')
-            .appendField(Blockly.Words['logic_switch_case_of'][systemLang]);
+            .appendField(Blockly.Translate('logic_switch_case_of'));
         this.appendStatementInput('CASE0')
-            .appendField(Blockly.Words['logic_switch_do'][systemLang]);
+            .appendField(Blockly.Translate('logic_switch_do'));
         this.setMutator(new Blockly.Mutator(['case_incaseof', 'case_default']));
-        this.setTooltip(Blockly.Words['logic_switch_tootltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('logic_switch_tootltip'));
         this.caseCount_ = 0;
         this.defaultCount_ = 0;
     },
@@ -53,9 +53,9 @@ Blockly.Blocks['logic_switch_case'] = {
 
         for (var x = 1; x <= this.caseCount_; x++) {
             this.appendValueInput('CASECONDITION' + x)
-                .appendField(Blockly.Words['logic_switch_case_of'][systemLang]);
+                .appendField(Blockly.Translate('logic_switch_case_of'));
             this.appendStatementInput('CASE' + x)
-                .appendField(Blockly.Words['logic_switch_do'][systemLang]);
+                .appendField(Blockly.Translate('logic_switch_do'));
         }
 
         if (this.defaultCount_) {
@@ -108,10 +108,10 @@ Blockly.Blocks['logic_switch_case'] = {
                 case 'case_incaseof':
                     this.caseCount_++;
                     var caseconditionInput = this.appendValueInput('CASECONDITION' + this.caseCount_)
-                        .appendField(Blockly.Words['logic_switch_case_of'][systemLang]);
+                        .appendField(Blockly.Translate('logic_switch_case_of'));
 
                     var caseInput = this.appendStatementInput('CASE' + this.caseCount_)
-                        .appendField(Blockly.Words['logic_switch_do'][systemLang]);
+                        .appendField(Blockly.Translate('logic_switch_do'));
 
                     if (caseBlock.valueConnection_) {
                         caseconditionInput.connection.connect(caseBlock.valueConnection_);
@@ -169,9 +169,9 @@ Blockly.Blocks['control_case'] = {
     init: function() {
         this.setColour(180);
         this.appendDummyInput()
-            .appendField(Blockly.Words['logic_switch_case_is'][systemLang]);
+            .appendField(Blockly.Translate('logic_switch_case_is'));
         this.appendStatementInput('STACK');
-        this.setTooltip(Blockly.Words['logic_switch_control_case_tootltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('logic_switch_control_case_tootltip'));
         this.contextMenu = false;
     }
 };
@@ -180,10 +180,10 @@ Blockly.Blocks['case_incaseof'] = {
     init: function() {
         this.setColour(180);
         this.appendDummyInput()
-            .appendField(Blockly.Words['logic_switch_case_of'][systemLang]);
+            .appendField(Blockly.Translate('logic_switch_case_of'));
         this.setPreviousStatement(true);
         this.setNextStatement(true);
-        this.setTooltip(Blockly.Words['logic_switch_case_incaseof_tootltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('logic_switch_case_incaseof_tootltip'));
         this.contextMenu = false;
     }
 };
@@ -195,7 +195,7 @@ Blockly.Blocks['case_default'] = {
             .appendField('default');
         this.setPreviousStatement(true);
         this.setNextStatement(false);
-        this.setTooltip(Blockly.Words['logic_switch_default_tootltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('logic_switch_default_tootltip'));
         this.contextMenu = false;
     }
 };

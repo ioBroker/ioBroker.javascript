@@ -24,14 +24,15 @@
  */
 'use strict';
 
-goog.provide('Blockly.FieldCRON');
+if (typeof goog !== 'undefined') {
+    goog.provide('Blockly.FieldCRON');
 
-goog.require('Blockly.Field');
-goog.require('Blockly.Msg');
-goog.require('goog.asserts');
-goog.require('goog.dom');
-goog.require('goog.userAgent');
-
+    goog.require('Blockly.Field');
+    goog.require('Blockly.Msg');
+    goog.require('goog.asserts');
+    goog.require('goog.dom');
+    goog.require('goog.userAgent');
+}
 
 /**
  * Class for an editable text field.
@@ -46,7 +47,11 @@ goog.require('goog.userAgent');
 Blockly.FieldCRON = function(text) {
     Blockly.FieldCRON.superClass_.constructor.call(this, text);
 };
-goog.inherits(Blockly.FieldCRON, Blockly.Field);
+if (typeof goog !== 'undefined') {
+    goog.inherits(Blockly.FieldCRON, Blockly.Field);
+} else {
+    Blockly.utils.object.inherits(Blockly.FieldCRON, Blockly.Field);
+}
 
 /**
  * Point size of text.  Should match blocklyText's font-size in CSS.
@@ -127,8 +132,6 @@ Blockly.FieldCRON.prototype.onHtmlInputChange_ = function(e) {
  * @private
  */
 Blockly.FieldCRON.prototype.validate_ = function() {
-    var valid = true;
-
     goog.asserts.assertObject(Blockly.FieldCRON.htmlInput_);
 
     var htmlInput = Blockly.FieldCRON.htmlInput_;

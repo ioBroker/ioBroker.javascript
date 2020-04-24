@@ -33,26 +33,26 @@ Blockly.Action.blocks['exec'] =
 Blockly.Blocks['exec'] = {
     init: function() {
         this.appendDummyInput('TEXT')
-            .appendField(Blockly.Words['exec'][systemLang]);
+            .appendField(Blockly.Translate('exec'));
 
         this.appendValueInput('COMMAND')
-            .appendField(Blockly.Words['exec_command'][systemLang]);
+            .appendField(Blockly.Translate('exec_command'));
 
         this.appendDummyInput('WITH_STATEMENT')
-            .appendField(Blockly.Words['exec_statement'][systemLang])
+            .appendField(Blockly.Translate('exec_statement'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
                 var delayInput = (option == true);
                 this.sourceBlock_.updateShape_(delayInput);
             }), 'WITH_STATEMENT');
 
         this.appendDummyInput('LOG')
-            .appendField(Blockly.Words['exec_log'][systemLang])
+            .appendField(Blockly.Translate('exec_log'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['exec_log_none'][systemLang],  ''],
-                [Blockly.Words['exec_log_info'][systemLang],  'log'],
-                [Blockly.Words['exec_log_debug'][systemLang], 'debug'],
-                [Blockly.Words['exec_log_warn'][systemLang],  'warn'],
-                [Blockly.Words['exec_log_error'][systemLang], 'error']
+                [Blockly.Translate('exec_log_none'),  ''],
+                [Blockly.Translate('exec_log_info'),  'log'],
+                [Blockly.Translate('exec_log_debug'), 'debug'],
+                [Blockly.Translate('exec_log_warn'),  'warn'],
+                [Blockly.Translate('exec_log_error'), 'error']
             ]), 'LOG');
 
         this.setInputsInline(false);
@@ -60,7 +60,7 @@ Blockly.Blocks['exec'] = {
         this.setNextStatement(true, null);
 
         this.setColour(Blockly.Action.HUE);
-        this.setTooltip(Blockly.Words['exec_tooltip'][systemLang]);
+        this.setTooltip(Blockly.Translate('exec_tooltip'));
         this.setHelpUrl(getHelp('exec_help'));
     },
     mutationToDom: function() {
@@ -130,26 +130,26 @@ Blockly.Action.blocks['request'] =
 Blockly.Blocks['request'] = {
     init: function() {
         this.appendDummyInput('TEXT')
-            .appendField(Blockly.Words['request'][systemLang]);
+            .appendField(Blockly.Translate('request'));
 
         this.appendValueInput('URL')
-            .appendField(Blockly.Words['request_url'][systemLang]);
+            .appendField(Blockly.Translate('request_url'));
 
         this.appendDummyInput('WITH_STATEMENT')
-            .appendField(Blockly.Words['request_statement'][systemLang])
+            .appendField(Blockly.Translate('request_statement'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
                 var delayInput = (option == true);
                 this.sourceBlock_.updateShape_(delayInput);
             }), 'WITH_STATEMENT');
 
         this.appendDummyInput('LOG')
-            .appendField(Blockly.Words['request_log'][systemLang])
+            .appendField(Blockly.Translate('request_log'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Words['request_log_none'][systemLang],  ''],
-                [Blockly.Words['request_log_info'][systemLang],  'log'],
-                [Blockly.Words['request_log_debug'][systemLang], 'debug'],
-                [Blockly.Words['request_log_warn'][systemLang],  'warn'],
-                [Blockly.Words['request_log_error'][systemLang], 'error']
+                [Blockly.Translate('request_log_none'),  ''],
+                [Blockly.Translate('request_log_info'),  'log'],
+                [Blockly.Translate('request_log_debug'), 'debug'],
+                [Blockly.Translate('request_log_warn'),  'warn'],
+                [Blockly.Translate('request_log_error'), 'error']
             ]), 'LOG');
 
         this.setInputsInline(false);
@@ -157,8 +157,8 @@ Blockly.Blocks['request'] = {
         this.setNextStatement(true, null);
 
         this.setColour(Blockly.Action.HUE);
-        this.setTooltip(Blockly.Words['request_tooltip'][systemLang]);
-        this.setHelpUrl(Blockly.Words['request_help'][systemLang]);
+        this.setTooltip(Blockly.Translate('request_tooltip'));
+        this.setHelpUrl(Blockly.Translate('request_help'));
     },
     mutationToDom: function() {
         var container = document.createElement('mutation');

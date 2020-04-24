@@ -160,6 +160,11 @@ function build() {
         stdout: true  // default = true, false means don't write stdout
     };
 
+    const version = JSON.parse(fs.readFileSync(__dirname + '/package.json').toString('utf8')).version;
+    const data = JSON.parse(fs.readFileSync(__dirname + '/src/package.json').toString('utf8'));
+    data.version = version;
+    fs.writeFileSync(__dirname + '/src/package.json', JSON.stringify(data, null, 2));
+
     console.log(options.cwd);
 
     if (fs.existsSync(__dirname + '/src/node_modules/react-scripts/scripts/build.js')) {
@@ -713,6 +718,16 @@ gulp.task('blocklyLanguagesFlat2words', done => {
             text += line + '};\n';
         }
     }
+
+    text += 'Blockly.Translate = function (word, lang) {\n' +
+        '    lang = lang || systemLang;\n' +
+        '    if (Blockly.Words && Blockly.Words[word]) {\n' +
+        '        return Blockly.Words[word][lang] || Blockly.Words[word].en;\n' +
+        '    } else {\n' +
+        '        return word;\n' +
+        '    }\n' +
+        '};\n\n';
+
     text += '\nif (typeof module !== \'undefined\' && typeof module.parent !== \'undefined\') {\n' +
         '    module.exports = Blockly;\n' +
         '}'
