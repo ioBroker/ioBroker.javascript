@@ -1,6 +1,6 @@
 // Taken from here: https://groups.google.com/forum/#!topic/blockly/djhO2jUb0Xs
 // I really tried to get the license conditions from authors, but no luck :(
-// Many thanks to Florian Pechwitz <florian.pechw...@itizzimo.com> for the code
+// Many thanks to Florian Pechwitz <florian.Pechwitz@itizzimo.com> for the code
 
 Blockly.System.blocks['logic_switch_case'] =
     '<block type="logic_switch_case">'
@@ -30,14 +30,17 @@ Blockly.Blocks['logic_switch_case'] = {
         this.defaultCount_ = 0;
     },
 
-    mutationToDom: function() {
+    mutationToDom: function () {
         if (!this.caseCount_ && !this.defaultCount_) {
             return null;
         }
+
         var container = document.createElement('mutation');
+
         if (this.caseCount_) {
             container.setAttribute('case', this.caseCount_);
         }
+
         if (this.defaultCount_) {
             container.setAttribute('default', 1);
         }
@@ -64,18 +67,22 @@ Blockly.Blocks['logic_switch_case'] = {
     decompose: function(workspace) {
         var containerBlock = workspace.newBlock('control_case');//Blockly.Block.obtain(workspace, 'control_case');
         containerBlock.initSvg();
+
         var connection = containerBlock.getInput('STACK').connection;
+
         for (var x = 1; x <= this.caseCount_; x++) {
             var caseBlock = workspace.newBlock('case_incaseof');//Blockly.Block.obtain(workspace, 'case_incaseof');
             caseBlock.initSvg();
             connection.connect(caseBlock.previousConnection);
             connection = caseBlock.nextConnection;
         }
+
         if (this.defaultCount_) {
             var defaultBlock = workspace.newBlock('case_default');//Blockly.Block.obtain(workspace, 'case_default');
             defaultBlock.initSvg();
             connection.connect(defaultBlock.previousConnection);
         }
+
         return containerBlock;
     },
 
@@ -84,13 +91,18 @@ Blockly.Blocks['logic_switch_case'] = {
         if (this.defaultCount_) {
             this.removeInput('ONDEFAULT');
         }
+
         this.defaultCount_ = 0;
+
         for (var x = this.caseCount_; x > 0; x--) {
             this.removeInput('CASECONDITION' + x);
             this.removeInput('CASE' + x);
         }
+
         this.caseCount_ = 0;
+
         var caseBlock = containerBlock.getInputTargetBlock('STACK');
+
         while (caseBlock) {
             switch(caseBlock.type) {
                 case 'case_incaseof':
@@ -123,8 +135,8 @@ Blockly.Blocks['logic_switch_case'] = {
                 default:
                     throw 'Unknown block type.';
             }
-            caseBlock = caseBlock.nextConnection &&
-                caseBlock.nextConnection.targetBlock();
+
+            caseBlock = caseBlock.nextConnection && caseBlock.nextConnection.targetBlock();
         }
     },
 
@@ -192,10 +204,11 @@ Blockly.JavaScript['logic_switch_case'] = function(block) {
     var code = '';
     var do_n;
     var case_n;
-    var switchVariable = Blockly.JavaScript.valueToCode(block, 'CONDITION',
-        Blockly.JavaScript.ORDER_NONE) || null;
+    var switchVariable = Blockly.JavaScript.valueToCode(block, 'CONDITION', Blockly.JavaScript.ORDER_NONE) || null;
+
     if (switchVariable){
         var pattern = /^([a-zA-Z_]+(\d|[a-zA-Z_])*)$/g;
+
         if (pattern.test(switchVariable)) { // Check to see if the switch is a kind of variable type
             code = '\nswitch (' + switchVariable + ') {\n';
             var case_0 = Blockly.JavaScript.valueToCode(block, 'CASECONDITION0', Blockly.JavaScript.ORDER_NONE) || null;
@@ -211,6 +224,7 @@ Blockly.JavaScript['logic_switch_case'] = function(block) {
                     code += '\tcase ' + case_n + ':\n' + do_n + '\n\t\tbreak;\n';
                 }
             }
+
             if (block.defaultCount_) {
                 do_n = Blockly.JavaScript.statementToCode(block, 'ONDEFAULT');
                 code += '\tdefault:\n' + do_n + '\n\t\tbreak;\n';
