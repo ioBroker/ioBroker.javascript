@@ -41,6 +41,9 @@ Cadena Parson JSON
 objetar a JSON
 Objeto Strinify
 embellecer
+Expresión JSONata
+aplicar para
+Convertir por expresión JSONata
 Enviar a
 mensaje
 enviar a
@@ -306,3 +309,10 @@ segundos
 como línea
 JS function with return
 Javascript function
+Interruptor / caja
+el caso es
+en caso de
+hacer
+Hace algo si la condición es verdadera. Si no hay un caso coincidente, se ejecutará la función predeterminada.
+Esta función se ejecutará si no hay casos coincidentes.
+Esta es una variable para la condición.

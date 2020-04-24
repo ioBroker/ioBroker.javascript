@@ -41,6 +41,9 @@ Analizza la stringa JSON
 oggetto a JSON
 Strinificare l'oggetto
 abbellire
+Espressione JSONata
+applica a
+Convertire da JSONata Expression
 Inviare a
 Messaggio
 inviare a
@@ -306,3 +309,10 @@ secondi
 come linea
 JS function with return
 Javascript function
+Scatola dell'interruttore
+il caso è
+in caso di
+fare
+Fa qualcosa se la condizione è vera. Se non esiste un caso corrispondente, verrà eseguita la funzione predefinita.
+Questa funzione verrà eseguita se non ci sono casi corrispondenti.
+Questa è una variabile per condizione.

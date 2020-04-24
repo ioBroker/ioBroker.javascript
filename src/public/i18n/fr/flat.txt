@@ -41,6 +41,9 @@ Parse JSON chaîne
 objet à JSON
 Strinify objet
 enjoliver
+Expression JSONata
+postuler à
+Conversion par expression JSONata
 Envoyer à
 message
 envoyer à
@@ -306,3 +309,10 @@ secondes
 en ligne
 JS function with return
 Javascript function
+Interrupteur / boîtier
+le cas est
+en cas de
+faire
+Fait quelque chose si la condition est vraie. S'il n'y a pas de cas correspondant, la fonction par défaut sera exécutée.
+Cette fonction s'exécutera s'il n'y a pas de cas correspondants.
+Il s'agit d'une variable de condition.

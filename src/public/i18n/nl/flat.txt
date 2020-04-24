@@ -41,6 +41,9 @@ Ontleed JSON-tekenreeks
 bezwaar tegen JSON
 Strinify-object
 leuk maken
+JSONata-expressie
+van toepassing op
+Converteer door JSONata-expressie
 Verzenden naar
 bericht
 verzenden naar
@@ -306,3 +309,10 @@ seconden
 als lijn
 JS function with return
 Javascript function
+Schakelaar / case
+het geval is
+in het geval van
+Doen
+Doet iets als de voorwaarde waar is. Als er geen overeenkomende case is, wordt de standaardfunctie uitgevoerd.
+Deze functie wordt uitgevoerd als er geen overeenkomende gevallen zijn.
+Dit is een variabele voor conditie.

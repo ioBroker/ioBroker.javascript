@@ -41,6 +41,9 @@ Parse JSON
 Objekt nach JSON
 Objekt nach JSON
 formatieren
+JSONata Ausdruck
+anwenden auf
+Mit JSONata konvertieren
 Sendto
 Meldung
 sendTo
@@ -306,3 +309,10 @@ Sekunden
 Als Linie
 JS-Funktion mit Ergebnis
 Javascript-Funktion
+Schaltergehäuse
+der Fall ist
+im Falle von
+machen
+Tut etwas, wenn die Bedingung erfüllt ist. Wenn es keinen passenden Fall gibt, wird die Standardfunktion ausgeführt.
+Diese Funktion wird ausgeführt, wenn keine übereinstimmenden Fälle vorliegen.
+Dies ist eine Variable für die Bedingung.

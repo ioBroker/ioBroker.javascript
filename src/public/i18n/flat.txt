@@ -41,6 +41,9 @@ convert_json2object_tooltip
 convert_object2json
 convert_object2json_tooltip
 convert_object2json_prettify
+convert_jsonata
+convert_jsonata_target
+convert_jsonata_tooltip
 Sendto
 sendto_message
 sendto_custom
@@ -306,3 +309,10 @@ cron_builder_seconds
 cron_builder_line
 procedures_defcustomreturn_name
 procedures_defcustomnoreturn_name
+logic_switch_case
+logic_switch_case_is
+logic_switch_case_of
+logic_switch_do
+logic_switch_tootltip
+logic_switch_default_tootltip
+logic_switch_control_case_tootltip

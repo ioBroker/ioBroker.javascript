@@ -41,6 +41,9 @@ https://github.com/request/request
 从对象到JSON
 将对象转为JSON字符串
 并格式化
+JSONata表达式
+适用于
+通过JSONata表达式转换
 发消息
 消息
 发消息给
@@ -306,3 +309,10 @@ astro--function
 横向显示
 JS function with return
 Javascript function
+开关/箱
+情况是
+的情况下
+做
+如果条件为真，则执行某些操作。如果没有匹配的情况，将执行默认功能。
+如果没有匹配的情况，此功能将运行。
+这是用于条件的变量。

@@ -140,7 +140,7 @@ class Log extends React.Component {
     }
 
     generateLine(message) {
-        return (<tr key={'tr_' + message.ts} className={this.props.classes[message.severity]}>
+        return (<tr key={'tr_' + message.ts + '_' + message.message.substr(-10)} className={this.props.classes[message.severity]}>
             <td key="tdTime" className={this.props.classes.trTime}>{getTimeString(new Date(message.ts))}</td>
             <td key="tdSeverity" className={this.props.classes.trSeverity}>{message.severity}</td>
             <td key="tdMessage">{message.message}</td>

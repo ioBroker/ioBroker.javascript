@@ -604,7 +604,7 @@ gulp.task('blockly2languagesFlat', done => {
         }
         fs.writeFileSync(src + 'i18n/flat.txt', keys.join('\n'));
     } else {
-        console.error('Cannot read or parse ' + fileName);
+        console.error('Cannot read or parse blocks_words.js');
     }
 
     done();
@@ -713,6 +713,9 @@ gulp.task('blocklyLanguagesFlat2words', done => {
             text += line + '};\n';
         }
     }
+    text += '\nif (typeof module !== \'undefined\' && typeof module.parent !== \'undefined\') {\n' +
+        '    module.exports = Blockly;\n' +
+        '}'
     fs.writeFileSync('./src/public/google-blockly/own/blocks_words.js', text);
 
     done();

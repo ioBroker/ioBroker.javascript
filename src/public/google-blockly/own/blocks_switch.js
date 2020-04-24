@@ -1,7 +1,7 @@
 // Taken from here: https://groups.google.com/forum/#!topic/blockly/djhO2jUb0Xs
 // I really tried to get the license conditions from authors, but no luck :(
+// Many thanks to Florian Pechwitz <florian.pechw...@itizzimo.com> for the code
 
-// todo: translate
 Blockly.System.blocks['logic_switch_case'] =
     '<block type="logic_switch_case">'
     + '     <value name="CONDITION">'
@@ -19,19 +19,19 @@ Blockly.Blocks['logic_switch_case'] = {
         this.setPreviousStatement(true);
         this.setNextStatement(true);
         this.appendValueInput('CONDITION')
-            .appendField('the case is');
+            .appendField(Blockly.Words['logic_switch_case_is'][systemLang]);
         this.appendValueInput('CASECONDITION0')
-            .appendField('in case of');
+            .appendField(Blockly.Words['logic_switch_case_of'][systemLang]);
         this.appendStatementInput('CASE0')
-            .appendField('do');
+            .appendField(Blockly.Words['logic_switch_do'][systemLang]);
         this.setMutator(new Blockly.Mutator(['case_incaseof', 'case_default']));
-        this.setTooltip('Does something if the condition is true. If there isn\'t a matching case the default function will be executed.');
+        this.setTooltip(Blockly.Words['logic_switch_tootltip'][systemLang]);
         this.caseCount_ = 0;
         this.defaultCount_ = 0;
     },
 
     mutationToDom: function() {
-        if(!this.caseCount_ && !this.defaultCount_) {
+        if (!this.caseCount_ && !this.defaultCount_) {
             return null;
         }
         var container = document.createElement('mutation');
@@ -45,14 +45,16 @@ Blockly.Blocks['logic_switch_case'] = {
     },
 
     domToMutation: function(xmlElement) {
-        this.caseCount_ = parseInt(xmlElement.getAttribute('case'), 10);
+        this.caseCount_    = parseInt(xmlElement.getAttribute('case'), 10);
         this.defaultCount_ = parseInt(xmlElement.getAttribute('default'), 10);
+
         for (var x = 1; x <= this.caseCount_; x++) {
             this.appendValueInput('CASECONDITION' + x)
-                .appendField('in case of');
+                .appendField(Blockly.Words['logic_switch_case_of'][systemLang]);
             this.appendStatementInput('CASE' + x)
-                .appendField('do');
+                .appendField(Blockly.Words['logic_switch_do'][systemLang]);
         }
+
         if (this.defaultCount_) {
             this.appendStatementInput('ONDEFAULT')
                 .appendField('default');
@@ -94,12 +96,15 @@ Blockly.Blocks['logic_switch_case'] = {
                 case 'case_incaseof':
                     this.caseCount_++;
                     var caseconditionInput = this.appendValueInput('CASECONDITION' + this.caseCount_)
-                        .appendField('in case of');
+                        .appendField(Blockly.Words['logic_switch_case_of'][systemLang]);
+
                     var caseInput = this.appendStatementInput('CASE' + this.caseCount_)
-                        .appendField('do');
+                        .appendField(Blockly.Words['logic_switch_do'][systemLang]);
+
                     if (caseBlock.valueConnection_) {
                         caseconditionInput.connection.connect(caseBlock.valueConnection_);
                     }
+
                     if (caseBlock.statementConnection_) {
                         caseInput.connection.connect(caseBlock.statementConnection_);
                     }
@@ -109,7 +114,8 @@ Blockly.Blocks['logic_switch_case'] = {
                     this.defaultCount_++;
                     var defaultInput = this.appendStatementInput('ONDEFAULT')
                         .appendField('default');
-                    if(caseBlock.statementConnection_) {
+
+                    if (caseBlock.statementConnection_) {
                         defaultInput.connection.connect(caseBlock.statementConnection_);
                     }
                     break;
@@ -151,9 +157,9 @@ Blockly.Blocks['control_case'] = {
     init: function() {
         this.setColour(180);
         this.appendDummyInput()
-            .appendField('the case is');
+            .appendField(Blockly.Words['logic_switch_case_is'][systemLang]);
         this.appendStatementInput('STACK');
-        this.setTooltip('--Placeholder--');
+        this.setTooltip(Blockly.Words['logic_switch_control_case_tootltip'][systemLang]);
         this.contextMenu = false;
     }
 };
@@ -162,10 +168,10 @@ Blockly.Blocks['case_incaseof'] = {
     init: function() {
         this.setColour(180);
         this.appendDummyInput()
-            .appendField('in case of');
+            .appendField(Blockly.Words['logic_switch_case_of'][systemLang]);
         this.setPreviousStatement(true);
         this.setNextStatement(true);
-        this.setTooltip('--Placeholder--');
+        this.setTooltip(Blockly.Words['logic_switch_case_incaseof_tootltip'][systemLang]);
         this.contextMenu = false;
     }
 };
@@ -177,7 +183,7 @@ Blockly.Blocks['case_default'] = {
             .appendField('default');
         this.setPreviousStatement(true);
         this.setNextStatement(false);
-        this.setTooltip('This function will run if there aren\'t any matching cases.');
+        this.setTooltip(Blockly.Words['logic_switch_default_tootltip'][systemLang]);
         this.contextMenu = false;
     }
 };
@@ -191,7 +197,7 @@ Blockly.JavaScript['logic_switch_case'] = function(block) {
     if (switchVariable){
         var pattern = /^([a-zA-Z_]+(\d|[a-zA-Z_])*)$/g;
         if (pattern.test(switchVariable)) { // Check to see if the switch is a kind of variable type
-            code = '\nswitch (' + switchVariable + '){\n';
+            code = '\nswitch (' + switchVariable + ') {\n';
             var case_0 = Blockly.JavaScript.valueToCode(block, 'CASECONDITION0', Blockly.JavaScript.ORDER_NONE) || null;
             var do_0 = Blockly.JavaScript.statementToCode(block, 'CASE0');
             code += '\tcase ' + case_0 + ':\n' + do_0 + '\n\t\tbreak;\n';
@@ -199,6 +205,7 @@ Blockly.JavaScript['logic_switch_case'] = function(block) {
             for (var n = 1; n <= block.caseCount_; n++) {
                 case_n = Blockly.JavaScript.valueToCode(block, 'CASECONDITION' + n,
                     Blockly.JavaScript.ORDER_NONE) || null;
+
                 if (case_n) {
                     do_n = Blockly.JavaScript.statementToCode(block, 'CASE' + n);
                     code += '\tcase ' + case_n + ':\n' + do_n + '\n\t\tbreak;\n';
@@ -208,6 +215,7 @@ Blockly.JavaScript['logic_switch_case'] = function(block) {
                 do_n = Blockly.JavaScript.statementToCode(block, 'ONDEFAULT');
                 code += '\tdefault:\n' + do_n + '\n\t\tbreak;\n';
             }
+
             code += '}\n';
         } else {
             alert('logic_switch_case: ' + switchVariable + ' is not a variable name');

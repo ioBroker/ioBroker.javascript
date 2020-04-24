@@ -41,6 +41,9 @@ Parse JSON string
 object to JSON
 Strinify object
 prettify
+Wyrażenie JSONata
+ubiegać się o
+Konwertuj przez wyrażenie JSONata
 Sendto
 message
 sendTo
@@ -306,3 +309,10 @@ seconds
 as line
 JS function with return
 Javascript function
+Sprawa przełącznik
+sprawa jest
+w przypadku
+zrobić
+Robi coś, jeśli warunek jest spełniony. Jeśli nie ma pasującego przypadku, zostanie wykonana funkcja domyślna.
+Ta funkcja będzie działać, jeśli nie ma pasujących przypadków.
+Jest to zmienna warunku.

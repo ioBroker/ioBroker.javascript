@@ -41,6 +41,9 @@ Parse JSON string
 object to JSON
 Stringify object
 prettify
+JSONata expression
+apply to
+Convert by JSONata Expression
 Sendto
 message
 sendTo
@@ -306,3 +309,10 @@ seconds
 as line
 JS function with return
 Javascript function
+Switch / case
+the case is
+in case of
+do
+Does something if the condition is true. If there isn't a matching case the default function will be executed.
+This function will run if there aren't any matching cases.
+This is a variable for condition.

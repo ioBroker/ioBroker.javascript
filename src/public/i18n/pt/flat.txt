@@ -41,6 +41,9 @@ Parse JSON
 Objeto para JSON
 Objeto para JSON
 formatar
+Expressão JSONata
+aplicar a
+Converter por expressão JSONata
 Enviar para
 mensagem
 enviar para
@@ -306,3 +309,10 @@ segundos
 como linha
 Função JS com resultado
 Função JavaScript
+Switch / case
+o caso é
+no caso de
+Faz
+Faz alguma coisa se a condição for verdadeira. Se não houver um caso correspondente, a função padrão será executada.
+Esta função será executada se não houver casos correspondentes.
+Esta é uma variável para a condição.
