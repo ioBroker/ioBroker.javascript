@@ -186,7 +186,7 @@
         "logTransporter": true,
         "plugins": {
             "sentry": {
-                "dsn": "https://83122ace813a456c8855f8fb4a2fe8d2@sentry.iobroker.net/15"
+                "dsn": "https://f3b9740caaee4ee69eb68019d71526ff@sentry.iobroker.net/15"
             }
         }
     },

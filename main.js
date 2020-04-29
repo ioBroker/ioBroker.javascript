@@ -30,6 +30,7 @@ if (true || parseInt(process.versions.node.split('.')[0]) < 6) {
     }
 }
 const nodeFS         = require('fs');
+const nodePath       = require('path');
 const coffeeCompiler = require('coffee-compiler');
 const tsc            = require('virtual-tsc');
 const typescript     = require('typescript');
@@ -66,6 +67,7 @@ const {
 } = require('./lib/typescriptTools');
 
 const adapterName = require('./package.json').name.split('.').pop();
+const scriptCodeMarker = 'script.js.';
 
 // for node version <= 0.12
 if (''.startsWith === undefined) {
@@ -239,7 +241,6 @@ function checkIsGlobal(obj) {
 }
 
 let adapter;
-
 function startAdapter(options) {
     options = options || {};
     Object.assign(options, {
@@ -457,165 +458,38 @@ function startAdapter(options) {
             stopAllScripts(callback)
         },
 
-        ready: function () {
-            // todo
-            context.errorLogFunction = webstormDebug ? console : adapter.log;
-            activeStr = adapter.namespace + '.scriptEnabled.';
-
-            mods.fs = new require('./lib/protectFs')(adapter.log);
-
-            // try to read TS declarations
-            try {
-                tsAmbient = {
-                    'javascript.d.ts': nodeFS.readFileSync(mods.path.join(__dirname, 'lib/javascript.d.ts'), 'utf8')
-                };
-                tsServer.provideAmbientDeclarations(tsAmbient);
-                jsDeclarationServer.provideAmbientDeclarations(tsAmbient);
-            } catch (e) {
-                adapter.log.warn('Could not read TypeScript ambient declarations: ' + e);
-            }
-
-            context.logWithLineInfo = function (level, msg) {
-                if (msg === undefined) {
-                    return context.logWithLineInfo('info', msg);
-                }
-
-                context.errorLogFunction && context.errorLogFunction[level](msg);
-
-                const stack = (new Error().stack).split('\n');
-
-                for (let i = 3; i < stack.length; i++) {
-                    if (!stack[i]) continue;
-                    if (stack[i].match(/runInContext|runInNewContext|javascript\.js:/)) break;
-                    context.errorLogFunction && context.errorLogFunction[level](fixLineNo(stack[i]));
-                }
-            };
-
-            context.logWithLineInfo.warn = context.logWithLineInfo.bind(1, 'warn');
-            context.logWithLineInfo.error = context.logWithLineInfo.bind(1, 'error');
-            context.logWithLineInfo.info = context.logWithLineInfo.bind(1, 'info');
-
-            context.scheduler = new Scheduler(adapter.log);
-
-            installLibraries(() => {
-
-                // Load the TS declarations for Node.js and all 3rd party modules
-                loadTypeScriptDeclarations();
-
-                getData(() => {
-                    dayTimeSchedules(adapter, context);
-                    timeSchedule(adapter, context);
-
-                    adapter.subscribeForeignObjects('*');
-
-                    if (!adapter.config.subscribe) {
-                        adapter.subscribeForeignStates('*');
-                    }
-
-                    // Warning. It could have a side-effect in compact mode, so all adapters will accept self signed certificates
-                    if (adapter.config.allowSelfSignedCerts) {
-                        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-                    }
-
-                    adapter.getObjectView('script', 'javascript', {}, (err, doc) => {
-                        globalScript = '';
-                        globalDeclarations = '';
-                        knownGlobalDeclarationsByScript = {};
-                        let count = 0;
-                        if (doc && doc.rows && doc.rows.length) {
-                            // assemble global script
-                            for (let g = 0; g < doc.rows.length; g++) {
-                                if (checkIsGlobal(doc.rows[g].value)) {
-                                    const obj = doc.rows[g].value;
-
-                                    if (obj && obj.common.enabled) {
-                                        const engineType = (obj.common.engineType || '').toLowerCase();
-                                        if (engineType.startsWith('coffee')) {
-                                            count++;
-                                            coffeeCompiler.fromSource(obj.common.source, {
-                                                sourceMap: false,
-                                                bare: true
-                                            }, (err, js) => {
-                                                if (err) {
-                                                    adapter.log.error('coffee compile ' + err);
-                                                    return;
-                                                }
-                                                globalScript += js + '\n';
-                                                if (!--count) {
-                                                    globalScriptLines = globalScript.split(/\r\n|\n|\r/g).length;
-                                                    // load all scripts
-                                                    for (let i = 0; i < doc.rows.length; i++) {
-                                                        if (!checkIsGlobal(doc.rows[i].value)) {
-                                                            load(doc.rows[i].value._id);
-                                                        }
-                                                    }
-                                                }
-                                            });
-                                        } else if (engineType.startsWith('typescript')) {
-                                            // compile the current global script
-                                            const filename = scriptIdToTSFilename(obj._id);
-                                            const tsCompiled = tsServer.compile(filename, obj.common.source);
-
-                                            const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
-
-                                            if (tsCompiled.success) {
-                                                if (errors.length > 0) {
-                                                    adapter.log.warn('TypeScript compilation completed with errors: \n' + errors);
-                                                } else {
-                                                    adapter.log.info('TypeScript compilation successful');
-                                                }
-                                                globalScript += tsCompiled.result + '\n';
-
-                                                // if declarations were generated, remember them
-                                                if (tsCompiled.declarations != null) {
-                                                    provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
-                                                }
-                                            } else {
-                                                adapter.log.error('TypeScript compilation failed: \n' + errors);
-                                            }
-                                        } else { // javascript
-                                            const sourceCode = obj.common.source;
-                                            globalScript += sourceCode + '\n';
-
-                                            // try to compile the declarations so TypeScripts can use
-                                            // functions defined in global JavaScripts
-                                            const filename = scriptIdToTSFilename(obj._id);
-                                            const tsCompiled = jsDeclarationServer.compile(filename, sourceCode);
-                                            // if declarations were generated, remember them
-                                            if (tsCompiled.success && tsCompiled.declarations != null) {
-                                                provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
-                                            }
-                                        }
+        ready: () => {
+            if (adapter.supportsFeature && adapter.supportsFeature('PLUGINS')) {
+                const sentryInstance = adapter.getPluginInstance('sentry');
+                if (sentryInstance) {
+                    const Sentry = sentryInstance.getSentryObject();
+                    Sentry.configureScope(scope => {
+                        scope.addEventProcessor((event, _hint) => {
+                            if (event.exception && event.exception.values && event.exception.values[0]) {
+                                const eventData = event.exception.values[0];
+                                if (eventData.stacktrace && eventData.stacktrace.frames && Array.isArray(eventData.stacktrace.frames) && eventData.stacktrace.frames.length) {
+                                    // Exclude event if script Marker is included
+                                    if (eventData.stacktrace.frames.find(frame => frame.filename && frame.filename.includes(scriptCodeMarker))) {
+                                        return null;
+                                    }
+                                    //Exclude event if own directory is included but not inside own node_modules
+                                    const ownNodeModulesDir = path.join(__dirname, 'node_modules');
+                                    if (!eventData.stacktrace.frames.find(frame => frame.filename && frame.filename.includes(__dirname) && !frame.filename.includes(ownNodeModulesDir))) {
+                                        return null;
                                     }
                                 }
                             }
-                        }
 
-                        if (!count) {
-                            globalScript = globalScript.replace(/\r\n/g, '\n');
-                            globalScriptLines = globalScript.split(/\n/g).length - 1;
-
-                            if (doc && doc.rows && doc.rows.length) {
-                                // load all scripts
-                                for (let i = 0; i < doc.rows.length; i++) {
-                                    if (!checkIsGlobal(doc.rows[i].value)) {
-                                        load(doc.rows[i].value);
-                                    }
-                                }
-                            }
-                        }
-
-                        if (adapter.config.mirrorPath) {
-                            mirror = new Mirror({
-                                adapter,
-                                log: adapter.log,
-                                diskRoot: adapter.config.mirrorPath
-                            });
-                        }
-
+                            return event;
+                        });
+                        main();
                     });
-                });
-            });
+                } else {
+                    main();
+                }
+            } else {
+                main();
+            }
         },
 
         message: obj => {
@@ -720,8 +594,7 @@ function startAdapter(options) {
         error: (err) => {
             // Identify unhandled errors originating from callbacks in scripts
             // These are not caught by wrapping the execution code in try-catch
-            const scriptCodeMarker = 'script.js.';
-            if (typeof err.stack === 'string' && err.stack.indexOf(scriptCodeMarker) > -1) {
+            if (err && typeof err.stack === 'string' && err.stack.indexOf(scriptCodeMarker) > -1) {
                 // This is a script error
                 let scriptName = err.stack.substr(err.stack.indexOf(scriptCodeMarker));
                 scriptName = scriptName.substr(0, scriptName.indexOf(':'));
@@ -752,6 +625,167 @@ function startAdapter(options) {
 
     context.adapter = adapter;
     return adapter;
+}
+
+function main() {
+    // todo
+    context.errorLogFunction = webstormDebug ? console : adapter.log;
+    activeStr = adapter.namespace + '.scriptEnabled.';
+
+    mods.fs = new require('./lib/protectFs')(adapter.log);
+
+    // try to read TS declarations
+    try {
+        tsAmbient = {
+            'javascript.d.ts': nodeFS.readFileSync(mods.path.join(__dirname, 'lib/javascript.d.ts'), 'utf8')
+        };
+        tsServer.provideAmbientDeclarations(tsAmbient);
+        jsDeclarationServer.provideAmbientDeclarations(tsAmbient);
+    } catch (e) {
+        adapter.log.warn('Could not read TypeScript ambient declarations: ' + e);
+    }
+
+    context.logWithLineInfo = function (level, msg) {
+        if (msg === undefined) {
+            return context.logWithLineInfo('info', msg);
+        }
+
+        context.errorLogFunction && context.errorLogFunction[level](msg);
+
+        const stack = (new Error().stack).split('\n');
+
+        for (let i = 3; i < stack.length; i++) {
+            if (!stack[i]) continue;
+            if (stack[i].match(/runInContext|runInNewContext|javascript\.js:/)) break;
+            context.errorLogFunction && context.errorLogFunction[level](fixLineNo(stack[i]));
+        }
+    };
+
+    context.logWithLineInfo.warn = context.logWithLineInfo.bind(1, 'warn');
+    context.logWithLineInfo.error = context.logWithLineInfo.bind(1, 'error');
+    context.logWithLineInfo.info = context.logWithLineInfo.bind(1, 'info');
+
+    context.scheduler = new Scheduler(adapter.log);
+
+    installLibraries(() => {
+
+        // Load the TS declarations for Node.js and all 3rd party modules
+        loadTypeScriptDeclarations();
+
+        getData(() => {
+            dayTimeSchedules(adapter, context);
+            timeSchedule(adapter, context);
+
+            adapter.subscribeForeignObjects('*');
+
+            if (!adapter.config.subscribe) {
+                adapter.subscribeForeignStates('*');
+            }
+
+            // Warning. It could have a side-effect in compact mode, so all adapters will accept self signed certificates
+            if (adapter.config.allowSelfSignedCerts) {
+                process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+            }
+
+            adapter.getObjectView('script', 'javascript', {}, (err, doc) => {
+                globalScript = '';
+                globalDeclarations = '';
+                knownGlobalDeclarationsByScript = {};
+                let count = 0;
+                if (doc && doc.rows && doc.rows.length) {
+                    // assemble global script
+                    for (let g = 0; g < doc.rows.length; g++) {
+                        if (checkIsGlobal(doc.rows[g].value)) {
+                            const obj = doc.rows[g].value;
+
+                            if (obj && obj.common.enabled) {
+                                const engineType = (obj.common.engineType || '').toLowerCase();
+                                if (engineType.startsWith('coffee')) {
+                                    count++;
+                                    coffeeCompiler.fromSource(obj.common.source, {
+                                        sourceMap: false,
+                                        bare: true
+                                    }, (err, js) => {
+                                        if (err) {
+                                            adapter.log.error('coffee compile ' + err);
+                                            return;
+                                        }
+                                        globalScript += js + '\n';
+                                        if (!--count) {
+                                            globalScriptLines = globalScript.split(/\r\n|\n|\r/g).length;
+                                            // load all scripts
+                                            for (let i = 0; i < doc.rows.length; i++) {
+                                                if (!checkIsGlobal(doc.rows[i].value)) {
+                                                    load(doc.rows[i].value._id);
+                                                }
+                                            }
+                                        }
+                                    });
+                                } else if (engineType.startsWith('typescript')) {
+                                    // compile the current global script
+                                    const filename = scriptIdToTSFilename(obj._id);
+                                    const tsCompiled = tsServer.compile(filename, obj.common.source);
+
+                                    const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
+
+                                    if (tsCompiled.success) {
+                                        if (errors.length > 0) {
+                                            adapter.log.warn('TypeScript compilation completed with errors: \n' + errors);
+                                        } else {
+                                            adapter.log.info('TypeScript compilation successful');
+                                        }
+                                        globalScript += tsCompiled.result + '\n';
+
+                                        // if declarations were generated, remember them
+                                        if (tsCompiled.declarations != null) {
+                                            provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
+                                        }
+                                    } else {
+                                        adapter.log.error('TypeScript compilation failed: \n' + errors);
+                                    }
+                                } else { // javascript
+                                    const sourceCode = obj.common.source;
+                                    globalScript += sourceCode + '\n';
+
+                                    // try to compile the declarations so TypeScripts can use
+                                    // functions defined in global JavaScripts
+                                    const filename = scriptIdToTSFilename(obj._id);
+                                    const tsCompiled = jsDeclarationServer.compile(filename, sourceCode);
+                                    // if declarations were generated, remember them
+                                    if (tsCompiled.success && tsCompiled.declarations != null) {
+                                        provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!count) {
+                    globalScript = globalScript.replace(/\r\n/g, '\n');
+                    globalScriptLines = globalScript.split(/\n/g).length - 1;
+
+                    if (doc && doc.rows && doc.rows.length) {
+                        // load all scripts
+                        for (let i = 0; i < doc.rows.length; i++) {
+                            if (!checkIsGlobal(doc.rows[i].value)) {
+                                load(doc.rows[i].value);
+                            }
+                        }
+                    }
+                }
+
+                if (adapter.config.mirrorPath) {
+                    mirror = new Mirror({
+                        adapter,
+                        log: adapter.log,
+                        diskRoot: adapter.config.mirrorPath
+                    });
+                }
+
+            });
+        });
+    });
 }
 
 function stopAllScripts(cb) {
