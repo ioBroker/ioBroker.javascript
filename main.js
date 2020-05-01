@@ -594,18 +594,30 @@ function startAdapter(options) {
         error: (err) => {
             // Identify unhandled errors originating from callbacks in scripts
             // These are not caught by wrapping the execution code in try-catch
-            if (err && typeof err.stack === 'string' && err.stack.indexOf(scriptCodeMarker) > -1) {
-                // This is a script error
-                let scriptName = err.stack.substr(err.stack.indexOf(scriptCodeMarker));
-                scriptName = scriptName.substr(0, scriptName.indexOf(':'));
-                context.logError(scriptName, err);
-                // Leave the script running for now
+            if (err && typeof err.stack === 'string') {
+                const scriptCodeMarkerIndex = err.stack.indexOf(scriptCodeMarker);
+                if (scriptCodeMarkerIndex > -1) {
+                    // This is a script error
+                    let scriptName = err.stack.substr(scriptCodeMarkerIndex);
+                    scriptName = scriptName.substr(0, scriptName.indexOf(':'));
+                    context.logError(scriptName, err);
 
-                // TODO: Add a marker that the script has problems:
-                // https://github.com/ioBroker/ioBroker.javascript/issues/162
+                    // Leave the script running for now
+                    // signal to the JS-Controller that we handled the error ourselves
+                    return true;
+                }
+                // check if a path contains adaptername but not own node_module
+                // this regex matched "iobroker.javascript/" if NOT followed by "node_modules"
+                if (!err.stack.match(/iobroker\.javascript[\/\\](?!.*node_modules).*/g)) {
+                    // This is an error without any info on origin (mostly async errors like connection errors)
+                    // also consider it as being from a script
+                    adapter.log.error('An error happened which is most likely from one of your scripts, but the originating script could not be detected.')
+                    adapter.log.error('Error: ' + err.message);
+                    adapter.log.error(err.stack);
 
-                // signal to the JS-Controller that we handled the error ourselves
-                return true;
+                    // signal to the JS-Controller that we handled the error ourselves
+                    return true;
+                }
             }
         }
     });
