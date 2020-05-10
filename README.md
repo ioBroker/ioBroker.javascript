@@ -33,11 +33,13 @@ And then call "npm run build".
 - ...
 
 ## Changelog
-### 4.6.0 (2020-04-24)
+### 4.6.1 (2020-05-1x)
 * (bluefox) Updated blockly to 3.20200402.1
-* (bluefox) Added to blockly the switch/case block. Warning do not use it in production, because license request from author still pending.
+* (bluefox) Added to blockly the switch/case block. 
 * (Mic-M) fix log crash
 * (Apollon77) Add new Sentry key and exclude user script exceptions
+* (Garfonso) Several fixes and optimizations for Mirroring functionality
+* (Apollon77) add support for 0_userdata.0 to createState and deleteState 
 
 ### 4.5.1 (2020-04-17)
 * (Apollon77) Nodejs 10 is new minimum Version!
