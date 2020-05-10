@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.0",
+        "version": "4.6.1",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -18,21 +18,21 @@
         "authors": [
             "bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>",
-            "Apollon77 <ingo@fischer-ka.de>",
+            "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
         "news": {
-            "4.6.0": {
-                "en": "Updated blockly to 3.20200402.1\nAdded to blockly the switch/case block. Warning do not use it in production, because license request from author still pending.\n",
-                "de": "Blockweise auf 3.20200402.1 aktualisiert\nHinzugefügt, um den Schalter- / Gehäuseblock zu blockieren. Warnung Verwenden Sie es nicht in der Produktion, da die Lizenzanforderung des Autors noch aussteht.\n",
-                "ru": "Обновлен блочно до 3.20200402.1\nДобавлен блочный блок switch / case. Предупреждение не используйте его в производстве, потому что запрос лицензии от автора все еще ожидает рассмотрения.\n",
-                "pt": "Atualizado em bloco para 3.20200402.1\nAdicionado ao bloco da chave / caixa. O aviso não o utiliza na produção, porque a solicitação de licença do autor ainda está pendente.\n",
-                "nl": "Blockly bijgewerkt naar 3.20200402.1\nToegevoegd om het schakelaar / case-blok te blokkeren. Waarschuwing gebruik het niet in productie, omdat het licentieverzoek van de auteur nog in behandeling is.\n",
-                "fr": "Mise à jour par blocs vers 3.20200402.1\nAjouté pour bloquer le bloc switch / case. Attention ne l'utilisez pas en production, car la demande de licence de l'auteur est toujours en attente.\n",
-                "it": "Aggiornato in blocco a 3.20200402.1\nAggiunto per bloccare il blocco switch / case. Avvertenza non utilizzarlo in produzione, poiché la richiesta di licenza dell'autore è ancora in sospeso.\n",
-                "es": "Actualizado en bloque a 3.20200402.1\nAñadido a blockly el interruptor / bloque de caja. Advertencia: no lo use en producción, porque la solicitud de licencia del autor aún está pendiente.\n",
-                "pl": "Zaktualizowano blokowo do 3.20200402.1\nDodano blokowo blok przełącznika / skrzynki. Ostrzeżenie nie używaj go w produkcji, ponieważ prośba o licencję od autora jest nadal w toku.\n",
-                "zh-cn": "整体更新为3.20200402.1\n添加到块/开关块。警告请勿在生产中使用它，因为作者的许可请求仍在等待中。\n"
+            "4.6.1": {
+                "en": "Updated blockly to 3.20200402.1\nAdded to blockly the switch/case block\ncreateState and deleteState now also support 0_userdata.0 states",
+                "de": "Blockweise auf 3.20200402.1 aktualisiert\nHinzugefügt, um den Schalter- / Gehäuseblock zu blockieren\ncreateState und deleteState unterstützen jetzt auch die Zustände 0_userdata.0",
+                "ru": "Обновлен блочно до 3.20200402.1\nДобавлен блочный блок switch / case\ncreateState и deleteState теперь также поддерживают состояния 0_userdata.0",
+                "pt": "Atualizado em bloco para 3.20200402.1\nAdicionado ao bloco de comutação / caixa\ncreateState e deleteState agora também suportam 0_userdata.0 estados",
+                "nl": "Blockly bijgewerkt naar 3.20200402.1\nToegevoegd om het schakelaar / case-blok te blokkeren\ncreateState en deleteState ondersteunen nu ook 0_userdata.0 staten",
+                "fr": "Mise à jour par blocs vers 3.20200402.1\nAjouté pour bloquer le bloc switch / case\ncreateState et deleteState prennent désormais également en charge les états 0_userdata.0",
+                "it": "Aggiornato in blocco a 3.20200402.1\nAggiunto per bloccare il blocco switch / case\ncreateState ed deleteState ora supportano anche stati 0_userdata.0",
+                "es": "Actualizado en bloque a 3.20200402.1\nSe agregó a blockly el interruptor / bloque de caja\ncreateState y deleteState ahora también admiten estados 0_userdata.0",
+                "pl": "Zaktualizowano blokowo do 3.20200402.1\nDodano blokowo blok przełącznika / skrzynki\ncreateState i deleteState obsługują teraz również stany 0_userdata.0",
+                "zh-cn": "整体更新为3.20200402.1\n添加到块/开关块\ncreateState和deleteState现在还支持0_userdata.0状态"
             },
             "4.5.1": {
                 "en": "REQUIRES node.js 10, js-controller 3.0 warnings prevented, Added Sentry for use with js-controller 3.0",

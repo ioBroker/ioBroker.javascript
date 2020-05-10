@@ -281,7 +281,7 @@ function startAdapter(options) {
 
             if (obj) {
                 // add state to state ID's list
-                if (obj.type === 'state' && context.stateIds.indexOf(id) === -1) {
+                if (obj.type === 'state' && !context.stateIds.includes(id)) {
                     context.stateIds.push(id);
                     context.stateIds.sort();
                 }

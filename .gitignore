@@ -4,7 +4,6 @@ tmp
 admin-config/i18n/*/flat.txt
 admin-config/i18n/flat.txt
 _admin
-package-lock.json
 iob_npm.dode
 /nbproject
 /src/blockly
