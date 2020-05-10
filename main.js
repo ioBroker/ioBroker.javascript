@@ -463,27 +463,31 @@ function startAdapter(options) {
                 const sentryInstance = adapter.getPluginInstance('sentry');
                 if (sentryInstance) {
                     const Sentry = sentryInstance.getSentryObject();
-                    Sentry.configureScope(scope => {
-                        scope.addEventProcessor((event, _hint) => {
-                            if (event.exception && event.exception.values && event.exception.values[0]) {
-                                const eventData = event.exception.values[0];
-                                if (eventData.stacktrace && eventData.stacktrace.frames && Array.isArray(eventData.stacktrace.frames) && eventData.stacktrace.frames.length) {
-                                    // Exclude event if script Marker is included
-                                    if (eventData.stacktrace.frames.find(frame => frame.filename && frame.filename.includes(scriptCodeMarker))) {
-                                        return null;
-                                    }
-                                    //Exclude event if own directory is included but not inside own node_modules
-                                    const ownNodeModulesDir = path.join(__dirname, 'node_modules');
-                                    if (!eventData.stacktrace.frames.find(frame => frame.filename && frame.filename.includes(__dirname) && !frame.filename.includes(ownNodeModulesDir))) {
-                                        return null;
+                    if (Sentry) {
+                        Sentry.configureScope(scope => {
+                            scope.addEventProcessor((event, _hint) => {
+                                if (event.exception && event.exception.values && event.exception.values[0]) {
+                                    const eventData = event.exception.values[0];
+                                    if (eventData.stacktrace && eventData.stacktrace.frames && Array.isArray(eventData.stacktrace.frames) && eventData.stacktrace.frames.length) {
+                                        // Exclude event if script Marker is included
+                                        if (eventData.stacktrace.frames.find(frame => frame.filename && frame.filename.includes(scriptCodeMarker))) {
+                                            return null;
+                                        }
+                                        //Exclude event if own directory is included but not inside own node_modules
+                                        const ownNodeModulesDir = path.join(__dirname, 'node_modules');
+                                        if (!eventData.stacktrace.frames.find(frame => frame.filename && frame.filename.includes(__dirname) && !frame.filename.includes(ownNodeModulesDir))) {
+                                            return null;
+                                        }
                                     }
                                 }
-                            }
 
-                            return event;
+                                return event;
+                            });
+                            main();
                         });
+                    } else {
                         main();
-                    });
+                    }
                 } else {
                     main();
                 }
