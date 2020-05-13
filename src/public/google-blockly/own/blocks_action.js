@@ -41,7 +41,7 @@ Blockly.Blocks['exec'] = {
         this.appendDummyInput('WITH_STATEMENT')
             .appendField(Blockly.Translate('exec_statement'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
-                var delayInput = (option == true);
+                var delayInput = option === true || option === 'true' || option === 'TRUE';
                 this.sourceBlock_.updateShape_(delayInput);
             }), 'WITH_STATEMENT');
 
@@ -69,7 +69,7 @@ Blockly.Blocks['exec'] = {
         return container;
     },
     domToMutation: function(xmlElement) {
-        this.updateShape_(xmlElement.getAttribute('with_statement') == 'true');
+        this.updateShape_(xmlElement.getAttribute('with_statement') === 'true');
     },
     updateShape_: function(withStatement) {
         // Add or remove a statement Input.
@@ -138,7 +138,7 @@ Blockly.Blocks['request'] = {
         this.appendDummyInput('WITH_STATEMENT')
             .appendField(Blockly.Translate('request_statement'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
-                var delayInput = (option == true);
+                var delayInput = option === true || option === 'true' || option === 'TRUE';
                 this.sourceBlock_.updateShape_(delayInput);
             }), 'WITH_STATEMENT');
 

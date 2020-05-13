@@ -10,7 +10,18 @@
       homescreen on Android. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
-    <script type="text/javascript" src="vendor/socket.io.js"></script>
+    <script>
+      var script = document.createElement('script');
+      window.registerSocketOnLoad = function (cb) {
+          window.socketLoadedHandler = cb;
+      };
+      script.onload = function () { 
+          typeof window.socketLoadedHandler === 'function' && window.socketLoadedHandler(); 
+      };
+      script.src = window.location.port === '3000' ? window.location.protocol + '//' + window.location.hostname + ':8081/lib/js/socket.io.js' : '%PUBLIC_URL%/../../lib/js/socket.io.js';
+
+      document.head.appendChild(script);
+    </script>
     <!--
        Notice the use of %PUBLIC_URL% in the tags above.
        It will be replaced with the URL of the `public` folder during the build.

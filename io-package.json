@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.1",
+        "version": "4.6.2",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.6.2": {
+                "en": "Corrected block: request, exec",
+                "de": "Korrigierter Block: Anfrage, Exec",
+                "ru": "Исправленный блок: запрос, exec",
+                "pt": "Bloco corrigido: solicitação, exec",
+                "nl": "Gecorrigeerd blok: verzoek, exec",
+                "fr": "Bloc corrigé: demande, exécut",
+                "it": "Blocco corretto: richiesta, esec",
+                "es": "Bloque corregido: solicitud, ejecutivo",
+                "pl": "Poprawiony blok: żądanie, wykon",
+                "zh-cn": "更正的块：请求，执行"
+            },
             "4.6.1": {
                 "en": "Updated blockly to 3.20200402.1\nAdded to blockly the switch/case block\ncreateState and deleteState now also support 0_userdata.0 states",
                 "de": "Blockweise auf 3.20200402.1 aktualisiert\nHinzugefügt, um den Schalter- / Gehäuseblock zu blockieren\ncreateState und deleteState unterstützen jetzt auch die Zustände 0_userdata.0",

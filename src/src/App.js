@@ -171,6 +171,7 @@ class App extends Component {
             onReady: (objects, scripts) => {
                 I18n.setLanguage(this.socket.systemLang);
                 window.systemLang = this.socket.systemLang;
+                this.subscribeOnAlive();
                 this.onObjectChange(objects, scripts, true);
             },
             onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
@@ -186,18 +187,23 @@ class App extends Component {
                 //this.setState({logMessage: {index: this.logIndex, message}})
             }
         });
+    }
 
-        this.socket.subscribeState('system.adapter.javascript.*.alive', (id, state) => {
-            if (id) {
-                id = id && id.substring(0, id.length - 6); // - .alive
+    subscribeOnAlive() {
+        if (!this.subscribeDone && this.socket) {
+            this.subscribeDone = true;
+            this.socket.subscribeState('system.adapter.javascript.*.alive', (id, state) => {
+                if (id) {
+                    id = id && id.substring(0, id.length - 6); // - .alive
 
-                if (this.state.runningInstances[id] !== (state ? state.val : false)) {
-                    const runningInstances = JSON.parse(JSON.stringify(this.state.runningInstances));
-                    runningInstances[id] = (state ? state.val : false);
-                    this.setState({runningInstances});
+                    if (this.state.runningInstances[id] !== (state ? state.val : false)) {
+                        const runningInstances = JSON.parse(JSON.stringify(this.state.runningInstances));
+                        runningInstances[id] = (state ? state.val : false);
+                        this.setState({runningInstances});
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     onObjectChange(objects, scripts, isReady) {
