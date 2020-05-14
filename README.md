@@ -33,7 +33,7 @@ And then call "npm run build".
 - ...
 
 ## Changelog
-### 4.6.2 (2020-05-13)
+### 4.6.3 (2020-05-14)
 * (bluefox) Corrected block: request, exec
 
 ### 4.6.1 (2020-05-11)
