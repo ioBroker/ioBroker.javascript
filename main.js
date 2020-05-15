@@ -681,7 +681,7 @@ function main() {
     context.logWithLineInfo.error = context.logWithLineInfo.bind(1, 'error');
     context.logWithLineInfo.info = context.logWithLineInfo.bind(1, 'info');
 
-    context.scheduler = new Scheduler(adapter.log);
+    context.scheduler = new Scheduler(adapter.log, Date, mods.suncalc, adapter.config.latitude, adapter.config.longitude);
 
     installLibraries(() => {
 
