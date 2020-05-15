@@ -30,7 +30,7 @@ if (true || parseInt(process.versions.node.split('.')[0]) < 6) {
     }
 }
 const nodeFS         = require('fs');
-const nodePath       = require('path');
+// const nodePath       = require('path');
 const coffeeCompiler = require('coffee-compiler');
 const tsc            = require('virtual-tsc');
 const typescript     = require('typescript');
@@ -51,7 +51,7 @@ const mods = {
     util:             require('util'),
     child_process:    require('child_process'),
     suncalc:          require('suncalc2'),
-    request:          require('request'),
+    request:          require('./lib/request'),
     wake_on_lan:      require('wake_on_lan')
 };
 
@@ -459,6 +459,8 @@ function startAdapter(options) {
         },
 
         ready: () => {
+            mods.request.setLogger(adapter.log);
+
             if (adapter.supportsFeature && adapter.supportsFeature('PLUGINS')) {
                 const sentryInstance = adapter.getPluginInstance('sentry');
                 if (sentryInstance) {
@@ -625,6 +627,7 @@ function startAdapter(options) {
             }
         }
     });
+
     adapter = new utils.Adapter(options);
 
     // handler for logs
@@ -640,6 +643,7 @@ function startAdapter(options) {
                 })));
 
     context.adapter = adapter;
+
     return adapter;
 }
 
