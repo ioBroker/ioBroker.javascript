@@ -110,8 +110,7 @@ Blockly.Blocks['control'] = {
         this.appendDummyInput('WITH_DELAY')
             .appendField(Blockly.Translate('control_delay'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function(option) {
-                var delayInput = (option == true);
-                this.sourceBlock_.updateShape_(delayInput);
+                this.sourceBlock_.updateShape_(option === true || option === 'true' || option === 'TRUE');
             }), 'WITH_DELAY');
 
 
@@ -124,11 +123,13 @@ Blockly.Blocks['control'] = {
     },
     mutationToDom: function() {
         var container = document.createElement('mutation');
-        container.setAttribute('delay_input', this.getFieldValue('WITH_DELAY') === 'TRUE');
+        var option = this.getFieldValue('WITH_DELAY');
+        container.setAttribute('delay_input', option === true || option === 'true' || option === 'TRUE');
         return container;
     },
     domToMutation: function(xmlElement) {
-        this.updateShape_(xmlElement.getAttribute('delay_input') == 'true');
+        var option = xmlElement.getAttribute('delay_input');
+        this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
     updateShape_: function(delayInput) {
         // Add or remove a delay Input.
@@ -176,12 +177,15 @@ Blockly.JavaScript['control'] = function(block) {
     } else if (unit === 'sec') {
         valueDelay *= 1000;
     }
-    var clearRunning = block.getFieldValue('CLEAR_RUNNING') === 'TRUE';
+    var clearRunning = block.getFieldValue('CLEAR_RUNNING');
     var valueValue   = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     var objectName   = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
     var code;
 
-    if (this.getFieldValue('WITH_DELAY') === 'TRUE') {
+    clearRunning = clearRunning === 'true' || clearRunning === true || clearRunning === 'true';
+    var withDelay = this.getFieldValue('WITH_DELAY');
+
+    if (withDelay === 'true' || withDelay === true || withDelay === 'TRUE') {
         code = 'setStateDelayed("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', ' + valueValue + ', ' + valueDelay + ', ' + clearRunning + ');\n';
     } else {
         code = 'setState("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', ' + valueValue + ');\n';
@@ -217,8 +221,7 @@ Blockly.Blocks['toggle'] = {
         this.appendDummyInput('WITH_DELAY')
             .appendField(Blockly.Translate('toggle_delay'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function(option) {
-                var delayInput = (option == true);
-                this.sourceBlock_.updateShape_(delayInput);
+                this.sourceBlock_.updateShape_(option === true || option === 'true' || option === 'TRUE');
             }), 'WITH_DELAY');
 
         this.setInputsInline(true);
@@ -230,11 +233,13 @@ Blockly.Blocks['toggle'] = {
     },
     mutationToDom: function() {
         var container = document.createElement('mutation');
-        container.setAttribute('delay_input', this.getFieldValue('WITH_DELAY') === 'TRUE');
+        var option = this.getFieldValue('WITH_DELAY');
+        container.setAttribute('delay_input', option === true || option === 'true' || option === 'TRUE');
         return container;
     },
     domToMutation: function(xmlElement) {
-        this.updateShape_(xmlElement.getAttribute('delay_input') == 'true');
+        var option = xmlElement.getAttribute('delay_input');
+        this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
     updateShape_: function(delayInput) {
         // Add or remove a delay Input.
@@ -282,11 +287,14 @@ Blockly.JavaScript['toggle'] = function(block) {
     } else if (unit === 'sec') {
         valueDelay *= 1000;
     }
-    var clearRunning = block.getFieldValue('CLEAR_RUNNING') === 'TRUE';
+    var clearRunning = block.getFieldValue('CLEAR_RUNNING');
     var objectName   = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
     var objectType   = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.type ? main.objects[valueObjectID].common.type : 'boolean';
     var code;
     var setCommand;
+
+    clearRunning = clearRunning === 'TRUE' || clearRunning === 'true' || clearRunning === true;
+
     if (objectType === 'number') {
         var max = 100;
         var min = 0;
@@ -300,8 +308,9 @@ Blockly.JavaScript['toggle'] = function(block) {
     } else {
         setCommand = '    setState("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? !state.val : true);\n';
     }
+    var withDelay = block.getFieldValue('WITH_DELAY');
 
-    if (this.getFieldValue('WITH_DELAY') === 'TRUE') {
+    if (withDelay === 'TRUE' || withDelay === 'true' || withDelay === true) {
         code =
             'getState("' + valueObjectID + '", function (err, state) {\n' +
             '    setStateDelayed("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? !state.val : true, ' + valueDelay + ', ' + clearRunning + ');\n' +
@@ -350,7 +359,7 @@ Blockly.Blocks['update'] = {
         this.appendDummyInput('WITH_DELAY')
             .appendField(Blockly.Translate('update_delay'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function(option) {
-                this.sourceBlock_.updateShape_(option == true);
+                this.sourceBlock_.updateShape_(option === true || option === 'true' || option === 'TRUE');
             }), 'WITH_DELAY');
 
         this.setInputsInline(true);
@@ -362,11 +371,13 @@ Blockly.Blocks['update'] = {
     },
     mutationToDom: function() {
         var container = document.createElement('mutation');
-        container.setAttribute('delay_input', this.getFieldValue('WITH_DELAY') === 'TRUE');
+        var option = this.getFieldValue('WITH_DELAY');
+        container.setAttribute('delay_input', option === true || option === 'true' || option === 'TRUE');
         return container;
     },
     domToMutation: function(xmlElement) {
-        this.updateShape_(xmlElement.getAttribute('delay_input') == 'true');
+        var option = xmlElement.getAttribute('delay_input');
+        this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
     updateShape_: function(delayInput) {
         // Add or remove a delay Input.
@@ -409,16 +420,21 @@ Blockly.JavaScript['update'] = function(block) {
 
     var value_value  = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     var value_delay  = parseInt(block.getFieldValue('DELAY_MS'), 10);
-    var clearRunning = block.getFieldValue('CLEAR_RUNNING') === 'TRUE';
+    var clearRunning = block.getFieldValue('CLEAR_RUNNING');
     var unit  = block.getFieldValue('UNIT');
     if (unit === 'min') {
         value_delay *= 60000;
     } else if (unit === 'sec') {
         value_delay *= 1000;
     }
+
+    clearRunning = clearRunning === true || clearRunning === 'true' || clearRunning === 'TRUE';
+
     var objectname = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
     var code;
-    if (this.getFieldValue('WITH_DELAY') === 'TRUE') {
+    var withDelay = this.getFieldValue('WITH_DELAY');
+
+    if (withDelay === true || withDelay === 'true' || withDelay === 'TRUE') {
         code = 'setStateDelayed("' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', ' + value_value + ', true, ' + value_delay + ', ' + clearRunning + ');\n';
     } else {
         code = 'setState("' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', ' + value_value + ', true);\n';
@@ -473,8 +489,8 @@ Blockly.JavaScript['direct'] = function(block) {
     var oidSrc = Blockly.JavaScript.valueToCode(block, 'OID_SRC', Blockly.JavaScript.ORDER_ATOMIC);
     var onlyChanges = block.getFieldValue('ONLY_CHANGES');
     var oidDest = Blockly.JavaScript.valueToCode(block, 'OID_DST', Blockly.JavaScript.ORDER_ATOMIC);
-
-    return 'on({id: ' + oidSrc + ', change: "' + (onlyChanges == 'TRUE' ? 'ne' : 'any') + '"}, function (obj) {\n  setState(' + oidDest + ', obj.state.val);\n});';
+    onlyChanges = onlyChanges === true || onlyChanges === 'true' || onlyChanges === 'TRUE';
+    return 'on({id: ' + oidSrc + ', change: "' + (onlyChanges ? 'ne' : 'any') + '"}, function (obj) {\n  setState(' + oidDest + ', obj.state.val);\n});';
 };
 
 // --- control ex -----------------------------------------------------------
@@ -541,8 +557,10 @@ Blockly.JavaScript['control_ex'] = function(block) {
     var valueObjectID = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     var value         = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     var valueDelay    = Blockly.JavaScript.valueToCode(block, 'DELAY_MS', Blockly.JavaScript.ORDER_ATOMIC);
-    var clearRunning  = block.getFieldValue('CLEAR_RUNNING') === 'TRUE';
-    var type          = block.getFieldValue('TYPE') === 'true';
+    var clearRunning  = block.getFieldValue('CLEAR_RUNNING');
+    var type          = block.getFieldValue('TYPE');
+    type = type === true || type === 'true' || type === 'TRUE';
+    clearRunning = clearRunning === true || clearRunning === 'true' || clearRunning === 'TRUE';
     return 'setStateDelayed(' + valueObjectID + ', ' + value + ', ' + type + ', parseInt(' + valueDelay + ', 10), ' + clearRunning + ');\n';
 };
 

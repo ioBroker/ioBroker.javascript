@@ -87,11 +87,13 @@ Blockly.Blocks['time_compare_ex'] = {
         var option = this.getFieldValue('OPTION');
         var use_actual_time = this.getFieldValue('USE_ACTUAL_TIME');
         container.setAttribute('end_time', (option === 'between' || option === 'not between') ? 'true' : 'false');
-        container.setAttribute('actual_time', (use_actual_time === 'TRUE') ? 'true' : 'false');
+        container.setAttribute('actual_time', use_actual_time === 'TRUE' || use_actual_time === 'true' || use_actual_time === true ? 'true' : 'false');
         return container;
     },
     domToMutation: function(xmlElement) {
-        this.updateShape_(xmlElement.getAttribute('end_time') === 'true', xmlElement.getAttribute('actual_time') === 'true');
+        var end_time = xmlElement.getAttribute('end_time');
+        var actual_time = xmlElement.getAttribute('actual_time');
+        this.updateShape_(end_time === true || end_time === 'true' || end_time === 'TRUE', actual_time === true || actual_time === 'true' || actual_time === 'TRUE');
     },
     updateShape_: function(isBetween, useActualTime) {
         if (isBetween === undefined) {
@@ -133,12 +135,13 @@ Blockly.Blocks['time_compare_ex'] = {
         }
 
         if (useActualTime === undefined) {
-            useActualTime = this.getFieldValue('USE_ACTUAL_TIME') === 'TRUE';
+            useActualTime = this.getFieldValue('USE_ACTUAL_TIME');
+            useActualTime = useActualTime === 'true' || useActualTime === 'TRUE' || useActualTime === true;
         }
         inputExists = this.getInput('CUSTOM_TIME');
 
         if (!useActualTime) {
-            this.getInput('TIME_TEXT').fieldRow[0].setText(Blockly.Translate('time_compare_custom_ex'));
+            this.getInput('TIME_TEXT').fieldRow[0].setValue(Blockly.Translate('time_compare_custom_ex'));
 
             if (!inputExists) {
                 this.appendDummyInput('CUSTOM_TEXT')
@@ -147,7 +150,7 @@ Blockly.Blocks['time_compare_ex'] = {
                 this.appendValueInput('CUSTOM_TIME');
             }
         } else if (inputExists) {
-            this.getInput('TIME_TEXT').fieldRow[0].setText(Blockly.Translate('time_compare_ex'));
+            this.getInput('TIME_TEXT').fieldRow[0].setValue(Blockly.Translate('time_compare_ex'));
             this.removeInput('CUSTOM_TIME');
             this.removeInput('CUSTOM_TEXT');
         }
@@ -219,7 +222,8 @@ Blockly.Blocks['time_compare'] = {
         return container;
     },
     domToMutation: function(xmlElement) {
-        this.updateShape_(xmlElement.getAttribute('end_time') === 'true');
+        var option = xmlElement.getAttribute('end_time');
+        this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
     updateShape_: function(isBetween) {
         // Add or remove a delay Input.
@@ -340,7 +344,9 @@ Blockly.Blocks['time_get'] = {
         return container;
     },
     domToMutation: function(xmlElement) {
-        this.updateShape_(xmlElement.getAttribute('format') === 'true', xmlElement.getAttribute('language') === 'true');
+        var format = xmlElement.getAttribute('format');
+        var language = xmlElement.getAttribute('language');
+        this.updateShape_(format === true || format === 'true' || format === 'TRUE', language === true || language === 'true' || language === 'TRUE');
     },
     updateShape_: function(isFormat, isLanguage) {
         // Add or remove a delay Input.

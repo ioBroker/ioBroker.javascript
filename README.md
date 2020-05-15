@@ -33,6 +33,8 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.6.5 (2020-05-16)
+* (bluefox) Fixed blockly blocks because of deprecated functions
 
 ### 4.6.4 (2020-05-15)
 * (bluefox) Corrected block: request, exec

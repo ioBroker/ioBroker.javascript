@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.4",
+        "version": "4.6.5",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.6.5": {
+                "en": "Fixed blockly blocks because of deprecated functions",
+                "de": "Blockierte Blöcke wegen veralteter Funktionen behoben",
+                "ru": "Исправлены блочные блоки из-за устаревших функций",
+                "pt": "Blocos fixos fixos devido a funções obsoletas",
+                "nl": "Blokkades verholpen vanwege verouderde functies",
+                "fr": "Blocs bloqués fixes en raison de fonctions obsolètes",
+                "it": "Risolti i blocchi bloccati a causa di funzioni deprecate",
+                "es": "Se corrigieron bloques bloqueados debido a funciones obsoletas",
+                "pl": "Naprawiono bloki blokowe z powodu przestarzałych funkcji",
+                "zh-cn": "修复了由于功能过时而导致的块状块"
+            },
             "4.6.4": {
                 "en": "Corrected block: request, exec",
                 "de": "Korrigierter Block: Anfrage, Exec",

@@ -41,8 +41,7 @@ Blockly.Blocks['exec'] = {
         this.appendDummyInput('WITH_STATEMENT')
             .appendField(Blockly.Translate('exec_statement'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
-                var delayInput = option === true || option === 'true' || option === 'TRUE';
-                this.sourceBlock_.updateShape_(delayInput);
+                this.sourceBlock_.updateShape_(option === true || option === 'true' || option === 'TRUE');
             }), 'WITH_STATEMENT');
 
         this.appendDummyInput('LOG')
@@ -65,11 +64,13 @@ Blockly.Blocks['exec'] = {
     },
     mutationToDom: function() {
         var container = document.createElement('mutation');
-        container.setAttribute('with_statement', this.getFieldValue('WITH_STATEMENT') === 'TRUE');
+        var option = this.getFieldValue('WITH_STATEMENT');
+        container.setAttribute('with_statement', option === true || option === 'true' || option === 'TRUE');
         return container;
     },
     domToMutation: function(xmlElement) {
-        this.updateShape_(xmlElement.getAttribute('with_statement') === 'true');
+        var option = xmlElement.getAttribute('with_statement');
+        this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
     updateShape_: function(withStatement) {
         // Add or remove a statement Input.
@@ -97,7 +98,7 @@ Blockly.JavaScript['exec'] = function(block) {
         logText = '';
     }
 
-    if (withStatement === 'TRUE') {
+    if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
         var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
         if (statement) {
             return 'exec(' + value_command + ', function (error, result, stderr) {\n  ' + statement + '});\n' +
@@ -138,8 +139,7 @@ Blockly.Blocks['request'] = {
         this.appendDummyInput('WITH_STATEMENT')
             .appendField(Blockly.Translate('request_statement'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
-                var delayInput = option === true || option === 'true' || option === 'TRUE';
-                this.sourceBlock_.updateShape_(delayInput);
+                this.sourceBlock_.updateShape_(option === true || option === 'true' || option === 'TRUE');
             }), 'WITH_STATEMENT');
 
         this.appendDummyInput('LOG')
@@ -166,7 +166,8 @@ Blockly.Blocks['request'] = {
         return container;
     },
     domToMutation: function(xmlElement) {
-        this.updateShape_(xmlElement.getAttribute('with_statement') == 'true');
+        var option = xmlElement.getAttribute('with_statement');
+        this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
     updateShape_: function(withStatement) {
         // Add or remove a statement Input.
@@ -194,7 +195,7 @@ Blockly.JavaScript['request'] = function(block) {
         logText = '';
     }
 
-    if (withStatement === 'TRUE') {
+    if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
         var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
         if (statement) {
             return 'try {\n  require("request")(' + URL + ', function (error, response, result) {\n  ' + statement + '  }).on("error", function (e) {console.error(e);});\n} catch (e) { console.error(e); }\n' +

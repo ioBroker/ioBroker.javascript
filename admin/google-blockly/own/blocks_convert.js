@@ -197,7 +197,10 @@ Blockly.Blocks.convert_from_date = {
         return container;
     },
     domToMutation: function(xmlElement) {
-        this.updateShape_(xmlElement.getAttribute('format') === 'true', xmlElement.getAttribute('language') === 'true');
+        var format = xmlElement.getAttribute('format');
+        var language = xmlElement.getAttribute('language');
+
+        this.updateShape_(format === true || format === 'true' || format === 'TRUE', language === true || language === 'true' || language === 'TRUE');
     },
     updateShape_: function(isFormat, isLanguage) {
         // Add or remove a delay Input.
@@ -332,8 +335,8 @@ Blockly.Blocks.convert_object2json = {
 };
 Blockly.JavaScript.convert_object2json = function (block) {
     var prettify = block.getFieldValue('PRETTIFY');
-
-    return ['JSON.stringify(' + Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + (prettify == 'TRUE' ? ', null, 2' : '') + ')', Blockly.JavaScript.ORDER_ATOMIC];
+    prettify = prettify === 'TRUE' || prettify === 'true' || prettify === true;
+    return ['JSON.stringify(' + Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + (prettify ? ', null, 2' : '') + ')', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- to single value -------------------------------------------

@@ -763,7 +763,7 @@ Blockly.Blocks['cron_builder'] = {
         this.appendDummyInput('LINE')
             .appendField(Blockly.Translate('cron_builder_line'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
-                this.sourceBlock_.setInputsInline(option == true);
+                this.sourceBlock_.setInputsInline(option === true || option === 'true' || option === 'TRUE');
             }), 'LINE');
 
         var _input = this.appendValueInput('DOW')
@@ -829,7 +829,7 @@ Blockly.Blocks['cron_builder'] = {
         this.appendDummyInput('WITH_SECONDS')
             .appendField(Blockly.Translate('cron_builder_with_seconds'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
-                var withSeconds = option === true;
+                var withSeconds = option === true || option === 'true' || option === 'TRUE';
                 this.sourceBlock_.updateShape_(withSeconds);
             }), 'WITH_SECONDS');
 
@@ -898,6 +898,6 @@ Blockly.JavaScript['cron_builder'] = function(block) {
     var seconds = Blockly.JavaScript.valueToCode(block, 'SECONDS', Blockly.JavaScript.ORDER_ATOMIC);
     var withSeconds = block.getFieldValue('WITH_SECONDS');
 
-    var code = ((withSeconds === 'TRUE') ? seconds + '.trim() + \' \' + ' : '') + minutes + '.trim() + \' \' + ' + hours + '.trim() + \' \' + ' + days + '.trim() + \' \' + ' + months + '.trim() + \' \' + ' + dow + '.trim()';
+    var code = (withSeconds === 'TRUE' || withSeconds === 'true' || withSeconds === true ? seconds + '.trim() + \' \' + ' : '') + minutes + '.trim() + \' \' + ' + hours + '.trim() + \' \' + ' + days + '.trim() + \' \' + ' + months + '.trim() + \' \' + ' + dow + '.trim()';
     return [code, Blockly.JavaScript.ORDER_ATOMIC]
 };
