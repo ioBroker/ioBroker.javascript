@@ -255,6 +255,7 @@ const prepareList = data => {
     do {
         modified = false;
         // check if all parents exists
+        // eslint-disable-next-line
         result.forEach(item => {
             if (item.parent) {
                 const parent = result.find(it => it.id === item.parent);

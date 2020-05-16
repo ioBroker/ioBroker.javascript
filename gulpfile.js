@@ -8,8 +8,6 @@
 
 const gulp       = require('gulp');
 const fs         = require('fs');
-const connect    = require('gulp-connect');
-const watch      = require('gulp-watch');
 const rename     = require('gulp-rename');
 const replace    = require('gulp-replace');
 const del        = require('del');
@@ -236,20 +234,6 @@ gulp.task('6-patch', done => {
 });
 
 gulp.task('6-patch-dep',  gulp.series('5-copy-dep', '6-patch'));
-
-gulp.task('webserver', () => {
-    connect.server({
-        root: 'src/build',
-        livereload: true
-    });
-});
-
-gulp.task('prewatch', () => {
-    // Callback mode, useful if any plugin in the pipeline depends on the `end`/`flush` event
-    return watch(['src/src/*/**', 'src/src/*'], { ignoreInitial: true }, ['build']);
-});
-
-gulp.task('watch', gulp.series('webserver', 'prewatch'));
 
 gulp.task('default', gulp.series('6-patch-dep'));
 
