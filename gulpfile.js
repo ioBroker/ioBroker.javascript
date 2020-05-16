@@ -7,13 +7,13 @@
 'use strict';
 
 const gulp       = require('gulp');
-const exec       = require('gulp-exec');
 const fs         = require('fs');
 const connect    = require('gulp-connect');
 const watch      = require('gulp-watch');
 const rename     = require('gulp-rename');
 const replace    = require('gulp-replace');
 const del        = require('del');
+const cp         = require('child_process');
 
 const pkg       = require('./package.json');
 const iopackage = require('./io-package.json');
@@ -148,35 +148,36 @@ gulp.task('2-npm', () => {
 gulp.task('2-npm-dep', gulp.series('clean', '2-npm'));
 
 function build() {
-    const options = {
-        continueOnError:        false, // default = false, true means don't emit error event
-        pipeStdout:             false, // default = false, true means stdout is written to file.contents
-        customTemplatingThing:  'build', // content passed to gutil.template()
-        cwd:                    __dirname + '/src/'
-    };
-    const reportOptions = {
-        err:    true, // default = true, false means don't write err
-        stderr: true, // default = true, false means don't write stderr
-        stdout: true  // default = true, false means don't write stdout
-    };
+    return new Promise((resolve, reject) => {
+        const options = {
+            stdio: 'pipe',
+            cwd:   __dirname + '/src/'
+        };
 
-    const version = JSON.parse(fs.readFileSync(__dirname + '/package.json').toString('utf8')).version;
-    const data = JSON.parse(fs.readFileSync(__dirname + '/src/package.json').toString('utf8'));
-    data.version = version;
-    fs.writeFileSync(__dirname + '/src/package.json', JSON.stringify(data, null, 2));
+        const version = JSON.parse(fs.readFileSync(__dirname + '/package.json').toString('utf8')).version;
+        const data = JSON.parse(fs.readFileSync(__dirname + '/src/package.json').toString('utf8'));
+        data.version = version;
+        fs.writeFileSync(__dirname + '/src/package.json', JSON.stringify(data, null, 2));
 
-    console.log(options.cwd);
+        console.log(options.cwd);
 
-    if (fs.existsSync(__dirname + '/src/node_modules/react-scripts/scripts/build.js')) {
-        return gulp.src(__dirname + '/src/node_modules/react-scripts/scripts/build.js')
-            .pipe(exec('node <%= file.path %>', options))
-            .pipe(exec.reporter(reportOptions)).pipe(connect.reload());
-    } else {
-        return gulp.src(__dirname + '/node_modules/react-scripts/scripts/build.js')
-            .pipe(exec('node <%= file.path %>', options))
-            .pipe(exec.reporter(reportOptions)).pipe(connect.reload());
-
-    }
+        let script = __dirname + '/src/node_modules/react-scripts/scripts/build.js';
+        if (!fs.existsSync(script)) {
+            script = __dirname + '/node_modules/react-scripts/scripts/build.js';
+        }
+        if (!fs.existsSync(script)) {
+            console.error('Cannot find execution file: ' + script);
+            reject('Cannot find execution file: ' + script);
+        } else {
+            const child = cp.fork(script, [], options);
+            child.stdout.on('data', data => console.log(data.toString()));
+            child.stderr.on('data', data => console.log(data.toString()));
+            child.on('close', code => {
+                console.log(`child process exited with code ${code}`);
+                code ? reject('Exit code: ' + code) : resolve();
+            });
+        }
+    });
 }
 
 gulp.task('3-build', () => build());
