@@ -33,6 +33,10 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+
+### 4.6.8 (2020-05-16)
+* (Apollon77) Fix error filtering 
+
 ### 4.6.7 (2020-05-16)
 * (bluefox) Fixed blockly blocks because of deprecated functions
 * (bluefox) Corrected schedule wizard 
