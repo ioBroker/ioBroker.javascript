@@ -82,7 +82,7 @@ function checkValueOfState(id, value, cb, counter) {
     });
 }
 
-describe('Test JS', function() {
+describe.only('Test JS', function () {
 
     before('Test JS: Start js-controller', function (_done) {
         this.timeout(600000); // because of first install from npm
@@ -99,9 +99,9 @@ describe('Test JS', function() {
             setup.setAdapterConfig(config.common, config.native);
 
             setup.startController(false, function (id, obj) {
-                if (onObjectChanged) onObjectChanged(id, obj);
+                onObjectChanged && onObjectChanged(id, obj);
             }, function (id, state) {
-                if (onStateChanged) onStateChanged(id, state);
+                onStateChanged && onStateChanged(id, state);
             },
             function (_objects, _states) {
                 objects = _objects;
@@ -973,7 +973,7 @@ describe('Test JS', function() {
         });
     }).timeout(5000);
 
-    it('Test JS: test ON misc', function (done) {
+    it.only('Test JS: test ON misc', function (done) {
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1053,8 +1053,14 @@ describe('Test JS', function() {
             ];
 
             switch (param) {
-                case 'recs': return recs;
-                case 'TEST_VAR': return TEST_VAR;
+                case 'recs':
+                    return recs;
+
+                case 'TEST_VAR':
+                    return TEST_VAR;
+
+                case 'TEST_RESULTS':
+                    return TEST_RESULTS;
             }
 
             createState(TEST_RESULTS, '', true, { name: 'Testresults', type: 'string' });
@@ -1065,8 +1071,13 @@ describe('Test JS', function() {
 
             function handler(result, req, obj) {
                 log ('handler: result=' + JSON.stringify(result) + ' / req=' + JSON.stringify(req) + ' / obj=' + JSON.stringify(obj));
-                if (obj.state.ts < result.initTs && obj.state.val === result.before && obj.state.ack === result.ack) {
-                    // we got the value subscribe for the "start" value too, ignore it
+                if (obj.state.ts < result.initTs &&
+                    (
+                        (obj.state.val === result.before && obj.state.ack === result.ack) ||
+                        (obj.state.val === '___' && obj.state.ack === true) // createState event
+                    )
+                ){
+                    // we got the value subscribe for the "start" or "createState" value too, ignore it
                     log('IGNORED');
                     return;
                 }
@@ -1119,7 +1130,7 @@ describe('Test JS', function() {
                         if (no >= ar.length) {
                             setTimeout(() => {
                                 unsubscribe(sub);
-                                results = ((req.callCount === req.cnt && req.nok === false) ? 'OK;' : 'NOK;') + 'no=' + req.no + ';' + results + 'callCount=' + req.callCount + ';cnt=' + req.cnt;
+                                results = (req.callCount === req.cnt && req.nok === false ? 'OK;' : 'NOK;') + 'no=' + req.no + ';' + results + 'callCount=' + req.callCount + ';cnt=' + req.cnt;
                                 setState(TEST_RESULTS, results, true, callback);
                             }, req.tio);
 
@@ -1138,12 +1149,17 @@ describe('Test JS', function() {
             }
 
             function runTests(id) {
-                createState(id, '', true, {name: 'Hello'}, (err, obj) => {
+                createState(id, '___', true, {name: 'Hello', type: 'string'}, (err, obj) => {
                     let cnt = 0;
                     (function doIt() {
-                        if (cnt >= recs.length) return;
+                        if (cnt >= recs.length) {
+                            return;
+                        }
                         const rec = recs[cnt++];
-                        createTest(rec[0], rec[1], rec[2], () => setTimeout(doIt, 1000));
+
+                        // sometimes the state init event from createState will be received too, so wait a little
+                        setTimeout(() =>
+                            createTest(rec[0], rec[1], rec[2], () => setTimeout(doIt, 1000)), 200);
                     })();
                 });
             }
@@ -1168,14 +1184,17 @@ describe('Test JS', function() {
 
         const recs = scriptFunction('recs');
         const TEST_VAR = scriptFunction('TEST_VAR');
-        this.timeout(10000 + 2000 * recs.length);
+        const TEST_RESULTS = scriptFunction('TEST_RESULTS');
+        this.timeout(20000 + 2200 * recs.length);
 
         function createObjects(callback) {
             const channel = TEST_VAR.replace(/\.[^.]+$/, '');
             const device = channel.replace(/\.[^.]+$/, '');
-            objects.setObject(device, { common: { name: 'Device', type: 'device'}}, (err, obj) => {
+            // create device
+            objects.setObject(device, { common: { name: 'Device'}, type: 'device'}, (err, obj) => {
                 expect(err).to.be.not.ok;
-                objects.setObject(channel, { common: { name: 'Channel', type: 'channel'}}, callback);
+                // create channel
+                objects.setObject(channel, { common: { name: 'Channel'}, type: 'channel'}, callback);
             });
         }
 
@@ -1187,7 +1206,7 @@ describe('Test JS', function() {
             let cnt = 0;
 
             const onStateChanged = function (id, state) {
-                if (id === 'javascript.0.testResults' && state.val) {
+                if (id === TEST_RESULTS && state.val) {
                     cnt += 1;
                     const ar = /^(OK;no=[\d]+)/.exec(state.val) || ['', state.val];
                     expect(ar).to.be.ok;
@@ -1199,8 +1218,10 @@ describe('Test JS', function() {
                     }
                 }
             };
+
             addStateChangedHandler(onStateChanged);
 
+            // write script into Objects => start script
             objects.setObject(script._id, script, err =>
                 expect(err).to.be.not.ok);
         });
@@ -1379,7 +1400,6 @@ describe('Test JS', function() {
         objects.setObject(script._id, script, err =>
             expect(err).to.be.not.ok);
     }).timeout(5000);
-
 
     it('Test JS: messaging between scripts', done => {
         // add script
