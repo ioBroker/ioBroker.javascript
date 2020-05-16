@@ -87,9 +87,15 @@ class BlocklyEditor extends React.Component {
         // get all adapters, that can have blockly
         const toLoad = [];
         for (const id in objects) {
-            if (!objects.hasOwnProperty(id) || !objects[id]) continue;
-            if (!id.match(/^system\.adapter\./)) continue;
-            if (objects[id].type !== 'adapter') continue;
+            if (
+                !objects.hasOwnProperty(id) ||
+                !objects[id] ||
+                !id.match(/^system\.adapter\./) ||
+                objects[id].type !== 'adapter'
+            ) {
+                continue;
+            }
+
             if (objects[id].common && objects[id].common.blockly) {
                 console.log('Detected custom blockly: ' + objects[id].common.name);
                 toLoad.push(objects[id].common.name);
@@ -394,7 +400,20 @@ class BlocklyEditor extends React.Component {
                 if (!xml.startsWith('<xml')) {
                     xml = '<xml xmlns="http://www.w3.org/1999/xhtml">' + xml + '</xml>';
                 }
+                let variables = xml.replace(/[\n\r]/g, '').match(/<variables>(.*)<\/variables>/);
+                if (variables) {
+                    let vars = this.Blockly.utils.xml.textToDomDocument('<variables>' + variables[1] + '</variables>');
+                    if (vars) {
+                        let nodes = vars.childNodes && vars.childNodes[0] && vars.childNodes[0].childNodes;
+                        if (nodes) {
+                            for (let i = 0; i < nodes.length; i++) {
+                                nodes[i].id && this.blocklyWorkspace.createVariable(nodes[i].id);
+                            }
+                        }
+                    }
+                }
                 xml = xml.replace(/[\n\r]/g, '').replace(/<variables>.*<\/variables>/g, '');
+                window.scripts.loading = true;
                 let xmlBlocks = this.Blockly.Xml.textToDom(xml);
                 if (xmlBlocks.nodeName === 'xml') {
                     for (let b = 0; b < xmlBlocks.children.length; b++) {
@@ -403,6 +422,10 @@ class BlocklyEditor extends React.Component {
                 } else {
                     this.blocklyWorkspace.paste(xmlBlocks);
                 }
+
+                window.scripts.loading = false;
+
+
                 this.onBlocklyChanged();
             } catch (e) {
                 this.setState({error: {text: e, title: I18n.t('Import error')}});
@@ -411,15 +434,19 @@ class BlocklyEditor extends React.Component {
     }
 
     loadCode() {
-        if (!this.blocklyWorkspace) return;
+        if (!this.blocklyWorkspace) {
+            return;
+        }
 
         this.ignoreChanges = true;
         this.blocklyWorkspace.clear();
 
         try {
             const xml = this.jsCode2Blockly(this.originalCode) || '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>';
+            window.scripts.loading = true;
             const dom = this.Blockly.Xml.textToDom(xml);
             this.Blockly.Xml.domToWorkspace(dom, this.blocklyWorkspace);
+            window.scripts.loading = false;
         } catch (e) {
             console.error(e);
             window.alert('Cannot extract Blockly code!');
