@@ -82,7 +82,7 @@ function checkValueOfState(id, value, cb, counter) {
     });
 }
 
-describe.only('Test JS', function () {
+describe('Test JS', function () {
 
     before('Test JS: Start js-controller', function (_done) {
         this.timeout(600000); // because of first install from npm
@@ -973,7 +973,7 @@ describe.only('Test JS', function () {
         });
     }).timeout(5000);
 
-    it.only('Test JS: test ON misc', function (done) {
+    it('Test JS: test ON misc', function (done) {
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1071,7 +1071,7 @@ describe.only('Test JS', function () {
 
             function handler(result, req, obj) {
                 log ('handler: result=' + JSON.stringify(result) + ' / req=' + JSON.stringify(req) + ' / obj=' + JSON.stringify(obj));
-                if (obj.state.ts < result.initTs &&
+                if (obj.state.ts <= result.initTs &&
                     (
                         (obj.state.val === result.before && obj.state.ack === result.ack) ||
                         (obj.state.val === '___' && obj.state.ack === true) // createState event
@@ -1149,7 +1149,7 @@ describe.only('Test JS', function () {
             }
 
             function runTests(id) {
-                createState(id, '___', true, {name: 'Hello', type: 'string'}, (err, obj) => {
+                createState(id, '___', true, {name: 'Hello', type: 'mixed'}, (err, obj) => {
                     let cnt = 0;
                     (function doIt() {
                         if (cnt >= recs.length) {
