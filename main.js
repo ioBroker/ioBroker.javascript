@@ -30,7 +30,7 @@ if (true || parseInt(process.versions.node.split('.')[0]) < 6) {
     }
 }
 const nodeFS         = require('fs');
-// const nodePath       = require('path');
+const nodePath       = require('path');
 const coffeeCompiler = require('coffee-compiler');
 const tsc            = require('virtual-tsc');
 const typescript     = require('typescript');
@@ -476,7 +476,7 @@ function startAdapter(options) {
                                             return null;
                                         }
                                         //Exclude event if own directory is included but not inside own node_modules
-                                        const ownNodeModulesDir = path.join(__dirname, 'node_modules');
+                                        const ownNodeModulesDir = nodePath.join(__dirname, 'node_modules');
                                         if (!eventData.stacktrace.frames.find(frame => frame.filename && frame.filename.includes(__dirname) && !frame.filename.includes(ownNodeModulesDir))) {
                                             return null;
                                         }
