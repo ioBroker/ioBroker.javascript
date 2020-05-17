@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.9",
+        "version": "4.6.10",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,7 +22,7 @@
             "AlCalzone"
         ],
         "news": {
-            "4.6.9": {
+            "4.6.10": {
                 "en": "Fixed blockly blocks because of deprecated functions",
                 "de": "Blockierte Blöcke wegen veralteter Funktionen behoben",
                 "ru": "Исправлены блочные блоки из-за устаревших функций",

@@ -33,7 +33,7 @@ And then call "npm run build".
 - ...
 
 ## Changelog
-### 4.6.9 (2020-05-16)
+### 4.6.10 (2020-05-16)
 * (bluefox) Fixed blockly blocks because of deprecated functions
 * (bluefox) Corrected schedule wizard 
 

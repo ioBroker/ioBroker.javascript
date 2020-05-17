@@ -86,7 +86,7 @@ Blockly.Blocks['time_compare_ex'] = {
         var container = document.createElement('mutation');
         var option = this.getFieldValue('OPTION');
         var use_actual_time = this.getFieldValue('USE_ACTUAL_TIME');
-        container.setAttribute('end_time', (option === 'between' || option === 'not between') ? 'true' : 'false');
+        container.setAttribute('end_time', option === 'between' || option === 'not between' ? 'true' : 'false');
         container.setAttribute('actual_time', use_actual_time === 'TRUE' || use_actual_time === 'true' || use_actual_time === true ? 'true' : 'false');
         return container;
     },
@@ -97,7 +97,7 @@ Blockly.Blocks['time_compare_ex'] = {
     },
     updateShape_: function(isBetween, useActualTime) {
         if (isBetween === undefined) {
-            isBetween = (this.getFieldValue('OPTION') === 'between' || this.getFieldValue('OPTION') === 'not between');
+            isBetween = this.getFieldValue('OPTION') === 'between' || this.getFieldValue('OPTION') === 'not between';
         }
         // Add or remove a delay Input.
         var inputExists = this.getInput('END_TIME');
@@ -105,6 +105,7 @@ Blockly.Blocks['time_compare_ex'] = {
         if (isBetween) {
             if (!inputExists) {
                 inputExists = this.getInput('CUSTOM_TIME');
+
                 if (inputExists) {
                     this.removeInput('CUSTOM_TIME');
                     this.removeInput('CUSTOM_TEXT');
@@ -114,20 +115,24 @@ Blockly.Blocks['time_compare_ex'] = {
                     .appendField(Blockly.Translate('time_compare_and'));
 
                 var input = this.appendValueInput('END_TIME');
-                var wp = this.workspace;
-                setTimeout(function () {
-                    if (!input.connection.isConnected()) {
-                        var shadow = wp.newBlock('text');
-                        shadow.setShadow(true);
-                        shadow.setFieldValue('18:00', 'TEXT');
 
-                        shadow.outputConnection.connect(input.connection);
-                        //input.connection.connect(shadow.outputConnection);
+                if (!window.scripts.loading) {
+                    var wp = this.workspace;
 
-                        shadow.initSvg();
-                        shadow.render();
-                    }
-                }, 100);
+                    setTimeout(function () {
+                        if (!input.connection.isConnected()) {
+                            var shadow = wp.newBlock('text');
+                            shadow.setShadow(true);
+                            shadow.setFieldValue('18:00', 'TEXT');
+
+                            shadow.outputConnection.connect(input.connection);
+                            // input.connection.connect(shadow.outputConnection);
+
+                            shadow.initSvg();
+                            shadow.render();
+                        }
+                    }, 100);
+                }
             }
         } else if (inputExists) {
             this.removeInput('END_TIME');

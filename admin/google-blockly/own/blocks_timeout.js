@@ -131,7 +131,7 @@ Blockly.Blocks['timeouts_settimeout'] = {
     },
     getVarModels: function () {
         var name = this.getFieldValue('NAME');
-        return [{getId: function () {return name}, name: name}];
+        return [{getId: function () {return name;}, type: 'timeout', name: name}];
     }
 };
 
@@ -159,6 +159,16 @@ Blockly.Timeouts.getAllTimeouts = function (workspace) {
             result.push([blocks[i].getFieldValue('NAME'), blocks[i].getFieldValue('NAME')]);
         }
     }
+
+    // BF(2020.05.16) : for back compatibility. Remove it after 5 years
+    if (window.scripts.loading) {
+        var variables = workspace.getVariablesOfType('');
+        variables.forEach(v => !result.find(it => it[0] === v.name) && result.push([v.name, v.name]));
+    }
+
+    var variables1 = workspace.getVariablesOfType('timeout');
+    variables1.forEach(v => !result.find(it => it[0] === v.name) && result.push([v.name, v.name]));
+
     !result.length && result.push(['', '']);
 
     return result;
@@ -175,7 +185,7 @@ Blockly.Blocks['timeouts_cleartimeout'] = {
         this.appendDummyInput('NAME')
             .appendField(Blockly.Translate('timeouts_cleartimeout'))
             .appendField(new Blockly.FieldDropdown(function () {
-                return scripts.blocklyWorkspace ? Blockly.Timeouts.getAllTimeouts(scripts.blocklyWorkspace) : [];
+                return window.scripts && window.scripts.blocklyWorkspace ? Blockly.Timeouts.getAllTimeouts(window.scripts.blocklyWorkspace) : [];
             }), 'NAME');
 
         this.setPreviousStatement(true, null);
@@ -241,7 +251,7 @@ Blockly.Blocks['timeouts_setinterval'] = {
     },
     getVarModels: function () {
         var name = this.getFieldValue('NAME');
-        return [{getId: function () {return name}, name: name}];
+        return [{getId: function () {return name;}, type: 'interval', name: name}];
     }
 };
 
@@ -277,7 +287,16 @@ Blockly.Timeouts.getAllIntervals = function (workspace) {
         }
     }
 
-    if (!result.length) result.push(['', '']);
+    // BF(2020.05.16) : for back compatibility. Remove it after 5 years
+    if (window.scripts.loading) {
+        var variables = workspace.getVariablesOfType('');
+        variables.forEach(v => !result.find(it => it[0] === v.name) && result.push([v.name, v.name]));
+    }
+
+    var variables1 = workspace.getVariablesOfType('interval');
+    variables1.forEach(v => !result.find(it => it[0] === v.name) && result.push([v.name, v.name]));
+
+    !result.length && result.push(['', '']);
 
     return result;
 };
@@ -287,7 +306,7 @@ Blockly.Blocks['timeouts_clearinterval'] = {
         this.appendDummyInput("NAME")
             .appendField(Blockly.Translate('timeouts_clearinterval'))
             .appendField(new Blockly.FieldDropdown(function () {
-                return scripts.blocklyWorkspace ? Blockly.Timeouts.getAllIntervals(scripts.blocklyWorkspace) : [];
+                return window.scripts.blocklyWorkspace ? Blockly.Timeouts.getAllIntervals(window.scripts.blocklyWorkspace) : [];
             }), "NAME");
 
         this.setPreviousStatement(true, null);
