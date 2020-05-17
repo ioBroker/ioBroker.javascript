@@ -32,5 +32,8 @@
             "error",
             "always"
         ]
+    },
+    "parserOptions": {
+        "ecmaVersion": 2019
     }
 }
