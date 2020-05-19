@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.12",
+        "version": "4.6.13",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,7 +22,7 @@
             "AlCalzone"
         ],
         "news": {
-            "4.6.12": {
+            "4.6.13": {
                 "en": "Fixed blockly blocks because of deprecated functions",
                 "de": "Blockierte Blöcke wegen veralteter Funktionen behoben",
                 "ru": "Исправлены блочные блоки из-за устаревших функций",
@@ -129,7 +129,7 @@
                 "es": "Adaptador hecho compatible con controlador js> = 2.2.x",
                 "pl": "Dostosowano adapter do kontrolera js> = 2.2.x",
                 "zh-cn": "使适配器与js-controller> = 2.2.x兼容"
-            },
+            }
         },
         "desc": {
             "en": "Javascript/Blockly Script Engine for ioBroker",
