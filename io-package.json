@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.11",
+        "version": "4.6.12",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,7 +22,7 @@
             "AlCalzone"
         ],
         "news": {
-            "4.6.11": {
+            "4.6.12": {
                 "en": "Fixed blockly blocks because of deprecated functions",
                 "de": "Blockierte Blöcke wegen veralteter Funktionen behoben",
                 "ru": "Исправлены блочные блоки из-за устаревших функций",
@@ -130,29 +130,6 @@
                 "pl": "Dostosowano adapter do kontrolera js> = 2.2.x",
                 "zh-cn": "使适配器与js-controller> = 2.2.x兼容"
             },
-            "4.3.5": {
-                "en": "fixed the load of zip files if more than one host",
-                "de": "Das Laden von ZIP-Dateien wurde behoben, wenn mehr als ein Host vorhanden war",
-                "ru": "исправлена загрузка zip-файлов, если несколько хостов",
-                "pt": "Corrigido o carregamento de arquivos zip se mais de um host",
-                "nl": "de belasting van zip-bestanden gerepareerd als meer dan één host",
-                "fr": "correction de la charge des fichiers zip si plusieurs hôtes",
-                "it": "corretto il caricamento dei file zip se più di un host",
-                "es": "reparó la carga de archivos zip si hay más de un host",
-                "pl": "naprawiono ładowanie plików zip, jeśli więcej niż jeden host",
-                "zh-cn": "如果一台以上的主机修复了zip文件的加载"
-            },
-            "3.7.0": {
-                "en": "Used VM2 as sandbox. The script errors will be caught.\nrefactoring: split into many modules",
-                "de": "Verwendete VM2 als Sandbox. Die Skriptfehler werden abgefangen.\nRefactoring: Aufteilung in viele Module",
-                "ru": "Используется VM2 как песочница. Ошибки скрипта будут обнаружены.\nрефакторинг: разделение на многие модули",
-                "pt": "Usado VM2 como sandbox. Os erros de script serão capturados.\nrefatoração: dividida em vários módulos",
-                "nl": "Gebruikte VM2 als sandbox. De scriptfouten worden gepakt.\nrefactoring: opgesplitst in vele modules",
-                "fr": "VM2 utilisé comme bac à sable. Les erreurs de script seront interceptées.\nrefactoring: divisé en plusieurs modules",
-                "it": "Usato VM2 come sandbox. Gli errori di script verranno catturati.\nrefactoring: suddiviso in molti moduli",
-                "es": "Usó VM2 como sandbox. Los errores de script serán capturados.\nrefactorización: dividida en muchos módulos",
-                "pl": "Używany VM2 jako sandbox. Błędy skryptu zostaną przechwycone.\nrefaktoryzacja: podzielona na wiele modułów"
-            }
         },
         "desc": {
             "en": "Javascript/Blockly Script Engine for ioBroker",

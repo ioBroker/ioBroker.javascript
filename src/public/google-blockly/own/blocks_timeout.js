@@ -131,7 +131,7 @@ Blockly.Blocks['timeouts_settimeout'] = {
     },
     getVarModels: function () {
         var name = this.getFieldValue('NAME');
-        return [{getId: function () {return name;}, type: 'timeout', name: name}];
+        return [{getId: function () {return name;}, name: name, type: 'timeout'}];
     }
 };
 
@@ -251,7 +251,7 @@ Blockly.Blocks['timeouts_setinterval'] = {
     },
     getVarModels: function () {
         var name = this.getFieldValue('NAME');
-        return [{getId: function () {return name;}, type: 'interval', name: name}];
+        return [{getId: function () {return name;}, name: name, type: 'interval'}];
     }
 };
 

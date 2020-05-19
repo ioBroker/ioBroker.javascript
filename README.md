@@ -9,6 +9,8 @@
 
 Executes Javascript, Typescript and Coffescript Scripts.
 
+**Coffescript is deprecated**
+
 [Function documentation](docs/en/javascript.md)
 
 [Benutzung](docs/de/usage.md)
@@ -33,7 +35,7 @@ And then call "npm run build".
 - ...
 
 ## Changelog
-### 4.6.11 (2020-05-16)
+### 4.6.12 (2020-05-19)
 * (bluefox) Fixed blockly blocks because of deprecated functions
 * (bluefox) Corrected schedule wizard 
 

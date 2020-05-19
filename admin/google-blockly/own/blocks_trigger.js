@@ -649,7 +649,7 @@ Blockly.Blocks['schedule_create'] = {
     },
     getVarModels: function () {
         var name = this.getFieldValue('NAME');
-        return [{getId: function () {return name}, name: name}];
+        return [{getId: function () {return name;}, name: name, type: 'cron'}];
     }
 };
 
@@ -672,7 +672,17 @@ Blockly.Trigger.getAllSchedules = function (workspace) {
             result.push([blocks[i].getFieldValue('NAME'), blocks[i].getFieldValue('NAME')]);
         }
     }
-    if (!result.length) result.push(['', '']);
+
+    // BF(2020.05.16) : for back compatibility. Remove it after 5 years
+    if (window.scripts.loading) {
+        var variables = workspace.getVariablesOfType('');
+        variables.forEach(v => !result.find(it => it[0] === v.name) && result.push([v.name, v.name]));
+    }
+
+    var variables1 = workspace.getVariablesOfType('cron');
+    variables1.forEach(v => !result.find(it => it[0] === v.name) && result.push([v.name, v.name]));
+
+    !result.length && result.push(['', '']);
 
     return result;
 };
