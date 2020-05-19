@@ -24,7 +24,7 @@
         "news": {
             "4.6.14": {
                 "en": "IDs with dot are not allowed any more\n\"schedule\" name is not allowed for CRON\nConvert strings to Date by formatDate",
-                "de": "IDs mit Punkt sind nicht mehr erlaubt\nDer Name \"Zeitplan\" ist für CRON nicht zulässig\nKonvertieren Sie Zeichenfolgen nach FormatDate in Datum",
+                "de": "IDs mit Punkt sind nicht mehr erlaubt\nDer Name \"schedule\" ist für CRON nicht zulässig\nZeichenfolgen werden in FormatDate nach Date-Objekt konvertiert",
                 "ru": "Идентификаторы с точкой больше не разрешены\nимя \"расписание\" не допускается для CRON\nПреобразовать строки в дату по formatDate",
                 "pt": "IDs com ponto não são mais permitidos\no nome \"horário\" não é permitido para CRON\nConverta seqüências de caracteres para Data por formatoData",
                 "nl": "ID's met punt zijn niet meer toegestaan\n\"planning\" naam is niet toegestaan voor CRON\nConverteer strings naar datum door formatDate",
