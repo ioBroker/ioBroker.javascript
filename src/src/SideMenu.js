@@ -978,7 +978,7 @@ class SideDrawer extends React.Component {
         }
 
         // eslint-disable-next-line
-        while (this.state.listItems.find(it => it.id === this.parent + '.' + word.replace(/\s/g, '_') + i)) {
+        while (this.state.listItems.find(it => it.id === this.parent + '.' + word.replace(/\.\s/g, '_') + i)) {
             i++;
         }
         /*ignore jslint end*/
@@ -1392,9 +1392,9 @@ class SideDrawer extends React.Component {
                 key="dialog-new-script"
                 onClose={() => this.setState({creatingScript: false})}
                 title={I18n.t('Create new script')}
-                name={this.getUniqueName()}
-                parents={this.getFolders()}
-                folder={false}
+                name={ this.getUniqueName() }
+                parents={ this.getFolders() }
+                folder={ false }
                 existingItems={this.state.listItems.map(item => item.id)}
                 instance={this.props.instances[0] || 0}
                 instances={this.props.instances}
@@ -1408,7 +1408,7 @@ class SideDrawer extends React.Component {
                 key="dialog-copy-script"
                 onClose={() => this.setState({copingScript: ''})}
                 title={I18n.t('Copy script')}
-                name={this.getUniqueName(this.state.copingScript)}
+                name={ this.getUniqueName(this.state.copingScript) }
                 parents={this.getFolders()}
                 folder={false}
                 instance={parseInt((copingItem && copingItem.common && copingItem.common.engine && copingItem.common.engine.split('.').pop()) || 0, 10)}

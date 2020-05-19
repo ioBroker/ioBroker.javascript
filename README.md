@@ -35,9 +35,15 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.6.14 (2020-05-19)
+* (bluefox) IDs with dot are not allowed any more
+* (bluefox) "schedule" name is not allowed for CRON
+* (bluefox) Convert strings to Date by formatDate
+
 ### 4.6.13 (2020-05-19)
 * (bluefox) Fixed blockly blocks because of deprecated functions
-* (bluefox) Corrected schedule wizard 
+* (bluefox) Corrected schedule wizard
+* (AlCazone) Update monaco editor
 
 ### 4.6.4 (2020-05-15)
 * (bluefox) Corrected block: request, exec

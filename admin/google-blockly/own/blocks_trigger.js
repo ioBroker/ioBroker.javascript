@@ -572,7 +572,7 @@ Blockly.Trigger.findLegalName = function(name, block) {
         // Collision with another procedure.
         var r = name.match(/^(.*?)(\d+)$/);
         if (!r) {
-            name += '2';
+            name += '1';
         } else {
             name = r[1] + (parseInt(r[2], 10) + 1);
         }
@@ -591,6 +591,10 @@ Blockly.Trigger.findLegalName = function(name, block) {
  * @private
  */
 Blockly.Trigger.isLegalName_ = function(name, workspace, opt_exclude) {
+    if (name === 'schedule') {
+        return false;
+    }
+
     var blocks = workspace.getAllBlocks();
     // Iterate through every block and check the name.
     for (var i = 0; i < blocks.length; i++) {
@@ -673,7 +677,7 @@ Blockly.Trigger.getAllSchedules = function (workspace) {
         }
     }
 
-    // BF(2020.05.16) : for back compatibility. Remove it after 5 years
+    // BF(2020.05.16): for back compatibility. Remove it after 5 years
     if (window.scripts.loading) {
         var variables = workspace.getVariablesOfType('');
         variables.forEach(v => !result.find(it => it[0] === v.name) && result.push([v.name, v.name]));

@@ -323,24 +323,23 @@ class App extends Component {
     onExpertModeChange(expertMode) {
         if (this.state.expertMode !== expertMode) {
             window.localStorage && window.localStorage.setItem('App.expertMode', expertMode ? 'true' : 'false');
-            this.setState({expertMode});
+            this.setState({ expertMode });
         }
     }
 
     showError(err) {
-        this.setState({errorText: err});
+        this.setState({ errorText: err });
     }
 
     showMessage(message) {
-        this.setState({message});
+        this.setState({ message });
     }
 
     onDelete(id) {
         this.socket.delObject(id)
         .then(() => {})
-        .catch(err => {
-            this.showError(err);
-        });
+        .catch(err =>
+            this.showError(err));
     }
 
     onEdit(id) {
@@ -364,12 +363,12 @@ class App extends Component {
                     expert: true
                 },
                 type: 'channel'
-            }).then(() => {
-                setTimeout(() => this.setState({menuSelectId: id}, () =>
-                    setTimeout(() => this.setState({menuSelectId: ''})), 300), 1000);
-            }).catch(err => {
-                this.showError(err);
-            });
+            })
+                .then(() =>
+                    setTimeout(() => this.setState({menuSelectId: id}, () =>
+                        setTimeout(() => this.setState({menuSelectId: ''})), 300), 1000))
+                .catch(err =>
+                    this.showError(err));
         } else {
             this.socket.setObject(id, {
                 common: {
@@ -627,8 +626,8 @@ class App extends Component {
                                 }}
                                 runningInstances={this.state.runningInstances}
                                 onExpertModeChange={this.onExpertModeChange.bind(this)}
-                                onDelete={this.onDelete.bind(this)}
-                                onAddNew={this.onAddNew.bind(this)}
+                                onDelete={this.onDelete.bind(this) }
+                                onAddNew={ this.onAddNew.bind(this) }
                                 onEnableDisable={this.onEnableDisable.bind(this)}
                                 onExport={this.onExport.bind(this)}
                                 width={this.menuSize}

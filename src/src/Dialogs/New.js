@@ -27,7 +27,7 @@ class DialogNew extends React.Component {
 
     getId(name) {
         name = name || this.state.name || '';
-        name = name.replace(/[\\/\][*,;'"`<>?\s]/g, '_');
+        name = name.replace(/[\\/\][.*,;'"`<>?\s]/g, '_');
         return (this.state ? this.state.parent : this.props.parent) + '.' + name;
     }
 
