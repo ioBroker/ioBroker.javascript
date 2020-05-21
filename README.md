@@ -36,7 +36,7 @@ And then call "npm run build".
 
 ## Changelog
 ### 4.6.14 (2020-05-19)
-* (bluefox) State names with dot are not allowed any more
+* (bluefox) Names for scripts can not have dots anymore. They will be replaced by "_"
 * (bluefox) "schedule" name is not allowed for CRON
 * (bluefox) Convert strings to Date by formatDate
 
