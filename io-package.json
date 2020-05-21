@@ -24,15 +24,15 @@
         "news": {
             "4.6.14": {
                 "en": "State names with dot are not allowed any more\n\"schedule\" name is not allowed for CRON\nConvert strings to Date by formatDate",
-                "de": "Zustandsnamen mit Punkt sind nicht mehr erlaubt\nDer Name \"Zeitplan\" ist für CRON nicht zulässig\nKonvertieren Sie Zeichenfolgen nach FormatDate in Datum",
-                "ru": "Названия состояний с точкой больше не допускаются\nимя \"расписание\" не допускается для CRON\nПреобразовать строки в дату по formatDate",
+                "de": "Zustandsnamen mit Punkt sind nicht mehr erlaubt\nDer Name \"schedule\" ist für CRON nicht zulässig\nZeichenfolgen werden in FormatDate nach Date-Objekt konvertiert",
+                "ru": "Названия состояний с точкой больше не разрешены\nимя \"расписание\" не допускается для CRON\nПреобразовать строки в дату по formatDate",
                 "pt": "Nomes de estado com ponto não são mais permitidos\no nome \"horário\" não é permitido para CRON\nConverta seqüências de caracteres para Data por formatoData",
                 "nl": "Staatsnamen met punt zijn niet meer toegestaan\n\"planning\" naam is niet toegestaan voor CRON\nConverteer strings naar datum door formatDate",
-                "fr": "Les noms d'états avec un point ne sont plus autorisés\nle nom \"horaire\" n'est pas autorisé pour CRON\nConvertir des chaînes en Date par formatDate",
-                "it": "I nomi di stato con punto non sono più consentiti\nIl nome \"programma\" non è consentito per CRON\nConverti le stringhe in Date per formatDate",
-                "es": "Los nombres de estado con punto ya no están permitidos\nel nombre \"horario\" no está permitido para CRON\nConvertir cadenas a Fecha por formato Fecha",
-                "pl": "Nazwy stanów z kropką nie są już dozwolone\nNazwa „harmonogram” nie jest dozwolona w przypadku CRON\nKonwertuj ciągi na datę według formatDate",
-                "zh-cn": "带点号的州名已不再允许\nCRON不允许使用“时间表”名称\n通过formatDate将字符串转换为Date"
+                "fr": "Les identifiants avec un point ne sont plus autorisés\nle nom \"horaire\" n'est pas autorisé pour CRON\nConvertir des chaînes en Date par formatDate",
+                "it": "Gli ID con punto non sono più consentiti\nIl nome \"programma\" non è consentito per CRON\nConverti le stringhe in Date per formatDate",
+                "es": "Las identificaciones con punto ya no están permitidas\nel nombre \"horario\" no está permitido para CRON\nConvertir cadenas a Fecha por formato Fecha",
+                "pl": "Identyfikatory z kropką nie są już dozwolone\nNazwa „harmonogram” nie jest dozwolona w przypadku CRON\nKonwertuj ciągi na datę według formatDate",
+                "zh-cn": "带点号的ID不再被允许\nCRON不允许使用“时间表”名称\n通过formatDate将字符串转换为Date"
             },
             "4.6.13": {
                 "en": "Fixed blockly blocks because of deprecated functions",
