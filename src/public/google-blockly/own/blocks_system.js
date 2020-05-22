@@ -182,7 +182,7 @@ Blockly.JavaScript['control'] = function(block) {
     var objectName   = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
     var code;
 
-    clearRunning = clearRunning === 'true' || clearRunning === true || clearRunning === 'true';
+    clearRunning = clearRunning === 'true' || clearRunning === true || clearRunning === 'TRUE';
     var withDelay = this.getFieldValue('WITH_DELAY');
 
     if (withDelay === 'true' || withDelay === true || withDelay === 'TRUE') {
