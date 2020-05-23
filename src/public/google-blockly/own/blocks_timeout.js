@@ -137,7 +137,7 @@ Blockly.Blocks['timeouts_settimeout'] = {
 
 Blockly.JavaScript['timeouts_settimeout'] = function(block) {
     var delay = block.getFieldValue('DELAY');
-    var name  = block.getFieldValue('NAME');
+    var name  = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
     var unit  = block.getFieldValue('UNIT');
     if (unit === 'min') {
         delay *= 60000;
@@ -198,7 +198,7 @@ Blockly.Blocks['timeouts_cleartimeout'] = {
 };
 
 Blockly.JavaScript['timeouts_cleartimeout'] = function(block) {
-    var name = block.getFieldValue('NAME');
+    var name = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
     return '(function () {if (' + name + ') {clearTimeout(' + name + '); ' + name + ' = null;}})();\n';
 };
 
@@ -257,7 +257,7 @@ Blockly.Blocks['timeouts_setinterval'] = {
 
 Blockly.JavaScript['timeouts_setinterval'] = function(block) {
     var delay = block.getFieldValue('INTERVAL');
-    var name  = block.getFieldValue('NAME');
+    var name  = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
     var unit  = block.getFieldValue('UNIT');
     if (unit === 'min') {
         delay *= 60000;
@@ -319,6 +319,7 @@ Blockly.Blocks['timeouts_clearinterval'] = {
 };
 
 Blockly.JavaScript['timeouts_clearinterval'] = function(block) {
-    var name = block.getFieldValue('NAME');
+    var name = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
+
     return '(function () {if (' + name + ') {clearInterval(' + name + '); ' + name + ' = null;}})();\n';
 };

@@ -35,7 +35,7 @@ And then call "npm run build".
 - ...
 
 ## Changelog
-### 4.6.15 (2020-05-22)
+### 4.6.15 (2020-05-23)
 * (bluefox) BREAKING: Please check "stopTimeout" blocks in your blockly scripts that the correct timeout name is listed there and correct after the update!
 
 ### 4.6.14 (2020-05-19)

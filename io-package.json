@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.14",
+        "version": "4.6.15",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.6.15": {
+                "en": "BREAKING CHANGE: Please check \"stopTimeout\" blocks in your blockly scripts that the correct timeout name is listed there and correct after the update!",
+                "de": "BREAKING CHANGE: Bitte überprüfen Sie \"stopTimeout\" -Blöcke in Ihren Block-Skripten, ob der richtige Timeout-Name dort aufgeführt ist und korrigieren Sie ihn nach dem Update!",
+                "ru": "BREAKING CHANGE: Пожалуйста, проверьте блоки \"stopTimeout\" в ваших блочных скриптах, чтобы там было указано правильное имя тайм-аута и правильное после обновления!",
+                "pt": "BREAKING CHANGE: Verifique os blocos \"stopTimeout\" em seus scripts blockly para que o nome do tempo limite correto esteja listado lá e corrija após a atualização!",
+                "nl": "BREAKING CHANGE: Controleer de \"stopTimeout\" -blokken in je blockly-scripts om te zien of de juiste time-outnaam daar staat en corrigeer na de update!",
+                "fr": "RUPTURE DU CHANGEMENT: Veuillez vérifier les blocs \"stopTimeout\" dans vos scripts bloqués que le nom de timeout correct y est répertorié et corriger après la mise à jour!",
+                "it": "CAMBIAMENTO DI ROTTURA: Controlla i blocchi \"stopTimeout\" nei tuoi script di blocco che il nome di timeout corretto sia elencato lì e corretto dopo l'aggiornamento!",
+                "es": "CAMBIO DE INTERRUPCIÓN: ¡Compruebe los bloques \"stopTimeout\" en sus secuencias de comandos en bloque que el nombre de tiempo de espera correcto aparece allí y es correcto después de la actualización!",
+                "pl": "ZŁAMANIE ZMIANY: Sprawdź bloki „stopTimeout” w swoich skryptach blokowych, czy podana jest tam poprawna nazwa limitu czasu i poprawna po aktualizacji!",
+                "zh-cn": "突破性更改：请检查您的脚本块中的“ stopTimeout”块，其中列出了正确的超时名称，并在更新后正确！"
+            },
             "4.6.14": {
                 "en": "Names for scripts can not have dots anymore. They will be replaced by \"_\"\n\"schedule\" name is not allowed for CRON\nConvert strings to Date by formatDate",
                 "de": "Namen für Skripte können keine Punkte mehr haben. Sie werden durch \"_\" ersetzt.\nDer Name \"Zeitplan\" ist für CRON nicht zulässig\nKonvertieren Sie Zeichenfolgen nach FormatDate in Datum",

@@ -658,7 +658,7 @@ Blockly.Blocks['schedule_create'] = {
 };
 
 Blockly.JavaScript['schedule_create'] = function (block) {
-    var name  = block.getFieldValue('NAME');
+    var name  = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
     var schedule = Blockly.JavaScript.valueToCode(block, 'SCHEDULE', Blockly.JavaScript.ORDER_ATOMIC);
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
