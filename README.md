@@ -7,7 +7,7 @@
 
 [![NPM](https://nodei.co/npm/iobroker.javascript.png?downloads=true)](https://nodei.co/npm/iobroker.javascript/)
 
-Executes Javascript, Typescript and Coffescript Scripts.
+Executes Javascript and Typescript Scripts.
 
 **Coffescript is deprecated**
 

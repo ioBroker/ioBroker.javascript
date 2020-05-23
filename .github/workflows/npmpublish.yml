@@ -16,17 +16,17 @@ jobs:
       - run: npm run build
       - run: npm test
       - name: Send mail on fail
-          uses: dawidd6/action-send-mail@v2
-          if: ${{ failure() }}
-          with:
-            server_address: smtp.gmail.com
-            server_port: 465
-            username: ${{secrets.MAIL_USERNAME}}
-            password: ${{secrets.MAIL_PASSWORD}}
-            subject: Github Actions job result
-            body: Test job of ${{github.repository}} failed!
-            to: ${{secrets.MAIL_TARGET}}
-            from: Github Actions
+        uses: dawidd6/action-send-mail@v2
+        if: ${{ failure() }}
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{secrets.MAIL_USERNAME}}
+          password: ${{secrets.MAIL_PASSWORD}}
+          subject: Github Actions job result
+          body: Test job of ${{github.repository}} failed!
+          to: ${{secrets.MAIL_TARGET}}
+          from: Github Actions
 
   publish-npm:
     needs: build
@@ -43,14 +43,14 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
       - name: Send mail on fail
-          uses: dawidd6/action-send-mail@v2
-          if: ${{ failure() }}
-          with:
-            server_address: smtp.gmail.com
-            server_port: 465
-            username: ${{secrets.MAIL_USERNAME}}
-            password: ${{secrets.MAIL_PASSWORD}}
-            subject: Github Actions job result
-            body: Publish job of ${{github.repository}} failed!
-            to: ${{secrets.MAIL_TARGET}}
-            from: Github Actions
+        uses: dawidd6/action-send-mail@v2
+        if: ${{ failure() }}
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{secrets.MAIL_USERNAME}}
+          password: ${{secrets.MAIL_PASSWORD}}
+          subject: Github Actions job result
+          body: Publish job of ${{github.repository}} failed!
+          to: ${{secrets.MAIL_TARGET}}
+          from: Github Actions
