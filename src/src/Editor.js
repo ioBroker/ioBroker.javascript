@@ -76,6 +76,9 @@ const styles = theme => ({
         minHeight: 24,
         padding: '6px 16px'
     },
+    textIcon: {
+        marginLeft: theme.spacing(1),
+    },
     tabIcon: {
         width: 24,
         height: 24,
@@ -124,7 +127,8 @@ const styles = theme => ({
         cursor: 'pointer'
     },
     notRunning: {
-        color: '#ffbc00'
+        color: '#ffbc00',
+        marginRight: theme.spacing(1)
     },
     tabButton: {
 
@@ -512,6 +516,20 @@ class Editor extends React.Component {
         }
     }
 
+    onSaveAll() {
+        const changed = JSON.parse(JSON.stringify(this.state.changed));
+        Object.keys(changed)
+            .forEach(id => {
+                if (changed[id]) {
+                    changed[id] = false;
+                    this.props.onChange && this.props.onChange(id, this.scripts[id]);
+                }
+            });
+
+        this.setState({ changed }, () =>
+            this.setChangedInAdmin());
+    }
+
     onCancel() {
         this.scripts[this.state.selected] = JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
 
@@ -785,15 +803,17 @@ class Editor extends React.Component {
         const isScriptRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].enabled;
 
         if (this.state.selected) {
+            const changedAll = Object.keys(this.state.changed).filter(id => this.state.changed[id]).length;
             const changed = this.state.changed[this.state.selected];
             return (
                 <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
                     {this.state.menuOpened && this.props.onLocate && (<IconButton className={this.props.classes.toolbarButtons} key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate/></IconButton>)}
                     {!changed && isInstanceRunning && (<IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>)}
-                    {!changed && !isScriptRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>)}
+                    {!changed && !isScriptRunning && (<span className={ this.props.classes.notRunning }>{I18n.t('Script is not running')}</span>)}
                     {!changed && isScriptRunning && !isInstanceRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>)}
-                    {changed && (<Button key="save" variant="contained" color="secondary" className={this.props.classes.textButton} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave /></Button>)}
-                    {changed && (<Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel /></Button>)}
+                    {changed && (<Button key="save" variant="contained" color="secondary" className={this.props.classes.textButton} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={ this.props.classes.textIcon }/></Button>)}
+                    {(changedAll > 1 || (changedAll === 1 && !changed)) && (<Button key="saveall" variant="contained" className={this.props.classes.textButton} onClick={() => this.onSaveAll()}>{I18n.t('Save all')}<IconSave className={ this.props.classes.textIcon }/></Button>)}
+                    {changed && (<Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel className={ this.props.classes.textIcon }/></Button>)}
                     <div style={{flex: 2}}/>
 
                     {this.state.blockly && !this.state.showBlocklyCode &&

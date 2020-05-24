@@ -254,5 +254,6 @@
   "tooltip_ts": "Marca de tiempo",
   "tooltip_user": "Usuario",
   "tooltip_value": "Valor",
-  "use seconds": "usar segundos"
+  "use seconds": "usar segundos",
+  "Save all": "Salvar a todos"
 }

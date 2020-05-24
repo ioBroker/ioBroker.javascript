@@ -254,5 +254,6 @@
   "tooltip_ts": "Zeitstempel",
   "tooltip_user": "Benutzer",
   "tooltip_value": "Wert",
-  "use seconds": "Sekunden verwenden"
+  "use seconds": "Sekunden verwenden",
+  "Save all": "Alle speichern"
 }

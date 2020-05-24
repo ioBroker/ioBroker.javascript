@@ -254,5 +254,6 @@
   "tooltip_ts": "Время",
   "tooltip_user": "Пользователь",
   "tooltip_value": "Значение",
-  "use seconds": "использовать секунды"
+  "use seconds": "использовать секунды",
+  "Save all": "Сохранить все"
 }

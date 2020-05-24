@@ -1100,6 +1100,7 @@ class SideDrawer extends React.Component {
                     }, 400);
                 }}
             /></RootRef>));
+
             result.push((<IconButton
                 key="disableSearch"
                 className={classes.toolbarButtons}
@@ -1110,6 +1111,7 @@ class SideDrawer extends React.Component {
                     this.filterList(false, () => this.props.onSearch && this.props.onSearch(this.state.searchText));
                 }}
             ><IconClose /></IconButton>));
+
             this.state.searchText && result.push((<IconButton
                 key="cleanSearch"
                 mini="true"
@@ -1261,6 +1263,7 @@ class SideDrawer extends React.Component {
                     this.setState({statusFilter});
                 }}
             />),
+
             (<IconPlay
                 key="filterByPaused"
                 title={I18n.t('Show only paused scripts')}
@@ -1363,6 +1366,7 @@ class SideDrawer extends React.Component {
                     this.getBottomButtons()
                 }</div>
             </Drawer>),
+
             renamingItem ? (<DialogRename
                 key="dialog-rename"
                 name={renamingItem.title}
@@ -1374,6 +1378,7 @@ class SideDrawer extends React.Component {
                 onClose={() => this.setState({renaming: false})}
                 onRename={(oldId, newName, newId, newInstance) => this.props.onRename && this.props.onRename(oldId, newName, newId, newInstance)}
             />) : null,
+
             this.state.deleting ? (<DialogDelete
                 key="dialog-delete"
                 name={this.state.listItems.find(i => i.id === this.state.deleting).title}
@@ -1381,6 +1386,7 @@ class SideDrawer extends React.Component {
                 onClose={() => this.setState({deleting: false})}
                 onDelete={id => this.props.onDelete && this.props.onDelete(id)}
             />) : null,
+
             this.state.choosingType ? (<DialogAddNewScript
                 key="dialog-script-type"
                 onClose={type => {
@@ -1388,6 +1394,7 @@ class SideDrawer extends React.Component {
                     type && this.setState({creatingScript: type})
                 }}
             />) : null,
+
             this.state.creatingScript ? (<DialogNew
                 key="dialog-new-script"
                 onClose={() => this.setState({creatingScript: false})}
@@ -1404,6 +1411,7 @@ class SideDrawer extends React.Component {
                     this.props.onAddNew && this.props.onAddNew(id, name, false, instance, type);
                 }}
             />) : null,
+
             this.state.copingScript ? (<DialogNew
                 key="dialog-copy-script"
                 onClose={() => this.setState({copingScript: ''})}
@@ -1424,6 +1432,7 @@ class SideDrawer extends React.Component {
                     this.props.onAddNew && this.props.onAddNew(id, name, false, instance, type, copingItem && copingItem.common && copingItem.common.source);
                 }}
             />) : null,
+
             this.state.creatingFolder ? (<DialogNew
                 key="dialog-new-folder"
                 onClose={() => this.setState({creatingFolder: false})}

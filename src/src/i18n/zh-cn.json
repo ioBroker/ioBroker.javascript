@@ -254,5 +254,6 @@
   "tooltip_ts": "时间戳",
   "tooltip_user": "用户",
   "tooltip_value": "值",
-  "use seconds": "精确到秒"
+  "use seconds": "精确到秒",
+  "Save all": "保存全部"
 }

@@ -254,5 +254,6 @@
   "tooltip_ts": "Horodatage",
   "tooltip_user": "Utilisateur",
   "tooltip_value": "Valeur",
-  "use seconds": "utiliser les secondes"
+  "use seconds": "utiliser les secondes",
+  "Save all": "Sauver tous"
 }

@@ -254,5 +254,6 @@
   "tooltip_ts": "Znak czasu",
   "tooltip_user": "Użytkownik",
   "tooltip_value": "Wartość",
-  "use seconds": "użyj sekund"
+  "use seconds": "użyj sekund",
+  "Save all": "Zapisz wszystko"
 }

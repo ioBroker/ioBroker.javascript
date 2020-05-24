@@ -254,5 +254,6 @@
   "tooltip_ts": "timestamp",
   "tooltip_user": "usuário",
   "tooltip_value": "valor",
-  "use seconds": "use segundos"
+  "use seconds": "use segundos",
+  "Save all": "Salvar tudo"
 }
