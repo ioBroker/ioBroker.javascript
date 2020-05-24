@@ -162,7 +162,8 @@ Blockly.Blocks['request'] = {
     },
     mutationToDom: function() {
         var container = document.createElement('mutation');
-        container.setAttribute('with_statement', this.getFieldValue('WITH_STATEMENT') === 'TRUE');
+        var withStatement = this.getFieldValue('WITH_STATEMENT') ;
+        container.setAttribute('with_statement', withStatement === true || withStatement === 'true' || withStatement === 'TRUE');
         return container;
     },
     domToMutation: function(xmlElement) {

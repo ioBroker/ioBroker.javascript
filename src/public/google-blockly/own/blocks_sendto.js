@@ -98,6 +98,23 @@ Blockly.Blocks['sendto_custom'] = {
 
         this.setColour(Blockly.Sendto.HUE);
 
+        this.appendDummyInput('LOG')
+            .appendField(Blockly.Translate('sendto_log'))
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('sendto_log_none'),  ''],
+                [Blockly.Translate('sendto_log_info'),  'log'],
+                [Blockly.Translate('sendto_log_debug'), 'debug'],
+                [Blockly.Translate('sendto_log_warn'),  'warn'],
+                [Blockly.Translate('sendto_log_error'), 'error']
+            ]), 'LOG');
+
+        this.appendDummyInput('WITH_STATEMENT')
+            .appendField(Blockly.Translate('request_statement'))
+            .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
+                var withStatement = option === true || option === 'true' || option === 'TRUE';
+                this.sourceBlock_.updateShape_(this.sourceBlock_.getArgNames_(), withStatement);
+            }), 'WITH_STATEMENT');
+
         this.itemCount_ = 1;
         this.updateShape_();
         this.setInputsInline(false);
@@ -106,7 +123,7 @@ Blockly.Blocks['sendto_custom'] = {
         this.setMutator(new Blockly.Mutator(['sendto_custom_item']));
         this.setTooltip(Blockly.Translate('sendto_custom_tooltip'));
         this.setHelpUrl(getHelp('sendto_custom_help'));
-    },
+   },
     /**
      * Create XML to represent number of text inputs.
      * @return {!Element} XML storage element.
@@ -121,7 +138,8 @@ Blockly.Blocks['sendto_custom'] = {
         }
 
         container.setAttribute('items', names.join(','));
-        container.setAttribute('with_statement', this.getFieldValue('WITH_STATEMENT') === 'TRUE');
+        var withStatement = this.getFieldValue('WITH_STATEMENT');
+        container.setAttribute('with_statement', withStatement === 'TRUE' || withStatement === 'true' || withStatement === true);
         return container;
     },
     /**
@@ -132,7 +150,8 @@ Blockly.Blocks['sendto_custom'] = {
     domToMutation: function (xmlElement) {
         var names = xmlElement.getAttribute('items').split(',');
         this.itemCount_ = names.length;
-        this.updateShape_(names, xmlElement.getAttribute('with_statement') == 'true');
+        var withStatement = xmlElement.getAttribute('with_statement');
+        this.updateShape_(names, withStatement === true || withStatement === 'true' || withStatement === 'TRUE');
     },
     /**
      * Populate the mutator's dialog with this block's components.
@@ -214,19 +233,26 @@ Blockly.Blocks['sendto_custom'] = {
      * @this Blockly.Block
      */
     updateShape_: function (names, withStatement) {
-        if (this.getInput('LOG'))
-            this.removeInput('LOG');
-        if (this.getInput('WITH_STATEMENT'))
-            this.removeInput('WITH_STATEMENT');
         names = names || [];
         var _input;
         var wp = this.workspace;
+        if (withStatement === undefined) {
+            withStatement = this.getFieldValue('WITH_STATEMENT');
+            withStatement = withStatement === true || withStatement === 'true' || withStatement === 'TRUE';
+        }
+
+        this.getInput('STATEMENT') && this.removeInput('STATEMENT');
+
         // Add new inputs.
-        for (var i = 0; i < this.itemCount_; i++) {
+        var i;
+        for (i = 0; i < this.itemCount_; i++) {
             _input = this.getInput('ARG' + i);
+
             if (!_input) {
                 _input = this.appendValueInput('ARG' + i);
-                if (!names[i]) names[i] = Blockly.Translate('sendto_custom_argument') + (i + 1);
+                if (!names[i]) {
+                    names[i] = Blockly.Translate('sendto_custom_argument') + (i + 1);
+                }
                 _input.appendField(new Blockly.FieldTextInput(names[i]));
                 setTimeout(function (_input) {
                     if (!_input.connection.isConnected()) {
@@ -253,6 +279,7 @@ Blockly.Blocks['sendto_custom'] = {
                 }, 100, _input, names[i]);
             }
         }
+
         // Remove deleted inputs.
         var blocks = [];
         while (_input = this.getInput('ARG' + i)) {
@@ -263,6 +290,7 @@ Blockly.Blocks['sendto_custom'] = {
             this.removeInput('ARG' + i);
             i++;
         }
+
         if (blocks.length) {
             var ws = this.workspace;
             setTimeout(function () {
@@ -272,32 +300,9 @@ Blockly.Blocks['sendto_custom'] = {
             }, 100);
         }
 
-        this.appendDummyInput('WITH_STATEMENT')
-            .appendField(Blockly.Translate('request_statement'))
-            .appendField(new Blockly.FieldCheckbox(withStatement ? 'TRUE': 'FALSE', function (option) {
-                var withStatement = (option == true);
-                this.sourceBlock_.updateShape_(this.sourceBlock_.getArgNames_(), withStatement);
-            }), 'WITH_STATEMENT');
-
-        this.appendDummyInput('LOG')
-            .appendField(Blockly.Translate('sendto_log'))
-            .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('sendto_log_none'),  ''],
-                [Blockly.Translate('sendto_log_info'),  'log'],
-                [Blockly.Translate('sendto_log_debug'), 'debug'],
-                [Blockly.Translate('sendto_log_warn'),  'warn'],
-                [Blockly.Translate('sendto_log_error'), 'error']
-            ]), 'LOG');
-
         // Add or remove a statement Input.
-        var inputExists = this.getInput('STATEMENT');
-
         if (withStatement) {
-            if (!inputExists) {
-                this.appendStatementInput('STATEMENT');
-            }
-        } else if (inputExists) {
-            this.removeInput('STATEMENT');
+            this.appendStatementInput('STATEMENT');
         }
     }
 };
@@ -315,7 +320,7 @@ Blockly.JavaScript['sendto_custom'] = function (block) {
         logText = '';
     }
     var statement;
-    if (withStatement === 'TRUE') {
+    if (withStatement === true || withStatement === 'true' || withStatement === 'TRUE') {
         statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     }
 

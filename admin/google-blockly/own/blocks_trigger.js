@@ -165,10 +165,13 @@ Blockly.Blocks['on_ext'] = {
      * @this Blockly.Block
      */
     updateShape_: function() {
-        if (this.getInput('CONDITION'))
+        if (this.getInput('CONDITION')) {
             this.removeInput('CONDITION');
-        if (this.getInput('ACK_CONDITION'))
+        }
+        if (this.getInput('ACK_CONDITION')) {
             this.removeInput('ACK_CONDITION');
+        }
+
         var input;
 
         for (var j = 0; input = this.inputList[j]; j++) {
@@ -238,8 +241,7 @@ Blockly.Blocks['on_ext'] = {
 
         if (input) {
             this.inputList.push(input);
-        }
-        else {
+        } else {
             this.appendStatementInput('STATEMENT')
                 .setCheck(null)
         }

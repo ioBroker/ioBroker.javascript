@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.15",
+        "version": "4.6.16",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.6.16": {
+                "en": "Corrected sendTo and clear delay blocks. ",
+                "de": "SendTo korrigiert und Verzögerungsblöcke gelöscht.",
+                "ru": "Исправлены sendTo и очищены блоки задержки.",
+                "pt": "SendTo corrigido e limpe os blocos de atraso.",
+                "nl": "SendTo gecorrigeerd en vertragingsblokken gewist.",
+                "fr": "Correction des blocs sendTo et clear delay.",
+                "it": "SendTo corretto e cancellare i blocchi di ritardo.",
+                "es": "SendTo corregido y borra los bloques de retraso.",
+                "pl": "Poprawione bloki wysyłania i usuwania opóźnień.",
+                "zh-cn": "更正了sendTo和清除延迟块。"
+            },
             "4.6.15": {
                 "en": "BREAKING CHANGE: Please check \"stopTimeout\" blocks in your blockly scripts that the correct timeout name is listed there and correct after the update!",
                 "de": "BREAKING CHANGE: Bitte überprüfen Sie \"stopTimeout\" -Blöcke in Ihren Block-Skripten, ob der richtige Timeout-Name dort aufgeführt ist und korrigieren Sie ihn nach dem Update!",

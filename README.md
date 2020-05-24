@@ -35,6 +35,9 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.6.16 (2020-05-24)
+* (bluefox) Corrected sendTo and clear delay blocks. 
+
 ### 4.6.15 (2020-05-23)
 * (bluefox) BREAKING: Please check "stopTimeout" blocks in your blockly scripts that the correct timeout name is listed there and correct after the update!
 

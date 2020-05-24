@@ -171,7 +171,7 @@ Blockly.JavaScript['control'] = function(block) {
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
 
     var valueDelay   = parseInt(block.getFieldValue('DELAY_MS'), 10);
-    var unit  = block.getFieldValue('UNIT');
+    var unit         = block.getFieldValue('UNIT');
     if (unit === 'min') {
         valueDelay *= 60000;
     } else if (unit === 'sec') {
@@ -182,7 +182,7 @@ Blockly.JavaScript['control'] = function(block) {
     var objectName   = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
     var code;
 
-    clearRunning = clearRunning === 'true' || clearRunning === true || clearRunning === 'TRUE';
+    clearRunning = clearRunning === 'TRUE' || clearRunning === 'true' || clearRunning === true;
     var withDelay = this.getFieldValue('WITH_DELAY');
 
     if (withDelay === 'true' || withDelay === true || withDelay === 'TRUE') {
@@ -428,7 +428,7 @@ Blockly.JavaScript['update'] = function(block) {
         value_delay *= 1000;
     }
 
-    clearRunning = clearRunning === true || clearRunning === 'true' || clearRunning === 'TRUE';
+    clearRunning = clearRunning === 'TRUE' || clearRunning === 'true' || clearRunning === true;
 
     var objectname = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
     var code;
