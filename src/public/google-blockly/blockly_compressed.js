@@ -604,9 +604,95 @@ Blockly.BlockSvg.prototype.dispose=function(a,b){if(this.workspace){Blockly.Tool
 this.rendered=!1;if(this.warningTextDb_){for(var d in this.warningTextDb_)clearTimeout(this.warningTextDb_[d]);this.warningTextDb_=null}b=this.getIcons();for(d=0;d<b.length;d++)b[d].dispose();Blockly.BlockSvg.superClass_.dispose.call(this,!!a);Blockly.utils.dom.removeNode(this.svgGroup_);c.resizeContents();this.svgGroup_=null;Blockly.utils.dom.stopTextWidthCache()}};
 Blockly.BlockSvg.prototype.applyColour=function(){this.pathObject.applyColour(this);for(var a=this.getIcons(),b=0;b<a.length;b++)a[b].applyColour();for(a=0;b=this.inputList[a];a++)for(var c=0,d;d=b.fieldRow[c];c++)d.applyColour()};Blockly.BlockSvg.prototype.updateDisabled=function(){var a=this.getChildren(!1);this.applyColour();for(var b=0,c;c=a[b];b++)c.updateDisabled()};Blockly.BlockSvg.prototype.getCommentIcon=function(){return this.commentIcon_};
 Blockly.BlockSvg.prototype.setCommentText=function(a){if(!Blockly.Comment)throw Error("Missing require for Blockly.Comment");this.commentModel.text!=a&&(Blockly.BlockSvg.superClass_.setCommentText.call(this,a),a=null!=a,!!this.commentIcon_==a?this.commentIcon_.updateText():(a?this.comment=this.commentIcon_=new Blockly.Comment(this):(this.commentIcon_.dispose(),this.comment=this.commentIcon_=null),this.rendered&&(this.render(),this.bumpNeighbours())))};
-Blockly.BlockSvg.prototype.setWarningText=function(a,b){if(!Blockly.Warning)throw Error("Missing require for Blockly.Warning");this.warningTextDb_||(this.warningTextDb_=Object.create(null));var c=b||"";if(c)this.warningTextDb_[c]&&(clearTimeout(this.warningTextDb_[c]),delete this.warningTextDb_[c]);else for(var d in this.warningTextDb_)clearTimeout(this.warningTextDb_[d]),delete this.warningTextDb_[d];if(this.workspace.isDragging()){var e=this;this.warningTextDb_[c]=setTimeout(function(){e.workspace&&
-(delete e.warningTextDb_[c],e.setWarningText(a,c))},100)}else{this.isInFlyout&&(a=null);b=this.getSurroundParent();for(d=null;b;)b.isCollapsed()&&(d=b),b=b.getSurroundParent();d&&d.setWarningText(Blockly.Msg.COLLAPSED_WARNINGS_WARNING,Blockly.BlockSvg.COLLAPSED_WARNING_ID);b=!1;"string"==typeof a?(this.warning||(this.warning=new Blockly.Warning(this),b=!0),this.warning.setText(a,c)):this.warning&&!c?(this.warning.dispose(),b=!0):this.warning&&(b=this.warning.getText(),this.warning.setText("",c),(d=
-this.warning.getText())||this.warning.dispose(),b=b!=d);b&&this.rendered&&(this.render(),this.bumpNeighbours())}};Blockly.BlockSvg.prototype.setMutator=function(a){this.mutator&&this.mutator!==a&&this.mutator.dispose();a&&(a.setBlock(this),this.mutator=a,a.createIcon());this.rendered&&(this.render(),this.bumpNeighbours())};
+
+/**
+ * Set this block's warning text.
+ * @param {?string} text The text, or null to delete.
+ * @param {string=} opt_id An optional ID for the warning text to be able to
+ *     maintain multiple warnings.
+ */
+Blockly.BlockSvg.prototype.setWarningText = function(text, opt_id) {
+    if (!Blockly.Warning) {
+        throw Error('Missing require for Blockly.Warning');
+    }
+    if (!this.warningTextDb_) {
+        // Create a database of warning PIDs.
+        // Only runs once per block (and only those with warnings).
+        this.warningTextDb_ = Object.create(null);
+    }
+    var id = opt_id || '';
+    if (!id) {
+        // Kill all previous pending processes, this edit supersedes them all.
+        for (var n in this.warningTextDb_) {
+            clearTimeout(this.warningTextDb_[n]);
+            delete this.warningTextDb_[n];
+        }
+    } else if (this.warningTextDb_[id]) {
+        // Only queue up the latest change.  Kill any earlier pending process.
+        clearTimeout(this.warningTextDb_[id]);
+        delete this.warningTextDb_[id];
+    }
+    if (this.workspace.isDragging()) {
+        // Don't change the warning text during a drag.
+        // Wait until the drag finishes.
+        var thisBlock = this;
+        this.warningTextDb_[id] = setTimeout(function() {
+            if (thisBlock.workspace) {  // Check block wasn't deleted.
+                delete thisBlock.warningTextDb_[id];
+                thisBlock.setWarningText(text, id);
+            }
+        }, 100);
+        return;
+    }
+    if (this.isInFlyout) {
+        text = null;
+    }
+
+    var changedState = false;
+    if (typeof text == 'string') {
+        // Bubble up to add a warning on top-most collapsed block.
+        var parent = this.getSurroundParent();
+        var collapsedParent = null;
+        while (parent) {
+            if (parent.isCollapsed()) {
+                collapsedParent = parent;
+            }
+            parent = parent.getSurroundParent();
+        }
+        if (collapsedParent) {
+            collapsedParent.setWarningText(Blockly.Msg['COLLAPSED_WARNINGS_WARNING'],
+                Blockly.BlockSvg.COLLAPSED_WARNING_ID);
+        }
+
+        if (!this.warning) {
+            this.warning = new Blockly.Warning(this);
+            changedState = true;
+        }
+        this.warning.setText(/** @type {string} */ (text), id);
+    } else {
+        // Dispose all warnings if no ID is given.
+        if (this.warning && !id) {
+            this.warning.dispose();
+            changedState = true;
+        } else if (this.warning) {
+            var oldText = this.warning.getText();
+            this.warning.setText('', id);
+            var newText = this.warning.getText();
+            if (!newText) {
+                this.warning.dispose();
+            }
+            changedState = oldText != newText;
+        }
+    }
+    if (changedState && this.rendered) {
+        this.render();
+        // Adding or removing a warning icon will cause the block to change shape.
+        this.bumpNeighbours();
+    }
+};
+
+
+Blockly.BlockSvg.prototype.setMutator=function(a){this.mutator&&this.mutator!==a&&this.mutator.dispose();a&&(a.setBlock(this),this.mutator=a,a.createIcon());this.rendered&&(this.render(),this.bumpNeighbours())};
 Blockly.BlockSvg.prototype.setDisabled=function(a){console.warn("Deprecated call to Blockly.BlockSvg.prototype.setDisabled, use Blockly.BlockSvg.prototype.setEnabled instead.");this.setEnabled(!a)};Blockly.BlockSvg.prototype.setEnabled=function(a){this.isEnabled()!=a&&(Blockly.BlockSvg.superClass_.setEnabled.call(this,a),this.rendered&&!this.getInheritedDisabled()&&this.updateDisabled())};Blockly.BlockSvg.prototype.setHighlighted=function(a){this.rendered&&this.pathObject.updateHighlighted(a)};
 Blockly.BlockSvg.prototype.addSelect=function(){this.pathObject.updateSelected(!0)};Blockly.BlockSvg.prototype.removeSelect=function(){this.pathObject.updateSelected(!1)};Blockly.BlockSvg.prototype.setDeleteStyle=function(a){this.pathObject.updateDraggingDelete(a)};Blockly.BlockSvg.prototype.getColour=function(){return this.style.colourPrimary};
 Blockly.BlockSvg.prototype.setColour=function(a){Blockly.BlockSvg.superClass_.setColour.call(this,a);a=this.workspace.getRenderer().getConstants().getBlockStyleForColour(this.colour_);this.pathObject.setStyle(a.style);this.style=a.style;this.styleName_=a.name;this.applyColour()};

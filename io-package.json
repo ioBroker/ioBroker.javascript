@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.16",
+        "version": "4.6.17",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.6.17": {
+                "en": "Fixed error with warnings collapsed blocks",
+                "de": "Fehler mit reduzierten Warnblöcken behoben",
+                "ru": "Исправлена ошибка с предупреждением свернутых блоков",
+                "pt": "Corrigido erro com blocos recolhidos de avisos",
+                "nl": "Fout opgelost met samengevouwen blokken met waarschuwingen",
+                "fr": "Correction d'une erreur avec les avertissements des blocs effondrés",
+                "it": "Risolto errore con blocchi compressi avvisi",
+                "es": "Se corrigió el error con bloques bloqueados de advertencias",
+                "pl": "Naprawiono błąd związany z zawalonymi blokami ostrzeżeń",
+                "zh-cn": "修复了带有警告折叠块的错误"
+            },
             "4.6.16": {
                 "en": "Corrected sendTo and clear delay blocks. ",
                 "de": "SendTo korrigiert und Verzögerungsblöcke gelöscht.",

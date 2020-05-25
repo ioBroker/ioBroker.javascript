@@ -35,6 +35,9 @@ And then call "npm run build".
 - ...
 
 ## Changelog
+### 4.6.17 (2020-05-25)
+* (bluefox) Fixed error with warnings collapsed blocks  
+
 ### 4.6.16 (2020-05-24)
 * (bluefox) Corrected sendTo and clear delay blocks. 
 

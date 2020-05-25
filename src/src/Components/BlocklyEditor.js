@@ -312,7 +312,9 @@ class BlocklyEditor extends React.Component {
             warningText = 'not properly connected';
         } else {
             badBlock = this.blocklyGetBlockWithWarning();
-            if (badBlock) warningText = 'warning on this block';
+            if (badBlock) {
+                warningText = 'warning on this block';
+            }
         }
 
         if (badBlock) {
