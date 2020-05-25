@@ -415,9 +415,9 @@ Blockly.Blocks['on_source'] = {
         } while (block);
 
         if (legal) {
-            this.setWarningText(null);
+            this.setWarningText(null, this.id);
         } else {
-            this.setWarningText(Blockly.Translate('on_source_warning'));
+            this.setWarningText(Blockly.Translate('on_source_warning'), this.id);
         }
     },
     /**
