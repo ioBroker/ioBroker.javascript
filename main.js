@@ -480,10 +480,13 @@ function startAdapter(options) {
                                         if (!eventData.stacktrace.frames.find(frame => frame.filename && frame.filename.includes(__dirname) && !frame.filename.includes(ownNodeModulesDir))) {
                                             return null;
                                         }
+                                        // We have exception data and do not sorted it out, so report it
+                                        return event;
                                     }
                                 }
 
-                                return event;
+                                // No exception in it ... do not report
+                                return null;
                             });
                             main();
                         });
