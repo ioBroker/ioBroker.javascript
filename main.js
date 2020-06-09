@@ -990,6 +990,12 @@ function tsLog(msg, sev) {
         console.log(`[${sev.toUpperCase()}] ${msg}`);
     }
 }
+// Due to an npm bug, virtual-tsc may be hoisted to the top level node_modules but 
+// typescript may still be in the adapter level (https://npm.community/t/packages-with-peerdependencies-are-incorrectly-hoisted/4794)
+// so we need to tell virtual-tsc where typescript is
+tsc.setTypeScriptResolveOptions({
+    paths: [require.resolve('typescript')],
+});
 // compiler instance for typescript
 tsServer = new tsc.Server(tsCompilerOptions, tsLog);
 // compiler instance for global JS declarations
