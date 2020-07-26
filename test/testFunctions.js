@@ -1290,13 +1290,13 @@ describe('Test JS', function () {
         });
     });
 
-    it('Test JS: test write file to "javascript"', function (done) {
+    it('Test JS: test write file to "0_userdata.0"', function (done) {
         // add script
         const script = {
             'common': {
                 'name':         'test ON any',
                 'engineType':   'Javascript/js',
-                'source':       "createState('testScheduleResponse2', false, function () {writeFile('/test.txt', 'test', function () {setState('testScheduleResponse2', true, true);});});",
+                'source':       "createState('testScheduleResponse2', false, function () {writeFile('0_userdata.0', '/test.txt', 'test', function () {setState('testScheduleResponse2', true, true);});});",
                 'enabled':      true,
                 'engine':       'system.adapter.javascript.0'
             },
@@ -1324,7 +1324,7 @@ describe('Test JS', function () {
             'common': {
                 'name':         'test ON any',
                 'engineType':   'Javascript/js',
-                'source':       "readFile('/test.txt', function (err, data) {setState('testScheduleResponse2', data, true);});",
+                'source':       "readFile('0_userdata.0', '/test.txt', function (err, data) {setState('testScheduleResponse2', data, true);});",
                 'enabled':      true,
                 'engine':       'system.adapter.javascript.0'
             },
@@ -1346,6 +1346,8 @@ describe('Test JS', function () {
         });
     }).timeout(5000);
 
+    /*
+    Vis is not installed
     it('Test JS: test write file  to "vis.0"', function (done) {
         // add script
         const script = {
@@ -1400,6 +1402,7 @@ describe('Test JS', function () {
         objects.setObject(script._id, script, err =>
             expect(err).to.be.not.ok);
     }).timeout(5000);
+    */
 
     it('Test JS: messaging between scripts', done => {
         // add script
