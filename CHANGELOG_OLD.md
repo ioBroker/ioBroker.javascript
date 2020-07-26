@@ -1,5 +1,10 @@
 The newest change log is in README.md
 
+## 4.6.14 (2020-05-19)
+* (bluefox) Names for scripts can not have dots anymore. They will be replaced by "_"
+* (bluefox) "schedule" name is not allowed for CRON
+* (bluefox) Convert strings to Date by formatDate
+
 ## 4.6.13 (2020-05-19)
 * (bluefox) Fixed blockly blocks because of deprecated functions
 * (bluefox) Corrected schedule wizard

@@ -36,7 +36,7 @@ And then call "npm run build".
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 4.6.20 (2020-07-26)
 * (Apollon77) make sure userdata objects/states are not overwritten on createState 
 
 ### 4.6.19 (2020-07-26)
@@ -62,11 +62,6 @@ And then call "npm run build".
 * (bluefox) BREAKING: Please check "stopTimeout" blocks in your blockly scripts that the correct timeout name is listed there and correct after the update!
 * (paul53) fix "control" blockly node with "delete delay if running"
 * (foxriver76) change dependencies with Admin
-
-### 4.6.14 (2020-05-19)
-* (bluefox) Names for scripts can not have dots anymore. They will be replaced by "_"
-* (bluefox) "schedule" name is not allowed for CRON
-* (bluefox) Convert strings to Date by formatDate
 
 ## License
 

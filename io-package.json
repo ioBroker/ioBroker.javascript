@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.19",
+        "version": "4.6.20",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.6.20": {
+                "en": "make sure userdata objects/states are not overwritten on createState",
+                "de": "Stellen Sie sicher, dass Benutzerdatenobjekte / -zustände in createState nicht überschrieben werden",
+                "ru": "убедитесь, что объекты / состояния пользовательских данных не перезаписываются при createState",
+                "pt": "verifique se os objetos / estados dos dados do usuário não são substituídos no createState",
+                "nl": "zorg ervoor dat userdata-objecten / statussen niet worden overschreven in createState",
+                "fr": "assurez-vous que les objets / états des données utilisateur ne sont pas écrasés lors de createState",
+                "it": "assicurarsi che gli oggetti / stati di userdata non vengano sovrascritti su createState",
+                "es": "asegúrese de que los objetos / estados de datos de usuario no se sobrescriban en createState",
+                "pl": "upewnij się, że obiekty / stany danych użytkownika nie są nadpisywane w createState",
+                "zh-cn": "确保用户数据对象/状态未在createState上覆盖"
+            },
             "4.6.19": {
                 "en": "Prevent wrong errors when setting \"null\" values for states\nPrevent potential crash when no typings could be found (Sentry IOBROKER-JAVASCRIPT-2T)\ncatch an error in mirroring functionality( Sentry IOBROKER-JAVASCRIPT-2V)\nmake sure names are handled correctly if they are not strings (Sentry IOBROKER-JAVASCRIPT-2Y) \nmake sure invalid schedules can not crash adapter (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77/paul53) Allow \"deleteState\" with full javascript.X object I dagain (from same instance only)\nRevert changes for sync getState, because \"on change\" detection is broken \nSeveral issues with Typescript, Typings and virtual-tsc optimized and fixed\nStore JS in browser cache by enabling serviceWorkers\nprevent multiple script restarts on fast file content change for mirroring or fast object changes",
                 "de": "Verhindern Sie falsche Fehler, wenn Sie \"Null\" -Werte für Status festlegen\nVerhindern Sie einen möglichen Absturz, wenn keine Eingaben gefunden werden konnten (Sentry IOBROKER-JAVASCRIPT-2T).\nFehler in der Spiegelungsfunktion abfangen (Sentry IOBROKER-JAVASCRIPT-2V)\nStellen Sie sicher, dass Namen korrekt behandelt werden, wenn es sich nicht um Zeichenfolgen handelt (Sentry IOBROKER-JAVASCRIPT-2Y).\nStellen Sie sicher, dass ungültige Zeitpläne den Adapter nicht zum Absturz bringen können (Sentry IOBROKER-JAVASCRIPT-31).\n(Apollon77 / paul53) Erlaube \"deleteState\" mit vollständigem Javascript.X-Objekt, das ich dagain (nur von derselben Instanz)\nÄnderungen für die Synchronisierung von getState zurücksetzen, da die Erkennung \"bei Änderung\" fehlerhaft ist\nVerschiedene Probleme mit Typescript, Typings und virtual-tsc wurden optimiert und behoben\nSpeichern Sie JS im Browser-Cache, indem Sie serviceWorkers aktivieren\nVerhindern Sie mehrere Skriptneustarts bei schnellen Änderungen des Dateiinhalts für Spiegelung oder schnelle Objektänderungen",
