@@ -36,9 +36,17 @@ And then call "npm run build".
 
 ## Changelog
 
-### 4.6.xx (2020-05-xx)
+### __WORK IN PROGRESS__
 * (Apollon77) Prevent wrong errors when setting "null" values for states
+* (Apollon77) Prevent potential crash when no typings could be found (Sentry IOBROKER-JAVASCRIPT-2T)
+* (Apollon77) catch an error in mirroring functionality( Sentry IOBROKER-JAVASCRIPT-2V)
+* (Apollon77) make sure names are handled correctly if they are not strings (Sentry IOBROKER-JAVASCRIPT-2Y) 
+* (Apollon77) make sure invalid schedules can not crash adapter (Sentry IOBROKER-JAVASCRIPT-31)
+* (Apollon77/paul53) Allow "deleteState" with full javascript.X object I dagain (from same instance only)
 * (bluefox) Revert changes for sync getState, because "on change" detection is broken 
+* (AlCalzone) Several issues with Typescript, Typings and virtual-tsc optimized and fixed
+* (bluefox) Store JS in browser cache by enabling serviceWorkers
+* (Apollon77) prevent multiple script restarts on fast file content change for mirroring or fast object changes
 
 ### 4.6.17 (2020-05-25)
 * (bluefox) Fixed error with warnings collapsed blocks

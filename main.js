@@ -68,6 +68,7 @@ const {
 
 const adapterName = require('./package.json').name.split('.').pop();
 const scriptCodeMarker = 'script.js.';
+const stopCounters =  {};
 
 // for node version <= 0.12
 if (''.startsWith === undefined) {
@@ -194,12 +195,14 @@ function loadTypeScriptDeclarations() {
             // node needs ambient typings, so we don't wrap it in declare module
             pkg !== 'node'
         );
-        adapter.log.debug(`Loaded TypeScript definitions for ${pkg}: ${JSON.stringify(Object.keys(pkgTypings))}`);
-        // remember the declarations for the editor
-        Object.assign(tsAmbient, pkgTypings);
-        // and give the language servers access to them
-        tsServer.provideAmbientDeclarations(pkgTypings);
-        jsDeclarationServer.provideAmbientDeclarations(pkgTypings);
+        if (pkgTypings) {
+            adapter.log.debug(`Loaded TypeScript definitions for ${pkg}: ${JSON.stringify(Object.keys(pkgTypings))}`);
+            // remember the declarations for the editor
+            Object.assign(tsAmbient, pkgTypings);
+            // and give the language servers access to them
+            tsServer.provideAmbientDeclarations(pkgTypings);
+            jsDeclarationServer.provideAmbientDeclarations(pkgTypings);
+        }
     }
 }
 
@@ -396,8 +399,11 @@ function startAdapter(options) {
                     context.objects[id] = obj;
 
                     // Source changed => restart it
+                    stopCounters[id] = stopCounters[id] ? stopCounters[id] + 1 : 1;
                     stop(id, (res, _id) =>
-                        load(_id));
+                        // only start again after stop when "last" object change to prevent problems on
+                        // multiple changes in fast frequency
+                        !--stopCounters[id] && load(_id));
                 } /*else {
                 // Something changed or not for us
                 objects[id] = obj;
@@ -1130,7 +1136,7 @@ function addToNames(obj) {
         if (!context.names[name]) {
             context.names[name] = id;
         } else {
-            if (typeof context.names[name] === 'string') {
+            if (!Array.isArray(context.names[name])) {
                 context.names[name] = [context.names[name]];
             }
             context.names[name].push(id);

@@ -1,6 +1,6 @@
 {
     "name": "iobroker.javascript",
-    "version": "4.6.17",
+    "version": "4.6.18",
     "description": "Javascript/Coffescript Script Engine for ioBroker",
     "author": "bluefox <dogafox@gmail.com>",
     "contributors": [
@@ -30,8 +30,8 @@
     },
     "dependencies": {
         "@iobroker/adapter-core": "^2.4.0",
-        "@types/node": "^10.17.26",
-        "@types/request": "^2.48.4",
+        "@types/node": "^12.12.53",
+        "@types/request": "^2.48.5",
         "coffee-compiler": "^0.3.2",
         "coffee-script": "^1.12.7",
         "jsonata": "^1.8.3",
@@ -39,20 +39,21 @@
         "request": "^2.88.2",
         "semver": "^7.3.2",
         "suncalc2": "^1.8.1",
-        "typescript": "^3.9.2",
+        "typescript": "^3.9.7",
         "virtual-tsc": "^0.6.1",
         "wake_on_lan": "^1.0.0"
     },
     "devDependencies": {
-        "@types/iobroker": "^3.0.8",
-        "alcalzone-shared": "^2.2.0",
+        "@alcalzone/release-script": "^1.4.1",
+        "@types/iobroker": "^3.0.11",
+        "alcalzone-shared": "^2.3.0",
         "chai": "^4.2.0",
         "del": "^5.1.0",
-        "eslint": "^6.6.0",
+        "eslint": "^6.8.0",
         "gulp": "^4.0.2",
         "gulp-rename": "^2.0.0",
         "gulp-replace": "^1.0.0",
-        "mocha": "^7.1.2",
+        "mocha": "^8.0.1",
         "timekeeper": "^2.2.0"
     },
     "bugs": {
@@ -65,6 +66,7 @@
         "test": "npm run test:declarations && npm run test:javascript",
         "postinstall": "node ./install/installTypings.js",
         "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
-        "build": "node node_modules/gulp/bin/gulp.js"
+        "build": "node node_modules/gulp/bin/gulp.js",
+        "release": "release-script"
     }
 }
