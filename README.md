@@ -36,6 +36,9 @@ And then call "npm run build".
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) make sure userdata objects/states are not overwritten on createState 
+
 ### 4.6.19 (2020-07-26)
 * (Apollon77) Prevent wrong errors when setting "null" values for states
 * (Apollon77) Prevent potential crash when no typings could be found (Sentry IOBROKER-JAVASCRIPT-2T)
