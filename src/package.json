@@ -4,9 +4,9 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.9.14",
-    "@iobroker/adapter-react": ">=0.4.5",
-    "@sentry/browser": "^5.15.5",
-    "@sentry/integrations": "^5.15.5",
+    "@iobroker/adapter-react": "^0.4.5",
+    "@sentry/browser": "^5.20.1",
+    "@sentry/integrations": "^5.20.1",
     "classnames": "^2.2.6",
     "cronstrue": "^1.94.0",
     "eslint": "^6.6.0",
