@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.18",
+        "version": "4.6.19",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.6.19": {
+                "en": "Prevent wrong errors when setting \"null\" values for states\nPrevent potential crash when no typings could be found (Sentry IOBROKER-JAVASCRIPT-2T)\ncatch an error in mirroring functionality( Sentry IOBROKER-JAVASCRIPT-2V)\nmake sure names are handled correctly if they are not strings (Sentry IOBROKER-JAVASCRIPT-2Y) \nmake sure invalid schedules can not crash adapter (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77/paul53) Allow \"deleteState\" with full javascript.X object I dagain (from same instance only)\nRevert changes for sync getState, because \"on change\" detection is broken \nSeveral issues with Typescript, Typings and virtual-tsc optimized and fixed\nStore JS in browser cache by enabling serviceWorkers\nprevent multiple script restarts on fast file content change for mirroring or fast object changes",
+                "de": "Verhindern Sie falsche Fehler, wenn Sie \"Null\" -Werte für Status festlegen\nVerhindern Sie einen möglichen Absturz, wenn keine Eingaben gefunden werden konnten (Sentry IOBROKER-JAVASCRIPT-2T).\nFehler in der Spiegelungsfunktion abfangen (Sentry IOBROKER-JAVASCRIPT-2V)\nStellen Sie sicher, dass Namen korrekt behandelt werden, wenn es sich nicht um Zeichenfolgen handelt (Sentry IOBROKER-JAVASCRIPT-2Y).\nStellen Sie sicher, dass ungültige Zeitpläne den Adapter nicht zum Absturz bringen können (Sentry IOBROKER-JAVASCRIPT-31).\n(Apollon77 / paul53) Erlaube \"deleteState\" mit vollständigem Javascript.X-Objekt, das ich dagain (nur von derselben Instanz)\nÄnderungen für die Synchronisierung von getState zurücksetzen, da die Erkennung \"bei Änderung\" fehlerhaft ist\nVerschiedene Probleme mit Typescript, Typings und virtual-tsc wurden optimiert und behoben\nSpeichern Sie JS im Browser-Cache, indem Sie serviceWorkers aktivieren\nVerhindern Sie mehrere Skriptneustarts bei schnellen Änderungen des Dateiinhalts für Spiegelung oder schnelle Objektänderungen",
+                "ru": "Предотвращение неправильных ошибок при установке «нулевых» значений для состояний\nПредотвратите возможный сбой, когда никакие печатания не могли быть найдены (Sentry IOBROKER-JAVASCRIPT-2T)\nпоймать ошибку в функции зеркалирования (Sentry IOBROKER-JAVASCRIPT-2V)\nубедитесь, что имена обрабатываются правильно, если они не являются строками (Sentry IOBROKER-JAVASCRIPT-2Y)\nубедитесь, что недопустимые расписания не могут привести к сбою адаптера (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77 / paul53) Разрешить \"deleteState\" с полным javascript.X объектом, который я использую (только из одного экземпляра)\nОтменить изменения для синхронизации getState, поскольку обнаружение «при изменении» не работает\nНесколько проблем с Typescript, Typings и virtual-tsc оптимизированы и исправлены\nХраните JS в кэше браузера, включив serviceWorkers\nпредотвращение многократного перезапуска сценария при быстром изменении содержимого файла для зеркального отображения или быстрого изменения объекта",
+                "pt": "Evitar erros errados ao definir valores \"nulos\" para estados\nEvitar possíveis falhas quando nenhuma digitação foi encontrada (Sentry IOBROKER-JAVASCRIPT-2T)\ndetectar um erro na funcionalidade de espelhamento (Sentry IOBROKER-JAVASCRIPT-2V)\ncertifique-se de que os nomes sejam manipulados corretamente se não forem cadeias de caracteres (Sentry IOBROKER-JAVASCRIPT-2Y)\nverifique se agendas inválidas não podem travar o adaptador (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77 / paul53) Permitir \"deleteState\" com o objeto javascript.X completo que eu tenho (apenas da mesma instância)\nReverter alterações para a sincronização getState, porque a detecção \"em mudança\" está interrompida\nVários problemas com TypeScript, Typings e virtual-tsc otimizados e corrigidos\nArmazene JS no cache do navegador, ativando serviceWorkers\nimpedir que vários scripts sejam reiniciados na alteração rápida do conteúdo do arquivo para espelhamento ou alteração rápida do objeto",
+                "nl": "Voorkom verkeerde fouten bij het instellen van \"null\" -waarden voor staten\nVoorkom een mogelijke crash wanneer er geen typewerk kon worden gevonden (Sentry IOBROKER-JAVASCRIPT-2T)\neen fout opvangen in de mirroring-functionaliteit (Sentry IOBROKER-JAVASCRIPT-2V)\nzorg ervoor dat namen correct worden afgehandeld als ze geen tekenreeksen zijn (Sentry IOBROKER-JAVASCRIPT-2Y)\nzorg ervoor dat ongeldige schema's de adapter niet kunnen laten crashen (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77 / paul53) \"deleteState\" toestaan met volledig javascript.X-object I dagain (alleen van dezelfde instantie)\nWijzigingen ongedaan maken voor getState-synchronisatie, omdat de detectie \"bij wijziging\" is verbroken\nVerschillende problemen met Typescript, Typings en virtual-tsc geoptimaliseerd en opgelost\nSla JS op in de browsercache door serviceWorkers in te schakelen\nvoorkomen dat meerdere scripts opnieuw worden opgestart bij snelle bestandsinhoudwijziging voor spiegeling of snelle objectwijzigingen",
+                "fr": "Évitez les erreurs lors de la définition de valeurs \"nulles\" pour les états\nEmpêcher un crash potentiel lorsqu'aucune saisie n'a pu être trouvée (Sentry IOBROKER-JAVASCRIPT-2T)\nattraper une erreur dans la fonctionnalité de mise en miroir (Sentry IOBROKER-JAVASCRIPT-2V)\nassurez-vous que les noms sont gérés correctement s'ils ne sont pas des chaînes (Sentry IOBROKER-JAVASCRIPT-2Y)\nassurez-vous que les horaires non valides ne peuvent pas planter l'adaptateur (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77 / paul53) Autoriser \"deleteState\" avec l'objet javascript.X complet que je dagain (à partir de la même instance uniquement)\nAnnuler les modifications pour la synchronisation getState, car la détection \"sur modification\" est interrompue\nPlusieurs problèmes avec Typescript, Typings et virtual-tsc optimisés et corrigés\nStockez JS dans le cache du navigateur en activant serviceWorkers\nempêcher plusieurs redémarrages de script en cas de modification rapide du contenu de fichier pour la mise en miroir ou les modifications rapides d'objet",
+                "it": "Prevenire errori errati quando si impostano valori \"null\" per gli stati\nPrevenire il potenziale arresto anomalo quando non è stato possibile trovare alcuna digitazione (Sentry IOBROKER-JAVASCRIPT-2T)\nrileva un errore nella funzionalità di mirroring (Sentry IOBROKER-JAVASCRIPT-2V)\nassicurarsi che i nomi siano gestiti correttamente se non sono stringhe (Sentry IOBROKER-JAVASCRIPT-2Y)\nassicurarsi che le pianificazioni non valide non possano arrestare in modo anomalo l'adattatore (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77 / paul53) Consenti \"deleteState\" con l'oggetto javascript.X completo che dagain (solo dalla stessa istanza)\nAnnulla le modifiche per sincronizzare getState, perché il rilevamento \"in modifica\" è interrotto\nDiversi problemi con Typescript, Typings e virtual-tsc ottimizzati e risolti\nMemorizza JS nella cache del browser abilitando serviceWorkers\nimpedire il riavvio multiplo di script in caso di modifica rapida del contenuto del file per il mirroring o la modifica rapida degli oggetti",
+                "es": "Evite errores incorrectos al establecer valores \"nulos\" para estados\nPrevenga un posible bloqueo cuando no se puedan encontrar tipings (Sentry IOBROKER-JAVASCRIPT-2T)\ndetectar un error en la funcionalidad de duplicación (Sentry IOBROKER-JAVASCRIPT-2V)\nasegúrese de que los nombres se manejen correctamente si no son cadenas (Sentry IOBROKER-JAVASCRIPT-2Y)\nasegúrese de que los horarios no válidos no puedan bloquear el adaptador (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77 / paul53) Permitir \"deleteState\" con el objeto javascript.X completo que doy (solo desde la misma instancia)\nRevertir los cambios para sincronizar getState, porque la detección \"al cambiar\" está rota\nVarios problemas con Typecript, Typings y virtual-tsc optimizados y corregidos\nAlmacene JS en la memoria caché del navegador habilitando serviceWorkers\nevitar que se reinicien múltiples scripts en el cambio rápido de contenido de archivos para duplicación o cambios rápidos de objetos",
+                "pl": "Zapobiegaj błędnym błędom podczas ustawiania wartości „null” dla stanów\nZapobiegaj potencjalnej awarii, gdy nie można znaleźć żadnych wpisów (Sentry IOBROKER-JAVASCRIPT-2T)\nwyłap błąd w funkcji dublowania (Sentry IOBROKER-JAVASCRIPT-2V)\nupewnij się, że nazwy są obsługiwane poprawnie, jeśli nie są ciągami znaków (Sentry IOBROKER-JAVASCRIPT-2Y)\nupewnij się, że nieprawidłowe harmonogramy nie mogą spowodować awarii adaptera (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77 / paul53) Zezwalaj na „deleteState” z pełnym obiektem javascript.X, który chcę ponownie (tylko z tej samej instancji)\nCofnij zmiany dla synchronizacji getState, ponieważ wykrywanie „przy zmianie” jest uszkodzone\nKilka problemów z Typescript, Typings i virtual-tsc zostało zoptymalizowanych i naprawionych\nPrzechowuj JS w pamięci podręcznej przeglądarki, włączając serviceWorkers\nzapobiega wielokrotnemu uruchamianiu skryptów przy szybkiej zmianie zawartości pliku w celu tworzenia kopii lustrzanych lub szybkich zmian obiektów",
+                "zh-cn": "为状态设置“空”值时防止错误错误\n找不到输入时防止潜在的崩溃（Sentry IOBROKER-JAVASCRIPT-2T）\n在镜像功能中发现错误（Sentry IOBROKER-JAVASCRIPT-2V）\n如果名称不是字符串，请确保正确处理名称（Sentry IOBROKER-JAVASCRIPT-2Y）\n确保无效的日程表不会使适配器崩溃（Sentry IOBROKER-JAVASCRIPT-31）\n（Apollon77 / paul53）允许完全删除的javascript.X对象带有“ deleteState”（仅限同一实例）\n还原更改以获取同步getState，因为“更改时”检测已损坏\n优化并修复了打字稿，打字和虚拟TSC的几个问题\n通过启用serviceWorkers将JS存储在浏览器缓存中\n防止在快速更改文件内容以进行镜像或快速对象更改时重新启动多个脚本"
+            },
             "4.6.17": {
                 "en": "Fixed error with warnings collapsed blocks",
                 "de": "Fehler mit reduzierten Warnblöcken behoben",
@@ -218,9 +230,17 @@
             "name": "Scripts"
         },
         "docs": {
-            "en": ["docs/en/javascript.md", "docs/en/blockly.md"],
-            "ru": ["docs/ru/blockly.md"],
-            "de": ["docs/de/usage.md", "docs/de/blockly.md"]
+            "en": [
+                "docs/en/javascript.md",
+                "docs/en/blockly.md"
+            ],
+            "ru": [
+                "docs/ru/blockly.md"
+            ],
+            "de": [
+                "docs/de/usage.md",
+                "docs/de/blockly.md"
+            ]
         },
         "dependencies": [
             {
@@ -253,12 +273,10 @@
         "useSystemGPS": true,
         "mirrorPath": "",
         "allowSelfSignedCerts": false,
-
         "sunriseEvent": "nightEnd",
         "sunriseOffset": 0,
         "sunriseLimitStart": "06:00",
         "sunriseLimitEnd": "12:00",
-
         "sunsetEvent": "dusk",
         "sunsetOffset": 0,
         "sunsetLimitStart": "18:00",
