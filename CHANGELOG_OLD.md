@@ -1,5 +1,10 @@
 The newest change log is in README.md
 
+## 4.6.15 (2020-05-23)
+* (bluefox) BREAKING: Please check "stopTimeout" blocks in your blockly scripts that the correct timeout name is listed there and correct after the update!
+* (paul53) fix "control" blockly node with "delete delay if running"
+* (foxriver76) change dependencies with Admin
+
 ## 4.6.14 (2020-05-19)
 * (bluefox) Names for scripts can not have dots anymore. They will be replaced by "_"
 * (bluefox) "schedule" name is not allowed for CRON

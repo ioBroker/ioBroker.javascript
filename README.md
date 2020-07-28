@@ -36,7 +36,7 @@ And then call "npm run build".
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 4.6.21 (2020-07-28)
 * (Apollon77) catched some more file errors in mirror logic (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)
 
 ### 4.6.20 (2020-07-26)
@@ -60,11 +60,6 @@ And then call "npm run build".
 
 ### 4.6.16 (2020-05-24)
 * (bluefox) Corrected sendTo and clear delay blocks. 
-
-### 4.6.15 (2020-05-23)
-* (bluefox) BREAKING: Please check "stopTimeout" blocks in your blockly scripts that the correct timeout name is listed there and correct after the update!
-* (paul53) fix "control" blockly node with "delete delay if running"
-* (foxriver76) change dependencies with Admin
 
 ## License
 
