@@ -36,8 +36,11 @@ And then call "npm run build".
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) catched some more file errors in mirror logic (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)
+
 ### 4.6.20 (2020-07-26)
-* (Apollon77) make sure userdata objects/states are not overwritten on createState 
+* (Apollon77) make sure 0_userdata.0 objects/states are not overwritten on createState 
 
 ### 4.6.19 (2020-07-26)
 * (Apollon77) Prevent wrong errors when setting "null" values for states
@@ -45,7 +48,7 @@ And then call "npm run build".
 * (Apollon77) catch an error in mirroring functionality( Sentry IOBROKER-JAVASCRIPT-2V)
 * (Apollon77) make sure names are handled correctly if they are not strings (Sentry IOBROKER-JAVASCRIPT-2Y) 
 * (Apollon77) make sure invalid schedules can not crash adapter (Sentry IOBROKER-JAVASCRIPT-31)
-* (Apollon77/paul53) Allow "deleteState" with full javascript.X object I dagain (from same instance only)
+* (Apollon77/paul53) Allow "deleteState" with full javascript.X object Id again (from same instance only)
 * (bluefox) Revert changes for sync getState, because "on change" detection is broken 
 * (AlCalzone) Several issues with Typescript, Typings and virtual-tsc optimized and fixed
 * (bluefox) Store JS in browser cache by enabling serviceWorkers
