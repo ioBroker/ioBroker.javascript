@@ -36,6 +36,9 @@ And then call "npm run build".
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) catched some more file errors in mirror logic
+
 ### 4.6.21 (2020-07-28)
 * (Apollon77) catched some more file errors in mirror logic (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)
 
