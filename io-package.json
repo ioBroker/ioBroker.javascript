@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.21",
+        "version": "4.6.22",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.6.22": {
+                "en": "catched some more file errors in mirror logic",
+                "de": "hat einige weitere Dateifehler in der Spiegellogik abgefangen",
+                "ru": "поймал еще несколько файловых ошибок в зеркальной логике",
+                "pt": "pegou mais alguns erros de arquivo na lógica do espelho",
+                "nl": "ving wat meer bestandsfouten op in spiegellogica",
+                "fr": "attrapé d'autres erreurs de fichier dans la logique miroir",
+                "it": "rilevato altri errori di file nella logica del mirror",
+                "es": "captó algunos errores de archivo más en la lógica espejo",
+                "pl": "złapał więcej błędów plików w logice lustrzanej",
+                "zh-cn": "在镜像逻辑中捕获了更多文件错误"
+            },
             "4.6.21": {
                 "en": "catched some more file errors in mirror logic (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)",
                 "de": "Es wurden weitere Dateifehler in der Spiegellogik festgestellt (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C).",

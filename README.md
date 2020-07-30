@@ -36,7 +36,7 @@ And then call "npm run build".
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 4.6.22 (2020-07-30)
 * (Apollon77) catched some more file errors in mirror logic
 
 ### 4.6.21 (2020-07-28)
@@ -60,9 +60,6 @@ And then call "npm run build".
 ### 4.6.17 (2020-05-25)
 * (bluefox) Fixed error with warnings collapsed blocks
 * (Apollon77) optimize Sentry error reporting to prevent false positives
-
-### 4.6.16 (2020-05-24)
-* (bluefox) Corrected sendTo and clear delay blocks. 
 
 ## License
 
