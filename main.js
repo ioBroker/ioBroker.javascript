@@ -180,9 +180,24 @@ function loadTypeScriptDeclarations() {
     ) {
         const installedLibs = adapter.config.libraries.split(/[,;\s]+/).map(s => s.trim());
         const wantsTypings = adapter.config.libraryTypings.split(/[,;\s]+/).map(s => s.trim());
+        // Add all installed libraries the user has requested typings for to the list of packages
         for (const lib of installedLibs) {
             if (
                 wantsTypings.indexOf(lib) > -1
+                && packages.indexOf(lib) === -1
+            ) {
+                packages.push(lib);
+            }
+        }
+        // Some packages have sub-modules (e.g. rxjs/operators) that are not exposed through the main entry point
+        // If typings are requested for them, also add them if the base module is installed
+        for (const lib of wantsTypings) {
+            // Extract the package name and check if we need to add it
+            if (lib.indexOf('/') === -1) continue;
+            const pkgName = lib.substr(0, lib.indexOf('/'));
+
+            if (
+                installedLibs.indexOf(pkgName) > -1
                 && packages.indexOf(lib) === -1
             ) {
                 packages.push(lib);
