@@ -36,6 +36,9 @@ And then call "npm run build".
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (AlCalzone) fix type resolution for rxjs in TypeScripts
+
 ### 4.6.22 (2020-07-30)
 * (Apollon77) catched some more file errors in mirror logic
 
