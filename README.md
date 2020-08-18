@@ -36,7 +36,7 @@ And then call "npm run build".
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 4.6.23 (2020-08-19)
 * (AlCalzone) fix type resolution for rxjs in TypeScripts
 
 ### 4.6.22 (2020-07-30)
@@ -59,10 +59,6 @@ And then call "npm run build".
 * (AlCalzone) Several issues with Typescript, Typings and virtual-tsc optimized and fixed
 * (bluefox) Store JS in browser cache by enabling serviceWorkers
 * (Apollon77) prevent multiple script restarts on fast file content change for mirroring or fast object changes
-
-### 4.6.17 (2020-05-25)
-* (bluefox) Fixed error with warnings collapsed blocks
-* (Apollon77) optimize Sentry error reporting to prevent false positives
 
 ## License
 

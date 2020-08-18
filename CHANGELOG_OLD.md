@@ -1,5 +1,9 @@
 The newest change log is in README.md
 
+## 4.6.17 (2020-05-25)
+* (bluefox) Fixed error with warnings collapsed blocks
+* (Apollon77) optimize Sentry error reporting to prevent false positives
+
 ## 4.6.16 (2020-05-24)
 * (bluefox) Corrected sendTo and clear delay blocks. 
 

@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.22",
+        "version": "4.6.23",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.6.23": {
+                "en": "fix type resolution for rxjs in TypeScripts",
+                "de": "Korrektur der Typauflösung für rxjs in TypeScripts",
+                "ru": "исправить разрешение типа для rxjs в TypeScripts",
+                "pt": "corrigir a resolução do tipo para rxjs em TypeScripts",
+                "nl": "fix type resolutie voor rxjs in TypeScripts",
+                "fr": "correction de la résolution de type pour rxjs dans TypeScripts",
+                "it": "correzione del tipo di risoluzione per rxjs in TypeScripts",
+                "es": "corregir la resolución de tipo para rxjs en TypeScripts",
+                "pl": "naprawiono rozdzielczość typu dla rxjs w TypeScripts",
+                "zh-cn": "修复TypeScripts中rxjs的类型解析"
+            },
             "4.6.22": {
                 "en": "catched some more file errors in mirror logic",
                 "de": "hat einige weitere Dateifehler in der Spiegellogik abgefangen",
