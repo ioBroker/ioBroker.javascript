@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.24",
+        "version": "4.6.25",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,7 +22,7 @@
             "AlCalzone"
         ],
         "news": {
-            "4.6.24": {
+            "4.6.25": {
                 "en": "Fixed the loading of page",
                 "de": "Das Laden der Seite wurde behoben",
                 "ru": "Исправлена загрузка страницы",

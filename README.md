@@ -39,7 +39,7 @@ And then call "npm run build".
     ### __WORK IN PROGRESS__
 -->
 ## Changelog
-### 4.6.24 (2020-08-24)
+### 4.6.25 (2020-08-24)
 * (bluefox) Fixed the loading of page
 
 ### 4.6.23 (2020-08-19)
