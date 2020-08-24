@@ -31,7 +31,7 @@ And then call "npm run build".
 ## Todo
 - search in all files
 - new rule editor (future releases)
-- heating profile (future releases)
+- heating profile (future releases)~~~~
 - ...
 
 <!--

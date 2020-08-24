@@ -1,0 +1,8 @@
+{
+  "all": true,
+  "lerna": false,
+
+  "scripts": {
+    "beforePush": "npm run build"
+  }
+}
