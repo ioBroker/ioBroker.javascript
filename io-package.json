@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.25",
+        "version": "4.6.26",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.6.26": {
+                "en": "Catch error case when npm istallation fails (Sentry IOBROKER-JAVASCRIPT-3K)\nPrevent crash case in mirroring (Sentry IOBROKER-JAVASCRIPT-3M)",
+                "de": "Fehlerfall abfangen, wenn die npm-Installation fehlschlägt (Sentry IOBROKER-JAVASCRIPT-3K)\nAbsturzfall beim Spiegeln verhindern (Sentry IOBROKER-JAVASCRIPT-3M)",
+                "ru": "Выявление ошибки при сбое установки npm (Sentry IOBROKER-JAVASCRIPT-3K)\nПредотвращение сбоев при зеркалировании (Sentry IOBROKER-JAVASCRIPT-3M)",
+                "pt": "Capture o caso de erro quando a instalação do npm falhar (Sentry IOBROKER-JAVASCRIPT-3K)\nPrevina caso de travamento no espelhamento (Sentry IOBROKER-JAVASCRIPT-3M)",
+                "nl": "Foutgeval opvangen wanneer npm istallation mislukt (Sentry IOBROKER-JAVASCRIPT-3K)\nVoorkom crashcase bij mirroring (Sentry IOBROKER-JAVASCRIPT-3M)",
+                "fr": "Cas d'erreur d'interception lorsque l'installation de npm échoue (Sentry IOBROKER-JAVASCRIPT-3K)\nEmpêcher les cas de crash dans la mise en miroir (Sentry IOBROKER-JAVASCRIPT-3M)",
+                "it": "Cattura il caso di errore quando l'installazione di npm non riesce (Sentry IOBROKER-JAVASCRIPT-3K)\nPrevenire il crash case nel mirroring (Sentry IOBROKER-JAVASCRIPT-3M)",
+                "es": "Capturar caso de error cuando falla la instalación de npm (Sentry IOBROKER-JAVASCRIPT-3K)\nEvitar caso de accidente en la duplicación (Sentry IOBROKER-JAVASCRIPT-3M)",
+                "pl": "Błąd przechwytywania, gdy instalacja npm kończy się niepowodzeniem (Sentry IOBROKER-JAVASCRIPT-3K)\nZapobiegaj awariom podczas tworzenia kopii lustrzanych (Sentry IOBROKER-JAVASCRIPT-3M)",
+                "zh-cn": "npm istalation失败时捕获错误情况（Sentry IOBROKER-JAVASCRIPT-3K）\n防止在镜像时发生崩溃（Sentry IOBROKER-JAVASCRIPT-3M）"
+            },
             "4.6.25": {
                 "en": "Fixed the loading of page",
                 "de": "Das Laden der Seite wurde behoben",
