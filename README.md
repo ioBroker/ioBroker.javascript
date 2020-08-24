@@ -39,6 +39,10 @@ And then call "npm run build".
     ### __WORK IN PROGRESS__
 -->
 ## Changelog
+### __WORK IN PROGRESS__
+* (Apollon77) Catch error case when npm istallation fails (Sentry IOBROKER-JAVASCRIPT-3K)
+* (Apollon77) Prevent crash case in mirroring (Sentry IOBROKER-JAVASCRIPT-3M)
+
 ### 4.6.25 (2020-08-24)
 * (bluefox) Fixed the loading of page
 

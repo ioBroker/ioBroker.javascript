@@ -1214,12 +1214,19 @@ function installNpm(npmLib, callback) {
     child.stderr.on('data', buf =>
         adapter.log.error(buf.toString('utf8')));
 
+    child.on('err', err => {
+        adapter.log.error('Cannot install ' + npmLib + ': ' + err);
+        if (typeof callback === 'function') callback(npmLib);
+        callback = null;
+    });
+
     child.on('exit', (code /* , signal */) => {
         if (code) {
             adapter.log.error('Cannot install ' + npmLib + ': ' + code);
         }
         // command succeeded
         if (typeof callback === 'function') callback(npmLib);
+        callback = null;
     });
 }
 
