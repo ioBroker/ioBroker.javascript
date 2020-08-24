@@ -34,7 +34,13 @@ And then call "npm run build".
 - heating profile (future releases)
 - ...
 
+<!--
+    Placeholder for the next version (at the beginning of the line):
+    ### __WORK IN PROGRESS__
+-->
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Fixed the loading of page
 
 ### 4.6.23 (2020-08-19)
 * (AlCalzone) fix type resolution for rxjs in TypeScripts

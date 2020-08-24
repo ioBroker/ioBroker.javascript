@@ -234,7 +234,7 @@ class ScriptEditor extends React.Component {
         if (range && range.length) {
             range.forEach(r => this.editor.setSelection(r.range));
             this.editor.revealLine(range[0].range.startLineNumber);
-        } else {
+        } else if (this.editor) {
             const row = this.editor.getPosition().lineNumber;
             const col = this.editor.getPosition().column;
             this.editor.setSelection(new this.monaco.Range(row, col, row, col));
