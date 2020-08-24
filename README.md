@@ -39,7 +39,7 @@ And then call "npm run build".
     ### __WORK IN PROGRESS__
 -->
 ## Changelog
-### __WORK IN PROGRESS__
+### 4.6.24 (2020-08-24)
 * (bluefox) Fixed the loading of page
 
 ### 4.6.23 (2020-08-19)
@@ -53,18 +53,6 @@ And then call "npm run build".
 
 ### 4.6.20 (2020-07-26)
 * (Apollon77) make sure 0_userdata.0 objects/states are not overwritten on createState 
-
-### 4.6.19 (2020-07-26)
-* (Apollon77) Prevent wrong errors when setting "null" values for states
-* (Apollon77) Prevent potential crash when no typings could be found (Sentry IOBROKER-JAVASCRIPT-2T)
-* (Apollon77) catch an error in mirroring functionality( Sentry IOBROKER-JAVASCRIPT-2V)
-* (Apollon77) make sure names are handled correctly if they are not strings (Sentry IOBROKER-JAVASCRIPT-2Y) 
-* (Apollon77) make sure invalid schedules can not crash adapter (Sentry IOBROKER-JAVASCRIPT-31)
-* (Apollon77/paul53) Allow "deleteState" with full javascript.X object Id again (from same instance only)
-* (bluefox) Revert changes for sync getState, because "on change" detection is broken 
-* (AlCalzone) Several issues with Typescript, Typings and virtual-tsc optimized and fixed
-* (bluefox) Store JS in browser cache by enabling serviceWorkers
-* (Apollon77) prevent multiple script restarts on fast file content change for mirroring or fast object changes
 
 ## License
 

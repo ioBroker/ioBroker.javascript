@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.23",
+        "version": "4.6.24",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.6.24": {
+                "en": "Fixed the loading of page",
+                "de": "Das Laden der Seite wurde behoben",
+                "ru": "Исправлена загрузка страницы",
+                "pt": "Corrigido o carregamento da página",
+                "nl": "Vaste het laden van de pagina",
+                "fr": "Correction du chargement de la page",
+                "it": "Corretto il caricamento della pagina",
+                "es": "Se corrigió la carga de la página.",
+                "pl": "Naprawiono ładowanie strony",
+                "zh-cn": "修复页面加载"
+            },
             "4.6.23": {
                 "en": "fix type resolution for rxjs in TypeScripts",
                 "de": "Korrektur der Typauflösung für rxjs in TypeScripts",
