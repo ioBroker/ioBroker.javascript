@@ -67,6 +67,7 @@
     "postinstall": "node ./install/installTypings.js",
     "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
     "build": "node node_modules/gulp/bin/gulp.js",
-    "release": "release-script"
+    "release": "release-script",
+    "beforePush": "node node_modules/gulp/bin/gulp.js"
   }
 }
