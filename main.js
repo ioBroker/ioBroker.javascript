@@ -475,8 +475,8 @@ function startAdapter(options) {
         },
 
         unload: callback => {
-            stopTimeSchedules(adapter, context);
-            stopAllScripts(callback)
+            stopTimeSchedules();
+            stopAllScripts(callback);
         },
 
         ready: () => {
@@ -638,10 +638,10 @@ function startAdapter(options) {
                 }
                 // check if a path contains adaptername but not own node_module
                 // this regex matched "iobroker.javascript/" if NOT followed by "node_modules"
-                if (!err.stack.match(/iobroker\.javascript[\/\\](?!.*node_modules).*/g)) {
+                if (!err.stack.match(/iobroker\.javascript[/\\](?!.*node_modules).*/g)) {
                     // This is an error without any info on origin (mostly async errors like connection errors)
                     // also consider it as being from a script
-                    adapter.log.error('An error happened which is most likely from one of your scripts, but the originating script could not be detected.')
+                    adapter.log.error('An error happened which is most likely from one of your scripts, but the originating script could not be detected.');
                     adapter.log.error('Error: ' + err.message);
                     adapter.log.error(err.stack);
 
@@ -847,7 +847,6 @@ let knownGlobalDeclarationsByScript = {};
 let globalScriptLines  = 0;
 // let activeRegEx        = null;
 let activeStr          = ''; // enabled state prefix
-let timeVariableTimer  = null; // timer to update dayTime every minute
 let daySchedule    = null; // schedule for astrological day
 
 function getNextTimeEvent(time) {
@@ -987,7 +986,6 @@ function dayTimeSchedules(adapter, context) {
 
 function stopTimeSchedules() {
     daySchedule && clearTimeout(daySchedule);
-    timeVariableTimer && clearTimeout(timeVariableTimer);
 }
 
 /**
@@ -1040,7 +1038,7 @@ function addGetProperty(object) {
 
 function fixLineNo(line) {
     if (line.indexOf('javascript.js:') >= 0) return line;
-    if (!/script[s]?\.js[.\\\/]/.test(line)) return line;
+    if (!/script[s]?\.js[.\\/]/.test(line)) return line;
     if (/:([\d]+):/.test(line)) {
         line = line.replace(/:([\d]+):/, ($0, $1) =>
             ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1) + ':');
