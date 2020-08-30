@@ -1260,7 +1260,7 @@ function installLibraries(callback) {
     if (allInstalled) callback();
 }
 
-function compile(source, name) {
+function createVM(source, name) {
     source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + ' and ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ));\n";
     try {
         if (VMScript) {
@@ -1497,7 +1497,7 @@ function prepareScript(obj, callback) {
                 const fn = name.replace(/^script.js./, '').replace(/\./g, '/');
                 sourceFn = mods.path.join(webstormDebug, fn + '.js');
             }
-            context.scripts[name] = compile(globalScript + obj.common.source, sourceFn);
+            context.scripts[name] = createVM(globalScript + obj.common.source, sourceFn);
             context.scripts[name] && execute(context.scripts[name], sourceFn, obj.common.verbose, obj.common.debug);
             typeof callback === 'function' && callback(true, name);
         } else if (obj.common.engineType.toLowerCase().startsWith('coffee')) {
@@ -1509,15 +1509,18 @@ function prepareScript(obj, callback) {
                     return;
                 }
                 adapter.log.info('Start coffescript ' + name);
-                context.scripts[name] = compile(globalScript + '\n' + js, name);
+                context.scripts[name] = createVM(globalScript + '\n' + js, name);
                 context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
                 typeof callback === 'function' && callback(true, name);
             });
         } else if (obj.common.engineType.toLowerCase().startsWith('typescript')) {
             // TypeScript
             adapter.log.info(name + ': compiling TypeScript source...');
+            // Force TypeScript to treat the code as a module.
+            // Without this, it may complain about different scripts using the same variables.
+            const sourceWithExport = obj.common.source + '\nexport {};';
             const filename = scriptIdToTSFilename(name);
-            const tsCompiled = tsServer.compile(filename, obj.common.source);
+            const tsCompiled = tsServer.compile(filename, sourceWithExport);
 
             const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
 
@@ -1527,7 +1530,7 @@ function prepareScript(obj, callback) {
                 } else {
                     adapter.log.info(name + ': TypeScript compilation successful');
                 }
-                context.scripts[name] = compile(globalScript + '\n' + tsCompiled.result, name);
+                context.scripts[name] = createVM(globalScript + '\n' + tsCompiled.result, name);
                 context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
                 typeof callback === 'function' && callback(true, name);
             } else {
