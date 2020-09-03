@@ -106,7 +106,7 @@ class DialogRename extends React.Component {
                                         onChange={e => this.setState({instance: parseInt(e.target.value, 10)})}
                                         inputProps={{name: 'instance', id: 'instance'}}
                                     >
-                                        {this.props.instances.map(instance => (<MenuItem key={instance} value={instance}>{instance || '0'}</MenuItem>))}
+                                        {this.props.instances.map(instance => <MenuItem key={instance} value={instance}>{instance || '0'}</MenuItem>)}
                                     </Select>
                                 </FormControl>)
                         }

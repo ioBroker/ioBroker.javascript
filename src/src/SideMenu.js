@@ -1202,11 +1202,11 @@ class SideDrawer extends React.Component {
 
             if (!this.state.reorder && this.state.selected && this.state.selected !== 'script.js.global' && this.state.selected !== 'script.js.common') {
                 // Rename
-                result.push((<IconButton className={classes.toolbarButtons}
+                result.push(<IconButton className={classes.toolbarButtons}
                                          title={I18n.t('Rename')}
                                          key="rename"
                                          onClick={e => this.onRename(e)}
-                ><IconEdit/></IconButton>));
+                ><IconEdit/></IconButton>);
 
 
                 // const selectedItem = this.state.listItems.find(i => i.id === this.state.selected);
@@ -1367,7 +1367,7 @@ class SideDrawer extends React.Component {
                 }</div>
             </Drawer>),
 
-            renamingItem ? (<DialogRename
+            renamingItem ? <DialogRename
                 key="dialog-rename"
                 name={renamingItem.title}
                 title={I18n.t('Rename')}
@@ -1377,7 +1377,7 @@ class SideDrawer extends React.Component {
                 instances={this.props.instances}
                 onClose={() => this.setState({renaming: false})}
                 onRename={(oldId, newName, newId, newInstance) => this.props.onRename && this.props.onRename(oldId, newName, newId, newInstance)}
-            />) : null,
+            /> : null,
 
             this.state.deleting ? (<DialogDelete
                 key="dialog-delete"

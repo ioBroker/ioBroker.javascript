@@ -264,19 +264,22 @@ class App extends GenericApp {
     subscribeOnInstances() {
         return this.socket.getAdapterInstances(this.adapterName)
             .then(instancesArray => {
-                const instances = instancesArray.map(obj => obj._id).sort();
+                const instances = instancesArray.map(obj => parseInt(obj._id.split('.').pop())).sort();
                 const runningInstances = {};
-                instances.forEach(id => runningInstances[id] = false);
+                instances.forEach(id => runningInstances['system.adapter.' + this.adapterName + '.' + id] = false);
 
                 const promises = [];
 
                 // subscribe on instances
-                instances.forEach(instance =>
-                    promises.push(this.socket.getState(instance + '.alive')
+                instances.forEach(instance => {
+                    const instanceId = `system.adapter.${this.adapterName}.${instance}`;
+                    const id = `${instanceId}.alive`;
+                    promises.push(this.socket.getState(id)
                         .then(state => {
-                            runningInstances[instance] = state ? state.val : false;
-                            this.socket.subscribeState(instance + '.alive', this.onInstanceAliveChange);
-                        })));
+                            runningInstances[instanceId] = state ? state.val : false;
+                            this.socket.subscribeState(id, this.onInstanceAliveChange);
+                        }));
+                });
 
                 return Promise.all(promises)
                     .then(() => ({instances, runningInstances}));
