@@ -69,6 +69,7 @@ class DialogImport extends React.Component {
                 <DialogTitle id="import-dialog-title">{I18n.t('Import blocks')}</DialogTitle>
                 <DialogContent className={classes.fullHeight}>
                     <textarea
+                        autoFocus
                         id="import-text-area"
                         className={classes.textArea}
                         onChange={e => this.onChange(e)}
@@ -76,7 +77,7 @@ class DialogImport extends React.Component {
                 </DialogContent>
                 <DialogActions>
                     <Button disabled={!this.state.text} onClick={event  => this.handleOk()} color="primary">{I18n.t('Import')}</Button>
-                    <Button onClick={() => this.handleCancel()} color="secondary">{I18n.t('Close')}</Button>
+                    <Button onClick={() => this.handleCancel()}>{I18n.t('Close')}</Button>
                 </DialogActions>
             </Dialog>
         );

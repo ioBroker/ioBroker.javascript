@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import SplitterLayout from 'react-splitter-layout';
 import {MdMenu as IconMenuClosed} from 'react-icons/md';
@@ -7,8 +7,6 @@ import {MdArrowBack as IconMenuOpened} from 'react-icons/md';
 import 'react-splitter-layout/lib/index.css';
 
 import GenericApp from '@iobroker/adapter-react/GenericApp';
-import Connection from '@iobroker/adapter-react/Connection';
-import {PROGRESS} from '@iobroker/adapter-react/Connection';
 import Loader from '@iobroker/adapter-react/Components/Loader'
 import I18n from '@iobroker/adapter-react/i18n';
 import DialogMessage from '@iobroker/adapter-react/Dialogs/Message';
@@ -92,97 +90,114 @@ const styles = theme => ({
 
 class App extends GenericApp {
     constructor(props) {
-        super(props);
-        this.objects = {};
-
-        // init translations
-        I18n.setTranslations({
-            'en': require('./i18n/en'),
-            'de': require('./i18n/de'),
-            'es': require('./i18n/es'),
-            'fr': require('./i18n/fr'),
-            'it': require('./i18n/it'),
-            'nl': require('./i18n/nl'),
-            'pl': require('./i18n/pl'),
-            'pt': require('./i18n/pt'),
-            'ru': require('./i18n/ru'),
-            'zh-cn': require('./i18n/zh-cn'),
+        super(props, {
+            translations: {
+                'en': require('./i18n/en'),
+                'de': require('./i18n/de'),
+                'es': require('./i18n/es'),
+                'fr': require('./i18n/fr'),
+                'it': require('./i18n/it'),
+                'nl': require('./i18n/nl'),
+                'pl': require('./i18n/pl'),
+                'pt': require('./i18n/pt'),
+                'ru': require('./i18n/ru'),
+                'zh-cn': require('./i18n/zh-cn'),
+            },
+            bottomButtons: false,
+            socket: {
+                autoSubscribeLog: true,
+            },
         });
 
         // this.logIndex = 0;
-        this.logSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.logSize')) || 150 : 150;
+        this.logSize  = window.localStorage ? parseFloat(window.localStorage.getItem('App.logSize'))  || 150 : 150;
         this.menuSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.menuSize')) || 500 : 500;
-        this.scripts = {};
         this.hosts = [];
         this.importFile = null;
-
-        super(props, {
-            bottomButtons: false,
-            socket: {
-                autoSubscribes: ['script.*', 'system.adapter.*', 'system.host.*'],
-                autoSubscribeLog: true
-            },
-            onObjectChange: (id, obj) => {
-
-                if (id.match(/^system\.adapter\.[-_\w\d]+\$/)) {
-                    if (obj[id].common && obj[id].common.blockly) {
-                        this.confirmCallback = result => result && window.location.reload();
-                        this.setState({confirm: I18n.t('Some blocks were updated. Reload admin?')});
-                    }
-                }
-
-            }
-        });
-
-        /*let port = parseInt(window.location.port, 10);
-        if (isNaN(port)) {
-            switch (window.location.protocol) {
-                case 'https:':
-                    port = 443;
-                    break;
-                default:
-                    port = 80;
-                    break;
-            }
-        }
-        // for debug and fallback purposes
-        if (!port || port === 3000) {
-            port = 8081;
-        }
-
-        this.socket = new Connection({
-            port,
-            autoSubscribes: ['script.*', 'system.adapter.javascript.*'],
-            autoSubscribeLog: true,
-            onProgress: progress => {
-                if (progress === PROGRESS.CONNECTING) {
-                    this.setState({connected: false});
-                } else if (progress === PROGRESS.READY) {
-                    this.setState({connected: true, progress: 100});
-                } else {
-                    this.setState({connected: true, progress: Math.round(PROGRESS.READY / progress * 100)});
-                }
-            },
-            onReady: (objects, scripts) => {
-                I18n.setLanguage(this.socket.systemLang);
-                window.systemLang = this.socket.systemLang;
-                this.subscribeOnAlive();
-                this.onObjectChange(objects, scripts, true);
-            },
-            onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
-            onError: err => {
-                console.error(err);
-            },
-            onBlocklyChanges: () => {
-                this.confirmCallback = result => result && window.location.reload();
-                this.setState({confirm: I18n.t('Some blocks were updated. Reload admin?')});
-            },
-            onLog: message => {
-                //this.logIndex++;
-                //this.setState({logMessage: {index: this.logIndex, message}})
-            }
-        });*/
+        this.scripts = {};
     }
+
+    onScriptsChanged = (id, obj) => {
+        if (!id) {
+            return;
+        }
+        let changed = false;
+        const newState = {};
+        if (id.startsWith('script.js.')) {
+            if (obj) {
+                if (JSON.stringify(this.scripts[id]) !== JSON.stringify(obj)) {
+                    this.scripts[id] = obj;
+                    changed = true;
+                    newState.scriptsHash = this.state.scriptsHash + 1;
+                }
+            } else if (this.scripts[id]) {
+                delete this.scripts[id];
+                changed = true;
+                newState.scriptsHash = this.state.scriptsHash + 1;
+            }
+        }
+
+        changed && this.setState(newState);
+    };
+
+    onInstanceChanged = (id, obj) => {
+        if (!id) {
+            return;
+        }
+        let changed = false;
+        const newState = {};
+
+        if (id.match(/^system\.adapter\.[-_\w\d]+\$/)) {
+            // update instances
+            if (id.startsWith('system.adapter.' + this.adapterName + '.')) {
+                if (obj && obj.type === 'instance') {
+                    if (!this.state.instances.includes(id)) {
+                        newState.instances = [...this.state.instances];
+                        newState.instances.push(id);
+                        newState.instances.sort();
+                        changed = true;
+                        // request alive
+                        this.socket.subscribeState(obj._id + '.alive', this.onInstanceAliveChange());
+                    }
+                } else if (!obj && this.state.instances.includes(id)) {
+                    this.socket.unsubscribeState(id + '.alive', this.onInstanceAliveChange());
+                    newState.instances = [...this.state.instances];
+                    const pos = newState.instances.indexOf(id);
+                    newState.instances.splice(pos, 1);
+                    changed = true;
+                }
+            }
+
+            if (obj && obj[id].common && obj[id].common.blockly) {
+                this.confirmCallback = result => result && window.location.reload();
+                newState.confirm = I18n.t('Some blocks were updated. Reload admin?');
+                changed = true;
+            }
+        }
+        changed && this.setState(newState);
+    };
+
+    onHostChanged = (id, obj) => {
+        if (!id) {
+            return;
+        }
+        let changed = false;
+        const newState = {};
+
+        if (id.startsWith('system.host.')) {
+            if (obj && obj.type === 'host') {
+                if (!this.hosts.includes(id)) {
+                    this.hosts.push(id);
+                    this.hosts.sort();
+                }
+            } else if (!obj && this.hosts.includes(id)) {
+                const pos = this.hosts.indexOf(id);
+                this.hosts.splice(pos, 1);
+            }
+        }
+
+        changed && this.setState(newState);
+    };
 
     onConnectionReady() {
         window.systemLang = this.socket.systemLang;
@@ -211,14 +226,10 @@ class App extends GenericApp {
 
         // load instances & scripts
         // Read all instances
-        this.socket.getAdapterInstances(this.adapterName)
-            .then(instances => {
-                newState.instances = Object.keys(instances).sort();
-
-                // subscribe on instances
-                instances.forEach(instance =>
-                    this.socket.subscribeState(instance + '.alive', this.onInstanceAliveChange));
-
+        this.subscribeOnInstances()
+            .then(result => {
+                newState.instances = result.instances;
+                newState.runningInstances = result.runningInstances;
                 return this.readAdaptersWithBlockly();
             })
             .then(() => this.socket.getHosts())
@@ -242,38 +253,51 @@ class App extends GenericApp {
                 }
                 newState.scriptsHash = scriptsHash;
                 newState.ready = true;
+                this.socket.subscribeObject('script.*', this.onScriptsChanged);
+                this.socket.subscribeObject('system.adapter.*', this.onInstanceChanged);
+                this.socket.subscribeObject('system.host.*', this.onHostChanged);
+
                 this.setState(newState);
             });
     }
 
+    subscribeOnInstances() {
+        return this.socket.getAdapterInstances(this.adapterName)
+            .then(instancesArray => {
+                const instances = instancesArray.map(obj => obj._id).sort();
+                const runningInstances = {};
+                instances.forEach(id => runningInstances[id] = false);
+
+                const promises = [];
+
+                // subscribe on instances
+                instances.forEach(instance =>
+                    promises.push(this.socket.getState(instance + '.alive')
+                        .then(state => {
+                            runningInstances[instance] = state ? state.val : false;
+                            this.socket.subscribeState(instance + '.alive', this.onInstanceAliveChange);
+                        })));
+
+                return Promise.all(promises)
+                    .then(() => ({instances, runningInstances}));
+            })
+    }
+
     readAllScripts() {
-        return new Promise(resolve =>
-            this._socket.emit('getObjectView', 'system', 'channel', {startkey: 'script.js.', endkey: 'script.js.\u9999'}, (err, doc) => {
-                const scripts = {};
-                if (!err) {
-                    doc.rows.forEach(item => scripts[item.value._id] = item.value);
-                }
-                this._socket.emit('getObjectView', 'system', 'script', {startkey: 'script.js.', endkey: 'script.js.\u9999'}, (err, doc) => {
-                    if (!err) {
-                        const scripts = {};
-                        doc.rows.forEach(item => scripts[item.value._id] = item.value);
-                    }
-                    resolve(scripts);
-                });
-            }));
+        return this.socket.getObjectView('script.js.', 'script.js.\u9999', 'channel')
+            .then(folders =>
+                this.socket.getObjectView('script.js.', 'script.js.\u9999', 'script')
+                    .then(scripts => {
+                        Object.keys(scripts).forEach(id => folders[id] = scripts[id]);
+                        return folders;
+                    }));
     }
 
     readAdaptersWithBlockly() {
-        return new Promise(resolve =>
-            this._socket.emit('getObjectView', 'system', 'adapter', {startkey: 'system.adapter.', endkey: 'system.adapter.\u9999'}, (err, doc) => {
-                    if (!err) {
-                        const adapters = {};
-                        doc.rows.forEach(item => adapters[item.value._id] = item.value);
-                        BlocklyEditor.loadCustomBlockly(adapters, () => resolve());
-                    } else {
-                        resolve();
-                    }
-                }));
+        return this.socket.getObjectView('system.adapter.', 'system.adapter.\u9999', 'adapter')
+            .then(adapters =>
+                new Promise(resolve =>
+                    BlocklyEditor.loadCustomBlockly(adapters, () => resolve())));
     }
 
     onInstanceAliveChange = (id, state) => {
@@ -281,45 +305,12 @@ class App extends GenericApp {
             id = id && id.substring(0, id.length - 6); // - .alive
 
             if (this.state.runningInstances[id] !== (state ? state.val : false)) {
-                const runningInstances = [...this.state.runningInstances];
+                const runningInstances = JSON.parse(JSON.stringify(this.state.runningInstances));
                 runningInstances[id] = state ? state.val : false;
                 this.setState({runningInstances});
             }
         }
     };
-
-    /*onObjectChange(objects, scripts, isReady) {
-        this.objects = objects;
-        // extract scripts and instances
-        const nScripts = {};
-        const newState = {};
-
-        scripts.list.forEach(id => nScripts[id] = objects[id]);
-        scripts.groups.forEach(id => nScripts[id] = objects[id]);
-        this.hosts = scripts.hosts;
-
-        if (window.localStorage && window.localStorage.getItem('App.expertMode') !== 'true' && window.localStorage.getItem('App.expertMode') !== 'false') {
-            // detect if some global scripts exists
-            if (scripts.list.find(id => id.startsWith('script.js.global.'))) {
-                newState.expertMode = true;
-            }
-        }
-
-        let scriptsHash = this.state.scriptsHash;
-        if (this.compareScripts(scripts)) {
-            scriptsHash++;
-        }
-        scripts.instances.sort();
-        this.scripts = nScripts;
-        newState.instances = scripts.instances;
-        newState.scriptsHash = scriptsHash;
-
-        if (isReady !== undefined) {
-            newState.ready = isReady;
-        }
-
-        BlocklyEditor.loadCustomBlockly(objects, () => this.setState(newState));
-    }*/
 
     compareScripts(newScripts) {
         const oldIds = Object.keys(this.scripts);
@@ -377,9 +368,9 @@ class App extends GenericApp {
                 newId = parts.join('.') + '.' + newId.split('.').pop();
             }
 
-            promise = this.socket.updateScript(oldId, newId, common);
+            promise = this.updateScript(oldId, newId, common);
         } else {
-            promise = this.socket.renameGroup(oldId, newId, newName);
+            promise = this.renameGroup(oldId, newId, newName);
         }
 
         promise
@@ -387,9 +378,47 @@ class App extends GenericApp {
             .catch(err => err !== 'canceled' && this.showError(err));
     }
 
+    renameGroup(id, newId, newName, _list) {
+        if (!_list) {
+            _list = [];
+
+            // collect all elements to rename
+            // find all elements
+            _list = Object.keys(this.scripts).filter(_id => _id.startsWith(id + '.'));
+
+            return this.socket.getObject(id)
+                .then(obj => {
+                    obj = obj || {common: {}};
+                    obj.common.name = newName;
+                    obj._id = newId;
+
+                    this.socket.delObject(id)
+                        .catch(() => {})
+                        .then(() => this.socket.setObject(newId, obj))
+                        .then(() => this.renameGroup(id, newId, newName, _list));
+                });
+        } else if (_list.length) {
+            let nId = _list.pop();
+
+            return this.socket.getObject(nId)
+                .then(obj =>
+                    this.socket.delObject(nId)
+                        .catch(() => {})
+                        .then(() => {
+                            nId = newId + nId.substring(id.length);
+                            obj._id = nId;
+                            return this.socket.setObject(nId, obj);
+                        })
+                        .then(() => this.renameGroup(id, newId, newName, _list))
+                );
+        } else {
+            return Promise.resolve();
+        }
+    }
+
     onUpdateScript(id, common) {
         if (this.scripts[id] && this.scripts[id].type === 'script') {
-            this.socket.updateScript(id, id, common)
+            this.updateScript(id, id, common)
                 .then(() => {})
                 .catch(err => err !== 'canceled' && this.showError(err));
         }
@@ -410,11 +439,11 @@ class App extends GenericApp {
     }
 
     showError(err) {
-        this.setState({ errorText: err });
+        this.setState({ errorText: err ? err.toString() : '' });
     }
 
     showMessage(message) {
-        this.setState({ message });
+        this.setState({ message: message ? message.toString() : '' });
     }
 
     onDelete(id) {
@@ -434,8 +463,7 @@ class App extends GenericApp {
         const reg = new RegExp(`^${id}\\.`);
 
         if (Object.keys(this.scripts).find(_id => id === _id || reg.test(id))) {
-            this.showError(I18n.t('Yet exists!'));
-            return;
+            return this.showError(I18n.t('Yet exists!'));
         }
 
         if (isFolder) {
@@ -449,8 +477,7 @@ class App extends GenericApp {
                 .then(() =>
                     setTimeout(() => this.setState({menuSelectId: id}, () =>
                         setTimeout(() => this.setState({menuSelectId: ''})), 300), 1000))
-                .catch(err =>
-                    this.showError(err));
+                .catch(err => this.showError(err));
         } else {
             this.socket.setObject(id, {
                 common: {
@@ -463,11 +490,9 @@ class App extends GenericApp {
                     verbose: false
                 },
                 type: 'script'
-            }).then(() => {
-                setTimeout(() => this.onSelect(id), 1000);
-            }).catch(err => {
-                this.showError(err);
-            });
+            })
+                .then(() => setTimeout(() => this.onSelect(id), 1000))
+                .catch(err => this.showError(err));
         }
     }
 
@@ -491,11 +516,11 @@ class App extends GenericApp {
                         }
 
                         return new Promise((resolve, reject) =>
-                            this._socket.emit('extendObject', oldId, obj, err =>
+                            this.socket.getRawSocket().emit('extendObject', oldId, obj, err =>
                                 err ? reject(err) : resolve()));
                     } else {
                         return new Promise((resolve, reject) =>
-                            this._socket.emit('extendObject', oldId, obj, err =>
+                            this.socket.getRawSocket().emit('extendObject', oldId, obj, err =>
                                 err ? reject(err) : resolve()));
                     }
                 } else {
@@ -556,13 +581,14 @@ class App extends GenericApp {
 
         if (_list.length) {
             const id = _list.shift();
-            this.socket.getState(id + '.alive', (err, state) => {
-                if (!err && state && state.val) {
-                    cb(id);
-                } else {
-                    setTimeout(() => this.getLiveHost(cb, _list));
-                }
-            });
+            this.socket.getState(id + '.alive')
+                .then(state => {
+                    if (state && state.val) {
+                        cb(id);
+                    } else {
+                        setTimeout(() => this.getLiveHost(cb, _list));
+                    }
+                });
         } else {
             cb();
         }
@@ -571,8 +597,7 @@ class App extends GenericApp {
     onExport() {
         this.getLiveHost(host => {
             if (!host) {
-                this.showError(I18n.t('No active host found'));
-                return;
+                return this.showError(I18n.t('No active host found'));
             }
 
             const d = new Date();
@@ -588,7 +613,7 @@ class App extends GenericApp {
             }
             date += '-' + m + '-';
 
-            this.socket.socket.emit('sendToHost', host, 'readObjectsAsZip', {
+            this.socket.getRawSocket().emit('sendToHost', host, 'readObjectsAsZip', {
                 adapter: 'javascript',
                 id: 'script.js',
                 link: date + 'scripts.zip' // request link to file and not the data itself
@@ -637,7 +662,7 @@ class App extends GenericApp {
                     this.showError(I18n.t('No active host found'));
                     return;
                 }
-                this.socket.socket.emit('sendToHost', host, 'writeObjectsAsZip', {
+                this.socket.getRawSocket().emit('sendToHost', host, 'writeObjectsAsZip', {
                     data: data,
                     adapter: 'javascript',
                     id: 'script.js'
@@ -661,20 +686,20 @@ class App extends GenericApp {
 
     renderMain() {
         const {classes} = this.props;
-        const errorDialog = this.state.errorText ? (<DialogError key="dialogError" onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/>) : null;
+        const errorDialog = this.state.errorText ? <DialogError key="dialogError" onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/> : null;
         return [
-            this.state.message ? (<DialogMessage key="dialogMessage" onClose={() => this.setState({message: ''})} text={this.state.message}/>) : null,
+            this.state.message ? <DialogMessage key="dialogMessage" onClose={() => this.setState({message: ''})} text={this.state.message}/> : null,
             errorDialog,
-            this.state.importFile ? (<DialogImportFile key="dialogImportFile" onClose={data => this.onImport(data)} />) : null,
-            this.state.confirm ? (<DialogConfirm
+            this.state.importFile ? <DialogImportFile key="dialogImportFile" onClose={data => this.onImport(data)} /> : null,
+            this.state.confirm ? <DialogConfirm
                 key="dialogConfirm"
                 onClose={result => {
                     this.state.confirm && this.setState({confirm: ''});
                     this.confirmCallback && this.confirmCallback(result);
                     this.confirmCallback = null;
                 }}
-                text={this.state.confirm}/>) : null,
-            (<div className={classes.content + ' iobVerticalSplitter'} key="main">
+                text={this.state.confirm}/> : null,
+            <div className={classes.content + ' iobVerticalSplitter'} key="main">
                 <div key="closeMenu" className={classes.menuOpenCloseButton} onClick={() => {
                     window.localStorage && window.localStorage.setItem('App.menuOpened', this.state.menuOpened ? 'false' : 'true');
                     this.setState({menuOpened: !this.state.menuOpened, resizing: true});
@@ -699,7 +724,6 @@ class App extends GenericApp {
                         key="editor"
                         visible={!this.state.resizing}
                         connection={this.socket}
-
                         onLocate={menuSelectId => this.setState({menuSelectId})}
                         runningInstances={this.state.runningInstances}
                         menuOpened={this.state.menuOpened}
@@ -726,7 +750,7 @@ class App extends GenericApp {
                     />
                     <Log key="log" verticalLayout={!this.state.logHorzLayout} onLayoutChange={() => this.toggleLogLayout()} editing={this.state.editing} connection={this.socket} selected={this.state.selected}/>
                 </SplitterLayout>
-            </div>),
+            </div>,
         ];
     }
 
@@ -738,57 +762,54 @@ class App extends GenericApp {
             return (<Loader theme={this.state.themeType}/>);
         }
 
-        return (
-                <div className={classes.root}>
-                    <SplitterLayout
-                        key="menuSplitter"
-                        vertical={false}
-                        primaryMinSize={300}
-                        primaryIndex={1}
-                        secondaryMinSize={300}
-                        secondaryInitialSize={this.menuSize}
-                        customClassName={classes.splitterDivs + ' ' + (!this.state.menuOpened ? classes.menuDivWithoutMenu : '')}
-                        onDragStart={() => this.setState({resizing: true})}
-                        onSecondaryPaneSizeChange={size => this.menuSize = parseFloat(size)}
-                        onDragEnd={() => {
-                            this.setState({resizing: false});
-                            window.localStorage && window.localStorage.setItem('App.menuSize', this.menuSize.toString());
+        return <div className={classes.root}>
+            <SplitterLayout
+                key="menuSplitter"
+                vertical={false}
+                primaryMinSize={300}
+                primaryIndex={1}
+                secondaryMinSize={300}
+                secondaryInitialSize={this.menuSize}
+                customClassName={classes.splitterDivs + ' ' + (!this.state.menuOpened ? classes.menuDivWithoutMenu : '')}
+                onDragStart={() => this.setState({resizing: true})}
+                onSecondaryPaneSizeChange={size => this.menuSize = parseFloat(size)}
+                onDragEnd={() => {
+                    this.setState({resizing: false});
+                    window.localStorage && window.localStorage.setItem('App.menuSize', this.menuSize.toString());
+                }}
+            >
+                <div className={classes.mainDiv} key="menu">
+                    <SideMenu
+                        key="sidemenu"
+                        scripts={this.scripts}
+                        scriptsHash={this.state.scriptsHash}
+                        instances={this.state.instances}
+                        update={this.state.updateScripts}
+                        onRename={this.onRename.bind(this)}
+                        onSelect={this.onSelect.bind(this)}
+                        connection={this.socket}
+                        selectId={this.state.menuSelectId}
+                        onEdit={this.onEdit.bind(this)}
+                        expertMode={this.state.expertMode}
+                        theme={this.state.themeType}
+                        onThemeChange={theme => {
+                            window.localStorage && window.localStorage.setItem('App.theme', theme);
+                            this.setState({themeType: theme}, () => this.props.onThemeChange(theme))
                         }}
-                    >
-                        <div className={classes.mainDiv} key="menu">
-                            <SideMenu
-                                key="sidemenu"
-                                scripts={this.scripts}
-                                objects={this.objects}
-                                scriptsHash={this.state.scriptsHash}
-                                instances={this.state.instances}
-                                update={this.state.updateScripts}
-                                onRename={this.onRename.bind(this)}
-                                onSelect={this.onSelect.bind(this)}
-                                connection={this.socket}
-                                selectId={this.state.menuSelectId}
-                                onEdit={this.onEdit.bind(this)}
-                                expertMode={this.state.expertMode}
-                                theme={this.state.themeType}
-                                onThemeChange={theme => {
-                                    window.localStorage && window.localStorage.setItem('App.theme', theme);
-                                    this.setState({themeType: theme}, () => this.props.onThemeChange(theme))
-                                }}
-                                runningInstances={this.state.runningInstances}
-                                onExpertModeChange={this.onExpertModeChange.bind(this)}
-                                onDelete={this.onDelete.bind(this) }
-                                onAddNew={ this.onAddNew.bind(this) }
-                                onEnableDisable={this.onEnableDisable.bind(this)}
-                                onExport={this.onExport.bind(this)}
-                                width={this.menuSize}
-                                onImport={() => this.setState({importFile: true})}
-                                onSearch={searchText => this.setState({searchText})}
-                            />
-                        </div>
-                        {this.renderMain()}
-                    </SplitterLayout>
+                        runningInstances={this.state.runningInstances}
+                        onExpertModeChange={this.onExpertModeChange.bind(this)}
+                        onDelete={this.onDelete.bind(this) }
+                        onAddNew={ this.onAddNew.bind(this) }
+                        onEnableDisable={this.onEnableDisable.bind(this)}
+                        onExport={this.onExport.bind(this)}
+                        width={this.menuSize}
+                        onImport={() => this.setState({importFile: true})}
+                        onSearch={searchText => this.setState({searchText})}
+                    />
                 </div>
-        );
+                {this.renderMain()}
+            </SplitterLayout>
+        </div>;
     }
 }
 

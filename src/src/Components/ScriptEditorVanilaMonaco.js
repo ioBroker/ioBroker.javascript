@@ -82,18 +82,19 @@ class ScriptEditor extends React.Component {
 
             // Load typings for the JS editor
             /** @type {string} */
-            let scriptAdapterInstance = this.props.connection.getScripts().instances[0];
+            let scriptAdapterInstance = this.props.runningInstances[0];
             if (scriptAdapterInstance || scriptAdapterInstance === 0) {
-                this.props.connection.sendTo('javascript.' + scriptAdapterInstance, 'loadTypings', null, result => {
-                    this.setState({alive: true, check: true});
-                    this.setTypeCheck(true);
-                    if (result.typings) {
-                        this.typings = result.typings;
-                        this.setEditorTypings();
-                    } else {
-                        console.error(`failed to load typings: ${result.error}`);
-                    }
-                });
+                this.props.connection.sendTo('javascript.' + scriptAdapterInstance, 'loadTypings', null)
+                    .then(result => {
+                        this.setState({alive: true, check: true});
+                        this.setTypeCheck(true);
+                        if (result.typings) {
+                            this.typings = result.typings;
+                            this.setEditorTypings();
+                        } else {
+                            console.error(`failed to load typings: ${result.error}`);
+                        }
+                    });
             }
             this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.KEY_S, () =>
                 this.onForceSave());
@@ -312,6 +313,7 @@ class ScriptEditor extends React.Component {
 
 ScriptEditor.propTypes = {
     connection: PropTypes.object,
+    runningInstances: PropTypes.object,
     name: PropTypes.string,
     onChange: PropTypes.func,
     onForceSave: PropTypes.func,

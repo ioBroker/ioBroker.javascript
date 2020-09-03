@@ -280,7 +280,7 @@ class Editor extends React.Component {
         newState = newState || {};
 
         let _changed = false;
-        if (this.state.editing && nextProps.objects['system.config']) {
+        if (this.state.editing) {
             const isAnyNonExists = this.state.editing.find(id => !nextProps.objects[id]);
 
             if (isAnyNonExists) {
@@ -879,6 +879,7 @@ class Editor extends React.Component {
                     code={this.scripts[this.state.selected].source || ''}
                     isDark={this.state.theme === 'dark'}
                     connection={this.props.connection}
+                    runningInstances={this.state.runningInstances}
                     onChange={newValue => this.onChange({script: newValue})}
                     language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
                 />
@@ -1055,7 +1056,7 @@ class Editor extends React.Component {
 
 Editor.propTypes = {
     objects: PropTypes.object.isRequired,
-    instances: PropTypes.object.isRequired,
+    instances: PropTypes.array.isRequired,
     selected: PropTypes.string.isRequired,
     onSelectedChange: PropTypes.func.isRequired,
     onRestart: PropTypes.func,

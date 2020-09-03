@@ -487,7 +487,7 @@ class SideDrawer extends React.Component {
             this.state.listItems,
             this.state.searchMode,
             this.state.searchText,
-            this.props.objects
+            this.props.scripts
         );
 
         if (newState) {
@@ -533,7 +533,7 @@ class SideDrawer extends React.Component {
             newState.listItems = listItems;
 
             if (state.searchText) {
-                const nState = SideDrawer.filterListStatic(true, listItems, state.searchMode, state.searchText, props.objects);
+                const nState = SideDrawer.filterListStatic(true, listItems, state.searchMode, state.searchText, props.scripts);
                 nState && Object.assign(newState, nState);
             }
 
@@ -967,7 +967,7 @@ class SideDrawer extends React.Component {
         let i = 1;
         let word = I18n.t('Script') + ' ';
         if (copyId) {
-            let name = getObjectName(copyId, this.props.objects[copyId]);
+            let name = getObjectName(copyId, this.props.scripts[copyId]);
             const m = name.match(/\d+$/);
             if (m) {
                 word = name.replace(/\d+$/, '');
@@ -1331,7 +1331,7 @@ class SideDrawer extends React.Component {
         const {classes} = this.props;
 
         const renamingItem = this.state.renaming && this.state.listItems.find(i => i.id === this.state.renaming);
-        const copingItem = this.state.copingScript && this.props.objects[this.state.copingScript];
+        const copingItem = this.state.copingScript && this.props.scripts[this.state.copingScript];
 
         return [(
             <Drawer
@@ -1424,7 +1424,7 @@ class SideDrawer extends React.Component {
                 type={(copingItem && copingItem.common && copingItem.common.engineType) || 'Javascript/js'}
                 parent={this.parent}
                 onAdd={(id, name, instance, type) => {
-                    const copingItem = this.state.copingScript && this.props.objects[this.state.copingScript];
+                    const copingItem = this.state.copingScript && this.props.scripts[this.state.copingScript];
                     if (copingItem && copingItem.common) {
                         // disable script by coping
                         copingItem.common.enabled = false;
@@ -1468,7 +1468,6 @@ SideDrawer.propTypes = {
     onDelete: PropTypes.func,
     onImport: PropTypes.func,
     onExport: PropTypes.func,
-    objects: PropTypes.object,
     onSearch: PropTypes.func,
     onThemeChange: PropTypes.func,
     width: PropTypes.number

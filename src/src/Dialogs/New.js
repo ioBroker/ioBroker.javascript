@@ -74,6 +74,7 @@ class DialogNew extends React.Component {
                         <TextField
                             style={{width: '100%'}}
                             id="standard-name"
+                            autoFocus
                             error={!!this.state.error}
                             label={I18n.t('Name')}
                             value={this.state.name}
@@ -142,7 +143,7 @@ class DialogNew extends React.Component {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleOk} disabled={!!this.state.error} color="primary">{I18n.t('Ok')}</Button>
-                    <Button onClick={this.handleCancel} color="primary">{I18n.t('Cancel')}</Button>
+                    <Button onClick={this.handleCancel}>{I18n.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>
         );
