@@ -83,22 +83,21 @@ class BlocklyEditor extends React.Component {
         }
     }
 
-    static loadCustomBlockly(objects, callback) {
+    static loadCustomBlockly(adapters, callback) {
         // get all adapters, that can have blockly
         const toLoad = [];
-        for (const id in objects) {
-            if (
-                !objects.hasOwnProperty(id) ||
-                !objects[id] ||
+        for (const id in adapters) {
+            if (!adapters.hasOwnProperty(id) ||
+                !adapters[id] ||
                 !id.match(/^system\.adapter\./) ||
-                objects[id].type !== 'adapter'
+                adapters[id].type !== 'adapter'
             ) {
                 continue;
             }
 
-            if (objects[id].common && objects[id].common.blockly) {
-                console.log('Detected custom blockly: ' + objects[id].common.name);
-                toLoad.push(objects[id].common.name);
+            if (adapters[id].common && adapters[id].common.blockly) {
+                console.log('Detected custom blockly: ' + adapters[id].common.name);
+                toLoad.push(adapters[id].common.name);
             }
         }
 

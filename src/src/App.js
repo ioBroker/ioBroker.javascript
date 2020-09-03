@@ -6,6 +6,7 @@ import {MdArrowBack as IconMenuOpened} from 'react-icons/md';
 
 import 'react-splitter-layout/lib/index.css';
 
+import GenericApp from '@iobroker/adapter-react/GenericApp';
 import Connection from '@iobroker/adapter-react/Connection';
 import {PROGRESS} from '@iobroker/adapter-react/Connection';
 import Loader from '@iobroker/adapter-react/Components/Loader'
@@ -52,7 +53,7 @@ const styles = theme => ({
     content: {
         width: '100%',
         height: '100%',
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: theme.palette.background && theme.palette.background.default,
         position: 'relative'
     },
     splitterDivWithMenu: {
@@ -89,7 +90,7 @@ const styles = theme => ({
     }
 });
 
-class App extends Component {
+class App extends GenericApp {
     constructor(props) {
         super(props);
         this.objects = {};
@@ -108,30 +109,6 @@ class App extends Component {
             'zh-cn': require('./i18n/zh-cn'),
         });
 
-        this.state = {
-            connected: false,
-            progress: 0,
-            ready: false,
-            updateScripts: 0,
-            scriptsHash: 0,
-            instances: [],
-            updating: false,
-            resizing: false,
-            selected: null,
-            logMessage: {},
-            editing: [],
-            menuOpened: window.localStorage ? window.localStorage.getItem('App.menuOpened') !== 'false' : true,
-            menuSelectId: '',
-            errorText: '',
-            expertMode: window.localStorage ? window.localStorage.getItem('App.expertMode') === 'true' : false,
-            logHorzLayout: window.localStorage ? window.localStorage.getItem('App.logHorzLayout') === 'true' : false,
-            runningInstances: {},
-            confirm: '',
-            importFile: false,
-            message: '',
-            searchText: '',
-            themeType: window.localStorage ? window.localStorage.getItem('App.theme') || 'light' : 'light',
-        };
         // this.logIndex = 0;
         this.logSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.logSize')) || 150 : 150;
         this.menuSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.menuSize')) || 500 : 500;
@@ -139,7 +116,25 @@ class App extends Component {
         this.hosts = [];
         this.importFile = null;
 
-        let port = parseInt(window.location.port, 10);
+        super(props, {
+            bottomButtons: false,
+            socket: {
+                autoSubscribes: ['script.*', 'system.adapter.*', 'system.host.*'],
+                autoSubscribeLog: true
+            },
+            onObjectChange: (id, obj) => {
+
+                if (id.match(/^system\.adapter\.[-_\w\d]+\$/)) {
+                    if (obj[id].common && obj[id].common.blockly) {
+                        this.confirmCallback = result => result && window.location.reload();
+                        this.setState({confirm: I18n.t('Some blocks were updated. Reload admin?')});
+                    }
+                }
+
+            }
+        });
+
+        /*let port = parseInt(window.location.port, 10);
         if (isNaN(port)) {
             switch (window.location.protocol) {
                 case 'https:':
@@ -186,27 +181,114 @@ class App extends Component {
                 //this.logIndex++;
                 //this.setState({logMessage: {index: this.logIndex, message}})
             }
-        });
+        });*/
     }
 
-    subscribeOnAlive() {
-        if (!this.subscribeDone && this.socket) {
-            this.subscribeDone = true;
-            this.socket.subscribeState('system.adapter.javascript.*.alive', (id, state) => {
-                if (id) {
-                    id = id && id.substring(0, id.length - 6); // - .alive
+    onConnectionReady() {
+        window.systemLang = this.socket.systemLang;
+        this.setState({
+            ready: false,
+            updateScripts: 0,
+            scriptsHash: 0,
+            instances: [],
+            updating: false,
+            resizing: false,
+            selected: null,
+            logMessage: {},
+            editing: [],
+            menuOpened: window.localStorage ? window.localStorage.getItem('App.menuOpened') !== 'false' : true,
+            menuSelectId: '',
+            expertMode: window.localStorage ? window.localStorage.getItem('App.expertMode') === 'true' : false,
+            logHorzLayout: window.localStorage ? window.localStorage.getItem('App.logHorzLayout') === 'true' : false,
+            runningInstances: {},
+            confirm: '',
+            importFile: false,
+            message: '',
+            searchText: '',
+        });
 
-                    if (this.state.runningInstances[id] !== (state ? state.val : false)) {
-                        const runningInstances = JSON.parse(JSON.stringify(this.state.runningInstances));
-                        runningInstances[id] = (state ? state.val : false);
-                        this.setState({runningInstances});
+        const newState = {};
+
+        // load instances & scripts
+        // Read all instances
+        this.socket.getAdapterInstances(this.adapterName)
+            .then(instances => {
+                newState.instances = Object.keys(instances).sort();
+
+                // subscribe on instances
+                instances.forEach(instance =>
+                    this.socket.subscribeState(instance + '.alive', this.onInstanceAliveChange));
+
+                return this.readAdaptersWithBlockly();
+            })
+            .then(() => this.socket.getHosts())
+            .then(hosts => {
+                this.hosts = hosts.map(obj => obj._id);
+                // load all scripts
+                return this.readAllScripts();
+            })
+            .then(scripts => {
+                if (window.localStorage && window.localStorage.getItem('App.expertMode') !== 'true' && window.localStorage.getItem('App.expertMode') !== 'false') {
+                    // detect if some global scripts exists
+                    if (Object.keys(scripts).find(id => id.startsWith('script.js.global.') && scripts.type === 'script')) {
+                        newState.expertMode = true;
                     }
                 }
+                this.scripts = scripts;
+
+                let scriptsHash = this.state.scriptsHash;
+                if (this.compareScripts(scripts)) {
+                    scriptsHash++;
+                }
+                newState.scriptsHash = scriptsHash;
+                newState.ready = true;
+                this.setState(newState);
             });
-        }
     }
 
-    onObjectChange(objects, scripts, isReady) {
+    readAllScripts() {
+        return new Promise(resolve =>
+            this._socket.emit('getObjectView', 'system', 'channel', {startkey: 'script.js.', endkey: 'script.js.\u9999'}, (err, doc) => {
+                const scripts = {};
+                if (!err) {
+                    doc.rows.forEach(item => scripts[item.value._id] = item.value);
+                }
+                this._socket.emit('getObjectView', 'system', 'script', {startkey: 'script.js.', endkey: 'script.js.\u9999'}, (err, doc) => {
+                    if (!err) {
+                        const scripts = {};
+                        doc.rows.forEach(item => scripts[item.value._id] = item.value);
+                    }
+                    resolve(scripts);
+                });
+            }));
+    }
+
+    readAdaptersWithBlockly() {
+        return new Promise(resolve =>
+            this._socket.emit('getObjectView', 'system', 'adapter', {startkey: 'system.adapter.', endkey: 'system.adapter.\u9999'}, (err, doc) => {
+                    if (!err) {
+                        const adapters = {};
+                        doc.rows.forEach(item => adapters[item.value._id] = item.value);
+                        BlocklyEditor.loadCustomBlockly(adapters, () => resolve());
+                    } else {
+                        resolve();
+                    }
+                }));
+    }
+
+    onInstanceAliveChange = (id, state) => {
+        if (id) {
+            id = id && id.substring(0, id.length - 6); // - .alive
+
+            if (this.state.runningInstances[id] !== (state ? state.val : false)) {
+                const runningInstances = [...this.state.runningInstances];
+                runningInstances[id] = state ? state.val : false;
+                this.setState({runningInstances});
+            }
+        }
+    };
+
+    /*onObjectChange(objects, scripts, isReady) {
         this.objects = objects;
         // extract scripts and instances
         const nScripts = {};
@@ -237,7 +319,7 @@ class App extends Component {
         }
 
         BlocklyEditor.loadCustomBlockly(objects, () => this.setState(newState));
-    }
+    }*/
 
     compareScripts(newScripts) {
         const oldIds = Object.keys(this.scripts);
@@ -314,7 +396,7 @@ class App extends Component {
     }
 
     onSelect(selected) {
-        if (this.objects[selected] && this.objects[selected].common && this.objects[selected].type === 'script') {
+        if (this.scripts[selected] && this.scripts[selected].common && this.scripts[selected].type === 'script') {
             this.setState({selected, menuSelectId: selected}, () =>
                 setTimeout(() => this.setState({menuSelectId: ''})), 300);
         }
@@ -351,7 +433,7 @@ class App extends Component {
     onAddNew(id, name, isFolder, instance, type, source) {
         const reg = new RegExp(`^${id}\\.`);
 
-        if (Object.keys(this.objects).find(_id => id === _id || reg.test(id))) {
+        if (Object.keys(this.scripts).find(_id => id === _id || reg.test(id))) {
             this.showError(I18n.t('Yet exists!'));
             return;
         }
@@ -389,20 +471,87 @@ class App extends Component {
         }
     }
 
+    updateScript(oldId, newId, newCommon) {
+        return this.socket.getObject(oldId)
+            .then(_obj => {
+                const obj = {common: {}};
+
+                if (newCommon.engine  !== undefined) obj.common.engine  = newCommon.engine;
+                if (newCommon.enabled !== undefined) obj.common.enabled = newCommon.enabled;
+                if (newCommon.source  !== undefined) obj.common.source  = newCommon.source;
+                if (newCommon.debug   !== undefined) obj.common.debug   = newCommon.debug;
+                if (newCommon.verbose !== undefined) obj.common.verbose = newCommon.verbose;
+
+                obj.from = 'system.adapter.admin.0'; // we must distinguish between GUI(admin.0) and disk(javascript.0)
+
+                if (oldId === newId && _obj && _obj.common && newCommon.name === _obj.common.name) {
+                    if (!newCommon.engineType || newCommon.engineType !== _obj.common.engineType) {
+                        if (newCommon.engineType !== undefined) {
+                            obj.common.engineType = newCommon.engineType || 'Javascript/js';
+                        }
+
+                        return new Promise((resolve, reject) =>
+                            this._socket.emit('extendObject', oldId, obj, err =>
+                                err ? reject(err) : resolve()));
+                    } else {
+                        return new Promise((resolve, reject) =>
+                            this._socket.emit('extendObject', oldId, obj, err =>
+                                err ? reject(err) : resolve()));
+                    }
+                } else {
+                    // let prefix;
+
+                    // let parts = _obj.common.engineType.split('/');
+
+                    // prefix = 'script.' + (parts[1] || parts[0]) + '.';
+
+                    if (_obj && _obj.common) {
+                        _obj.common.engineType = newCommon.engineType || _obj.common.engineType || 'Javascript/js';
+                        return this.socket.delObject(oldId)
+                            .then(() => {
+                                if (obj.common.engine !== undefined) _obj.common.engine = obj.common.engine;
+                                if (obj.common.enabled !== undefined) _obj.common.enabled = obj.common.enabled;
+                                if (obj.common.source !== undefined) _obj.common.source = obj.common.source;
+                                if (obj.common.name !== undefined) _obj.common.name = obj.common.name;
+                                if (obj.common.debug !== undefined) _obj.common.debug = obj.common.debug;
+                                if (obj.common.verbose !== undefined) _obj.common.verbose = obj.common.verbose;
+
+                                delete _obj._rev;
+
+                                // Name must always exist
+                                _obj.common.name = newCommon.name;
+
+                                _obj._id = newId; // prefix + newCommon.name.replace(/[\s"']/g, '_');
+
+                                this.socket.setObject(newId, _obj);
+                            });
+                    } else {
+                        _obj = obj;
+                    }
+
+                    // Name must always exist
+                    _obj.common.name = newCommon.name;
+
+                    _obj._id = newId; // prefix + newCommon.name.replace(/[\s"']/g, '_');
+
+                    return this.socket.setObject(newId, _obj);
+                }
+            });
+    }
+
     onEnableDisable(id, enabled) {
         if (this.scripts[id] && this.scripts[id].type === 'script') {
-            const common = this.objects[id].common;
+            const common = this.scripts[id].common;
             common.enabled = enabled;
             common.expert = true;
-            this.socket.updateScript(id, id, common)
-                .then(() => {})
+            this.updateScript(id, id, common)
                 .catch(err => err !== 'canceled' && this.showError(err));
         }
     }
 
     getLiveHost(cb, _list) {
         if (!_list) {
-            _list = JSON.parse(JSON.stringify(this.hosts)) || [];
+            _list = this.hosts ? [...this.hosts] : [];
         }
 
         if (_list.length) {
@@ -571,8 +720,9 @@ class App extends Component {
                             changed && this.setState(newState);
                         }}
                         onRestart={id => this.socket.extendObject(id, {common: {enabled: true}})}
-                        selected={this.state.selected && this.objects[this.state.selected] && this.objects[this.state.selected].type === 'script' ? this.state.selected : ''}
-                        objects={this.objects}
+                        selected={this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].type === 'script' ? this.state.selected : ''}
+                        objects={this.scripts}
+                        instances={this.state.instances}
                     />
                     <Log key="log" verticalLayout={!this.state.logHorzLayout} onLayoutChange={() => this.toggleLogLayout()} editing={this.state.editing} connection={this.socket} selected={this.state.selected}/>
                 </SplitterLayout>

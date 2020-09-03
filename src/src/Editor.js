@@ -54,7 +54,6 @@ const MENU_ITEM_HEIGHT = 48;
 const COLOR_DEBUG = '#02a102';
 const COLOR_VERBOSE = '#70aae9';
 
-
 const styles = theme => ({
 
     toolbar: {
@@ -204,19 +203,10 @@ class Editor extends React.Component {
             isReturn: false
         };
 
-        const instances = [];
-        if (this.props.objects) {
-            for (let id in this.props.objects) {
-                if (this.props.objects.hasOwnProperty(id) && id.startsWith('system.adapter.') && this.props.objects[id] && this.props.objects[id].type === 'instance') {
-                    instances.push(id);
-                }
-            }
-        }
-
         window.systemLang = I18n.getLanguage();
         window.main = {
             objects: this.props.objects,
-            instances,
+            instances: this.props.instances,
             selectIdDialog: (initValue, cb) => {
                 this.selectId.callback = cb;
                 this.selectId.initValue = initValue;
@@ -357,26 +347,23 @@ class Editor extends React.Component {
             _changed = true;
         }
 
+        if (JSON.stringify(nextProps.instances) !== JSON.stringify(this.state.instances)) {
+            _changed = true;
+            newState.instances = nextProps.instances;
+            window.main.instances = newState.instances;
+        }
+
         // if objects read
         if (this.objects !== nextProps.objects) {
             this.objects = nextProps.objects;
             window.main.objects = nextProps.objects;
 
             // update all scripts
-            for (const id in this.scripts) {
-                if (!this.scripts.hasOwnProperty(id)) continue;
+            Object.keys(this.scripts).forEach(id => {
                 const source = this.scripts[id].source;
                 this.scripts[id] = JSON.parse(JSON.stringify(this.objects[id].common));
                 this.scripts[id].source = source;
-            }
-
-            const instances = [];
-            for (let id in window.main.objects) {
-                if (window.main.objects.hasOwnProperty(id) && id.startsWith('system.adapter.') && window.main.objects[id] && window.main.objects[id].type === 'instance') {
-                    instances.push(id);
-                }
-            }
-            window.main.instances = instances;
+            });
 
             // if script is blockly
             if (this.state.selected && this.objects[this.state.selected]) {
@@ -665,7 +652,7 @@ class Editor extends React.Component {
 
     getTabs() {
         if (this.state.editing.length) {
-            return [(<Tabs
+            return [<Tabs
                     component={'div'}
                     key="tabs1"
                     value={this.state.selected}
@@ -715,8 +702,8 @@ class Editor extends React.Component {
                             />);
                         }
                     })}
-                </Tabs>),
-                this.state.editing.length > 1 ? (<IconButton
+                </Tabs>,
+                this.state.editing.length > 1 ? <IconButton
                     key="menuButton"
                     href="#"
                     aria-label="Close all but current"
@@ -737,23 +724,23 @@ class Editor extends React.Component {
                     }}
                 >
                     <IconCloseAll />
-                </IconButton>) : null
+                </IconButton> : null
             ];
         } else {
-            return (<div key="tabs2" className={this.props.classes.toolbar}>
+            return <div key="tabs2" className={this.props.classes.toolbar}>
                 <Button key="select1" disabled={true} className={this.props.classes.hintButton} href="">
                     <span key="select2">{I18n.t('Click on this icon')}</span>
                     <IconDoEdit key="select3" className={this.props.classes.hintIcon}/>
                     <span key="select4">{I18n.t('for edit or create script')}</span>
                 </Button>
-            </div>);
+            </div>;
         }
     }
 
     getDebugMenu() {
         if (!this.state.showDebugMenu) return null;
 
-        return (<Menu
+        return <Menu
             key="menuDebug"
             id="menu-debug"
             anchorEl={this.state.menuDebugAnchorEl}
@@ -787,7 +774,7 @@ class Editor extends React.Component {
                 <IconVerbose className={this.props.classes.menuIcon} style={{color: COLOR_VERBOSE}}/>
                 {I18n.t('verbose')}
             </MenuItem>
-        </Menu>);
+        </Menu>;
     }
 
     getDebugBadge() {
@@ -805,8 +792,7 @@ class Editor extends React.Component {
         if (this.state.selected) {
             const changedAll = Object.keys(this.state.changed).filter(id => this.state.changed[id]).length;
             const changed = this.state.changed[this.state.selected];
-            return (
-                <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
+            return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
                     {this.state.menuOpened && this.props.onLocate && (<IconButton className={this.props.classes.toolbarButtons} key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate/></IconButton>)}
                     {!changed && isInstanceRunning && (<IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>)}
                     {!changed && !isScriptRunning && (<span className={ this.props.classes.notRunning }>{I18n.t('Script is not running')}</span>)}
@@ -869,7 +855,7 @@ class Editor extends React.Component {
                         </Badge>
                     </IconButton>)}
 
-                </Toolbar>);
+                </Toolbar>;
         } else {
             return null;
         }
@@ -947,7 +933,7 @@ class Editor extends React.Component {
                 key="dialogSelectID1"
                 prefix={'../..'}
                 theme={this.props.theme}
-                connection={this.props.connection}
+                scoket={this.props.connection}
                 selected={this.selectId.callback ? this.selectId.initValue || '' : this.getSelect ? this.getSelect() : ''}
                 statesOnly={true}
                 onClose={() => this.setState({showSelectId: false})}
@@ -1069,6 +1055,7 @@ class Editor extends React.Component {
 
 Editor.propTypes = {
     objects: PropTypes.object.isRequired,
+    instances: PropTypes.object.isRequired,
     selected: PropTypes.string.isRequired,
     onSelectedChange: PropTypes.func.isRequired,
     onRestart: PropTypes.func,
