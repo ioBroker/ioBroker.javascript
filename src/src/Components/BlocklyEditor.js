@@ -35,7 +35,7 @@ class BlocklyEditor extends React.Component {
             changed: false,
             message: '',
             error: '',
-            theme: this.props.theme,
+            themeType: this.props.themeType,
             exportText: '',
             importText: false,
             searchText: this.props.searchText || '',
@@ -192,8 +192,8 @@ class BlocklyEditor extends React.Component {
             this.searchId();
         }
 
-        if (this.state.theme !== nextProps.theme) {
-            this.setState({theme: nextProps.theme}, () => this.updateBackground());
+        if (this.state.themeType !== nextProps.themeType) {
+            this.setState({themeType: nextProps.themeType}, () => this.updateBackground());
         }
 
         if (this.originalCode !== nextProps.code) {
@@ -537,7 +537,7 @@ class BlocklyEditor extends React.Component {
 
     updateBackground() {
         const background = document.getElementsByClassName('blocklyMainBackground')[0];
-        if (this.state.theme === 'dark') {
+        if (this.state.themeType === 'dark') {
             let found = 0;
             for (let i = 0; i < background.classList.length; i++) {
                 if (background.classList[i] === this.props.classes.darkBackground) {
@@ -630,12 +630,12 @@ class BlocklyEditor extends React.Component {
                         }}/>) :
                     null,
 
-                this.state.exportText ? (<DialogExport key="dialogExport" theme={this.props.theme} onClose={() => this.setState({exportText: ''})} text={this.state.exportText}/>) : null,
+                this.state.exportText ? <DialogExport key="dialogExport" theme={this.state.themeType} onClose={() => this.setState({exportText: ''})} text={this.state.exportText}/> : null,
 
-                this.state.importText ? (<DialogImport key="dialogImport" theme={this.props.theme} onClose={text => {
+                this.state.importText ? <DialogImport key="dialogImport"  onClose={text => {
                     this.setState({importText: false});
                     this.onImportBlocks(text);
-                }}/>) : null
+                }}/> : null
             ];
         } else {
             return null;
@@ -647,7 +647,7 @@ BlocklyEditor.propTypes = {
     command: PropTypes.string,
     onChange: PropTypes.func,
     searchText: PropTypes.string,
-    theme: PropTypes.string
+    themeType: PropTypes.string
 };
 
 export default withStyles(styles)(BlocklyEditor);

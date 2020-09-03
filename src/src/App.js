@@ -11,6 +11,7 @@ import Loader from '@iobroker/adapter-react/Components/Loader'
 import I18n from '@iobroker/adapter-react/i18n';
 import DialogMessage from '@iobroker/adapter-react/Dialogs/Message';
 import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
+import Utils from '@iobroker/adapter-react/Components/Utils';
 
 import SideMenu from './SideMenu';
 import Log from './Log';
@@ -731,7 +732,8 @@ class App extends GenericApp {
                         runningInstances={this.state.runningInstances}
                         menuOpened={this.state.menuOpened}
                         searchText={this.state.searchText}
-                        theme={this.state.themeType}
+                        themeType={this.state.themeType}
+                        themeName={this.state.themeName}
                         onChange={(id, common) => this.onUpdateScript(id, common)}
                         onSelectedChange={(id, editing) => {
                             const newState = {};
@@ -762,7 +764,7 @@ class App extends GenericApp {
 
         if (!this.state.ready) {
             // return (<CircularProgress className={classes.progress} size={50} />);
-            return (<Loader theme={this.state.themeType}/>);
+            return <Loader theme={this.state.themeType}/>;
         }
 
         return <div className={classes.root}>
@@ -794,10 +796,12 @@ class App extends GenericApp {
                         selectId={this.state.menuSelectId}
                         onEdit={this.onEdit.bind(this)}
                         expertMode={this.state.expertMode}
-                        theme={this.state.themeType}
-                        onThemeChange={theme => {
-                            window.localStorage && window.localStorage.setItem('App.theme', theme);
-                            this.setState({themeType: theme}, () => this.props.onThemeChange(theme))
+                        themeType={this.state.themeType}
+                        themeName={this.state.themeName}
+                        onThemeChange={themeName => {
+                            Utils.setThemeName(themeName);
+                            const themeType = themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light';
+                            this.setState({themeName, themeType}, () => this.props.onThemeChange(themeName))
                         }}
                         runningInstances={this.state.runningInstances}
                         onExpertModeChange={this.onExpertModeChange.bind(this)}

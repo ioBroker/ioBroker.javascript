@@ -24,7 +24,7 @@ const styles = theme => ({
         height: '95%'
     },
     typography: {
-        padding: theme.spacing.unit * 2,
+        padding: theme.spacing(2),
     },
 });
 class DialogExport extends React.Component {
@@ -77,7 +77,7 @@ class DialogExport extends React.Component {
                 <DialogContent>
                     <pre
                         id="export-text"
-                        className={classes.textArea + ' ' + (this.props.theme === 'dark' ? '' : classes.textAreaLight)}
+                        className={classes.textArea + ' ' + (this.props.themeType === 'dark' ? '' : classes.textAreaLight)}
                     >{this.props.text}</pre>
                 </DialogContent>
                 <DialogActions>
@@ -109,7 +109,7 @@ DialogExport.propTypes = {
     classes: PropTypes.object.isRequired,
     onClose: PropTypes.func,
     text: PropTypes.string,
-    theme: PropTypes.string,
+    themeType: PropTypes.string,
 };
 
 export default withStyles(styles)(DialogExport);

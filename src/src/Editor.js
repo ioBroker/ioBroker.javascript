@@ -173,7 +173,7 @@ class Editor extends React.Component {
             showScript: false,
             insert: '',
             searchText: '',
-            theme: this.props.theme,
+            themeType: this.props.themeType,
             visible: props.visible,
             cmdToBlockly: '',
             menuOpened: !!this.props.menuOpened,
@@ -331,8 +331,8 @@ class Editor extends React.Component {
             _changed = true;
         }
 
-        if (this.state.theme !== nextProps.theme) {
-            newState.theme = nextProps.theme;
+        if (this.state.themeType !== nextProps.themeType) {
+            newState.themeType = nextProps.themeType;
             _changed = true;
         }
 
@@ -877,7 +877,7 @@ class Editor extends React.Component {
                     readOnly={this.state.showBlocklyCode}
                     changed={this.state.changed[this.state.selected]}
                     code={this.scripts[this.state.selected].source || ''}
-                    isDark={this.state.theme === 'dark'}
+                    isDark={this.state.themeType === 'dark'}
                     connection={this.props.connection}
                     runningInstances={this.state.runningInstances}
                     onChange={newValue => this.onChange({script: newValue})}
@@ -897,7 +897,7 @@ class Editor extends React.Component {
                 <BlocklyEditor
                     command={this.state.cmdToBlockly}
                     key="BlocklyEditor"
-                    theme={this.state.theme}
+                    themeType={this.state.themeType}
                     searchText={this.state.searchText}
                     resizing={this.props.resizing}
                     code={this.scripts[this.state.selected].source || ''}
@@ -930,11 +930,12 @@ class Editor extends React.Component {
 
     getSelectIdDialog() {
         if (this.state.showSelectId) {
-            return (<DialogSelectID
+            return <DialogSelectID
                 key="dialogSelectID1"
                 prefix={'../..'}
-                theme={this.props.theme}
-                scoket={this.props.connection}
+                themeName={this.props.themeName}
+                themeType={this.state.themeType}
+                socket={this.props.connection}
                 selected={this.selectId.callback ? this.selectId.initValue || '' : this.getSelect ? this.getSelect() : ''}
                 statesOnly={true}
                 onClose={() => this.setState({showSelectId: false})}
@@ -947,7 +948,7 @@ class Editor extends React.Component {
                         this.setState({insert: `'${selected}'/*${name}*/`})
                     }
                 }}
-            />);
+            />;
         } else {
             return null;
         }
@@ -976,13 +977,13 @@ class Editor extends React.Component {
 
     getEditorDialog() {
         if (this.state.showScript) {
-            return (<DialogScriptEditor
+            return <DialogScriptEditor
                 key="scriptEditorDialog"
                 source={this.scriptDialog.initValue}
                 args={this.scriptDialog.args ? this.scriptDialog.args.join(', ') : ''}
                 isReturn={this.scriptDialog.isReturn}
                 connection={this.props.connection}
-                theme={this.state.theme}
+                themeType={this.state.themeType}
                 onClose={result => {
                     this.scriptDialog.initValue = null;
                     if (this.scriptDialog.callback) {
@@ -991,7 +992,7 @@ class Editor extends React.Component {
                     }
                     this.setState({showScript: false});
                 }}
-            />);
+            />;
         } else {
             return null;
         }
@@ -1067,7 +1068,8 @@ Editor.propTypes = {
     runningInstances: PropTypes.object,
     connection: PropTypes.object,
     searchText: PropTypes.string,
-    theme: PropTypes.string
+    themeName: PropTypes.string,
+    themeType: PropTypes.string,
 };
 
 export default withStyles(styles)(Editor);

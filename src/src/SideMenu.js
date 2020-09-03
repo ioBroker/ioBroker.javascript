@@ -306,7 +306,7 @@ class SideDrawer extends React.Component {
             expanded: expanded,
             problems: [],
             reorder: false,
-            theme: this.props.theme,
+            themeName: this.props.themeName,
             dragDepth: 0,
             draggedId: null,
             selected: window.localStorage ? window.localStorage.getItem('SideMenu.selected') || null : null,
@@ -552,9 +552,9 @@ class SideDrawer extends React.Component {
             changed = true;
             newState.width = props.width;
         }
-        if (state.theme !== props.theme) {
+        if (state.themeName !== props.themeName) {
             changed = true;
-            newState.theme = props.theme;
+            newState.themeName = props.themeName;
         }
 
         if (props.selectId && state.selected !== props.selectId) {
@@ -1045,36 +1045,36 @@ class SideDrawer extends React.Component {
                               this.props.onExpertModeChange && this.props.onExpertModeChange(!this.state.expertMode));
                       }}><IconExpert className={this.props.classes.iconDropdownMenu} style={{color: 'orange'}}/>{I18n.t('Expert mode')}
             </MenuItem>
-            {this.props.onExport && (<MenuItem key="exportAll"
+            {this.props.onExport && <MenuItem key="exportAll"
                                                onClick={event => {
                                                    event.stopPropagation();
                                                    event.preventDefault();
                                                    this.onCloseMenu(() => this.props.onExport());
                                                }}><IconExport className={this.props.classes.iconDropdownMenu} />{I18n.t('Export all scripts')}
-            </MenuItem>)}
-            {this.props.onImport && (<MenuItem key="import"
+            </MenuItem>}
+            {this.props.onImport && <MenuItem key="import"
                                                onClick={event => {
                                                    event.stopPropagation();
                                                    event.preventDefault();
                                                    this.onCloseMenu(() => this.props.onImport());
                                                }}><IconImport className={this.props.classes.iconDropdownMenu} />{I18n.t('Import scripts')}
-            </MenuItem>)}
-            {this.props.onThemeChange && (<MenuItem key="dark"
-                                                    onClick={event => {
+            </MenuItem>}
+            {this.props.onThemeChange && <MenuItem key="dark"
+                                                    onClick={event =>
                                                         //event.stopPropagation();
                                                         //event.preventDefault();
                                                         this.onCloseMenu(() =>
-                                                            this.props.onThemeChange(this.state.theme === 'dark' ? 'light' : 'dark'));
-                                                    }}><IconDark className={this.props.classes.iconDropdownMenu} />{this.state.theme === 'dark' ? I18n.t('Light style') : I18n.t('Dark style')}
-            </MenuItem>)}
-            {this.props.onAddNew && (<MenuItem key="copy"
+                                                            this.props.onThemeChange(this.state.themeName === 'dark' ? 'light' : 'dark'))}>
+                <IconDark className={this.props.classes.iconDropdownMenu} />{this.state.themeName === 'dark' ? I18n.t('Light style') : I18n.t('Dark style')}
+            </MenuItem>}
+            {this.props.onAddNew && <MenuItem key="copy"
                                                disabled={!this.state.selected || !selectedItem || selectedItem.type === 'folder'}
                                                onClick={event => {
                                                    const selected = this.state.selected;
                                                    this.onCloseMenu(() => this.onCopy(event, selected))
                                                }}>
                 <IconCopy className={this.props.classes.iconDropdownMenu} />{I18n.t('Copy script')}
-            </MenuItem>)}
+            </MenuItem>}
         </Menu>);
     }
 
@@ -1461,7 +1461,8 @@ SideDrawer.propTypes = {
     onEnableDisable: PropTypes.func,
     runningInstances: PropTypes.object,
     connection: PropTypes.object,
-    theme: PropTypes.string,
+    themeName: PropTypes.string,
+    themeType: PropTypes.string,
     onSelect: PropTypes.func,
     onAddNew: PropTypes.func,
     onRename: PropTypes.func,

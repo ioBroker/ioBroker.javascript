@@ -102,7 +102,7 @@ class DialogScriptEditor extends React.Component {
                         readOnly={false}
                         checkJs={false}
                         code={this.state.source}
-                        isDark={this.props.theme === 'dark'}
+                        isDark={this.props.themeType === 'dark'}
                         onChange={newValue => this.onChange(newValue)}
                         language={'javascript'}
                     />
@@ -122,7 +122,7 @@ DialogScriptEditor.propTypes = {
     source: PropTypes.string,
     args: PropTypes.string,
     isReturn: PropTypes.bool,
-    theme: PropTypes.string,
+    themeType: PropTypes.string,
     connection: PropTypes.object
 };
 
