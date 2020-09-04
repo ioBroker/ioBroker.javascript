@@ -1045,27 +1045,37 @@ class SideDrawer extends React.Component {
                               this.props.onExpertModeChange && this.props.onExpertModeChange(!this.state.expertMode));
                       }}><IconExpert className={this.props.classes.iconDropdownMenu} style={{color: 'orange'}}/>{I18n.t('Expert mode')}
             </MenuItem>
-            {this.props.onExport && <MenuItem key="exportAll"
-                                               onClick={event => {
-                                                   event.stopPropagation();
-                                                   event.preventDefault();
-                                                   this.onCloseMenu(() => this.props.onExport());
-                                               }}><IconExport className={this.props.classes.iconDropdownMenu} />{I18n.t('Export all scripts')}
+            {this.props.onExport && <MenuItem
+                key="exportAll"
+                onClick={event => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    this.onCloseMenu(() => this.props.onExport());
+                }}>
+                <IconExport className={this.props.classes.iconDropdownMenu} />{I18n.t('Export all scripts')}
             </MenuItem>}
-            {this.props.onImport && <MenuItem key="import"
-                                               onClick={event => {
-                                                   event.stopPropagation();
-                                                   event.preventDefault();
-                                                   this.onCloseMenu(() => this.props.onImport());
-                                               }}><IconImport className={this.props.classes.iconDropdownMenu} />{I18n.t('Import scripts')}
+            {this.props.onImport && <MenuItem
+                key="import"
+                onClick={event => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    this.onCloseMenu(() => this.props.onImport());
+                }}>
+                <IconImport className={this.props.classes.iconDropdownMenu} />{I18n.t('Import scripts')}
             </MenuItem>}
-            {this.props.onThemeChange && <MenuItem key="dark"
-                                                    onClick={event =>
-                                                        //event.stopPropagation();
-                                                        //event.preventDefault();
-                                                        this.onCloseMenu(() =>
-                                                            this.props.onThemeChange(this.state.themeName === 'dark' ? 'light' : 'dark'))}>
-                <IconDark className={this.props.classes.iconDropdownMenu} />{this.state.themeName === 'dark' ? I18n.t('Light style') : I18n.t('Dark style')}
+            {this.props.onThemeChange && <MenuItem
+                key="dark"
+                onClick={event =>
+                    this.onCloseMenu(() => {
+
+                        // TODO: use Utils.toggleTheme(themeName)
+                        // newThemeName = Utils.toggleTheme(themeName);
+                        const newThemeName = this.state.themeName === 'dark' ? 'blue' :
+                            this.state.themeName === 'blue' ? 'colored' : this.state.themeName === 'colored' ? 'light' :
+                                this.state.themeName === 'light' ? 'dark' : 'colored';
+                        this.props.onThemeChange(newThemeName);
+                    })}>
+                <IconDark className={this.props.classes.iconDropdownMenu} />{I18n.t('Change theme (actual "%s")', this.state.themeName)}
             </MenuItem>}
             {this.props.onAddNew && <MenuItem key="copy"
                                                disabled={!this.state.selected || !selectedItem || selectedItem.type === 'folder'}

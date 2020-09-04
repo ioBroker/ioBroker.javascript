@@ -255,5 +255,6 @@
   "tooltip_user": "Użytkownik",
   "tooltip_value": "Wartość",
   "use seconds": "użyj sekund",
-  "Save all": "Zapisz wszystko"
+  "Save all": "Zapisz wszystko",
+  "hange theme (actual \"%s\")": "Zmień motyw (rzeczywiste - „%s”)"
 }

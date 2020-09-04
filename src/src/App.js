@@ -800,7 +800,7 @@ class App extends GenericApp {
                         themeName={this.state.themeName}
                         onThemeChange={themeName => {
                             Utils.setThemeName(themeName);
-                            const themeType = themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light';
+                            const themeType = Utils.getThemeType(themeName);
                             this.setState({themeName, themeType}, () => this.props.onThemeChange(themeName))
                         }}
                         runningInstances={this.state.runningInstances}

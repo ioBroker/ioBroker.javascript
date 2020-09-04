@@ -277,9 +277,12 @@ class ScriptEditor extends React.Component {
 
         if (this.insert !== nextProps.insert) {
             this.insert = nextProps.insert;
-            if (nextProps.insert) {
-                this.insertTextIntoEditor(nextProps.insert);
-                setTimeout(() => this.props.onInserted && this.props.onInserted(), 100);
+            if (this.insert) {
+                console.log('INsert text' + this.insert)
+                setTimeout(insert => {
+                    this.insertTextIntoEditor(insert);
+                    setTimeout(() => this.props.onInserted && this.props.onInserted(), 100);
+                }, 100, this.insert);
             }
         }
     }
