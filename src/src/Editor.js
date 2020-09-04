@@ -36,7 +36,6 @@ import ImgTypeScript from './assets/typescript.png';
 import ImgBlockly2Js from './assets/blockly2js.png'
 
 import I18n from '@iobroker/adapter-react/i18n';
-import Theme from './Theme';
 import ScriptEditor from './Components/ScriptEditorVanilaMonaco';
 import BlocklyEditor from './Components/BlocklyEditor';
 import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
@@ -67,7 +66,7 @@ const styles = theme => ({
         marginLeft: 4
     },
     editorDiv: {
-        height: `calc(100% - ${Theme.toolbar.height + 38/*Theme.toolbar.height */ + 1}px)`,
+        height: `calc(100% - ${theme.toolbar.height + 38/*Theme.toolbar.height */ + 1}px)`,
         width: '100%',
         overflow: 'hidden',
         position: 'relative'

@@ -9,16 +9,15 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import I18n from '@iobroker/adapter-react/i18n';
-import Themes from '../Theme';
 
 const styles = theme => ({
     titleBackground: {
-        background: Themes.colors.error.background
+        background: theme.palette.error.main,
     },
     titleColor: {
-        color: Themes.colors.error.color,
+        color: theme.palette.error.contrastText,
         '&>h2': {
-            color: Themes.colors.error.color,
+            color: theme.palette.error.contrastText,
         }
     },
 });

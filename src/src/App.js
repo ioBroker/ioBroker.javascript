@@ -16,13 +16,17 @@ import Utils from '@iobroker/adapter-react/Components/Utils';
 import SideMenu from './SideMenu';
 import Log from './Log';
 import Editor from './Editor';
-import Theme from './Theme';
 import DialogError from './Dialogs/Error';
 import DialogImportFile from './Dialogs/ImportFile';
 import BlocklyEditor from './Components/BlocklyEditor';
 
 const styles = theme => ({
-    root: Theme.root,
+    root: {
+        flexGrow: 1,
+        display: 'flex',
+        width: '100%',
+        height: '100%'
+    },
     menuDiv: {
         overflow: 'hidden',
     },
@@ -33,7 +37,7 @@ const styles = theme => ({
             height: '100%',
         },
         '& .layout-splitter': {
-           background: Theme.type === 'dark' ? '#595858' : '#ccc;'
+           background: theme.palette.type === 'dark' ? '#595858' : '#ccc;'
         }
     },
     mainDiv: {
@@ -56,7 +60,7 @@ const styles = theme => ({
         position: 'relative'
     },
     splitterDivWithMenu: {
-        width: `calc(100% - ${Theme.menu.width}px)`,
+        width: `calc(100% - 300px)`,
         height: '100%'
     },
     menuDivWithoutMenu: {
@@ -80,8 +84,8 @@ const styles = theme => ({
         zIndex: 1,
         height: 25,
         width: 20,
-        background: Theme.colors.secondary,
-        color: Theme.colors.primary,
+        background: theme.palette.secondary.main,
+        color: theme.palette.primary.main,
         paddingLeft: 3,
         '&:hover': {
             color: 'white'

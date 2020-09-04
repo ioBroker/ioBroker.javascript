@@ -23,8 +23,6 @@ Hier kann man die Beschreibung von [Blockly](docs/de/blockly.md) finden.
 
 Описание по [blockly](docs/ru/blockly.md) можно найти [здесь](docs/ru/blockly.md).
 
-**This adapter uses Sentry libraries to automatically report exceptions and code errors to the developers.** For more details and for information how to disable the error reporting see [Sentry-Plugin Documentation](https://github.com/ioBroker/plugin-sentry#plugin-sentry)! Sentry reporting is used starting with js-controller 3.0.
-
 ## How to build (only for developers)
 Just run "npm i" in the root and in the src folders.
 
@@ -41,6 +39,9 @@ And then call "npm run build".
     ### __WORK IN PROGRESS__
 -->
 ## Changelog
+### __WORK IN PROGRESS__
+* (Bluefox) Fixed styling
+
 ### 4.7.0 (2020-09-04)
 * (AlCalzone) Allowed async functions whenever a callback is accepted
 * (AlCalzone) Allowed `true` as 2nd parameter in getObject 

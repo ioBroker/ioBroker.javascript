@@ -48,7 +48,6 @@ import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
 
-import Theme from './Theme';
 import I18n from '@iobroker/adapter-react/i18n';
 import DialogRename from './Dialogs/Rename';
 import DialogDelete from './Dialogs/Delete';
@@ -61,6 +60,11 @@ const COLOR_RUN = green[400];
 const COLOR_PROBLEM = yellow[400];
 const COLOR_PAUSE = red[400];
 
+const SELECTED_STYLE = {
+    background: '#164477',
+    color: 'white'
+};
+
 const styles = theme => ({
     drawerPaper: {
         position: 'relative',
@@ -69,7 +73,7 @@ const styles = theme => ({
         overflow: 'hidden'
     },
     toolbar: {
-        height: Theme.toolbar.height
+        height: theme.toolbar.height
     },
     toolbarButtons: {
         color: theme.palette.type === 'dark'? 'white !important' : 'black !important'
@@ -137,7 +141,7 @@ const styles = theme => ({
         width: 37,
         height: 37
     },
-    selected: Theme.colors.selected,
+    selected:  SELECTED_STYLE,
     instances: {
         color: 'gray',
         fontSize: 'smaller'
@@ -824,8 +828,8 @@ class SideDrawer extends React.Component {
         }
 
         const depthPx = this.state.reorder ?
-            8 + (this.state.draggedId === item.id ? this.state.dragDepth : item.depth) * Theme.menu.depthOffset :
-            item.depth * Theme.menu.depthOffset;
+            8 + (this.state.draggedId === item.id ? this.state.dragDepth : item.depth) * 20 :
+            item.depth * 20;
 
         let title = item.title;
 
@@ -850,7 +854,7 @@ class SideDrawer extends React.Component {
             cursor: item.type === 'folder' && this.state.reorder ? 'default' : 'inherit',
             opacity: item.filteredPartly ? 0.5 : 1,
             width: `calc(100% - ${depthPx}px)`
-        }, item.id === this.state.selected && !this.state.reorder ? Theme.colors.selected : {});
+        }, item.id === this.state.selected && !this.state.reorder ? SELECTED_STYLE : {});
 
         if (item.id === 'script.js.global' && item.id !== this.state.selected) {
             style.color = '#00a200';
