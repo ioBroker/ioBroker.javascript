@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.7.0",
+        "version": "4.7.1",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.7.1": {
+                "en": "Fixed styling",
+                "de": "Styling korrigiert",
+                "ru": "Фиксированный стиль",
+                "pt": "Estilo fixo",
+                "nl": "Vaste styling",
+                "fr": "Style fixe",
+                "it": "Stile fisso",
+                "es": "Estilo fijo",
+                "pl": "Naprawiono stylizację",
+                "zh-cn": "固定样式"
+            },
             "4.7.0": {
                 "en": "Allowed async functions whenever a callback is accepted\nAllowed `true` as 2nd parameter in getObject \nForced TypeScript to treat each script as a separate module\nReplaced the Select-ID dialog",
                 "de": "Zulässige asynchrone Funktionen, wenn ein Rückruf akzeptiert wird\nErlaubt `true` als 2. Parameter in getObject\nErzwang, dass TypeScript jedes Skript als separates Modul behandelt\nDas Dialogfeld \"ID auswählen\" wurde ersetzt",
@@ -249,18 +261,6 @@
                 "es": "uso con todo tipo de puertos de administración y servidores proxy optimizados; problemas con las funciones astro solucionadas",
                 "pl": "korzystanie ze wszystkich rodzajów zoptymalizowanych portów administracyjnych i zwrotnych serwerów proxy; naprawiono problemy z funkcjami astro",
                 "zh-cn": "与各种管理端口和反向代理一起使用的优化；修复了astro功能的问题"
-            },
-            "4.4.0": {
-                "en": "Fixed the authentication error detection",
-                "de": "Die Erkennung von Authentifizierungsfehlern wurde behoben",
-                "ru": "Исправлено обнаружение ошибки аутентификации",
-                "pt": "Corrigida a detecção de erros de autenticação",
-                "nl": "Detectie van authenticatiefouten opgelost",
-                "fr": "Correction de la détection d'erreur d'authentification",
-                "it": "Risolto il problema con il rilevamento degli errori di autenticazione",
-                "es": "Se corrigió la detección de errores de autenticación",
-                "pl": "Naprawiono wykrywanie błędu uwierzytelnienia",
-                "zh-cn": "修复了身份验证错误检测"
             }
         },
         "desc": {

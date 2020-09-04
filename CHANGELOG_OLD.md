@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 4.6.22 (2020-07-30)
+* (Apollon77) caught some more file errors in mirror logic
+
 ## 4.6.21 (2020-07-28)
 * (Apollon77) catched some more file errors in mirror logic (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)
 

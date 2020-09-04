@@ -39,7 +39,7 @@ And then call "npm run build".
     ### __WORK IN PROGRESS__
 -->
 ## Changelog
-### __WORK IN PROGRESS__
+### 4.7.1 (2020-09-04)
 * (Bluefox) Fixed styling
 
 ### 4.7.0 (2020-09-04)
@@ -57,9 +57,6 @@ And then call "npm run build".
 
 ### 4.6.23 (2020-08-19)
 * (AlCalzone) fix type resolution for rxjs in TypeScripts
-
-### 4.6.22 (2020-07-30)
-* (Apollon77) caught some more file errors in mirror logic
 
 ## License
 
