@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
+
 import Toolbar from '@material-ui/core/Toolbar';
 import {withStyles} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -666,16 +668,17 @@ class Editor extends React.Component {
                     {this.state.editing.map(id => {
                         if (!this.props.objects[id]) {
                             const label = [
-                                (<div key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</div>),
-                                (<span key="icon" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
-                            return (<Tab
+                                <div key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</div>,
+                                <span key="icon" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>];
+                            return <Tab
+                                wrapped
                                 component={'div'}
                                 href={'#' + id}
                                 key={id}
                                 label={label}
                                 value={id}
                                 classes={{wrapper: this.props.classes.tabButtonWrapper}}
-                            />);
+                            />;
                         } else {
                             let text = this.props.objects[id].common.name;
                             let title = '';
@@ -685,12 +688,14 @@ class Editor extends React.Component {
                             }
                             const changed = this.props.objects[id].common && this.scripts[id] && this.props.objects[id].common.source !== this.scripts[id].source;
                             const label = [
-                                (<img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon}/>),
-                                (<div key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{text}</div>),
-                                changed ? (<span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span>) : null,
-                                (<span key="icon2" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
+                                <img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon}/>,
+                                <div key="text" className={clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{text}</div>,
+                                changed ? <span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span> : null,
+                                <span key="icon2" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>
+                                ];
 
-                            return (<Tab
+                            return <Tab
+                                wrapped
                                 component={'div'}
                                 href={'#' + id}
                                 key={id}
@@ -699,7 +704,7 @@ class Editor extends React.Component {
                                 value={id}
                                 title={title}
                                 classes={{wrapper: this.props.classes.tabButtonWrapper}}
-                            />);
+                            />;
                         }
                     })}
                 </Tabs>,
