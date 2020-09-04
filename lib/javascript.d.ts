@@ -770,9 +770,10 @@ declare global {
 	function getIdByName(name: string, forceArray?: boolean): string | string[];
 
 	/**
-	 * Reads an object from the object db
+	 * Reads an object from the object db.
+	 * @param enumName Which enum should be included in the returned object. `true` to return all enums.
 	 */
-	function getObject(id: string, enumName?: string): iobJS.Object;
+	function getObject(id: string, enumName?: string | true): iobJS.Object;
 	/** Creates or overwrites an object in the object db */
 	function setObject(id: string, obj: iobJS.Object, callback?: iobJS.SetObjectCallback): void;
 	/** Extend an object and create it if it might not exist */
