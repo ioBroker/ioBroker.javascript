@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
+
 import Toolbar from '@material-ui/core/Toolbar';
 import {withStyles} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -53,7 +55,6 @@ const images = {
 const MENU_ITEM_HEIGHT = 48;
 const COLOR_DEBUG = '#02a102';
 const COLOR_VERBOSE = '#70aae9';
-
 
 const styles = theme => ({
 
@@ -174,7 +175,7 @@ class Editor extends React.Component {
             showScript: false,
             insert: '',
             searchText: '',
-            theme: this.props.theme,
+            themeType: this.props.themeType,
             visible: props.visible,
             cmdToBlockly: '',
             menuOpened: !!this.props.menuOpened,
@@ -204,19 +205,10 @@ class Editor extends React.Component {
             isReturn: false
         };
 
-        const instances = [];
-        if (this.props.objects) {
-            for (let id in this.props.objects) {
-                if (this.props.objects.hasOwnProperty(id) && id.startsWith('system.adapter.') && this.props.objects[id] && this.props.objects[id].type === 'instance') {
-                    instances.push(id);
-                }
-            }
-        }
-
         window.systemLang = I18n.getLanguage();
         window.main = {
             objects: this.props.objects,
-            instances,
+            instances: this.props.instances,
             selectIdDialog: (initValue, cb) => {
                 this.selectId.callback = cb;
                 this.selectId.initValue = initValue;
@@ -290,7 +282,7 @@ class Editor extends React.Component {
         newState = newState || {};
 
         let _changed = false;
-        if (this.state.editing && nextProps.objects['system.config']) {
+        if (this.state.editing) {
             const isAnyNonExists = this.state.editing.find(id => !nextProps.objects[id]);
 
             if (isAnyNonExists) {
@@ -341,8 +333,8 @@ class Editor extends React.Component {
             _changed = true;
         }
 
-        if (this.state.theme !== nextProps.theme) {
-            newState.theme = nextProps.theme;
+        if (this.state.themeType !== nextProps.themeType) {
+            newState.themeType = nextProps.themeType;
             _changed = true;
         }
 
@@ -357,26 +349,23 @@ class Editor extends React.Component {
             _changed = true;
         }
 
+        if (JSON.stringify(nextProps.instances) !== JSON.stringify(this.state.instances)) {
+            _changed = true;
+            newState.instances = nextProps.instances;
+            window.main.instances = newState.instances;
+        }
+
         // if objects read
         if (this.objects !== nextProps.objects) {
             this.objects = nextProps.objects;
             window.main.objects = nextProps.objects;
 
             // update all scripts
-            for (const id in this.scripts) {
-                if (!this.scripts.hasOwnProperty(id)) continue;
+            Object.keys(this.scripts).forEach(id => {
                 const source = this.scripts[id].source;
                 this.scripts[id] = JSON.parse(JSON.stringify(this.objects[id].common));
                 this.scripts[id].source = source;
-            }
-
-            const instances = [];
-            for (let id in window.main.objects) {
-                if (window.main.objects.hasOwnProperty(id) && id.startsWith('system.adapter.') && window.main.objects[id] && window.main.objects[id].type === 'instance') {
-                    instances.push(id);
-                }
-            }
-            window.main.instances = instances;
+            });
 
             // if script is blockly
             if (this.state.selected && this.objects[this.state.selected]) {
@@ -665,7 +654,7 @@ class Editor extends React.Component {
 
     getTabs() {
         if (this.state.editing.length) {
-            return [(<Tabs
+            return [<Tabs
                     component={'div'}
                     key="tabs1"
                     value={this.state.selected}
@@ -679,16 +668,17 @@ class Editor extends React.Component {
                     {this.state.editing.map(id => {
                         if (!this.props.objects[id]) {
                             const label = [
-                                (<div key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</div>),
-                                (<span key="icon" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
-                            return (<Tab
+                                <div key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</div>,
+                                <span key="icon" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>];
+                            return <Tab
+                                wrapped
                                 component={'div'}
                                 href={'#' + id}
                                 key={id}
                                 label={label}
                                 value={id}
                                 classes={{wrapper: this.props.classes.tabButtonWrapper}}
-                            />);
+                            />;
                         } else {
                             let text = this.props.objects[id].common.name;
                             let title = '';
@@ -698,12 +688,14 @@ class Editor extends React.Component {
                             }
                             const changed = this.props.objects[id].common && this.scripts[id] && this.props.objects[id].common.source !== this.scripts[id].source;
                             const label = [
-                                (<img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon}/>),
-                                (<div key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{text}</div>),
-                                changed ? (<span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span>) : null,
-                                (<span key="icon2" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>)];
+                                <img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon}/>,
+                                <div key="text" className={clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{text}</div>,
+                                changed ? <span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span> : null,
+                                <span key="icon2" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>
+                                ];
 
-                            return (<Tab
+                            return <Tab
+                                wrapped
                                 component={'div'}
                                 href={'#' + id}
                                 key={id}
@@ -712,11 +704,11 @@ class Editor extends React.Component {
                                 value={id}
                                 title={title}
                                 classes={{wrapper: this.props.classes.tabButtonWrapper}}
-                            />);
+                            />;
                         }
                     })}
-                </Tabs>),
-                this.state.editing.length > 1 ? (<IconButton
+                </Tabs>,
+                this.state.editing.length > 1 ? <IconButton
                     key="menuButton"
                     href="#"
                     aria-label="Close all but current"
@@ -737,23 +729,23 @@ class Editor extends React.Component {
                     }}
                 >
                     <IconCloseAll />
-                </IconButton>) : null
+                </IconButton> : null
             ];
         } else {
-            return (<div key="tabs2" className={this.props.classes.toolbar}>
+            return <div key="tabs2" className={this.props.classes.toolbar}>
                 <Button key="select1" disabled={true} className={this.props.classes.hintButton} href="">
                     <span key="select2">{I18n.t('Click on this icon')}</span>
                     <IconDoEdit key="select3" className={this.props.classes.hintIcon}/>
                     <span key="select4">{I18n.t('for edit or create script')}</span>
                 </Button>
-            </div>);
+            </div>;
         }
     }
 
     getDebugMenu() {
         if (!this.state.showDebugMenu) return null;
 
-        return (<Menu
+        return <Menu
             key="menuDebug"
             id="menu-debug"
             anchorEl={this.state.menuDebugAnchorEl}
@@ -787,7 +779,7 @@ class Editor extends React.Component {
                 <IconVerbose className={this.props.classes.menuIcon} style={{color: COLOR_VERBOSE}}/>
                 {I18n.t('verbose')}
             </MenuItem>
-        </Menu>);
+        </Menu>;
     }
 
     getDebugBadge() {
@@ -805,8 +797,7 @@ class Editor extends React.Component {
         if (this.state.selected) {
             const changedAll = Object.keys(this.state.changed).filter(id => this.state.changed[id]).length;
             const changed = this.state.changed[this.state.selected];
-            return (
-                <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
+            return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
                     {this.state.menuOpened && this.props.onLocate && (<IconButton className={this.props.classes.toolbarButtons} key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate/></IconButton>)}
                     {!changed && isInstanceRunning && (<IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>)}
                     {!changed && !isScriptRunning && (<span className={ this.props.classes.notRunning }>{I18n.t('Script is not running')}</span>)}
@@ -869,7 +860,7 @@ class Editor extends React.Component {
                         </Badge>
                     </IconButton>)}
 
-                </Toolbar>);
+                </Toolbar>;
         } else {
             return null;
         }
@@ -891,8 +882,9 @@ class Editor extends React.Component {
                     readOnly={this.state.showBlocklyCode}
                     changed={this.state.changed[this.state.selected]}
                     code={this.scripts[this.state.selected].source || ''}
-                    isDark={this.state.theme === 'dark'}
+                    isDark={this.state.themeType === 'dark'}
                     connection={this.props.connection}
+                    runningInstances={this.state.runningInstances}
                     onChange={newValue => this.onChange({script: newValue})}
                     language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
                 />
@@ -910,7 +902,7 @@ class Editor extends React.Component {
                 <BlocklyEditor
                     command={this.state.cmdToBlockly}
                     key="BlocklyEditor"
-                    theme={this.state.theme}
+                    themeType={this.state.themeType}
                     searchText={this.state.searchText}
                     resizing={this.props.resizing}
                     code={this.scripts[this.state.selected].source || ''}
@@ -943,11 +935,12 @@ class Editor extends React.Component {
 
     getSelectIdDialog() {
         if (this.state.showSelectId) {
-            return (<DialogSelectID
+            return <DialogSelectID
                 key="dialogSelectID1"
                 prefix={'../..'}
-                theme={this.props.theme}
-                connection={this.props.connection}
+                themeName={this.props.themeName}
+                themeType={this.state.themeType}
+                socket={this.props.connection}
                 selected={this.selectId.callback ? this.selectId.initValue || '' : this.getSelect ? this.getSelect() : ''}
                 statesOnly={true}
                 onClose={() => this.setState({showSelectId: false})}
@@ -960,7 +953,7 @@ class Editor extends React.Component {
                         this.setState({insert: `'${selected}'/*${name}*/`})
                     }
                 }}
-            />);
+            />;
         } else {
             return null;
         }
@@ -989,13 +982,13 @@ class Editor extends React.Component {
 
     getEditorDialog() {
         if (this.state.showScript) {
-            return (<DialogScriptEditor
+            return <DialogScriptEditor
                 key="scriptEditorDialog"
                 source={this.scriptDialog.initValue}
                 args={this.scriptDialog.args ? this.scriptDialog.args.join(', ') : ''}
                 isReturn={this.scriptDialog.isReturn}
                 connection={this.props.connection}
-                theme={this.state.theme}
+                themeType={this.state.themeType}
                 onClose={result => {
                     this.scriptDialog.initValue = null;
                     if (this.scriptDialog.callback) {
@@ -1004,7 +997,7 @@ class Editor extends React.Component {
                     }
                     this.setState({showScript: false});
                 }}
-            />);
+            />;
         } else {
             return null;
         }
@@ -1069,6 +1062,7 @@ class Editor extends React.Component {
 
 Editor.propTypes = {
     objects: PropTypes.object.isRequired,
+    instances: PropTypes.array.isRequired,
     selected: PropTypes.string.isRequired,
     onSelectedChange: PropTypes.func.isRequired,
     onRestart: PropTypes.func,
@@ -1079,7 +1073,8 @@ Editor.propTypes = {
     runningInstances: PropTypes.object,
     connection: PropTypes.object,
     searchText: PropTypes.string,
-    theme: PropTypes.string
+    themeName: PropTypes.string,
+    themeType: PropTypes.string,
 };
 
 export default withStyles(styles)(Editor);

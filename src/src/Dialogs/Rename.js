@@ -76,6 +76,7 @@ class DialogRename extends React.Component {
                         <TextField
                             style={{width: '100%'}}
                             id="standard-name"
+                            autoFocus
                             label={I18n.t('Name')}
                             value={this.state.name}
                             onKeyPress={(ev) => {
@@ -105,7 +106,7 @@ class DialogRename extends React.Component {
                                         onChange={e => this.setState({instance: parseInt(e.target.value, 10)})}
                                         inputProps={{name: 'instance', id: 'instance'}}
                                     >
-                                        {this.props.instances.map(instance => (<MenuItem key={instance} value={instance}>{instance || '0'}</MenuItem>))}
+                                        {this.props.instances.map(instance => <MenuItem key={instance} value={instance}>{instance || '0'}</MenuItem>)}
                                     </Select>
                                 </FormControl>)
                         }
@@ -113,7 +114,7 @@ class DialogRename extends React.Component {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleOk} color="primary">{I18n.t('Ok')}</Button>
-                    <Button onClick={this.handleCancel} color="primary">{I18n.t('Cancel')}</Button>
+                    <Button onClick={this.handleCancel}>{I18n.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>
         );

@@ -255,5 +255,6 @@
   "tooltip_user": "Gebruiker",
   "tooltip_value": "Waarde",
   "use seconds": "gebruik seconden",
-  "Save all": "Sla alles op"
+  "Save all": "Sla alles op",
+  "hange theme (actual \"%s\")": "Thema wijzigen (werkelijk - \"%s\")"
 }

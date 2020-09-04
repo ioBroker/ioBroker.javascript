@@ -119,7 +119,7 @@ class DialogCron extends React.Component {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => this.handleOk()}     color="primary">{this.props.ok || I18n.t('Ok')}</Button>
-                    <Button onClick={() => this.handleCancel()} color="secondary">{this.props.cancel || I18n.t('Cancel')}</Button>
+                    <Button onClick={() => this.handleCancel()}>{this.props.cancel || I18n.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>
         );

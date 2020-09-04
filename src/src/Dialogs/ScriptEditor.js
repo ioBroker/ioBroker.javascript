@@ -102,14 +102,14 @@ class DialogScriptEditor extends React.Component {
                         readOnly={false}
                         checkJs={false}
                         code={this.state.source}
-                        isDark={this.props.theme === 'dark'}
+                        isDark={this.props.themeType === 'dark'}
                         onChange={newValue => this.onChange(newValue)}
                         language={'javascript'}
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={event => this.handleOk()} color="primary">{I18n.t('Save')}</Button>
-                    <Button onClick={event => this.handleCancel()} color="secondary">{I18n.t('Cancel')}</Button>
+                    <Button onClick={() => this.handleOk()} color="primary">{I18n.t('Save')}</Button>
+                    <Button onClick={() => this.handleCancel()}>{I18n.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>
         );
@@ -122,7 +122,7 @@ DialogScriptEditor.propTypes = {
     source: PropTypes.string,
     args: PropTypes.string,
     isReturn: PropTypes.bool,
-    theme: PropTypes.string,
+    themeType: PropTypes.string,
     connection: PropTypes.object
 };
 

@@ -306,7 +306,7 @@ class SideDrawer extends React.Component {
             expanded: expanded,
             problems: [],
             reorder: false,
-            theme: this.props.theme,
+            themeName: this.props.themeName,
             dragDepth: 0,
             draggedId: null,
             selected: window.localStorage ? window.localStorage.getItem('SideMenu.selected') || null : null,
@@ -487,7 +487,7 @@ class SideDrawer extends React.Component {
             this.state.listItems,
             this.state.searchMode,
             this.state.searchText,
-            this.props.objects
+            this.props.scripts
         );
 
         if (newState) {
@@ -533,7 +533,7 @@ class SideDrawer extends React.Component {
             newState.listItems = listItems;
 
             if (state.searchText) {
-                const nState = SideDrawer.filterListStatic(true, listItems, state.searchMode, state.searchText, props.objects);
+                const nState = SideDrawer.filterListStatic(true, listItems, state.searchMode, state.searchText, props.scripts);
                 nState && Object.assign(newState, nState);
             }
 
@@ -552,9 +552,9 @@ class SideDrawer extends React.Component {
             changed = true;
             newState.width = props.width;
         }
-        if (state.theme !== props.theme) {
+        if (state.themeName !== props.themeName) {
             changed = true;
-            newState.theme = props.theme;
+            newState.themeName = props.themeName;
         }
 
         if (props.selectId && state.selected !== props.selectId) {
@@ -967,7 +967,7 @@ class SideDrawer extends React.Component {
         let i = 1;
         let word = I18n.t('Script') + ' ';
         if (copyId) {
-            let name = getObjectName(copyId, this.props.objects[copyId]);
+            let name = getObjectName(copyId, this.props.scripts[copyId]);
             const m = name.match(/\d+$/);
             if (m) {
                 word = name.replace(/\d+$/, '');
@@ -1045,36 +1045,46 @@ class SideDrawer extends React.Component {
                               this.props.onExpertModeChange && this.props.onExpertModeChange(!this.state.expertMode));
                       }}><IconExpert className={this.props.classes.iconDropdownMenu} style={{color: 'orange'}}/>{I18n.t('Expert mode')}
             </MenuItem>
-            {this.props.onExport && (<MenuItem key="exportAll"
-                                               onClick={event => {
-                                                   event.stopPropagation();
-                                                   event.preventDefault();
-                                                   this.onCloseMenu(() => this.props.onExport());
-                                               }}><IconExport className={this.props.classes.iconDropdownMenu} />{I18n.t('Export all scripts')}
-            </MenuItem>)}
-            {this.props.onImport && (<MenuItem key="import"
-                                               onClick={event => {
-                                                   event.stopPropagation();
-                                                   event.preventDefault();
-                                                   this.onCloseMenu(() => this.props.onImport());
-                                               }}><IconImport className={this.props.classes.iconDropdownMenu} />{I18n.t('Import scripts')}
-            </MenuItem>)}
-            {this.props.onThemeChange && (<MenuItem key="dark"
-                                                    onClick={event => {
-                                                        //event.stopPropagation();
-                                                        //event.preventDefault();
-                                                        this.onCloseMenu(() =>
-                                                            this.props.onThemeChange(this.state.theme === 'dark' ? 'light' : 'dark'));
-                                                    }}><IconDark className={this.props.classes.iconDropdownMenu} />{this.state.theme === 'dark' ? I18n.t('Light style') : I18n.t('Dark style')}
-            </MenuItem>)}
-            {this.props.onAddNew && (<MenuItem key="copy"
+            {this.props.onExport && <MenuItem
+                key="exportAll"
+                onClick={event => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    this.onCloseMenu(() => this.props.onExport());
+                }}>
+                <IconExport className={this.props.classes.iconDropdownMenu} />{I18n.t('Export all scripts')}
+            </MenuItem>}
+            {this.props.onImport && <MenuItem
+                key="import"
+                onClick={event => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    this.onCloseMenu(() => this.props.onImport());
+                }}>
+                <IconImport className={this.props.classes.iconDropdownMenu} />{I18n.t('Import scripts')}
+            </MenuItem>}
+            {this.props.onThemeChange && <MenuItem
+                key="dark"
+                onClick={event =>
+                    this.onCloseMenu(() => {
+
+                        // TODO: use Utils.toggleTheme(themeName)
+                        // newThemeName = Utils.toggleTheme(themeName);
+                        const newThemeName = this.state.themeName === 'dark' ? 'blue' :
+                            this.state.themeName === 'blue' ? 'colored' : this.state.themeName === 'colored' ? 'light' :
+                                this.state.themeName === 'light' ? 'dark' : 'colored';
+                        this.props.onThemeChange(newThemeName);
+                    })}>
+                <IconDark className={this.props.classes.iconDropdownMenu} />{I18n.t('Change theme (actual "%s")', this.state.themeName)}
+            </MenuItem>}
+            {this.props.onAddNew && <MenuItem key="copy"
                                                disabled={!this.state.selected || !selectedItem || selectedItem.type === 'folder'}
                                                onClick={event => {
                                                    const selected = this.state.selected;
                                                    this.onCloseMenu(() => this.onCopy(event, selected))
                                                }}>
                 <IconCopy className={this.props.classes.iconDropdownMenu} />{I18n.t('Copy script')}
-            </MenuItem>)}
+            </MenuItem>}
         </Menu>);
     }
 
@@ -1202,11 +1212,11 @@ class SideDrawer extends React.Component {
 
             if (!this.state.reorder && this.state.selected && this.state.selected !== 'script.js.global' && this.state.selected !== 'script.js.common') {
                 // Rename
-                result.push((<IconButton className={classes.toolbarButtons}
+                result.push(<IconButton className={classes.toolbarButtons}
                                          title={I18n.t('Rename')}
                                          key="rename"
                                          onClick={e => this.onRename(e)}
-                ><IconEdit/></IconButton>));
+                ><IconEdit/></IconButton>);
 
 
                 // const selectedItem = this.state.listItems.find(i => i.id === this.state.selected);
@@ -1331,7 +1341,7 @@ class SideDrawer extends React.Component {
         const {classes} = this.props;
 
         const renamingItem = this.state.renaming && this.state.listItems.find(i => i.id === this.state.renaming);
-        const copingItem = this.state.copingScript && this.props.objects[this.state.copingScript];
+        const copingItem = this.state.copingScript && this.props.scripts[this.state.copingScript];
 
         return [(
             <Drawer
@@ -1367,7 +1377,7 @@ class SideDrawer extends React.Component {
                 }</div>
             </Drawer>),
 
-            renamingItem ? (<DialogRename
+            renamingItem ? <DialogRename
                 key="dialog-rename"
                 name={renamingItem.title}
                 title={I18n.t('Rename')}
@@ -1377,7 +1387,7 @@ class SideDrawer extends React.Component {
                 instances={this.props.instances}
                 onClose={() => this.setState({renaming: false})}
                 onRename={(oldId, newName, newId, newInstance) => this.props.onRename && this.props.onRename(oldId, newName, newId, newInstance)}
-            />) : null,
+            /> : null,
 
             this.state.deleting ? (<DialogDelete
                 key="dialog-delete"
@@ -1424,7 +1434,7 @@ class SideDrawer extends React.Component {
                 type={(copingItem && copingItem.common && copingItem.common.engineType) || 'Javascript/js'}
                 parent={this.parent}
                 onAdd={(id, name, instance, type) => {
-                    const copingItem = this.state.copingScript && this.props.objects[this.state.copingScript];
+                    const copingItem = this.state.copingScript && this.props.scripts[this.state.copingScript];
                     if (copingItem && copingItem.common) {
                         // disable script by coping
                         copingItem.common.enabled = false;
@@ -1461,14 +1471,14 @@ SideDrawer.propTypes = {
     onEnableDisable: PropTypes.func,
     runningInstances: PropTypes.object,
     connection: PropTypes.object,
-    theme: PropTypes.string,
+    themeName: PropTypes.string,
+    themeType: PropTypes.string,
     onSelect: PropTypes.func,
     onAddNew: PropTypes.func,
     onRename: PropTypes.func,
     onDelete: PropTypes.func,
     onImport: PropTypes.func,
     onExport: PropTypes.func,
-    objects: PropTypes.object,
     onSearch: PropTypes.func,
     onThemeChange: PropTypes.func,
     width: PropTypes.number

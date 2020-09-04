@@ -255,5 +255,6 @@
   "tooltip_user": "Usuario",
   "tooltip_value": "Valor",
   "use seconds": "usar segundos",
-  "Save all": "Salvar a todos"
+  "Save all": "Salvar a todos",
+  "hange theme (actual \"%s\")": "Cambiar tema (\"%s\" real)"
 }

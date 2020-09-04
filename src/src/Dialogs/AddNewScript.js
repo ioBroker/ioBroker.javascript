@@ -125,7 +125,7 @@ class DialogAddNew extends React.Component {
                     {this.getTSCard()}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={this.handleCancel} color="primary">{I18n.t('Cancel')}</Button>
+                    <Button onClick={this.handleCancel}>{I18n.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>
         );
