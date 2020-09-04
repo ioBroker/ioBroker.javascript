@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.6.26",
+        "version": "4.7.0",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.7.0": {
+                "en": "Allowed async functions whenever a callback is accepted\nAllowed `true` as 2nd parameter in getObject \nForced TypeScript to treat each script as a separate module\nReplaced the Select-ID dialog",
+                "de": "Zulässige asynchrone Funktionen, wenn ein Rückruf akzeptiert wird\nErlaubt `true` als 2. Parameter in getObject\nErzwang, dass TypeScript jedes Skript als separates Modul behandelt\nDas Dialogfeld \"ID auswählen\" wurde ersetzt",
+                "ru": "Разрешены асинхронные функции всякий раз, когда принимается обратный вызов\nДопускается `true` как второй параметр в getObject\nПринудительный TypeScript обрабатывать каждый скрипт как отдельный модуль\nЗаменен диалог Select-ID",
+                "pt": "Funções assíncronas permitidas sempre que um retorno de chamada for aceito\nPermitido `true` como segundo parâmetro em getObject\nTypeScript forçado a tratar cada script como um módulo separado\nSubstituiu a caixa de diálogo Select-ID",
+                "nl": "Toegestane asynchrone functies wanneer een callback wordt geaccepteerd\nToegestaan 'true' als 2e parameter in getObject\nTypeScript gedwongen om elk script als een afzonderlijke module te behandelen\nVerving het Selecteer-ID-dialoogvenster",
+                "fr": "Fonctions asynchrones autorisées chaque fois qu'un rappel est accepté\nAutorisé `true` comme 2ème paramètre dans getObject\nTypeScript forcé de traiter chaque script comme un module distinct\nRemplacement de la boîte de dialogue Select-ID",
+                "it": "Funzioni asincrone consentite ogni volta che viene accettata una richiamata\nConsentito \"true\" come secondo parametro in getObject\nTypeScript forzato a trattare ogni script come un modulo separato\nSostituita la finestra di dialogo Seleziona ID",
+                "es": "Funciones asincrónicas permitidas siempre que se acepta una devolución de llamada\nPermitido `true` como segundo parámetro en getObject\nTypeScript forzado a tratar cada script como un módulo separado\nSe reemplazó el cuadro de diálogo Seleccionar ID.",
+                "pl": "Dozwolone funkcje asynchroniczne po zaakceptowaniu wywołania zwrotnego\nDozwolone „prawda” jako drugi parametr w getObject\nZmuszono TypeScript do traktowania każdego skryptu jako oddzielnego modułu\nZastąpiono okno dialogowe Select-ID",
+                "zh-cn": "每当接受回调时允许的异步功能\n允许将“ true”作为getObject中的第二个参数\n强制TypeScript将每个脚本视为一个单独的模块\n替换了“选择ID”对话框"
+            },
             "4.6.26": {
                 "en": "Catch error case when npm istallation fails (Sentry IOBROKER-JAVASCRIPT-3K)\nPrevent crash case in mirroring (Sentry IOBROKER-JAVASCRIPT-3M)",
                 "de": "Fehlerfall abfangen, wenn die npm-Installation fehlschlägt (Sentry IOBROKER-JAVASCRIPT-3K)\nAbsturzfall beim Spiegeln verhindern (Sentry IOBROKER-JAVASCRIPT-3M)",
@@ -249,18 +261,6 @@
                 "es": "Se corrigió la detección de errores de autenticación",
                 "pl": "Naprawiono wykrywanie błędu uwierzytelnienia",
                 "zh-cn": "修复了身份验证错误检测"
-            },
-            "4.3.7": {
-                "en": "Made adapter compatible with js-controller >= 2.2.x",
-                "de": "Adapter kompatibel mit js-controller> = 2.2.x gemacht",
-                "ru": "Сделан адаптер, совместимый с js-controller> = 2.2.x",
-                "pt": "Adaptador compatível com js-controller> = 2.2.x",
-                "nl": "Adapter compatibel gemaakt met js-controller> = 2.2.x",
-                "fr": "Adaptateur compatible avec js-controller> = 2.2.x",
-                "it": "Compatibile con l'adattatore con js-controller> = 2.2.x",
-                "es": "Adaptador hecho compatible con controlador js> = 2.2.x",
-                "pl": "Dostosowano adapter do kontrolera js> = 2.2.x",
-                "zh-cn": "使适配器与js-controller> = 2.2.x兼容"
             }
         },
         "desc": {

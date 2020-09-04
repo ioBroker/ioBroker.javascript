@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 4.6.21 (2020-07-28)
+* (Apollon77) catched some more file errors in mirror logic (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)
+
 ## 4.6.20 (2020-07-26)
 * (Apollon77) make sure 0_userdata.0 objects/states are not overwritten on createState 
 

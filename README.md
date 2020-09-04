@@ -41,7 +41,7 @@ And then call "npm run build".
     ### __WORK IN PROGRESS__
 -->
 ## Changelog
-### __WORK IN PROGRESS__
+### 4.7.0 (2020-09-04)
 * (AlCalzone) Allowed async functions whenever a callback is accepted
 * (AlCalzone) Allowed `true` as 2nd parameter in getObject 
 * (AlCalzone) Forced TypeScript to treat each script as a separate module
@@ -59,9 +59,6 @@ And then call "npm run build".
 
 ### 4.6.22 (2020-07-30)
 * (Apollon77) catched some more file errors in mirror logic
-
-### 4.6.21 (2020-07-28)
-* (Apollon77) catched some more file errors in mirror logic (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)
 
 ## License
 
