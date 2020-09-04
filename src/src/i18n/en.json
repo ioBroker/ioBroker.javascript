@@ -256,5 +256,5 @@
   "tooltip_value": "Value",
   "use seconds": "use seconds",
   "Save all": "Save all",
-  "hange theme (actual \"%s\")": "Сhange theme (actual - \"%s\")"
+  "Change theme (actual \"%s\")": "Change theme (now - \"%s\")"
 }
