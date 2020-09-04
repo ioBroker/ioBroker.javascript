@@ -82,9 +82,9 @@ class ScriptEditor extends React.Component {
 
             // Load typings for the JS editor
             /** @type {string} */
-            let scriptAdapterInstance = this.props.runningInstances[0];
-            if (scriptAdapterInstance || scriptAdapterInstance === 0) {
-                this.props.connection.sendTo('javascript.' + scriptAdapterInstance, 'loadTypings', null)
+            let scriptAdapterInstance = Object.keys(this.props.runningInstances).find(id => this.props.runningInstances[id]);
+            if (scriptAdapterInstance) {
+                this.props.connection.sendTo(scriptAdapterInstance.replace('system.adapter.', ''), 'loadTypings', null)
                     .then(result => {
                         this.setState({alive: true, check: true});
                         this.setTypeCheck(true);
@@ -302,15 +302,13 @@ class ScriptEditor extends React.Component {
             return null;
         }
 
-        return (
-            <div ref={el => this.monacoDiv = el} style={{width: '100%', height: '100%', overflow: 'hidden', position: 'relative'}}>
-                {!this.state.check && (<Fab
-                    size="small"
-                    title={I18n.t('Check is not active, because javascript adapter is disabled')}
-                    style={{bottom: 10, right: 10, opacity: 0.5, position: 'absolute', zIndex: 1, background: 'red', color: 'white'}}
-                    color="secondary"><IconNoCheck/></Fab>)}
-            </div>
-        );
+        return <div ref={el => this.monacoDiv = el} style={{width: '100%', height: '100%', overflow: 'hidden', position: 'relative'}}>
+            {!this.state.check && <Fab
+                size="small"
+                title={I18n.t('Check is not active, because javascript adapter is disabled')}
+                style={{bottom: 10, right: 10, opacity: 0.5, position: 'absolute', zIndex: 1, background: 'red', color: 'white'}}
+                color="secondary"><IconNoCheck/></Fab>}
+        </div>;
     }
 }
 
