@@ -2,11 +2,11 @@
 // this has the nice side effect that we may augment the global scope
 import child_process = require("child_process");
 
-type EmptyCallback = () => void;
-type ErrorCallback = (err?: string) => void;
-type GenericCallback<T> = (err: string | null, result?: T) => void;
-type SimpleCallback<T> = (result?: T) => void;
-type LogCallback = (msg: any) => void;
+type EmptyCallback = () => void | Promise<void>;
+type ErrorCallback = (err?: string) => void | Promise<void>;
+type GenericCallback<T> = (err: string | null, result?: T) => void | Promise<void>;
+type SimpleCallback<T> = (result?: T) => void | Promise<void>;
+type LogCallback = (msg: any) => void | Promise<void>;
 
 // tslint:disable:no-namespace
 declare global {
@@ -229,18 +229,18 @@ declare global {
 		type Object = StateObject | ChannelObject | DeviceObject | OtherObject;
 		type PartialObject = PartialStateObject | PartialChannelObject | PartialDeviceObject | PartialOtherObject;
 
-		type GetStateCallback<T extends StateValue = any> = (err: string | null, state?: State<T> | AbsentState) => void;
-		type SetStateCallback = (err: string | null, id?: string) => void;
-		type GetBinaryStateCallback = (err: string | null, state?: Buffer) => void;
+		type GetStateCallback<T extends StateValue = any> = (err: string | null, state?: State<T> | AbsentState) => void | Promise<void>;
+		type SetStateCallback = (err: string | null, id?: string) => void | Promise<void>;
+		type GetBinaryStateCallback = (err: string | null, state?: Buffer) => void | Promise<void>;
 
-		type StateChangeHandler<TOld extends StateValue = any, TNew extends TOld = any> = (obj: ChangedStateObject<TOld, TNew>) => void;
+		type StateChangeHandler<TOld extends StateValue = any, TNew extends TOld = any> = (obj: ChangedStateObject<TOld, TNew>) => void | Promise<void>;
 
-		type SetObjectCallback = (err: string | null, obj: { id: string }) => void;
-		type GetObjectCallback = (err: string | null, obj: iobJS.Object) => void;
+		type SetObjectCallback = (err: string | null, obj: { id: string }) => void | Promise<void>;
+		type GetObjectCallback = (err: string | null, obj: iobJS.Object) => void | Promise<void>;
 
 		type LogLevel = "silly" | "debug" | "info" | "warn" | "error" | "force";
 
-		type ReadFileCallback = (err: string | null, file?: Buffer | string, mimeType?: string) => void;
+		type ReadFileCallback = (err: string | null, file?: Buffer | string, mimeType?: string) => void | Promise<void>;
 
 		/** Callback information for a passed message */
 		interface MessageCallbackInfo {
@@ -253,7 +253,7 @@ declare global {
 			/** Timestamp of this message */
 			time: number;
 		}
-		type MessageCallback = (result?: any) => void;
+		type MessageCallback = (result?: any) => void | Promise<void>;
 
 		interface Subscription {
 			name: string;
@@ -370,7 +370,7 @@ declare global {
 			 * Executes a function for each state id in the result array
 			 * The execution is canceled if a callback returns false
 			 */
-			each(callback?: (id: string, index: number) => boolean | void): this;
+			each(callback?: (id: string, index: number) => boolean | void | Promise<void>): this;
 
 			/**
 			 * Returns the first state found by this query.
@@ -583,7 +583,7 @@ declare global {
 	/**
 	 * Executes a system command
 	 */
-	function exec(command: string, callback?: (err: Error, stdout: string, stderr: string) => void): child_process.ChildProcess;
+	function exec(command: string, callback?: (err: Error, stdout: string, stderr: string) => void | Promise<void>): child_process.ChildProcess;
 
 	/**
 	 * Sends an email using the email adapter.
@@ -668,9 +668,9 @@ declare global {
 	 * Schedules a function to be executed on a defined schedule.
 	 * The return value can be used to clear the schedule later.
 	 */
-	function schedule(pattern: string | iobJS.SchedulePattern, callback: () => void): any;
-	function schedule(date: Date, callback: () => void): any;
-	function schedule(astro: iobJS.AstroSchedule, callback: () => void): any;
+	function schedule(pattern: string | iobJS.SchedulePattern, callback: EmptyCallback): any;
+	function schedule(date: Date, callback: EmptyCallback): any;
+	function schedule(astro: iobJS.AstroSchedule, callback: EmptyCallback): any;
 	/**
 	 * Clears a schedule. Returns true if it was successful.
 	 */
@@ -834,7 +834,7 @@ declare global {
 	): boolean;
 
 	/** Sets up a callback which is called when the script stops */
-	function onStop(callback: (cb?: () => void) => void, timeout?: number): void;
+	function onStop(callback: (cb?: EmptyCallback) => void, timeout?: number): void;
 
 	function formatValue(value: number | string, format?: any): string;
 	function formatValue(value: number | string, decimals: number, format?: any): string;

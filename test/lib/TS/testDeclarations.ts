@@ -17,7 +17,9 @@ getState("id").ts;
 
 setState("id", 1);
 setState("id", 1, true);
-setState("id", 1, (id) => id!.toLowerCase());
+setState("id", 1, (id) => {
+	id!.toLowerCase();
+});
 
 getBinaryState('id').readInt16LE(0);
 setBinaryState('id', new Buffer(0));
@@ -49,3 +51,6 @@ if (state1.notExist) {
 
 // Repro from #539
 $("*").setState(1);
+
+// Repro from #636
+$("*").each(async () => {});
