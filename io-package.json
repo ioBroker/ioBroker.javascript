@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.7.1",
+        "version": "4.7.2",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.7.2": {
+                "en": "Fixed blockly problem",
+                "de": "Blockproblem behoben",
+                "ru": "Исправлена блочная проблема",
+                "pt": "Problema de bloqueio corrigido",
+                "nl": "Blokkeerprobleem opgelost",
+                "fr": "Correction d'un problème de blocage",
+                "it": "Risolto problema di blocco",
+                "es": "Problema de bloque fijo",
+                "pl": "Naprawiono blokowy problem",
+                "zh-cn": "修复块状问题"
+            },
             "4.7.1": {
                 "en": "Fixed styling",
                 "de": "Styling korrigiert",
@@ -249,18 +261,6 @@
                 "es": "Se agregó JSONata para la conversión de objetos",
                 "pl": "Dodano JSONata do konwersji obiektów",
                 "zh-cn": "添加了用于对象转换的JSONata"
-            },
-            "4.4.2": {
-                "en": "usage with all kinds of admin ports and reverse proxies optimized; problems with astro functions fixed",
-                "de": "Verwendung mit allen Arten von Admin-Ports und Reverse-Proxys optimiert; Probleme mit Astrofunktionen behoben",
-                "ru": "оптимизировано использование всех видов административных портов и обратных прокси; исправлены проблемы с астро-функциями",
-                "pt": "uso com todos os tipos de portas administrativas e proxies reversos otimizados; problemas com funções astro corrigidas",
-                "nl": "gebruik met allerlei beheerpoorten en geoptimaliseerde reverse-proxy's; problemen met astro-functies opgelost",
-                "fr": "utilisation avec toutes sortes de ports d'administration et de proxys inversés optimisés; problèmes avec les fonctions astro corrigés",
-                "it": "utilizzo ottimizzato con tutti i tipi di porte di amministrazione e proxy inversi; problemi con le funzioni astro risolti",
-                "es": "uso con todo tipo de puertos de administración y servidores proxy optimizados; problemas con las funciones astro solucionadas",
-                "pl": "korzystanie ze wszystkich rodzajów zoptymalizowanych portów administracyjnych i zwrotnych serwerów proxy; naprawiono problemy z funkcjami astro",
-                "zh-cn": "与各种管理端口和反向代理一起使用的优化；修复了astro功能的问题"
             }
         },
         "desc": {
