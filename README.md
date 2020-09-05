@@ -7,7 +7,7 @@
 
 [![NPM](https://nodei.co/npm/iobroker.javascript.png?downloads=true)](https://nodei.co/npm/iobroker.javascript/)
 
-Executes Javascript, Typescript and Coffescript Scripts.
+Executes Javascript, Typescript Scripts.
 
 [Function documentation](docs/en/javascript.md)
 
@@ -35,28 +35,32 @@ And then call "npm run build".
 ## Changelog
 ### 4.7.2 (2020-09-05)
 * (Bluefox) Fixed blockly problem
+* chore: release v4.7.0
 
-### 4.6.8 (2020-05-16)
-* (bluefox) Fixed blockly blocks because of deprecated functions
-* (bluefox) Corrected schedule wizard 
+### 4.7.1 (2020-09-04)
+* (Bluefox) Fixed styling
 
-### 4.6.4 (2020-05-15)
-* (bluefox) Corrected block: request, exec
+### 4.7.0 (2020-09-03)
+* (AlCalzone) Allowed async functions whenever a callback is accepted
+* (AlCalzone) Allowed `true` as 2nd parameter in getObject
+* (AlCalzone) Forced TypeScript to treat each script as a separate module
+* (Bluefox) Replaced the Select-ID dialog
 
-### 4.6.1 (2020-05-11)
-* (bluefox) Updated blockly to 3.20200402.1
-* (bluefox) Added to blockly the switch/case block. 
-* (Mic-M) fix log crash
-* (Apollon77) Add new Sentry key and exclude user script exceptions
-* (Garfonso) Several fixes and optimizations for Mirroring functionality
-* (Apollon77) add support for 0_userdata.0 to createState and deleteState 
+### 4.6.26 (2020-08-24)
+* (Apollon77) Catch error case when npm installation fails (Sentry IOBROKER-JAVASCRIPT-3K)
+* (Apollon77) Prevent crash case in mirroring (Sentry IOBROKER-JAVASCRIPT-3M)
 
-### 4.5.1 (2020-04-17)
-* (Apollon77) Nodejs 10 is new minimum Version!
-* (Apollon77) Add Sentry for use in js-controller 3.0 and React component
-* (Apollon77) prevent warnings with js-controller 3.0
-* (Garfonso) fix enum object cache handling
-* (bluefox/Apollon77) enhance existsState
+### 4.6.25 (2020-08-24)
+* (bluefox) Fixed the loading of page
+
+### 4.6.23 (2020-08-19)
+* (AlCalzone) fix type resolution for rxjs in TypeScripts
+
+### 4.6.22 (2020-07-30)
+* (Apollon77) caught some more file errors in mirror logic
+
+### 4.6.21 (2020-07-28)
+* (Apollon77) caught some more file errors in mirror logic (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)
 
 ## License
 

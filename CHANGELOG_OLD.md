@@ -1,239 +1,9 @@
 The newest change log is in README.md
 
-## 4.4.3 (2020-03-03)
-* (klein0r) Added JSONata for Object conversion
-
-## 4.4.2 (2020-02-10)
-* (Apollon77) Fix Astro functions and error message
-* (Apollon77) usage with all kinds of admin ports and reverse proxies optimized
-
-## 4.4.0 (2020-02-08)
-* (Apollon77) Add new socket.io client library to prevent errors
-
-## 4.3.8 (2020-02-07)
-* (bluefox) Fixed the authentication error detection
-
-## 4.3.7 (2020-01-26)
-* (bluefox) Made adapter compatible with js-controller >= 2.2.x 
-
-## 4.3.5 (2020-01-26)
-* (bluefox) fixed the load of zip files if more than one host
-
-## 4.3.4 (2019-10-28)
-* (bluefox) Values are showed in select ID dialog
-* (bluefox) Allow select with $ the schedule objects
-
-## 4.3.3 (2019-10-28)
-* (bluefox) Search in scripts was corrected
-
-## 4.3.2 (2019-10-27)
-* (AlCalzone) Fix syntax help for Node.js runtime methods (#418)
-* (AlCalzone) Target ES 2017 in TypeScript (#419)
-* (AlCalzone) Automatically load declarations for 3rd party modules (#422)
-* (bluefox) Functions with non latin text are working now
-
-## 4.3.1 (2019-10-16)
-* (bluefox) Fixed login with non-admin user
-* (bluefox) fixed log
-* (bluefox) Some GUI fixes
-
-## 4.3.0 (2019-10-09)
-* (bluefox) log handlers were implemented
-* (bluefox) fixed the error with $ selector and with disabled subscribes
-
-## 4.2.1 (2019-10-07)
-* (bluefox) implement inter-script communication.
-* (bluefox) Implemented the mirroring on disk
-* (bluefox) Translation for other languages was added
-
-## 4.1.16 (2019-08-24)
-* (bluefox) Fixed the errors in editor
-
-## 4.1.15 (2019-08-24)
-* (bluefox) Added the polish language to CRON
-* (bluefox) Fixed the import of scripts
-
-## 4.1.14 (2019-07-14)
-* (bluefox) Fixed locale settings
-
-## 4.1.13 (2019-06-02)
-* (bluefox) fixed Monaco Loading
-* (bluefox) added missing blockly element
-* (AlCalzone) Improved the warning message when assigning a variable of wrong type to a state
-* (thewhobox) Added selector blockly, language strings, regexp
-* (thewhobox) Fixed Blockly bug
-* (paul53) fixed for suncalc.getTimes between middle night and nadir
-
-## 4.1.12 (2019-03-07)
-* (bluefox) Schedule was corrected
-
-## 4.1.8 (2019-02-03)
-* (jkuehner) Updated the blockly to the latest code
-* (bleufox) scriptEnabled variables not only for experts
-* (bleufox) fixed one error with "cannot extract blockly"
-* (bluefox) GUI fixes
-* (bluefox) show problem scripts as yellow pause icon
-
-## 4.0.12 (2019-01-20)
-* (Apollon77/AlCalzone) fixes unwanted changes in last version
-* (SchumyHao) Add Chinese support
-
-## 4.0.11 (2019-01-14)
-* (bluefox) add set/getBinaryState
-
-## 3.7.0 (2018-05-05)
-* (bluefox) Used VM2 as sandbox. The script errors will be caught.
-* (bluefox) refactoring: split into many modules
-* (AlCalzone) Change TypeScript version range to include TS 3.0+
-
-## 3.6.5 (2019-02-13)
-* (bluefox) Error with formatDate was fixed
-
-## 3.6.4 (2018-02-05)
-* (bluefox) Pattern error is fixed
-
-## 3.6.3 (2018-01-31)
-* (bluefox) Fixing the CSS for CRON dialog
-* (bluefox) Fixing the reorder of scripts
-
-## 3.6.1 (2018-01-23)
-* (bluefox) Pattern error is fixed
-
-## 3.6.0 (2017-12-28)
-* (bluefox) more translations are added
-* (bluefox) update blockly engine
-
-## 3.5.1 (2017-11-14)
-* (bluefox) fixed: sometimes MSG is not defined
-* (AlCalzone) TypeScript support (preparations)
-* (bluefox) add sendToHost call
-* (bluefox) protect exec call
-* (bluefox) add getStateDelayed function
-
-## 3.4.4 (2017-09-12)
-* (soef) typo error in line number correction fixed
-
-## 3.4.1 (2017-08-12)
-* (soef) patternMatching optimized
-
-## 3.4.0 (2017-08-06)
-* (bluefox) Support of new admin
-
-## 3.3.12 (2017-07-24)
-* (bluefox) file and line info added to log outputs
-
-## 3.3.11 (2017-07-18)
-* (bluefox) fix build CRON block
-
-## 3.3.9 (2017-06-18)
-* (bluefox) Add the toggle blockly block
-
-## 3.3.8 (2017-05-22)
-* (Apollon77/bluefox) Accept for subscribes arrays of IDs
-
-## 3.3.6 (2017-05-17)
-* (bluefox) add the genitive month for formatDate
-
-## 3.3.4 (2017-04-01)
-* (bluefox) Catch error by request if host unavailable
-* (bluefox) add "request" to script namespace
-
-## 3.3.3 (2017-03-27)
-* (bluefox)Fix stopScript
-
-## 3.3.2 (2017-03-18)
-* (bluefox) Support of system coordinates
-
-## 3.3.1 (2017-03-15)
- * (bluefox) fix error if no scripts exists
-
-## 3.3.0 (2017-03-14)
-* (bluefox) all callbacks in try/catch
-
-## 3.2.8 (2017-03-08)
-* (bluefox) Translations
-
-## 3.2.7 (2017-03-03)
-* (bluefox) allow creation of states for other javascript instances
-
-## 3.2.6 (2017-02-14)
-* (bluefox) Fix import of scripts
-* (bluefox) Ask to save before start the script
-
-## 3.2.5 (2017-01-23)
-* (bluefox) Extend compareTime function with astro features
-
-## 3.2.4 (2017-01-13)
-* (bluefox) fix stopScript
-
-## 3.2.3 (2017-01-05)
-* (bluefox) Try to fix error with sayit
-
-## 3.2.2 (2016-12-17)
-* (bluefox) Allow with stopScript() to stop itself
-
-## 3.2.1 (2016-11-24)
-* (bluefox) Fix error with subscribe for only required states
-
-## 3.2.0 (2016-11-14)
-* (bluefox) Fix error with of blocks in adapters
-* (bluefox) Support of subscribe for only required states
-* (bluefox) add delFile
-* (bluefox) fix error with names
-
-## 3.1.0 (2016-10-12)
-* (bluefox) Support of blocks in adapters
-* (bluefox) Move sendTo blocks into adapters
-
-## 3.0.10 (2016-09-30)
-* (bluefox) New blocks: compare time, write state
-* (bluefox) Documentation
-
-## 3.0.9 (2016-09-20)
-* (bluefox) Bugfixing of blockly
-
-## 3.0.7 (2016-09-09)
-* (bluefox) add ack for trigger in blockly
-* (bluefox) add block to get info about trigger
-* (bluefox) start description of blockly
-* (bluefox) add runScript functions
-* (bluefox) disable zoom on wheel in blockly
-* (bluefox) fix block: time compare
-
-## 3.0.6 (2016-09-07)
-* (bluefox) add extendObject function
-* (bluefox) add custom sendTo block
-* (bluefox) add multiple trigger block
-
-## 3.0.5 (2016-09-03)
-* (bluefox) Fix sendTo blocks
-
-## 3.0.4 (2016-09-01)
-* (bluefox) Support of convert day of week into text in blockly
-
-## 3.0.3 (2016-08-29)
-* (bluefox) Fixed the convert date block
-
-## 3.0.2 (2016-08-28)
-* (bluefox) Change name of sandbox debug variable
-
-## 3.0.1 (2016-08-27)
-* (bluefox) Fix disabling of script
-
-## 3.0.0 (2016-08-27)
-* (bluefox) Beta Release with Blockly
-
-
-## 4.6.22 (2020-07-30)
-* (Apollon77) caught some more file errors in mirror logic
-
-## 4.6.21 (2020-07-28)
-* (Apollon77) catched some more file errors in mirror logic (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)
-
-## 4.6.20 (2020-07-26)
+### 4.6.20 (2020-07-26)
 * (Apollon77) make sure 0_userdata.0 objects/states are not overwritten on createState 
 
-## 4.6.19 (2020-07-26)
+### 4.6.19 (2020-07-26)
 * (Apollon77) Prevent wrong errors when setting "null" values for states
 * (Apollon77) Prevent potential crash when no typings could be found (Sentry IOBROKER-JAVASCRIPT-2T)
 * (Apollon77) catch an error in mirroring functionality( Sentry IOBROKER-JAVASCRIPT-2V)
@@ -245,32 +15,36 @@ The newest change log is in README.md
 * (bluefox) Store JS in browser cache by enabling serviceWorkers
 * (Apollon77) prevent multiple script restarts on fast file content change for mirroring or fast object changes
 
-## 4.6.17 (2020-05-25)
+### 4.6.17 (2020-05-25)
 * (bluefox) Fixed error with warnings collapsed blocks
 * (Apollon77) optimize Sentry error reporting to prevent false positives
 
-## 4.6.16 (2020-05-24)
+### 4.6.16 (2020-05-24)
 * (bluefox) Corrected sendTo and clear delay blocks. 
 
-## 4.6.15 (2020-05-23)
+### 4.6.15 (2020-05-23)
 * (bluefox) BREAKING: Please check "stopTimeout" blocks in your blockly scripts that the correct timeout name is listed there and correct after the update!
 * (paul53) fix "control" blockly node with "delete delay if running"
 * (foxriver76) change dependencies with Admin
 
-## 4.6.14 (2020-05-19)
+### 4.6.14 (2020-05-19)
 * (bluefox) Names for scripts can not have dots anymore. They will be replaced by "_"
 * (bluefox) "schedule" name is not allowed for CRON
 * (bluefox) Convert strings to Date by formatDate
 
-## 4.6.13 (2020-05-19)
+### 4.6.13 (2020-05-19)
 * (bluefox) Fixed blockly blocks because of deprecated functions
 * (bluefox) Corrected schedule wizard
 * (AlCazone) Update monaco editor
 
-## 4.6.4 (2020-05-15)
+### 4.6.8 (2020-05-16)
+* (bluefox) Fixed blockly blocks because of deprecated functions
+* (bluefox) Corrected schedule wizard 
+
+### 4.6.4 (2020-05-15)
 * (bluefox) Corrected block: request, exec
 
-## 4.6.1 (2020-05-11)
+### 4.6.1 (2020-05-11)
 * (bluefox) Updated blockly to 3.20200402.1
 * (bluefox) Added to blockly the switch/case block. 
 * (Mic-M) fix log crash
@@ -278,70 +52,70 @@ The newest change log is in README.md
 * (Garfonso) Several fixes and optimizations for Mirroring functionality
 * (Apollon77) add support for 0_userdata.0 to createState and deleteState 
 
-## 4.5.1 (2020-04-17)
+### 4.5.1 (2020-04-17)
 * (Apollon77) Nodejs 10 is new minimum Version!
 * (Apollon77) Add Sentry for use in js-controller 3.0 and React component
 * (Apollon77) prevent warnings with js-controller 3.0
 * (Garfonso) fix enum object cache handling
 * (bluefox/Apollon77) enhance existsState
 
-## 4.4.3 (2020-03-03)
+### 4.4.3 (2020-03-03)
 * (klein0r) Added JSONata for Object conversion
 
-## 4.4.2 (2020-02-10)
+### 4.4.2 (2020-02-10)
 * (Apollon77) Fix Astro functions and error message
 * (Apollon77) usage with all kinds of admin ports and reverse proxies optimized
 
-## 4.4.0 (2020-02-08)
+### 4.4.0 (2020-02-08)
 * (Apollon77) Add new socket.io client library to prevent errors
 
-## 4.3.8 (2020-02-07)
+### 4.3.8 (2020-02-07)
 * (bluefox) Fixed the authentication error detection
 
-## 4.3.7 (2020-01-26)
+### 4.3.7 (2020-01-26)
 * (bluefox) Made adapter compatible with js-controller >= 2.2.x 
 
-## 4.3.5 (2020-01-26)
+### 4.3.5 (2020-01-26)
 * (bluefox) fixed the load of zip files if more than one host
 
-## 4.3.4 (2019-10-28)
+### 4.3.4 (2019-10-28)
 * (bluefox) Values are showed in select ID dialog
 * (bluefox) Allow select with $ the schedule objects
 
-## 4.3.3 (2019-10-28)
+### 4.3.3 (2019-10-28)
 * (bluefox) Search in scripts was corrected
 
-## 4.3.2 (2019-10-27)
+### 4.3.2 (2019-10-27)
 * (AlCalzone) Fix syntax help for Node.js runtime methods (#418)
 * (AlCalzone) Target ES 2017 in TypeScript (#419)
 * (AlCalzone) Automatically load declarations for 3rd party modules (#422)
 * (bluefox) Functions with non latin text are working now
 
-## 4.3.1 (2019-10-16)
+### 4.3.1 (2019-10-16)
 * (bluefox) Fixed login with non-admin user
 * (bluefox) fixed log
 * (bluefox) Some GUI fixes
 
-## 4.3.0 (2019-10-09)
+### 4.3.0 (2019-10-09)
 * (bluefox) log handlers were implemented
 * (bluefox) fixed the error with $ selector and with disabled subscribes
 
-## 4.2.1 (2019-10-07)
+### 4.2.1 (2019-10-07)
 * (bluefox) implement inter-script communication.
 * (bluefox) Implemented the mirroring on disk
 * (bluefox) Translation for other languages was added
 
-## 4.1.16 (2019-08-24)
+### 4.1.16 (2019-08-24)
 * (bluefox) Fixed the errors in editor
 
-## 4.1.15 (2019-08-24)
+### 4.1.15 (2019-08-24)
 * (bluefox) Added the polish language to CRON
 * (bluefox) Fixed the import of scripts
 
-## 4.1.14 (2019-07-14)
+### 4.1.14 (2019-07-14)
 * (bluefox) Fixed locale settings
 
-## 4.1.13 (2019-06-02)
+### 4.1.13 (2019-06-02)
 * (bluefox) fixed Monaco Loading
 * (bluefox) added missing blockly element
 * (AlCalzone) Improved the warning message when assigning a variable of wrong type to a state
@@ -349,135 +123,135 @@ The newest change log is in README.md
 * (thewhobox) Fixed Blockly bug
 * (paul53) fixed for suncalc.getTimes between middle night and nadir
 
-## 4.1.12 (2019-03-07)
+### 4.1.12 (2019-03-07)
 * (bluefox) Schedule was corrected
 
-## 4.1.8 (2019-02-03)
+### 4.1.8 (2019-02-03)
 * (jkuehner) Updated the blockly to the latest code
 * (bleufox) scriptEnabled variables not only for experts
 * (bleufox) fixed one error with "cannot extract blockly"
 * (bluefox) GUI fixes
 * (bluefox) show problem scripts as yellow pause icon
 
-## 4.0.12 (2019-01-20)
+### 4.0.12 (2019-01-20)
 * (Apollon77/AlCalzone) fixes unwanted changes in last version
 * (SchumyHao) Add Chinese support
 
-## 4.0.11 (2019-01-14)
+### 4.0.11 (2019-01-14)
 * (bluefox) add set/getBinaryState
 
-## 3.7.0 (2018-05-05)
+### 3.7.0 (2018-05-05)
 * (bluefox) Used VM2 as sandbox. The script errors will be caught.
 * (bluefox) refactoring: split into many modules
 * (AlCalzone) Change TypeScript version range to include TS 3.0+
 
-## 3.6.5 (2019-02-13)
+### 3.6.5 (2019-02-13)
 * (bluefox) Error with formatDate was fixed
 
-## 3.6.4 (2018-02-05)
+### 3.6.4 (2018-02-05)
 * (bluefox) Pattern error is fixed
 
-## 3.6.3 (2018-01-31)
+### 3.6.3 (2018-01-31)
 * (bluefox) Fixing the CSS for CRON dialog
 * (bluefox) Fixing the reorder of scripts
 
-## 3.6.1 (2018-01-23)
+### 3.6.1 (2018-01-23)
 * (bluefox) Pattern error is fixed
 
-## 3.6.0 (2017-12-28)
+### 3.6.0 (2017-12-28)
 * (bluefox) more translations are added
 * (bluefox) update blockly engine
 
-## 3.5.1 (2017-11-14)
+### 3.5.1 (2017-11-14)
 * (bluefox) fixed: sometimes MSG is not defined
 * (AlCalzone) TypeScript support (preparations)
 * (bluefox) add sendToHost call
 * (bluefox) protect exec call
 * (bluefox) add getStateDelayed function
 
-## 3.4.4 (2017-09-12)
+### 3.4.4 (2017-09-12)
 * (soef) typo error in line number correction fixed
 
-## 3.4.1 (2017-08-12)
+### 3.4.1 (2017-08-12)
 * (soef) patternMatching optimized
 
-## 3.4.0 (2017-08-06)
+### 3.4.0 (2017-08-06)
 * (bluefox) Support of new admin
 
-## 3.3.12 (2017-07-24)
+### 3.3.12 (2017-07-24)
 * (bluefox) file and line info added to log outputs
 
-## 3.3.11 (2017-07-18)
+### 3.3.11 (2017-07-18)
 * (bluefox) fix build CRON block
 
-## 3.3.9 (2017-06-18)
+### 3.3.9 (2017-06-18)
 * (bluefox) Add the toggle blockly block
 
-## 3.3.8 (2017-05-22)
+### 3.3.8 (2017-05-22)
 * (Apollon77/bluefox) Accept for subscribes arrays of IDs
 
-## 3.3.6 (2017-05-17)
+### 3.3.6 (2017-05-17)
 * (bluefox) add the genitive month for formatDate
 
-## 3.3.4 (2017-04-01)
+### 3.3.4 (2017-04-01)
 * (bluefox) Catch error by request if host unavailable
 * (bluefox) add "request" to script namespace
 
-## 3.3.3 (2017-03-27)
+### 3.3.3 (2017-03-27)
 * (bluefox)Fix stopScript
 
-## 3.3.2 (2017-03-18)
+### 3.3.2 (2017-03-18)
 * (bluefox) Support of system coordinates
 
-## 3.3.1 (2017-03-15)
+### 3.3.1 (2017-03-15)
  * (bluefox) fix error if no scripts exists
 
-## 3.3.0 (2017-03-14)
+### 3.3.0 (2017-03-14)
 * (bluefox) all callbacks in try/catch
 
-## 3.2.8 (2017-03-08)
+### 3.2.8 (2017-03-08)
 * (bluefox) Translations
 
-## 3.2.7 (2017-03-03)
+### 3.2.7 (2017-03-03)
 * (bluefox) allow creation of states for other javascript instances
 
-## 3.2.6 (2017-02-14)
+### 3.2.6 (2017-02-14)
 * (bluefox) Fix import of scripts
 * (bluefox) Ask to save before start the script
 
-## 3.2.5 (2017-01-23)
+### 3.2.5 (2017-01-23)
 * (bluefox) Extend compareTime function with astro features
 
-## 3.2.4 (2017-01-13)
+### 3.2.4 (2017-01-13)
 * (bluefox) fix stopScript
 
-## 3.2.3 (2017-01-05)
+### 3.2.3 (2017-01-05)
 * (bluefox) Try to fix error with sayit
 
-## 3.2.2 (2016-12-17)
+### 3.2.2 (2016-12-17)
 * (bluefox) Allow with stopScript() to stop itself
 
-## 3.2.1 (2016-11-24)
+### 3.2.1 (2016-11-24)
 * (bluefox) Fix error with subscribe for only required states
 
-## 3.2.0 (2016-11-14)
+### 3.2.0 (2016-11-14)
 * (bluefox) Fix error with of blocks in adapters
 * (bluefox) Support of subscribe for only required states
 * (bluefox) add delFile
 * (bluefox) fix error with names
 
-## 3.1.0 (2016-10-12)
+### 3.1.0 (2016-10-12)
 * (bluefox) Support of blocks in adapters
 * (bluefox) Move sendTo blocks into adapters
 
-## 3.0.10 (2016-09-30)
+### 3.0.10 (2016-09-30)
 * (bluefox) New blocks: compare time, write state
 * (bluefox) Documentation
 
-## 3.0.9 (2016-09-20)
+### 3.0.9 (2016-09-20)
 * (bluefox) Bugfixing of blockly
 
-## 3.0.7 (2016-09-09)
+### 3.0.7 (2016-09-09)
 * (bluefox) add ack for trigger in blockly
 * (bluefox) add block to get info about trigger
 * (bluefox) start description of blockly
@@ -485,27 +259,27 @@ The newest change log is in README.md
 * (bluefox) disable zoom on wheel in blockly
 * (bluefox) fix block: time compare
 
-## 3.0.6 (2016-09-07)
+### 3.0.6 (2016-09-07)
 * (bluefox) add extendObject function
 * (bluefox) add custom sendTo block
 * (bluefox) add multiple trigger block
 
-## 3.0.5 (2016-09-03)
+### 3.0.5 (2016-09-03)
 * (bluefox) Fix sendTo blocks
 
-## 3.0.4 (2016-09-01)
+### 3.0.4 (2016-09-01)
 * (bluefox) Support of convert day of week into text in blockly
 
-## 3.0.3 (2016-08-29)
+### 3.0.3 (2016-08-29)
 * (bluefox) Fixed the convert date block
 
-## 3.0.2 (2016-08-28)
+### 3.0.2 (2016-08-28)
 * (bluefox) Change name of sandbox debug variable
 
-## 3.0.1 (2016-08-27)
+### 3.0.1 (2016-08-27)
 * (bluefox) Fix disabling of script
 
-## 3.0.0 (2016-08-27)
+### 3.0.0 (2016-08-27)
 * (bluefox) Beta Release with Blockly
 
 
