@@ -98,7 +98,7 @@ class DialogScriptEditor extends React.Component {
                         style={{height: this.props.args ? 'calc(100% - 30px)' : '100%'}}
                         key="scriptEditor"
                         name={'blockly'}
-                        connection={this.props.connection}
+                        socket={this.props.socket}
                         readOnly={false}
                         checkJs={false}
                         code={this.state.source}
@@ -123,7 +123,7 @@ DialogScriptEditor.propTypes = {
     args: PropTypes.string,
     isReturn: PropTypes.bool,
     themeType: PropTypes.string,
-    connection: PropTypes.object
+    socket: PropTypes.object
 };
 
 export default withStyles(styles)(DialogScriptEditor);

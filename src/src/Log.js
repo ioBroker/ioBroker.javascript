@@ -176,11 +176,11 @@ class Log extends React.Component {
     }
 
     componentDidMount() {
-        this.props.connection.registerLogHandler(this.logHandlerBound);
+        this.props.socket.registerLogHandler(this.logHandlerBound);
     }
 
     componentWillUnmount() {
-        this.props.connection.unregisterLogHandler(this.logHandlerBound);
+        this.props.socket.unregisterLogHandler(this.logHandlerBound);
     }
 
     componentDidUpdate() {
@@ -257,6 +257,7 @@ class Log extends React.Component {
 
 Log.propTypes = {
     selected: PropTypes.string,
+    socket: PropTypes.object,
     onLayoutChange: PropTypes.func,
     verticalLayout: PropTypes.bool
 };

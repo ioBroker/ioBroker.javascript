@@ -39,6 +39,9 @@ And then call "npm run build".
     ### __WORK IN PROGRESS__
 -->
 ## Changelog
+### __WORK IN PROGRESS__
+* (Bluefox) Fixed blockly problem
+
 ### 4.7.1 (2020-09-04)
 * (Bluefox) Fixed styling
 

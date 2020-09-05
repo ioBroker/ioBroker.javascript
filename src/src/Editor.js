@@ -183,6 +183,7 @@ class Editor extends React.Component {
             runningInstances: this.props.runningInstances || {},
             showDebugMenu: false,
             toast: '',
+            instancesLoaded: false,
         };
 
         this.setChangedInAdmin();
@@ -206,8 +207,8 @@ class Editor extends React.Component {
 
         window.systemLang = I18n.getLanguage();
         window.main = {
-            objects: this.props.objects,
-            instances: this.props.instances,
+            objects: {},
+            instances: [],
             selectIdDialog: (initValue, cb) => {
                 this.selectId.callback = cb;
                 this.selectId.initValue = initValue;
@@ -226,6 +227,7 @@ class Editor extends React.Component {
                 this.setState({showScript: true});
             }
         };
+
         this.objects = props.objects;
         /* ----------------------- */
 
@@ -235,12 +237,48 @@ class Editor extends React.Component {
             this.state.selected = this.state.editing[0];
         }
 
-        // to enable logging
-        if (this.props.onSelectedChange && this.state.selected) {
-            setTimeout(() => this.props.onSelectedChange(this.state.selected, this.state.editing), 100);
-        }
-        this.onBrowserCloseBound = this.onBrowserClose.bind(this);
+        this.getAllAdapterInstances()
+            .then(() => {
+                // to enable logging
+                if (this.props.onSelectedChange && this.state.selected) {
+                    setTimeout(() => this.props.onSelectedChange(this.state.selected, this.state.editing), 100);
+                }
+            });
     }
+
+    getAllAdapterInstances() {
+        return this.props.socket.getAdapterInstances(true)
+            .then(instanceObjects => {
+                const objects = {};
+                const instances = instanceObjects.map(obj => {
+                    objects[obj._id] = obj;
+                    return obj._id;
+                });
+                window.main.objects = objects;
+                window.main.instances = instances;
+                this.setState({instancesLoaded: true});
+            });
+    }
+
+    onInstanceChanged = (id, obj) => {
+        if (!id) {
+            return;
+        }
+
+        if (!obj && window.main.instances.includes[id]) {
+            delete window.main.objects[id];
+            const pos = window.main.instances.indexOf(id);
+            window.main.instances.splice(pos, 1);
+        } else
+        if (obj && obj.type === 'instance') {
+            // update instances
+            if (!window.main.instances.includes(id)) {
+                window.main.instances.push(id);
+                window.main.instances.sort();
+            }
+            window.main.objects[id] = obj;
+        }
+    };
 
     setChangedInAdmin() {
         const isChanged = Object.keys(this.state.changed).find(id => this.state.changed[id]);
@@ -251,14 +289,16 @@ class Editor extends React.Component {
     }
 
     componentDidMount() {
-        window.addEventListener('beforeunload', this.onBrowserCloseBound, false);
+        window.addEventListener('beforeunload', this.onBrowserClose, false);
+        this.props.socket.subscribeObject('system.adapter.*', this.onInstanceChanged);
     }
 
     componentWillUnmount() {
-        window.removeEventListener('beforeunload', this.onBrowserCloseBound);
+        window.removeEventListener('beforeunload', this.onBrowserClose);
+        this.props.socket.unsubscribeObject('system.adapter.*', this.onInstanceChanged);
     }
 
-    onBrowserClose(e) {
+    onBrowserClose = e => {
         const isChanged = Object.keys(this.scripts).find(id =>
             JSON.stringify(this.scripts[id]) !== JSON.stringify(this.props.objects[id].common));
 
@@ -274,7 +314,7 @@ class Editor extends React.Component {
             // For Safari
             return message;
         }
-    }
+    };
 
     removeNonExistingScripts(nextProps, newState) {
         nextProps = nextProps || this.props;
@@ -346,12 +386,6 @@ class Editor extends React.Component {
         if (this.state.searchText !== nextProps.searchText) {
             newState.searchText = nextProps.searchText;
             _changed = true;
-        }
-
-        if (JSON.stringify(nextProps.instances) !== JSON.stringify(this.state.instances)) {
-            _changed = true;
-            newState.instances = nextProps.instances;
-            window.main.instances = newState.instances;
         }
 
         // if objects read
@@ -882,7 +916,7 @@ class Editor extends React.Component {
                     changed={this.state.changed[this.state.selected]}
                     code={this.scripts[this.state.selected].source || ''}
                     isDark={this.state.themeType === 'dark'}
-                    connection={this.props.connection}
+                    socket={this.props.socket}
                     runningInstances={this.state.runningInstances}
                     onChange={newValue => this.onChange({script: newValue})}
                     language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
@@ -894,7 +928,7 @@ class Editor extends React.Component {
     }
 
     getBlocklyEditor() {
-        if (this.state.selected && this.props.objects[this.state.selected] && (this.state.blockly && !this.state.showBlocklyCode) && this.state.visible) {
+        if (this.state.instancesLoaded && this.state.selected && this.props.objects[this.state.selected] && (this.state.blockly && !this.state.showBlocklyCode) && this.state.visible) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
 
             return (<div className={this.props.classes.editorDiv} key="blocklyEditorDiv">
@@ -939,7 +973,7 @@ class Editor extends React.Component {
                 prefix={'../..'}
                 themeName={this.props.themeName}
                 themeType={this.state.themeType}
-                socket={this.props.connection}
+                socket={this.props.socket}
                 selected={this.selectId.callback ? this.selectId.initValue || '' : this.getSelect ? this.getSelect() : ''}
                 statesOnly={true}
                 onClose={() => this.setState({showSelectId: false})}
@@ -986,7 +1020,7 @@ class Editor extends React.Component {
                 source={this.scriptDialog.initValue}
                 args={this.scriptDialog.args ? this.scriptDialog.args.join(', ') : ''}
                 isReturn={this.scriptDialog.isReturn}
-                connection={this.props.connection}
+                socket={this.props.socket}
                 themeType={this.state.themeType}
                 onClose={result => {
                     this.scriptDialog.initValue = null;
@@ -1070,7 +1104,7 @@ Editor.propTypes = {
     menuOpened: PropTypes.bool,
     onLocate: PropTypes.func,
     runningInstances: PropTypes.object,
-    connection: PropTypes.object,
+    socket: PropTypes.object,
     searchText: PropTypes.string,
     themeName: PropTypes.string,
     themeType: PropTypes.string,

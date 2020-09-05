@@ -120,6 +120,11 @@ class App extends GenericApp {
         this.hosts = [];
         this.importFile = null;
         this.scripts = {};
+
+        window.alert = message => {
+            console.error(message);
+            this.showError(message.toString());
+        };
     }
 
     onScriptsChanged = (id, obj) => {
@@ -172,6 +177,9 @@ class App extends GenericApp {
                     changed = true;
                 }
             }
+
+
+
 
             if (obj && obj[id].common && obj[id].common.blockly) {
                 this.confirmCallback = result => result && window.location.reload();
@@ -731,7 +739,7 @@ class App extends GenericApp {
                     <Editor
                         key="editor"
                         visible={!this.state.resizing}
-                        connection={this.socket}
+                        socket={this.socket}
                         onLocate={menuSelectId => this.setState({menuSelectId})}
                         runningInstances={this.state.runningInstances}
                         menuOpened={this.state.menuOpened}
@@ -757,7 +765,7 @@ class App extends GenericApp {
                         objects={this.scripts}
                         instances={this.state.instances}
                     />
-                    <Log key="log" verticalLayout={!this.state.logHorzLayout} onLayoutChange={() => this.toggleLogLayout()} editing={this.state.editing} connection={this.socket} selected={this.state.selected}/>
+                    <Log key="log" verticalLayout={!this.state.logHorzLayout} onLayoutChange={() => this.toggleLogLayout()} editing={this.state.editing} socket={this.socket} selected={this.state.selected}/>
                 </SplitterLayout>
             </div>,
         ];
@@ -796,7 +804,7 @@ class App extends GenericApp {
                         update={this.state.updateScripts}
                         onRename={this.onRename.bind(this)}
                         onSelect={this.onSelect.bind(this)}
-                        connection={this.socket}
+                        socket={this.socket}
                         selectId={this.state.menuSelectId}
                         onEdit={this.onEdit.bind(this)}
                         expertMode={this.state.expertMode}

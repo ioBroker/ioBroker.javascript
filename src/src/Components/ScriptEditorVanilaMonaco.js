@@ -84,7 +84,7 @@ class ScriptEditor extends React.Component {
             /** @type {string} */
             let scriptAdapterInstance = Object.keys(this.props.runningInstances).find(id => this.props.runningInstances[id]);
             if (scriptAdapterInstance) {
-                this.props.connection.sendTo(scriptAdapterInstance.replace('system.adapter.', ''), 'loadTypings', null)
+                this.props.socket.sendTo(scriptAdapterInstance.replace('system.adapter.', ''), 'loadTypings', null)
                     .then(result => {
                         this.setState({alive: true, check: true});
                         this.setTypeCheck(true);
@@ -313,7 +313,7 @@ class ScriptEditor extends React.Component {
 }
 
 ScriptEditor.propTypes = {
-    connection: PropTypes.object,
+    socket: PropTypes.object,
     runningInstances: PropTypes.object,
     name: PropTypes.string,
     onChange: PropTypes.func,

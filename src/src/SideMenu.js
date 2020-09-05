@@ -367,7 +367,7 @@ class SideDrawer extends React.Component {
                 const that = this; // sometimes lambda does not work
                 const _id = 'javascript.' + instance + '.scriptProblem.' + id.substring('script.js.'.length);
 
-                this.props.connection.getState(_id, (err, state) => {
+                this.props.socket.getState(_id, (err, state) => {
                     that.onProblemUpdated(_id, state);
                     setTimeout(() => that.readProblems(cb, tasks), 0);
                 });
@@ -380,14 +380,14 @@ class SideDrawer extends React.Component {
     componentDidMount() {
         this.readProblems(() =>  {
             this.props.instances.forEach(instance => {
-                this.props.connection.subscribeState('javascript.' + instance + '.scriptProblem.*', this.onProblemUpdatedBound);
+                this.props.socket.subscribeState('javascript.' + instance + '.scriptProblem.*', this.onProblemUpdatedBound);
             });
         });
     }
 
     componentWillUnmount() {
         this.props.instances.forEach(instance => {
-            this.props.connection.unsubscribeState('javascript.' + instance + '.scriptProblem.*', this.onProblemUpdatedBound);
+            this.props.socket.unsubscribeState('javascript.' + instance + '.scriptProblem.*', this.onProblemUpdatedBound);
         });
     }
 
@@ -1474,7 +1474,7 @@ SideDrawer.propTypes = {
     onExpertModeChange: PropTypes.func,
     onEnableDisable: PropTypes.func,
     runningInstances: PropTypes.object,
-    connection: PropTypes.object,
+    socket: PropTypes.object,
     themeName: PropTypes.string,
     themeType: PropTypes.string,
     onSelect: PropTypes.func,
