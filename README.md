@@ -32,10 +32,17 @@ And then call "npm run build".
 - heating profile (future releases)
 - ...
 
+<!--
+	Placeholder for the next version (at the beginning of the line):
+	### __WORK IN PROGRESS__
+-->
+
 ## Changelog
+### __WORK IN PROGRESS__
+* (Bluefox) Fixed the select ID dialog
+
 ### 4.7.2 (2020-09-05)
 * (Bluefox) Fixed blockly problem
-* chore: release v4.7.0
 
 ### 4.7.1 (2020-09-04)
 * (Bluefox) Fixed styling

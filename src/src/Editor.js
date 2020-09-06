@@ -968,15 +968,42 @@ class Editor extends React.Component {
 
     getSelectIdDialog() {
         if (this.state.showSelectId) {
+            let selectedId = this.selectId.callback ? this.selectId.initValue || '' : this.getSelect ? this.getSelect() : '';
+            // it could be:
+            // - 'id.xx'/* aksjdhsdf*/
+            // - "id.xx"/* aksjdhsdf*/
+            // - "id.xx"//
+            let pos = selectedId.indexOf('/*');
+            if (pos !== -1) {
+                selectedId = selectedId.substring(0, pos);
+            }
+            pos = selectedId.indexOf('//');
+            if (pos !== -1) {
+                selectedId = selectedId.substring(0, pos);
+            }
+            let m = selectedId.match(/"([^"]+)"/);
+            if (m) {
+                selectedId = m[1];
+            }
+            m = selectedId.match(/'([^']+)'/);
+            if (m) {
+                selectedId = m[1];
+            }
+
             return <DialogSelectID
                 key="dialogSelectID1"
                 prefix={'../..'}
                 themeName={this.props.themeName}
                 themeType={this.state.themeType}
                 socket={this.props.socket}
-                selected={this.selectId.callback ? this.selectId.initValue || '' : this.getSelect ? this.getSelect() : ''}
+                selected={selectedId}
                 statesOnly={true}
-                onClose={() => this.setState({showSelectId: false})}
+                onClose={() => {
+                    this.setState({showSelectId: false});
+                    if (this.selectId.callback) {
+                        this.selectId.callback = null;
+                    }
+                }}
                 onOk={(selected, name) => {
                     this.selectId.initValue = null;
                     if (this.selectId.callback) {
