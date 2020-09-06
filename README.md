@@ -38,7 +38,7 @@ And then call "npm run build".
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 4.7.3 (2020-09-06)
 * (Bluefox) Fixed the select ID dialog
 
 ### 4.7.2 (2020-09-05)
@@ -56,18 +56,6 @@ And then call "npm run build".
 ### 4.6.26 (2020-08-24)
 * (Apollon77) Catch error case when npm installation fails (Sentry IOBROKER-JAVASCRIPT-3K)
 * (Apollon77) Prevent crash case in mirroring (Sentry IOBROKER-JAVASCRIPT-3M)
-
-### 4.6.25 (2020-08-24)
-* (bluefox) Fixed the loading of page
-
-### 4.6.23 (2020-08-19)
-* (AlCalzone) fix type resolution for rxjs in TypeScripts
-
-### 4.6.22 (2020-07-30)
-* (Apollon77) caught some more file errors in mirror logic
-
-### 4.6.21 (2020-07-28)
-* (Apollon77) caught some more file errors in mirror logic (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)
 
 ## License
 

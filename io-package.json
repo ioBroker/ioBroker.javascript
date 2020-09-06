@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.7.2",
+        "version": "4.7.3",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.7.3": {
+                "en": "Fixed the select ID dialog",
+                "de": "Das Dialogfeld \"ID auswählen\" wurde korrigiert",
+                "ru": "Исправлен диалог выбора идентификатора",
+                "pt": "Corrigida a caixa de diálogo de seleção de ID",
+                "nl": "Het dialoogvenster ID selecteren opgelost",
+                "fr": "Correction de la boîte de dialogue de sélection d'ID",
+                "it": "Corretta la finestra di dialogo Seleziona ID",
+                "es": "Se corrigió el diálogo de selección de ID",
+                "pl": "Naprawiono okno dialogowe wyboru identyfikatora",
+                "zh-cn": "修复了选择ID对话框"
+            },
             "4.7.2": {
                 "en": "Fixed blockly problem",
                 "de": "Blockproblem behoben",
@@ -239,18 +251,6 @@
                 "zh-cn": "要求node.js 10，防止js-controller 3.0警告，已添加Sentry与js-controller 3.0一起使用"
             },
             "4.4.4": {
-                "en": "Added JSONata for Object conversion",
-                "de": "JSONata für die Objektkonvertierung hinzugefügt",
-                "ru": "Добавлена JSONata для преобразования объектов",
-                "pt": "Adicionado JSONata para conversão de objeto",
-                "nl": "JSONata toegevoegd voor objectconversie",
-                "fr": "Ajout de la conversion JSONata pour objet",
-                "it": "Aggiunto JSONata per la conversione di oggetti",
-                "es": "Se agregó JSONata para la conversión de objetos",
-                "pl": "Dodano JSONata do konwersji obiektów",
-                "zh-cn": "添加了用于对象转换的JSONata"
-            },
-            "4.4.3": {
                 "en": "Added JSONata for Object conversion",
                 "de": "JSONata für die Objektkonvertierung hinzugefügt",
                 "ru": "Добавлена JSONata для преобразования объектов",
