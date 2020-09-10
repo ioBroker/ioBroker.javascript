@@ -7,8 +7,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
 
-import ScriptEditorComponent from '../Components/ScriptEditorVanilaMonaco';
+import IconSave from '@material-ui/icons/Save';
+import IconCancel from '@material-ui/icons/Cancel';
 
+import ScriptEditorComponent from '../Components/ScriptEditorVanilaMonaco';
 import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
@@ -32,6 +34,9 @@ const styles = theme => ({
     argsTitle: {
         color: theme.palette.type === 'dark' ? 'white' : 'black',
         fontWeight: 'bold'
+    },
+    buttonIcon: {
+        marginRight: theme.spacing(1),
     }
 });
 
@@ -76,48 +81,50 @@ class DialogScriptEditor extends React.Component {
     render() {
         const classes = this.props.classes;
 
-        return (
-            <Dialog
-                disableBackdropClick
-                disableEscapeKeyDown
-                maxWidth="lg"
-                classes={{paper: classes.dialog}}
-                fullWidth={true}
-                open={true}
-                aria-labelledby="source-dialog-title"
-            >
-                <DialogTitle id="source-dialog-title">{I18n.t('Function editor')}</DialogTitle>
-                <DialogContent className={classes.fullHeight}>
-                    {this.props.args && (<div key="arguments" className={classes.args}>
-                        <span className={classes.argsTitle}>{I18n.t('function (')}</span>
-                        {this.props.args}
-                        <span className={classes.argsTitle}>)</span>
-                    </div>)}
-                    <ScriptEditorComponent
-                        className={classes.textArea}
-                        style={{height: this.props.args ? 'calc(100% - 30px)' : '100%'}}
-                        key="scriptEditor"
-                        name={'blockly'}
-                        socket={this.props.socket}
-                        readOnly={false}
-                        checkJs={false}
-                        code={this.state.source}
-                        isDark={this.props.themeType === 'dark'}
-                        onChange={newValue => this.onChange(newValue)}
-                        language={'javascript'}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => this.handleOk()} color="primary">{I18n.t('Save')}</Button>
-                    <Button onClick={() => this.handleCancel()}>{I18n.t('Cancel')}</Button>
-                </DialogActions>
-            </Dialog>
-        );
+        return <Dialog
+            disableBackdropClick
+            disableEscapeKeyDown
+            maxWidth="lg"
+            classes={{paper: classes.dialog}}
+            fullWidth={true}
+            open={true}
+            aria-labelledby="source-dialog-title"
+        >
+            <DialogTitle id="source-dialog-title">{I18n.t('Function editor')}</DialogTitle>
+            <DialogContent className={classes.fullHeight}>
+                {this.props.args && (<div key="arguments" className={classes.args}>
+                    <span className={classes.argsTitle}>{I18n.t('function (')}</span>
+                    {this.props.args}
+                    <span className={classes.argsTitle}>)</span>
+                </div>)}
+                <ScriptEditorComponent
+                    adapterName={this.props.adapterName}
+                    runningInstances={this.props.runningInstances}
+                    className={classes.textArea}
+                    style={{height: this.props.args ? 'calc(100% - 30px)' : '100%'}}
+                    key="scriptEditor"
+                    name={'blockly'}
+                    socket={this.props.socket}
+                    readOnly={false}
+                    checkJs={false}
+                    code={this.state.source}
+                    isDark={this.props.themeType === 'dark'}
+                    onChange={newValue => this.onChange(newValue)}
+                    language={'javascript'}
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => this.handleOk()} color="primary"><IconSave className={this.props.classes.buttonIcon}/>{I18n.t('Save')}</Button>
+                <Button onClick={() => this.handleCancel()}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Cancel')}</Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 
 DialogScriptEditor.propTypes = {
     classes: PropTypes.object.isRequired,
+    adapterName: PropTypes.string.isRequired,
+    runningInstances: PropTypes.object.isRequired,
     onClose: PropTypes.func,
     source: PropTypes.string,
     args: PropTypes.string,

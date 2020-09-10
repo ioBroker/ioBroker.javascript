@@ -10,7 +10,11 @@ import Popper from '@material-ui/core/Popper';
 import Fade from '@material-ui/core/Fade';
 import Paper from '@material-ui/core/Paper';
 
+import IconCopy from '@material-ui/icons/FileCopy';
+import IconCancel from '@material-ui/icons/Cancel';
+
 import I18n from '@iobroker/adapter-react/i18n';
+import IconSave from "@material-ui/icons/Save";
 
 const styles = theme => ({
     textArea: {
@@ -25,6 +29,9 @@ const styles = theme => ({
     },
     typography: {
         padding: theme.spacing(2),
+    },
+    buttonIcon: {
+        marginRight: theme.spacing(1),
     },
 });
 class DialogExport extends React.Component {
@@ -81,8 +88,8 @@ class DialogExport extends React.Component {
                     >{this.props.text}</pre>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={event  => this.onCopy(event )} color="secondary">{I18n.t('Copy to clipboard')}</Button>
-                    <Button onClick={() => this.handleCancel()} color="primary">{I18n.t('Close')}</Button>
+                    <Button onClick={event  => this.onCopy(event )} color="secondary"><IconCopy className={this.props.classes.buttonIcon}/>{I18n.t('Copy to clipboard')}</Button>
+                    <Button onClick={() => this.handleCancel()} color="primary"><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Close')}</Button>
 
                     <Popper
                         id="popper"

@@ -36,7 +36,7 @@ import ImgTypeScript from './assets/typescript.png';
 import ImgBlockly2Js from './assets/blockly2js.png'
 
 import I18n from '@iobroker/adapter-react/i18n';
-import ScriptEditor from './Components/ScriptEditorVanilaMonaco';
+import ScriptEditorComponent from './Components/ScriptEditorVanilaMonaco';
 import BlocklyEditor from './Components/BlocklyEditor';
 import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
 import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
@@ -903,10 +903,11 @@ class Editor extends React.Component {
         if (this.state.selected && this.props.objects[this.state.selected] && this.state.blockly !== null && (!this.state.blockly || this.state.showBlocklyCode)) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
 
-            return (<div className={this.props.classes.editorDiv} key="scriptEditorDiv">
-                <ScriptEditor
-                    key="scriptEditor"
+            return <div className={this.props.classes.editorDiv} key="scriptEditorDiv">
+                <ScriptEditorComponent
+                    key="scriptEditor1"
                     name={this.state.selected}
+                    adapterName={this.props.adapterName}
                     insert={this.state.insert}
                     onInserted={() => this.setState({insert: ''})}
                     onForceSave={() => this.onSave()}
@@ -921,7 +922,7 @@ class Editor extends React.Component {
                     onChange={newValue => this.onChange({script: newValue})}
                     language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
                 />
-            </div>);
+            </div>;
         } else {
             return null;
         }
@@ -1044,10 +1045,12 @@ class Editor extends React.Component {
         if (this.state.showScript) {
             return <DialogScriptEditor
                 key="scriptEditorDialog"
+                adapterName={this.props.adapterName}
                 source={this.scriptDialog.initValue}
                 args={this.scriptDialog.args ? this.scriptDialog.args.join(', ') : ''}
                 isReturn={this.scriptDialog.isReturn}
                 socket={this.props.socket}
+                runningInstances={this.state.runningInstances}
                 themeType={this.state.themeType}
                 onClose={result => {
                     this.scriptDialog.initValue = null;
@@ -1064,7 +1067,7 @@ class Editor extends React.Component {
     }
 
     getToast() {
-        return (<Snackbar
+        return <Snackbar
             key="toast"
             anchorOrigin={{
                 vertical: 'bottom',
@@ -1085,7 +1088,7 @@ class Editor extends React.Component {
                 ><IconClose />
                 </IconButton>,
             ]}
-        />);
+        />;
     }
 
     render() {
@@ -1123,6 +1126,7 @@ class Editor extends React.Component {
 Editor.propTypes = {
     objects: PropTypes.object.isRequired,
     instances: PropTypes.array.isRequired,
+    adapterName: PropTypes.string.isRequired,
     selected: PropTypes.string.isRequired,
     onSelectedChange: PropTypes.func.isRequired,
     onRestart: PropTypes.func,

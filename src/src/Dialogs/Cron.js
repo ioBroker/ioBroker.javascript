@@ -8,6 +8,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
 import Radio from '@material-ui/core/Radio';
 
+import IconOk from '@material-ui/icons/Check';
+import IconCancel from '@material-ui/icons/Cancel';
+
 import ComplexCron from '../Components/ComplexCron';
 import SimpleCron from '../Components/simple-cron/SimpleCron';
 import Schedule from '../Components/Schedule';
@@ -26,6 +29,9 @@ const styles = theme => ({
     },
     dialogPaper: {
         height: 'calc(100% - 96px)'
+    },
+    buttonIcon: {
+        marginRight: theme.spacing(1),
     }
 });
 
@@ -118,8 +124,8 @@ class DialogCron extends React.Component {
                         />)}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.handleOk()}     color="primary">{this.props.ok || I18n.t('Ok')}</Button>
-                    <Button onClick={() => this.handleCancel()}>{this.props.cancel || I18n.t('Cancel')}</Button>
+                    <Button onClick={() => this.handleOk()}     color="primary"><IconOk className={this.props.classes.buttonIcon}/>{this.props.ok || I18n.t('Ok')}</Button>
+                    <Button onClick={() => this.handleCancel()}><IconCancel className={this.props.classes.buttonIcon}/>{this.props.cancel || I18n.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>
         );

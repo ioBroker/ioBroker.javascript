@@ -38,6 +38,9 @@ And then call "npm run build".
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (Bluefox) Fixed JS editor in blockly
+
 ### 4.7.3 (2020-09-06)
 * (Bluefox) Fixed the select ID dialog
 

@@ -19,7 +19,8 @@ class ScriptEditor extends React.Component {
             readOnly: props.readOnly || false,
             alive: true,
             check: false,
-            searchText: this.props.searchText || ''
+            searchText: this.props.searchText || '',
+            runningInstances: this.props.runningInstances || null,
         };
         this.monacoDiv = null; //ref
         this.editor = null;
@@ -29,10 +30,31 @@ class ScriptEditor extends React.Component {
         this.globalTypingHandles  = [];
         this.typings = {}; // TypeScript declarations
         this.lastSearch = '';
+        /*if (!this.state.runningInstances) {
+            return this.props.socket.getAdapterInstances(this.props.adapterName)
+                .then(instancesArray => {
+                    const instances = instancesArray.map(obj => parseInt(obj._id.split('.').pop())).sort();
+                    const runningInstances = {};
+                    instances.forEach(id => runningInstances['system.adapter.' + this.props.adapterName + '.' + id] = false);
+
+                    const promises = [];
+
+                    // subscribe on instances
+                    instances.forEach(instance => {
+                        const instanceId = `system.adapter.${this.props.adapterName}.${instance}`;
+                        const id = `${instanceId}.alive`;
+                        promises.push(this.props.socket.getState(id)
+                            .then(state => runningInstances[instanceId] = state ? state.val : false));
+                    });
+
+                    return Promise.all(promises)
+                        .then(() => ({instances, runningInstances}));
+                });
+        }*/
     }
 
     waitForMonaco(cb) {
-        if (!this.monaco) {
+        if (!this.monaco || !this.state.runningInstances) {
             this.monaco = window.monaco;
             this.monacoCounter = this.monacoCounter || 0;
             this.monacoCounter++;
@@ -48,7 +70,7 @@ class ScriptEditor extends React.Component {
     }
 
     componentDidMount() {
-        if (!this.monaco) {
+        if (!this.monaco || !this.state.runningInstances) {
             this.monaco = window.monaco;
             if (!this.monaco) {
                 console.log('wait for monaco loaded');
@@ -82,7 +104,7 @@ class ScriptEditor extends React.Component {
 
             // Load typings for the JS editor
             /** @type {string} */
-            let scriptAdapterInstance = Object.keys(this.props.runningInstances).find(id => this.props.runningInstances[id]);
+            let scriptAdapterInstance = this.props.runningInstances && Object.keys(this.props.runningInstances).find(id => this.props.runningInstances[id]);
             if (scriptAdapterInstance) {
                 this.props.socket.sendTo(scriptAdapterInstance.replace('system.adapter.', ''), 'loadTypings', null)
                     .then(result => {
@@ -294,7 +316,7 @@ class ScriptEditor extends React.Component {
     }
 
     render() {
-        if (!this.monaco) {
+        if (!this.monaco || !this.state.runningInstances) {
             setTimeout(() => {
                 this.monaco = window.monaco;
                 this.forceUpdate()
@@ -313,6 +335,7 @@ class ScriptEditor extends React.Component {
 }
 
 ScriptEditor.propTypes = {
+    adapterName: PropTypes.string.isRequired,
     socket: PropTypes.object,
     runningInstances: PropTypes.object,
     name: PropTypes.string,

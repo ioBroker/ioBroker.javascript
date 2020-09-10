@@ -12,6 +12,8 @@ import {MdFileUpload as IconUpload} from 'react-icons/md';
 import {MdCancel as IconNo} from 'react-icons/md';
 import {MdPlusOne as IconPlus} from 'react-icons/md';
 
+import IconCancel from '@material-ui/icons/Cancel';
+
 import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
@@ -67,7 +69,10 @@ const styles = theme => ({
         color: '#868686',
         position: 'absolute',
         zIndex: 1,
-    }
+    },
+    buttonIcon: {
+        marginRight: theme.spacing(1),
+    },
 });
 class DialogImportFile extends React.Component {
 
@@ -202,7 +207,7 @@ class DialogImportFile extends React.Component {
                     {this.state.error ? (<DialogError text={this.state.error} onClose={() => this.setState({error: ''})}/>) : null}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.handleCancel()}>{I18n.t('Close')}</Button>
+                    <Button onClick={() => this.handleCancel()}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Close')}</Button>
                 </DialogActions>
             </Dialog>
         );

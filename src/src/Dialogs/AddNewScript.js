@@ -15,10 +15,11 @@ import CardMedia from '@material-ui/core/CardMedia';
 import ImgJS from '../assets/tileJS.png';
 import ImgTS from '../assets/tileTS.png';
 import ImgBlockly from '../assets/tileBlockly.png';
+import IconCancel from '@material-ui/icons/Cancel';
 
 import I18n from '@iobroker/adapter-react/i18n';
 
-const styles = {
+const styles = theme => ({
     card: {
         maxWidth: 345,
         display: 'inline-block',
@@ -29,8 +30,12 @@ const styles = {
     },
     text: {
         maxWidth: 200,
+    },
+    buttonIcon: {
+        marginRight: theme.spacing(1),
     }
-};
+});
+
 class DialogAddNew extends React.Component {
     handleCancel = () => {
         this.props.onClose();
@@ -125,7 +130,7 @@ class DialogAddNew extends React.Component {
                     {this.getTSCard()}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={this.handleCancel}>{I18n.t('Cancel')}</Button>
+                    <Button onClick={this.handleCancel}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>
         );

@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {withStyles} from "@material-ui/core/styles";
+
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -12,6 +14,15 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import I18n from '@iobroker/adapter-react/i18n';
+
+import IconCancel from '@material-ui/icons/Cancel';
+import IconOk from "@material-ui/icons/Check";
+
+const styles = theme => ({
+    buttonIcon: {
+        marginRight: theme.spacing(1),
+    }
+});
 
 class DialogRename extends React.Component {
     constructor(props) {
@@ -113,8 +124,8 @@ class DialogRename extends React.Component {
                     </form>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={this.handleOk} color="primary">{I18n.t('Ok')}</Button>
-                    <Button onClick={this.handleCancel}>{I18n.t('Cancel')}</Button>
+                    <Button onClick={this.handleOk} color="primary"><IconOk className={this.props.classes.buttonIcon}/>{I18n.t('Ok')}</Button>
+                    <Button onClick={this.handleCancel}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>
         );
@@ -131,4 +142,4 @@ DialogRename.propTypes = {
     folder: PropTypes.bool,
 };
 
-export default DialogRename;
+export default withStyles(styles)(DialogRename);

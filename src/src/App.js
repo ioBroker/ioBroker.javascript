@@ -740,6 +740,7 @@ class App extends GenericApp {
                         key="editor"
                         visible={!this.state.resizing}
                         socket={this.socket}
+                        adapterName={this.adapterName}
                         onLocate={menuSelectId => this.setState({menuSelectId})}
                         runningInstances={this.state.runningInstances}
                         menuOpened={this.state.menuOpened}

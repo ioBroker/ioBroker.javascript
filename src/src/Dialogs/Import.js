@@ -7,6 +7,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
 
+import IconOk from '@material-ui/icons/Check';
+import IconCancel from '@material-ui/icons/Cancel';
+
 import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
@@ -21,6 +24,9 @@ const styles = theme => ({
     fullHeight: {
         height: '100%',
         overflow: 'hidden'
+    },
+    buttonIcon: {
+        marginRight: theme.spacing(1),
     },
 });
 class DialogImport extends React.Component {
@@ -76,8 +82,8 @@ class DialogImport extends React.Component {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button disabled={!this.state.text} onClick={event  => this.handleOk()} color="primary">{I18n.t('Import')}</Button>
-                    <Button onClick={() => this.handleCancel()}>{I18n.t('Close')}</Button>
+                    <Button disabled={!this.state.text} onClick={event  => this.handleOk()} color="primary"><IconOk className={this.props.classes.buttonIcon}/>{I18n.t('Import')}</Button>
+                    <Button onClick={() => this.handleCancel()}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Close')}</Button>
                 </DialogActions>
             </Dialog>
         );

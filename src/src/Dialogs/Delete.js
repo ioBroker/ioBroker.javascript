@@ -7,7 +7,18 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
 import {MdDelete as IconDelete} from 'react-icons/md';
 
+import IconOk from '@material-ui/icons/Check';
+import IconCancel from '@material-ui/icons/Cancel';
+
 import I18n from '@iobroker/adapter-react/i18n';
+import {withStyles} from "@material-ui/core/styles";
+
+const styles = theme => ({
+    buttonIcon: {
+        marginRight: theme.spacing(1),
+    }
+});
+
 
 class DialogDelete extends React.Component {
     constructor(props) {
@@ -52,8 +63,8 @@ class DialogDelete extends React.Component {
                     <span style={{fontSize: 14, fontWeight: 'bold'}}>{I18n.t('Delete %s', this.state.name)}</span>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={this.handleOk} color="primary">{I18n.t('Ok')}</Button>
-                    <Button onClick={this.handleCancel}>{I18n.t('Cancel')}</Button>
+                    <Button onClick={this.handleOk} color="primary"><IconOk className={this.props.classes.buttonIcon}/>{I18n.t('Ok')}</Button>
+                    <Button onClick={this.handleCancel}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>
         );
@@ -67,4 +78,4 @@ DialogDelete.propTypes = {
     id: PropTypes.string,
 };
 
-export default DialogDelete;
+export default withStyles(styles)(DialogDelete);
