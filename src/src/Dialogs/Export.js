@@ -14,7 +14,6 @@ import IconCopy from '@material-ui/icons/FileCopy';
 import IconCancel from '@material-ui/icons/Cancel';
 
 import I18n from '@iobroker/adapter-react/i18n';
-import IconSave from "@material-ui/icons/Save";
 
 const styles = theme => ({
     textArea: {
