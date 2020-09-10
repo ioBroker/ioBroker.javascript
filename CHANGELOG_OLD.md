@@ -1,5 +1,9 @@
 The newest change log is in README.md
 
+## 4.6.26 (2020-08-24)
+* (Apollon77) Catch error case when npm installation fails (Sentry IOBROKER-JAVASCRIPT-3K)
+* (Apollon77) Prevent crash case in mirroring (Sentry IOBROKER-JAVASCRIPT-3M)
+
 ## 4.6.25 (2020-08-24)
 * (bluefox) Fixed the loading of page
 

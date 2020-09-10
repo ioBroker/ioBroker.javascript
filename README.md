@@ -38,7 +38,7 @@ And then call "npm run build".
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 4.7.4 (2020-09-10)
 * (Bluefox) Fixed JS editor in blockly
 
 ### 4.7.3 (2020-09-06)
@@ -55,10 +55,6 @@ And then call "npm run build".
 * (AlCalzone) Allowed `true` as 2nd parameter in getObject
 * (AlCalzone) Forced TypeScript to treat each script as a separate module
 * (Bluefox) Replaced the Select-ID dialog
-
-### 4.6.26 (2020-08-24)
-* (Apollon77) Catch error case when npm installation fails (Sentry IOBROKER-JAVASCRIPT-3K)
-* (Apollon77) Prevent crash case in mirroring (Sentry IOBROKER-JAVASCRIPT-3M)
 
 ## License
 
