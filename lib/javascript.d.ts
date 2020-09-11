@@ -4,9 +4,24 @@ import child_process = require("child_process");
 
 type EmptyCallback = () => void | Promise<void>;
 type ErrorCallback = (err?: string) => void | Promise<void>;
-type GenericCallback<T> = (err: string | null, result?: T) => void | Promise<void>;
+type GenericCallback<T> = (err?: string | null, result?: T) => void | Promise<void>;
 type SimpleCallback<T> = (result?: T) => void | Promise<void>;
 type LogCallback = (msg: any) => void | Promise<void>;
+
+type SecondParameterOf<T extends (...args: any[]) => any> = T extends (
+	arg0: any,
+	arg1: infer R,
+	...args: any[]
+) => any
+	? R
+	: never;
+/** Infers the return type from a callback-style API and strips out null and undefined */
+type NonNullCallbackReturnTypeOf<T extends (...args: any[]) => any> = Exclude<
+	SecondParameterOf<T>,
+	null | undefined
+>;
+/** Infers the return type from a callback-style API and and leaves null and undefined in */
+type CallbackReturnTypeOf<T extends (...args: any[]) => any> = SecondParameterOf<T>;
 
 // tslint:disable:no-namespace
 declare global {
@@ -229,18 +244,26 @@ declare global {
 		type Object = StateObject | ChannelObject | DeviceObject | OtherObject;
 		type PartialObject = PartialStateObject | PartialChannelObject | PartialDeviceObject | PartialOtherObject;
 
-		type GetStateCallback<T extends StateValue = any> = (err: string | null, state?: State<T> | AbsentState) => void | Promise<void>;
-		type SetStateCallback = (err: string | null, id?: string) => void | Promise<void>;
-		type GetBinaryStateCallback = (err: string | null, state?: Buffer) => void | Promise<void>;
+		type GetStateCallback<T extends StateValue = any> = (err?: string | null, state?: State<T> | AbsentState) => void | Promise<void>;
+
+		type GetBinaryStateCallback = (err?: string | null, state?: Buffer) => void | Promise<void>;
+		type GetBinaryStatePromise = Promise<NonNullCallbackReturnTypeOf<GetBinaryStateCallback>>;
+
+		type SetStateCallback = (err?: string | null, id?: string) => void | Promise<void>;
+		type SetStatePromise = Promise<NonNullCallbackReturnTypeOf<SetStateCallback>>;
 
 		type StateChangeHandler<TOld extends StateValue = any, TNew extends TOld = any> = (obj: ChangedStateObject<TOld, TNew>) => void | Promise<void>;
 
-		type SetObjectCallback = (err: string | null, obj: { id: string }) => void | Promise<void>;
-		type GetObjectCallback = (err: string | null, obj: iobJS.Object) => void | Promise<void>;
+		type SetObjectCallback = (err?: string | null, obj?: { id: string }) => void | Promise<void>;
+		type SetObjectPromise = Promise<NonNullCallbackReturnTypeOf<SetObjectCallback>>;
+
+		type GetObjectCallback = (err?: string | null, obj?: iobJS.Object) => void | Promise<void>;
+		type GetObjectPromise = Promise<NonNullCallbackReturnTypeOf<GetObjectCallback>>;
 
 		type LogLevel = "silly" | "debug" | "info" | "warn" | "error" | "force";
 
-		type ReadFileCallback = (err: string | null, file?: Buffer | string, mimeType?: string) => void | Promise<void>;
+		type ReadFileCallback = (err?: string | null, file?: Buffer | string, mimeType?: string) => void | Promise<void>;
+		type ReadFilePromise = Promise<NonNullCallbackReturnTypeOf<ReadFileCallback>>;
 
 		/** Callback information for a passed message */
 		interface MessageCallbackInfo {
@@ -380,6 +403,7 @@ declare global {
 			 */
 			getState<T extends StateValue = any>(callback: GetStateCallback<T>): void;
 			getState<T extends StateValue = any>(): State<T> | null | undefined;
+			getStateAsync<T extends StateValue = any>(): Promise<State<T> | null | undefined>;
 
 			/**
 			 * Returns the first state found by this query.
@@ -389,16 +413,19 @@ declare global {
 			 */
 			getBinaryState(callback: GetBinaryStateCallback): void;
 			getBinaryState(): Buffer | null | undefined;
+			getBinaryStateAsync(): Promise<Buffer | null | undefined>;
 
 			/**
 			 * Sets all queried states to the given value.
 			 */
 			setState<T extends StateValue>(state: T | State<T> | Partial<State<T>>, ack?: boolean, callback?: SetStateCallback): this;
+			setStateAsync<T extends StateValue>(state: T | State<T> | Partial<State<T>>, ack?: boolean): Promise<void>;
 
 			/**
 			 * Sets all queried binary states to the given value.
 			 */
 			setBinaryState(state: Buffer, ack?: boolean, callback?: SetStateCallback): this;
+			setBinaryStateAsync(state: Buffer, ack?: boolean): Promise<void>;
 
 			/**
 			 * Subscribes the given callback to changes of the matched states.
@@ -583,7 +610,7 @@ declare global {
 	/**
 	 * Executes a system command
 	 */
-	function exec(command: string, callback?: (err: Error, stdout: string, stderr: string) => void | Promise<void>): child_process.ChildProcess;
+	function exec(command: string, callback?: (err: Error | null | undefined, stdout: string, stderr: string) => void | Promise<void>): child_process.ChildProcess;
 
 	/**
 	 * Sends an email using the email adapter.
@@ -696,6 +723,8 @@ declare global {
 	function setState<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, callback?: iobJS.SetStateCallback): void;
 	function setState<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, ack: boolean, callback?: iobJS.SetStateCallback): void;
 
+	function setStateAsync<T extends iobJS.StateValue>(id: string, state: T | iobJS.State<T> | Partial<iobJS.State<T>>, ack?: boolean): iobJS.SetStatePromise;
+
 	/**
 	 * Sets a state to the given value after a timeout has passed.
 	 * Returns the timer so it can be manually cleared with clearStateDelayed
@@ -734,6 +763,7 @@ declare global {
 	 * @param id The ID of the state to be set
 	 */
 	function setBinaryState(id: string, state: Buffer, callback?: iobJS.SetStateCallback): void;
+	function setBinaryStateAsync(id: string, state: Buffer): iobJS.SetStatePromise;
 
 	/**
 	 * Returns the state with the given ID.
@@ -743,6 +773,7 @@ declare global {
 	 */
 	function getState<T extends iobJS.StateValue = any>(id: string, callback: iobJS.GetStateCallback<T>): void;
 	function getState<T extends iobJS.StateValue = any>(id: string): iobJS.State<T> | iobJS.AbsentState;
+	function getStateAsync<T extends iobJS.StateValue = any>(id: string): Promise<iobJS.State<T>>;
 
 	/**
 	 * Returns the binary state with the given ID.
@@ -752,15 +783,18 @@ declare global {
 	 */
 	function getBinaryState(id: string, callback: iobJS.GetStateCallback): void;
 	function getBinaryState(id: string): Buffer;
+	function getBinaryStateAsync(id: string): iobJS.GetBinaryStatePromise;
 
 	/**
 	 * Checks if the state with the given ID exists
 	 */
 	function existsState(id: string): boolean;
+	function existsStateAsync(id: string): Promise<boolean>;
 	/**
 	 * Checks if the object with the given ID exists
 	 */
 	function existsObject(id: string): boolean;
+	function existsObjectAsync(id: string): Promise<boolean>;
 
 	/**
 	 * Returns the IDs of the states with the given name
@@ -774,10 +808,21 @@ declare global {
 	 * @param enumName Which enum should be included in the returned object. `true` to return all enums.
 	 */
 	function getObject(id: string, enumName?: string | true): iobJS.Object;
+	function getObject(id: string, callback: iobJS.GetObjectCallback): void;
+	function getObject(id: string, enumName: string | true, callback: iobJS.GetObjectCallback): void;
+	function getObjectAsync(id: string, enumName?: string | true): iobJS.GetObjectPromise;
+
 	/** Creates or overwrites an object in the object db */
 	function setObject(id: string, obj: iobJS.Object, callback?: iobJS.SetObjectCallback): void;
+	function setObjectAsync(id: string, obj: iobJS.Object): iobJS.SetObjectPromise;
 	/** Extend an object and create it if it might not exist */
 	function extendObject(id: string, objPart: iobJS.PartialObject, callback?: iobJS.SetObjectCallback): void;
+	function extendObjectAsync(id: string, objPart: iobJS.PartialObject): iobJS.SetObjectPromise;
+
+	/** Deletes an object in the object db */
+	function deleteObject(id: string, callback?: ErrorCallback): void;
+	function deleteObject(id: string, recursive: boolean, callback?: ErrorCallback): void;
+	function deleteObjectAsync(id: string, recursive?: boolean): Promise<void>;
 
 	function getEnums(enumName?: string): any;
 
@@ -800,11 +845,18 @@ declare global {
 	function createState(name: string, common: Partial<iobJS.StateCommon>, native: any, callback?: iobJS.SetStateCallback): void;
 	function createState(name: string, initValue: iobJS.StateValue, common: Partial<iobJS.StateCommon>, native: any, callback?: iobJS.SetStateCallback): void;
 
+	function createStateAsync(name: string, initValue?: iobJS.StateValue, forceCreation?: boolean, common?: Partial<iobJS.StateCommon>, native?: any): iobJS.SetStatePromise;
+	function createStateAsync(name: string, common: Partial<iobJS.StateCommon>): iobJS.SetStatePromise;
+	function createStateAsync(name: string, common: Partial<iobJS.StateCommon>, native?: any): iobJS.SetStatePromise;
+	function createStateAsync(name: string, initValue: iobJS.StateValue, common: Partial<iobJS.StateCommon>): iobJS.SetStatePromise;
+	function createStateAsync(name: string, initValue: iobJS.StateValue, common: Partial<iobJS.StateCommon>, native?: any): iobJS.SetStatePromise;
+
 	/**
 	 * Deletes the state with the given ID
 	 * @param callback (optional) Is called after the state was deleted (or not).
 	 */
 	function deleteState(id: string, callback?: GenericCallback<boolean>): void;
+	function deleteStateAsync(id: string): Promise<boolean>;
 
 	/**
 	 * Sends a message to a specific instance or all instances of some specific adapter.
@@ -851,6 +903,7 @@ declare global {
 	 * @param callback Is called when the operation has finished (successfully or not)
 	 */
 	function writeFile(id: string, name: string, data: Buffer | string, callback: ErrorCallback): void;
+	function writeFileAsync(id: string, name: string, data: Buffer | string): Promise<void>;
 
 	/**
 	 * Reads a file.
@@ -859,6 +912,7 @@ declare global {
 	 * @param callback Is called when the operation has finished (successfully or not)
 	 */
 	function readFile(id: string, name: string, callback: iobJS.ReadFileCallback): void;
+	function readFileAsync(id: string, name: string): iobJS.ReadFilePromise;
 
 	/**
 	 * Deletes a file.
@@ -867,6 +921,8 @@ declare global {
 	 * @param callback Is called when the operation has finished (successfully or not)
 	 */
 	function unlink(id: string, name: string, callback: ErrorCallback): void;
+	function unlinkAsync(id: string, name: string): Promise<void>;
+
 	/**
 	 * Deletes a file.
 	 * @param id Name of the root directory. This should be the adapter instance, e.g. "admin.0"
@@ -874,6 +930,7 @@ declare global {
 	 * @param callback Is called when the operation has finished (successfully or not)
 	 */
 	function delFile(id: string, name: string, callback: ErrorCallback): void;
+	function delFileAsync(id: string, name: string): Promise<void>;
 
 	function getHistory(instance: any, options: any, callback: any): any;
 
@@ -882,6 +939,8 @@ declare global {
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
 	 */
 	function runScript(scriptName?: string, callback?: ErrorCallback): boolean;
+	function runScriptAsync(scriptName?: string): Promise<void>;
+
 	/**
 	 * Starts or restarts a script by name
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
@@ -889,6 +948,8 @@ declare global {
 	 * @param callback (optional) Is called when the script has finished (successfully or not)
 	 */
 	function startScript(scriptName: string | undefined, ignoreIfStarted: boolean, callback?: GenericCallback<boolean>): boolean;
+	function startScriptAsync(scriptName?: string | undefined, ignoreIfStarted?: boolean): Promise<void>;
+
 	/**
 	 * Starts or restarts a script by name
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
@@ -900,6 +961,8 @@ declare global {
 	 * @param scriptName (optional) Name of the script. If none is given, the current script is stopped.
 	 */
 	function stopScript(scriptName: string | undefined, callback?: GenericCallback<boolean>): boolean;
+	function stopScriptAsync(scriptName?: string): Promise<void>;
+
 	function isScriptActive(scriptName: string): boolean;
 
 	/** Converts a value to an integer */
@@ -953,4 +1016,10 @@ declare global {
 	 * @return true if subscription exists and was deleted.
 	 */
 	function onLogUnregister(idOrCallbackOrSeverity: iobJS.MessageSubscribeID | SimpleCallback<iobJS.LogMessage> | iobJS.LogLevel | "*"): boolean;
+
+	/** `await` this method to pause for the given number of milliseconds */
+	function wait(ms: number): Promise<void>;
+
+	/** `await` this method to pause for the given number of milliseconds */
+	function sleep(ms: number): Promise<void>;
 }
