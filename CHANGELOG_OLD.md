@@ -1,5 +1,11 @@
 The newest change log is in README.md
 
+## 4.7.0 (2020-09-03)
+* (AlCalzone) Allowed async functions whenever a callback is accepted
+* (AlCalzone) Allowed `true` as 2nd parameter in getObject
+* (AlCalzone) Forced TypeScript to treat each script as a separate module
+* (Bluefox) Replaced the Select-ID dialog
+
 ## 4.6.26 (2020-08-24)
 * (Apollon77) Catch error case when npm installation fails (Sentry IOBROKER-JAVASCRIPT-3K)
 * (Apollon77) Prevent crash case in mirroring (Sentry IOBROKER-JAVASCRIPT-3M)

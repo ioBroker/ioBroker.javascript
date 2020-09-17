@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.7.4",
+        "version": "4.8.0",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.8.0": {
+                "en": "add xyzAsync methods and wait/sleep\nPrevent a crash case (Sentry IOBROKER-JAVASCRIPT-3N)",
+                "de": "füge xyzAsync-Methoden hinzu und warte / schlafe\nVerhindern Sie einen Absturz (Sentry IOBROKER-JAVASCRIPT-3N)",
+                "ru": "добавить методы xyzAsync и ждать / спать\nПредотвращение сбоя (Sentry IOBROKER-JAVASCRIPT-3N)",
+                "pt": "adicionar métodos xyzAsync e esperar / dormir\nPrevina um caso de travamento (Sentry IOBROKER-JAVASCRIPT-3N)",
+                "nl": "voeg xyzAsync-methoden toe en wacht / slaap\nVoorkom een crashcase (Sentry IOBROKER-JAVASCRIPT-3N)",
+                "fr": "ajouter des méthodes xyzAsync et attendre / dormir\nPrévenir un cas de crash (Sentry IOBROKER-JAVASCRIPT-3N)",
+                "it": "aggiungi i metodi xyzAsync e wait / sleep\nPrevenire un crash case (Sentry IOBROKER-JAVASCRIPT-3N)",
+                "es": "agregar métodos xyzAsync y esperar / dormir\nEvitar un caso de accidente (Sentry IOBROKER-JAVASCRIPT-3N)",
+                "pl": "dodaj metody xyzAsync i poczekaj / uśpij\nZapobiegaj awariom (Sentry IOBROKER-JAVASCRIPT-3N)",
+                "zh-cn": "添加xyzAsync方法并等待/睡眠\n防止发生崩溃情况（Sentry IOBROKER-JAVASCRIPT-3N）"
+            },
             "4.7.4": {
                 "en": "Fixed JS editor in blockly",
                 "de": "JS-Editor blockartig behoben",
@@ -249,18 +261,6 @@
                 "es": "Actualizado en bloque a 3.20200402.1\nSe agregó a blockly el interruptor / bloque de caja\ncreateState y deleteState ahora también admiten estados 0_userdata.0",
                 "pl": "Zaktualizowano blokowo do 3.20200402.1\nDodano blokowo blok przełącznika / skrzynki\ncreateState i deleteState obsługują teraz również stany 0_userdata.0",
                 "zh-cn": "整体更新为3.20200402.1\n添加到块/开关块\ncreateState和deleteState现在还支持0_userdata.0状态"
-            },
-            "4.5.1": {
-                "en": "REQUIRES node.js 10, js-controller 3.0 warnings prevented, Added Sentry for use with js-controller 3.0",
-                "de": "ERFORDERLICH node.js 10, Warnungen vor js-controller 3.0 verhindert, Sentry zur Verwendung mit js-controller 3.0 hinzugefügt",
-                "ru": "ТРЕБУЕТСЯ node.js 10, предупреждения js-controller 3.0 предотвращены, добавлен Sentry для использования с js-controller 3.0",
-                "pt": "EXIGE node.js 10, avisos do js-controller 3.0 impedidos, Sentry adicionado para uso com o controller 3.0",
-                "nl": "VEREIST node.js 10, js-controller 3.0-waarschuwingen voorkomen, Sentry toegevoegd voor gebruik met js-controller 3.0",
-                "fr": "REQUIERT node.js 10, avertissements js-controller 3.0 empêchés, Sentry ajouté pour une utilisation avec js-controller 3.0",
-                "it": "RICHIEDE node.js 10, avvisi js-controller 3.0 impediti, aggiunta Sentry per l'uso con js-controller 3.0",
-                "es": "REQUIERE node.js 10, se evitaron las advertencias de js-controller 3.0, Sentry agregado para usar con js-controller 3.0",
-                "pl": "WYMAGA węzła.js 10, zapobiegania ostrzeżeniom js-kontrolera 3.0, Dodano Sentry do użytku z js-kontrolerem 3.0",
-                "zh-cn": "要求node.js 10，防止js-controller 3.0警告，已添加Sentry与js-controller 3.0一起使用"
             }
         },
         "desc": {

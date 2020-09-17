@@ -38,6 +38,11 @@ And then call "npm run build".
 -->
 
 ## Changelog
+
+### 4.8.0 (2020-09-17)
+* (AlCalzone) add xyzAsync methods and wait/sleep
+* (Apollon77) Prevent a crash case (Sentry IOBROKER-JAVASCRIPT-3N)
+
 ### 4.7.4 (2020-09-10)
 * (Bluefox) Fixed JS editor in blockly
 
@@ -49,12 +54,6 @@ And then call "npm run build".
 
 ### 4.7.1 (2020-09-04)
 * (Bluefox) Fixed styling
-
-### 4.7.0 (2020-09-03)
-* (AlCalzone) Allowed async functions whenever a callback is accepted
-* (AlCalzone) Allowed `true` as 2nd parameter in getObject
-* (AlCalzone) Forced TypeScript to treat each script as a separate module
-* (Bluefox) Replaced the Select-ID dialog
 
 ## License
 
