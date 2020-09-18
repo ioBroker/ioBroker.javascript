@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.8.0",
+        "version": "4.8.1",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -22,6 +22,18 @@
             "AlCalzone"
         ],
         "news": {
+            "4.8.1": {
+                "en": "Added the settings for columns in the state selection dialog",
+                "de": "Die Einstellungen für Spalten im Statusauswahldialog wurden hinzugefügt",
+                "ru": "Добавлены настройки столбцов в диалоге выбора состояния",
+                "pt": "Adicionadas as configurações para as colunas na janela de seleção de estado",
+                "nl": "De instellingen voor kolommen toegevoegd in het dialoogvenster voor staatsselectie",
+                "fr": "Ajout des paramètres pour les colonnes dans la boîte de dialogue de sélection d'état",
+                "it": "Aggiunte le impostazioni per le colonne nella finestra di dialogo di selezione dello stato",
+                "es": "Se agregaron las configuraciones para columnas en el cuadro de diálogo de selección de estado.",
+                "pl": "Dodano ustawienia dla kolumn w oknie dialogowym wyboru stanu",
+                "zh-cn": "在状态选择对话框中添加了列的设置"
+            },
             "4.8.0": {
                 "en": "add xyzAsync methods and wait/sleep\nPrevent a crash case (Sentry IOBROKER-JAVASCRIPT-3N)",
                 "de": "füge xyzAsync-Methoden hinzu und warte / schlafe\nVerhindern Sie einen Absturz (Sentry IOBROKER-JAVASCRIPT-3N)",
@@ -249,18 +261,6 @@
                 "es": "Bloque corregido: solicitud, ejecutivo",
                 "pl": "Poprawiony blok: żądanie, wykon",
                 "zh-cn": "更正的块：请求，执行"
-            },
-            "4.6.1": {
-                "en": "Updated blockly to 3.20200402.1\nAdded to blockly the switch/case block\ncreateState and deleteState now also support 0_userdata.0 states",
-                "de": "Blockweise auf 3.20200402.1 aktualisiert\nHinzugefügt, um den Schalter- / Gehäuseblock zu blockieren\ncreateState und deleteState unterstützen jetzt auch die Zustände 0_userdata.0",
-                "ru": "Обновлен блочно до 3.20200402.1\nДобавлен блочный блок switch / case\ncreateState и deleteState теперь также поддерживают состояния 0_userdata.0",
-                "pt": "Atualizado em bloco para 3.20200402.1\nAdicionado ao bloco de comutação / caixa\ncreateState e deleteState agora também suportam 0_userdata.0 estados",
-                "nl": "Blockly bijgewerkt naar 3.20200402.1\nToegevoegd om het schakelaar / case-blok te blokkeren\ncreateState en deleteState ondersteunen nu ook 0_userdata.0 staten",
-                "fr": "Mise à jour par blocs vers 3.20200402.1\nAjouté pour bloquer le bloc switch / case\ncreateState et deleteState prennent désormais également en charge les états 0_userdata.0",
-                "it": "Aggiornato in blocco a 3.20200402.1\nAggiunto per bloccare il blocco switch / case\ncreateState ed deleteState ora supportano anche stati 0_userdata.0",
-                "es": "Actualizado en bloque a 3.20200402.1\nSe agregó a blockly el interruptor / bloque de caja\ncreateState y deleteState ahora también admiten estados 0_userdata.0",
-                "pl": "Zaktualizowano blokowo do 3.20200402.1\nDodano blokowo blok przełącznika / skrzynki\ncreateState i deleteState obsługują teraz również stany 0_userdata.0",
-                "zh-cn": "整体更新为3.20200402.1\n添加到块/开关块\ncreateState和deleteState现在还支持0_userdata.0状态"
             }
         },
         "desc": {

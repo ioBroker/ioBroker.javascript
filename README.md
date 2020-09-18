@@ -38,7 +38,7 @@ And then call "npm run build".
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 4.8.1 (2020-09-18)
 * (Bluefox) Added the settings for columns in the state selection dialog
 
 ### 4.8.0 (2020-09-17)
@@ -53,9 +53,6 @@ And then call "npm run build".
 
 ### 4.7.2 (2020-09-05)
 * (Bluefox) Fixed blockly problem
-
-### 4.7.1 (2020-09-04)
-* (Bluefox) Fixed styling
 
 ## License
 

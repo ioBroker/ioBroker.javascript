@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 4.7.1 (2020-09-04)
+* (Bluefox) Fixed styling
+
 ## 4.7.0 (2020-09-03)
 * (AlCalzone) Allowed async functions whenever a callback is accepted
 * (AlCalzone) Allowed `true` as 2nd parameter in getObject
