@@ -38,6 +38,8 @@ And then call "npm run build".
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (Bluefox) Added the settings for columns in the state selection dialog
 
 ### 4.8.0 (2020-09-17)
 * (AlCalzone) add xyzAsync methods and wait/sleep
