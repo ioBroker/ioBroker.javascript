@@ -208,6 +208,7 @@ class Editor extends React.Component {
         window.systemLang = I18n.getLanguage();
         window.main = {
             objects: {},
+            getObject: (id, cb) => this.props.socket.getObject(id).then(obj => cb && cb(null, obj)).catch(err => cb && cb(err)),
             instances: [],
             selectIdDialog: (initValue, cb) => {
                 this.selectId.callback = cb;

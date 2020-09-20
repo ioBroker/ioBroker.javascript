@@ -88,22 +88,51 @@ Blockly.FieldOID.prototype.setValue = function(id) {
     }
 
     var objects = window.main.objects;
-    var text = objects && objects[id] && objects[id].common && objects[id].common.name ? objects[id].common.name : id;
-    if (typeof text === 'object') {
-        text = text[systemLang] || text.en;
-    }
-    if (text.length > this.maxDisplayLength) {
-        // Truncate displayed string and add an ellipsis ('...').
-        text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
-    }
-    // Replace whitespace with non-breaking spaces so the text doesn't collapse.
-    text = text.replace(/\s/g, Blockly.Field.NBSP);
 
-    if (!text) {
-        // Prevent the field from disappearing if empty.
-        text = Blockly.Field.NBSP;
+    if (objects && !objects[id] && typeof window.main.getObject === 'function') {
+        this._idName = id || Blockly.Field.NBSP;
+        var that = this;
+        window.main.getObject(id, function (err, obj) {
+            if (obj) {
+                objects[obj._id] = objects[obj._id] || obj;
+                var text = objects[obj._id].common && objects[obj._id].common.name && objects[obj._id].common.name;
+                if (text) {
+                    if (typeof text === 'object') {
+                        text = text[systemLang] || text.en;
+                    }
+                    if (text.length > that.maxDisplayLength) {
+                        // Truncate displayed string and add an ellipsis ('...').
+                        text = text.substring(0, that.maxDisplayLength - 2) + '\u2026';
+                    }
+                    text.trim();
+                    // Replace whitespace with non-breaking spaces so the text doesn't collapse.
+                    text = text.replace(/\s/g, Blockly.Field.NBSP);
+
+                    if (text) {
+                        that._idName = text;
+                        that.forceRerender();
+                    }
+                }
+            }
+        });
+    } else {
+        var text = objects && objects[id] && objects[id].common && objects[id].common.name ? objects[id].common.name : id;
+        if (typeof text === 'object') {
+            text = text[systemLang] || text.en;
+        }
+        if (text.length > this.maxDisplayLength) {
+            // Truncate displayed string and add an ellipsis ('...').
+            text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
+        }
+        // Replace whitespace with non-breaking spaces so the text doesn't collapse.
+        text = text.replace(/\s/g, Blockly.Field.NBSP);
+
+        if (!text) {
+            // Prevent the field from disappearing if empty.
+            text = Blockly.Field.NBSP;
+        }
+        this._idName = text;
     }
-    this._idName = text;
 
     Blockly.Field.prototype.setValue.call(this, id);
 };
