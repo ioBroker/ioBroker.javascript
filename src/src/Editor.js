@@ -993,7 +993,7 @@ class Editor extends React.Component {
 
             return <DialogSelectID
                 key="dialogSelectID1"
-                prefix={'../..'}
+                prefix="../.."
                 themeName={this.props.themeName}
                 themeType={this.state.themeType}
                 socket={this.props.socket}

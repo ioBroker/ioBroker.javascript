@@ -1,7 +1,6 @@
 {
     "common": {
         "name": "javascript",
-        "version": "4.8.1",
         "title": "Script Engine",
         "titleLang": {
             "en": "Script Engine",
@@ -21,8 +20,9 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
+        "version": "4.8.2",
         "news": {
-            "4.8.1": {
+            "4.8.2": {
                 "en": "Added the settings for columns in the state selection dialog",
                 "de": "Die Einstellungen für Spalten im Statusauswahldialog wurden hinzugefügt",
                 "ru": "Добавлены настройки столбцов в диалоге выбора состояния",

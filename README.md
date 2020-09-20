@@ -38,7 +38,7 @@ And then call "npm run build".
 -->
 
 ## Changelog
-### 4.8.1 (2020-09-18)
+### 4.8.2 (2020-09-20)
 * (Bluefox) Added the settings for columns in the state selection dialog
 
 ### 4.8.0 (2020-09-17)

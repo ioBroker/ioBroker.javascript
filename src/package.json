@@ -1,12 +1,12 @@
 {
   "name": "js",
-  "version": "4.8.1",
+  "version": "4.8.2",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
-    "@iobroker/adapter-react": "^1.2.8",
+    "@iobroker/adapter-react": "^1.2.9",
     "@sentry/browser": "^5.22.3",
     "@sentry/integrations": "^5.22.3",
     "classnames": "^2.2.6",
