@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from '@material-ui/core/styles';
 
 import I18n from '@iobroker/adapter-react/i18n';
 import DialogMessage from '@iobroker/adapter-react/Dialogs/Message';
@@ -13,12 +12,6 @@ let languageOwnLoaded = false;
 let toolboxText = null;
 let toolboxXml;
 let scriptsLoaded = [];
-const styles = theme => ({
-    darkBackground: {
-        stroke: '#3a3a3a !important',
-        fill: '#515151 !important'
-    }
-});
 
 class BlocklyEditor extends React.Component {
     constructor(props) {
@@ -538,18 +531,18 @@ class BlocklyEditor extends React.Component {
     updateBackground() {
         const background = document.getElementsByClassName('blocklyMainBackground')[0];
         if (this.state.themeType === 'dark') {
-            let found = 0;
-            for (let i = 0; i < background.classList.length; i++) {
-                if (background.classList[i] === this.props.classes.darkBackground) {
-                    found = true;
-                    break;
-                }
+            if (!background._originalStyle) {
+                background._originalStyle = {
+                    stroke: background.style.stroke,
+                    fill: background.style.fill
+                };
             }
-            if (!found) {
-                background.classList.add(this.props.classes.darkBackground);
-            }
-        } else {
-            background.classList.remove(this.props.classes.darkBackground);
+            // add class
+            background.style.stroke = '#3a3a3a';
+            background.style.fill = '#515151';
+        } else if (background._originalStyle) {
+            background.style.stroke = background._originalStyle.stroke;
+            background.style.fill = background._originalStyle.fill;
         }
     }
 
@@ -650,4 +643,4 @@ BlocklyEditor.propTypes = {
     themeType: PropTypes.string
 };
 
-export default withStyles(styles)(BlocklyEditor);
+export default BlocklyEditor;

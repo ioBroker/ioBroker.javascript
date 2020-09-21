@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.8.3",
+        "version": "4.8.4",
         "news": {
+            "4.8.4": {
+                "en": "Make the mirroring instance adjustable\nCorrect the dark mode for blockly",
+                "de": "Machen Sie die Spiegelungsinstanz einstellbar\nKorrigieren Sie den Dunkelmodus für Block",
+                "ru": "Сделайте экземпляр зеркального отображения настраиваемым\nИсправьте темный режим для блочного",
+                "pt": "Torne a instância de espelhamento ajustável\nCorrija o modo escuro para blocos",
+                "nl": "Maak de spiegelinstantie instelbaar\nCorrigeer de donkere modus voor blokkerig",
+                "fr": "Rendre l'instance de mise en miroir ajustable\nCorrigez le mode sombre pour bloquer",
+                "it": "Rendi l'istanza di mirroring regolabile\nCorreggere la modalità oscura per blockly",
+                "es": "Hacer que la instancia de duplicación sea ajustable\nCorrija el modo oscuro para blockly",
+                "pl": "Ustaw regulację instancji dublowania\nPopraw tryb ciemny na blokowy",
+                "zh-cn": "使镜像实例可调\n纠正黑暗模式以阻止"
+            },
             "4.8.3": {
                 "en": "Added the settings for columns in the state selection dialog",
                 "de": "Die Einstellungen für Spalten im Statusauswahldialog wurden hinzugefügt",
@@ -117,150 +129,6 @@
                 "es": "Capturar caso de error cuando falla la instalación de npm (Sentry IOBROKER-JAVASCRIPT-3K)\nEvitar caso de accidente en la duplicación (Sentry IOBROKER-JAVASCRIPT-3M)",
                 "pl": "Błąd przechwytywania, gdy instalacja npm kończy się niepowodzeniem (Sentry IOBROKER-JAVASCRIPT-3K)\nZapobiegaj awariom podczas tworzenia kopii lustrzanych (Sentry IOBROKER-JAVASCRIPT-3M)",
                 "zh-cn": "npm istalation失败时捕获错误情况（Sentry IOBROKER-JAVASCRIPT-3K）\n防止在镜像时发生崩溃（Sentry IOBROKER-JAVASCRIPT-3M）"
-            },
-            "4.6.25": {
-                "en": "Fixed the loading of page",
-                "de": "Das Laden der Seite wurde behoben",
-                "ru": "Исправлена загрузка страницы",
-                "pt": "Corrigido o carregamento da página",
-                "nl": "Vaste het laden van de pagina",
-                "fr": "Correction du chargement de la page",
-                "it": "Corretto il caricamento della pagina",
-                "es": "Se corrigió la carga de la página.",
-                "pl": "Naprawiono ładowanie strony",
-                "zh-cn": "修复页面加载"
-            },
-            "4.6.23": {
-                "en": "fix type resolution for rxjs in TypeScripts",
-                "de": "Korrektur der Typauflösung für rxjs in TypeScripts",
-                "ru": "исправить разрешение типа для rxjs в TypeScripts",
-                "pt": "corrigir a resolução do tipo para rxjs em TypeScripts",
-                "nl": "fix type resolutie voor rxjs in TypeScripts",
-                "fr": "correction de la résolution de type pour rxjs dans TypeScripts",
-                "it": "correzione del tipo di risoluzione per rxjs in TypeScripts",
-                "es": "corregir la resolución de tipo para rxjs en TypeScripts",
-                "pl": "naprawiono rozdzielczość typu dla rxjs w TypeScripts",
-                "zh-cn": "修复TypeScripts中rxjs的类型解析"
-            },
-            "4.6.22": {
-                "en": "catched some more file errors in mirror logic",
-                "de": "hat einige weitere Dateifehler in der Spiegellogik abgefangen",
-                "ru": "поймал еще несколько файловых ошибок в зеркальной логике",
-                "pt": "pegou mais alguns erros de arquivo na lógica do espelho",
-                "nl": "ving wat meer bestandsfouten op in spiegellogica",
-                "fr": "attrapé d'autres erreurs de fichier dans la logique miroir",
-                "it": "rilevato altri errori di file nella logica del mirror",
-                "es": "captó algunos errores de archivo más en la lógica espejo",
-                "pl": "złapał więcej błędów plików w logice lustrzanej",
-                "zh-cn": "在镜像逻辑中捕获了更多文件错误"
-            },
-            "4.6.21": {
-                "en": "catched some more file errors in mirror logic (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)",
-                "de": "Es wurden weitere Dateifehler in der Spiegellogik festgestellt (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C).",
-                "ru": "перехватил еще несколько файловых ошибок в зеркальной логике (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)",
-                "pt": "detectou mais alguns erros de arquivo na lógica de espelho (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)",
-                "nl": "ving nog wat meer bestandsfouten op in spiegellogica (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)",
-                "fr": "attrapé d'autres erreurs de fichier dans la logique miroir (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)",
-                "it": "rilevato altri errori di file nella logica del mirror (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)",
-                "es": "detectó algunos errores de archivo más en la lógica espejo (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)",
-                "pl": "wyłapałem więcej błędów plików w logice lustrzanej (Sentry IOBROKER-JAVASCRIPT-2X, IOBROKER-JAVASCRIPT-3C)",
-                "zh-cn": "在镜像逻辑中捕获了更多文件错误（Sentry IOBROKER-JAVASCRIPT-2X，IOBROKER-JAVASCRIPT-3C）"
-            },
-            "4.6.20": {
-                "en": "make sure userdata objects/states are not overwritten on createState",
-                "de": "Stellen Sie sicher, dass Benutzerdatenobjekte / -zustände in createState nicht überschrieben werden",
-                "ru": "убедитесь, что объекты / состояния пользовательских данных не перезаписываются при createState",
-                "pt": "verifique se os objetos / estados dos dados do usuário não são substituídos no createState",
-                "nl": "zorg ervoor dat userdata-objecten / statussen niet worden overschreven in createState",
-                "fr": "assurez-vous que les objets / états des données utilisateur ne sont pas écrasés lors de createState",
-                "it": "assicurarsi che gli oggetti / stati di userdata non vengano sovrascritti su createState",
-                "es": "asegúrese de que los objetos / estados de datos de usuario no se sobrescriban en createState",
-                "pl": "upewnij się, że obiekty / stany danych użytkownika nie są nadpisywane w createState",
-                "zh-cn": "确保用户数据对象/状态未在createState上覆盖"
-            },
-            "4.6.19": {
-                "en": "Prevent wrong errors when setting \"null\" values for states\nPrevent potential crash when no typings could be found (Sentry IOBROKER-JAVASCRIPT-2T)\ncatch an error in mirroring functionality( Sentry IOBROKER-JAVASCRIPT-2V)\nmake sure names are handled correctly if they are not strings (Sentry IOBROKER-JAVASCRIPT-2Y) \nmake sure invalid schedules can not crash adapter (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77/paul53) Allow \"deleteState\" with full javascript.X object I dagain (from same instance only)\nRevert changes for sync getState, because \"on change\" detection is broken \nSeveral issues with Typescript, Typings and virtual-tsc optimized and fixed\nStore JS in browser cache by enabling serviceWorkers\nprevent multiple script restarts on fast file content change for mirroring or fast object changes",
-                "de": "Verhindern Sie falsche Fehler, wenn Sie \"Null\" -Werte für Status festlegen\nVerhindern Sie einen möglichen Absturz, wenn keine Eingaben gefunden werden konnten (Sentry IOBROKER-JAVASCRIPT-2T).\nFehler in der Spiegelungsfunktion abfangen (Sentry IOBROKER-JAVASCRIPT-2V)\nStellen Sie sicher, dass Namen korrekt behandelt werden, wenn es sich nicht um Zeichenfolgen handelt (Sentry IOBROKER-JAVASCRIPT-2Y).\nStellen Sie sicher, dass ungültige Zeitpläne den Adapter nicht zum Absturz bringen können (Sentry IOBROKER-JAVASCRIPT-31).\n(Apollon77 / paul53) Erlaube \"deleteState\" mit vollständigem Javascript.X-Objekt, das ich dagain (nur von derselben Instanz)\nÄnderungen für die Synchronisierung von getState zurücksetzen, da die Erkennung \"bei Änderung\" fehlerhaft ist\nVerschiedene Probleme mit Typescript, Typings und virtual-tsc wurden optimiert und behoben\nSpeichern Sie JS im Browser-Cache, indem Sie serviceWorkers aktivieren\nVerhindern Sie mehrere Skriptneustarts bei schnellen Änderungen des Dateiinhalts für Spiegelung oder schnelle Objektänderungen",
-                "ru": "Предотвращение неправильных ошибок при установке «нулевых» значений для состояний\nПредотвратите возможный сбой, когда никакие печатания не могли быть найдены (Sentry IOBROKER-JAVASCRIPT-2T)\nпоймать ошибку в функции зеркалирования (Sentry IOBROKER-JAVASCRIPT-2V)\nубедитесь, что имена обрабатываются правильно, если они не являются строками (Sentry IOBROKER-JAVASCRIPT-2Y)\nубедитесь, что недопустимые расписания не могут привести к сбою адаптера (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77 / paul53) Разрешить \"deleteState\" с полным javascript.X объектом, который я использую (только из одного экземпляра)\nОтменить изменения для синхронизации getState, поскольку обнаружение «при изменении» не работает\nНесколько проблем с Typescript, Typings и virtual-tsc оптимизированы и исправлены\nХраните JS в кэше браузера, включив serviceWorkers\nпредотвращение многократного перезапуска сценария при быстром изменении содержимого файла для зеркального отображения или быстрого изменения объекта",
-                "pt": "Evitar erros errados ao definir valores \"nulos\" para estados\nEvitar possíveis falhas quando nenhuma digitação foi encontrada (Sentry IOBROKER-JAVASCRIPT-2T)\ndetectar um erro na funcionalidade de espelhamento (Sentry IOBROKER-JAVASCRIPT-2V)\ncertifique-se de que os nomes sejam manipulados corretamente se não forem cadeias de caracteres (Sentry IOBROKER-JAVASCRIPT-2Y)\nverifique se agendas inválidas não podem travar o adaptador (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77 / paul53) Permitir \"deleteState\" com o objeto javascript.X completo que eu tenho (apenas da mesma instância)\nReverter alterações para a sincronização getState, porque a detecção \"em mudança\" está interrompida\nVários problemas com TypeScript, Typings e virtual-tsc otimizados e corrigidos\nArmazene JS no cache do navegador, ativando serviceWorkers\nimpedir que vários scripts sejam reiniciados na alteração rápida do conteúdo do arquivo para espelhamento ou alteração rápida do objeto",
-                "nl": "Voorkom verkeerde fouten bij het instellen van \"null\" -waarden voor staten\nVoorkom een mogelijke crash wanneer er geen typewerk kon worden gevonden (Sentry IOBROKER-JAVASCRIPT-2T)\neen fout opvangen in de mirroring-functionaliteit (Sentry IOBROKER-JAVASCRIPT-2V)\nzorg ervoor dat namen correct worden afgehandeld als ze geen tekenreeksen zijn (Sentry IOBROKER-JAVASCRIPT-2Y)\nzorg ervoor dat ongeldige schema's de adapter niet kunnen laten crashen (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77 / paul53) \"deleteState\" toestaan met volledig javascript.X-object I dagain (alleen van dezelfde instantie)\nWijzigingen ongedaan maken voor getState-synchronisatie, omdat de detectie \"bij wijziging\" is verbroken\nVerschillende problemen met Typescript, Typings en virtual-tsc geoptimaliseerd en opgelost\nSla JS op in de browsercache door serviceWorkers in te schakelen\nvoorkomen dat meerdere scripts opnieuw worden opgestart bij snelle bestandsinhoudwijziging voor spiegeling of snelle objectwijzigingen",
-                "fr": "Évitez les erreurs lors de la définition de valeurs \"nulles\" pour les états\nEmpêcher un crash potentiel lorsqu'aucune saisie n'a pu être trouvée (Sentry IOBROKER-JAVASCRIPT-2T)\nattraper une erreur dans la fonctionnalité de mise en miroir (Sentry IOBROKER-JAVASCRIPT-2V)\nassurez-vous que les noms sont gérés correctement s'ils ne sont pas des chaînes (Sentry IOBROKER-JAVASCRIPT-2Y)\nassurez-vous que les horaires non valides ne peuvent pas planter l'adaptateur (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77 / paul53) Autoriser \"deleteState\" avec l'objet javascript.X complet que je dagain (à partir de la même instance uniquement)\nAnnuler les modifications pour la synchronisation getState, car la détection \"sur modification\" est interrompue\nPlusieurs problèmes avec Typescript, Typings et virtual-tsc optimisés et corrigés\nStockez JS dans le cache du navigateur en activant serviceWorkers\nempêcher plusieurs redémarrages de script en cas de modification rapide du contenu de fichier pour la mise en miroir ou les modifications rapides d'objet",
-                "it": "Prevenire errori errati quando si impostano valori \"null\" per gli stati\nPrevenire il potenziale arresto anomalo quando non è stato possibile trovare alcuna digitazione (Sentry IOBROKER-JAVASCRIPT-2T)\nrileva un errore nella funzionalità di mirroring (Sentry IOBROKER-JAVASCRIPT-2V)\nassicurarsi che i nomi siano gestiti correttamente se non sono stringhe (Sentry IOBROKER-JAVASCRIPT-2Y)\nassicurarsi che le pianificazioni non valide non possano arrestare in modo anomalo l'adattatore (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77 / paul53) Consenti \"deleteState\" con l'oggetto javascript.X completo che dagain (solo dalla stessa istanza)\nAnnulla le modifiche per sincronizzare getState, perché il rilevamento \"in modifica\" è interrotto\nDiversi problemi con Typescript, Typings e virtual-tsc ottimizzati e risolti\nMemorizza JS nella cache del browser abilitando serviceWorkers\nimpedire il riavvio multiplo di script in caso di modifica rapida del contenuto del file per il mirroring o la modifica rapida degli oggetti",
-                "es": "Evite errores incorrectos al establecer valores \"nulos\" para estados\nPrevenga un posible bloqueo cuando no se puedan encontrar tipings (Sentry IOBROKER-JAVASCRIPT-2T)\ndetectar un error en la funcionalidad de duplicación (Sentry IOBROKER-JAVASCRIPT-2V)\nasegúrese de que los nombres se manejen correctamente si no son cadenas (Sentry IOBROKER-JAVASCRIPT-2Y)\nasegúrese de que los horarios no válidos no puedan bloquear el adaptador (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77 / paul53) Permitir \"deleteState\" con el objeto javascript.X completo que doy (solo desde la misma instancia)\nRevertir los cambios para sincronizar getState, porque la detección \"al cambiar\" está rota\nVarios problemas con Typecript, Typings y virtual-tsc optimizados y corregidos\nAlmacene JS en la memoria caché del navegador habilitando serviceWorkers\nevitar que se reinicien múltiples scripts en el cambio rápido de contenido de archivos para duplicación o cambios rápidos de objetos",
-                "pl": "Zapobiegaj błędnym błędom podczas ustawiania wartości „null” dla stanów\nZapobiegaj potencjalnej awarii, gdy nie można znaleźć żadnych wpisów (Sentry IOBROKER-JAVASCRIPT-2T)\nwyłap błąd w funkcji dublowania (Sentry IOBROKER-JAVASCRIPT-2V)\nupewnij się, że nazwy są obsługiwane poprawnie, jeśli nie są ciągami znaków (Sentry IOBROKER-JAVASCRIPT-2Y)\nupewnij się, że nieprawidłowe harmonogramy nie mogą spowodować awarii adaptera (Sentry IOBROKER-JAVASCRIPT-31)\n(Apollon77 / paul53) Zezwalaj na „deleteState” z pełnym obiektem javascript.X, który chcę ponownie (tylko z tej samej instancji)\nCofnij zmiany dla synchronizacji getState, ponieważ wykrywanie „przy zmianie” jest uszkodzone\nKilka problemów z Typescript, Typings i virtual-tsc zostało zoptymalizowanych i naprawionych\nPrzechowuj JS w pamięci podręcznej przeglądarki, włączając serviceWorkers\nzapobiega wielokrotnemu uruchamianiu skryptów przy szybkiej zmianie zawartości pliku w celu tworzenia kopii lustrzanych lub szybkich zmian obiektów",
-                "zh-cn": "为状态设置“空”值时防止错误错误\n找不到输入时防止潜在的崩溃（Sentry IOBROKER-JAVASCRIPT-2T）\n在镜像功能中发现错误（Sentry IOBROKER-JAVASCRIPT-2V）\n如果名称不是字符串，请确保正确处理名称（Sentry IOBROKER-JAVASCRIPT-2Y）\n确保无效的日程表不会使适配器崩溃（Sentry IOBROKER-JAVASCRIPT-31）\n（Apollon77 / paul53）允许完全删除的javascript.X对象带有“ deleteState”（仅限同一实例）\n还原更改以获取同步getState，因为“更改时”检测已损坏\n优化并修复了打字稿，打字和虚拟TSC的几个问题\n通过启用serviceWorkers将JS存储在浏览器缓存中\n防止在快速更改文件内容以进行镜像或快速对象更改时重新启动多个脚本"
-            },
-            "4.6.17": {
-                "en": "Fixed error with warnings collapsed blocks",
-                "de": "Fehler mit reduzierten Warnblöcken behoben",
-                "ru": "Исправлена ошибка с предупреждением свернутых блоков",
-                "pt": "Corrigido erro com blocos recolhidos de avisos",
-                "nl": "Fout opgelost met samengevouwen blokken met waarschuwingen",
-                "fr": "Correction d'une erreur avec les avertissements des blocs effondrés",
-                "it": "Risolto errore con blocchi compressi avvisi",
-                "es": "Se corrigió el error con bloques bloqueados de advertencias",
-                "pl": "Naprawiono błąd związany z zawalonymi blokami ostrzeżeń",
-                "zh-cn": "修复了带有警告折叠块的错误"
-            },
-            "4.6.16": {
-                "en": "Corrected sendTo and clear delay blocks. ",
-                "de": "SendTo korrigiert und Verzögerungsblöcke gelöscht.",
-                "ru": "Исправлены sendTo и очищены блоки задержки.",
-                "pt": "SendTo corrigido e limpe os blocos de atraso.",
-                "nl": "SendTo gecorrigeerd en vertragingsblokken gewist.",
-                "fr": "Correction des blocs sendTo et clear delay.",
-                "it": "SendTo corretto e cancellare i blocchi di ritardo.",
-                "es": "SendTo corregido y borra los bloques de retraso.",
-                "pl": "Poprawione bloki wysyłania i usuwania opóźnień.",
-                "zh-cn": "更正了sendTo和清除延迟块。"
-            },
-            "4.6.15": {
-                "en": "BREAKING CHANGE: Please check \"stopTimeout\" blocks in your blockly scripts that the correct timeout name is listed there and correct after the update!",
-                "de": "BREAKING CHANGE: Bitte überprüfen Sie \"stopTimeout\" -Blöcke in Ihren Block-Skripten, ob der richtige Timeout-Name dort aufgeführt ist und korrigieren Sie ihn nach dem Update!",
-                "ru": "BREAKING CHANGE: Пожалуйста, проверьте блоки \"stopTimeout\" в ваших блочных скриптах, чтобы там было указано правильное имя тайм-аута и правильное после обновления!",
-                "pt": "BREAKING CHANGE: Verifique os blocos \"stopTimeout\" em seus scripts blockly para que o nome do tempo limite correto esteja listado lá e corrija após a atualização!",
-                "nl": "BREAKING CHANGE: Controleer de \"stopTimeout\" -blokken in je blockly-scripts om te zien of de juiste time-outnaam daar staat en corrigeer na de update!",
-                "fr": "RUPTURE DU CHANGEMENT: Veuillez vérifier les blocs \"stopTimeout\" dans vos scripts bloqués que le nom de timeout correct y est répertorié et corriger après la mise à jour!",
-                "it": "CAMBIAMENTO DI ROTTURA: Controlla i blocchi \"stopTimeout\" nei tuoi script di blocco che il nome di timeout corretto sia elencato lì e corretto dopo l'aggiornamento!",
-                "es": "CAMBIO DE INTERRUPCIÓN: ¡Compruebe los bloques \"stopTimeout\" en sus secuencias de comandos en bloque que el nombre de tiempo de espera correcto aparece allí y es correcto después de la actualización!",
-                "pl": "ZŁAMANIE ZMIANY: Sprawdź bloki „stopTimeout” w swoich skryptach blokowych, czy podana jest tam poprawna nazwa limitu czasu i poprawna po aktualizacji!",
-                "zh-cn": "突破性更改：请检查您的脚本块中的“ stopTimeout”块，其中列出了正确的超时名称，并在更新后正确！"
-            },
-            "4.6.14": {
-                "en": "Names for scripts can not have dots anymore. They will be replaced by \"_\"\n\"schedule\" name is not allowed for CRON\nConvert strings to Date by formatDate",
-                "de": "Namen für Skripte können keine Punkte mehr haben. Sie werden durch \"_\" ersetzt.\nDer Name \"Zeitplan\" ist für CRON nicht zulässig\nKonvertieren Sie Zeichenfolgen nach FormatDate in Datum",
-                "ru": "Названия сценариев больше не могут иметь точек. Они будут заменены на \"_\"\nимя \"расписание\" не допускается для CRON\nПреобразовать строки в дату по formatDate",
-                "pt": "Os nomes para scripts não podem mais ter pontos. Eles serão substituídos por \"_\"\no nome \"horário\" não é permitido para CRON\nConverta seqüências de caracteres para Data por formatoData",
-                "nl": "Namen voor scripts mogen geen punten meer bevatten. Ze worden vervangen door \"_\"\n\"planning\" naam is niet toegestaan voor CRON\nConverteer strings naar datum door formatDate",
-                "fr": "Les noms des scripts ne peuvent plus avoir de points. Ils seront remplacés par \"_\"\nle nom \"horaire\" n'est pas autorisé pour CRON\nConvertir des chaînes en Date par formatDate",
-                "it": "I nomi degli script non possono più avere punti. Saranno sostituiti da \"_\"\nIl nome \"programma\" non è consentito per CRON\nConverti le stringhe in Date per formatDate",
-                "es": "Los nombres de los scripts ya no pueden tener puntos. Serán reemplazados por \"_\"\nel nombre \"horario\" no está permitido para CRON\nConvertir cadenas a Fecha por formato Fecha",
-                "pl": "Nazwy skryptów nie mogą już zawierać kropek. Zostaną one zastąpione przez „_”\nNazwa „harmonogram” nie jest dozwolona w przypadku CRON\nKonwertuj ciągi na datę według formatDate",
-                "zh-cn": "脚本名称不能再带有点。它们将被替换为“ _”\nCRON不允许使用“时间表”名称\n通过formatDate将字符串转换为Date"
-            },
-            "4.6.13": {
-                "en": "Fixed blockly blocks because of deprecated functions",
-                "de": "Blockierte Blöcke wegen veralteter Funktionen behoben",
-                "ru": "Исправлены блочные блоки из-за устаревших функций",
-                "pt": "Blocos fixos fixos devido a funções obsoletas",
-                "nl": "Blokkades verholpen vanwege verouderde functies",
-                "fr": "Blocs bloqués fixes en raison de fonctions obsolètes",
-                "it": "Risolti i blocchi bloccati a causa di funzioni deprecate",
-                "es": "Se corrigieron bloques bloqueados debido a funciones obsoletas",
-                "pl": "Naprawiono bloki blokowe z powodu przestarzałych funkcji",
-                "zh-cn": "修复了由于功能过时而导致的块状块"
-            },
-            "4.6.4": {
-                "en": "Corrected block: request, exec",
-                "de": "Korrigierter Block: Anfrage, Exec",
-                "ru": "Исправленный блок: запрос, exec",
-                "pt": "Bloco corrigido: solicitação, exec",
-                "nl": "Gecorrigeerd blok: verzoek, exec",
-                "fr": "Bloc corrigé: demande, exécut",
-                "it": "Blocco corretto: richiesta, esec",
-                "es": "Bloque corregido: solicitud, ejecutivo",
-                "pl": "Poprawiony blok: żądanie, wykon",
-                "zh-cn": "更正的块：请求，执行"
             }
         },
         "desc": {
@@ -344,6 +212,7 @@
         "subscribe": false,
         "useSystemGPS": true,
         "mirrorPath": "",
+        "mirrorInstance": 0,
         "allowSelfSignedCerts": false,
         "sunriseEvent": "nightEnd",
         "sunriseOffset": 0,
@@ -387,7 +256,9 @@
             },
             "type": "channel",
             "native": {}
-        },
+        }
+    ],
+    "instanceObjects": [
         {
             "_id": "variables",
             "common": {

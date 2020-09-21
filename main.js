@@ -820,11 +820,14 @@ function main() {
                 }
 
                 if (adapter.config.mirrorPath) {
-                    mirror = new Mirror({
-                        adapter,
-                        log: adapter.log,
-                        diskRoot: adapter.config.mirrorPath
-                    });
+                    adapter.config.mirrorInstance = parseInt(adapter.config.mirrorInstance, 10) || 0;
+                    if (adapter.instance === adapter.config.mirrorInstance) {
+                        mirror = new Mirror({
+                            adapter,
+                            log: adapter.log,
+                            diskRoot: adapter.config.mirrorPath
+                        });
+                    }
                 }
 
             });
@@ -1009,7 +1012,7 @@ function tsLog(msg, sev) {
         console.log(`[${sev.toUpperCase()}] ${msg}`);
     }
 }
-// Due to an npm bug, virtual-tsc may be hoisted to the top level node_modules but 
+// Due to an npm bug, virtual-tsc may be hoisted to the top level node_modules but
 // typescript may still be in the adapter level (https://npm.community/t/packages-with-peerdependencies-are-incorrectly-hoisted/4794)
 // so we need to tell virtual-tsc where typescript is
 tsc.setTypeScriptResolveOptions({

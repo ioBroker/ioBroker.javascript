@@ -234,11 +234,24 @@
         if (settings.enableExec === undefined) {
             settings.enableExec = false;
         }
+        if (settings.mirrorInstance === undefined) {
+            settings.mirrorInstance = 0;
+        }
         $('.astro-calc').on('change', function () {
             updateAstroTimes();
         }).on('keyup', function () {
             $(this).attr('type') === 'text' && $(this).trigger('change');
-        })
+        });
+
+        getAdapterInstances('javascript', function (res) {
+            if (!res) return;
+            var $mirrorInstance = $('#mirrorInstance');
+            for (var t = 0; t < res.length; t++) {
+                $mirrorInstance.append('<option value="' + res[t]._id.split('.').pop() + '">' + res[t]._id.replace('system.adapter.', '') + '</option>');
+            }
+            $mirrorInstance.val(settings.mirrorInstance);
+            $mirrorInstance.select();
+        });
 
         gSettings = settings;
 
@@ -426,9 +439,13 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col s12">
+                <div class="col s8">
                     <input id="mirrorPath" class="value" type="text"/>
                     <label for="mirrorPath" class="translate">Mirror scripts to file path:</label>
+                </div>
+                <div class="col s4">
+                    <select id="mirrorInstance" class="value"></select>
+                    <label for="mirrorInstance" class="translate">Instance, that do mirroring</label>
                 </div>
             </div>
             <div class="row">

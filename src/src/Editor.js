@@ -76,6 +76,9 @@ const styles = theme => ({
         minHeight: 24,
         padding: '6px 16px'
     },
+    saveButton: {
+        background: '#ff9900'
+    },
     textIcon: {
         marginLeft: theme.spacing(1),
     },
@@ -833,10 +836,10 @@ class Editor extends React.Component {
             const changed = this.state.changed[this.state.selected];
             return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
                     {this.state.menuOpened && this.props.onLocate && (<IconButton className={this.props.classes.toolbarButtons} key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate/></IconButton>)}
-                    {!changed && isInstanceRunning && (<IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>)}
-                    {!changed && !isScriptRunning && (<span className={ this.props.classes.notRunning }>{I18n.t('Script is not running')}</span>)}
-                    {!changed && isScriptRunning && !isInstanceRunning && (<span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>)}
-                    {changed && (<Button key="save" variant="contained" color="secondary" className={this.props.classes.textButton} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={ this.props.classes.textIcon }/></Button>)}
+                    {!changed && isInstanceRunning && <IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>}
+                    {!changed && !isScriptRunning && <span className={ this.props.classes.notRunning }>{I18n.t('Script is not running')}</span>}
+                    {!changed && isScriptRunning && !isInstanceRunning && <span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>}
+                    {changed && <Button key="save" variant="contained" className={clsx(this.props.classes.textButton, this.props.classes.saveButton)} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={ this.props.classes.textIcon }/></Button>}
                     {(changedAll > 1 || (changedAll === 1 && !changed)) && (<Button key="saveall" variant="contained" className={this.props.classes.textButton} onClick={() => this.onSaveAll()}>{I18n.t('Save all')}<IconSave className={ this.props.classes.textIcon }/></Button>)}
                     {changed && (<Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel className={ this.props.classes.textIcon }/></Button>)}
                     <div style={{flex: 2}}/>
