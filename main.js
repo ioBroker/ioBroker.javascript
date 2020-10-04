@@ -65,6 +65,7 @@ const {
     resolveTypings,
     scriptIdToTSFilename
 } = require('./lib/typescriptTools');
+const { hashSource } = require('./lib/tools');
 
 const adapterName = require('./package.json').name.split('.').pop();
 const scriptCodeMarker = 'script.js.';
@@ -257,7 +258,14 @@ const regExGlobalNew = /script\.js\.global\./;
 function checkIsGlobal(obj) {
     return regExGlobalOld.test(obj.common.name) || regExGlobalNew.test(obj._id);
 }
+/**
+ * @type {Set<string>}
+ * Stores the IDs of script objects whose change should be ignored because
+ * the compiled source was just updated
+ */
+const ignoreObjectChange = new Set();
 
+/** @type {ioBroker.Adapter} */
 let adapter;
 function startAdapter(options) {
     options = options || {};
@@ -268,6 +276,13 @@ function startAdapter(options) {
         useFormatDate: true, // load float formatting
 
         objectChange: (id, obj) => {
+            // Check if we should ignore this change because we just updated the compiled sources
+            if (ignoreObjectChange.has(id)) {
+                // only ignore it once
+                ignoreObjectChange.delete(id);
+                return;
+            }
+
             if (id.startsWith('enum.')) {
                 // clear cache
                 context.cacheObjectEnums = {};
@@ -770,26 +785,63 @@ function main() {
                                         }
                                     });
                                 } else if (engineType.startsWith('typescript')) {
-                                    // compile the current global script
-                                    const filename = scriptIdToTSFilename(obj._id);
-                                    const tsCompiled = tsServer.compile(filename, obj.common.source);
+                                    // TypeScript
+                                    adapter.log.info(obj._id + ': compiling TypeScript source...');
+                                    // Force TypeScript to treat the code as a module.
+                                    // Without this, it may complain about different scripts using the same variables.
+                                    const sourceWithExport = obj.common.source + '\nexport {};';
+                                    const sourceHash = hashSource(sourceWithExport);
 
-                                    const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
-
-                                    if (tsCompiled.success) {
-                                        if (errors.length > 0) {
-                                            adapter.log.warn('TypeScript compilation completed with errors: \n' + errors);
-                                        } else {
-                                            adapter.log.info('TypeScript compilation successful');
-                                        }
-                                        globalScript += tsCompiled.result + '\n';
-
-                                        // if declarations were generated, remember them
-                                        if (tsCompiled.declarations != null) {
-                                            provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
-                                        }
+                                    let compiled;
+                                    let declarations;
+                                    // If we already stored the compiled source code and the original source hash,
+                                    // use the hash to check whether we can rely on the compiled source code or
+                                    // if we need to compile it again
+                                    if (
+                                        typeof obj.common.compiled === 'string'
+                                        && typeof obj.common.sourceHash === 'string'
+                                        && sourceHash === obj.common.sourceHash
+                                    ) {
+                                        // We can reuse the stored source
+                                        compiled = obj.common.compiled;
+                                        declarations = obj.common.declarations;
+                                        adapter.log.info(obj._id + ': source code did not change, using cached compilation result...');
                                     } else {
-                                        adapter.log.error('TypeScript compilation failed: \n' + errors);
+                                        // We don't have a hashed source code or the original source changed, compile it
+                                        const filename = scriptIdToTSFilename(obj._id);
+                                        const tsCompiled = tsServer.compile(filename, obj.common.source);
+
+                                        const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
+
+                                        if (tsCompiled.success) {
+                                            if (errors.length > 0) {
+                                                adapter.log.warn('TypeScript compilation completed with errors: \n' + errors);
+                                            } else {
+                                                adapter.log.info('TypeScript compilation successful');
+                                            }
+                                            compiled = tsCompiled.result;
+                                            declarations = tsCompiled.declarations;
+
+                                            const newCommon = {
+                                                sourceHash,
+                                                compiled,
+                                            };
+                                            if (declarations) newCommon.declarations = declarations;
+
+                                            // Store the compiled source and the original source hash, so we don't need to do the work again next time
+                                            ignoreObjectChange.add(obj._id); // ignore the next change and don't restart scripts
+                                            adapter.extendForeignObject(obj._id, {
+                                                common: newCommon
+                                            });
+                                        } else {
+                                            adapter.log.error('TypeScript compilation failed: \n' + errors);
+                                            continue;
+                                        }
+                                    }
+                                    globalScript += compiled + '\n';
+                                    // if declarations were generated, remember them
+                                    if (declarations != null) {
+                                        provideDeclarationsForGlobalScript(obj._id, declarations);
                                     }
                                 } else { // javascript
                                     const sourceCode = obj.common.source;
@@ -1534,23 +1586,52 @@ function prepareScript(obj, callback) {
             // Force TypeScript to treat the code as a module.
             // Without this, it may complain about different scripts using the same variables.
             const sourceWithExport = obj.common.source + '\nexport {};';
-            const filename = scriptIdToTSFilename(name);
-            const tsCompiled = tsServer.compile(filename, sourceWithExport);
+            const sourceHash = hashSource(sourceWithExport);
 
-            const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
-
-            if (tsCompiled.success) {
-                if (errors.length > 0) {
-                    adapter.log.warn(name + ': TypeScript compilation had errors: \n' + errors);
-                } else {
-                    adapter.log.info(name + ': TypeScript compilation successful');
-                }
-                context.scripts[name] = createVM(`(async () => {${globalScript + '\n' + tsCompiled.result}\n})();`, name);
-                context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
-                typeof callback === 'function' && callback(true, name);
+            let compiled;
+            // If we already stored the compiled source code and the original source hash,
+            // use the hash to check whether we can rely on the compiled source code or
+            // if we need to compile it again
+            if (
+                typeof obj.common.compiled === 'string'
+                && typeof obj.common.sourceHash === 'string'
+                && sourceHash === obj.common.sourceHash
+            ) {
+                // We can reuse the stored source
+                compiled = obj.common.compiled;
+                adapter.log.info(name + ': source code did not change, using cached compilation result...');
             } else {
-                adapter.log.error(name + ': TypeScript compilation failed: \n' + errors);
+                // We don't have a hashed source code or the original source changed, compile it
+                const filename = scriptIdToTSFilename(name);
+                const tsCompiled = tsServer.compile(filename, sourceWithExport);
+
+                const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
+
+                if (tsCompiled.success) {
+                    if (errors.length > 0) {
+                        adapter.log.warn(name + ': TypeScript compilation had errors: \n' + errors);
+                    } else {
+                        adapter.log.info(name + ': TypeScript compilation successful');
+                    }
+                    compiled = tsCompiled.result;
+
+                    // Store the compiled source and the original source hash, so we don't need to do the work again next time
+                    ignoreObjectChange.add(name); // ignore the next change and don't restart scripts
+                    adapter.extendForeignObject(name, {
+                        common: {
+                            sourceHash: sourceHash,
+                            compiled,
+                        }
+                    });
+                } else {
+                    adapter.log.error(name + ': TypeScript compilation failed: \n' + errors);
+                    typeof callback === 'function' && callback(false, name);
+                    return;
+                }
             }
+            context.scripts[name] = createVM(`(async () => {${globalScript + '\n' + compiled}\n})();`, name);
+            context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
+            typeof callback === 'function' && callback(true, name);
         }
     } else {
         let _name;
