@@ -276,9 +276,10 @@ function startAdapter(options) {
         useFormatDate: true, // load float formatting
 
         objectChange: (id, obj) => {
-            // Check if we should ignore this change because we just updated the compiled sources
+            // Check if we should ignore this change (once!) because we just updated the compiled sources
             if (ignoreObjectChange.has(id)) {
-                // only ignore it once
+                // Update the cached object and do nothing more
+                context.objects[id] = obj;
                 ignoreObjectChange.delete(id);
                 return;
             }
