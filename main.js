@@ -818,9 +818,9 @@ function main() {
 
                                         if (tsCompiled.success) {
                                             if (errors.length > 0) {
-                                                adapter.log.warn('TypeScript compilation completed with errors: \n' + errors);
+                                                adapter.log.warn(obj._id + ': TypeScript compilation completed with errors: \n' + errors);
                                             } else {
-                                                adapter.log.info('TypeScript compilation successful');
+                                                adapter.log.info(obj._id + ': TypeScript compilation successful');
                                             }
                                             compiled = tsCompiled.result;
                                             declarations = tsCompiled.declarations;
@@ -837,7 +837,7 @@ function main() {
                                                 common: newCommon
                                             });
                                         } else {
-                                            adapter.log.error('TypeScript compilation failed: \n' + errors);
+                                            adapter.log.error(obj._id + ': TypeScript compilation failed: \n' + errors);
                                             continue;
                                         }
                                     }
