@@ -322,7 +322,7 @@ Blockly.JavaScript['procedures_defcustomreturn'] = function(block) {
         lines[l] = '    ' + lines[l];
     }
 
-    var code = 'function ' + funcName + '(' + args.join(', ') + ') {\n' +
+    var code = 'async function ' + funcName + '(' + args.join(', ') + ') {\n' +
         lines.join('\n') + '\n}';
 
     code = Blockly.JavaScript.scrub_(block, code);

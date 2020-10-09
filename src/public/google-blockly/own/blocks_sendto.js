@@ -335,7 +335,7 @@ Blockly.JavaScript['sendto_custom'] = function (block) {
 
         if (block.itemCount_ === 1 && !input.fieldRow[0].getValue()) {
             if (statement) {
-                return 'sendTo("' + instance + '", "' + command + '", ' + val + ', function (result) {\n  ' + statement + '  });\n' + logText;
+                return 'sendTo("' + instance + '", "' + command + '", ' + val + ', async function (result) {\n  ' + statement + '  });\n' + logText;
             } else {
                 return 'sendTo("' + instance + '", "' + command + '", ' + val + ');\n' + logText;
             }
@@ -343,7 +343,7 @@ Blockly.JavaScript['sendto_custom'] = function (block) {
     }
 
     if (statement) {
-        return 'sendTo("' + instance + '", "' + command + '", {' + (args.length ? args.join(',') + '\n' : '') + '}, function (result) {\n  ' + statement + '  });\n' + logText;
+        return 'sendTo("' + instance + '", "' + command + '", {' + (args.length ? args.join(',') + '\n' : '') + '}, async function (result) {\n  ' + statement + '  });\n' + logText;
     } else {
         return 'sendTo("' + instance + '", "' + command + '", {' + (args.length ? args.join(',') + '\n' : '') + '});\n' + logText;
     }
