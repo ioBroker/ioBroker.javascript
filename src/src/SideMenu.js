@@ -200,7 +200,8 @@ const getObjectName = (id, obj, lang) => {
 const prepareList = data => {
     const result = [];
     const ids = Object.keys(data);
-    ids.sort((a, b) => {
+
+    /*ids.sort((a, b) => {
         if ((a === 'script.js.common' || a === 'script.js.global') && (b === 'script.js.common' || b === 'script.js.global')) {
             return a > b ? 1 : -1;
         } else if (a === 'script.js.common' || a === 'script.js.global' || b === 'script.js.common' || b === 'script.js.global') {
@@ -208,7 +209,7 @@ const prepareList = data => {
         } else {
             return a > b ? 1 : -1;
         }
-    });
+    });*/
 
     for (let i = 0; i < ids.length; i++) {
         const obj = data[ids[i]];
@@ -226,11 +227,14 @@ const prepareList = data => {
     }
 
     // Place all folder-less scripts at start
-    result.sort((a, b) => {
+    /*result.sort((a, b) => {
         // without folders => always at start
         if (!a.parent && a.type !== 'folder' && !b.parent && b.type !== 'folder') {
-            if (a.id === b.id) return 0;
-            return a.id > b.id ? 1 : -1;
+            if (a.id === b.id) {
+                return 0;
+            } else {
+                return a.id > b.id ? 1 : -1;
+            }
         } else if (!a.parent && a.type !== 'folder') {
             return -1;
         } else if (!b.parent && b.type !== 'folder') {
@@ -239,18 +243,24 @@ const prepareList = data => {
             // common and global are always at the end
             if ((a.id.startsWith('script.js.common') || a.id.startsWith('script.js.global')) &&
                 (b.id.startsWith('script.js.common') || b.id.startsWith('script.js.global'))) {
-                if (a.id === b.id) return 0;
-                return a.id > b.id ? 1 : -1;
+                if (a.id === b.id) {
+                    return 0;
+                } else {
+                    return a.id > b.id ? 1 : -1;
+                }
             } else if (a.id.startsWith('script.js.common') || a.id.startsWith('script.js.global')) {
                 return 1;
             } else if (b.id.startsWith('script.js.common') || b.id.startsWith('script.js.global')) {
                 return -1;
             } else {
-                if (a.id === b.id) return 0;
-                return a.id > b.id ? 1 : -1;
+                if (a.id === b.id) {
+                    return 0;
+                } else {
+                    return a.id > b.id ? 1 : -1;
+                }
             }
         }
-    });
+    });*/
 
     // Fill all index
     result.forEach((item, i) => item.index = i);
@@ -286,6 +296,25 @@ const prepareList = data => {
             if (parent) {
                 item.parentIndex = parent.index;
             }
+        }
+    });
+
+    // Folders first
+    result.sort((a, b) => {
+        const idA = a.id.toLowerCase();
+        const idB = b.id.toLowerCase();
+        if (a.type === 'folder' && b.type !== 'folder') {
+            return -1;
+        } else if (b.type === 'folder' && a.type !== 'folder') {
+            return 1;
+        }
+
+        if (idA > idB) {
+            return 1;
+        } else if (idA < idB) {
+            return -1;
+        } else {
+            return 0;
         }
     });
 
