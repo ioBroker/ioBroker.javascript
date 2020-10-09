@@ -1,5 +1,11 @@
 The newest change log is in README.md
 
+## 4.7.3 (2020-09-06)
+* (Bluefox) Fixed the select ID dialog
+
+## 4.7.2 (2020-09-05)
+* (Bluefox) Fixed blockly problem
+
 ## 4.7.1 (2020-09-04)
 * (Bluefox) Fixed styling
 
