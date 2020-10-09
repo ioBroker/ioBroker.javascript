@@ -110,7 +110,7 @@ Blockly.Convert.blocks['convert_to_date'] =
 
 Blockly.Blocks.convert_to_date = {
     init: function () {
-        
+
         this.appendValueInput('VALUE')
             .appendField(Blockly.Translate('convert_to_date'));
 
@@ -273,9 +273,9 @@ Blockly.JavaScript.convert_from_date = function (block) {
     } else if (option === 'fy') {
         code = 'getDateObject(' + value + ').getFullYear()';
     } else if (option === 'wdt') {
-        code = 'formatDate(getDateObject(' + value + ').getDay(), "WW", "' + lang + '")';
+        code = 'formatDate(getDateObject(' + value + '), "WW", "' + lang + '")';
     } else if (option === 'wdts') {
-        code = 'formatDate(getDateObject(' + value + ').getDay(), "W", "' + lang + '")';
+        code = 'formatDate(getDateObject(' + value + '), "W", "' + lang + '")';
     } else if (option === 'wd') {
         code = 'getDateObject(' + value + ').getDay()';
     } else if (option === 'custom') {

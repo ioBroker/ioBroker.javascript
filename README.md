@@ -38,6 +38,10 @@ And then call "npm run build".
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (AlCalzone) Matched the exact ID if the $ selector contains no wildcard
+* (bluefox) Added new block in blockly: "pause" 
+
 ### 4.8.4 (2020-09-21)
 * (bluefox) Make the mirroring instance adjustable
 * (bluefox) Correct the dark mode for blockly
