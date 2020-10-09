@@ -791,7 +791,9 @@ function main() {
                                     // Force TypeScript to treat the code as a module.
                                     // Without this, it may complain about different scripts using the same variables.
                                     const sourceWithExport = obj.common.source + '\nexport {};';
-                                    const sourceHash = hashSource(sourceWithExport);
+                                    // We need to hash both global declarations that are known until now
+                                    // AND the script source, because changing either can change the compilation output
+                                    const sourceHash = hashSource(globalDeclarations + sourceWithExport);
 
                                     let compiled;
                                     let declarations;
@@ -1587,7 +1589,9 @@ function prepareScript(obj, callback) {
             // Force TypeScript to treat the code as a module.
             // Without this, it may complain about different scripts using the same variables.
             const sourceWithExport = obj.common.source + '\nexport {};';
-            const sourceHash = hashSource(sourceWithExport);
+            // We need to hash both global declarations that are known until now
+            // AND the script source, because changing either can change the compilation output
+            const sourceHash = hashSource(globalDeclarations + sourceWithExport);
 
             let compiled;
             // If we already stored the compiled source code and the original source hash,
