@@ -381,7 +381,7 @@ declare global {
 			oldFromNe?: string | string[] | RegExp;
 		}
 
-		interface QueryResult {
+		interface QueryResult extends Iterable<string> {
 			/** State-ID */
 			[index: number]: string;
 			/** Number of matched states */
