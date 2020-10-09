@@ -83,6 +83,47 @@ Blockly.Timeouts.rename = function (name) {
 };
 
 // --- setTimeout -----------------------------------------------------------
+Blockly.Timeouts.blocks['timeouts_wait'] =
+    '<block type="timeouts_wait">'
+    + '     <value name="DELAY">'
+    + '     </value>'
+    + '     <value name="UNIT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['timeouts_wait'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('timeouts_wait'))
+            .appendField(new Blockly.FieldTextInput(1000), "DELAY")
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('timeouts_settimeout_ms'), 'ms'],
+                [Blockly.Translate('timeouts_settimeout_sec'), 'sec'],
+                [Blockly.Translate('timeouts_settimeout_min'), 'min']
+            ]), 'UNIT')
+            .appendField(Blockly.Translate('timeouts_settimeout_ms'));
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setInputsInline(true);
+        this.setColour(Blockly.Timeouts.HUE);
+        this.setTooltip(Blockly.Translate('timeouts_wait_tooltip'));
+        this.setHelpUrl(getHelp('timeouts_wait_help'));
+    },
+};
+
+Blockly.JavaScript['timeouts_wait'] = function(block) {
+    var delay = block.getFieldValue('DELAY');
+    var unit  = block.getFieldValue('UNIT');
+    if (unit === 'min') {
+        delay *= 60000;
+    } else if (unit === 'sec') {
+        delay *= 1000;
+    }
+    return 'await wait(' + delay + ');\n';
+};
+
+// --- setTimeout -----------------------------------------------------------
 Blockly.Timeouts.blocks['timeouts_settimeout'] =
     '<block type="timeouts_settimeout">'
     + '     <value name="NAME">'

@@ -699,8 +699,12 @@ function main() {
         const stack = (new Error().stack).split('\n');
 
         for (let i = 3; i < stack.length; i++) {
-            if (!stack[i]) continue;
-            if (stack[i].match(/runInContext|runInNewContext|javascript\.js:/)) break;
+            if (!stack[i]) {
+                continue;
+            }
+            if (stack[i].match(/runInContext|runInNewContext|javascript\.js:/)) {
+                break;
+            }
             context.errorLogFunction && context.errorLogFunction[level](fixLineNo(stack[i]));
         }
     };
@@ -848,9 +852,9 @@ let globalDeclarations = '';
 // have access to, because it depends on the compile order
 let knownGlobalDeclarationsByScript = {};
 let globalScriptLines  = 0;
-// let activeRegEx        = null;
+// let activeRegEx     = null;
 let activeStr          = ''; // enabled state prefix
-let daySchedule    = null; // schedule for astrological day
+let daySchedule        = null; // schedule for astrological day
 
 function getNextTimeEvent(time) {
     const now = new Date();
@@ -1040,14 +1044,18 @@ function addGetProperty(object) {
 }
 
 function fixLineNo(line) {
-    if (line.indexOf('javascript.js:') >= 0) return line;
-    if (!/script[s]?\.js[.\\/]/.test(line)) return line;
+    if (line.indexOf('javascript.js:') >= 0) {
+        return line;
+    }
+    if (!/script[s]?\.js[.\\/]/.test(line)) {
+        return line;
+    }
     if (/:([\d]+):/.test(line)) {
         line = line.replace(/:([\d]+):/, ($0, $1) =>
-            ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1) + ':');
+            ':' + ($1 > globalScriptLines + 1 ? $1 - globalScriptLines - 1 : $1) + ':'); // one line for 'async function ()'
     } else {
         line = line.replace(/:([\d]+)$/, ($0, $1) =>
-            ':' + ($1 > globalScriptLines ? $1 - globalScriptLines : $1));
+            ':' + ($1 > globalScriptLines + 1 ? $1 - globalScriptLines - 1 : $1));       // one line for 'async function ()'
     }
     return line;
 }
@@ -1061,8 +1069,12 @@ context.logError = function (msg, e, offs) {
     //errorLogFunction.error(msg + stack[0]);
     context.errorLogFunction.error(msg + fixLineNo(stack[0]));
     for (let i = offs || 1; i < stack.length; i++) {
-        if (!stack[i]) continue;
-        if (stack[i].match(/runInNewContext|javascript\.js:/)) break;
+        if (!stack[i]) {
+            continue;
+        }
+        if (stack[i].match(/runInNewContext|javascript\.js:/)) {
+            break;
+        }
         //adapter.log.error(fixLineNo(stack[i]));
         context.errorLogFunction.error(fixLineNo(stack[i]));
     }
@@ -1500,7 +1512,7 @@ function prepareScript(obj, callback) {
                 const fn = name.replace(/^script.js./, '').replace(/\./g, '/');
                 sourceFn = mods.path.join(webstormDebug, fn + '.js');
             }
-            context.scripts[name] = createVM(globalScript + obj.common.source, sourceFn);
+            context.scripts[name] = createVM(`(async () => {\n${globalScript + obj.common.source}\n})();`, sourceFn);
             context.scripts[name] && execute(context.scripts[name], sourceFn, obj.common.verbose, obj.common.debug);
             typeof callback === 'function' && callback(true, name);
         } else if (obj.common.engineType.toLowerCase().startsWith('coffee')) {
@@ -1512,7 +1524,7 @@ function prepareScript(obj, callback) {
                     return;
                 }
                 adapter.log.info('Start coffescript ' + name);
-                context.scripts[name] = createVM(globalScript + '\n' + js, name);
+                context.scripts[name] = createVM(`(async () => {\n${globalScript + '\n' + js}\n})();`, name);
                 context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
                 typeof callback === 'function' && callback(true, name);
             });
@@ -1533,7 +1545,7 @@ function prepareScript(obj, callback) {
                 } else {
                     adapter.log.info(name + ': TypeScript compilation successful');
                 }
-                context.scripts[name] = createVM(globalScript + '\n' + tsCompiled.result, name);
+                context.scripts[name] = createVM(`(async () => {${globalScript + '\n' + tsCompiled.result}\n})();`, name);
                 context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
                 typeof callback === 'function' && callback(true, name);
             } else {
