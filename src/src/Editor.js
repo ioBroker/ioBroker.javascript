@@ -66,7 +66,7 @@ const styles = theme => ({
         marginLeft: 4
     },
     editorDiv: {
-        height: `calc(100% - ${theme.toolbar.height + 38/*Theme.toolbar.height */ + 1}px)`,
+        height: `calc(100% - ${theme.toolbar.height + 38/*Theme.toolbar.height */ + 5}px)`,
         width: '100%',
         overflow: 'hidden',
         position: 'relative'

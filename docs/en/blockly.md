@@ -50,6 +50,7 @@
         - [CRON dialog](#cron-dialog)
         - [CRON rule](#cron-rule)
     - [Timeouts](#timeouts)
+        - [Wait/Pause](#wait)
         - [Delayed execution](#delayed-execution)
         - [Clear delayed execution](#clear-delayed-execution)
         - [Execution by interval](#execution-by-interval)
@@ -1742,6 +1743,47 @@ With additional parameter "with seconds" you can specify seconds for CRON rule t
 This block can be used (like [CRON dialog](#cron-dialog)) only with [Named schedule](#named-schedule) block.
 
 ## Timeouts
+### Wait/Pause
+With this simple block you can pause the execution of blocks.
+Take care if `pause` is used in some bundle, it will pause all blocks in this script which are positioned lower block with pause:
+![Example 1](img/wait1.png)
+Generated code: 
+```
+console.log('"Independent" block'); // Will not be delayed
+
+console.log('Before pause');
+await wait(5000);
+console.log('After pause');
+```
+
+Log output:
+```
+15:48:21.807	info	javascript.0 (7304) script.js.Skript_1: "Independent" block
+15:48:21.807	info	javascript.0 (7304) script.js.Skript_1: Before pause
+15:48:21.807	info	javascript.0 (7304) script.js.Skript_1: registered 0 subscriptions and 0 schedules
+15:48:26.810	info	javascript.0 (7304) script.js.Skript_1: After pause
+```
+
+![Example 2](img/wait2.png)
+
+Generated code: 
+```
+console.log('Before pause');
+await wait(5000);
+console.log('After pause');
+
+console.log('"Independent" block'); // Will be delayed by for 5 seconds
+```
+
+Output:
+
+```
+15:52:03.289	info	javascript.0 (7304) script.js.Skript_1: Before pause
+15:52:03.290	info	javascript.0 (7304) script.js.Skript_1: registered 0 subscriptions and 0 schedules
+15:52:08.296	info	javascript.0 (7304) script.js.Skript_1: After pause
+15:52:08.297	info	javascript.0 (7304) script.js.Skript_1: "Independent" block
+```
+
 
 ### Delayed execution
 ![Delayed execution](img/timeouts_timeout_en.png)
