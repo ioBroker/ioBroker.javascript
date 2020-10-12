@@ -345,7 +345,19 @@ Blockly.Blocks['procedures_callcustomreturn'] = {
     defType_: 'procedures_defcustomreturn'
 };
 
-Blockly.JavaScript['procedures_callcustomreturn'] = Blockly.JavaScript['procedures_callreturn'];
+Blockly.JavaScript['procedures_callcustomreturn'] = function(block) {
+    // Call a procedure with a return value.
+    var funcName = Blockly.JavaScript.variableDB_.getName(
+        block.getFieldValue('NAME'), Blockly.PROCEDURE_CATEGORY_NAME);
+    var args = [];
+    var variables = block.arguments_;
+    for (var i = 0; i < variables.length; i++) {
+        args[i] = Blockly.JavaScript.valueToCode(block, 'ARG' + i,
+            Blockly.JavaScript.ORDER_COMMA) || 'null';
+    }
+    var code = 'await ' + funcName + '(' + args.join(', ') + ')';
+    return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
 
 // ---------------------- custom function with no return ------------------------------
 
@@ -412,4 +424,10 @@ Blockly.Blocks['procedures_callcustomnoreturn'] = {
     defType_: 'procedures_defcustomnoreturn'
 };
 
-Blockly.JavaScript['procedures_callcustomnoreturn'] = Blockly.JavaScript['procedures_callnoreturn'];
+Blockly.JavaScript['procedures_callcustomnoreturn'] = function(block) {
+    // Call a procedure with no return value.
+    // Generated code is for a function call as a statement is the same as a
+    // function call as a value, with the addition of line ending.
+    var tuple = Blockly.JavaScript['procedures_callcustomreturn'](block);
+    return tuple[0] + ';\n';
+};

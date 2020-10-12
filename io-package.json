@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.9.0",
+        "version": "4.9.1",
         "news": {
+            "4.9.1": {
+                "en": "Corrected the function calls",
+                "de": "Funktionsaufrufe korrigiert",
+                "ru": "Исправлены вызовы функций",
+                "pt": "Corrigiu as chamadas de função",
+                "nl": "De functie-aanroepen gecorrigeerd",
+                "fr": "Correction des appels de fonction",
+                "it": "Corrette le chiamate di funzione",
+                "es": "Corregidas las llamadas a funciones.",
+                "pl": "Poprawiono wywołania funkcji",
+                "zh-cn": "更正了函数调用"
+            },
             "4.9.0": {
                 "en": "All scripts support now `await` calls. THIS COULD HAVE SOME SIDE-EFFECT (unknown yet). \nMatched the exact ID if the $ selector contains no wildcard\nAdded new block in blockly: \"pause\" \nChanged the order of folders and scripts to \"folders first\".\nExtend the documentation.\nCorrected the error with blockly and \"day of week\" conversion.",
                 "de": "Alle Skripte unterstützen jetzt \"Kawit\" -Aufrufe. Dies könnte einige Nebeneffekte haben (noch unbekannt).\nEntspricht der genauen ID, wenn der $ -Selektor keinen Platzhalter enthält\nNeuer Block in blockly hinzugefügt: \"pause\"\nDie Reihenfolge der Ordner und Skripte wurde in \"Ordner zuerst\" geändert.\nErweitern Sie die Dokumentation.\nDer Fehler wurde durch Block- und \"Wochentag\" -Konvertierung behoben.",
