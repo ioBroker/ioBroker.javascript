@@ -100,8 +100,8 @@ Blockly.Blocks['timeouts_wait'] = {
                 [Blockly.Translate('timeouts_settimeout_ms'), 'ms'],
                 [Blockly.Translate('timeouts_settimeout_sec'), 'sec'],
                 [Blockly.Translate('timeouts_settimeout_min'), 'min']
-            ]), 'UNIT')
-            .appendField(Blockly.Translate('timeouts_settimeout_ms'));
+            ]), 'UNIT');
+            //.appendField(Blockly.Translate('timeouts_settimeout_ms'));
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -153,8 +153,8 @@ Blockly.Blocks['timeouts_settimeout'] = {
                 [Blockly.Translate('timeouts_settimeout_ms'), 'ms'],
                 [Blockly.Translate('timeouts_settimeout_sec'), 'sec'],
                 [Blockly.Translate('timeouts_settimeout_min'), 'min']
-            ]), 'UNIT')
-            .appendField(Blockly.Translate('timeouts_settimeout_ms'));
+            ]), 'UNIT');
+            //.appendField(Blockly.Translate('timeouts_settimeout_ms'));
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -186,7 +186,7 @@ Blockly.JavaScript['timeouts_settimeout'] = function(block) {
         delay *= 1000;
     }
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    return name + ' = setTimeout(function () {\n' + statements_name + '}, ' + delay + ');\n';
+    return name + ' = setTimeout(async function () {\n' + statements_name + '}, ' + delay + ');\n';
 };
 
 // --- clearTimeout -----------------------------------------------------------
@@ -273,8 +273,8 @@ Blockly.Blocks['timeouts_setinterval'] = {
                 [Blockly.Translate('timeouts_settimeout_ms'), 'ms'],
                 [Blockly.Translate('timeouts_settimeout_sec'), 'sec'],
                 [Blockly.Translate('timeouts_settimeout_min'), 'min']
-            ]), 'UNIT')
-            .appendField(Blockly.Translate('timeouts_setinterval_ms'));
+            ]), 'UNIT');
+            //.appendField(Blockly.Translate('timeouts_setinterval_ms'));
 
         this.appendStatementInput("STATEMENT")
             .setCheck(null);
@@ -307,7 +307,7 @@ Blockly.JavaScript['timeouts_setinterval'] = function(block) {
     }
 
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    return name + ' = setInterval(function () {\n' + statements_name + '}, ' + delay + ');\n';
+    return name + ' = setInterval(async function () {\n' + statements_name + '}, ' + delay + ');\n';
 };
 
 // --- clearInterval -----------------------------------------------------------

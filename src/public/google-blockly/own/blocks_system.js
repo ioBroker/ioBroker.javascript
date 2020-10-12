@@ -632,7 +632,7 @@ Blockly.JavaScript['create'] = function(block) {
         }
     }
 
-    return 'createState("' + name + '"' + paraV + paraC + ', function () {\n' + statement + '});\n';
+    return 'createState("' + name + '"' + paraV + paraC + ', async function () {\n' + statement + '});\n';
 };
 
 // --- get value --------------------------------------------------
@@ -772,7 +772,7 @@ Blockly.JavaScript['get_value_async'] = function(block) {
     var oid  = block.getFieldValue('OID');
     var attr = block.getFieldValue('ATTR');
     var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    return 'getState("' + oid + '", function (err, state) {\n   var value = state.' + attr + ';\n' + statement + '});\n';
+    return 'getState("' + oid + '", async function (err, state) {\n   var value = state.' + attr + ';\n' + statement + '});\n';
 };
 
 // --- select OID --------------------------------------------------

@@ -113,7 +113,8 @@ const tsCompilerOptions = {
     // we need to target ES5, otherwise the compiled
     // scripts may include `import` keywords, which are not
     // supported by vm.Script.
-    target: typescript.ScriptTarget.ES5,
+    target: typescript.ScriptTarget.ES2017,
+    module: typescript.ModuleKind.ESNext,
     lib: [`lib.${targetTsLib}.d.ts`],
 };
 
@@ -1588,7 +1589,7 @@ function prepareScript(obj, callback) {
             adapter.log.info(name + ': compiling TypeScript source...');
             // Force TypeScript to treat the code as a module.
             // Without this, it may complain about different scripts using the same variables.
-            const sourceWithExport = obj.common.source + '\nexport {};';
+            const sourceWithExport = `(async () => {${obj.common.source}\n})();`;
             // We need to hash both global declarations that are known until now
             // AND the script source, because changing either can change the compilation output
             const sourceHash = hashSource(globalDeclarations + sourceWithExport);
@@ -1609,7 +1610,6 @@ function prepareScript(obj, callback) {
                 // We don't have a hashed source code or the original source changed, compile it
                 const filename = scriptIdToTSFilename(name);
                 const tsCompiled = tsServer.compile(filename, sourceWithExport);
-
                 const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
 
                 if (tsCompiled.success) {
