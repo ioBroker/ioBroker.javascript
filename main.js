@@ -112,7 +112,8 @@ const tsCompilerOptions = {
     // we need to target ES5, otherwise the compiled
     // scripts may include `import` keywords, which are not
     // supported by vm.Script.
-    target: typescript.ScriptTarget.ES5,
+    target: typescript.ScriptTarget.ES2017,
+    module: typescript.ModuleKind.ESNext,
     lib: [`lib.${targetTsLib}.d.ts`],
 };
 
@@ -1533,7 +1534,7 @@ function prepareScript(obj, callback) {
             adapter.log.info(name + ': compiling TypeScript source...');
             // Force TypeScript to treat the code as a module.
             // Without this, it may complain about different scripts using the same variables.
-            const sourceWithExport = obj.common.source + '\nexport {};';
+            const sourceWithExport = `(async () => {${obj.common.source}\n})();`;
             const filename = scriptIdToTSFilename(name);
             const tsCompiled = tsServer.compile(filename, sourceWithExport);
 
@@ -1545,7 +1546,7 @@ function prepareScript(obj, callback) {
                 } else {
                     adapter.log.info(name + ': TypeScript compilation successful');
                 }
-                context.scripts[name] = createVM(`(async () => {${globalScript + '\n' + tsCompiled.result}\n})();`, name);
+                context.scripts[name] = createVM(`${globalScript}\n${tsCompiled.result}`, name);
                 context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
                 typeof callback === 'function' && callback(true, name);
             } else {
