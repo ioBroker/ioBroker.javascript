@@ -20,9 +20,9 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.9.1",
+        "version": "4.9.2",
         "news": {
-            "4.9.1": {
+            "4.9.2": {
                 "en": "Corrected the function calls",
                 "de": "Funktionsaufrufe korrigiert",
                 "ru": "Исправлены вызовы функций",
