@@ -110,11 +110,10 @@ const tsCompilerOptions = {
     // This enables TS users to `import * as ... from` and `import ... from`
     esModuleInterop: true,
     // In order to run scripts as a NodeJS vm.Script,
-    // we need to target ES5, otherwise the compiled
+    // we MUST target ES5, otherwise the compiled
     // scripts may include `import` keywords, which are not
     // supported by vm.Script.
-    target: typescript.ScriptTarget.ES2017,
-    module: typescript.ModuleKind.ESNext,
+    target: typescript.ScriptTarget.ES5,
     lib: [`lib.${targetTsLib}.d.ts`],
 };
 
@@ -791,7 +790,7 @@ function main() {
                                     adapter.log.info(obj._id + ': compiling TypeScript source...');
                                     // Force TypeScript to treat the code as a module.
                                     // Without this, it may complain about different scripts using the same variables.
-                                    const sourceWithExport = obj.common.source + '\nexport {};';
+                                    const sourceWithExport = `(async () => {${obj.common.source}})();\nexport {};`;
                                     // We need to hash both global declarations that are known until now
                                     // AND the script source, because changing either can change the compilation output
                                     const sourceHash = hashSource(globalDeclarations + sourceWithExport);
@@ -813,7 +812,7 @@ function main() {
                                     } else {
                                         // We don't have a hashed source code or the original source changed, compile it
                                         const filename = scriptIdToTSFilename(obj._id);
-                                        const tsCompiled = tsServer.compile(filename, obj.common.source);
+                                        const tsCompiled = tsServer.compile(filename, sourceWithExport);
 
                                         const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
 
@@ -1587,9 +1586,9 @@ function prepareScript(obj, callback) {
         } else if (obj.common.engineType.toLowerCase().startsWith('typescript')) {
             // TypeScript
             adapter.log.info(name + ': compiling TypeScript source...');
-            // Force TypeScript to treat the code as a module.
+            // Force TypeScript to treat the code as a module by adding an empty export.
             // Without this, it may complain about different scripts using the same variables.
-            const sourceWithExport = `(async () => {${obj.common.source}\n})();`;
+            const sourceWithExport = `(async () => {${obj.common.source}})();\nexport {};`;
             // We need to hash both global declarations that are known until now
             // AND the script source, because changing either can change the compilation output
             const sourceHash = hashSource(globalDeclarations + sourceWithExport);
@@ -1634,7 +1633,7 @@ function prepareScript(obj, callback) {
                     return;
                 }
             }
-            context.scripts[name] = createVM(`(async () => {${globalScript + '\n' + compiled}\n})();`, name);
+            context.scripts[name] = createVM(globalScript + '\n' + compiled, name);
             context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
             typeof callback === 'function' && callback(true, name);
         }
