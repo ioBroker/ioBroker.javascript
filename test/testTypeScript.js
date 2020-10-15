@@ -61,6 +61,6 @@ await wait(100);
             const tsCompiled = tsServer.compile(filename, transformedSource);
 
             expect(tsCompiled.success).to.be.true;
-        });
+        }).timeout(20000);
     }
 });
