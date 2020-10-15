@@ -703,6 +703,15 @@ function main() {
         jsDeclarationServer.provideAmbientDeclarations(tsAmbient);
     } catch (e) {
         adapter.log.warn('Could not read TypeScript ambient declarations: ' + e);
+        // This should not happen, so send a error report to Sentry
+        if (adapter.supportsFeature && adapter.supportsFeature('PLUGINS')) {
+            const sentryInstance = adapter.getPluginInstance('sentry');
+            if (sentryInstance) {
+                sentryInstance.getSentryObject().captureException(e);
+            }
+        }
+        // Keep the adapter from crashing when the included typings cannot be read
+        tsAmbient = {};
     }
 
     context.logWithLineInfo = function (level, msg) {
