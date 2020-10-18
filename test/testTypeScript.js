@@ -52,6 +52,14 @@ describe('TypeScript compilation regression tests', () => {
 import * as fs from "fs";
 await wait(100);
 `,
+        // declare any statement with `declare` must be hoisted
+        `
+declare function test(): any;
+declare class Test {};
+declare interface Foo {};
+export const bla = 1;
+export { test };
+        `,
         // Simplified repro from #677
         `
 class Foo {
@@ -61,6 +69,7 @@ class Foo {
     }
 }
 `
+
     ];
 
     for (let i = 0; i < tests.length; i++) {
