@@ -707,7 +707,8 @@ function main() {
         if (adapter.supportsFeature && adapter.supportsFeature('PLUGINS')) {
             const sentryInstance = adapter.getPluginInstance('sentry');
             if (sentryInstance) {
-                sentryInstance.getSentryObject().captureException(e);
+                const sentryObject = sentryInstance.getSentryObject();
+                if (sentryObject) sentryObject.captureException(e);
             }
         }
         // Keep the adapter from crashing when the included typings cannot be read
