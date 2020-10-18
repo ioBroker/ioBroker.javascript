@@ -42,6 +42,7 @@ describe('TypeScript compilation regression tests', () => {
             path.join(__dirname, '../lib/javascript.d.ts'),
             'utf8'
         ),
+        'fs.d.ts': `declare module "fs" { }`
     };
     tsServer.provideAmbientDeclarations(tsAmbient);
 
@@ -51,6 +52,15 @@ describe('TypeScript compilation regression tests', () => {
 import * as fs from "fs";
 await wait(100);
 `,
+        // Simplified repro from #677
+        `
+class Foo {
+    private prop: boolean;
+    private method() {
+        this.prop = true;
+    }
+}
+`
     ];
 
     for (let i = 0; i < tests.length; i++) {
