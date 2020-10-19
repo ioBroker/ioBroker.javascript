@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.9.3",
+        "version": "4.9.4",
         "news": {
+            "4.9.4": {
+                "en": "corrected the crash IOBROKER-JAVASCRIPT-40\ncorrected typescript for async/await",
+                "de": "korrigierte den Absturz IOBROKER-JAVASCRIPT-40\nkorrigiertes Typoskript für Async / Warten",
+                "ru": "исправлен вылет IOBROKER-JAVASCRIPT-40\nисправлен машинописный текст для async / await",
+                "pt": "corrigiu a falha IOBROKER-JAVASCRIPT-40\ntexto digitado corrigido para assíncrono / espera",
+                "nl": "de crash gecorrigeerd IOBROKER-JAVASCRIPT-40\ngecorrigeerd typoscript voor async / await",
+                "fr": "corrigé le crash IOBROKER-JAVASCRIPT-40\ndactylographie corrigé pour async / await",
+                "it": "corretto il crash IOBROKER-JAVASCRIPT-40\ndattiloscritto corretto per async / await",
+                "es": "Corregido el bloqueo IOBROKER-JAVASCRIPT-40\nmecanografiado corregido para async / await",
+                "pl": "poprawiono awarię IOBROKER-JAVASCRIPT-40\npoprawiony maszynopis async / await",
+                "zh-cn": "更正了崩溃IOBROKER-JAVASCRIPT-40\n更正了用于异步/等待的打字稿"
+            },
             "4.9.3": {
                 "en": "Corrected the function calls",
                 "de": "Funktionsaufrufe korrigiert",

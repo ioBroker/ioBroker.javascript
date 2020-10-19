@@ -1,5 +1,12 @@
 The newest change log is in README.md
 
+## 4.8.0 (2020-09-17)
+* (AlCalzone) add xyzAsync methods and wait/sleep
+* (Apollon77) Prevent a crash case (Sentry IOBROKER-JAVASCRIPT-3N)
+
+## 4.7.4 (2020-09-10)
+* (Bluefox) Fixed JS editor in blockly
+
 ## 4.7.3 (2020-09-06)
 * (Bluefox) Fixed the select ID dialog
 

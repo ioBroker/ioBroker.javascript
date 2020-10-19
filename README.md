@@ -38,7 +38,7 @@ And then call "npm run build".
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 4.9.4 (2020-10-19)
 * (AlCalzone) corrected the crash IOBROKER-JAVASCRIPT-40
 * (AlCalzone) corrected typescript for async/await
 
@@ -61,13 +61,6 @@ And then call "npm run build".
 
 ### 4.8.2 (2020-09-20)
 * (Bluefox) Added the settings for columns in the state selection dialog
-
-### 4.8.0 (2020-09-17)
-* (AlCalzone) add xyzAsync methods and wait/sleep
-* (Apollon77) Prevent a crash case (Sentry IOBROKER-JAVASCRIPT-3N)
-
-### 4.7.4 (2020-09-10)
-* (Bluefox) Fixed JS editor in blockly
 
 ## License
 
