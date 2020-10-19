@@ -33,7 +33,6 @@ const nodeFS         = require('fs');
 const nodePath       = require('path');
 const coffeeCompiler = require('coffee-compiler');
 const tsc            = require('virtual-tsc');
-const typescript     = require('typescript');
 const nodeSchedule   = require('node-schedule');
 const Mirror         = require('./lib/mirror');
 
@@ -63,8 +62,10 @@ const Scheduler = require('./lib/scheduler');
 const {
     resolveTypescriptLibs,
     resolveTypings,
-    scriptIdToTSFilename
+    scriptIdToTSFilename,
+    transformScriptBeforeCompilation
 } = require('./lib/typescriptTools');
+const { targetTsLib, tsCompilerOptions, jsDeclarationCompilerOptions } = require('./lib/typescriptSettings');
 const { hashSource } = require('./lib/tools');
 
 const adapterName = require('./package.json').name.split('.').pop();
@@ -95,39 +96,6 @@ if (process.argv) {
 }
 
 const isCI = !!process.env.CI;
-
-// NodeJS 8+ supports the features of ES2017
-// When upgrading the minimum supported version to NodeJS 10 or higher,
-// consider changing this, so we get to support the newest features too
-const targetTsLib = 'es2017';
-
-/** @type {typescript.CompilerOptions} */
-const tsCompilerOptions = {
-    // don't compile faulty scripts
-    noEmitOnError: true,
-    // emit declarations for global scripts
-    declaration: true,
-    // This enables TS users to `import * as ... from` and `import ... from`
-    esModuleInterop: true,
-    // In order to run scripts as a NodeJS vm.Script,
-    // we MUST target ES5, otherwise the compiled
-    // scripts may include `import` keywords, which are not
-    // supported by vm.Script.
-    target: typescript.ScriptTarget.ES5,
-    lib: [`lib.${targetTsLib}.d.ts`],
-};
-
-const jsDeclarationCompilerOptions = Object.assign(
-    {}, tsCompilerOptions,
-    {
-        // we only care about the declarations
-        emitDeclarationOnly: true,
-        // allow errors
-        noEmitOnError: false,
-        noImplicitAny: false,
-        strict: false,
-    }
-);
 
 // ambient declarations for typescript
 /** @type {Record<string, string>} */
@@ -219,6 +187,19 @@ function loadTypeScriptDeclarations() {
             tsServer.provideAmbientDeclarations(pkgTypings);
             jsDeclarationServer.provideAmbientDeclarations(pkgTypings);
         }
+    }
+}
+
+/**
+ * @param {string} script
+ */
+function transformTSScript(script) {
+    try {
+        // Try to execute the smart transformer script
+        return transformScriptBeforeCompilation(script);
+    } catch (e) {
+        // Fall back to simple wrapping
+        return `(async () => {${script}})();\nexport {};`;
     }
 }
 
@@ -798,12 +779,12 @@ function main() {
                                 } else if (engineType.startsWith('typescript')) {
                                     // TypeScript
                                     adapter.log.info(obj._id + ': compiling TypeScript source...');
-                                    // Force TypeScript to treat the code as a module.
-                                    // Without this, it may complain about different scripts using the same variables.
-                                    const sourceWithExport = `(async () => {${obj.common.source}})();\nexport {};`;
+                                    // The source code must be transformed in order to support top level await
+                                    // and to force TypeScript to compile the code as a module
+                                    const transformedSource = transformTSScript(obj.common.source);
                                     // We need to hash both global declarations that are known until now
                                     // AND the script source, because changing either can change the compilation output
-                                    const sourceHash = hashSource(globalDeclarations + sourceWithExport);
+                                    const sourceHash = hashSource(globalDeclarations + transformedSource);
 
                                     let compiled;
                                     let declarations;
@@ -822,7 +803,7 @@ function main() {
                                     } else {
                                         // We don't have a hashed source code or the original source changed, compile it
                                         const filename = scriptIdToTSFilename(obj._id);
-                                        const tsCompiled = tsServer.compile(filename, sourceWithExport);
+                                        const tsCompiled = tsServer.compile(filename, transformedSource);
 
                                         const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
 
@@ -1596,12 +1577,12 @@ function prepareScript(obj, callback) {
         } else if (obj.common.engineType.toLowerCase().startsWith('typescript')) {
             // TypeScript
             adapter.log.info(name + ': compiling TypeScript source...');
-            // Force TypeScript to treat the code as a module by adding an empty export.
-            // Without this, it may complain about different scripts using the same variables.
-            const sourceWithExport = `(async () => {${obj.common.source}})();\nexport {};`;
+            // The source code must be transformed in order to support top level await
+            // and to force TypeScript to compile the code as a module
+            const transformedSource = transformTSScript(obj.common.source);
             // We need to hash both global declarations that are known until now
             // AND the script source, because changing either can change the compilation output
-            const sourceHash = hashSource(globalDeclarations + sourceWithExport);
+            const sourceHash = hashSource(globalDeclarations + transformedSource);
 
             let compiled;
             // If we already stored the compiled source code and the original source hash,
@@ -1618,7 +1599,7 @@ function prepareScript(obj, callback) {
             } else {
                 // We don't have a hashed source code or the original source changed, compile it
                 const filename = scriptIdToTSFilename(name);
-                const tsCompiled = tsServer.compile(filename, sourceWithExport);
+                const tsCompiled = tsServer.compile(filename, transformedSource);
                 const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
 
                 if (tsCompiled.success) {
@@ -1633,7 +1614,7 @@ function prepareScript(obj, callback) {
                     ignoreObjectChange.add(name); // ignore the next change and don't restart scripts
                     adapter.extendForeignObject(name, {
                         common: {
-                            sourceHash: sourceHash,
+                            sourceHash,
                             compiled,
                         }
                     });
