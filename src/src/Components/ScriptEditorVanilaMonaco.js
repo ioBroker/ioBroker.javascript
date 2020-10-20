@@ -27,7 +27,6 @@ class ScriptEditor extends React.Component {
         this.monaco = window.monaco;
         this.insert = '';
         this.originalCode = props.code || '';
-        this.globalTypingHandles  = [];
         this.typings = {}; // TypeScript declarations
         this.lastSearch = '';
         /*if (!this.state.runningInstances) {
@@ -112,7 +111,7 @@ class ScriptEditor extends React.Component {
                         this.setTypeCheck(true);
                         if (result.typings) {
                             this.typings = result.typings;
-                            this.setEditorTypings();
+                            this.setEditorTypings(this.state.name);
                         } else {
                             console.error(`failed to load typings: ${result.error}`);
                         }
@@ -162,7 +161,6 @@ class ScriptEditor extends React.Component {
 
     /**
      * Sets the language of the code editor
-     * @param {monaco.editor.IStandaloneCodeEditor} editorInstance The editor instance to change the options for
      * @param {EditorLanguage} language
      */
     setEditorLanguage(language) {
@@ -205,28 +203,13 @@ class ScriptEditor extends React.Component {
     }
 
     /**
-     * Adds the given declaration file to the editor
-     * @param {string} path The file path of the typings to add
-     * @param {string} typings The declaration file to add
-     * @param {boolean} [isGlobal=false] Whethere the file is a global declaration file
-     * @returns {void}
+     * @param {string} [currentScriptName] The name of the current script
      */
-    addTypingsToEditor(path, typings, isGlobal) {
-        try {
-            const handle = this.monaco.languages.typescript.typescriptDefaults.addExtraLib(typings, path);
-            if (isGlobal) this.globalTypingHandles.push(handle);
-        } catch (e) { /* might be added already */}
-    }
-
-    setEditorTypings() {
-        // clear previously added global typings
-        for (const handle of this.globalTypingHandles) {
-            handle && handle.dispose();
-        }
-
-        const isGlobalScript = isIdOfGlobalScript(this.state.name);
+    setEditorTypings(currentScriptName = '') {
+        const isGlobalScript = isIdOfGlobalScript(currentScriptName);
         // The filename of the declarations this script can see if it is a global script
-        const partialDeclarationsPath = this.state.name + '.d.ts';
+        const partialDeclarationsPath = `${currentScriptName}.d.ts`;
+        const wantedTypings = [];
         for (const path of Object.keys(this.typings)) {
             // global scripts don't get to see all other global scripts
             // but only a part of them
@@ -234,8 +217,12 @@ class ScriptEditor extends React.Component {
                 if (path === 'global.d.ts') continue;
                 if (path.startsWith('script.js.global') && path !== partialDeclarationsPath) continue;
             }
-            this.addTypingsToEditor(path, this.typings[path], isGlobalScript);
+            wantedTypings.push({
+                filePath: path,
+                content: this.typings[path],
+            });
         }
+        this.monaco.languages.typescript.typescriptDefaults.setExtraLibs(wantedTypings);
     }
 
     /**
@@ -267,10 +254,14 @@ class ScriptEditor extends React.Component {
     UNSAFE_componentWillReceiveProps(nextProps) {
         const options = {};
         if (this.state.name !== nextProps.name) {
+            // A different script was selected
             this.setState({name: nextProps.name});
             this.originalCode = nextProps.code || '';
             this.editor && this.editor.setValue(nextProps.code);
             this.highlightText(this.lastSearch);
+            // Update the typings because global scripts need different typings than normal scripts
+            // and each global script has different typings
+            this.setEditorTypings(nextProps.name);
         }
 
         // if the code not yet changed, update the new code

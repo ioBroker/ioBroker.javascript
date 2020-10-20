@@ -100,7 +100,7 @@ gulp.task('clean', () => {
         'admin/**/*',
         'admin/*',
         'src/build/**/*'
-    ]).then(del([
+    ]).then(() => del([
         // 'src/node_modules',
         'src/build',
         'admin/'
@@ -814,7 +814,9 @@ gulp.task('updateReadme', done => {
 });
 
 gulp.task('monaco-typescript', done => {
-    // This script downloads a version of monaco that is build with the specified TypeScript version.
+    // This script downloads a version of monaco that is built with the specified TypeScript version.
+    // Use this script to update to a version of TypeScript that is NOT supported by the official monaco-editor releases
+    //
     // For a list of versions, check https://typescript.azureedge.net/indexes/releases.json
     // See also https://github.com/microsoft/TypeScript-Website/tree/v2/packages/sandbox how the TypeScript team
     // does it on their website
@@ -825,7 +827,6 @@ gulp.task('monaco-typescript', done => {
     } else {
         version = version.substr('--version='.length);
     }
-    console.log(version);
 
     const vsDir = path.join(__dirname, 'admin/vs');
 
@@ -851,6 +852,45 @@ gulp.task('monaco-typescript', done => {
     fs.renameSync(path.join(__dirname, 'monaco.configure.js'), path.join(vsDir, 'configure.js'));
     // delete the tarball
     fs.unlinkSync(path.join(__dirname, `typescript-deploys-monaco-editor-${version}.tgz`));
+
+    done();
+});
+
+gulp.task('monaco-update', done => {
+    // This script updated the monaco editor to the given official version. Only use this script
+    // if the version supports the TypeScript version we want to support
+
+    let version = process.argv.find(arg => arg.startsWith('--version='));
+    if (!version) {
+        throw new Error('you must provide a version with the flag --version=<editor-version>');
+    } else {
+        version = version.substr('--version='.length);
+    }
+
+    const vsDir = path.join(__dirname, 'admin/vs');
+
+    // Download the tarball
+    console.log('downloading new monaco version');
+    cp.execSync(`npm pack monaco-editor@${version}`);
+
+    console.log('cleaning up');
+    // save the old configure.js
+    fs.renameSync(path.join(vsDir, 'configure.js'), path.join(__dirname, 'monaco.configure.js'));
+    // delete everything else
+    fs.rmdirSync(vsDir, {recursive: true});
+    fs.mkdirSync(vsDir, {recursive: true});
+
+    console.log('installing new version');
+    // extract the new monaco-editor
+    cp.execSync(`tar -xvzf monaco-editor-${version}.tgz --strip-components=3 -C admin/vs package/min/vs`);
+    // and the .d.ts file
+    cp.execSync(`tar -xvzf monaco-editor-${version}.tgz --strip-components=1 -C admin/vs package/monaco.d.ts`);
+
+    console.log('finalizing');
+    // restore the old configure.js
+    fs.renameSync(path.join(__dirname, 'monaco.configure.js'), path.join(vsDir, 'configure.js'));
+    // delete the tarball
+    fs.unlinkSync(path.join(__dirname, `monaco-editor-${version}.tgz`));
 
     done();
 });
