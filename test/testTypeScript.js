@@ -18,7 +18,7 @@ describe('TypeScript tools', () => {
             expect(transformed).to.include(expected);
         });
 
-        it('but only if it is really necessary', () => {
+        it('...but only if it is really necessary', () => {
             const source = `log("test")`;
             const expected = `log("test");\nexport {};\n`.replace(/\n/g, require('os').EOL);
             const transformed = transformScriptBeforeCompilation(source);
@@ -30,6 +30,13 @@ describe('TypeScript tools', () => {
             const expected = /^export \{\};$/m;
             const transformed = transformScriptBeforeCompilation(source);
             expect(transformed).to.match(expected);
+        });
+
+        it('...but only if the file should be treated as a module', () => {
+            const source = `foo;`;
+            const expected = /^export \{\};$/m;
+            const transformed = transformScriptBeforeCompilation(source, false);
+            expect(transformed).not.to.match(expected);
         });
     });
 

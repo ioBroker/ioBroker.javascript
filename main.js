@@ -191,15 +191,19 @@ function loadTypeScriptDeclarations() {
 }
 
 /**
- * @param {string} script
+ * @param {string} source The original TypeScript source
+ * @param {boolean} [forceModule] Whether the transformed file should be treated as a module by TypeScript. This should be false for global scripts
+ * @returns {string}
  */
-function transformTSScript(script) {
+function transformTSScript(source, forceModule = false) {
     try {
         // Try to execute the smart transformer script
-        return transformScriptBeforeCompilation(script);
+        return transformScriptBeforeCompilation(source, forceModule);
     } catch (e) {
         // Fall back to simple wrapping
-        return `(async () => {${script}})();\nexport {};`;
+        let ret = `(async () => {${source}})();`;
+        if (forceModule) ret += `\nexport {};`;
+        return ret;
     }
 }
 
@@ -780,8 +784,9 @@ function main() {
                                     // TypeScript
                                     adapter.log.info(obj._id + ': compiling TypeScript source...');
                                     // The source code must be transformed in order to support top level await
-                                    // and to force TypeScript to compile the code as a module
-                                    const transformedSource = transformTSScript(obj.common.source);
+                                    // Global scripts must not be treated as a module, otherwise their methods
+                                    // cannot be found by the normal scripts
+                                    const transformedSource = transformTSScript(obj.common.source, false);
                                     // We need to hash both global declarations that are known until now
                                     // AND the script source, because changing either can change the compilation output
                                     const sourceHash = hashSource(globalDeclarations + transformedSource);
