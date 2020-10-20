@@ -192,10 +192,10 @@ function loadTypeScriptDeclarations() {
 
 /**
  * @param {string} source The original TypeScript source
- * @param {boolean} [forceModule] Whether the transformed file should be treated as a module by TypeScript. This should be false for global scripts
+ * @param {boolean} [forceModule] Whether the transformed file should be treated as a module by TypeScript. This should be false for global scripts and true for "normal" scripts
  * @returns {string}
  */
-function transformTSScript(source, forceModule = false) {
+function transformTSScript(source, forceModule = true) {
     try {
         // Try to execute the smart transformer script
         return transformScriptBeforeCompilation(source, forceModule);
