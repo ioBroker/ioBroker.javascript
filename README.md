@@ -38,6 +38,10 @@ And then call "npm run build".
 -->
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77) Fix possible crash case (Sentry IOBROKER-JAVASCRIPT-47)
+
 ### 4.9.4 (2020-10-19)
 * (AlCalzone) corrected the crash IOBROKER-JAVASCRIPT-40
 * (AlCalzone) corrected typescript for async/await
