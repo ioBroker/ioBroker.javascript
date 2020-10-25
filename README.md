@@ -40,7 +40,7 @@ And then call "npm run build".
 ## Changelog
 
 ### __WORK IN PROGRESS__
-* (Apollon77) Fix possible crash case (Sentry IOBROKER-JAVASCRIPT-47)
+* (Apollon77) Fix possible crash case (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)
 
 ### 4.9.4 (2020-10-19)
 * (AlCalzone) corrected the crash IOBROKER-JAVASCRIPT-40
