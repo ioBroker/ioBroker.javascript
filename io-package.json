@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.9.4",
+        "version": "4.9.5",
         "news": {
+            "4.9.5": {
+                "en": "Fix possible crash case (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)\nPass ID as the result, not the error to the callback of createState\nUpdate the editor's type declarations when switching scripts\nThe corrections for typescript were added",
+                "de": "Behebung eines möglichen Absturzfalls (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)\nÜbergeben Sie die ID als Ergebnis und nicht den Fehler an den Rückruf von createState\nAktualisieren Sie die Typdeklarationen des Editors, wenn Sie Skripte wechseln\nDie Korrekturen für Typoskript wurden hinzugefügt",
+                "ru": "Исправить возможный сбой (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)\nПередайте идентификатор как результат, а не ошибку, в обратный вызов createState\nОбновлять объявления типов редактора при переключении скриптов\nДобавлены исправления для машинописного текста.",
+                "pt": "Corrigir um possível caso de falha (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)\nPasse o ID como resultado, não o erro para o retorno de chamada de createState\nAtualize as declarações de tipo do editor ao trocar de scripts\nAs correções para o texto datilografado foram adicionadas",
+                "nl": "Mogelijke crash case repareren (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)\nGeef ID door als resultaat, niet als fout, aan de callback van createState\nWerk de typedeclaraties van de editor bij bij het wisselen van script\nDe correcties voor typoscript zijn toegevoegd",
+                "fr": "Correction d'un cas de crash possible (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)\nTransmettez l'ID comme résultat, pas l'erreur au rappel de createState\nMettre à jour les déclarations de type de l'éditeur lors du changement de script\nLes corrections pour dactylographié ont été ajoutées",
+                "it": "Risolvi possibili casi di crash (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)\nPassa ID come risultato, non l'errore al callback di createState\nAggiorna le dichiarazioni del tipo dell'editor quando cambi script\nSono state aggiunte le correzioni per il dattiloscritto",
+                "es": "Soluciona un posible caso de bloqueo (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)\nPass ID como resultado, no el error a la devolución de llamada de createState\nActualice las declaraciones de tipo del editor al cambiar de script\nSe agregaron las correcciones para el texto mecanografiado",
+                "pl": "Napraw możliwą awarię (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)\nPrzekaż identyfikator jako wynik, a nie błąd do wywołania zwrotnego createState\nZaktualizuj deklaracje typu edytora podczas przełączania skryptów\nDodano poprawki na maszynopis",
+                "zh-cn": "修复可能的崩溃情况（哨兵IOBROKER-JAVASCRIPT-47，IOBROKER-JAVASCRIPT-44）\n将ID作为结果传递，而不是将错误传递给createState的回调\n切换脚本时更新编辑器的类型声明\n更正了打字稿"
+            },
             "4.9.4": {
                 "en": "corrected the crash IOBROKER-JAVASCRIPT-40\ncorrected typescript for async/await",
                 "de": "korrigierte den Absturz IOBROKER-JAVASCRIPT-40\nkorrigiertes Typoskript für Async / Warten",
