@@ -20,9 +20,9 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.9.5",
+        "version": "4.9.6",
         "news": {
-            "4.9.5": {
+            "4.9.6": {
                 "en": "Fix possible crash case (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)\nPass ID as the result, not the error to the callback of createState\nUpdate the editor's type declarations when switching scripts\nThe corrections for typescript were added",
                 "de": "Behebung eines möglichen Absturzfalls (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)\nÜbergeben Sie die ID als Ergebnis und nicht den Fehler an den Rückruf von createState\nAktualisieren Sie die Typdeklarationen des Editors, wenn Sie Skripte wechseln\nDie Korrekturen für Typoskript wurden hinzugefügt",
                 "ru": "Исправить возможный сбой (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)\nПередайте идентификатор как результат, а не ошибку, в обратный вызов createState\nОбновлять объявления типов редактора при переключении скриптов\nДобавлены исправления для машинописного текста.",

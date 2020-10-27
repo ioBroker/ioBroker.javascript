@@ -262,9 +262,6 @@ const prepareList = data => {
         }
     });*/
 
-    // Fill all index
-    result.forEach((item, i) => item.index = i);
-
     let modified;
     do {
         modified = false;
@@ -289,16 +286,6 @@ const prepareList = data => {
         });
     } while (modified);
 
-    // Fill all parentIndex
-    result.forEach(item => {
-        if (item.parent) {
-            const parent = result.find(it => it.id === item.parent);
-            if (parent) {
-                item.parentIndex = parent.index;
-            }
-        }
-    });
-
     // Folders first
     result.sort((a, b) => {
         const idA = a.id.toLowerCase();
@@ -315,6 +302,19 @@ const prepareList = data => {
             return -1;
         } else {
             return 0;
+        }
+    });
+
+    // Fill all index
+    result.forEach((item, i) => item.index = i);
+
+    // Fill all parentIndex
+    result.forEach(item => {
+        if (item.parent) {
+            const parent = result.find(it => it.id === item.parent);
+            if (parent) {
+                item.parentIndex = parent.index;
+            }
         }
     });
 
