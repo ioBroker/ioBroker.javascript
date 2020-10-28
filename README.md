@@ -39,7 +39,7 @@ And then call "npm run build".
 
 ## Changelog
 
-### 4.9.6 (2020-10-27)
+### 4.9.7 (2020-10-28)
 * (Apollon77) Fix possible crash case (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)
 * (AlCalzone) pass ID as the result, not the error to the callback of createState
 * (AlCalzone) update the editor's type declarations when switching scripts

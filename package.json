@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "4.9.6",
+  "version": "4.9.7",
   "description": "Javascript/Coffescript Script Engine for ioBroker",
   "author": "bluefox <dogafox@gmail.com>",
   "contributors": [
@@ -65,7 +65,7 @@
     "test:javascript": "node node_modules/mocha/bin/mocha --exit",
     "test": "npm run test:declarations && npm run test:javascript",
     "postinstall": "node ./install/installTypings.js",
-    "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
+    "prepublishOnly1": "node node_modules/gulp/bin/gulp.js",
     "build": "node node_modules/gulp/bin/gulp.js",
     "release": "node node_modules/@alcalzone/release-script/bin/release.js"
   }
