@@ -38,6 +38,8 @@ And then call "npm run build".
 -->
 
 ## Changelog
+### 4.9.8 (2020-11-01)
+* (bluefox) Corrected search in blockly
 
 ### 4.9.7 (2020-10-28)
 * (Apollon77) Fix possible crash case (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)

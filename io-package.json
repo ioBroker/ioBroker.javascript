@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.9.7",
+        "version": "4.9.8",
         "news": {
+            "4.9.8": {
+                "en": "Corrected search in blockly",
+                "de": "Suche in blockly korrigiert",
+                "ru": "Исправлен поиск в blockly",
+                "pt": "Pesquisa corrigida em blockly",
+                "nl": "Zoekopdracht blokvormig gecorrigeerd",
+                "fr": "Recherche corrigée en blockly",
+                "it": "Ricerca corretta in blockly",
+                "es": "Búsqueda corregida en blockly",
+                "pl": "Poprawione wyszukiwanie w blockly",
+                "zh-cn": "更正了部分搜索"
+            },
             "4.9.7": {
                 "en": "Fix possible crash case (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)\nPass ID as the result, not the error to the callback of createState\nUpdate the editor's type declarations when switching scripts\nThe corrections for typescript were added",
                 "de": "Behebung eines möglichen Absturzfalls (Sentry IOBROKER-JAVASCRIPT-47, IOBROKER-JAVASCRIPT-44)\nÜbergeben Sie die ID als Ergebnis und nicht den Fehler an den Rückruf von createState\nAktualisieren Sie die Typdeklarationen des Editors, wenn Sie Skripte wechseln\nDie Korrekturen für Typoskript wurden hinzugefügt",

@@ -13,6 +13,29 @@ let toolboxText = null;
 let toolboxXml;
 let scriptsLoaded = [];
 
+// BF (2020-10-31) I have no Idea, why it does not work as static in BlocklyEditor, but outside of BlocklyEditor it works
+function searchXml(root, text, _id, _result) {
+    _result = _result || [];
+    if (root.tagName === 'BLOCK' || root.tagName === 'block') {
+        _id = root.id;
+    }
+    if (root.tagName === 'FIELD' || root.tagName === 'field') {
+        for (let a = 0; a < root.attributes.length; a++) {
+            const val = (root.attributes[a].value || '').toLowerCase();
+            if (root.attributes[a].nodeName === 'name' && (val === 'oid' || val === 'text')) {
+                if ((root.innerHTML || root.innerText || '').toLowerCase().includes(text)) {
+                    _result.push(_id);
+                }
+            }
+        }
+    }
+    root.childNodes.forEach(node =>
+        searchXml(node, text, _id, _result));
+
+    return _result;
+}
+
+
 class BlocklyEditor extends React.Component {
     constructor(props) {
         super(props);
@@ -116,32 +139,13 @@ class BlocklyEditor extends React.Component {
         return parseXml(text);
     }
 
-    static searchXml(root, text, _id, _result) {
-        _result = _result || [];
-        if (root.tagName === 'BLOCK') {
-            _id = root.id;
-        }
-        if (root.tagName === 'FIELD') {
-            for (let a = 0; a < root.attributes.length; a++) {
-                const val = (root.attributes[a].value || '').toLowerCase();
-                if (root.attributes[a].nodeName === 'name' && (val === 'oid' || val === 'text')) {
-                    if (root.innerText.toLowerCase().indexOf(text) !== -1) {
-                        _result.push(_id);
-                    }
-                }
-            }
-        }
-        root.childNodes.forEach(node => BlocklyEditor.searchXml(node, text, _id, _result));
-        return _result;
-    }
-
     searchBlocks(text) {
         if (this.blocklyWorkspace) {
             const dom = this.Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
-            const ids = BlocklyEditor.searchXml(dom, text.toLowerCase());
+            const ids = searchXml(dom, text.toLowerCase());
             const allBlocks = this.blocklyWorkspace.getAllBlocks();
             const result = [];
-            allBlocks.filter(b => ids.indexOf(b.id) !== -1).forEach(b => result.push(b));
+            allBlocks.filter(b => ids.includes(b.id)).forEach(b => result.push(b));
             return result;
         }
     }
