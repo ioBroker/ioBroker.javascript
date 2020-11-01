@@ -15,7 +15,7 @@
     - [schedule](#schedule)
         - [Time schedule](#time-schedule)
         - [Astro-function](#astro--function)
-
+    - [getSchedules](#egtschedules)
     - [clearSchedule](#clearschedule)
     - [getAttr](#getattr)
     - [getAstroDate](#getastrodate)
@@ -578,6 +578,27 @@ on({astro: "sunset", shift: 10}, function () {
     log((new Date()).toString() + " - 10 minutes after sunset!");
 });
 ```
+### getSchedules
+```js
+const list = getSchedules(true);
+```
+Returns the list of all CRON jobs and schedules (except astro).
+Argument must be true if you want to get the list for every running script. Else only schedules in this script will be returned.
+
+```js
+const list = getSchedules(true);
+list.forEach(schedule => console.log(JSON.stringify(schedule)));
+
+// clear all schedules in all scripts!
+list.forEach(schedule => clearSchedule(schedule));
+```
+
+Example output:
+```
+2020-11-01 20:15:19.929  - {"type":"cron","pattern":"0 * * * *","scriptName":"script.js.Heizung","id":"cron_1604258108384_74924"}
+2020-11-01 20:15:19.931  - {"type":"schedule","schedule":"{"period":{}}","scriptName":"script.js.Heizung","id":"schedule_19576"}
+```
+ 
 
 ### clearSchedule
 If **no** "astro" function used you can cancel the schedule later. To allow this the schedule object must be saved:
