@@ -717,7 +717,7 @@ Blockly.Blocks['schedule_clear'] = {
 };
 
 Blockly.JavaScript['schedule_clear'] = function(block) {
-    var name = block.getFieldValue('NAME');
+    var name = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
     return '(function () {if (' + name + ') {clearSchedule(' + name + '); ' + name + ' = null;}})();\n';
 };
 

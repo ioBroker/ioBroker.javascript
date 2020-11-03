@@ -447,7 +447,7 @@ class BlocklyEditor extends React.Component {
             window.scripts.loading = false;
         } catch (e) {
             console.error(e);
-            window.alert('Cannot extract Blockly code!');
+            setTimeout(() => this.setState({error: I18n.t('Cannot extract Blockly code!')}));
         }
         setTimeout(() => this.ignoreChanges = false, 100);
     }
@@ -459,13 +459,17 @@ class BlocklyEditor extends React.Component {
     }
 
     componentDidUpdate() {
-        if (!this.blockly) return;
+        if (!this.blockly) {
+            return;
+        }
         if (this.didUpdate) {
             clearTimeout(this.didUpdate);
             this.didUpdate = null;
         }
 
-        if (this.blocklyWorkspace) return;
+        if (this.blocklyWorkspace) {
+            return;
+        }
 
         window.addEventListener('resize', this.onResizeBind, false);
         toolboxText = toolboxText || this.getToolbox();
@@ -589,6 +593,43 @@ class BlocklyEditor extends React.Component {
         return toolboxText;
     }
 
+    renderMessageDialog() {
+        return this.state.message ?
+            <DialogMessage
+                key="dialogMessage"
+                text={typeof this.state.message === 'object' ? this.state.message.text : this.state.message}
+                title={typeof this.state.message === 'object' ? this.state.message.title : ''}
+                onClose={() => this.setState({message: ''})}
+            /> :
+            null;
+    }
+    renderErrorDialog() {
+        return this.state.error ?
+            <DialogError
+                key="dialogError"
+                text={typeof this.state.error === 'object' ? this.state.error.text.toString() : this.state.error}
+                title={typeof this.state.error === 'object' ? this.state.error.title : ''}
+                onClose={() => {
+                    if (this.blinkBlock) {
+                        this.blocklyBlinkBlock(this.blinkBlock);
+                        this.blinkBlock = null;
+                    }
+                    this.setState({error: ''});
+                }}/> :
+            null;
+    }
+
+    renderExportDialog() {
+        return this.state.exportText ? <DialogExport key="dialogExport" theme={this.state.themeType} onClose={() => this.setState({exportText: ''})} text={this.state.exportText}/> : null;
+    }
+
+    renderImportDialog() {
+        return this.state.importText ? <DialogImport key="dialogImport"  onClose={text => {
+            this.setState({importText: false});
+            this.onImportBlocks(text);
+        }}/> : null;
+    }
+
     render() {
         if (this.state.languageBlocklyLoaded && this.state.languageOwnLoaded) {
             this.didUpdate = setTimeout(() => {
@@ -597,42 +638,17 @@ class BlocklyEditor extends React.Component {
             }, 100);
 
             return [
-                (<div key="blocklyDOM" ref={el => this.blockly = el} style={{
+                <div key="blocklyDOM" ref={el => this.blockly = el} style={{
                     //marginLeft: 180,
                     width: '100%',//'calc(100% - 180px)',
                     height: '100%',
                     //overflow: 'hidden',
-                    position: 'relative'}}/>),
+                    position: 'relative'}}/>,
 
-                this.state.message ?
-                    (<DialogMessage
-                        key="dialogMessage"
-                        text={typeof this.state.message === 'object' ? this.state.message.text : this.state.message}
-                        title={typeof this.state.message === 'object' ? this.state.message.title : ''}
-                        onClose={() => this.setState({message: ''})}
-                    />) :
-                    null,
-
-                this.state.error ?
-                    (<DialogError
-                        key="dialogError"
-                        text={typeof this.state.error === 'object' ? this.state.error.text.toString() : this.state.error}
-                        title={typeof this.state.error === 'object' ? this.state.error.title : ''}
-                        onClose={() => {
-                            if (this.blinkBlock) {
-                                this.blocklyBlinkBlock(this.blinkBlock);
-                                this.blinkBlock = null;
-                            }
-                            this.setState({error: ''});
-                        }}/>) :
-                    null,
-
-                this.state.exportText ? <DialogExport key="dialogExport" theme={this.state.themeType} onClose={() => this.setState({exportText: ''})} text={this.state.exportText}/> : null,
-
-                this.state.importText ? <DialogImport key="dialogImport"  onClose={text => {
-                    this.setState({importText: false});
-                    this.onImportBlocks(text);
-                }}/> : null
+                this.renderMessageDialog(),
+                this.renderErrorDialog(),
+                this.renderExportDialog(),
+                this.renderImportDialog(),
             ];
         } else {
             return null;

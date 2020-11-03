@@ -112,7 +112,7 @@
   "Unknown error": "Unbekannter Fehler",
   "Unknown error!": "Unbekannter Fehler!",
   "Wednesday": "Mittwoch",
-  "Yet exists!": "Existiert doch!",
+  "Yet exists!": "Name existiert schon!",
   "copy": "Kopieren",
   "file reading has failed: %s": "Das Lesen der Datei ist fehlgeschlagen: %s",
   "file reading was aborted": "Das Lesen der Datei wurde abgebrochen",
