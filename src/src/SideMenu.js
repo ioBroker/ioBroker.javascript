@@ -139,9 +139,6 @@ const styles = theme => ({
         transitionDuration: '0.5s',
         transitionProperty: 'opacity'
     },
-    folderReorderDragging: {
-        opacity: 1,
-    },
     folderIcon: {
         width: 20,
         height: 20,
@@ -168,9 +165,6 @@ const styles = theme => ({
         opacity: 1,
         transitionDuration: '0.5s',
         transitionProperty: 'opacity'
-    },
-    scriptReorderDragging: {
-        opacity: 0.3,
     },
     reorder: {
         //padding: '9px 16px 9px 9px',
@@ -211,6 +205,12 @@ const styles = theme => ({
     mainList: {
         '& .js-folder-dragover>li>.folder-reorder': {
             background: '#40adff'
+        },
+        '& .js-folder-dragging .folder-reorder': {
+            opacity: 1,
+        },
+        '& .js-folder-dragging .script-reorder': {
+            opacity: 0.3,
         }
     }
 });
@@ -390,31 +390,17 @@ const prepareList = data => {
 export const Droppable = (props) => {
     const { onDrop} = props;
 
-    const [{ isOver }, drop] = useDrop({
+    const [{ isOver, isOverAny}, drop] = useDrop({
         accept: ['script'],
-        drop: e => {
-            onDrop(e, isOver)
-        },
+        drop: e => isOver ? onDrop(e) : undefined,
         collect: monitor => ({
             isOver: monitor.isOver({ shallow: true }),
+            isOverAny: monitor.isOver(),
         }),
     });
 
-    let backgroundColor;
-
-    if (isOver) {
-        //backgroundColor = '#164477';
-    }
-
-    return <div ref={drop} style={{ backgroundColor }} className={isOver ? 'js-folder-dragover' : ''}>
-        {React.Children.map(props.children, child => {
-            // checking isValidElement is the safe way and avoids a typescript error too
-            const props = {isOver};
-            if (React.isValidElement(child)) {
-                return React.cloneElement(child, props);
-            }
-            return child;
-        })}
+    return <div ref={drop} className={clsx(isOver && 'js-folder-dragover', isOverAny && 'js-folder-dragging')}>
+        {props.children}
     </div>;
 };
 
@@ -1005,16 +991,14 @@ class SideDrawer extends React.Component {
             className={clsx(
                 item.type === 'folder' ? this.props.classes.folder : this.props.classes.script,
                 this.state.reorder && item.type === 'folder' && 'folder-reorder',
+                this.state.reorder && item.type !== 'folder' && 'script-reorder',
                 this.state.reorder && this.props.classes.reorder,
                 this.state.reorder && item.type !== 'folder' &&  this.props.classes.scriptReorder,
-                this.state.reorder && item.type !== 'folder' && this.state.draggedId && this.state.draggedId !== item.id && this.props.classes.scriptReorderDragging,
                 this.state.reorder && item.type === 'folder' && this.props.classes.folderReorder,
-                this.state.reorder && item.type === 'folder' && this.state.draggedId && this.props.classes.folderReorderDragging,
                 )}
             onClick={e => this.onClick(item, e)}
             onDoubleClick={e => this.onDblClick(item, e)}
         >
-            {/*this.renderFolderButtons(item, children, isExpanded)*/}
             <ListItemIcon
                 classes={{root: this.props.classes.listItemIcon}}
             >{
@@ -1031,6 +1015,14 @@ class SideDrawer extends React.Component {
                 style={this.getTextStyle(item)} primary={(<span>{title}{childrenCount}</span>)}/>
             <ListItemSecondaryAction>{this.renderItemButtonsOnEnd(item, children)}</ListItemSecondaryAction>
         </ListItem>;
+    }
+
+    onDragFinish(source, target) {
+        let newId = target + '.' + source.split('.').pop();
+        if (newId !== source) {
+            this.props.onRename && this.props.onRename(source, newId);
+        }
+        return undefined;
     }
 
     renderOneItem(items, item, dragging) {
@@ -1055,9 +1047,7 @@ class SideDrawer extends React.Component {
         if (this.state.reorder) {
             if (item.type === 'folder') {
                 result.push(<Droppable key={'droppable_' + item.id}
-                    onDrop={(e, isOver) => {
-                        isOver && console.log(JSON.stringify(e) + ' to ' + item.id);
-                    }}
+                    onDrop={e => this.onDragFinish(e.name, item.id)}
                 >
                     {element}
                     {reactChidren || null}
