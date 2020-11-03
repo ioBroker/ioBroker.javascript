@@ -10,7 +10,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
-import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
+// import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
+import { useDrag, useDrop, DndProvider as DragDropContext  } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend'
+
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Input from '@material-ui/core/Input';
@@ -203,6 +206,12 @@ const styles = theme => ({
     },
     footerButtonsRight: {
         float: 'right'
+    },
+
+    mainList: {
+        '& .js-folder-dragover>li>.folder-reorder': {
+            background: '#40adff'
+        }
     }
 });
 
@@ -226,7 +235,7 @@ const getItemStyle = function (style, snapshot) {
         background: snapshot.isDragging ? '#8fff97' : 'inherit',
         transitionDuration: `0.001s`
     };
-}
+};
 
 const getFolderStyle = (droppableStyle, snapshot) => ({
     userSelect: 'none',
@@ -376,6 +385,53 @@ const prepareList = data => {
     });
 
     return result;
+};
+
+export const Droppable = (props) => {
+    const { onDrop} = props;
+
+    const [{ isOver }, drop] = useDrop({
+        accept: ['script'],
+        drop: e => {
+            onDrop(e, isOver)
+        },
+        collect: monitor => ({
+            isOver: monitor.isOver({ shallow: true }),
+        }),
+    });
+
+    let backgroundColor;
+
+    if (isOver) {
+        //backgroundColor = '#164477';
+    }
+
+    return <div ref={drop} style={{ backgroundColor }} className={isOver ? 'js-folder-dragover' : ''}>
+        {React.Children.map(props.children, child => {
+            // checking isValidElement is the safe way and avoids a typescript error too
+            const props = {isOver};
+            if (React.isValidElement(child)) {
+                return React.cloneElement(child, props);
+            }
+            return child;
+        })}
+    </div>;
+};
+
+export const Draggable = (props) => {
+    const { name } = props;
+    const [{ opacity }, drag] = useDrag({
+        item: {
+            name,
+            type: 'script'
+        },
+        collect: (monitor) => ({
+            opacity: monitor.isDragging() ? 0.3 : 1,
+        }),
+    });
+    return <div ref={drag} style={{ opacity }}>
+        {props.children}
+    </div>;
 };
 
 class SideDrawer extends React.Component {
@@ -948,6 +1004,7 @@ class SideDrawer extends React.Component {
             style={style}
             className={clsx(
                 item.type === 'folder' ? this.props.classes.folder : this.props.classes.script,
+                this.state.reorder && item.type === 'folder' && 'folder-reorder',
                 this.state.reorder && this.props.classes.reorder,
                 this.state.reorder && item.type !== 'folder' &&  this.props.classes.scriptReorder,
                 this.state.reorder && item.type !== 'folder' && this.state.draggedId && this.state.draggedId !== item.id && this.props.classes.scriptReorderDragging,
@@ -988,59 +1045,60 @@ class SideDrawer extends React.Component {
             return;
         }
 
-        const result = [this.renderListItem(item, children, childrenFiltered)];
-
+        const element = this.renderListItem(item, children, childrenFiltered);
+        const result = [];
+        let reactChidren;
         if (children && (this.state.reorder || this.state.expanded.includes(item.id) || item.id === ROOT_ID)) {
-            children.forEach(it => result.push(this.renderOneItem(items, it)));
+            reactChidren = children.map(it => this.renderOneItem(items, it));
         }
+
+        if (this.state.reorder) {
+            if (item.type === 'folder') {
+                result.push(<Droppable key={'droppable_' + item.id}
+                    onDrop={(e, isOver) => {
+                        isOver && console.log(JSON.stringify(e) + ' to ' + item.id);
+                    }}
+                >
+                    {element}
+                    {reactChidren || null}
+                </Droppable>);
+            } else {
+                result.push(<Draggable key={'draggable_' + item.id} name={item.id}>
+                    {element}
+                    {reactChidren || null}
+                </Draggable>);
+            }
+        } else {
+            result.push(element);
+            reactChidren && reactChidren.forEach(e => result.push(e));
+        }
+
         return result;
     }
 
     renderAllItems(items, dragging) {
         const result = [];
-        if (this.state.reorder) {
+        /*if (this.state.reorder) {
              for (let i = 0; i < items.length; i++) {
                  let item = items[i];
                  if (item.type === 'folder') {
                      // find all scripts, that has this parent
                      let children = items.filter(i => i.parent === item.id && i.type !== 'folder')
                          .map(item => <Draggable key={item.id} draggableId={item.id} index={item.index}>
-                         {(provided, snapshot) => (
-                             <div ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  style={getItemStyle(
-                                      provided.draggableProps.style,
-                                      snapshot
-                                  )}>
-                                 {this.renderListItem(item)}
-                             </div>
-                         )}
-                     </Draggable>);
+                             {this.renderListItem(item)}
+                         </Draggable>);
 
                      result.push(<Droppable key={item.id} droppableId={item.id}>
-                         {(provided, snapshot) => (
-                             <div ref={provided.innerRef}
-                                  {...provided.droppableProps}
-                                  style={getFolderStyle(
-                                      provided.droppableProps.style,
-                                      snapshot,
-                                  )}>
-                                 {this.renderListItem(item)}
-                                 {children}
-                                 <div style={{ display: 'none' }}>
-                                     {provided.placeholder}
-                                 </div>
-                             </div>
-                         )}
+                         {this.renderListItem(item)}
+                         {children}
                      </Droppable>);
                  }
              }
-        } else {
+        } else {*/
             items.forEach(item => !item.parent && result.push(this.renderOneItem(items, item, dragging)));
-        }
+        //}
 
-        return <List dense={true} disablePadding={true}>{result}</List>;
+        return <List dense={true} disablePadding={true} className={this.props.classes.mainList}>{result}</List>;
     }
 
     onAddNew(e) {
@@ -1490,20 +1548,12 @@ class SideDrawer extends React.Component {
                 <Divider/>
 
                 <DragDropContext
+                    backend={HTML5Backend}
                     onBeforeDragStart={e => this.onBeforeDragStart(e)}
                     onDragStart={e => this.onDragStart(e)}
                     onDragEnd={e => this.onDragEnd(e)}
                     onDragUpdate={e => this.onDragUpdate(e)}
                 >
-                    {/*<Droppable droppableId="droppable">
-                        {(provided, snapshot) => (
-                            <div ref={provided.innerRef}
-                                //style={getListStyle(snapshot.isDraggingOver)}
-                                 className={classes.innerMenu}>
-                                {this.renderAllItems(this.state.listItems)}
-                            </div>
-                        )}
-                    </Droppable>*/}
                     <div className={classes.innerMenu}>
                         {this.renderAllItems(this.state.listItems)}
                     </div>
