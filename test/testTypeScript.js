@@ -2,11 +2,13 @@ const tsc = require('virtual-tsc');
 const fs = require('fs');
 const path = require('path');
 const { tsCompilerOptions } = require('../lib/typescriptSettings');
+const { EOL } = require('os');
 
 const { expect } = require('chai');
 const {
     scriptIdToTSFilename,
     transformScriptBeforeCompilation,
+    transformGlobalDeclarations,
 } = require('../lib/typescriptTools');
 
 describe('TypeScript tools', () => {
@@ -14,29 +16,82 @@ describe('TypeScript tools', () => {
         it('wraps the top level in an async function', () => {
             const source = `await wait(100)`;
             const expected = `(async () => { await wait(100); })();`;
-            const transformed = transformScriptBeforeCompilation(source);
+            const transformed = transformScriptBeforeCompilation(source, false);
             expect(transformed).to.include(expected);
         });
 
         it('...but only if it is really necessary', () => {
             const source = `log("test")`;
             const expected = `log("test");\nexport {};\n`.replace(/\n/g, require('os').EOL);
-            const transformed = transformScriptBeforeCompilation(source);
+            const transformed = transformScriptBeforeCompilation(source, false);
             expect(transformed).to.equal(expected);
         });
 
         it('appends an empty export statement', () => {
             const source = `foo;`;
             const expected = /^export \{\};$/m;
-            const transformed = transformScriptBeforeCompilation(source);
+            const transformed = transformScriptBeforeCompilation(source, false);
             expect(transformed).to.match(expected);
         });
 
-        it('...but only if the file should be treated as a module', () => {
+        it('...even if the file is not a global script', () => {
             const source = `foo;`;
             const expected = /^export \{\};$/m;
-            const transformed = transformScriptBeforeCompilation(source, false);
-            expect(transformed).not.to.match(expected);
+            const transformed = transformScriptBeforeCompilation(source, true);
+            expect(transformed).to.match(expected);
+        });
+
+        it('exports every declaration if the transformation is for global script declarations', () => {
+            // simplified repro for #694 (Part 1)
+            const source = `
+import * as fs from "fs";
+class Foo {
+    do() { }
+}`.trim();
+            const expected = `
+import * as fs from "fs";
+export class Foo {
+    do() { }
+}`.trim().replace(/\r?\n/g, EOL);
+            const transformed = transformScriptBeforeCompilation(source, true, true);
+            expect(transformed.trim()).to.equal(expected);
+        });
+    });
+
+    describe('transformGlobalDeclarations', () => {
+        it('wraps export declare statements in `declare global`', () => {
+            // simplified repro for #694 (Part 2)
+            const source = `
+import * as fs from "fs";
+export declare class Foo {
+    do(): void;
+}`.trim();
+            const expected = `
+import * as fs from "fs";
+declare global {
+    export class Foo {
+        do(): void;
+    }
+}`.trim().replace(/\r?\n/g, EOL);
+            const transformed = transformGlobalDeclarations(source);
+            expect(transformed.trim()).to.equal(expected);
+        });
+
+        it('If there is no import statement, `export {};` must be added', () => {
+            const source = `
+export declare class Foo {
+    do(): void;
+}`.trim();
+            const expected = `
+declare global {
+    export class Foo {
+        do(): void;
+    }
+}
+export {};
+`.trim().replace(/\r?\n/g, EOL);
+            const transformed = transformGlobalDeclarations(source);
+            expect(transformed.trim()).to.equal(expected);
         });
     });
 
@@ -97,7 +152,7 @@ class Foo {
 
     for (let i = 0; i < tests.length; i++) {
         it(`Test #${i + 1}`, () => {
-            const transformedSource = transformScriptBeforeCompilation(tests[i]);
+            const transformedSource = transformScriptBeforeCompilation(tests[i], false);
             const filename = scriptIdToTSFilename(`script.js.test_${i + 1}`);
 
             const tsCompiled = tsServer.compile(filename, transformedSource);
