@@ -38,6 +38,11 @@ And then call "npm run build".
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (AlCalzone) In global TypeScripts, `import` can now be used
+* (AlCalzone) Iteration of `$(...)` query results in TypeScript no longer causes compilation to fail
+* (AlCalzone) Already-compiled TypeScripts are now recompiled after an update of the adapter to benefit of potential fixes
+
 ### 4.9.8 (2020-11-01)
 * (bluefox) Corrected search in blockly
 
