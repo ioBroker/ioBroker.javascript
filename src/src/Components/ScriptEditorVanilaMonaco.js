@@ -20,8 +20,9 @@ class ScriptEditor extends React.Component {
             alive: true,
             check: false,
             searchText: this.props.searchText || '',
-            runningInstances: this.props.runningInstances || null,
+            typingsLoaded: false,
         };
+        this.runningInstancesStr = JSON.stringify(this.props.runningInstances);
         this.monacoDiv = null; //ref
         this.editor = null;
         this.monaco = window.monaco;
@@ -29,7 +30,7 @@ class ScriptEditor extends React.Component {
         this.originalCode = props.code || '';
         this.typings = {}; // TypeScript declarations
         this.lastSearch = '';
-        /*if (!this.state.runningInstances) {
+        /*if (!this.props.runningInstances) {
             return this.props.socket.getAdapterInstances(this.props.adapterName)
                 .then(instancesArray => {
                     const instances = instancesArray.map(obj => parseInt(obj._id.split('.').pop())).sort();
@@ -53,7 +54,7 @@ class ScriptEditor extends React.Component {
     }
 
     waitForMonaco(cb) {
-        if (!this.monaco || !this.state.runningInstances) {
+        if (!this.monaco || !this.props.runningInstances) {
             this.monaco = window.monaco;
             this.monacoCounter = this.monacoCounter || 0;
             this.monacoCounter++;
@@ -68,8 +69,29 @@ class ScriptEditor extends React.Component {
         }
     }
 
+    loadTypings(runningInstances) {
+        if (!this.editor) {
+            return;
+        }
+        runningInstances = runningInstances || this.props.runningInstances;
+        let scriptAdapterInstance = runningInstances && Object.keys(runningInstances).find(id => runningInstances[id]);
+        if (scriptAdapterInstance) {
+            this.props.socket.sendTo(scriptAdapterInstance.replace('system.adapter.', ''), 'loadTypings', null)
+                .then(result => {
+                    this.setState({alive: true, check: true, typingsLoaded: true});
+                    this.setTypeCheck(true);
+                    if (result.typings) {
+                        this.typings = result.typings;
+                        this.setEditorTypings(this.state.name);
+                    } else {
+                        console.error(`failed to load typings: ${result.error}`);
+                    }
+                });
+        }
+    }
+
     componentDidMount() {
-        if (!this.monaco || !this.state.runningInstances) {
+        if (!this.monaco || !this.props.runningInstances) {
             this.monaco = window.monaco;
             if (!this.monaco) {
                 console.log('wait for monaco loaded');
@@ -103,20 +125,8 @@ class ScriptEditor extends React.Component {
 
             // Load typings for the JS editor
             /** @type {string} */
-            let scriptAdapterInstance = this.props.runningInstances && Object.keys(this.props.runningInstances).find(id => this.props.runningInstances[id]);
-            if (scriptAdapterInstance) {
-                this.props.socket.sendTo(scriptAdapterInstance.replace('system.adapter.', ''), 'loadTypings', null)
-                    .then(result => {
-                        this.setState({alive: true, check: true});
-                        this.setTypeCheck(true);
-                        if (result.typings) {
-                            this.typings = result.typings;
-                            this.setEditorTypings(this.state.name);
-                        } else {
-                            console.error(`failed to load typings: ${result.error}`);
-                        }
-                    });
-            }
+            this.loadTypings();
+
             this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.KEY_S, () =>
                 this.onForceSave());
 
@@ -276,6 +286,14 @@ class ScriptEditor extends React.Component {
             this.setEditorTypings(nextProps.name);
         }
 
+        // if some running instance will be foung and
+        if (JSON.stringify(nextProps.runningInstances) !== this.runningInstancesStr) {
+            this.runningInstancesStr = JSON.stringify(nextProps.runningInstances);
+            if (!this.state.typingsLoaded) {
+                this.loadTypings(nextProps.runningInstances);
+            }
+        }
+
         // if the code not yet changed, update the new code
         if (!nextProps.changed && nextProps.code !== this.originalCode) {
             this.originalCode = nextProps.code;
@@ -303,7 +321,7 @@ class ScriptEditor extends React.Component {
         if (this.insert !== nextProps.insert) {
             this.insert = nextProps.insert;
             if (this.insert) {
-                console.log('INsert text' + this.insert)
+                console.log('Insert text' + this.insert);
                 setTimeout(insert => {
                     this.insertTextIntoEditor(insert);
                     setTimeout(() => this.props.onInserted && this.props.onInserted(), 100);
@@ -319,7 +337,7 @@ class ScriptEditor extends React.Component {
     }
 
     render() {
-        if (!this.monaco || !this.state.runningInstances) {
+        if (!this.monaco || !this.props.runningInstances) {
             setTimeout(() => {
                 this.monaco = window.monaco;
                 this.forceUpdate()
