@@ -2,11 +2,13 @@ const tsc = require('virtual-tsc');
 const fs = require('fs');
 const path = require('path');
 const { tsCompilerOptions } = require('../lib/typescriptSettings');
+const { EOL } = require('os');
 
 const { expect } = require('chai');
 const {
     scriptIdToTSFilename,
     transformScriptBeforeCompilation,
+    transformGlobalDeclarations,
 } = require('../lib/typescriptTools');
 
 describe('TypeScript tools', () => {
@@ -14,29 +16,84 @@ describe('TypeScript tools', () => {
         it('wraps the top level in an async function', () => {
             const source = `await wait(100)`;
             const expected = `(async () => { await wait(100); })();`;
-            const transformed = transformScriptBeforeCompilation(source);
+            const transformed = transformScriptBeforeCompilation(source, false);
             expect(transformed).to.include(expected);
         });
 
         it('...but only if it is really necessary', () => {
             const source = `log("test")`;
             const expected = `log("test");\nexport {};\n`.replace(/\n/g, require('os').EOL);
-            const transformed = transformScriptBeforeCompilation(source);
+            const transformed = transformScriptBeforeCompilation(source, false);
             expect(transformed).to.equal(expected);
         });
 
-        it('appends an empty export statement', () => {
-            const source = `foo;`;
+        it('forces non-global scripts to be treated as modules (part 1)', () => {
+            const source = `const foo = 1;`;
             const expected = /^export \{\};$/m;
-            const transformed = transformScriptBeforeCompilation(source);
+            const transformed = transformScriptBeforeCompilation(source, false);
             expect(transformed).to.match(expected);
         });
 
-        it('...but only if the file should be treated as a module', () => {
-            const source = `foo;`;
+        it('forces non-global scripts to be treated as modules (part 2)', () => {
+            const source = `import fs from "fs";
+const foo = 1;`;
             const expected = /^export \{\};$/m;
             const transformed = transformScriptBeforeCompilation(source, false);
+            // There is an import, we don't need an empty export now
             expect(transformed).not.to.match(expected);
+        });
+
+        it('exports every exportable thing in global scripts', () => {
+            // simplified repro for #694 (Part 1)
+            const source = `
+import * as fs from "fs";
+class Foo {
+    do() { }
+}`.trim();
+            const expected = `
+import * as fs from "fs";
+export class Foo {
+    do() { }
+}`.trim().replace(/\r?\n/g, EOL);
+            const transformed = transformScriptBeforeCompilation(source, true);
+            expect(transformed.trim()).to.equal(expected);
+        });
+    });
+
+    describe('transformGlobalDeclarations', () => {
+        it('wraps export declare statements in `declare global`', () => {
+            // simplified repro for #694 (Part 2)
+            const source = `
+import * as fs from "fs";
+export declare class Foo {
+    do(): void;
+}`.trim();
+            const expected = `
+import * as fs from "fs";
+declare global {
+    export class Foo {
+        do(): void;
+    }
+}`.trim().replace(/\r?\n/g, EOL);
+            const transformed = transformGlobalDeclarations(source);
+            expect(transformed.trim()).to.equal(expected);
+        });
+
+        it('If there is no import statement, `export {};` must be added', () => {
+            const source = `
+export declare class Foo {
+    do(): void;
+}`.trim();
+            const expected = `
+declare global {
+    export class Foo {
+        do(): void;
+    }
+}
+export {};
+`.trim().replace(/\r?\n/g, EOL);
+            const transformed = transformGlobalDeclarations(source);
+            expect(transformed.trim()).to.equal(expected);
         });
     });
 
@@ -49,7 +106,7 @@ describe('TypeScript tools', () => {
     });
 });
 
-describe('TypeScript compilation regression tests', () => {
+describe('TypeScript compilation regression tests (non-global scripts)', () => {
     const tsServer = new tsc.Server(tsCompilerOptions, undefined);
     const tsAmbient = {
         'javascript.d.ts': fs.readFileSync(
@@ -102,7 +159,45 @@ const arr = [...result];
 
     for (let i = 0; i < tests.length; i++) {
         it(`Test #${i + 1}`, () => {
-            const transformedSource = transformScriptBeforeCompilation(tests[i]);
+            const transformedSource = transformScriptBeforeCompilation(tests[i], false);
+            const filename = scriptIdToTSFilename(`script.js.test_${i + 1}`);
+
+            const tsCompiled = tsServer.compile(filename, transformedSource);
+
+            expect(tsCompiled.success).to.be.true;
+        }).timeout(20000);
+    }
+});
+
+describe('TypeScript compilation regression tests (global scripts)', () => {
+    const tsServer = new tsc.Server(tsCompilerOptions, undefined);
+    const tsAmbient = {
+        'javascript.d.ts': fs.readFileSync(
+            path.join(__dirname, '../lib/javascript.d.ts'),
+            'utf8'
+        ),
+        'fs.d.ts': `declare module "fs" { }`,
+        'otherglobal.d.ts': `
+declare global {
+    namespace iobJS {
+        const what: 1;
+    }
+};
+export {};
+`
+    };
+    tsServer.provideAmbientDeclarations(tsAmbient);
+
+    const tests = [
+        // Regression test for using predefined types in global scripts (https://github.com/ioBroker/ioBroker.javascript/issues/694#issuecomment-721607156)
+        `
+export type Foo = iobJS.Object & { foo: "bar" };
+`,
+    ];
+
+    for (let i = 0; i < tests.length; i++) {
+        it(`Test #${i + 1}`, () => {
+            const transformedSource = transformScriptBeforeCompilation(tests[i], true);
             const filename = scriptIdToTSFilename(`script.js.test_${i + 1}`);
 
             const tsCompiled = tsServer.compile(filename, transformedSource);

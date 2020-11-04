@@ -63,7 +63,8 @@ const {
     resolveTypescriptLibs,
     resolveTypings,
     scriptIdToTSFilename,
-    transformScriptBeforeCompilation
+    transformScriptBeforeCompilation,
+    transformGlobalDeclarations
 } = require('./lib/typescriptTools');
 const { targetTsLib, tsCompilerOptions, jsDeclarationCompilerOptions } = require('./lib/typescriptSettings');
 const { hashSource } = require('./lib/tools');
@@ -193,23 +194,6 @@ function loadTypeScriptDeclarations() {
             tsServer.provideAmbientDeclarations(pkgTypings);
             jsDeclarationServer.provideAmbientDeclarations(pkgTypings);
         }
-    }
-}
-
-/**
- * @param {string} source The original TypeScript source
- * @param {boolean} [forceModule] Whether the transformed file should be treated as a module by TypeScript. This should be false for global scripts and true for "normal" scripts
- * @returns {string}
- */
-function transformTSScript(source, forceModule = true) {
-    try {
-        // Try to execute the smart transformer script
-        return transformScriptBeforeCompilation(source, forceModule);
-    } catch (e) {
-        // Fall back to simple wrapping
-        let ret = `(async () => {${source}})();`;
-        if (forceModule) ret += `\nexport {};`;
-        return ret;
     }
 }
 
@@ -789,15 +773,20 @@ function main() {
                                 } else if (engineType.startsWith('typescript')) {
                                     // TypeScript
                                     adapter.log.info(obj._id + ': compiling TypeScript source...');
+                                    // In order to compile global TypeScript, we need to do some transformations
+                                    // 1. For top-level-await, some statements must be wrapped in an immediately-invoked async function
+                                    // 2. If any global script uses `import`, the declarations are no longer visible if they are not exported with `declare global`
+                                    const transformedSource = transformScriptBeforeCompilation(obj.common.source, true);
                                     // The source code must be transformed in order to support top level await
                                     // Global scripts must not be treated as a module, otherwise their methods
                                     // cannot be found by the normal scripts
-                                    const transformedSource = transformTSScript(obj.common.source, false);
                                     // We need to hash both global declarations that are known until now
                                     // AND the script source, because changing either can change the compilation output
                                     const sourceHash = hashSource(tsSourceHashBase + globalDeclarations + transformedSource);
 
+                                    /** @type {string | undefined} */
                                     let compiled;
+                                    /** @type {string | undefined} */
                                     let declarations;
                                     // If we already stored the compiled source code and the original source hash,
                                     // use the hash to check whether we can rely on the compiled source code or
@@ -825,7 +814,8 @@ function main() {
                                                 adapter.log.info(obj._id + ': TypeScript compilation successful');
                                             }
                                             compiled = tsCompiled.result;
-                                            declarations = tsCompiled.declarations;
+                                            // Global scripts that have been transformed to support `import` need to have their declarations transformed aswell
+                                            declarations = transformGlobalDeclarations(tsCompiled.declarations || '');
 
                                             const newCommon = {
                                                 sourceHash,
@@ -1590,7 +1580,7 @@ function prepareScript(obj, callback) {
             adapter.log.info(name + ': compiling TypeScript source...');
             // The source code must be transformed in order to support top level await
             // and to force TypeScript to compile the code as a module
-            const transformedSource = transformTSScript(obj.common.source);
+            const transformedSource = transformScriptBeforeCompilation(obj.common.source, false);
             // We need to hash both global declarations that are known until now
             // AND the script source, because changing either can change the compilation output
             const sourceHash = hashSource(tsSourceHashBase + globalDeclarations + transformedSource);
