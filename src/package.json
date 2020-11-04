@@ -13,7 +13,6 @@
     "cronstrue": "^1.100.0",
     "eslint": "^6.6.0",
     "monaco-editor": "~0.21.2",
-    "monaco-languages": "~2.1.1",
     "react": "^16.13.1",
     "react-dnd": "^11.1.3",
     "react-dnd-html5-backend": "^11.1.3",

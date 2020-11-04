@@ -828,7 +828,7 @@ gulp.task('monaco-typescript', done => {
         version = version.substr('--version='.length);
     }
 
-    const vsDir = path.join(__dirname, 'admin/vs');
+    const vsDir = path.join(__dirname, 'src/public/vs');
 
     // Download the tarball
     console.log('downloading new monaco version');
@@ -867,7 +867,7 @@ gulp.task('monaco-update', done => {
         version = version.substr('--version='.length);
     }
 
-    const vsDir = path.join(__dirname, 'admin/vs');
+    const vsDir = path.join(__dirname, 'src/public/vs');
 
     // Download the tarball
     console.log('downloading new monaco version');
