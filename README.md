@@ -38,7 +38,7 @@ And then call "npm run build".
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 4.10.0 (2020-11-04)
 * (AlCalzone) In global TypeScripts, `import` can now be used
 * (AlCalzone) Iteration of `$(...)` query results in TypeScript no longer causes compilation to fail
 * (AlCalzone) Already-compiled TypeScripts are now recompiled after an update of the adapter to benefit of potential fixes
@@ -66,22 +66,6 @@ And then call "npm run build".
 ### 4.9.3 (2020-10-12)
 * (bluefox) Corrected the function calls.
 * (AlCalzone) Optimized the typescript compilation
-
-### 4.9.0 (2020-10-09)
-* (bluefox) All scripts support now `await` calls. THIS COULD HAVE SOME SIDE-EFFECT (unknown yet). 
-* (AlCalzone) Matched the exact ID if the $ selector contains no wildcard
-* (bluefox) Added new block in blockly: "pause" 
-* (bluefox) Changed the order of folders and scripts to "folders first".
-* (bluefox) Extend the documentation.
-* (bluefox) Corrected the error with blockly and "day of week" conversion. 
-
-### 4.8.4 (2020-09-21)
-* (bluefox) Make the mirroring instance adjustable
-* (bluefox) Correct the dark mode for blockly
-* (bluefox) Corrected the special variables: isDayTime and dayTime
-
-### 4.8.2 (2020-09-20)
-* (Bluefox) Added the settings for columns in the state selection dialog
 
 ## License
 

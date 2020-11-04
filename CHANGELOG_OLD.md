@@ -1,5 +1,21 @@
 The newest change log is in README.md
 
+## 4.9.0 (2020-10-09)
+* (bluefox) All scripts support now `await` calls. THIS COULD HAVE SOME SIDE-EFFECT (unknown yet). 
+* (AlCalzone) Matched the exact ID if the $ selector contains no wildcard
+* (bluefox) Added new block in blockly: "pause" 
+* (bluefox) Changed the order of folders and scripts to "folders first".
+* (bluefox) Extend the documentation.
+* (bluefox) Corrected the error with blockly and "day of week" conversion. 
+
+## 4.8.4 (2020-09-21)
+* (bluefox) Make the mirroring instance adjustable
+* (bluefox) Correct the dark mode for blockly
+* (bluefox) Corrected the special variables: isDayTime and dayTime
+
+## 4.8.2 (2020-09-20)
+* (Bluefox) Added the settings for columns in the state selection dialog
+
 ## 4.8.0 (2020-09-17)
 * (AlCalzone) add xyzAsync methods and wait/sleep
 * (Apollon77) Prevent a crash case (Sentry IOBROKER-JAVASCRIPT-3N)
