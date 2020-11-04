@@ -11,7 +11,7 @@ describe('Test Scheduler', function() {
 
         console.log(new Date());
         const s = new Scheduler(null, Date);
-        s.add( '{"time":{"exactTime":true,"start":"23:59"},"period":{"years":1,"yearDate":31,"yearMonth":12}}', () => {
+        s.add( '{"time":{"exactTime":true,"start":"23:59"},"period":{"years":1,"yearDate":31,"yearMonth":12}}', 'someName', () => {
             console.log(new Date());
             done();
         });
@@ -24,7 +24,7 @@ describe('Test Scheduler', function() {
 
         console.log(new Date());
         const s = new Scheduler(null, Date);
-        s.add( '{"time":{"exactTime":true,"start":"23:59"},"period":{"years":1,"yearDate":31,"yearMonth":12}}', () => {
+        s.add( '{"time":{"exactTime":true,"start":"23:59"},"period":{"years":1,"yearDate":31,"yearMonth":12}}', 'someName1', () => {
             expect(false).to.be.true;
         });
         setTimeout(done, 5000);

@@ -843,9 +843,9 @@ gulp.task('monaco-typescript', done => {
 
     console.log('installing new version');
     // extract the new monaco-editor
-    cp.execSync(`tar -xvzf typescript-deploys-monaco-editor-${version}.tgz --strip-components=3 -C admin/vs package/min/vs`);
+    cp.execSync(`tar -xvzf typescript-deploys-monaco-editor-${version}.tgz --strip-components=3 -C src/public/vs package/min/vs`);
     // and the .d.ts file
-    cp.execSync(`tar -xvzf typescript-deploys-monaco-editor-${version}.tgz --strip-components=1 -C admin/vs package/monaco.d.ts`);
+    cp.execSync(`tar -xvzf typescript-deploys-monaco-editor-${version}.tgz --strip-components=1 -C src/public/vs package/monaco.d.ts`);
 
     console.log('finalizing');
     // restore the old configure.js
@@ -882,9 +882,9 @@ gulp.task('monaco-update', done => {
 
     console.log('installing new version');
     // extract the new monaco-editor
-    cp.execSync(`tar -xvzf monaco-editor-${version}.tgz --strip-components=3 -C admin/vs package/min/vs`);
+    cp.execSync(`tar -xvzf monaco-editor-${version}.tgz --strip-components=3 -C src/public/vs package/min/vs`);
     // and the .d.ts file
-    cp.execSync(`tar -xvzf monaco-editor-${version}.tgz --strip-components=1 -C admin/vs package/monaco.d.ts`);
+    cp.execSync(`tar -xvzf monaco-editor-${version}.tgz --strip-components=1 -C src/public/vs package/monaco.d.ts`);
 
     console.log('finalizing');
     // restore the old configure.js
