@@ -92,6 +92,11 @@ class Foo {
         this.prop = true;
     }
 }
+`,
+        // Repro for https://github.com/ioBroker/ioBroker.javascript/pull/663#issuecomment-721645705
+        `
+const result = $('system.adapter.*.alive');
+const arr = [...result];
 `
     ];
 
