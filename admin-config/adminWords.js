@@ -152,5 +152,53 @@ systemDictionary = {
         "es": "Usado como final del día",
         "pl": "Używany jako koniec dnia",
         "zh-cn": "用作白天结束"
+    },
+    "Your home": {
+        "en": "Your home",
+        "de": "Ihr Haus",
+        "ru": "Твой дом",
+        "pt": "Sua casa",
+        "nl": "Uw huis",
+        "fr": "Ta maison",
+        "it": "La vostra casa",
+        "es": "Tu hogar",
+        "pl": "Twój dom",
+        "zh-cn": "你家"
+    },
+    "Next sunrise:": {
+        "en": "Next sunrise:",
+        "de": "Nächster Sonnenaufgang:",
+        "ru": "Следующий восход:",
+        "pt": "Próximo amanhecer:",
+        "nl": "Volgende zonsopgang:",
+        "fr": "Prochain lever de soleil:",
+        "it": "Prossima alba:",
+        "es": "Próximo amanecer:",
+        "pl": "Następny wschód słońca:",
+        "zh-cn": "下一个日出："
+    },
+    "Activate syntax help for these npm modules:": {
+        "en": "Activate syntax help for these npm modules:",
+        "de": "Aktivieren Sie die Syntaxhilfe für diese npm-Module:",
+        "ru": "Активируйте справку по синтаксису для этих модулей npm:",
+        "pt": "Ative a ajuda de sintaxe para estes módulos npm:",
+        "nl": "Activeer syntaxishulp voor deze npm-modules:",
+        "fr": "Activez l'aide à la syntaxe pour ces modules npm:",
+        "it": "Attiva la guida alla sintassi per questi moduli npm:",
+        "es": "Active la ayuda de sintaxis para estos módulos npm:",
+        "pl": "Aktywuj pomoc dotyczącą składni dla tych modułów npm:",
+        "zh-cn": "激活以下npm模块的语法帮助："
+    },
+    "Next sunset:": {
+        "en": "Next sunset:",
+        "de": "Nächster Sonnenuntergang:",
+        "ru": "Следующий закат:",
+        "pt": "Próximo pôr do sol:",
+        "nl": "Volgende zonsondergang:",
+        "fr": "Prochain coucher de soleil:",
+        "it": "Prossimo tramonto:",
+        "es": "Próxima puesta de sol:",
+        "pl": "Następny zachód słońca:",
+        "zh-cn": "下一日落："
     }
 };

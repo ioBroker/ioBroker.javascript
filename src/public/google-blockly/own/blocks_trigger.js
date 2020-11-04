@@ -914,6 +914,13 @@ Blockly.JavaScript['cron_builder'] = function(block) {
     var seconds = Blockly.JavaScript.valueToCode(block, 'SECONDS', Blockly.JavaScript.ORDER_ATOMIC);
     var withSeconds = block.getFieldValue('WITH_SECONDS');
 
-    var code = (withSeconds === 'TRUE' || withSeconds === 'true' || withSeconds === true ? seconds + '.trim() + \' \' + ' : '') + minutes + '.trim() + \' \' + ' + hours + '.trim() + \' \' + ' + days + '.trim() + \' \' + ' + months + '.trim() + \' \' + ' + dow + '.trim()';
+    var code =
+        (withSeconds === 'TRUE' || withSeconds === 'true' || withSeconds === true ?
+        seconds + '.toString().trim() + \' \' + ' : '') +
+        minutes + '.toString().trim() + \' \' + ' +
+        hours   + '.toString().trim() + \' \' + ' +
+        days    + '.toString().trim() + \' \' + ' +
+        months  + '.toString().trim() + \' \' + ' +
+        dow     + '.toString().trim()';
     return [code, Blockly.JavaScript.ORDER_ATOMIC]
 };

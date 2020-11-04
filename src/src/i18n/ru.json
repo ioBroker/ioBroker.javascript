@@ -113,7 +113,7 @@
   "Unknown error!": "Неизвестная ошибка!",
   "Wednesday": "среда",
   "Yet exists!": "Имя уже существует!",
-  "copy": "Копировать",
+  "copy": "копия",
   "file reading has failed: %s": "Ошибка чтения файла: %s",
   "file reading was aborted": "Чтение файла было прервано",
   "filter_func": "функция",

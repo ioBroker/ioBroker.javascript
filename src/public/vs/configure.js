@@ -13,6 +13,9 @@ var availableLanguages = ['de', 'en', 'fr', 'es', 'it', 'ja', 'ru', 'ko', 'zh-tw
 
 // find the best match
 function findLanguage() {
+    if (window.sysLang !== undefined) {
+        return window.sysLang; // this variable will be set via info.js
+    }
     if (navigator.languages && Array.isArray(navigator.languages)) {
         return navigator.languages.find(function (lang) {return availableLanguages.indexOf(lang) > -1});
     }

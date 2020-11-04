@@ -10,7 +10,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
-// import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
 import { useDrag, useDrop, DndProvider as DragDropContext  } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
@@ -63,6 +62,7 @@ const COLOR_PAUSE = red[400];
 const ROOT_ID = 'script.js';
 const COMMON_ID = ROOT_ID + '.common';
 const GLOBAL_ID = ROOT_ID + '.global';
+const NARROW_WIDTH = 350;
 
 const SELECTED_STYLE = {
     background: '#164477',
@@ -203,7 +203,7 @@ const styles = theme => ({
     },
 
     mainList: {
-        '& .js-folder-dragover>li>.folder-reorder': {
+        '& .js-folder-dragover>div>li>.folder-reorder': {
             background: '#40adff'
         },
         '& .js-folder-dragging .folder-reorder': {
@@ -221,7 +221,7 @@ const images = {
     def: ImgJS,
     'TypeScript/ts': ImgTypeScript,
 };
-
+/*
 const getItemStyle = function (style, snapshot) {
     if (!snapshot.isDragging) {
         return {};
@@ -241,7 +241,7 @@ const getFolderStyle = (droppableStyle, snapshot) => ({
     userSelect: 'none',
     background: snapshot.isDraggingOver ? '#40adff' : 'inherit',
     ...droppableStyle,
-});
+});*/
 
 const getObjectName = (id, obj, lang) => {
     lang = lang || I18n.getLanguage();
@@ -341,10 +341,10 @@ const prepareList = data => {
                     parts.pop();
                     result.push({
                         id: item.parent,
-                        title: item.parent.replace(/^script\.js./, ''),
-                        depth: parts.length - 2,
+                        title: item.parent.split('.').pop(),
+                        depth: parts.length - 1,
                         type: 'folder',
-                        parent: parts.length > 2 ? parts.join('.') : null
+                        parent: parts.length > 1 ? parts.join('.') : null
                     });
                     modified = true;
                 }
@@ -439,8 +439,6 @@ class SideDrawer extends React.Component {
             problems: [],
             reorder: false,
             themeName: this.props.themeName,
-            dragDepth: 0,
-            draggedId: null,
             selected: window.localStorage ? window.localStorage.getItem('SideMenu.selected') || null : null,
             creatingScript: false,
             creatingFolder: false,
@@ -759,49 +757,6 @@ class SideDrawer extends React.Component {
         this.saveExpanded(expanded);
     }
 
-    onDragEnd(result) {
-        // dropped outside the list
-        if (!result.destination) {
-            return;
-        }
-
-        let newId = result.destination.droppableId + '.' + result.draggableId.split('.').pop();
-        if (newId !== result.draggableId) {
-            this.props.onRename && this.props.onRename(result.draggableId, newId);
-        }
-
-        this.setState({draggedId: ''});
-    }
-    onBeforeDragStart(event) {
-        this.setState({
-            dragDepth: this.state.listItems.find(i => i.id === event.draggableId).depth,
-            draggedId: event.draggableId
-        });
-    }
-
-    onDragStart(event) {
-        // fill the drag depth
-        /*this.setState({
-            dragDepth: this.state.listItems.find(i => i.id === event.draggableId).depth,
-            draggedId: event.draggableId
-        });*/
-    }
-
-    onDragUpdate = (update, provided) => {
-        if (!update.destination) return;
-        let item = this.state.listItems[update.destination.index - 1];
-        while (item && (item.type !== 'folder' || item.parent)) {
-            item = this.state.listItems[item.parentIndex];
-        }
-        if (item) {
-            this.setState({dragDepth: item.depth + 1});
-            console.log(`depth ${item.depth + 1}`);
-        } else {
-            console.log(`depth 0`);
-            this.setState({dragDepth: 0});
-        }
-    };
-
     renderItemButtonsOnEnd(item, children) {
         if (this.state.reorder) {
             return null;
@@ -823,14 +778,14 @@ class SideDrawer extends React.Component {
                             style={{color}}>
                             {item.enabled ? (<IconPause/>) : (<IconPlay/>)}
                 </IconButton>,
-                this.state.width > 350 ? <IconButton
+                this.state.width > NARROW_WIDTH ? <IconButton
                     key="delete"
                     title={I18n.t('Delete script')}
                     disabled={item.id === GLOBAL_ID || item.id === COMMON_ID}
                     onClick={e => this.onDelete(item, e)}><IconDelete/></IconButton> : null,
                 <IconButton key="openInEdit" title={I18n.t('Edit script or just double click')} onClick={e => this.onEdit(item, e)}><IconDoEdit/></IconButton>,
             ];
-        } else if (this.state.width > 350) {
+        } else if (this.state.width > NARROW_WIDTH) {
             if (item.id !== ROOT_ID && item.id !== COMMON_ID && item.id !== GLOBAL_ID && (!children || !children.length)) {
                 return <IconButton
                     key="delete"
@@ -863,7 +818,7 @@ class SideDrawer extends React.Component {
         if (!this.state.reorder && item.type !== 'folder') {
             return {
                 //width: 130,
-                width: `calc(100% - ${this.state.width > 350 ? 245 : 197}px)`,
+                width: `calc(100% - ${this.state.width > NARROW_WIDTH ? 185 : 137}px)`,
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 flex: 'none',
@@ -925,9 +880,7 @@ class SideDrawer extends React.Component {
             return null;
         }
 
-        const depthPx = this.state.reorder ?
-            8 + (this.state.draggedId === item.id ? this.state.dragDepth : item.depth) * 20 :
-            (item.depth - 1) * 20;
+        const depthPx = this.state.reorder ? item.depth * 20 : (item.depth - 1) * 20;
 
         let title = item.title;
         if (!this.state.isAllZeroInstances && item.type !== 'folder') {
@@ -963,7 +916,7 @@ class SideDrawer extends React.Component {
         }
 
         let isExpanded = item.id === ROOT_ID;
-        if (!isExpanded && children && children.length) {
+        if (!isExpanded && children) {
             isExpanded = this.state.expanded.includes(item.id);
         }
 
@@ -1020,6 +973,11 @@ class SideDrawer extends React.Component {
     onDragFinish(source, target) {
         let newId = target + '.' + source.split('.').pop();
         if (newId !== source) {
+            // If target yet exists => add Copy to
+            if (this.state.listItems.find(item => item.id === newId)) {
+                newId += '_' + I18n.t('copy');
+            }
+
             this.props.onRename && this.props.onRename(source, newId);
         }
         return undefined;
@@ -1039,9 +997,9 @@ class SideDrawer extends React.Component {
 
         const element = this.renderListItem(item, children, childrenFiltered);
         const result = [];
-        let reactChidren;
+        let reactChildren;
         if (children && (this.state.reorder || this.state.expanded.includes(item.id) || item.id === ROOT_ID)) {
-            reactChidren = children.map(it => this.renderOneItem(items, it));
+            reactChildren = children.map(it => this.renderOneItem(items, it));
         }
 
         if (this.state.reorder) {
@@ -1049,46 +1007,33 @@ class SideDrawer extends React.Component {
                 result.push(<Droppable key={'droppable_' + item.id}
                     onDrop={e => this.onDragFinish(e.name, item.id)}
                 >
-                    {element}
-                    {reactChidren || null}
+                    <Draggable key={'draggable_' + item.id} name={item.id}>{element}</Draggable>
+                    {reactChildren || null}
                 </Droppable>);
             } else {
                 result.push(<Draggable key={'draggable_' + item.id} name={item.id}>
                     {element}
-                    {reactChidren || null}
+                    {reactChildren || null}
                 </Draggable>);
             }
         } else {
             result.push(element);
-            reactChidren && reactChidren.forEach(e => result.push(e));
+            reactChildren && reactChildren.forEach(e => result.push(e));
         }
 
         return result;
     }
 
-    renderAllItems(items, dragging) {
-        const result = [];
-        /*if (this.state.reorder) {
-             for (let i = 0; i < items.length; i++) {
-                 let item = items[i];
-                 if (item.type === 'folder') {
-                     // find all scripts, that has this parent
-                     let children = items.filter(i => i.parent === item.id && i.type !== 'folder')
-                         .map(item => <Draggable key={item.id} draggableId={item.id} index={item.index}>
-                             {this.renderListItem(item)}
-                         </Draggable>);
+    renderAllItems(items) {
+        const result = items.filter(item => !item.parent).map(item => this.renderOneItem(items, item));
 
-                     result.push(<Droppable key={item.id} droppableId={item.id}>
-                         {this.renderListItem(item)}
-                         {children}
-                     </Droppable>);
-                 }
-             }
-        } else {*/
-            items.forEach(item => !item.parent && result.push(this.renderOneItem(items, item, dragging)));
-        //}
-
-        return <List dense={true} disablePadding={true} className={this.props.classes.mainList}>{result}</List>;
+        return <List
+            dense={true}
+            disablePadding={true}
+            className={this.props.classes.mainList}
+        >
+            {result}
+        </List>;
     }
 
     onAddNew(e) {
@@ -1200,7 +1145,7 @@ class SideDrawer extends React.Component {
                 },
             }}
         >
-            {this.state.width <= 350 ? (<MenuItem
+            {this.state.width <= NARROW_WIDTH ? <MenuItem
                 key="deleted"
                 disabled={!this.state.selected || this.state.selected === GLOBAL_ID || this.state.selected === COMMON_ID || (children && children.length)}
                 onClick={event => {
@@ -1214,7 +1159,7 @@ class SideDrawer extends React.Component {
                     this.setState({menuOpened: false, menuAnchorEl: null}, () =>
                         this.onDelete(this.state.selected).then(() => {}));
                 }}><IconDelete className={this.props.classes.iconDropdownMenu}  style={{color: 'red'}}/>{I18n.t('Delete')}
-            </MenuItem>) : null}
+            </MenuItem> : null}
             <MenuItem key="expertMode" selected={this.state.expertMode}
                       onClick={event => {
                           event.stopPropagation();
@@ -1336,7 +1281,7 @@ class SideDrawer extends React.Component {
 
                 const selectedItem = this.state.listItems.find(it => it.id === this.state.selected);
                 let children;
-                if (selectedItem && this.state.width <= 350 && selectedItem.type === 'folder') {
+                if (selectedItem && this.state.width <= NARROW_WIDTH && selectedItem.type === 'folder') {
                     children = this.state.listItems.filter(i => i.parent === this.state.selected);
                 }
 
@@ -1383,7 +1328,7 @@ class SideDrawer extends React.Component {
                 style={{color: this.state.reorder ? 'red' : 'inherit', float: 'right'}}
                 onClick={e => {
                     e.stopPropagation();
-                    this.setState({reorder: !this.state.reorder, draggedId: ''});
+                    this.setState({reorder: !this.state.reorder});
                 }}
             ><IconReorder/></IconButton>);
 
@@ -1537,17 +1482,12 @@ class SideDrawer extends React.Component {
 
                 <Divider/>
 
-                <DragDropContext
-                    backend={HTML5Backend}
-                    onBeforeDragStart={e => this.onBeforeDragStart(e)}
-                    onDragStart={e => this.onDragStart(e)}
-                    onDragEnd={e => this.onDragEnd(e)}
-                    onDragUpdate={e => this.onDragUpdate(e)}
-                >
+                <DragDropContext backend={HTML5Backend}>
                     <div className={classes.innerMenu}>
                         {this.renderAllItems(this.state.listItems)}
                     </div>
                 </DragDropContext>
+
                 <Divider/>
 
                 <div className={classes.footer}>{this.getBottomButtons()}</div>

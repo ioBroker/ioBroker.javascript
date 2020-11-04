@@ -207,7 +207,7 @@ Blockly.JavaScript['procedures_callreturn'] = function(block) {
     var funcName = Blockly.JavaScript.variableDB_.getName(
         block.getFieldValue('NAME'), Blockly.PROCEDURE_CATEGORY_NAME);
     var args = [];
-    var variables = block.getVars();
+    var variables = block.arguments_;
     for (var i = 0; i < variables.length; i++) {
         args[i] = Blockly.JavaScript.valueToCode(block, 'ARG' + i,
             Blockly.JavaScript.ORDER_COMMA) || 'null';
@@ -405,25 +405,14 @@ Blockly.Blocks['procedures_callcustomreturn'] = {
     updateShape_: Blockly.Blocks['procedures_callreturn'].updateShape_,
     mutationToDom: Blockly.Blocks['procedures_callreturn'].mutationToDom,
     domToMutation: Blockly.Blocks['procedures_callreturn'].domToMutation,
+    getVars: Blockly.Blocks['procedures_callreturn'].getVars,
     getVarModels: Blockly.Blocks['procedures_callreturn'].getVarModels,
     onchange: Blockly.Blocks['procedures_callreturn'].onchange,
     customContextMenu: Blockly.Blocks['procedures_callreturn'].customContextMenu,
     defType_: 'procedures_defcustomreturn'
 };
 
-Blockly.JavaScript['procedures_callcustomreturn'] = function(block) {
-    // Call a procedure with a return value.
-    var funcName = Blockly.JavaScript.variableDB_.getName(
-        block.getFieldValue('NAME'), Blockly.PROCEDURE_CATEGORY_NAME);
-    var args = [];
-    var variables = block.arguments_;
-    for (var i = 0; i < variables.length; i++) {
-        args[i] = Blockly.JavaScript.valueToCode(block, 'ARG' + i,
-            Blockly.JavaScript.ORDER_COMMA) || 'null';
-    }
-    var code = 'await ' + funcName + '(' + args.join(', ') + ')';
-    return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
-};
+Blockly.JavaScript['procedures_callcustomreturn'] = Blockly.JavaScript['procedures_callreturn'];
 
 // ---------------------- custom function with no return ------------------------------
 
@@ -485,6 +474,8 @@ Blockly.Blocks['procedures_callcustomnoreturn'] = {
     updateShape_: Blockly.Blocks['procedures_callnoreturn'].updateShape_,
     mutationToDom: Blockly.Blocks['procedures_callnoreturn'].mutationToDom,
     domToMutation: Blockly.Blocks['procedures_callnoreturn'].domToMutation,
+    getVars: Blockly.Blocks['procedures_callnoreturn'].getVars,
+    getVarModels: Blockly.Blocks['procedures_callnoreturn'].getVarModels,
     onchange: Blockly.Blocks['procedures_callnoreturn'].onchange,
     customContextMenu: Blockly.Blocks['procedures_callnoreturn'].customContextMenu,
     defType_: 'procedures_defcustomnoreturn'

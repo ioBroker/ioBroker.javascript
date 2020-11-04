@@ -580,16 +580,16 @@ function startAdapter(options) {
                     }
                     case 'calcAstro': {
                         if (obj.message) {
-                            const sunriseOffset = parseInt(obj.message.sunriseOffset === undefined ? adapter.config.sunriseOffset : obj.message.sunriseOffset, 10) || 0;
-                            const sunsetOffset = parseInt(obj.message.sunsetOffset === undefined ? adapter.config.sunsetOffset : obj.message.sunsetOffset, 10) || 0;
-                            const longitude = parseFloat(obj.message.longitude === undefined ? adapter.config.longitude : obj.message.longitude) || 0;
-                            const latitude = parseFloat(obj.message.latitude === undefined ? adapter.config.latitude : obj.message.latitude) || 0;
+                            const sunriseOffset = parseInt(obj.message.sunriseOffset  === undefined ? adapter.config.sunriseOffset : obj.message.sunriseOffset, 10) || 0;
+                            const sunsetOffset  = parseInt(obj.message.sunsetOffset   === undefined ? adapter.config.sunsetOffset  : obj.message.sunsetOffset, 10)  || 0;
+                            const longitude     = parseFloat(obj.message.longitude === undefined ? adapter.config.longitude    : obj.message.longitude) || 0;
+                            const latitude      = parseFloat(obj.message.latitude  === undefined ? adapter.config.latitude     : obj.message.latitude)  || 0;
                             const now = new Date();
                             const nextSunrise = getAstroEvent(
                                 now,
                                 obj.message.sunriseEvent || adapter.config.sunriseEvent,
                                 obj.message.sunriseLimitStart || adapter.config.sunriseLimitStart,
-                                obj.message.sunriseLimitEnd || adapter.config.sunriseLimitEnd,
+                                obj.message.sunriseLimitEnd   || adapter.config.sunriseLimitEnd,
                                 sunriseOffset,
                                 false,
                                 latitude,
@@ -597,9 +597,9 @@ function startAdapter(options) {
                             );
                             const nextSunset = getAstroEvent(
                                 now,
-                                obj.message.sunsetEvent || adapter.config.sunsetEvent,
-                                obj.message.sunsetLimitStart || adapter.config.sunsetLimitStart,
-                                obj.message.sunsetLimitEnd || adapter.config.sunsetLimitEnd,
+                                obj.message.sunsetEvent  || adapter.config.sunsetEvent,
+                                obj.message.sunsetLimitStart  || adapter.config.sunsetLimitStart,
+                                obj.message.sunsetLimitEnd    || adapter.config.sunsetLimitEnd,
                                 sunsetOffset,
                                 true,
                                 latitude,
@@ -929,6 +929,7 @@ function getAstroEvent(now, astroEvent, start, end, offsetMinutes, isDayEnd, lat
     }
     ts.setSeconds(0);
     ts.setMilliseconds(0);
+    ts.setMinutes(ts.getMinutes() + (parseInt(offsetMinutes, 10) || 0));
 
     let [timeHoursStart, timeMinutesStart] = start.split(':');
     timeHoursStart = parseInt(timeHoursStart, 10);
@@ -986,41 +987,37 @@ function dayTimeSchedules(adapter, context) {
         return;
     }
 
-    // Calculate next event;
-    const nowDate = new Date();
+    // Calculate next event today
+    const todayDate = new Date();
+    const nowDate   = new Date();
+    todayDate.setHours(0);
+    todayDate.setMinutes(0);
+    todayDate.setSeconds(0);
+    todayDate.setMilliseconds(0);
 
-    const nextSunrise = getAstroEvent(nowDate, adapter.config.sunriseEvent, adapter.config.sunriseLimitStart, adapter.config.sunriseLimitEnd, adapter.config.sunriseOffset, false, adapter.config.latitude, adapter.config.longitude);
-    const nextSunset  = getAstroEvent(nowDate, adapter.config.sunsetEvent,  adapter.config.sunsetLimitStart,  adapter.config.sunsetLimitEnd,  adapter.config.sunsetOffset,  true, adapter.config.latitude, adapter.config.longitude);
+    const todaySunrise = getAstroEvent(todayDate, adapter.config.sunriseEvent, adapter.config.sunriseLimitStart, adapter.config.sunriseLimitEnd, adapter.config.sunriseOffset, false, adapter.config.latitude, adapter.config.longitude);
+    const todaySunset  = getAstroEvent(todayDate, adapter.config.sunsetEvent,  adapter.config.sunsetLimitStart,  adapter.config.sunsetLimitEnd,  adapter.config.sunsetOffset,  true,  adapter.config.latitude, adapter.config.longitude);
 
     // Sunrise
-    let sunriseTimeout = nextSunrise.getTime() - nowDate.getTime();
-    if (sunriseTimeout > 3600000) {
+    let sunriseTimeout = todaySunrise.getTime() - nowDate.getTime();
+    if (sunriseTimeout < 0 || sunriseTimeout > 3600000) {
         sunriseTimeout = 3600000;
     }
 
     // Sunset
-    let sunsetTimeout = nextSunset.getTime() - nowDate.getTime();
-    if (sunsetTimeout > 3600000) {
+    let sunsetTimeout = todaySunset.getTime() - nowDate.getTime();
+    if (sunsetTimeout < 0 || sunsetTimeout > 3600000) {
         sunsetTimeout = 3600000;
     }
 
     let isDay;
     if (sunriseTimeout < 5000) {
         isDay = true;
-
     } else if (sunsetTimeout < 5000) {
         isDay = false;
     } else {
         // check if in between
-        // todo
-        const nowStartDate = new Date();
-        nowStartDate.setHours(0);
-        nowStartDate.setMinutes(0);
-        nowStartDate.setSeconds(0);
-        nowStartDate.setMilliseconds(0);
-        const todaySunrise = getAstroEvent(nowStartDate, adapter.config.sunriseEvent, adapter.config.sunriseLimitStart, adapter.config.sunriseLimitEnd, adapter.config.sunriseOffset, false);
-        const todaySunset  = getAstroEvent(nowStartDate, adapter.config.sunsetEvent,  adapter.config.sunsetLimitStart,  adapter.config.sunsetLimitEnd,  adapter.config.sunsetOffset,  false);
-        isDay = nowDate > todaySunrise && nowDate <= todaySunset;
+        isDay = nowDate.getTime() > (todaySunrise.getTime() - 60000) && nowDate <= todaySunset;
     }
 
     adapter.getState('variables.isDayTime', (err, state) => {
