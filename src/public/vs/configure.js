@@ -10,24 +10,32 @@ require.config({ paths: { 'vs': 'vs' }});
 
 // All languages in monaco-editor
 var availableLanguages = ['de', 'en', 'fr', 'es', 'it', 'ja', 'ru', 'ko', 'zh-tw', 'zh-cn'];
+
 // find the best match
 function findLanguage() {
+    if (window.sysLang !== undefined) {
+        return window.sysLang; // this variable will be set via info.js
+    }
     if (navigator.languages && Array.isArray(navigator.languages)) {
         return navigator.languages.find(function (lang) {return availableLanguages.indexOf(lang) > -1});
     }
     var lang = navigator.language || navigator.userLanguage;
     if (typeof lang === 'string') {
         // first try the long version
-        if (availableLanguages.indexOf(lang) > -1) return lang;
+        if (availableLanguages.indexOf(lang) > -1) {
+            return lang;
+        }
         // then the short one
         lang = lang.substr(0, 2);
-        if (availableLanguages.indexOf(lang) > -1) return lang;
+        if (availableLanguages.indexOf(lang) > -1) {
+            return lang;
+        }
     }
 }
 
 var language = findLanguage();
 // if we have a match, configure the editor
-if (language != null && language !== 'en') {
+if (language !== undefined && language !== null && language !== 'en') {
     require.config({
         'vs/nls': {
             availableLanguages: {

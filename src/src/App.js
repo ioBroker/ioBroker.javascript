@@ -405,12 +405,29 @@ class App extends GenericApp {
             return this.socket.getObject(id)
                 .then(obj => {
                     obj = obj || {common: {}};
-                    obj.common.name = newName;
+                    obj.common.name = newName || obj.common.name || id.split('.').pop();
                     obj._id = newId;
 
                     this.socket.delObject(id)
                         .catch(() => {})
                         .then(() => this.socket.setObject(newId, obj))
+                        .then(() => this.renameGroup(id, newId, newName, _list))
+                        .catch(e => {
+                            console.log(e);
+                        });
+                })
+                .catch(e => {
+                    console.log(e);
+                    const obj = {
+                        _id: newId,
+                        type: 'channel',
+                        common: {
+                            name: newName || id.split('.').pop()
+                        },
+                        native: {}
+                    };
+                    // may be it is virtual folder
+                    return this.socket.setObject(newId, obj)
                         .then(() => this.renameGroup(id, newId, newName, _list));
                 });
         } else if (_list.length) {
