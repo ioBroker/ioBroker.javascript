@@ -68,7 +68,8 @@ const {
 const { targetTsLib, tsCompilerOptions, jsDeclarationCompilerOptions } = require('./lib/typescriptSettings');
 const { hashSource } = require('./lib/tools');
 
-const adapterName = require('./package.json').name.split('.').pop();
+const packageJson = require('./package.json');
+const adapterName = packageJson.name.split('.').pop();
 const scriptCodeMarker = 'script.js.';
 const stopCounters =  {};
 
@@ -104,6 +105,11 @@ let tsAmbient;
 let tsServer;
 /** @type {tsc.Server} */
 let jsDeclarationServer;
+
+// TypeScript scripts are only recompiled if their source hash changes. If an adapter update fixes compilation bugs,
+// a user won't notice until he changes and re-saves the script. In order to avoid that, we also include the
+// adapter version and TypeScript version in the hash
+const tsSourceHashBase = `versions:adapter=${packageJson.version},typescript=${packageJson.dependencies.typescript}`;
 
 let mirror;
 
@@ -789,7 +795,7 @@ function main() {
                                     const transformedSource = transformTSScript(obj.common.source, false);
                                     // We need to hash both global declarations that are known until now
                                     // AND the script source, because changing either can change the compilation output
-                                    const sourceHash = hashSource(globalDeclarations + transformedSource);
+                                    const sourceHash = hashSource(tsSourceHashBase + globalDeclarations + transformedSource);
 
                                     let compiled;
                                     let declarations;
@@ -1587,7 +1593,7 @@ function prepareScript(obj, callback) {
             const transformedSource = transformTSScript(obj.common.source);
             // We need to hash both global declarations that are known until now
             // AND the script source, because changing either can change the compilation output
-            const sourceHash = hashSource(globalDeclarations + transformedSource);
+            const sourceHash = hashSource(tsSourceHashBase + globalDeclarations + transformedSource);
 
             let compiled;
             // If we already stored the compiled source code and the original source hash,
