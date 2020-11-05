@@ -1,5 +1,9 @@
 The newest change log is in README.md
 
+## 4.9.3 (2020-10-12)
+* (bluefox) Corrected the function calls.
+* (AlCalzone) Optimized the typescript compilation
+
 ## 4.9.0 (2020-10-09)
 * (bluefox) All scripts support now `await` calls. THIS COULD HAVE SOME SIDE-EFFECT (unknown yet). 
 * (AlCalzone) Matched the exact ID if the $ selector contains no wildcard

@@ -38,6 +38,9 @@ And then call "npm run build".
 -->
 
 ## Changelog
+### 4.10.2 (2020-11-05)
+* (bluefox) Corrected search in scripts
+
 ### 4.10.1 (2020-11-04)
 * (AlCalzone) In global TypeScripts, `import` can now be used
 * (AlCalzone) Iteration of `$(...)` query results in TypeScript no longer causes compilation to fail
@@ -62,10 +65,6 @@ And then call "npm run build".
 ### 4.9.4 (2020-10-19)
 * (AlCalzone) corrected the crash IOBROKER-JAVASCRIPT-40
 * (AlCalzone) corrected typescript for async/await
-
-### 4.9.3 (2020-10-12)
-* (bluefox) Corrected the function calls.
-* (AlCalzone) Optimized the typescript compilation
 
 ## License
 

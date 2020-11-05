@@ -247,9 +247,9 @@ const getObjectName = (id, obj, lang) => {
     lang = lang || I18n.getLanguage();
     if (obj && obj.common && obj.common.name) {
         if (typeof obj.common.name === 'object') {
-            return obj.common.name[lang] || obj.common.name.en;
+            return (obj.common.name[lang] || obj.common.name.en || id.replace(/^script\.js./, '')).toString();
         } else {
-            return obj.common.name;
+            return obj.common.name.toString();
         }
     } else {
         return id.replace(/^script\.js./, '');
@@ -883,12 +883,6 @@ class SideDrawer extends React.Component {
         const depthPx = this.state.reorder ? item.depth * 20 : (item.depth - 1) * 20;
 
         let title = item.title;
-        if (!this.state.isAllZeroInstances && item.type !== 'folder') {
-            title = [
-                <span key="instance" title={I18n.t('Instance')} className={this.props.classes.instances}>[{item.instance}] </span>,
-                <span key="title">{title}</span>
-            ];
-        }
 
         if (this.state.searchText) {
             const pos = title.toLowerCase().indexOf(this.state.searchText.toLowerCase());
@@ -899,6 +893,13 @@ class SideDrawer extends React.Component {
                     (<span key="third">{title.substring(pos + this.state.searchText.length)}</span>),
                 ];
             }
+        }
+
+        if (!this.state.isAllZeroInstances && item.type !== 'folder') {
+            title = [
+                <span key="instance" title={I18n.t('Instance')} className={this.props.classes.instances}>[{item.instance}] </span>,
+                <span key="title">{title}</span>
+            ];
         }
 
         const style = Object.assign({

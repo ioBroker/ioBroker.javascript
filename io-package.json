@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.10.1",
+        "version": "4.10.2",
         "news": {
+            "4.10.2": {
+                "en": "Corrected search in scripts",
+                "de": "Suche in Skripten korrigiert",
+                "ru": "Исправлен поиск в скриптах",
+                "pt": "Pesquisa corrigida em scripts",
+                "nl": "Zoeken in scripts gecorrigeerd",
+                "fr": "Recherche corrigée dans les scripts",
+                "it": "Ricerca corretta negli script",
+                "es": "Búsqueda corregida en guiones",
+                "pl": "Poprawione wyszukiwanie w skryptach",
+                "zh-cn": "更正了脚本中的搜索"
+            },
             "4.10.1": {
                 "en": "In global TypeScripts, `import` can now be used\nIteration of `$(...)` query results in TypeScript no longer causes compilation to fail\nAlready-compiled TypeScripts are now recompiled after an update of the adapter to benefit of potential fixes\nCorrected schedule on date object\nCorrected the moving of scripts\nCorrected search tab\nCorrected the calculation of isDayTime variable\nCorrected `trim()` issue by CRON builder  \nCorrected functions call in blockly\nCorrected CRON name in blockly",
                 "de": "In globalen TypeScripts kann jetzt \"Import\" verwendet werden\nDie Iteration der Abfrageergebnisse \"$ (...)\" in TypeScript führt nicht mehr zum Fehlschlagen der Kompilierung\nBereits kompilierte TypeScripts werden jetzt nach einer Aktualisierung des Adapters neu kompiliert, um mögliche Korrekturen zu nutzen\nDer Zeitplan für das Datumsobjekt wurde korrigiert\nDas Verschieben von Skripten wurde korrigiert\nRegisterkarte \"Suche\" korrigiert\nDie Berechnung der Variablen isDayTime wurde korrigiert\nDas Problem \"trim ()\" wurde vom CRON-Builder behoben\nKorrigierte Funktionen werden blockweise aufgerufen\nDer CRON-Name wurde blockweise korrigiert",
