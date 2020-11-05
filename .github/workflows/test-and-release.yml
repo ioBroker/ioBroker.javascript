@@ -145,11 +145,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release v${{ env.VERSION }}
+          release_name: Release v${{ steps.extract_release.outputs.VERSION }}
           draft: false
           # Prerelease versions create prereleases on Github
-          prerelease: ${{ contains(env.VERSION, '-') }}
-          body: ${{ env.BODY }}
+          prerelease: ${{ contains(steps.extract_release.outputs.VERSION, '-') }}
+          body: ${{ steps.extract_release.outputs.BODY }}
 
       - name: Notify Sentry.io about the release
         run: |
@@ -158,7 +158,7 @@ jobs:
           export SENTRY_URL=https://sentry.iobroker.net
           export SENTRY_ORG=iobroker
           export SENTRY_PROJECT=iobroker-javascript
-          export SENTRY_VERSION=iobroker.javascript@${{ env.VERSION }}
+          export SENTRY_VERSION=iobroker.javascript@${{ steps.extract_release.outputs.VERSION }}
           sentry-cli releases new $SENTRY_VERSION
           sentry-cli releases finalize $SENTRY_VERSION
 
