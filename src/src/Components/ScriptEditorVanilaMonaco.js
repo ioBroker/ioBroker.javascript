@@ -30,27 +30,6 @@ class ScriptEditor extends React.Component {
         this.originalCode = props.code || '';
         this.typings = {}; // TypeScript declarations
         this.lastSearch = '';
-        /*if (!this.props.runningInstances) {
-            return this.props.socket.getAdapterInstances(this.props.adapterName)
-                .then(instancesArray => {
-                    const instances = instancesArray.map(obj => parseInt(obj._id.split('.').pop())).sort();
-                    const runningInstances = {};
-                    instances.forEach(id => runningInstances['system.adapter.' + this.props.adapterName + '.' + id] = false);
-
-                    const promises = [];
-
-                    // subscribe on instances
-                    instances.forEach(instance => {
-                        const instanceId = `system.adapter.${this.props.adapterName}.${instance}`;
-                        const id = `${instanceId}.alive`;
-                        promises.push(this.props.socket.getState(id)
-                            .then(state => runningInstances[instanceId] = state ? state.val : false));
-                    });
-
-                    return Promise.all(promises)
-                        .then(() => ({instances, runningInstances}));
-                });
-        }*/
     }
 
     waitForMonaco(cb) {
@@ -140,6 +119,7 @@ class ScriptEditor extends React.Component {
             language: this.state.language,
             isDark: this.state.isDark
         };
+
         this.setEditorOptions(options);
         this.editor.focus();
         this.editor.setValue(this.originalCode);
@@ -151,12 +131,23 @@ class ScriptEditor extends React.Component {
      * @param {Partial<{readOnly: boolean, lineWrap: boolean, language: EditorLanguage, typeCheck: boolean}>} options
      */
     setEditorOptions(options) {
-        if (!options) return;
-        if (options.language) this.setEditorLanguage(options.language);
-        if (options.readOnly !== undefined) this.editor.updateOptions({readOnly: options.readOnly});
-        if (options.lineWrap !== undefined) this.editor.updateOptions({wordWrap: options.lineWrap ? 'on' : 'off'});
-        if (options.typeCheck !== undefined) this.setTypeCheck(options.typeCheck);
-        if (options.isDark !== undefined) this.monaco.editor.setTheme(options.isDark ? 'vs-dark' : 'vs');
+        if (options) {
+            if (options.language) {
+                this.setEditorLanguage(options.language);
+            }
+            if (options.readOnly !== undefined) {
+                this.editor.updateOptions({readOnly: options.readOnly});
+            }
+            if (options.lineWrap !== undefined) {
+                this.editor.updateOptions({wordWrap: options.lineWrap ? 'on' : 'off'});
+            }
+            if (options.typeCheck !== undefined) {
+                this.setTypeCheck(options.typeCheck);
+            }
+            if (options.isDark !== undefined) {
+                this.monaco.editor.setTheme(options.isDark ? 'vs-dark' : 'vs');
+            }
+        }
     }
 
     componentWillUnmount() {
@@ -177,26 +168,33 @@ class ScriptEditor extends React.Component {
         // we need to recreate the model when changing languages,
         // so remember its settings
         const model = this.editor.getModel();
-        const code = model.getValue();
-        const uri = model.uri.path;
+        const code  = model.getValue();
+        const uri   = model.uri.path;
+
         const filenameWithoutExtension =
             typeof uri === 'string' && uri.indexOf('.') > -1
                 ? uri.substr(0, uri.lastIndexOf('.'))
                 : 'index';
+
         const extension =
             language === 'javascript' ? 'js'
-                : language === 'typescript' ? 'ts'
-                : language === 'coffee' ? 'coffee'
-                    : language;
+                : (language === 'typescript' ? 'ts'
+                    : (language === 'coffee' ? 'coffee'
+                        : language));
+
         // get rid of the original model
         model.dispose();
+
         // Both JS and TS need the model to work in TypeScript as the script type
         // is inferred from the file extension
         const newLanguage = (language === 'javascript' || language === 'typescript') ? 'typescript' : language;
 
         const newModel = this.monaco.editor.createModel(
-            code, newLanguage, this.monaco.Uri.from({path: `${filenameWithoutExtension}${index++}.${extension}`})
+            code,
+            newLanguage,
+            this.monaco.Uri.from({path: `${filenameWithoutExtension}${index++}.${extension}`})
         );
+
         this.editor.setModel(newModel);
     }
 
@@ -273,17 +271,22 @@ class ScriptEditor extends React.Component {
         }
     }
 
+    initNewScript(name, code) {
+        this.setState({name});
+        this.originalCode = code || '';
+        this.editor && this.editor.setValue(code);
+        this.highlightText(this.lastSearch);
+        //this.setEditorLanguage();
+        // Update the typings because global scripts need different typings than normal scripts
+        // and each global script has different typings
+        this.setEditorTypings(name);
+    }
+
     UNSAFE_componentWillReceiveProps(nextProps) {
         const options = {};
         if (this.state.name !== nextProps.name) {
             // A different script was selected
-            this.setState({name: nextProps.name});
-            this.originalCode = nextProps.code || '';
-            this.editor && this.editor.setValue(nextProps.code);
-            this.highlightText(this.lastSearch);
-            // Update the typings because global scripts need different typings than normal scripts
-            // and each global script has different typings
-            this.setEditorTypings(nextProps.name);
+            this.initNewScript(nextProps.name, nextProps.code);
         }
 
         // if some running instance will be foung and

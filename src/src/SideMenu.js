@@ -221,27 +221,6 @@ const images = {
     def: ImgJS,
     'TypeScript/ts': ImgTypeScript,
 };
-/*
-const getItemStyle = function (style, snapshot) {
-    if (!snapshot.isDragging) {
-        return {};
-    }
-    if (!snapshot.isDropAnimating) {
-        return style;
-    }
-    return {
-        ...style,
-        userSelect: 'none',
-        background: snapshot.isDragging ? '#8fff97' : 'inherit',
-        transitionDuration: `0.001s`
-    };
-};
-
-const getFolderStyle = (droppableStyle, snapshot) => ({
-    userSelect: 'none',
-    background: snapshot.isDraggingOver ? '#40adff' : 'inherit',
-    ...droppableStyle,
-});*/
 
 const getObjectName = (id, obj, lang) => {
     lang = lang || I18n.getLanguage();
@@ -847,7 +826,9 @@ class SideDrawer extends React.Component {
 
     onDblClick(item, e) {
         e && e.stopPropagation();
-        if (this.state.reorder) return;
+        if (this.state.reorder) {
+            return;
+        }
         if (item.type === 'folder') {
             this.onToggle(item.id);
         } else {

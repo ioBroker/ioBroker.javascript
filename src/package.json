@@ -6,7 +6,7 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
-    "@iobroker/adapter-react": "^1.4.5",
+    "@iobroker/adapter-react": "^1.4.6",
     "@sentry/browser": "^5.25.0",
     "@sentry/integrations": "^5.25.0",
     "clsx": "^1.1.1",

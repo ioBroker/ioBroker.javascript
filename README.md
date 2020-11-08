@@ -38,7 +38,7 @@ And then call "npm run build".
 -->
 
 ## Changelog
-### 4.10.2 (2020-11-05)
+### 4.10.3 (2020-11-08)
 * (bluefox) Corrected search in scripts
 
 ### 4.10.1 (2020-11-04)

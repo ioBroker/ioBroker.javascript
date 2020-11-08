@@ -20,9 +20,9 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.10.2",
+        "version": "4.10.3",
         "news": {
-            "4.10.2": {
+            "4.10.3": {
                 "en": "Corrected search in scripts",
                 "de": "Suche in Skripten korrigiert",
                 "ru": "Исправлен поиск в скриптах",
