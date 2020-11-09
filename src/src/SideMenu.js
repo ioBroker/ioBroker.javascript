@@ -63,6 +63,7 @@ const ROOT_ID = 'script.js';
 const COMMON_ID = ROOT_ID + '.common';
 const GLOBAL_ID = ROOT_ID + '.global';
 const NARROW_WIDTH = 350;
+const LEVEL_PADDING = 16;
 
 const SELECTED_STYLE = {
     background: '#164477',
@@ -394,7 +395,8 @@ export const Draggable = (props) => {
             opacity: monitor.isDragging() ? 0.3 : 1,
         }),
     });
-    return <div ref={drag} style={{ opacity }}>
+    // About transform: https://github.com/react-dnd/react-dnd/issues/832#issuecomment-442071628
+    return <div ref={drag} style={{ opacity, transform: 'translate3d(0, 0, 0)' }}>
         {props.children}
     </div>;
 };
@@ -861,7 +863,7 @@ class SideDrawer extends React.Component {
             return null;
         }
 
-        const depthPx = this.state.reorder ? item.depth * 20 : (item.depth - 1) * 20;
+        const depthPx = (this.state.reorder ? item.depth : item.depth - 1) * LEVEL_PADDING;
 
         let title = item.title;
 
@@ -986,9 +988,7 @@ class SideDrawer extends React.Component {
 
         if (this.state.reorder) {
             if (item.type === 'folder') {
-                result.push(<Droppable key={'droppable_' + item.id}
-                    onDrop={e => this.onDragFinish(e.name, item.id)}
-                >
+                result.push(<Droppable key={'droppable_' + item.id} onDrop={e => this.onDragFinish(e.name, item.id)}>
                     <Draggable key={'draggable_' + item.id} name={item.id}>{element}</Draggable>
                     {reactChildren || null}
                 </Droppable>);
@@ -1007,7 +1007,10 @@ class SideDrawer extends React.Component {
     }
 
     renderAllItems(items) {
-        const result = items.filter(item => !item.parent).map(item => this.renderOneItem(items, item));
+        const result = items
+            .filter(item => !item.parent)
+            .map(item =>
+                this.renderOneItem(items, item));
 
         return <List
             dense={true}
