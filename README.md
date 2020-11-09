@@ -38,6 +38,10 @@ And then call "npm run build".
 -->
 
 ## Changelog
+### 4.10.4 (2020-11-09)
+* (bluefox) null timeouts are checked now
+* (AlCalzone) Correction for the typescript with async functions
+
 ### 4.10.3 (2020-11-08)
 * (bluefox) Corrected search in scripts
 
@@ -61,10 +65,6 @@ And then call "npm run build".
 * (AlCalzone) pass ID as the result, not the error to the callback of createState
 * (AlCalzone) update the editor's type declarations when switching scripts
 * (AlCalzone) The corrections for typescript were added
-
-### 4.9.4 (2020-10-19)
-* (AlCalzone) corrected the crash IOBROKER-JAVASCRIPT-40
-* (AlCalzone) corrected typescript for async/await
 
 ## License
 

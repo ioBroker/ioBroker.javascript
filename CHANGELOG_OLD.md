@@ -1,5 +1,9 @@
 The newest change log is in README.md
 
+## 4.9.4 (2020-10-19)
+* (AlCalzone) corrected the crash IOBROKER-JAVASCRIPT-40
+* (AlCalzone) corrected typescript for async/await
+
 ## 4.9.3 (2020-10-12)
 * (bluefox) Corrected the function calls.
 * (AlCalzone) Optimized the typescript compilation

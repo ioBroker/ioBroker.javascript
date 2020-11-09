@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.10.3",
+        "version": "4.10.4",
         "news": {
+            "4.10.4": {
+                "en": "null timeouts are checked now\nCorrection for the typescript with async functions",
+                "de": "Null-Timeouts werden jetzt überprüft\nKorrektur für das Typoskript mit asynchronen Funktionen",
+                "ru": "нулевые таймауты проверены сейчас\nИсправление машинописного текста с асинхронными функциями",
+                "pt": "tempos limites nulos são verificados agora\nCorreção para o texto datilografado com funções assíncronas",
+                "nl": "null-time-outs worden nu gecontroleerd\nCorrectie voor het typoscript met asynchrone functies",
+                "fr": "les délais d'expiration nuls sont vérifiés maintenant\nCorrection du dactylographie avec des fonctions asynchrones",
+                "it": "i timeout nulli sono controllati ora\nCorrezione per il dattiloscritto con funzioni asincrone",
+                "es": "los tiempos de espera nulos están marcados ahora\nCorrección del mecanografiado con funciones asíncronas",
+                "pl": "zerowe limity czasu są teraz sprawdzane\nPoprawka dotycząca maszynopisu z funkcjami asynchronicznymi",
+                "zh-cn": "现在检查空超时\n使用异步功能更正打字稿"
+            },
             "4.10.3": {
                 "en": "Corrected search in scripts",
                 "de": "Suche in Skripten korrigiert",
