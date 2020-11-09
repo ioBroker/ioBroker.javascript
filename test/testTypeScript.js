@@ -154,6 +154,16 @@ class Foo {
         `
 const result = $('system.adapter.*.alive');
 const arr = [...result];
+`,
+        // Repro from #705
+        `
+const foo = 42;
+
+async function bar():Promise<void> {
+    return new Promise<void>(() => log(foo.toString()));
+}
+
+await bar();
 `
     ];
 
