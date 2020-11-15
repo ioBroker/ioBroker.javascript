@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.10.4",
+        "version": "4.10.5",
         "news": {
+            "4.10.5": {
+                "en": "null timeouts are checked now",
+                "de": "Null-Timeouts werden jetzt überprüft",
+                "ru": "нулевые таймауты проверены сейчас",
+                "pt": "tempos limites nulos são verificados agora",
+                "nl": "null-time-outs worden nu gecontroleerd",
+                "fr": "les délais d'expiration nuls sont vérifiés maintenant",
+                "it": "i timeout nulli sono controllati ora",
+                "es": "los tiempos de espera nulos están marcados ahora",
+                "pl": "zerowe limity czasu są teraz sprawdzane",
+                "zh-cn": "现在检查空超时"
+            },
             "4.10.4": {
                 "en": "null timeouts are checked now\nCorrection for the typescript with async functions",
                 "de": "Null-Timeouts werden jetzt überprüft\nKorrektur für das Typoskript mit asynchronen Funktionen",
