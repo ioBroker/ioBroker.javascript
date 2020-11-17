@@ -181,19 +181,24 @@ function loadTypeScriptDeclarations() {
         }
     }
     for (const pkg of packages) {
-        const pkgTypings = resolveTypings(
+        let pkgTypings = resolveTypings(
             pkg,
             // node needs ambient typings, so we don't wrap it in declare module
             pkg !== 'node'
         );
-        if (pkgTypings) {
-            adapter.log.debug(`Loaded TypeScript definitions for ${pkg}: ${JSON.stringify(Object.keys(pkgTypings))}`);
-            // remember the declarations for the editor
-            Object.assign(tsAmbient, pkgTypings);
-            // and give the language servers access to them
-            tsServer.provideAmbientDeclarations(pkgTypings);
-            jsDeclarationServer.provideAmbientDeclarations(pkgTypings);
+        if (!pkgTypings) {
+            // Create empty dummy declarations so users don't get the "not found" error
+            // for installed packages
+            pkgTypings = {
+                [`node_modules/@types/${pkg}/index.d.ts`]: `declare module "${pkg}";`,
+            };
         }
+        adapter.log.debug(`Loaded TypeScript definitions for ${pkg}: ${JSON.stringify(Object.keys(pkgTypings))}`);
+        // remember the declarations for the editor
+        Object.assign(tsAmbient, pkgTypings);
+        // and give the language servers access to them
+        tsServer.provideAmbientDeclarations(pkgTypings);
+        jsDeclarationServer.provideAmbientDeclarations(pkgTypings);
     }
 }
 
@@ -1257,13 +1262,18 @@ function installNpm(npmLib, callback) {
         npmLib = undefined;
     }
 
-    const cmd = 'npm install ' + npmLib + ' --production --prefix "' + path + '"';
-    adapter.log.info(cmd + ' (System call)');
+    // Also, set the working directory (cwd) of the process instead of using --prefix
+    // because that has ugly bugs on Windows
+    const cmd = `npm install ${npmLib} --production`;
+    adapter.log.info(`${cmd} (System call)`);
     // Install node modules as system call
 
     // System call used for update of js-controller itself,
     // because during installation npm packet will be deleted too, but some files must be loaded even during the install process.
-    const child = mods['child_process'].exec(cmd);
+    const child = mods['child_process'].exec(cmd, {
+        windowsHide: true,
+        cwd: path,
+    });
 
     child.stdout.on('data', buf =>
         adapter.log.info(buf.toString('utf8')));
@@ -1272,14 +1282,14 @@ function installNpm(npmLib, callback) {
         adapter.log.error(buf.toString('utf8')));
 
     child.on('err', err => {
-        adapter.log.error('Cannot install ' + npmLib + ': ' + err);
+        adapter.log.error(`Cannot install ${npmLib}: ${err}`);
         if (typeof callback === 'function') callback(npmLib);
         callback = null;
     });
 
     child.on('exit', (code /* , signal */) => {
         if (code) {
-            adapter.log.error('Cannot install ' + npmLib + ': ' + code);
+            adapter.log.error(`Cannot install ${npmLib}: ${code}`);
         }
         // command succeeded
         if (typeof callback === 'function') callback(npmLib);
