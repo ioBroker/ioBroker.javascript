@@ -1257,13 +1257,18 @@ function installNpm(npmLib, callback) {
         npmLib = undefined;
     }
 
-    const cmd = 'npm install ' + npmLib + ' --production --prefix "' + path + '"';
-    adapter.log.info(cmd + ' (System call)');
+    // Also, set the working directory (cwd) of the process instead of using --prefix
+    // because that has ugly bugs on Windows
+    const cmd = `npm install ${npmLib} --production`;
+    adapter.log.info(`${cmd} (System call)`);
     // Install node modules as system call
 
     // System call used for update of js-controller itself,
     // because during installation npm packet will be deleted too, but some files must be loaded even during the install process.
-    const child = mods['child_process'].exec(cmd);
+    const child = mods['child_process'].exec(cmd, {
+        windowsHide: true,
+        cwd: path,
+    });
 
     child.stdout.on('data', buf =>
         adapter.log.info(buf.toString('utf8')));
@@ -1272,14 +1277,14 @@ function installNpm(npmLib, callback) {
         adapter.log.error(buf.toString('utf8')));
 
     child.on('err', err => {
-        adapter.log.error('Cannot install ' + npmLib + ': ' + err);
+        adapter.log.error(`Cannot install ${npmLib}: ${err}`);
         if (typeof callback === 'function') callback(npmLib);
         callback = null;
     });
 
     child.on('exit', (code /* , signal */) => {
         if (code) {
-            adapter.log.error('Cannot install ' + npmLib + ': ' + code);
+            adapter.log.error(`Cannot install ${npmLib}: ${code}`);
         }
         // command succeeded
         if (typeof callback === 'function') callback(npmLib);
