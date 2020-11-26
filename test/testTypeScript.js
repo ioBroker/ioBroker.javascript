@@ -58,6 +58,23 @@ export class Foo {
             const transformed = transformScriptBeforeCompilation(source, true);
             expect(transformed.trim()).to.equal(expected);
         });
+
+        it('wraps global augmentations in `declare global`', () => {
+            // simplified repro for #698
+            const source = `
+interface Date {
+    getWeekYear(): number;
+}`.trim();
+            const expected = `
+declare global {
+    interface Date {
+        getWeekYear(): number;
+    }
+}
+export {};`.trim().replace(/\r?\n/g, EOL);
+            const transformed = transformScriptBeforeCompilation(source, true);
+            expect(transformed.trim()).to.equal(expected);
+        });
     });
 
     describe('transformGlobalDeclarations', () => {
@@ -92,6 +109,24 @@ declare global {
 }
 export {};
 `.trim().replace(/\r?\n/g, EOL);
+            const transformed = transformGlobalDeclarations(source);
+            expect(transformed.trim()).to.equal(expected);
+        });
+
+        it('should preserve already-existing declare global { ... } blocks', () => {
+            const source = `
+declare global {
+    interface Date {
+        getWeekYear(): number;
+    }
+}`.trim();
+            const expected = `
+declare global {
+    interface Date {
+        getWeekYear(): number;
+    }
+}
+export {};`.trim().replace(/\r?\n/g, EOL);
             const transformed = transformGlobalDeclarations(source);
             expect(transformed.trim()).to.equal(expected);
         });
@@ -203,9 +238,31 @@ export {};
         `
 export type Foo = iobJS.Object & { foo: "bar" };
 `,
+        // Repro from #686
+        `
+/** 
+* Get the ISO week date year number 
+*/
+declare global {
+    interface Date {
+        getWeekYear(): number;
+    }
+}
+Date.prototype.getWeekYear = function () {
+    // Create a new date object for the thursday of this week  
+    let target: Date = new Date(this.valueOf());
+    target.setDate(target.getDate() - ((this.getDay() + 6) % 7) + 3);
+
+    return target.getFullYear();
+};
+
+const d = new Date();
+d.getWeekYear()
+`
     ];
 
     for (let i = 0; i < tests.length; i++) {
+    // for (const i of [1]) {
         it(`Test #${i + 1}`, () => {
             const transformedSource = transformScriptBeforeCompilation(tests[i], true);
             const filename = scriptIdToTSFilename(`script.js.test_${i + 1}`);

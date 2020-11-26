@@ -181,19 +181,24 @@ function loadTypeScriptDeclarations() {
         }
     }
     for (const pkg of packages) {
-        const pkgTypings = resolveTypings(
+        let pkgTypings = resolveTypings(
             pkg,
             // node needs ambient typings, so we don't wrap it in declare module
             pkg !== 'node'
         );
-        if (pkgTypings) {
-            adapter.log.debug(`Loaded TypeScript definitions for ${pkg}: ${JSON.stringify(Object.keys(pkgTypings))}`);
-            // remember the declarations for the editor
-            Object.assign(tsAmbient, pkgTypings);
-            // and give the language servers access to them
-            tsServer.provideAmbientDeclarations(pkgTypings);
-            jsDeclarationServer.provideAmbientDeclarations(pkgTypings);
+        if (!pkgTypings) {
+            // Create empty dummy declarations so users don't get the "not found" error
+            // for installed packages
+            pkgTypings = {
+                [`node_modules/@types/${pkg}/index.d.ts`]: `declare module "${pkg}";`,
+            };
         }
+        adapter.log.debug(`Loaded TypeScript definitions for ${pkg}: ${JSON.stringify(Object.keys(pkgTypings))}`);
+        // remember the declarations for the editor
+        Object.assign(tsAmbient, pkgTypings);
+        // and give the language servers access to them
+        tsServer.provideAmbientDeclarations(pkgTypings);
+        jsDeclarationServer.provideAmbientDeclarations(pkgTypings);
     }
 }
 
