@@ -913,10 +913,6 @@ function getNextTimeEvent(time) {
     let [timeHours, timeMinutes] = time.split(':');
     timeHours = parseInt(timeHours, 10);
     timeMinutes = parseInt(timeMinutes, 10);
-    if ((now.getHours() > timeHours) ||
-        (now.getHours() === timeHours && now.getMinutes() > timeMinutes)) {
-        now.setDate(now.getDate() + 1);
-    }
 
     now.setHours(timeHours);
     now.setMinutes(timeMinutes);
