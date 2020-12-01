@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.10.5",
+        "version": "4.10.6",
         "news": {
+            "4.10.6": {
+                "en": "TypeScripts which augment the global scope are now correctly compiled\nIf no type declarations are found for an installed package, `require` will no longer show the error \"module not found\"\nRemoved the `--prefix` argument in `npm install`, so package installations on Windows no longer mess up the install directory\nCorrected the set of the binary state",
+                "de": "TypeScripts, die den globalen Bereich erweitern, werden jetzt korrekt kompiliert\nWenn für ein installiertes Paket keine Typdeklarationen gefunden werden, zeigt `require` nicht mehr den Fehler\" Modul nicht gefunden \"an.\nDas Argument \"--prefix\" in \"npm install\" wurde entfernt, sodass Paketinstallationen unter Windows das Installationsverzeichnis nicht mehr durcheinander bringen\nDie Menge des Binärzustands wurde korrigiert",
+                "ru": "TypeScripts, которые увеличивают глобальную область видимости, теперь правильно компилируются.\nЕсли для установленного пакета не найдено объявлений типа, require больше не будет отображать ошибку «модуль не найден»\nУдален аргумент --prefix в npm install, поэтому установка пакетов в Windows больше не портит каталог установки.\nИсправлен набор бинарного состояния",
+                "pt": "TypeScripts que aumentam o escopo global agora são compilados corretamente\nSe nenhuma declaração de tipo for encontrada para um pacote instalado, `require` não mostrará mais o erro\" módulo não encontrado \"\nRemovido o argumento `--prefix` em` npm install`, então as instalações de pacotes no Windows não bagunçam mais o diretório de instalação\nCorrigido o conjunto do estado binário",
+                "nl": "TypeScripts die het globale bereik vergroten, zijn nu correct gecompileerd\nAls er geen typeaangiftes worden gevonden voor een geïnstalleerd pakket, zal `vereisen` niet langer de foutmelding\" module niet gevonden \"weergeven\nHet `--prefix` argument in` npm install` verwijderd, zodat pakketinstallaties op Windows de installatiemap niet langer verknoeien\nDe set van de binaire staat gecorrigeerd",
+                "fr": "Les scripts de type qui augmentent la portée globale sont maintenant correctement compilés\nSi aucune déclaration de type n'est trouvée pour un package installé, `require` n'affichera plus l'erreur\" module not found \"\nSuppression de l'argument `--prefix` dans` npm install`, de sorte que les installations de paquets sur Windows ne gâchent plus le répertoire d'installation\nCorrection de l'ensemble de l'état binaire",
+                "it": "Gli script di tipo che aumentano l'ambito globale vengono ora compilati correttamente\nSe non vengono trovate dichiarazioni di tipo per un pacchetto installato, `require` non mostrerà più l'errore\" modulo non trovato \"\nRimosso l'argomento `--prefix` in` npm install`, quindi le installazioni dei pacchetti su Windows non rovinano più la directory di installazione\nCorretto l'insieme dello stato binario",
+                "es": "TypeScripts que aumentan el alcance global ahora se compilan correctamente\nSi no se encuentran declaraciones de tipo para un paquete instalado, `require` ya no mostrará el error\" módulo no encontrado \"\nSe eliminó el argumento `--prefix` en` npm install`, por lo que las instalaciones de paquetes en Windows ya no estropean el directorio de instalación\nCorregido el conjunto del estado binario.",
+                "pl": "Skrypty TypeScriptu, które rozszerzają zakres globalny, są teraz poprawnie kompilowane\nJeśli dla zainstalowanego pakietu nie zostaną znalezione żadne deklaracje typu, argument „require” nie będzie już pokazywał błędu „nie znaleziono modułu”\nUsunięto argument `--prefix` w` npm install`, więc instalacje pakietów w systemie Windows nie psują już katalogu instalacyjnego\nPoprawiono zestaw stanu binarnego",
+                "zh-cn": "现在可以正确编译扩大全局范围的TypeScript\n如果找不到已安装软件包的类型声明，则`require`将不再显示错误“找不到模块”\n删除了npm install中的--prefix参数，因此Windows上的软件包安装不再混乱安装目录\n更正了二进制状态集"
+            },
             "4.10.5": {
                 "en": "null timeouts are checked now",
                 "de": "Null-Timeouts werden jetzt überprüft",

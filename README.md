@@ -38,10 +38,11 @@ And then call "npm run build".
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 4.10.6 (2020-12-01)
 * (AlCalzone) TypeScripts which augment the global scope are now correctly compiled
 * (AlCalzone) If no type declarations are found for an installed package, `require` will no longer show the error "module not found"
 * (AlCalzone) Removed the `--prefix` argument in `npm install`, so package installations on Windows no longer mess up the install directory
+* (bluefox) Corrected the set of the binary state
 
 ### 4.10.5 (2020-11-15)
 * (bluefox) null timeouts are checked now
@@ -64,9 +65,6 @@ And then call "npm run build".
 * (bluefox) Corrected `trim()` issue by CRON builder  
 * (bluefox) Corrected functions call in blockly
 * (bluefox) Corrected CRON name in blockly
-
-### 4.9.8 (2020-11-01)
-* (bluefox) Corrected search in blockly
 
 ## License
 
