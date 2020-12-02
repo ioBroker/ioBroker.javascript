@@ -38,6 +38,10 @@ And then call "npm run build".
 -->
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77) Prevent crash case (Sentry IOBROKER-JAVASCRIPT-4Q)
+
 ### 4.10.6 (2020-12-01)
 * (AlCalzone) TypeScripts which augment the global scope are now correctly compiled
 * (AlCalzone) If no type declarations are found for an installed package, `require` will no longer show the error "module not found"
