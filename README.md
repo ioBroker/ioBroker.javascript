@@ -39,8 +39,9 @@ And then call "npm run build".
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 4.10.7 (2020-12-03)
 * (Apollon77) Prevent crash case (Sentry IOBROKER-JAVASCRIPT-4Q)
+* (paul53) Corrected `variables.isDayTime`
 
 ### 4.10.6 (2020-12-01)
 * (AlCalzone) TypeScripts which augment the global scope are now correctly compiled
@@ -57,18 +58,6 @@ And then call "npm run build".
 
 ### 4.10.3 (2020-11-08)
 * (bluefox) Corrected search in scripts
-
-### 4.10.1 (2020-11-04)
-* (AlCalzone) In global TypeScripts, `import` can now be used
-* (AlCalzone) Iteration of `$(...)` query results in TypeScript no longer causes compilation to fail
-* (AlCalzone) Already-compiled TypeScripts are now recompiled after an update of the adapter to benefit of potential fixes
-* (bluefox) Corrected schedule on date object
-* (bluefox) Corrected the moving of scripts
-* (bluefox) Corrected search tab
-* (bluefox) Corrected the calculation of isDayTime variable
-* (bluefox) Corrected `trim()` issue by CRON builder  
-* (bluefox) Corrected functions call in blockly
-* (bluefox) Corrected CRON name in blockly
 
 ## License
 

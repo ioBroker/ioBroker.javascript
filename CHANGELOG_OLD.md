@@ -1,5 +1,17 @@
 The newest change log is in README.md
 
+## 4.10.1 (2020-11-04)
+* (AlCalzone) In global TypeScripts, `import` can now be used
+* (AlCalzone) Iteration of `$(...)` query results in TypeScript no longer causes compilation to fail
+* (AlCalzone) Already-compiled TypeScripts are now recompiled after an update of the adapter to benefit of potential fixes
+* (bluefox) Corrected schedule on date object
+* (bluefox) Corrected the moving of scripts
+* (bluefox) Corrected search tab
+* (bluefox) Corrected the calculation of isDayTime variable
+* (bluefox) Corrected `trim()` issue by CRON builder  
+* (bluefox) Corrected functions call in blockly
+* (bluefox) Corrected CRON name in blockly
+
 ## 4.9.8 (2020-11-01)
 * (bluefox) Corrected search in blockly
 
