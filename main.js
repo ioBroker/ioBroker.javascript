@@ -912,12 +912,12 @@ let globalScriptLines  = 0;
 let activeStr          = ''; // enabled state prefix
 let daySchedule        = null; // schedule for astrological day
 
-function getNextTimeEvent(time) {
+function getNextTimeEvent(time, useNextDay) {
     const now = new Date();
     let [timeHours, timeMinutes] = time.split(':');
     timeHours = parseInt(timeHours, 10);
     timeMinutes = parseInt(timeMinutes, 10);
-    if ((now.getHours() > timeHours) ||
+    if (useNextDay && (now.getHours() > timeHours) ||
         (now.getHours() === timeHours && now.getMinutes() > timeMinutes)) {
         now.setDate(now.getDate() + 1);
     }
@@ -927,10 +927,10 @@ function getNextTimeEvent(time) {
     return now;
 }
 
-function getAstroEvent(now, astroEvent, start, end, offsetMinutes, isDayEnd, latitude, longitude) {
+function getAstroEvent(now, astroEvent, start, end, offsetMinutes, isDayEnd, latitude, longitude, useNextDay) {
     let ts = mods.suncalc.getTimes(now, latitude, longitude)[astroEvent];
     if (!ts || ts.getTime().toString() === 'NaN') {
-        ts = isDayEnd ? getNextTimeEvent(end) : getNextTimeEvent(start);
+        ts = isDayEnd ? getNextTimeEvent(end, useNextDay) : getNextTimeEvent(start, useNextDay);
     }
     ts.setSeconds(0);
     ts.setMilliseconds(0);
@@ -941,7 +941,7 @@ function getAstroEvent(now, astroEvent, start, end, offsetMinutes, isDayEnd, lat
     timeMinutesStart = parseInt(timeMinutesStart, 10) || 0;
 
     if (ts.getHours() < timeHoursStart || (ts.getHours() === timeHoursStart && ts.getMinutes() < timeMinutesStart)) {
-        ts = getNextTimeEvent(start);
+        ts = getNextTimeEvent(start, useNextDay);
     }
 
     let [timeHoursEnd, timeMinutesEnd] = end.split(':');
@@ -949,7 +949,7 @@ function getAstroEvent(now, astroEvent, start, end, offsetMinutes, isDayEnd, lat
     timeMinutesEnd = parseInt(timeMinutesEnd, 10) || 0;
 
     if (ts.getHours() > timeHoursEnd || (ts.getHours() === timeHoursEnd && ts.getMinutes() > timeMinutesEnd)) {
-        ts = getNextTimeEvent(end);
+        ts = getNextTimeEvent(end, useNextDay);
     }
 
     // if event in the past
