@@ -592,7 +592,8 @@ function startAdapter(options) {
                                 sunriseOffset,
                                 false,
                                 latitude,
-                                longitude
+                                longitude,
+                                true
                             );
                             const nextSunset = getAstroEvent(
                                 now,
@@ -602,7 +603,8 @@ function startAdapter(options) {
                                 sunsetOffset,
                                 true,
                                 latitude,
-                                longitude
+                                longitude,
+                                true
                             );
 
                             obj.callback && adapter.sendTo(obj.from, obj.command, {
@@ -953,7 +955,7 @@ function getAstroEvent(now, astroEvent, start, end, offsetMinutes, isDayEnd, lat
     }
 
     // if event in the past
-    if (now > ts) {
+    if (now > ts && useNextDay) {
         // take next day
         ts.setDate(ts.getDate() + 1);
     }
