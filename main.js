@@ -783,7 +783,7 @@ function main() {
                                     });
                                 } else if (engineType.startsWith('typescript')) {
                                     // TypeScript
-                                    adapter.log.info(obj._id + ': compiling TypeScript source...');
+                                    adapter.log.info(`${obj._id}: compiling TypeScript source...`);
                                     // In order to compile global TypeScript, we need to do some transformations
                                     // 1. For top-level-await, some statements must be wrapped in an immediately-invoked async function
                                     // 2. If any global script uses `import`, the declarations are no longer visible if they are not exported with `declare global`
@@ -810,19 +810,25 @@ function main() {
                                         // We can reuse the stored source
                                         compiled = obj.common.compiled;
                                         declarations = obj.common.declarations;
-                                        adapter.log.info(obj._id + ': source code did not change, using cached compilation result...');
+                                        adapter.log.info(`${obj._id}: source code did not change, using cached compilation result...`);
                                     } else {
                                         // We don't have a hashed source code or the original source changed, compile it
                                         const filename = scriptIdToTSFilename(obj._id);
-                                        const tsCompiled = tsServer.compile(filename, transformedSource);
+                                        let tsCompiled;
+                                        try {
+                                            tsCompiled = tsServer.compile(filename, transformedSource);
+                                        } catch (e) {
+                                            adapter.log.error(`${obj._id}: TypeScript compilation failed:\n${e}`);
+                                            continue;
+                                        }
 
                                         const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
 
                                         if (tsCompiled.success) {
                                             if (errors.length > 0) {
-                                                adapter.log.warn(obj._id + ': TypeScript compilation completed with errors: \n' + errors);
+                                                adapter.log.warn(`${obj._id}: TypeScript compilation completed with errors:\n${errors}`);
                                             } else {
-                                                adapter.log.info(obj._id + ': TypeScript compilation successful');
+                                                adapter.log.info(`${obj._id}: TypeScript compilation successful`);
                                             }
                                             compiled = tsCompiled.result;
                                             // Global scripts that have been transformed to support `import` need to have their declarations transformed aswell
@@ -840,7 +846,7 @@ function main() {
                                                 common: newCommon
                                             });
                                         } else {
-                                            adapter.log.error(obj._id + ': TypeScript compilation failed: \n' + errors);
+                                            adapter.log.error(`${obj._id}: TypeScript compilation failed:\n${errors}`);
                                             continue;
                                         }
                                     }
@@ -856,7 +862,13 @@ function main() {
                                     // try to compile the declarations so TypeScripts can use
                                     // functions defined in global JavaScripts
                                     const filename = scriptIdToTSFilename(obj._id);
-                                    const tsCompiled = jsDeclarationServer.compile(filename, sourceCode);
+                                    let tsCompiled;
+                                    try {
+                                        tsCompiled = jsDeclarationServer.compile(filename, sourceCode);
+                                    } catch (e) {
+                                        adapter.log.warn(`${obj._id}: Error while generating type declarations, skipping:\n${e}`);
+                                        continue;
+                                    }
                                     // if declarations were generated, remember them
                                     if (tsCompiled.success && tsCompiled.declarations != null) {
                                         provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
@@ -1590,7 +1602,7 @@ function prepareScript(obj, callback) {
             });
         } else if (obj.common.engineType.toLowerCase().startsWith('typescript')) {
             // TypeScript
-            adapter.log.info(name + ': compiling TypeScript source...');
+            adapter.log.info(`${name}: compiling TypeScript source...`);
             // The source code must be transformed in order to support top level await
             // and to force TypeScript to compile the code as a module
             const transformedSource = transformScriptBeforeCompilation(obj.common.source, false);
@@ -1609,18 +1621,26 @@ function prepareScript(obj, callback) {
             ) {
                 // We can reuse the stored source
                 compiled = obj.common.compiled;
-                adapter.log.info(name + ': source code did not change, using cached compilation result...');
+                adapter.log.info(`${name}: source code did not change, using cached compilation result...`);
             } else {
                 // We don't have a hashed source code or the original source changed, compile it
                 const filename = scriptIdToTSFilename(name);
-                const tsCompiled = tsServer.compile(filename, transformedSource);
+                let tsCompiled;
+                try {
+                    tsCompiled = tsServer.compile(filename, transformedSource);
+                } catch (e) {
+                    adapter.log.error(`${obj._id}: TypeScript compilation failed:\n${e}`);
+                    typeof callback === 'function' && callback(false, name);
+                    return;
+                }
+
                 const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
 
                 if (tsCompiled.success) {
                     if (errors.length > 0) {
-                        adapter.log.warn(name + ': TypeScript compilation had errors: \n' + errors);
+                        adapter.log.warn(`${name}: TypeScript compilation had errors:\n${errors}`);
                     } else {
-                        adapter.log.info(name + ': TypeScript compilation successful');
+                        adapter.log.info(`${name}: TypeScript compilation successful`);
                     }
                     compiled = tsCompiled.result;
 
@@ -1633,7 +1653,7 @@ function prepareScript(obj, callback) {
                         }
                     });
                 } else {
-                    adapter.log.error(name + ': TypeScript compilation failed: \n' + errors);
+                    adapter.log.error(`${name}: TypeScript compilation failed:\n${errors}`);
                     typeof callback === 'function' && callback(false, name);
                     return;
                 }
