@@ -1009,7 +1009,7 @@ function dayTimeSchedules(adapter, context) {
     // Calculate next event today
     const todayDate = new Date();
     const nowDate   = new Date();
-    todayDate.setHours(0);
+    todayDate.setHours(12);
     todayDate.setMinutes(0);
     todayDate.setSeconds(0);
     todayDate.setMilliseconds(0);
