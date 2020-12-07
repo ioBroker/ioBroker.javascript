@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 4.10.3 (2020-11-08)
+* (bluefox) Corrected search in scripts
+
 ## 4.10.1 (2020-11-04)
 * (AlCalzone) In global TypeScripts, `import` can now be used
 * (AlCalzone) Iteration of `$(...)` query results in TypeScript no longer causes compilation to fail

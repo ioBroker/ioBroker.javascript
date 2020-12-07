@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.10.7",
+        "version": "4.10.8",
         "news": {
+            "4.10.8": {
+                "en": "Corrected `variables.isDayTime`\ncatch errors during virtual-tsc compile calls\nPrevent crash case (Sentry)",
+                "de": "`Variables.isDayTime` korrigiert\nFehler beim Kompilieren von Virtual-TSC-Aufrufen abfangen\nAbsturz verhindern (Sentry)",
+                "ru": "Исправленный файл `variables.isDayTime`\nпоймать ошибки во время вызовов компиляции virtual-tsc\nСлучай предотвращения аварии (Sentry)",
+                "pt": "Corrigido `variables.isDayTime`\ndetectar erros durante chamadas de compilação virtual-tsc\nPrevenir caso de travamento (Sentry)",
+                "nl": "Gecorrigeerde `variables.isDayTime`\nvang fouten op tijdens het compileren van virtual-tsc\nVoorkom crash case (Sentry)",
+                "fr": "Correction de `variables.isDayTime`\nattraper les erreurs lors des appels de compilation virtual-tsc\nPrévenir les cas de crash (Sentry)",
+                "it": "Correzione di \"variables.isDayTime\"\nrilevare gli errori durante le chiamate di compilazione virtual-tsc\nPrevenire il crash case (Sentry)",
+                "es": "Se corrigió `variables.isDayTime`\ndetectar errores durante las llamadas de compilación virtual-tsc\nPrevenir caso de accidente (centinela)",
+                "pl": "Poprawiono plik „variable.isDayTime”\nprzechwytywanie błędów podczas wywołań kompilacji virtual-tsc\nZapobiegaj awariom (Sentry)",
+                "zh-cn": "更正了`variables.isDayTime`\n在虚拟TSC编译调用期间捕获错误\n防止崩溃情况（哨兵）"
+            },
             "4.10.7": {
                 "en": "Prevent crash case (Sentry IOBROKER-JAVASCRIPT-4Q)\nCorrected `variables.isDayTime`",
                 "de": "Absturz verhindern (Sentry IOBROKER-JAVASCRIPT-4Q)\n`Variables.isDayTime` korrigiert",
@@ -249,18 +261,6 @@
                 "es": "Estilo fijo",
                 "pl": "Naprawiono stylizację",
                 "zh-cn": "固定样式"
-            },
-            "4.7.0": {
-                "en": "Allowed async functions whenever a callback is accepted\nAllowed `true` as 2nd parameter in getObject \nForced TypeScript to treat each script as a separate module\nReplaced the Select-ID dialog",
-                "de": "Zulässige asynchrone Funktionen, wenn ein Rückruf akzeptiert wird\nErlaubt `true` als 2. Parameter in getObject\nErzwang, dass TypeScript jedes Skript als separates Modul behandelt\nDas Dialogfeld \"ID auswählen\" wurde ersetzt",
-                "ru": "Разрешены асинхронные функции всякий раз, когда принимается обратный вызов\nДопускается `true` как второй параметр в getObject\nПринудительный TypeScript обрабатывать каждый скрипт как отдельный модуль\nЗаменен диалог Select-ID",
-                "pt": "Funções assíncronas permitidas sempre que um retorno de chamada for aceito\nPermitido `true` como segundo parâmetro em getObject\nTypeScript forçado a tratar cada script como um módulo separado\nSubstituiu a caixa de diálogo Select-ID",
-                "nl": "Toegestane asynchrone functies wanneer een callback wordt geaccepteerd\nToegestaan 'true' als 2e parameter in getObject\nTypeScript gedwongen om elk script als een afzonderlijke module te behandelen\nVerving het Selecteer-ID-dialoogvenster",
-                "fr": "Fonctions asynchrones autorisées chaque fois qu'un rappel est accepté\nAutorisé `true` comme 2ème paramètre dans getObject\nTypeScript forcé de traiter chaque script comme un module distinct\nRemplacement de la boîte de dialogue Select-ID",
-                "it": "Funzioni asincrone consentite ogni volta che viene accettata una richiamata\nConsentito \"true\" come secondo parametro in getObject\nTypeScript forzato a trattare ogni script come un modulo separato\nSostituita la finestra di dialogo Seleziona ID",
-                "es": "Funciones asincrónicas permitidas siempre que se acepta una devolución de llamada\nPermitido `true` como segundo parámetro en getObject\nTypeScript forzado a tratar cada script como un módulo separado\nSe reemplazó el cuadro de diálogo Seleccionar ID.",
-                "pl": "Dozwolone funkcje asynchroniczne po zaakceptowaniu wywołania zwrotnego\nDozwolone „prawda” jako drugi parametr w getObject\nZmuszono TypeScript do traktowania każdego skryptu jako oddzielnego modułu\nZastąpiono okno dialogowe Select-ID",
-                "zh-cn": "每当接受回调时允许的异步功能\n允许将“ true”作为getObject中的第二个参数\n强制TypeScript将每个脚本视为一个单独的模块\n替换了“选择ID”对话框"
             }
         },
         "desc": {
