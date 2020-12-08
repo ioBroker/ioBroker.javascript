@@ -583,9 +583,8 @@ function startAdapter(options) {
                             const sunsetOffset  = parseInt(obj.message.sunsetOffset   === undefined ? adapter.config.sunsetOffset  : obj.message.sunsetOffset, 10)  || 0;
                             const longitude     = parseFloat(obj.message.longitude === undefined ? adapter.config.longitude    : obj.message.longitude) || 0;
                             const latitude      = parseFloat(obj.message.latitude  === undefined ? adapter.config.latitude     : obj.message.latitude)  || 0;
-                            const now = new Date();
                             const nextSunrise = getAstroEvent(
-                                now,
+                                new Date(),
                                 obj.message.sunriseEvent || adapter.config.sunriseEvent,
                                 obj.message.sunriseLimitStart || adapter.config.sunriseLimitStart,
                                 obj.message.sunriseLimitEnd   || adapter.config.sunriseLimitEnd,
@@ -596,7 +595,7 @@ function startAdapter(options) {
                                 true
                             );
                             const nextSunset = getAstroEvent(
-                                now,
+                                new Date(),
                                 obj.message.sunsetEvent  || adapter.config.sunsetEvent,
                                 obj.message.sunsetLimitStart  || adapter.config.sunsetLimitStart,
                                 obj.message.sunsetLimitEnd    || adapter.config.sunsetLimitEnd,
