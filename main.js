@@ -926,51 +926,48 @@ let globalScriptLines  = 0;
 let activeStr          = ''; // enabled state prefix
 let daySchedule        = null; // schedule for astrological day
 
-function getNextTimeEvent(time, useNextDay) {
-    const now = new Date();
+function getNextTimeEvent(time, now) {
     let [timeHours, timeMinutes] = time.split(':');
     timeHours = parseInt(timeHours, 10);
     timeMinutes = parseInt(timeMinutes, 10);
-    if (useNextDay && (now.getHours() > timeHours) ||
-        (now.getHours() === timeHours && now.getMinutes() > timeMinutes)) {
-        now.setDate(now.getDate() + 1);
-    }
-
-    now.setHours(timeHours);
-    now.setMinutes(timeMinutes);
-    return now;
+    let date = new Date(now.getTime());
+    date.setHours(timeHours);
+    date.setMinutes(timeMinutes);
+    return date;
 }
 
 function getAstroEvent(now, astroEvent, start, end, offsetMinutes, isDayEnd, latitude, longitude, useNextDay) {
-    let ts = mods.suncalc.getTimes(now, latitude, longitude)[astroEvent];
+    let date = new Date(now.getTime());
+    let ts = mods.suncalc.getTimes(date, latitude, longitude)[astroEvent];
     if (!ts || ts.getTime().toString() === 'NaN') {
-        ts = isDayEnd ? getNextTimeEvent(end, useNextDay) : getNextTimeEvent(start, useNextDay);
+        ts = isDayEnd ? getNextTimeEvent(end, date) : getNextTimeEvent(start, date);
+    }
+    // if event in the past
+    if (now > ts && useNextDay) {
+        // take next day
+        date.setDate(now.getDate() + 1);
+        ts = mods.suncalc.getTimes(date, latitude, longitude)[astroEvent];
+        if (!ts || ts.getTime().toString() === 'NaN') {
+            ts = isDayEnd ? getNextTimeEvent(end, date) : getNextTimeEvent(start, date);
+        }
     }
     ts.setSeconds(0);
     ts.setMilliseconds(0);
     ts.setMinutes(ts.getMinutes() + (parseInt(offsetMinutes, 10) || 0));
-
     let [timeHoursStart, timeMinutesStart] = start.split(':');
     timeHoursStart = parseInt(timeHoursStart, 10);
     timeMinutesStart = parseInt(timeMinutesStart, 10) || 0;
-
     if (ts.getHours() < timeHoursStart || (ts.getHours() === timeHoursStart && ts.getMinutes() < timeMinutesStart)) {
-        ts = getNextTimeEvent(start, useNextDay);
+        ts = getNextTimeEvent(start, date);
     }
 
     let [timeHoursEnd, timeMinutesEnd] = end.split(':');
     timeHoursEnd = parseInt(timeHoursEnd, 10);
     timeMinutesEnd = parseInt(timeMinutesEnd, 10) || 0;
-
     if (ts.getHours() > timeHoursEnd || (ts.getHours() === timeHoursEnd && ts.getMinutes() > timeMinutesEnd)) {
-        ts = getNextTimeEvent(end, useNextDay);
+        ts = getNextTimeEvent(end, date);
     }
 
-    // if event in the past
-    if (now > ts && useNextDay) {
-        // take next day
-        ts.setDate(ts.getDate() + 1);
-    }
     return ts;
 }
 
