@@ -207,7 +207,7 @@ Blockly.JavaScript['logic_switch_case'] = function (block) {
     var switchVariable = Blockly.JavaScript.valueToCode(block, 'CONDITION', Blockly.JavaScript.ORDER_NONE) || null;
 
     if (switchVariable){
-        var pattern = /^[$\w_][._$\d\w]*$/g;
+        var pattern = /^\(?([._$\d\w"?: ])*\)?$/g;
 
         if (pattern.test(switchVariable)) { // Check to see if the switch is a kind of variable type
             code = '\nswitch (' + switchVariable + ') {\n';
