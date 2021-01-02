@@ -1183,11 +1183,11 @@ Take all their states, where id ends with `".STATE"` and make subscription on al
 If some of these states changes the callback will be called like for "on" function.
 
 
-Following functions are possible, setValue, getValue (only from first), on, each
+Following functions are possible, setState, getState (only from first), on, each
 
 ```js
 // Switch on all switches in "Wohnzimmer"
-$('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').setValue(true);
+$('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').setState(true);
 ```
 
 You can interrupt the "each" loop by returning the false value, like:
