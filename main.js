@@ -931,8 +931,7 @@ function getNextTimeEvent(time, useNextDay) {
     let [timeHours, timeMinutes] = time.split(':');
     timeHours = parseInt(timeHours, 10);
     timeMinutes = parseInt(timeMinutes, 10);
-    if (useNextDay && (now.getHours() > timeHours) ||
-        (now.getHours() === timeHours && now.getMinutes() > timeMinutes)) {
+    if (useNextDay && (now.getHours() > timeHours || (now.getHours() === timeHours && now.getMinutes() > timeMinutes))) {
         now.setDate(now.getDate() + 1);
     }
 
