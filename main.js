@@ -214,6 +214,7 @@ const context = {
     stateIds:         [],
     errorLogFunction: null,
     subscriptions:    [],
+    subscriptionsObject: [],
     adapterSubs:      {},
     subscribedPatterns: {},
     cacheObjectEnums: {},
@@ -297,6 +298,17 @@ function startAdapter(options) {
             // send changes to disk mirror
             mirror && mirror.onObjectChange(id, obj);
 
+            context.subscriptionsObject.forEach(sub => {
+                // ToDo: implement comparation with id.0.* too
+                if (sub.pattern === id) {
+                    try {
+                        sub.callback(id, obj);
+                    } catch (err) {
+                        adapter.log.error(`Error in callback: ${err}`);
+                    }
+                }
+            });
+
             if (obj) {
                 // add state to state ID's list
                 if (obj.type === 'state' && !context.stateIds.includes(id)) {
@@ -311,7 +323,9 @@ function startAdapter(options) {
 
             if (!obj) {
                 // object deleted
-                if (!context.objects[id]) return;
+                if (!context.objects[id]) {
+                    return;
+                }
 
                 // Script deleted => remove it
                 if (context.objects[id].type === 'script' && context.objects[id].common.engine === 'system.adapter.' + adapter.namespace) {
@@ -469,7 +483,11 @@ function startAdapter(options) {
             for (let i = 0, l = context.subscriptions.length; i < l; i++) {
                 const sub = context.subscriptions[i];
                 if (sub && patternMatching(_eventObj, sub.patternCompareFunctions)) {
-                    sub.callback(_eventObj);
+                    try {
+                        sub.callback(_eventObj);
+                    } catch (err) {
+                        adapter.log.error(`Error in callback: ${err}`);
+                    }
                 }
             }
         },
@@ -1488,7 +1506,9 @@ function stop(name, callback) {
                     if (context.subscribedPatterns[id] <= 0) {
                         adapter.unsubscribeForeignStates(id);
                         delete context.subscribedPatterns[id];
-                        if (context.states[id]) delete context.states[id];
+                        if (context.states[id]) {
+                            delete context.states[id];
+                        }
                     }
                 }
             }
@@ -1502,6 +1522,13 @@ function stop(name, callback) {
                 if (!context.isEnums && context.subscriptions[i].pattern.enumName || context.subscriptions[i].pattern.enumId) {
                     context.isEnums = true;
                 }
+            }
+        }
+
+        for (let i = context.subscriptionsObject.length - 1; i >= 0; i--) {
+            if (context.subscriptionsObject[i].name === name) {
+                const sub = context.subscriptionsObject.splice(i, 1)[0];
+                sub && adapter.unsubscribeForeignObjects(sub.pattern);
             }
         }
 

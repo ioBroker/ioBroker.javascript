@@ -1,8 +1,10 @@
+** Hinweis: Momentan beinhaltet die Englishe Version viel mehr infomation und wir empfehlen die zu lesen**
 
 Der javascript-Adapter dient dazu komfortabel Skripte zu erstellen, editieren und zu verwalten.
 
 
-## [](https://github.com/ioBroker/ioBroker/wiki/ioBroker-Adapter-javascript#konfiguration)Konfiguration
+## Konfiguration
+[Hier ist mehr darüber](https://github.com/ioBroker/ioBroker/wiki/ioBroker-Adapter-javascript#konfiguration)
 
 
 ![Einstellungsmenü Javascript Adapter](img/javascript_Einstellungen-Javascript.png)
