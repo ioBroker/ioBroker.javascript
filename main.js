@@ -943,6 +943,7 @@ let globalScriptLines  = 0;
 // let activeRegEx     = null;
 let activeStr          = ''; // enabled state prefix
 let daySchedule        = null; // schedule for astrological day
+let timeScheduleTimer  = null; // schedule for astrological day
 
 function getNextTimeEvent(time, useNextDay) {
     const now = new Date();
@@ -1011,7 +1012,7 @@ function timeSchedule(adapter, context) {
     now.setSeconds(0);
     now.setMilliseconds(0);
     const interval = now.getTime() - Date.now();
-    setTimeout(timeSchedule, interval, adapter, context);
+    timeScheduleTimer = setTimeout(timeSchedule, interval, adapter, context);
 }
 
 function dayTimeSchedules(adapter, context) {
@@ -1077,6 +1078,7 @@ function dayTimeSchedules(adapter, context) {
 
 function stopTimeSchedules() {
     daySchedule && clearTimeout(daySchedule);
+    timeScheduleTimer && clearTimeout(timeScheduleTimer);
 }
 
 /**

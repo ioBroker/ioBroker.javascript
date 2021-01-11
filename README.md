@@ -37,6 +37,10 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77) Make sure to end all Timeouts
+
 ### 4.10.8 (2020-12-07)
 * (paul53) Corrected `variables.isDayTime`
 * (AlCalzone) catch errors during virtual-tsc compile calls
