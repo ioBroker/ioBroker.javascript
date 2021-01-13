@@ -241,7 +241,7 @@ const regExGlobalOld = /_global$/;
 const regExGlobalNew = /script\.js\.global\./;
 
 function checkIsGlobal(obj) {
-    return regExGlobalOld.test(obj.common.name) || regExGlobalNew.test(obj._id);
+    return obj && obj.common && (regExGlobalOld.test(obj.common.name) || regExGlobalNew.test(obj._id));
 }
 /**
  * @type {Set<string>}

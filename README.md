@@ -40,6 +40,7 @@ And then call `npm run build`.
 
 ### __WORK IN PROGRESS__
 * (Apollon77) Make sure to end all Timeouts
+* (Apollon77) Prevent crash case (Sentry IOBROKER-JAVASCRIPT-51)
 
 ### 4.10.8 (2020-12-07)
 * (paul53) Corrected `variables.isDayTime`
