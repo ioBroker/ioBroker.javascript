@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.10.8",
+        "version": "4.10.9",
         "news": {
+            "4.10.9": {
+                "en": "Make sure to end all Timeouts\nPrevent crash case (Sentry IOBROKER-JAVASCRIPT-51)",
+                "de": "Stellen Sie sicher, dass alle Timeouts beendet sind\nAbsturz verhindern (Sentry IOBROKER-JAVASCRIPT-51)",
+                "ru": "Обязательно завершите все тайм-ауты\nСлучай предотвращения сбоя (Sentry IOBROKER-JAVASCRIPT-51)",
+                "pt": "Certifique-se de encerrar todos os tempos limite\nPrevenir caso de travamento (Sentry IOBROKER-JAVASCRIPT-51)",
+                "nl": "Zorg ervoor dat u alle time-outs beëindigt\nVoorkom een crashcase (Sentry IOBROKER-JAVASCRIPT-51)",
+                "fr": "Assurez-vous de mettre fin à tous les délais\nPrévenir les cas de crash (Sentry IOBROKER-JAVASCRIPT-51)",
+                "it": "Assicurati di terminare tutti i timeout\nPrevenire il crash case (Sentry IOBROKER-JAVASCRIPT-51)",
+                "es": "Asegúrese de finalizar todos los tiempos de espera\nCaso de prevención de accidentes (Sentry IOBROKER-JAVASCRIPT-51)",
+                "pl": "Pamiętaj, aby zakończyć wszystkie limity czasu\nZapobiegaj awariom (Sentry IOBROKER-JAVASCRIPT-51)",
+                "zh-cn": "确保结束所有超时\n防止发生崩溃情况（Sentry IOBROKER-JAVASCRIPT-51）"
+            },
             "4.10.8": {
                 "en": "Corrected `variables.isDayTime`\ncatch errors during virtual-tsc compile calls\nPrevent crash case (Sentry)",
                 "de": "`Variables.isDayTime` korrigiert\nFehler beim Kompilieren von Virtual-TSC-Aufrufen abfangen\nAbsturz verhindern (Sentry)",
@@ -249,18 +261,6 @@
                 "es": "Problema de bloque fijo",
                 "pl": "Naprawiono blokowy problem",
                 "zh-cn": "修复块状问题"
-            },
-            "4.7.1": {
-                "en": "Fixed styling",
-                "de": "Styling korrigiert",
-                "ru": "Фиксированный стиль",
-                "pt": "Estilo fixo",
-                "nl": "Vaste styling",
-                "fr": "Style fixe",
-                "it": "Stile fisso",
-                "es": "Estilo fijo",
-                "pl": "Naprawiono stylizację",
-                "zh-cn": "固定样式"
             }
         },
         "desc": {

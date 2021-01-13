@@ -1,5 +1,9 @@
 The newest change log is in README.md
 
+## 4.10.4 (2020-11-09)
+* (bluefox) null timeouts are checked now
+* (AlCalzone) Correction for the typescript with async functions
+
 ## 4.10.3 (2020-11-08)
 * (bluefox) Corrected search in scripts
 

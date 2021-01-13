@@ -38,7 +38,7 @@ And then call `npm run build`.
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 4.10.9 (2021-01-13)
 * (Apollon77) Make sure to end all Timeouts
 * (Apollon77) Prevent crash case (Sentry IOBROKER-JAVASCRIPT-51)
 
@@ -59,10 +59,6 @@ And then call `npm run build`.
 
 ### 4.10.5 (2020-11-15)
 * (bluefox) null timeouts are checked now
-
-### 4.10.4 (2020-11-09)
-* (bluefox) null timeouts are checked now
-* (AlCalzone) Correction for the typescript with async functions
 
 ## License
 
