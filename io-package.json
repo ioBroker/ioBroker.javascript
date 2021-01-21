@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.10.9",
+        "version": "4.10.10",
         "news": {
+            "4.10.10": {
+                "en": "Do not try to set a state value if object creation was not successful (Sentry IOBROKER-JAVASCRIPT-5G)\nMake sure no incorrect states are trying to be set (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "de": "Versuchen Sie nicht, einen Statuswert festzulegen, wenn die Objekterstellung nicht erfolgreich war (Sentry IOBROKER-JAVASCRIPT-5G).\nStellen Sie sicher, dass keine falschen Zustände festgelegt werden sollen (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A).",
+                "ru": "Не пытайтесь установить значение состояния, если создание объекта не удалось (Sentry IOBROKER-JAVASCRIPT-5G)\nУбедитесь, что не устанавливаются неправильные состояния (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "pt": "Não tente definir um valor de estado se a criação do objeto não foi bem-sucedida (Sentry IOBROKER-JAVASCRIPT-5G)\nCertifique-se de que nenhum estado incorreto esteja tentando ser definido (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "nl": "Probeer geen statuswaarde in te stellen als het maken van een object niet is gelukt (Sentry IOBROKER-JAVASCRIPT-5G)\nZorg ervoor dat er geen onjuiste statussen worden ingesteld (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "fr": "N'essayez pas de définir une valeur d'état si la création d'objet a échoué (Sentry IOBROKER-JAVASCRIPT-5G)\nAssurez-vous qu'aucun état incorrect ne tente d'être défini (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "it": "Non tentare di impostare un valore di stato se la creazione dell'oggetto non è andata a buon fine (Sentry IOBROKER-JAVASCRIPT-5G)\nAssicurati che non stiano tentando di impostare stati errati (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "es": "No intente establecer un valor de estado si la creación del objeto no fue exitosa (Sentry IOBROKER-JAVASCRIPT-5G)\nAsegúrese de que no se estén intentando establecer estados incorrectos (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "pl": "Nie próbuj ustawiać wartości stanu, jeśli utworzenie obiektu nie powiodło się (Sentry IOBROKER-JAVASCRIPT-5G)\nUpewnij się, że nie próbujesz ustawić żadnych nieprawidłowych stanów (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "zh-cn": "如果对象创建不成功，请勿尝试设置状态值（Sentry IOBROKER-JAVASCRIPT-5G）\n确保没有试图设置不正确的状态（Sentry IOBROKER-JAVASCRIPT-5F，IOBROKER-JAVASCRIPT-5A）"
+            },
             "4.10.9": {
                 "en": "Make sure to end all Timeouts\nPrevent crash case (Sentry IOBROKER-JAVASCRIPT-51)",
                 "de": "Stellen Sie sicher, dass alle Timeouts beendet sind\nAbsturz verhindern (Sentry IOBROKER-JAVASCRIPT-51)",
@@ -249,18 +261,6 @@
                 "es": "Se corrigió el diálogo de selección de ID",
                 "pl": "Naprawiono okno dialogowe wyboru identyfikatora",
                 "zh-cn": "修复了选择ID对话框"
-            },
-            "4.7.2": {
-                "en": "Fixed blockly problem",
-                "de": "Blockproblem behoben",
-                "ru": "Исправлена блочная проблема",
-                "pt": "Problema de bloqueio corrigido",
-                "nl": "Blokkeerprobleem opgelost",
-                "fr": "Correction d'un problème de blocage",
-                "it": "Risolto problema di blocco",
-                "es": "Problema de bloque fijo",
-                "pl": "Naprawiono blokowy problem",
-                "zh-cn": "修复块状问题"
             }
         },
         "desc": {

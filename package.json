@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "4.10.9",
+  "version": "4.10.10",
   "description": "Javascript/Coffescript Script Engine for ioBroker",
   "author": "bluefox <dogafox@gmail.com>",
   "contributors": [
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.4.0",
-    "@types/node": "^12.19.13",
+    "@types/node": "^12.19.15",
     "@types/request": "^2.48.5",
     "coffee-compiler": "^0.3.2",
     "coffee-script": "^1.12.7",

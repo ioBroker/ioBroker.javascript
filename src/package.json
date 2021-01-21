@@ -1,6 +1,6 @@
 {
   "name": "js",
-  "version": "4.10.9",
+  "version": "4.10.10",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.0",

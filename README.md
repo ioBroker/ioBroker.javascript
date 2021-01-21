@@ -38,7 +38,7 @@ And then call `npm run build`.
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 4.10.10 (2021-01-22)
 * (Apollon77) Do not try to set a state value if object creation was not successful (Sentry IOBROKER-JAVASCRIPT-5G)
 * (Apollon77) Make sure no incorrect states are trying to be set (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)
 
@@ -60,9 +60,6 @@ And then call `npm run build`.
 * (AlCalzone) If no type declarations are found for an installed package, `require` will no longer show the error "module not found"
 * (AlCalzone) Removed the `--prefix` argument in `npm install`, so package installations on Windows no longer mess up the install directory
 * (bluefox) Corrected the set of the binary state
-
-### 4.10.5 (2020-11-15)
-* (bluefox) null timeouts are checked now
 
 ## License
 
