@@ -1694,7 +1694,12 @@ function prepareScript(obj, callback) {
         let _name;
         if (obj && obj._id) {
             _name = obj._id;
-            adapter.setState('scriptEnabled.' + _name.substring('script.js.'.length), false, true);
+            const scriptIdName = _name.substring('script.js.'.length);
+            if (scriptIdName.length) {
+                adapter.setState('scriptEnabled.' + scriptIdName, false, true);
+            } else {
+                adapter.log.error('Invalid scriptname');
+            }
         }
         !obj && adapter.log.error('Invalid script');
         typeof callback === 'function' && callback(false, _name);
