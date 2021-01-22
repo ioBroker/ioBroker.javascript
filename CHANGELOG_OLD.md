@@ -1,5 +1,11 @@
 The newest change log is in README.md
 
+## 4.10.6 (2020-12-01)
+* (AlCalzone) TypeScripts which augment the global scope are now correctly compiled
+* (AlCalzone) If no type declarations are found for an installed package, `require` will no longer show the error "module not found"
+* (AlCalzone) Removed the `--prefix` argument in `npm install`, so package installations on Windows no longer mess up the install directory
+* (bluefox) Corrected the set of the binary state
+
 ## 4.10.5 (2020-11-15)
 * (bluefox) null timeouts are checked now
 

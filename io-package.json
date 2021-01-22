@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.10.10",
+        "version": "4.10.11",
         "news": {
+            "4.10.11": {
+                "en": "Optimize error handling in createState and file mirror again",
+                "de": "Optimieren Sie die Fehlerbehandlung in createState und file Mirror erneut",
+                "ru": "Оптимизируйте обработку ошибок в createState и снова зеркалируйте файлы",
+                "pt": "Otimize o tratamento de erros em createState e espelho de arquivo novamente",
+                "nl": "Optimaliseer foutafhandeling in createState en bestandsspiegel opnieuw",
+                "fr": "Optimiser à nouveau la gestion des erreurs dans createState et file mirror",
+                "it": "Ottimizza nuovamente la gestione degli errori in createState e file mirror",
+                "es": "Optimice el manejo de errores en createState y file mirror nuevamente",
+                "pl": "Zoptymalizuj obsługę błędów w createState i ponownie dubluj pliki",
+                "zh-cn": "重新优化createState和文件镜像中的错误处理"
+            },
             "4.10.10": {
                 "en": "Do not try to set a state value if object creation was not successful (Sentry IOBROKER-JAVASCRIPT-5G)\nMake sure no incorrect states are trying to be set (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
                 "de": "Versuchen Sie nicht, einen Statuswert festzulegen, wenn die Objekterstellung nicht erfolgreich war (Sentry IOBROKER-JAVASCRIPT-5G).\nStellen Sie sicher, dass keine falschen Zustände festgelegt werden sollen (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A).",
@@ -249,18 +261,6 @@
                 "es": "Editor JS fijo en blockly",
                 "pl": "Naprawiono blokowy edytor JS",
                 "zh-cn": "固定JS编辑器在块中"
-            },
-            "4.7.3": {
-                "en": "Fixed the select ID dialog",
-                "de": "Das Dialogfeld \"ID auswählen\" wurde korrigiert",
-                "ru": "Исправлен диалог выбора идентификатора",
-                "pt": "Corrigida a caixa de diálogo de seleção de ID",
-                "nl": "Het dialoogvenster ID selecteren opgelost",
-                "fr": "Correction de la boîte de dialogue de sélection d'ID",
-                "it": "Corretta la finestra di dialogo Seleziona ID",
-                "es": "Se corrigió el diálogo de selección de ID",
-                "pl": "Naprawiono okno dialogowe wyboru identyfikatora",
-                "zh-cn": "修复了选择ID对话框"
             }
         },
         "desc": {
