@@ -1,5 +1,9 @@
 The newest change log is in README.md
 
+## 4.10.7 (2020-12-03)
+* (Apollon77) Prevent crash case (Sentry IOBROKER-JAVASCRIPT-4Q)
+* (paul53) Corrected `variables.isDayTime`
+
 ## 4.10.6 (2020-12-01)
 * (AlCalzone) TypeScripts which augment the global scope are now correctly compiled
 * (AlCalzone) If no type declarations are found for an installed package, `require` will no longer show the error "module not found"

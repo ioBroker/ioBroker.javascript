@@ -38,7 +38,7 @@ And then call `npm run build`.
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 4.10.12 (2021-01-24)
 * (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-4B)
 
 ### 4.10.11 (2021-01-22)
@@ -56,10 +56,6 @@ And then call `npm run build`.
 * (paul53) Corrected `variables.isDayTime`
 * (AlCalzone) catch errors during virtual-tsc compile calls
 * (Apollon77) Prevent crash case (Sentry)
-
-### 4.10.7 (2020-12-03)
-* (Apollon77) Prevent crash case (Sentry IOBROKER-JAVASCRIPT-4Q)
-* (paul53) Corrected `variables.isDayTime`
 
 ## License
 

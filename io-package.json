@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.10.11",
+        "version": "4.10.12",
         "news": {
+            "4.10.12": {
+                "en": "Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "de": "Behandeln Sie weitere Fälle mit ungültigen Skriptnamen / Status-IDs (Sentry IOBROKER-JAVASCRIPT-4B).",
+                "ru": "Обработка большего количества случаев с недопустимыми именами сценариев / идентификаторами состояний (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "pt": "Trate mais casos com nomes de script / ids de estado inválidos (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "nl": "Behandel meer gevallen met ongeldige scriptnamen / status-id's (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "fr": "Gérez plus de cas avec des noms de script / ID d'état non valides (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "it": "Gestisci più casi con nomi di script / id di stato non validi (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "es": "Maneje más casos con nombres de script / id de estado no válidos (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "pl": "Obsługuj więcej przypadków z nieprawidłowymi nazwami skryptów / identyfikatorami stanów (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "zh-cn": "使用无效的脚本名称/状态ID处理更多案件（Sentry IOBROKER-JAVASCRIPT-4B）"
+            },
             "4.10.11": {
                 "en": "Optimize error handling in createState and file mirror again",
                 "de": "Optimieren Sie die Fehlerbehandlung in createState und file Mirror erneut",
@@ -249,18 +261,6 @@
                 "es": "agregar métodos xyzAsync y esperar / dormir\nEvitar un caso de accidente (Sentry IOBROKER-JAVASCRIPT-3N)",
                 "pl": "dodaj metody xyzAsync i poczekaj / uśpij\nZapobiegaj awariom (Sentry IOBROKER-JAVASCRIPT-3N)",
                 "zh-cn": "添加xyzAsync方法并等待/睡眠\n防止发生崩溃情况（Sentry IOBROKER-JAVASCRIPT-3N）"
-            },
-            "4.7.4": {
-                "en": "Fixed JS editor in blockly",
-                "de": "JS-Editor blockartig behoben",
-                "ru": "Исправлен редактор JS в блочном режиме",
-                "pt": "Editor JS corrigido em bloco",
-                "nl": "JS-editor in blockly opgelost",
-                "fr": "Éditeur JS fixe en bloc",
-                "it": "Corretto l'editor JS in blocco",
-                "es": "Editor JS fijo en blockly",
-                "pl": "Naprawiono blokowy edytor JS",
-                "zh-cn": "固定JS编辑器在块中"
             }
         },
         "desc": {
