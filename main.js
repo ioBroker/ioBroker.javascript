@@ -1600,7 +1600,13 @@ function prepareScript(obj, callback) {
         obj.common.source) {
         const name = obj._id;
 
-        adapter.setState('scriptEnabled.' + name.substring('script.js.'.length), true, true);
+        const nameId = name.substring('script.js.'.length);
+        if (!nameId.length) {
+            adapter.log.error(name + ' script name is empty which is invalid!');
+            typeof callback === 'function' && callback(false, name);
+            return;
+        }
+        adapter.setState('scriptEnabled.' + nameId, true, true);
         obj.common.engineType = obj.common.engineType || '';
 
         if ((obj.common.engineType.toLowerCase().startsWith('javascript') || obj.common.engineType === 'Blockly')) {

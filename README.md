@@ -38,6 +38,9 @@ And then call `npm run build`.
 
 ## Changelog
 
+### __WORK IN PROGERSS__
+* (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-4B)
+
 ### 4.10.11 (2021-01-22)
 * (Apollon77) Optimize error handling in createState and file mirror again
 
