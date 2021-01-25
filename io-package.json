@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.10.13",
+        "version": "4.10.14",
         "news": {
+            "4.10.14": {
+                "en": "Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "de": "Behandeln Sie weitere Fälle mit ungültigen Skriptnamen / Status-IDs (Sentry IOBROKER-JAVASCRIPT-5R).",
+                "ru": "Обработка большего количества случаев с недопустимыми именами сценариев / идентификаторами состояний (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "pt": "Trate mais casos com nomes de script / ids de estado inválidos (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "nl": "Behandel meer gevallen met ongeldige scriptnamen / status-id's (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "fr": "Gérez plus de cas avec des noms de script / ID d'état non valides (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "it": "Gestisci più casi con nomi di script / id di stato non validi (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "es": "Manejar más casos con nombres de script / id de estado no válidos (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "pl": "Obsługuj więcej przypadków z nieprawidłowymi nazwami skryptów / identyfikatorami stanów (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "zh-cn": "使用无效的脚本名称/状态ID处理更多案件（Sentry IOBROKER-JAVASCRIPT-5R）"
+            },
             "4.10.13": {
                 "en": "Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-4B)",
                 "de": "Behandeln Sie weitere Fälle mit ungültigen Skriptnamen / Status-IDs (Sentry IOBROKER-JAVASCRIPT-4B).",
@@ -249,18 +261,6 @@
                 "es": "Se agregaron las configuraciones para columnas en el cuadro de diálogo de selección de estado.",
                 "pl": "Dodano ustawienia dla kolumn w oknie dialogowym wyboru stanu",
                 "zh-cn": "在状态选择对话框中添加了列的设置"
-            },
-            "4.8.0": {
-                "en": "add xyzAsync methods and wait/sleep\nPrevent a crash case (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "de": "füge xyzAsync-Methoden hinzu und warte / schlafe\nVerhindern Sie einen Absturz (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "ru": "добавить методы xyzAsync и ждать / спать\nПредотвращение сбоя (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "pt": "adicionar métodos xyzAsync e esperar / dormir\nPrevina um caso de travamento (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "nl": "voeg xyzAsync-methoden toe en wacht / slaap\nVoorkom een crashcase (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "fr": "ajouter des méthodes xyzAsync et attendre / dormir\nPrévenir un cas de crash (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "it": "aggiungi i metodi xyzAsync e wait / sleep\nPrevenire un crash case (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "es": "agregar métodos xyzAsync y esperar / dormir\nEvitar un caso de accidente (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "pl": "dodaj metody xyzAsync i poczekaj / uśpij\nZapobiegaj awariom (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "zh-cn": "添加xyzAsync方法并等待/睡眠\n防止发生崩溃情况（Sentry IOBROKER-JAVASCRIPT-3N）"
             }
         },
         "desc": {

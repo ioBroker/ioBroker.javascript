@@ -1,5 +1,10 @@
 The newest change log is in README.md
 
+## 4.10.8 (2020-12-07)
+* (paul53) Corrected `variables.isDayTime`
+* (AlCalzone) catch errors during virtual-tsc compile calls
+* (Apollon77) Prevent crash case (Sentry)
+
 ## 4.10.7 (2020-12-03)
 * (Apollon77) Prevent crash case (Sentry IOBROKER-JAVASCRIPT-4Q)
 * (paul53) Corrected `variables.isDayTime`
