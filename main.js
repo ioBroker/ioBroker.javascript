@@ -1601,8 +1601,8 @@ function prepareScript(obj, callback) {
         const name = obj._id;
 
         const nameId = name.substring('script.js.'.length);
-        if (!nameId.length) {
-            adapter.log.error(name + ' script name is empty which is invalid!');
+        if (!nameId.length || nameId.endsWith('.')) {
+            adapter.log.error(`Script name ${name} is invalid!`);
             typeof callback === 'function' && callback(false, name);
             return;
         }

@@ -38,6 +38,9 @@ And then call `npm run build`.
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5R)
+
 ### 4.10.13 (2021-01-24)
 * (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-4B)
 
