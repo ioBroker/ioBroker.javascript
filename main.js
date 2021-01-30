@@ -1701,11 +1701,13 @@ function prepareScript(obj, callback) {
         if (obj && obj._id) {
             _name = obj._id;
             const scriptIdName = _name.substring('script.js.'.length);
-            if (scriptIdName.length) {
-                adapter.setState('scriptEnabled.' + scriptIdName, false, true);
-            } else {
-                adapter.log.error('Invalid scriptname');
+
+            if (!scriptIdName.length || scriptIdName.endsWith('.')) {
+                adapter.log.error(`Script name ${_name} is invalid!`);
+                typeof callback === 'function' && callback(false, _name);
+                return;
             }
+            adapter.setState('scriptEnabled.' + scriptIdName, false, true);
         }
         !obj && adapter.log.error('Invalid script');
         typeof callback === 'function' && callback(false, _name);
