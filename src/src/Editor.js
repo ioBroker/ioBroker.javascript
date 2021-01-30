@@ -34,6 +34,7 @@ import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
 import ImgBlockly2Js from './assets/blockly2js.png'
+import ImgRules from './assets/rules.png';
 
 import I18n from '@iobroker/adapter-react/i18n';
 import ScriptEditorComponent from './Components/ScriptEditorVanilaMonaco';
@@ -42,11 +43,12 @@ import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
 import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import DialogCron from './Dialogs/Cron';
 import DialogScriptEditor from './Dialogs/ScriptEditor';
-
+import RulesEditor from './Components/RulesEditor';
 
 const images = {
     'Blockly': ImgBlockly,
     'Javascript/js': ImgJS,
+    'Rules': ImgRules,
     def: ImgJS,
     'TypeScript/ts': ImgTypeScript,
 };
@@ -169,9 +171,11 @@ class Editor extends React.Component {
             editing: editing, // array of opened scripts
             changed: {}, // for every script
             blockly: null,
+            rules: null,
             debugEnabled: false,
             verboseEnabled: false,
             showBlocklyCode: false,
+            showRules: false,
             showSelectId: false,
             showCron: false,
             showScript: false,
@@ -616,7 +620,7 @@ class Editor extends React.Component {
     onTabChange(event, selected) {
         window.localStorage && window.localStorage.setItem('Editor.selected', selected);
         const common = this.scripts[selected] || (this.props.objects[selected] && this.props.objects[selected].common);
-        this.setState({selected, blockly: common.engineType === 'Blockly', showBlocklyCode: false, verboseEnabled: common.verbose, debugEnabled: common.debug});
+        this.setState({ selected, rules: common.engineType === 'Rules', blockly: common.engineType === 'Blockly', showBlocklyCode: false, verboseEnabled: common.verbose, debugEnabled: common.debug });
         this.props.onSelectedChange && this.props.onSelectedChange(selected, this.state.editing);
     }
 
@@ -659,6 +663,7 @@ class Editor extends React.Component {
                     newState.changed[newState.selected] = this.isScriptChanged(newState.selected);
                     const common = newState.selected && (this.scripts[newState.selected] || (this.props.objects[newState.selected] && this.props.objects[newState.selected].common));
                     newState.blockly = common ? common.engineType === 'Blockly' : false;
+                    newState.rules = common ? common.engineType === 'Rules' : false;
                     newState.verboseEnabled = common ? common.verbose : false;
                     newState.debugEnabled = common ? common.debug : false;
                     newState.showBlocklyCode = false;
@@ -904,7 +909,9 @@ class Editor extends React.Component {
     }
 
     getScriptEditor() {
-        if (this.state.selected && this.props.objects[this.state.selected] && this.state.blockly !== null && (!this.state.blockly || this.state.showBlocklyCode)) {
+        if (this.state.selected && this.props.objects[this.state.selected]
+            && this.state.blockly !== null && (!this.state.blockly || this.state.showBlocklyCode)
+            && !this.state.rules) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
 
             return <div className={this.props.classes.editorDiv} key="scriptEditorDiv">
@@ -945,6 +952,26 @@ class Editor extends React.Component {
                     resizing={this.props.resizing}
                     code={this.scripts[this.state.selected].source || ''}
                     onChange={newValue => this.onChange({script: newValue})}
+                />
+            </div>);
+        } else {
+            return null;
+        }
+    }
+
+    getRulesEditor() {
+        if (this.state.instancesLoaded && this.state.selected && this.props.objects[this.state.selected] && this.state.rules && this.state.visible) {
+            this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
+
+            return (<div className={this.props.classes.editorDiv} key="flowEditorDiv">
+                <RulesEditor
+                    command={this.state.cmdToBlockly}
+                    key="flowEditorDiv"
+                    themeType={this.state.themeType}
+                    searchText={this.state.searchText}
+                    resizing={this.props.resizing}
+                    code={this.scripts[this.state.selected].source || ''}
+                    onChange={newValue => this.onChange({ script: newValue })}
                 />
             </div>);
         } else {
@@ -1101,6 +1128,7 @@ class Editor extends React.Component {
             setTimeout(() => {
                 const newState = {
                     blockly: this.scripts[this.state.selected].engineType === 'Blockly',
+                    rules: this.scripts[this.state.selected].engineType === 'Rules',
                     showBlocklyCode: false,
                     debugEnabled: this.scripts[this.state.selected].debug,
                     verboseEnabled: this.scripts[this.state.selected].verbose,
@@ -1117,6 +1145,7 @@ class Editor extends React.Component {
             this.getToolbar(),
             this.getScriptEditor(),
             this.getBlocklyEditor(),
+            this.getRulesEditor(),
             this.getConfirmDialog(),
             this.getSelectIdDialog(),
             this.getCronDialog(),

@@ -1,0 +1,54 @@
+$colorFons: #81688c; //
+
+.wrapper_rules {
+    background: url("https://klike.net/uploads/posts/2020-04/1586763579_24.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+    display: flex;
+    * {
+        color: white;
+    }
+    .main_block_item_rules:nth-child(3) {
+        border-left: 1px solid #ffffff59;
+        border-right: 1px solid #ffffff59;
+    }
+}
+.menu_rules {
+    // background: green;
+    width: 200px;
+    height: 100%;
+    background: #994e9e30;
+    border-right: 1px solid #9a39a063;
+    padding: 10px;
+}
+.menu_title {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: $colorFons;
+    &::after,
+    &::before {
+        content: "";
+        flex: 1;
+        border-bottom: 1px solid;
+    }
+    &::after {
+        margin-left: 0.25em;
+    }
+    &::before {
+        margin-right: 0.25em;
+    }
+}
+.icon_them {
+    width: 30px !important;
+    height: 30px !important;
+    margin-left: 5px;
+    * {
+        color: #dfbdec !important;
+    }
+}
+.input_width {
+    margin-top: 20px !important;
+    margin-bottom: 15px !important;
+}

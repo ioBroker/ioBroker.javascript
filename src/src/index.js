@@ -2,14 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as Sentry from '@sentry/browser';
 import * as SentryIntegrations from '@sentry/integrations';
-import { MuiThemeProvider} from '@material-ui/core/styles';
+import { MuiThemeProvider } from '@material-ui/core/styles';
 
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import {version} from '../package.json';
+import { version } from '../package.json';
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 window.adapterName = 'javascript';
 let themeName = Utils.getThemeName();
@@ -21,10 +23,12 @@ function build() {
         console.log('Something is wrong')
     }
     return ReactDOM.render(<MuiThemeProvider theme={theme(themeName)}>
-        <App onThemeChange={_theme => {
-            themeName = _theme;
-            build();
-        }}/>
+        <DndProvider backend={HTML5Backend}>
+            <App onThemeChange={_theme => {
+                themeName = _theme;
+                build();
+            }} />
+        </DndProvider>
     </MuiThemeProvider>, document.getElementById('root'));
 
 }

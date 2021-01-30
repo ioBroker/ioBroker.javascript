@@ -1,0 +1,28 @@
+.switches_item {
+    max-width: 200px;
+    display: flex;
+    margin: 5px 0;
+    padding: 12px 0;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0);
+    transition: all 0.7s;
+    span {
+        width: 100%;
+        margin-left: 15px;
+        color: #dfbdec;
+    }
+    &:hover {
+        border: 1px solid #9a39a063;
+        color: #9a39a063;
+        border-radius: 6px;
+        background: #cb3ed40d;
+        cursor: pointer;
+    }
+}
+.switches_item_active{
+    border: 1px solid #9a39a063;
+    color: #9a39a063;
+    border-radius: 6px;
+    background: #cb3ed40d;
+    cursor: pointer;
+}

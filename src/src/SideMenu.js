@@ -47,6 +47,7 @@ import {MdUnfoldLess as IconCollapseAll} from 'react-icons/md';
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
+import ImgRules from './assets/rules.png';
 
 import I18n from '@iobroker/adapter-react/i18n';
 import DialogRename from './Dialogs/Rename';
@@ -220,6 +221,7 @@ const images = {
     'Blockly': ImgBlockly,
     'Javascript/js': ImgJS,
     def: ImgJS,
+    'Rules':ImgRules,
     'TypeScript/ts': ImgTypeScript,
 };
 
@@ -1437,6 +1439,18 @@ class SideDrawer extends React.Component {
                 src={images['TypeScript/ts'] || images.def}
                 onClick={event => {
                     const typeFilter = this.state.typeFilter === 'TypeScript/ts' ? '' : 'TypeScript/ts';
+                    window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
+                this.setState({typeFilter});
+                }}
+            />,
+            <img
+                key="filterRules"
+                className={this.props.classes.footerButtons}
+                alt="Rules"
+                style={{opacity: this.state.typeFilter === 'Rules' ? 1 : 0.3, background: this.state.typeFilter === 'TypeScript/ts' ? 'gray' : 'inherit'}}
+                src={images['Rules'] || images.def}
+                onClick={event => {
+                    const typeFilter = this.state.typeFilter === 'Rules' ? '' : 'Rules';
                     window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
                 this.setState({typeFilter});
                 }}
