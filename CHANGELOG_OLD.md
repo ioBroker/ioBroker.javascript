@@ -1,5 +1,9 @@
 The newest change log is in README.md
 
+## 4.10.9 (2021-01-13)
+* (Apollon77) Make sure to end all Timeouts
+* (Apollon77) Prevent crash case (Sentry IOBROKER-JAVASCRIPT-51)
+
 ## 4.10.8 (2020-12-07)
 * (paul53) Corrected `variables.isDayTime`
 * (AlCalzone) catch errors during virtual-tsc compile calls

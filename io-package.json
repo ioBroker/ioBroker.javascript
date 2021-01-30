@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.10.14",
+        "version": "4.10.15",
         "news": {
+            "4.10.15": {
+                "en": "Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "de": "Behandeln Sie weitere Fälle mit ungültigen Skriptnamen / Status-IDs (Sentry IOBROKER-JAVASCRIPT-5W).",
+                "ru": "Обработка большего количества случаев с недопустимыми именами скриптов / идентификаторами состояний (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "pt": "Trate mais casos com nomes de script / ids de estado inválidos (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "nl": "Behandel meer gevallen met ongeldige scriptnamen / status-ID's (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "fr": "Gérez plus de cas avec des noms de script / ID d'état non valides (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "it": "Gestisci più casi con nomi di script / id di stato non validi (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "es": "Manejar más casos con nombres de script / id de estado no válidos (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "pl": "Obsługuj więcej przypadków z nieprawidłowymi nazwami skryptów / identyfikatorami stanów (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "zh-cn": "使用无效的脚本名称/状态ID处理更多案件（Sentry IOBROKER-JAVASCRIPT-5W）"
+            },
             "4.10.14": {
                 "en": "Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5R)",
                 "de": "Behandeln Sie weitere Fälle mit ungültigen Skriptnamen / Status-IDs (Sentry IOBROKER-JAVASCRIPT-5R).",
@@ -249,18 +261,6 @@
                 "es": "Hacer que la instancia de duplicación sea ajustable\nCorrija el modo oscuro para blockly",
                 "pl": "Ustaw regulację instancji dublowania\nPopraw tryb ciemny na blokowy",
                 "zh-cn": "使镜像实例可调\n纠正黑暗模式以阻止"
-            },
-            "4.8.3": {
-                "en": "Added the settings for columns in the state selection dialog",
-                "de": "Die Einstellungen für Spalten im Statusauswahldialog wurden hinzugefügt",
-                "ru": "Добавлены настройки столбцов в диалоге выбора состояния",
-                "pt": "Adicionadas as configurações para as colunas na janela de seleção de estado",
-                "nl": "De instellingen voor kolommen toegevoegd in het dialoogvenster voor staatsselectie",
-                "fr": "Ajout des paramètres pour les colonnes dans la boîte de dialogue de sélection d'état",
-                "it": "Aggiunte le impostazioni per le colonne nella finestra di dialogo di selezione dello stato",
-                "es": "Se agregaron las configuraciones para columnas en el cuadro de diálogo de selección de estado.",
-                "pl": "Dodano ustawienia dla kolumn w oknie dialogowym wyboru stanu",
-                "zh-cn": "在状态选择对话框中添加了列的设置"
             }
         },
         "desc": {
