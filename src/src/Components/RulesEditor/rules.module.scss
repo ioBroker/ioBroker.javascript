@@ -21,6 +21,13 @@ $colorFons: #81688c; //
     background: #994e9e30;
     border-right: 1px solid #9a39a063;
     padding: 10px;
+    opacity: 1;
+    transition: width 0.5s, opacity 0.2s, padding 0.5s;
+}
+.menu_off {
+    width: 0px;
+    opacity: 0;
+    padding: 0;
 }
 .menu_title {
     display: flex;
@@ -51,4 +58,24 @@ $colorFons: #81688c; //
 .input_width {
     margin-top: 20px !important;
     margin-bottom: 15px !important;
+}
+.hamburger_wrapper {
+    position: absolute;
+    width: 40px;
+    height: 28px;
+    background: #994e9e7d;
+    border-radius: 0px 20px 20px 0;
+    display: flex;
+    justify-content: center;
+    padding-top: 12px;
+    left: 221px;
+    top: 30px;
+    border: 1px solid #9a39a063;
+    cursor: pointer;
+    transition: left 0.5s, border-radius .7s;
+    z-index: 10;
+}
+.hamburger_off {
+    left: 20px;
+    border-radius: 20px;
 }

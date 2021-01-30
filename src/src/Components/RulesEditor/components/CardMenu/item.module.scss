@@ -10,6 +10,7 @@
         width: 100%;
         margin-left: 15px;
         color: #dfbdec;
+        white-space: nowrap;
     }
     &:hover {
         border: 1px solid #9a39a063;
@@ -19,7 +20,7 @@
         cursor: pointer;
     }
 }
-.switches_item_active{
+.switches_item_active {
     border: 1px solid #9a39a063;
     color: #9a39a063;
     border-radius: 6px;

@@ -9,6 +9,7 @@ import CurrentItem from './components/CurrentItem';
 import { CustomDragLayer } from './components/CustomDragLayer';
 import CustomDragItem from './components/CardMenu/CustomDragItem';
 import ContentBlockItems from './components/ContentBlockItems';
+import HamurgerMenu from './components/HamurgerMenu';
 // import PropTypes from 'prop-types';
 
 // import I18n from '@iobroker/adapter-react/i18n';
@@ -33,10 +34,11 @@ const RulesEditor = () => {
             type: "then"
         }
     ]);
-
+    const [hamburgerOnOff, setHumburgerOnOff] = useState(false);
     return (
         <div className={cls.wrapper_rules}>
-            <div className={cls.menu_rules}>
+            <div className={`${cls.hamburger_wrapper} ${hamburgerOnOff ? cls.hamburger_off : null}`} onClick={() => setHumburgerOnOff(!hamburgerOnOff)}><HamurgerMenu boolean={!hamburgerOnOff} /></div>
+            <div className={`${cls.menu_rules} ${hamburgerOnOff ? cls.menu_off : null}`}>
                 <CustomInput
                     className={cls.input_width}
                     fullWidth
