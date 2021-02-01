@@ -1,5 +1,4 @@
-import * as React from "react";
-
+import * as React from 'react';
 
 export function useStateLocal(events, nameEvents) {
     const [state, setState] = React.useState(

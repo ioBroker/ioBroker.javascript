@@ -13,9 +13,9 @@ import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
 import DragWrapper from '../DragWrapper';
 
 const icon = {
-    'Audio': (props) => <MusicNoteIcon {...props} />,
-    'Shuffle': (props) => <ShuffleIcon {...props} />,
-    'Playlist Play': (props) => <PlaylistPlayIcon {...props} />
+    'Trigger1': (props) => <MusicNoteIcon {...props} />,
+    'Condition1': (props) => <ShuffleIcon {...props} />,
+    'Action1': (props) => <PlaylistPlayIcon {...props} />
 }
 
 const DopContentBlockItems = ({ boolean, children, name, itemsSwitches, setItemsSwitches }) => {
@@ -36,11 +36,13 @@ const DopContentBlockItems = ({ boolean, children, name, itemsSwitches, setItems
     else if (canDrop) {
         backgroundColor = '#fb00002e';
     }
-    return (<div ref={drop} style={{ backgroundColor }} className={`${cls.content_block_item} ${boolean ? null : cls.content_heigth_off}`}>
-        {itemsSwitches.filter(el => el.nameBlock === name).map((el, index) => (
-            <DragWrapper {...el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} Icon={icon[el.name]}><CurrentItem {...el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} name={el.name} Icon={icon[el.name]} /></DragWrapper>))}
+    return <div ref={drop} style={{ backgroundColor }} className={`${cls.content_block_item} ${boolean ? null : cls.content_height_off}`}>
+        {itemsSwitches.filter(el => el.nameBlock === name).map(el=> (
+            <DragWrapper {...el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} Icon={icon[el.name]}>
+                <CurrentItem {...el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} name={el.name} Icon={icon[el.name]} />
+            </DragWrapper>))}
         {isActive ? <div className={cls.empty_block} /> : null}
-    </div>)
+    </div>;
 }
 
 DopContentBlockItems.defaultProps = {
@@ -49,41 +51,40 @@ DopContentBlockItems.defaultProps = {
 };
 
 const ContentBlockItems = ({ children, name, nameDop, dop, border, dopLength, itemsSwitches, setItemsSwitches }) => {
-    const [dopClickItems, setDopClickItems] = useStateLocal([], "dopClickItems");
-    return (
-        <div className={`${cls.main_block_item_rules} ${border ? cls.border : null}`}>
-            <span>{name}</span>
-            <DopContentBlockItems setItemsSwitches={setItemsSwitches} name={name} itemsSwitches={itemsSwitches}>
-            </DopContentBlockItems>
-            {dop && [...Array(dopLength)].map((e, index) => {
-                const booleanDop = (value = index) => Boolean(dopClickItems.find(el => el === `${value}_dop`));
-                return <Fragment key={`${index}_block`}><div
-                    onClick={() => {
-                        let newDopClickItems = [...dopClickItems];
-                        if (booleanDop()) {
-                            let valueIndex = index;
-                            if (booleanDop(1)) {
-                                valueIndex = 1;
-                            }
-                            newDopClickItems = newDopClickItems.filter(el => el !== `${valueIndex}_dop`)
-                        } else {
-                            let valueIndex = 0;
-                            if (booleanDop(0)) {
-                                valueIndex = index;
-                            }
-                            newDopClickItems.push(`${valueIndex}_dop`)
+    const [dopClickItems, setDopClickItems] = useStateLocal([], 'dopClickItems');
+    return <div className={`${cls.main_block_item_rules} ${border ? cls.border : null}`}>
+        <span>{name}</span>
+        <DopContentBlockItems setItemsSwitches={setItemsSwitches} name={name} itemsSwitches={itemsSwitches}>
+        </DopContentBlockItems>
+        {dop && [...Array(dopLength)].map((e, index) => {
+            const booleanDop = (value = index) => Boolean(dopClickItems.find(el => el === `${value}_dop`));
+            return <Fragment key={`${index}_block`}><div
+                onClick={() => {
+                    let newDopClickItems = [...dopClickItems];
+                    if (booleanDop()) {
+                        let valueIndex = index;
+                        if (booleanDop(1)) {
+                            valueIndex = 1;
                         }
-                        setDopClickItems(newDopClickItems);
+                        newDopClickItems = newDopClickItems.filter(el => el !== `${valueIndex}_dop`)
+                    } else {
+                        let valueIndex = 0;
+                        if (booleanDop(0)) {
+                            valueIndex = index;
+                        }
+                        newDopClickItems.push(`${valueIndex}_dop`)
                     }
-                    } key={index} className={cls.block_card_add}>
-                    <div className={cls.card_add}>
-                        {nameDop}
-                    </div>{booleanDop() ? '-' : '+'}
-                </div>
-                    <DopContentBlockItems setItemsSwitches={setItemsSwitches} itemsSwitches={itemsSwitches} name={`${name}_${index + 1}`} boolean={booleanDop()} />
-                </Fragment>
-            })}
-        </div>);
+                    setDopClickItems(newDopClickItems);
+                }
+                } key={index} className={cls.block_card_add}>
+                <div className={cls.card_add}>
+                    {nameDop}
+                </div>{booleanDop() ? '-' : '+'}
+            </div>
+                <DopContentBlockItems setItemsSwitches={setItemsSwitches} itemsSwitches={itemsSwitches} name={`${name}_${index + 1}`} boolean={booleanDop()} />
+            </Fragment>
+        })}
+    </div>;
 }
 
 ContentBlockItems.defaultProps = {

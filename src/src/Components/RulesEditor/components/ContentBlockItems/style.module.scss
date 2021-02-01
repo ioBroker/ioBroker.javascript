@@ -39,8 +39,8 @@ $colorFons: #81688c; //
     flex-direction: column;
     transition: height .3s, background .5s;
 }
-.content_heigth_off{
-    height: 0%;
+.content_height_off {
+    height: 0;
     overflow: hidden;
 }
 .card_add {
@@ -65,7 +65,7 @@ $colorFons: #81688c; //
 }
 .block_card_add {
     display: flex;
-    padding: 0px 10px 6px 10px;
+    padding: 0 10px 6px 10px;
     align-items: center;
     cursor: pointer;
     * {
