@@ -37,27 +37,22 @@ And then call `npm run build`.
 -->
 
 ## Changelog
-### 4.10.8 (2020-12-07)
-* (paul53) Corrected `variables.isDayTime`
-* (AlCalzone) catch errors during virtual-tsc compile calls
-* (Apollon77) Prevent crash case (Sentry)
 
-### 4.10.7 (2020-12-03)
-* (Apollon77) Prevent crash case (Sentry IOBROKER-JAVASCRIPT-4Q)
-* (paul53) Corrected `variables.isDayTime`
+### 4.10.15 (2021-01-31)
+* (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5W)
 
-### 4.10.6 (2020-12-01)
-* (AlCalzone) TypeScripts which augment the global scope are now correctly compiled
-* (AlCalzone) If no type declarations are found for an installed package, `require` will no longer show the error "module not found"
-* (AlCalzone) Removed the `--prefix` argument in `npm install`, so package installations on Windows no longer mess up the install directory
-* (bluefox) Corrected the set of the binary state
+### 4.10.14 (2021-01-25)
+* (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5R)
 
-### 4.10.5 (2020-11-15)
-* (bluefox) null timeouts are checked now
+### 4.10.13 (2021-01-24)
+* (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-4B)
 
-### 4.10.4 (2020-11-09)
-* (bluefox) null timeouts are checked now
-* (AlCalzone) Correction for the typescript with async functions
+### 4.10.11 (2021-01-22)
+* (Apollon77) Optimize error handling in createState and file mirror again
+
+### 4.10.10 (2021-01-22)
+* (Apollon77) Do not try to set a state value if object creation was not successful (Sentry IOBROKER-JAVASCRIPT-5G)
+* (Apollon77) Make sure no incorrect states are trying to be set (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)
 
 ## License
 

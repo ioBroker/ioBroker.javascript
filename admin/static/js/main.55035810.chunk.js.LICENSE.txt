@@ -1,0 +1,15 @@
+/*!schedule.period.days && (
+                <div key="dows" className={this.props.classes.rowDiv + ' ' + this.props.classes.rowDows}>
+                    <div className={this.props.classes.modeDiv}>
+                        <FormControlLabel control={(<Radio className={this.props.classes.inputRadio} checked={!!schedule.period.dows} onClick={() => {
+                            const schedule = JSON.parse(JSON.stringify(this.state.schedule));
+                            schedule.period.dows = schedule.period.dows ? '' : '[0,1,2,3,4,5,6]';
+                            this.onChange(schedule);
+                        }}/>)}
+                        label={I18n.t('sch_periodWeekdays')} />
+                    </div>
+                    <div className={this.props.classes.settingsDiv}>
+                        {this.getPeriodSettingsWeekdays()}
+                    </div>
+                </div>),
+*/

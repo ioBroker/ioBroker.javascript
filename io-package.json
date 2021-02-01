@@ -20,8 +20,80 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.10.8",
+        "version": "4.10.15",
         "news": {
+            "4.10.15": {
+                "en": "Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "de": "Behandeln Sie weitere Fälle mit ungültigen Skriptnamen / Status-IDs (Sentry IOBROKER-JAVASCRIPT-5W).",
+                "ru": "Обработка большего количества случаев с недопустимыми именами скриптов / идентификаторами состояний (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "pt": "Trate mais casos com nomes de script / ids de estado inválidos (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "nl": "Behandel meer gevallen met ongeldige scriptnamen / status-ID's (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "fr": "Gérez plus de cas avec des noms de script / ID d'état non valides (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "it": "Gestisci più casi con nomi di script / id di stato non validi (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "es": "Manejar más casos con nombres de script / id de estado no válidos (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "pl": "Obsługuj więcej przypadków z nieprawidłowymi nazwami skryptów / identyfikatorami stanów (Sentry IOBROKER-JAVASCRIPT-5W)",
+                "zh-cn": "使用无效的脚本名称/状态ID处理更多案件（Sentry IOBROKER-JAVASCRIPT-5W）"
+            },
+            "4.10.14": {
+                "en": "Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "de": "Behandeln Sie weitere Fälle mit ungültigen Skriptnamen / Status-IDs (Sentry IOBROKER-JAVASCRIPT-5R).",
+                "ru": "Обработка большего количества случаев с недопустимыми именами сценариев / идентификаторами состояний (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "pt": "Trate mais casos com nomes de script / ids de estado inválidos (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "nl": "Behandel meer gevallen met ongeldige scriptnamen / status-id's (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "fr": "Gérez plus de cas avec des noms de script / ID d'état non valides (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "it": "Gestisci più casi con nomi di script / id di stato non validi (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "es": "Manejar más casos con nombres de script / id de estado no válidos (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "pl": "Obsługuj więcej przypadków z nieprawidłowymi nazwami skryptów / identyfikatorami stanów (Sentry IOBROKER-JAVASCRIPT-5R)",
+                "zh-cn": "使用无效的脚本名称/状态ID处理更多案件（Sentry IOBROKER-JAVASCRIPT-5R）"
+            },
+            "4.10.13": {
+                "en": "Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "de": "Behandeln Sie weitere Fälle mit ungültigen Skriptnamen / Status-IDs (Sentry IOBROKER-JAVASCRIPT-4B).",
+                "ru": "Обработка большего количества случаев с недопустимыми именами сценариев / идентификаторами состояний (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "pt": "Trate mais casos com nomes de script / ids de estado inválidos (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "nl": "Behandel meer gevallen met ongeldige scriptnamen / status-id's (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "fr": "Gérez plus de cas avec des noms de script / ID d'état non valides (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "it": "Gestisci più casi con nomi di script / id di stato non validi (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "es": "Maneje más casos con nombres de script / id de estado no válidos (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "pl": "Obsługuj więcej przypadków z nieprawidłowymi nazwami skryptów / identyfikatorami stanów (Sentry IOBROKER-JAVASCRIPT-4B)",
+                "zh-cn": "使用无效的脚本名称/状态ID处理更多案件（Sentry IOBROKER-JAVASCRIPT-4B）"
+            },
+            "4.10.11": {
+                "en": "Optimize error handling in createState and file mirror again",
+                "de": "Optimieren Sie die Fehlerbehandlung in createState und file Mirror erneut",
+                "ru": "Оптимизируйте обработку ошибок в createState и снова зеркалируйте файлы",
+                "pt": "Otimize o tratamento de erros em createState e espelho de arquivo novamente",
+                "nl": "Optimaliseer foutafhandeling in createState en bestandsspiegel opnieuw",
+                "fr": "Optimiser à nouveau la gestion des erreurs dans createState et file mirror",
+                "it": "Ottimizza nuovamente la gestione degli errori in createState e file mirror",
+                "es": "Optimice el manejo de errores en createState y file mirror nuevamente",
+                "pl": "Zoptymalizuj obsługę błędów w createState i ponownie dubluj pliki",
+                "zh-cn": "重新优化createState和文件镜像中的错误处理"
+            },
+            "4.10.10": {
+                "en": "Do not try to set a state value if object creation was not successful (Sentry IOBROKER-JAVASCRIPT-5G)\nMake sure no incorrect states are trying to be set (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "de": "Versuchen Sie nicht, einen Statuswert festzulegen, wenn die Objekterstellung nicht erfolgreich war (Sentry IOBROKER-JAVASCRIPT-5G).\nStellen Sie sicher, dass keine falschen Zustände festgelegt werden sollen (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A).",
+                "ru": "Не пытайтесь установить значение состояния, если создание объекта не удалось (Sentry IOBROKER-JAVASCRIPT-5G)\nУбедитесь, что не устанавливаются неправильные состояния (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "pt": "Não tente definir um valor de estado se a criação do objeto não foi bem-sucedida (Sentry IOBROKER-JAVASCRIPT-5G)\nCertifique-se de que nenhum estado incorreto esteja tentando ser definido (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "nl": "Probeer geen statuswaarde in te stellen als het maken van een object niet is gelukt (Sentry IOBROKER-JAVASCRIPT-5G)\nZorg ervoor dat er geen onjuiste statussen worden ingesteld (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "fr": "N'essayez pas de définir une valeur d'état si la création d'objet a échoué (Sentry IOBROKER-JAVASCRIPT-5G)\nAssurez-vous qu'aucun état incorrect ne tente d'être défini (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "it": "Non tentare di impostare un valore di stato se la creazione dell'oggetto non è andata a buon fine (Sentry IOBROKER-JAVASCRIPT-5G)\nAssicurati che non stiano tentando di impostare stati errati (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "es": "No intente establecer un valor de estado si la creación del objeto no fue exitosa (Sentry IOBROKER-JAVASCRIPT-5G)\nAsegúrese de que no se estén intentando establecer estados incorrectos (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "pl": "Nie próbuj ustawiać wartości stanu, jeśli utworzenie obiektu nie powiodło się (Sentry IOBROKER-JAVASCRIPT-5G)\nUpewnij się, że nie próbujesz ustawić żadnych nieprawidłowych stanów (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
+                "zh-cn": "如果对象创建不成功，请勿尝试设置状态值（Sentry IOBROKER-JAVASCRIPT-5G）\n确保没有试图设置不正确的状态（Sentry IOBROKER-JAVASCRIPT-5F，IOBROKER-JAVASCRIPT-5A）"
+            },
+            "4.10.9": {
+                "en": "Make sure to end all Timeouts\nPrevent crash case (Sentry IOBROKER-JAVASCRIPT-51)",
+                "de": "Stellen Sie sicher, dass alle Timeouts beendet sind\nAbsturz verhindern (Sentry IOBROKER-JAVASCRIPT-51)",
+                "ru": "Обязательно завершите все тайм-ауты\nСлучай предотвращения сбоя (Sentry IOBROKER-JAVASCRIPT-51)",
+                "pt": "Certifique-se de encerrar todos os tempos limite\nPrevenir caso de travamento (Sentry IOBROKER-JAVASCRIPT-51)",
+                "nl": "Zorg ervoor dat u alle time-outs beëindigt\nVoorkom een crashcase (Sentry IOBROKER-JAVASCRIPT-51)",
+                "fr": "Assurez-vous de mettre fin à tous les délais\nPrévenir les cas de crash (Sentry IOBROKER-JAVASCRIPT-51)",
+                "it": "Assicurati di terminare tutti i timeout\nPrevenire il crash case (Sentry IOBROKER-JAVASCRIPT-51)",
+                "es": "Asegúrese de finalizar todos los tiempos de espera\nCaso de prevención de accidentes (Sentry IOBROKER-JAVASCRIPT-51)",
+                "pl": "Pamiętaj, aby zakończyć wszystkie limity czasu\nZapobiegaj awariom (Sentry IOBROKER-JAVASCRIPT-51)",
+                "zh-cn": "确保结束所有超时\n防止发生崩溃情况（Sentry IOBROKER-JAVASCRIPT-51）"
+            },
             "4.10.8": {
                 "en": "Corrected `variables.isDayTime`\ncatch errors during virtual-tsc compile calls\nPrevent crash case (Sentry)",
                 "de": "`Variables.isDayTime` korrigiert\nFehler beim Kompilieren von Virtual-TSC-Aufrufen abfangen\nAbsturz verhindern (Sentry)",
@@ -189,78 +261,6 @@
                 "es": "Hacer que la instancia de duplicación sea ajustable\nCorrija el modo oscuro para blockly",
                 "pl": "Ustaw regulację instancji dublowania\nPopraw tryb ciemny na blokowy",
                 "zh-cn": "使镜像实例可调\n纠正黑暗模式以阻止"
-            },
-            "4.8.3": {
-                "en": "Added the settings for columns in the state selection dialog",
-                "de": "Die Einstellungen für Spalten im Statusauswahldialog wurden hinzugefügt",
-                "ru": "Добавлены настройки столбцов в диалоге выбора состояния",
-                "pt": "Adicionadas as configurações para as colunas na janela de seleção de estado",
-                "nl": "De instellingen voor kolommen toegevoegd in het dialoogvenster voor staatsselectie",
-                "fr": "Ajout des paramètres pour les colonnes dans la boîte de dialogue de sélection d'état",
-                "it": "Aggiunte le impostazioni per le colonne nella finestra di dialogo di selezione dello stato",
-                "es": "Se agregaron las configuraciones para columnas en el cuadro de diálogo de selección de estado.",
-                "pl": "Dodano ustawienia dla kolumn w oknie dialogowym wyboru stanu",
-                "zh-cn": "在状态选择对话框中添加了列的设置"
-            },
-            "4.8.0": {
-                "en": "add xyzAsync methods and wait/sleep\nPrevent a crash case (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "de": "füge xyzAsync-Methoden hinzu und warte / schlafe\nVerhindern Sie einen Absturz (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "ru": "добавить методы xyzAsync и ждать / спать\nПредотвращение сбоя (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "pt": "adicionar métodos xyzAsync e esperar / dormir\nPrevina um caso de travamento (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "nl": "voeg xyzAsync-methoden toe en wacht / slaap\nVoorkom een crashcase (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "fr": "ajouter des méthodes xyzAsync et attendre / dormir\nPrévenir un cas de crash (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "it": "aggiungi i metodi xyzAsync e wait / sleep\nPrevenire un crash case (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "es": "agregar métodos xyzAsync y esperar / dormir\nEvitar un caso de accidente (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "pl": "dodaj metody xyzAsync i poczekaj / uśpij\nZapobiegaj awariom (Sentry IOBROKER-JAVASCRIPT-3N)",
-                "zh-cn": "添加xyzAsync方法并等待/睡眠\n防止发生崩溃情况（Sentry IOBROKER-JAVASCRIPT-3N）"
-            },
-            "4.7.4": {
-                "en": "Fixed JS editor in blockly",
-                "de": "JS-Editor blockartig behoben",
-                "ru": "Исправлен редактор JS в блочном режиме",
-                "pt": "Editor JS corrigido em bloco",
-                "nl": "JS-editor in blockly opgelost",
-                "fr": "Éditeur JS fixe en bloc",
-                "it": "Corretto l'editor JS in blocco",
-                "es": "Editor JS fijo en blockly",
-                "pl": "Naprawiono blokowy edytor JS",
-                "zh-cn": "固定JS编辑器在块中"
-            },
-            "4.7.3": {
-                "en": "Fixed the select ID dialog",
-                "de": "Das Dialogfeld \"ID auswählen\" wurde korrigiert",
-                "ru": "Исправлен диалог выбора идентификатора",
-                "pt": "Corrigida a caixa de diálogo de seleção de ID",
-                "nl": "Het dialoogvenster ID selecteren opgelost",
-                "fr": "Correction de la boîte de dialogue de sélection d'ID",
-                "it": "Corretta la finestra di dialogo Seleziona ID",
-                "es": "Se corrigió el diálogo de selección de ID",
-                "pl": "Naprawiono okno dialogowe wyboru identyfikatora",
-                "zh-cn": "修复了选择ID对话框"
-            },
-            "4.7.2": {
-                "en": "Fixed blockly problem",
-                "de": "Blockproblem behoben",
-                "ru": "Исправлена блочная проблема",
-                "pt": "Problema de bloqueio corrigido",
-                "nl": "Blokkeerprobleem opgelost",
-                "fr": "Correction d'un problème de blocage",
-                "it": "Risolto problema di blocco",
-                "es": "Problema de bloque fijo",
-                "pl": "Naprawiono blokowy problem",
-                "zh-cn": "修复块状问题"
-            },
-            "4.7.1": {
-                "en": "Fixed styling",
-                "de": "Styling korrigiert",
-                "ru": "Фиксированный стиль",
-                "pt": "Estilo fixo",
-                "nl": "Vaste styling",
-                "fr": "Style fixe",
-                "it": "Stile fisso",
-                "es": "Estilo fijo",
-                "pl": "Naprawiono stylizację",
-                "zh-cn": "固定样式"
             }
         },
         "desc": {

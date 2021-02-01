@@ -241,7 +241,7 @@ const regExGlobalOld = /_global$/;
 const regExGlobalNew = /script\.js\.global\./;
 
 function checkIsGlobal(obj) {
-    return regExGlobalOld.test(obj.common.name) || regExGlobalNew.test(obj._id);
+    return obj && obj.common && (regExGlobalOld.test(obj.common.name) || regExGlobalNew.test(obj._id));
 }
 /**
  * @type {Set<string>}
@@ -943,6 +943,7 @@ let globalScriptLines  = 0;
 // let activeRegEx     = null;
 let activeStr          = ''; // enabled state prefix
 let daySchedule        = null; // schedule for astrological day
+let timeScheduleTimer  = null; // schedule for astrological day
 
 function getNextTimeEvent(time, useNextDay) {
     const now = new Date();
@@ -1011,7 +1012,7 @@ function timeSchedule(adapter, context) {
     now.setSeconds(0);
     now.setMilliseconds(0);
     const interval = now.getTime() - Date.now();
-    setTimeout(timeSchedule, interval, adapter, context);
+    timeScheduleTimer = setTimeout(timeSchedule, interval, adapter, context);
 }
 
 function dayTimeSchedules(adapter, context) {
@@ -1077,6 +1078,7 @@ function dayTimeSchedules(adapter, context) {
 
 function stopTimeSchedules() {
     daySchedule && clearTimeout(daySchedule);
+    timeScheduleTimer && clearTimeout(timeScheduleTimer);
 }
 
 /**
@@ -1598,7 +1600,13 @@ function prepareScript(obj, callback) {
         obj.common.source) {
         const name = obj._id;
 
-        adapter.setState('scriptEnabled.' + name.substring('script.js.'.length), true, true);
+        const nameId = name.substring('script.js.'.length);
+        if (!nameId.length || nameId.endsWith('.')) {
+            adapter.log.error(`Script name ${name} is invalid!`);
+            typeof callback === 'function' && callback(false, name);
+            return;
+        }
+        adapter.setState('scriptEnabled.' + nameId, true, true);
         obj.common.engineType = obj.common.engineType || '';
 
         if ((obj.common.engineType.toLowerCase().startsWith('javascript') || obj.common.engineType === 'Blockly')) {
@@ -1692,7 +1700,14 @@ function prepareScript(obj, callback) {
         let _name;
         if (obj && obj._id) {
             _name = obj._id;
-            adapter.setState('scriptEnabled.' + _name.substring('script.js.'.length), false, true);
+            const scriptIdName = _name.substring('script.js.'.length);
+
+            if (!scriptIdName.length || scriptIdName.endsWith('.')) {
+                adapter.log.error(`Script name ${_name} is invalid!`);
+                typeof callback === 'function' && callback(false, _name);
+                return;
+            }
+            adapter.setState('scriptEnabled.' + scriptIdName, false, true);
         }
         !obj && adapter.log.error('Invalid script');
         typeof callback === 'function' && callback(false, _name);
