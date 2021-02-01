@@ -1,11 +1,20 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
 import CustomInput from '../CustomInput';
 
-const CurrentItem = memo(({ Icon, name, ref }) => {
-    return <div ref={ref} className={cls.card_style}>
+const CurrentItem = memo(({ Icon, name, ref, setItmesSwitches, itemsSwitches, _id }) => {
+    const [anchorEl, setAnchorEl] = useState(null);
+    const handlePopoverOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
+    return <div
+        onMouseEnter={handlePopoverOpen}
+        onMouseLeave={handlePopoverClose} ref={ref} className={cls.card_style}>
         <Icon className={cls.icon_them_card} />
         <div className={cls.block_name}>
             <span>
@@ -19,6 +28,11 @@ const CurrentItem = memo(({ Icon, name, ref }) => {
                 size="small"
             />
         </div>
+        {setItmesSwitches && <div className={cls.control_menu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
+            <div onClick={() => {
+                setItmesSwitches([...itemsSwitches.filter(el => el._id !== _id)]);
+            }} className={cls.close_btn}></div>
+        </div>}
     </div>;
 });
 

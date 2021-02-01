@@ -3,21 +3,21 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import CardMenu from '.';
 
-const CustomDragItem = ({ Icon, name, id, isActive, typeBlock, setItmesSwitches, itemsSwitches }) => {
+const DragWrapper = ({ Icon, name, id, isActive, typeBlock, setItmesSwitches, itemsSwitches, children, _id }) => {
     const [{ opacity }, drag, preview] = useDrag({
-        item: { type: 'box', Icon, name, id, isActive, typeBlock },
+        item: { type: 'box', Icon, name, id, isActive, typeBlock, _id },
         begin: (monitor) => {
             // debugger
         },
         end: (item, monitor) => {
             let dropResult = monitor.getDropResult();
             if (!dropResult) {
+                setItmesSwitches([...itemsSwitches.filter(el => el._id !== _id)]);
                 return null;
             }
-            let idNumber = Math.max.apply(null, itemsSwitches.length ? itemsSwitches.map(el => el._id) : [0]) + 1;
-            setItmesSwitches([...itemsSwitches, { ...item, nameBlock: dropResult.name, _id: idNumber }]);
+            // debugger
+            setItmesSwitches([...itemsSwitches.filter(el => el._id !== _id), { ...item, nameBlock: dropResult.name }]);
         },
         collect: (monitor) => ({
             opacity: monitor.isDragging() ? 0.4 : 1,
@@ -28,18 +28,18 @@ const CustomDragItem = ({ Icon, name, id, isActive, typeBlock, setItmesSwitches,
         preview(getEmptyImage(), { captureDraggingState: true });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    return <div key={id} ref={drag} style={{ opacity }}><CardMenu Icon={Icon} name={name} id={id} isActive={isActive} /></div>;
+    return <div key={id} ref={drag} style={{ opacity }}>{children}</div>;
 }
 
-CustomDragItem.defaultProps = {
+DragWrapper.defaultProps = {
     Icon: null,
     name: '',
     active: false,
     id: ''
 };
 
-CustomDragItem.propTypes = {
+DragWrapper.propTypes = {
     name: PropTypes.string
 };
 
-export default CustomDragItem;
+export default DragWrapper;

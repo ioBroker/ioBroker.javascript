@@ -1,19 +1,33 @@
 
-import React, { useState } from 'react';
+import React, { Fragment } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
 import { useDrop } from 'react-dnd';
+// import { useStateLocal } from '../../hooks/useStateLocal';
+import CurrentItem from '../CurrentItem';
+import { useStateLocal } from '../../hooks/useStateLocal';
+import MusicNoteIcon from '@material-ui/icons/MusicNote';
+import ShuffleIcon from '@material-ui/icons/Shuffle';
+import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
+import DragWrapper from '../DragWrapper';
 
-const ContentBlockItems = ({ children, name, nameDop, dop, border, dopLength }) => {
+const icon = {
+    'Audio': (props) => <MusicNoteIcon {...props} />,
+    'Shuffle': (props) => <ShuffleIcon {...props} />,
+    'Playlist Play': (props) => <PlaylistPlayIcon {...props} />
+}
+
+const DopContentBlockItems = ({ boolean, children, name, itemsSwitches, setItmesSwitches }) => {
     const [{ canDrop, isOver }, drop] = useDrop({
         accept: 'box',
-        drop: () => ({ name: 'Dustbin' }),
+        drop: () => ({ name }),
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
+            targetId: monitor.targetId
         }),
-    })
+    });
     const isActive = canDrop && isOver;
     let backgroundColor = '';
     if (isActive) {
@@ -22,17 +36,28 @@ const ContentBlockItems = ({ children, name, nameDop, dop, border, dopLength }) 
     else if (canDrop) {
         backgroundColor = '#fb00002e';
     }
-    const [dopClickItems, setDopClickItems] = useState([]);
+    return (<div ref={drop} style={{ backgroundColor }} className={`${cls.content_block_item} ${boolean ? null : cls.content_heigth_off}`}>
+        {itemsSwitches.filter(el => el.nameBlock === name).map((el, index) => (
+            <DragWrapper {...el} itemsSwitches={itemsSwitches} setItmesSwitches={setItmesSwitches} Icon={icon[el.name]}><CurrentItem {...el} itemsSwitches={itemsSwitches} setItmesSwitches={setItmesSwitches} name={el.name} Icon={icon[el.name]} /></DragWrapper>))}
+        {isActive ? <div className={cls.empty_block} /> : null}
+    </div>)
+}
+
+DopContentBlockItems.defaultProps = {
+    children: null,
+    boolean: true
+};
+
+const ContentBlockItems = ({ children, name, nameDop, dop, border, dopLength, itemsSwitches, setItmesSwitches }) => {
+    const [dopClickItems, setDopClickItems] = useStateLocal([], "dopClickItems");
     return (
-        <div ref={drop} style={{ backgroundColor }} className={`${cls.main_block_item_rules} ${border ? cls.border : null}`}>
+        <div className={`${cls.main_block_item_rules} ${border ? cls.border : null}`}>
             <span>{name}</span>
-            <div className={cls.content_block_item}>
-                {children}
-                {isActive ? <div className={cls.empty_block} /> : null}
-            </div>
+            <DopContentBlockItems setItmesSwitches={setItmesSwitches} name={name} itemsSwitches={itemsSwitches}>
+            </DopContentBlockItems>
             {dop && [...Array(dopLength)].map((e, index) => {
                 const boleanDop = (value = index) => Boolean(dopClickItems.find(el => el === `${value}_dop`));
-                return <><div
+                return <Fragment key={`${index}_block`}><div
                     onClick={() => {
                         let newDopClickItems = [...dopClickItems];
                         if (boleanDop()) {
@@ -55,10 +80,8 @@ const ContentBlockItems = ({ children, name, nameDop, dop, border, dopLength }) 
                         {nameDop}
                     </div>{boleanDop() ? '-' : '+'}
                 </div>
-                    <div className={`${cls.content_block_item} ${boleanDop() ? null : cls.content_heigth_off}`}>
-                        {isActive ? <div className={cls.empty_block} /> : null}
-                    </div>
-                </>
+                    <DopContentBlockItems setItmesSwitches={setItmesSwitches} itemsSwitches={itemsSwitches} name={`${name}_${index + 1}`} boolean={boleanDop()} />
+                </Fragment>
             })}
         </div>);
 }

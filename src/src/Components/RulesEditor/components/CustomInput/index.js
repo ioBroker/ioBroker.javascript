@@ -1,5 +1,5 @@
 import { TextField, withStyles } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 
@@ -29,19 +29,21 @@ const TextFieldMod = withStyles({
     },
 })(TextField);
 
-const CustomInput = ({ fullWidth, autoComplete, label, error, size, variant, value, type, style, onChange, className }) => {
+const CustomInput = ({ fullWidth, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue }) => {
+    const [inputText, setInputText] = useState('');
     return <TextFieldMod
         error={!!error}
         fullWidth={fullWidth}
         label={label}
         variant={variant}
-        value={value}
+        value={customValue ? value : inputText}
         type={type}
         helperText={error}
         style={style}
         className={className}
         autoComplete={autoComplete}
         onChange={e => {
+            if(!customValue)setInputText(e.target.value);
             onChange(e.target.value);
         }}
         margin="normal"
@@ -62,7 +64,8 @@ CustomInput.defaultProps = {
     styleComponentBlock: null,
     onChange: () => { },
     fullWidth: false,
-    autoComplete: ''
+    autoComplete: '',
+    customValue: false
 };
 
 CustomInput.propTypes = {

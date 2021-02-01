@@ -1,6 +1,6 @@
-
 .card_style {
     cursor: pointer;
+    position: relative;
     width: 200px;
     height: fit-content;
     display: flex;
@@ -29,4 +29,54 @@
 }
 .block_name {
     margin-left: 10px;
+}
+.control_menu {
+    display: flex;
+    position: absolute;
+    right: -31px;
+    // background: red;
+    width: 30px;
+    height: 100%;
+    transition: opacity 0.5s;
+}
+.close_btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    position: relative;
+    z-index: 1;
+    margin: 5px auto;
+    cursor: pointer;
+    &:before {
+        content: "+";
+        color: #f7060684;
+        position: absolute;
+        z-index: 2;
+        transform: rotate(45deg);
+        font-size: 30px;
+        line-height: 1;
+        top: -6px;
+        left: 2px;
+        transition: all 0.3s cubic-bezier(0.77, 0, 0.2, 0.85);
+    }
+    &:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 100%;
+        background: #994e9e7d;
+        z-index: 1;
+        transition: all 0.3s cubic-bezier(0.77, 0, 0.2, 0.85);
+        transform: scale(0.01);
+    }
+    &:hover:after {
+        transform: scale(1);
+    }
+    &:hover:before {
+        transform: scale(0.8) rotate(45deg);
+        color: #fff;
+    }
 }

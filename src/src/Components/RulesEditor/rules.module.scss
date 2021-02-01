@@ -72,10 +72,26 @@ $colorFons: #81688c; //
     top: 30px;
     border: 1px solid #9a39a063;
     cursor: pointer;
-    transition: left 0.5s, border-radius .7s;
+    transition: left 0.5s, border-radius 0.7s;
     z-index: 10;
 }
 .hamburger_off {
     left: 20px;
     border-radius: 20px;
+}
+.nothing_found {
+    color: #a95fa3;
+    margin: 16px;
+    font-size: 21px;
+}
+.reset_search {
+    font-weight: bold;
+    color: #210025;
+    cursor: pointer;
+    margin: 10px 0;
+    transition: color 0.3s, font-size 0.3s;
+    &:hover {
+        color: #36083c;
+        font-size: 22px;
+    }
 }

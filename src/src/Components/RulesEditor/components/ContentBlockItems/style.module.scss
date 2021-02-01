@@ -37,10 +37,11 @@ $colorFons: #81688c; //
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    transition: height .3s;
+    transition: height .3s, background .5s;
 }
 .content_heigth_off{
     height: 0%;
+    overflow: hidden;
 }
 .card_add {
     display: flex;
