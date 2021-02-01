@@ -5,7 +5,7 @@ import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import CardMenu from '.';
 
-const CustomDragItem = ({ Icon, name, id, isActive, typeBlock, setItmesSwitches, itemsSwitches }) => {
+const CustomDragItem = ({ Icon, name, id, isActive, typeBlock, setItemsSwitches, itemsSwitches }) => {
     const [{ opacity }, drag, preview] = useDrag({
         item: { type: 'box', Icon, name, id, isActive, typeBlock },
         begin: (monitor) => {
@@ -17,7 +17,7 @@ const CustomDragItem = ({ Icon, name, id, isActive, typeBlock, setItmesSwitches,
                 return null;
             }
             let idNumber = Math.max.apply(null, itemsSwitches.length ? itemsSwitches.map(el => el._id) : [0]) + 1;
-            setItmesSwitches([...itemsSwitches, { ...item, nameBlock: dropResult.name, _id: idNumber }]);
+            setItemsSwitches([...itemsSwitches, { ...item, nameBlock: dropResult.name, _id: idNumber }]);
         },
         collect: (monitor) => ({
             opacity: monitor.isDragging() ? 0.4 : 1,

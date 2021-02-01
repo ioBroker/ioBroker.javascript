@@ -256,5 +256,7 @@
   "tooltip_value": "值",
   "use seconds": "精确到秒",
   "Save all": "保存全部",
-  "Change theme (actual \"%s\")": "更改主题（现在为“%s”）"
+  "Change theme (actual \"%s\")": "更改主题（现在为“%s”）",
+  "Hide logs": "隐藏日志",
+  "Show logs": "显示记录"
 }

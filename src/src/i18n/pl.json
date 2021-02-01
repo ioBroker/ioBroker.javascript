@@ -256,5 +256,7 @@
   "tooltip_value": "Wartość",
   "use seconds": "użyj sekund",
   "Save all": "Zapisz wszystko",
-  "Change theme (actual \"%s\")": "Zmień motyw (teraz - „%s”)"
+  "Change theme (actual \"%s\")": "Zmień motyw (teraz - „%s”)",
+  "Hide logs": "Ukryj dzienniki",
+  "Show logs": "Pokaż dzienniki"
 }

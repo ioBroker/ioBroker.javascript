@@ -256,5 +256,7 @@
   "tooltip_value": "Wert",
   "use seconds": "Sekunden verwenden",
   "Save all": "Alle speichern",
-  "Change theme (actual \"%s\")": "Thema ändern (jetzt - \"%s\")"
+  "Change theme (actual \"%s\")": "Thema ändern (jetzt - \"%s\")",
+  "Hide logs": "Protokolle ausblenden",
+  "Show logs": "Protokolle anzeigen"
 }

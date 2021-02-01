@@ -256,5 +256,7 @@
   "tooltip_value": "Value",
   "use seconds": "use seconds",
   "Save all": "Save all",
-  "Change theme (actual \"%s\")": "Change theme (now - \"%s\")"
+  "Change theme (actual \"%s\")": "Change theme (now - \"%s\")",
+  "Hide logs": "Hide logs",
+  "Show logs": "Show logs"
 }

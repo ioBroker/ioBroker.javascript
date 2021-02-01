@@ -3,6 +3,7 @@ import {withStyles} from '@material-ui/core/styles';
 import SplitterLayout from 'react-splitter-layout';
 import {MdMenu as IconMenuClosed} from 'react-icons/md';
 import {MdArrowBack as IconMenuOpened} from 'react-icons/md';
+import {MdVisibility as IconShowLog} from 'react-icons/md';
 
 import 'react-splitter-layout/lib/index.css';
 
@@ -87,6 +88,23 @@ const styles = theme => ({
         background: theme.palette.secondary.main,
         color: theme.palette.primary.main,
         paddingLeft: 3,
+        '&:hover': {
+            color: 'white'
+        }
+    },
+    showLogButton: {
+        position: 'absolute',
+        right: 3,
+        borderRadius: '5px 5px 0 0',
+        bottom: 0,
+        paddingTop: 3,
+        cursor: 'pointer',
+        zIndex: 10,
+        height: 20,
+        width: 25,
+        background: theme.palette.secondary.main,
+        color: theme.palette.primary.main,
+        paddingLeft: 8,
         '&:hover': {
             color: 'white'
         }
@@ -224,15 +242,16 @@ class App extends GenericApp {
             selected: null,
             logMessage: {},
             editing: [],
-            menuOpened: window.localStorage ? window.localStorage.getItem('App.menuOpened') !== 'false' : true,
+            menuOpened: window.localStorage.getItem('App.menuOpened') !== 'false',
             menuSelectId: '',
-            expertMode: window.localStorage ? window.localStorage.getItem('App.expertMode') === 'true' : false,
-            logHorzLayout: window.localStorage ? window.localStorage.getItem('App.logHorzLayout') === 'true' : false,
+            expertMode: window.localStorage.getItem('App.expertMode') === 'true',
+            logHorzLayout: window.localStorage.getItem('App.logHorzLayout') === 'true',
             runningInstances: {},
             confirm: '',
             importFile: false,
             message: '',
             searchText: '',
+            hideLog: window.localStorage.getItem('App.hideLog') === 'true',
         });
 
         const newState = {};
@@ -717,6 +736,54 @@ class App extends GenericApp {
         this.setState({logHorzLayout: !this.state.logHorzLayout});
     }
 
+    renderEditor() {
+        return <Editor
+            key="editor"
+            visible={!this.state.resizing}
+            socket={this.socket}
+            adapterName={this.adapterName}
+            onLocate={menuSelectId => this.setState({menuSelectId})}
+            runningInstances={this.state.runningInstances}
+            menuOpened={this.state.menuOpened}
+            searchText={this.state.searchText}
+            themeType={this.state.themeType}
+            themeName={this.state.themeName}
+            onChange={(id, common) => this.onUpdateScript(id, common)}
+            onSelectedChange={(id, editing) => {
+                const newState = {};
+                let changed = false;
+                if (id !== this.state.selected) {
+                    changed = true;
+                    newState.selected = id;
+                }
+                if (JSON.stringify(editing) !== JSON.stringify(this.state.editing)) {
+                    changed = true;
+                    newState.editing = JSON.parse(JSON.stringify(editing));
+                }
+                changed && this.setState(newState);
+            }}
+            onRestart={id => this.socket.extendObject(id, {common: {enabled: true}})}
+            selected={this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].type === 'script' ? this.state.selected : ''}
+            objects={this.scripts}
+            instances={this.state.instances}
+        />;
+    }
+
+    showLogButton() {
+        return <div
+            key="showLog"
+            title={I18n.t('Show log')}
+            className={this.props.classes.showLogButton}
+            onClick={() => {
+                window.localStorage.setItem('App.hideLog', 'false');
+                this.setState({hideLog: false, resizing: true});
+                setTimeout(() => this.setState({resizing: false}), 300);
+            }}
+        >
+            <IconShowLog />
+        </div>;
+    }
+
     renderMain() {
         const {classes} = this.props;
         const errorDialog = this.state.errorText ? <DialogError key="dialogError" onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/> : null;
@@ -734,57 +801,47 @@ class App extends GenericApp {
                 text={this.state.confirm}/> : null,
             <div className={classes.content + ' iobVerticalSplitter'} key="main">
                 <div key="closeMenu" className={classes.menuOpenCloseButton} onClick={() => {
-                    window.localStorage && window.localStorage.setItem('App.menuOpened', this.state.menuOpened ? 'false' : 'true');
+                    window.localStorage.setItem('App.menuOpened', this.state.menuOpened ? 'false' : 'true');
                     this.setState({menuOpened: !this.state.menuOpened, resizing: true});
                     setTimeout(() => this.setState({resizing: false}), 300);
                 }}>
-                    {this.state.menuOpened ? (<IconMenuOpened />) : (<IconMenuClosed />)}
+                    {this.state.menuOpened ? <IconMenuOpened /> : <IconMenuClosed />}
                 </div>
-                <SplitterLayout
-                    key="splitterLayout"
-                    vertical={!this.state.logHorzLayout}
-                    primaryMinSize={100}
-                    secondaryInitialSize={this.logSize}
-                    //customClassName={classes.menuDiv + ' ' + classes.splitterDivWithoutMenu}
-                    onDragStart={() => this.setState({resizing: true})}
-                    onSecondaryPaneSizeChange={size => this.logSize = parseFloat(size)}
-                    onDragEnd={() => {
-                        this.setState({resizing: false});
-                        window.localStorage && window.localStorage.setItem('App.logSize', this.logSize.toString());
-                    }}
-                >
-                    <Editor
-                        key="editor"
-                        visible={!this.state.resizing}
-                        socket={this.socket}
-                        adapterName={this.adapterName}
-                        onLocate={menuSelectId => this.setState({menuSelectId})}
-                        runningInstances={this.state.runningInstances}
-                        menuOpened={this.state.menuOpened}
-                        searchText={this.state.searchText}
-                        themeType={this.state.themeType}
-                        themeName={this.state.themeName}
-                        onChange={(id, common) => this.onUpdateScript(id, common)}
-                        onSelectedChange={(id, editing) => {
-                            const newState = {};
-                            let changed = false;
-                            if (id !== this.state.selected) {
-                                changed = true;
-                                newState.selected = id;
-                            }
-                            if (JSON.stringify(editing) !== JSON.stringify(this.state.editing)) {
-                                changed = true;
-                                newState.editing = JSON.parse(JSON.stringify(editing));
-                            }
-                            changed && this.setState(newState);
+                {this.state.hideLog ?
+                    <>
+                        {this.renderEditor()}
+                        {this.showLogButton()}
+                    </>
+                    :
+                    <SplitterLayout
+                        key="splitterLayout"
+                        vertical={!this.state.logHorzLayout}
+                        primaryMinSize={100}
+                        secondaryInitialSize={this.logSize}
+                        //customClassName={classes.menuDiv + ' ' + classes.splitterDivWithoutMenu}
+                        onDragStart={() => this.setState({resizing: true})}
+                        onSecondaryPaneSizeChange={size => this.logSize = parseFloat(size)}
+                        onDragEnd={() => {
+                            this.setState({resizing: false});
+                            window.localStorage.setItem('App.logSize', this.logSize.toString());
                         }}
-                        onRestart={id => this.socket.extendObject(id, {common: {enabled: true}})}
-                        selected={this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].type === 'script' ? this.state.selected : ''}
-                        objects={this.scripts}
-                        instances={this.state.instances}
-                    />
-                    <Log key="log" verticalLayout={!this.state.logHorzLayout} onLayoutChange={() => this.toggleLogLayout()} editing={this.state.editing} socket={this.socket} selected={this.state.selected}/>
-                </SplitterLayout>
+                    >
+                        {this.renderEditor()}
+                        <Log
+                            key="log"
+                            verticalLayout={!this.state.logHorzLayout}
+                            onLayoutChange={() => this.toggleLogLayout()}
+                            editing={this.state.editing}
+                            socket={this.socket}
+                            selected={this.state.selected}
+                            onHideLog={() => {
+                                window.localStorage.setItem('App.hideLog', 'true');
+                                this.setState({hideLog: true, resizing: true});
+                                setTimeout(() => this.setState({resizing: false}), 300);
+                            }}
+                        />
+                    </SplitterLayout>
+                }
             </div>,
         ];
     }
@@ -810,7 +867,7 @@ class App extends GenericApp {
                 onSecondaryPaneSizeChange={size => this.menuSize = parseFloat(size)}
                 onDragEnd={() => {
                     this.setState({resizing: false});
-                    window.localStorage && window.localStorage.setItem('App.menuSize', this.menuSize.toString());
+                    window.localStorage.setItem('App.menuSize', this.menuSize.toString());
                 }}
             >
                 <div className={classes.mainDiv} key="menu">

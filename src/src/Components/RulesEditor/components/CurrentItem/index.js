@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import cls from './style.module.scss';
 import CustomInput from '../CustomInput';
 
-const CurrentItem = memo(({ Icon, name, ref, setItmesSwitches, itemsSwitches, _id }) => {
+const CurrentItem = memo(({ Icon, name, ref, setItemsSwitches, itemsSwitches, _id }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const handlePopoverOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -28,10 +28,10 @@ const CurrentItem = memo(({ Icon, name, ref, setItmesSwitches, itemsSwitches, _i
                 size="small"
             />
         </div>
-        {setItmesSwitches && <div className={cls.control_menu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
+        {setItemsSwitches && <div className={cls.control_menu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
             <div onClick={() => {
-                setItmesSwitches([...itemsSwitches.filter(el => el._id !== _id)]);
-            }} className={cls.close_btn}></div>
+                setItemsSwitches([...itemsSwitches.filter(el => el._id !== _id)]);
+            }} className={cls.close_btn}/>
         </div>}
     </div>;
 });

@@ -18,7 +18,7 @@ const icon = {
     'Playlist Play': (props) => <PlaylistPlayIcon {...props} />
 }
 
-const DopContentBlockItems = ({ boolean, children, name, itemsSwitches, setItmesSwitches }) => {
+const DopContentBlockItems = ({ boolean, children, name, itemsSwitches, setItemsSwitches }) => {
     const [{ canDrop, isOver }, drop] = useDrop({
         accept: 'box',
         drop: () => ({ name }),
@@ -38,7 +38,7 @@ const DopContentBlockItems = ({ boolean, children, name, itemsSwitches, setItmes
     }
     return (<div ref={drop} style={{ backgroundColor }} className={`${cls.content_block_item} ${boolean ? null : cls.content_heigth_off}`}>
         {itemsSwitches.filter(el => el.nameBlock === name).map((el, index) => (
-            <DragWrapper {...el} itemsSwitches={itemsSwitches} setItmesSwitches={setItmesSwitches} Icon={icon[el.name]}><CurrentItem {...el} itemsSwitches={itemsSwitches} setItmesSwitches={setItmesSwitches} name={el.name} Icon={icon[el.name]} /></DragWrapper>))}
+            <DragWrapper {...el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} Icon={icon[el.name]}><CurrentItem {...el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} name={el.name} Icon={icon[el.name]} /></DragWrapper>))}
         {isActive ? <div className={cls.empty_block} /> : null}
     </div>)
 }
@@ -48,27 +48,27 @@ DopContentBlockItems.defaultProps = {
     boolean: true
 };
 
-const ContentBlockItems = ({ children, name, nameDop, dop, border, dopLength, itemsSwitches, setItmesSwitches }) => {
+const ContentBlockItems = ({ children, name, nameDop, dop, border, dopLength, itemsSwitches, setItemsSwitches }) => {
     const [dopClickItems, setDopClickItems] = useStateLocal([], "dopClickItems");
     return (
         <div className={`${cls.main_block_item_rules} ${border ? cls.border : null}`}>
             <span>{name}</span>
-            <DopContentBlockItems setItmesSwitches={setItmesSwitches} name={name} itemsSwitches={itemsSwitches}>
+            <DopContentBlockItems setItemsSwitches={setItemsSwitches} name={name} itemsSwitches={itemsSwitches}>
             </DopContentBlockItems>
             {dop && [...Array(dopLength)].map((e, index) => {
-                const boleanDop = (value = index) => Boolean(dopClickItems.find(el => el === `${value}_dop`));
+                const booleanDop = (value = index) => Boolean(dopClickItems.find(el => el === `${value}_dop`));
                 return <Fragment key={`${index}_block`}><div
                     onClick={() => {
                         let newDopClickItems = [...dopClickItems];
-                        if (boleanDop()) {
+                        if (booleanDop()) {
                             let valueIndex = index;
-                            if (boleanDop(1)) {
+                            if (booleanDop(1)) {
                                 valueIndex = 1;
                             }
                             newDopClickItems = newDopClickItems.filter(el => el !== `${valueIndex}_dop`)
                         } else {
                             let valueIndex = 0;
-                            if (boleanDop(0)) {
+                            if (booleanDop(0)) {
                                 valueIndex = index;
                             }
                             newDopClickItems.push(`${valueIndex}_dop`)
@@ -78,9 +78,9 @@ const ContentBlockItems = ({ children, name, nameDop, dop, border, dopLength, it
                     } key={index} className={cls.block_card_add}>
                     <div className={cls.card_add}>
                         {nameDop}
-                    </div>{boleanDop() ? '-' : '+'}
+                    </div>{booleanDop() ? '-' : '+'}
                 </div>
-                    <DopContentBlockItems setItmesSwitches={setItmesSwitches} itemsSwitches={itemsSwitches} name={`${name}_${index + 1}`} boolean={boleanDop()} />
+                    <DopContentBlockItems setItemsSwitches={setItemsSwitches} itemsSwitches={itemsSwitches} name={`${name}_${index + 1}`} boolean={booleanDop()} />
                 </Fragment>
             })}
         </div>);

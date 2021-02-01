@@ -38,7 +38,7 @@ const RulesEditor = () => {
         setSwitches(allSwitches);
     }, []);
     const [hamburgerOnOff, setHumburgerOnOff] = useStateLocal(false, 'hamburgerOnOff');
-    const [itemsSwitches, setItmesSwitches] = useStateLocal([], 'switchesItems');
+    const [itemsSwitches, setItemsSwitches] = useStateLocal([], 'switchesItems');
     const [inputText, setInputText] = useState('');
     return (
         <div className={cls.wrapper_rules}>
@@ -63,7 +63,7 @@ const RulesEditor = () => {
             </div>
                 <div>
                     {switches.map(({ name, icon, typeBlock }) => {
-                        return (<CustomDragItem itemsSwitches={itemsSwitches} setItmesSwitches={setItmesSwitches} isActive={false} name={name} Icon={icon} id={name} typeBlock={typeBlock} />)
+                        return (<CustomDragItem itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} isActive={false} name={name} Icon={icon} id={name} typeBlock={typeBlock} />)
                     })}
                     {switches.length === 0 && <div className={cls.nothing_found}>
                         Nothing found...
@@ -74,9 +74,9 @@ const RulesEditor = () => {
                     </div>}
                 </div>
             </div>
-            <ContentBlockItems setItmesSwitches={setItmesSwitches} itemsSwitches={itemsSwitches} name='when...' />
-            <ContentBlockItems setItmesSwitches={setItmesSwitches} itemsSwitches={itemsSwitches} name='...and...' nameDop='or' dopLength={2} dop border />
-            <ContentBlockItems setItmesSwitches={setItmesSwitches} itemsSwitches={itemsSwitches} name='...then' nameDop='else' dop />
+            <ContentBlockItems setItemsSwitches={setItemsSwitches} itemsSwitches={itemsSwitches} name='when...' />
+            <ContentBlockItems setItemsSwitches={setItemsSwitches} itemsSwitches={itemsSwitches} name='...and...' nameDop='or' dopLength={2} dop border />
+            <ContentBlockItems setItemsSwitches={setItemsSwitches} itemsSwitches={itemsSwitches} name='...then' nameDop='else' dop />
         </div>
     )
 }
