@@ -772,7 +772,7 @@ class App extends GenericApp {
     showLogButton() {
         return <div
             key="showLog"
-            title={I18n.t('Show log')}
+            title={I18n.t('Show logs')}
             className={this.props.classes.showLogButton}
             onClick={() => {
                 window.localStorage.setItem('App.hideLog', 'false');
