@@ -1,5 +1,5 @@
 
-import React, { Fragment } from 'react';
+import React, { Fragment, useContext, useState } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
@@ -11,6 +11,7 @@ import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import ShuffleIcon from '@material-ui/icons/Shuffle';
 import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
 import DragWrapper from '../DragWrapper';
+import { ContextWrapperCreate } from '../ContextWrapper';
 
 const icon = {
     'Trigger1': (props) => <MusicNoteIcon {...props} />,
@@ -18,30 +19,45 @@ const icon = {
     'Action1': (props) => <PlaylistPlayIcon {...props} />
 }
 
-const DopContentBlockItems = ({ boolean, children, name, itemsSwitches, setItemsSwitches }) => {
-    const [{ canDrop, isOver }, drop] = useDrop({
+const DopContentBlockItems = ({ boolean, typeBlock, name, itemsSwitches, setItemsSwitches }) => {
+    const [checkItem, setCheckItem] = useState(false);
+    const [canDropCheck, setCanDropCheck] = useState(false);
+    const { setActive } = useContext(ContextWrapperCreate);
+    const [{ canDrop, isOver, offset }, drop] = useDrop({
         accept: 'box',
         drop: () => ({ name }),
+        hover: (item, monitor) => {
+            setCheckItem(item.typeBlock === typeBlock);
+        },
+        canDrop: (item, monitor) => {
+            setCanDropCheck(item.typeBlock === typeBlock);
+            setActive(item.typeBlock === typeBlock)
+            return item.typeBlock === typeBlock
+        },
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
-            targetId: monitor.targetId
+            offset: monitor.getClientOffset()
         }),
     });
     const isActive = canDrop && isOver;
     let backgroundColor = '';
     if (isActive) {
-        backgroundColor = '#00fb003d';
+        backgroundColor = checkItem ? '#00fb003d' : '#fb00002e';
     }
     else if (canDrop) {
-        backgroundColor = '#fb00002e';
+        backgroundColor = canDropCheck ? '#00fb003d' : '#fb00002e';
+    } else if (offset) {
+        backgroundColor = canDropCheck ? '#00fb003d' : '#fb00002e';
     }
     return <div ref={drop} style={{ backgroundColor }} className={`${cls.content_block_item} ${boolean ? null : cls.content_height_off}`}>
-        {itemsSwitches.filter(el => el.nameBlock === name).map(el=> (
-            <DragWrapper {...el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} Icon={icon[el.name]}>
-                <CurrentItem {...el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} name={el.name} Icon={icon[el.name]} />
-            </DragWrapper>))}
-        {isActive ? <div className={cls.empty_block} /> : null}
+        {itemsSwitches.filter(el => el.nameBlock === name).map((el, idx) => (
+            <Fragment key={`dop_content_${name}_${idx}`}>
+                <DragWrapper {...el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} Icon={icon[el.name]}>
+                    <CurrentItem {...el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} name={el.name} Icon={icon[el.name]} />
+                </DragWrapper>
+            </Fragment>))}
+        {isActive && checkItem ? <div className={cls.empty_block} /> : null}
     </div>;
 }
 
@@ -50,11 +66,11 @@ DopContentBlockItems.defaultProps = {
     boolean: true
 };
 
-const ContentBlockItems = ({ children, name, nameDop, dop, border, dopLength, itemsSwitches, setItemsSwitches }) => {
+const ContentBlockItems = ({ typeBlock, name, nameDop, dop, border, dopLength, itemsSwitches, setItemsSwitches }) => {
     const [dopClickItems, setDopClickItems] = useStateLocal([], 'dopClickItems');
     return <div className={`${cls.main_block_item_rules} ${border ? cls.border : null}`}>
         <span>{name}</span>
-        <DopContentBlockItems setItemsSwitches={setItemsSwitches} name={name} itemsSwitches={itemsSwitches}>
+        <DopContentBlockItems typeBlock={typeBlock} setItemsSwitches={setItemsSwitches} name={name} itemsSwitches={itemsSwitches}>
         </DopContentBlockItems>
         {dop && [...Array(dopLength)].map((e, index) => {
             const booleanDop = (value = index) => Boolean(dopClickItems.find(el => el === `${value}_dop`));
@@ -81,7 +97,7 @@ const ContentBlockItems = ({ children, name, nameDop, dop, border, dopLength, it
                     {nameDop}
                 </div>{booleanDop() ? '-' : '+'}
             </div>
-                <DopContentBlockItems setItemsSwitches={setItemsSwitches} itemsSwitches={itemsSwitches} name={`${name}_${index + 1}`} boolean={booleanDop()} />
+                <DopContentBlockItems typeBlock={typeBlock} setItemsSwitches={setItemsSwitches} itemsSwitches={itemsSwitches} name={`${name}_${index + 1}`} boolean={booleanDop()} />
             </Fragment>
         })}
     </div>;

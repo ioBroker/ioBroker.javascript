@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { Fab, Tooltip, withStyles } from '@material-ui/core';
 import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
 
 const LightTooltip = withStyles((theme) => ({
     tooltip: {
-      backgroundColor: '#83469c9e',
-      color: 'rgb(255 255 255 / 87%)',
-      boxShadow: theme.shadows[1],
-      fontSize: 11,
-      border: '1px solid #920b9e'
+        backgroundColor: '#83469c9e',
+        color: 'rgb(255 255 255 / 87%)',
+        boxShadow: theme.shadows[1],
+        fontSize: 11,
+        border: '1px solid #920b9e'
     },
-  }))(Tooltip);
+}))(Tooltip);
 
 const CustomHint = ({ children }) => {
     const [open, setOpen] = useState(false);
@@ -48,10 +47,5 @@ const CustomHint = ({ children }) => {
 CustomHint.defaultProps = {
     children: null
 };
-
-CustomHint.propTypes = {
-    children: PropTypes.string,
-};
-
 
 export default CustomHint;

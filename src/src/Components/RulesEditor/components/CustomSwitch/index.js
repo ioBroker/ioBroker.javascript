@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 const ColorSwitch = withStyles({
     switchBase: {
-        color: '#922fb3d9',
+        color: '#654169cc',
         '&$checked': {
             color: '#922fb3d9',
         },
@@ -37,7 +37,7 @@ const CustomSwitch = ({ label, size, value, style, onChange, className, customVa
 }
 
 CustomSwitch.defaultProps = {
-    value: '',
+    value: false,
     type: 'text',
     error: '',
     className: null,

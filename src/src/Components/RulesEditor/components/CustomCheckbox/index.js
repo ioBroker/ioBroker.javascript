@@ -4,7 +4,7 @@ import React, { memo, useState } from 'react';
 import PropTypes from 'prop-types';
 
 
-const CustomCheckbox = ({ type, size, value, style, onChange, className, customValue }) => {
+const CustomCheckbox = ({ type, size, value, style, onChange, className, customValue, disabled }) => {
     const [switchChecked, setSwitchChecked] = useState(false);
     let color = {
         trigger: { color: '#24b3c1f0' },
@@ -12,7 +12,8 @@ const CustomCheckbox = ({ type, size, value, style, onChange, className, customV
         action: { color: '#59f9599e' },
     }
     return <Checkbox
-        checked={customValue ? value : switchChecked}
+        disabled={disabled}
+        checked={Boolean(customValue ? value : switchChecked)}
         style={Object.assign(type ? color[type] : null, style)}
         className={className}
         onChange={e => {
@@ -24,7 +25,8 @@ const CustomCheckbox = ({ type, size, value, style, onChange, className, customV
 }
 
 CustomCheckbox.defaultProps = {
-    value: '',
+    value: false,
+    disabled: false,
     type: null,
     error: '',
     className: null,

@@ -1,7 +1,9 @@
-import React from 'react';
-import {useDragLayer} from 'react-dnd';
+import React, { useContext } from 'react';
+import { useDragLayer } from 'react-dnd';
 import CardMenu from '../CardMenu';
+import { ContextWrapperCreate } from '../ContextWrapper';
 import CurrentItem from '../CurrentItem';
+import CurrentItemClose from '../CurrentItemClose';
 
 const layerStyles = {
     position: 'fixed',
@@ -25,7 +27,7 @@ const getItemStyles = (initialOffset, currentOffset, isSnapToGrid) => {
             display: 'none'
         };
     }
-    let {x, y} = currentOffset;
+    let { x, y } = currentOffset;
     if (isSnapToGrid) {
         x -= initialOffset.x;
         y -= initialOffset.y;
@@ -47,7 +49,6 @@ export const CustomDragLayer = (props) => {
         item,
         initialOffset,
         currentOffset,
-        isActive,
         issas
     } = useDragLayer((monitor) => ({
         item: monitor.getItem(),
@@ -55,15 +56,14 @@ export const CustomDragLayer = (props) => {
         initialOffset: monitor.getInitialSourceClientOffset(),
         currentOffset: monitor.getSourceClientOffset(),
         isDragging: monitor.isDragging(),
-        isActive: monitor,
         issas: monitor.getTargetIds()
     }));
-    console.log(issas, 'sss', isActive)
+    const { active } = useContext(ContextWrapperCreate);
     const renderItem = () => {
         switch (itemType) {
             case 'box':
-                return issas.length ? <CurrentItem name={item.name} Icon={item.Icon} id={item.id}/> :
-                    <CardMenu active name={item.name} Icon={item.Icon} id={item.id}/>;
+                return issas.length ? !active ? <CurrentItemClose /> : <CurrentItem name={item.name} Icon={item.Icon} id={item.id} /> :
+                    <CardMenu active name={item.name} Icon={item.Icon} id={item.id} />;
             default:
                 return null;
         }

@@ -13,6 +13,7 @@ const CurrentItem = memo(({ Icon, name, ref, setItemsSwitches, itemsSwitches, _i
         setAnchorEl(null);
     };
     return <div
+        onMouseMove={handlePopoverOpen}
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose} ref={ref} className={cls.card_style}>
         <Icon className={cls.icon_them_card} />
@@ -31,7 +32,7 @@ const CurrentItem = memo(({ Icon, name, ref, setItemsSwitches, itemsSwitches, _i
         {setItemsSwitches && <div className={cls.control_menu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
             <div onClick={() => {
                 setItemsSwitches([...itemsSwitches.filter(el => el._id !== _id)]);
-            }} className={cls.close_btn}/>
+            }} className={cls.close_btn} />
         </div>}
     </div>;
 });

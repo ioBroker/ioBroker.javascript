@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import cls from './rules.module.scss';
 import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import ShuffleIcon from '@material-ui/icons/Shuffle';
@@ -12,6 +12,7 @@ import { useStateLocal } from './hooks/useStateLocal';
 import CustomSwitch from './components/CustomSwitch';
 import CustomCheckbox from './components/CustomCheckbox';
 import CustomHint from './components/CustomHint';
+import { ContextWrapper } from './components/ContextWrapper';
 // import PropTypes from 'prop-types';
 
 // import I18n from '@iobroker/adapter-react/i18n';
@@ -78,8 +79,7 @@ function compile(json) {
     let conditions = [];
     json.conditions.forEach(ors => {
         const _ors = [];
-        // eslint-disable-next-line array-callback-return
-        ors.map(block => {
+        ors.forEach(block => {
             const found = allSwitches.find(_block => _block.type === block.type);
             if (found) {
                 _ors.push(found.compile(block));
@@ -108,7 +108,11 @@ function code2json(code) {
         const lines = code.split('\n');
         let json = lines.pop();
         try {
-            return JSON.parse(json);
+            json = JSON.parse(json);
+            if (!json.triggers) {
+                json = [];//DEFAULT_RULE;
+            }
+            return json;
         } catch (e) {
             return [];//DEFAULT_RULE;
         }
@@ -123,100 +127,143 @@ function json2code(json) {
 }
 
 const RulesEditor = props => {
-
-    // eslint-disable-next-line no-unused-vars
     const [switches, setSwitches] = useState([]);
-    useEffect(() => {
-        setSwitches(allSwitches);
-    }, []);
-
     const [hamburgerOnOff, setHamburgerOnOff] = useStateLocal(false, 'hamburgerOnOff');
     const [itemsSwitches, setItemsSwitches] = useStateLocal([], 'itemsSwitches');//useState(code2json(props.code));
-    const [filterText, setFilterText] = useState('');
-
+    const [filter, setFilter] = useStateLocal({
+        text: '',
+        type: ['trigger', 'condition', 'action'],
+        allType: true
+    }, 'filterControlPanel');
+    const setSwitchesFunc = (text = filter.text, array = filter.type) => {
+        setSwitches([...allSwitches.filter(({ type, name }) => name.toLowerCase().indexOf(text.toLowerCase()) + 1 && array.find(el => el === type))]);
+    }
+    useEffect(() => {
+        setSwitchesFunc();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     return <div className={cls.wrapper_rules}>
-        <CustomDragLayer />
-        <div className={`${cls.hamburger_wrapper} ${hamburgerOnOff ? cls.hamburger_off : null}`}
-            onClick={() => setHamburgerOnOff(!hamburgerOnOff)}><HamburgerMenu boolean={!hamburgerOnOff} /></div>
-        <div className={`${cls.menu_rules} ${hamburgerOnOff ? cls.menu_off : null}`}>
-            <CustomInput
-                className={cls.input_width}
-                fullWidth
-                customValue
-                value={filterText}
-                autoComplete='off'
-                label="search"
-                variant="outlined"
-                onChange={(value) => {
-                    setFilterText(value);
-                    setSwitches([...allSwitches.filter(({ name }) => name.toLowerCase().indexOf(value.toLowerCase()) + 1)]);
-                }}
-            />
-            <div className={cls.menu_title}>
-                Control Panel
+        <ContextWrapper>
+            <CustomDragLayer />
+            <div className={`${cls.hamburger_wrapper} ${hamburgerOnOff ? cls.hamburger_off : null}`}
+                onClick={() => setHamburgerOnOff(!hamburgerOnOff)}><HamburgerMenu boolean={!hamburgerOnOff} /></div>
+            <div className={`${cls.menu_rules} ${hamburgerOnOff ? cls.menu_off : null}`}>
+                <CustomInput
+                    className={cls.input_width}
+                    fullWidth
+                    customValue
+                    value={filter.text}
+                    autoComplete='off'
+                    label="search"
+                    variant="outlined"
+                    onChange={(value) => {
+                        setFilter({ ...filter, text: value });
+                        setSwitchesFunc(value);
+                    }}
+                />
+                <div className={cls.menu_title}>
+                    Control Panel
             </div>
-            <div className={cls.control_panel}>
-                <CustomSwitch />
-                <CustomHint>
-                    <div>
-                        <div className={cls.hint_content}><div className={cls.hint_square} style={{ background: '#24b3c1f0' }} /> trigger</div>
-                        <div className={cls.hint_content}><div className={cls.hint_square} style={{ background: '#fcff5c94' }} /> condition</div>
-                        <div className={cls.hint_content}><div className={cls.hint_square} style={{ background: '#59f9599e' }} /> action</div>
-                    </div>
-                </CustomHint>
+                <div className={cls.control_panel}>
+                    <CustomSwitch customValue value={filter.allType}
+                        onChange={(value) => {
+                            setFilter({
+                                ...filter, allType: value,
+                                type: ['trigger', 'condition', 'action']
+                            });
+                            setSwitchesFunc(filter.text, ['trigger', 'condition', 'action']);
+                        }} />
+                    <CustomHint>
+                        <div>
+                            <div className={cls.hint_content}><div className={cls.hint_square} style={{ background: '#24b3c1f0' }} /> trigger</div>
+                            <div className={cls.hint_content}><div className={cls.hint_square} style={{ background: '#fcff5c94' }} /> condition</div>
+                            <div className={cls.hint_content}><div className={cls.hint_square} style={{ background: '#59f9599e' }} /> action</div>
+                        </div>
+                    </CustomHint>
+                </div>
+                <div className={cls.control_panel}>
+                    {['trigger', 'condition', 'action'].map((typeEl) => (
+                        <Fragment key={typeEl}>
+                            <CustomCheckbox key={typeEl} disabled={filter.allType} customValue value={filter.type.find(_type => _type === typeEl)}
+                                onChange={(value) => {
+                                    let newArray = [...filter.type];
+                                    if (value) {
+                                        newArray.push(typeEl);
+                                    } else {
+                                        newArray = newArray.filter(item => item !== typeEl);
+                                    }
+                                    setFilter({ ...filter, type: newArray });
+                                    setSwitchesFunc(filter.text, newArray);
+                                }} type={typeEl} />
+                        </Fragment>))}
+                </div>
+                <div className={cls.menu_title}>
+                    Switches
             </div>
-            <div className={cls.control_panel}>
-                <CustomCheckbox type="trigger" />
-                <CustomCheckbox type="condition" />
-                <CustomCheckbox type="action" />
-            </div>
-            <div className={cls.menu_title}>
-                Switches
-            </div>
-            <div>
-                {switches.map(({ name, icon, typeBlock }) =>
-                    <CustomDragItem itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} isActive={false}
-                        name={name} Icon={icon} id={name} typeBlock={typeBlock} />)}
-                {switches.length === 0 && <div className={cls.nothing_found}>
-                    Nothing found...
+                <div>
+                    {switches.map(({ name, icon, typeBlock }) =>
+                        <Fragment key={name}>
+                            <CustomDragItem
+                                itemsSwitches={itemsSwitches}
+                                setItemsSwitches={json => {
+                                    setItemsSwitches(json);
+                                    props.onChange(json2code(json));
+                                }}
+                                isActive={false}
+                                name={name}
+                                Icon={icon}
+                                id={name}
+                                typeBlock={typeBlock}
+                            />
+                        </Fragment>)}
+                    {switches.length === 0 && <div className={cls.nothing_found}>
+                        Nothing found...
                     <div className={cls.reset_search} onClick={() => {
-                        setFilterText('');
-                        setSwitches(allSwitches);
-                    }}>reset search</div>
-                </div>}
+                            setFilter({
+                                text: '',
+                                type: ['trigger', 'condition', 'action'],
+                                allType: true
+                            });
+                            setSwitches(allSwitches);
+                        }}>reset search</div>
+                    </div>}
+                </div>
             </div>
-        </div>
 
-        <ContentBlockItems
-            setItemsSwitches={json => {
-                setItemsSwitches(json);
-                //props.onChange(json2code(json));
-            }}
-            itemsSwitches={itemsSwitches}
-            name='when...'
-        />
-        <ContentBlockItems
-            setItemsSwitches={json => {
-                setItemsSwitches(json);
-                //props.onChange(json2code(json));
-            }}
-            itemsSwitches={itemsSwitches}
-            name='...and...'
-            nameDop='or'
-            dopLength={2}
-            dop
-            border
-        />
-        <ContentBlockItems
-            setItemsSwitches={json => {
-                setItemsSwitches(json);
-                //props.onChange(json2code(json));
-            }}
-            itemsSwitches={itemsSwitches}
-            name='...then'
-            nameDop='else'
-            dop
-        />
+            <ContentBlockItems
+                setItemsSwitches={json => {
+                    setItemsSwitches(json);
+                    props.onChange(json2code(json));
+                }}
+                itemsSwitches={itemsSwitches}
+                name='when...'
+                typeBlock='when'
+            />
+            <ContentBlockItems
+                setItemsSwitches={json => {
+                    setItemsSwitches(json);
+                    props.onChange(json2code(json));
+                }}
+                itemsSwitches={itemsSwitches}
+                name='...and...'
+                typeBlock='and'
+                nameDop='or'
+                dopLength={2}
+                dop
+                border
+            />
+            <ContentBlockItems
+                setItemsSwitches={json => {
+                    setItemsSwitches(json);
+                    props.onChange(json2code(json));
+                }}
+                itemsSwitches={itemsSwitches}
+                name='...then'
+                typeBlock='then'
+                nameDop='else'
+                dop
+            />
+        </ContextWrapper>
     </div>;
 }
 
