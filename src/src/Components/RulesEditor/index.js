@@ -11,6 +11,14 @@ import HamburgerMenu from './components/HamburgerMenu';
 import {useStateLocal} from './hooks/useStateLocal';
 // import PropTypes from 'prop-types';
 
+const STANDARD_FUNCTION = `async function (obj) {
+    if (__%%CONDITION%%__) {
+__%%THEN%%__
+    } else {
+__%%ELSE%%__
+    }
+}`
+
 // import I18n from '@iobroker/adapter-react/i18n';
 // import DialogMessage from '@iobroker/adapter-react/Dialogs/Message';
 const allSwitches = [
@@ -21,7 +29,7 @@ const allSwitches = [
 
         // acceptedOn: ['when'],
         type: 'trigger',
-        compile: (config, action) => `schedule('* 1 * * *', async function (obj) {\t${action}});`
+        compile: (config, context) => `schedule('* 1 * * *', ${STANDARD_FUNCTION});`
     },
     {
         name: 'Condition1',
@@ -30,7 +38,7 @@ const allSwitches = [
 
         // acceptedOn: ['or', 'and'],
         type: 'condition',
-        compile: config => `obj.val === "1"`
+        compile: (config, context) => `obj.val === "1"`
     },
     {
         name: 'Action1',
@@ -39,9 +47,10 @@ const allSwitches = [
 
         // acceptedOn: ['then', 'else'],
         type: 'condition',
-        compile: config => `setState('id', obj.val);`
+        compile: (config, context) => `setState('id', obj.val);`
     }
 ];
+
 const DEFAULT_RULE = {
     triggers: [],
     conditions: [],
@@ -51,47 +60,66 @@ const DEFAULT_RULE = {
     }
 };
 
-function compile(json) {
-    let actions = [];
-    json.actions.then.forEach(action => {
-        const found = allSwitches.find(block => block.type === action.type);
-        if (found) {
-            actions.push(found.compile(action));
-        }
-    });
-    const then = actions.join('\t\t\n') || '\t\t/* ignore */';
-
-    actions = [];
-    json.actions.then.forEach(action => {
-        const found = allSwitches.find(block => block.type === action.type);
-        if (found) {
-            actions.push(found.compile(action));
-        }
-    });
-    const _else = actions.join('\t\t\n') || '\t\t/* ignore */';
-
-    let conditions = [];
-    json.conditions.forEach(ors => {
-        const _ors = [];
-        ors.forEach(block => {
-            const found = allSwitches.find(_block => _block.type === block.type);
-            if (found) {
-                _ors.push(found.compile(block));
-            }
-        });
-        conditions.push(_ors.join(' || '));
-    });
-    const condition = '\tif (' + (conditions.join(') && (') || 'true') + ') {\n' + then + '\n\t} else {\n' + _else + '\n}';
-
+function compileTriggers(json, context) {
     const triggers = [];
     json.triggers.forEach(trigger => {
-        const found = allSwitches.find(_block => _block.type === trigger.type);
+        const found = findBlock(trigger.id);
         if (found) {
-            triggers.push(found.compile(trigger, condition));
+            const text = found.compile(trigger, context);
+            const conditions = compileConditions(json.conditions, context);
+            const then = compileActions(json.actions.then, context);
+            const _else = compileActions(json.actions.else, context);
+            triggers.push(
+                text
+                    .replace('__%%CONDITION%%__', conditions)
+                    .replace('__%%THEN%%__', then || '// ignore')
+                    .replace('__%%ELSE%%__', _else || '// ignore')
+            );
         }
     });
 
     return triggers.join('\n\n');
+}
+function findBlock(type) {
+    return allSwitches.find(block => block.name === type);
+}
+
+function compileActions(actions, context) {
+    let result = [];
+    actions && actions.forEach(action => {
+        const found = findBlock(action.id);
+        if (found) {
+            result.push(found.compile(action, context));
+        }
+    });
+    return `\t\t${result.join('\t\t\n')}` || '';
+}
+
+function compileConditions(conditions, context) {
+    let result = [];
+    conditions && conditions.forEach(ors => {
+        if (ors.hasOwnProperty('length')) {
+            const _ors = [];
+            _ors && ors.forEach(block => {
+                const found = findBlock(block.id);
+                if (found) {
+                    _ors.push(found.compile(block, context));
+                }
+            });
+            result.push(_ors.join(' || '));
+        } else {
+            const found = findBlock(ors.id);
+            if (found) {
+                result.push(found.compile(ors, context));
+            }
+        }
+
+    });
+    return (result.join(') && (') || 'true');
+}
+
+function compile(json) {
+    return compileTriggers(json);
 }
 
 function code2json(code) {
@@ -113,13 +141,22 @@ function code2json(code) {
 }
 
 function json2code(json) {
-    const code = `const demo = ${JSON.stringify(json, null, 2)};`;
+    let code = `const demo = ${JSON.stringify(json, null, 2)};\n`;
+
+    const compiled = compile({
+        triggers: json.filter(block => block.typeBlock === 'when'),
+        conditions: json.filter(block => block.typeBlock === 'and'),
+        actions: {
+            then: json.filter(block => block.typeBlock === 'then'),
+            'else': null,
+        }
+    });
+    code += compiled;
 
     return code + '\n//' + JSON.stringify(json);
 }
 
 const RulesEditor = props => {
-
     // eslint-disable-next-line no-unused-vars
     const [switches, setSwitches] = useState([]);
     useEffect(() => {
