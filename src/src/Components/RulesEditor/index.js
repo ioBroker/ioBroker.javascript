@@ -1,14 +1,17 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import cls from './rules.module.scss';
 import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import ShuffleIcon from '@material-ui/icons/Shuffle';
 import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
 import CustomInput from './components/CustomInput';
-import {CustomDragLayer} from './components/CustomDragLayer';
+import { CustomDragLayer } from './components/CustomDragLayer';
 import CustomDragItem from './components/CardMenu/CustomDragItem';
 import ContentBlockItems from './components/ContentBlockItems';
 import HamburgerMenu from './components/HamburgerMenu';
-import {useStateLocal} from './hooks/useStateLocal';
+import { useStateLocal } from './hooks/useStateLocal';
+import CustomSwitch from './components/CustomSwitch';
+import CustomCheckbox from './components/CustomCheckbox';
+import CustomHint from './components/CustomHint';
 // import PropTypes from 'prop-types';
 
 // import I18n from '@iobroker/adapter-react/i18n';
@@ -16,7 +19,7 @@ import {useStateLocal} from './hooks/useStateLocal';
 const allSwitches = [
     {
         name: 'Trigger1',
-        icon: props => <MusicNoteIcon {...props} className={cls.icon_them}/>,
+        icon: props => <MusicNoteIcon {...props} className={cls.icon_them} />,
         typeBlock: 'when',
 
         // acceptedOn: ['when'],
@@ -25,7 +28,7 @@ const allSwitches = [
     },
     {
         name: 'Condition1',
-        icon: (props) => <ShuffleIcon {...props} className={cls.icon_them}/>,
+        icon: (props) => <ShuffleIcon {...props} className={cls.icon_them} />,
         typeBlock: 'and',
 
         // acceptedOn: ['or', 'and'],
@@ -34,14 +37,15 @@ const allSwitches = [
     },
     {
         name: 'Action1',
-        icon: (props) => <PlaylistPlayIcon {...props} className={cls.icon_them}/>,
+        icon: (props) => <PlaylistPlayIcon {...props} className={cls.icon_them} />,
         typeBlock: 'then',
 
         // acceptedOn: ['then', 'else'],
-        type: 'condition',
+        type: 'action',
         compile: config => `setState('id', obj.val);`
     }
 ];
+// eslint-disable-next-line no-unused-vars
 const DEFAULT_RULE = {
     triggers: [],
     conditions: [],
@@ -51,6 +55,7 @@ const DEFAULT_RULE = {
     }
 };
 
+// eslint-disable-next-line no-unused-vars
 function compile(json) {
     let actions = [];
     json.actions.then.forEach(action => {
@@ -73,6 +78,7 @@ function compile(json) {
     let conditions = [];
     json.conditions.forEach(ors => {
         const _ors = [];
+        // eslint-disable-next-line array-callback-return
         ors.map(block => {
             const found = allSwitches.find(_block => _block.type === block.type);
             if (found) {
@@ -94,6 +100,7 @@ function compile(json) {
     return triggers.join('\n\n');
 }
 
+// eslint-disable-next-line no-unused-vars
 function code2json(code) {
     if (!code) {
         return [];//DEFAULT_RULE;
@@ -108,6 +115,7 @@ function code2json(code) {
     }
 }
 
+// eslint-disable-next-line no-unused-vars
 function json2code(json) {
     const code = `const demo = ${JSON.stringify(json, null, 2)};`;
 
@@ -123,13 +131,13 @@ const RulesEditor = props => {
     }, []);
 
     const [hamburgerOnOff, setHamburgerOnOff] = useStateLocal(false, 'hamburgerOnOff');
-    const [itemsSwitches, setItemsSwitches] = useStateLocal( [], 'itemsSwitches');//useState(code2json(props.code));
+    const [itemsSwitches, setItemsSwitches] = useStateLocal([], 'itemsSwitches');//useState(code2json(props.code));
     const [filterText, setFilterText] = useState('');
 
     return <div className={cls.wrapper_rules}>
-        <CustomDragLayer/>
+        <CustomDragLayer />
         <div className={`${cls.hamburger_wrapper} ${hamburgerOnOff ? cls.hamburger_off : null}`}
-             onClick={() => setHamburgerOnOff(!hamburgerOnOff)}><HamburgerMenu boolean={!hamburgerOnOff}/></div>
+            onClick={() => setHamburgerOnOff(!hamburgerOnOff)}><HamburgerMenu boolean={!hamburgerOnOff} /></div>
         <div className={`${cls.menu_rules} ${hamburgerOnOff ? cls.menu_off : null}`}>
             <CustomInput
                 className={cls.input_width}
@@ -141,16 +149,34 @@ const RulesEditor = props => {
                 variant="outlined"
                 onChange={(value) => {
                     setFilterText(value);
-                    setSwitches([...allSwitches.filter(({name}) => name.toLowerCase().indexOf(value.toLowerCase()) + 1)]);
+                    setSwitches([...allSwitches.filter(({ name }) => name.toLowerCase().indexOf(value.toLowerCase()) + 1)]);
                 }}
             />
+            <div className={cls.menu_title}>
+                Control Panel
+            </div>
+            <div className={cls.control_panel}>
+                <CustomSwitch />
+                <CustomHint>
+                    <div>
+                        <div className={cls.hint_content}><div className={cls.hint_square} style={{ background: '#24b3c1f0' }} /> trigger</div>
+                        <div className={cls.hint_content}><div className={cls.hint_square} style={{ background: '#fcff5c94' }} /> condition</div>
+                        <div className={cls.hint_content}><div className={cls.hint_square} style={{ background: '#59f9599e' }} /> action</div>
+                    </div>
+                </CustomHint>
+            </div>
+            <div className={cls.control_panel}>
+                <CustomCheckbox type="trigger" />
+                <CustomCheckbox type="condition" />
+                <CustomCheckbox type="action" />
+            </div>
             <div className={cls.menu_title}>
                 Switches
             </div>
             <div>
-                {switches.map(({name, icon, typeBlock}) =>
+                {switches.map(({ name, icon, typeBlock }) =>
                     <CustomDragItem itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} isActive={false}
-                                    name={name} Icon={icon} id={name} typeBlock={typeBlock}/>)}
+                        name={name} Icon={icon} id={name} typeBlock={typeBlock} />)}
                 {switches.length === 0 && <div className={cls.nothing_found}>
                     Nothing found...
                     <div className={cls.reset_search} onClick={() => {
