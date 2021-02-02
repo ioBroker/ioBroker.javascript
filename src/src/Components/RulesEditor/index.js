@@ -73,7 +73,7 @@ function compile(json) {
     let conditions = [];
     json.conditions.forEach(ors => {
         const _ors = [];
-        ors.map(block => {
+        ors.forEach(block => {
             const found = allSwitches.find(_block => _block.type === block.type);
             if (found) {
                 _ors.push(found.compile(block));
