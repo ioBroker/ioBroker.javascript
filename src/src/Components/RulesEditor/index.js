@@ -101,7 +101,11 @@ function code2json(code) {
         const lines = code.split('\n');
         let json = lines.pop();
         try {
-            return JSON.parse(json);
+            json = JSON.parse(json);
+            if (!json.triggers) {
+                json = [];//DEFAULT_RULE;
+            }
+            return json;
         } catch (e) {
             return [];//DEFAULT_RULE;
         }
@@ -149,8 +153,18 @@ const RulesEditor = props => {
             </div>
             <div>
                 {switches.map(({name, icon, typeBlock}) =>
-                    <CustomDragItem itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} isActive={false}
-                                    name={name} Icon={icon} id={name} typeBlock={typeBlock}/>)}
+                    <CustomDragItem
+                        itemsSwitches={itemsSwitches}
+                        setItemsSwitches={json => {
+                            setItemsSwitches(json);
+                            props.onChange(json2code(json));
+                        }}
+                        isActive={false}
+                        name={name}
+                        Icon={icon}
+                        id={name}
+                        typeBlock={typeBlock}
+                    />)}
                 {switches.length === 0 && <div className={cls.nothing_found}>
                     Nothing found...
                     <div className={cls.reset_search} onClick={() => {
@@ -164,7 +178,7 @@ const RulesEditor = props => {
         <ContentBlockItems
             setItemsSwitches={json => {
                 setItemsSwitches(json);
-                //props.onChange(json2code(json));
+                props.onChange(json2code(json));
             }}
             itemsSwitches={itemsSwitches}
             name='when...'
@@ -172,7 +186,7 @@ const RulesEditor = props => {
         <ContentBlockItems
             setItemsSwitches={json => {
                 setItemsSwitches(json);
-                //props.onChange(json2code(json));
+                props.onChange(json2code(json));
             }}
             itemsSwitches={itemsSwitches}
             name='...and...'
@@ -184,7 +198,7 @@ const RulesEditor = props => {
         <ContentBlockItems
             setItemsSwitches={json => {
                 setItemsSwitches(json);
-                //props.onChange(json2code(json));
+                props.onChange(json2code(json));
             }}
             itemsSwitches={itemsSwitches}
             name='...then'
