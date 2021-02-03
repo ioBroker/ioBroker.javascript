@@ -1,9 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { useDragLayer } from 'react-dnd';
 import CardMenu from '../CardMenu';
-import { ContextWrapperCreate } from '../ContextWrapper';
 import CurrentItem from '../CurrentItem';
-import CurrentItemClose from '../CurrentItemClose';
 
 const layerStyles = {
     position: 'fixed',
@@ -58,11 +56,10 @@ export const CustomDragLayer = (props) => {
         isDragging: monitor.isDragging(),
         issas: monitor.getTargetIds()
     }));
-    const { active } = useContext(ContextWrapperCreate);
     const renderItem = () => {
         switch (itemType) {
             case 'box':
-                return issas.length ? !active ? <CurrentItemClose /> : <CurrentItem name={item.name} Icon={item.Icon} id={item.id} /> :
+                return issas.length ? <CurrentItem name={item.name} Icon={item.Icon} id={item.id} /> :
                     <CardMenu active name={item.name} Icon={item.Icon} id={item.id} />;
             default:
                 return null;

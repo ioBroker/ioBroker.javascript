@@ -1,5 +1,5 @@
 
-import React, { Fragment, useContext, useState } from 'react';
+import React, { Fragment, useContext, useEffect, useState } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
@@ -19,15 +19,17 @@ const icon = {
     'Action1': (props) => <PlaylistPlayIcon {...props} />
 }
 
-const DopContentBlockItems = ({ boolean, typeBlock, name, itemsSwitches, setItemsSwitches }) => {
+const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolean, typeBlock, name, itemsSwitches, setItemsSwitches }) => {
     const [checkItem, setCheckItem] = useState(false);
     const [canDropCheck, setCanDropCheck] = useState(false);
+    const [hoverBlock, setHoverBlock] = useState('');
     const { setActive } = useContext(ContextWrapperCreate);
-    const [{ canDrop, isOver, offset }, drop] = useDrop({
+    const [{ canDrop, isOver, offset, targetId }, drop] = useDrop({
         accept: 'box',
-        drop: () => ({ name }),
+        drop: () => ({ name, blockValue }),
         hover: (item, monitor) => {
             setCheckItem(item.typeBlock === typeBlock);
+            setHoverBlock(monitor.getHandlerId())
         },
         canDrop: (item, monitor) => {
             setCanDropCheck(item.typeBlock === typeBlock);
@@ -37,9 +39,11 @@ const DopContentBlockItems = ({ boolean, typeBlock, name, itemsSwitches, setItem
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
-            offset: monitor.getClientOffset()
+            offset: monitor.getClientOffset(),
+            targetId: monitor.targetId
         }),
     });
+    useEffect(() => { setHoverBlock('') }, [offset])
     const isActive = canDrop && isOver;
     let backgroundColor = '';
     if (isActive) {
@@ -48,73 +52,90 @@ const DopContentBlockItems = ({ boolean, typeBlock, name, itemsSwitches, setItem
     else if (canDrop) {
         backgroundColor = canDropCheck ? '#00fb003d' : '#fb00002e';
     } else if (offset) {
-        backgroundColor = canDropCheck ? '#00fb003d' : '#fb00002e';
+        backgroundColor = targetId === hoverBlock ? '#fb00002e' : '';
     }
-    return <div ref={drop} style={{ backgroundColor }} className={`${cls.content_block_item} ${boolean ? null : cls.content_height_off}`}>
-        {itemsSwitches.filter(el => el.nameBlock === name).map((el, idx) => (
-            <Fragment key={`dop_content_${name}_${idx}`}>
-                <DragWrapper {...el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} Icon={icon[el.name]}>
-                    <CurrentItem {...el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} name={el.name} Icon={icon[el.name]} />
+    return <div ref={drop} style={{ backgroundColor }} className={`${cls.contentBlockItem} ${boolean ? null : cls.contentHeightOff}`}>
+        {itemsSwitchesRender[blockValue]?.filter(el => el.nameBlock === name).map((el, idx) => (
+            <Fragment key={`additionally_content_${name}_${idx}`}>
+                <DragWrapper {...el} blockValue={blockValue} allProperties={el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} Icon={icon[el.name]}>
+                    <CurrentItem {...el} blockValue={blockValue} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} Icon={icon[el.name]} />
                 </DragWrapper>
             </Fragment>))}
-        {isActive && checkItem ? <div className={cls.empty_block} /> : null}
+        {isActive && checkItem ? <div className={cls.emptyBlock} /> : null}
     </div>;
 }
 
-DopContentBlockItems.defaultProps = {
+AdditionallyContentBlockItems.defaultProps = {
     children: null,
     boolean: true
 };
 
-const ContentBlockItems = ({ typeBlock, name, nameDop, dop, border, dopLength, itemsSwitches, setItemsSwitches }) => {
-    const [dopClickItems, setDopClickItems] = useStateLocal([], 'dopClickItems');
-    return <div className={`${cls.main_block_item_rules} ${border ? cls.border : null}`}>
+const ContentBlockItems = ({ blockValue, typeBlock, name, nameAdditionally, additionally, border, additionallyLength, itemsSwitches, setItemsSwitches }) => {
+    const [additionallyClickItems, setAdditionallyClickItems] = useStateLocal(blockValue === 'actions' ? false : [], `additionallyClickItems_${blockValue}`);
+    const [additionallyRowsItems, setAdditionallyRowsItems] = useStateLocal(1, 'additionallyRowsItems');
+    return <div className={`${cls.mainBlockItemRules} ${border ? cls.border : null}`}>
         <span>{name}</span>
-        <DopContentBlockItems typeBlock={typeBlock} setItemsSwitches={setItemsSwitches} name={name} itemsSwitches={itemsSwitches}>
-        </DopContentBlockItems>
-        {dop && [...Array(dopLength)].map((e, index) => {
-            const booleanDop = (value = index) => Boolean(dopClickItems.find(el => el === `${value}_dop`));
+        <AdditionallyContentBlockItems
+            blockValue={blockValue === 'actions' ? 'then' : blockValue === 'conditions' ? 0 : blockValue}
+            typeBlock={typeBlock} setItemsSwitches={setItemsSwitches}
+            name={name}
+            itemsSwitches={itemsSwitches}
+            itemsSwitchesRender={blockValue === 'actions' ? itemsSwitches['actions'] : blockValue === 'conditions' ? itemsSwitches['conditions'] : itemsSwitches}
+        />
+        {additionally && [...Array(blockValue === 'actions' ? 1 : itemsSwitches.conditions.length - 1)].map((e, index) => {
+            const booleanAdditionally = (value = index) => Boolean(blockValue === 'actions' ? additionallyClickItems : additionallyClickItems.find(el => el.index === value && el.open));
             return <Fragment key={`${index}_block`}><div
                 onClick={() => {
-                    let newDopClickItems = [...dopClickItems];
-                    if (booleanDop()) {
-                        let valueIndex = index;
-                        if (booleanDop(1)) {
-                            valueIndex = 1;
-                        }
-                        newDopClickItems = newDopClickItems.filter(el => el !== `${valueIndex}_dop`)
-                    } else {
-                        let valueIndex = 0;
-                        if (booleanDop(0)) {
-                            valueIndex = index;
-                        }
-                        newDopClickItems.push(`${valueIndex}_dop`)
+                    if (blockValue === 'actions') {
+                        setAdditionallyClickItems(!additionallyClickItems)
+                        return null;
                     }
-                    setDopClickItems(newDopClickItems);
-                }
-                } key={index} className={cls.block_card_add}>
-                <div className={cls.card_add}>
-                    {nameDop}
-                </div>{booleanDop() ? '-' : '+'}
+                    setAdditionallyClickItems([...additionallyClickItems.filter(el => el.index !== index)]);
+                    setItemsSwitches({ ...itemsSwitches, conditions: [...itemsSwitches.conditions.filter((el, idx) => idx !== index + 1)] });
+                }}
+                key={index} className={cls.blockCardAdd}>
+                {booleanAdditionally() ? '-' : '+'}<div className={cls.cardAdd}>
+                    {nameAdditionally}
+                </div>
             </div>
-                <DopContentBlockItems typeBlock={typeBlock} setItemsSwitches={setItemsSwitches} itemsSwitches={itemsSwitches} name={`${name}_${index + 1}`} boolean={booleanDop()} />
+                <AdditionallyContentBlockItems
+                    blockValue={blockValue === 'actions' ? 'else' : blockValue === 'conditions' ? index + 1 : blockValue}
+                    typeBlock={typeBlock} setItemsSwitches={setItemsSwitches}
+                    itemsSwitchesRender={blockValue === 'actions' ? itemsSwitches['actions'] : blockValue === 'conditions' ? itemsSwitches['conditions'] : itemsSwitches}
+                    itemsSwitches={itemsSwitches}
+                    name={`${name}_${index + 1}`}
+                    boolean={booleanAdditionally()}
+                />
             </Fragment>
         })}
+        {additionally && blockValue === 'conditions' && (<div
+            onClick={() => {
+                setAdditionallyClickItems([...additionallyClickItems, {
+                    index: additionallyClickItems.length,
+                    open: true
+                }])
+                // setAdditionallyRowsItems(additionallyRowsItems + 1)
+                setItemsSwitches({ ...itemsSwitches, conditions: [...itemsSwitches.conditions, []] })
+            }}
+            className={cls.blockCardAdd}>
+            {'+'}<div className={cls.cardAdd}>
+                {nameAdditionally}
+            </div></div>)}
     </div>;
 }
 
 ContentBlockItems.defaultProps = {
     children: null,
     name: '',
-    nameDop: '',
-    dop: false,
+    nameAdditionally: '',
+    additionally: false,
     border: false,
-    dopLength: 1
+    additionallyLength: 1
 };
 
 ContentBlockItems.propTypes = {
     name: PropTypes.string,
-    nameDop: PropTypes.string
+    nameAdditionally: PropTypes.string
 };
 
 export default ContentBlockItems;

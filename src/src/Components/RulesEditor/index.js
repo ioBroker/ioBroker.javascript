@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import cls from './rules.module.scss';
+import cls from './style.module.scss';
 import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import ShuffleIcon from '@material-ui/icons/Shuffle';
 import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
@@ -28,16 +28,40 @@ __%%ELSE%%__
 const allSwitches = [
     {
         name: 'Trigger1',
-        icon: props => <MusicNoteIcon {...props} className={cls.icon_them} />,
+        Icon: props => <MusicNoteIcon {...props} className={cls.iconThem} />,
         typeBlock: 'when',
 
         // acceptedOn: ['when'],
         type: 'trigger',
-        compile: (config, context) => `schedule('* 1 * * *', ${STANDARD_FUNCTION});`
+
+
+        compile: (config, context) => `schedule('* 1 * * *', ${STANDARD_FUNCTION});`,
+        getConfig: () => { },
+        setConfig: (config) => { },
+        _acceptedBy: 'triggers', // where it could be acceped: trigger, condition, action
+        _type: 'trigger1',
+        _name: { en: 'Trigger', ru: 'Триггер' },
+        _inputs: [
+            { name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
+            { name: { en: 'Time' }, attr: 'timeFrom', type: 'time', default: '00:00', icon: '' },
+            { name: { en: 'Color' }, attr: 'background', type: 'color', default: '#FF00FF', icon: '' },
+            { name: { en: 'Dimmer' }, attr: 'dimmer', type: 'slider', default: 50, min: 0, max: 100, icon: '' },
+            // text
+            // number natural
+            // checkbox
+            // select {options: {value: '1', name: {'en': 'One'}}}
+        ]
     },
     {
         name: 'Condition1',
-        icon: (props) => <ShuffleIcon {...props} className={cls.icon_them} />,
+        getConfig: () => { },
+        setConfig: (config) => { },
+        _acceptedBy: 'conditions', // where it could be acceped: trigger, condition, action
+        _type: 'condition1',
+        _name: { en: 'Сondition', ru: 'Триггер' },
+
+
+        Icon: (props) => <ShuffleIcon {...props} className={cls.iconThem} />,
         typeBlock: 'and',
 
         // acceptedOn: ['or', 'and'],
@@ -46,22 +70,27 @@ const allSwitches = [
     },
     {
         name: 'Action1',
-        icon: (props) => <PlaylistPlayIcon {...props} className={cls.icon_them} />,
+        Icon: (props) => <PlaylistPlayIcon {...props} className={cls.iconThem} />,
         typeBlock: 'then',
 
         // acceptedOn: ['then', 'else'],
         type: 'action',
-        compile: (config, context) => `setState('id', obj.val);`
+        compile: (config, context) => `setState('id', obj.val);`,
+        getConfig: () => { },
+        setConfig: (config) => { },
+        _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
+        _type: 'action1',
+        _name: { en: 'Action', ru: 'Действие' },
     }
 ];
 
 // eslint-disable-next-line no-unused-vars
 const DEFAULT_RULE = {
     triggers: [],
-    conditions: [],
+    conditions: [[]],
     actions: {
         then: [],
-        'else': null,
+        'else': []
     }
 };
 
@@ -167,7 +196,7 @@ const RulesEditor = props => {
     // eslint-disable-next-line no-unused-vars
     const [switches, setSwitches] = useState([]);
     const [hamburgerOnOff, setHamburgerOnOff] = useStateLocal(false, 'hamburgerOnOff');
-    const [itemsSwitches, setItemsSwitches] = useStateLocal([], 'itemsSwitches');//useState(code2json(props.code));
+    const [itemsSwitches, setItemsSwitches] = useStateLocal(DEFAULT_RULE, 'itemsSwitches');//useState(code2json(props.code));
     const [filter, setFilter] = useStateLocal({
         text: '',
         type: ['trigger', 'condition', 'action'],
@@ -180,14 +209,14 @@ const RulesEditor = props => {
         setSwitchesFunc();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    return <div className={cls.wrapper_rules}>
+    return <div className={cls.wrapperRules}>
         <ContextWrapper>
             <CustomDragLayer />
-            <div className={`${cls.hamburger_wrapper} ${hamburgerOnOff ? cls.hamburger_off : null}`}
+            <div className={`${cls.hamburgerWrapper} ${hamburgerOnOff ? cls.hamburgerOff : null}`}
                 onClick={() => setHamburgerOnOff(!hamburgerOnOff)}><HamburgerMenu boolean={!hamburgerOnOff} /></div>
-            <div className={`${cls.menu_rules} ${hamburgerOnOff ? cls.menu_off : null}`}>
+            <div className={`${cls.menuRules} ${hamburgerOnOff ? cls.menuOff : null}`}>
                 <CustomInput
-                    className={cls.input_width}
+                    className={cls.inputWidth}
                     fullWidth
                     customValue
                     value={filter.text}
@@ -199,10 +228,10 @@ const RulesEditor = props => {
                         setSwitchesFunc(value);
                     }}
                 />
-                <div className={cls.menu_title}>
+                <div className={cls.menuTitle}>
                     Control Panel
             </div>
-                <div className={cls.control_panel}>
+                <div className={cls.controlPanel}>
                     <CustomSwitch customValue value={filter.allType}
                         onChange={(value) => {
                             setFilter({
@@ -213,13 +242,13 @@ const RulesEditor = props => {
                         }} />
                     <CustomHint>
                         <div>
-                            <div className={cls.hint_content}><div className={cls.hint_square} style={{ background: '#24b3c1f0' }} /> trigger</div>
-                            <div className={cls.hint_content}><div className={cls.hint_square} style={{ background: '#fcff5c94' }} /> condition</div>
-                            <div className={cls.hint_content}><div className={cls.hint_square} style={{ background: '#59f9599e' }} /> action</div>
+                            <div className={cls.hintContent}><div className={cls.hintSquare} style={{ background: '#24b3c1f0' }} /> trigger</div>
+                            <div className={cls.hintContent}><div className={cls.hintSquare} style={{ background: '#fcff5c94' }} /> condition</div>
+                            <div className={cls.hintContent}><div className={cls.hintSquare} style={{ background: '#59f9599e' }} /> action</div>
                         </div>
                     </CustomHint>
                 </div>
-                <div className={cls.control_panel}>
+                <div className={cls.controlPanel}>
                     {['trigger', 'condition', 'action'].map((typeEl) => (
                         <Fragment key={typeEl}>
                             <CustomCheckbox key={typeEl} disabled={filter.allType} customValue value={filter.type.find(_type => _type === typeEl)}
@@ -235,28 +264,27 @@ const RulesEditor = props => {
                                 }} type={typeEl} />
                         </Fragment>))}
                 </div>
-                <div className={cls.menu_title}>
+                <div className={cls.menuTitle}>
                     Switches
             </div>
                 <div>
-                    {switches.map(({ name, icon, typeBlock }) =>
-                        <Fragment key={name}>
+                    {switches.map((el) =>
+                        <Fragment key={el.name}>
                             <CustomDragItem
+                                {...el}
                                 itemsSwitches={itemsSwitches}
                                 setItemsSwitches={json => {
                                     setItemsSwitches(json);
-                                    props.onChange(json2code(json));
+                                    // props.onChange(json2code(json));
                                 }}
                                 isActive={false}
-                                name={name}
-                                Icon={icon}
-                                id={name}
-                                typeBlock={typeBlock}
+                                id={el.name}
+                                allProperties={el}
                             />
                         </Fragment>)}
-                    {switches.length === 0 && <div className={cls.nothing_found}>
+                    {switches.length === 0 && <div className={cls.nothingFound}>
                         Nothing found...
-                    <div className={cls.reset_search} onClick={() => {
+                    <div className={cls.resetSearch} onClick={() => {
                             setFilter({
                                 text: '',
                                 type: ['trigger', 'condition', 'action'],
@@ -270,36 +298,42 @@ const RulesEditor = props => {
 
             <ContentBlockItems
                 setItemsSwitches={json => {
+                    // const _itemsSwitches = JSON.parse(JSON.stringify(itemsSwitches));
+                    // _itemsSwitches.triggers = json;
                     setItemsSwitches(json);
-                    props.onChange(json2code(json));
+                    // props.onChange(json2code(json));
                 }}
                 itemsSwitches={itemsSwitches}
                 name='when...'
                 typeBlock='when'
+                blockValue='triggers'
+                typeValue='any'
             />
             <ContentBlockItems
                 setItemsSwitches={json => {
                     setItemsSwitches(json);
-                    props.onChange(json2code(json));
+                    // props.onChange(json2code(json));
                 }}
                 itemsSwitches={itemsSwitches}
                 name='...and...'
                 typeBlock='and'
-                nameDop='or'
-                dopLength={2}
-                dop
+                nameAdditionally='or'
+                additionallyLength={2}
+                additionally
                 border
+                blockValue='conditions'
             />
             <ContentBlockItems
                 setItemsSwitches={json => {
                     setItemsSwitches(json);
-                    props.onChange(json2code(json));
+                    // props.onChange(json2code(json));
                 }}
                 itemsSwitches={itemsSwitches}
                 name='...then'
                 typeBlock='then'
-                nameDop='else'
-                dop
+                nameAdditionally='else'
+                additionally
+                blockValue='actions'
             />
         </ContextWrapper>
     </div>;

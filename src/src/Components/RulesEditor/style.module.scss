@@ -1,21 +1,17 @@
 $colorFons: #81688c; //
 
-.wrapper_rules {
+.wrapperRules {
     background: url("https://klike.net/uploads/posts/2020-04/1586763579_24.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     height: 100%;
     display: flex;
-    // * {
-    //     color: white;
-    // }
-    .main_block_item_rules:nth-child(3) {
+    .mainBlockItemRules:nth-child(3) {
         border-left: 1px solid #ffffff59;
         border-right: 1px solid #ffffff59;
     }
 }
-.menu_rules {
-    // background: green;
+.menuRules {
     width: 200px;
     height: 100%;
     background: #994e9e30;
@@ -24,12 +20,12 @@ $colorFons: #81688c; //
     opacity: 1;
     transition: width 0.5s, opacity 0.2s, padding 0.5s;
 }
-.menu_off {
+.menuOff {
     width: 0px;
     opacity: 0;
     padding: 0;
 }
-.menu_title {
+.menuTitle {
     display: flex;
     align-items: center;
     text-align: center;
@@ -48,7 +44,7 @@ $colorFons: #81688c; //
         margin-right: 0.25em;
     }
 }
-.icon_them {
+.iconThem {
     width: 30px !important;
     height: 30px !important;
     margin-left: 5px;
@@ -56,11 +52,11 @@ $colorFons: #81688c; //
         color: #dfbdec !important;
     }
 }
-.input_width {
+.inputWidth {
     margin-top: 20px !important;
     margin-bottom: 15px !important;
 }
-.hamburger_wrapper {
+.hamburgerWrapper {
     position: absolute;
     width: 40px;
     height: 28px;
@@ -76,16 +72,16 @@ $colorFons: #81688c; //
     transition: left 0.5s, border-radius 0.7s;
     z-index: 10;
 }
-.hamburger_off {
+.hamburgerOff {
     left: 20px;
     border-radius: 20px;
 }
-.nothing_found {
+.nothingFound {
     color: #a95fa3;
     margin: 16px;
     font-size: 21px;
 }
-.reset_search {
+.resetSearch {
     font-weight: bold;
     color: #210025;
     cursor: pointer;
@@ -96,7 +92,7 @@ $colorFons: #81688c; //
         font-size: 22px;
     }
 }
-.control_panel {
+.controlPanel {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -104,13 +100,13 @@ $colorFons: #81688c; //
         color: #210025cc !important;
     }
 }
-.hint_content {
+.hintContent {
     display: flex;
     align-items: center;
     font-size: 16px;
     margin: 7px 0;
 }
-.hint_square {
+.hintSquare {
     width: 20px;
     height: 20px;
     margin-right: 10px;

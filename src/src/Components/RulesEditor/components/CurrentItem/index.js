@@ -4,7 +4,72 @@ import PropTypes from 'prop-types';
 import cls from './style.module.scss';
 import CustomInput from '../CustomInput';
 
-const CurrentItem = memo(({ Icon, name, ref, setItemsSwitches, itemsSwitches, _id }) => {
+
+// class GenericBlock extends React.Component {
+//     constructor(props) {
+//         super(props);
+//         console.log(props.inputs);
+
+//         this.state = {
+//             inputs: props.inputs;
+//         }
+//     }
+
+//     renderNumber() {
+
+//     }
+//     renderOid() {
+
+//     }
+//     renderText(){
+
+//     }
+
+//     render() {
+//         return <div
+//         onMouseMove={handlePopoverOpen}
+//         onMouseEnter={handlePopoverOpen}
+//         onMouseLeave={handlePopoverClose} ref={ref} className={cls.card_style}>
+//         <Icon className={cls.icon_them_card} />
+//         <div className={cls.block_name}>
+//             <span>
+//                 {name}
+//             </span>
+//             <CustomInput
+//                 className={cls.input_card}
+//                 autoComplete='off'
+//                 label="CO2"
+//                 variant="outlined"
+//                 size="small"
+//             />
+//         </div>
+//         {setItemsSwitches && <div className={cls.control_menu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
+//             <div onClick={() => {
+//                 setItemsSwitches([...itemsSwitches.filter(el => el._id !== _id)]);
+//             }} className={cls.close_btn} />
+//         </div>}
+//     </div>
+//     }
+// };
+
+// class TimeTrigger extends GenericBlock {
+//     constructor(props) {
+//         this.type = 'TimeTrigger';
+//         this.acceptedBy = 'tigger';
+//         const _props = JSON.parse(JSON.stringify(props));
+//         _props.inputs = [
+//             {type: 'cron', attr: 'myCron', name: {en: 'CRON'}, render: 'renderCron'}
+//         ];
+//         super(props);
+//     }
+
+//     renderCron() {
+//         return null;
+//     }    
+// }
+
+const CurrentItem = memo((props) => {
+    const { Icon, name, ref, setItemsSwitches, itemsSwitches, _id, _acceptedBy, blockValue } = props;
     const [anchorEl, setAnchorEl] = useState(null);
     const handlePopoverOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -30,8 +95,29 @@ const CurrentItem = memo(({ Icon, name, ref, setItemsSwitches, itemsSwitches, _i
             />
         </div>
         {setItemsSwitches && <div className={cls.control_menu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
-            <div onClick={() => {
-                setItemsSwitches([...itemsSwitches.filter(el => el._id !== _id)]);
+            <div onClick={(e) => {
+                switch (_acceptedBy) {
+                    case 'actions':
+                        let newItemsSwitchess = {
+                            ...itemsSwitches, [_acceptedBy]: {
+                                ...itemsSwitches[_acceptedBy], [blockValue]:
+                                    [...itemsSwitches[_acceptedBy][blockValue]]
+                            }
+                        }
+                        newItemsSwitchess[_acceptedBy][blockValue] = newItemsSwitchess[_acceptedBy][blockValue].filter(el => el._id !== _id);
+                        return setItemsSwitches(newItemsSwitchess);
+                    case 'conditions':
+                        let newItemsSwitches = {
+                            ...itemsSwitches, [_acceptedBy]: [
+                                ...itemsSwitches[_acceptedBy]
+                            ]
+                        }
+                        newItemsSwitches[_acceptedBy][blockValue] = newItemsSwitches[_acceptedBy][blockValue].filter(el => el._id !== _id);
+                        return setItemsSwitches(newItemsSwitches);
+                    default:
+                        return setItemsSwitches({ ...itemsSwitches, [props._acceptedBy]: [...itemsSwitches[props._acceptedBy].filter(el => el._id !== _id)] });
+                        ;
+                }
             }} className={cls.close_btn} />
         </div>}
     </div>;
