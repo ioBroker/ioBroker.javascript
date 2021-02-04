@@ -9,14 +9,14 @@ $bar-spacing: 7px;
 	cursor: pointer;
 }
 
-.hamburger_menu,
-.hamburger_menu:after,
-.hamburger_menu:before {
+.hamburgerMenu,
+.hamburgerMenu:after,
+.hamburgerMenu:before {
   width: $bar-width;
 	height: $bar-height;
 }
 
-.hamburger_menu {
+.hamburgerMenu {
 	position: relative;
 	transform: translateY($bar-spacing);
 	background: #dfbdec;
@@ -27,7 +27,7 @@ $bar-spacing: 7px;
   }
 }
 
-.hamburger_menu:before {
+.hamburgerMenu:before {
 	content: "";
 	position: absolute;
 	left: 0;
@@ -36,7 +36,7 @@ $bar-spacing: 7px;
 	transition: bottom 300ms 300ms cubic-bezier(0.23, 1, 0.32, 1), transform 300ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.hamburger_menu:after {
+.hamburgerMenu:after {
 	content: "";
 	position: absolute;
 	left: 0;
@@ -45,13 +45,13 @@ $bar-spacing: 7px;
 	transition: top 300ms 300ms cubic-bezier(0.23, 1, 0.32, 1), transform 300ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.hamburger_menu.animate:after {
+.hamburgerMenu.animate:after {
 	top: 0;
 	transform: rotate(45deg);
 	transition: top 300ms cubic-bezier(0.23, 1, 0.32, 1), transform 300ms 300ms cubic-bezier(0.23, 1, 0.32, 1);;
 }
 
-.hamburger_menu.animate:before {
+.hamburgerMenu.animate:before {
 	bottom: 0;
 	transform: rotate(-45deg);
 	transition: bottom 300ms cubic-bezier(0.23, 1, 0.32, 1), transform 300ms 300ms cubic-bezier(0.23, 1, 0.32, 1);;

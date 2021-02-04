@@ -3,6 +3,8 @@ import React, { memo, useState } from 'react';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
 import CustomInput from '../CustomInput';
+import { deepCopy } from '../../helpers/ deepCopy';
+import { filterElement } from '../../helpers/filterElement';
 
 
 // class GenericBlock extends React.Component {
@@ -68,57 +70,36 @@ import CustomInput from '../CustomInput';
 //     }    
 // }
 
-const CurrentItem = memo((props) => {
+const CurrentItem = memo(props => {
     const { Icon, name, ref, setItemsSwitches, itemsSwitches, _id, _acceptedBy, blockValue } = props;
     const [anchorEl, setAnchorEl] = useState(null);
-    const handlePopoverOpen = (event) => {
+    const handlePopoverOpen = event =>
         setAnchorEl(event.currentTarget);
-    };
-    const handlePopoverClose = () => {
+    const handlePopoverClose = () =>
         setAnchorEl(null);
-    };
     return <div
         onMouseMove={handlePopoverOpen}
         onMouseEnter={handlePopoverOpen}
-        onMouseLeave={handlePopoverClose} ref={ref} className={cls.card_style}>
-        <Icon className={cls.icon_them_card} />
-        <div className={cls.block_name}>
+        onMouseLeave={handlePopoverClose} ref={ref} className={cls.cardStyle}>
+        <Icon className={cls.iconThemCard} />
+        <div className={cls.blockName}>
             <span>
                 {name}
             </span>
             <CustomInput
-                className={cls.input_card}
-                autoComplete='off'
+                className={cls.inputCard}
+                autoComplete="off"
                 label="CO2"
                 variant="outlined"
                 size="small"
             />
         </div>
-        {setItemsSwitches && <div className={cls.control_menu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
-            <div onClick={(e) => {
-                switch (_acceptedBy) {
-                    case 'actions':
-                        let newItemsSwitchess = {
-                            ...itemsSwitches, [_acceptedBy]: {
-                                ...itemsSwitches[_acceptedBy], [blockValue]:
-                                    [...itemsSwitches[_acceptedBy][blockValue]]
-                            }
-                        }
-                        newItemsSwitchess[_acceptedBy][blockValue] = newItemsSwitchess[_acceptedBy][blockValue].filter(el => el._id !== _id);
-                        return setItemsSwitches(newItemsSwitchess);
-                    case 'conditions':
-                        let newItemsSwitches = {
-                            ...itemsSwitches, [_acceptedBy]: [
-                                ...itemsSwitches[_acceptedBy]
-                            ]
-                        }
-                        newItemsSwitches[_acceptedBy][blockValue] = newItemsSwitches[_acceptedBy][blockValue].filter(el => el._id !== _id);
-                        return setItemsSwitches(newItemsSwitches);
-                    default:
-                        return setItemsSwitches({ ...itemsSwitches, [props._acceptedBy]: [...itemsSwitches[props._acceptedBy].filter(el => el._id !== _id)] });
-                        ;
-                }
-            }} className={cls.close_btn} />
+        {setItemsSwitches && <div className={cls.controlMenu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
+            <div onClick={e => {
+                let newItemsSwitches = deepCopy(_acceptedBy, itemsSwitches, blockValue);
+                newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, blockValue, _id);
+                return setItemsSwitches(newItemsSwitches);
+            }} className={cls.closeBtn} />
         </div>}
     </div>;
 });

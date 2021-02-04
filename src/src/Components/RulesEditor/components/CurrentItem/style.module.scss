@@ -1,4 +1,4 @@
-.card_style {
+.cardStyle {
     cursor: pointer;
     position: relative;
     width: 200px;
@@ -16,7 +16,7 @@
         margin-top: 0 !important;
     }
 }
-.icon_them_card {
+.iconThemCard {
     width: 40px !important;
     height: 40px !important;
     margin-left: 5px;
@@ -24,22 +24,21 @@
         color: #3e0056 !important;
     }
 }
-.input_card {
+.inputCard {
     margin-top: 10px !important;
 }
-.block_name {
+.blockName {
     margin-left: 10px;
 }
-.control_menu {
+.controlMenu {
     display: flex;
     position: absolute;
     right: -31px;
-    // background: red;
     width: 30px;
     height: 100%;
     transition: opacity 0.5s;
 }
-.close_btn {
+.closeBtn {
     width: 20px;
     height: 20px;
     border-radius: 20px;

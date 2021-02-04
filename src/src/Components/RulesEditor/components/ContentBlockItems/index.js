@@ -1,17 +1,15 @@
 
-import React, { Fragment, useContext, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
 import { useDrop } from 'react-dnd';
-// import { useStateLocal } from '../../hooks/useStateLocal';
 import CurrentItem from '../CurrentItem';
 import { useStateLocal } from '../../hooks/useStateLocal';
 import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import ShuffleIcon from '@material-ui/icons/Shuffle';
 import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
 import DragWrapper from '../DragWrapper';
-import { ContextWrapperCreate } from '../ContextWrapper';
 
 const icon = {
     'Trigger1': (props) => <MusicNoteIcon {...props} />,
@@ -23,7 +21,6 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
     const [checkItem, setCheckItem] = useState(false);
     const [canDropCheck, setCanDropCheck] = useState(false);
     const [hoverBlock, setHoverBlock] = useState('');
-    const { setActive } = useContext(ContextWrapperCreate);
     const [{ canDrop, isOver, offset, targetId }, drop] = useDrop({
         accept: 'box',
         drop: () => ({ name, blockValue }),
@@ -33,7 +30,6 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
         },
         canDrop: (item, monitor) => {
             setCanDropCheck(item.typeBlock === typeBlock);
-            setActive(item.typeBlock === typeBlock)
             return item.typeBlock === typeBlock
         },
         collect: (monitor) => ({
@@ -70,14 +66,29 @@ AdditionallyContentBlockItems.defaultProps = {
     boolean: true
 };
 
-const ContentBlockItems = ({ blockValue, typeBlock, name, nameAdditionally, additionally, border, additionallyLength, itemsSwitches, setItemsSwitches }) => {
+const ContentBlockItems = ({ blockValue, typeBlock, name, nameAdditionally, additionally, border, itemsSwitches, setItemsSwitches }) => {
     const [additionallyClickItems, setAdditionallyClickItems] = useStateLocal(blockValue === 'actions' ? false : [], `additionallyClickItems_${blockValue}`);
-    const [additionallyRowsItems, setAdditionallyRowsItems] = useStateLocal(1, 'additionallyRowsItems');
+    useEffect(() => {
+        if (blockValue === 'conditions' && additionallyClickItems.length !== itemsSwitches['conditions'].length - 1) {
+            let newArray = [];
+            itemsSwitches['conditions'].forEach((el, idx) => {
+                if (idx > 0) {
+                    newArray.push({
+                        index: idx - 1,
+                        open: true
+                    });
+                }
+            })
+            setAdditionallyClickItems([...additionallyClickItems, ...newArray]);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     return <div className={`${cls.mainBlockItemRules} ${border ? cls.border : null}`}>
         <span>{name}</span>
         <AdditionallyContentBlockItems
             blockValue={blockValue === 'actions' ? 'then' : blockValue === 'conditions' ? 0 : blockValue}
-            typeBlock={typeBlock} setItemsSwitches={setItemsSwitches}
+            typeBlock={typeBlock}
+            setItemsSwitches={setItemsSwitches}
             name={name}
             itemsSwitches={itemsSwitches}
             itemsSwitchesRender={blockValue === 'actions' ? itemsSwitches['actions'] : blockValue === 'conditions' ? itemsSwitches['conditions'] : itemsSwitches}
@@ -90,7 +101,21 @@ const ContentBlockItems = ({ blockValue, typeBlock, name, nameAdditionally, addi
                         setAdditionallyClickItems(!additionallyClickItems)
                         return null;
                     }
-                    setAdditionallyClickItems([...additionallyClickItems.filter(el => el.index !== index)]);
+                    let newAdditionally = JSON.parse(JSON.stringify(additionallyClickItems));
+                    if (itemsSwitches['conditions'][index + 1].length) {
+                        newAdditionally[index].open = !newAdditionally[index].open
+                        setAdditionallyClickItems(newAdditionally);
+                        return null
+                    }
+                    newAdditionally = newAdditionally.filter(el => el.index !== index);
+                    if (newAdditionally.length > index) {
+                        newAdditionally.forEach((element, idx) => {
+                            if (idx > index) {
+                                newAdditionally[idx].index = idx - 1;
+                            }
+                        });
+                    }
+                    setAdditionallyClickItems(newAdditionally);
                     setItemsSwitches({ ...itemsSwitches, conditions: [...itemsSwitches.conditions.filter((el, idx) => idx !== index + 1)] });
                 }}
                 key={index} className={cls.blockCardAdd}>
@@ -113,9 +138,8 @@ const ContentBlockItems = ({ blockValue, typeBlock, name, nameAdditionally, addi
                 setAdditionallyClickItems([...additionallyClickItems, {
                     index: additionallyClickItems.length,
                     open: true
-                }])
-                // setAdditionallyRowsItems(additionallyRowsItems + 1)
-                setItemsSwitches({ ...itemsSwitches, conditions: [...itemsSwitches.conditions, []] })
+                }]);
+                setItemsSwitches({ ...itemsSwitches, conditions: [...itemsSwitches.conditions, []] });
             }}
             className={cls.blockCardAdd}>
             {'+'}<div className={cls.cardAdd}>
@@ -130,12 +154,20 @@ ContentBlockItems.defaultProps = {
     nameAdditionally: '',
     additionally: false,
     border: false,
-    additionallyLength: 1
+    typeBlock: '',
+    blockValue: ''
 };
 
 ContentBlockItems.propTypes = {
     name: PropTypes.string,
-    nameAdditionally: PropTypes.string
+    nameAdditionally: PropTypes.string,
+    border: PropTypes.bool,
+    additionally: PropTypes.bool,
+    children: PropTypes.object,
+    typeBlock: PropTypes.string,
+    blockValue: PropTypes.string,
+    itemsSwitches: PropTypes.object,
+    setItemsSwitches: PropTypes.func
 };
 
 export default ContentBlockItems;

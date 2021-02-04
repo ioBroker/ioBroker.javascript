@@ -94,8 +94,24 @@ $colorFons: #81688c; //
 }
 .controlPanel {
     display: flex;
-    justify-content: space-around;
+    // justify-content: space-around;
     align-items: center;
+    width: 200px;
+    button{
+        width: calc(100%/3);
+        min-width: auto;
+        color: #dfbdec;
+    }
+    .controlPanelAppBar{
+        background: none;
+        box-shadow: none;
+    }
+    [class*="Mui-selected"] {
+        color: #ef00ffab !important;
+    }
+    [class*="MuiTabs-indicator"] {
+        background-color: #ef00ffab;
+    }
     [class*="Mui-disabled"] {
         color: #210025cc !important;
     }

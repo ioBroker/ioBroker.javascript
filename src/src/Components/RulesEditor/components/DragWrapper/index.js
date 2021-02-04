@@ -3,67 +3,48 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
+import { deepCopy } from '../../helpers/ deepCopy';
+import { filterElement } from '../../helpers/filterElement';
 
 const DragWrapper = ({ allProperties, id, isActive, setItemsSwitches, itemsSwitches, children, _id, Icon, blockValue }) => {
     const [{ opacity }, drag, preview] = useDrag({
         item: { ...allProperties, type: 'box', id, isActive, _id, Icon: Icon ? Icon : allProperties.Icon },
         end: (item, monitor) => {
-            let dropResult = monitor.getDropResult();
             const { _acceptedBy } = item;
+            let dropResult = monitor.getDropResult();
+            let newItemsSwitches;
             if (!dropResult) {
                 if (typeof _id === 'number' && !monitor.getTargetIds().length) {
-                    switch (_acceptedBy) {
-                        case 'actions':
-                            let newItemsSwitchess = {
-                                ...itemsSwitches, [_acceptedBy]: {
-                                    ...itemsSwitches[_acceptedBy], [blockValue]:
-                                        [...itemsSwitches[_acceptedBy][blockValue]]
-                                }
-                            }
-                            newItemsSwitchess[_acceptedBy][blockValue] = newItemsSwitchess[_acceptedBy][blockValue].filter(el => el._id !== _id);
-                            return setItemsSwitches(newItemsSwitchess);
-                        case 'conditions':
-                            let newItemsSwitches = {
-                                ...itemsSwitches, [_acceptedBy]: [
-                                    ...itemsSwitches[_acceptedBy]
-                                ]
-                            }
-                            newItemsSwitches[_acceptedBy][blockValue] = newItemsSwitches[_acceptedBy][blockValue].filter(el => el._id !== _id);
-                            return setItemsSwitches(newItemsSwitches);
-                        default:
-                            return setItemsSwitches({ ...itemsSwitches, [_acceptedBy]: [...itemsSwitches[_acceptedBy].filter(el => el._id !== _id)] });
-                    }
+                    newItemsSwitches = deepCopy(_acceptedBy, itemsSwitches, blockValue);
+                    newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, blockValue, _id);
+                    setItemsSwitches(newItemsSwitches);
                 }
                 return null;
             }
-            let idNumber = typeof _id === 'number' ? _id : Math.max.apply(null, itemsSwitches[_acceptedBy]?.length ? itemsSwitches[_acceptedBy].map(el => el._id) : [0]) + 1;
+            let idNumber = typeof _id === 'number' ? _id : Date.now();
+            newItemsSwitches = deepCopy(_acceptedBy, itemsSwitches, dropResult.blockValue);
             switch (_acceptedBy) {
                 case 'actions':
-                    idNumber = typeof _id === 'number' ? _id : Math.max.apply(null, itemsSwitches[_acceptedBy][dropResult.blockValue]?.length ? itemsSwitches[_acceptedBy][dropResult.blockValue].map(el => el._id) : [0]) + 1;
-                    let newItemsSwitchess = {
-                        ...itemsSwitches, [_acceptedBy]: {
-                            ...itemsSwitches[_acceptedBy], [dropResult.blockValue]:
-                                [...itemsSwitches[_acceptedBy][dropResult.blockValue]]
-                        }
+                    if (blockValue) {
+                        newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, blockValue, _id);
                     }
-                    newItemsSwitchess[_acceptedBy][dropResult.blockValue] = newItemsSwitchess[_acceptedBy][dropResult.blockValue].filter(el => el._id !== _id);
-                    newItemsSwitchess[_acceptedBy][dropResult.blockValue].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
-                    return setItemsSwitches(newItemsSwitchess);
+                    newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, dropResult.blockValue, _id);
+                    newItemsSwitches[_acceptedBy][dropResult.blockValue].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
+                    return setItemsSwitches(newItemsSwitches);
                 case 'conditions':
-                    idNumber = typeof _id === 'number' ? _id : Math.max.apply(null, itemsSwitches[_acceptedBy][dropResult.blockValue]?.length ? itemsSwitches[_acceptedBy][dropResult.blockValue].map(el => el._id) : [0]) + 1;
-                    let newItemsSwitches = {
-                        ...itemsSwitches, [_acceptedBy]: [
-                            ...itemsSwitches[_acceptedBy]
-                        ]
-                    }
-                    newItemsSwitches[_acceptedBy][dropResult.blockValue] = newItemsSwitches[_acceptedBy][dropResult.blockValue].filter(el => el._id !== _id);
+                    if (typeof blockValue === 'number') {
+                        newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, blockValue, _id);
+                    };
+                    newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, dropResult.blockValue, _id);
                     newItemsSwitches[_acceptedBy][dropResult.blockValue].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
                     return setItemsSwitches(newItemsSwitches);
                 default:
-                    return setItemsSwitches({ ...itemsSwitches, [_acceptedBy]: [...itemsSwitches[_acceptedBy].filter(el => el._id !== _id), { ...item, nameBlock: dropResult.name, _id: idNumber }] });
+                    newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, dropResult.blockValue, _id);
+                    newItemsSwitches[_acceptedBy].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
+                    return setItemsSwitches(newItemsSwitches);
             }
         },
-        collect: (monitor) => ({
+        collect: monitor => ({
             opacity: monitor.isDragging() ? 0.4 : 1,
             isDragging: monitor.isDragging()
         }),

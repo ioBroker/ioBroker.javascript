@@ -3,16 +3,17 @@ import cls from './style.module.scss';
 import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import ShuffleIcon from '@material-ui/icons/Shuffle';
 import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
+import FlashOnIcon from '@material-ui/icons/FlashOn';
+import HelpIcon from '@material-ui/icons/Help';
+import PlayForWorkIcon from '@material-ui/icons/PlayForWork';
 import CustomInput from './components/CustomInput';
 import { CustomDragLayer } from './components/CustomDragLayer';
 import CustomDragItem from './components/CardMenu/CustomDragItem';
 import ContentBlockItems from './components/ContentBlockItems';
 import HamburgerMenu from './components/HamburgerMenu';
 import { useStateLocal } from './hooks/useStateLocal';
-import CustomSwitch from './components/CustomSwitch';
-import CustomCheckbox from './components/CustomCheckbox';
-import CustomHint from './components/CustomHint';
 import { ContextWrapper } from './components/ContextWrapper';
+import { AppBar, Tab, Tabs } from '@material-ui/core';
 // import PropTypes from 'prop-types';
 
 const STANDARD_FUNCTION = `async function (obj) {
@@ -199,16 +200,28 @@ const RulesEditor = props => {
     const [itemsSwitches, setItemsSwitches] = useStateLocal(DEFAULT_RULE, 'itemsSwitches');//useState(code2json(props.code));
     const [filter, setFilter] = useStateLocal({
         text: '',
-        type: ['trigger', 'condition', 'action'],
-        allType: true
+        type: 'trigger',
+        index: 0
     }, 'filterControlPanel');
-    const setSwitchesFunc = (text = filter.text, array = filter.type) => {
-        setSwitches([...allSwitches.filter(({ type, name }) => name.toLowerCase().indexOf(text.toLowerCase()) + 1 && array.find(el => el === type))]);
+    const setSwitchesFunc = (text = filter.text, typeFunc = filter.type) => {
+        setSwitches([...allSwitches.filter(({ type, name }) => name.toLowerCase().indexOf(text.toLowerCase()) + 1 && typeFunc === type)]);
     }
     useEffect(() => {
         setSwitchesFunc();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    const a11yProps = index => ({
+        id: `scrollable-force-tab-${index}`,
+        'aria-controls': `scrollable-force-tabpanel-${index}`
+    });
+    const handleChange = (event, newValue) => {
+        setFilter({
+            ...filter,
+            index: newValue,
+            type: ['trigger', 'condition', 'action'][newValue]
+        });
+        setSwitchesFunc(filter.text, ['trigger', 'condition', 'action'][newValue]);
+    };
     return <div className={cls.wrapperRules}>
         <ContextWrapper>
             <CustomDragLayer />
@@ -220,7 +233,7 @@ const RulesEditor = props => {
                     fullWidth
                     customValue
                     value={filter.text}
-                    autoComplete='off'
+                    autoComplete="off"
                     label="search"
                     variant="outlined"
                     onChange={(value) => {
@@ -232,43 +245,25 @@ const RulesEditor = props => {
                     Control Panel
             </div>
                 <div className={cls.controlPanel}>
-                    <CustomSwitch customValue value={filter.allType}
-                        onChange={(value) => {
-                            setFilter({
-                                ...filter, allType: value,
-                                type: ['trigger', 'condition', 'action']
-                            });
-                            setSwitchesFunc(filter.text, ['trigger', 'condition', 'action']);
-                        }} />
-                    <CustomHint>
-                        <div>
-                            <div className={cls.hintContent}><div className={cls.hintSquare} style={{ background: '#24b3c1f0' }} /> trigger</div>
-                            <div className={cls.hintContent}><div className={cls.hintSquare} style={{ background: '#fcff5c94' }} /> condition</div>
-                            <div className={cls.hintContent}><div className={cls.hintSquare} style={{ background: '#59f9599e' }} /> action</div>
-                        </div>
-                    </CustomHint>
-                </div>
-                <div className={cls.controlPanel}>
-                    {['trigger', 'condition', 'action'].map((typeEl) => (
-                        <Fragment key={typeEl}>
-                            <CustomCheckbox key={typeEl} disabled={filter.allType} customValue value={filter.type.find(_type => _type === typeEl)}
-                                onChange={(value) => {
-                                    let newArray = [...filter.type];
-                                    if (value) {
-                                        newArray.push(typeEl);
-                                    } else {
-                                        newArray = newArray.filter(item => item !== typeEl);
-                                    }
-                                    setFilter({ ...filter, type: newArray });
-                                    setSwitchesFunc(filter.text, newArray);
-                                }} type={typeEl} />
-                        </Fragment>))}
+                    <AppBar className={cls.controlPanelAppBar} position="static">
+                        <Tabs
+                            value={filter.index}
+                            onChange={handleChange}
+                            indicatorColor="primary"
+                            textColor="primary"
+                            aria-label="scrollable force tabs example"
+                        >
+                            <Tab icon={<FlashOnIcon />} {...a11yProps(0)} />
+                            <Tab icon={<HelpIcon />} {...a11yProps(1)} />
+                            <Tab icon={<PlayForWorkIcon />} {...a11yProps(2)} />
+                        </Tabs>
+                    </AppBar>
                 </div>
                 <div className={cls.menuTitle}>
                     Switches
             </div>
                 <div>
-                    {switches.map((el) =>
+                    {switches.map(el =>
                         <Fragment key={el.name}>
                             <CustomDragItem
                                 {...el}
@@ -286,11 +281,10 @@ const RulesEditor = props => {
                         Nothing found...
                     <div className={cls.resetSearch} onClick={() => {
                             setFilter({
-                                text: '',
-                                type: ['trigger', 'condition', 'action'],
-                                allType: true
+                                ...filter,
+                                text: ''
                             });
-                            setSwitches(allSwitches);
+                            setSwitchesFunc('');
                         }}>reset search</div>
                     </div>}
                 </div>
@@ -304,10 +298,9 @@ const RulesEditor = props => {
                     // props.onChange(json2code(json));
                 }}
                 itemsSwitches={itemsSwitches}
-                name='when...'
-                typeBlock='when'
-                blockValue='triggers'
-                typeValue='any'
+                name="when..."
+                typeBlock="when"
+                blockValue="triggers"
             />
             <ContentBlockItems
                 setItemsSwitches={json => {
@@ -315,13 +308,12 @@ const RulesEditor = props => {
                     // props.onChange(json2code(json));
                 }}
                 itemsSwitches={itemsSwitches}
-                name='...and...'
-                typeBlock='and'
-                nameAdditionally='or'
-                additionallyLength={2}
+                name="...and..."
+                typeBlock="and"
+                nameAdditionally="or"
                 additionally
                 border
-                blockValue='conditions'
+                blockValue="conditions"
             />
             <ContentBlockItems
                 setItemsSwitches={json => {
@@ -329,11 +321,11 @@ const RulesEditor = props => {
                     // props.onChange(json2code(json));
                 }}
                 itemsSwitches={itemsSwitches}
-                name='...then'
-                typeBlock='then'
-                nameAdditionally='else'
+                name="...then"
+                typeBlock="then"
+                nameAdditionally="else"
                 additionally
-                blockValue='actions'
+                blockValue="actions"
             />
         </ContextWrapper>
     </div>;

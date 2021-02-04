@@ -40,27 +40,27 @@ const getItemStyles = (initialOffset, currentOffset, isSnapToGrid) => {
     };
 }
 
-export const CustomDragLayer = (props) => {
+export const CustomDragLayer = props => {
     const {
         itemType,
         isDragging,
         item,
         initialOffset,
         currentOffset,
-        issas
+        targetIds
     } = useDragLayer((monitor) => ({
         item: monitor.getItem(),
         itemType: monitor.getItemType(),
         initialOffset: monitor.getInitialSourceClientOffset(),
         currentOffset: monitor.getSourceClientOffset(),
         isDragging: monitor.isDragging(),
-        issas: monitor.getTargetIds()
+        targetIds: monitor.getTargetIds()
     }));
     const renderItem = () => {
         switch (itemType) {
             case 'box':
-                return issas.length ? <CurrentItem name={item.name} Icon={item.Icon} id={item.id} /> :
-                    <CardMenu active name={item.name} Icon={item.Icon} id={item.id} />;
+                return targetIds.length ? <CurrentItem {...item} /> :
+                    <CardMenu active {...item} />;
             default:
                 return null;
         }

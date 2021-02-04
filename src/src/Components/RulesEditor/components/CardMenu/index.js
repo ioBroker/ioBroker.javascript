@@ -20,7 +20,8 @@ CardMenu.defaultProps = {
 };
 
 CardMenu.propTypes = {
-    name: PropTypes.string
+    name: PropTypes.string,
+    active: PropTypes.bool
 };
 
 export default CardMenu;
