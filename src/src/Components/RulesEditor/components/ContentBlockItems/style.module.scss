@@ -19,7 +19,7 @@ $colorFons: #81688c; //
     display: flex;
     flex: 1 3;
     flex-direction: column;
-    transition: all .5s;
+    transition: all 0.5s;
     z-index: 9;
     // background: white;
     span {
@@ -37,7 +37,8 @@ $colorFons: #81688c; //
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    transition: height .3s, background .5s;
+    overflow: auto;
+    transition: height 0.3s, background 0.5s;
 }
 .contentHeightOff {
     height: 0;
@@ -67,7 +68,7 @@ $colorFons: #81688c; //
     display: flex;
     padding: 0 10px 6px 10px;
     align-items: center;
-    color:white;
+    color: white;
     cursor: pointer;
     * {
         color: #ffffffb3;

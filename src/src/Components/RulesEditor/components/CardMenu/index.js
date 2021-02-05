@@ -3,11 +3,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
 
-const CardMenu = ({ Icon, name, id, active }) => {
+const CardMenu = ({ Icon, _name, id, active }) => {
     return <div key={id} className={`${cls.switchesItem} ${active ? cls.switchesItemActive : null}`}>
         <Icon />
         <span>
-            {name}
+            {_name.en}
         </span>
     </div>;
 }

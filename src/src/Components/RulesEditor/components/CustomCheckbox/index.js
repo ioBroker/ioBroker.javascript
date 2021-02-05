@@ -14,7 +14,7 @@ const CustomCheckbox = ({ type, size, value, style, onChange, className, customV
     return <Checkbox
         disabled={disabled}
         checked={Boolean(customValue ? value : switchChecked)}
-        style={Object.assign(type ? color[type] : null, style)}
+        // style={Object.assign(type ? color[type] : null, style)}
         className={className}
         onChange={e => {
             if (!customValue) setSwitchChecked(e.target.checked);

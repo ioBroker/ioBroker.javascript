@@ -5,6 +5,7 @@ import cls from './style.module.scss';
 import CustomInput from '../CustomInput';
 import { deepCopy } from '../../helpers/ deepCopy';
 import { filterElement } from '../../helpers/filterElement';
+import GenericInputBlock from '../GenericInputBlock';
 
 
 // class GenericBlock extends React.Component {
@@ -71,7 +72,7 @@ import { filterElement } from '../../helpers/filterElement';
 // }
 
 const CurrentItem = memo(props => {
-    const { Icon, name, ref, setItemsSwitches, itemsSwitches, _id, _acceptedBy, blockValue } = props;
+    const { Icon, name, ref, setItemsSwitches, itemsSwitches, _id, _acceptedBy, blockValue, _inputs, _name } = props;
     const [anchorEl, setAnchorEl] = useState(null);
     const handlePopoverOpen = event =>
         setAnchorEl(event.currentTarget);
@@ -84,16 +85,12 @@ const CurrentItem = memo(props => {
         <Icon className={cls.iconThemCard} />
         <div className={cls.blockName}>
             <span>
-                {name}
+                {_name.en}
             </span>
-            <CustomInput
-                className={cls.inputCard}
-                autoComplete="off"
-                label="CO2"
-                variant="outlined"
-                size="small"
-            />
+            <GenericInputBlock className={null} inputs={_inputs || []} />
         </div>
+        {/* <div><GenericInputBlock className={null} inputs={_inputs || []} /></div> */}
+        
         {setItemsSwitches && <div className={cls.controlMenu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
             <div onClick={e => {
                 let newItemsSwitches = deepCopy(_acceptedBy, itemsSwitches, blockValue);

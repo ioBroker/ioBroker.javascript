@@ -13,12 +13,22 @@ $colorFons: #81688c; //
 }
 .menuRules {
     width: 200px;
-    height: 100%;
+    // height: 100%;
+    display: flex;
+    flex-direction: column;
     background: #994e9e30;
     border-right: 1px solid #9a39a063;
     padding: 10px;
     opacity: 1;
     transition: width 0.5s, opacity 0.2s, padding 0.5s;
+}
+.switchesRenderWrapper{
+    overflow-x: hidden;
+    overflow-y: auto;
+    direction:rtl;
+    span{
+        direction:ltr;
+    }
 }
 .menuOff {
     width: 0px;
