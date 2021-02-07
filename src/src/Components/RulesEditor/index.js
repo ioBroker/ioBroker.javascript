@@ -345,18 +345,18 @@ function compile(json) {
 // eslint-disable-next-line no-unused-vars
 function code2json(code) {
     if (!code) {
-        return [];//DEFAULT_RULE;
+        return DEFAULT_RULE;
     } else {
         const lines = code.split('\n');
-        let json = lines.pop();
         try {
+            let json = lines.pop().replace(/^\/\//, '');
             json = JSON.parse(json);
             if (!json.triggers) {
-                json = [];//DEFAULT_RULE;
+                json = DEFAULT_RULE;
             }
             return json;
         } catch (e) {
-            return [];//DEFAULT_RULE;
+            return DEFAULT_RULE;
         }
     }
 }
@@ -365,14 +365,7 @@ function code2json(code) {
 function json2code(json) {
     let code = `const demo = ${JSON.stringify(json, null, 2)};\n`;
 
-    const compiled = compile({
-        triggers: json.filter(block => block.typeBlock === 'when'),
-        conditions: json.filter(block => block.typeBlock === 'and'),
-        actions: {
-            then: json.filter(block => block.typeBlock === 'then'),
-            'else': null,
-        }
-    });
+    const compiled = compile(json);
     code += compiled;
 
     return code + '\n//' + JSON.stringify(json);
@@ -382,27 +375,31 @@ const RulesEditor = props => {
     // eslint-disable-next-line no-unused-vars
     const [switches, setSwitches] = useState([]);
     const [hamburgerOnOff, setHamburgerOnOff] = useStateLocal(false, 'hamburgerOnOff');
-    const [itemsSwitches, setItemsSwitches] = useStateLocal(DEFAULT_RULE, 'itemsSwitches');//useState(code2json(props.code));
+    const [itemsSwitches, setItemsSwitches] = useState(code2json(props.code)); //useStateLocal(DEFAULT_RULE, 'itemsSwitches');
     const [filter, setFilter] = useStateLocal({
         text: '',
         type: 'trigger',
         index: 0
     }, 'filterControlPanel');
+
     const setSwitchesFunc = (text = filter.text, typeFunc = filter.type) => {
         let newAllSwitches = [...allSwitches];
         newAllSwitches = newAllSwitches.filter(({ type, _name }) => _name.en.toLowerCase().indexOf(text.toLowerCase()) + 1);
         newAllSwitches = newAllSwitches.filter(({ type, _name }) => typeFunc === type);
         console.log(newAllSwitches);
         setSwitches(newAllSwitches);
-    }
+    };
+
     useEffect(() => {
         setSwitchesFunc();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
     const a11yProps = index => ({
         id: `scrollable-force-tab-${index}`,
         'aria-controls': `scrollable-force-tabpanel-${index}`
     });
+
     const handleChange = (event, newValue) => {
         setFilter({
             ...filter,
@@ -411,6 +408,7 @@ const RulesEditor = props => {
         });
         setSwitchesFunc(filter.text, ['trigger', 'condition', 'action'][newValue]);
     };
+
     return <div className={cls.wrapperRules}>
         <ContextWrapper>
             <CustomDragLayer />
@@ -450,7 +448,7 @@ const RulesEditor = props => {
                 </div>
                 <div className={cls.menuTitle}>
                     Switches
-            </div>
+                </div>
                 <div className={cls.switchesRenderWrapper}>
                     <span>
                         {switches.map(el =>
@@ -460,7 +458,7 @@ const RulesEditor = props => {
                                     itemsSwitches={itemsSwitches}
                                     setItemsSwitches={json => {
                                         setItemsSwitches(json);
-                                        // props.onChange(json2code(json));
+                                        props.onChange(json2code(json));
                                     }}
                                     isActive={false}
                                     id={el.name}
@@ -469,7 +467,7 @@ const RulesEditor = props => {
                             </Fragment>)}
                         {switches.length === 0 && <div className={cls.nothingFound}>
                             Nothing found...
-                    <div className={cls.resetSearch} onClick={() => {
+                            <div className={cls.resetSearch} onClick={() => {
                                 setFilter({
                                     ...filter,
                                     text: ''
@@ -486,7 +484,7 @@ const RulesEditor = props => {
                     // const _itemsSwitches = JSON.parse(JSON.stringify(itemsSwitches));
                     // _itemsSwitches.triggers = json;
                     setItemsSwitches(json);
-                    // props.onChange(json2code(json));
+                    props.onChange(json2code(json));
                 }}
                 itemsSwitches={itemsSwitches}
                 name="when..."
@@ -496,7 +494,7 @@ const RulesEditor = props => {
             <ContentBlockItems
                 setItemsSwitches={json => {
                     setItemsSwitches(json);
-                    // props.onChange(json2code(json));
+                    props.onChange(json2code(json));
                 }}
                 itemsSwitches={itemsSwitches}
                 name="...and..."
@@ -509,7 +507,7 @@ const RulesEditor = props => {
             <ContentBlockItems
                 setItemsSwitches={json => {
                     setItemsSwitches(json);
-                    // props.onChange(json2code(json));
+                    props.onChange(json2code(json));
                 }}
                 itemsSwitches={itemsSwitches}
                 name="...then"
