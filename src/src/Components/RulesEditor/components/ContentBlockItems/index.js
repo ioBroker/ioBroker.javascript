@@ -52,7 +52,7 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
     }
     return <div ref={drop} style={{ backgroundColor }} className={`${cls.contentBlockItem} ${boolean ? null : cls.contentHeightOff}`}>
         {itemsSwitchesRender[blockValue]?.filter(el => el.nameBlock === name).map((el, idx) => (
-            <Fragment key={`additionally_content_${name}_${idx}`}>
+            <Fragment key={`additionally_content_${el._id}`}>
                 <DragWrapper {...el} blockValue={blockValue} allProperties={el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} Icon={icon[el.name]}>
                     <CurrentItem {...el} blockValue={blockValue} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} Icon={icon[el.name]} />
                 </DragWrapper>
@@ -84,7 +84,7 @@ const ContentBlockItems = ({ blockValue, typeBlock, name, nameAdditionally, addi
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     return <div className={`${cls.mainBlockItemRules} ${border ? cls.border : null}`}>
-        <span>{name}</span>
+        <span className={cls.nameBlockItems}>{name}</span>
         <AdditionallyContentBlockItems
             blockValue={blockValue === 'actions' ? 'then' : blockValue === 'conditions' ? 0 : blockValue}
             typeBlock={typeBlock}

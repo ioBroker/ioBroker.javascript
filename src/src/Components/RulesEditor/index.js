@@ -90,6 +90,30 @@ const allSwitches = [
         setConfig: (config) => { },
         _acceptedBy: 'conditions', // where it could be acceped: trigger, condition, action
         _type: 'condition1',
+        _name: { en: 'Сondition checkbox', ru: 'Триггер' },
+        Icon: (props) => <ShuffleIcon {...props} className={cls.iconThem} />,
+        typeBlock: 'and',
+        type: 'condition',
+        compile: (config, context) => `obj.val === "1"`,
+        _inputs: [
+            // {nameRender:'renderText', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
+            // { nameRender: 'renderNumber', name: { en: 'Time' }, attr: 'timeFrom', type: 'time', default: '00:00', icon: '' },
+            {nameRender:'renderCheckbox', name: { en: 'Color' }, attr: 'background', type: 'color', default: '#FF00FF', icon: '' },
+            // {nameRender:'renderSlider', name: { en: 'Dimmer' }, attr: 'dimmer', type: 'slider', default: 50, min: 0, max: 100, icon: '' },
+            // {nameRender:'renderButton', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
+            // {nameRender:'renderObjectID', name: { en: 'Time' }, attr: 'timeFrom', type: 'time', default: '00:00', icon: '' },
+            // {nameRender:'renderColor', name: { en: 'Color' }, attr: 'background', type: 'color', default: '#FF00FF', icon: '' },
+            // {nameRender:'renderTimeOfDay', name: { en: 'Dimmer' }, attr: 'dimmer', type: 'slider', default: 50, min: 0, max: 100, icon: '' },
+            // {nameRender:'renderDate', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
+            // {nameRender:'renderInstanceSelection', name: { en: 'Time' }, attr: 'timeFrom', type: 'time', default: '00:00', icon: '' },
+        ]
+    },
+    {
+        name: 'Condition1',
+        getConfig: () => { },
+        setConfig: (config) => { },
+        _acceptedBy: 'conditions', // where it could be acceped: trigger, condition, action
+        _type: 'condition1',
         _name: { en: 'Сondition Slider', ru: 'Триггер' },
         Icon: (props) => <ShuffleIcon {...props} className={cls.iconThem} />,
         typeBlock: 'and',
@@ -249,7 +273,7 @@ const allSwitches = [
             // {nameRender:'renderColor', name: { en: 'Color' }, attr: 'background', type: 'color', default: '#FF00FF', icon: '' },
             // {nameRender:'renderTimeOfDay', name: { en: 'Dimmer' }, attr: 'dimmer', type: 'slider', default: 50, min: 0, max: 100, icon: '' },
             // {nameRender:'renderDate', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-            { nameRender: 'renderInstanceSelection', name: { en: 'Time' }, attr: 'timeFrom', type: 'time', default: '00:00', icon: '' },
+            { nameRender: 'renderInstanceSelection', name: { en: 'Time' }, attr: 'timeFrom', type: 'time', default: '00:00', icon: '',options:[{value:'test1',title:'test1'},{value:'test2',title:'test2'},{value:'test3',title:'test3'}] },
         ]
     },
     {

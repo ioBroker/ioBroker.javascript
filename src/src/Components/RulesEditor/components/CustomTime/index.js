@@ -4,35 +4,44 @@ import React from 'react';
 import PropTypes from 'prop-types';
 // import clsx from 'clsx';
 
-const styles = theme => ({
-    container: {
-        display: 'flex',
-        flexWrap: 'wrap',
+const TimeFieldMod = withStyles({
+    root: {
+        margin: '10px 0',
+        '& > *': {
+            color: '#2d0440 !important'
+        },
+        '& label.Mui-focused': {
+            color: '#81688c',
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: '#510573',
+        },
+        '& .MuiInput-underline:before': {
+            borderBottomColor: '#81688c',
+        },
+        '& .MuiInput-underline:hover:before': {
+            borderBottomColor: '#81688c',
+        },
     },
-    textField: {
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
-        width: 200,
-    },
-});
+})(TextField);
 
-const CustomTime = ({ table, value, title, attr, options, style, classes, native, onChange, className }) => {
+const CustomTime = ({ table, value, title, attr, options, style, native, onChange, className }) => {
 
-    return <form className={classes.container} noValidate>
-        <TextField
-            id="time"
-            label="Alarm clock"
-            type="time"
-            defaultValue="07:30"
-            className={classes.textField}
-            InputLabelProps={{
-                shrink: true,
-            }}
-            inputProps={{
-                step: 300, // 5 min
-            }}
-        />
-    </form>;
+    return <TimeFieldMod
+        id="time"
+        // label="Alarm clock"
+        type="time"
+        defaultValue="07:30"
+        className={className}
+        fullWidth
+        style={style}
+        InputLabelProps={{
+            shrink: true,
+        }}
+        inputProps={{
+            step: 300, // 5 min
+        }}
+    />;
 }
 
 CustomTime.defaultProps = {
@@ -50,4 +59,4 @@ CustomTime.propTypes = {
     onChange: PropTypes.func
 };
 
-export default withStyles(styles)(CustomTime);
+export default CustomTime;

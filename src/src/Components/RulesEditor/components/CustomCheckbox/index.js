@@ -6,11 +6,7 @@ import PropTypes from 'prop-types';
 
 const CustomCheckbox = ({ type, size, value, style, onChange, className, customValue, disabled }) => {
     const [switchChecked, setSwitchChecked] = useState(false);
-    let color = {
-        trigger: { color: '#24b3c1f0' },
-        condition: { color: '#fcff5c94' },
-        action: { color: '#59f9599e' },
-    }
+
     return <Checkbox
         disabled={disabled}
         checked={Boolean(customValue ? value : switchChecked)}

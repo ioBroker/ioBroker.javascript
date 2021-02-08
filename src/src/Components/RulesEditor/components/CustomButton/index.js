@@ -1,19 +1,32 @@
-import { Button } from '@material-ui/core';
+import { Button, withStyles } from '@material-ui/core';
 import React from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 
-const CustomButton = ({ fullWidth,  size, onClick, style, className }) => {
-    return <Button
-    variant="outlined" 
-    color="primary"
-    onClick={onClick}
-    fullWidth={fullWidth}
-    style={style}
-    className={className}
-    margin="normal"
-    size={size}
-  >dddddd</Button>;
+const ColorButton = withStyles((theme) => ({
+    root: {
+        color: '#81688c',
+        margin: '10px 0',
+        borderColor: '#81688c',
+        '&:hover': {
+            borderColor: '#7a5e86',
+            color: '#7a5e86',
+            backgroundColor: 'inherit'
+        },
+    },
+}))(Button);
+
+const CustomButton = ({ fullWidth, size, onClick, style, className, value }) => {
+    return <ColorButton
+        variant="outlined"
+        color="primary"
+        onClick={onClick}
+        fullWidth={fullWidth}
+        style={style}
+        className={className}
+        margin="normal"
+        size={size}
+    >{value}</ColorButton>;
 }
 
 CustomButton.defaultProps = {

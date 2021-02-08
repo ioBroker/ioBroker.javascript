@@ -1,31 +1,46 @@
 import { FormControl, FormHelperText, Input, MenuItem, Select, withStyles } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
 import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
-const styles = theme => ({
-    input: {
-        minWidth: 300
+const SelectMod = withStyles({
+    root: {
+        margin: '10px 0',
+        '& > *': {
+            color: '#2d0440 !important'
+        },
+        '& .MuiSelect-icon': {
+            color: '#81688c'
+        },
+        '& label.Mui-focused': {
+            color: '#81688c',
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: '#510573',
+        },
+        '& .MuiInput-underline:before': {
+            borderBottomColor: '#81688c',
+        },
+        '& .MuiInput-underline:hover:before': {
+            borderBottomColor: '#81688c',
+        },
     },
-    inputNumber: {
-        minWidth: 150
-    }
-});
+})(FormControl);
 
-const CustomSelect = ({ table, value, title, attr, options, style, classes, native, onChange, className }) => {
-    return <FormControl
-        className={clsx(classes.input, classes.controlElement, className)}
+const CustomSelect = ({ table, value, customValue, title, attr, options, style, native, onChange, className }) => {
+    const [inputText, setInputText] = useState('test1');
+
+    return <SelectMod
+        className={className}
+        fullWidth
         style={Object.assign({ paddingTop: 5 }, style)}
     >
         <Select
-            value={value}
+            value={customValue ? value : inputText}
+            fullWidth
             onChange={e => {
-                if (table) {
-                    onChange(e.target.value);
-                } else {
-                    onChange(attr, e.target.value === '_' ? '' : e.target.value)
-                }
+                if (!customValue) setInputText(e.target.value);
+                onChange(e.target.value);
             }
             }
             input={<Input name={attr} id={attr + '-helper'} />}
@@ -33,13 +48,14 @@ const CustomSelect = ({ table, value, title, attr, options, style, classes, nati
             {options.map(item => (<MenuItem key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)}</MenuItem>))}
         </Select>
         <FormHelperText>{I18n.t(title)}</FormHelperText>
-    </FormControl>;
+    </SelectMod>;
 }
 
 CustomSelect.defaultProps = {
     value: '',
     className: null,
-    table: false
+    table: false,
+    customValue: false
 };
 
 CustomSelect.propTypes = {
@@ -51,4 +67,4 @@ CustomSelect.propTypes = {
     onChange: PropTypes.func
 };
 
-export default withStyles(styles)(CustomSelect);
+export default CustomSelect;
