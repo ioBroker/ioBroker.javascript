@@ -39,13 +39,14 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
             targetId: monitor.targetId
         }),
     });
-    useEffect(() => { setHoverBlock('') }, [offset])
+
+    useEffect(() => { setHoverBlock('') }, [offset]);
+
     const isActive = canDrop && isOver;
     let backgroundColor = '';
     if (isActive) {
         backgroundColor = checkItem ? '#00fb003d' : '#fb00002e';
-    }
-    else if (canDrop) {
+    } else if (canDrop) {
         backgroundColor = canDropCheck ? '#00fb003d' : '#fb00002e';
     } else if (offset) {
         backgroundColor = targetId === hoverBlock ? '#fb00002e' : '';
@@ -71,6 +72,7 @@ const ContentBlockItems = ({ blockValue, typeBlock, name, nameAdditionally, addi
     useEffect(() => {
         if (blockValue === 'conditions' && additionallyClickItems.length !== itemsSwitches['conditions'].length - 1) {
             let newArray = [];
+
             itemsSwitches['conditions'].forEach((el, idx) => {
                 if (idx > 0) {
                     newArray.push({
@@ -78,11 +80,13 @@ const ContentBlockItems = ({ blockValue, typeBlock, name, nameAdditionally, addi
                         open: true
                     });
                 }
-            })
+            });
+
             setAdditionallyClickItems([...additionallyClickItems, ...newArray]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
     return <div className={`${cls.mainBlockItemRules} ${border ? cls.border : null}`}>
         <span className={cls.nameBlockItems}>{name}</span>
         <AdditionallyContentBlockItems
