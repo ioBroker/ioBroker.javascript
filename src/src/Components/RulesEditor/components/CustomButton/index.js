@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 const ColorButton = withStyles((theme) => ({
     root: {
         color: '#81688c',
-        margin: '10px 0',
+        // margin: '10px 0',
         borderColor: '#81688c',
         '&:hover': {
             borderColor: '#7a5e86',

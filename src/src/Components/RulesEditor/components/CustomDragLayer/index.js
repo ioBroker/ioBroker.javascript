@@ -59,7 +59,7 @@ export const CustomDragLayer = props => {
     const renderItem = () => {
         switch (itemType) {
             case 'box':
-                return targetIds.length ? <CurrentItem {...item} /> :
+                return targetIds.length ? <CurrentItem active {...item} /> :
                     <CardMenu active {...item} />;
             default:
                 return null;

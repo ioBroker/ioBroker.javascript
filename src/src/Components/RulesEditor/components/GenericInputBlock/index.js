@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import CustomButton from '../CustomButton';
 import CustomCheckbox from '../CustomCheckbox';
 import CustomInput from '../CustomInput';
@@ -6,22 +6,24 @@ import CustomSlider from '../CustomSlider';
 import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import CustomSelect from '../CustomSelect';
 import CustomTime from '../CustomTime';
-import GenericApp from '@iobroker/adapter-react/GenericApp';
+// import GenericApp from '@iobroker/adapter-react/GenericApp';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import { Menu, MenuItem } from '@material-ui/core';
+import { ContextWrapperCreate } from '../ContextWrapper';
+import ComplexCron from '../../../ComplexCron';
+import CustomModal from '../CustomModal';
+import Schedule from '../../../Schedule';
 // import I18n from '@iobroker/adapter-react/i18n';
 
-class GenericInputBlock extends GenericApp {
+class GenericInputBlock extends Component {
     constructor(props) {
-        super(props, {
-            socket: {
-                autoSubscribeLog: true,
-            },
-        });
+        super(props);
         this.state = {
             inputs: props.inputs,
             showSelectId: false,
             openTagMenu: false,
+            openModal: false,
+            openCheckbox: false,
             tagCardArray: [],
             tagCard: '',
             textOptions: [],
@@ -45,6 +47,8 @@ class GenericInputBlock extends GenericApp {
             instanceSelectionOptions: [],
             instanceSelectionDef: '',
         }
+        this.tagGenerateNew();
+        this.tagGenerate();
     }
 
     renderText = (value, onChange) => {
@@ -113,6 +117,8 @@ class GenericInputBlock extends GenericApp {
     renderObjectID = () => {
         const { showSelectId } = this.state;
         const { className } = this.props;
+        const { socket } = this.context;
+        // return null
         return <>
             <CustomButton
                 fullWidth
@@ -125,12 +131,11 @@ class GenericInputBlock extends GenericApp {
                 imagePrefix="../.."
                 dialogName={'javascript'}
                 themeType={Utils.getThemeName()}
-                socket={this.socket}
+                socket={socket}
                 statesOnly={true}
                 // selected={this.selectIdValue}
                 onClose={() => this.setState({ showSelectId: false })}
                 onOk={(selected, name) => {
-                    debugger
                     this.setState({ showSelectId: false, selectIdValue: selected });
                 }}
             /> : null}</>
@@ -150,14 +155,228 @@ class GenericInputBlock extends GenericApp {
         />
     }
 
-    renderTimeOfDay = () => {
-        const { tagCard } = this.state;
-        if (tagCard === 'interval') {
-            return <><CustomTime /><CustomTime /></>
-        }
-        return <CustomTime />
-    }
+    renderTimeOfDay = (value, onChange) => {
+        const { tagCard, openModal, openCheckbox } = this.state;
+        const { className } = this.props;
+        switch (tagCard) {
+            case "Interval":
+                return <div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}><span style={{ marginRight: 10 }}>every</span> <CustomInput
+                        className={className}
+                        autoComplete="off"
+                        fullWidth
+                        type="number"
+                        variant="outlined"
+                        size="small"
+                        value={value}
+                        onChange={onChange}
+                    /></div>
+                    <CustomSelect
+                        // title='ip'
+                        className={className}
+                        options={[{ value: 'second(s)', title: 'second(s)' }, { value: 'minute(s)', title: 'minute(s)' }, { value: 'hour(s)', title: 'hour(s)' },]}
+                        value={'second(s)'}
+                        onChange={onChange}
+                    />
+                </div>
+            case "CRON":
+                return <div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}><CustomInput
+                        className={className}
+                        autoComplete="off"
+                        fullWidth
+                        variant="outlined"
+                        size="small"
+                        value={value}
+                        onChange={onChange}
+                    />
+                        <CustomButton
+                            fullWidth
+                            style={{ width: 80, marginLeft: 5 }}
+                            value='...'
+                            className={className}
+                            onClick={() => this.setState({ openModal: true })}
+                        /></div>
+                    <CustomModal
+                        open={openModal}
+                        buttonClick={() => {
+                            this.setState({ openModal: !openModal });
+                        }}
+                        close={() => this.setState({ openModal: !openModal })}
+                        titleButton={'button_title'}
+                        titleButton2={'button_title2'}>
+                        <ComplexCron />
+                    </CustomModal>
+       every hour at 0 minutes
+            </div>
+            case "Wizard":
+                return <div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}><CustomInput
+                        className={className}
+                        autoComplete="off"
+                        fullWidth
+                        disabled
+                        variant="outlined"
+                        size="small"
+                        multiline
+                        rows={2}
+                        value={"Every hour from 8:00 to 17:00"}
+                        onChange={onChange}
+                        customValue
+                    />
+                        <CustomButton
+                            fullWidth
+                            style={{ width: 80, marginLeft: 5 }}
+                            value='...'
+                            className={className}
+                            onClick={() => this.setState({ openModal: true })}
+                        /></div>
+                    <CustomModal
+                        open={openModal}
+                        buttonClick={() => {
+                            this.setState({ openModal: !openModal });
+                        }}
+                        close={() => this.setState({ openModal: !openModal })}
+                        titleButton={'button_title'}
+                        titleButton2={'button_title2'}>
+                        <Schedule />
+                    </CustomModal>
+       every hour at 0 minutes
+            </div>
+            case "at":
+                return <div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>at <CustomTime style={{ marginLeft: 5 }} /></div>
+                    <CustomSelect
+                        // title='ip'
+                        key='at'
+                        className={className}
+                        multiple
+                        options={['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Every day']}
+                        value={['Monday']}
+                        onChange={onChange}
+                    />
+                </div>
+            case "Astro":
+                return <div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>at <CustomSelect
+                        // title='ip'
+                        key='at'
+                        className={className}
+                        // multiple
+                        style={{ marginLeft: 5 }}
+                        options={[{ value: 'Sunrise', title: 'Sunrise' }]}
+                        value={'Sunrise'}
+                        onChange={onChange}
+                    /></div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}><CustomCheckbox
+                        className={className}
+                        autoComplete="off"
+                        label="number"
+                        variant="outlined"
+                        size="small"
+                        style={{ marginRight: 5 }}
+                        value={openCheckbox}
+                        onChange={(e) => this.setState({ openCheckbox: e })}
+                    /> with offset</div>
 
+                    {openCheckbox && <div style={{ display: 'flex', alignItems: 'center' }}>offset  <CustomInput
+                        className={className}
+                        autoComplete="off"
+                        label="number"
+                        variant="outlined"
+                        size="small"
+                        type="number"
+                        style={{ marginLeft: 5, marginRight: 5, width: 80 }}
+                        value={value}
+                        onChange={onChange}
+                    /> minutes</div>}
+                    <div style={{ display: 'flex', alignItems: 'center' }}>at 18:29</div>
+                </div>
+            default:
+                return <CustomTime />
+        }
+    }
+    renderState = (value, onChange) => {
+        const { showSelectId, tagCard } = this.state;
+        const { className } = this.props;
+        const { socket } = this.context;
+        switch (tagCard) {
+            case "on update":
+                return <div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}><CustomInput
+                        className={className}
+                        autoComplete="off"
+                        fullWidth
+                        disabled
+                        variant="outlined"
+                        size="small"
+                        value={"system.adapter.ad..."}
+                        onChange={onChange}
+                        customValue
+                    />
+                        <CustomButton
+                            // fullWidth
+                            value='...'
+                            className={className}
+                            onClick={() => this.setState({ showSelectId: true })}
+                        />
+                    </div>
+                    Alive for alarm adapter
+                    {showSelectId ? <DialogSelectID
+                        key="tableSelect"
+                        imagePrefix="../.."
+                        dialogName={'javascript'}
+                        themeType={Utils.getThemeName()}
+                        socket={socket}
+                        statesOnly={true}
+                        // selected={this.selectIdValue}
+                        onClose={() => this.setState({ showSelectId: false })}
+                        onOk={(selected, name) => {
+                            this.setState({ showSelectId: false, selectIdValue: selected });
+                        }}
+                    /> : null}</div>
+            case "on change":
+                return <div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}><CustomInput
+                        className={className}
+                        autoComplete="off"
+                        fullWidth
+                        disabled
+                        variant="outlined"
+                        size="small"
+                        value={"system.adapter.ad..."}
+                        onChange={onChange}
+                        customValue
+                    />
+                        <CustomButton
+                            // fullWidth
+                            value='...'
+                            className={className}
+                            onClick={() => this.setState({ showSelectId: true })}
+                        />
+                    </div>
+                Alive for alarm adapter
+                {showSelectId ? <DialogSelectID
+                        key="tableSelect"
+                        imagePrefix="../.."
+                        dialogName={'javascript'}
+                        themeType={Utils.getThemeName()}
+                        socket={socket}
+                        statesOnly={true}
+                        // selected={this.selectIdValue}
+                        onClose={() => this.setState({ showSelectId: false })}
+                        onOk={(selected, name) => {
+                            this.setState({ showSelectId: false, selectIdValue: selected });
+                        }}
+                    /> : null}</div>
+            default:
+                return <CustomTime />
+
+        }
+    }
+    renderOnScript=()=>{
+        return <div>On script save or adapter start</div>
+    }
     renderDate = () => {
         return <CustomTime />
     }
@@ -168,7 +387,7 @@ class GenericInputBlock extends GenericApp {
             // title='ip'
             className={className}
             options={options}
-            value={value}
+            value={'test1'}
             onChange={onChange}
         />
     }
@@ -177,8 +396,12 @@ class GenericInputBlock extends GenericApp {
         const { inputs, tagCard, tagCardArray, openTagMenu } = this.state;
         let result;
         if (inputs[0].nameRender === 'renderTimeOfDay' && tagCard === '') {
-            this.setState({ tagCard: 'cron', tagCardArray: ['cron', 'vizard', 'interval'] });
-            result = 'cron';
+            this.setState({ tagCard: 'CRON', tagCardArray: ['CRON', 'Wizard', 'Interval', 'at', 'Astro'] });
+            result = 'CRON';
+        }
+        if (inputs[0].nameRender === 'renderState' && tagCard === '') {
+            this.setState({ tagCard: 'on update', tagCardArray: ['on update', 'on change'] });
+            result = 'CRON';
         }
         if (tagCardArray.length > 3) {
             result = <div>
@@ -194,7 +417,6 @@ class GenericInputBlock extends GenericApp {
                 </Menu>
             </div>
         }
-        console.log(result,tagCard)
         return result || tagCard;
     }
 
@@ -216,4 +438,5 @@ class GenericInputBlock extends GenericApp {
     }
 };
 
+GenericInputBlock.contextType = ContextWrapperCreate;
 export default GenericInputBlock;

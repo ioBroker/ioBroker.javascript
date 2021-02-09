@@ -6,6 +6,8 @@ import PropTypes from 'prop-types';
 const TextFieldMod = withStyles({
     root: {
         background: '#71497d42',
+        marginTop: 0,
+        marginBottom: 0,
         '& > *': {
             color: '#81688c !important'
         },
@@ -29,13 +31,16 @@ const TextFieldMod = withStyles({
     },
 })(TextField);
 
-const CustomInput = ({ fullWidth, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue }) => {
+const CustomInput = ({ fullWidth, disabled, multiline, rows, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue }) => {
     const [inputText, setInputText] = useState('');
     return <TextFieldMod
         error={!!error}
         fullWidth={fullWidth}
         label={label}
+        disabled={disabled}
         variant={variant}
+        multiline={multiline}
+        rows={rows}
         value={customValue ? value : inputText}
         type={type}
         helperText={error}
@@ -43,7 +48,7 @@ const CustomInput = ({ fullWidth, autoComplete, label, error, size, variant, val
         className={className}
         autoComplete={autoComplete}
         onChange={e => {
-            if(!customValue)setInputText(e.target.value);
+            if (!customValue) setInputText(e.target.value);
             onChange(e.target.value);
         }}
         margin="normal"
@@ -65,7 +70,8 @@ CustomInput.defaultProps = {
     onChange: () => { },
     fullWidth: false,
     autoComplete: '',
-    customValue: false
+    customValue: false,
+    rows:1
 };
 
 CustomInput.propTypes = {

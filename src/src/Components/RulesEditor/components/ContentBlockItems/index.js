@@ -6,13 +6,20 @@ import cls from './style.module.scss';
 import { useDrop } from 'react-dnd';
 import CurrentItem from '../CurrentItem';
 import { useStateLocal } from '../../hooks/useStateLocal';
-import MusicNoteIcon from '@material-ui/icons/MusicNote';
+//////
+// import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import ShuffleIcon from '@material-ui/icons/Shuffle';
 import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
+import FlashOnIcon from '@material-ui/icons/FlashOn';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+/////
 import DragWrapper from '../DragWrapper';
 
 const icon = {
-    'Trigger1': (props) => <MusicNoteIcon {...props} />,
+    'Trigger1': (props) => <FlashOnIcon {...props} />,
+    'Trigger2': (props) => <AccessTimeIcon {...props} />,
+    'Trigger3': (props) => <PlayArrowIcon {...props} />,
     'Condition1': (props) => <ShuffleIcon {...props} />,
     'Action1': (props) => <PlaylistPlayIcon {...props} />
 }

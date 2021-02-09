@@ -1,4 +1,4 @@
-import { FormControl, FormHelperText, Input, MenuItem, Select, withStyles } from '@material-ui/core';
+import { Checkbox, FormControl, FormHelperText, Input, MenuItem, Select, withStyles } from '@material-ui/core';
 import React, { useState } from 'react';
 import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
@@ -6,6 +6,10 @@ import PropTypes from 'prop-types';
 const SelectMod = withStyles({
     root: {
         margin: '10px 0',
+        '& .MuiFormControl-marginNormal': {
+            marginTop: 0,
+            marginBottom: 0,
+        },
         '& > *': {
             color: '#2d0440 !important'
         },
@@ -27,17 +31,19 @@ const SelectMod = withStyles({
     },
 })(FormControl);
 
-const CustomSelect = ({ table, value, customValue, title, attr, options, style, native, onChange, className }) => {
-    const [inputText, setInputText] = useState('test1');
+const CustomSelect = ({ multiple, value, customValue, title, attr, options, style, native, onChange, className }) => {
+    const [inputText, setInputText] = useState(value || 'test1');
 
     return <SelectMod
         className={className}
         fullWidth
-        style={Object.assign({ paddingTop: 5 }, style)}
+        style={style}
     >
         <Select
             value={customValue ? value : inputText}
             fullWidth
+            multiple={multiple}
+            renderValue={(selected) => multiple && selected.join ? selected.join(', ') : selected}
             onChange={e => {
                 if (!customValue) setInputText(e.target.value);
                 onChange(e.target.value);
@@ -45,7 +51,8 @@ const CustomSelect = ({ table, value, customValue, title, attr, options, style, 
             }
             input={<Input name={attr} id={attr + '-helper'} />}
         >
-            {options.map(item => (<MenuItem key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)}</MenuItem>))}
+            {!multiple && options.map(item => (<MenuItem key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)}</MenuItem>))}
+            {multiple && options.map(item => (<MenuItem key={'key-' + item} value={item || '_'}>{I18n.t(item)} <Checkbox checked={inputText.indexOf(item) > -1} /></MenuItem>))}
         </Select>
         <FormHelperText>{I18n.t(title)}</FormHelperText>
     </SelectMod>;

@@ -1,18 +1,21 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import cls from './style.module.scss';
-import MusicNoteIcon from '@material-ui/icons/MusicNote';
+///////
+// import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import ShuffleIcon from '@material-ui/icons/Shuffle';
 import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import HelpIcon from '@material-ui/icons/Help';
 import PlayForWorkIcon from '@material-ui/icons/PlayForWork';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+//////
 import CustomInput from './components/CustomInput';
 import { CustomDragLayer } from './components/CustomDragLayer';
 import CustomDragItem from './components/CardMenu/CustomDragItem';
 import ContentBlockItems from './components/ContentBlockItems';
 import HamburgerMenu from './components/HamburgerMenu';
 import { useStateLocal } from './hooks/useStateLocal';
-import { ContextWrapper } from './components/ContextWrapper';
 import { AppBar, Tab, Tabs } from '@material-ui/core';
 // import PropTypes from 'prop-types';
 
@@ -28,8 +31,8 @@ __%%ELSE%%__
 // import DialogMessage from '@iobroker/adapter-react/Dialogs/Message';
 const allSwitches = [
     {
-        name: 'Trigger1',
-        Icon: props => <MusicNoteIcon {...props} className={cls.iconThem} />,
+        name: 'Trigger2',
+        Icon: props => <AccessTimeIcon {...props} className={cls.iconThem} />,
         typeBlock: 'when',
 
         // acceptedOn: ['when'],
@@ -41,9 +44,46 @@ const allSwitches = [
         setConfig: (config) => { },
         _acceptedBy: 'triggers', // where it could be acceped: trigger, condition, action
         _type: 'trigger1',
-        _name: { en: 'Trigger', ru: 'Триггер' },
+        _name: { en: 'Schedule', ru: 'Триггер' },
         _inputs: [
-            { nameRender: 'renderText', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
+            { nameRender: 'renderTimeOfDay', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
+        ]
+    },{
+        name: 'Trigger3',
+        Icon: props => <PlayArrowIcon {...props} className={cls.iconThem} />,
+        typeBlock: 'when',
+
+        // acceptedOn: ['when'],
+        type: 'trigger',
+
+
+        compile: (config, context) => `schedule('* 1 * * *', ${STANDARD_FUNCTION});`,
+        getConfig: () => { },
+        setConfig: (config) => { },
+        _acceptedBy: 'triggers', // where it could be acceped: trigger, condition, action
+        _type: 'trigger1',
+        _name: { en: 'Script save', ru: 'Триггер' },
+        _inputs: [
+            { nameRender: 'renderOnScript', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
+        ]
+    },
+    {
+        name: 'Trigger1',
+        Icon: props => <FlashOnIcon {...props} className={cls.iconThem} />,
+        typeBlock: 'when',
+
+        // acceptedOn: ['when'],
+        type: 'trigger',
+
+
+        compile: (config, context) => `schedule('* 1 * * *', ${STANDARD_FUNCTION});`,
+        getConfig: () => { },
+        setConfig: (config) => { },
+        _acceptedBy: 'triggers', // where it could be acceped: trigger, condition, action
+        _type: 'trigger1',
+        _name: { en: 'State', ru: 'Триггер' },
+        _inputs: [
+            { nameRender: 'renderState', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
         ]
     },
     {
@@ -98,7 +138,7 @@ const allSwitches = [
         _inputs: [
             // {nameRender:'renderText', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
             // { nameRender: 'renderNumber', name: { en: 'Time' }, attr: 'timeFrom', type: 'time', default: '00:00', icon: '' },
-            {nameRender:'renderCheckbox', name: { en: 'Color' }, attr: 'background', type: 'color', default: '#FF00FF', icon: '' },
+            { nameRender: 'renderCheckbox', name: { en: 'Color' }, attr: 'background', type: 'color', default: '#FF00FF', icon: '' },
             // {nameRender:'renderSlider', name: { en: 'Dimmer' }, attr: 'dimmer', type: 'slider', default: 50, min: 0, max: 100, icon: '' },
             // {nameRender:'renderButton', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
             // {nameRender:'renderObjectID', name: { en: 'Time' }, attr: 'timeFrom', type: 'time', default: '00:00', icon: '' },
@@ -273,7 +313,7 @@ const allSwitches = [
             // {nameRender:'renderColor', name: { en: 'Color' }, attr: 'background', type: 'color', default: '#FF00FF', icon: '' },
             // {nameRender:'renderTimeOfDay', name: { en: 'Dimmer' }, attr: 'dimmer', type: 'slider', default: 50, min: 0, max: 100, icon: '' },
             // {nameRender:'renderDate', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-            { nameRender: 'renderInstanceSelection', name: { en: 'Time' }, attr: 'timeFrom', type: 'time', default: '00:00', icon: '',options:[{value:'test1',title:'test1'},{value:'test2',title:'test2'},{value:'test3',title:'test3'}] },
+            { nameRender: 'renderInstanceSelection', name: { en: 'Time' }, attr: 'timeFrom', type: 'time', default: '00:00', icon: '', options: [{ value: 'test1', title: 'test1' }, { value: 'test2', title: 'test2' }, { value: 'test3', title: 'test3' }] },
         ]
     },
     {
@@ -434,113 +474,111 @@ const RulesEditor = props => {
     };
 
     return <div className={cls.wrapperRules}>
-        <ContextWrapper>
-            <CustomDragLayer />
-            <div className={`${cls.hamburgerWrapper} ${hamburgerOnOff ? cls.hamburgerOff : null}`}
-                onClick={() => setHamburgerOnOff(!hamburgerOnOff)}><HamburgerMenu boolean={!hamburgerOnOff} /></div>
-            <div className={`${cls.menuRules} ${hamburgerOnOff ? cls.menuOff : null}`}>
-                <CustomInput
-                    className={cls.inputWidth}
-                    fullWidth
-                    customValue
-                    value={filter.text}
-                    autoComplete="off"
-                    label="search"
-                    variant="outlined"
-                    onChange={(value) => {
-                        setFilter({ ...filter, text: value });
-                        setSwitchesFunc(value);
-                    }}
-                />
-                <div className={cls.menuTitle}>
-                    Control Panel
+        <CustomDragLayer />
+        <div className={`${cls.hamburgerWrapper} ${hamburgerOnOff ? cls.hamburgerOff : null}`}
+            onClick={() => setHamburgerOnOff(!hamburgerOnOff)}><HamburgerMenu boolean={!hamburgerOnOff} /></div>
+        <div className={`${cls.menuRules} ${hamburgerOnOff ? cls.menuOff : null}`}>
+            <CustomInput
+                className={cls.inputWidth}
+                fullWidth
+                customValue
+                value={filter.text}
+                autoComplete="off"
+                label="search"
+                variant="outlined"
+                onChange={(value) => {
+                    setFilter({ ...filter, text: value });
+                    setSwitchesFunc(value);
+                }}
+            />
+            <div className={cls.menuTitle}>
+                Control Panel
             </div>
-                <div className={cls.controlPanel}>
-                    <AppBar className={cls.controlPanelAppBar} position="static">
-                        <Tabs
-                            value={filter.index}
-                            onChange={handleChange}
-                            indicatorColor="primary"
-                            textColor="primary"
-                            aria-label="scrollable force tabs example"
-                        >
-                            <Tab icon={<FlashOnIcon />} {...a11yProps(0)} />
-                            <Tab icon={<HelpIcon />} {...a11yProps(1)} />
-                            <Tab icon={<PlayForWorkIcon />} {...a11yProps(2)} />
-                        </Tabs>
-                    </AppBar>
+            <div className={cls.controlPanel}>
+                <AppBar className={cls.controlPanelAppBar} position="static">
+                    <Tabs
+                        value={filter.index}
+                        onChange={handleChange}
+                        indicatorColor="primary"
+                        textColor="primary"
+                        aria-label="scrollable force tabs example"
+                    >
+                        <Tab icon={<FlashOnIcon />} {...a11yProps(0)} />
+                        <Tab icon={<HelpIcon />} {...a11yProps(1)} />
+                        <Tab icon={<PlayForWorkIcon />} {...a11yProps(2)} />
+                    </Tabs>
+                </AppBar>
+            </div>
+            <div className={cls.menuTitle}>
+                Switches
                 </div>
-                <div className={cls.menuTitle}>
-                    Switches
-                </div>
-                <div className={cls.switchesRenderWrapper}>
-                    <span>
-                        {switches.map(el =>
-                            <Fragment key={el._name.en}>
-                                <CustomDragItem
-                                    {...el}
-                                    itemsSwitches={itemsSwitches}
-                                    setItemsSwitches={json => {
-                                        setItemsSwitches(json);
-                                        props.onChange(json2code(json));
-                                    }}
-                                    isActive={false}
-                                    id={el.name}
-                                    allProperties={el}
-                                />
-                            </Fragment>)}
-                        {switches.length === 0 && <div className={cls.nothingFound}>
-                            Nothing found...
+            <div className={cls.switchesRenderWrapper}>
+                <span>
+                    {switches.map(el =>
+                        <Fragment key={el._name.en}>
+                            <CustomDragItem
+                                {...el}
+                                itemsSwitches={itemsSwitches}
+                                setItemsSwitches={json => {
+                                    setItemsSwitches(json);
+                                    props.onChange(json2code(json));
+                                }}
+                                isActive={false}
+                                id={el.name}
+                                allProperties={el}
+                            />
+                        </Fragment>)}
+                    {switches.length === 0 && <div className={cls.nothingFound}>
+                        Nothing found...
                             <div className={cls.resetSearch} onClick={() => {
-                                setFilter({
-                                    ...filter,
-                                    text: ''
-                                });
-                                setSwitchesFunc('');
-                            }}>reset search</div>
-                        </div>}
-                    </span>
-                </div>
+                            setFilter({
+                                ...filter,
+                                text: ''
+                            });
+                            setSwitchesFunc('');
+                        }}>reset search</div>
+                    </div>}
+                </span>
             </div>
+        </div>
 
-            <ContentBlockItems
-                setItemsSwitches={json => {
-                    // const _itemsSwitches = JSON.parse(JSON.stringify(itemsSwitches));
-                    // _itemsSwitches.triggers = json;
-                    setItemsSwitches(json);
-                    props.onChange(json2code(json));
-                }}
-                itemsSwitches={itemsSwitches}
-                name="when..."
-                typeBlock="when"
-                blockValue="triggers"
-            />
-            <ContentBlockItems
-                setItemsSwitches={json => {
-                    setItemsSwitches(json);
-                    props.onChange(json2code(json));
-                }}
-                itemsSwitches={itemsSwitches}
-                name="...and..."
-                typeBlock="and"
-                nameAdditionally="or"
-                additionally
-                border
-                blockValue="conditions"
-            />
-            <ContentBlockItems
-                setItemsSwitches={json => {
-                    setItemsSwitches(json);
-                    props.onChange(json2code(json));
-                }}
-                itemsSwitches={itemsSwitches}
-                name="...then"
-                typeBlock="then"
-                nameAdditionally="else"
-                additionally
-                blockValue="actions"
-            />
-        </ContextWrapper>
+        <ContentBlockItems
+            setItemsSwitches={json => {
+                // const _itemsSwitches = JSON.parse(JSON.stringify(itemsSwitches));
+                // _itemsSwitches.triggers = json;
+                setItemsSwitches(json);
+                props.onChange(json2code(json));
+            }}
+            itemsSwitches={itemsSwitches}
+            name="when..."
+            typeBlock="when"
+            blockValue="triggers"
+        />
+        <ContentBlockItems
+            setItemsSwitches={json => {
+                setItemsSwitches(json);
+                props.onChange(json2code(json));
+            }}
+            itemsSwitches={itemsSwitches}
+            name="...and..."
+            typeBlock="and"
+            nameAdditionally="or"
+            additionally
+            border
+            blockValue="conditions"
+        />
+        <ContentBlockItems
+            setItemsSwitches={json => {
+                setItemsSwitches(json);
+                props.onChange(json2code(json));
+            }}
+            itemsSwitches={itemsSwitches}
+            name="...then"
+            typeBlock="then"
+            nameAdditionally="else"
+            additionally
+            blockValue="actions"
+        />
     </div>;
 }
 

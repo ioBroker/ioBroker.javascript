@@ -9,7 +9,7 @@ import GenericInputBlock from '../GenericInputBlock';
 
 
 const CurrentItem = memo(props => {
-    const { Icon, ref, setItemsSwitches, itemsSwitches, _id, _acceptedBy, blockValue, _inputs, _name } = props;
+    const { Icon, ref, setItemsSwitches, itemsSwitches, _id, _acceptedBy, blockValue, _inputs, _name, active } = props;
     const [anchorEl, setAnchorEl] = useState(null);
     const handlePopoverOpen = event =>
         setAnchorEl(event.currentTarget);
@@ -21,13 +21,13 @@ const CurrentItem = memo(props => {
         if (generic) {
             setTag(generic.current.tagGenerate());
         }
-    }, [generic]);
+    }, [generic,generic.current?.state.tagCardArray]);
     return <div
         onMouseMove={handlePopoverOpen}
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
         ref={ref}
-        className={cls.cardStyle}>
+        className={`${cls.cardStyle} ${active ? cls.cardStyleActive : null}`}>
         <Icon className={cls.iconThemCard} />
         <div className={cls.blockName}>
             <span className={cls.nameCard}>
@@ -42,7 +42,7 @@ const CurrentItem = memo(props => {
                 return setItemsSwitches(newItemsSwitches);
             }} className={cls.closeBtn} />
         </div>}
-        {setItemsSwitches && tag && <div className={cls.controlMenuTop} style={Boolean(anchorEl) ? { opacity: 1, height: 20, top: -20 } : { opacity: 0, height: 0, top: 0 }}>
+        {setItemsSwitches && tag && <div className={cls.controlMenuTop} style={{ opacity: 1, height: 22, top: -22 }}>
             <div onClick={async e => {
                 await generic.current.tagGenerateNew();
                 await setTag(generic.current.tagGenerate());
@@ -52,7 +52,8 @@ const CurrentItem = memo(props => {
 });
 
 CurrentItem.defaultProps = {
-    name: ''
+    name: '',
+    active: false
 };
 
 CurrentItem.propTypes = {
