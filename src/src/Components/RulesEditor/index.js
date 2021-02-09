@@ -92,7 +92,7 @@ const allSwitches = [
         setConfig: (config) => { },
         _acceptedBy: 'conditions', // where it could be acceped: trigger, condition, action
         _type: 'condition1',
-        _name: { en: 'Сondition', ru: 'Триггер' },
+        _name: { en: 'Condition', ru: 'Триггер' },
         Icon: (props) => <ShuffleIcon {...props} className={cls.iconThem} />,
         typeBlock: 'and',
         type: 'condition',
@@ -106,7 +106,7 @@ const allSwitches = [
         setConfig: (config) => { },
         _acceptedBy: 'conditions', // where it could be acceped: trigger, condition, action
         _type: 'condition1',
-        _name: { en: 'Сondition number', ru: 'Триггер' },
+        _name: { en: 'Condition number', ru: 'Триггер' },
         Icon: (props) => <ShuffleIcon {...props} className={cls.iconThem} />,
         typeBlock: 'and',
         type: 'condition',
