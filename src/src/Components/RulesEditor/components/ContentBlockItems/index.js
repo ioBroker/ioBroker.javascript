@@ -6,23 +6,8 @@ import cls from './style.module.scss';
 import { useDrop } from 'react-dnd';
 import CurrentItem from '../CurrentItem';
 import { useStateLocal } from '../../hooks/useStateLocal';
-//////
-// import MusicNoteIcon from '@material-ui/icons/MusicNote';
-import ShuffleIcon from '@material-ui/icons/Shuffle';
-import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
-import AccessTimeIcon from '@material-ui/icons/AccessTime';
-import FlashOnIcon from '@material-ui/icons/FlashOn';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-/////
 import DragWrapper from '../DragWrapper';
-
-const icon = {
-    'Trigger1': (props) => <FlashOnIcon {...props} />,
-    'Trigger2': (props) => <AccessTimeIcon {...props} />,
-    'Trigger3': (props) => <PlayArrowIcon {...props} />,
-    'Condition1': (props) => <ShuffleIcon {...props} />,
-    'Action1': (props) => <PlaylistPlayIcon {...props} />
-}
+// import update from 'immutability-helper';
 
 const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolean, typeBlock, name, itemsSwitches, setItemsSwitches }) => {
     const [checkItem, setCheckItem] = useState(false);
@@ -61,8 +46,8 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
     return <div ref={drop} style={{ backgroundColor }} className={`${cls.contentBlockItem} ${boolean ? null : cls.contentHeightOff}`}>
         {itemsSwitchesRender[blockValue]?.filter(el => el.nameBlock === name).map((el, idx) => (
             <Fragment key={`additionally_content_${el._id}`}>
-                <DragWrapper {...el} blockValue={blockValue} allProperties={el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} Icon={icon[el.name]}>
-                    <CurrentItem {...el} blockValue={blockValue} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} Icon={icon[el.name]} />
+                <DragWrapper {...el} blockValue={blockValue} allProperties={el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches}>
+                    <CurrentItem {...el} blockValue={blockValue} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} />
                 </DragWrapper>
             </Fragment>))}
         {isActive && checkItem ? <div className={cls.emptyBlock} /> : null}

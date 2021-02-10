@@ -6,9 +6,9 @@ import { getEmptyImage } from 'react-dnd-html5-backend';
 import { deepCopy } from '../../helpers/ deepCopy';
 import { filterElement } from '../../helpers/filterElement';
 
-const DragWrapper = ({ allProperties, id, isActive, setItemsSwitches, itemsSwitches, children, _id, Icon, blockValue }) => {
+const DragWrapper = ({ allProperties, id, isActive, setItemsSwitches, itemsSwitches, children, _id, blockValue }) => {
     const [{ opacity }, drag, preview] = useDrag({
-        item: { ...allProperties, type: 'box', id, isActive, _id, Icon: Icon ? Icon : allProperties.Icon },
+        item: { ...allProperties, type: 'box', id, isActive, _id },
         end: (item, monitor) => {
             const { _acceptedBy } = item;
             let dropResult = monitor.getDropResult();
@@ -53,11 +53,10 @@ const DragWrapper = ({ allProperties, id, isActive, setItemsSwitches, itemsSwitc
         preview(getEmptyImage(), { captureDraggingState: true });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    return <div key={id} ref={drag} style={{ opacity }}>{children}</div>;
+    return <div key={id} ref={drag} style={{ opacity, display: 'flex', width: '100%' }}>{children}</div>;
 }
 
 DragWrapper.defaultProps = {
-    Icon: null,
     name: '',
     active: false,
     id: '',

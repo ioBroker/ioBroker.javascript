@@ -2,6 +2,7 @@
     cursor: pointer;
     position: relative;
     min-width: 200px;
+    width: calc(100% - 70px);
     height: fit-content;
     display: flex;
     padding: 10px;
@@ -109,5 +110,7 @@
     border-top: 1px solid #35064899;
     border-left: 1px solid #35064899;
     border-right: 1px solid #35064899;
-    font-weight: bold;
+    // font-weight: bold;
+    font-size: 12px;
+    padding-top: 2px;
 }

@@ -22,6 +22,9 @@ const useStyles = makeStyles((theme) => ({
     modalButtonBlockTwo: {
         justifyContent: 'space-around',
         flexFlow: 'wrap-reverse',
+        position: 'sticky',
+        bottom: 0,
+        background: theme.overrides.MuiAppBar.colorDefault.backgroundColor,
         '& button': {
             margin: '5px'
         }
@@ -69,7 +72,8 @@ const useStyles = makeStyles((theme) => ({
         }
     }
 
-}));
+})
+);
 
 const CustomModal = ({ open, close, children, titleButton, titleButton2, buttonClick }) => {
     const classes = useStyles();

@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
@@ -7,9 +7,10 @@ import { deepCopy } from '../../helpers/ deepCopy';
 import { filterElement } from '../../helpers/filterElement';
 import GenericInputBlock from '../GenericInputBlock';
 
+// @iobroker/javascript-block
 
 const CurrentItem = memo(props => {
-    const { Icon, ref, setItemsSwitches, itemsSwitches, _id, _acceptedBy, blockValue, _inputs, _name, active } = props;
+    const { ref, setItemsSwitches, itemsSwitches, _id, _acceptedBy, blockValue, _inputs, _name, active, icon } = props;
     const [anchorEl, setAnchorEl] = useState(null);
     const handlePopoverOpen = event =>
         setAnchorEl(event.currentTarget);
@@ -21,7 +22,8 @@ const CurrentItem = memo(props => {
         if (generic) {
             setTag(generic.current.tagGenerate());
         }
-    }, [generic,generic.current?.state.tagCardArray]);
+    }, [generic, generic.current?.state.tagCardArray]);
+    const Icon = useMemo(() => require(`@material-ui/icons/${icon}`).default, [icon]);
     return <div
         onMouseMove={handlePopoverOpen}
         onMouseEnter={handlePopoverOpen}
@@ -53,7 +55,8 @@ const CurrentItem = memo(props => {
 
 CurrentItem.defaultProps = {
     name: '',
-    active: false
+    active: false,
+    icon: 'Help'
 };
 
 CurrentItem.propTypes = {

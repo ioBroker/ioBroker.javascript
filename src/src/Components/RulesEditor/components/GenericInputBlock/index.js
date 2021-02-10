@@ -203,8 +203,8 @@ class GenericInputBlock extends Component {
                             this.setState({ openModal: !openModal });
                         }}
                         close={() => this.setState({ openModal: !openModal })}
-                        titleButton={'button_title'}
-                        titleButton2={'button_title2'}>
+                        titleButton={'add'}
+                        titleButton2={'close'}>
                         <ComplexCron />
                     </CustomModal>
        every hour at 0 minutes
@@ -237,8 +237,8 @@ class GenericInputBlock extends Component {
                             this.setState({ openModal: !openModal });
                         }}
                         close={() => this.setState({ openModal: !openModal })}
-                        titleButton={'button_title'}
-                        titleButton2={'button_title2'}>
+                        titleButton={'add'}
+                        titleButton2={'close'}>
                         <Schedule />
                     </CustomModal>
        every hour at 0 minutes
@@ -374,7 +374,7 @@ class GenericInputBlock extends Component {
 
         }
     }
-    renderOnScript=()=>{
+    renderOnScript = () => {
         return <div>On script save or adapter start</div>
     }
     renderDate = () => {
@@ -395,11 +395,11 @@ class GenericInputBlock extends Component {
     tagGenerate = () => {
         const { inputs, tagCard, tagCardArray, openTagMenu } = this.state;
         let result;
-        if (inputs[0].nameRender === 'renderTimeOfDay' && tagCard === '') {
+        if (inputs.nameRender === 'renderTimeOfDay' && tagCard === '') {
             this.setState({ tagCard: 'CRON', tagCardArray: ['CRON', 'Wizard', 'Interval', 'at', 'Astro'] });
             result = 'CRON';
         }
-        if (inputs[0].nameRender === 'renderState' && tagCard === '') {
+        if (inputs.nameRender === 'renderState' && tagCard === '') {
             this.setState({ tagCard: 'on update', tagCardArray: ['on update', 'on change'] });
             result = 'CRON';
         }
@@ -433,7 +433,7 @@ class GenericInputBlock extends Component {
     render = () => {
         const { inputs } = this.state;
         return <Fragment>
-            {inputs.map(el => (this[el.nameRender](el.default, () => { }, el.options || [])))}
+            {this[inputs.nameRender](inputs.default, () => { }, inputs.options || [])}
         </Fragment>
     }
 };
