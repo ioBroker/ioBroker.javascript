@@ -14,6 +14,7 @@ import ComplexCron from '../../../ComplexCron';
 import CustomModal from '../CustomModal';
 import Schedule from '../../../Schedule';
 // import I18n from '@iobroker/adapter-react/i18n';
+import SunCalc from 'suncalc2';
 
 class GenericInputBlock extends Component {
     constructor(props) {
@@ -257,6 +258,8 @@ class GenericInputBlock extends Component {
                     />
                 </div>
             case "Astro":
+                const sunValue = SunCalc.getTimes(new Date(), 51.5, - 0.1);
+                console.log()
                 return <div>
                     <div style={{ display: 'flex', alignItems: 'center' }}>at <CustomSelect
                         // title='ip'
@@ -264,8 +267,8 @@ class GenericInputBlock extends Component {
                         className={className}
                         // multiple
                         style={{ marginLeft: 5 }}
-                        options={[{ value: 'Sunrise', title: 'Sunrise' }]}
-                        value={'Sunrise'}
+                        options={Object.keys(sunValue).map((name) => ({ value: name, title: name, title2: `[${sunValue[name].getHours() < 10 ? 0 : ''}${sunValue[name].getHours()}:${sunValue[name].getMinutes() < 10 ? 0 : ''}${sunValue[name].getMinutes()}]` }))}
+                        value={'solarNoon'}
                         onChange={onChange}
                     /></div>
                     <div style={{ display: 'flex', alignItems: 'center' }}><CustomCheckbox
@@ -290,7 +293,7 @@ class GenericInputBlock extends Component {
                         value={value}
                         onChange={onChange}
                     /> minutes</div>}
-                    <div style={{ display: 'flex', alignItems: 'center' }}>at 18:29</div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>at {`${sunValue['solarNoon'].getHours() < 10 ? 0 : ''}${sunValue['solarNoon'].getHours()}:${sunValue['solarNoon'].getMinutes() < 10 ? 0 : ''}${sunValue['solarNoon'].getMinutes()}`}</div>
                 </div>
             default:
                 return <CustomTime />

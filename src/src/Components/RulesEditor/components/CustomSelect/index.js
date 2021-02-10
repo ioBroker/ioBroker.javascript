@@ -51,7 +51,7 @@ const CustomSelect = ({ multiple, value, customValue, title, attr, options, styl
             }
             input={<Input name={attr} id={attr + '-helper'} />}
         >
-            {!multiple && options.map(item => (<MenuItem key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)}</MenuItem>))}
+            {!multiple && options.map(item => (<MenuItem style={{placeContent:'space-between'}} key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)}{item.title2 && <div>{item.title2}</div>}</MenuItem>))}
             {multiple && options.map(item => (<MenuItem key={'key-' + item} value={item || '_'}>{I18n.t(item)} <Checkbox checked={inputText.indexOf(item) > -1} /></MenuItem>))}
         </Select>
         <FormHelperText>{I18n.t(title)}</FormHelperText>
