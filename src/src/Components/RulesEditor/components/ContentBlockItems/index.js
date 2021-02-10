@@ -12,17 +12,19 @@ import DragWrapper from '../DragWrapper';
 const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolean, typeBlock, name, itemsSwitches, setItemsSwitches }) => {
     const [checkItem, setCheckItem] = useState(false);
     const [canDropCheck, setCanDropCheck] = useState(false);
+    const [checkId, setCheckId] = useState(false);
     const [hoverBlock, setHoverBlock] = useState('');
     const [{ canDrop, isOver, offset, targetId }, drop] = useDrop({
         accept: 'box',
         drop: () => ({ name, blockValue }),
         hover: (item, monitor) => {
-            setCheckItem(item.typeBlock === typeBlock);
-            setHoverBlock(monitor.getHandlerId())
+            setCheckItem(item._acceptedBy === typeBlock);
+            setCheckId(!!item._id);
+            setHoverBlock(monitor.getHandlerId());
         },
         canDrop: (item, monitor) => {
-            setCanDropCheck(item.typeBlock === typeBlock);
-            return item.typeBlock === typeBlock
+            setCanDropCheck(item._acceptedBy === typeBlock);
+            return item._acceptedBy === typeBlock
         },
         collect: (monitor) => ({
             isOver: monitor.isOver(),
@@ -31,7 +33,6 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
             targetId: monitor.targetId
         }),
     });
-
     useEffect(() => { setHoverBlock('') }, [offset]);
 
     const isActive = canDrop && isOver;
@@ -50,7 +51,7 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
                     <CurrentItem {...el} blockValue={blockValue} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} />
                 </DragWrapper>
             </Fragment>))}
-        {isActive && checkItem ? <div className={cls.emptyBlock} /> : null}
+        {isActive && checkItem && !checkId? <div className={cls.emptyBlock} /> : null}
     </div>;
 }
 
@@ -59,10 +60,10 @@ AdditionallyContentBlockItems.defaultProps = {
     boolean: true
 };
 
-const ContentBlockItems = ({ blockValue, typeBlock, name, nameAdditionally, additionally, border, itemsSwitches, setItemsSwitches }) => {
-    const [additionallyClickItems, setAdditionallyClickItems] = useStateLocal(blockValue === 'actions' ? false : [], `additionallyClickItems_${blockValue}`);
+const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, border, itemsSwitches, setItemsSwitches }) => {
+    const [additionallyClickItems, setAdditionallyClickItems] = useStateLocal(typeBlock === 'actions' ? false : [], `additionallyClickItems_${typeBlock}`);
     useEffect(() => {
-        if (blockValue === 'conditions' && additionallyClickItems.length !== itemsSwitches['conditions'].length - 1) {
+        if (typeBlock === 'conditions' && additionallyClickItems.length !== itemsSwitches['conditions'].length - 1) {
             let newArray = [];
 
             itemsSwitches['conditions'].forEach((el, idx) => {
@@ -82,18 +83,18 @@ const ContentBlockItems = ({ blockValue, typeBlock, name, nameAdditionally, addi
     return <div className={`${cls.mainBlockItemRules} ${border ? cls.border : null}`}>
         <span className={cls.nameBlockItems}>{name}</span>
         <AdditionallyContentBlockItems
-            blockValue={blockValue === 'actions' ? 'then' : blockValue === 'conditions' ? 0 : blockValue}
+            blockValue={typeBlock === 'actions' ? 'then' : typeBlock === 'conditions' ? 0 : typeBlock}
             typeBlock={typeBlock}
             setItemsSwitches={setItemsSwitches}
             name={name}
             itemsSwitches={itemsSwitches}
-            itemsSwitchesRender={blockValue === 'actions' ? itemsSwitches['actions'] : blockValue === 'conditions' ? itemsSwitches['conditions'] : itemsSwitches}
+            itemsSwitchesRender={typeBlock === 'actions' ? itemsSwitches['actions'] : typeBlock === 'conditions' ? itemsSwitches['conditions'] : itemsSwitches}
         />
-        {additionally && [...Array(blockValue === 'actions' ? 1 : itemsSwitches.conditions.length - 1)].map((e, index) => {
-            const booleanAdditionally = (value = index) => Boolean(blockValue === 'actions' ? additionallyClickItems : additionallyClickItems.find(el => el.index === value && el.open));
+        {additionally && [...Array(typeBlock === 'actions' ? 1 : itemsSwitches.conditions.length - 1)].map((e, index) => {
+            const booleanAdditionally = (value = index) => Boolean(typeBlock === 'actions' ? additionallyClickItems : additionallyClickItems.find(el => el.index === value && el.open));
             return <Fragment key={`${index}_block`}><div
                 onClick={() => {
-                    if (blockValue === 'actions') {
+                    if (typeBlock === 'actions') {
                         setAdditionallyClickItems(!additionallyClickItems)
                         return null;
                     }
@@ -120,16 +121,17 @@ const ContentBlockItems = ({ blockValue, typeBlock, name, nameAdditionally, addi
                 </div>
             </div>
                 <AdditionallyContentBlockItems
-                    blockValue={blockValue === 'actions' ? 'else' : blockValue === 'conditions' ? index + 1 : blockValue}
-                    typeBlock={typeBlock} setItemsSwitches={setItemsSwitches}
-                    itemsSwitchesRender={blockValue === 'actions' ? itemsSwitches['actions'] : blockValue === 'conditions' ? itemsSwitches['conditions'] : itemsSwitches}
+                    blockValue={typeBlock === 'actions' ? 'else' : typeBlock === 'conditions' ? index + 1 : typeBlock}
+                    typeBlock={typeBlock} 
+                    setItemsSwitches={setItemsSwitches}
+                    itemsSwitchesRender={typeBlock === 'actions' ? itemsSwitches['actions'] : typeBlock === 'conditions' ? itemsSwitches['conditions'] : itemsSwitches}
                     itemsSwitches={itemsSwitches}
                     name={`${name}_${index + 1}`}
                     boolean={booleanAdditionally()}
                 />
             </Fragment>
         })}
-        {additionally && blockValue === 'conditions' && (<div
+        {additionally && typeBlock === 'conditions' && (<div
             onClick={() => {
                 setAdditionallyClickItems([...additionallyClickItems, {
                     index: additionallyClickItems.length,
@@ -150,8 +152,7 @@ ContentBlockItems.defaultProps = {
     nameAdditionally: '',
     additionally: false,
     border: false,
-    typeBlock: '',
-    blockValue: ''
+    typeBlock: ''
 };
 
 ContentBlockItems.propTypes = {

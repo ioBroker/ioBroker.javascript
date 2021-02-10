@@ -377,8 +377,9 @@ class GenericInputBlock extends Component {
 
         }
     }
-    renderOnScript = () => {
-        return <div>On script save or adapter start</div>
+    renderOnScript = (value, onChange) => {
+        const { className } = this.props;
+        return <div style={{ display: 'flex', alignItems: 'center' }} className={className}>On script save or adapter start</div>
     }
     renderDate = () => {
         return <CustomTime />

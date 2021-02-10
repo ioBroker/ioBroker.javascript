@@ -42,11 +42,8 @@ const allSwitches = [
         name: 'Trigger3',
         typeBlock: 'when',
         icon:'PlayArrow',
-
         // acceptedOn: ['when'],
         type: 'trigger',
-
-
         compile: (config, context) => `schedule('* 1 * * *', ${STANDARD_FUNCTION});`,
         getConfig: () => { },
         setConfig: (config) => { },
@@ -60,11 +57,8 @@ const allSwitches = [
         name: 'Trigger1',
         typeBlock: 'when',
         icon:'FlashOn',
-
         // acceptedOn: ['when'],
         type: 'trigger',
-
-
         compile: (config, context) => `schedule('* 1 * * *', ${STANDARD_FUNCTION});`,
         getConfig: () => { },
         setConfig: (config) => { },
@@ -73,7 +67,6 @@ const allSwitches = [
         _name: { en: 'State', ru: 'Триггер' },
         _inputs: 
             { nameRender: 'renderState', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-        
     },
     {
         name: 'Condition1',
@@ -324,8 +317,7 @@ const RulesEditor = props => {
             }}
             itemsSwitches={itemsSwitches}
             name="when..."
-            typeBlock="when"
-            blockValue="triggers"
+            typeBlock="triggers"
         />
         <ContentBlockItems
             setItemsSwitches={json => {
@@ -334,11 +326,10 @@ const RulesEditor = props => {
             }}
             itemsSwitches={itemsSwitches}
             name="...and..."
-            typeBlock="and"
+            typeBlock="conditions"
             nameAdditionally="or"
             additionally
             border
-            blockValue="conditions"
         />
         <ContentBlockItems
             setItemsSwitches={json => {
@@ -347,10 +338,9 @@ const RulesEditor = props => {
             }}
             itemsSwitches={itemsSwitches}
             name="...then"
-            typeBlock="then"
+            typeBlock="actions"
             nameAdditionally="else"
             additionally
-            blockValue="actions"
         />
     </div>;
 }

@@ -4,6 +4,7 @@
     min-width: 200px;
     width: calc(100% - 70px);
     height: fit-content;
+    min-height: 70px;
     display: flex;
     padding: 10px;
     margin: 12px;
@@ -20,6 +21,7 @@
 }
 .cardStyleActive{
     width: 300px;
+    z-index: 100;
 }
 .iconThemCard {
     width: 40px !important;

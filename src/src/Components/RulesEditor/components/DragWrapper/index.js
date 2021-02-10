@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
-import { useDrag } from 'react-dnd';
+import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { deepCopy } from '../../helpers/ deepCopy';
+import { deepCopy } from '../../helpers/deepCopy';
 import { filterElement } from '../../helpers/filterElement';
+import { findCard, moveCard } from '../../helpers/cardSort';
 
 const DragWrapper = ({ allProperties, id, isActive, setItemsSwitches, itemsSwitches, children, _id, blockValue }) => {
     const [{ opacity }, drag, preview] = useDrag({
@@ -23,25 +24,28 @@ const DragWrapper = ({ allProperties, id, isActive, setItemsSwitches, itemsSwitc
             }
             let idNumber = typeof _id === 'number' ? _id : Date.now();
             newItemsSwitches = deepCopy(_acceptedBy, itemsSwitches, dropResult.blockValue);
-            switch (_acceptedBy) {
-                case 'actions':
-                    if (blockValue) {
-                        newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, blockValue, _id);
-                    }
-                    newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, dropResult.blockValue, _id);
-                    newItemsSwitches[_acceptedBy][dropResult.blockValue].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
-                    return setItemsSwitches(newItemsSwitches);
-                case 'conditions':
-                    if (typeof blockValue === 'number') {
-                        newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, blockValue, _id);
-                    };
-                    newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, dropResult.blockValue, _id);
-                    newItemsSwitches[_acceptedBy][dropResult.blockValue].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
-                    return setItemsSwitches(newItemsSwitches);
-                default:
-                    newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, dropResult.blockValue, _id);
-                    newItemsSwitches[_acceptedBy].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
-                    return setItemsSwitches(newItemsSwitches);
+            if (!_id) {
+                switch (_acceptedBy) {
+                    case 'actions':
+                        if (blockValue) {
+                            newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, blockValue, _id);
+                        }
+                        newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, dropResult.blockValue, _id);
+                        newItemsSwitches[_acceptedBy][dropResult.blockValue].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
+                        return setItemsSwitches(newItemsSwitches);
+                    case 'conditions':
+                        if (typeof blockValue === 'number') {
+                            newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, blockValue, _id);
+                        };
+                        newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, dropResult.blockValue, _id);
+                        newItemsSwitches[_acceptedBy][dropResult.blockValue].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
+                        return setItemsSwitches(newItemsSwitches);
+                    default:
+                        newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, dropResult.blockValue, _id);
+                        newItemsSwitches[_acceptedBy].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
+                        return setItemsSwitches(newItemsSwitches);
+                    // return
+                }
             }
         },
         collect: monitor => ({
@@ -49,11 +53,24 @@ const DragWrapper = ({ allProperties, id, isActive, setItemsSwitches, itemsSwitc
             isDragging: monitor.isDragging()
         }),
     });
+
+    const [, drop] = useDrop({
+        accept: 'box',
+        canDrop: () => false,
+        hover({ _id: draggedId }) {
+            if (_id && draggedId !== _id) {
+                const { index: overIndex } = findCard(_id, itemsSwitches['triggers']);
+                if (overIndex !== draggedId) {
+                    moveCard(draggedId, overIndex, itemsSwitches['triggers'], setItemsSwitches, itemsSwitches);
+                }
+            }
+        }
+    });
     useEffect(() => {
         preview(getEmptyImage(), { captureDraggingState: true });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    return <div key={id} ref={drag} style={{ opacity, display: 'flex', width: '100%' }}>{children}</div>;
+    return <div key={id} ref={node => drag(drop(node))} style={{ opacity, display: 'flex', width: '100%' }}>{children}</div>;
 }
 
 DragWrapper.defaultProps = {
