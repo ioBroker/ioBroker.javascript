@@ -20,6 +20,7 @@ import SunCalc from 'suncalc2';
 class GenericInputBlock extends PureComponent {
     constructor(props) {
         super(props);
+
         this.state = {
             inputs: props.inputs,
             showSelectId: false,
@@ -588,7 +589,7 @@ class GenericInputBlock extends PureComponent {
     render = () => {
         const { inputs } = this.state;
         const { GenericInputBlockMethod } = this.context.state;
-        console.log('render')
+        console.log('render');
         return <Fragment>
             {GenericInputBlockMethod[inputs.nameRender] ?
                 GenericInputBlockMethod[inputs.nameRender](inputs.default, () => { }, inputs.options || []) :

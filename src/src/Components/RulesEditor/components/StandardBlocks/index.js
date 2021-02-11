@@ -6,7 +6,7 @@ __%%ELSE%%__
     }
 }`
 
-const SayitBlock = [
+const StandardBlocks = [
     {
         name: 'Trigger2',
         typeBlock: 'when',
@@ -110,4 +110,4 @@ const SayitBlock = [
     }
 ];
 
-export default SayitBlock;
+export default StandardBlocks;

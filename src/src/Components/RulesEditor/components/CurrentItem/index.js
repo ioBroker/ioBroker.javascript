@@ -15,17 +15,20 @@ const CurrentItem = memo(props => {
     const { setItemsSwitches, itemsSwitches, _id, _acceptedBy, blockValue, _inputs, _name, active, icon } = props;
     const [anchorEl, setAnchorEl] = useState(null);
     const handlePopoverOpen = event =>
-        setAnchorEl(event.currentTarget);
+        event.currentTarget !== anchorEl && setAnchorEl(event.currentTarget);
     const handlePopoverClose = () =>
         setAnchorEl(null);
     const generic = useRef(null);
     const [tag, setTag] = useState('');
+    
     useEffect(() => {
         if (generic) {
             setTag(generic.current.tagGenerate());
         }
     }, [generic, generic.current?.state.tagCardArray]);
+
     const blockInput = useMemo(() => <GenericInputBlock ref={generic} className={null} inputs={_inputs || {}} />, [_inputs])
+
     return <div
         onMouseMove={handlePopoverOpen}
         onMouseEnter={handlePopoverOpen}
@@ -38,6 +41,7 @@ const CurrentItem = memo(props => {
             </span>
             {blockInput}
         </div>
+
         {setItemsSwitches && <div className={cls.controlMenu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
             <div onClick={e => {
                 let newItemsSwitches = deepCopy(_acceptedBy, itemsSwitches, blockValue);
@@ -45,6 +49,7 @@ const CurrentItem = memo(props => {
                 return setItemsSwitches(newItemsSwitches);
             }} className={cls.closeBtn} />
         </div>}
+
         {setItemsSwitches && tag && <div className={cls.controlMenuTop} style={{ opacity: 1, height: 22, top: -22 }}>
             <div onClick={async e => {
                 await generic.current.tagGenerateNew();

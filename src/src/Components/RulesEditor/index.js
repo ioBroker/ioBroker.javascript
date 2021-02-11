@@ -26,15 +26,15 @@ const DEFAULT_RULE = {
     }
 };
 
-function compileTriggers(json, context, listSayit) {
+function compileTriggers(json, context, blocks) {
     const triggers = [];
     json.triggers.forEach(trigger => {
-        const found = findBlock(trigger.id, listSayit);
+        const found = findBlock(trigger.id, blocks);
         if (found) {
             const text = found.compile(trigger, context);
-            const conditions = compileConditions(json.conditions, context, listSayit);
-            const then = compileActions(json.actions.then, context, listSayit);
-            const _else = compileActions(json.actions.else, context, listSayit);
+            const conditions = compileConditions(json.conditions, context, blocks);
+            const then = compileActions(json.actions.then, context, blocks);
+            const _else = compileActions(json.actions.else, context, blocks);
             triggers.push(
                 text
                     .replace('__%%CONDITION%%__', conditions)
@@ -46,14 +46,14 @@ function compileTriggers(json, context, listSayit) {
 
     return triggers.join('\n\n');
 }
-function findBlock(type, listSayit) {
-    return listSayit.find(block => block.name === type);
+function findBlock(type, blocks) {
+    return blocks.find(block => block.name === type);
 }
 
-function compileActions(actions, context, listSayit) {
+function compileActions(actions, context, blocks) {
     let result = [];
     actions && actions.forEach(action => {
-        const found = findBlock(action.id, listSayit);
+        const found = findBlock(action.id, blocks);
         if (found) {
             result.push(found.compile(action, context));
         }
@@ -61,20 +61,20 @@ function compileActions(actions, context, listSayit) {
     return `\t\t${result.join('\t\t\n')}` || '';
 }
 
-function compileConditions(conditions, context, listSayit) {
+function compileConditions(conditions, context, blocks) {
     let result = [];
     conditions && conditions.forEach(ors => {
         if (ors.hasOwnProperty('length')) {
             const _ors = [];
             _ors && ors.forEach(block => {
-                const found = findBlock(block.id, listSayit);
+                const found = findBlock(block.id, blocks);
                 if (found) {
                     _ors.push(found.compile(block, context));
                 }
             });
             result.push(_ors.join(' || '));
         } else {
-            const found = findBlock(ors.id, listSayit);
+            const found = findBlock(ors.id, blocks);
             if (found) {
                 result.push(found.compile(ors, context));
             }
@@ -84,8 +84,8 @@ function compileConditions(conditions, context, listSayit) {
     return (result.join(') && (') || 'true');
 }
 
-function compile(json, listSayit) {
-    return compileTriggers(json, null, listSayit);
+function compile(json, blocks) {
+    return compileTriggers(json, null, blocks);
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -108,10 +108,10 @@ function code2json(code) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function json2code(json, listSayit) {
+function json2code(json, blocks) {
     let code = `const demo = ${JSON.stringify(json, null, 2)};\n`;
 
-    const compiled = compile(json, listSayit);
+    const compiled = compile(json, blocks);
     code += compiled;
 
     return code + '\n//' + JSON.stringify(json);
@@ -119,7 +119,7 @@ function json2code(json, listSayit) {
 
 const RulesEditor = props => {
     // eslint-disable-next-line no-unused-vars
-    const { state: { listSayit } } = useContext(ContextWrapperCreate);
+    const { state: { blocks } } = useContext(ContextWrapperCreate);
     const [switches, setSwitches] = useState([]);
     const [hamburgerOnOff, setHamburgerOnOff] = useStateLocal(false, 'hamburgerOnOff');
     const [itemsSwitches, setItemsSwitches] = useState(code2json(props.code)); //useStateLocal(DEFAULT_RULE, 'itemsSwitches');
@@ -130,7 +130,7 @@ const RulesEditor = props => {
     }, 'filterControlPanel');
 
     const setSwitchesFunc = (text = filter.text, typeFunc = filter.type) => {
-        let newAllSwitches = [...listSayit];
+        let newAllSwitches = [...blocks];
         newAllSwitches = newAllSwitches.filter(({ type, _name }) => _name.en.toLowerCase().indexOf(text.toLowerCase()) + 1);
         newAllSwitches = newAllSwitches.filter(({ type, _name }) => typeFunc === type);
         console.log(newAllSwitches);
@@ -204,7 +204,7 @@ const RulesEditor = props => {
                                 itemsSwitches={itemsSwitches}
                                 setItemsSwitches={json => {
                                     setItemsSwitches(json);
-                                    props.onChange(json2code(json, listSayit));
+                                    props.onChange(json2code(json, blocks));
                                 }}
                                 isActive={false}
                                 id={el.name}
@@ -230,7 +230,7 @@ const RulesEditor = props => {
                 // const _itemsSwitches = JSON.parse(JSON.stringify(itemsSwitches));
                 // _itemsSwitches.triggers = json;
                 setItemsSwitches(json);
-                props.onChange(json2code(json, listSayit));
+                props.onChange(json2code(json, blocks));
             }}
             itemsSwitches={itemsSwitches}
             name="when..."
@@ -239,7 +239,7 @@ const RulesEditor = props => {
         <ContentBlockItems
             setItemsSwitches={json => {
                 setItemsSwitches(json);
-                props.onChange(json2code(json, listSayit));
+                props.onChange(json2code(json, blocks));
             }}
             itemsSwitches={itemsSwitches}
             name="...and..."
@@ -251,7 +251,7 @@ const RulesEditor = props => {
         <ContentBlockItems
             setItemsSwitches={json => {
                 setItemsSwitches(json);
-                props.onChange(json2code(json, listSayit));
+                props.onChange(json2code(json, blocks));
             }}
             itemsSwitches={itemsSwitches}
             name="...then"
