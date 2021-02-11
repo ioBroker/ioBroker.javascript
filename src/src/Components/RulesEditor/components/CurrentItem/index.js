@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
@@ -12,7 +12,7 @@ import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 // @iobroker/javascript-block
 
 const CurrentItem = memo(props => {
-    const { ref, setItemsSwitches, itemsSwitches, _id, _acceptedBy, blockValue, _inputs, _name, active, icon } = props;
+    const { setItemsSwitches, itemsSwitches, _id, _acceptedBy, blockValue, _inputs, _name, active, icon } = props;
     const [anchorEl, setAnchorEl] = useState(null);
     const handlePopoverOpen = event =>
         setAnchorEl(event.currentTarget);
@@ -25,18 +25,18 @@ const CurrentItem = memo(props => {
             setTag(generic.current.tagGenerate());
         }
     }, [generic, generic.current?.state.tagCardArray]);
+    const blockInput = useMemo(() => <GenericInputBlock ref={generic} className={null} inputs={_inputs || {}} />, [_inputs])
     return <div
         onMouseMove={handlePopoverOpen}
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
-        ref={ref}
         className={`${cls.cardStyle} ${active ? cls.cardStyleActive : null}`}>
         <MaterialDynamicIcon iconName={icon} className={cls.iconThemCard} />
         <div className={cls.blockName}>
             <span className={cls.nameCard}>
                 {_name.en}
             </span>
-            <GenericInputBlock ref={generic} className={null} inputs={_inputs || {}} />
+            {blockInput}
         </div>
         {setItemsSwitches && <div className={cls.controlMenu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
             <div onClick={e => {

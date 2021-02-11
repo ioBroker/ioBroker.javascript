@@ -27,7 +27,8 @@
     "react-text-mask": "^5.4.3",
     "react-treeview-mui": "^0.1.2",
     "sass": "^1.32.5",
-    "suncalc2": "^1.8.1"
+    "suncalc2": "^1.8.1",
+    "lodash":"^4.17.20"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,20 +1,55 @@
-const moveCard = (id, atIndex, cards, setCards, itemsSwitches) => {
+import _ from "lodash";
+
+const funcSet = _.throttle(
+    (setCards, itemsSwitches) => setCards(itemsSwitches)
+    , 50);
+
+const moveCard = (
+    id,
+    atIndex,
+    cards,
+    setCards,
+    itemsSwitches,
+    _acceptedBy,
+    additionally,
+    hoverClientY,
+    hoverMiddleY) => {
     // console.log('2', id, atIndex, cards)
+
     const { card, index } = findCard(id, cards);
+    if (index < atIndex && hoverClientY < hoverMiddleY) {
+        return;
+    }
+    if (index > atIndex && hoverClientY > hoverMiddleY) {
+        return;
+    }
     if (card && index !== atIndex) {
-        console.log(2233,index,atIndex)
-        const copyCard = [...cards];
+        console.log('render set')
+        const copyCard = _.clone(cards);
         copyCard.splice(index, 1);
         copyCard.splice(atIndex, 0, card);
-        setCards({ ...itemsSwitches, 'triggers': copyCard });
+        const newTriggers = _.clone(itemsSwitches);
+        switch (_acceptedBy) {
+            case 'actions':
+                newTriggers[_acceptedBy][additionally] = copyCard;
+                funcSet(setCards, newTriggers);
+                return;
+            case 'conditions':
+                newTriggers[_acceptedBy][additionally] = copyCard;
+                funcSet(setCards, newTriggers);
+                return;
+            default:
+                newTriggers[_acceptedBy] = copyCard;
+                funcSet(setCards, newTriggers);
+                return;
+        }
     }
 };
 const findCard = (id, cards) => {
-    // console.log('1', id, cards)
     const card = cards.find((c) => c._id === id);
     return {
         card,
-        index: cards.indexOf(card)
+        index: cards.indexOf(card),
     };
 };
 

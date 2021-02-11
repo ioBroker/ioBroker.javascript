@@ -46,12 +46,10 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
     }
     return <div ref={drop} style={{ backgroundColor }} className={`${cls.contentBlockItem} ${boolean ? null : cls.contentHeightOff}`}>
         {itemsSwitchesRender[blockValue]?.filter(el => el.nameBlock === name).map((el, idx) => (
-            <Fragment key={`additionally_content_${el._id}`}>
-                <DragWrapper {...el} blockValue={blockValue} allProperties={el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches}>
+                <DragWrapper key={el._id} {...el} blockValue={blockValue} allProperties={el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches}>
                     <CurrentItem {...el} blockValue={blockValue} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} />
-                </DragWrapper>
-            </Fragment>))}
-        {isActive && checkItem && !checkId? <div className={cls.emptyBlock} /> : null}
+                </DragWrapper>))}
+        {isActive && checkItem && !checkId ? <div className={cls.emptyBlock} /> : null}
     </div>;
 }
 
@@ -122,7 +120,7 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
             </div>
                 <AdditionallyContentBlockItems
                     blockValue={typeBlock === 'actions' ? 'else' : typeBlock === 'conditions' ? index + 1 : typeBlock}
-                    typeBlock={typeBlock} 
+                    typeBlock={typeBlock}
                     setItemsSwitches={setItemsSwitches}
                     itemsSwitchesRender={typeBlock === 'actions' ? itemsSwitches['actions'] : typeBlock === 'conditions' ? itemsSwitches['conditions'] : itemsSwitches}
                     itemsSwitches={itemsSwitches}

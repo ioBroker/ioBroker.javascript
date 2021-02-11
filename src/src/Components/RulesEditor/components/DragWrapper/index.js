@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import { useDrag, useDrop } from 'react-dnd';
@@ -22,9 +22,9 @@ const DragWrapper = ({ allProperties, id, isActive, setItemsSwitches, itemsSwitc
                 }
                 return null;
             }
-            let idNumber = typeof _id === 'number' ? _id : Date.now();
-            newItemsSwitches = deepCopy(_acceptedBy, itemsSwitches, dropResult.blockValue);
-            if (!_id) {
+            if (dropResult.blockValue !== blockValue) {
+                let idNumber = typeof _id === 'number' ? _id : Date.now();
+                newItemsSwitches = deepCopy(_acceptedBy, itemsSwitches, dropResult.blockValue);
                 switch (_acceptedBy) {
                     case 'actions':
                         if (blockValue) {
@@ -44,24 +44,76 @@ const DragWrapper = ({ allProperties, id, isActive, setItemsSwitches, itemsSwitc
                         newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, dropResult.blockValue, _id);
                         newItemsSwitches[_acceptedBy].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
                         return setItemsSwitches(newItemsSwitches);
-                    // return
                 }
             }
         },
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.4 : 1,
-            isDragging: monitor.isDragging()
+            isDragging: monitor.isDragging(),
         }),
     });
-
+    const ref = useRef(null)
     const [, drop] = useDrop({
         accept: 'box',
         canDrop: () => false,
-        hover({ _id: draggedId }) {
-            if (_id && draggedId !== _id) {
-                const { index: overIndex } = findCard(_id, itemsSwitches['triggers']);
-                if (overIndex !== draggedId) {
-                    moveCard(draggedId, overIndex, itemsSwitches['triggers'], setItemsSwitches, itemsSwitches);
+        hover({ _id: draggedId, _acceptedBy }, monitor) {
+            if (!ref.current) {
+                return;
+            }
+            // Determine rectangle on screen
+            const hoverBoundingRect = ref.current?.getBoundingClientRect();
+            const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+            const clientOffset = monitor.getClientOffset();
+            const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+
+            if (!!_id && draggedId !== _id) {
+                switch (_acceptedBy) {
+                    case 'actions':
+                        if (blockValue === 'then' || blockValue === 'else') {
+                            const { index: overIndexActions } = findCard(_id, itemsSwitches[_acceptedBy][blockValue]);
+                            if (overIndexActions !== draggedId) {
+                                moveCard(draggedId,
+                                    overIndexActions,
+                                    itemsSwitches[_acceptedBy][blockValue],
+                                    setItemsSwitches,
+                                    itemsSwitches,
+                                    _acceptedBy,
+                                    blockValue,
+                                    hoverClientY,
+                                    hoverMiddleY);
+                            }
+                        }
+                        return;
+                    case 'conditions':
+                        if (typeof blockValue === 'number') {
+                            const { index: overIndexConditions } = findCard(_id, itemsSwitches[_acceptedBy][blockValue]);
+                            if (overIndexConditions !== draggedId) {
+                                moveCard(draggedId,
+                                    overIndexConditions,
+                                    itemsSwitches[_acceptedBy][blockValue],
+                                    setItemsSwitches,
+                                    itemsSwitches,
+                                    _acceptedBy,
+                                    blockValue,
+                                    hoverClientY,
+                                    hoverMiddleY);
+                            }
+                        }
+                        return;
+                    default:
+                        const { index: overIndex } = findCard(_id, itemsSwitches[_acceptedBy]);
+                        if (overIndex !== draggedId) {
+                            moveCard(draggedId,
+                                overIndex,
+                                itemsSwitches[_acceptedBy],
+                                setItemsSwitches,
+                                itemsSwitches,
+                                _acceptedBy,
+                                null,
+                                hoverClientY,
+                                hoverMiddleY);
+                        }
+                        return;
                 }
             }
         }
@@ -70,7 +122,8 @@ const DragWrapper = ({ allProperties, id, isActive, setItemsSwitches, itemsSwitc
         preview(getEmptyImage(), { captureDraggingState: true });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    return <div key={id} ref={node => drag(drop(node))} style={{ opacity, display: 'flex', width: '100%' }}>{children}</div>;
+    drag(drop(ref))
+    return <div ref={ref} style={{ opacity, }}>{children}</div>;
 }
 
 DragWrapper.defaultProps = {

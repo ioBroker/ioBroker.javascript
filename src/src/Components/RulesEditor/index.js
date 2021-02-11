@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useContext, useEffect, useState } from 'react';
 import cls from './style.module.scss';
 ///////
 import FlashOnIcon from '@material-ui/icons/FlashOn';
@@ -12,93 +12,9 @@ import ContentBlockItems from './components/ContentBlockItems';
 import HamburgerMenu from './components/HamburgerMenu';
 import { useStateLocal } from './hooks/useStateLocal';
 import { AppBar, Tab, Tabs } from '@material-ui/core';
+import { ContextWrapperCreate } from './components/ContextWrapper';
 // import PropTypes from 'prop-types';
 
-const STANDARD_FUNCTION = `async function (obj) {
-    if (__%%CONDITION%%__) {
-__%%THEN%%__
-    } else {
-__%%ELSE%%__
-    }
-}`
-
-// import I18n from '@iobroker/adapter-react/i18n';
-// import DialogMessage from '@iobroker/adapter-react/Dialogs/Message';
-const allSwitches = [
-    {
-        name: 'Trigger2',
-        typeBlock: 'when',
-        icon:'AccessTime',
-        // acceptedOn: ['when'],
-        type: 'trigger',
-        compile: (config, context) => `schedule('* 1 * * *', ${STANDARD_FUNCTION});`,
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'triggers', // where it could be acceped: trigger, condition, action
-        _type: 'trigger1',
-        _name: { en: 'Schedule', ru: 'Триггер' },
-        _inputs: { nameRender: 'renderTimeOfDay', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    },{
-        name: 'Trigger3',
-        typeBlock: 'when',
-        icon:'PlayArrow',
-        // acceptedOn: ['when'],
-        type: 'trigger',
-        compile: (config, context) => `schedule('* 1 * * *', ${STANDARD_FUNCTION});`,
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'triggers', // where it could be acceped: trigger, condition, action
-        _type: 'trigger1',
-        _name: { en: 'Script save', ru: 'Триггер' },
-        _inputs: 
-            { nameRender: 'renderOnScript', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    },
-    {
-        name: 'Trigger1',
-        typeBlock: 'when',
-        icon:'FlashOn',
-        // acceptedOn: ['when'],
-        type: 'trigger',
-        compile: (config, context) => `schedule('* 1 * * *', ${STANDARD_FUNCTION});`,
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'triggers', // where it could be acceped: trigger, condition, action
-        _type: 'trigger1',
-        _name: { en: 'State', ru: 'Триггер' },
-        _inputs: 
-            { nameRender: 'renderState', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    },
-    {
-        name: 'Condition1',
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'conditions', // where it could be acceped: trigger, condition, action
-        _type: 'condition1',
-        _name: { en: 'Condition', ru: 'Триггер' },
-        typeBlock: 'and',
-        icon:'Shuffle',
-        type: 'condition',
-        compile: (config, context) => `obj.val === "1"`,
-        _inputs: 
-            { nameRender: 'renderText', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    },
-    {
-        name: 'Action1',
-        typeBlock: 'then',
-        icon:'PlaylistPlay',
-
-        // acceptedOn: ['then', 'else'],
-        type: 'action',
-        compile: (config, context) => `setState('id', obj.val);`,
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
-        _type: 'action1',
-        _name: { en: 'Action', ru: 'Действие' },
-        _inputs: 
-            { nameRender: 'renderText', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    }
-];
 
 // eslint-disable-next-line no-unused-vars
 const DEFAULT_RULE = {
@@ -110,15 +26,15 @@ const DEFAULT_RULE = {
     }
 };
 
-function compileTriggers(json, context) {
+function compileTriggers(json, context, listSayit) {
     const triggers = [];
     json.triggers.forEach(trigger => {
-        const found = findBlock(trigger.id);
+        const found = findBlock(trigger.id, listSayit);
         if (found) {
             const text = found.compile(trigger, context);
-            const conditions = compileConditions(json.conditions, context);
-            const then = compileActions(json.actions.then, context);
-            const _else = compileActions(json.actions.else, context);
+            const conditions = compileConditions(json.conditions, context, listSayit);
+            const then = compileActions(json.actions.then, context, listSayit);
+            const _else = compileActions(json.actions.else, context, listSayit);
             triggers.push(
                 text
                     .replace('__%%CONDITION%%__', conditions)
@@ -130,14 +46,14 @@ function compileTriggers(json, context) {
 
     return triggers.join('\n\n');
 }
-function findBlock(type) {
-    return allSwitches.find(block => block.name === type);
+function findBlock(type, listSayit) {
+    return listSayit.find(block => block.name === type);
 }
 
-function compileActions(actions, context) {
+function compileActions(actions, context, listSayit) {
     let result = [];
     actions && actions.forEach(action => {
-        const found = findBlock(action.id);
+        const found = findBlock(action.id, listSayit);
         if (found) {
             result.push(found.compile(action, context));
         }
@@ -145,20 +61,20 @@ function compileActions(actions, context) {
     return `\t\t${result.join('\t\t\n')}` || '';
 }
 
-function compileConditions(conditions, context) {
+function compileConditions(conditions, context, listSayit) {
     let result = [];
     conditions && conditions.forEach(ors => {
         if (ors.hasOwnProperty('length')) {
             const _ors = [];
             _ors && ors.forEach(block => {
-                const found = findBlock(block.id);
+                const found = findBlock(block.id, listSayit);
                 if (found) {
                     _ors.push(found.compile(block, context));
                 }
             });
             result.push(_ors.join(' || '));
         } else {
-            const found = findBlock(ors.id);
+            const found = findBlock(ors.id, listSayit);
             if (found) {
                 result.push(found.compile(ors, context));
             }
@@ -168,8 +84,8 @@ function compileConditions(conditions, context) {
     return (result.join(') && (') || 'true');
 }
 
-function compile(json) {
-    return compileTriggers(json);
+function compile(json, listSayit) {
+    return compileTriggers(json, null, listSayit);
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -192,10 +108,10 @@ function code2json(code) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function json2code(json) {
+function json2code(json, listSayit) {
     let code = `const demo = ${JSON.stringify(json, null, 2)};\n`;
 
-    const compiled = compile(json);
+    const compiled = compile(json, listSayit);
     code += compiled;
 
     return code + '\n//' + JSON.stringify(json);
@@ -203,6 +119,7 @@ function json2code(json) {
 
 const RulesEditor = props => {
     // eslint-disable-next-line no-unused-vars
+    const { state: { listSayit } } = useContext(ContextWrapperCreate);
     const [switches, setSwitches] = useState([]);
     const [hamburgerOnOff, setHamburgerOnOff] = useStateLocal(false, 'hamburgerOnOff');
     const [itemsSwitches, setItemsSwitches] = useState(code2json(props.code)); //useStateLocal(DEFAULT_RULE, 'itemsSwitches');
@@ -213,7 +130,7 @@ const RulesEditor = props => {
     }, 'filterControlPanel');
 
     const setSwitchesFunc = (text = filter.text, typeFunc = filter.type) => {
-        let newAllSwitches = [...allSwitches];
+        let newAllSwitches = [...listSayit];
         newAllSwitches = newAllSwitches.filter(({ type, _name }) => _name.en.toLowerCase().indexOf(text.toLowerCase()) + 1);
         newAllSwitches = newAllSwitches.filter(({ type, _name }) => typeFunc === type);
         console.log(newAllSwitches);
@@ -287,7 +204,7 @@ const RulesEditor = props => {
                                 itemsSwitches={itemsSwitches}
                                 setItemsSwitches={json => {
                                     setItemsSwitches(json);
-                                    props.onChange(json2code(json));
+                                    props.onChange(json2code(json, listSayit));
                                 }}
                                 isActive={false}
                                 id={el.name}
@@ -313,7 +230,7 @@ const RulesEditor = props => {
                 // const _itemsSwitches = JSON.parse(JSON.stringify(itemsSwitches));
                 // _itemsSwitches.triggers = json;
                 setItemsSwitches(json);
-                props.onChange(json2code(json));
+                props.onChange(json2code(json, listSayit));
             }}
             itemsSwitches={itemsSwitches}
             name="when..."
@@ -322,7 +239,7 @@ const RulesEditor = props => {
         <ContentBlockItems
             setItemsSwitches={json => {
                 setItemsSwitches(json);
-                props.onChange(json2code(json));
+                props.onChange(json2code(json, listSayit));
             }}
             itemsSwitches={itemsSwitches}
             name="...and..."
@@ -334,7 +251,7 @@ const RulesEditor = props => {
         <ContentBlockItems
             setItemsSwitches={json => {
                 setItemsSwitches(json);
-                props.onChange(json2code(json));
+                props.onChange(json2code(json, listSayit));
             }}
             itemsSwitches={itemsSwitches}
             name="...then"

@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import CustomButton from '../CustomButton';
 import CustomCheckbox from '../CustomCheckbox';
 import CustomInput from '../CustomInput';
@@ -16,7 +16,8 @@ import Schedule from '../../../Schedule';
 // import I18n from '@iobroker/adapter-react/i18n';
 import SunCalc from 'suncalc2';
 
-class GenericInputBlock extends Component {
+// const 
+class GenericInputBlock extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
@@ -64,7 +65,6 @@ class GenericInputBlock extends Component {
             onChange={onChange}
         />
     }
-
     renderNumber = (value, onChange) => {
         const { className } = this.props;
         return <CustomInput
@@ -259,7 +259,6 @@ class GenericInputBlock extends Component {
                 </div>
             case "Astro":
                 const sunValue = SunCalc.getTimes(new Date(), 51.5, - 0.1);
-                console.log()
                 return <div>
                     <div style={{ display: 'flex', alignItems: 'center' }}>at <CustomSelect
                         // title='ip'
@@ -396,6 +395,150 @@ class GenericInputBlock extends Component {
         />
     }
 
+    renderStateCondition = (value, onChange) => {
+        const { showSelectId, tagCard, openCheckbox } = this.state;
+        const { className } = this.props;
+        const { socket } = this.context;
+        return <div style={{ display: 'flex' }}><div style={{
+            fontSize: 30,
+            color: '#460f46',
+            display: 'flex',
+            alignItems: 'center',
+            minWidth: 40,
+            marginBottom: 30
+        }}>{tagCard}</div><div>
+                <div style={{ display: 'flex', alignItems: 'center' }}><CustomCheckbox
+                    className={className}
+                    autoComplete="off"
+                    label="number"
+                    variant="outlined"
+                    size="small"
+                    style={{ marginRight: 5 }}
+                    value={openCheckbox}
+                    onChange={(e) => this.setState({ openCheckbox: e })}
+                /> Value from trigger</div>
+
+                {openCheckbox && <div><div style={{ display: 'flex', alignItems: 'center' }}><CustomInput
+                    className={className}
+                    autoComplete="off"
+                    fullWidth
+                    disabled
+                    variant="outlined"
+                    size="small"
+                    value={"system.adapter.ad..."}
+                    onChange={onChange}
+                    customValue
+                />
+                    <CustomButton
+                        // fullWidth
+                        value='...'
+                        className={className}
+                        onClick={() => this.setState({ showSelectId: true })}
+                    />
+                </div>
+                    Alive for alarm adapter
+                    {showSelectId ? <DialogSelectID
+                        key="tableSelect"
+                        imagePrefix="../.."
+                        dialogName={'javascript'}
+                        themeType={Utils.getThemeName()}
+                        socket={socket}
+                        statesOnly={true}
+                        // selected={this.selectIdValue}
+                        onClose={() => this.setState({ showSelectId: false })}
+                        onOk={(selected, name) => {
+                            this.setState({ showSelectId: false, selectIdValue: selected });
+                        }}
+                    /> : null}</div>}
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ marginRight: 10, whiteSpace: 'nowrap' }}>
+                        greater than
+                        </span>
+                    <CustomInput
+                        className={className}
+                        autoComplete="off"
+                        fullWidth
+                        type="number"
+                        variant="outlined"
+                        size="small"
+                        value={30}
+                        onChange={onChange}
+                        customValue
+                    /></div>
+            </div>
+        </div>
+    }
+
+    renderTimeCondition = (value, onChange) => {
+        const { tagCard } = this.state;
+        // const { className } = this.props;
+        return <div style={{ display: 'flex' }}>
+            <div style={{
+                fontSize: 30,
+                color: '#460f46',
+                display: 'flex',
+                alignItems: 'center',
+                minWidth: 40,
+                marginBottom: 30
+            }}>
+                {tagCard}
+            </div>
+            <div>
+                <div>Actual time of day</div>
+                <div style={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+                    greater than <CustomTime style={{ marginLeft: 5 }} />
+                </div>
+            </div>
+        </div>
+    }
+
+    renderAstrologicalCondition = (value, onChange) => {
+        const { openCheckbox } = this.state;
+        const { className } = this.props;
+        const sunValue = SunCalc.getTimes(new Date(), 51.5, - 0.1);
+        return <div>
+            <div>Actual time of day</div>
+            <div style={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+                greater than
+                <CustomSelect
+                    // title='ip'
+                    key='at'
+                    className={className}
+                    // multiple
+                    style={{ marginLeft: 5 }}
+                    options={Object.keys(sunValue).map((name) => ({ value: name, title: name, title2: `[${sunValue[name].getHours() < 10 ? 0 : ''}${sunValue[name].getHours()}:${sunValue[name].getMinutes() < 10 ? 0 : ''}${sunValue[name].getMinutes()}]` }))}
+                    value={'solarNoon'}
+                    onChange={onChange}
+                />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center' }}><CustomCheckbox
+                className={className}
+                autoComplete="off"
+                label="number"
+                variant="outlined"
+                size="small"
+                style={{ marginRight: 5 }}
+                value={openCheckbox}
+                onChange={(e) => this.setState({ openCheckbox: e })}
+            /> with offset</div>
+
+            {openCheckbox && <div style={{ display: 'flex', alignItems: 'center' }}>
+                <CustomInput
+                    className={className}
+                    autoComplete="off"
+                    label="number"
+                    variant="outlined"
+                    size="small"
+                    type="number"
+                    style={{ marginLeft: 5, marginRight: 5, width: 80 }}
+                    value={value}
+                    onChange={onChange}
+                /> minutes</div>}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                {`${sunValue['solarNoon'].getHours() < 10 ? 0 : ''}${sunValue['solarNoon'].getHours()}:${sunValue['solarNoon'].getMinutes() < 10 ? 0 : ''}${sunValue['solarNoon'].getMinutes()}`}</div>
+        </div>
+    }
+
     tagGenerate = () => {
         const { inputs, tagCard, tagCardArray, openTagMenu } = this.state;
         let result;
@@ -405,7 +548,15 @@ class GenericInputBlock extends Component {
         }
         if (inputs.nameRender === 'renderState' && tagCard === '') {
             this.setState({ tagCard: 'on update', tagCardArray: ['on update', 'on change'] });
-            result = 'CRON';
+            result = 'on update';
+        }
+        if (inputs.nameRender === 'renderStateCondition' && tagCard === '') {
+            this.setState({ tagCard: '>', tagCardArray: ['>', '>=', '<', '<=', '=', '<>', '...'] });
+            result = '>';
+        }
+        if ((inputs.nameRender === 'renderTimeCondition' || inputs.nameRender === 'renderAstrologicalCondition') && tagCard === '') {
+            this.setState({ tagCard: '>', tagCardArray: ['>', '>=', '<', '<=', '=', '<>'] });
+            result = '>';
         }
         if (tagCardArray.length > 3) {
             result = <div>
@@ -436,8 +587,15 @@ class GenericInputBlock extends Component {
 
     render = () => {
         const { inputs } = this.state;
+        const { GenericInputBlockMethod } = this.context.state;
+        console.log('render')
         return <Fragment>
-            {this[inputs.nameRender](inputs.default, () => { }, inputs.options || [])}
+            {GenericInputBlockMethod[inputs.nameRender] ?
+                GenericInputBlockMethod[inputs.nameRender](inputs.default, () => { }, inputs.options || []) :
+                null}
+            {this[inputs.nameRender] ?
+                this[inputs.nameRender](inputs.default, () => { }, inputs.options || []) :
+                null}
         </Fragment>
     }
 };
