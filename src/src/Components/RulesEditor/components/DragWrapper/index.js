@@ -7,7 +7,7 @@ import { deepCopy } from '../../helpers/deepCopy';
 import { filterElement } from '../../helpers/filterElement';
 import { findCard, moveCard } from '../../helpers/cardSort';
 
-const DragWrapper = ({ allProperties, id, isActive, setItemsSwitches, itemsSwitches, children, _id, blockValue }) => {
+const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setItemsSwitches, itemsSwitches, children, _id, blockValue }) => {
     const [{ opacity }, drag, preview] = useDrag({
         item: { ...allProperties, type: 'box', id, isActive, _id },
         end: (item, monitor) => {
@@ -60,6 +60,11 @@ const DragWrapper = ({ allProperties, id, isActive, setItemsSwitches, itemsSwitc
             if (!ref.current) {
                 return;
             }
+            // console.log(typeBlocks,_acceptedBy)
+            if (typeBlocks !== _acceptedBy) {
+                return
+            }
+            // console.log(monitor, monitor.getHandlerId(), blockValue)
             // Determine rectangle on screen
             const hoverBoundingRect = ref.current?.getBoundingClientRect();
             const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;

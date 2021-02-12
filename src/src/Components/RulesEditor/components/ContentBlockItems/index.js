@@ -46,7 +46,7 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
     }
     return <div ref={drop} style={{ backgroundColor }} className={`${cls.contentBlockItem} ${boolean ? null : cls.contentHeightOff}`}>
         {itemsSwitchesRender[blockValue]?.filter(el => el.nameBlock === name).map((el, idx) => (
-                <DragWrapper key={el._id} {...el} blockValue={blockValue} allProperties={el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches}>
+                <DragWrapper typeBlocks={typeBlock} key={el._id} {...el} blockValue={blockValue} allProperties={el} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches}>
                     <CurrentItem {...el} blockValue={blockValue} itemsSwitches={itemsSwitches} setItemsSwitches={setItemsSwitches} />
                 </DragWrapper>))}
         {isActive && checkItem && !checkId ? <div className={cls.emptyBlock} /> : null}

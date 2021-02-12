@@ -1,6 +1,6 @@
-import GenericBlocks from '../GenericBlocks';
+import GenericBlocks from '../GenericBlocks'; // @iobroker/javascript-rules
 
-class SayItBlocks extends GenericBlocks {
+class SayitBlock extends GenericBlocks {
     constructor(props) {
         super(props, {
             name: 'Action2222',
@@ -28,7 +28,6 @@ class SayItBlocks extends GenericBlocks {
 
     onSettingsUpdate(settings) {
 
-
     }
 
 
@@ -37,7 +36,9 @@ class SayItBlocks extends GenericBlocks {
     }
 }
 
-export default SayItBlocks;
+const SayitBlocks = [SayitBlock];
+
+export default SayitBlocks;
 /*{
     name: 'Action2222',
     typeBlock: 'then',
