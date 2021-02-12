@@ -15,14 +15,19 @@ import CustomModal from '../CustomModal';
 import Schedule from '../../../Schedule';
 // import I18n from '@iobroker/adapter-react/i18n';
 import SunCalc from 'suncalc2';
+import cls from './style.module.scss';
+import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
+import CustomSwitch from '../CustomSwitch';
 
 // const 
-class GenericInputBlock extends PureComponent {
-    constructor(props) {
+class GenericBlocks extends PureComponent {
+    constructor(props, item) {
         super(props);
-
+        // console.log(props, item)
         this.state = {
-            inputs: props.inputs,
+            inputs: props._inputs ? props._inputs : item._inputs,
+            name: props._name ? props._name : item._name,
+            icon: props.icon ? props.icon : item.icon,
             showSelectId: false,
             openTagMenu: false,
             openModal: false,
@@ -50,8 +55,6 @@ class GenericInputBlock extends PureComponent {
             instanceSelectionOptions: [],
             instanceSelectionDef: '',
         }
-        this.tagGenerateNew();
-        this.tagGenerate();
     }
 
     renderText = (value, onChange) => {
@@ -539,7 +542,303 @@ class GenericInputBlock extends PureComponent {
                 {`${sunValue['solarNoon'].getHours() < 10 ? 0 : ''}${sunValue['solarNoon'].getHours()}:${sunValue['solarNoon'].getMinutes() < 10 ? 0 : ''}${sunValue['solarNoon'].getMinutes()}`}</div>
         </div>
     }
-
+    renderSetStateAction = (value, onChange) => {
+        const { showSelectId, tagCard } = this.state;
+        const { className } = this.props;
+        const { socket } = this.context;
+        let additionallyBlock = null;
+        switch (tagCard) {
+            case 'control':
+                additionallyBlock = <div style={{ display: 'flex', alignItems: 'center' }}>
+                    with
+                <CustomInput
+                        className={className}
+                        autoComplete="off"
+                        label="number"
+                        variant="outlined"
+                        size="small"
+                        type="number"
+                        style={{ marginLeft: 5, marginRight: 5, width: 80 }}
+                        value={30}
+                        onChange={onChange}
+                        customValue
+                    />
+                kW
+                </div>
+                break
+            case 'update':
+                additionallyBlock = <div style={{ display: 'flex', alignItems: 'center' }}>
+                    with
+            <CustomInput
+                        className={className}
+                        autoComplete="off"
+                        label="number"
+                        variant="outlined"
+                        size="small"
+                        type="number"
+                        style={{ marginLeft: 5, marginRight: 5, width: 80 }}
+                        value={30}
+                        onChange={onChange}
+                        customValue
+                    />
+                </div>
+                break
+            case 'control1':
+                additionallyBlock = <div style={{ display: 'flex', alignItems: 'center' }}>
+                    0 <CustomSlider
+                        className={className}
+                        autoComplete="off"
+                        label="number"
+                        variant="outlined"
+                        size="small"
+                        value={50}
+                        onChange={onChange}
+                        customValue
+                    />100
+                </div>
+                break
+            case 'control2':
+                additionallyBlock = <div style={{ display: 'flex', alignItems: 'center' }}>
+                    with
+                <CustomInput
+                        className={className}
+                        autoComplete="off"
+                        fullWidth
+                        variant="outlined"
+                        size="small"
+                        type="color"
+                        value={value}
+                        onChange={onChange}
+                    />
+                </div>
+                break
+            case 'control3':
+                additionallyBlock = <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <CustomSelect
+                        // title='ip'
+                        className={className}
+                        options={[{ value: 'State1', title: 'State1' }, { value: 'State2', title: 'State2' }, { value: 'State3', title: 'State3' },]}
+                        value={'State1'}
+                        onChange={onChange}
+                    />
+                </div>
+                break
+            case 'control4':
+                additionallyBlock = <div style={{ display: 'flex', alignItems: 'center' }}>
+                    false
+                    <CustomSwitch
+                        label=''
+                    />
+                    true
+                </div>
+                break
+            case 'control5':
+                additionallyBlock = <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <CustomButton
+                        // fullWidth
+                        value='Press'
+                        className={className}
+                        onClick={onChange}
+                    />
+                </div>
+                break
+            default:
+                additionallyBlock = null;
+                break
+        }
+        return <div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <CustomInput
+                    className={className}
+                    autoComplete="off"
+                    fullWidth
+                    disabled
+                    variant="outlined"
+                    size="small"
+                    value={"system.adapter.ad..."}
+                    onChange={onChange}
+                    customValue
+                />
+                <CustomButton
+                    // fullWidth
+                    value='...'
+                    className={className}
+                    onClick={() => this.setState({ showSelectId: true })}
+                />
+            </div>
+    Alive for alarm adapter
+    {showSelectId ? <DialogSelectID
+                key="tableSelect"
+                imagePrefix="../.."
+                dialogName={'javascript'}
+                themeType={Utils.getThemeName()}
+                socket={socket}
+                statesOnly={true}
+                // selected={this.selectIdValue}
+                onClose={() => this.setState({ showSelectId: false })}
+                onOk={(selected, name) => {
+                    this.setState({ showSelectId: false, selectIdValue: selected });
+                }}
+            /> : null}
+            <div>
+                {additionallyBlock}
+            </div>
+        </div>
+    }
+    renderExecAction = (value, onChange) => {
+        const { openModal } = this.state;
+        const { className } = this.props;
+        return <div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <CustomInput
+                    className={className}
+                    autoComplete="off"
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    value={'value'}
+                    onChange={onChange}
+                    customValue
+                />
+                <CustomButton
+                    fullWidth
+                    style={{ width: 80, marginLeft: 5 }}
+                    value='...'
+                    className={className}
+                    onClick={() => this.setState({ openModal: true })}
+                /></div>
+            <CustomModal
+                open={openModal}
+                buttonClick={() => {
+                    this.setState({ openModal: !openModal });
+                }}
+                close={() => this.setState({ openModal: !openModal })}
+                titleButton={'add'}
+                titleButton2={'close'}>
+                <CustomInput
+                    className={className}
+                    autoComplete="off"
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    rows={10}
+                    multiline
+                    value={value}
+                    onChange={onChange}
+                />
+            </CustomModal>
+            Shell command</div>
+    }
+    renderHTTPCallAction = (value, onChange) => {
+        const { openModal } = this.state;
+        const { className } = this.props;
+        return <div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <CustomInput
+                    className={className}
+                    autoComplete="off"
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    value={'value'}
+                    onChange={onChange}
+                    customValue
+                />
+                <CustomButton
+                    fullWidth
+                    style={{ width: 80, marginLeft: 5 }}
+                    value='...'
+                    className={className}
+                    onClick={() => this.setState({ openModal: true })}
+                /></div>
+            <CustomModal
+                open={openModal}
+                buttonClick={() => {
+                    this.setState({ openModal: !openModal });
+                }}
+                close={() => this.setState({ openModal: !openModal })}
+                titleButton={'add'}
+                titleButton2={'close'}>
+                <CustomInput
+                    className={className}
+                    autoComplete="off"
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    rows={10}
+                    multiline
+                    value={value}
+                    onChange={onChange}
+                />
+            </CustomModal>
+        URL</div>
+    }
+    renderPrintTextAction = (value, onChange) => {
+        const { openModal } = this.state;
+        const { className } = this.props;
+        return <div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <CustomInput
+                    className={className}
+                    autoComplete="off"
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    value={'value'}
+                    onChange={onChange}
+                    customValue
+                />
+                <CustomButton
+                    fullWidth
+                    style={{ width: 80, marginLeft: 5 }}
+                    value='...'
+                    className={className}
+                    onClick={() => this.setState({ openModal: true })}
+                /></div>
+            <CustomModal
+                open={openModal}
+                buttonClick={() => {
+                    this.setState({ openModal: !openModal });
+                }}
+                close={() => this.setState({ openModal: !openModal })}
+                titleButton={'add'}
+                titleButton2={'close'}>
+                <CustomInput
+                    className={className}
+                    autoComplete="off"
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    rows={10}
+                    multiline
+                    value={value}
+                    onChange={onChange}
+                />
+            </CustomModal>
+        Log text</div>
+    }
+    renderPauseAction = (value, onChange) => {
+        const { className } = this.props;
+        return <div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <CustomInput
+                    fullWidth
+                    customValue
+                    type="number"
+                    value={100}
+                />
+            </div>
+            <CustomSelect
+                // title='ip'
+                key='at'
+                className={className}
+                options={[{ value: 'ms', title: 'ms' },{ value: 's', title: 's' }]}
+                value={'ms'}
+                onChange={onChange}
+            />
+        </div>
+    }
+    /////////////////////////////
     tagGenerate = () => {
         const { inputs, tagCard, tagCardArray, openTagMenu } = this.state;
         let result;
@@ -558,6 +857,10 @@ class GenericInputBlock extends PureComponent {
         if ((inputs.nameRender === 'renderTimeCondition' || inputs.nameRender === 'renderAstrologicalCondition') && tagCard === '') {
             this.setState({ tagCard: '>', tagCardArray: ['>', '>=', '<', '<=', '=', '<>'] });
             result = '>';
+        }
+        if (inputs.nameRender === 'renderSetStateAction' && tagCard === '') {
+            this.setState({ tagCard: 'control', tagCardArray: ['control', 'update', 'control1', 'control2', 'control3', 'control4', 'control5'] });
+            result = 'control';
         }
         if (tagCardArray.length > 3) {
             result = <div>
@@ -585,21 +888,36 @@ class GenericInputBlock extends PureComponent {
             this.setState({ tagCard: tagCardArray[tagCardArray.indexOf(tagCard) + 1] });
         }
     }
-
+    componentDidMount = async () => {
+        await this.tagGenerateNew();
+        await this.tagGenerate();
+    }
     render = () => {
-        const { inputs } = this.state;
-        const { GenericInputBlockMethod } = this.context.state;
-        console.log('render');
+        const { inputs, tagCard, name, icon } = this.state;
+        // const { GenericInputBlockMethod } = this.context.state;
+        // console.log('render', inputs, name, icon);
         return <Fragment>
-            {GenericInputBlockMethod[inputs.nameRender] ?
-                GenericInputBlockMethod[inputs.nameRender](inputs.default, () => { }, inputs.options || []) :
-                null}
-            {this[inputs.nameRender] ?
-                this[inputs.nameRender](inputs.default, () => { }, inputs.options || []) :
-                null}
+            <MaterialDynamicIcon iconName={icon} className={cls.iconThemCard} />
+            <div className={cls.blockName}>
+                <span className={cls.nameCard}>
+                    {name && name.en}
+                </span>
+                {/* {GenericInputBlockMethod[inputs.nameRender] ?
+                    GenericInputBlockMethod[inputs.nameRender](inputs.default, () => { }, inputs.options || []) :
+                    null} */}
+                {this[inputs.nameRender] ?
+                    this[inputs.nameRender](inputs.default, () => { }, inputs.options || []) :
+                    null}
+            </div>
+            {tagCard && <div className={cls.controlMenuTop} style={{ opacity: 1, height: 22, top: -22 }}>
+                <div onClick={async e => {
+                    await this.tagGenerateNew();
+                    await this.tagGenerate();
+                }} className={cls.tagCard} >{this.tagGenerate()}</div>
+            </div>}
         </Fragment>
     }
 };
 
-GenericInputBlock.contextType = ContextWrapperCreate;
-export default GenericInputBlock;
+GenericBlocks.contextType = ContextWrapperCreate;
+export default GenericBlocks;

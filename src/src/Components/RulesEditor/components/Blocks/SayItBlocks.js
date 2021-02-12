@@ -1,6 +1,6 @@
-import GenericInputBlock from '../GenericInputBlock';
+import GenericBlocks from '../GenericBlocks';
 
-class SayItBlocks extends GenericInputBlock {
+class SayItBlocks extends GenericBlocks {
     constructor(props) {
         super(props, {
             name: 'Action2222',
@@ -15,19 +15,19 @@ class SayItBlocks extends GenericInputBlock {
             _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
             _type: 'action1',
             _name: { en: 'context add list', ru: 'Действие' },
-            _inputs: [{ 
+            _inputs: { 
                 nameRender: 'renderTextContext', 
                 name: { en: 'Object ID' }, 
                 attr: 'objectID', 
                 type: 'oid', 
                 default: '', 
                 icon: '' 
-            }],
+            },
         });        
     }
 
     onSettingsUpdate(settings) {
-        
+
 
     }
 

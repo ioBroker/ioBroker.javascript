@@ -107,6 +107,86 @@ const StandardBlocks = [
         _name: { en: 'Action', ru: 'Действие' },
         _inputs:
             { nameRender: 'renderText', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
+    },
+    {
+        name: 'Action2',
+        typeBlock: 'then',
+        icon: 'PlayForWork',
+
+        // acceptedOn: ['then', 'else'],
+        type: 'action',
+        compile: (config, context) => `setState('id', obj.val);`,
+        getConfig: () => { },
+        setConfig: (config) => { },
+        _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
+        _type: 'action1',
+        _name: { en: 'Set state action', ru: 'Действие' },
+        _inputs:
+            { nameRender: 'renderSetStateAction', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
+    },
+    {
+        name: 'Action3',
+        typeBlock: 'then',
+        icon: 'Apps',
+
+        // acceptedOn: ['then', 'else'],
+        type: 'action',
+        compile: (config, context) => `setState('id', obj.val);`,
+        getConfig: () => { },
+        setConfig: (config) => { },
+        _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
+        _type: 'action1',
+        _name: { en: 'Exec', ru: 'Действие' },
+        _inputs:
+            { nameRender: 'renderExecAction', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
+    },
+    {
+        name: 'Action4',
+        typeBlock: 'then',
+        icon: 'Language',
+
+        // acceptedOn: ['then', 'else'],
+        type: 'action',
+        compile: (config, context) => `setState('id', obj.val);`,
+        getConfig: () => { },
+        setConfig: (config) => { },
+        _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
+        _type: 'action1',
+        _name: { en: 'HTTP Call', ru: 'Действие' },
+        _inputs:
+            { nameRender: 'renderHTTPCallAction', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
+    },
+    {
+        name: 'Action5',
+        typeBlock: 'then',
+        icon: 'Subject',
+
+        // acceptedOn: ['then', 'else'],
+        type: 'action',
+        compile: (config, context) => `setState('id', obj.val);`,
+        getConfig: () => { },
+        setConfig: (config) => { },
+        _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
+        _type: 'action1',
+        _name: { en: 'Print text', ru: 'Действие' },
+        _inputs:
+            { nameRender: 'renderPrintTextAction', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
+    },
+    {
+        name: 'Action6',
+        typeBlock: 'then',
+        icon: 'Pause',
+
+        // acceptedOn: ['then', 'else'],
+        type: 'action',
+        compile: (config, context) => `setState('id', obj.val);`,
+        getConfig: () => { },
+        setConfig: (config) => { },
+        _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
+        _type: 'action1',
+        _name: { en: 'Pause', ru: 'Действие' },
+        _inputs:
+            { nameRender: 'renderPauseAction', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
     }
 ];
 

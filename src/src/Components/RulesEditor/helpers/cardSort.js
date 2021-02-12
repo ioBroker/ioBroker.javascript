@@ -2,7 +2,7 @@ import _ from "lodash";
 
 const funcSet = _.throttle(
     (setCards, itemsSwitches) => setCards(itemsSwitches)
-    , 50);
+    , 0);
 
 const moveCard = (
     id,
