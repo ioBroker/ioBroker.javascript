@@ -26,20 +26,22 @@ import utils from '../../helpers/utils';
 class GenericBlock extends PureComponent {
     constructor(props, item) {
         super(props);
+        item = item || {};
 
         // console.log(props, item)
         this.state = {
-            inputs: props.inputs|| item.inputs,
-            name: props.name || item.name,
-            icon: props.icon || item.icon,
+            inputs: item.inputs || props.inputs,
+            name: item.name || props.name,
+            icon: item.icon || props.icon,
+
+            tagCardArray: item.tagCardArray || null,
+            tagCard: item.tagCardArray ? item.tagCardArray[0] || '' : '',
 
             showSelectId: false,
             openTagMenu: false,
             openModal: false,
             openCheckbox: false,
 
-            tagCardArray: [],
-            tagCard: '',
 
             textOptions: [],
             textDef: '',
@@ -94,7 +96,7 @@ class GenericBlock extends PureComponent {
             size="small"
             value={value}
             onChange={onChange}
-        />
+        />;
     }
 
     renderNumber = (input, value, onChange) => {
@@ -198,7 +200,7 @@ class GenericBlock extends PureComponent {
         const {tagCard, openModal, openCheckbox} = this.state;
         const {className} = this.props;
         switch (tagCard) {
-            case "Interval":
+            case 'Interval':
                 return <div key={input.attr}>
                     <div style={{display: 'flex', alignItems: 'center'}}><span style={{marginRight: 10}}>every</span>
                         <CustomInput
@@ -223,7 +225,7 @@ class GenericBlock extends PureComponent {
                     />
                 </div>;
 
-            case "CRON":
+            case 'CRON':
                 return <div key={input.attr}>
                     <div style={{display: 'flex', alignItems: 'center'}}><CustomInput
                         className={className}
@@ -254,7 +256,7 @@ class GenericBlock extends PureComponent {
                     every hour at 0 minutes
                 </div>;
 
-            case "Wizard":
+            case 'Wizard':
                 return <div key={input.attr}>
                     <div style={{display: 'flex', alignItems: 'center'}}><CustomInput
                         className={className}
@@ -289,7 +291,7 @@ class GenericBlock extends PureComponent {
                     every hour at 0 minutes
                 </div>;
 
-            case "at":
+            case 'at':
                 return <div key={input.attr}>
                     <div style={{display: 'flex', alignItems: 'center'}}>at <CustomTime style={{marginLeft: 5}}/></div>
                     <CustomSelect
@@ -303,7 +305,7 @@ class GenericBlock extends PureComponent {
                     />
                 </div>;
 
-            case "Astro":
+            case 'Astro':
                 const sunValue = SunCalc.getTimes(new Date(), 51.5, -0.1);
                 return <div key={input.attr}>
                     <div style={{display: 'flex', alignItems: 'center'}}>at<CustomSelect
@@ -936,26 +938,30 @@ class GenericBlock extends PureComponent {
 
     /////////////////////////////
     tagGenerate = () => {
-        const {inputs, tagCard, tagCardArray, openTagMenu} = this.state;
+        let {inputs, tagCard, tagCardArray, openTagMenu} = this.state;
         let result;
-        if (inputs.nameRender === 'renderTimeOfDay' && tagCard === '') {
-            this.setState({tagCard: 'CRON', tagCardArray: ['CRON', 'Wizard', 'Interval', 'at', 'Astro']});
-            result = 'CRON';
-        } else if (inputs.nameRender === 'renderState' && tagCard === '') {
-            this.setState({tagCard: 'on update', tagCardArray: ['on update', 'on change']});
-            result = 'on update';
-        } else if (inputs.nameRender === 'renderStateCondition' && tagCard === '') {
-            this.setState({tagCard: '>', tagCardArray: ['>', '>=', '<', '<=', '=', '<>', '...']});
-            result = '>';
-        } else if ((inputs.nameRender === 'renderTimeCondition' || inputs.nameRender === 'renderAstrologicalCondition') && tagCard === '') {
-            this.setState({tagCard: '>', tagCardArray: ['>', '>=', '<', '<=', '=', '<>']});
-            result = '>';
-        } else if (inputs.nameRender === 'renderSetStateAction' && tagCard === '') {
-            this.setState({
-                tagCard: 'control',
-                tagCardArray: ['control', 'update', 'control1', 'control2', 'control3', 'control4', 'control5']
-            });
-            result = 'control';
+        if (!tagCardArray) {
+
+            if (inputs.nameRender === 'renderTimeOfDay' && tagCard === '') {
+                tagCardArray = ['CRON', 'Wizard', 'Interval', 'at', 'Astro'];
+            } else if (inputs.nameRender === 'renderState' && tagCard === '') {
+                tagCardArray = ['on update', 'on change'];
+            } else if (inputs.nameRender === 'renderStateCondition' && tagCard === '') {
+                this.setState({tagCard: '>', tagCardArray: ['>', '>=', '<', '<=', '=', '<>', '...']});
+                result = '>';
+            } else if ((inputs.nameRender === 'renderTimeCondition' || inputs.nameRender === 'renderAstrologicalCondition') && tagCard === '') {
+                tagCardArray = ['>', '>=', '<', '<=', '=', '<>'];
+            } else if (inputs.nameRender === 'renderSetStateAction' && tagCard === '') {
+                tagCardArray = ['control', 'update'];
+            } else {
+                tagCardArray = [];
+            }
+
+            tagCard = tagCardArray[0] || null;
+            this.setState({tagCard, tagCardArray});
+            result = tagCard;
+        } else {
+            result = this.state.tagCard;
         }
 
         if (tagCardArray.length > 3) {
@@ -969,13 +975,14 @@ class GenericBlock extends PureComponent {
                     open={Boolean(openTagMenu)}
                     onClose={() => this.setState({openTagMenu: null})}
                 >
-                    {tagCardArray.map(el => <MenuItem key={el} onClick={(e) => this.setState({
+                    {tagCardArray.map(el => <MenuItem key={el} onClick={e => this.setState({
                         openTagMenu: null,
                         tagCard: e.currentTarget.innerText
                     })}>{el}</MenuItem>)}
                 </Menu>
             </div>;
         }
+
         return result || tagCard;
     };
 
@@ -1012,8 +1019,8 @@ class GenericBlock extends PureComponent {
                     GenericInputBlockMethod[inputs.nameRender](inputs.default, () => { }, inputs.options || []) :
                     null} */}
                 {_inputs.filter(input => this[input.nameRender])
-                    .map(input =>
-                        this[input.nameRender](
+                    .map(input => {
+                        return this[input.nameRender](
                             input.attr,
                             this.state.settings[input.attr] === undefined ? input.default : this.state.settings[input.attr],
                             value => {
@@ -1022,8 +1029,8 @@ class GenericBlock extends PureComponent {
                                 this.setState({settings});
                             },
                             input.options || []
-                        )
-                    )}
+                        );
+                    })}
             </div>
             {tagCard && <div className={cls.controlMenuTop} style={{opacity: 1, height: 22, top: -22}}>
                 <div onClick={async e => {
