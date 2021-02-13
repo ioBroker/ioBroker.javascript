@@ -1,29 +1,29 @@
-import GenericBlocks from '../GenericBlocks'; // @iobroker/javascript-rules
+import GenericBlock from '../GenericBlock'; // @iobroker/javascript-rules
 
-class SayitBlock extends GenericBlocks {
+class SayitBlock extends GenericBlock {
     constructor(props) {
         super(props, {
-            name: 'Action2222',
             typeBlock: 'then',
             icon: 'BatteryChargingFull',
-        
+
             // acceptedOn: ['then', 'else'],
             type: 'action',
             compile: (config, context) => `setState('id', obj.val);`,
             getConfig: () => { },
             setConfig: (config) => { },
-            _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
-            _type: 'action1',
-            _name: { en: 'context add list', ru: 'Действие' },
-            _inputs: { 
-                nameRender: 'renderTextContext', 
-                name: { en: 'Object ID' }, 
-                attr: 'objectID', 
-                type: 'oid', 
-                default: '', 
-                icon: '' 
-            },
-        });        
+            acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
+            name: { en: 'context add list', ru: 'Действие' },
+            inputs: [
+                {
+                    nameRender: 'renderTextContext',
+                    name: { en: 'Object ID' },
+                    attr: 'objectID',
+                    type: 'oid',
+                    default: '',
+                    icon: ''
+                }
+            ],
+        });
     }
 
     onSettingsUpdate(settings) {
@@ -49,9 +49,9 @@ export default SayitBlocks;
     compile: (config, context) => `setState('id', obj.val);`,
     getConfig: () => { },
     setConfig: (config) => { },
-    _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
+    acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
     _type: 'action1',
-    _name: { en: 'context add list', ru: 'Действие' },
-    _inputs:
+    name: { en: 'context add list', ru: 'Действие' },
+    inputs:
         { nameRender: 'renderTextContext', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
 }*/

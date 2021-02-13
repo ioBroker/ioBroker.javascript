@@ -1,18 +1,22 @@
 import React, {
     createContext,
-    // useEffect, 
+    // useEffect,
     useState
-} from "react"
-import StandardBlocks from "../StandardBlocks";
+} from 'react';
+import StandardBlocks from '../StandardBlocks';
+import TriggerSchedule from '../Blocks/TriggerSchedule';
 
 export const ContextWrapperCreate = createContext();
 
 export const ContextWrapper = ({ children, socket }) => {
-    const [state, setState] = useState({ blocks: StandardBlocks, GenericInputBlockMethod: {} });
+    const [state, setState] = useState({
+        blocks: [TriggerSchedule, ...StandardBlocks],
+        GenericInputBlockMethod: {}
+    });
 
     // useEffect(() => {
     //     setState({
-    //         blocks: [...state.blocks, 
+    //         blocks: [...state.blocks,
     //             {
     //                 name: 'Action2222',
     //                 typeBlock: 'then',
@@ -23,10 +27,10 @@ export const ContextWrapper = ({ children, socket }) => {
     //                 compile: (config, context) => `setState('id', obj.val);`,
     //                 getConfig: () => { },
     //                 setConfig: (config) => { },
-    //                 _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
+    //                 acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
     //                 _type: 'action1',
-    //                 _name: { en: 'context add list', ru: 'Действие' },
-    //                 _inputs:
+    //                 name: { en: 'context add list', ru: 'Действие' },
+    //                 inputs:
     //                     { nameRender: 'renderTextContext', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
     //             }
     //         ],

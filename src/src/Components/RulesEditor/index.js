@@ -13,132 +13,48 @@ import HamburgerMenu from './components/HamburgerMenu';
 import { useStateLocal } from './hooks/useStateLocal';
 import { AppBar, Tab, Tabs } from '@material-ui/core';
 import { ContextWrapperCreate } from './components/ContextWrapper';
+import Compile from './Compile';
 // import PropTypes from 'prop-types';
-
-
-// eslint-disable-next-line no-unused-vars
-const DEFAULT_RULE = {
-    triggers: [],
-    conditions: [[]],
-    actions: {
-        then: [],
-        'else': []
-    }
-};
-
-function compileTriggers(json, context, blocks) {
-    const triggers = [];
-    json.triggers.forEach(trigger => {
-        const found = findBlock(trigger.id, blocks);
-        if (found) {
-            const text = found.compile(trigger, context);
-            const conditions = compileConditions(json.conditions, context, blocks);
-            const then = compileActions(json.actions.then, context, blocks);
-            const _else = compileActions(json.actions.else, context, blocks);
-            triggers.push(
-                text
-                    .replace('__%%CONDITION%%__', conditions)
-                    .replace('__%%THEN%%__', then || '// ignore')
-                    .replace('__%%ELSE%%__', _else || '// ignore')
-            );
-        }
-    });
-
-    return triggers.join('\n\n');
-}
-function findBlock(type, blocks) {
-    return blocks.find(block => block.name === type);
-}
-
-function compileActions(actions, context, blocks) {
-    let result = [];
-    actions && actions.forEach(action => {
-        const found = findBlock(action.id, blocks);
-        if (found) {
-            result.push(found.compile(action, context));
-        }
-    });
-    return `\t\t${result.join('\t\t\n')}` || '';
-}
-
-function compileConditions(conditions, context, blocks) {
-    let result = [];
-    conditions && conditions.forEach(ors => {
-        if (ors.hasOwnProperty('length')) {
-            const _ors = [];
-            _ors && ors.forEach(block => {
-                const found = findBlock(block.id, blocks);
-                if (found) {
-                    _ors.push(found.compile(block, context));
-                }
-            });
-            result.push(_ors.join(' || '));
-        } else {
-            const found = findBlock(ors.id, blocks);
-            if (found) {
-                result.push(found.compile(ors, context));
-            }
-        }
-
-    });
-    return (result.join(') && (') || 'true');
-}
-
-function compile(json, blocks) {
-    return compileTriggers(json, null, blocks);
-}
-
-// eslint-disable-next-line no-unused-vars
-function code2json(code) {
-    if (!code) {
-        return DEFAULT_RULE;
-    } else {
-        const lines = code.split('\n');
-        try {
-            let json = lines.pop().replace(/^\/\//, '');
-            json = JSON.parse(json);
-            if (!json.triggers) {
-                json = DEFAULT_RULE;
-            }
-            return json;
-        } catch (e) {
-            return DEFAULT_RULE;
-        }
-    }
-}
-
-// eslint-disable-next-line no-unused-vars
-function json2code(json, blocks) {
-    let code = `const demo = ${JSON.stringify(json, null, 2)};\n`;
-
-    const compiled = compile(json, blocks);
-    code += compiled;
-
-    return code + '\n//' + JSON.stringify(json);
-}
 
 const RulesEditor = props => {
     // eslint-disable-next-line no-unused-vars
     const { state: { blocks } } = useContext(ContextWrapperCreate);
-    const [switches, setSwitches] = useState([]);
+    const [allBlocks, setAllBlocks] = useState([]);
     const [hamburgerOnOff, setHamburgerOnOff] = useStateLocal(false, 'hamburgerOnOff');
-    const [itemsSwitches, setItemsSwitches] = useState(code2json(props.code)); //useStateLocal(DEFAULT_RULE, 'itemsSwitches');
+    const [userRules, setUserRules] = useState(Compile.code2json(props.code)); //useStateLocal(DEFAULT_RULE, 'userRules');
     const [filter, setFilter] = useStateLocal({
         text: '',
         type: 'trigger',
         index: 0
     }, 'filterControlPanel');
 
-    const setSwitchesFunc = (text = filter.text, typeFunc = filter.type) => {
-        let newAllSwitches = [...blocks];
-        newAllSwitches = newAllSwitches.filter(({ type, _name }) => _name.en.toLowerCase().indexOf(text.toLowerCase()) + 1);
-        newAllSwitches = newAllSwitches.filter(({ type, _name }) => typeFunc === type);
-        console.log(newAllSwitches);
-        setSwitches(newAllSwitches);
+    const setBlocksFunc = (text = filter.text, typeFunc = filter.type) => {
+        let newAllBlocks = [...blocks];
+        newAllBlocks = newAllBlocks.filter(el => {
+            if (!text) {
+                return true;
+            }
+            if (el.getStaticData) {
+                const {name} = el.getStaticData();
+                return name && name.en.toLowerCase().includes(text.toLowerCase());
+            } else {
+                return el.name && el.name.en.toLowerCase().includes(text.toLowerCase());
+            }
+        });
+        newAllBlocks = newAllBlocks.filter(el => {
+            if (el.getStaticData) {
+                return typeFunc === el.getStaticData().type;
+            } else {
+                return typeFunc === el.type;
+            }
+        });
+
+        console.log(newAllBlocks);
+        setAllBlocks(newAllBlocks);
     };
 
     useEffect(() => {
-        setSwitchesFunc();
+        setBlocksFunc();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -153,11 +69,15 @@ const RulesEditor = props => {
             index: newValue,
             type: ['trigger', 'condition', 'action'][newValue]
         });
-        setSwitchesFunc(filter.text, ['trigger', 'condition', 'action'][newValue]);
+        setBlocksFunc(filter.text, ['trigger', 'condition', 'action'][newValue]);
     };
 
+    if (!allBlocks.length) {
+        return null;
+    }
+
     return <div className={cls.wrapperRules}>
-        <CustomDragLayer />
+        <CustomDragLayer allBlocks={allBlocks}/>
         <div className={`${cls.hamburgerWrapper} ${hamburgerOnOff ? cls.hamburgerOff : null}`}
             onClick={() => setHamburgerOnOff(!hamburgerOnOff)}><HamburgerMenu boolean={!hamburgerOnOff} /></div>
         <div className={`${cls.menuRules} ${hamburgerOnOff ? cls.menuOff : null}`}>
@@ -171,7 +91,7 @@ const RulesEditor = props => {
                 variant="outlined"
                 onChange={(value) => {
                     setFilter({ ...filter, text: value });
-                    setSwitchesFunc(value);
+                    setBlocksFunc(value);
                 }}
             />
             <div className={cls.menuTitle}>
@@ -193,32 +113,51 @@ const RulesEditor = props => {
                 </AppBar>
             </div>
             <div className={cls.menuTitle}>
-                Switches
-                </div>
+                Blocks
+            </div>
             <div className={cls.switchesRenderWrapper}>
                 <span>
-                    {switches.map(el =>
-                        <Fragment key={el._name.en}>
-                            <CustomDragItem
-                                {...el}
-                                itemsSwitches={itemsSwitches}
-                                setItemsSwitches={json => {
-                                    setItemsSwitches(json);
-                                    props.onChange(json2code(json, blocks));
-                                }}
-                                isActive={false}
-                                id={el.name}
-                                allProperties={el}
-                            />
-                        </Fragment>)}
-                    {switches.length === 0 && <div className={cls.nothingFound}>
+                    {allBlocks.map(el => {
+                        if (el.getStaticData) {
+                            const staticData = el.getStaticData();
+                            return <Fragment key={staticData.id}>
+                                <CustomDragItem
+                                    allProperties={{object: el}}
+                                    name={staticData.name}
+                                    icon={staticData.icon}
+                                    userRules={userRules}
+                                    setUserRules={json => {
+                                        setUserRules(json);
+                                        props.onChange(Compile.json2code(json, blocks));
+                                    }}
+                                    isActive={false}
+                                    id={staticData.id}
+                                />
+                            </Fragment>;
+                        } else {
+                            return <Fragment key={el.name.en}>
+                                <CustomDragItem
+                                    {...el}
+                                    userRules={userRules}
+                                    setUserRules={json => {
+                                        setUserRules(json);
+                                        props.onChange(Compile.json2code(json, blocks));
+                                    }}
+                                    isActive={false}
+                                    id={el.name}
+                                    allProperties={el}
+                                />
+                            </Fragment>;
+                        }
+                    })}
+                    {allBlocks.length === 0 && <div className={cls.nothingFound}>
                         Nothing found...
                             <div className={cls.resetSearch} onClick={() => {
                             setFilter({
                                 ...filter,
                                 text: ''
                             });
-                            setSwitchesFunc('');
+                            setBlocksFunc('');
                         }}>reset search</div>
                     </div>}
                 </span>
@@ -226,22 +165,24 @@ const RulesEditor = props => {
         </div>
 
         <ContentBlockItems
-            setItemsSwitches={json => {
-                // const _itemsSwitches = JSON.parse(JSON.stringify(itemsSwitches));
+            allBlocks={allBlocks}
+            setUserRules={json => {
+                // const _itemsSwitches = JSON.parse(JSON.stringify(userRules));
                 // _itemsSwitches.triggers = json;
-                setItemsSwitches(json);
-                props.onChange(json2code(json, blocks));
+                setUserRules(json);
+                props.onChange(Compile.json2code(json, blocks));
             }}
-            itemsSwitches={itemsSwitches}
+            userRules={userRules}
             name="when..."
             typeBlock="triggers"
         />
         <ContentBlockItems
-            setItemsSwitches={json => {
-                setItemsSwitches(json);
-                props.onChange(json2code(json, blocks));
+            allBlocks={allBlocks}
+            setUserRules={json => {
+                setUserRules(json);
+                props.onChange(Compile.json2code(json, blocks));
             }}
-            itemsSwitches={itemsSwitches}
+            userRules={userRules}
             name="...and..."
             typeBlock="conditions"
             nameAdditionally="or"
@@ -249,11 +190,12 @@ const RulesEditor = props => {
             border
         />
         <ContentBlockItems
-            setItemsSwitches={json => {
-                setItemsSwitches(json);
-                props.onChange(json2code(json, blocks));
+            allBlocks={allBlocks}
+            setUserRules={json => {
+                setUserRules(json);
+                props.onChange(Compile.json2code(json, blocks));
             }}
-            itemsSwitches={itemsSwitches}
+            userRules={userRules}
             name="...then"
             typeBlock="actions"
             nameAdditionally="else"

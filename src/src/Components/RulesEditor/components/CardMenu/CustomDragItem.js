@@ -4,7 +4,9 @@ import DragWrapper from '../DragWrapper';
 
 const CustomDragItem = (props) => {
     const { allProperties } = props;
-    return <DragWrapper {...props} {...allProperties}><CardMenu {...props} {...allProperties} /></DragWrapper>;
+    return <DragWrapper {...props} {...allProperties}>
+        <CardMenu {...props} {...allProperties} />
+    </DragWrapper>;
 }
 
 export default CustomDragItem;

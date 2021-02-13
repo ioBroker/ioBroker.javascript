@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 import cls from './style.module.scss';
 import { deepCopy } from '../../helpers/deepCopy';
 import { filterElement } from '../../helpers/filterElement';
-import GenericBlocks from '../GenericBlocks';
+import GenericBlock from '../GenericBlock';
 // import SayItBlocks from '../Blocks/SayItBlocks';
 
 
 // @iobroker/javascript-block
 
 const CurrentItem = memo(props => {
-    const { setItemsSwitches, itemsSwitches, _id, _acceptedBy, blockValue, _inputs, active } = props;
+    const { setUserRules, userRules, _id, id, acceptedBy, blockValue, inputs, active, object, allBlocks } = props;
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handlePopoverOpen = event =>
@@ -19,8 +19,29 @@ const CurrentItem = memo(props => {
     const handlePopoverClose = () =>
         setAnchorEl(null);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const blockInput = useMemo(() => <GenericBlocks {...props} className={null} />, [_inputs])
+    const blockInput = useMemo(() => {
+        let _object = object;
+        if (!_object) {
+            _object = allBlocks.find(item => {
+                if (item.getStaticData) {
+                    const staticData = item.getStaticData();
+                    if (staticData.id === id) {
+                        return true;
+                    }
+                } else {
+                    return item.id === id;
+                }
+            });
+        }
+
+        if (_object) {
+            const CustomBlock = _object;
+            return <CustomBlock {...props} className={null}/>;
+        } else {
+            return <GenericBlock {...props} className={null}/>;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [inputs]);
 
     return <div
         onMouseMove={handlePopoverOpen}
@@ -28,12 +49,11 @@ const CurrentItem = memo(props => {
         onMouseLeave={handlePopoverClose}
         className={`${cls.cardStyle} ${active ? cls.cardStyleActive : null}`}>
         {blockInput}
-        {/* <SayItBlocks/> */}
-        {setItemsSwitches && <div className={cls.controlMenu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
+        {setUserRules && <div className={cls.controlMenu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
             <div onClick={e => {
-                let newItemsSwitches = deepCopy(_acceptedBy, itemsSwitches, blockValue);
-                newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, blockValue, _id);
-                return setItemsSwitches(newItemsSwitches);
+                let newItemsSwitches = deepCopy(acceptedBy, userRules, blockValue);
+                newItemsSwitches = filterElement(acceptedBy, newItemsSwitches, blockValue, _id);
+                return setUserRules(newItemsSwitches);
             }} className={cls.closeBtn} />
         </div>}
     </div>;
@@ -44,7 +64,7 @@ CurrentItem.defaultProps = {
 };
 
 CurrentItem.propTypes = {
-    name: PropTypes.string
+    name: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
 };
 
 export default CurrentItem;

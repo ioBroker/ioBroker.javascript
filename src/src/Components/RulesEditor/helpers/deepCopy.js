@@ -1,18 +1,19 @@
-export function deepCopy(name, itemsSwitches, additionalParameter) {
+export function deepCopy(name, userRules, additionalParameter) {
     let newItemsSwitches;
     switch (name) {
         case 'actions':
             newItemsSwitches = {
-                ...itemsSwitches, [name]: {
-                    ...itemsSwitches[name], [additionalParameter]:
-                        [...itemsSwitches[name][additionalParameter]]
+                ...userRules, [name]: {
+                    ...userRules[name], [additionalParameter]:
+                        [...userRules[name][additionalParameter]]
                 }
             }
             return newItemsSwitches;
+
         default:
             newItemsSwitches = {
-                ...itemsSwitches, [name]: [
-                    ...itemsSwitches[name]
+                ...userRules, [name]: [
+                    ...userRules[name]
                 ]
             }
             return newItemsSwitches;

@@ -7,43 +7,51 @@ import { deepCopy } from '../../helpers/deepCopy';
 import { filterElement } from '../../helpers/filterElement';
 import { findCard, moveCard } from '../../helpers/cardSort';
 
-const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setItemsSwitches, itemsSwitches, children, _id, blockValue }) => {
+const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, userRules, children, _id, blockValue }) => {
     const [{ opacity }, drag, preview] = useDrag({
         item: { ...allProperties, type: 'box', id, isActive, _id },
         end: (item, monitor) => {
-            const { _acceptedBy } = item;
+            let { acceptedBy, object } = item;
+            if (object) {
+                acceptedBy = object.getStaticData().acceptedBy;
+            }
+
             let dropResult = monitor.getDropResult();
-            let newItemsSwitches;
+            let newUserRules;
             if (!dropResult) {
                 if (typeof _id === 'number' && !monitor.getTargetIds().length) {
-                    newItemsSwitches = deepCopy(_acceptedBy, itemsSwitches, blockValue);
-                    newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, blockValue, _id);
-                    setItemsSwitches(newItemsSwitches);
+                    newUserRules = deepCopy(acceptedBy, userRules, blockValue);
+                    newUserRules = filterElement(acceptedBy, newUserRules, blockValue, _id);
+                    setUserRules(newUserRules);
                 }
                 return null;
             }
             if (dropResult.blockValue !== blockValue) {
                 let idNumber = typeof _id === 'number' ? _id : Date.now();
-                newItemsSwitches = deepCopy(_acceptedBy, itemsSwitches, dropResult.blockValue);
-                switch (_acceptedBy) {
+
+                newUserRules = deepCopy(acceptedBy, userRules, dropResult.blockValue);
+
+                switch (acceptedBy) {
                     case 'actions':
                         if (blockValue) {
-                            newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, blockValue, _id);
+                            newUserRules = filterElement(acceptedBy, newUserRules, blockValue, _id);
                         }
-                        newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, dropResult.blockValue, _id);
-                        newItemsSwitches[_acceptedBy][dropResult.blockValue].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
-                        return setItemsSwitches(newItemsSwitches);
+                        newUserRules = filterElement(acceptedBy, newUserRules, dropResult.blockValue, _id);
+                        newUserRules[acceptedBy][dropResult.blockValue].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
+                        return setUserRules(newUserRules);
+
                     case 'conditions':
                         if (typeof blockValue === 'number') {
-                            newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, blockValue, _id);
-                        };
-                        newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, dropResult.blockValue, _id);
-                        newItemsSwitches[_acceptedBy][dropResult.blockValue].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
-                        return setItemsSwitches(newItemsSwitches);
+                            newUserRules = filterElement(acceptedBy, newUserRules, blockValue, _id);
+                        }
+                        newUserRules = filterElement(acceptedBy, newUserRules, dropResult.blockValue, _id);
+                        newUserRules[acceptedBy][dropResult.blockValue].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
+                        return setUserRules(newUserRules);
+
                     default:
-                        newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, dropResult.blockValue, _id);
-                        newItemsSwitches[_acceptedBy].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
-                        return setItemsSwitches(newItemsSwitches);
+                        newUserRules = filterElement(acceptedBy, newUserRules, dropResult.blockValue, _id);
+                        newUserRules[acceptedBy].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
+                        return setUserRules(newUserRules);
                 }
             }
         },
@@ -56,12 +64,12 @@ const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setItemsSwitches
     const [, drop] = useDrop({
         accept: 'box',
         canDrop: () => false,
-        hover({ _id: draggedId, _acceptedBy }, monitor) {
+        hover({ _id: draggedId, acceptedBy }, monitor) {
             if (!ref.current) {
                 return;
             }
-            // console.log(typeBlocks,_acceptedBy)
-            if (typeBlocks !== _acceptedBy) {
+            // console.log(typeBlocks,acceptedBy)
+            if (typeBlocks !== acceptedBy) {
                 return
             }
             // console.log(monitor, monitor.getHandlerId(), blockValue)
@@ -72,17 +80,17 @@ const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setItemsSwitches
             const hoverClientY = clientOffset.y - hoverBoundingRect.top;
 
             if (!!_id && draggedId !== _id) {
-                switch (_acceptedBy) {
+                switch (acceptedBy) {
                     case 'actions':
                         if (blockValue === 'then' || blockValue === 'else') {
-                            const { index: overIndexActions } = findCard(_id, itemsSwitches[_acceptedBy][blockValue]);
+                            const { index: overIndexActions } = findCard(_id, userRules[acceptedBy][blockValue]);
                             if (overIndexActions !== draggedId) {
                                 moveCard(draggedId,
                                     overIndexActions,
-                                    itemsSwitches[_acceptedBy][blockValue],
-                                    setItemsSwitches,
-                                    itemsSwitches,
-                                    _acceptedBy,
+                                    userRules[acceptedBy][blockValue],
+                                    setUserRules,
+                                    userRules,
+                                    acceptedBy,
                                     blockValue,
                                     hoverClientY,
                                     hoverMiddleY);
@@ -91,14 +99,14 @@ const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setItemsSwitches
                         return;
                     case 'conditions':
                         if (typeof blockValue === 'number') {
-                            const { index: overIndexConditions } = findCard(_id, itemsSwitches[_acceptedBy][blockValue]);
+                            const { index: overIndexConditions } = findCard(_id, userRules[acceptedBy][blockValue]);
                             if (overIndexConditions !== draggedId) {
                                 moveCard(draggedId,
                                     overIndexConditions,
-                                    itemsSwitches[_acceptedBy][blockValue],
-                                    setItemsSwitches,
-                                    itemsSwitches,
-                                    _acceptedBy,
+                                    userRules[acceptedBy][blockValue],
+                                    setUserRules,
+                                    userRules,
+                                    acceptedBy,
                                     blockValue,
                                     hoverClientY,
                                     hoverMiddleY);
@@ -106,14 +114,14 @@ const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setItemsSwitches
                         }
                         return;
                     default:
-                        const { index: overIndex } = findCard(_id, itemsSwitches[_acceptedBy]);
+                        const { index: overIndex } = findCard(_id, userRules[acceptedBy]);
                         if (overIndex !== draggedId) {
                             moveCard(draggedId,
                                 overIndex,
-                                itemsSwitches[_acceptedBy],
-                                setItemsSwitches,
-                                itemsSwitches,
-                                _acceptedBy,
+                                userRules[acceptedBy],
+                                setUserRules,
+                                userRules,
+                                acceptedBy,
                                 null,
                                 hoverClientY,
                                 hoverMiddleY);
@@ -127,7 +135,9 @@ const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setItemsSwitches
         preview(getEmptyImage(), { captureDraggingState: true });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    drag(drop(ref))
+
+    drag(drop(ref));
+
     return <div ref={ref} style={{ opacity, }}>{children}</div>;
 }
 
@@ -139,7 +149,7 @@ DragWrapper.defaultProps = {
 };
 
 DragWrapper.propTypes = {
-    name: PropTypes.string
+    name: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 };
 
 export default DragWrapper;

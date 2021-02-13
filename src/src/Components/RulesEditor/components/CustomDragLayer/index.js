@@ -48,7 +48,7 @@ export const CustomDragLayer = props => {
         initialOffset,
         currentOffset,
         targetIds
-    } = useDragLayer((monitor) => ({
+    } = useDragLayer(monitor => ({
         item: monitor.getItem(),
         itemType: monitor.getItemType(),
         initialOffset: monitor.getInitialSourceClientOffset(),
@@ -56,18 +56,21 @@ export const CustomDragLayer = props => {
         isDragging: monitor.isDragging(),
         targetIds: monitor.getTargetIds()
     }));
+
     const renderItem = () => {
         switch (itemType) {
             case 'box':
-                return targetIds.length ? <CurrentItem active {...item} /> :
+                return targetIds.length ? <CurrentItem active {...item} allBlocks={props.allBlocks}/> :
                     <CardMenu active {...item} />;
             default:
                 return null;
         }
     }
+
     if (!isDragging) {
         return null;
     }
+
     return <div style={layerStyles}>
         <div style={getItemStyles(initialOffset, currentOffset)}>
             {renderItem()}

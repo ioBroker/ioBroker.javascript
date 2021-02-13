@@ -26,7 +26,6 @@ const TimeFieldMod = withStyles({
 })(TextField);
 
 const CustomTime = ({ table, value, title, attr, options, style, native, onChange, className }) => {
-
     return <TimeFieldMod
         id="time"
         // label="Alarm clock"
