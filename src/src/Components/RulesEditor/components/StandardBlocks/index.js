@@ -1,7 +1,7 @@
 import Compile from '../../Compile';
 
 const StandardBlocks = [
-    {
+    /*{
         typeBlock: 'when',
         icon: 'AccessTime',
         // acceptedOn: ['when'],
@@ -12,7 +12,7 @@ const StandardBlocks = [
         acceptedBy: 'triggers', // where it could be accepted: trigger, condition, action
         name: { en: 'Schedule', ru: 'Триггер' },
         inputs: { nameRender: 'renderTimeOfDay', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    }, {
+    },*/ {
         typeBlock: 'when',
         icon: 'PlayArrow',
         // acceptedOn: ['when'],

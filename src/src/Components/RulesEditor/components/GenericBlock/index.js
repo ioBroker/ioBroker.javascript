@@ -6,7 +6,7 @@ import {Menu, MenuItem} from '@material-ui/core';
 
 import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import Utils from '@iobroker/adapter-react/Components/Utils';
-// import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 
 import CustomButton from '../CustomButton';
 import CustomCheckbox from '../CustomCheckbox';
@@ -14,10 +14,7 @@ import CustomInput from '../CustomInput';
 import CustomSlider from '../CustomSlider';
 import CustomSelect from '../CustomSelect';
 import CustomTime from '../CustomTime';
-//import {ContextWrapperCreate} from '../ContextWrapper';
-import ComplexCron from '../../../ComplexCron';
 import CustomModal from '../CustomModal';
-import Schedule from '../../../Schedule';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import CustomSwitch from '../CustomSwitch';
 import utils from '../../helpers/utils';
@@ -30,12 +27,11 @@ class GenericBlock extends PureComponent {
 
         // console.log(props, item)
         this.state = {
-            inputs: item.inputs || props.inputs,
-            name: item.name || props.name,
-            icon: item.icon || props.icon,
+            inputs: item.inputs || props.inputs || [],
+            name: item.name || props.name || '',
+            icon: item.icon || props.icon || '',
 
             tagCardArray: item.tagCardArray || null,
-            tagCard: item.tagCardArray ? item.tagCardArray[0] || '' : '',
 
             showSelectId: false,
             openTagMenu: false,
@@ -73,12 +69,14 @@ class GenericBlock extends PureComponent {
             instanceSelectionOptions: [],
             instanceSelectionDef: '',
 
-            settings: {}
+            settings: {
+                tagCard: item.tagCardArray ? item.tagCardArray[0] || '' : ''
+            }
         };
     }
 
     getConfig() {
-        return JSON.parse(JSON.stringify(this.state.settings));
+        return {...this.state.settings};
     }
 
     setConfig(settings) {
@@ -195,7 +193,7 @@ class GenericBlock extends PureComponent {
             onChange={onChange}
         />;
     }
-
+    /*
     renderTimeOfDay = (input, value, onChange) => {
         const {tagCard, openModal, openCheckbox} = this.state;
         const {className} = this.props;
@@ -355,13 +353,13 @@ class GenericBlock extends PureComponent {
             default:
                 return <CustomTime key={input.attr}/>;
         }
-    }
+    }*/
 
     renderState = (input, value, onChange) => {
-        const {showSelectId, tagCard} = this.state;
+        const {showSelectId} = this.state;
         const {className} = this.props;
         const {socket} = this.context;
-        switch (tagCard) {
+        switch (this.state.settings.tagCard) {
             case "on update":
                 return <div key={input.attr}>
                     <div style={{display: 'flex', alignItems: 'center'}}><CustomInput
@@ -398,6 +396,7 @@ class GenericBlock extends PureComponent {
                     /> : null}
                 </div>;
 
+            default:
             case "on change":
                 return <div key={input.attr}>
                     <div style={{display: 'flex', alignItems: 'center'}}><CustomInput
@@ -433,21 +432,33 @@ class GenericBlock extends PureComponent {
                         }}
                     /> : null}
                 </div>;
-
-            default:
-                return <CustomTime key={input.attr}/>;
-
         }
     }
 
     renderOnScript = (input, value, onChange) => {
         const {className} = this.props;
-        return <div key={input.attr} style={{display: 'flex', alignItems: 'center'}} className={className}>On script save or
-            adapter start</div>
+        return <div key={input.attr} style={{display: 'flex', alignItems: 'center'}} className={className}>
+            On script save or adapter start
+        </div>
     };
 
-    renderDate = (input) => {
+    renderDate = (input, value, onChange) => {
         return <CustomTime key={input.attr}/>
+    };
+
+    renderTime = (input, value, onChange) => {
+        return <CustomTime key={input.attr}/>
+    };
+
+    renderSelect = (input, value, onChange) => {
+        const {className} = this.props;
+        return <CustomSelect
+            title={input.name}
+            className={className}
+            options={input.options}
+            value={value}
+            onChange={onChange}
+        />;
     };
 
     renderInstanceSelection = (input, value, onChange, options) => {
@@ -463,7 +474,7 @@ class GenericBlock extends PureComponent {
     };
 
     renderStateCondition = (input, value, onChange) => {
-        const {showSelectId, tagCard, openCheckbox} = this.state;
+        const {showSelectId, openCheckbox} = this.state;
         const {className} = this.props;
         const {socket} = this.context;
         return <div key={input.attr} style={{display: 'flex'}}>
@@ -475,7 +486,7 @@ class GenericBlock extends PureComponent {
                 minWidth: 40,
                 marginBottom: 30
             }}>
-                {tagCard}
+                {this.state.settings.tagCard}
             </div>
             <div>
                 <div style={{display: 'flex', alignItems: 'center'}}><CustomCheckbox
@@ -544,7 +555,6 @@ class GenericBlock extends PureComponent {
     };
 
     renderTimeCondition = (input, value, onChange) => {
-        const {tagCard} = this.state;
         // const { className } = this.props;
         return <div key={input.attr} style={{display: 'flex'}}>
             <div style={{
@@ -555,7 +565,7 @@ class GenericBlock extends PureComponent {
                 minWidth: 40,
                 marginBottom: 30
             }}>
-                {tagCard}
+                {this.state.settings.tagCard}
             </div>
             <div>
                 <div>Actual time of day</div>
@@ -619,11 +629,11 @@ class GenericBlock extends PureComponent {
     };
 
     renderSetStateAction = (input, value, onChange) => {
-        const {showSelectId, tagCard} = this.state;
+        const {showSelectId} = this.state;
         const {className} = this.props;
         const {socket} = this.context;
         let additionallyBlock = null;
-        switch (tagCard) {
+        switch (this.state.settings.tagCard) {
             case 'control':
                 additionallyBlock = <div style={{display: 'flex', alignItems: 'center'}}>
                     with
@@ -938,36 +948,35 @@ class GenericBlock extends PureComponent {
 
     /////////////////////////////
     tagGenerate = () => {
-        let {inputs, tagCard, tagCardArray, openTagMenu} = this.state;
+        let {inputs, tagCardArray, openTagMenu} = this.state;
         let result;
         if (!tagCardArray) {
-
-            if (inputs.nameRender === 'renderTimeOfDay' && tagCard === '') {
+            if (inputs.nameRender === 'renderTimeOfDay') {
                 tagCardArray = ['CRON', 'Wizard', 'Interval', 'at', 'Astro'];
-            } else if (inputs.nameRender === 'renderState' && tagCard === '') {
+            } else if (inputs.nameRender === 'renderState') {
                 tagCardArray = ['on update', 'on change'];
-            } else if (inputs.nameRender === 'renderStateCondition' && tagCard === '') {
-                this.setState({tagCard: '>', tagCardArray: ['>', '>=', '<', '<=', '=', '<>', '...']});
-                result = '>';
-            } else if ((inputs.nameRender === 'renderTimeCondition' || inputs.nameRender === 'renderAstrologicalCondition') && tagCard === '') {
+            } else if (inputs.nameRender === 'renderStateCondition') {
+                tagCardArray = ['>', '>=', '<', '<=', '=', '<>', '...'];
+            } else if (inputs.nameRender === 'renderTimeCondition' || inputs.nameRender === 'renderAstrologicalCondition') {
                 tagCardArray = ['>', '>=', '<', '<=', '=', '<>'];
-            } else if (inputs.nameRender === 'renderSetStateAction' && tagCard === '') {
+            } else if (inputs.nameRender === 'renderSetStateAction') {
                 tagCardArray = ['control', 'update'];
             } else {
                 tagCardArray = [];
             }
 
-            tagCard = tagCardArray[0] || null;
-            this.setState({tagCard, tagCardArray});
-            result = tagCard;
+            const settings = {...this.state.settings};
+            settings.tagCard = tagCardArray[0] || null
+            this.setState({tagCardArray, settings});
+            result = settings.tagCard;
         } else {
-            result = this.state.tagCard;
+            result = this.state.settings.tagCard;
         }
 
         if (tagCardArray.length > 3) {
             result = <div>
                 <div aria-controls="simple-menu" aria-haspopup="true"
-                     onClick={(e) => this.setState({openTagMenu: e.currentTarget})}>{tagCard}</div>
+                     onClick={(e) => this.setState({openTagMenu: e.currentTarget})}>{result}</div>
                 <Menu
                     id="simple-menu"
                     anchorEl={openTagMenu}
@@ -975,35 +984,42 @@ class GenericBlock extends PureComponent {
                     open={Boolean(openTagMenu)}
                     onClose={() => this.setState({openTagMenu: null})}
                 >
-                    {tagCardArray.map(el => <MenuItem key={el} onClick={e => this.setState({
-                        openTagMenu: null,
-                        tagCard: e.currentTarget.innerText
-                    })}>{el}</MenuItem>)}
+                    {tagCardArray.map(el =>
+                        <MenuItem key={el}
+                            onClick={e => {
+                                const settings = {...this.state.settings, tagCard: el};
+                                this.setState({openTagMenu: null, settings}, this.onTagChange && this.onTagChange(el));
+                            }}>{I18n.t(el)}</MenuItem>)}
                 </Menu>
             </div>;
         }
 
-        return result || tagCard;
+        return result;
     };
 
     tagGenerateNew = () => {
-        const {tagCard, tagCardArray} = this.state;
-        if (tagCard && tagCardArray.length < 4) {
-            if (tagCardArray.indexOf(tagCard) === tagCardArray.length - 1) {
-                return this.setState({tagCard: tagCardArray[0]});
+        const {tagCardArray} = this.state;
+        if (this.state.settings.tagCard && tagCardArray.length < 4) {
+            const settings = {...this.state.settings};
+            if (tagCardArray.indexOf(this.state.settings.tagCard) === tagCardArray.length - 1) {
+                settings.tagCard = tagCardArray[0];
+                return this.setState({settings});
+            } else {
+                settings.tagCard = tagCardArray[tagCardArray.indexOf(this.state.settings.tagCard) + 1];
+                this.setState(settings);
             }
-            this.setState({tagCard: tagCardArray[tagCardArray.indexOf(tagCard) + 1]});
         }
     };
 
     componentDidMount = async () => {
+        this.onTagChange && this.onTagChange();
         await this.tagGenerateNew();
         await this.tagGenerate();
     };
 
     render = () => {
-        const {inputs, tagCard, name, icon} = this.state;
-        let _inputs = inputs;
+        const {inputs, name, icon} = this.state;
+        let _inputs = inputs || [];
         if (!Array.isArray(inputs)) {
             _inputs = [inputs];
         }
@@ -1021,18 +1037,18 @@ class GenericBlock extends PureComponent {
                 {_inputs.filter(input => this[input.nameRender])
                     .map(input => {
                         return this[input.nameRender](
-                            input.attr,
+                            input,
                             this.state.settings[input.attr] === undefined ? input.default : this.state.settings[input.attr],
-                            value => {
+                            (value, attr) => {
                                 const settings = JSON.parse(JSON.stringify(this.state.settings));
-                                settings[input.attr] = value;
+                                settings[attr || input.attr] = attr;
                                 this.setState({settings});
                             },
                             input.options || []
                         );
                     })}
             </div>
-            {tagCard && <div className={cls.controlMenuTop} style={{opacity: 1, height: 22, top: -22}}>
+            {this.state.settings.tagCard && <div className={cls.controlMenuTop} style={{opacity: 1, height: 22, top: -22}}>
                 <div onClick={async e => {
                     await this.tagGenerateNew();
                     await this.tagGenerate();

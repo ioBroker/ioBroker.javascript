@@ -31,8 +31,8 @@ const SelectMod = withStyles({
     },
 })(FormControl);
 
-const CustomSelect = ({ multiple, value, customValue, title, attr, options, style, native, onChange, className }) => {
-    const [inputText, setInputText] = useState(value || 'test1');
+const CustomSelect = ({ multiple, value, customValue, title, attr, options, style, onChange, className }) => {
+    const [inputText, setInputText] = useState(value || options[0].value);
 
     return <SelectMod
         className={className}
@@ -43,18 +43,17 @@ const CustomSelect = ({ multiple, value, customValue, title, attr, options, styl
             value={customValue ? value : inputText}
             fullWidth
             multiple={multiple}
-            renderValue={(selected) => multiple && selected.join ? selected.join(', ') : selected}
+            renderValue={selected => multiple && selected.join ? selected.join(', ') : selected}
             onChange={e => {
-                if (!customValue) setInputText(e.target.value);
+                !customValue && setInputText(e.target.value);
                 onChange(e.target.value);
-            }
-            }
+            }}
             input={<Input name={attr} id={attr + '-helper'} />}
         >
-            {!multiple && options.map(item => (<MenuItem style={{placeContent:'space-between'}} key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)}{item.title2 && <div>{item.title2}</div>}</MenuItem>))}
-            {multiple && options.map(item => (<MenuItem key={'key-' + item} value={item || '_'}>{I18n.t(item)} <Checkbox checked={inputText.indexOf(item) > -1} /></MenuItem>))}
+            {!multiple && options.map(item => <MenuItem style={{placeContent: 'space-between'}} key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)}{item.title2 && <div>{item.title2}</div>}</MenuItem>)}
+            { multiple && options.map(item => <MenuItem key={'key-' + item} value={item || '_'}>{I18n.t(item)} <Checkbox checked={inputText.includes(item)} /></MenuItem>)}
         </Select>
-        <FormHelperText>{I18n.t(title)}</FormHelperText>
+        {title ? <FormHelperText>{I18n.t(title)}</FormHelperText> : null}
     </SelectMod>;
 }
 

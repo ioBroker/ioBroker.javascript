@@ -4,8 +4,6 @@ import cls from './style.module.scss';
 import { deepCopy } from '../../helpers/deepCopy';
 import { filterElement } from '../../helpers/filterElement';
 import GenericBlock from '../GenericBlock';
-// import SayItBlocks from '../Blocks/SayItBlocks';
-
 
 // @iobroker/javascript-block
 
