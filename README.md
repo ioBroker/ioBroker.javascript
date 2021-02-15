@@ -38,6 +38,11 @@ And then call `npm run build`.
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) Add some additional checks for getSchedules
+* (Garfonso) make sure promisified methods reject with Error instead of string so that async errors can be catched correctly
+* (Huseriato) update some german blockly translations
+
 ### 4.10.15 (2021-01-31)
 * (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5W)
 
