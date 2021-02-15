@@ -1,193 +1,29 @@
-const STANDARD_FUNCTION = `async function (obj) {
-    if (__%%CONDITION%%__) {
-__%%THEN%%__
-    } else {
-__%%ELSE%%__
-    }
-}`
+import TriggerScriptSave from '../Blocks/TriggerScriptSave';
+import TriggerSchedule from '../Blocks/TriggerSchedule';
+import TriggerState from '../Blocks/TriggerState';
+import ConditionState from '../Blocks/ConditionState';
+import ConditionTime from '../Blocks/ConditionTime';
+import ConditionAstrological from '../Blocks/ConditionAstrological';
+import ActionText from '../Blocks/ActionText';
+import ActionSetState from '../Blocks/ActionSetState';
+import ActionExec from '../Blocks/ActionExec';
+import ActionHTTPCall from '../Blocks/ActionHTTPCall';
+import ActionPrintText from '../Blocks/ActionPrintText';
+import ActionPause from '../Blocks/ActionPause';
 
 const StandardBlocks = [
-    {
-        name: 'Trigger2',
-        typeBlock: 'when',
-        icon: 'AccessTime',
-        // acceptedOn: ['when'],
-        type: 'trigger',
-        compile: (config, context) => `schedule('* 1 * * *', ${STANDARD_FUNCTION});`,
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'triggers', // where it could be acceped: trigger, condition, action
-        _type: 'trigger1',
-        _name: { en: 'Schedule', ru: 'Триггер' },
-        _inputs: { nameRender: 'renderTimeOfDay', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    }, {
-        name: 'Trigger3',
-        typeBlock: 'when',
-        icon: 'PlayArrow',
-        // acceptedOn: ['when'],
-        type: 'trigger',
-        compile: (config, context) => `schedule('* 1 * * *', ${STANDARD_FUNCTION});`,
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'triggers', // where it could be acceped: trigger, condition, action
-        _type: 'trigger1',
-        _name: { en: 'Script save', ru: 'Триггер' },
-        _inputs:
-            { nameRender: 'renderOnScript', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    },
-    {
-        name: 'Trigger1',
-        typeBlock: 'when',
-        icon: 'FlashOn',
-        // acceptedOn: ['when'],
-        type: 'trigger',
-        compile: (config, context) => `schedule('* 1 * * *', ${STANDARD_FUNCTION});`,
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'triggers', // where it could be acceped: trigger, condition, action
-        _type: 'trigger1',
-        _name: { en: 'State', ru: 'Триггер' },
-        _inputs:
-            { nameRender: 'renderState', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    },
-    {
-        name: 'Condition1',
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'conditions', // where it could be acceped: trigger, condition, action
-        _type: 'condition1',
-        _name: { en: 'State condition', ru: 'Триггер' },
-        typeBlock: 'and',
-        icon: 'Shuffle',
-        type: 'condition',
-        compile: (config, context) => `obj.val === "1"`,
-        _inputs:
-            { nameRender: 'renderStateCondition', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    },
-    {
-        name: 'Condition2',
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'conditions', // where it could be acceped: trigger, condition, action
-        _type: 'condition1',
-        _name: { en: 'Time condition', ru: 'Триггер' },
-        typeBlock: 'and',
-        icon: 'Shuffle',
-        type: 'condition',
-        compile: (config, context) => `obj.val === "1"`,
-        _inputs:
-            { nameRender: 'renderTimeCondition', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    },
-    {
-        name: 'Condition3',
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'conditions', // where it could be acceped: trigger, condition, action
-        _type: 'condition1',
-        _name: { en: 'Astrological condition', ru: 'Триггер' },
-        typeBlock: 'and',
-        icon: 'Brightness3',
-        type: 'condition',
-        compile: (config, context) => `obj.val === "1"`,
-        _inputs:
-            { nameRender: 'renderAstrologicalCondition', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    },
-    {
-        name: 'Action1',
-        typeBlock: 'then',
-        icon: 'PlaylistPlay',
-
-        // acceptedOn: ['then', 'else'],
-        type: 'action',
-        compile: (config, context) => `setState('id', obj.val);`,
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
-        _type: 'action1',
-        _name: { en: 'Action', ru: 'Действие' },
-        _inputs:
-            { nameRender: 'renderText', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    },
-    {
-        name: 'Action2',
-        typeBlock: 'then',
-        icon: 'PlayForWork',
-
-        // acceptedOn: ['then', 'else'],
-        type: 'action',
-        compile: (config, context) => `setState('id', obj.val);`,
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
-        _type: 'action1',
-        _name: { en: 'Set state action', ru: 'Действие' },
-        _inputs:
-            { nameRender: 'renderSetStateAction', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    },
-    {
-        name: 'Action3',
-        typeBlock: 'then',
-        icon: 'Apps',
-
-        // acceptedOn: ['then', 'else'],
-        type: 'action',
-        compile: (config, context) => `setState('id', obj.val);`,
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
-        _type: 'action1',
-        _name: { en: 'Exec', ru: 'Действие' },
-        _inputs:
-            { nameRender: 'renderExecAction', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    },
-    {
-        name: 'Action4',
-        typeBlock: 'then',
-        icon: 'Language',
-
-        // acceptedOn: ['then', 'else'],
-        type: 'action',
-        compile: (config, context) => `setState('id', obj.val);`,
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
-        _type: 'action1',
-        _name: { en: 'HTTP Call', ru: 'Действие' },
-        _inputs:
-            { nameRender: 'renderHTTPCallAction', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    },
-    {
-        name: 'Action5',
-        typeBlock: 'then',
-        icon: 'Subject',
-
-        // acceptedOn: ['then', 'else'],
-        type: 'action',
-        compile: (config, context) => `setState('id', obj.val);`,
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
-        _type: 'action1',
-        _name: { en: 'Print text', ru: 'Действие' },
-        _inputs:
-            { nameRender: 'renderPrintTextAction', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    },
-    {
-        name: 'Action6',
-        typeBlock: 'then',
-        icon: 'Pause',
-
-        // acceptedOn: ['then', 'else'],
-        type: 'action',
-        compile: (config, context) => `setState('id', obj.val);`,
-        getConfig: () => { },
-        setConfig: (config) => { },
-        _acceptedBy: 'actions', // where it could be acceped: trigger, condition, action
-        _type: 'action1',
-        _name: { en: 'Pause', ru: 'Действие' },
-        _inputs:
-            { nameRender: 'renderPauseAction', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    }
+    TriggerSchedule,
+    TriggerScriptSave,
+    TriggerState,
+    ConditionState,
+    ConditionTime,
+    ConditionAstrological,
+    ActionText,
+    ActionSetState,
+    ActionExec,
+    ActionHTTPCall,
+    ActionPrintText,
+    ActionPause,
 ];
 
 export default StandardBlocks;

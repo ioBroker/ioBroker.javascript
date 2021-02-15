@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 const funcSet = _.throttle(
-    (setCards, itemsSwitches) => setCards(itemsSwitches)
+    (setCards, userRules) => setCards(userRules)
     , 0);
 
 const moveCard = (
@@ -9,8 +9,8 @@ const moveCard = (
     atIndex,
     cards,
     setCards,
-    itemsSwitches,
-    _acceptedBy,
+    userRules,
+    acceptedBy,
     additionally,
     hoverClientY,
     hoverMiddleY) => {
@@ -28,18 +28,18 @@ const moveCard = (
         const copyCard = _.clone(cards);
         copyCard.splice(index, 1);
         copyCard.splice(atIndex, 0, card);
-        const newTriggers = _.clone(itemsSwitches);
-        switch (_acceptedBy) {
+        const newTriggers = _.clone(userRules);
+        switch (acceptedBy) {
             case 'actions':
-                newTriggers[_acceptedBy][additionally] = copyCard;
+                newTriggers[acceptedBy][additionally] = copyCard;
                 funcSet(setCards, newTriggers);
                 return;
             case 'conditions':
-                newTriggers[_acceptedBy][additionally] = copyCard;
+                newTriggers[acceptedBy][additionally] = copyCard;
                 funcSet(setCards, newTriggers);
                 return;
             default:
-                newTriggers[_acceptedBy] = copyCard;
+                newTriggers[acceptedBy] = copyCard;
                 funcSet(setCards, newTriggers);
                 return;
         }
