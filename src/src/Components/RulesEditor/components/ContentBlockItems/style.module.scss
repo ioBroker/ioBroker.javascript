@@ -35,10 +35,15 @@ $colorFons: #81688c; //
     height: 100%;
     display: flex;
     // align-items: center;
-    justify-content: center;
+    // justify-content: center;
     flex-direction: column;
     overflow: auto;
     transition: height 0.3s, background 0.5s;
+}
+.wrapperMargin{
+    margin: auto 0;
+    display: flex;
+    flex-direction: column;
 }
 .contentHeightOff {
     height: 0;
