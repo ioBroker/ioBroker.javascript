@@ -24,7 +24,7 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
                 const staticData = el.getStaticData();
                 return staticData.id === item.id;
             }).getStaticData();
-            let acceptedBy = _object.acceptedBy;
+            let { acceptedBy } = _object;
             setCheckItem(acceptedBy === typeBlock);
             setCheckId(!!item._id);
             setHoverBlock(monitor.getHandlerId());

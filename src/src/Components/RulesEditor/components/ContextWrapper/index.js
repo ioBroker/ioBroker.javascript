@@ -9,7 +9,7 @@ export const ContextWrapperCreate = createContext();
 
 export const ContextWrapper = ({ children, socket }) => {
     const [state, setState] = useState({
-        blocks: [ ...StandardBlocks]
+        blocks: StandardBlocks
     });
 
     // useEffect(() => {

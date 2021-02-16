@@ -10,7 +10,7 @@ import { ContextWrapperCreate } from '../ContextWrapper';
 const CurrentItem = memo(props => {
     const { setUserRules, userRules, _id, id, acceptedBy, blockValue, active, object } = props;
     const [anchorEl, setAnchorEl] = useState(null);
-    const { state: { blocks } } = useContext(ContextWrapperCreate);
+    const { state: { blocks }, socket } = useContext(ContextWrapperCreate);
     let _acceptedBy = acceptedBy;
     const handlePopoverOpen = event =>
         event.currentTarget !== anchorEl && setAnchorEl(event.currentTarget);
@@ -18,10 +18,7 @@ const CurrentItem = memo(props => {
         setAnchorEl(null);
     let _object = object;
     if (!_object) {
-        _object = blocks.find(item => {
-            const staticData = item.getStaticData();
-            return staticData.id === id;
-        });
+        _object = blocks.find(item => item.getStaticData().id === id);
     }
     if (_object) {
         _acceptedBy = _object.getStaticData().acceptedBy;
@@ -31,7 +28,7 @@ const CurrentItem = memo(props => {
             return null;
         }
         const CustomBlock = _object;
-        return <CustomBlock {...props} className={null} />;
+        return <CustomBlock {...props} className={null} socket={socket} />;
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [_object]);
     return <div
