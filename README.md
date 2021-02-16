@@ -38,7 +38,7 @@ And then call `npm run build`.
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 4.11.0 (2021-02-16)
 * (Apollon77) Add some additional checks for getSchedules
 * (Garfonso) make sure promisified methods reject with Error instead of string so that async errors can be catched correctly
 * (Huseriato) update some german blockly translations
@@ -54,10 +54,6 @@ And then call `npm run build`.
 
 ### 4.10.11 (2021-01-22)
 * (Apollon77) Optimize error handling in createState and file mirror again
-
-### 4.10.10 (2021-01-22)
-* (Apollon77) Do not try to set a state value if object creation was not successful (Sentry IOBROKER-JAVASCRIPT-5G)
-* (Apollon77) Make sure no incorrect states are trying to be set (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)
 
 ## License
 
