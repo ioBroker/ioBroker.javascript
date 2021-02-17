@@ -1,0 +1,7 @@
+@mixin indentationHeader {
+    padding-top: $headerHeight;
+    padding-bottom: $footerHeight;
+}
+@mixin colorText {
+    color: rgb(196, 29, 214);
+}

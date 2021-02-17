@@ -16,7 +16,8 @@ class ActionSetState extends GenericBlock {
                     nameRender: 'renderObjectID',
                     attr: 'renderObjectID',
                     nameBlock:'Alive for alarm adapter',
-                    defaultValue: 'system.adapter.ad...'
+                    defaultValue: 'system.adapter.ad...',
+                    additionallyCommon:true
                 }
             ]
         });

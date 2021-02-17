@@ -48,8 +48,16 @@ const RulesEditor = ({ code, onChange }) => {
 
     useEffect(() => {
         setBlocksFunc();
+        // onChange(Compile.json2code({
+        //     triggers: [],
+        //     conditions: [[]],
+        //     actions: {
+        //         then: [],
+        //         'else': []
+        //     }
+        // }))
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [blocks]);
 
     const a11yProps = index => ({
         id: `scrollable-force-tab-${index}`,
@@ -140,7 +148,6 @@ const RulesEditor = ({ code, onChange }) => {
                 </span>
             </div>
         </div>
-
         <ContentBlockItems
             setUserRules={json => {
                 setUserRules(json);

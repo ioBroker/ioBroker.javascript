@@ -33,7 +33,8 @@ import {MdPlaylistAddCheck as IconVerbose} from 'react-icons/md';
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
-import ImgBlockly2Js from './assets/blockly2js.png'
+import ImgBlockly2Js from './assets/blockly2js.png';
+import ImgRules2Js from './assets/rules2js.png';
 import ImgRules from './assets/rules.png';
 
 import I18n from '@iobroker/adapter-react/i18n';
@@ -906,7 +907,7 @@ class Editor extends React.Component {
                                                     color={this.state.showCompiledCode ? 'secondary' : 'inherit'}
                                                     style={{padding: '0 5px'}}
                                                     onClick={() => this.setState({showCompiledCode: !this.state.showCompiledCode})}>
-                        <img alt="blockly2js" src={ImgBlockly2Js} /></Button>}
+                        <img alt={this.state.blockly?"blockly2js":"rules2js"} src={this.state.blockly?ImgBlockly2Js:ImgRules2Js} /></Button>}
 
                     <IconButton key="debug" aria-label="Debug menu"
                                                                  title={I18n.t('Debug options')}

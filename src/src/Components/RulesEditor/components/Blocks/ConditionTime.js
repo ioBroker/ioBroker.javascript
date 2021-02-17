@@ -27,18 +27,6 @@ class ConditionTime extends GenericBlock {
             iconTag:true
         });
     }
-   // {
-    //     getConfig: () => { },
-    //     setConfig: (config) => { },
-    //     acceptedBy: 'conditions', // where it could be acceped: trigger, condition, action
-    //     name: { en: 'Time condition', ru: 'Триггер' },
-    //     typeBlock: 'and',
-    //     icon: 'Shuffle',
-    //     type: 'condition',
-    //     compile: (config, context) => `obj.val === "1"`,
-    //     inputs:
-    //         { nameRender: 'renderTimeCondition', name: { en: 'Object ID' }, attr: 'objectID', type: 'oid', default: '', icon: '' },
-    // },
     static getStaticData() {
         return {
             acceptedBy: 'conditions',

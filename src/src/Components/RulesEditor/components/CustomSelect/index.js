@@ -69,7 +69,6 @@ CustomSelect.propTypes = {
     attr: PropTypes.string,
     options: PropTypes.array.isRequired,
     style: PropTypes.object,
-    native: PropTypes.object.isRequired,
     onChange: PropTypes.func
 };
 

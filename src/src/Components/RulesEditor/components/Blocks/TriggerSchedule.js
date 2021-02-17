@@ -242,7 +242,7 @@ class TriggerScheduleBlock extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'triggers',
-            name: { en: 'Schedule', ru: 'Расписание' },
+            name: { en: 'Schedule', ru: 'Schedule' },
             id: 'TriggerScheduleBlock',
             icon: 'AccessTime',
             tagCardArray: ['cron', 'wizard', 'interval', 'at', 'astro'],
