@@ -14,7 +14,6 @@ const moveCard = (
     additionally,
     hoverClientY,
     hoverMiddleY) => {
-    // console.log('2', id, atIndex, cards)
 
     const { card, index } = findCard(id, cards);
     if (index < atIndex && hoverClientY < hoverMiddleY) {
@@ -24,7 +23,6 @@ const moveCard = (
         return;
     }
     if (card && index !== atIndex) {
-        console.log('render set')
         const copyCard = _.clone(cards);
         copyCard.splice(index, 1);
         copyCard.splice(atIndex, 0, card);

@@ -1,4 +1,4 @@
-import React, { Fragment, useContext, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useContext, useEffect, useState } from 'react';
 import cls from './style.module.scss';
 import CustomInput from './components/CustomInput';
 import { CustomDragLayer } from './components/CustomDragLayer';
@@ -10,7 +10,7 @@ import { AppBar, Tab, Tabs } from '@material-ui/core';
 import { ContextWrapperCreate } from './components/ContextWrapper';
 import Compile from './Compile';
 import MaterialDynamicIcon from './helpers/MaterialDynamicIcon';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 const RulesEditor = ({ code, onChange }) => {
     // eslint-disable-next-line no-unused-vars
@@ -29,20 +29,10 @@ const RulesEditor = ({ code, onChange }) => {
             if (!text) {
                 return true;
             }
-            if (el.getStaticData) {
-                const { name } = el.getStaticData();
-                return name && name.en.toLowerCase().includes(text.toLowerCase());
-            } else {
-                return el.name && el.name.en.toLowerCase().includes(text.toLowerCase());
-            }
+            const { name } = el.getStaticData();
+            return name && name.en.toLowerCase().includes(text.toLowerCase());
         });
-        newAllBlocks = newAllBlocks.filter(el => {
-            if (el.getStaticData) {
-                return typeFunc === el.getStaticData().acceptedBy;
-            } else {
-                return typeFunc === el.acceptedBy;
-            }
-        });
+        newAllBlocks = newAllBlocks.filter(el => typeFunc === el.getStaticData().acceptedBy);
         setAllBlocks(newAllBlocks);
     };
 
@@ -73,9 +63,10 @@ const RulesEditor = ({ code, onChange }) => {
         setBlocksFunc(filter.text, ['triggers', 'conditions', 'actions'][newValue]);
     };
 
-    // if (!allBlocks.length) {
-    //     return null;
-    // }
+    const onChangeBloks = useCallback((json)=>{
+        setUserRules(json);
+        onChange(Compile.json2code(json, blocks));
+    },[blocks, onChange]);
 
     return <div className={cls.wrapperRules}>
         <CustomDragLayer allBlocks={allBlocks} />
@@ -126,10 +117,7 @@ const RulesEditor = ({ code, onChange }) => {
                                 name={name}
                                 icon={icon}
                                 userRules={userRules}
-                                setUserRules={json => {
-                                    setUserRules(json);
-                                    onChange(Compile.json2code(json, blocks));
-                                }}
+                                setUserRules={onChangeBloks}
                                 isActive={false}
                                 id={id}
                             />
@@ -149,20 +137,13 @@ const RulesEditor = ({ code, onChange }) => {
             </div>
         </div>
         <ContentBlockItems
-            setUserRules={json => {
-                setUserRules(json);
-                console.log(json)
-                onChange(Compile.json2code(json, blocks));
-            }}
+            setUserRules={onChangeBloks}
             userRules={userRules}
             name="when..."
             typeBlock="triggers"
         />
         <ContentBlockItems
-            setUserRules={json => {
-                setUserRules(json);
-                onChange(Compile.json2code(json, blocks));
-            }}
+            setUserRules={onChangeBloks}
             userRules={userRules}
             name="...and..."
             typeBlock="conditions"
@@ -171,10 +152,7 @@ const RulesEditor = ({ code, onChange }) => {
             border
         />
         <ContentBlockItems
-            setUserRules={json => {
-                setUserRules(json);
-                onChange(Compile.json2code(json, blocks));
-            }}
+            setUserRules={onChangeBloks}
             userRules={userRules}
             name="...then"
             typeBlock="actions"
@@ -184,8 +162,9 @@ const RulesEditor = ({ code, onChange }) => {
     </div>;
 }
 
-// RulesEditor.propTypes = {
-
-// };
+RulesEditor.propTypes = {
+    onChange:PropTypes.func,
+    code:PropTypes.string
+};
 
 export default RulesEditor;

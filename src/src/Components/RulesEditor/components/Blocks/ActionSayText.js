@@ -37,8 +37,8 @@ class ActionSayText extends GenericBlock {
                     nameRender: 'renderSlider',
                     attr: 'text',
                     defaultValue: 45,
-                    frontText: 0,
-                    backText:100
+                    frontText: '0',
+                    backText: '100'
                 },
                 {
                     nameRender: 'renderModalInput',

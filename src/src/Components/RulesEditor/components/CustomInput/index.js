@@ -9,7 +9,7 @@ const TextFieldMod = withStyles({
         marginTop: 0,
         marginBottom: 0,
         '& > *': {
-            color: '#81688c !important'
+            color: '#1f032b !important'
         },
         '& label.Mui-focused': {
             color: '#81688c',

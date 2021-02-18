@@ -21,6 +21,7 @@ class ActionPause extends GenericBlock {
                 {
                     nameRender: 'renderSelect',
                     attr: 'modal',
+                    defaultValue: 'ms',
                     options: [
                         { value: 'ms', title: 'm.second(ms)' },
                         { value: 's', title: 'second(s)' },

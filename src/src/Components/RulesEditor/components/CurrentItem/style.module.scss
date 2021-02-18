@@ -116,3 +116,14 @@
     font-size: 12px;
     padding-top: 2px;
 }
+.isDelete{
+    height: 0px;
+    min-height: 0px;
+    overflow: hidden;
+    padding: 0 10px;
+    margin: 0px 12px 0px 12px;
+    transition: all 0.25s;
+    background: rgb(255, 255, 255);
+    opacity: 0.8;
+    box-shadow: 0 0 10px rgb(106 204 255);
+}

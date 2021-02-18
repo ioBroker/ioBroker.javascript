@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 
 const SelectMod = withStyles({
     root: {
-        margin: '10px 0',
         '& .MuiFormControl-marginNormal': {
             marginTop: 0,
             marginBottom: 0,

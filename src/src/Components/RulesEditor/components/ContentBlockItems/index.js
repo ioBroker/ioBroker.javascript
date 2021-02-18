@@ -1,5 +1,5 @@
 
-import React, { Fragment, useContext, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useContext, useEffect, useState } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
@@ -10,9 +10,13 @@ import DragWrapper from '../DragWrapper';
 import { ContextWrapperCreate } from '../ContextWrapper';
 // import update from 'immutability-helper';
 
-const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolean, typeBlock, name, userRules, setUserRules }) => {
+const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolean, typeBlock, name, userRules, setUserRules, animation }) => {
     const [checkItem, setCheckItem] = useState(false);
     const { state: { blocks } } = useContext(ContextWrapperCreate);
+    const findElement = useCallback((id) => blocks.find(el => {
+        const staticData = el.getStaticData();
+        return staticData.id === id;
+    }).getStaticData(), [blocks]);
     const [canDropCheck, setCanDropCheck] = useState(false);
     const [checkId, setCheckId] = useState(false);
     const [hoverBlock, setHoverBlock] = useState('');
@@ -20,21 +24,13 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
         accept: 'box',
         drop: () => ({ name, blockValue }),
         hover: (item, monitor) => {
-            let _object = blocks.find(el => {
-                const staticData = el.getStaticData();
-                return staticData.id === item.id;
-            }).getStaticData();
-            let { acceptedBy } = _object;
+            let { acceptedBy } = findElement(item.id);
             setCheckItem(acceptedBy === typeBlock);
             setCheckId(!!item._id);
             setHoverBlock(monitor.getHandlerId());
         },
         canDrop: (item, monitor) => {
-            let _object = blocks.find(el => {
-                const staticData = el.getStaticData();
-                return staticData.id === item.id;
-            }).getStaticData();
-            let acceptedBy = _object.acceptedBy;
+            let { acceptedBy } = findElement(item.id);
             setCanDropCheck(acceptedBy === typeBlock);
             return acceptedBy === typeBlock;
         },
@@ -46,7 +42,6 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
         }),
     });
     useEffect(() => { setHoverBlock('') }, [offset]);
-
     const isActive = canDrop && isOver;
     let backgroundColor = '';
     if (isActive) {
@@ -56,18 +51,20 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
     } else if (offset) {
         backgroundColor = targetId === hoverBlock ? '#fb00002e' : '';
     }
-    return <div ref={drop} style={{ backgroundColor }} className={`${cls.contentBlockItem} ${boolean ? null : cls.contentHeightOff}`}>
+    return <div ref={drop} style={{ backgroundColor }} className={`${cls.contentBlockItem} ${boolean ? animation ? cls.contentHeightOn : null : cls.contentHeightOff}`}>
         <div className={cls.wrapperMargin}>{itemsSwitchesRender[blockValue]?.filter(el => el.nameBlock === name).map((el, idx) => (
             <DragWrapper typeBlocks={typeBlock} key={el._id} {...el} blockValue={blockValue} allProperties={el} userRules={userRules} setUserRules={setUserRules}>
                 <CurrentItem {...el} blockValue={blockValue} userRules={userRules} setUserRules={setUserRules} />
-            </DragWrapper>))}</div>
-        {isActive && checkItem && !checkId ? <div className={cls.emptyBlock} /> : null}
+            </DragWrapper>))}
+            <div className={`${cls.emptyBlockStyle} ${isActive && checkItem && !checkId ? cls.emptyBlock : cls.emptyBlockNone}`} />
+        </div>
     </div>;
 }
 
 AdditionallyContentBlockItems.defaultProps = {
     children: null,
-    boolean: true
+    boolean: true,
+    animation: false
 };
 
 const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, border, userRules, setUserRules }) => {
@@ -89,6 +86,7 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    const [animation, setAnimation] = useState(false);
 
     return <div className={`${cls.mainBlockItemRules} ${border ? cls.border : null}`}>
         <span className={cls.nameBlockItems}>{name}</span>
@@ -123,7 +121,12 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
                         });
                     }
                     setAdditionallyClickItems(newAdditionally);
-                    setUserRules({ ...userRules, conditions: [...userRules.conditions.filter((el, idx) => idx !== index + 1)] });
+                    setAnimation(true);
+                    setTimeout(() => {
+                        setAnimation(false);
+                        setUserRules({ ...userRules, conditions: [...userRules.conditions.filter((el, idx) => idx !== index + 1)] });
+                    }, 250);
+
                 }}
                 key={index} className={cls.blockCardAdd}>
                 {booleanAdditionally() ? '-' : '+'}<div className={cls.cardAdd}>
@@ -138,6 +141,7 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
                     userRules={userRules}
                     name={`${name}_${index + 1}`}
                     boolean={booleanAdditionally()}
+                    animation={animation}
                 />
             </Fragment>
         })}
@@ -148,6 +152,8 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
                     open: true
                 }]);
                 setUserRules({ ...userRules, conditions: [...userRules.conditions, []] });
+                setAnimation(true);
+                setTimeout(() => setAnimation(false), 1000);
             }}
             className={cls.blockCardAdd}
         >

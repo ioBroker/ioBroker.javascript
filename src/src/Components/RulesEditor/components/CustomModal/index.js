@@ -17,28 +17,38 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'flex-end',
         marginTop: '20px',
         flexFlow: 'wrap',
-        borderTop: '1px solid silver'
+        borderTop: '1px solid silver',
+        borderColor: '#81688c',
+        background: '#9a8fa840',
+        borderRadius: 3,
+        '& button': {
+            color: '#1f032b !important',
+            flex: 1
+        }
     },
     modalButtonBlockTwo: {
         justifyContent: 'space-around',
         flexFlow: 'wrap-reverse',
         position: 'sticky',
         bottom: 0,
-        background: theme.overrides.MuiAppBar.colorDefault.backgroundColor,
         '& button': {
             margin: '5px'
         }
     },
     modalWrapper: {
-        position: 'relative',
-        '[class*="MuiPaper-root MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthXl MuiPaper-elevation24 MuiPaper-rounded"]': {
-            background: '#f6f6f6'
+        // position: 'relative',
+        '[class*="MuiPaper-root MuiDialog-paper MuiPaper-elevation24 MuiDialog-paperScrollPaper MuiDialog-paperWidthXl MuiPaper-elevation24 MuiPaper-rounded"]': {
+            backgroundColor: '#f6f6f6'
         }
+    },
+    background: {
+        backgroundColor: '#fdf3ffa6',
+        overflowY: 'visible'
     },
     close: {
         position: 'absolute',
-        right: '8px',
-        top: '6px',
+        right: -14,
+        top: -16,
         width: '32px',
         height: '32px',
         opacity: '0.9',
@@ -83,18 +93,19 @@ const CustomModal = ({ open, close, children, titleButton, titleButton2, buttonC
             maxWidth='xl'
             disableEscapeKeyDown={true}
             onClose={close}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
+            classes={{ paper: classes.background }}
+            // aria-labelledby="alert-dialog-title"
+            // aria-describedby="alert-dialog-description"
             className={classes.modalWrapper || ''}
         >
             <div className={classes.modalContentWrapper}>
                 <div className={classes.close} onClick={close} />
                 {children}
                 <div className={`${classes.modalButtonBlock} ${titleButton ? classes.modalButtonBlockTwo : ''}`}>
-                    {titleButton && <Button onClick={buttonClick}>
+                    {titleButton && <Button fullWidth onClick={buttonClick}>
                         {titleButton}
                     </Button>}
-                    {titleButton2 && <Button onClick={close}>
+                    {titleButton2 && <Button fullWidth onClick={close}>
                         {titleButton2}
                     </Button>}
                 </div>

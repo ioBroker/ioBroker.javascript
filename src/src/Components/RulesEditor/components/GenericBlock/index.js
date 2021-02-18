@@ -17,6 +17,7 @@ import CustomModal from '../CustomModal';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import CustomSwitch from '../CustomSwitch';
 import utils from '../../helpers/utils';
+import clsx from 'clsx';
 
 class GenericBlock extends PureComponent {
     constructor(props, item) {
@@ -27,7 +28,6 @@ class GenericBlock extends PureComponent {
             inputs: item.inputs || props.inputs || [],
             name: item.name || props.name || '',
             icon: item.icon || props.icon || '',
-            common: { type: 'number' },
 
             tagCardArray: item.tagCardArray || [],
 
@@ -58,8 +58,8 @@ class GenericBlock extends PureComponent {
         const { className } = this.props;
         const { attr, defaultValue, frontText, backText, nameBlock } = input;
         return <div key={attr}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                {frontText}
+            <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
+                {frontText && <div className={cls.frontText}>{frontText}</div>}
                 <CustomInput
                     className={className}
                     autoComplete="off"
@@ -71,17 +71,34 @@ class GenericBlock extends PureComponent {
                     onChange={onChange}
                     customValue
                 />
-                {backText}
+                {backText && <div className={cls.backText}>{backText}</div>}
             </div>
-            {nameBlock}
+            {nameBlock && <div className={cls.nameBlock}>{nameBlock}</div>}
         </div>;
     }
-    renderNameText = (input, value, onChange) => {
+
+    renderSwitch = (input, value, onChange) => {
         const { className } = this.props;
+        const { attr, frontText, backText, nameBlock, defaultValue } = input;
+        return <div key={attr}>
+            <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
+                {frontText && <div className={cls.frontText}>{frontText}</div>}
+                <CustomSwitch
+                    className={className}
+                    label=''
+                    customValue
+                    value={defaultValue}
+                />
+                {backText && <div className={cls.backText}>{backText}</div>}
+            </div>
+            {nameBlock && <div className={cls.nameBlock}>{nameBlock}</div>}
+        </div>;
+    }
+
+    renderNameText = (input, value, onChange) => {
         const { attr, defaultValue } = input;
         return <div
-            style={{ display: 'flex', alignItems: 'center' }}
-            className={className}
+            className={clsx(cls.displayFlex, cls.blockMarginTop)}
             key={attr}>
             {defaultValue}
         </div>
@@ -90,15 +107,17 @@ class GenericBlock extends PureComponent {
     renderNumber = (input, value, onChange) => {
         const { className } = this.props;
         const { openCheckbox } = this.state;
-        const { attr, defaultValue, backText, openCheckbox: openCheckboxValue } = input;
+        const { attr, defaultValue, backText, frontText, openCheckbox: openCheckboxValue } = input;
         let visibility = true;
         if (openCheckboxValue) {
             visibility = openCheckbox
         }
-        return visibility ? <div style={{ display: 'flex', alignItems: 'center' }}>
+        return visibility ? <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
+            {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomInput
                 key={attr}
                 className={className}
+                fullWidth
                 autoComplete="off"
                 label="number"
                 variant="outlined"
@@ -108,15 +127,35 @@ class GenericBlock extends PureComponent {
                 onChange={onChange}
                 customValue
             />
-            {backText}
+            {backText && <div className={cls.backText}>{backText}</div>}
         </div> : null;
+    }
+
+    renderColor = (input, value, onChange) => {
+        const { className } = this.props;
+        const { attr, defaultValue, backText, frontText } = input;
+        return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)}>
+            {frontText && <div className={cls.frontText}>{frontText}</div>}
+            <CustomInput
+                className={className}
+                autoComplete="off"
+                fullWidth
+                variant="outlined"
+                size="small"
+                type="color"
+                value={defaultValue}
+                onChange={onChange}
+            />
+            {backText && <div className={cls.backText}>{backText}</div>}
+        </div>;
     }
 
     renderCheckbox = (input, value, onChange) => {
         const { className } = this.props;
         const { openCheckbox } = this.state;
-        const { attr, backText } = input;
-        return <div style={{ display: 'flex', alignItems: 'center' }}>
+        const { attr, backText, frontText } = input;
+        return <div className={cls.displayFlex}>
+            {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomCheckbox
                 key={attr}
                 className={className}
@@ -128,11 +167,10 @@ class GenericBlock extends PureComponent {
                 value={openCheckbox}
                 customValue
                 onChange={(e) => {
-                    console.log(e)
                     this.setState({ openCheckbox: e })
                 }}
             />
-            {backText}
+            {backText && <div className={cls.backText}>{backText}</div>}
         </div>;
     }
 
@@ -140,8 +178,8 @@ class GenericBlock extends PureComponent {
         const { className } = this.props;
         const { attr, defaultValue, frontText, backText, nameBlock } = input;
         return <div key={attr}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                {frontText}
+            <div className={cls.displayFlex}>
+                {frontText && <div className={cls.frontText}>{frontText}</div>}
                 <CustomSlider
                     customValue
                     className={className}
@@ -152,127 +190,39 @@ class GenericBlock extends PureComponent {
                     value={defaultValue}
                     onChange={onChange}
                 />
-                {backText}
+                {backText && <div className={cls.backText}>{backText}</div>}
             </div>
-            {nameBlock}
+            {nameBlock && <div className={cls.nameBlock}>{nameBlock}</div>}
         </div>;
     }
 
     renderButton = (input, value, onClick) => {
         const { className } = this.props;
-        return <CustomButton
-            key={input.attr}
-            fullWidth
-            value='click me'
-            className={className}
-            onClick={onClick}
-        />;
+        const { attr, defaultValue, frontText, backText } = input;
+        return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)}>
+            {frontText && <div className={cls.frontText}>{frontText}</div>}
+            <CustomButton
+                key={input.attr}
+                fullWidth
+                value={defaultValue}
+                className={className}
+                onClick={onClick}
+            />
+            {backText && <div className={cls.backText}>{backText}</div>}
+        </div>
     }
 
     renderObjectID = (input, value, onChange) => {
-        const { showSelectId, common: { type }, openCheckbox } = this.state;
+        const { showSelectId, openCheckbox } = this.state;
         const { className, socket } = this.props;
-        const { attr, nameBlock, defaultValue, additionallyCommon, openCheckbox: openCheckboxValue } = input;
+        const { attr, nameBlock, defaultValue, openCheckbox: openCheckboxValue } = input;
         let visibility = true;
         if (openCheckboxValue) {
             visibility = openCheckbox
         }
-        let additionallyBlock = null;
-        if (additionallyCommon) {
-            switch (type) {
-                case 'number':
-                    additionallyBlock = <div style={{ display: 'flex', alignItems: 'center' }}>
-                        with
-                    <CustomInput
-                            className={className}
-                            autoComplete="off"
-                            label="number"
-                            variant="outlined"
-                            size="small"
-                            type="number"
-                            style={{ marginLeft: 5, marginRight: 5, width: 80 }}
-                            value={30}
-                            onChange={onChange}
-                            customValue
-                        />
-                    kW
-                </div>;
-                    break;
-                case 'control1':
-                    additionallyBlock = <div style={{ display: 'flex', alignItems: 'center' }}>
-                        0 <CustomSlider
-                            className={className}
-                            autoComplete="off"
-                            label="number"
-                            variant="outlined"
-                            size="small"
-                            value={50}
-                            onChange={onChange}
-                            customValue
-                        />100
-                </div>;
-                    break;
-
-                case 'control2':
-                    additionallyBlock = <div style={{ display: 'flex', alignItems: 'center' }}>
-                        with
-                    <CustomInput
-                            className={className}
-                            autoComplete="off"
-                            fullWidth
-                            variant="outlined"
-                            size="small"
-                            type="color"
-                            value={value}
-                            onChange={onChange}
-                        />
-                    </div>;
-                    break;
-
-                case 'control3':
-                    additionallyBlock = <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <CustomSelect
-                            // title='ip'
-                            className={className}
-                            options={[{ value: 'State1', title: 'State1' }, {
-                                value: 'State2',
-                                title: 'State2'
-                            }, { value: 'State3', title: 'State3' },]}
-                            value={'State1'}
-                            onChange={onChange}
-                        />
-                    </div>;
-                    break;
-
-                case 'control4':
-                    additionallyBlock = <div style={{ display: 'flex', alignItems: 'center' }}>
-                        false
-                    <CustomSwitch
-                            label=''
-                        />
-                    true
-                </div>;
-                    break;
-
-                case 'control5':
-                    additionallyBlock = <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <CustomButton
-                            // fullWidth
-                            value='Press'
-                            className={className}
-                            onClick={onChange}
-                        />
-                    </div>;
-                    break;
-
-                default:
-                    additionallyBlock = null;
-                    break
-            }
-        }
         // return null
-        return visibility ? <div key={attr}>
-            <div style={{ display: 'flex', alignItems: 'center' }}><CustomInput
+        return visibility ? <div className={cls.blockMarginTop} key={attr}>
+            <div className={cls.displayFlex}><CustomInput
                 className={className}
                 autoComplete="off"
                 fullWidth
@@ -285,12 +235,13 @@ class GenericBlock extends PureComponent {
             />
                 <CustomButton
                     // fullWidth
+                    style={{ marginLeft: 5 }}
                     value='...'
                     className={className}
                     onClick={() => this.setState({ showSelectId: true })}
                 />
             </div>
-            {nameBlock}
+            {nameBlock && <div className={cls.nameBlock}>{nameBlock}</div>}
             {showSelectId ? <DialogSelectID
                 key="tableSelect"
                 // imagePrefix="../.."
@@ -305,104 +256,7 @@ class GenericBlock extends PureComponent {
                     this.setState({ showSelectId: false, selectIdValue: selected });
                 }}
             /> : null}
-            {additionallyBlock}
         </div> : null;
-    }
-
-    renderColor = (input, value, onChange) => {
-        const { className } = this.props;
-        return <CustomInput
-            key={input.attr}
-            className={className}
-            autoComplete="off"
-            fullWidth
-            variant="outlined"
-            size="small"
-            type="color"
-            value={value}
-            onChange={onChange}
-        />;
-    }
-
-
-    renderState = (input, value, onChange) => {
-        const { showSelectId } = this.state;
-        const { className } = this.props;
-        const { socket } = this.context;
-        switch (this.state.settings.tagCard) {
-            case "on update":
-                return <div key={input.attr}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}><CustomInput
-                        className={className}
-                        autoComplete="off"
-                        fullWidth
-                        disabled
-                        variant="outlined"
-                        size="small"
-                        value={"system.adapter.ad..."}
-                        onChange={onChange}
-                        customValue
-                    />
-                        <CustomButton
-                            // fullWidth
-                            value='...'
-                            className={className}
-                            onClick={() => this.setState({ showSelectId: true })}
-                        />
-                    </div>
-                    Alive for alarm adapter
-                    {showSelectId ? <DialogSelectID
-                        key="tableSelect"
-                        imagePrefix="../.."
-                        dialogName={'javascript'}
-                        themeType={Utils.getThemeName()}
-                        socket={socket}
-                        statesOnly={true}
-                        // selected={this.selectIdValue}
-                        onClose={() => this.setState({ showSelectId: false })}
-                        onOk={(selected, name) => {
-                            this.setState({ showSelectId: false, selectIdValue: selected });
-                        }}
-                    /> : null}
-                </div>;
-
-            default:
-            case "on change":
-                return <div key={input.attr}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}><CustomInput
-                        className={className}
-                        autoComplete="off"
-                        fullWidth
-                        disabled
-                        variant="outlined"
-                        size="small"
-                        value={"system.adapter.ad..."}
-                        onChange={onChange}
-                        customValue
-                    />
-                        <CustomButton
-                            // fullWidth
-                            value='...'
-                            className={className}
-                            onClick={() => this.setState({ showSelectId: true })}
-                        />
-                    </div>
-                    Alive for alarm adapter
-                    {showSelectId ? <DialogSelectID
-                        key="tableSelect"
-                        imagePrefix="../.."
-                        dialogName={'javascript'}
-                        themeType={Utils.getThemeName()}
-                        socket={socket}
-                        statesOnly={true}
-                        // selected={this.selectIdValue}
-                        onClose={() => this.setState({ showSelectId: false })}
-                        onOk={(selected, name) => {
-                            this.setState({ showSelectId: false, selectIdValue: selected });
-                        }}
-                    /> : null}
-                </div>;
-        }
     }
 
     renderIconTag = () => {
@@ -421,18 +275,18 @@ class GenericBlock extends PureComponent {
 
     renderTime = (input, value, onChange) => {
         const { attr, backText, frontText } = input
-        return <div style={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
-            {frontText}
+        return <div className={cls.displayFlex} style={{ whiteSpace: 'nowrap' }}>
+            {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomTime key={attr} />
-            {backText}
+            {backText && <div className={cls.backText}>{backText}</div>}
         </div>
     };
 
     renderSelect = (input, value, onChange) => {
         const { className } = this.props;
-        const { name, options, frontText, defaultValue } = input;
-        return <div style={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
-            {frontText}
+        const { name, options, frontText, backText, defaultValue } = input;
+        return <div className={clsx(cls.displayFlex, cls.blockMarginTop)} style={{ whiteSpace: 'nowrap' }}>
+            {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomSelect
                 title={name}
                 className={className}
@@ -441,6 +295,7 @@ class GenericBlock extends PureComponent {
                 onChange={onChange}
                 customValue
             />
+            {backText && <div className={cls.backText}>{backText}</div>}
         </div>
     };
 
@@ -449,8 +304,8 @@ class GenericBlock extends PureComponent {
         const { className } = this.props;
         const { attr, defaultValue, nameBlock, frontText, backText } = input;
         return <div key={attr}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                {frontText}
+            <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
+                {frontText && <div className={cls.frontText}>{frontText}</div>}
                 <CustomInput
                     className={className}
                     autoComplete="off"
@@ -468,7 +323,7 @@ class GenericBlock extends PureComponent {
                     className={className}
                     onClick={() => this.setState({ openModal: true })}
                 />
-                {backText}
+                {backText && <div className={cls.backText}>{backText}</div>}
             </div>
             <CustomModal
                 open={openModal}
@@ -491,7 +346,7 @@ class GenericBlock extends PureComponent {
                     customValue
                 />
             </CustomModal>
-            {nameBlock}
+            {nameBlock && <div className={cls.nameBlock}>{nameBlock}</div>}
         </div>;
     };
 

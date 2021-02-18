@@ -10,15 +10,72 @@ class ActionSetState extends GenericBlock {
     }
 
     onTagChange(tagCard) {
+        let obg = {};
+        let type = 'number';
+        switch (type) {
+            case 'number':
+                obg = {
+                    backText: 'kW',
+                    frontText: 'with',
+                    nameRender: 'renderNumber',
+                    defaultValue: 30
+                }
+                break;
+            case 'control1':
+                obg = {
+                    nameRender: 'renderSlider',
+                    attr: 'text',
+                    defaultValue: 50,
+                    frontText: '0',
+                    backText: '100'
+                }
+                break;
+            case 'control2':
+                obg = {
+                    nameRender: 'renderSelect',
+                    frontText: 'Instance:',
+                    options: [{
+                        value: 'State1',
+                        title: 'State1',
+                    }],
+                    defaultValue: 'State1',
+                    attr: 'Instance',
+                }
+                break;
+            case 'control3':
+                obg = {
+                    backText: 'true',
+                    frontText: 'false',
+                    nameRender: 'renderSwitch',
+                    defaultValue: false
+                }
+                break;
+            case 'control4':
+                obg = {
+                    nameRender: 'renderButton',
+                    defaultValue: 'Press'
+                }
+                break;
+            case 'control5':
+                obg = {
+                    nameRender: 'renderColor',
+                    defaultValue: 30
+                }
+                break;
+            default:
+                obg = null;
+                break
+        }
         this.setState({
             inputs: [
                 {
                     nameRender: 'renderObjectID',
                     attr: 'renderObjectID',
-                    nameBlock:'Alive for alarm adapter',
+                    nameBlock: 'Alive for alarm adapter',
                     defaultValue: 'system.adapter.ad...',
-                    additionallyCommon:true
-                }
+                    // additionallyCommon: true
+                },
+                obg
             ]
         });
     }

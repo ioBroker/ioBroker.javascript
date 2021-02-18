@@ -13,13 +13,14 @@
     border-radius: 4px;
     box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
         0px 1px 3px 0px rgba(0, 0, 0, 0.12);
-    .nameCard {
-        color: #3e0056 !important;
-        margin-top: 0 !important;
-        margin-bottom: 5px;
-    }
 }
-.cardStyleActive{
+.nameCard {
+    margin-top: 0;
+    font-size: 19px;
+    color: #3e0056;
+    font-weight: 500;
+}
+.cardStyleActive {
     width: 300px;
     z-index: 100;
 }
@@ -112,7 +113,22 @@
     border-top: 1px solid #35064899;
     border-left: 1px solid #35064899;
     border-right: 1px solid #35064899;
-    // font-weight: bold;
     font-size: 12px;
     padding-top: 2px;
+}
+.displayFlex {
+    display: flex;
+    align-items: center;
+}
+.blockMarginTop,
+.nameBlock {
+    margin-top: 7px;
+}
+.frontText {
+    margin-right: 7px;
+    min-width: 80px;
+    display: inline-table;
+}
+.backText {
+    margin-left: 7px;
 }

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import { useDrag, useDrop } from 'react-dnd';
@@ -9,6 +9,11 @@ import { findCard, moveCard } from '../../helpers/cardSort';
 import { ContextWrapperCreate } from '../ContextWrapper';
 
 const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, userRules, children, _id, blockValue }) => {
+    const { state: { blocks } } = useContext(ContextWrapperCreate);
+    const findElement = useCallback((id)=>blocks.find(el => {
+        const staticData = el.getStaticData();
+        return staticData.id === id;
+    }).getStaticData(),[blocks]);
     const [{ opacity }, drag, preview] = useDrag({
         item: { ...allProperties, type: 'box', id, isActive, _id },
         end: (item, monitor) => {
@@ -29,7 +34,7 @@ const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, us
             }
             if (dropResult.blockValue !== blockValue) {
                 let idNumber = typeof _id === 'number' ? _id : Date.now();
-
+                let { acceptedBy } = findElement(item.id);
                 newUserRules = deepCopy(acceptedBy, userRules, dropResult.blockValue);
 
                 switch (acceptedBy) {
@@ -62,16 +67,11 @@ const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, us
         }),
     });
     const ref = useRef(null)
-    const { state: { blocks } } = useContext(ContextWrapperCreate);
     const [, drop] = useDrop({
         accept: 'box',
         canDrop: () => false,
         hover({ _id: draggedId, id }, monitor) {
-            let _object = blocks.find(el => {
-                const staticData = el.getStaticData();
-                return staticData.id === id;
-            }).getStaticData();
-            let acceptedBy = _object.acceptedBy;
+            let { acceptedBy } = findElement(id);
             if (!ref.current) {
                 return;
             }
