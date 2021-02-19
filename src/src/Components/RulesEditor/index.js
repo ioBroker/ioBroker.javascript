@@ -113,7 +113,7 @@ const RulesEditor = ({ code, onChange }) => {
                         const { name, id, icon } = el.getStaticData();
                         return <Fragment key={id}>
                             <CustomDragItem
-                                allProperties={{ object: el }}
+                                allProperties={el.getStaticData()}
                                 name={name}
                                 icon={icon}
                                 userRules={userRules}

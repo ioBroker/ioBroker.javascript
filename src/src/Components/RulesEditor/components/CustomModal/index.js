@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     background: {
-        backgroundColor: '#fdf3ffa6',
+        backgroundColor: '#fdf3ffdb',
         overflowY: 'visible'
     },
     close: {

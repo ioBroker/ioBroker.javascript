@@ -8,7 +8,7 @@ import { ContextWrapperCreate } from '../ContextWrapper';
 // @iobroker/javascript-block
 
 const CurrentItem = memo(props => {
-    const { setUserRules, userRules, _id, id, blockValue, active } = props;
+    const { setUserRules, userRules, _id, id, blockValue, active, acceptedBy } = props;
     const [anchorEl, setAnchorEl] = useState(null);
     const { state: { blocks }, socket } = useContext(ContextWrapperCreate);
     const findElement = useCallback((id) => blocks.find(el => {
@@ -30,13 +30,14 @@ const CurrentItem = memo(props => {
         onMouseMove={handlePopoverOpen}
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
+        id="height"
+        style={active ? { width: document.getElementById('width').clientWidth - 70 } : null}
         className={`${cls.cardStyle} ${active ? cls.cardStyleActive : null} ${isDelete ? cls.isDelete : null}`}>
         {blockInput}
         {setUserRules && <div className={cls.controlMenu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
             <div onClick={e => {
-                let _acceptedBy = findElement(id).getStaticData().acceptedBy;
-                let newItemsSwitches = deepCopy(_acceptedBy, userRules, blockValue);
-                newItemsSwitches = filterElement(_acceptedBy, newItemsSwitches, blockValue, _id);
+                let newItemsSwitches = deepCopy(acceptedBy, userRules, blockValue);
+                newItemsSwitches = filterElement(acceptedBy, newItemsSwitches, blockValue, _id);
                 setIsDelete(true);
                 setTimeout(() => setUserRules(newItemsSwitches), 300);
             }} className={cls.closeBtn} />

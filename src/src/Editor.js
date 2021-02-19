@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import cls from './Components/RulesEditor/style.module.scss';
 
 import Toolbar from '@material-ui/core/Toolbar';
 import {withStyles} from '@material-ui/core/styles';
@@ -993,7 +994,7 @@ class Editor extends React.Component {
         ) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
 
-            return <div className={this.props.classes.editorDiv} key="flowEditorDiv">
+            return <div className={clsx(this.props.classes.editorDiv,cls.editorDivRules)} key="flowEditorDiv">
                 <RulesEditor
                     command={this.state.cmdToBlockly}
                     key="flowEditorDiv"

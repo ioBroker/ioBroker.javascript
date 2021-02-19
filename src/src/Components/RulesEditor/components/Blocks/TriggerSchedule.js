@@ -1,14 +1,12 @@
 import GenericBlock from '../GenericBlock/index';
 import Compile from "../../Compile";
 import CustomInput from "../CustomInput";
-import CustomSelect from "../CustomSelect";
 import CustomButton from "../CustomButton";
 import CustomModal from "../CustomModal";
 import ComplexCron from "../../../ComplexCron";
 import Schedule from "../../../Schedule";
 // import CustomTime from "../CustomTime";
 import SunCalc from "suncalc2";
-import CustomCheckbox from "../CustomCheckbox";
 import React from "react"; // @iobroker/javascript-rules
 
 class TriggerScheduleBlock extends GenericBlock {
@@ -27,15 +25,17 @@ class TriggerScheduleBlock extends GenericBlock {
                 this.setState({
                     inputs: [
                         {
-                            nameRender: 'renderText',
+                            nameRender: 'renderNumber',
                             prefix: {
                                 en: 'every'
                             },
                             attr: 'interval',
-                            default: 10,
+                            frontText: 'every',
+                            defaultValue: 30,
                         },
                         {
                             nameRender: 'renderSelect',
+                            defaultValue: 'second(s)',
                             options: [
                                 { value: 's', title: 'second(s)' },
                                 { value: 'm', title: 'minute(s)' },
@@ -81,6 +81,7 @@ class TriggerScheduleBlock extends GenericBlock {
                             attr: 'unit',
                             default: '',
                             multiple: true,
+                            defaultValue: 'Every day',
                             options: [
                                 { value: '', title: 'Every day', only: true },
                                 { value: 'mo', title: 'Monday' },
@@ -96,15 +97,37 @@ class TriggerScheduleBlock extends GenericBlock {
                 });
                 break
             case 'astro':
+                const sunValue = SunCalc.getTimes(new Date(), 51.5, -0.1);
                 this.setState({
                     inputs: [
                         {
-                            nameRender: 'renderAstro',
-                            prefix: 'at',
-                            attr: 'astro',
-                            default: 'solarNoon',
+                            frontText: 'at',
+                            nameRender: 'renderSelect',
+                            options: Object.keys(sunValue).map((name) => ({
+                                value: name,
+                                title: name,
+                                title2: `[${sunValue[name].getHours() < 10 ? 0 : ''}${sunValue[name].getHours()}:${sunValue[name].getMinutes() < 10 ? 0 : ''}${sunValue[name].getMinutes()}]`
+                            })),
+                            defaultValue: 'solarNoon'
                         },
-                    ]
+                        {
+                            backText: 'with offset',
+                            nameRender: 'renderCheckbox'
+                        },
+                        {
+                            backText: 'minutes',
+                            frontText: 'offset',
+                            nameRender: 'renderNumber',
+                            defaultValue: 30,
+                            openCheckbox: true
+                        },
+                        {
+                            nameRender: 'renderNameText',
+                            attr: 'interval',
+                            defaultValue: `at ${sunValue['solarNoon'].getHours() < 10 ? 0 : ''}${sunValue['solarNoon'].getHours()}:${sunValue['solarNoon'].getMinutes() < 10 ? 0 : ''}${sunValue['solarNoon'].getMinutes()}`,
+                        }
+                    ],
+                    openCheckbox: true
                 });
                 break
             default:
@@ -115,19 +138,16 @@ class TriggerScheduleBlock extends GenericBlock {
     renderCron(input, value, onChange) {
         const { className } = this.props;
         return <div key={input.attr}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                <CustomInput
-                    className={className}
-                    autoComplete="off"
-                    fullWidth
-                    variant="outlined"
-                    size="small"
-                    value={value}
-                    onChange={onChange}
-                />
+            <div style={{ display: 'flex', alignItems: 'baseline' }}>
+                <div style={{ width: '100%' }}>
+                    {this.renderText({
+                        attr: 'text',
+                        defaultValue: '* 0 * * *'
+                    })}
+                </div>
                 <CustomButton
-                    fullWidth
-                    style={{ width: 80, marginLeft: 5 }}
+                    // fullWidth
+                    style={{ marginLeft: 7 }}
                     value='...'
                     className={className}
                     onClick={() => this.setState({ openDialog: true })}
@@ -141,15 +161,17 @@ class TriggerScheduleBlock extends GenericBlock {
                 titleButton2={'close'}>
                 <ComplexCron />
             </CustomModal>
-            every hour at 0 minutes
+            {this.renderNameText({
+                defaultValue: 'every hour at 0 minutes',
+                attr: 'text'
+            })}
         </div>;
     }
 
     renderWizard(input, value, onChange) {
         const { className } = this.props;
-
         return <div key={input.attr}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: 7 }}>
                 <CustomInput
                     className={className}
                     autoComplete="off"
@@ -164,8 +186,8 @@ class TriggerScheduleBlock extends GenericBlock {
                     customValue
                 />
                 <CustomButton
-                    fullWidth
-                    style={{ width: 80, marginLeft: 5 }}
+                    // fullWidth
+                    style={{ marginLeft: 7 }}
                     value='...'
                     className={className}
                     onClick={() => this.setState({ openDialog: true })}
@@ -179,63 +201,10 @@ class TriggerScheduleBlock extends GenericBlock {
                 titleButton2={'close'}>
                 <Schedule />
             </CustomModal>
-            every hour at 0 minutes
-        </div>;
-    }
-
-    renderAstro(input, value, onChange) {
-        const { className } = this.props;
-        const sunValue = SunCalc.getTimes(new Date(), 51.5, -0.1);
-        return <div key={input.attr}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>at
-                <CustomSelect
-                    className={className}
-                    // multiple
-                    style={{ marginLeft: 5 }}
-                    options={Object.keys(sunValue).map((name) => ({
-                        value: name,
-                        title: name,
-                        title2: `[${sunValue[name].getHours() < 10 ? 0 : ''}${sunValue[name].getHours()}:${sunValue[name].getMinutes() < 10 ? 0 : ''}${sunValue[name].getMinutes()}]`
-                    }))}
-                    value={value}
-                    onChange={value => onChange(value)}
-                />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                <CustomCheckbox
-                    className={className}
-                    autoComplete="off"
-                    title="with offset"
-                    variant="outlined"
-                    size="small"
-                    style={{ marginRight: 5 }}
-                    value={this.state.settings.withOffset}
-                    onChange={checked => onChange(checked, 'withOffset')}
-                />
-            </div>
-
-            {this.state.settings.withOffset &&
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    offset
-                    <CustomInput
-                        prefix="offset"
-                        className={className}
-                        autoComplete="off"
-                        label="number"
-                        variant="outlined"
-                        size="small"
-                        type="number"
-                        style={{ marginLeft: 5, marginRight: 5, width: 80 }}
-                        value={this.state.settings.offset}
-                        onChange={value => onChange(value, 'offset')}
-                    />
-                    minutes
-                </div>
-            }
-            <div style={{
-                display: 'flex',
-                alignItems: 'center'
-            }}>at {`${sunValue['solarNoon'].getHours() < 10 ? 0 : ''}${sunValue['solarNoon'].getHours()}:${sunValue['solarNoon'].getMinutes() < 10 ? 0 : ''}${sunValue['solarNoon'].getMinutes()}`}</div>
+            {this.renderNameText({
+                defaultValue: 'every hour at 0 minutes',
+                attr: 'text'
+            })}
         </div>;
     }
 

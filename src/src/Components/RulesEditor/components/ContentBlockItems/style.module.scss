@@ -18,7 +18,7 @@ $colorFons: #81688c; //
 }
 .emptyBlock {
     padding: 10px;
-    height: 76px;
+    // height: 76px;
     margin-top: 10px;
     animation: marginTop 0.12s;
     // transition: margin-top 0.1s;
@@ -32,7 +32,7 @@ $colorFons: #81688c; //
     100% {
         padding: 10px;
         margin-top: 10px;
-        height: 76px;
+        // height: 100%;
     }
 }
 .emptyBlockNone {

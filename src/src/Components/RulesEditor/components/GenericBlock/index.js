@@ -57,7 +57,7 @@ class GenericBlock extends PureComponent {
     renderText = (input, value, onChange) => {
         const { className } = this.props;
         const { attr, defaultValue, frontText, backText, nameBlock } = input;
-        return <div key={attr}>
+        return <Fragment key={attr}>
             <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
                 {frontText && <div className={cls.frontText}>{frontText}</div>}
                 <CustomInput
@@ -74,7 +74,7 @@ class GenericBlock extends PureComponent {
                 {backText && <div className={cls.backText}>{backText}</div>}
             </div>
             {nameBlock && <div className={cls.nameBlock}>{nameBlock}</div>}
-        </div>;
+        </Fragment>;
     }
 
     renderSwitch = (input, value, onChange) => {
@@ -222,20 +222,21 @@ class GenericBlock extends PureComponent {
         }
         // return null
         return visibility ? <div className={cls.blockMarginTop} key={attr}>
-            <div className={cls.displayFlex}><CustomInput
-                className={className}
-                autoComplete="off"
-                fullWidth
-                disabled
-                variant="outlined"
-                size="small"
-                value={defaultValue}
-                onChange={onChange}
-                customValue
-            />
+            <div className={cls.displayFlex}>
+                <CustomInput
+                    className={className}
+                    autoComplete="off"
+                    fullWidth
+                    disabled
+                    variant="outlined"
+                    size="small"
+                    value={defaultValue}
+                    onChange={onChange}
+                    customValue
+                />
                 <CustomButton
                     // fullWidth
-                    style={{ marginLeft: 5 }}
+                    style={{ marginLeft: 7 }}
                     value='...'
                     className={className}
                     onClick={() => this.setState({ showSelectId: true })}

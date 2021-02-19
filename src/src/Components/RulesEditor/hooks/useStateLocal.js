@@ -9,5 +9,5 @@ export function useStateLocal(events, nameEvents) {
         localStorage.setItem(nameEvents, JSON.stringify(newHeadCells));
         setState(newHeadCells);
     };
-    return [state, eventsToInstall];
+    return [state, eventsToInstall, localStorage.getItem(nameEvents) ? true : false];
 }

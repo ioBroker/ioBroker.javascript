@@ -1,5 +1,5 @@
 
-import React, { Fragment, useCallback, useContext, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
@@ -7,30 +7,21 @@ import { useDrop } from 'react-dnd';
 import CurrentItem from '../CurrentItem';
 import { useStateLocal } from '../../hooks/useStateLocal';
 import DragWrapper from '../DragWrapper';
-import { ContextWrapperCreate } from '../ContextWrapper';
-// import update from 'immutability-helper';
 
-const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolean, typeBlock, name, userRules, setUserRules, animation }) => {
+const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolean, typeBlock, userRules, setUserRules, animation }) => {
     const [checkItem, setCheckItem] = useState(false);
-    const { state: { blocks } } = useContext(ContextWrapperCreate);
-    const findElement = useCallback((id) => blocks.find(el => {
-        const staticData = el.getStaticData();
-        return staticData.id === id;
-    }).getStaticData(), [blocks]);
     const [canDropCheck, setCanDropCheck] = useState(false);
     const [checkId, setCheckId] = useState(false);
     const [hoverBlock, setHoverBlock] = useState('');
     const [{ canDrop, isOver, offset, targetId }, drop] = useDrop({
         accept: 'box',
-        drop: () => ({ name, blockValue }),
-        hover: (item, monitor) => {
-            let { acceptedBy } = findElement(item.id);
+        drop: () => ({ blockValue }),
+        hover: ({ acceptedBy, _id }, monitor) => {
             setCheckItem(acceptedBy === typeBlock);
-            setCheckId(!!item._id);
+            setCheckId(!!_id);
             setHoverBlock(monitor.getHandlerId());
         },
-        canDrop: (item, monitor) => {
-            let { acceptedBy } = findElement(item.id);
+        canDrop: ({ acceptedBy }, monitor) => {
             setCanDropCheck(acceptedBy === typeBlock);
             return acceptedBy === typeBlock;
         },
@@ -52,11 +43,14 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
         backgroundColor = targetId === hoverBlock ? '#fb00002e' : '';
     }
     return <div ref={drop} style={{ backgroundColor }} className={`${cls.contentBlockItem} ${boolean ? animation ? cls.contentHeightOn : null : cls.contentHeightOff}`}>
-        <div className={cls.wrapperMargin}>{itemsSwitchesRender[blockValue]?.filter(el => el.nameBlock === name).map((el, idx) => (
+        <div className={cls.wrapperMargin}>{itemsSwitchesRender[blockValue]?.map((el, idx) => (
             <DragWrapper typeBlocks={typeBlock} key={el._id} {...el} blockValue={blockValue} allProperties={el} userRules={userRules} setUserRules={setUserRules}>
                 <CurrentItem {...el} blockValue={blockValue} userRules={userRules} setUserRules={setUserRules} />
             </DragWrapper>))}
-            <div className={`${cls.emptyBlockStyle} ${isActive && checkItem && !checkId ? cls.emptyBlock : cls.emptyBlockNone}`} />
+            <div
+                style={isActive && checkItem && !checkId ? { height: document.getElementById('height').clientHeight } : null}
+                className={`${cls.emptyBlockStyle} ${isActive && checkItem && !checkId ? cls.emptyBlock : cls.emptyBlockNone}`}
+            />
         </div>
     </div>;
 }
@@ -68,39 +62,39 @@ AdditionallyContentBlockItems.defaultProps = {
 };
 
 const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, border, userRules, setUserRules }) => {
-    const [additionallyClickItems, setAdditionallyClickItems] = useStateLocal(typeBlock === 'actions' ? false : [], `additionallyClickItems_${typeBlock}`);
+    const [additionallyClickItems, setAdditionallyClickItems, checkLocal] = useStateLocal(typeBlock === 'actions' ? false : [], `additionallyClickItems_${typeBlock}`);
     useEffect(() => {
         if (typeBlock === 'conditions' && additionallyClickItems.length !== userRules['conditions'].length - 1) {
             let newArray = [];
-
             userRules['conditions'].forEach((el, idx) => {
                 if (idx > 0) {
                     newArray.push({
-                        index: idx - 1,
+                        _id: Date.now(),
                         open: true
                     });
                 }
             });
-
             setAdditionallyClickItems([...additionallyClickItems, ...newArray]);
+        }
+        if (typeBlock === 'actions' && !checkLocal && userRules['actions']['else'].length) {
+            setAdditionallyClickItems(true);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     const [animation, setAnimation] = useState(false);
 
     return <div className={`${cls.mainBlockItemRules} ${border ? cls.border : null}`}>
-        <span className={cls.nameBlockItems}>{name}</span>
+        <span id='width' className={cls.nameBlockItems}>{name}</span>
         <AdditionallyContentBlockItems
             blockValue={typeBlock === 'actions' ? 'then' : typeBlock === 'conditions' ? 0 : typeBlock}
             typeBlock={typeBlock}
             setUserRules={setUserRules}
-            name={name}
             userRules={userRules}
             itemsSwitchesRender={typeBlock === 'actions' ? userRules['actions'] : typeBlock === 'conditions' ? userRules['conditions'] : userRules}
         />
         {additionally && [...Array(typeBlock === 'actions' ? 1 : userRules.conditions.length - 1)].map((e, index) => {
-            const booleanAdditionally = (value = index) => Boolean(typeBlock === 'actions' ? additionallyClickItems : additionallyClickItems.find(el => el.index === value && el.open));
-            return <Fragment key={`${index}_block`}><div
+            const booleanAdditionally = (value = index) => Boolean(typeBlock === 'actions' ? additionallyClickItems : additionallyClickItems.find((el, idx) => idx === value && el.open));
+            return <Fragment key={`${index}_block_${typeBlock}`}><div
                 onClick={() => {
                     if (typeBlock === 'actions') {
                         setAdditionallyClickItems(!additionallyClickItems);
@@ -112,16 +106,9 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
                         setAdditionallyClickItems(newAdditionally);
                         return null
                     }
-                    newAdditionally = newAdditionally.filter(el => el.index !== index);
-                    if (newAdditionally.length > index) {
-                        newAdditionally.forEach((element, idx) => {
-                            if (idx > index) {
-                                newAdditionally[idx].index = idx - 1;
-                            }
-                        });
-                    }
+                    newAdditionally = newAdditionally.filter((el, idx) => idx !== index);
                     setAdditionallyClickItems(newAdditionally);
-                    setAnimation(true);
+                    setAnimation(typeBlock === 'actions' ? true : index);
                     setTimeout(() => {
                         setAnimation(false);
                         setUserRules({ ...userRules, conditions: [...userRules.conditions.filter((el, idx) => idx !== index + 1)] });
@@ -139,20 +126,19 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
                     setUserRules={setUserRules}
                     itemsSwitchesRender={typeBlock === 'actions' ? userRules['actions'] : typeBlock === 'conditions' ? userRules['conditions'] : userRules}
                     userRules={userRules}
-                    name={`${name}_${index + 1}`}
                     boolean={booleanAdditionally()}
-                    animation={animation}
+                    animation={Boolean(animation === index)}
                 />
             </Fragment>
         })}
         {additionally && typeBlock === 'conditions' && <div
             onClick={() => {
                 setAdditionallyClickItems([...additionallyClickItems, {
-                    index: additionallyClickItems.length,
+                    _id: Date.now(),
                     open: true
                 }]);
                 setUserRules({ ...userRules, conditions: [...userRules.conditions, []] });
-                setAnimation(true);
+                setAnimation(typeBlock === 'actions' ? true : userRules.conditions.length - 1);
                 setTimeout(() => setAnimation(false), 1000);
             }}
             className={cls.blockCardAdd}

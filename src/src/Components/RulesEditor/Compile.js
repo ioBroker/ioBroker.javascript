@@ -1,5 +1,4 @@
 // eslint-disable-next-line no-unused-vars
-import RulesEditor from "./index";
 
 const STANDARD_FUNCTION = `async function (obj) {
     if (__%%CONDITION%%__) {

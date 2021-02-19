@@ -22,12 +22,12 @@ $colorFons: #81688c; //
     opacity: 1;
     transition: width 0.5s, opacity 0.2s, padding 0.5s;
 }
-.switchesRenderWrapper{
+.switchesRenderWrapper {
     overflow-x: hidden;
     overflow-y: auto;
-    direction:rtl;
-    span{
-        direction:ltr;
+    direction: rtl;
+    span {
+        direction: ltr;
     }
 }
 .menuOff {
@@ -107,12 +107,12 @@ $colorFons: #81688c; //
     // justify-content: space-around;
     align-items: center;
     width: 200px;
-    button{
-        width: calc(100%/3);
+    button {
+        width: calc(100% / 3);
         min-width: auto;
         color: #dfbdec;
     }
-    .controlPanelAppBar{
+    .controlPanelAppBar {
         background: none;
         box-shadow: none;
     }
@@ -136,4 +136,22 @@ $colorFons: #81688c; //
     width: 20px;
     height: 20px;
     margin-right: 10px;
+}
+@media screen and (max-width: 835px) {
+    .wrapperRules {
+        flex-direction: column;
+        height: auto;
+    }
+    .editorDivRules {
+        overflow: visible !important;
+    }
+    .menuRules{
+        position: sticky;
+        top: 0;
+        height: 97vh;
+        z-index: 2222;
+    }
+    .hamburgerWrapper{
+        position: sticky;
+    }
 }
