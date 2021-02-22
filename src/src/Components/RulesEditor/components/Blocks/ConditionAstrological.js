@@ -1,4 +1,4 @@
-import GenericBlock from '../GenericBlock/index';
+import GenericBlock from '../GenericBlock';
 import Compile from "../../Compile";
 import SunCalc from "suncalc2";
 
@@ -7,7 +7,7 @@ class ConditionAstrological extends GenericBlock {
         super(props, ConditionAstrological.getStaticData());
     }
 
-    compile(config, context) {
+    static compile(config, context) {
         return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
     }
 
@@ -53,11 +53,18 @@ class ConditionAstrological extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'conditions',
-            name: { en: 'Astrological condition', ru: 'Astrological condition' },
+            name: {
+                en: 'Astrological',
+                ru: 'Astrological'
+            },
             id: 'ConditionAstrological',
             icon: 'Brightness3',
             tagCardArray: ['>', '>=', '<', '<=', '=', '<>'],
         }
+    }
+
+    getData() {
+        return ConditionAstrological.getStaticData();
     }
 }
 

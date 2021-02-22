@@ -1,4 +1,4 @@
-import GenericBlock from '../GenericBlock/index';
+import GenericBlock from '../GenericBlock';
 import Compile from "../../Compile";
 import CustomInput from "../CustomInput";
 import CustomButton from "../CustomButton";
@@ -14,9 +14,23 @@ class TriggerScheduleBlock extends GenericBlock {
         super(props, TriggerScheduleBlock.getStaticData());
     }
 
-    compile(config, context) {
-        return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
+    static compile(config, context) {
+        let text = '';
+        if (config.tagCard === 'interval') {
+            text = `setInterval(${Compile.STANDARD_FUNCTION}, ${config.interval || 1} * ${config.attr === 's' ? 1000 : (config.attr === 'm' ? 60000 : 3600000)})`;
+        } else if (config.tagCard === 'cron') {
+            text = `schedule("${config.cron}", ${Compile.STANDARD_FUNCTION});`;
+        } else if (config.tagCard === 'at') {
+            const [hours, minutes] = config.at.split(':');
+            // todo: dow
+            text = `schedule("${minutes} ${hours} * * *", ${Compile.STANDARD_FUNCTION});`;
+        } else if (config.tagCard === 'astro') {
+            text = `schedule({astro: "${config.astro}", shift: ${config.offset ? config.offsetValue : 0}}, ${Compile.STANDARD_FUNCTION})`;
+        }
+
+        return text;
     }
+
 
     onTagChange(tagCard) {
         tagCard = tagCard || this.state.settings.tagCard;
@@ -45,7 +59,7 @@ class TriggerScheduleBlock extends GenericBlock {
                         }
                     ]
                 });
-                break
+                break;
 
             case 'cron':
                 this.setState({
@@ -69,7 +83,7 @@ class TriggerScheduleBlock extends GenericBlock {
                         }
                     ]
                 });
-                break
+                break;
 
             case 'at':
                 this.setState({
@@ -82,30 +96,32 @@ class TriggerScheduleBlock extends GenericBlock {
                         },
                         {
                             nameRender: 'renderSelect',
-                            attr: 'unit',
+                            attr: 'dow',
                             default: '',
                             multiple: true,
                             defaultValue: 'Every day',
                             options: [
                                 { value: '', title: 'Every day', only: true },
-                                { value: 'mo', title: 'Monday' },
-                                { value: 'tu', title: 'Tuesday' },
-                                { value: 'we', title: 'Wednesday' },
-                                { value: 'th', title: 'Thursday' },
-                                { value: 'fr', title: 'Friday' },
-                                { value: 'sa', title: 'Saturday' },
-                                { value: 'su', title: 'Sunday' },
+                                { value: '1', title: 'Monday' },
+                                { value: '2', title: 'Tuesday' },
+                                { value: '3', title: 'Wednesday' },
+                                { value: '4', title: 'Thursday' },
+                                { value: '5', title: 'Friday' },
+                                { value: '6', title: 'Saturday' },
+                                { value: '0', title: 'Sunday' },
                             ]
                         }
                     ]
                 });
-                break
+                break;
+
             case 'astro':
                 const sunValue = SunCalc.getTimes(new Date(), 51.5, -0.1);
                 this.setState({
                     inputs: [
                         {
                             frontText: 'at',
+                            attr: 'astro',
                             nameRender: 'renderSelect',
                             options: Object.keys(sunValue).map((name) => ({
                                 value: name,
@@ -116,13 +132,15 @@ class TriggerScheduleBlock extends GenericBlock {
                         },
                         {
                             backText: 'with offset',
-                            nameRender: 'renderCheckbox'
+                            nameRender: 'renderCheckbox',
+                            attr: 'offset',
                         },
                         {
                             backText: 'minutes',
                             frontText: 'offset',
                             nameRender: 'renderNumber',
                             defaultValue: 30,
+                            attr: 'offsetValue',
                             openCheckbox: true
                         },
                         {
@@ -133,9 +151,10 @@ class TriggerScheduleBlock extends GenericBlock {
                     ],
                     openCheckbox: true
                 });
-                break
+                break;
+
             default:
-                break
+                break;
         }
     }
 

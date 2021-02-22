@@ -1,13 +1,16 @@
-import GenericBlock from '../GenericBlock/index';
-import Compile from "../../Compile";
+import GenericBlock from '../GenericBlock';
 
 class TriggerScriptSave extends GenericBlock {
     constructor(props) {
         super(props, TriggerScriptSave.getStaticData());
     }
 
-    compile(config, context) {
-        return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
+    static compile(config, context) {
+        return `if (__%%CONDITION%%__) {
+__%%THEN%%__
+} else {
+__%%ELSE%%__
+}`;
     }
 
     onTagChange(tagCard) {

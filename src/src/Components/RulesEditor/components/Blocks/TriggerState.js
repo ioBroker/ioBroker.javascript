@@ -1,13 +1,13 @@
-import GenericBlock from '../GenericBlock/index';
-import Compile from "../../Compile";
+import GenericBlock from '../GenericBlock';
+import Compile from '../../Compile';
 
 class TriggerState extends GenericBlock {
     constructor(props) {
         super(props, TriggerState.getStaticData());
     }
 
-    compile(config, context) {
-        return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
+    static compile(config, context) {
+        return `on({id: "${config.oid || ''}", change: ${config.tagCard === 'on update' ? 'any' : 'ne'}}, ${Compile.STANDARD_FUNCTION});`
     }
 
     onTagChange(tagCard) {
@@ -16,7 +16,6 @@ class TriggerState extends GenericBlock {
                 {
                     nameRender: 'renderObjectID',
                     attr: 'oid',
-                    nameBlock: 'Alive for alarm adapter',
                     defaultValue: ''
                 }
             ]

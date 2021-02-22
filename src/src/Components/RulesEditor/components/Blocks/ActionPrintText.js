@@ -1,13 +1,12 @@
-import GenericBlock from '../GenericBlock/index';
-import Compile from "../../Compile";
+import GenericBlock from '../GenericBlock';
 
 class ActionPrintText extends GenericBlock {
     constructor(props) {
         super(props, ActionPrintText.getStaticData());
     }
 
-    compile(config, context) {
-        return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
+    static compile(config, context) {
+        return `console.log("${(config.text || '').replace(/"/g, '\\"')}");`;
     }
 
     onTagChange(tagCard) {
@@ -15,20 +14,28 @@ class ActionPrintText extends GenericBlock {
             inputs: [
                 {
                     nameRender: 'renderModalInput',
-                    attr: 'modal',
+                    attr: 'text',
                     defaultValue: 'My device triggered',
                     nameBlock: 'Log text'
                 }
             ]
         });
     }
+
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: { en: 'Print text', ru: 'Print text' },
+            name: {
+                en: 'Print text',
+                ru: 'Print text'
+            },
             id: 'ActionPrintText',
             icon: 'Subject',
         }
+    }
+
+    getData() {
+        return ActionPrintText.getStaticData();
     }
 }
 

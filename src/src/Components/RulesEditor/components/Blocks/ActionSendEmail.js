@@ -1,4 +1,4 @@
-import GenericBlock from '../GenericBlock/index';
+import GenericBlock from '../GenericBlock';
 import Compile from "../../Compile";
 
 class ActionSendEmail extends GenericBlock {
@@ -6,7 +6,7 @@ class ActionSendEmail extends GenericBlock {
         super(props, ActionSendEmail.getStaticData());
     }
 
-    compile(config, context) {
+    static compile(config, context) {
         return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
     }
 
@@ -55,6 +55,10 @@ class ActionSendEmail extends GenericBlock {
             id: 'ActionSendEmail',
             icon: 'MailOutline'
         }
+    }
+
+    getData() {
+        return ActionSendEmail.getStaticData();
     }
 }
 

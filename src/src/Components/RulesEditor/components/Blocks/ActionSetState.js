@@ -1,37 +1,48 @@
-import GenericBlock from '../GenericBlock/index';
-import Compile from "../../Compile";
+import GenericBlock from '../GenericBlock';
+
 class ActionSetState extends GenericBlock {
     constructor(props) {
         super(props, ActionSetState.getStaticData());
     }
 
-    compile(config, context) {
-        return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
+    static compile(config, context) {
+        let value = config.value;
+
+        if (parseFloat(config.value).toString() !== config.value && config.value !== 'true' && config.value !== 'false') {
+            value = '"' + value.replace(/"/g, '\\"') + '"';
+        }
+
+        return `await setState("${config.oid}", ${value}, ${config.tagCard === 'update'});`;
     }
 
     onTagChange(tagCard) {
-        let obg = {};
+        let obg;
         let type = 'number';
+
         switch (type) {
             case 'number':
                 obg = {
+                    attr: 'value',
                     backText: 'kW',
                     frontText: 'with',
                     nameRender: 'renderNumber',
                     defaultValue: 30
                 }
                 break;
+
             case 'control1':
                 obg = {
                     nameRender: 'renderSlider',
-                    attr: 'text',
+                    attr: 'value',
                     defaultValue: 50,
                     frontText: '0',
                     backText: '100'
                 }
                 break;
+
             case 'control2':
                 obg = {
+                    attr: 'value',
                     nameRender: 'renderSelect',
                     frontText: 'Instance:',
                     options: [{
@@ -39,9 +50,9 @@ class ActionSetState extends GenericBlock {
                         title: 'State1',
                     }],
                     defaultValue: 'State1',
-                    attr: 'Instance',
                 }
                 break;
+
             case 'control3':
                 obg = {
                     backText: 'true',
@@ -50,22 +61,26 @@ class ActionSetState extends GenericBlock {
                     defaultValue: false
                 }
                 break;
+
             case 'control4':
                 obg = {
                     nameRender: 'renderButton',
                     defaultValue: 'Press'
                 }
                 break;
+
             case 'control5':
                 obg = {
                     nameRender: 'renderColor',
                     defaultValue: 30
                 }
                 break;
+
             default:
                 obg = null;
-                break
+                break;
         }
+
         this.setState({
             inputs: [
                 {

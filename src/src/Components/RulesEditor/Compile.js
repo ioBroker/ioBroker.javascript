@@ -19,9 +19,13 @@ const DEFAULT_RULE = {
 
 function compileTriggers(json, context, blocks) {
     const triggers = [];
-    json.triggers.forEach(trigger => {
+    let jsonTriggers = json.triggers;
+    if (!jsonTriggers.length) {
+        jsonTriggers = [{id: 'TriggerScriptSave'}];
+    }
+    jsonTriggers.forEach(trigger => {
         const found = findBlock(trigger.id, blocks);
-        if (found && false) {
+        if (found) {
             const text = found.compile(trigger, context);
             const conditions = compileConditions(json.conditions, context, blocks);
             const then = compileActions(json.actions.then, context, blocks);

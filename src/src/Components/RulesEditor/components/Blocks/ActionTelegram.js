@@ -1,4 +1,4 @@
-import GenericBlock from '../GenericBlock/index';
+import GenericBlock from '../GenericBlock';
 import Compile from "../../Compile";
 
 class ActionTelegram extends GenericBlock {
@@ -6,7 +6,7 @@ class ActionTelegram extends GenericBlock {
         super(props, ActionTelegram.getStaticData());
     }
 
-    compile(config, context) {
+    static compile(config, context) {
         return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
     }
 
@@ -47,6 +47,10 @@ class ActionTelegram extends GenericBlock {
             id: 'ActionTelegram',
             icon: 'ChatBubbleOutline'
         }
+    }
+
+    getData() {
+        return ActionTelegram.getStaticData();
     }
 }
 
