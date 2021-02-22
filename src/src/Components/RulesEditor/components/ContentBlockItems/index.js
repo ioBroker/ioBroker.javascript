@@ -60,9 +60,46 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
                     userRules={userRules}
                     onChange={settings => {
                         const newUserRules = JSON.parse(JSON.stringify(userRules));
-                        const block = newUserRules[typeBlock].find(item => item._id === settings._id);
-                        const pos = newUserRules[typeBlock].indexOf(block);
-                        newUserRules[typeBlock][pos] = settings;
+                        let found;
+                        if (typeBlock === 'conditions') {
+                            for (let i = 0; i < newUserRules.conditions.length; i++) {
+                                for (let j = 0; j < newUserRules.conditions[i].length; j++) {
+                                    if (newUserRules.conditions[i][j]._id === settings._id) {
+                                        newUserRules.conditions[i][j] = settings;
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (found) {
+                                    break;
+                                }
+                            }
+                        } else if (typeBlock === 'actions') {
+
+                            for (let i = 0; i < newUserRules.actions['then'].length; i++) {
+                                if (newUserRules.actions['then'][i]._id === settings._id) {
+                                    newUserRules.actions['then'][i] = settings;
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                for (let i = 0; i < newUserRules.actions['else'].length; i++) {
+                                    if (newUserRules.actions['else'][i]._id === settings._id) {
+                                        newUserRules.actions['else'][i] = settings;
+                                        break;
+                                    }
+                                }
+                            }
+                        } else {
+                            for (let i = 0; i < newUserRules.triggers.length; i++) {
+                                if (newUserRules.triggers[i]._id === settings._id) {
+                                    newUserRules.triggers[i] = settings;
+                                    break;
+                                }
+                            }
+                        }
+
                         setUserRules(newUserRules);
                     }}
                 />

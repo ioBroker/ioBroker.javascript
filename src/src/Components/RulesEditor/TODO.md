@@ -1,0 +1,7 @@
+- Drag with Ctrl => copy of block
+- Show Same icons as in control panel for "when, ..and.. ..then"
+- Change colors to brand book
+- Make inputs smaller like material design
+- Change Modal Dialog to normal material dialog
+- Remove text "Control panel"  => just line
+- Make 

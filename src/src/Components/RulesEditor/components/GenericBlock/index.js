@@ -321,7 +321,7 @@ class GenericBlock extends PureComponent {
                     fullWidth
                     variant="outlined"
                     size="small"
-                    value={defaultValue}
+                    value={this.state.settings[input.attr] === undefined ? defaultValue : this.state.settings[input.attr]}
                     onChange={onChange}
                     customValue
                 />
@@ -336,12 +336,10 @@ class GenericBlock extends PureComponent {
             </div>
             <CustomModal
                 open={openModal}
-                buttonClick={() => {
-                    this.setState({ openModal: !openModal });
-                }}
-                close={() => this.setState({ openModal: !openModal })}
-                titleButton={'add'}
-                titleButton2={'close'}>
+                buttonClick={() => this.setState({ openModal: false })}
+                close={() => this.setState({ openModal: false })}
+                titleButton={'ok'}
+                titleButton2={'cancel'}>
                 <CustomInput
                     className={className}
                     autoComplete="off"
@@ -350,7 +348,7 @@ class GenericBlock extends PureComponent {
                     size="small"
                     rows={10}
                     multiline
-                    value={defaultValue}
+                    value={this.state.settings[input.attr] === undefined ? defaultValue : this.state.settings[input.attr]}
                     onChange={onChange}
                     customValue
                 />
