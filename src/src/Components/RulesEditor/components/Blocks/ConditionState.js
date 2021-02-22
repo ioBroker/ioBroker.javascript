@@ -19,7 +19,7 @@ class ConditionState extends GenericBlock {
                 },
                 {
                     nameRender: 'renderObjectID',
-                    attr: 'renderObjectID',
+                    attr: 'oid',
                     nameBlock:'Alive for alarm adapter',
                     defaultValue: 'system.adapter.ad...',
                     openCheckbox: true

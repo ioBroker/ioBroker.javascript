@@ -70,15 +70,14 @@ class ActionSetState extends GenericBlock {
             inputs: [
                 {
                     nameRender: 'renderObjectID',
-                    attr: 'renderObjectID',
-                    nameBlock: 'Alive for alarm adapter',
-                    defaultValue: 'system.adapter.ad...',
-                    // additionallyCommon: true
+                    attr: 'oid',
+                    defaultValue: '',
                 },
                 obg
             ]
         });
     }
+
 
     static getStaticData() {
         return {
@@ -88,6 +87,10 @@ class ActionSetState extends GenericBlock {
             icon: 'PlayForWork',
             tagCardArray: ['control', 'update']
         }
+    }
+
+    getData() {
+        return ActionSetState.getStaticData();
     }
 }
 

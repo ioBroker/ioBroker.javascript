@@ -16,7 +16,7 @@ class ActionExec extends GenericBlock {
                 {
                     nameRender: 'renderModalInput',
                     attr: 'modal',
-                    defaultValue: 'format C:',
+                    defaultValue: 'ls /opt/iobroker',
                     nameBlock: 'Shell command'
                 }
             ]

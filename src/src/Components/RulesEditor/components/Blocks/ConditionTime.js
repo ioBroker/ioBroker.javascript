@@ -37,6 +37,10 @@ class ConditionTime extends GenericBlock {
             tagCardArray: ['>', '>=', '<', '<=', '=', '<>']
         }
     }
+
+    getData() {
+        return ConditionTime.getStaticData();
+    }
 }
 
 export default ConditionTime;

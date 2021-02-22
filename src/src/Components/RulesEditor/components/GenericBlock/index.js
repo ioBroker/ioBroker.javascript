@@ -219,8 +219,17 @@ class GenericBlock extends PureComponent {
         const { attr, nameBlock, defaultValue, openCheckbox: openCheckboxValue } = input;
         let visibility = true;
         if (openCheckboxValue) {
-            visibility = openCheckbox
+            visibility = openCheckbox;
         }
+
+        if (this.state.settings[input.attr] && !this.state[this.state.settings[input.attr]]) {
+            setTimeout(() => {
+                this.props.socket.getObject(value)
+                    .then(obj =>
+                        this.setState({[this.state.settings[input.attr]]: obj}));
+            }, 200);
+        }
+
         // return null
         return visibility ? <div className={cls.blockMarginTop} key={attr}>
             <div className={cls.displayFlex}>
@@ -242,7 +251,7 @@ class GenericBlock extends PureComponent {
                     onClick={() => this.setState({ showSelectId: true })}
                 />
             </div>
-            {nameBlock && <div className={cls.nameBlock}>{nameBlock}</div>}
+            {this.state[this.state.settings[input.attr]] && <div className={cls.nameBlock}>{Utils.getObjectNameFromObj(this.state[this.state.settings[input.attr]], I18n.getLanguage())}</div>}
             {showSelectId ? <DialogSelectID
                 key="tableSelect"
                 // imagePrefix="../.."
@@ -424,8 +433,10 @@ class GenericBlock extends PureComponent {
                                 settings.id = this.getData().id;
                                 settings._id = this.props._id;
 
-                                this.setState({ settings }, () =>
-                                    this.props.onChange(settings));
+                                this.setState({ settings }, () => {
+                                    this.onValueChange && this.onValueChange(value, attr || input.attr);
+                                    this.props.onChange(settings)
+                                });
                             },
                             input.options || []
                         );
