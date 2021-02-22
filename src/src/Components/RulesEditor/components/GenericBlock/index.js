@@ -23,6 +23,9 @@ class GenericBlock extends PureComponent {
     constructor(props, item) {
         super(props);
         item = item || {};
+        let settings = props.settings || {
+            tagCard: item.tagCardArray ? item.tagCardArray[0] || '' : ''
+        }
 
         this.state = {
             inputs: item.inputs || props.inputs || [],
@@ -40,9 +43,7 @@ class GenericBlock extends PureComponent {
             instanceSelectionOptions: [],
             instanceSelectionDef: '',
 
-            settings: {
-                tagCard: item.tagCardArray ? item.tagCardArray[0] || '' : ''
-            }
+            settings
         };
     }
 
@@ -230,8 +231,7 @@ class GenericBlock extends PureComponent {
                     disabled
                     variant="outlined"
                     size="small"
-                    value={defaultValue}
-                    onChange={onChange}
+                    value={this.state.settings[input.attr] === undefined ? defaultValue : this.state.settings[input.attr]}
                     customValue
                 />
                 <CustomButton
@@ -252,10 +252,9 @@ class GenericBlock extends PureComponent {
                 statesOnly={true}
                 // selected={this.selectIdValue}
                 onClose={() => this.setState({ showSelectId: false })}
-                onOk={(selected, name) => {
-                    console.log(1111, selected, name)
-                    this.setState({ showSelectId: false, selectIdValue: selected });
-                }}
+                onOk={(selected, name) =>
+                    this.setState({ showSelectId: false}, () =>
+                        onChange(selected))}
             /> : null}
         </div> : null;
     }
@@ -421,8 +420,12 @@ class GenericBlock extends PureComponent {
                             this.state.settings[input.attr] === undefined ? input.default : this.state.settings[input.attr],
                             (value, attr) => {
                                 const settings = JSON.parse(JSON.stringify(this.state.settings));
-                                settings[attr || input.attr] = attr;
-                                this.setState({ settings });
+                                settings[attr || input.attr] = value;
+                                settings.id = this.getData().id;
+                                settings._id = this.props._id;
+
+                                this.setState({ settings }, () =>
+                                    this.props.onChange(settings));
                             },
                             input.options || []
                         );

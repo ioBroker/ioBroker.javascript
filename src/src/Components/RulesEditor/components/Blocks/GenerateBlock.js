@@ -16,7 +16,7 @@ class GenerateBlock extends GenericBlock {
         });
     }
 
-    static getStaticData = () => {
+    getStaticData = () => {
         return GenerateBlock.getStaticDataParams().dataGenerate
     }
 

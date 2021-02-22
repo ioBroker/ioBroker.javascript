@@ -27,6 +27,7 @@ class ConditionTime extends GenericBlock {
             iconTag:true
         });
     }
+
     static getStaticData() {
         return {
             acceptedBy: 'conditions',

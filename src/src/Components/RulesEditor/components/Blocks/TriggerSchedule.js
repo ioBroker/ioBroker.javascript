@@ -35,6 +35,7 @@ class TriggerScheduleBlock extends GenericBlock {
                         },
                         {
                             nameRender: 'renderSelect',
+                            attr: 'unit',
                             defaultValue: 'second(s)',
                             options: [
                                 { value: 's', title: 'second(s)' },
@@ -45,6 +46,7 @@ class TriggerScheduleBlock extends GenericBlock {
                     ]
                 });
                 break
+
             case 'cron':
                 this.setState({
                     inputs: [
@@ -55,7 +57,8 @@ class TriggerScheduleBlock extends GenericBlock {
                         }
                     ]
                 });
-                break
+                break;
+
             case 'wizard':
                 this.setState({
                     inputs: [
@@ -67,6 +70,7 @@ class TriggerScheduleBlock extends GenericBlock {
                     ]
                 });
                 break
+
             case 'at':
                 this.setState({
                     inputs: [
@@ -216,6 +220,10 @@ class TriggerScheduleBlock extends GenericBlock {
             icon: 'AccessTime',
             tagCardArray: ['cron', 'wizard', 'interval', 'at', 'astro'],
         }
+    }
+
+    getData() {
+        return TriggerScheduleBlock.getStaticData();
     }
 }
 

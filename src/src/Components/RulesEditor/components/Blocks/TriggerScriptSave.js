@@ -21,7 +21,7 @@ class TriggerScriptSave extends GenericBlock {
             ]
         });
     }
-    
+
     static getStaticData() {
         return {
             acceptedBy: 'triggers',
@@ -29,6 +29,10 @@ class TriggerScriptSave extends GenericBlock {
             id: 'TriggerScriptSave',
             icon: 'PlayArrow',
         }
+    }
+
+    getData() {
+        return TriggerScriptSave.getStaticData();
     }
 }
 

@@ -15,9 +15,9 @@ class TriggerState extends GenericBlock {
             inputs: [
                 {
                     nameRender: 'renderObjectID',
-                    attr: 'renderObjectID',
-                    nameBlock:'Alive for alarm adapter',
-                    defaultValue: 'system.adapter.ad...'
+                    attr: 'oid',
+                    nameBlock: 'Alive for alarm adapter',
+                    defaultValue: ''
                 }
             ]
         });
@@ -31,6 +31,10 @@ class TriggerState extends GenericBlock {
             icon: 'FlashOn',
             tagCardArray: ['on update', 'on change']
         }
+    }
+
+    getData() {
+        return TriggerState.getStaticData();
     }
 }
 

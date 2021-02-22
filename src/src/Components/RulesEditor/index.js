@@ -23,6 +23,7 @@ const RulesEditor = ({ code, onChange }) => {
         type: 'triggers',
         index: 0
     }, 'filterControlPanel');
+
     const setBlocksFunc = (text = filter.text, typeFunc = filter.type) => {
         let newAllBlocks = [...blocks];
         newAllBlocks = newAllBlocks.filter(el => {
@@ -63,7 +64,7 @@ const RulesEditor = ({ code, onChange }) => {
         setBlocksFunc(filter.text, ['triggers', 'conditions', 'actions'][newValue]);
     };
 
-    const onChangeBloks = useCallback((json)=>{
+    const onChangeBlocks = useCallback((json)=>{
         setUserRules(json);
         onChange(Compile.json2code(json, blocks));
     },[blocks, onChange]);
@@ -117,7 +118,7 @@ const RulesEditor = ({ code, onChange }) => {
                                 name={name}
                                 icon={icon}
                                 userRules={userRules}
-                                setUserRules={onChangeBloks}
+                                setUserRules={onChangeBlocks}
                                 isActive={false}
                                 id={id}
                             />
@@ -137,13 +138,13 @@ const RulesEditor = ({ code, onChange }) => {
             </div>
         </div>
         <ContentBlockItems
-            setUserRules={onChangeBloks}
+            setUserRules={onChangeBlocks}
             userRules={userRules}
             name="when..."
             typeBlock="triggers"
         />
         <ContentBlockItems
-            setUserRules={onChangeBloks}
+            setUserRules={onChangeBlocks}
             userRules={userRules}
             name="...and..."
             typeBlock="conditions"
@@ -152,7 +153,7 @@ const RulesEditor = ({ code, onChange }) => {
             border
         />
         <ContentBlockItems
-            setUserRules={onChangeBloks}
+            setUserRules={onChangeBlocks}
             userRules={userRules}
             name="...then"
             typeBlock="actions"
