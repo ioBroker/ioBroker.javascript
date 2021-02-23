@@ -50,9 +50,21 @@ class GenericBlock extends PureComponent {
         };
     }
 
+    // called every time, the tagCard changes or at start
     onTagChange(tagCard) {
         // do nothing, but blocks can overwrite it
     }
+
+    // called if trigger added or removed
+    onUpdate() {
+        // do nothing, but blocks can overwrite it
+    }
+
+    // called every time if some attribute changes
+    onValueChanged(value, attr) {
+        // do nothing, but blocks can overwrite it
+    }
+
     renderText = (input, value, onChange) => {
         const { className } = this.props;
         const { attr, frontText, backText, nameBlock, name } = input;
@@ -420,8 +432,8 @@ class GenericBlock extends PureComponent {
             settings._id = this.props._id;
 
             this.setState({ settings }, () => {
-                this.onValueChange && this.onValueChange(value, attr || attribute);
-                this.props.onChange(settings)
+                this.onValueChanged(value, attr || attribute);
+                this.props.onChange(settings);
             });
         }
     }

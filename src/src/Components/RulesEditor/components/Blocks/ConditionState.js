@@ -105,10 +105,14 @@ class ConditionState extends GenericBlock {
         }
     }
 
-    onValueChange(value, attr, context) {
+    onValueChanged(value, attr, context) {
         if (attr === 'useTrigger') {
             this._setInputs(value);
         }
+    }
+
+    onUpdate() {
+        this._setInputs(this.state.settings.useTrigger);
     }
 
     onTagChange(tagCard) {
