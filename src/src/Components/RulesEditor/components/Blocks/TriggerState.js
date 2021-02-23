@@ -16,7 +16,7 @@ class TriggerState extends GenericBlock {
                 {
                     nameRender: 'renderObjectID',
                     attr: 'renderObjectID',
-                    nameBlock:'Alive for alarm adapter',
+                    nameBlock: 'Alive for alarm adapter',
                     defaultValue: 'system.adapter.ad...'
                 }
             ]

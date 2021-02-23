@@ -137,6 +137,7 @@ class TriggerScheduleBlock extends GenericBlock {
 
     renderCron(input, value, onChange) {
         const { className } = this.props;
+        let textCron = '';
         return <div key={input.attr}>
             <div style={{ display: 'flex', alignItems: 'baseline' }}>
                 <div style={{ width: '100%' }}>
@@ -155,11 +156,13 @@ class TriggerScheduleBlock extends GenericBlock {
             </div>
             <CustomModal
                 open={this.state.openDialog}
-                buttonClick={() => this.setState({ openDialog: false })}
+                buttonClick={() => {
+                    this.setState({ openDialog: false, renderText: { value: textCron } })
+                }}
                 close={() => this.setState({ openDialog: false })}
                 titleButton={'add'}
                 titleButton2={'close'}>
-                <ComplexCron />
+                <ComplexCron onChange={el => { textCron = el }} />
             </CustomModal>
             {this.renderNameText({
                 defaultValue: 'every hour at 0 minutes',
@@ -199,7 +202,7 @@ class TriggerScheduleBlock extends GenericBlock {
                 close={() => this.setState({ openDialog: false })}
                 titleButton={'add'}
                 titleButton2={'close'}>
-                <Schedule />
+                <Schedule onChange={el=>console.log(el)}/>
             </CustomModal>
             {this.renderNameText({
                 defaultValue: 'every hour at 0 minutes',

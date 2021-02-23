@@ -37,6 +37,15 @@ class GenericBlock extends PureComponent {
             openCheckbox: false,
             iconTag: false,
 
+            renderObjectID: {
+                nameBlock: '',
+                value: ''
+            },
+            
+            renderText: {
+                value: ''
+            },
+
             instanceSelectionOptions: [],
             instanceSelectionDef: '',
 
@@ -56,6 +65,7 @@ class GenericBlock extends PureComponent {
 
     renderText = (input, value, onChange) => {
         const { className } = this.props;
+        const { renderText } = this.state;
         const { attr, defaultValue, frontText, backText, nameBlock } = input;
         return <Fragment key={attr}>
             <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
@@ -67,7 +77,7 @@ class GenericBlock extends PureComponent {
                     variant="outlined"
                     size="small"
                     fullWidth
-                    value={defaultValue}
+                    value={renderText.value || defaultValue}
                     onChange={onChange}
                     customValue
                 />
@@ -213,7 +223,7 @@ class GenericBlock extends PureComponent {
     }
 
     renderObjectID = (input, value, onChange) => {
-        const { showSelectId, openCheckbox } = this.state;
+        const { showSelectId, openCheckbox, renderObjectID } = this.state;
         const { className, socket } = this.props;
         const { attr, nameBlock, defaultValue, openCheckbox: openCheckboxValue } = input;
         let visibility = true;
@@ -230,7 +240,7 @@ class GenericBlock extends PureComponent {
                     disabled
                     variant="outlined"
                     size="small"
-                    value={defaultValue}
+                    value={renderObjectID.value || defaultValue}
                     onChange={onChange}
                     customValue
                 />
@@ -242,7 +252,7 @@ class GenericBlock extends PureComponent {
                     onClick={() => this.setState({ showSelectId: true })}
                 />
             </div>
-            {nameBlock && <div className={cls.nameBlock}>{nameBlock}</div>}
+            {nameBlock && <div className={cls.nameBlock}>{renderObjectID.nameBlock || nameBlock}</div>}
             {showSelectId ? <DialogSelectID
                 key="tableSelect"
                 // imagePrefix="../.."
@@ -254,7 +264,7 @@ class GenericBlock extends PureComponent {
                 onClose={() => this.setState({ showSelectId: false })}
                 onOk={(selected, name) => {
                     console.log(1111, selected, name)
-                    this.setState({ showSelectId: false, selectIdValue: selected });
+                    this.setState({ showSelectId: false, selectIdValue: selected, renderObjectID: { value: selected, nameBlock: name } });
                 }}
             /> : null}
         </div> : null;
@@ -402,11 +412,8 @@ class GenericBlock extends PureComponent {
     };
 
     render = () => {
-        const { inputs, name, icon, iconTag } = this.state;
+        const { inputs, name, icon, iconTag, settings, settings: { tagCard } } = this.state;
         let _inputs = inputs || [];
-        if (!Array.isArray(inputs)) {
-            _inputs = [inputs];
-        }
         return <Fragment>
             {iconTag ? this.renderIconTag() :
                 <MaterialDynamicIcon iconName={icon} className={cls.iconThemCard} />}
@@ -418,17 +425,17 @@ class GenericBlock extends PureComponent {
                     .map(input => {
                         return this[input.nameRender](
                             input,
-                            this.state.settings[input.attr] === undefined ? input.default : this.state.settings[input.attr],
+                            settings[input.attr] === undefined ? input.default : settings[input.attr],
                             (value, attr) => {
-                                const settings = JSON.parse(JSON.stringify(this.state.settings));
-                                settings[attr || input.attr] = attr;
-                                this.setState({ settings });
+                                const copySettings = JSON.parse(JSON.stringify(settings));
+                                copySettings[attr || input.attr] = attr;
+                                this.setState({ copySettings });
                             },
                             input.options || []
                         );
                     })}
             </div>
-            {this.state.settings.tagCard && <div className={cls.controlMenuTop} style={{ opacity: 1, height: 22, top: -22 }}>
+            {tagCard && <div className={cls.controlMenuTop} style={{ opacity: 1, height: 22, top: -22 }}>
                 <div onClick={async e => {
                     await this.tagGenerateNew();
                     await this.tagGenerate();
