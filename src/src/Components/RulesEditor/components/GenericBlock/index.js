@@ -50,6 +50,9 @@ class GenericBlock extends PureComponent {
         };
     }
 
+    onTagChange(tagCard) {
+        // do nothing, but blocks can overwrite it
+    }
     renderText = (input, value, onChange) => {
         const { className } = this.props;
         const { attr, frontText, backText, nameBlock, name } = input;
@@ -377,7 +380,7 @@ class GenericBlock extends PureComponent {
                                 const settings = { ...this.state.settings, tagCard: el };
                                 this.setState({ openTagMenu: null, settings }, () => {
                                     this.props.onChange(settings);
-                                    this.onTagChange && this.onTagChange(el);
+                                    this.onTagChange(el);
                                 });
                             }}>{I18n.t(el)}</MenuItem>)}
                 </Menu>
