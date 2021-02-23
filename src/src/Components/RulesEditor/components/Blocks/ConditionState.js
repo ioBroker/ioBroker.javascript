@@ -1,13 +1,12 @@
-import GenericBlock from '../GenericBlock/index';
-import Compile from "../../Compile";
+import GenericBlock from '../GenericBlock';
 
 class ConditionState extends GenericBlock {
     constructor(props) {
         super(props, ConditionState.getStaticData());
     }
 
-    compile(config, context) {
-        return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
+    static compile(config, context) {
+        return `true`;
     }
 
     onTagChange(tagCard) {
@@ -15,13 +14,13 @@ class ConditionState extends GenericBlock {
             inputs: [
                 {
                     backText: 'with offset',
-                    nameRender: 'renderCheckbox'
+                    nameRender: 'renderCheckbox',
+                    attr: 'offset',
                 },
                 {
                     nameRender: 'renderObjectID',
-                    attr: 'renderObjectID',
-                    nameBlock:'Alive for alarm adapter',
-                    defaultValue: 'system.adapter.ad...',
+                    attr: 'oid',
+                    defaultValue: '',
                     openCheckbox: true
                 },
                 {
@@ -43,6 +42,10 @@ class ConditionState extends GenericBlock {
             icon: 'Shuffle',
             tagCardArray: ['>', '>=', '<', '<=', '=', '<>', '...'],
         }
+    }
+
+    getData() {
+        return ConditionState.getStaticData();
     }
 }
 

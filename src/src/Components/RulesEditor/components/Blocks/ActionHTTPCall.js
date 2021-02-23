@@ -1,12 +1,12 @@
-import GenericBlock from '../GenericBlock/index';
-import Compile from "../../Compile";
+import GenericBlock from '../GenericBlock';
+
 class ActionHTTPCall extends GenericBlock {
     constructor(props) {
         super(props, ActionHTTPCall.getStaticData());
     }
 
-    compile(config, context) {
-        return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
+    static compile(config, context) {
+        return `request("${(config.url || '').replace(/"/g, '\\"')}");`;
     }
 
     onTagChange(tagCard) {
@@ -14,20 +14,28 @@ class ActionHTTPCall extends GenericBlock {
             inputs: [
                 {
                     nameRender: 'renderModalInput',
-                    attr: 'modal',
+                    attr: 'url',
                     defaultValue: 'http://mydevice.com?...',
                     nameBlock: 'URL'
                 }
             ]
         });
     }
+
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: { en: 'HTTP Call', ru: 'HTTP Call' },
+            name: {
+                en: 'HTTP Call',
+                ru: 'HTTP Call'
+            },
             id: 'ActionHTTPCall',
             icon: 'Language',
         }
+    }
+
+    getData() {
+        return ActionHTTPCall.getStaticData();
     }
 }
 

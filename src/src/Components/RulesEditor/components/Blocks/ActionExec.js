@@ -1,13 +1,12 @@
-import GenericBlock from '../GenericBlock/index';
-import Compile from "../../Compile";
+import GenericBlock from '../GenericBlock';
 
 class ActionExec extends GenericBlock {
     constructor(props) {
         super(props, ActionExec.getStaticData());
     }
 
-    compile(config, context) {
-        return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
+    static compile(config, context) {
+        return `exec("${(config.exec || '').replace(/"/g, '\\"')}");`;
     }
 
     onTagChange(tagCard) {
@@ -15,8 +14,8 @@ class ActionExec extends GenericBlock {
             inputs: [
                 {
                     nameRender: 'renderModalInput',
-                    attr: 'modal',
-                    defaultValue: 'format C:',
+                    attr: 'exec',
+                    defaultValue: 'ls /opt/iobroker',
                     nameBlock: 'Shell command'
                 }
             ]
@@ -26,10 +25,17 @@ class ActionExec extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: { en: 'Exec', ru: 'Exec' },
+            name: {
+                en: 'Exec',
+                ru: 'Exec'
+            },
             id: 'ActionExec',
             icon: 'Apps',
         }
+    }
+
+    getData() {
+        return ActionExec.getStaticData();
     }
 }
 

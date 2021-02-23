@@ -43,9 +43,23 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
         backgroundColor = targetId === hoverBlock ? '#fb00002e' : '';
     }
     return <div ref={drop} style={{ backgroundColor }} className={`${cls.contentBlockItem} ${boolean ? animation ? cls.contentHeightOn : null : cls.contentHeightOff}`}>
-        <div className={cls.wrapperMargin}>{itemsSwitchesRender[blockValue]?.map((el, idx) => (
-            <DragWrapper typeBlocks={typeBlock} key={el._id} {...el} blockValue={blockValue} allProperties={el} userRules={userRules} setUserRules={setUserRules}>
-                <CurrentItem {...el} blockValue={blockValue} userRules={userRules} setUserRules={setUserRules} />
+        <div className={cls.wrapperMargin}>{itemsSwitchesRender[blockValue]?.map(el => (
+            <DragWrapper
+                typeBlocks={typeBlock}
+                key={el._id}
+                {...el}
+                blockValue={blockValue}
+                allProperties={el}
+                userRules={userRules}
+                setUserRules={setUserRules}
+            >
+                <CurrentItem
+                    {...el}
+                    settings={el}
+                    blockValue={blockValue}
+                    userRules={userRules}
+                    setUserRules={setUserRules}
+                />
             </DragWrapper>))}
             <div
                 style={isActive && checkItem && !checkId ? { height: document.getElementById('height').clientHeight } : null}
@@ -63,6 +77,7 @@ AdditionallyContentBlockItems.defaultProps = {
 
 const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, border, userRules, setUserRules }) => {
     const [additionallyClickItems, setAdditionallyClickItems, checkLocal] = useStateLocal(typeBlock === 'actions' ? false : [], `additionallyClickItems_${typeBlock}`);
+
     useEffect(() => {
         if (typeBlock === 'conditions' && additionallyClickItems.length !== userRules['conditions'].length - 1) {
             let newArray = [];
@@ -81,6 +96,7 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
     const [animation, setAnimation] = useState(false);
 
     return <div className={`${cls.mainBlockItemRules} ${border ? cls.border : null}`}>

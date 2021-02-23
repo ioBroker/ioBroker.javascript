@@ -1,4 +1,4 @@
-import GenericBlock from '../GenericBlock/index';
+import GenericBlock from '../GenericBlock';
 import Compile from "../../Compile";
 import CustomInput from "../CustomInput";
 import CustomButton from "../CustomButton";
@@ -8,15 +8,31 @@ import Schedule from "../../../Schedule";
 // import CustomTime from "../CustomTime";
 import SunCalc from "suncalc2";
 import React from "react"; // @iobroker/javascript-rules
+import convertCronToText from '../../../simple-cron/cronText';
+import I18n from '@iobroker/adapter-react/i18n';
 
 class TriggerScheduleBlock extends GenericBlock {
     constructor(props) {
         super(props, TriggerScheduleBlock.getStaticData());
     }
 
-    compile(config, context) {
-        return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
+    static compile(config, context) {
+        let text = '';
+        if (config.tagCard === 'interval') {
+            text = `setInterval(${Compile.STANDARD_FUNCTION}, ${config.interval || 1} * ${config.attr === 's' ? 1000 : (config.attr === 'm' ? 60000 : 3600000)})`;
+        } else if (config.tagCard === 'cron') {
+            text = `schedule("${config.cron}", ${Compile.STANDARD_FUNCTION});`;
+        } else if (config.tagCard === 'at') {
+            // const [hours, minutes] = config.at.split(':');
+            // todo: dow
+            text = `schedule("* * * * *", ${Compile.STANDARD_FUNCTION});`;
+        } else if (config.tagCard === 'astro') {
+            text = `schedule({astro: "${config.astro}", shift: ${config.offset ? config.offsetValue : 0}}, ${Compile.STANDARD_FUNCTION})`;
+        }
+
+        return text;
     }
+
 
     onTagChange(tagCard) {
         tagCard = tagCard || this.state.settings.tagCard;
@@ -35,38 +51,42 @@ class TriggerScheduleBlock extends GenericBlock {
                         },
                         {
                             nameRender: 'renderSelect',
+                            attr: 'unit',
                             defaultValue: 'second(s)',
                             options: [
-                                { value: 's', title: 'second(s)' },
-                                { value: 'm', title: 'minute(s)' },
-                                { value: 'h', title: 'hour(s)' }
+                                { value: 'second(s)', title: 'second(s)' },
+                                { value: 'minute(s)', title: 'minute(s)' },
+                                { value: 'hour(s)', title: 'hour(s)' }
                             ]
                         }
                     ]
                 });
-                break
+                break;
+
             case 'cron':
                 this.setState({
                     inputs: [
                         {
                             nameRender: 'renderCron',
                             attr: 'cron',
-                            default: '0 * * * *',
+                            defaultValue: '0 * * * *',
                         }
                     ]
                 });
-                break
+                break;
+
             case 'wizard':
                 this.setState({
                     inputs: [
                         {
                             nameRender: 'renderWizard',
                             attr: 'wizard',
-                            default: '{}',
+                            defaultValue: 'Every hour from 8:00 to 17:00',
                         }
                     ]
                 });
-                break
+                break;
+
             case 'at':
                 this.setState({
                     inputs: [
@@ -74,77 +94,85 @@ class TriggerScheduleBlock extends GenericBlock {
                             nameRender: 'renderTime',
                             prefix: 'at',
                             attr: 'at',
-                            default: '7:30',
+                            defaultValue: "07:30",
                         },
                         {
                             nameRender: 'renderSelect',
-                            attr: 'unit',
+                            attr: 'dow',
                             default: '',
                             multiple: true,
                             defaultValue: 'Every day',
                             options: [
-                                { value: '', title: 'Every day', only: true },
-                                { value: 'mo', title: 'Monday' },
-                                { value: 'tu', title: 'Tuesday' },
-                                { value: 'we', title: 'Wednesday' },
-                                { value: 'th', title: 'Thursday' },
-                                { value: 'fr', title: 'Friday' },
-                                { value: 'sa', title: 'Saturday' },
-                                { value: 'su', title: 'Sunday' },
+                                { value: 'Every day', title: 'Every day', only: true },
+                                { value: 'Monday', title: 'Monday' },
+                                { value: 'Tuesday', title: 'Tuesday' },
+                                { value: 'Wednesday', title: 'Wednesday' },
+                                { value: 'Thursday', title: 'Thursday' },
+                                { value: 'Friday', title: 'Friday' },
+                                { value: 'Saturday', title: 'Saturday' },
+                                { value: 'Sunday', title: 'Sunday' },
                             ]
                         }
                     ]
                 });
-                break
+                break;
+
             case 'astro':
                 const sunValue = SunCalc.getTimes(new Date(), 51.5, -0.1);
+                const options = Object.keys(sunValue).map((name) => ({
+                    value: name,
+                    title: name,
+                    title2: `[${sunValue[name].getHours() < 10 ? 0 : ''}${sunValue[name].getHours()}:${sunValue[name].getMinutes() < 10 ? 0 : ''}${sunValue[name].getMinutes()}]`
+                }));
                 this.setState({
                     inputs: [
                         {
                             frontText: 'at',
+                            attr: 'astro',
                             nameRender: 'renderSelect',
-                            options: Object.keys(sunValue).map((name) => ({
-                                value: name,
-                                title: name,
-                                title2: `[${sunValue[name].getHours() < 10 ? 0 : ''}${sunValue[name].getHours()}:${sunValue[name].getMinutes() < 10 ? 0 : ''}${sunValue[name].getMinutes()}]`
-                            })),
+                            options,
                             defaultValue: 'solarNoon'
                         },
                         {
                             backText: 'with offset',
-                            nameRender: 'renderCheckbox'
+                            nameRender: 'renderCheckbox',
+                            attr: 'offset',
                         },
                         {
                             backText: 'minutes',
                             frontText: 'offset',
                             nameRender: 'renderNumber',
                             defaultValue: 30,
+                            attr: 'offsetValue',
                             openCheckbox: true
                         },
                         {
                             nameRender: 'renderNameText',
-                            attr: 'interval',
+                            attr: 'textTime',
                             defaultValue: `at ${sunValue['solarNoon'].getHours() < 10 ? 0 : ''}${sunValue['solarNoon'].getHours()}:${sunValue['solarNoon'].getMinutes() < 10 ? 0 : ''}${sunValue['solarNoon'].getMinutes()}`,
                         }
                     ],
                     openCheckbox: true
                 });
-                break
+                break;
+
             default:
-                break
+                break;
         }
     }
 
     renderCron(input, value, onChange) {
         const { className } = this.props;
         let textCron = '';
-        return <div key={input.attr}>
+        const { settings } = this.state;
+        const { attr } = input;
+        return <div key={attr}>
             <div style={{ display: 'flex', alignItems: 'baseline' }}>
                 <div style={{ width: '100%' }}>
                     {this.renderText({
                         attr: 'text',
-                        defaultValue: '* 0 * * *'
-                    })}
+                        defaultValue: value
+                    },!!settings['text'] ? settings['text'] : value,onChange)}
                 </div>
                 <CustomButton
                     // fullWidth
@@ -156,36 +184,44 @@ class TriggerScheduleBlock extends GenericBlock {
             </div>
             <CustomModal
                 open={this.state.openDialog}
-                buttonClick={() => {
-                    this.setState({ openDialog: false, renderText: { value: textCron } })
+                buttonClick={async () => {
+                    await onChange(textCron, 'text');
+                    await onChange(convertCronToText(textCron, I18n.getLanguage()), 'addText');
+                    this.setState({ openDialog: false })
                 }}
                 close={() => this.setState({ openDialog: false })}
                 titleButton={'add'}
                 titleButton2={'close'}>
-                <ComplexCron onChange={el => { textCron = el }} />
+                <ComplexCron
+                    cronExpression={!!settings[input.attr] ? '' : settings[attr]}
+                    onChange={(el) => {
+                        textCron = el
+                    }} />
             </CustomModal>
             {this.renderNameText({
                 defaultValue: 'every hour at 0 minutes',
-                attr: 'text'
-            })}
+                attr: 'addText'
+            },!!settings['addText'] ? settings['addText'] : 'every hour at 0 minutes',onChange)}
         </div>;
     }
 
     renderWizard(input, value, onChange) {
         const { className } = this.props;
-        return <div key={input.attr}>
+        const { attr } = input;
+        let textWizard = '';
+        return <div key={attr}>
             <div style={{ display: 'flex', alignItems: 'center', marginTop: 7 }}>
                 <CustomInput
                     className={className}
                     autoComplete="off"
                     fullWidth
-                    disabled
+                    // disabled
                     variant="outlined"
                     size="small"
                     multiline
                     rows={2}
-                    value={"Every hour from 8:00 to 17:00"}
-                    onChange={onChange}
+                    value={value}
+                    onChange={(el) => onChange(el)}
                     customValue
                 />
                 <CustomButton
@@ -198,16 +234,15 @@ class TriggerScheduleBlock extends GenericBlock {
             </div>
             <CustomModal
                 open={this.state.openDialog}
-                buttonClick={() => this.setState({ openDialog: false })}
+                buttonClick={() => {
+                    onChange(textWizard);
+                    this.setState({ openDialog: false });
+                }}
                 close={() => this.setState({ openDialog: false })}
                 titleButton={'add'}
                 titleButton2={'close'}>
-                <Schedule onChange={el=>console.log(el)}/>
+                <Schedule onChange={(_, text) => textWizard = text} />
             </CustomModal>
-            {this.renderNameText({
-                defaultValue: 'every hour at 0 minutes',
-                attr: 'text'
-            })}
         </div>;
     }
 
@@ -219,6 +254,10 @@ class TriggerScheduleBlock extends GenericBlock {
             icon: 'AccessTime',
             tagCardArray: ['cron', 'wizard', 'interval', 'at', 'astro'],
         }
+    }
+
+    getData() {
+        return TriggerScheduleBlock.getStaticData();
     }
 }
 

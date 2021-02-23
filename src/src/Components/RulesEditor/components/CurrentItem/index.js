@@ -4,6 +4,7 @@ import cls from './style.module.scss';
 import { deepCopy } from '../../helpers/deepCopy';
 import { filterElement } from '../../helpers/filterElement';
 import { ContextWrapperCreate } from '../ContextWrapper';
+import { findElement } from '../../helpers/findElement';
 
 // @iobroker/javascript-block
 
@@ -11,21 +12,25 @@ const CurrentItem = memo(props => {
     const { setUserRules, userRules, _id, id, blockValue, active, acceptedBy } = props;
     const [anchorEl, setAnchorEl] = useState(null);
     const { state: { blocks }, socket } = useContext(ContextWrapperCreate);
-    const findElement = useCallback((id) => blocks.find(el => {
+    const findElementBlocks = useCallback(id => blocks.find(el => {
         const staticData = el.getStaticData();
         return staticData.id === id;
     }), [blocks]);
+    const onChange = useCallback(settings => {
+        let newUserRules = findElement(settings, userRules, blockValue);
+        setUserRules(newUserRules);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[userRules])
     const handlePopoverOpen = event =>
         event.currentTarget !== anchorEl && setAnchorEl(event.currentTarget);
     const handlePopoverClose = () =>
         setAnchorEl(null);
     const blockInput = useMemo(() => {
-        const CustomBlock = findElement(id);
-        return <CustomBlock {...props} className={null} socket={socket} />;
+        const CustomBlock = findElementBlocks(id);
+        return <CustomBlock {...props} onChange={onChange} className={null} socket={socket} />;
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [userRules]);
     const [isDelete, setIsDelete] = useState(false);
-
     return <div
         onMouseMove={handlePopoverOpen}
         onMouseEnter={handlePopoverOpen}

@@ -31,6 +31,8 @@ const CustomTime = ({ table, value, title, attr, options, style, native, onChang
         // label="Alarm clock"
         type="time"
         defaultValue="07:30"
+        onChange={(e)=>onChange(e.currentTarget.value)}
+        value={value}
         className={className}
         fullWidth
         style={style}
@@ -52,9 +54,9 @@ CustomTime.defaultProps = {
 CustomTime.propTypes = {
     title: PropTypes.string,
     attr: PropTypes.string,
-    options: PropTypes.array.isRequired,
+    // options: PropTypes.array.isRequired,
     style: PropTypes.object,
-    native: PropTypes.object.isRequired,
+    // native: PropTypes.object.isRequired,
     onChange: PropTypes.func
 };
 

@@ -1,13 +1,13 @@
-import GenericBlock from '../GenericBlock/index';
-import Compile from "../../Compile";
+import GenericBlock from '../GenericBlock';
 
 class ActionPause extends GenericBlock {
     constructor(props) {
         super(props, ActionPause.getStaticData());
     }
 
-    compile(config, context) {
-        return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
+    static compile(config, context) {
+        return `await wait(${config.pause} * ${config.unit === 'ms' ? 1 : 
+            (config.unit === 's' ? 1000 : (config.unit === 'm' ? 60000 : 3600000))});`;
     }
 
     onTagChange(tagCard) {
@@ -15,15 +15,15 @@ class ActionPause extends GenericBlock {
             inputs: [
                 {
                     nameRender: 'renderNumber',
-                    attr: 'modal',
+                    attr: 'pause',
                     defaultValue: 100,
                 },
                 {
                     nameRender: 'renderSelect',
-                    attr: 'modal',
+                    attr: 'unit',
                     defaultValue: 'ms',
                     options: [
-                        { value: 'ms', title: 'm.second(ms)' },
+                        { value: 'ms', title: 'second(s)' },
                         { value: 's', title: 'second(s)' },
                         { value: 'm', title: 'minute(s)' },
                         { value: 'h', title: 'hour(s)' }
@@ -36,10 +36,17 @@ class ActionPause extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: { en: 'Pause', ru: 'Pause' },
+            name: {
+                en: 'Pause',
+                ru: 'Pause'
+            },
             id: 'ActionPause',
             icon: 'Pause',
         }
+    }
+
+    getData() {
+        return ActionPause.getStaticData();
     }
 }
 

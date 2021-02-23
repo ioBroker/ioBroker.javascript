@@ -23,6 +23,12 @@ class GenericBlock extends PureComponent {
     constructor(props, item) {
         super(props);
         item = item || {};
+        let settings = props.settings || {
+            tagCard: item.tagCardArray ? item.tagCardArray[0] || '' : ''
+        }
+        if (!settings.tagCard && item.tagCardArray) {
+            settings.tagCard = item.tagCardArray[0];
+        }
 
         this.state = {
             inputs: item.inputs || props.inputs || [],
@@ -34,50 +40,30 @@ class GenericBlock extends PureComponent {
             showSelectId: false,
             openTagMenu: false,
             openModal: false,
-            openCheckbox: false,
             iconTag: false,
 
-            renderObjectID: {
-                nameBlock: '',
-                value: ''
-            },
-            
-            renderText: {
-                value: ''
-            },
-
+            oid: {},
             instanceSelectionOptions: [],
             instanceSelectionDef: '',
 
-            settings: {
-                tagCard: item.tagCardArray ? item.tagCardArray[0] || '' : ''
-            }
+            settings
         };
-    }
-
-    getConfig() {
-        return { ...this.state.settings };
-    }
-
-    setConfig(settings) {
-        this.setState({ settings });
     }
 
     renderText = (input, value, onChange) => {
         const { className } = this.props;
-        const { renderText } = this.state;
-        const { attr, defaultValue, frontText, backText, nameBlock } = input;
+        const { attr, frontText, backText, nameBlock, name } = input;
         return <Fragment key={attr}>
             <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
                 {frontText && <div className={cls.frontText}>{frontText}</div>}
                 <CustomInput
                     className={className}
                     autoComplete="off"
-                    label={utils.getName(input.name)}
+                    label={utils.getName(name)}
                     variant="outlined"
                     size="small"
                     fullWidth
-                    value={renderText.value || defaultValue}
+                    value={value}
                     onChange={onChange}
                     customValue
                 />
@@ -89,7 +75,7 @@ class GenericBlock extends PureComponent {
 
     renderSwitch = (input, value, onChange) => {
         const { className } = this.props;
-        const { attr, frontText, backText, nameBlock, defaultValue } = input;
+        const { attr, frontText, backText, nameBlock } = input;
         return <div key={attr}>
             <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
                 {frontText && <div className={cls.frontText}>{frontText}</div>}
@@ -97,7 +83,8 @@ class GenericBlock extends PureComponent {
                     className={className}
                     label=''
                     customValue
-                    value={defaultValue}
+                    value={value}
+                    onChange={onChange}
                 />
                 {backText && <div className={cls.backText}>{backText}</div>}
             </div>
@@ -105,27 +92,23 @@ class GenericBlock extends PureComponent {
         </div>;
     }
 
-    renderNameText = (input, value, onChange) => {
-        const { attr, defaultValue } = input;
-        return <div
-            className={clsx(cls.displayFlex, cls.blockMarginTop)}
-            key={attr}>
-            {defaultValue}
-        </div>
-    }
+    renderNameText = ({ attr }, value) => <div
+        className={clsx(cls.displayFlex, cls.blockMarginTop)}
+        key={attr}>
+        {value}
+    </div>
 
     renderNumber = (input, value, onChange) => {
         const { className } = this.props;
-        const { openCheckbox } = this.state;
-        const { attr, defaultValue, backText, frontText, openCheckbox: openCheckboxValue } = input;
+        const { settings } = this.state;
+        const { attr, backText, frontText, openCheckbox } = input;
         let visibility = true;
-        if (openCheckboxValue) {
-            visibility = openCheckbox
+        if (openCheckbox) {
+            visibility = typeof settings['offset'] === 'boolean' ? settings['offset'] : true
         }
-        return visibility ? <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
+        return visibility ? <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)}>
             {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomInput
-                key={attr}
                 className={className}
                 fullWidth
                 autoComplete="off"
@@ -133,7 +116,7 @@ class GenericBlock extends PureComponent {
                 variant="outlined"
                 size="small"
                 type="number"
-                value={defaultValue}
+                value={value}
                 onChange={onChange}
                 customValue
             />
@@ -143,7 +126,7 @@ class GenericBlock extends PureComponent {
 
     renderColor = (input, value, onChange) => {
         const { className } = this.props;
-        const { attr, defaultValue, backText, frontText } = input;
+        const { attr, backText, frontText } = input;
         return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)}>
             {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomInput
@@ -153,7 +136,7 @@ class GenericBlock extends PureComponent {
                 variant="outlined"
                 size="small"
                 type="color"
-                value={defaultValue}
+                value={value}
                 onChange={onChange}
             />
             {backText && <div className={cls.backText}>{backText}</div>}
@@ -162,23 +145,20 @@ class GenericBlock extends PureComponent {
 
     renderCheckbox = (input, value, onChange) => {
         const { className } = this.props;
-        const { openCheckbox } = this.state;
+        const { settings } = this.state;
         const { attr, backText, frontText } = input;
-        return <div className={cls.displayFlex}>
+        return <div key={attr} className={cls.displayFlex}>
             {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomCheckbox
-                key={attr}
                 className={className}
                 autoComplete="off"
                 label="number"
                 variant="outlined"
                 size="small"
                 style={{ marginRight: 5 }}
-                value={openCheckbox}
+                value={typeof settings[attr] === 'boolean' ? settings[attr] : true}
                 customValue
-                onChange={(e) => {
-                    this.setState({ openCheckbox: e })
-                }}
+                onChange={onChange}
             />
             {backText && <div className={cls.backText}>{backText}</div>}
         </div>;
@@ -186,7 +166,7 @@ class GenericBlock extends PureComponent {
 
     renderSlider = (input, value, onChange) => {
         const { className } = this.props;
-        const { attr, defaultValue, frontText, backText, nameBlock } = input;
+        const { attr, frontText, backText, nameBlock } = input;
         return <div key={attr}>
             <div className={cls.displayFlex}>
                 {frontText && <div className={cls.frontText}>{frontText}</div>}
@@ -197,7 +177,7 @@ class GenericBlock extends PureComponent {
                     label="number"
                     variant="outlined"
                     size="small"
-                    value={defaultValue}
+                    value={value}
                     onChange={onChange}
                 />
                 {backText && <div className={cls.backText}>{backText}</div>}
@@ -208,13 +188,12 @@ class GenericBlock extends PureComponent {
 
     renderButton = (input, value, onClick) => {
         const { className } = this.props;
-        const { attr, defaultValue, frontText, backText } = input;
+        const { attr, frontText, backText } = input;
         return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)}>
             {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomButton
-                key={input.attr}
                 fullWidth
-                value={defaultValue}
+                value={value}
                 className={className}
                 onClick={onClick}
             />
@@ -223,12 +202,20 @@ class GenericBlock extends PureComponent {
     }
 
     renderObjectID = (input, value, onChange) => {
-        const { showSelectId, openCheckbox, renderObjectID } = this.state;
+        const { showSelectId, settings } = this.state;
         const { className, socket } = this.props;
-        const { attr, nameBlock, defaultValue, openCheckbox: openCheckboxValue } = input;
+        const { attr, openCheckbox } = input;
         let visibility = true;
-        if (openCheckboxValue) {
-            visibility = openCheckbox
+        if (openCheckbox) {
+            visibility = typeof settings['offset'] === 'boolean' ? settings['offset'] : true
+        }
+
+        if (settings[attr] && !this.state[settings[attr]]) {
+            setTimeout(() => {
+                this.props.socket.getObject(value)
+                    .then(obj =>
+                        this.setState({ [settings[attr]]: obj }, () => this.onTagChange(obj.common)));
+            }, 0);
         }
         // return null
         return visibility ? <div className={cls.blockMarginTop} key={attr}>
@@ -240,8 +227,7 @@ class GenericBlock extends PureComponent {
                     disabled
                     variant="outlined"
                     size="small"
-                    value={renderObjectID.value || defaultValue}
-                    onChange={onChange}
+                    value={value}
                     customValue
                 />
                 <CustomButton
@@ -252,7 +238,7 @@ class GenericBlock extends PureComponent {
                     onClick={() => this.setState({ showSelectId: true })}
                 />
             </div>
-            {nameBlock && <div className={cls.nameBlock}>{renderObjectID.nameBlock || nameBlock}</div>}
+            {this.state[this.state.settings[input.attr]] && <div className={cls.nameBlock}>{Utils.getObjectNameFromObj(this.state[settings[attr]], I18n.getLanguage())}</div>}
             {showSelectId ? <DialogSelectID
                 key="tableSelect"
                 // imagePrefix="../.."
@@ -262,10 +248,8 @@ class GenericBlock extends PureComponent {
                 statesOnly={true}
                 // selected={this.selectIdValue}
                 onClose={() => this.setState({ showSelectId: false })}
-                onOk={(selected, name) => {
-                    console.log(1111, selected, name)
-                    this.setState({ showSelectId: false, selectIdValue: selected, renderObjectID: { value: selected, nameBlock: name } });
-                }}
+                onOk={(selected, name, common) =>
+                    this.setState({ showSelectId: false }, () => onChange(selected))}
             /> : null}
         </div> : null;
     }
@@ -286,23 +270,26 @@ class GenericBlock extends PureComponent {
 
     renderTime = (input, value, onChange) => {
         const { attr, backText, frontText } = input
-        return <div className={cls.displayFlex} style={{ whiteSpace: 'nowrap' }}>
+        return <div key={attr} className={cls.displayFlex} style={{ whiteSpace: 'nowrap' }}>
             {frontText && <div className={cls.frontText}>{frontText}</div>}
-            <CustomTime key={attr} />
+            <CustomTime
+                value={value}
+                onChange={onChange}
+            />
             {backText && <div className={cls.backText}>{backText}</div>}
         </div>
     };
 
     renderSelect = (input, value, onChange) => {
         const { className } = this.props;
-        const { name, options, frontText, backText, defaultValue } = input;
-        return <div className={clsx(cls.displayFlex, cls.blockMarginTop)} style={{ whiteSpace: 'nowrap' }}>
+        const { name, options, frontText, backText, attr } = input;
+        return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)} style={{ whiteSpace: 'nowrap' }}>
             {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomSelect
                 title={name}
                 className={className}
                 options={options}
-                value={defaultValue}
+                value={value}
                 onChange={onChange}
                 customValue
             />
@@ -311,9 +298,10 @@ class GenericBlock extends PureComponent {
     };
 
     renderModalInput = (input, value, onChange) => {
-        const { openModal } = this.state;
+        const { openModal, settings } = this.state;
         const { className } = this.props;
-        const { attr, defaultValue, nameBlock, frontText, backText } = input;
+        const { attr, nameBlock, frontText, backText } = input;
+        console.log(settings[attr])
         return <div key={attr}>
             <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
                 {frontText && <div className={cls.frontText}>{frontText}</div>}
@@ -323,7 +311,7 @@ class GenericBlock extends PureComponent {
                     fullWidth
                     variant="outlined"
                     size="small"
-                    value={defaultValue}
+                    value={value}
                     onChange={onChange}
                     customValue
                 />
@@ -338,12 +326,10 @@ class GenericBlock extends PureComponent {
             </div>
             <CustomModal
                 open={openModal}
-                buttonClick={() => {
-                    this.setState({ openModal: !openModal });
-                }}
-                close={() => this.setState({ openModal: !openModal })}
-                titleButton={'add'}
-                titleButton2={'close'}>
+                buttonClick={() => this.setState({ openModal: false })}
+                close={() => this.setState({ openModal: false })}
+                titleButton={'ok'}
+                titleButton2={'cancel'}>
                 <CustomInput
                     className={className}
                     autoComplete="off"
@@ -352,7 +338,7 @@ class GenericBlock extends PureComponent {
                     size="small"
                     rows={10}
                     multiline
-                    value={defaultValue}
+                    value={value}
                     onChange={onChange}
                     customValue
                 />
@@ -380,9 +366,13 @@ class GenericBlock extends PureComponent {
                 >
                     {tagCardArray.map(el =>
                         <MenuItem key={el}
+                            selected={el === tagCard}
                             onClick={e => {
                                 const settings = { ...this.state.settings, tagCard: el };
-                                this.setState({ openTagMenu: null, settings }, this.onTagChange && this.onTagChange(el));
+                                this.setState({ openTagMenu: null, settings }, () => {
+                                    this.props.onChange(settings);
+                                    this.onTagChange && this.onTagChange(el);
+                                });
                             }}>{I18n.t(el)}</MenuItem>)}
                 </Menu>
             </div>;
@@ -397,23 +387,38 @@ class GenericBlock extends PureComponent {
             const newSettings = { ...settings };
             if (tagCardArray.indexOf(tagCard) === tagCardArray.length - 1) {
                 newSettings.tagCard = tagCardArray[0];
-                return this.setState({ settings: newSettings });
+                return this.setState({ settings: newSettings }, () => {
+                    this.props.onChange(newSettings)
+                });
             } else {
                 newSettings.tagCard = tagCardArray[tagCardArray.indexOf(tagCard) + 1];
-                this.setState({ settings: newSettings });
+                this.setState({ settings: newSettings }, () => {
+                    this.props.onChange(newSettings)
+                });
             }
         }
     };
 
-    componentDidMount = async () => {
-        this.onTagChange && await this.onTagChange();
-        await this.tagGenerateNew();
-        await this.tagGenerate();
+    componentDidMount = () => {
+        this.onTagChange();
     };
+
+    onChangeInput = (attribute) => {
+        return (value, attr) => {
+            const settings = JSON.parse(JSON.stringify(this.state.settings));
+            settings[attr || attribute] = value;
+            settings.id = this.getData().id;
+            settings._id = this.props._id;
+
+            this.setState({ settings }, () => {
+                this.onValueChange && this.onValueChange(value, attr || attribute);
+                this.props.onChange(settings)
+            });
+        }
+    }
 
     render = () => {
         const { inputs, name, icon, iconTag, settings, settings: { tagCard } } = this.state;
-        let _inputs = inputs || [];
         return <Fragment>
             {iconTag ? this.renderIconTag() :
                 <MaterialDynamicIcon iconName={icon} className={cls.iconThemCard} />}
@@ -421,25 +426,19 @@ class GenericBlock extends PureComponent {
                 <span className={cls.nameCard}>
                     {name && name.en}
                 </span>
-                {_inputs.filter(input => this[input.nameRender])
+                {inputs.filter(({ nameRender }) => this[nameRender])
                     .map(input => {
-                        return this[input.nameRender](
+                        const { nameRender, defaultValue, attr, options } = input;
+                        return this[nameRender](
                             input,
-                            settings[input.attr] === undefined ? input.default : settings[input.attr],
-                            (value, attr) => {
-                                const copySettings = JSON.parse(JSON.stringify(settings));
-                                copySettings[attr || input.attr] = attr;
-                                this.setState({ copySettings });
-                            },
-                            input.options || []
+                            !!settings[attr] ? settings[attr] : defaultValue,
+                            this.onChangeInput(attr),
+                            options || []
                         );
                     })}
             </div>
             {tagCard && <div className={cls.controlMenuTop} style={{ opacity: 1, height: 22, top: -22 }}>
-                <div onClick={async e => {
-                    await this.tagGenerateNew();
-                    await this.tagGenerate();
-                }} className={cls.tagCard}>{this.tagGenerate()}</div>
+                <div onClick={e => this.tagGenerateNew()} className={cls.tagCard}>{this.tagGenerate()}</div>
             </div>}
         </Fragment>;
     };
