@@ -13,6 +13,7 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
     const [canDropCheck, setCanDropCheck] = useState(false);
     const [checkId, setCheckId] = useState(false);
     const [hoverBlock, setHoverBlock] = useState('');
+
     const [{ canDrop, isOver, offset, targetId }, drop] = useDrop({
         accept: 'box',
         drop: () => ({ blockValue }),
@@ -32,7 +33,9 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
             targetId: monitor.targetId
         }),
     });
+
     useEffect(() => { setHoverBlock('') }, [offset]);
+
     const isActive = canDrop && isOver;
     let backgroundColor = '';
     if (isActive) {
@@ -42,6 +45,7 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
     } else if (offset) {
         backgroundColor = targetId === hoverBlock ? '#fb00002e' : '';
     }
+
     return <div ref={drop} style={{ backgroundColor }} className={`${cls.contentBlockItem} ${boolean ? animation ? cls.contentHeightOn : null : cls.contentHeightOff}`}>
         <div className={cls.wrapperMargin}>{itemsSwitchesRender[blockValue]?.map(el => (
             <DragWrapper
@@ -120,7 +124,7 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
                     if (userRules['conditions'][index + 1].length) {
                         newAdditionally[index].open = !newAdditionally[index].open
                         setAdditionallyClickItems(newAdditionally);
-                        return null
+                        return null;
                     }
                     newAdditionally = newAdditionally.filter((el, idx) => idx !== index);
                     setAdditionallyClickItems(newAdditionally);

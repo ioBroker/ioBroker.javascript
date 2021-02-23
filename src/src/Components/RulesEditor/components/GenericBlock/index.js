@@ -146,7 +146,7 @@ class GenericBlock extends PureComponent {
     renderCheckbox = (input, value, onChange) => {
         const { className } = this.props;
         const { settings } = this.state;
-        const { attr, backText, frontText } = input;
+        const { attr, backText, frontText, defaultValue } = input;
         return <div key={attr} className={cls.displayFlex}>
             {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomCheckbox
@@ -156,7 +156,7 @@ class GenericBlock extends PureComponent {
                 variant="outlined"
                 size="small"
                 style={{ marginRight: 5 }}
-                value={typeof settings[attr] === 'boolean' ? settings[attr] : true}
+                value={typeof settings[attr] === 'boolean' ? settings[attr] : defaultValue}
                 customValue
                 onChange={onChange}
             />
@@ -249,7 +249,13 @@ class GenericBlock extends PureComponent {
                 // selected={this.selectIdValue}
                 onClose={() => this.setState({ showSelectId: false })}
                 onOk={(selected, name, common) =>
-                    this.setState({ showSelectId: false }, () => onChange(selected))}
+                    this.setState({ showSelectId: false }, () => {
+                        onChange(selected);
+                        // read type of object
+                        this.props.socket.getObject(selected)
+                            .then(obj =>
+                                onChange(obj.common.type, attr + 'Type'));
+                    })}
             /> : null}
         </div> : null;
     }

@@ -19,9 +19,6 @@ let themeName = Utils.getThemeName();
 console.log('iobroker.' + window.adapterName + '@' + version + ' using theme "' + themeName + '"');
 
 function build() {
-    if (typeof Map === 'undefined') {
-        console.log('Something is wrong')
-    }
     return ReactDOM.render(<MuiThemeProvider theme={theme(themeName)}>
         <DndProvider backend={HTML5Backend}>
             <App onThemeChange={_theme => {
