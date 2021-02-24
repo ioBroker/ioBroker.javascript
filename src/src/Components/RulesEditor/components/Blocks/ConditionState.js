@@ -13,7 +13,7 @@ class ConditionState extends GenericBlock {
         this.setState({
             inputs: [
                 {
-                    backText: 'with offset',
+                    backText: 'use trigger value',
                     nameRender: 'renderCheckbox',
                     attr: 'offset',
                 },
@@ -23,14 +23,14 @@ class ConditionState extends GenericBlock {
                     defaultValue: '',
                     openCheckbox: true
                 },
-                {
-                    backText: 'minutes',
-                    nameRender: 'renderNumber',
+                {                    
+                    nameRender: 'renderText',
+                    attr:'text',
                     defaultValue: 30
                 },
             ],
             openCheckbox: true,
-            iconTag:true
+            iconTag: true
         });
     }
 
