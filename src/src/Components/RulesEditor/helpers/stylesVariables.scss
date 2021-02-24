@@ -1,7 +1,21 @@
-@mixin indentationHeader {
-    padding-top: $headerHeight;
-    padding-bottom: $footerHeight;
+// .scssTheme{
+    $backgroundColor:#3052813b;
+    $lineColor:#4caaf47d;
+    $lineColorHover:#ccceff;
+    $lineColorActive:#4caaf4;
+    $backgroundColorHumburger:#436a93b8;
+    $colorBlock:#02124b;
+    $backgroundBlock:#c9e7ffab;
+// }
+@mixin themable($theme-name, $container-bg, $left-bg, $right-bg, $innertext, $button-bg) {
+    .#{$theme-name} {
+        $backgroundColor:$container-bg;
+        $lineColor:$left-bg;
+        $lineColorHover:$right-bg;
+        $lineColorActive:$innertext;
+        $backgroundColorHumburger:$innertext;
+        $colorBlock:$innertext;
+        $backgroundBlock:$innertext; 
+ }
 }
-@mixin colorText {
-    color: rgb(196, 29, 214);
-}
+@include themable(scssTheme, #f7eb80, #497265, #82aa91, #fff, #bc6a49);

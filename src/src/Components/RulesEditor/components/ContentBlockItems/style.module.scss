@@ -1,8 +1,9 @@
 $colorFons: #81688c; //
+@import '../../helpers/stylesVariables.scss';
 
 .border {
-    border-left: 1px solid #ffffff59;
-    border-right: 1px solid #ffffff59;
+    border-left: 1px solid $lineColor;
+    border-right: 1px solid $lineColor;
 }
 .emptyBlockStyle {
     cursor: pointer;
@@ -48,12 +49,13 @@ $colorFons: #81688c; //
     transition: all 0.5s;
     z-index: 9;
     .nameBlockItems {
-        color: #b9a0c3;
+        color: $lineColor;
         margin-top: 10px;
         width: 100%;
         display: flex;
         height: fit-content;
         justify-content: center;
+        align-items: center;
     }
 }
 .contentBlockItem {

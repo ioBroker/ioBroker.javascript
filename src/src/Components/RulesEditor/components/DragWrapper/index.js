@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import { useDrag, useDrop } from 'react-dnd';
@@ -6,8 +6,10 @@ import { getEmptyImage } from 'react-dnd-html5-backend';
 import { deepCopy } from '../../helpers/deepCopy';
 import { filterElement } from '../../helpers/filterElement';
 import { findCard, moveCard } from '../../helpers/cardSort';
+import { ContextWrapperCreate } from '../ContextWrapper';
 
 const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, userRules, children, _id, blockValue }) => {
+    const { state, setState } = useContext(ContextWrapperCreate);
     const [{ opacity }, drag, preview] = useDrag({
         item: { ...allProperties, type: 'box', id, isActive, _id },
         end: (item, monitor) => {
@@ -25,14 +27,14 @@ const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, us
             if (dropResult.blockValue !== blockValue) {
                 let idNumber = typeof _id === 'number' ? _id : Date.now();
                 newUserRules = deepCopy(acceptedBy, userRules, dropResult.blockValue);
-
+                const newItem = { id: item.id, acceptedBy: item.acceptedBy }
                 switch (acceptedBy) {
                     case 'actions':
                         if (blockValue) {
                             newUserRules = filterElement(acceptedBy, newUserRules, blockValue, _id);
                         }
                         newUserRules = filterElement(acceptedBy, newUserRules, dropResult.blockValue, _id);
-                        newUserRules[acceptedBy][dropResult.blockValue].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
+                        newUserRules[acceptedBy][dropResult.blockValue].push({ ...newItem, _id: idNumber });
                         return setUserRules(newUserRules);
 
                     case 'conditions':
@@ -40,12 +42,13 @@ const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, us
                             newUserRules = filterElement(acceptedBy, newUserRules, blockValue, _id);
                         }
                         newUserRules = filterElement(acceptedBy, newUserRules, dropResult.blockValue, _id);
-                        newUserRules[acceptedBy][dropResult.blockValue].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
+                        newUserRules[acceptedBy][dropResult.blockValue].push({ ...newItem, _id: idNumber });
                         return setUserRules(newUserRules);
 
                     default:
+                        setState({ ...state, onUpdate: true })
                         newUserRules = filterElement(acceptedBy, newUserRules, dropResult.blockValue, _id);
-                        newUserRules[acceptedBy].push({ ...item, nameBlock: dropResult.name, _id: idNumber });
+                        newUserRules[acceptedBy].push({ ...newItem, _id: idNumber });
                         return setUserRules(newUserRules);
                 }
             }

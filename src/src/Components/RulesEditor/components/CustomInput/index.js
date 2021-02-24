@@ -1,39 +1,13 @@
-import { TextField, withStyles } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import React, { useState } from 'react';
+import cls from './style.module.scss';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
-
-const TextFieldMod = withStyles({
-    root: {
-        background: '#71497d42',
-        marginTop: 0,
-        marginBottom: 0,
-        '& > *': {
-            color: '#1f032b !important'
-        },
-        '& label.Mui-focused': {
-            color: '#81688c',
-        },
-        '& .MuiInput-underline:after': {
-            borderBottomColor: '#81688c',
-        },
-        '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-                borderColor: '#81688c',
-            },
-            '&:hover fieldset': {
-                borderColor: '#81688c',
-            },
-            '&.Mui-focused fieldset': {
-                borderColor: '#81688c',
-            }
-        },
-    },
-})(TextField);
+import clsx from 'clsx';
 
 const CustomInput = ({ fullWidth, disabled, multiline, rows, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue }) => {
     const [inputText, setInputText] = useState('');
-    return <TextFieldMod
+    return <TextField
         error={!!error}
         fullWidth={fullWidth}
         label={label}
@@ -45,7 +19,7 @@ const CustomInput = ({ fullWidth, disabled, multiline, rows, autoComplete, label
         type={type}
         helperText={error}
         style={style}
-        className={className}
+        className={clsx(cls.root, className)}
         autoComplete={autoComplete}
         onChange={e => {
             if (!customValue) setInputText(e.target.value);
@@ -71,7 +45,7 @@ CustomInput.defaultProps = {
     fullWidth: false,
     autoComplete: '',
     customValue: false,
-    rows:1
+    rows: 1
 };
 
 CustomInput.propTypes = {

@@ -1,40 +1,15 @@
-import { Checkbox, FormControl, FormHelperText, Input, MenuItem, Select, withStyles } from '@material-ui/core';
+import { Checkbox, FormControl, FormHelperText, Input, MenuItem, Select } from '@material-ui/core';
 import React, { useState } from 'react';
 import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
-
-const SelectMod = withStyles({
-    root: {
-        '& .MuiFormControl-marginNormal': {
-            marginTop: 0,
-            marginBottom: 0,
-        },
-        '& > *': {
-            color: '#2d0440 !important'
-        },
-        '& .MuiSelect-icon': {
-            color: '#81688c'
-        },
-        '& label.Mui-focused': {
-            color: '#81688c',
-        },
-        '& .MuiInput-underline:after': {
-            borderBottomColor: '#510573',
-        },
-        '& .MuiInput-underline:before': {
-            borderBottomColor: '#81688c',
-        },
-        '& .MuiInput-underline:hover:before': {
-            borderBottomColor: '#81688c',
-        },
-    },
-})(FormControl);
+import cls from './style.module.scss';
+import clsx from 'clsx';
 
 const CustomSelect = ({ multiple, value, customValue, title, attr, options, style, onChange, className }) => {
     const [inputText, setInputText] = useState(value || options[0].value);
 
-    return <SelectMod
-        className={className}
+    return <FormControl
+        className={clsx(cls.root,className)}
         fullWidth
         style={style}
     >
@@ -53,7 +28,7 @@ const CustomSelect = ({ multiple, value, customValue, title, attr, options, styl
             { multiple && options.map(item => <MenuItem key={'key-' + item} value={item || '_'}>{I18n.t(item)} <Checkbox checked={inputText.includes(item)} /></MenuItem>)}
         </Select>
         {title ? <FormHelperText>{I18n.t(title)}</FormHelperText> : null}
-    </SelectMod>;
+    </FormControl>;
 }
 
 CustomSelect.defaultProps = {

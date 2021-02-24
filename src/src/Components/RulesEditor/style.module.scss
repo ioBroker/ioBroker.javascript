@@ -1,4 +1,4 @@
-$colorFons: #81688c; //
+@import './helpers/stylesVariables.scss';
 
 .wrapperRules {
     background: url("https://klike.net/uploads/posts/2020-04/1586763579_24.jpg");
@@ -6,20 +6,17 @@ $colorFons: #81688c; //
     background-size: cover;
     height: 100%;
     display: flex;
-    .mainBlockItemRules:nth-child(3) {
-        border-left: 1px solid #ffffff59;
-        border-right: 1px solid #ffffff59;
-    }
 }
 .menuRules {
     width: 200px;
     // height: 100%;
     display: flex;
     flex-direction: column;
-    background: #994e9e30;
-    border-right: 1px solid #9a39a063;
+    background: $backgroundColor;
+    border-right: 1px solid $lineColor;
     padding: 10px;
     opacity: 1;
+    overflow-x: hidden;
     transition: width 0.5s, opacity 0.2s, padding 0.5s;
 }
 .switchesRenderWrapper {
@@ -39,7 +36,7 @@ $colorFons: #81688c; //
     display: flex;
     align-items: center;
     text-align: center;
-    color: $colorFons;
+    color: $lineColor;
     white-space: nowrap;
     &::after,
     &::before {
@@ -47,19 +44,23 @@ $colorFons: #81688c; //
         flex: 1;
         border-bottom: 1px solid;
     }
-    &::after {
-        margin-left: 0.25em;
-    }
-    &::before {
-        margin-right: 0.25em;
-    }
+    // &::after {
+    //     margin-left: 0.25em;
+    // }
+    // &::before {
+    //     margin-right: 0.25em;
+    // }
+}
+.marginAuto {
+    margin-top: auto;
+    margin-bottom: 20px;
 }
 .iconThem {
     width: 30px !important;
     height: 30px !important;
     margin-left: 5px;
     * {
-        color: #dfbdec !important;
+        color: #bdbdec !important;
     }
 }
 .inputWidth {
@@ -70,14 +71,14 @@ $colorFons: #81688c; //
     position: absolute;
     width: 40px;
     height: 28px;
-    background: #994e9e7d;
+    background: $backgroundColorHumburger;
     border-radius: 0px 20px 20px 0;
     display: flex;
     justify-content: center;
     padding-top: 12px;
     left: 221px;
     top: 30px;
-    border: 1px solid #9a39a063;
+    border: 1px solid $lineColor;
     cursor: pointer;
     transition: left 0.5s, border-radius 0.7s;
     z-index: 10;
@@ -87,18 +88,18 @@ $colorFons: #81688c; //
     border-radius: 20px;
 }
 .nothingFound {
-    color: #a95fa3;
+    color: $lineColor;
     margin: 16px;
     font-size: 21px;
 }
 .resetSearch {
     font-weight: bold;
-    color: #210025;
+    color: $lineColor;
     cursor: pointer;
     margin: 10px 0;
     transition: color 0.3s, font-size 0.3s;
     &:hover {
-        color: #36083c;
+        color: $lineColorHover;
         font-size: 22px;
     }
 }
@@ -110,17 +111,17 @@ $colorFons: #81688c; //
     button {
         width: calc(100% / 3);
         min-width: auto;
-        color: #dfbdec;
+        color: $lineColor;
     }
     .controlPanelAppBar {
         background: none;
         box-shadow: none;
     }
     [class*="Mui-selected"] {
-        color: #ef00ffab !important;
+        color: $lineColorActive !important;
     }
     [class*="MuiTabs-indicator"] {
-        background-color: #ef00ffab;
+        background-color: $lineColorActive;
     }
     [class*="Mui-disabled"] {
         color: #210025cc !important;
@@ -145,13 +146,13 @@ $colorFons: #81688c; //
     .editorDivRules {
         overflow: visible !important;
     }
-    .menuRules{
+    .menuRules {
         position: sticky;
         top: 0;
         height: 97vh;
         z-index: 2222;
     }
-    .hamburgerWrapper{
+    .hamburgerWrapper {
         position: sticky;
     }
 }

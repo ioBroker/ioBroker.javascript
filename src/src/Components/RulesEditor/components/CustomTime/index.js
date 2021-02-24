@@ -1,39 +1,19 @@
-import { TextField, withStyles } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import React from 'react';
+import cls from './style.module.scss';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
-// import clsx from 'clsx';
-
-const TimeFieldMod = withStyles({
-    root: {
-        margin: '10px 0',
-        '& > *': {
-            color: '#2d0440 !important'
-        },
-        '& label.Mui-focused': {
-            color: '#81688c',
-        },
-        '& .MuiInput-underline:after': {
-            borderBottomColor: '#510573',
-        },
-        '& .MuiInput-underline:before': {
-            borderBottomColor: '#81688c',
-        },
-        '& .MuiInput-underline:hover:before': {
-            borderBottomColor: '#81688c',
-        },
-    },
-})(TextField);
+import clsx from 'clsx';
 
 const CustomTime = ({ table, value, title, attr, options, style, native, onChange, className }) => {
-    return <TimeFieldMod
+    return <TextField
         id="time"
         // label="Alarm clock"
         type="time"
         defaultValue="07:30"
-        onChange={(e)=>onChange(e.currentTarget.value)}
+        onChange={(e) => onChange(e.currentTarget.value)}
         value={value}
-        className={className}
+        className={clsx(cls.root, className)}
         fullWidth
         style={style}
         InputLabelProps={{

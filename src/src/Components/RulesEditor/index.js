@@ -11,6 +11,8 @@ import { ContextWrapperCreate } from './components/ContextWrapper';
 import Compile from './Compile';
 import MaterialDynamicIcon from './helpers/MaterialDynamicIcon';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
+import theme from './helpers/stylesVariables.scss';
 
 const RulesEditor = ({ code, onChange }) => {
     // eslint-disable-next-line no-unused-vars
@@ -46,7 +48,7 @@ const RulesEditor = ({ code, onChange }) => {
         //         then: [],
         //         'else': []
         //     }
-        // }))
+        // },blocks))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [blocks]);
 
@@ -64,32 +66,16 @@ const RulesEditor = ({ code, onChange }) => {
         setBlocksFunc(filter.text, ['triggers', 'conditions', 'actions'][newValue]);
     };
 
-    const onChangeBlocks = useCallback((json)=>{
+    const onChangeBlocks = useCallback((json) => {
         setUserRules(json);
         onChange(Compile.json2code(json, blocks));
-    },[blocks, onChange]);
+    }, [blocks, onChange]);
 
-    return <div className={cls.wrapperRules}>
+    return <div className={clsx(theme['scssTheme'], cls.wrapperRules, "scssTheme")}>
         <CustomDragLayer allBlocks={allBlocks} />
         <div className={`${cls.hamburgerWrapper} ${hamburgerOnOff ? cls.hamburgerOff : null}`}
             onClick={() => setHamburgerOnOff(!hamburgerOnOff)}><HamburgerMenu boolean={!hamburgerOnOff} /></div>
         <div className={`${cls.menuRules} ${hamburgerOnOff ? cls.menuOff : null}`}>
-            <CustomInput
-                className={cls.inputWidth}
-                fullWidth
-                customValue
-                value={filter.text}
-                autoComplete="off"
-                label="search"
-                variant="outlined"
-                onChange={(value) => {
-                    setFilter({ ...filter, text: value });
-                    setBlocksFunc(value);
-                }}
-            />
-            <div className={cls.menuTitle}>
-                Control Panel
-            </div>
             <div className={cls.controlPanel}>
                 <AppBar className={cls.controlPanelAppBar} position="static">
                     <Tabs
@@ -104,9 +90,6 @@ const RulesEditor = ({ code, onChange }) => {
                             {...a11yProps(2)} />
                     </Tabs>
                 </AppBar>
-            </div>
-            <div className={cls.menuTitle}>
-                Blocks
             </div>
             <div className={cls.switchesRenderWrapper}>
                 <span>
@@ -136,18 +119,35 @@ const RulesEditor = ({ code, onChange }) => {
                     </div>}
                 </span>
             </div>
+            <div className={clsx(cls.menuTitle, cls.marginAuto)} />
+            <CustomInput
+                className={cls.inputWidth}
+                fullWidth
+                customValue
+                value={filter.text}
+                size="small"
+                autoComplete="off"
+                label="search"
+                variant="outlined"
+                onChange={(value) => {
+                    setFilter({ ...filter, text: value });
+                    setBlocksFunc(value);
+                }}
+            />
         </div>
         <ContentBlockItems
             setUserRules={onChangeBlocks}
             userRules={userRules}
             name="when..."
             typeBlock="triggers"
+            iconName='FlashOn'
         />
         <ContentBlockItems
             setUserRules={onChangeBlocks}
             userRules={userRules}
             name="...and..."
             typeBlock="conditions"
+            iconName='Help'
             nameAdditionally="or"
             additionally
             border
@@ -157,6 +157,7 @@ const RulesEditor = ({ code, onChange }) => {
             userRules={userRules}
             name="...then"
             typeBlock="actions"
+            iconName='PlayForWork'
             nameAdditionally="else"
             additionally
         />
@@ -164,8 +165,8 @@ const RulesEditor = ({ code, onChange }) => {
 }
 
 RulesEditor.propTypes = {
-    onChange:PropTypes.func,
-    code:PropTypes.string
+    onChange: PropTypes.func,
+    code: PropTypes.string
 };
 
 export default RulesEditor;

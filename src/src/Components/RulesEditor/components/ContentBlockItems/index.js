@@ -7,12 +7,14 @@ import { useDrop } from 'react-dnd';
 import CurrentItem from '../CurrentItem';
 import { useStateLocal } from '../../hooks/useStateLocal';
 import DragWrapper from '../DragWrapper';
+import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 
 const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolean, typeBlock, userRules, setUserRules, animation }) => {
     const [checkItem, setCheckItem] = useState(false);
     const [canDropCheck, setCanDropCheck] = useState(false);
     const [checkId, setCheckId] = useState(false);
     const [hoverBlock, setHoverBlock] = useState('');
+
     const [{ canDrop, isOver, offset, targetId }, drop] = useDrop({
         accept: 'box',
         drop: () => ({ blockValue }),
@@ -32,7 +34,9 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
             targetId: monitor.targetId
         }),
     });
+
     useEffect(() => { setHoverBlock('') }, [offset]);
+
     const isActive = canDrop && isOver;
     let backgroundColor = '';
     if (isActive) {
@@ -42,6 +46,7 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
     } else if (offset) {
         backgroundColor = targetId === hoverBlock ? '#fb00002e' : '';
     }
+
     return <div ref={drop} style={{ backgroundColor }} className={`${cls.contentBlockItem} ${boolean ? animation ? cls.contentHeightOn : null : cls.contentHeightOff}`}>
         <div className={cls.wrapperMargin}>{itemsSwitchesRender[blockValue]?.map(el => (
             <DragWrapper
@@ -75,7 +80,7 @@ AdditionallyContentBlockItems.defaultProps = {
     animation: false
 };
 
-const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, border, userRules, setUserRules }) => {
+const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, border, userRules, setUserRules,iconName }) => {
     const [additionallyClickItems, setAdditionallyClickItems, checkLocal] = useStateLocal(typeBlock === 'actions' ? false : [], `additionallyClickItems_${typeBlock}`);
 
     useEffect(() => {
@@ -100,7 +105,7 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
     const [animation, setAnimation] = useState(false);
 
     return <div className={`${cls.mainBlockItemRules} ${border ? cls.border : null}`}>
-        <span id='width' className={cls.nameBlockItems}>{name}</span>
+        <span id='width' className={cls.nameBlockItems}><MaterialDynamicIcon iconName={iconName} className={cls.iconThemCard} />{name}</span>
         <AdditionallyContentBlockItems
             blockValue={typeBlock === 'actions' ? 'then' : typeBlock === 'conditions' ? 0 : typeBlock}
             typeBlock={typeBlock}
@@ -120,7 +125,7 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
                     if (userRules['conditions'][index + 1].length) {
                         newAdditionally[index].open = !newAdditionally[index].open
                         setAdditionallyClickItems(newAdditionally);
-                        return null
+                        return null;
                     }
                     newAdditionally = newAdditionally.filter((el, idx) => idx !== index);
                     setAdditionallyClickItems(newAdditionally);

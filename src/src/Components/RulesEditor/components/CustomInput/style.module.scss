@@ -1,0 +1,36 @@
+@import '../../helpers/stylesVariables.scss';
+
+.root {
+    background: $backgroundColorHumburger;
+    border-radius: 5px;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    * {
+        color: $lineColorActive !important;
+    }
+    [class*="MuiInputLabel-shrink"] {
+        color: $colorBlock !important;
+    }
+    [class*="MuiInput-underline"] {
+        :after {
+            border-bottom-color: $lineColor !important;
+        }
+    }
+    &:hover {
+        [class*="MuiOutlinedInput-notchedOutline"] {
+            border-color: $lineColor !important;
+        }
+    }
+    [class*="MuiOutlinedInput-notchedOutline"] {
+        border-color: $lineColor !important;
+        &:hover {
+            border-color: $lineColor !important;
+        }
+        [class*="Mui-focused"] {
+            border-color: $lineColor !important;
+        }
+        [class*="Mui-disabled"] {
+            border-color: $lineColor !important;
+        }
+    }
+}

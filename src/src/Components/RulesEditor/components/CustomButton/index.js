@@ -5,12 +5,12 @@ import PropTypes from 'prop-types';
 
 const ColorButton = withStyles((theme) => ({
     root: {
-        color: '#81688c',
+        color: '#02124b',
         // margin: '10px 0',
-        borderColor: '#81688c',
+        borderColor: '#02124b',
         '&:hover': {
-            borderColor: '#7a5e86',
-            color: '#7a5e86',
+            borderColor: '#02124b8c',
+            color: '#02124b8c',
             backgroundColor: 'inherit'
         },
     },

@@ -9,10 +9,10 @@ class ActionSetState extends GenericBlock {
         let value = config.value;
 
         if (parseFloat(config.value).toString() !== config.value && config.value !== 'true' && config.value !== 'false') {
-            // value = '"' + value.replace(/"/g, '\\"') + '"';
+            value = `"${value.replace(/"/g, '\\"')}"`;
         }
 
-        return `await setState("${config.oid}", ${value}, ${config.tagCard === 'update'});`;
+        return `await setStateAsync("${config.oid}", ${value}, ${config.tagCard === 'update'});`;
     }
 
     onTagChange(common) {

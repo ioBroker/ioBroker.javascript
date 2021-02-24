@@ -12,9 +12,15 @@ export const ContextWrapperCreate = createContext();
 
 export const ContextWrapper = ({ children, socket }) => {
     const [state, setState] = useState({
-        blocks: StandardBlocks
+        blocks: StandardBlocks,
+        onUpdate: false
     });
     const [generateBlocksArray, setGenerateBlocksArray] = useState([]);
+    useEffect(() => {
+        if (state.onUpdate) {
+            setState({ ...state, onUpdate: false })
+        }
+    }, [state, state.onUpdate])
     useEffect(() => {
         setGenerateBlocksArray([ActionSendEmail, ActionSayText, ActionTelegram]);
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -22,7 +28,7 @@ export const ContextWrapper = ({ children, socket }) => {
 
     useEffect(() => {
         setState({
-            blocks: [...state.blocks,
+            ...state, blocks: [...state.blocks,
             ...generateBlocksArray
             ],
         });

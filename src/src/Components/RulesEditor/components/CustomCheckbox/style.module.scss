@@ -1,0 +1,7 @@
+@import '../../helpers/stylesVariables.scss';
+
+.root {
+    * {
+        color: $colorBlock !important;
+    }
+}

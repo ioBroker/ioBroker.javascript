@@ -50,6 +50,21 @@ class GenericBlock extends PureComponent {
         };
     }
 
+    // called every time, the tagCard changes or at start
+    onTagChange(tagCard) {
+        // do nothing, but blocks can overwrite it
+    }
+
+    // called if trigger added or removed
+    onUpdate() {
+        // do nothing, but blocks can overwrite it
+    }
+
+    // called every time if some attribute changes
+    onValueChanged(value, attr) {
+        // do nothing, but blocks can overwrite it
+    }
+
     renderText = (input, value, onChange) => {
         const { className } = this.props;
         const { attr, frontText, backText, nameBlock, name } = input;
@@ -146,7 +161,7 @@ class GenericBlock extends PureComponent {
     renderCheckbox = (input, value, onChange) => {
         const { className } = this.props;
         const { settings } = this.state;
-        const { attr, backText, frontText } = input;
+        const { attr, backText, frontText, defaultValue } = input;
         return <div key={attr} className={cls.displayFlex}>
             {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomCheckbox
@@ -156,7 +171,7 @@ class GenericBlock extends PureComponent {
                 variant="outlined"
                 size="small"
                 style={{ marginRight: 5 }}
-                value={typeof settings[attr] === 'boolean' ? settings[attr] : true}
+                value={typeof settings[attr] === 'boolean' ? settings[attr] : defaultValue}
                 customValue
                 onChange={onChange}
             />
@@ -249,24 +264,20 @@ class GenericBlock extends PureComponent {
                 // selected={this.selectIdValue}
                 onClose={() => this.setState({ showSelectId: false })}
                 onOk={(selected, name, common) =>
-                    this.setState({ showSelectId: false }, () => onChange(selected))}
+                    this.setState({ showSelectId: false }, () => {
+                        onChange(selected);
+                        // read type of object
+                        this.props.socket.getObject(selected)
+                            .then(obj =>
+                                onChange(obj.common.type, attr + 'Type'));
+                    })}
             /> : null}
         </div> : null;
     }
 
-    renderIconTag = () => {
-        return <div style={{
-            fontSize: 40,
-            color: '#460f46',
-            display: 'flex',
-            alignItems: 'center',
-            minWidth: 40,
-            marginBottom: 10,
-            marginLeft: 12
-        }}>
-            {this.state.settings.tagCard}
-        </div>
-    }
+    renderIconTag = () => <div className={cls.iconTag}>
+        {this.state.settings.tagCard}
+    </div>
 
     renderTime = (input, value, onChange) => {
         const { attr, backText, frontText } = input
@@ -371,7 +382,7 @@ class GenericBlock extends PureComponent {
                                 const settings = { ...this.state.settings, tagCard: el };
                                 this.setState({ openTagMenu: null, settings }, () => {
                                     this.props.onChange(settings);
-                                    this.onTagChange && this.onTagChange(el);
+                                    this.onTagChange(el);
                                 });
                             }}>{I18n.t(el)}</MenuItem>)}
                 </Menu>
@@ -403,6 +414,13 @@ class GenericBlock extends PureComponent {
         this.onTagChange();
     };
 
+    componentDidUpdate = (prevProps) => {
+        if (this.props.acceptedBy !== 'triggers' && this.props.onUpdate) {
+            console.log(this.props.settings._id, this.props.onUpdate)
+            setTimeout(() => this.onUpdate(), 0);
+        }
+    }
+
     onChangeInput = (attribute) => {
         return (value, attr) => {
             const settings = JSON.parse(JSON.stringify(this.state.settings));
@@ -411,8 +429,8 @@ class GenericBlock extends PureComponent {
             settings._id = this.props._id;
 
             this.setState({ settings }, () => {
-                this.onValueChange && this.onValueChange(value, attr || attribute);
-                this.props.onChange(settings)
+                this.onValueChanged(value, attr || attribute);
+                this.props.onChange(settings);
             });
         }
     }
