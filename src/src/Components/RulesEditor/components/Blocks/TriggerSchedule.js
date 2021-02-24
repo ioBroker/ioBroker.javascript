@@ -19,7 +19,7 @@ class TriggerScheduleBlock extends GenericBlock {
     static compile(config, context) {
         let text = '';
         if (config.tagCard === 'interval') {
-            text = `setInterval(${Compile.STANDARD_FUNCTION}, ${config.interval || 1} * ${config.attr === 's' ? 1000 : (config.attr === 'm' ? 60000 : 3600000)})`;
+            text = `setInterval(${Compile.STANDARD_FUNCTION}, ${config.interval || 1} * ${config.attr === 's' ? 1000 : (config.attr === 'm' ? 60000 : 3600000)});`;
         } else if (config.tagCard === 'cron') {
             text = `schedule("${config.cron}", ${Compile.STANDARD_FUNCTION});`;
         } else if (config.tagCard === 'at') {
@@ -27,26 +27,45 @@ class TriggerScheduleBlock extends GenericBlock {
             // todo: dow
             text = `schedule("* * * * *", ${Compile.STANDARD_FUNCTION});`;
         } else if (config.tagCard === 'astro') {
-            text = `schedule({astro: "${config.astro}", shift: ${config.offset ? config.offsetValue : 0}}, ${Compile.STANDARD_FUNCTION})`;
+            text = `schedule({astro: "${config.astro}", shift: ${config.offset ? config.offsetValue : 0}}, ${Compile.STANDARD_FUNCTION});`;
         }
 
         return text;
+    }
+
+    static _time2String(time) {
+        if (!time) {
+            return '--:--';
+        }
+        return `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
     }
 
     _setAstro(astro, offset, offsetValue) {
         astro = astro || this.state.settings.astro || 'solarNoon';
         offset = offset === undefined ? this.state.settings.offset : offset;
         offsetValue = offsetValue === undefined ? this.state.settings.offsetValue : offsetValue;
-        
+
         const sunValue = SunCalc.getTimes(new Date(), 51.5, -0.1);
         const options = Object.keys(sunValue).map(name => ({
             value: name,
             title: name,
-            title2: `[${sunValue[name].getHours() < 10 ? 0 : ''}${sunValue[name].getHours()}:${sunValue[name].getMinutes() < 10 ? 0 : ''}${sunValue[name].getMinutes()}]`
+            title2: `[${TriggerScheduleBlock._time2String(sunValue[name])}]`,
+            order: TriggerScheduleBlock._time2String(sunValue[name])
         }));
+        options.sort((a, b) => a.order > b.order ? 1 : (a.order < b.order ? -1 : 0));
 
-        this.setState({
-            inputs: [
+        // calculate time text
+        let time = '--:--';
+        if (astro && sunValue[astro]) {
+            const astroTime = new Date(sunValue[astro]);
+            offset && astroTime.setMinutes(astroTime.getMinutes() + parseInt(offsetValue, 10));
+            time = `at ${TriggerScheduleBlock._time2String(astroTime)}`;
+        }
+
+        let inputs;
+
+        if (offset) {
+            inputs = [
                 {
                     frontText: 'at',
                     attr: 'astro',
@@ -60,29 +79,53 @@ class TriggerScheduleBlock extends GenericBlock {
                     attr: 'offset',
                 },
                 {
-                    backText: 'minutes',
+                    backText: 'minute(s)',
                     frontText: 'offset',
                     nameRender: 'renderNumber',
                     defaultValue: 0,
                     attr: 'offsetValue',
-                    openCheckbox: true
+                    noHelperText: true,
                 },
                 {
                     nameRender: 'renderNameText',
                     attr: 'textTime',
-                    defaultValue: `at ${sunValue[astro].getHours() < 10 ? 0 : ''}${sunValue[astro].getHours()}:${sunValue[astro].getMinutes() < 10 ? 0 : ''}${sunValue[astro].getMinutes()} ${offset ? offsetValue : ''}`,
+                    defaultValue: time,
                 }
-            ],
-        })
+            ];
+        } else {
+            inputs = [
+                {
+                    frontText: 'at',
+                    attr: 'astro',
+                    nameRender: 'renderSelect',
+                    options,
+                    defaultValue: 'solarNoon'
+                },
+                {
+                    backText: 'with offset',
+                    nameRender: 'renderCheckbox',
+                    attr: 'offset',
+                },
+                {
+                    nameRender: 'renderNameText',
+                    attr: 'textTime',
+                    defaultValue: time,
+                }
+            ];
+        }
+
+        this.setState({inputs});
     }
 
     onValueChanged(value, attr) {
         if (this.state.settings.tagCard === 'astro') {
-            this._setAstro(value);
-        } else if (this.state.settings.tagCard === 'offset') {
-            this._setAstro(undefined, value);
-        } else if (this.state.settings.tagCard === 'offsetValue') {
-            this._setAstro(undefined, undefined, value);
+            if (attr === 'astro') {
+                this._setAstro(value);
+            } else if (attr === 'offset') {
+                this._setAstro(undefined, value);
+            } else if (attr === 'offsetValue') {
+                this._setAstro(undefined, undefined, value);
+            }
         }
     }
 

@@ -7,7 +7,7 @@ class TriggerState extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `on({id: "${config.oid || ''}", change: ${config.tagCard === 'on update' ? 'any' : 'ne'}}, ${Compile.STANDARD_FUNCTION});`
+        return `on({id: "${config.oid || ''}", change: ${config.tagCard === 'on update' ? 'any' : 'ne'}}, ${Compile.STANDARD_FUNCTION_STATE});`
     }
 
     onTagChange(tagCard) {

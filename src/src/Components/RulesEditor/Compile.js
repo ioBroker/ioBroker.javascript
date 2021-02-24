@@ -1,6 +1,13 @@
 // eslint-disable-next-line no-unused-vars
 
-const STANDARD_FUNCTION = `async function (obj) {
+const STANDARD_FUNCTION_STATE = `async function (obj) {
+    if (__%%CONDITION%%__) {
+__%%THEN%%__
+    } else {
+__%%ELSE%%__
+    }
+}`;
+const STANDARD_FUNCTION = `async function () {
     if (__%%CONDITION%%__) {
 __%%THEN%%__
     } else {
@@ -26,10 +33,12 @@ function compileTriggers(json, context, blocks) {
     jsonTriggers.forEach(trigger => {
         const found = findBlock(trigger.id, blocks);
         if (found) {
-            const text = found.compile(trigger, context);
-            const conditions = compileConditions(json.conditions, context, blocks);
-            const then = compileActions(json.actions.then, context, blocks);
-            const _else = compileActions(json.actions.else, context, blocks);
+            const _context = {trigger}
+            const text = found.compile(trigger, _context);
+            const conditions = compileConditions(json.conditions, _context, blocks);
+            const then = compileActions(json.actions.then, _context, blocks);
+            const _else = compileActions(json.actions.else, _context, blocks);
+
             triggers.push(
                 text
                     .replace('__%%CONDITION%%__', conditions)
@@ -77,7 +86,8 @@ function compileConditions(conditions, context, blocks) {
         }
 
     });
-    return (result.join(') && (') || 'true');
+
+    return result.join(') && (') || 'true';
 }
 
 function compile(json, blocks) {
@@ -105,10 +115,12 @@ function code2json(code) {
 
 // eslint-disable-next-line no-unused-vars
 function json2code(json, blocks) {
-    let code = `const demo = ${JSON.stringify(json, null, 2)};\n`;
+    let code = '';
 
     const compiled = compile(json, blocks);
     code += compiled;
+
+    code += `\n/*const demo = ${JSON.stringify(json, null, 2)};*/\n`;
 
     return code + '\n//' + JSON.stringify(json);
 }
@@ -117,7 +129,8 @@ const Compile = {
     code2json,
     json2code,
     compile,
-    STANDARD_FUNCTION
+    STANDARD_FUNCTION,
+    STANDARD_FUNCTION_STATE
 };
 
 export default Compile;

@@ -127,7 +127,7 @@ class GenericBlock extends PureComponent {
                 className={className}
                 fullWidth
                 autoComplete="off"
-                label="number"
+                label={input.noHelperText ? '' : 'number'}
                 variant="outlined"
                 size="small"
                 type="number"

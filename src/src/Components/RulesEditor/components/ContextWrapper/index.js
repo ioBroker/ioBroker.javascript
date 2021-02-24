@@ -15,25 +15,28 @@ export const ContextWrapper = ({ children, socket }) => {
         blocks: StandardBlocks,
         onUpdate: false
     });
-    const [generateBlocksArray, setGenerateBlocksArray] = useState([]);
+
+    const [adapterBlocksArray, setAdapterBlocksArray] = useState([]);
+
     useEffect(() => {
         if (state.onUpdate) {
             setState({ ...state, onUpdate: false })
         }
-    }, [state, state.onUpdate])
+    }, [state, state.onUpdate]);
+
     useEffect(() => {
-        setGenerateBlocksArray([ActionSendEmail, ActionSayText, ActionTelegram]);
+        setAdapterBlocksArray([ActionSendEmail, ActionSayText, ActionTelegram]);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         setState({
-            ...state, blocks: [...state.blocks,
-            ...generateBlocksArray
-            ],
+            ...state,
+            blocks: [...state.blocks, ...adapterBlocksArray],
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [generateBlocksArray]);
+    }, [adapterBlocksArray]);
+
     return <ContextWrapperCreate.Provider value={{ state, setState, socket }}>
         {children}
     </ContextWrapperCreate.Provider>;

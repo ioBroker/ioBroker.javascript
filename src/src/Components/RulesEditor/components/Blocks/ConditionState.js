@@ -13,7 +13,7 @@ class ConditionState extends GenericBlock {
     static compile(config, context) {
         if (config.tagCard !== 'includes') {
             if (config.useTrigger) {
-                if (context?.type === 'string') {
+                if (context?.trigger?.oidType === 'string') {
                     return `obj.state.value ${config.tagCard} "${config.value}"`;
                 } else {
                     return `obj.state.value ${config.tagCard} ${config.value}`;
@@ -27,7 +27,7 @@ class ConditionState extends GenericBlock {
             }
         } else {
             if (config.useTrigger) {
-                if (context?.type === 'string') {
+                if (context?.trigger?.oidType === 'string') {
                     return `obj.state.value.includes("${config.value}")`;
                 } else {
                     return `false`;

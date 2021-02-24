@@ -107,7 +107,6 @@ class ActionSetState extends GenericBlock {
         });
     }
 
-
     static getStaticData() {
         return {
             acceptedBy: 'actions',
