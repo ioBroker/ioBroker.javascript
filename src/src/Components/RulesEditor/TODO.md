@@ -1,7 +1,11 @@
 - Drag with Ctrl => copy of block
-- Show Same icons as in control panel for "when, ..and.. ..then"
-- Change colors to brand book
-- Make inputs smaller like material design
+- Color Themes
+- Double click on block => add block to workspace
 - Change Modal Dialog to normal material dialog
-- Remove text "Control panel"  => just line
-- Make 
+- Load additional blocks from other adapters
+- Multiselect for Day of weeks
+- Astro: read coordinates from 
+  system.adapter.javascript.0=>native.latitude(longitude) ||
+  system.config => common.latitude/longitude
+
+- i18n  

@@ -33,6 +33,58 @@ class TriggerScheduleBlock extends GenericBlock {
         return text;
     }
 
+    _setAstro(astro, offset, offsetValue) {
+        astro = astro || this.state.settings.astro || 'solarNoon';
+        offset = offset === undefined ? this.state.settings.offset : offset;
+        offsetValue = offsetValue === undefined ? this.state.settings.offsetValue : offsetValue;
+        
+        const sunValue = SunCalc.getTimes(new Date(), 51.5, -0.1);
+        const options = Object.keys(sunValue).map(name => ({
+            value: name,
+            title: name,
+            title2: `[${sunValue[name].getHours() < 10 ? 0 : ''}${sunValue[name].getHours()}:${sunValue[name].getMinutes() < 10 ? 0 : ''}${sunValue[name].getMinutes()}]`
+        }));
+
+        this.setState({
+            inputs: [
+                {
+                    frontText: 'at',
+                    attr: 'astro',
+                    nameRender: 'renderSelect',
+                    options,
+                    defaultValue: 'solarNoon'
+                },
+                {
+                    backText: 'with offset',
+                    nameRender: 'renderCheckbox',
+                    attr: 'offset',
+                },
+                {
+                    backText: 'minutes',
+                    frontText: 'offset',
+                    nameRender: 'renderNumber',
+                    defaultValue: 0,
+                    attr: 'offsetValue',
+                    openCheckbox: true
+                },
+                {
+                    nameRender: 'renderNameText',
+                    attr: 'textTime',
+                    defaultValue: `at ${sunValue[astro].getHours() < 10 ? 0 : ''}${sunValue[astro].getHours()}:${sunValue[astro].getMinutes() < 10 ? 0 : ''}${sunValue[astro].getMinutes()} ${offset ? offsetValue : ''}`,
+                }
+            ],
+        })
+    }
+
+    onValueChanged(value, attr) {
+        if (this.state.settings.tagCard === 'astro') {
+            this._setAstro(value);
+        } else if (this.state.settings.tagCard === 'offset') {
+            this._setAstro(undefined, value);
+        } else if (this.state.settings.tagCard === 'offsetValue') {
+            this._setAstro(undefined, undefined, value);
+        }
+    }
 
     onTagChange(tagCard) {
         tagCard = tagCard || this.state.settings.tagCard;
@@ -118,42 +170,7 @@ class TriggerScheduleBlock extends GenericBlock {
                 break;
 
             case 'astro':
-                const sunValue = SunCalc.getTimes(new Date(), 51.5, -0.1);
-                const options = Object.keys(sunValue).map((name) => ({
-                    value: name,
-                    title: name,
-                    title2: `[${sunValue[name].getHours() < 10 ? 0 : ''}${sunValue[name].getHours()}:${sunValue[name].getMinutes() < 10 ? 0 : ''}${sunValue[name].getMinutes()}]`
-                }));
-                this.setState({
-                    inputs: [
-                        {
-                            frontText: 'at',
-                            attr: 'astro',
-                            nameRender: 'renderSelect',
-                            options,
-                            defaultValue: 'solarNoon'
-                        },
-                        {
-                            backText: 'with offset',
-                            nameRender: 'renderCheckbox',
-                            attr: 'offset',
-                        },
-                        {
-                            backText: 'minutes',
-                            frontText: 'offset',
-                            nameRender: 'renderNumber',
-                            defaultValue: 30,
-                            attr: 'offsetValue',
-                            openCheckbox: true
-                        },
-                        {
-                            nameRender: 'renderNameText',
-                            attr: 'textTime',
-                            defaultValue: `at ${sunValue['solarNoon'].getHours() < 10 ? 0 : ''}${sunValue['solarNoon'].getHours()}:${sunValue['solarNoon'].getMinutes() < 10 ? 0 : ''}${sunValue['solarNoon'].getMinutes()}`,
-                        }
-                    ],
-                    openCheckbox: true
-                });
+                this._setAstro();
                 break;
 
             default:

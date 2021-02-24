@@ -7,6 +7,9 @@ class ActionSetState extends GenericBlock {
 
     static compile(config, context) {
         let value = config.value;
+        if (value === undefined || value === null) {
+            value = '';
+        }
 
         if (parseFloat(config.value).toString() !== config.value && config.value !== 'true' && config.value !== 'false') {
             value = `"${value.replace(/"/g, '\\"')}"`;
