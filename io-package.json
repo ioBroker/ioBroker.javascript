@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "4.10.15",
+        "version": "4.11.0",
         "news": {
+            "4.11.0": {
+                "en": "Add some additional checks for getSchedules\nmake sure promisified methods reject with Error instead of string so that async errors can be catched correctly\nupdate some german blockly translations",
+                "de": "Fügen Sie einige zusätzliche Überprüfungen für getSchedules hinzu\nStellen Sie sicher, dass versprochene Methoden mit Fehler anstelle von Zeichenfolge zurückweisen, damit asynchrone Fehler korrekt abgefangen werden können\nAktualisiere einige deutsche Blockübersetzungen",
+                "ru": "Добавьте дополнительные проверки для getSchedules\nубедитесь, что обещанные методы отклоняются с ошибкой вместо строки, чтобы ошибки async могли быть правильно отловлены\nобновить некоторые немецкие блочные переводы",
+                "pt": "Adicione algumas verificações adicionais para getSchedules\ncertifique-se de que os métodos prometidos sejam rejeitados com Error em vez de string para que os erros assíncronos possam ser detectados corretamente\natualizar algumas traduções em alemão",
+                "nl": "Voeg wat extra controles toe voor getSchedules\nzorg ervoor dat beloofde methoden weigeren met Error in plaats van string, zodat asynchrone fouten correct kunnen worden opgevangen\nupdate enkele Duitse blokachtige vertalingen",
+                "fr": "Ajouter des vérifications supplémentaires pour getSchedules\nassurez-vous que les méthodes promises rejettent avec Error au lieu de string afin que les erreurs asynchrones puissent être détectées correctement\nmettre à jour quelques traductions en bloc allemand",
+                "it": "Aggiungi alcuni controlli aggiuntivi per getSchedules\nassicurati che i metodi promessi rifiutino con Errore invece che con stringa in modo che gli errori asincroni possano essere rilevati correttamente\naggiornare alcune traduzioni a blocchi in tedesco",
+                "es": "Agregue algunas comprobaciones adicionales para getSchedules\nasegúrese de que los métodos prometidos se rechacen con Error en lugar de cadena para que los errores asíncronos se puedan detectar correctamente\nactualizar algunas traducciones alemanas en bloques",
+                "pl": "Dodaj dodatkowe sprawdzenia dotyczące getSchedules\nupewnij się, że obiecane metody odrzucają z błędem zamiast ciągu, aby błędy asynchroniczne mogły być poprawnie przechwytywane\nzaktualizuj niektóre niemieckie tłumaczenia blokowe",
+                "zh-cn": "为getSchedules添加一些其他检查\n确保承诺的方法使用Error而不是String拒绝，以便可以正确捕获异步错误\n更新一些德语块翻译"
+            },
             "4.10.15": {
                 "en": "Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5W)",
                 "de": "Behandeln Sie weitere Fälle mit ungültigen Skriptnamen / Status-IDs (Sentry IOBROKER-JAVASCRIPT-5W).",
@@ -249,18 +261,6 @@
                 "es": "Todos los scripts soportan ahora llamadas ʻawait`. ESTO PODRÍA TENER ALGÚN EFECTO SECUNDARIO (aún desconocido).\nCoincidió con el ID exacto si el selector $ no contiene comodines\nSe agregó un nuevo bloque en blockly: \"pause\"\nSe cambió el orden de las carpetas y los scripts a \"carpetas primero\".\nAmplíe la documentación.\nSe corrigió el error con conversión en bloque y \"día de la semana\".",
                 "pl": "Wszystkie skrypty obsługują teraz wywołania „poczekaj”. TO MOŻE MIEĆ JAKIEŚ EFEKTY UBOCZNE (jeszcze nieznane).\nDopasowano dokładny identyfikator, jeśli selektor $ nie zawiera symbolu wieloznacznego\nDodano nowy blok w bloku: „pauza”\nZmieniono kolejność folderów i skryptów na „najpierw foldery”.\nRozszerz dokumentację.\nPoprawiono błąd związany z konwersją blokową i „dnia tygodnia”.",
                 "zh-cn": "所有脚本现在都支持“等待”调用。这可能有一些副作用（未知）。\n如果$选择器不包含通配符，则匹配确切的ID\n在块中添加了新块：“暂停”\n将文件夹和脚本的顺序更改为“文件夹优先”。\n扩展文档。\n修正了错误性和“星期几”转换的错误。"
-            },
-            "4.8.4": {
-                "en": "Make the mirroring instance adjustable\nCorrect the dark mode for blockly",
-                "de": "Machen Sie die Spiegelungsinstanz einstellbar\nKorrigieren Sie den Dunkelmodus für Block",
-                "ru": "Сделайте экземпляр зеркального отображения настраиваемым\nИсправьте темный режим для блочного",
-                "pt": "Torne a instância de espelhamento ajustável\nCorrija o modo escuro para blocos",
-                "nl": "Maak de spiegelinstantie instelbaar\nCorrigeer de donkere modus voor blokkerig",
-                "fr": "Rendre l'instance de mise en miroir ajustable\nCorrigez le mode sombre pour bloquer",
-                "it": "Rendi l'istanza di mirroring regolabile\nCorreggere la modalità oscura per blockly",
-                "es": "Hacer que la instancia de duplicación sea ajustable\nCorrija el modo oscuro para blockly",
-                "pl": "Ustaw regulację instancji dublowania\nPopraw tryb ciemny na blokowy",
-                "zh-cn": "使镜像实例可调\n纠正黑暗模式以阻止"
             }
         },
         "desc": {
