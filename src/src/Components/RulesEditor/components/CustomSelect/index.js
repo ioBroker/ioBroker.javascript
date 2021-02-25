@@ -19,6 +19,11 @@ const CustomSelect = ({ multiple, value, customValue, title, attr, options, styl
             multiple={multiple}
             renderValue={selected => {
                 if (multiple && selected.join) {
+                    const onlyItem = options.find(el => el.only);
+                    if (selected.includes(onlyItem.value)) {
+                        return onlyItem.titleShort || onlyItem.title;
+                    }
+
                     const titles = selected
                         .map(sel => options.find(item => item.value === sel || (sel === '_' && item.value === '')) || sel)
                         .map(item => typeof item === 'object' ? item.titleShort || item.title : item);
@@ -31,14 +36,16 @@ const CustomSelect = ({ multiple, value, customValue, title, attr, options, styl
             }}
             onChange={e => {
                 !customValue && setInputText(e.target.value);
-                if (multiple && !!options.find(el => el.only)) {
-                    debugger
-                    const valueOnly = options.find(el => el.only).value;
-                    if (e.target.value.length === options.length - 1 && e.target.value.includes(valueOnly)) {
-                        return onChange(e.target.value.filter(el => el !== valueOnly));
-                    }
-                    if (e.target.value.includes(valueOnly)) {
-                        return onChange(options.map(el => el.value));
+                if (multiple) {
+                    const onlyItem = options.find(el => el.only);
+                    if (onlyItem) {
+                        const valueOnly = onlyItem.value;
+                        if (e.target.value.length === options.length - 1 && e.target.value.includes(valueOnly)) {
+                            return onChange(e.target.value.filter(el => el !== valueOnly));
+                        }
+                        if (e.target.value.includes(valueOnly)) {
+                            return onChange(options.map(el => el.value));
+                        }
                     }
                 }
                 onChange(e.target.value);

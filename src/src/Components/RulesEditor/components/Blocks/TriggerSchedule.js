@@ -196,9 +196,9 @@ class TriggerScheduleBlock extends GenericBlock {
                             attr: 'dow',
                             default: '',
                             multiple: true,
-                            defaultValue: ['Every day'],
+                            defaultValue: ['_'],
                             options: [
-                                { value: '', title: 'Every day', only: true },
+                                { value: '_', title: 'Every day', only: true },
                                 { value: '1', title: 'Monday', titleShort: 'Mo' },
                                 { value: '2', title: 'Tuesday', titleShort: 'Tu' },
                                 { value: '3', title: 'Wednesday', titleShort: 'We' },
