@@ -7,7 +7,19 @@ class ActionSendEmail extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
+        let value = '';
+        if (context.trigger?.oidType) {
+            value = '.replace(/%s/g, obj.state.value)';
+        }
+        if (!config.recipients) {
+            return '// no recipients defined'
+        } else {
+            return `sendTo("${config.instance || 'email.0'}", {
+            to:      "${config.recipients || ''}",
+            subject: "${(config.subject || 'ioBroker').replace(/"/g, '\\"')}"${value},
+            text:    "${(config.text || '').replace(/"/g, '\\"')}"${value}
+        });`;
+        }
     }
 
     onTagChange(tagCard) {
@@ -24,11 +36,10 @@ class ActionSendEmail extends GenericBlock {
                     attr: 'recipients',
                     nameRender: 'renderText',
                     defaultValue: 'user@mail.ru',
-                    nameBlock: 'Recipients',
                     frontText: 'To:',
                 },
                 {
-                    attr: 'title',
+                    attr: 'subject',
                     nameRender: 'renderText',
                     defaultValue: 'Email from iobroker',
                     nameBlock: '',

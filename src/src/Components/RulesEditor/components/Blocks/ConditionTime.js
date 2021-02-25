@@ -6,10 +6,14 @@ class ConditionTime extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `true`;
+        const compare = config.tagCard === '=' ? '===' : (config.tagCard === '<>' ? '!==' : config.tagCard);
+        return `formatDate(Date.now(), 'hh:mm') ${compare} "${config.time}"`;
     }
 
     onTagChange(tagCard) {
+        tagCard = tagCard || this.state.settings.tagCard;
+        const tagCardArray = ConditionTime.getStaticData().tagCardArray;
+        const tag = tagCardArray.find(item => item.title === tagCard);
         this.setState({
             inputs: [
                 {
@@ -18,10 +22,10 @@ class ConditionTime extends GenericBlock {
                     defaultValue: 'Actual time of day',
                 },
                 {
-                    frontText: 'greater than',
+                    frontText: tag?.text || tagCard,
                     nameRender: 'renderTime',
                     attr: 'time',
-                    defaultValue: '00:12',
+                    defaultValue: '12:00',
                 },
             ],
             iconTag:true
@@ -31,28 +35,44 @@ class ConditionTime extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'conditions',
-            name: { en: 'Time condition', ru: 'Time condition' },
+            name: {
+                en: 'Time condition',
+                ru: 'Time condition'
+            },
             id: 'ConditionTime',
             icon: 'Shuffle',
-            tagCardArray: [{
-                title: '>',
-                title2: '[greater]'
-            }, {
-                title: '>=',
-                title2: '[greater or equal]'
-            }, {
-                title: '<',
-                title2: '[less]'
-            }, {
-                title: '<=',
-                title2: '[less or equal]'
-            }, {
-                title: '=',
-                title2: '[equal]',
-            }, {
-                title: '<>',
-                title2: '[not equal]'
-            }],
+            tagCardArray: [
+                {
+                    title: '=',
+                    title2: '[equal]',
+                    text: 'equal to'
+                },
+                {
+                    title: '>=',
+                    title2: '[greater or equal]',
+                    text: 'greater or equal'
+                },
+                {
+                    title: '>',
+                    title2: '[greater]',
+                    text: 'greater than'
+                },
+                {
+                    title: '<=',
+                    title2: '[less or equal]',
+                    text: 'less or equal'
+                },
+                {
+                    title: '<',
+                    title2: '[less]',
+                    text: 'less than'
+                },
+                {
+                    title: '<>',
+                    title2: '[not equal]',
+                    text: 'not equal to'
+                }
+            ],
         }
     }
 

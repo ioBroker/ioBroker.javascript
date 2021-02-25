@@ -28,7 +28,7 @@ class TriggerState extends GenericBlock {
             name: { en: 'State', ru: 'State' },
             id: 'TriggerState',
             icon: 'FlashOn',
-            tagCardArray: ['on update', 'on change']
+            tagCardArray: ['on change', 'on update']
         }
     }
 

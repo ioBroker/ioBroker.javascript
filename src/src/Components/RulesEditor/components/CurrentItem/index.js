@@ -21,7 +21,7 @@ const CurrentItem = memo(props => {
 
     const onChange = useCallback(settings => {
         let newUserRules = findElement(settings, userRules, blockValue);
-        setUserRules(newUserRules);
+        newUserRules && setUserRules(newUserRules);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userRules]);
 

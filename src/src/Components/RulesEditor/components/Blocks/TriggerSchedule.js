@@ -23,9 +23,38 @@ class TriggerScheduleBlock extends GenericBlock {
         } else if (config.tagCard === 'cron') {
             text = `schedule("${config.cron}", ${Compile.STANDARD_FUNCTION});`;
         } else if (config.tagCard === 'at') {
-            // const [hours, minutes] = config.at.split(':');
-            // todo: dow
-            text = `schedule("* * * * *", ${Compile.STANDARD_FUNCTION});`;
+            const [hours, minutes] = (config.at || '').split(':');
+            let dow = '*';
+            if (config?.dow.length && !config?.dow.includes('_')) {
+                const _dow = [...config.dow].map(item => parseInt(item, 10));
+                _dow.sort();
+
+                let intervals = [];
+                let start = _dow[0];
+                let i = 1
+                for (; i < _dow.length; i++) {
+                    if (_dow[i] - _dow[i - 1] > 1) {
+                        if (start === _dow[i - 1]) {
+                            intervals.push(start);
+                        } else if (_dow[i - 1] - start === 1) {
+                            intervals.push(start + ',' + _dow[i - 1]);
+                        } else {
+                            intervals.push(start + '-' + _dow[i - 1]);
+                        }
+
+                        start = _dow[i];
+                    } else if (i === _dow.length - 1) {
+                        if (start === _dow[i - 1] || _dow[i] - start === 1) {
+                            intervals.push(start + ',' + _dow[i]);
+                        } else {
+                            intervals.push(start + '-' + _dow[i]);
+                        }
+                    }
+                }
+
+                dow = intervals.join(',')
+            }
+            text = `schedule("${minutes || '0'} ${hours || '0'} * * ${dow}", ${Compile.STANDARD_FUNCTION});`;
         } else if (config.tagCard === 'astro') {
             text = `schedule({astro: "${config.astro}", shift: ${config.offset ? config.offsetValue : 0}}, ${Compile.STANDARD_FUNCTION});`;
         }
@@ -45,6 +74,8 @@ class TriggerScheduleBlock extends GenericBlock {
         offset = offset === undefined ? this.state.settings.offset : offset;
         offsetValue = offsetValue === undefined ? this.state.settings.offsetValue : offsetValue;
 
+        offsetValue = parseInt(offsetValue, 10) || 0;
+
         const sunValue = SunCalc.getTimes(new Date(), 51.5, -0.1);
         const options = Object.keys(sunValue).map(name => ({
             value: name,
@@ -59,7 +90,7 @@ class TriggerScheduleBlock extends GenericBlock {
         if (astro && sunValue[astro]) {
             const astroTime = new Date(sunValue[astro]);
             offset && astroTime.setMinutes(astroTime.getMinutes() + parseInt(offsetValue, 10));
-            time = `at ${TriggerScheduleBlock._time2String(astroTime)}`;
+            time = `(at ${TriggerScheduleBlock._time2String(astroTime)})`;
         }
 
         let inputs;

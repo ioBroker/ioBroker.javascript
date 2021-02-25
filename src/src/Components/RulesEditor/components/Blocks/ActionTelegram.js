@@ -8,7 +8,12 @@ class ActionTelegram extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
+        let text = (config.text || '').replace(/"/g, '\\"');
+        let value = '';
+        if (context.trigger?.oidType) {
+            value = '.replace(/%s/g, obj.state.value)';
+        }
+        return `sendTo("${config.instance}", ${config.user ? `{user: ${config.user}, text: "${text}"${value}}` : `"${text}"${value}`});`;
     }
 
     onValueChanged(value, attr) {

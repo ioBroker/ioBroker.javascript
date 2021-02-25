@@ -8,27 +8,67 @@ class ConditionAstrological extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `schedule('* 1 * * *', ${Compile.STANDARD_FUNCTION});`;
+        const compare = config.tagCard === '=' ? '===' : (config.tagCard === '<>' ? '!==' : config.tagCard);
+        return `formatDate(Date.now(), 'hh:mm')  ${compare} formatDate(getAstroDate("${config.astro}", 'hh:mm')`;
     }
 
-    onTagChange(tagCard) {
+    static _time2String(time) {
+        if (!time) {
+            return '--:--';
+        }
+        return `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
+    }
+
+    onValueChanged(value, attr) {
+        if (attr === 'astro') {
+            this._setAstro(value);
+        } else if (attr === 'offset') {
+            this._setAstro(undefined, value);
+        } else if (attr === 'offsetValue') {
+            this._setAstro(undefined, undefined, value);
+        }
+    }
+
+    _setAstro(astro, offset, offsetValue) {
+        astro = astro || this.state.settings.astro || 'solarNoon';
+        offset = offset === undefined ? this.state.settings.offset : offset;
+        offsetValue = offsetValue === undefined ? this.state.settings.offsetValue : offsetValue;
+
+        offsetValue = parseInt(offsetValue, 10) || 0;
+
         const sunValue = SunCalc.getTimes(new Date(), 51.5, -0.1);
-        this.setState({
-            inputs: [
+        const options = Object.keys(sunValue).map(name => ({
+            value: name,
+            title: name,
+            title2: `[${ConditionAstrological._time2String(sunValue[name])}]`,
+            order: ConditionAstrological._time2String(sunValue[name])
+        }));
+        options.sort((a, b) => a.order > b.order ? 1 : (a.order < b.order ? -1 : 0));
+
+        // calculate time text
+        const tagCardArray = ConditionAstrological.getStaticData().tagCardArray;
+        const tag = tagCardArray.find(item => item.title === this.state.settings.tagCard);
+
+        let time = '--:--';
+        if (astro && sunValue[astro]) {
+            const astroTime = new Date(sunValue[astro]);
+            offset && astroTime.setMinutes(astroTime.getMinutes() + parseInt(offsetValue, 10));
+            time = `(${tag.text} ${ConditionAstrological._time2String(astroTime)})`;
+        }
+
+        let inputs;
+
+        if (offset) {
+            inputs = [
                 {
                     nameRender: 'renderNameText',
-                    attr: 'interval',
                     defaultValue: 'Actual time of day',
                 },
                 {
                     frontText: 'greater than',
-                    nameRender: 'renderSelect',
                     attr: 'astro',
-                    options: Object.keys(sunValue).map((name) => ({
-                        value: name,
-                        title: name,
-                        title2: `[${sunValue[name].getHours() < 10 ? 0 : ''}${sunValue[name].getHours()}:${sunValue[name].getMinutes() < 10 ? 0 : ''}${sunValue[name].getMinutes()}]`
-                    })),
+                    nameRender: 'renderSelect',
+                    options,
                     defaultValue: 'solarNoon'
                 },
                 {
@@ -37,20 +77,50 @@ class ConditionAstrological extends GenericBlock {
                     attr: 'offset',
                 },
                 {
-                    backText: 'minutes',
+                    backText: 'minute(s)',
+                    frontText: 'offset',
                     nameRender: 'renderNumber',
-                    attr: 'number',
-                    defaultValue: 30,
-                    openCheckbox: true
+                    defaultValue: 0,
+                    attr: 'offsetValue',
+                    noHelperText: true,
                 },
                 {
                     nameRender: 'renderNameText',
-                    attr: 'interval',
-                    defaultValue: `${sunValue['solarNoon'].getHours() < 10 ? 0 : ''}${sunValue['solarNoon'].getHours()}:${sunValue['solarNoon'].getMinutes() < 10 ? 0 : ''}${sunValue['solarNoon'].getMinutes()}`,
+                    attr: 'textTime',
+                    defaultValue: time,
                 }
-            ],
-            openCheckbox: true
-        });
+            ];
+        } else {
+            inputs = [
+                {
+                    nameRender: 'renderNameText',
+                    defaultValue: 'Actual time of day',
+                },
+                {
+                    frontText: tag.text,
+                    attr: 'astro',
+                    nameRender: 'renderSelect',
+                    options,
+                    defaultValue: 'solarNoon'
+                },
+                {
+                    backText: 'with offset',
+                    nameRender: 'renderCheckbox',
+                    attr: 'offset',
+                },
+                {
+                    nameRender: 'renderNameText',
+                    attr: 'textTime',
+                    defaultValue: time,
+                }
+            ];
+        }
+
+        this.setState({inputs});
+    }
+
+    onTagChange(tagCard) {
+        this._setAstro();
     }
 
     static getStaticData() {
@@ -62,25 +132,38 @@ class ConditionAstrological extends GenericBlock {
             },
             id: 'ConditionAstrological',
             icon: 'Brightness3',
-            tagCardArray: [{
-                title: '>',
-                title2: '[greater]'
-            }, {
-                title: '>=',
-                title2: '[greater or equal]'
-            }, {
-                title: '<',
-                title2: '[less]'
-            }, {
-                title: '<=',
-                title2: '[less or equal]'
-            }, {
-                title: '=',
-                title2: '[equal]',
-            }, {
-                title: '<>',
-                title2: '[not equal]'
-            }],
+            tagCardArray: [
+                {
+                    title: '=',
+                    title2: '[equal]',
+                    text: 'equal to'
+                },
+                {
+                    title: '>=',
+                    title2: '[greater or equal]',
+                    text: 'greater or equal to'
+                },
+                {
+                    title: '>',
+                    title2: '[greater]',
+                    text: 'greater than'
+                },
+                {
+                    title: '<=',
+                    title2: '[less or equal]',
+                    text: 'less or equal to'
+                },
+                {
+                    title: '<',
+                    title2: '[less]',
+                    text: 'less than'
+                },
+                {
+                    title: '<>',
+                    title2: '[not equal]',
+                    text: 'not equal to'
+                }
+            ],
         }
     }
 

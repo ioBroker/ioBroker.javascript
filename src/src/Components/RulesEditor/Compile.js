@@ -39,6 +39,8 @@ function compileTriggers(json, context, blocks) {
             const then = compileActions(json.actions.then, _context, blocks);
             const _else = compileActions(json.actions.else, _context, blocks);
 
+            // find indent
+
             triggers.push(
                 text
                     .replace('__%%CONDITION%%__', conditions)
@@ -63,7 +65,7 @@ function compileActions(actions, context, blocks) {
             result.push(found.compile(action, context));
         }
     });
-    return `\t\t${result.join('\t\t\n')}` || '';
+    return `\t\t${result.join('\n\t\t')}` || '';
 }
 
 function compileConditions(conditions, context, blocks) {
@@ -77,7 +79,7 @@ function compileConditions(conditions, context, blocks) {
                     _ors.push(found.compile(block, context));
                 }
             });
-            result.push(_ors.join(' || '));
+            result.push(_ors.join(' && '));
         } else {
             const found = findBlock(ors.id, blocks);
             if (found) {
@@ -87,7 +89,14 @@ function compileConditions(conditions, context, blocks) {
 
     });
 
-    return result.join(') && (') || 'true';
+    if (!result.length) {
+        return 'true';
+    } else
+    if (result.length === 1) {
+        return result[0] || 'true';
+    } else {
+        return '(' + result.join(') || (') + ')';
+    }
 }
 
 function compile(json, blocks) {
