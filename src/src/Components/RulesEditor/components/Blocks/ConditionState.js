@@ -12,17 +12,18 @@ class ConditionState extends GenericBlock {
 
     static compile(config, context) {
         if (config.tagCard !== 'includes') {
+            const compare = config.tagCard === '=' ? '==' : (config.tagCard === '<>' ? '!=' : config.tagCard);
             if (config.useTrigger) {
                 if (context?.trigger?.oidType === 'string') {
-                    return `obj.state.value ${config.tagCard} "${config.value}"`;
+                    return `obj.state.value ${compare} "${config.value}"`;
                 } else {
-                    return `obj.state.value ${config.tagCard} ${config.value}`;
+                    return `obj.state.value ${compare} ${config.value}`;
                 }
             } else {
                 if (config.oidType === 'string') {
-                    return `await getStateAsync("${config.oid}").val ${config.tagCard} "${config.value}"`;
+                    return `await getStateAsync("${config.oid}").val ${compare} "${config.value}"`;
                 } else {
-                    return `await getStateAsync("${config.oid}").val ${config.tagCard} ${config.value}`;
+                    return `await getStateAsync("${config.oid}").val ${compare} ${config.value}`;
                 }
             }
         } else {
