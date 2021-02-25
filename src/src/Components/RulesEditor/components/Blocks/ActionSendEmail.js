@@ -14,32 +14,29 @@ class ActionSendEmail extends GenericBlock {
         this.setState({
             inputs: [
                 {
-                    nameRender: 'renderSelect',
-                    frontText: 'Instance:',
-                    options: [{
-                        value: 'email.0',
-                        title: 'email.0',
-                    }],
+                    attr: 'instance',
+                    nameRender: 'renderInstance',
                     defaultValue: 'email.0',
-                    attr: 'Instance',
+                    frontText: 'Instance:',
+                    adapter: 'email',
                 },
                 {
+                    attr: 'recipients',
                     nameRender: 'renderText',
-                    attr: 'text',
                     defaultValue: 'user@mail.ru',
                     nameBlock: 'Recipients',
                     frontText: 'To:',
                 },
                 {
+                    attr: 'title',
                     nameRender: 'renderText',
-                    attr: 'modal',
                     defaultValue: 'Email from iobroker',
                     nameBlock: '',
                     frontText: 'Subject:',
                 },
                 {
+                    attr: 'text',
                     nameRender: 'renderModalInput',
-                    attr: 'modal2',
                     defaultValue: 'Email from iobroker',
                     nameBlock: '',
                     frontText: 'Body:',
@@ -51,9 +48,12 @@ class ActionSendEmail extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: { en: 'Send email', ru: 'Send email' },
+            name: {
+                en: 'Send email',
+                ru: 'Send email'
+            },
             id: 'ActionSendEmail',
-            icon: 'MailOutline'
+            adapter: 'email',
         }
     }
 

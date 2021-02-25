@@ -80,7 +80,7 @@ AdditionallyContentBlockItems.defaultProps = {
     animation: false
 };
 
-const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, border, userRules, setUserRules,iconName }) => {
+const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, border, userRules, setUserRules, iconName, adapter, socket }) => {
     const [additionallyClickItems, setAdditionallyClickItems, checkLocal] = useStateLocal(typeBlock === 'actions' ? false : [], `additionallyClickItems_${typeBlock}`);
 
     useEffect(() => {
@@ -105,7 +105,8 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
     const [animation, setAnimation] = useState(false);
 
     return <div className={`${cls.mainBlockItemRules} ${border ? cls.border : null}`}>
-        <span id='width' className={cls.nameBlockItems}><MaterialDynamicIcon iconName={iconName} className={cls.iconThemCard} />{name}</span>
+        <span id='width' className={cls.nameBlockItems}>
+            <MaterialDynamicIcon iconName={iconName} className={cls.iconThemCard} adapter={adapter} socket={socket}/>{name}</span>
         <AdditionallyContentBlockItems
             blockValue={typeBlock === 'actions' ? 'then' : typeBlock === 'conditions' ? 0 : typeBlock}
             typeBlock={typeBlock}

@@ -17,15 +17,26 @@ const CustomSelect = ({ multiple, value, customValue, title, attr, options, styl
             value={customValue ? value : inputText}
             fullWidth
             multiple={multiple}
-            renderValue={selected => multiple && selected.join ? selected.join(', ') : selected}
+            renderValue={selected => {
+                if (multiple && selected.join) {
+                    const titles = selected
+                        .map(sel => options.find(item => item.value === sel || (sel === '_' && item.value === '')) || sel)
+                        .map(item => typeof item === 'object' ? item.titleShort || item.title : item);
+
+                    return titles.join(', ');
+                } else {
+                    const item = options ? options.find(item => item.value === selected || (selected === '_' && item.value === '')) : null;
+                    return item?.title || selected;
+                }
+            }}
             onChange={e => {
                 !customValue && setInputText(e.target.value);
                 onChange(e.target.value);
             }}
             input={<Input name={attr} id={attr + '-helper'} />}
         >
-            {!multiple && options.map(item => <MenuItem style={{placeContent: 'space-between'}} key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)}{item.title2 && <div>{item.title2}</div>}</MenuItem>)}
-            { multiple && options.map(item => <MenuItem key={'key-' + item} value={item || '_'}>{I18n.t(item)} <Checkbox checked={inputText.includes(item)} /></MenuItem>)}
+            {!multiple && options && options.map(item => <MenuItem style={{placeContent: 'space-between'}} key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)}{item.title2 && <span>{item.title2}</span>}</MenuItem>)}
+            { multiple && options && options.map(item => <MenuItem key={'key-' + item} value={item || '_'}>{I18n.t(item)} <Checkbox checked={inputText.includes(item)} /></MenuItem>)}
         </Select>
         {title ? <FormHelperText>{I18n.t(title)}</FormHelperText> : null}
     </FormControl>;

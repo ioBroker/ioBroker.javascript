@@ -14,14 +14,11 @@ class ActionSayText extends GenericBlock {
         this.setState({
             inputs: [
                 {
-                    nameRender: 'renderSelect',
-                    frontText: 'Instance:',
-                    options: [{
-                        value: 'sayit.0',
-                        title: 'sayit.0',
-                    }],
+                    attr: 'instance',
+                    nameRender: 'renderInstance',
+                    adapter: 'sayit',
                     defaultValue: 'sayit.0',
-                    attr: 'Instance',
+                    frontText: 'Instance:',
                 },
                 {
                     nameRender: 'renderSelect',
@@ -31,19 +28,19 @@ class ActionSayText extends GenericBlock {
                         title: 'Google Русский',
                     }],
                     defaultValue: 'Google Русский',
-                    attr: 'Language',
+                    attr: 'language',
                 },
                 {
                     nameRender: 'renderSlider',
-                    attr: 'text',
+                    attr: 'volume',
                     defaultValue: 45,
                     frontText: '0',
                     backText: '100'
                 },
                 {
+                    attr: 'text',
                     nameRender: 'renderModalInput',
-                    attr: 'modal2',
-                    defaultValue: 'Привет',
+                    defaultValue: 'Hallo',
                     nameBlock: '',
                     frontText: 'Text:',
                 }
@@ -54,9 +51,12 @@ class ActionSayText extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: { en: 'Say Text', ru: 'Say Text' },
+            name: {
+                en: 'Say Text',
+                ru: 'Say Text'
+            },
             id: 'ActionSayText',
-            icon: 'ChatBubbleOutline'
+            adapter: 'sayit'
         }
     }
 

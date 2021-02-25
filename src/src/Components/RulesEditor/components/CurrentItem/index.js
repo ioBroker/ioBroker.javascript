@@ -5,6 +5,7 @@ import { deepCopy } from '../../helpers/deepCopy';
 import { filterElement } from '../../helpers/filterElement';
 import { ContextWrapperCreate } from '../ContextWrapper';
 import { findElement } from '../../helpers/findElement';
+import GenericBlock from '../GenericBlock';
 
 // @iobroker/javascript-block
 
@@ -32,7 +33,11 @@ const CurrentItem = memo(props => {
 
     const blockInput = useMemo(() => {
         const CustomBlock = findElementBlocks(id);
-        return <CustomBlock {...props} onUpdate={onUpdate} onChange={onChange} className={null} socket={socket} />;
+        if (CustomBlock) {
+            return <CustomBlock {...props} onUpdate={onUpdate} onChange={onChange} className={null} socket={socket} />;
+        } else {
+            return <GenericBlock {...props} onUpdate={onUpdate} onChange={onChange} className={null} socket={socket} />;
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userRules, onUpdate]);
 
