@@ -16,7 +16,7 @@ import './helpers/stylesVariables.scss';
 
 const RulesEditor = ({ code, onChange }) => {
     // eslint-disable-next-line no-unused-vars
-    const { state: { blocks } } = useContext(ContextWrapperCreate);
+    const { state: { blocks }, socket } = useContext(ContextWrapperCreate);
     const [allBlocks, setAllBlocks] = useState([]);
     const [hamburgerOnOff, setHamburgerOnOff] = useStateLocal(false, 'hamburgerOnOff');
     const [theme, setTheme] = useStateLocal('themeStandart', 'themeRules');
@@ -28,6 +28,9 @@ const RulesEditor = ({ code, onChange }) => {
     }, 'filterControlPanel');
 
     const setBlocksFunc = (text = filter.text, typeFunc = filter.type) => {
+        if (!blocks) {
+            return;
+        }
         let newAllBlocks = [...blocks];
         newAllBlocks = newAllBlocks.filter(el => {
             if (!text) {
@@ -69,13 +72,15 @@ const RulesEditor = ({ code, onChange }) => {
         setBlocksFunc(filter.text, ['triggers', 'conditions', 'actions'][newValue]);
     };
 
-    const onChangeBlocks = useCallback((json) => {
+    const onChangeBlocks = useCallback(json => {
         setUserRules(json);
         onChange(Compile.json2code(json, blocks));
     }, [blocks, onChange]);
-
+	if (!blocks) {
+        return null;
+    }
     return <div className={clsx(cls.wrapperRules, theme)}>
-        <CustomDragLayer allBlocks={allBlocks} />
+        <CustomDragLayer allBlocks={allBlocks} socket={socket}/>
         <div className={`${cls.hamburgerWrapper} ${hamburgerOnOff ? cls.hamburgerOff : null}`}
             onClick={() => setHamburgerOnOff(!hamburgerOnOff)}><HamburgerMenu boolean={!hamburgerOnOff} /></div>
         <div className={`${cls.menuRules} ${hamburgerOnOff ? cls.menuOff : null}`}>
@@ -97,12 +102,14 @@ const RulesEditor = ({ code, onChange }) => {
             <div className={cls.switchesRenderWrapper}>
                 <span>
                     {allBlocks.map(el => {
-                        const { name, id, icon } = el.getStaticData();
+                        const { name, id, icon, adapter } = el.getStaticData();
                         return <Fragment key={id}>
                             <CustomDragItem
                                 allProperties={el.getStaticData()}
                                 name={name}
                                 icon={icon}
+                                adapter={adapter}
+                                socket={socket}
                                 userRules={userRules}
                                 setUserRules={onChangeBlocks}
                                 isActive={false}
@@ -148,14 +155,14 @@ const RulesEditor = ({ code, onChange }) => {
             userRules={userRules}
             name="when..."
             typeBlock="triggers"
-            iconName='FlashOn'
+            iconName="FlashOn"
         />
         <ContentBlockItems
             setUserRules={onChangeBlocks}
             userRules={userRules}
             name="...and..."
             typeBlock="conditions"
-            iconName='Help'
+            iconName="Help"
             nameAdditionally="or"
             additionally
             border
@@ -165,7 +172,7 @@ const RulesEditor = ({ code, onChange }) => {
             userRules={userRules}
             name="...then"
             typeBlock="actions"
-            iconName='PlayForWork'
+            iconName="PlayForWork"
             nameAdditionally="else"
             additionally
         />

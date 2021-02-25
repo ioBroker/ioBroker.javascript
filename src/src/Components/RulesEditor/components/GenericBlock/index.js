@@ -10,12 +10,14 @@ import I18n from '@iobroker/adapter-react/i18n';
 import CustomButton from '../CustomButton';
 import CustomCheckbox from '../CustomCheckbox';
 import CustomInput from '../CustomInput';
-import CustomSlider from '../CustomSlider';
-import CustomSelect from '../CustomSelect';
-import CustomTime from '../CustomTime';
+import CustomInstance from '../CustomInstance';
 import CustomModal from '../CustomModal';
-import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
+import CustomSelect from '../CustomSelect';
+import CustomSlider from '../CustomSlider';
 import CustomSwitch from '../CustomSwitch';
+import CustomTime from '../CustomTime';
+
+import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import utils from '../../helpers/utils';
 import clsx from 'clsx';
 
@@ -34,6 +36,7 @@ class GenericBlock extends PureComponent {
             inputs: item.inputs || props.inputs || [],
             name: item.name || props.name || '',
             icon: item.icon || props.icon || '',
+            adapter: item.adapter || props.adapter || '',
 
             tagCardArray: item.tagCardArray || [],
 
@@ -45,6 +48,8 @@ class GenericBlock extends PureComponent {
             oid: {},
             instanceSelectionOptions: [],
             instanceSelectionDef: '',
+
+            hideAttributes: [], // e.g. instance
 
             settings
         };
@@ -213,7 +218,7 @@ class GenericBlock extends PureComponent {
                 onClick={onClick}
             />
             {backText && <div className={cls.backText}>{backText}</div>}
-        </div>
+        </div>;
     }
 
     renderObjectID = (input, value, onChange) => {
@@ -277,7 +282,7 @@ class GenericBlock extends PureComponent {
 
     renderIconTag = () => <div className={cls.iconTag}>
         {this.state.settings.tagCard}
-    </div>
+    </div>;
 
     renderTime = (input, value, onChange) => {
         const { attr, backText, frontText } = input
@@ -288,7 +293,7 @@ class GenericBlock extends PureComponent {
                 onChange={onChange}
             />
             {backText && <div className={cls.backText}>{backText}</div>}
-        </div>
+        </div>;
     };
 
     renderSelect = (input, value, onChange) => {
@@ -306,8 +311,31 @@ class GenericBlock extends PureComponent {
                 customValue
             />
             {backText && <div className={cls.backText}>{backText}</div>}
-        </div>
+        </div>;
     };
+
+    renderInstance = (input, value, onChange) => {
+        const { className } = this.props;
+        const { name, options, frontText, backText, attr, adapter } = input;
+        if (this.state.hideAttributes.includes(attr)) {
+            return null;
+        }
+        return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)} style={{ whiteSpace: 'nowrap' }}>
+            {frontText && <div className={cls.frontText}>{frontText}</div>}
+            <CustomInstance
+                socket={this.props.socket}
+                adapter={adapter}
+                title={name}
+                className={className}
+                options={options}
+                value={value}
+                onChange={onChange}
+                customValue
+                onInstanceHide={value => this.setState({hideAttributes : [...this.state.hideAttributes, attr]}, () => onChange(value))} // hide instance if only exactly one exists
+            />
+            {backText && <div className={cls.backText}>{backText}</div>}
+        </div>;
+    }
 
     renderModalInput = (input, value, onChange) => {
         const { openModal, settings } = this.state;
@@ -448,10 +476,10 @@ class GenericBlock extends PureComponent {
     }
 
     render = () => {
-        const { inputs, name, icon, iconTag, settings, settings: { tagCard } } = this.state;
+        const { inputs, name, icon, iconTag, settings, adapter, settings: { tagCard } } = this.state;
         return <Fragment>
             {iconTag ? this.renderIconTag() :
-                <MaterialDynamicIcon iconName={icon} className={cls.iconThemCard} />}
+                <MaterialDynamicIcon iconName={icon} className={cls.iconThemCard} adapter={adapter} socket={this.props.socket}/>}
             <div className={cls.blockName}>
                 <span className={cls.nameCard}>
                     {name && name.en}

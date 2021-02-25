@@ -198,14 +198,14 @@ class TriggerScheduleBlock extends GenericBlock {
                             multiple: true,
                             defaultValue: ['Every day'],
                             options: [
-                                { value: 'Every day', title: 'Every day', only: true },
-                                { value: 'Monday', title: 'Monday' },
-                                { value: 'Tuesday', title: 'Tuesday' },
-                                { value: 'Wednesday', title: 'Wednesday' },
-                                { value: 'Thursday', title: 'Thursday' },
-                                { value: 'Friday', title: 'Friday' },
-                                { value: 'Saturday', title: 'Saturday' },
-                                { value: 'Sunday', title: 'Sunday' },
+                                { value: '', title: 'Every day', only: true },
+                                { value: '1', title: 'Monday', titleShort: 'Mo' },
+                                { value: '2', title: 'Tuesday', titleShort: 'Tu' },
+                                { value: '3', title: 'Wednesday', titleShort: 'We' },
+                                { value: '4', title: 'Thursday', titleShort: 'Th' },
+                                { value: '5', title: 'Friday', titleShort: 'Fr' },
+                                { value: '6', title: 'Saturday', titleShort: 'Sa' },
+                                { value: '0', title: 'Sunday', titleShort: 'Su' },
                             ]
                         }
                     ]

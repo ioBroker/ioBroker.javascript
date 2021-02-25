@@ -5,9 +5,9 @@ import cls from './style.module.scss';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import utils from '../../helpers/utils'
 
-const CardMenu = ({ name, id, active, icon }) => {
-    return <div onDoubleClick={()=>console.log('sss')} key={id} className={`${cls.switchesItem} ${active ? cls.switchesItemActive : null}`}>
-        <MaterialDynamicIcon iconName={icon} className={cls.iconThem} />
+const CardMenu = ({ name, id, active, icon, adapter, socket }) => {
+    return <div key={id} className={`${cls.switchesItem} ${active ? cls.switchesItemActive : null}`}>
+        <MaterialDynamicIcon iconName={icon} className={cls.iconThem} adapter={adapter} socket={socket}/>
         <span>
             {utils.getName(name)}
         </span>
