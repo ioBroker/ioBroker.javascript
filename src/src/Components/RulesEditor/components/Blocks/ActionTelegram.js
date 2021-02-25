@@ -1,5 +1,4 @@
 import GenericBlock from '../GenericBlock';
-import Compile from "../../Compile";
 
 class ActionTelegram extends GenericBlock {
     constructor(props) {

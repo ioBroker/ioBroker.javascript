@@ -234,7 +234,7 @@ class GenericBlock extends PureComponent {
             setTimeout(() => {
                 this.props.socket.getObject(value)
                     .then(obj =>
-                        this.setState({ [settings[attr]]: obj }, () => this.onTagChange(obj.common)));
+                        this.setState({ [settings[attr]]: obj }));
             }, 0);
         }
         // return null
@@ -273,8 +273,9 @@ class GenericBlock extends PureComponent {
                         onChange(selected);
                         // read type of object
                         this.props.socket.getObject(selected)
-                            .then(obj =>
-                                onChange(obj.common.type, attr + 'Type'));
+                            .then(obj => onChange(obj.common.type, attr + 'Type', () =>
+                                    onChange(obj.common.unit, attr + 'Unit', () =>
+                                        onChange(obj.common.states, attr + 'States'))));
                     })}
             /> : null}
         </div> : null;
@@ -433,20 +434,15 @@ class GenericBlock extends PureComponent {
         if (typeof newTagCardArray[0] !== 'string') {
             newTagCardArray = newTagCardArray.map(el => el.title);
         }
-        console.log(newTagCardArray)
+
         if (tagCard && newTagCardArray.length < 4) {
             const newSettings = { ...settings };
-            if (newTagCardArray.indexOf(tagCard) === newTagCardArray.length - 1) {
-                newSettings.tagCard = newTagCardArray[0];
-                return this.setState({ settings: newSettings }, () => {
-                    this.props.onChange(newSettings)
-                });
-            } else {
-                newSettings.tagCard = newTagCardArray[newTagCardArray.indexOf(tagCard) + 1];
-                this.setState({ settings: newSettings }, () => {
-                    this.props.onChange(newSettings)
-                });
-            }
+            const newTagCard = newTagCardArray[(newTagCardArray.indexOf(tagCard) + 1) % newTagCardArray.length]
+            newSettings.tagCard = newTagCard;
+            this.setState({ settings: newSettings }, () => {
+                this.props.onChange(newSettings);
+                this.onTagChange(newTagCard);
+            });
         }
     };
 
@@ -462,7 +458,7 @@ class GenericBlock extends PureComponent {
     }
 
     onChangeInput = (attribute) => {
-        return (value, attr) => {
+        return (value, attr, cb) => {
             const settings = JSON.parse(JSON.stringify(this.state.settings));
             settings[attr || attribute] = value;
             settings.id = this.getData().id;
@@ -471,6 +467,7 @@ class GenericBlock extends PureComponent {
             this.setState({ settings }, () => {
                 this.onValueChanged(value, attr || attribute);
                 this.props.onChange(settings);
+                cb && cb();
             });
         }
     }
@@ -496,7 +493,7 @@ class GenericBlock extends PureComponent {
                     })}
             </div>
             {tagCard && <div className={cls.controlMenuTop} style={{ opacity: 1, height: 22, top: -22 }}>
-                <div onClick={e => this.tagGenerateNew()} className={cls.tagCard}>{this.tagGenerate()}</div>
+                <div onClick={() => this.tagGenerateNew()} className={cls.tagCard}>{this.tagGenerate()}</div>
             </div>}
         </Fragment>;
     };
