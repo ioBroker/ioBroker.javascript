@@ -1,0 +1,148 @@
+.cardStyle {
+    cursor: pointer;
+    position: relative;
+    min-width: 200px;
+    width: calc(100% - 70px);
+    height: fit-content;
+    min-height: 70px;
+    display: flex;
+    padding: 10px;
+    margin: 23px 12px 4px 12px;
+    align-items: center;
+    background: var(--backgroundBlock);
+    border-radius: 4px;
+    box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+        0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+}
+.nameCard {
+    margin-top: 0;
+    font-size: 19px;
+    color: var(--colorBlock);
+    font-weight: 500;
+}
+.cardStyleActive {
+    width: 300px;
+    z-index: 100;
+}
+.iconThemCard {
+    width: 40px !important;
+    height: 40px !important;
+    margin-left: 5px;
+    * {
+        color: var(--colorBlock) !important;
+    }
+}
+.inputCard {
+    margin-top: 10px !important;
+}
+.blockName {
+    margin-left: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.controlMenu {
+    display: flex;
+    position: absolute;
+    right: -31px;
+    width: 30px;
+    height: 100%;
+    transition: opacity 0.5s;
+}
+.closeBtn {
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    position: relative;
+    z-index: 1;
+    margin: 5px auto;
+    cursor: pointer;
+    &:before {
+        content: "+";
+        color: #f7060684;
+        position: absolute;
+        z-index: 2;
+        transform: rotate(45deg);
+        font-size: 30px;
+        line-height: 1;
+        top: -6px;
+        left: 2px;
+        transition: all 0.3s cubic-bezier(0.77, 0, 0.2, 0.85);
+    }
+    &:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 100%;
+        background: #994e9e7d;
+        z-index: 1;
+        transition: all 0.3s cubic-bezier(0.77, 0, 0.2, 0.85);
+        transform: scale(0.01);
+    }
+    &:hover:after {
+        transform: scale(1);
+    }
+    &:hover:before {
+        transform: scale(0.8) rotate(45deg);
+        color: #fff;
+    }
+}
+.controlMenuTop {
+    display: flex;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    transition: opacity 0.5s, height 0.5s, top 0.5s;
+}
+.tagCard {
+    text-align: center;
+    color: var(--lineColorActive);
+    min-width: 100px;
+    padding: 0 2px;
+    height: 22px;
+    background: var(--backgroundColorHumburger);
+    border-radius: 5px 5px 0 0;
+    position: relative;
+    margin-left: auto;
+    margin-right: 8px;
+    cursor: pointer;
+    border-top: 1px solid var(--lineColor);
+    border-left: 1px solid var(--lineColor);
+    border-right: 1px solid var(--lineColor);
+    font-size: 12px;
+    padding-top: 2px;
+}
+.displayFlex {
+    display: flex;
+    align-items: center;
+}
+.blockMarginTop,
+.nameBlock {
+    margin-top: 7px;
+}
+.frontText {
+    margin-right: 7px;
+    min-width: 80px;
+    display: inline-table;
+}
+.backText {
+    margin-left: 7px;
+}
+.iconTag {
+    font-size: 40px;
+    color: var(--colorBlock);
+    display: flex;
+    align-items: center;
+    min-width: 40px;
+    margin-bottom: 10px;
+    margin-left: 12px;
+}
+.displayItalic {
+    font-style: italic;
+    font-size: 11px;
+    margin-top: 0;
+}

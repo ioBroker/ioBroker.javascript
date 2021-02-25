@@ -337,7 +337,7 @@ class Schedule extends React.Component {
                 }
             }
 
-            this.props.onChange && this.props.onChange(JSON.stringify(copy));
+            this.props.onChange && this.props.onChange(JSON.stringify(copy),this.state2text(schedule));
         }
     }
 

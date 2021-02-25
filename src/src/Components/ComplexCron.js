@@ -323,7 +323,7 @@ class ComplexCron extends React.Component {
             value = parseInt(value.replace('*/', ''), 10) || 1;
         }
 
-        return (<div>
+        return <div>
             <Select
                 className={this.props.classes.periodSelect}
                 style={{verticalAlign: 'bottom'}}
@@ -349,8 +349,8 @@ class ComplexCron extends React.Component {
                 <MenuItem key='everyN' value='everyN'>{I18n.t('sc_everyN_' + type)}</MenuItem>
                 <MenuItem key='specific' value='specific'>{I18n.t('sc_specific_' + type)}</MenuItem>
             </Select>
-            {everyN && false && (<span>{value}</span>)}
-            {everyN && (<TextField
+            {everyN && false && <span>{value}</span>}
+            {everyN && <TextField
                 key="interval"
                 label={I18n.t('sc_' + type)}
                 value={value}
@@ -362,9 +362,9 @@ class ComplexCron extends React.Component {
                 InputLabelProps={{shrink: true,}}
                 type="number"
                 margin="normal"
-            />)}
+            />}
             {!every && !everyN && this.getDigitsSelector(type, max)}
-        </div>);
+        </div>;
     }
 
     convertCronToText(cron, lang) {
@@ -377,34 +377,32 @@ class ComplexCron extends React.Component {
 
     render() {
         const tab = this.state.seconds !== false ? this.state.tab : this.state.tab + 1;
-        return (
-            <div className={this.props.classes.mainDiv}>
-                <div style={{paddingLeft: 8, width: '100%'}}><TextField style={{width: '100%'}} value={this.state.cron} disabled={true}/></div>
-                <div style={{paddingLeft: 8, width: '100%', height: 60}}>{this.convertCronToText(this.state.cron, this.props.language || 'en')}</div>
-                <FormControlLabel
-                    control={<Checkbox checked={this.state.seconds}
-                                       onChange={e => this.setState({seconds: e.target.checked ? '*' : false}, () => this.recalcCron())}/>}
-                    label={I18n.t('use seconds')}
-                />
-                <AppBar position="static" classes={{root: this.props.classes.appBar}} color="secondary">
-                    <Tabs value={this.state.tab} className={this.props.classes.appBar} color="secondary" onChange={(active, tab) =>
-                        this.setState({tab})}>
-                        {this.state.seconds !== false && <Tab id="sc_seconds" label={I18n.t('sc_seconds')}/>}
-                        <Tab  id="minutes" label={I18n.t('sc_minutes')}/>
-                        <Tab  id="hours" label={I18n.t('sc_hours')}/>
-                        <Tab  id="dates" label={I18n.t('sc_dates')}/>
-                        <Tab  id="months" label={I18n.t('sc_months')}/>
-                        <Tab  id="dows" label={I18n.t('sc_dows')}/>
-                    </Tabs>
-                </AppBar>
-                {tab === 0 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('seconds', 60)}</div>)}
-                {tab === 1 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('minutes', 60)}</div>)}
-                {tab === 2 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('hours', 24)}</div>)}
-                {tab === 3 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('dates', 31)}</div>)}
-                {tab === 4 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('months', 12)}</div>)}
-                {tab === 5 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('dows', 7)}</div>)}
-            </div>
-        );
+        return <div className={this.props.classes.mainDiv}>
+            <div style={{paddingLeft: 8, width: '100%'}}><TextField style={{width: '100%'}} value={this.state.cron} disabled={true}/></div>
+            <div style={{paddingLeft: 8, width: '100%', height: 60}}>{this.convertCronToText(this.state.cron, this.props.language || 'en')}</div>
+            <FormControlLabel
+                control={<Checkbox checked={this.state.seconds}
+                                   onChange={e => this.setState({seconds: e.target.checked ? '*' : false}, () => this.recalcCron())}/>}
+                label={I18n.t('use seconds')}
+            />
+            <AppBar position="static" classes={{root: this.props.classes.appBar}} color="secondary">
+                <Tabs value={this.state.tab} className={this.props.classes.appBar} color="secondary" onChange={(active, tab) =>
+                    this.setState({tab})}>
+                    {this.state.seconds !== false && <Tab id="sc_seconds" label={I18n.t('sc_seconds')}/>}
+                    <Tab  id="minutes" label={I18n.t('sc_minutes')}/>
+                    <Tab  id="hours" label={I18n.t('sc_hours')}/>
+                    <Tab  id="dates" label={I18n.t('sc_dates')}/>
+                    <Tab  id="months" label={I18n.t('sc_months')}/>
+                    <Tab  id="dows" label={I18n.t('sc_dows')}/>
+                </Tabs>
+            </AppBar>
+            {tab === 0 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('seconds', 60)}</div>)}
+            {tab === 1 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('minutes', 60)}</div>)}
+            {tab === 2 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('hours', 24)}</div>)}
+            {tab === 3 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('dates', 31)}</div>)}
+            {tab === 4 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('months', 12)}</div>)}
+            {tab === 5 && (<div className={this.props.classes.tabContent}>{this.getPeriodsTab('dows', 7)}</div>)}
+        </div>;
     }
 }
 

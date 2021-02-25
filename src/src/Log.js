@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-
 import IconButton from '@material-ui/core/IconButton';
 import {MdDeleteForever as IconDelete} from 'react-icons/md';
 import {MdVerticalAlignBottom as IconBottom} from 'react-icons/md';
 import {MdContentCopy as IconCopy} from 'react-icons/md';
+import {MdVisibilityOff as IconHide} from 'react-icons/md';
 
 import I18n from '@iobroker/adapter-react/i18n';
 import {withStyles} from '@material-ui/core/styles/index';
@@ -13,6 +13,7 @@ import {withStyles} from '@material-ui/core/styles/index';
 // replace later with MdHorizontalSplit and MdVerticalSplit
 const IconVerticalSplit   = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAACFJREFUeAFjAIJRwP////8PYIKWHCigNQdKj/pn1D+jAABTG16wVQqVpQAAAABJRU5ErkJggg==';
 const IconHorizontalSplit = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAABtJREFUeAFjAIJRwP8fCj7QkENn/4z6Z5QzCgBjbWaoyx1PqQAAAABJRU5ErkJggg==';
+
 
 function getTimeString(d) {
     let text;
@@ -118,8 +119,12 @@ function copyToClipboard(str) {
 }
 
 function paddingMs(ms) {
-    if (ms < 10) return '00' + ms;
-    if (ms < 100) return '0' + ms;
+    if (ms < 10) {
+        return '00' + ms;
+    }
+    if (ms < 100) {
+        return '0' + ms;
+    }
     return ms;
 }
 
@@ -235,23 +240,22 @@ class Log extends React.Component {
 
     render() {
         const lines = this.state.selected && this.state.lines[this.state.selected];
-        return (
-            <div className={this.props.classes.logBox}>
-                <div className={this.props.classes.toolbox} key="toolbox">
-                    <IconButton className={this.props.classes.iconButtons} onClick={() => this.setState({goBottom: !this.state.goBottom})} color={this.state.goBottom ? 'secondary' : ''}><IconBottom/></IconButton>
-                    {lines && lines.length ? (<IconButton className={this.props.classes.iconButtons} onClick={() => this.clearLog()}><IconDelete/></IconButton>) : null}
-                    {lines && lines.length ? (<IconButton className={this.props.classes.iconButtons} onClick={() => this.onCopy()}><IconCopy/></IconButton>) : null}
-                    {this.props.onLayoutChange ? (<IconButton className={this.props.classes.iconButtons} onClick={() => this.props.onLayoutChange()} title={I18n.t('Change layout')}><img className={this.props.classes.layoutIcon} alt="split" src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit} /></IconButton>) : null}
-                </div>
-                {this.state.selected && lines && lines.length ?
-                    (<div className={this.props.classes.logBoxInner} key="logList">
-                        <table key="logTable" className={this.props.classes.table}><tbody>{lines}</tbody></table>
-                        <div key="logScrollPoint" ref={this.messagesEnd} style={{float: 'left', clear: 'both'}}/>
-                    </div>) :
-                    (<div key="logList" className={this.props.classes.logBoxInner} style={{paddingLeft: 10}}>{I18n.t('Log outputs')}</div>)
-                }
+        return <div className={this.props.classes.logBox}>
+            <div className={this.props.classes.toolbox} key="toolbox">
+                <IconButton className={this.props.classes.iconButtons} onClick={() => this.setState({goBottom: !this.state.goBottom})} color={this.state.goBottom ? 'secondary' : ''}><IconBottom/></IconButton>
+                {lines && lines.length ? <IconButton className={this.props.classes.iconButtons} onClick={() => this.clearLog()}><IconDelete/></IconButton> : null}
+                {lines && lines.length ? <IconButton className={this.props.classes.iconButtons} onClick={() => this.onCopy()}><IconCopy/></IconButton> : null}
+                {this.props.onLayoutChange ? <IconButton className={this.props.classes.iconButtons} onClick={() => this.props.onLayoutChange()} title={I18n.t('Change layout')}><img className={this.props.classes.layoutIcon} alt="split" src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit} /></IconButton> : null}
+                <IconButton className={this.props.classes.iconButtons} onClick={() => this.props.onHideLog()} title={I18n.t('Hide logs')}><IconHide /></IconButton>
             </div>
-        );
+            {this.state.selected && lines && lines.length ?
+                <div className={this.props.classes.logBoxInner} key="logList">
+                    <table key="logTable" className={this.props.classes.table}><tbody>{lines}</tbody></table>
+                    <div key="logScrollPoint" ref={this.messagesEnd} style={{float: 'left', clear: 'both'}}/>
+                </div> :
+                <div key="logList" className={this.props.classes.logBoxInner} style={{paddingLeft: 10}}>{I18n.t('Log outputs')}</div>
+            }
+        </div>;
     }
 }
 

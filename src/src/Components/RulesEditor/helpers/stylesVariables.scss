@@ -1,0 +1,47 @@
+$themeStandart: (
+    --backgroundColor: #3052813b,
+    --lineColor: #4caaf47d,
+    --lineColorHover: #ccceff,
+    --lineColorActive: #4caaf4,
+    --backgroundColorHumburger: #436a93b8,
+    --colorBlock: #02124b,
+    --colorBlockHover: #02124b8c,
+    --backgroundBlock: #c9e7ffab,
+    --backgroundGlobalColor: #ffffff00,
+);
+$themeGreen: (
+    --backgroundColor: #3081333b,
+    --lineColor: #4cf4577d,
+    --lineColorHover: #cdffcc,
+    --lineColorActive: #4ff44c,
+    --backgroundColorHumburger: #439346b8,
+    --colorBlock: #024b04,
+    --colorBlockHover: #024b048c,
+    --backgroundBlock: #c9ffcfab,
+    --backgroundGlobalColor: #51ff001b,
+);
+$themeSilver: (
+    --backgroundColor: #4646463b,
+    --lineColor: #f3f3f37d,
+    --lineColorHover: #a0a0a0,
+    --lineColorActive: #dedede,
+    --backgroundColorHumburger: #3e3e3eb8,
+    --colorBlock: #080808,
+    --colorBlockHover: #0808088c,
+    --backgroundBlock: #c1c1c1ab,
+    --backgroundGlobalColor: #464646,
+);
+@mixin spread-map($map: ()) {
+    @each $key, $value in $map {
+        #{$key}: $value;
+    }
+}
+:root.themeStandart {
+    @include spread-map($themeStandart);
+}
+:root.themeGreen {
+    @include spread-map($themeGreen);
+}
+:root.themeSilver {
+    @include spread-map($themeSilver);
+}

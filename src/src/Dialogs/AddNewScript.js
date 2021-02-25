@@ -15,6 +15,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import ImgJS from '../assets/tileJS.png';
 import ImgTS from '../assets/tileTS.png';
 import ImgBlockly from '../assets/tileBlockly.png';
+import ImgRules from '../assets/tileRules.png';
 import IconCancel from '@material-ui/icons/Cancel';
 
 import I18n from '@iobroker/adapter-react/i18n';
@@ -113,6 +114,25 @@ class DialogAddNew extends React.Component {
             </CardActions>
         </Card>);
     }
+    getRulesCard() {
+        return (<Card className={this.props.classes.card}>
+            <CardActionArea onClick={() => this.props.onClose && this.props.onClose('Rules')}>
+                <CardMedia
+                    className={this.props.classes.media}
+                    image={ImgRules}
+                    title="Rules"
+                />
+                <CardContent>
+                    <h2>Rules</h2>
+                    <div className={this.props.classes.text}>Rules Rules Rules Rules</div>
+                </CardContent>
+            </CardActionArea>
+            <CardActions>
+                <Button size="small" color="primary" onClick={() => this.props.onClose && this.props.onClose('Rules')}>{I18n.t('Add')}</Button>
+                <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/blockly.md')}>{I18n.t('Learn More')}</Button>
+            </CardActions>
+        </Card>);
+    }
     render() {
         return (
             <Dialog
@@ -128,6 +148,7 @@ class DialogAddNew extends React.Component {
                     {this.getJSCard()}
                     {this.getBlocklyCard()}
                     {this.getTSCard()}
+                    {this.getRulesCard()}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleCancel}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Cancel')}</Button>

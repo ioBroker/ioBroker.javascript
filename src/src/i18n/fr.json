@@ -256,5 +256,7 @@
   "tooltip_value": "Valeur",
   "use seconds": "utiliser les secondes",
   "Save all": "Sauver tous",
-  "Change theme (actual \"%s\")": "Changer de thème (maintenant - \"%s\")"
+  "Change theme (actual \"%s\")": "Changer de thème (maintenant - \"%s\")",
+  "Hide logs": "Masquer les journaux",
+  "Show logs": "Afficher les journaux"
 }

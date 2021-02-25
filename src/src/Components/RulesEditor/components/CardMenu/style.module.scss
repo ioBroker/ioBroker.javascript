@@ -1,0 +1,38 @@
+.switchesItem {
+    max-width: 200px;
+    width: auto;
+    display: flex;
+    margin: 5px 0;
+    padding: 12px 0;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0);
+    transition: all 0.7s;
+    span {
+        width: 100%;
+        margin-left: 15px;
+        color: var(--lineColorActive);
+        white-space: nowrap;
+    }
+    &:hover {
+        border: 1px solid var(--lineColor);
+        color: var(--lineColorHover);
+        border-radius: 6px;
+        background: var(--backgroundColor);
+        cursor: pointer;
+    }
+}
+.switchesItemActive {
+    border: 1px solid var(--lineColor);
+    color: var(--lineColorHover);
+    border-radius: 6px;
+    background: var(--backgroundColor);
+    cursor: pointer;
+}
+.iconThem {
+    width: 30px !important;
+    height: 30px !important;
+    margin-left: 5px;
+    * {
+        color: var(--lineColorActive) !important;
+    }
+}

@@ -256,5 +256,7 @@
   "tooltip_value": "Waarde",
   "use seconds": "gebruik seconden",
   "Save all": "Sla alles op",
-  "Change theme (actual \"%s\")": "Thema wijzigen (nu - \"%s\")"
+  "Change theme (actual \"%s\")": "Thema wijzigen (nu - \"%s\")",
+  "Hide logs": "Verberg logboeken",
+  "Show logs": "Toon logboeken"
 }

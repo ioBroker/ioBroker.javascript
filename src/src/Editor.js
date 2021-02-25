@@ -33,7 +33,9 @@ import {MdPlaylistAddCheck as IconVerbose} from 'react-icons/md';
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
-import ImgBlockly2Js from './assets/blockly2js.png'
+import ImgBlockly2Js from './assets/blockly2js.png';
+import ImgRules2Js from './assets/rules2js.png';
+import ImgRules from './assets/rules.png';
 
 import I18n from '@iobroker/adapter-react/i18n';
 import ScriptEditorComponent from './Components/ScriptEditorVanilaMonaco';
@@ -42,11 +44,12 @@ import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
 import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import DialogCron from './Dialogs/Cron';
 import DialogScriptEditor from './Dialogs/ScriptEditor';
-
+import RulesEditor from './Components/RulesEditor';
 
 const images = {
     'Blockly': ImgBlockly,
     'Javascript/js': ImgJS,
+    'Rules': ImgRules,
     def: ImgJS,
     'TypeScript/ts': ImgTypeScript,
 };
@@ -169,9 +172,10 @@ class Editor extends React.Component {
             editing: editing, // array of opened scripts
             changed: {}, // for every script
             blockly: null,
+            rules: null,
             debugEnabled: false,
             verboseEnabled: false,
-            showBlocklyCode: false,
+            showCompiledCode: false,
             showSelectId: false,
             showCron: false,
             showScript: false,
@@ -348,6 +352,10 @@ class Editor extends React.Component {
                             newState.blockly = this.scripts[newState.selected].engineType === 'Blockly';
                             _changed = true;
                         }
+                        if (this.state.rules !== (this.scripts[newState.selected].engineType === 'Rules')) {
+                            newState.rules = this.scripts[newState.selected].engineType === 'Rules';
+                            _changed = true;
+                        }
                         if (this.state.verboseEnabled !== this.scripts[newState.selected].verbose) {
                             newState.verboseEnabled = this.scripts[newState.selected].verbose;
                             _changed = true;
@@ -409,6 +417,10 @@ class Editor extends React.Component {
                 this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.objects[this.state.selected].common));
                 if (this.state.blockly !== (this.scripts[this.state.selected].engineType === 'Blockly')) {
                     newState.blockly = this.scripts[this.state.selected].engineType === 'Blockly';
+                    _changed = true;
+                }
+                if (this.state.rules !== (this.scripts[this.state.selected].engineType === 'Rules')) {
+                    newState.rules = this.scripts[this.state.selected].engineType === 'Rules';
                     _changed = true;
                 }
                 if (this.state.verboseEnabled !== this.scripts[this.state.selected].verbose) {
@@ -513,9 +525,10 @@ class Editor extends React.Component {
             newState.editing = editing;
             newState.selected = nextProps.selected;
             newState.blockly = this.scripts[nextProps.selected].engineType === 'Blockly';
+            newState.rules = this.scripts[nextProps.selected].engineType === 'Rules';
             newState.verboseEnabled = this.scripts[nextProps.selected].verbose;
             newState.debugEnabled = this.scripts[nextProps.selected].debug;
-            newState.showBlocklyCode = false;
+            newState.showCompiledCode = false;
         } else {
 
         }
@@ -569,7 +582,7 @@ class Editor extends React.Component {
         this.getSelect = func;
     }
 
-    onConvert2JS() {
+    onConvertBlockly2JS() {
         this.showConfirmDialog(I18n.t('It will not be possible to revert this operation.'), result => {
             if (result) {
                 this.scripts[this.state.selected].engineType = 'Javascript/js';
@@ -616,7 +629,14 @@ class Editor extends React.Component {
     onTabChange(event, selected) {
         window.localStorage && window.localStorage.setItem('Editor.selected', selected);
         const common = this.scripts[selected] || (this.props.objects[selected] && this.props.objects[selected].common);
-        this.setState({selected, blockly: common.engineType === 'Blockly', showBlocklyCode: false, verboseEnabled: common.verbose, debugEnabled: common.debug});
+        this.setState({
+            selected,
+            rules: common.engineType === 'Rules',
+            blockly: common.engineType === 'Blockly',
+            showCompiledCode: false,
+            verboseEnabled: common.verbose,
+            debugEnabled: common.debug
+        });
         this.props.onSelectedChange && this.props.onSelectedChange(selected, this.state.editing);
     }
 
@@ -659,9 +679,10 @@ class Editor extends React.Component {
                     newState.changed[newState.selected] = this.isScriptChanged(newState.selected);
                     const common = newState.selected && (this.scripts[newState.selected] || (this.props.objects[newState.selected] && this.props.objects[newState.selected].common));
                     newState.blockly = common ? common.engineType === 'Blockly' : false;
+                    newState.rules = common ? common.engineType === 'Rules' : false;
                     newState.verboseEnabled = common ? common.verbose : false;
                     newState.debugEnabled = common ? common.debug : false;
-                    newState.showBlocklyCode = false;
+                    newState.showCompiledCode = false;
                 }
 
                 this.setState(newState, () =>  {
@@ -844,59 +865,58 @@ class Editor extends React.Component {
                     {changed && (<Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel className={ this.props.classes.textIcon }/></Button>)}
                     <div style={{flex: 2}}/>
 
-                    {this.state.blockly && !this.state.showBlocklyCode &&
-                        (<IconButton key="export" aria-label="Export Blocks"
+                    {this.state.blockly && !this.state.showCompiledCode &&
+                        <IconButton key="export" aria-label="Export Blocks"
                                      title={I18n.t('Export blocks')}
                              className={this.props.classes.toolbarButtons}
                              onClick={() => this.sendCommandToBlockly('export')}>
-                        <IconExport /></IconButton>)}
+                        <IconExport /></IconButton>}
 
-                    {this.state.blockly && !this.state.showBlocklyCode &&
-                        (<IconButton key="import" aria-label="Import Blocks"
+                    {this.state.blockly && !this.state.showCompiledCode &&
+                        <IconButton key="import" aria-label="Import Blocks"
                                      title={I18n.t('Import blocks')}
                                      className={this.props.classes.toolbarButtons}
                                      onClick={() => this.sendCommandToBlockly('import')}>
-                            <IconImport /></IconButton>)}
+                            <IconImport /></IconButton>}
 
-                    {this.state.blockly && !this.state.showBlocklyCode &&
-                        (<IconButton key="check" aria-label="Check code"
+                    {this.state.blockly && !this.state.showCompiledCode &&
+                        <IconButton key="check" aria-label="Check code"
                                      title={I18n.t('Check blocks')}
                                      className={this.props.classes.toolbarButtons}
                                      onClick={() => this.sendCommandToBlockly('check')}>
-                            <IconCheck /></IconButton>)}
+                            <IconCheck /></IconButton>}
 
-                    {!this.state.blockly && !this.state.showBlocklyCode && (<IconButton key="select-cron" aria-label="create CRON"
+                    {!this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton key="select-cron" aria-label="create CRON"
                                                                                         title={I18n.t('Create or edit CRON or time wizard')}
                                                                                         className={this.props.classes.toolbarButtons}
-                                                                                        onClick={() => this.setState({showCron: true})}><IconCron/></IconButton>)}
+                                                                                        onClick={() => this.setState({showCron: true})}><IconCron/></IconButton>}
 
-                    {!this.state.blockly && !this.state.showBlocklyCode && (<IconButton key="select-id" aria-label="select ID"
+                    {!this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton key="select-id" aria-label="select ID"
                                                                                         title={I18n.t('Insert object ID')}
                                                                                         className={this.props.classes.toolbarButtons}
-                                                                                        onClick={() => this.setState({showSelectId: true})}><IconSelectId/></IconButton>)}
+                                                                                        onClick={() => this.setState({showSelectId: true})}><IconSelectId/></IconButton>}
 
-                    {this.state.blockly && this.state.showBlocklyCode && (<Button key="convert2js" aria-label="convert to javascript"
+                    {this.state.blockly && !this.state.rules && this.state.showCompiledCode && <Button key="convert2js" aria-label="convert to javascript"
                                                                                   title={I18n.t('Convert blockly to javascript for ever.')}
-                                                                                  onClick={() => this.onConvert2JS()}
-                    >Blockly=>JS</Button>)}
+                                                                                  onClick={() => this.onConvertBlockly2JS()}
+                    >Blockly=>JS</Button>}
 
-                    {this.state.blockly && (<Button key="blockly-code" aria-label="blockly"
+                    {(this.state.blockly || this.state.rules) && <Button key="blockly-code" aria-label="blockly"
                                                     title={I18n.t('Show javascript code')}
                                                     className={this.props.classes.toolbarButtons}
-                                                    color={this.state.showBlocklyCode ? 'secondary' : 'inherit'}
+                                                    color={this.state.showCompiledCode ? 'secondary' : 'inherit'}
                                                     style={{padding: '0 5px'}}
-                                                    onClick={() => this.setState({showBlocklyCode: !this.state.showBlocklyCode})}>
-                        <img alt="blockly2js" src={ImgBlockly2Js} /></Button>)}
+                                                    onClick={() => this.setState({showCompiledCode: !this.state.showCompiledCode})}>
+                        <img alt={this.state.blockly?"blockly2js":"rules2js"} src={this.state.blockly?ImgBlockly2Js:ImgRules2Js} /></Button>}
 
-                    {!this.state.showBlocklyCode && (<IconButton key="debug" aria-label="Debug menu"
+                    <IconButton key="debug" aria-label="Debug menu"
                                                                  title={I18n.t('Debug options')}
                                                                  className={this.props.classes.toolbarButtons}
                                                                  onClick={e => this.setState({showDebugMenu: true, menuDebugAnchorEl: e.currentTarget})}>
                         <Badge className={this.props.classes.badgeMargin} badgeContent={this.getDebugBadge()}>
                             <IconDebugMenu />
                         </Badge>
-                    </IconButton>)}
-
+                    </IconButton>
                 </Toolbar>;
         } else {
             return null;
@@ -904,7 +924,12 @@ class Editor extends React.Component {
     }
 
     getScriptEditor() {
-        if (this.state.selected && this.props.objects[this.state.selected] && this.state.blockly !== null && (!this.state.blockly || this.state.showBlocklyCode)) {
+        if (this.state.selected &&
+            this.props.objects[this.state.selected] &&
+            this.state.blockly !== null &&
+            (!this.state.blockly || this.state.showCompiledCode) &&
+            (!this.state.rules   || this.state.showCompiledCode)
+        ) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
 
             return <div className={this.props.classes.editorDiv} key="scriptEditorDiv">
@@ -917,7 +942,7 @@ class Editor extends React.Component {
                     onForceSave={() => this.onSave()}
                     searchText={this.state.searchText}
                     onRegisterSelect={func => this.onRegisterSelect(func)}
-                    readOnly={this.state.showBlocklyCode}
+                    readOnly={this.state.showCompiledCode}
                     changed={this.state.changed[this.state.selected]}
                     code={this.scripts[this.state.selected].source || ''}
                     isDark={this.state.themeType === 'dark'}
@@ -933,10 +958,16 @@ class Editor extends React.Component {
     }
 
     getBlocklyEditor() {
-        if (this.state.instancesLoaded && this.state.selected && this.props.objects[this.state.selected] && (this.state.blockly && !this.state.showBlocklyCode) && this.state.visible) {
+        if (this.state.instancesLoaded &&
+            this.state.selected &&
+            this.props.objects[this.state.selected] &&
+            this.state.blockly &&
+            !this.state.showCompiledCode &&
+            this.state.visible
+        ) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
 
-            return (<div className={this.props.classes.editorDiv} key="blocklyEditorDiv">
+            return <div className={this.props.classes.editorDiv} key="blocklyEditorDiv">
                 <BlocklyEditor
                     command={this.state.cmdToBlockly}
                     key="BlocklyEditor"
@@ -946,7 +977,34 @@ class Editor extends React.Component {
                     code={this.scripts[this.state.selected].source || ''}
                     onChange={newValue => this.onChange({script: newValue})}
                 />
-            </div>);
+            </div>;
+        } else {
+            return null;
+        }
+    }
+
+    getRulesEditor() {
+        if (this.state.instancesLoaded &&
+            this.state.selected &&
+            this.props.objects[this.state.selected] &&
+            this.state.rules &&
+            !this.state.showCompiledCode &&
+            this.state.visible
+        ) {
+            this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
+
+            return <div className={clsx(this.props.classes.editorDiv)} key="flowEditorDiv">
+                <RulesEditor
+                    command={this.state.cmdToBlockly}
+                    key="flowEditorDiv"
+                    themeType={this.state.themeType}
+                    themeName={this.state.themeName}
+                    searchText={this.state.searchText}
+                    resizing={this.props.resizing}
+                    code={this.scripts[this.state.selected].source || ''}
+                    onChange={newValue => this.onChange({ script: newValue })}
+                />
+            </div>;
         } else {
             return null;
         }
@@ -1096,12 +1154,13 @@ class Editor extends React.Component {
     }
 
     render() {
-        if (this.state.selected && this.props.objects[this.state.selected] && this.state.blockly === null) {
+        if (this.state.selected && this.props.objects[this.state.selected] && this.state.blockly === null && this.state.rules === null) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
             setTimeout(() => {
                 const newState = {
                     blockly: this.scripts[this.state.selected].engineType === 'Blockly',
-                    showBlocklyCode: false,
+                    rules: this.scripts[this.state.selected].engineType === 'Rules',
+                    showCompiledCode: false,
                     debugEnabled: this.scripts[this.state.selected].debug,
                     verboseEnabled: this.scripts[this.state.selected].verbose,
                 };
@@ -1117,6 +1176,7 @@ class Editor extends React.Component {
             this.getToolbar(),
             this.getScriptEditor(),
             this.getBlocklyEditor(),
+            this.getRulesEditor(),
             this.getConfirmDialog(),
             this.getSelectIdDialog(),
             this.getCronDialog(),
