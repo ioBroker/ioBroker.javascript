@@ -13,7 +13,11 @@ class ActionTelegram extends GenericBlock {
         if (context.trigger?.oidType) {
             value = '.replace(/%s/g, obj.state.value)';
         }
-        return `sendTo("${config.instance}", ${config.user ? `{user: ${config.user}, text: "${text}"${value}}` : `"${text}"${value}`});`;
+        if (!text) {
+            return '// no text defined'
+        } else {
+            return `sendTo("${config.instance}", ${config.user ? `{user: ${config.user}, text: "${text}"${value}}` : `"${text}"${value}`});`;
+        }
     }
 
     onValueChanged(value, attr) {
