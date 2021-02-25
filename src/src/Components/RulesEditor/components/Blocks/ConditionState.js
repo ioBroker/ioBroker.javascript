@@ -50,6 +50,11 @@ class ConditionState extends GenericBlock {
         oidType   = oidType   || this.state.settings.oidType;
         oidUnit   = oidUnit   || this.state.settings.oidUnit;
         oidStates = oidStates || this.state.settings.oidStates;
+        if (isAllTriggersOnState && useTrigger && this.props.userRules?.triggers?.length === 1) {
+            oidType   = this.props.userRules.triggers[0].oidType;
+            oidUnit   = this.props.userRules.triggers[0].oidUnit;
+            oidStates = this.props.userRules.triggers[0].oidStates;
+        }
 
         const _tagCardArray = ConditionState.getStaticData().tagCardArray;
         const tag = _tagCardArray.find(item => item.title === tagCard);
@@ -155,7 +160,6 @@ class ConditionState extends GenericBlock {
         }
 
         let settings = null;
-        let tagCardChanged = false;
         if (!tagCardArray.find(item => item.title === tagCard)) {
             tagCard = tagCardArray[0].title;
             settings = settings || {...this.state.settings};
