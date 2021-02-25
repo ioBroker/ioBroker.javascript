@@ -1,41 +1,13 @@
-import { Slider, withStyles } from '@material-ui/core';
+import { Slider } from '@material-ui/core';
 import React, { useState } from 'react';
+import cls from './style.module.scss';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
-
-const PrettoSlider = withStyles({
-    root: {
-        color: '#81688c',
-        height: 8,
-    },
-    thumb: {
-        height: 24,
-        width: 24,
-        backgroundColor: '#fff',
-        border: '2px solid currentColor',
-        marginTop: -8,
-        marginLeft: -12,
-        '&:focus, &:hover, &$active': {
-            boxShadow: 'inherit',
-        },
-    },
-    active: {},
-    valueLabel: {
-        left: 'calc(-50% + 4px)',
-    },
-    track: {
-        height: 8,
-        borderRadius: 4,
-    },
-    rail: {
-        height: 8,
-        borderRadius: 4,
-    },
-})(Slider);
+import clsx from 'clsx';
 
 const CustomSlider = ({ fullWidth, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue }) => {
     const [inputText, setInputText] = useState(0);
-    return <PrettoSlider
+    return <Slider
         defaultValue={customValue ? value : inputText}
         // getAriaValueText={customValue ? value : inputText}
         aria-labelledby="discrete-slider"
@@ -52,7 +24,7 @@ const CustomSlider = ({ fullWidth, autoComplete, label, error, size, variant, va
         type={type}
         helperText={error}
         style={style}
-        className={className}
+        className={clsx(cls.root, className)}
         autoComplete={autoComplete}
         onChange={(e, newValue) => {
             if (!customValue) setInputText(newValue);

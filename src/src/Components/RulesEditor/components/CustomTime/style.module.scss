@@ -1,24 +1,22 @@
-@import "../../helpers/stylesVariables.scss";
-
 .root {
     margin-top: 0 !important;
     margin-bottom: 0 !important;
     * {
-        color: $colorBlock !important;
+        color: var(--colorBlock) !important;
     }
     [class*="MuiInputLabel-shrink"] {
-        color: $colorBlock !important;
+        color: var(--colorBlock) !important;
     }
     [class*="MuiInput-underline"] {
         &:after {
-            border-bottom-color: $lineColor !important;
+            border-bottom-color: var(--lineColor) !important;
         }
         &:before {
-            border-bottom-color: $lineColor !important;
+            border-bottom-color: var(--lineColor) !important;
         }
         &:hover {
             &:before {
-                border-bottom-color: $lineColor !important;
+                border-bottom-color: var(--lineColor) !important;
             }
         }
     }

@@ -1,26 +1,14 @@
-import { FormControlLabel, Switch, withStyles } from '@material-ui/core';
+import { FormControlLabel, Switch } from '@material-ui/core';
 import React, { memo, useState } from 'react';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
-
-const ColorSwitch = withStyles({
-    switchBase: {
-        color: '#654169cc',
-        '&$checked': {
-            color: '#922fb3d9',
-        },
-        '&$checked + $track': {
-            backgroundColor: '#ef00ffb8',
-        },
-    },
-    checked: {},
-    track: {},
-})(Switch);
+import cls from './style.module.scss';
 
 const CustomSwitch = ({ label, size, value, style, onChange, className, customValue }) => {
     const [switchChecked, setSwitchChecked] = useState(false);
     return <FormControlLabel
-        control={<ColorSwitch
+        className={cls.root}
+        control={<Switch
             checked={customValue ? value : switchChecked}
             style={style}
             className={className}
@@ -31,7 +19,6 @@ const CustomSwitch = ({ label, size, value, style, onChange, className, customVa
             size={size}
         />
         }
-        style={{ color: '#dfbdec' }}
         label={label}
     />;
 }

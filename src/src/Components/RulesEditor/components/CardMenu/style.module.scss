@@ -1,5 +1,3 @@
-@import '../../helpers/stylesVariables.scss';
-
 .switchesItem {
     max-width: 200px;
     width: auto;
@@ -12,22 +10,22 @@
     span {
         width: 100%;
         margin-left: 15px;
-        color: $lineColorActive;
+        color: var(--lineColorActive);
         white-space: nowrap;
     }
     &:hover {
-        border: 1px solid $lineColor;
-        color: $lineColorHover;
+        border: 1px solid var(--lineColor);
+        color: var(--lineColorHover);
         border-radius: 6px;
-        background: $backgroundColor;
+        background: var(--backgroundColor);
         cursor: pointer;
     }
 }
 .switchesItemActive {
-    border: 1px solid $lineColor;
-    color: $lineColorHover;
+    border: 1px solid var(--lineColor);
+    color: var(--lineColorHover);
     border-radius: 6px;
-    background: $backgroundColor;
+    background: var(--backgroundColor);
     cursor: pointer;
 }
 .iconThem {
@@ -35,6 +33,6 @@
     height: 30px !important;
     margin-left: 5px;
     * {
-        color: $lineColorActive !important;
+        color: var(--lineColorActive) !important;
     }
 }

@@ -1,7 +1,6 @@
-@import './helpers/stylesVariables.scss';
-
 .wrapperRules {
-    background: url("https://klike.net/uploads/posts/2020-04/1586763579_24.jpg");
+    background: linear-gradient(0deg, var(--backgroundGlobalColor), var(--backgroundGlobalColor)),
+        url("https://klike.net/uploads/posts/2020-04/1586763579_24.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     height: 100%;
@@ -12,12 +11,12 @@
     // height: 100%;
     display: flex;
     flex-direction: column;
-    background: $backgroundColor;
-    border-right: 1px solid $lineColor;
+    background: var(--backgroundColor);
+    border-right: 1px solid var(--lineColor);
     padding: 10px;
     opacity: 1;
     overflow-x: hidden;
-    transition: width 0.5s, opacity 0.2s, padding 0.5s;
+    transition: width 0.5s, opacity 0.2s, padding 0.5s, background 0.2s, border-right 0.2s;
 }
 .switchesRenderWrapper {
     overflow-x: hidden;
@@ -36,8 +35,9 @@
     display: flex;
     align-items: center;
     text-align: center;
-    color: $lineColor;
+    color: var(--lineColor);
     white-space: nowrap;
+    transition: color 0.2s;
     &::after,
     &::before {
         content: "";
@@ -64,23 +64,23 @@
     }
 }
 .inputWidth {
-    margin-top: 20px !important;
-    margin-bottom: 15px !important;
+    margin-top: 0px !important;
+    margin-bottom: 5px !important;
 }
 .hamburgerWrapper {
     position: absolute;
     width: 40px;
     height: 28px;
-    background: $backgroundColorHumburger;
+    background: var(--backgroundColorHumburger);
     border-radius: 0px 20px 20px 0;
     display: flex;
     justify-content: center;
     padding-top: 12px;
     left: 221px;
     top: 30px;
-    border: 1px solid $lineColor;
+    border: 1px solid var(--lineColor);
     cursor: pointer;
-    transition: left 0.5s, border-radius 0.7s;
+    transition: left 0.5s, border-radius 0.7s, background 0.2s, border 0.2s;
     z-index: 10;
 }
 .hamburgerOff {
@@ -88,18 +88,19 @@
     border-radius: 20px;
 }
 .nothingFound {
-    color: $lineColor;
+    color: var(--lineColor);
     margin: 16px;
     font-size: 21px;
+    transition: color 0.2s;
 }
 .resetSearch {
     font-weight: bold;
-    color: $lineColor;
+    color: var(--lineColor);
     cursor: pointer;
     margin: 10px 0;
     transition: color 0.3s, font-size 0.3s;
     &:hover {
-        color: $lineColorHover;
+        color: var(--lineColorHover);
         font-size: 22px;
     }
 }
@@ -111,17 +112,18 @@
     button {
         width: calc(100% / 3);
         min-width: auto;
-        color: $lineColor;
+        color: var(--lineColor);
+        transition: color 0.2s;
     }
     .controlPanelAppBar {
         background: none;
         box-shadow: none;
     }
     [class*="Mui-selected"] {
-        color: $lineColorActive !important;
+        color: var(--lineColorActive) !important;
     }
     [class*="MuiTabs-indicator"] {
-        background-color: $lineColorActive;
+        background-color: var(--lineColorActive);
     }
     [class*="Mui-disabled"] {
         color: #210025cc !important;
@@ -138,6 +140,18 @@
     height: 20px;
     margin-right: 10px;
 }
+.blockTheme {
+    display: flex;
+}
+.currentBlockTheme {
+    width: 20px;
+    height: 20px;
+    background: red;
+    margin: 6px;
+    border: 2px solid #190000;
+    cursor: pointer;
+}
+
 @media screen and (max-width: 835px) {
     .wrapperRules {
         flex-direction: column;

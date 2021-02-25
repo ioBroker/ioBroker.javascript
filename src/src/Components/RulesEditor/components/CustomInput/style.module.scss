@@ -1,36 +1,34 @@
-@import '../../helpers/stylesVariables.scss';
-
 .root {
-    background: $backgroundColorHumburger;
+    background: var(--backgroundColorHumburger);
     border-radius: 5px;
     margin-top: 0 !important;
     margin-bottom: 0 !important;
     * {
-        color: $lineColorActive !important;
+        color: var(--colorBlock) !important;
     }
     [class*="MuiInputLabel-shrink"] {
-        color: $colorBlock !important;
+        color: var(--colorBlock) !important;
     }
     [class*="MuiInput-underline"] {
         :after {
-            border-bottom-color: $lineColor !important;
+            border-bottom-color: var(--lineColor) !important;
         }
     }
     &:hover {
         [class*="MuiOutlinedInput-notchedOutline"] {
-            border-color: $lineColor !important;
+            border-color: var(--lineColor) !important;
         }
     }
     [class*="MuiOutlinedInput-notchedOutline"] {
-        border-color: $lineColor !important;
+        border-color: var(--lineColor) !important;
         &:hover {
-            border-color: $lineColor !important;
+            border-color: var(--lineColor) !important;
         }
         [class*="Mui-focused"] {
-            border-color: $lineColor !important;
+            border-color: var(--lineColor) !important;
         }
         [class*="Mui-disabled"] {
-            border-color: $lineColor !important;
+            border-color: var(--lineColor) !important;
         }
     }
 }

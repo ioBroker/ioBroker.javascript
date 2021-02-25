@@ -1,0 +1,9 @@
+.root {
+    color: var(--colorBlock) !important;
+    border-color: var(--colorBlock) !important;
+    &:hover {
+        border-color: var(--colorBlockHover) !important;
+        color: var(--colorBlockHover) !important;
+        background-color: inherit !important;
+    }
+}

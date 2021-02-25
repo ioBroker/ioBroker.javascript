@@ -1,5 +1,3 @@
-@import "../../helpers/stylesVariables.scss";
-
 .cardStyle {
     cursor: pointer;
     position: relative;
@@ -11,7 +9,7 @@
     padding: 10px;
     margin: 23px 12px 4px 12px;
     align-items: center;
-    background: $backgroundBlock;
+    background: var(--backgroundBlock);
     border-radius: 4px;
     box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
         0px 1px 3px 0px rgba(0, 0, 0, 0.12);
@@ -19,7 +17,7 @@
 .nameCard {
     margin-top: 0;
     font-size: 19px;
-    color: $colorBlock;
+    color: var(--colorBlock);
     font-weight: 500;
 }
 .cardStyleActive {
@@ -31,7 +29,7 @@
     height: 40px !important;
     margin-left: 5px;
     * {
-        color: $colorBlock !important;
+        color: var(--colorBlock) !important;
     }
 }
 .inputCard {
@@ -102,19 +100,19 @@
 }
 .tagCard {
     text-align: center;
-    color: $lineColorActive;
+    color: var(--lineColorActive);
     min-width: 100px;
     padding: 0 2px;
     height: 22px;
-    background: $backgroundColorHumburger;
+    background: var(--backgroundColorHumburger);
     border-radius: 5px 5px 0 0;
     position: relative;
     margin-left: auto;
     margin-right: 8px;
     cursor: pointer;
-    border-top: 1px solid $lineColor;
-    border-left: 1px solid $lineColor;
-    border-right: 1px solid $lineColor;
+    border-top: 1px solid var(--lineColor);
+    border-left: 1px solid var(--lineColor);
+    border-right: 1px solid var(--lineColor);
     font-size: 12px;
     padding-top: 2px;
 }
@@ -136,10 +134,15 @@
 }
 .iconTag {
     font-size: 40px;
-    color: $colorBlock;
+    color: var(--colorBlock);
     display: flex;
     align-items: center;
     min-width: 40px;
     margin-bottom: 10px;
     margin-left: 12px;
+}
+.displayItalic {
+    font-style: italic;
+    font-size: 11px;
+    margin-top: 0;
 }

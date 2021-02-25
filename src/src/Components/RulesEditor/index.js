@@ -12,13 +12,14 @@ import Compile from './Compile';
 import MaterialDynamicIcon from './helpers/MaterialDynamicIcon';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import theme from './helpers/stylesVariables.scss';
+import './helpers/stylesVariables.scss';
 
 const RulesEditor = ({ code, onChange }) => {
     // eslint-disable-next-line no-unused-vars
     const { state: { blocks } } = useContext(ContextWrapperCreate);
     const [allBlocks, setAllBlocks] = useState([]);
     const [hamburgerOnOff, setHamburgerOnOff] = useStateLocal(false, 'hamburgerOnOff');
+    const [theme, setTheme] = useStateLocal('themeStandart', 'themeRules');
     const [userRules, setUserRules] = useState(Compile.code2json(code)); //useStateLocal(DEFAULT_RULE, 'userRules');
     const [filter, setFilter] = useStateLocal({
         text: '',
@@ -38,7 +39,9 @@ const RulesEditor = ({ code, onChange }) => {
         newAllBlocks = newAllBlocks.filter(el => typeFunc === el.getStaticData().acceptedBy);
         setAllBlocks(newAllBlocks);
     };
-
+    useEffect(() => {
+        document.getElementsByTagName('HTML')[0].className = theme;
+    }, [theme]);
     useEffect(() => {
         setBlocksFunc();
         // onChange(Compile.json2code({
@@ -71,7 +74,7 @@ const RulesEditor = ({ code, onChange }) => {
         onChange(Compile.json2code(json, blocks));
     }, [blocks, onChange]);
 
-    return <div className={clsx(theme['scssTheme'], cls.wrapperRules, "scssTheme")}>
+    return <div className={clsx(cls.wrapperRules, theme)}>
         <CustomDragLayer allBlocks={allBlocks} />
         <div className={`${cls.hamburgerWrapper} ${hamburgerOnOff ? cls.hamburgerOff : null}`}
             onClick={() => setHamburgerOnOff(!hamburgerOnOff)}><HamburgerMenu boolean={!hamburgerOnOff} /></div>
@@ -120,6 +123,11 @@ const RulesEditor = ({ code, onChange }) => {
                 </span>
             </div>
             <div className={clsx(cls.menuTitle, cls.marginAuto)} />
+            <div className={cls.blockTheme}>
+                <div onClick={() => setTheme('themeStandart')} style={{ background: '#4caaf47d', borderColor: '#4caaf4', opacity: theme !== 'themeStandart' ? 0.4 : 1 }} className={cls.currentBlockTheme}></div>
+                <div onClick={() => setTheme('themeGreen')} style={{ background: '#4cf4577d', borderColor: '#50f44c', opacity: theme !== 'themeGreen' ? 0.4 : 1 }} className={cls.currentBlockTheme}></div>
+                <div onClick={() => setTheme('themeSilver')} style={{ background: '#f3f3f37d', borderColor: '#dedede', opacity: theme !== 'themeSilver' ? 0.4 : 1 }} className={cls.currentBlockTheme}></div>
+            </div>
             <CustomInput
                 className={cls.inputWidth}
                 fullWidth

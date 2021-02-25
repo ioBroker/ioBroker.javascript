@@ -12,6 +12,7 @@ import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
 
 window.adapterName = 'javascript';
 let themeName = Utils.getThemeName();
@@ -19,8 +20,9 @@ let themeName = Utils.getThemeName();
 console.log('iobroker.' + window.adapterName + '@' + version + ' using theme "' + themeName + '"');
 
 function build() {
+    const isMobile = window.innerWidth < 600;
     return ReactDOM.render(<MuiThemeProvider theme={theme(themeName)}>
-        <DndProvider backend={HTML5Backend}>
+        <DndProvider backend={isMobile ? TouchBackend : HTML5Backend}>
             <App onThemeChange={_theme => {
                 themeName = _theme;
                 build();

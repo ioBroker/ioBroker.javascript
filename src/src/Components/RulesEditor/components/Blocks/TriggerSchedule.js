@@ -260,7 +260,8 @@ class TriggerScheduleBlock extends GenericBlock {
             </CustomModal>
             {this.renderNameText({
                 defaultValue: 'every hour at 0 minutes',
-                attr: 'addText'
+                attr: 'addText',
+                signature:true
             },!!settings['addText'] ? settings['addText'] : 'every hour at 0 minutes',onChange)}
         </div>;
     }

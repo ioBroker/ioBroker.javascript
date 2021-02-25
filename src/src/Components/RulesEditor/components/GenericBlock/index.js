@@ -107,8 +107,8 @@ class GenericBlock extends PureComponent {
         </div>;
     }
 
-    renderNameText = ({ attr }, value) => <div
-        className={clsx(cls.displayFlex, cls.blockMarginTop)}
+    renderNameText = ({ attr, signature }, value) => <div
+        className={clsx(!!signature?cls.displayItalic:cls.displayFlex, cls.blockMarginTop)}
         key={attr}>
         {value}
     </div>
@@ -253,7 +253,7 @@ class GenericBlock extends PureComponent {
                     onClick={() => this.setState({ showSelectId: true })}
                 />
             </div>
-            {this.state[this.state.settings[input.attr]] && <div className={cls.nameBlock}>{Utils.getObjectNameFromObj(this.state[settings[attr]], I18n.getLanguage())}</div>}
+            {this.state[this.state.settings[input.attr]] && <div className={clsx(cls.nameBlock,cls.displayItalic)}>{Utils.getObjectNameFromObj(this.state[settings[attr]], I18n.getLanguage())}</div>}
             {showSelectId ? <DialogSelectID
                 key="tableSelect"
                 // imagePrefix="../.."

@@ -1,7 +1,5 @@
-@import '../../helpers/stylesVariables.scss';
-
 .root {
     * {
-        color: $colorBlock !important;
+        color: var(--colorBlock) !important;
     }
 }

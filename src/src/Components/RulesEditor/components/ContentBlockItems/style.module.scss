@@ -1,9 +1,6 @@
-$colorFons: #81688c; //
-@import '../../helpers/stylesVariables.scss';
-
 .border {
-    border-left: 1px solid $lineColor;
-    border-right: 1px solid $lineColor;
+    border-left: 1px solid var(--lineColor);
+    border-right: 1px solid var(--lineColor);
 }
 .emptyBlockStyle {
     cursor: pointer;
@@ -49,7 +46,7 @@ $colorFons: #81688c; //
     transition: all 0.5s;
     z-index: 9;
     .nameBlockItems {
-        color: $lineColor;
+        color: var(--lineColor);
         margin-top: 10px;
         width: 100%;
         display: flex;
@@ -93,7 +90,7 @@ $colorFons: #81688c; //
     text-align: center;
     margin: 0 10px;
     width: 100%;
-    color: $colorFons;
+    color: var(--lineColor);
     &::after,
     &::before {
         content: "";
