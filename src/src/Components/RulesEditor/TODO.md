@@ -10,3 +10,8 @@
 
 - i18n  
 - Show name of not installed block
+
+- Place rules as first in create dialog and add 
+  rules - beginner, blockly - normal user, javascript - advanced, typescript - profi
+  (place types in given order)
+- Show icon of device by "State trigger" and "set state" 

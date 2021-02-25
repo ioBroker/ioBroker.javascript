@@ -54,7 +54,7 @@ function compileTriggers(json, context, blocks) {
 }
 
 function findBlock(type, blocks) {
-    return blocks.find(block => block.name === type);
+    return blocks.find(block => block.getStaticData && block.getStaticData().id === type);
 }
 
 function compileActions(actions, context, blocks) {

@@ -261,12 +261,12 @@ class GenericBlock extends PureComponent {
             {this.state[this.state.settings[input.attr]] && <div className={clsx(cls.nameBlock, cls.displayItalic)}>{Utils.getObjectNameFromObj(this.state[settings[attr]], I18n.getLanguage())}</div>}
             {showSelectId ? <DialogSelectID
                 key="tableSelect"
-                // imagePrefix="../.."
+                imagePrefix="../.."
                 dialogName={'javascript'}
                 themeType={Utils.getThemeName()}
                 socket={socket}
                 statesOnly={true}
-                // selected={this.selectIdValue}
+                selected={value}
                 onClose={() => this.setState({ showSelectId: false })}
                 onOk={(selected, name, common) =>
                     this.setState({ showSelectId: false }, () => {

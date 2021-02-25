@@ -25,7 +25,7 @@ class TriggerScheduleBlock extends GenericBlock {
         } else if (config.tagCard === 'at') {
             const [hours, minutes] = (config.at || '').split(':');
             let dow = '*';
-            if (config?.dow.length && !config?.dow.includes('_')) {
+            if (config?.dow?.length && !config.dow.includes('_')) {
                 const _dow = [...config.dow].map(item => parseInt(item, 10));
                 _dow.sort();
 
@@ -227,7 +227,7 @@ class TriggerScheduleBlock extends GenericBlock {
                             attr: 'dow',
                             default: '',
                             multiple: true,
-                            defaultValue: ['_'],
+                            defaultValue: ['_', '1', '2', '3', '4', '5', '6', '0'],
                             options: [
                                 { value: '_', title: 'Every day', only: true },
                                 { value: '1', title: 'Monday', titleShort: 'Mo' },
