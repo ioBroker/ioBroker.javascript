@@ -998,6 +998,7 @@ class Editor extends React.Component {
                     command={this.state.cmdToBlockly}
                     key="flowEditorDiv"
                     themeType={this.state.themeType}
+                    themeName={this.state.themeName}
                     searchText={this.state.searchText}
                     resizing={this.props.resizing}
                     code={this.scripts[this.state.selected].source || ''}

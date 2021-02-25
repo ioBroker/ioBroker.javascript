@@ -24,10 +24,10 @@ class GenericBlock extends PureComponent {
         super(props);
         item = item || {};
         let settings = props.settings || {
-            tagCard: item.tagCardArray ? item.tagCardArray[0] || '' : ''
+            tagCard: item.tagCardArray ? typeof item.tagCardArray[0] !== 'string' ? item.tagCardArray[0].title : item.tagCardArray[0] : ''
         }
         if (!settings.tagCard && item.tagCardArray) {
-            settings.tagCard = item.tagCardArray[0];
+            settings.tagCard = typeof item.tagCardArray[0] !== 'string' ? item.tagCardArray[0].title : item.tagCardArray[0];
         }
 
         this.state = {
@@ -108,7 +108,7 @@ class GenericBlock extends PureComponent {
     }
 
     renderNameText = ({ attr, signature }, value) => <div
-        className={clsx(!!signature?cls.displayItalic:cls.displayFlex, cls.blockMarginTop)}
+        className={clsx(!!signature ? cls.displayItalic : cls.displayFlex, cls.blockMarginTop)}
         key={attr}>
         {value}
     </div>
@@ -253,7 +253,7 @@ class GenericBlock extends PureComponent {
                     onClick={() => this.setState({ showSelectId: true })}
                 />
             </div>
-            {this.state[this.state.settings[input.attr]] && <div className={clsx(cls.nameBlock,cls.displayItalic)}>{Utils.getObjectNameFromObj(this.state[settings[attr]], I18n.getLanguage())}</div>}
+            {this.state[this.state.settings[input.attr]] && <div className={clsx(cls.nameBlock, cls.displayItalic)}>{Utils.getObjectNameFromObj(this.state[settings[attr]], I18n.getLanguage())}</div>}
             {showSelectId ? <DialogSelectID
                 key="tableSelect"
                 // imagePrefix="../.."
@@ -293,7 +293,7 @@ class GenericBlock extends PureComponent {
 
     renderSelect = (input, value, onChange) => {
         const { className } = this.props;
-        const { name, options, frontText, backText, attr } = input;
+        const { name, options, frontText, backText, attr, multiple } = input;
         return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)} style={{ whiteSpace: 'nowrap' }}>
             {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomSelect
@@ -302,6 +302,7 @@ class GenericBlock extends PureComponent {
                 options={options}
                 value={value}
                 onChange={onChange}
+                multiple={multiple}
                 customValue
             />
             {backText && <div className={cls.backText}>{backText}</div>}
@@ -361,9 +362,9 @@ class GenericBlock extends PureComponent {
     /////////////////////////////
     tagGenerate = () => {
         let { tagCardArray, openTagMenu } = this.state;
+        console.log('tagCardArray',tagCardArray)
         let { tagCard } = this.state.settings;
         let result = tagCard;
-
         if (tagCardArray.length > 3) {
             result = <div>
                 <div aria-controls="simple-menu" aria-haspopup="true"
@@ -375,16 +376,22 @@ class GenericBlock extends PureComponent {
                     open={Boolean(openTagMenu)}
                     onClose={() => this.setState({ openTagMenu: null })}
                 >
-                    {tagCardArray.map(el =>
-                        <MenuItem key={el}
-                            selected={el === tagCard}
+                    {tagCardArray.map(el => {
+                        let tag = el;
+                        if (typeof el !== 'string') {
+                            tag = el.title;
+                        }
+                        return <MenuItem key={tag}
+                            selected={tag === tagCard}
+                            style={{ placeContent: 'space-between' }}
                             onClick={e => {
-                                const settings = { ...this.state.settings, tagCard: el };
+                                const settings = { ...this.state.settings, tagCard: tag };
                                 this.setState({ openTagMenu: null, settings }, () => {
                                     this.props.onChange(settings);
-                                    this.onTagChange(el);
+                                    this.onTagChange(tag);
                                 });
-                            }}>{I18n.t(el)}</MenuItem>)}
+                            }}>{I18n.t(tag)}{typeof el !== 'string' && el.title2 && <div style={{ marginLeft: 4 }}>{el.title2}</div>}</MenuItem>
+                    })}
                 </Menu>
             </div>;
         }
@@ -394,15 +401,20 @@ class GenericBlock extends PureComponent {
 
     tagGenerateNew = () => {
         const { tagCardArray, settings, settings: { tagCard } } = this.state;
-        if (tagCard && tagCardArray.length < 4) {
+        let newTagCardArray = [...tagCardArray]
+        if (typeof newTagCardArray[0] !== 'string') {
+            newTagCardArray = newTagCardArray.map(el => el.title);
+        }
+        console.log(newTagCardArray)
+        if (tagCard && newTagCardArray.length < 4) {
             const newSettings = { ...settings };
-            if (tagCardArray.indexOf(tagCard) === tagCardArray.length - 1) {
-                newSettings.tagCard = tagCardArray[0];
+            if (newTagCardArray.indexOf(tagCard) === newTagCardArray.length - 1) {
+                newSettings.tagCard = newTagCardArray[0];
                 return this.setState({ settings: newSettings }, () => {
                     this.props.onChange(newSettings)
                 });
             } else {
-                newSettings.tagCard = tagCardArray[tagCardArray.indexOf(tagCard) + 1];
+                newSettings.tagCard = newTagCardArray[newTagCardArray.indexOf(tagCard) + 1];
                 this.setState({ settings: newSettings }, () => {
                     this.props.onChange(newSettings)
                 });

@@ -62,7 +62,25 @@ class ConditionAstrological extends GenericBlock {
             },
             id: 'ConditionAstrological',
             icon: 'Brightness3',
-            tagCardArray: ['>', '>=', '<', '<=', '=', '<>'],
+            tagCardArray: [{
+                title: '>',
+                title2: '[greater]'
+            }, {
+                title: '>=',
+                title2: '[greater or equal]'
+            }, {
+                title: '<',
+                title2: '[less]'
+            }, {
+                title: '<=',
+                title2: '[less or equal]'
+            }, {
+                title: '=',
+                title2: '[equal]',
+            }, {
+                title: '<>',
+                title2: '[not equal]'
+            }],
         }
     }
 

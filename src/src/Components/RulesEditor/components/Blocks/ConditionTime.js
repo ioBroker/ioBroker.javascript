@@ -34,7 +34,25 @@ class ConditionTime extends GenericBlock {
             name: { en: 'Time condition', ru: 'Time condition' },
             id: 'ConditionTime',
             icon: 'Shuffle',
-            tagCardArray: ['>', '>=', '<', '<=', '=', '<>']
+            tagCardArray: [{
+                title: '>',
+                title2: '[greater]'
+            }, {
+                title: '>=',
+                title2: '[greater or equal]'
+            }, {
+                title: '<',
+                title2: '[less]'
+            }, {
+                title: '<=',
+                title2: '[less or equal]'
+            }, {
+                title: '=',
+                title2: '[equal]',
+            }, {
+                title: '<>',
+                title2: '[not equal]'
+            }],
         }
     }
 

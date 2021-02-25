@@ -125,7 +125,28 @@ class ConditionState extends GenericBlock {
             name: { en: 'State condition', ru: 'State condition' },
             id: 'ConditionState',
             icon: 'Shuffle',
-            tagCardArray: ['>', '>=', '<', '<=', '=', '<>', 'includes'],
+            tagCardArray: [{
+                title: '>',
+                title2: '[greater]'
+            }, {
+                title: '>=',
+                title2: '[greater or equal]'
+            }, {
+                title: '<',
+                title2: '[less]'
+            }, {
+                title: '<=',
+                title2: '[less or equal]'
+            }, {
+                title: '=',
+                title2: '[equal]',
+            }, {
+                title: '<>',
+                title2: '[not equal]'
+            }, {
+                title: '.',
+                title2: '[includes]'
+            }],
         }
     }
 
