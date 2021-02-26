@@ -1,17 +1,13 @@
-- Small object name under the input
 - Drag with Ctrl => copy of block
 - Color Themes
-- Double click on a block => add the block to workspace
-- Change Modal Dialog to normal material dialog
-- Multiselect for Day of weeks
-- Astro: read coordinates from 
-  system.adapter.javascript.0=>native.latitude(longitude) ||
-  system.config => common.latitude/longitude
-
 - i18n  
-- Show name of not installed block
-
 - Place rules as first in create dialog and add 
   rules - beginner, blockly - normal user, javascript - advanced, typescript - profi
   (place types in given order)
 - Show icon of device by "State trigger" and "set state" 
+
+- Update on choosing by trigger states (after all attributes set => trigger update)
+- After the block is placed, code is not actual (e.g. exec)
+- If canceled the saving, the workflow is not returned to initial state
+- Agree => OK, Disagree => Cancel
+- Close menu tab on mobile if clicked on something else
