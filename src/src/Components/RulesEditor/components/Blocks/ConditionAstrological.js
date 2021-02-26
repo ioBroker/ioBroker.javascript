@@ -97,7 +97,7 @@ class ConditionAstrological extends GenericBlock {
                     attr: 'offset',
                 },
                 {
-                    backText: 'minute(s)',
+                    backText: offsetValue === 1 ? 'minute' : 'minutes',
                     frontText: 'offset',
                     nameRender: 'renderNumber',
                     defaultValue: 0,

@@ -11,3 +11,4 @@
 - If canceled the saving, the workflow is not returned to initial state
 - Agree => OK, Disagree => Cancel
 - Close menu tab on mobile if clicked on something else
+- Если нажимать на текст чекбокса, то он тоже должен менять состояние. Сейчас меняет, если прямо на чекбокс нажать

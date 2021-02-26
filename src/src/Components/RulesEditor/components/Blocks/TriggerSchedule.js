@@ -14,6 +14,7 @@ import I18n from '@iobroker/adapter-react/i18n';
 class TriggerScheduleBlock extends GenericBlock {
     constructor(props) {
         super(props, TriggerScheduleBlock.getStaticData());
+        this.coordinates = null;
     }
 
     static compile(config, context) {
@@ -76,39 +77,42 @@ class TriggerScheduleBlock extends GenericBlock {
 
         offsetValue = parseInt(offsetValue, 10) || 0;
 
-        let coordinates = {
-            latitude: 51.5,
-            longitude: -0.1
-        }
-        await this.props.socket.getObject('system.adapter.javascript.0').then(({ native: { latitude, longitude } }) => {
-            if (!latitude && !longitude) {
-                this.props.socket.getObject('system.config').then(obj => {
-                    if (latitude && longitude) {
-                        coordinates = {
+        if (!this.coordinates) {
+            await this.props.socket.getObject('system.adapter.javascript.0')
+                .then(({ native: { latitude, longitude } }) => {
+                    if (!latitude && !longitude) {
+                        return this.props.socket.getObject('system.config')
+                            .then(obj => {
+                                if (obj && (obj.common.latitude || obj.common.longitude)) {
+                                    this.coordinates = {
+                                        latitude: obj.common.latitude,
+                                        longitude: obj.common.longitude
+                                    }
+                                } else {
+                                    this.coordinates = null;
+                                }
+                            });
+                    } else {
+                        this.coordinates = {
                             latitude,
                             longitude
                         }
                     }
-                })
-            } else {
-                coordinates = {
-                    latitude,
-                    longitude
-                }
-            }
-        });
-        const sunValue = SunCalc.getTimes(new Date(), coordinates.latitude, coordinates.longitude);
+                });
+        }
+
+        const sunValue = this.coordinates && SunCalc.getTimes(new Date(), this.coordinates.latitude, this.coordinates.longitude);
         const options = Object.keys(sunValue).map(name => ({
             value: name,
             title: name,
             title2: `[${TriggerScheduleBlock._time2String(sunValue[name])}]`,
-            order: TriggerScheduleBlock._time2String(sunValue[name])
+            order: sunValue ? TriggerScheduleBlock._time2String(sunValue[name]) : '??:??'
         }));
         options.sort((a, b) => a.order > b.order ? 1 : (a.order < b.order ? -1 : 0));
 
         // calculate time text
         let time = '--:--';
-        if (astro && sunValue[astro]) {
+        if (astro && sunValue && sunValue[astro]) {
             const astroTime = new Date(sunValue[astro]);
             offset && astroTime.setMinutes(astroTime.getMinutes() + parseInt(offsetValue, 10));
             time = `(at ${TriggerScheduleBlock._time2String(astroTime)})`;
@@ -169,6 +173,44 @@ class TriggerScheduleBlock extends GenericBlock {
         this.setState({ inputs });
     }
 
+    async _setInterval(interval) {
+        interval = parseInt(interval || this.state.settings.interval, 10) || 30;
+        let options;
+        if (interval === 1) {
+            options = [
+                { value: 's', title: 'second' },
+                { value: 'm', title: 'minute' },
+                { value: 'h', title: 'hour' }
+            ];
+        } else {
+            options = [
+                { value: 's', title: 'seconds' },
+                { value: 'm', title: 'minutes' },
+                { value: 'h', title: 'hours' }
+            ];
+        }
+
+        this.setState({
+            inputs: [
+                {
+                    nameRender: 'renderNumber',
+                    prefix: {
+                        en: 'every'
+                    },
+                    attr: 'interval',
+                    frontText: 'every',
+                    defaultValue: 30,
+                },
+                {
+                    nameRender: 'renderSelect',
+                    attr: 'unit',
+                    defaultValue: 's',
+                    options
+                }
+            ]
+        });
+    }
+
     onValueChanged(value, attr) {
         if (this.state.settings.tagCard === 'astro') {
             if (attr === 'astro') {
@@ -178,36 +220,19 @@ class TriggerScheduleBlock extends GenericBlock {
             } else if (attr === 'offsetValue') {
                 this._setAstro(undefined, undefined, value);
             }
+        } else if (this.state.settings.tagCard === 'interval') {
+            if (attr === 'interval') {
+                this._setInterval(value);
+            }
         }
+
     }
 
     onTagChange(tagCard) {
         tagCard = tagCard || this.state.settings.tagCard;
         switch (tagCard) {
             case 'interval':
-                this.setState({
-                    inputs: [
-                        {
-                            nameRender: 'renderNumber',
-                            prefix: {
-                                en: 'every'
-                            },
-                            attr: 'interval',
-                            frontText: 'every',
-                            defaultValue: 30,
-                        },
-                        {
-                            nameRender: 'renderSelect',
-                            attr: 'unit',
-                            defaultValue: 'second(s)',
-                            options: [
-                                { value: 'second(s)', title: 'second(s)' },
-                                { value: 'minute(s)', title: 'minute(s)' },
-                                { value: 'hour(s)', title: 'hour(s)' }
-                            ]
-                        }
-                    ]
-                });
+                this._setInterval();
                 break;
 
             case 'cron':
