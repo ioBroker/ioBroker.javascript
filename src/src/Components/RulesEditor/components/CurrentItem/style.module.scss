@@ -78,3 +78,8 @@
     opacity: 0.8;
     box-shadow: 0 0 10px rgb(106 204 255);
 }
+@media screen and (max-width: 835px) {
+    .controlMenu{
+        opacity: 1 !important;
+    }
+}

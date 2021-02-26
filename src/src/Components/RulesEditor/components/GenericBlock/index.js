@@ -200,7 +200,7 @@ class GenericBlock extends PureComponent {
                     value={value}
                     onChange={onChange}
                 />
-                {backText && <div className={cls.backText}>{backText}</div>}
+                {backText && <div style={{ marginLeft: 20 }} className={cls.backText}>{backText}</div>}
             </div>
             {nameBlock && <div className={cls.nameBlock}>{nameBlock}</div>}
         </div>;
@@ -232,7 +232,7 @@ class GenericBlock extends PureComponent {
 
         if (settings[attr] && !this.state[settings[attr]]) {
             setTimeout(() => {
-                this.props.socket.getObject(value)
+                socket.getObject(value)
                     .then(obj =>
                         this.setState({ [settings[attr]]: obj }));
             }, 0);
@@ -251,7 +251,7 @@ class GenericBlock extends PureComponent {
                     customValue
                 />
                 <CustomButton
-                    // fullWidth
+                    square
                     style={{ marginLeft: 7 }}
                     value='...'
                     className={className}
@@ -272,10 +272,10 @@ class GenericBlock extends PureComponent {
                     this.setState({ showSelectId: false }, () => {
                         onChange(selected);
                         // read type of object
-                        this.props.socket.getObject(selected)
+                        socket.getObject(selected)
                             .then(obj => onChange(obj.common.type, attr + 'Type', () =>
-                                    onChange(obj.common.unit, attr + 'Unit', () =>
-                                        onChange(obj.common.states, attr + 'States'))));
+                                onChange(obj.common.unit, attr + 'Unit', () =>
+                                    onChange(obj.common.states, attr + 'States'))));
                     })}
             /> : null}
         </div> : null;
@@ -316,7 +316,7 @@ class GenericBlock extends PureComponent {
     };
 
     renderInstance = (input, value, onChange) => {
-        const { className } = this.props;
+        const { className, socket } = this.props;
         const { name, options, frontText, backText, attr, adapter } = input;
         if (this.state.hideAttributes.includes(attr)) {
             return null;
@@ -324,7 +324,7 @@ class GenericBlock extends PureComponent {
         return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)} style={{ whiteSpace: 'nowrap' }}>
             {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomInstance
-                socket={this.props.socket}
+                socket={socket}
                 adapter={adapter}
                 title={name}
                 className={className}
@@ -332,17 +332,16 @@ class GenericBlock extends PureComponent {
                 value={value}
                 onChange={onChange}
                 customValue
-                onInstanceHide={value => this.setState({hideAttributes : [...this.state.hideAttributes, attr]}, () => onChange(value))} // hide instance if only exactly one exists
+                onInstanceHide={value => this.setState({ hideAttributes: [...this.state.hideAttributes, attr] }, () => onChange(value))} // hide instance if only exactly one exists
             />
             {backText && <div className={cls.backText}>{backText}</div>}
         </div>;
     }
 
     renderModalInput = (input, value, onChange) => {
-        const { openModal, settings } = this.state;
+        const { openModal } = this.state;
         const { className } = this.props;
         const { attr, nameBlock, frontText, backText } = input;
-        console.log(settings[attr])
         return <div key={attr}>
             <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
                 {frontText && <div className={cls.frontText}>{frontText}</div>}
@@ -357,8 +356,9 @@ class GenericBlock extends PureComponent {
                     customValue
                 />
                 <CustomButton
-                    fullWidth
-                    style={{ width: 80, marginLeft: 5 }}
+                    square
+                    // fullWidth
+                    style={{ marginLeft: 5 }}
                     value='...'
                     className={className}
                     onClick={() => this.setState({ openModal: true })}
@@ -368,9 +368,7 @@ class GenericBlock extends PureComponent {
             <CustomModal
                 open={openModal}
                 buttonClick={() => this.setState({ openModal: false })}
-                close={() => this.setState({ openModal: false })}
-                titleButton={'ok'}
-                titleButton2={'cancel'}>
+                close={() => this.setState({ openModal: false })}>
                 <CustomInput
                     className={className}
                     autoComplete="off"
@@ -391,7 +389,6 @@ class GenericBlock extends PureComponent {
     /////////////////////////////
     tagGenerate = () => {
         let { tagCardArray, openTagMenu } = this.state;
-        console.log('tagCardArray',tagCardArray)
         let { tagCard } = this.state.settings;
         let result = tagCard;
         if (tagCardArray.length > 3) {
@@ -452,7 +449,6 @@ class GenericBlock extends PureComponent {
 
     componentDidUpdate = (prevProps) => {
         if (this.props.acceptedBy !== 'triggers' && this.props.onUpdate) {
-            console.log(this.props.settings._id, this.props.onUpdate)
             setTimeout(() => this.onUpdate(), 0);
         }
     }
@@ -474,12 +470,14 @@ class GenericBlock extends PureComponent {
 
     render = () => {
         const { inputs, name, icon, iconTag, settings, adapter, settings: { tagCard } } = this.state;
+        const { socket, notFound } = this.props;
         return <Fragment>
             {iconTag ? this.renderIconTag() :
-                <MaterialDynamicIcon iconName={icon} className={cls.iconThemCard} adapter={adapter} socket={this.props.socket}/>}
+                <MaterialDynamicIcon iconName={icon} className={cls.iconThemCard} adapter={adapter} socket={socket} />}
             <div className={cls.blockName}>
                 <span className={cls.nameCard}>
                     {name && name.en}
+                    {!!notFound ? `${settings.id} not found` : ''}
                 </span>
                 {inputs.filter(({ nameRender }) => this[nameRender])
                     .map(input => {

@@ -8,6 +8,7 @@ $themeStandart: (
     --colorBlockHover: #02124b8c,
     --backgroundBlock: #c9e7ffab,
     --backgroundGlobalColor: #ffffff00,
+    --backgroundMobile: #041c35d4
 );
 $themeGreen: (
     --backgroundColor: #3081333b,
@@ -19,9 +20,10 @@ $themeGreen: (
     --colorBlockHover: #024b048c,
     --backgroundBlock: #c9ffcfab,
     --backgroundGlobalColor: #51ff001b,
+    --backgroundMobile: #3081333b
 );
 $themeSilver: (
-    --backgroundColor: #4646463b,
+    --backgroundColor: #3131313b,
     --lineColor: #f3f3f37d,
     --lineColorHover: #a0a0a0,
     --lineColorActive: #dedede,
@@ -29,19 +31,35 @@ $themeSilver: (
     --colorBlock: #080808,
     --colorBlockHover: #0808088c,
     --backgroundBlock: #c1c1c1ab,
-    --backgroundGlobalColor: #464646,
+    --backgroundGlobalColor: #6d6d6ded,
+    --backgroundMobile: #040303eb
+);
+$themeLight: (
+    --backgroundColor: #3131313b,
+    --lineColor: #0001257d,
+    --lineColorHover: #a0a0a0,
+    --lineColorActive: #07002f,
+    --backgroundColorHumburger: #333542a3,
+    --colorBlock: #090929,
+    --colorBlockHover: #c7c6c68c,
+    --backgroundBlock: #000000,
+    --backgroundGlobalColor: #ffffff40,
+    --backgroundMobile: #b4b2c7bf
 );
 @mixin spread-map($map: ()) {
     @each $key, $value in $map {
         #{$key}: $value;
     }
 }
-:root.themeStandart {
+:root.blue {
     @include spread-map($themeStandart);
 }
-:root.themeGreen {
-    @include spread-map($themeGreen);
+:root.colored {
+    @include spread-map($themeStandart);
 }
-:root.themeSilver {
+:root.dark {
     @include spread-map($themeSilver);
+}
+:root.light {
+    @include spread-map($themeLight);
 }

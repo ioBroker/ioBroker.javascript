@@ -5,9 +5,9 @@ import cls from './style.module.scss';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import utils from '../../helpers/utils'
 
-const CardMenu = ({ name, id, active, icon, adapter, socket }) => {
-    return <div key={id} className={`${cls.switchesItem} ${active ? cls.switchesItemActive : null}`}>
-        <MaterialDynamicIcon iconName={icon} className={cls.iconThem} adapter={adapter} socket={socket}/>
+const CardMenu = ({ name, id, active, icon, adapter, socket, onDoubleClick }) => {
+    return <div onDoubleClick={onDoubleClick} key={id} className={`${cls.switchesItem} ${active ? cls.switchesItemActive : null}`}>
+        <MaterialDynamicIcon iconName={icon} className={cls.iconThem} adapter={adapter} socket={socket} />
         <span>
             {utils.getName(name)}
         </span>
@@ -17,7 +17,8 @@ const CardMenu = ({ name, id, active, icon, adapter, socket }) => {
 CardMenu.defaultProps = {
     name: '',
     active: false,
-    id: ''
+    id: '',
+    onDoubleClick: () => { }
 };
 
 CardMenu.propTypes = {

@@ -18,15 +18,15 @@ class ActionSetState extends GenericBlock {
         return `await setStateAsync("${config.oid}", ${value}, ${config.tagCard === 'update'});`;
     }
 
-    onTagChange(common) {
+    _setInputs() {
         let obg;
         let type = '';
-        console.log('oid', common)
-        if (common) {
-            if (common.type === 'string') {
+        const { oidType, oidUnit } = this.state.settings;
+        if (oidType) {
+            if (oidType === 'string') {
                 type = 'number'
             }
-            else if (common.type === 'boolean') {
+            else if (oidType === 'boolean') {
                 type = 'boolean'
             }
             else {
@@ -37,7 +37,7 @@ class ActionSetState extends GenericBlock {
             case 'number':
                 obg = {
                     attr: 'value',
-                    backText: common?.unit || '',
+                    backText: oidUnit || '',
                     frontText: 'with',
                     nameRender: 'renderNumber',
                     defaultValue: 30
@@ -72,21 +72,24 @@ class ActionSetState extends GenericBlock {
                     backText: 'true',
                     frontText: 'false',
                     nameRender: 'renderSwitch',
-                    defaultValue: false
+                    defaultValue: false,
+                    attr:'boolean'
                 }
                 break;
 
             case 'control4':
                 obg = {
                     nameRender: 'renderButton',
-                    defaultValue: 'Press'
+                    defaultValue: 'Press',
+                    attr:'button'
                 }
                 break;
 
             case 'control5':
                 obg = {
                     nameRender: 'renderColor',
-                    defaultValue: 30
+                    defaultValue: 30,
+                    attr:'color'
                 }
                 break;
 
@@ -94,7 +97,10 @@ class ActionSetState extends GenericBlock {
                 obg = {};
                 break;
         }
+        return { ...obg };
+    }
 
+    onTagChange() {
         this.setState({
             inputs: [
                 {
@@ -102,9 +108,13 @@ class ActionSetState extends GenericBlock {
                     attr: 'oid',
                     defaultValue: '',
                 },
-                obg
+                this._setInputs()
             ]
         });
+    }
+
+    onValueChanged() {
+        this.onTagChange();
     }
 
     static getStaticData() {

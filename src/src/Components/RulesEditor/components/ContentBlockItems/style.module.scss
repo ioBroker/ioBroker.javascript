@@ -45,6 +45,7 @@
     flex-direction: column;
     transition: all 0.5s;
     z-index: 9;
+    overflow: auto;
     .nameBlockItems {
         color: var(--lineColor);
         margin-top: 10px;
@@ -112,5 +113,24 @@
     cursor: pointer;
     * {
         color: #ffffffb3;
+    }
+}
+@media screen and (max-width: 835px) {
+    .mainBlockItemRules{
+        overflow: initial;
+    }
+    .contentBlockItem{
+        min-height: 300px;
+    }
+    .contentHeightOff{
+        min-height: 0;
+        transition: min-height 0.3s;
+    }
+    .contentHeightOn{
+        transition: min-height 0.3s;
+    }
+    .border {
+        border-left: initial;
+        border-right: initial;
     }
 }

@@ -1,5 +1,5 @@
 import GenericBlock from '../GenericBlock';
-import Compile from "../../Compile";
+// import Compile from "../../Compile";
 import SunCalc from "suncalc2";
 
 class ConditionAstrological extends GenericBlock {
@@ -29,14 +29,34 @@ class ConditionAstrological extends GenericBlock {
         }
     }
 
-    _setAstro(astro, offset, offsetValue) {
+    async _setAstro(astro, offset, offsetValue) {
         astro = astro || this.state.settings.astro || 'solarNoon';
         offset = offset === undefined ? this.state.settings.offset : offset;
         offsetValue = offsetValue === undefined ? this.state.settings.offsetValue : offsetValue;
 
         offsetValue = parseInt(offsetValue, 10) || 0;
-
-        const sunValue = SunCalc.getTimes(new Date(), 51.5, -0.1);
+        let coordinates = {
+            latitude: 51.5,
+            longitude: -0.1
+        }
+        await this.props.socket.getObject('system.adapter.javascript.0').then(({ native: { latitude, longitude } }) => {
+            if (!latitude && !longitude) {
+                this.props.socket.getObject('system.config').then(obj => {
+                    if (latitude && longitude) {
+                        coordinates = {
+                            latitude,
+                            longitude
+                        }
+                    }
+                })
+            } else {
+                coordinates = {
+                    latitude,
+                    longitude
+                }
+            }
+        });
+        const sunValue = SunCalc.getTimes(new Date(), coordinates.latitude, coordinates.longitude);
         const options = Object.keys(sunValue).map(name => ({
             value: name,
             title: name,
@@ -116,7 +136,7 @@ class ConditionAstrological extends GenericBlock {
             ];
         }
 
-        this.setState({inputs});
+        this.setState({ inputs });
     }
 
     onTagChange(tagCard) {

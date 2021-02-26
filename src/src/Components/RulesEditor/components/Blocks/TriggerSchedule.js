@@ -69,14 +69,35 @@ class TriggerScheduleBlock extends GenericBlock {
         return `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
     }
 
-    _setAstro(astro, offset, offsetValue) {
+    async _setAstro(astro, offset, offsetValue) {
         astro = astro || this.state.settings.astro || 'solarNoon';
         offset = offset === undefined ? this.state.settings.offset : offset;
         offsetValue = offsetValue === undefined ? this.state.settings.offsetValue : offsetValue;
 
         offsetValue = parseInt(offsetValue, 10) || 0;
 
-        const sunValue = SunCalc.getTimes(new Date(), 51.5, -0.1);
+        let coordinates = {
+            latitude: 51.5,
+            longitude: -0.1
+        }
+        await this.props.socket.getObject('system.adapter.javascript.0').then(({ native: { latitude, longitude } }) => {
+            if (!latitude && !longitude) {
+                this.props.socket.getObject('system.config').then(obj => {
+                    if (latitude && longitude) {
+                        coordinates = {
+                            latitude,
+                            longitude
+                        }
+                    }
+                })
+            } else {
+                coordinates = {
+                    latitude,
+                    longitude
+                }
+            }
+        });
+        const sunValue = SunCalc.getTimes(new Date(), coordinates.latitude, coordinates.longitude);
         const options = Object.keys(sunValue).map(name => ({
             value: name,
             title: name,
@@ -145,7 +166,7 @@ class TriggerScheduleBlock extends GenericBlock {
             ];
         }
 
-        this.setState({inputs});
+        this.setState({ inputs });
     }
 
     onValueChanged(value, attr) {
@@ -263,10 +284,10 @@ class TriggerScheduleBlock extends GenericBlock {
                     {this.renderText({
                         attr: 'text',
                         defaultValue: value
-                    },!!settings['text'] ? settings['text'] : value,onChange)}
+                    }, !!settings['text'] ? settings['text'] : value, onChange)}
                 </div>
                 <CustomButton
-                    // fullWidth
+                    square
                     style={{ marginLeft: 7 }}
                     value='...'
                     className={className}
@@ -280,9 +301,7 @@ class TriggerScheduleBlock extends GenericBlock {
                     await onChange(convertCronToText(textCron, I18n.getLanguage()), 'addText');
                     this.setState({ openDialog: false })
                 }}
-                close={() => this.setState({ openDialog: false })}
-                titleButton={'add'}
-                titleButton2={'close'}>
+                close={() => this.setState({ openDialog: false })}>
                 <ComplexCron
                     cronExpression={!!settings[input.attr] ? '' : settings[attr]}
                     onChange={(el) => {
@@ -292,8 +311,8 @@ class TriggerScheduleBlock extends GenericBlock {
             {this.renderNameText({
                 defaultValue: 'every hour at 0 minutes',
                 attr: 'addText',
-                signature:true
-            },!!settings['addText'] ? settings['addText'] : 'every hour at 0 minutes',onChange)}
+                signature: true
+            }, !!settings['addText'] ? settings['addText'] : 'every hour at 0 minutes', onChange)}
         </div>;
     }
 
@@ -317,7 +336,7 @@ class TriggerScheduleBlock extends GenericBlock {
                     customValue
                 />
                 <CustomButton
-                    // fullWidth
+                    square
                     style={{ marginLeft: 7 }}
                     value='...'
                     className={className}
@@ -330,9 +349,7 @@ class TriggerScheduleBlock extends GenericBlock {
                     onChange(textWizard);
                     this.setState({ openDialog: false });
                 }}
-                close={() => this.setState({ openDialog: false })}
-                titleButton={'add'}
-                titleButton2={'close'}>
+                close={() => this.setState({ openDialog: false })}>
                 <Schedule onChange={(_, text) => textWizard = text} />
             </CustomModal>
         </div>;
