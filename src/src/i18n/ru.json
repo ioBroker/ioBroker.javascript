@@ -216,7 +216,7 @@
   "sch_intervalTime": "Интервал времени",
   "sch_invert": "инвертировать",
   "sch_no_one": "никакой",
-  "sch_on": "",
+  "sch_on": "на",
   "sch_period": "период",
   "sch_periodDaily": "Ежедневно",
   "sch_periodDates": "Даты",
@@ -258,5 +258,6 @@
   "Save all": "Сохранить все",
   "Change theme (actual \"%s\")": "Сменить тему (сейчас - \"%s\")",
   "Hide logs": "Скрыть журналы",
-  "Show logs": "Показать журналы"
+  "Show logs": "Показать журналы",
+  "Rules description": "Создавайте правила с блоками ЕСЛИ, ТО, ИНАЧЕ"
 }

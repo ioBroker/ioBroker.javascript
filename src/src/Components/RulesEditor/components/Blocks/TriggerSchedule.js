@@ -102,12 +102,12 @@ class TriggerScheduleBlock extends GenericBlock {
         }
 
         const sunValue = this.coordinates && SunCalc.getTimes(new Date(), this.coordinates.latitude, this.coordinates.longitude);
-        const options = Object.keys(sunValue).map(name => ({
+        const options = sunValue ? Object.keys(sunValue).map(name => ({
             value: name,
             title: name,
             title2: `[${TriggerScheduleBlock._time2String(sunValue[name])}]`,
             order: sunValue ? TriggerScheduleBlock._time2String(sunValue[name]) : '??:??'
-        }));
+        })) : [];
         options.sort((a, b) => a.order > b.order ? 1 : (a.order < b.order ? -1 : 0));
 
         // calculate time text
@@ -115,7 +115,7 @@ class TriggerScheduleBlock extends GenericBlock {
         if (astro && sunValue && sunValue[astro]) {
             const astroTime = new Date(sunValue[astro]);
             offset && astroTime.setMinutes(astroTime.getMinutes() + parseInt(offsetValue, 10));
-            time = `(at ${TriggerScheduleBlock._time2String(astroTime)})`;
+            time = `(at ${TriggerScheduleBlock._time2String(astroTime)})`;// translate
         }
 
         let inputs;
@@ -135,7 +135,7 @@ class TriggerScheduleBlock extends GenericBlock {
                     attr: 'offset',
                 },
                 {
-                    backText: 'minute(s)',
+                    backText: offsetValue === 1 ? 'minute' : 'minutes', // translate
                     frontText: 'offset',
                     nameRender: 'renderNumber',
                     defaultValue: 0,
@@ -151,14 +151,14 @@ class TriggerScheduleBlock extends GenericBlock {
         } else {
             inputs = [
                 {
-                    frontText: 'at',
+                    frontText: 'at', // translate
                     attr: 'astro',
                     nameRender: 'renderSelect',
                     options,
                     defaultValue: 'solarNoon'
                 },
                 {
-                    backText: 'with offset',
+                    backText: 'with offset', // translate
                     nameRender: 'renderCheckbox',
                     attr: 'offset',
                 },
@@ -170,7 +170,7 @@ class TriggerScheduleBlock extends GenericBlock {
             ];
         }
 
-        this.setState({ inputs });
+        this.setState({ inputs }, () => super.onTagChange());
     }
 
     async _setInterval(interval) {
@@ -208,7 +208,7 @@ class TriggerScheduleBlock extends GenericBlock {
                     options
                 }
             ]
-        });
+        }, () => super.onTagChange());
     }
 
     onValueChanged(value, attr) {
@@ -225,7 +225,6 @@ class TriggerScheduleBlock extends GenericBlock {
                 this._setInterval(value);
             }
         }
-
     }
 
     onTagChange(tagCard) {
@@ -244,7 +243,7 @@ class TriggerScheduleBlock extends GenericBlock {
                             defaultValue: '0 * * * *',
                         }
                     ]
-                });
+                }, () => super.onTagChange());
                 break;
 
             case 'wizard':
@@ -256,7 +255,7 @@ class TriggerScheduleBlock extends GenericBlock {
                             defaultValue: 'Every hour from 8:00 to 17:00',
                         }
                     ]
-                });
+                }, () => super.onTagChange());
                 break;
 
             case 'at':
@@ -266,7 +265,7 @@ class TriggerScheduleBlock extends GenericBlock {
                             nameRender: 'renderTime',
                             prefix: 'at',
                             attr: 'at',
-                            defaultValue: "07:30",
+                            defaultValue: '07:30',
                         },
                         {
                             nameRender: 'renderSelect',
@@ -286,7 +285,7 @@ class TriggerScheduleBlock extends GenericBlock {
                             ]
                         }
                     ]
-                });
+                }, () => super.onTagChange());
                 break;
 
             case 'astro':
@@ -321,17 +320,15 @@ class TriggerScheduleBlock extends GenericBlock {
             </div>
             <CustomModal
                 open={this.state.openDialog}
-                buttonClick={async () => {
+                onApply={async () => {
                     await onChange(textCron, 'text');
                     await onChange(convertCronToText(textCron, I18n.getLanguage()), 'addText');
-                    this.setState({ openDialog: false })
+                    this.setState({ openDialog: false });
                 }}
-                close={() => this.setState({ openDialog: false })}>
+                onClose={() => this.setState({ openDialog: false })}>
                 <ComplexCron
                     cronExpression={!!settings[input.attr] ? '' : settings[attr]}
-                    onChange={(el) => {
-                        textCron = el
-                    }} />
+                    onChange={el => {textCron = el}} />
             </CustomModal>
             {this.renderNameText({
                 defaultValue: 'every hour at 0 minutes',
@@ -370,11 +367,10 @@ class TriggerScheduleBlock extends GenericBlock {
             </div>
             <CustomModal
                 open={this.state.openDialog}
-                buttonClick={() => {
-                    onChange(textWizard);
-                    this.setState({ openDialog: false });
-                }}
-                close={() => this.setState({ openDialog: false })}>
+                onApply={() =>
+                    this.setState({ openDialog: false }, () =>
+                        onChange(textWizard))}
+                onClose={() => this.setState({ openDialog: false })}>
                 <Schedule onChange={(_, text) => textWizard = text} />
             </CustomModal>
         </div>;

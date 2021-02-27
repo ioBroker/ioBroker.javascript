@@ -5,7 +5,7 @@ import cls from './style.module.scss';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-const CustomInput = ({ fullWidth, disabled, multiline, rows, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue }) => {
+const CustomInput = ({ fullWidth, disabled, multiline, rows, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue, minWidth }) => {
     const [inputText, setInputText] = useState('');
     return <TextField
         error={!!error}
@@ -22,7 +22,7 @@ const CustomInput = ({ fullWidth, disabled, multiline, rows, autoComplete, label
         className={clsx(cls.root, className)}
         autoComplete={autoComplete}
         onChange={e => {
-            if (!customValue) setInputText(e.target.value);
+            !customValue && setInputText(e.target.value);
             onChange(e.target.value);
         }}
         margin="normal"

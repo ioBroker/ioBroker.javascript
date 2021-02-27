@@ -1,21 +1,37 @@
-import { Slider } from '@material-ui/core';
 import React, { useState } from 'react';
 import cls from './style.module.scss';
-// import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-const CustomSlider = ({ fullWidth, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue }) => {
+import { Slider } from '@material-ui/core';
+
+const CustomSlider = ({ fullWidth, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue, min, max, step, unit }) => {
     const [inputText, setInputText] = useState(0);
+    min = min !== undefined ? min : 0;
+    max = max !== undefined ? max : 0;
+    step = step !== undefined ? step : (max - min) / 100;
+
+    const marks = [
+        {
+            value: min,
+            label: min + (unit || ''),
+        },
+        {
+            value: max,
+            label: max + (unit || ''),
+        },
+    ];
+
     return <Slider
         defaultValue={customValue ? value : inputText}
         // getAriaValueText={customValue ? value : inputText}
         aria-labelledby="discrete-slider"
         valueLabelDisplay="auto"
-        // step={10}
-        // marks
-        min={0}
-        max={100}
+        classes={{mark: cls.mark}}
+        marks={marks}
+        step={step}
+        min={min}
+        max={max}
         error={!!error}
         fullWidth={fullWidth}
         label={label}
@@ -27,7 +43,7 @@ const CustomSlider = ({ fullWidth, autoComplete, label, error, size, variant, va
         className={clsx(cls.root, className)}
         autoComplete={autoComplete}
         onChange={(e, newValue) => {
-            if (!customValue) setInputText(newValue);
+            !customValue && setInputText(newValue);
             onChange(newValue);
         }}
         margin="normal"

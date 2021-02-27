@@ -53,7 +53,7 @@ class ActionTelegram extends GenericBlock {
                         frontText: 'Text:',
                     }
                 ]
-            });
+            }, () => super.onTagChange());
         }
 
         this.cachePromises[instance]
@@ -91,7 +91,7 @@ class ActionTelegram extends GenericBlock {
                             frontText: 'Text:',
                         }
                     ]
-                });
+                }, () => super.onTagChange());
             });
     }
 

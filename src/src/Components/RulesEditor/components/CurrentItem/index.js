@@ -12,7 +12,7 @@ import GenericBlock from '../GenericBlock';
 const CurrentItem = memo(props => {
     const { setUserRules, userRules, _id, id, blockValue, active, acceptedBy } = props;
     const [anchorEl, setAnchorEl] = useState(null);
-    const { state, setState, state: { blocks, onUpdate }, socket } = useContext(ContextWrapperCreate);
+    const { blocks, socket, onUpdate, setOnUpdate} = useContext(ContextWrapperCreate);
 
     const findElementBlocks = useCallback(id => blocks.find(el => {
         const staticData = el.getStaticData();
@@ -32,12 +32,15 @@ const CurrentItem = memo(props => {
         setAnchorEl(null);
 
     const blockInput = useMemo(() => {
-        const CustomBlock = findElementBlocks(id);
-        if (CustomBlock) {
-            return <CustomBlock {...props} onUpdate={onUpdate} onChange={onChange} className={null} socket={socket} />;
-        } else {
-            return <GenericBlock {...props} onUpdate={onUpdate} notFound={true} onChange={onChange} className={null} socket={socket} />;
-        }
+        const CustomBlock = findElementBlocks(id) || GenericBlock;
+        return <CustomBlock
+            {...props}
+            onUpdate={onUpdate}
+            setOnUpdate={setOnUpdate}
+            onChange={onChange}
+            className={null}
+            socket={socket}
+        />;
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userRules, onUpdate]);
 
@@ -58,7 +61,7 @@ const CurrentItem = memo(props => {
                 setIsDelete(true);
                 setTimeout(() => {
                     if (acceptedBy === 'triggers') {
-                        setState({ ...state, onUpdate: true });
+                        setOnUpdate(true);
                     }
                     setUserRules(newItemsSwitches);
                 }, 300);

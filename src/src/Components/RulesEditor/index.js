@@ -16,7 +16,7 @@ import './helpers/stylesVariables.scss';
 
 const RulesEditor = ({ code, onChange, themeName }) => {
     // eslint-disable-next-line no-unused-vars
-    const { state: { blocks }, socket } = useContext(ContextWrapperCreate);
+    const { blocks, socket, setOnUpdate } = useContext(ContextWrapperCreate);
     const [allBlocks, setAllBlocks] = useState([]);
     const [hamburgerOnOff, setHamburgerOnOff] = useStateLocal(false, 'hamburgerOnOff');
     const [userRules, setUserRules] = useState(Compile.code2json(code)); //useStateLocal(DEFAULT_RULE, 'userRules');
@@ -25,6 +25,15 @@ const RulesEditor = ({ code, onChange, themeName }) => {
         type: 'triggers',
         index: 0
     }, 'filterControlPanel');
+
+    React.useEffect(() => {
+        const newUserRules = Compile.code2json(code);
+        if (JSON.stringify(newUserRules) !== JSON.stringify(userRules)) {
+            setUserRules(newUserRules);
+            setOnUpdate(true);
+        }
+    }, [code]);
+
 
     const setBlocksFunc = (text = filter.text, typeFunc = filter.type) => {
         if (!blocks) {
@@ -41,10 +50,12 @@ const RulesEditor = ({ code, onChange, themeName }) => {
         newAllBlocks = newAllBlocks.filter(el => typeFunc === el.getStaticData().acceptedBy);
         setAllBlocks(newAllBlocks);
     };
+
     useEffect(() => {
         document.getElementsByTagName('HTML')[0].className = themeName || 'blue';
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [themeName]);
+
     useEffect(() => {
         setBlocksFunc();
         // eslint-disable-next-line react-hooks/exhaustive-deps

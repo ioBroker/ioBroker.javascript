@@ -19,7 +19,7 @@ class ActionExec extends GenericBlock {
                     nameBlock: 'Shell command'
                 }
             ]
-        });
+        }, () => super.onTagChange(tagCard));
     }
 
     static getStaticData() {

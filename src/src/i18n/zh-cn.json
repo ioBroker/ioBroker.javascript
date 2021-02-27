@@ -258,5 +258,6 @@
   "Save all": "保存全部",
   "Change theme (actual \"%s\")": "更改主题（现在为“%s”）",
   "Hide logs": "隐藏日志",
-  "Show logs": "显示记录"
+  "Show logs": "显示记录",
+  "Rules description": "使用IF，THEN，ELSE块创建规则"
 }

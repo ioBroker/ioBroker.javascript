@@ -258,5 +258,6 @@
   "Save all": "Alle speichern",
   "Change theme (actual \"%s\")": "Thema ändern (jetzt - \"%s\")",
   "Hide logs": "Protokolle ausblenden",
-  "Show logs": "Protokolle anzeigen"
+  "Show logs": "Protokolle anzeigen",
+  "Rules description": "Erstellen Sie Regeln mit WENN-, DANN- und SONST-Blöcken"
 }

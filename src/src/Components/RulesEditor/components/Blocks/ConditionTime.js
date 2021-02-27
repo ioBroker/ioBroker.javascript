@@ -29,7 +29,7 @@ class ConditionTime extends GenericBlock {
                 },
             ],
             iconTag:true
-        });
+        }, () => super.onTagChange());
     }
 
     static getStaticData() {

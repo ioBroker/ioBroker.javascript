@@ -18,11 +18,10 @@ __%%ELSE%%__
             inputs: [
                 {
                     nameRender: 'renderNameText',
-                    attr: 'interval',
                     defaultValue: 'On script save or adapter start',
                 },
             ]
-        });
+        }, () => super.onTagChange());
     }
 
     static getStaticData() {

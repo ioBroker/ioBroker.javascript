@@ -28,6 +28,7 @@ class GenericBlock extends PureComponent {
         let settings = props.settings || {
             tagCard: item.tagCardArray ? typeof item.tagCardArray[0] !== 'string' ? item.tagCardArray[0].title : item.tagCardArray[0] : ''
         }
+
         if (!settings.tagCard && item.tagCardArray) {
             settings.tagCard = typeof item.tagCardArray[0] !== 'string' ? item.tagCardArray[0].title : item.tagCardArray[0];
         }
@@ -51,13 +52,35 @@ class GenericBlock extends PureComponent {
 
             hideAttributes: [], // e.g. instance
 
-            settings
+            settings,
         };
     }
 
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (JSON.stringify(nextProps.settings) !== JSON.stringify(this.state.settings)) {
+            this.setState({settings: JSON.parse(JSON.stringify(nextProps.settings))});
+        }
+    }
+
     // called every time, the tagCard changes or at start
-    onTagChange(tagCard) {
-        // do nothing, but blocks can overwrite it
+    onTagChange(tagCard, cb) {
+        // analyse inputs and fill the attributes with default values
+        let changed = false;
+        let settings = JSON.parse(JSON.stringify(this.state.settings));
+        this.state.inputs.forEach(input => {
+            if (input.attr && input.defaultValue !== undefined) {
+                if (settings[input.attr] === undefined) {
+                    changed = true;
+                    settings[input.attr] = input.defaultValue;
+                }
+            }
+        });
+        if (changed) {
+            this.setState({settings}, () => cb && cb());
+            this.props.onChange(settings);
+        } else {
+            cb && cb();
+        }
     }
 
     // called if trigger added or removed
@@ -116,7 +139,7 @@ class GenericBlock extends PureComponent {
         className={clsx(!!signature ? cls.displayItalic : cls.displayFlex, cls.blockMarginTop)}
         key={attr}>
         {value}
-    </div>
+    </div>;
 
     renderNumber = (input, value, onChange) => {
         const { className } = this.props;
@@ -171,27 +194,28 @@ class GenericBlock extends PureComponent {
             {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomCheckbox
                 className={className}
-                autoComplete="off"
-                label="number"
-                variant="outlined"
                 size="small"
                 style={{ marginRight: 5 }}
                 value={typeof settings[attr] === 'boolean' ? settings[attr] : defaultValue}
                 customValue
                 onChange={onChange}
             />
-            {backText && <div className={cls.backText}>{backText}</div>}
+            {backText && <div onClick={() => onChange(typeof settings[attr] === 'boolean' ? !settings[attr] : !defaultValue)} className={cls.backText}>{backText}</div>}
         </div>;
     }
 
     renderSlider = (input, value, onChange) => {
         const { className } = this.props;
-        const { attr, frontText, backText, nameBlock } = input;
+        const { attr, frontText, backText, nameBlock, min, max, step, unit } = input;
         return <div key={attr}>
-            <div className={cls.displayFlex}>
+            <div className={cls.displayFlex} style={{marginRight: 20}}>
                 {frontText && <div className={cls.frontText}>{frontText}</div>}
                 <CustomSlider
                     customValue
+                    min={min}
+                    max={max}
+                    step={step}
+                    unit={unit}
                     className={className}
                     autoComplete="off"
                     label="number"
@@ -208,10 +232,11 @@ class GenericBlock extends PureComponent {
 
     renderButton = (input, value, onClick) => {
         const { className } = this.props;
-        const { attr, frontText, backText } = input;
+        const { attr, frontText, backText, buttonText } = input;
         return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)}>
             {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomButton
+                label={buttonText}
                 fullWidth
                 value={value}
                 className={className}
@@ -270,20 +295,32 @@ class GenericBlock extends PureComponent {
                 onClose={() => this.setState({ showSelectId: false })}
                 onOk={(selected, name, common) =>
                     this.setState({ showSelectId: false }, () => {
-                        onChange(selected);
                         // read type of object
                         socket.getObject(selected)
-                            .then(obj => onChange(obj.common.type, attr + 'Type', () =>
-                                onChange(obj.common.unit, attr + 'Unit', () =>
-                                    onChange(obj.common.states, attr + 'States'))));
+                            .then(obj => onChange({
+                                [attr]: selected,
+                                [attr + 'Role']: obj.common.role,
+                                [attr + 'Type']: obj.common.type,
+                                [attr + 'Unit']: obj.common.unit,
+                                [attr + 'States']: obj.common.states,
+                                [attr + 'Min']: obj.common.min,
+                                [attr + 'Max']: obj.common.max,
+                                [attr + 'Step']: obj.common.step,
+                                [attr + 'Def']: obj.common.def,
+                                [attr + 'Write']: obj.common.write,
+                                [attr + 'Read']: obj.common.read,
+                            }, null, () =>
+                                this.props.setOnUpdate && this.props.setOnUpdate(true)));
                     })}
             /> : null}
         </div> : null;
     }
 
-    renderIconTag = () => <div className={cls.iconTag}>
-        {this.state.settings.tagCard}
-    </div>;
+    renderIconTag = () => {
+        return <div className={cls.iconTag}>
+            {this.state.settings.tagCard}
+        </div>;
+    }
 
     renderTime = (input, value, onChange) => {
         const { attr, backText, frontText } = input
@@ -365,23 +402,15 @@ class GenericBlock extends PureComponent {
                 />
                 {backText && <div className={cls.backText}>{backText}</div>}
             </div>
-            <CustomModal
-                open={openModal}
-                buttonClick={() => this.setState({ openModal: false })}
-                close={() => this.setState({ openModal: false })}>
-                <CustomInput
-                    className={className}
-                    autoComplete="off"
-                    fullWidth
-                    variant="outlined"
-                    size="small"
-                    rows={10}
-                    multiline
-                    value={value}
-                    onChange={onChange}
-                    customValue
-                />
-            </CustomModal>
+            {openModal ? <CustomModal
+                open={true}
+                onApply={val =>
+                    this.setState({ openModal: false }, () =>
+                        val !== null && val !== undefined && onChange(val))}
+                onClose={() => this.setState({ openModal: false })}
+                defaultValue={value}
+                textInput={true}
+            /> : null}
             {nameBlock && <div className={cls.nameBlock}>{nameBlock}</div>}
         </div>;
     };
@@ -445,18 +474,24 @@ class GenericBlock extends PureComponent {
 
     componentDidMount = () => {
         this.onTagChange();
+        // detect changes
     };
 
-    componentDidUpdate = (prevProps) => {
+    componentDidUpdate = prevProps => {
         if (this.props.acceptedBy !== 'triggers' && this.props.onUpdate) {
             setTimeout(() => this.onUpdate(), 0);
         }
     }
 
-    onChangeInput = (attribute) => {
+    onChangeInput = attribute => {
         return (value, attr, cb) => {
             const settings = JSON.parse(JSON.stringify(this.state.settings));
-            settings[attr || attribute] = value;
+
+            if (typeof value === 'object' && (!attr || typeof attr === 'function')) {
+                Object.keys(value).forEach(_attr => settings[_attr] = value[_attr]);
+            } else {
+                settings[attr || attribute] = value;
+            }
             settings.id = this.getData().id;
             settings._id = this.props._id;
 
@@ -471,6 +506,7 @@ class GenericBlock extends PureComponent {
     render = () => {
         const { inputs, name, icon, iconTag, settings, adapter, settings: { tagCard } } = this.state;
         const { socket, notFound } = this.props;
+
         return <Fragment>
             {iconTag ? this.renderIconTag() :
                 <MaterialDynamicIcon iconName={icon} className={cls.iconThemCard} adapter={adapter} socket={socket} />}

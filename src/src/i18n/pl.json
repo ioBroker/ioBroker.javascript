@@ -258,5 +258,6 @@
   "Save all": "Zapisz wszystko",
   "Change theme (actual \"%s\")": "Zmień motyw (teraz - „%s”)",
   "Hide logs": "Ukryj dzienniki",
-  "Show logs": "Pokaż dzienniki"
+  "Show logs": "Pokaż dzienniki",
+  "Rules description": "Twórz reguły z blokami IF, THEN, ELSE"
 }

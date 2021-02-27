@@ -258,5 +258,6 @@
   "Save all": "Sla alles op",
   "Change theme (actual \"%s\")": "Thema wijzigen (nu - \"%s\")",
   "Hide logs": "Verberg logboeken",
-  "Show logs": "Toon logboeken"
+  "Show logs": "Toon logboeken",
+  "Rules description": "Maak regels met IF, THEN, ELSE blokken"
 }

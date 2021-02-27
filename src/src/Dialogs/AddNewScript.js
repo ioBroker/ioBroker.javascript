@@ -34,6 +34,11 @@ const styles = theme => ({
     },
     buttonIcon: {
         marginRight: theme.spacing(1),
+    },
+    complexity: {
+        fontWeight: 'bold',
+        fontStyle: 'italic',
+        marginBottom: theme.spacing(1),
     }
 });
 
@@ -56,7 +61,7 @@ class DialogAddNew extends React.Component {
     }
 
     getJSCard() {
-        return (<Card className={this.props.classes.card}>
+        return <Card className={this.props.classes.card}>
             <CardActionArea
                 onClick={() => this.props.onClose && this.props.onClose('Javascript/js')}>
                 <CardMedia
@@ -66,6 +71,7 @@ class DialogAddNew extends React.Component {
                 />
                 <CardContent>
                     <h2>Javascript</h2>
+                    <div className={this.props.classes.complexity}>{I18n.t('for programmers')}</div>
                     <div className={this.props.classes.text}>{I18n.t('JS description')}</div>
                 </CardContent>
             </CardActionArea>
@@ -73,10 +79,11 @@ class DialogAddNew extends React.Component {
                 <Button size="small" color="primary" onClick={() => this.props.onClose && this.props.onClose('Javascript/js')}>{I18n.t('Add')}</Button>
                 <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md')}>{I18n.t('Learn More')}</Button>
             </CardActions>
-        </Card>);
+        </Card>;
     }
+
     getTSCard() {
-        return (<Card className={this.props.classes.card}>
+        return <Card className={this.props.classes.card}>
             <CardActionArea
                 onClick={() => this.props.onClose && this.props.onClose('TypeScript/ts')}>
                 <CardMedia
@@ -86,6 +93,7 @@ class DialogAddNew extends React.Component {
                 />
                 <CardContent>
                     <h2>Typescript</h2>
+                    <div className={this.props.classes.complexity}>{I18n.t('for professionals')}</div>
                     <div className={this.props.classes.text}>{I18n.t('TS description')}</div>
                 </CardContent>
             </CardActionArea>
@@ -93,8 +101,9 @@ class DialogAddNew extends React.Component {
                 <Button size="small" color="primary" onClick={() => this.props.onClose && this.props.onClose('TypeScript/ts')}>{I18n.t('Add')}</Button>
                 <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#global-functions')}>{I18n.t('Learn More')}</Button>
             </CardActions>
-        </Card>);
+        </Card>;
     }
+
     getBlocklyCard() {
         return (<Card className={this.props.classes.card}>
             <CardActionArea onClick={() => this.props.onClose && this.props.onClose('Blockly')}>
@@ -105,6 +114,7 @@ class DialogAddNew extends React.Component {
                 />
                 <CardContent>
                     <h2>Blockly</h2>
+                    <div className={this.props.classes.complexity}>{I18n.t('normal')}</div>
                     <div className={this.props.classes.text}>{I18n.t('Blockly description')}</div>
                 </CardContent>
             </CardActionArea>
@@ -114,6 +124,7 @@ class DialogAddNew extends React.Component {
             </CardActions>
         </Card>);
     }
+
     getRulesCard() {
         return (<Card className={this.props.classes.card}>
             <CardActionArea onClick={() => this.props.onClose && this.props.onClose('Rules')}>
@@ -124,7 +135,8 @@ class DialogAddNew extends React.Component {
                 />
                 <CardContent>
                     <h2>Rules</h2>
-                    <div className={this.props.classes.text}>Rules Rules Rules Rules</div>
+                    <div className={this.props.classes.complexity}>{I18n.t('easy')}</div>
+                    <div className={this.props.classes.text}>{I18n.t('Rules description')}</div>
                 </CardContent>
             </CardActionArea>
             <CardActions>
@@ -134,27 +146,25 @@ class DialogAddNew extends React.Component {
         </Card>);
     }
     render() {
-        return (
-            <Dialog
-                disableBackdropClick
-                disableEscapeKeyDown
-                maxWidth="md"
-                fullWidth={true}
-                open={true}
-                aria-labelledby="confirmation-dialog-title"
-            >
-                <DialogTitle id="confirmation-dialog-title">{I18n.t('Add new script')}</DialogTitle>
-                <DialogContent style={{textAlign: 'center'}}>
-                    {this.getJSCard()}
-                    {this.getBlocklyCard()}
-                    {this.getTSCard()}
-                    {this.getRulesCard()}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={this.handleCancel}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Cancel')}</Button>
-                </DialogActions>
-            </Dialog>
-        );
+        return <Dialog
+            disableBackdropClick
+            disableEscapeKeyDown
+            maxWidth="lg"
+            fullWidth={true}
+            open={true}
+            aria-labelledby="confirmation-dialog-title"
+        >
+            <DialogTitle id="confirmation-dialog-title">{I18n.t('Add new script')}</DialogTitle>
+            <DialogContent style={{textAlign: 'center'}}>
+                {this.getRulesCard()}
+                {this.getBlocklyCard()}
+                {this.getJSCard()}
+                {this.getTSCard()}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={this.handleCancel}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Cancel')}</Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 

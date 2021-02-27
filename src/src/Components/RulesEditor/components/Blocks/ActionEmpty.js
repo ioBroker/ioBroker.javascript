@@ -18,7 +18,7 @@ class ActionEmpty extends GenericBlock {
                     defaultValue: 'Block not found',
                 }
             ]
-        });
+        }, () => super.onTagChange(tagCard));
     }
 
     static getStaticData() {

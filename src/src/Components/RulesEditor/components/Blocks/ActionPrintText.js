@@ -19,7 +19,7 @@ class ActionPrintText extends GenericBlock {
                     nameBlock: 'Log text'
                 }
             ]
-        });
+        }, () => super.onTagChange(tagCard));
     }
 
     static getStaticData() {

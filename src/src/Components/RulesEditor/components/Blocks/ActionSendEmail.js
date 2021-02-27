@@ -52,7 +52,7 @@ class ActionSendEmail extends GenericBlock {
                     frontText: 'Body:',
                 }
             ]
-        });
+        }, () => super.onTagChange(tagCard));
     }
 
     static getStaticData() {

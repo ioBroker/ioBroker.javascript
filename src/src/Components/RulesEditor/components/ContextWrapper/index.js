@@ -18,16 +18,12 @@ const ADAPTERS = {
 export const ContextWrapperCreate = createContext();
 
 export const ContextWrapper = ({ children, socket }) => {
-    const [state, setState] = useState({
-        blocks: null,
-        onUpdate: false
-    });
+    const [blocks, setBlocks] = useState(null);
+    const [onUpdate, setOnUpdate] = useState(false);
 
     useEffect(() => {
-        if (state.onUpdate) {
-            setState({ ...state, onUpdate: false })
-        }
-    }, [state, state.onUpdate]);
+        onUpdate && setOnUpdate(false);
+    }, [onUpdate]);
 
     useEffect(() => {
         socket.getAdapterInstances()
@@ -36,15 +32,12 @@ export const ContextWrapper = ({ children, socket }) => {
                     instances.find(obj => obj?.common?.name === adapter));
                 const adapterBlocksArray = adapters.map(adapter => ADAPTERS[adapter]);
 
-                setState({
-                    ...state,
-                    blocks: [...StandardBlocks, ...adapterBlocksArray],
-                });
+                setBlocks([...StandardBlocks, ...adapterBlocksArray]);
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return <ContextWrapperCreate.Provider value={{ state, setState, socket }}>
+    return <ContextWrapperCreate.Provider value={{ blocks, socket, onUpdate, setOnUpdate }}>
         {children}
     </ContextWrapperCreate.Provider>;
 };

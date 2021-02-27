@@ -11,7 +11,11 @@ class ActionSetState extends GenericBlock {
             value = '';
         }
 
-        if (parseFloat(config.value).toString() !== config.value && config.value !== 'true' && config.value !== 'false') {
+        if (typeof config.value === 'string' &&
+            parseFloat(config.value).toString() !== config.value &&
+            config.value !== 'true' &&
+            config.value !== 'false'
+        ) {
             value = `"${value.replace(/"/g, '\\"')}"`;
         }
 
@@ -19,98 +23,150 @@ class ActionSetState extends GenericBlock {
     }
 
     _setInputs() {
-        let obg;
+        let input;
         let type = '';
-        const { oidType, oidUnit } = this.state.settings;
+        let options;
+        const { oidType, oidUnit, oidStates, oidMax, oidMin, oidRole, oidWrite, oidStep } = this.state.settings;
+        let settings;
+
         if (oidType) {
-            if (oidType === 'string') {
-                type = 'number'
+            if (oidType === 'number') {
+                type = 'number';
+                if (oidMax !== undefined && oidMin !== undefined) {
+                    type = 'slider';
+                }
+            } else if (oidType === 'boolean') {
+                type = 'boolean';
+                if (oidRole && oidRole.includes('button') && oidWrite) {
+                    type = 'button';
+                }
+            } else {
+                type = '';
+                if (oidRole && oidRole.includes('color')) {
+                    type = 'color';
+                }
             }
-            else if (oidType === 'boolean') {
-                type = 'boolean'
-            }
-            else {
-                type = ''
+
+            if (oidStates) {
+                options = Object.keys(oidStates).map(val =>
+                    ({value: val, title: oidStates[val]}));
+                type = 'select';
             }
         }
+
         switch (type) {
             case 'number':
-                obg = {
-                    attr: 'value',
+                input = {
                     backText: oidUnit || '',
                     frontText: 'with',
                     nameRender: 'renderNumber',
-                    defaultValue: 30
+                    defaultValue: oidMax === undefined ? 0 : oidMax,
+                }
+                if (this.state.settings.value !== undefined && isNaN(parseFloat(this.state.settings.value))) {
+                    settings = {value: oidMax === undefined ? 0 : oidMax};
                 }
                 break;
 
-            case 'control1':
-                obg = {
+            case 'slider':
+                input = {
                     nameRender: 'renderSlider',
-                    attr: 'value',
-                    defaultValue: 50,
-                    frontText: '0',
-                    backText: '100'
+                    defaultValue: oidMax,
+                    min: oidMin,
+                    max: oidMax,
+                    unit: oidUnit,
+                    step: oidStep,
+                };
+                const f = parseFloat(this.state.settings.value);
+                if (this.state.settings.value !== undefined &&
+                    (isNaN(f) || f < oidMin || f > oidMax)
+                ) {
+                    settings = {value: oidMax};
                 }
                 break;
 
-            case 'control2':
-                obg = {
-                    attr: 'value',
+            case 'select':
+                input = {
                     nameRender: 'renderSelect',
-                    frontText: 'Instance:',
-                    options: [{
-                        value: 'State1',
-                        title: 'State1',
-                    }],
-                    defaultValue: 'State1',
+                    frontText: 'with',
+                    options,
+                    defaultValue: options[0].value,
+                };
+                if (this.state.settings.value !== undefined && !options.find(item => item.value === this.state.settings.value)) {
+                    settings = {value: options[0].value};
                 }
                 break;
 
             case 'boolean':
-                obg = {
+                input = {
                     backText: 'true',
                     frontText: 'false',
                     nameRender: 'renderSwitch',
                     defaultValue: false,
-                    attr:'boolean'
+                };
+                if (this.state.settings.value !== undefined && this.state.settings.value !== false && this.state.settings.value !== true) {
+                    settings = {value: false};
                 }
                 break;
 
-            case 'control4':
-                obg = {
+            case 'button':
+                input = {
                     nameRender: 'renderButton',
-                    defaultValue: 'Press',
-                    attr:'button'
+                    defaultValue: true,
+                };
+                if (this.state.settings.value !== undefined && this.state.settings.value !== true) {
+                    settings = {value: true};
                 }
                 break;
 
-            case 'control5':
-                obg = {
+            case 'color':
+                input = {
                     nameRender: 'renderColor',
-                    defaultValue: 30,
-                    attr:'color'
+                    frontText: 'with',
+                    defaultValue: '#FFFFFF',
+                };
+                if (this.state.settings.value !== undefined &&
+                    (
+                        typeof this.state.settings.value !== 'string' ||
+                        (typeof this.state.settings.value.startsWith('#') &&
+                         typeof this.state.settings.value.startsWith('rgb'))
+                        )) {
+                    settings = {value: '#FFFFFF'};
                 }
                 break;
 
             default:
-                obg = {};
+                input = {
+                    backText: oidUnit || '',
+                    frontText: 'with',
+                    nameRender: 'renderText',
+                    defaultValue: ''
+                };
                 break;
         }
-        return { ...obg };
+        input.attr = 'value';
+
+        return {input, newSettings: settings};
     }
 
     onTagChange() {
-        this.setState({
-            inputs: [
-                {
-                    nameRender: 'renderObjectID',
-                    attr: 'oid',
-                    defaultValue: '',
-                },
-                this._setInputs()
-            ]
-        });
+        const {input, newSettings} = this._setInputs();
+        let inputs = [
+            {
+                nameRender: 'renderObjectID',
+                attr: 'oid',
+                defaultValue: '',
+            },
+            input
+        ];
+
+        this.setState({inputs}, () => super.onTagChange(null, () => {
+            if (newSettings) {
+                const settings = JSON.parse(JSON.stringify(this.state.settings));
+                Object.assign(settings, newSettings);
+                this.setState(settings);
+                this.props.onChange(settings);
+            }
+        }));
     }
 
     onValueChanged() {

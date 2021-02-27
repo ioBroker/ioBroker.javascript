@@ -50,6 +50,7 @@ class ConditionState extends GenericBlock {
         oidType   = oidType   || this.state.settings.oidType;
         oidUnit   = oidUnit   || this.state.settings.oidUnit;
         oidStates = oidStates || this.state.settings.oidStates;
+
         if (isAllTriggersOnState && useTrigger && this.props.userRules?.triggers?.length === 1) {
             oidType   = this.props.userRules.triggers[0].oidType;
             oidUnit   = this.props.userRules.triggers[0].oidUnit;
@@ -245,18 +246,28 @@ class ConditionState extends GenericBlock {
             inputs
         };
 
-        this.setState(state,() => settings && this.setState({settings}));
+        this.setState(state,() =>
+            super.onTagChange(null, () => {
+                if (settings) {
+                    this.setState({settings});
+                    this.props.onChange(settings);
+                }
+            }));
     }
 
     onValueChanged(value, attr, context) {
-        if (attr === 'useTrigger') {
-            this._setInputs(value);
-        } else if (attr === 'oidType') {
-            this._setInputs(value, undefined, value);
-        } else if (attr === 'oidUnit') {
-            this._setInputs(value, undefined, undefined, value);
-        } else if (attr === 'oidStates') {
-            this._setInputs(value, undefined, undefined, undefined, value);
+        if (typeof value === 'object') {
+            this._setInputs(value.useTrigger, value.tagCard, value.oidType, value.states);
+        } else {
+            if (attr === 'useTrigger') {
+                this._setInputs(value);
+            } else if (attr === 'oidType') {
+                this._setInputs(value, undefined, value);
+            } else if (attr === 'oidUnit') {
+                this._setInputs(value, undefined, undefined, value);
+            } else if (attr === 'oidStates') {
+                this._setInputs(value, undefined, undefined, undefined, value);
+            }
         }
     }
 

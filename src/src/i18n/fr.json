@@ -258,5 +258,6 @@
   "Save all": "Sauver tous",
   "Change theme (actual \"%s\")": "Changer de thème (maintenant - \"%s\")",
   "Hide logs": "Masquer les journaux",
-  "Show logs": "Afficher les journaux"
+  "Show logs": "Afficher les journaux",
+  "Rules description": "Créer des règles avec des blocs IF, THEN, ELSE"
 }

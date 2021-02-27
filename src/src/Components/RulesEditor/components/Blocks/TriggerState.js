@@ -19,7 +19,7 @@ class TriggerState extends GenericBlock {
                     defaultValue: ''
                 }
             ]
-        });
+        }, () => super.onTagChange());
     }
 
     static getStaticData() {

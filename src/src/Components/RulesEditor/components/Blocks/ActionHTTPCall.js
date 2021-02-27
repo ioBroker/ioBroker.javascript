@@ -19,7 +19,7 @@ class ActionHTTPCall extends GenericBlock {
                     nameBlock: 'URL'
                 }
             ]
-        });
+        }, () => super.onTagChange(tagCard));
     }
 
     static getStaticData() {

@@ -5,6 +5,7 @@ import SunCalc from "suncalc2";
 class ConditionAstrological extends GenericBlock {
     constructor(props) {
         super(props, ConditionAstrological.getStaticData());
+        this.coordinates = null;
     }
 
     static compile(config, context) {
@@ -35,34 +36,36 @@ class ConditionAstrological extends GenericBlock {
         offsetValue = offsetValue === undefined ? this.state.settings.offsetValue : offsetValue;
 
         offsetValue = parseInt(offsetValue, 10) || 0;
-        let coordinates = {
-            latitude: 51.5,
-            longitude: -0.1
-        }
-        await this.props.socket.getObject('system.adapter.javascript.0').then(({ native: { latitude, longitude } }) => {
-            if (!latitude && !longitude) {
-                this.props.socket.getObject('system.config').then(obj => {
-                    if (latitude && longitude) {
-                        coordinates = {
+        if (!this.coordinates) {
+            await this.props.socket.getObject('system.adapter.javascript.0')
+                .then(({ native: { latitude, longitude } }) => {
+                    if (!latitude && !longitude) {
+                        return this.props.socket.getObject('system.config')
+                            .then(obj => {
+                                if (obj && (obj.common.latitude || obj.common.longitude)) {
+                                    this.coordinates = {
+                                        latitude: obj.common.latitude,
+                                        longitude: obj.common.longitude
+                                    }
+                                } else {
+                                    this.coordinates = null;
+                                }
+                            });
+                    } else {
+                        this.coordinates = {
                             latitude,
                             longitude
                         }
                     }
-                })
-            } else {
-                coordinates = {
-                    latitude,
-                    longitude
-                }
-            }
-        });
-        const sunValue = SunCalc.getTimes(new Date(), coordinates.latitude, coordinates.longitude);
-        const options = Object.keys(sunValue).map(name => ({
+                });
+        }
+        const sunValue = this.coordinates && SunCalc.getTimes(new Date(), this.coordinates.latitude, this.coordinates.longitude);
+        const options = sunValue ? Object.keys(sunValue).map(name => ({
             value: name,
             title: name,
             title2: `[${ConditionAstrological._time2String(sunValue[name])}]`,
             order: ConditionAstrological._time2String(sunValue[name])
-        }));
+        })) : [];
         options.sort((a, b) => a.order > b.order ? 1 : (a.order < b.order ? -1 : 0));
 
         // calculate time text
@@ -70,7 +73,7 @@ class ConditionAstrological extends GenericBlock {
         const tag = tagCardArray.find(item => item.title === this.state.settings.tagCard);
 
         let time = '--:--';
-        if (astro && sunValue[astro]) {
+        if (astro && sunValue && sunValue[astro]) {
             const astroTime = new Date(sunValue[astro]);
             offset && astroTime.setMinutes(astroTime.getMinutes() + parseInt(offsetValue, 10));
             time = `(${tag.text} ${ConditionAstrological._time2String(astroTime)})`;
@@ -136,7 +139,7 @@ class ConditionAstrological extends GenericBlock {
             ];
         }
 
-        this.setState({ inputs });
+        this.setState({ inputs }, () => super.onTagChange());
     }
 
     onTagChange(tagCard) {

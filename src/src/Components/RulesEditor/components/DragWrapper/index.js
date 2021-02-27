@@ -9,7 +9,7 @@ import { findCard, moveCard } from '../../helpers/cardSort';
 import { ContextWrapperCreate } from '../ContextWrapper';
 
 const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, userRules, children, _id, blockValue }) => {
-    const { state, setState } = useContext(ContextWrapperCreate);
+    const { onUpdate, setOnUpdate } = useContext(ContextWrapperCreate);
     const [{ opacity }, drag, preview] = useDrag({
         item: { ...allProperties, type: 'box', id, isActive, _id },
         end: (item, monitor) => {
@@ -46,7 +46,7 @@ const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, us
                         return setUserRules(newUserRules);
 
                     default:
-                        setState({ ...state, onUpdate: true })
+                        setOnUpdate(true);
                         newUserRules = filterElement(acceptedBy, newUserRules, dropResult.blockValue, _id);
                         newUserRules[acceptedBy].push({ ...newItem, _id: idNumber });
                         return setUserRules(newUserRules);
@@ -88,7 +88,8 @@ const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, us
                                     acceptedBy,
                                     blockValue,
                                     hoverClientY,
-                                    hoverMiddleY);
+                                    hoverMiddleY
+                                );
                             }
                         }
                         return;
@@ -104,7 +105,8 @@ const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, us
                                     acceptedBy,
                                     blockValue,
                                     hoverClientY,
-                                    hoverMiddleY);
+                                    hoverMiddleY
+                                );
                             }
                         }
                         return;
@@ -119,7 +121,8 @@ const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, us
                                 acceptedBy,
                                 null,
                                 hoverClientY,
-                                hoverMiddleY);
+                                hoverMiddleY
+                            );
                         }
                         return;
                 }

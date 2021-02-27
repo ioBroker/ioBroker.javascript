@@ -45,7 +45,7 @@ class ActionPause extends GenericBlock {
                     options: this._getOptions(pause)
                 },
             ]
-        });
+        }, () => super.onTagChange());
     }
 
     onValueChanged(value, attr) {

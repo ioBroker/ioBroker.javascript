@@ -184,7 +184,7 @@ class ActionSayText extends GenericBlock {
                     frontText: 'Text:',
                 }
             ]
-        });
+        }, () => super.onTagChange(tagCard));
     }
 
     static getStaticData() {
