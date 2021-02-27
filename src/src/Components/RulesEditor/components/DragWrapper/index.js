@@ -9,7 +9,7 @@ import { findCard, moveCard } from '../../helpers/cardSort';
 import { ContextWrapperCreate } from '../ContextWrapper';
 
 const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, userRules, children, _id, blockValue }) => {
-    const { onUpdate, setOnUpdate } = useContext(ContextWrapperCreate);
+    const { setOnUpdate } = useContext(ContextWrapperCreate);
     const [{ opacity }, drag, preview] = useDrag({
         item: { ...allProperties, type: 'box', id, isActive, _id },
         end: (item, monitor) => {

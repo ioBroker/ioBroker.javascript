@@ -8,7 +8,6 @@ import CurrentItem from '../CurrentItem';
 import { useStateLocal } from '../../hooks/useStateLocal';
 import DragWrapper from '../DragWrapper';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
-import CustomDragItem from "../CardMenu/CustomDragItem";
 
 const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolean, typeBlock, userRules, setUserRules, animation, setTourStep, tourStep, isTourOpen }) => {
     const [checkItem, setCheckItem] = useState(false);
