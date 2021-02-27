@@ -32,6 +32,7 @@ const RulesEditor = ({ code, onChange, themeName }) => {
             setUserRules(newUserRules);
             setOnUpdate(true);
         }
+        // eslint-disable-next-line
     }, [code]);
 
 

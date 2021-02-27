@@ -154,8 +154,11 @@ const ASTRO = [
 ];
 
 function padding(num) {
-    if (num < 10) return '0' + num;
-    return '' + num;
+    if (num < 10) {
+        return '0' + num;
+    } else {
+        return '' + num;
+    }
 }
 
 function TextTime(props) {
@@ -245,7 +248,7 @@ class Schedule extends React.Component {
         }
         schedule = schedule || {};
         schedule = Object.assign({}, DEFAULT, schedule);
-        schedule.valid.from = schedule.valid.from || this.now2string();
+        schedule.valid.from = schedule.valid.from || Schedule.now2string();
 
         this.refFrom = React.createRef();
         this.refTo = React.createRef();
@@ -253,7 +256,7 @@ class Schedule extends React.Component {
 
         this.state = {
             schedule,
-            desc: this.state2text(schedule)
+            desc: Schedule.state2text(schedule)
         };
 
         if (JSON.stringify(schedule) !== this.props.schedule) {
@@ -264,7 +267,7 @@ class Schedule extends React.Component {
     onChange(schedule, force) {
         const isDiff = JSON.stringify(schedule) !== JSON.stringify(this.state.schedule);
         if (force || isDiff) {
-            isDiff && this.setState({schedule, desc: this.state2text(schedule)});
+            isDiff && this.setState({schedule, desc: Schedule.state2text(schedule)});
             const copy = JSON.parse(JSON.stringify(schedule));
             if (copy.period.once) {
                 let once = copy.period.once;
@@ -322,7 +325,7 @@ class Schedule extends React.Component {
                     delete copy.valid.to;
                 }
                 if (copy.period.days === 1 || copy.period.weeks === 1 || copy.period.months === 1 || copy.period.years === 1) {
-                    const from = this.string2date(copy.valid.from);
+                    const from = Schedule.string2date(copy.valid.from);
                     const today = new Date();
                     today.setHours(0);
                     today.setMinutes(0);
@@ -337,16 +340,24 @@ class Schedule extends React.Component {
                 }
             }
 
-            this.props.onChange && this.props.onChange(JSON.stringify(copy),this.state2text(schedule));
+            this.props.onChange && this.props.onChange(JSON.stringify(copy), Schedule.state2text(schedule));
         }
     }
 
-    state2text(schedule) {
+    static state2text(schedule) {
+        if (typeof schedule === 'string') {
+            try {
+                schedule = JSON.parse(schedule);
+            } catch (e) {
+                schedule = {};
+            }
+        }
+
         let desc = [];
-        let validFrom = this.string2date(schedule.valid.from);
+        let validFrom = Schedule.string2date(schedule.valid.from);
         if (schedule.period.once) {
             // once
-            let once = this.string2date(schedule.period.once);
+            let once = Schedule.string2date(schedule.period.once);
             let now = new Date();
             now.setMilliseconds(0);
             now.setSeconds(0);
@@ -669,14 +680,14 @@ class Schedule extends React.Component {
     }
 
     getDivider() {
-        return (<hr className={this.props.classes.hr}/>);
+        return <hr className={this.props.classes.hr}/>;
     }
 
     getPeriodModes() {
         const schedule = this.state.schedule;
         const isOnce = !schedule.period.dows && !schedule.period.months && !schedule.period.dates && !schedule.period.years && !schedule.period.days && !schedule.period.weeks;
         if (isOnce && !schedule.period.once) {
-            schedule.period.once = this.now2string(true);
+            schedule.period.once = Schedule.now2string(true);
         }
 
         return [
@@ -685,7 +696,7 @@ class Schedule extends React.Component {
                 <div className={this.props.classes.modeDiv}>
                     <FormControlLabel control={(<Radio className={this.props.classes.inputRadio} checked={isOnce} onClick={() => {
                                     const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
-                                    _schedule.period.once = _schedule.period.once || this.now2string(true);
+                                    _schedule.period.once = _schedule.period.once || Schedule.now2string(true);
                                     _schedule.period.dows = '';
                                     _schedule.period.months = '';
                                     _schedule.period.dates = '';
@@ -714,7 +725,7 @@ class Schedule extends React.Component {
                                 this.timerOnce = null;
                                 this.refOnce.current.style.background = '';
                                 const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
-                                const date = this.string2date(value);
+                                const date = Schedule.string2date(value);
                                 if (date.toString() !== 'Invalid Date') {
                                     _schedule.period.once = padding(date.getDate()) + '.' + padding(date.getMonth() + 1) + '.' + date.getFullYear();
                                     this.onChange(_schedule);
@@ -1274,7 +1285,7 @@ class Schedule extends React.Component {
         ];
     }
 
-    now2string(isEnd) {
+    static now2string(isEnd) {
         const d = new Date();
         d.setHours(0);
         d.setMinutes(0);
@@ -1288,7 +1299,7 @@ class Schedule extends React.Component {
         return padding(d.getDate()) + '.' + padding(d.getMonth() + 1) + '.' + padding(d.getFullYear());
     }
 
-    string2date(str) {
+    static string2date(str) {
         let parts = str.split('.'); // 31.12.2019
         if (parts.length === 1) {
             parts = str.split('-'); // 2018-12-31
@@ -1325,7 +1336,7 @@ class Schedule extends React.Component {
                                 this.timerFrom = null;
                                 this.refFrom.current.style.background = '';
                                 const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
-                                const date = this.string2date(value);
+                                const date = Schedule.string2date(value);
                                 if (date.toString() !== 'Invalid Date') {
                                     _schedule.valid.from = padding(date.getDate()) + '.' + padding(date.getMonth() + 1) + '.' + date.getFullYear();
                                     this.onChange(_schedule);
@@ -1337,7 +1348,7 @@ class Schedule extends React.Component {
                     />
                     <FormControlLabel control={(<Checkbox className={this.props.classes.inputRadio} checked={!!schedule.valid.to} onClick={() => {
                         const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
-                        _schedule.valid.to = _schedule.valid.to ? '' : this.now2string(true);
+                        _schedule.valid.to = _schedule.valid.to ? '' : Schedule.now2string(true);
                         this.onChange(_schedule);
                     }}/>)}
                         label={I18n.t('sch_validTo')} />
@@ -1358,7 +1369,7 @@ class Schedule extends React.Component {
                                         this.timerTo = null;
                                         this.refTo.current.style.background = '';
                                         const _schedule = JSON.parse(JSON.stringify(this.state.schedule));
-                                        const date = this.string2date(value);
+                                        const date = Schedule.string2date(value);
                                         if (date.toString() !== 'Invalid Date') {
                                             _schedule.valid.to = padding(date.getDate()) + '.' + padding(date.getMonth() + 1) + '.' + date.getFullYear();
                                             this.onChange(_schedule);

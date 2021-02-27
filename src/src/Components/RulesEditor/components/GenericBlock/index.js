@@ -57,8 +57,13 @@ class GenericBlock extends PureComponent {
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
-        if (JSON.stringify(nextProps.settings) !== JSON.stringify(this.state.settings)) {
-            this.setState({settings: JSON.parse(JSON.stringify(nextProps.settings))});
+        const settings = JSON.parse(JSON.stringify(nextProps.settings));
+        if (!settings.tagCard && this.state.tagCardArray && this.state.tagCardArray.length) {
+            settings.tagCard = typeof this.state.tagCardArray[0] !== 'string' ? this.state.tagCardArray[0].title : this.state.tagCardArray[0];
+        }
+
+        if (JSON.stringify(settings) !== JSON.stringify(this.state.settings)) {
+            this.setState({settings});
         }
     }
 
@@ -344,7 +349,7 @@ class GenericBlock extends PureComponent {
                 className={className}
                 options={options}
                 value={value}
-                onChange={onChange}
+                onChange={val => onChange(val, attr)}
                 multiple={multiple}
                 customValue
             />
@@ -520,7 +525,7 @@ class GenericBlock extends PureComponent {
                         const { nameRender, defaultValue, attr, options } = input;
                         return this[nameRender](
                             input,
-                            !!settings[attr] ? settings[attr] : defaultValue,
+                            settings[attr] !== undefined ? settings[attr] : defaultValue,
                             this.onChangeInput(attr),
                             options || []
                         );

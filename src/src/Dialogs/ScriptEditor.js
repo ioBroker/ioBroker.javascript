@@ -67,7 +67,7 @@ class DialogScriptEditor extends React.Component {
     }
 
     handleOk () {
-        if (this.props.isReturn && this.state.source.indexOf('return ') === -1) {
+        if (this.props.isReturn && !this.state.source.includes('return ')) {
 
         } else {
             this.props.onClose(this.state.source);

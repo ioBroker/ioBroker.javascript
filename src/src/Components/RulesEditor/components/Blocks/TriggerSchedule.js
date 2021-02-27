@@ -11,6 +11,9 @@ import React from "react"; // @iobroker/javascript-rules
 import convertCronToText from '../../../simple-cron/cronText';
 import I18n from '@iobroker/adapter-react/i18n';
 
+
+const DEFAULT_WIZARD = "{\"time\":{\"start\":\"00:00\",\"end\":\"24:00\",\"mode\":\"hours\",\"interval\":1},\"period\":{\"days\":1}}";
+
 class TriggerScheduleBlock extends GenericBlock {
     constructor(props) {
         super(props, TriggerScheduleBlock.getStaticData());
@@ -20,7 +23,7 @@ class TriggerScheduleBlock extends GenericBlock {
     static compile(config, context) {
         let text = '';
         if (config.tagCard === 'interval') {
-            text = `setInterval(${Compile.STANDARD_FUNCTION}, ${config.interval || 1} * ${config.attr === 's' ? 1000 : (config.attr === 'm' ? 60000 : 3600000)});`;
+            text = `setInterval(${Compile.STANDARD_FUNCTION}, ${config.interval || 1} * ${config.unit === 's' ? 1000 : (config.unit === 'm' ? 60000 : 3600000)});`;
         } else if (config.tagCard === 'cron') {
             text = `schedule("${config.cron}", ${Compile.STANDARD_FUNCTION});`;
         } else if (config.tagCard === 'at') {
@@ -58,6 +61,8 @@ class TriggerScheduleBlock extends GenericBlock {
             text = `schedule("${minutes || '0'} ${hours || '0'} * * ${dow}", ${Compile.STANDARD_FUNCTION});`;
         } else if (config.tagCard === 'astro') {
             text = `schedule({astro: "${config.astro}", shift: ${config.offset ? config.offsetValue : 0}}, ${Compile.STANDARD_FUNCTION});`;
+        } else if (config.tagCard === 'wizard') {
+            text = `schedule('${config.wizard}', ${Compile.STANDARD_FUNCTION});`;
         }
 
         return text;
@@ -227,76 +232,6 @@ class TriggerScheduleBlock extends GenericBlock {
         }
     }
 
-    onTagChange(tagCard) {
-        tagCard = tagCard || this.state.settings.tagCard;
-        switch (tagCard) {
-            case 'interval':
-                this._setInterval();
-                break;
-
-            case 'cron':
-                this.setState({
-                    inputs: [
-                        {
-                            nameRender: 'renderCron',
-                            attr: 'cron',
-                            defaultValue: '0 * * * *',
-                        }
-                    ]
-                }, () => super.onTagChange());
-                break;
-
-            case 'wizard':
-                this.setState({
-                    inputs: [
-                        {
-                            nameRender: 'renderWizard',
-                            attr: 'wizard',
-                            defaultValue: 'Every hour from 8:00 to 17:00',
-                        }
-                    ]
-                }, () => super.onTagChange());
-                break;
-
-            case 'at':
-                this.setState({
-                    inputs: [
-                        {
-                            nameRender: 'renderTime',
-                            prefix: 'at',
-                            attr: 'at',
-                            defaultValue: '07:30',
-                        },
-                        {
-                            nameRender: 'renderSelect',
-                            attr: 'dow',
-                            default: '',
-                            multiple: true,
-                            defaultValue: ['_', '1', '2', '3', '4', '5', '6', '0'],
-                            options: [
-                                { value: '_', title: 'Every day', only: true },
-                                { value: '1', title: 'Monday', titleShort: 'Mo' },
-                                { value: '2', title: 'Tuesday', titleShort: 'Tu' },
-                                { value: '3', title: 'Wednesday', titleShort: 'We' },
-                                { value: '4', title: 'Thursday', titleShort: 'Th' },
-                                { value: '5', title: 'Friday', titleShort: 'Fr' },
-                                { value: '6', title: 'Saturday', titleShort: 'Sa' },
-                                { value: '0', title: 'Sunday', titleShort: 'Su' },
-                            ]
-                        }
-                    ]
-                }, () => super.onTagChange());
-                break;
-
-            case 'astro':
-                this._setAstro();
-                break;
-
-            default:
-                break;
-        }
-    }
-
     renderCron(input, value, onChange) {
         const { className } = this.props;
         let textCron = '';
@@ -341,7 +276,8 @@ class TriggerScheduleBlock extends GenericBlock {
     renderWizard(input, value, onChange) {
         const { className } = this.props;
         const { attr } = input;
-        let textWizard = '';
+        let wizardText = '';
+        let wizard = null;
         return <div key={attr}>
             <div style={{ display: 'flex', alignItems: 'center', marginTop: 7 }}>
                 <CustomInput
@@ -353,7 +289,7 @@ class TriggerScheduleBlock extends GenericBlock {
                     size="small"
                     multiline
                     rows={2}
-                    value={value}
+                    value={this.state.settings[attr + 'Text']}
                     onChange={(el) => onChange(el)}
                     customValue
                 />
@@ -369,11 +305,102 @@ class TriggerScheduleBlock extends GenericBlock {
                 open={this.state.openDialog}
                 onApply={() =>
                     this.setState({ openDialog: false }, () =>
-                        onChange(textWizard))}
+                        onChange({
+                            [attr + 'Text']: wizardText,
+                            [attr]: wizard,
+                        }))}
                 onClose={() => this.setState({ openDialog: false })}>
-                <Schedule onChange={(_, text) => textWizard = text} />
+                <Schedule onChange={(val, text) => {
+                    wizardText = text;
+                    wizard = typeof val === 'object' ? JSON.parse(JSON.stringify(val)) : JSON.parse(val);
+                    wizard.valid = wizard.valid || {};
+                    wizard.valid.from = wizard.valid.from || Schedule.now2string();
+                    wizard = JSON.stringify(wizard);
+                }} />
             </CustomModal>
         </div>;
+    }
+
+    onTagChange(tagCard) {
+        tagCard = tagCard || this.state.settings.tagCard;
+        switch (tagCard) {
+            case 'interval':
+                this._setInterval();
+                break;
+
+            case 'cron':
+                this.setState({
+                    inputs: [
+                        {
+                            nameRender: 'renderCron',
+                            attr: 'cron',
+                            defaultValue: '0 * * * *',
+                        }
+                    ]
+                }, () => super.onTagChange());
+                break;
+
+            case 'wizard':
+                const wizard = JSON.parse(DEFAULT_WIZARD);
+                wizard.valid = wizard.valid || {};
+                wizard.valid.from = wizard.valid.from || Schedule.now2string();
+
+                this.setState({
+                    inputs: [
+                        {
+                            nameRender: 'renderWizard',
+                            attr: 'wizard',
+                            defaultValue: JSON.stringify(wizard),
+                        }
+                    ]
+                }, () => super.onTagChange(null, () => {
+                    const wizardText = Schedule.state2text(this.state.settings.wizard || wizard);
+                    if (this.state.settings.wizardText !== wizardText) {
+                        const settings = JSON.parse(JSON.stringify(this.state.settings));
+                        settings.wizardText = wizardText;
+                        this.setState({settings});
+                        this.props.onChange(settings);
+                    }
+                }));
+                break;
+
+            case 'at':
+                this.setState({
+                    inputs: [
+                        {
+                            nameRender: 'renderTime',
+                            prefix: 'at',
+                            attr: 'at',
+                            defaultValue: '07:30',
+                        },
+                        {
+                            nameRender: 'renderSelect',
+                            attr: 'dow',
+                            default: '',
+                            multiple: true,
+                            defaultValue: ['_', '1', '2', '3', '4', '5', '6', '0'],
+                            options: [
+                                { value: '_', title: 'Every day', only: true },
+                                { value: '1', title: 'Monday', titleShort: 'Mo' },
+                                { value: '2', title: 'Tuesday', titleShort: 'Tu' },
+                                { value: '3', title: 'Wednesday', titleShort: 'We' },
+                                { value: '4', title: 'Thursday', titleShort: 'Th' },
+                                { value: '5', title: 'Friday', titleShort: 'Fr' },
+                                { value: '6', title: 'Saturday', titleShort: 'Sa' },
+                                { value: '0', title: 'Sunday', titleShort: 'Su' },
+                            ]
+                        }
+                    ]
+                }, () => super.onTagChange());
+                break;
+
+            case 'astro':
+                this._setAstro();
+                break;
+
+            default:
+                break;
+        }
     }
 
     static getStaticData() {

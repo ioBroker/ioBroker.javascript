@@ -37,6 +37,8 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.0.0 (2021-02-27) [Birthday edition]
+* (bluefox) added the rules engine
 
 ### 4.11.0 (2021-02-16)
 * (Apollon77) Add some additional checks for getSchedules
@@ -59,6 +61,6 @@ And then call `npm run build`.
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2020 bluefox <dogafox@gmail.com>,
+Copyright (c) 2014-2021 bluefox <dogafox@gmail.com>,
 
 Copyright (c) 2014      hobbyquaker

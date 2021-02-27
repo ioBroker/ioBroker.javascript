@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 bluefox <dogafox@gmail.com>,
+ * Copyright (c) 2014-2021 bluefox <dogafox@gmail.com>,
  *
  * Copyright (c) 2014      hobbyquaker
 */
@@ -1609,7 +1609,7 @@ function prepareScript(obj, callback) {
         adapter.setState('scriptEnabled.' + nameId, true, true);
         obj.common.engineType = obj.common.engineType || '';
 
-        if ((obj.common.engineType.toLowerCase().startsWith('javascript') || obj.common.engineType === 'Blockly')) {
+        if ((obj.common.engineType.toLowerCase().startsWith('javascript') || obj.common.engineType === 'Blockly' || obj.common.engineType === 'Rules')) {
             // Javascript
             adapter.log.info('Start javascript ' + name);
 

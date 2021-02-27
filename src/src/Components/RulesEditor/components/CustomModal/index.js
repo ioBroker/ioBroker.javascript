@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Button from '@material-ui/core/Button';
-import { Dialog, DialogActions, DialogContent, DialogContentText } from '@material-ui/core';
+import { Dialog, DialogActions, DialogContent } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
 import i18n from '@iobroker/adapter-react/i18n';
@@ -33,11 +33,11 @@ const CustomModal = ({ open, onClose, children, titleButtonApply, titleButtonClo
             {!textInput && children}
         </DialogContent>
         <DialogActions>
-            <Button onClick={onClose} variant="contained">
-                {i18n.t(titleButtonClose)}
-            </Button>
             <Button onClick={() => onApply(textInput ? value : null)}  variant="contained" color="primary">
                 {i18n.t(titleButtonApply)}
+            </Button>
+            <Button onClick={onClose} variant="contained">
+                {i18n.t(titleButtonClose)}
             </Button>
         </DialogActions>
     </Dialog>;

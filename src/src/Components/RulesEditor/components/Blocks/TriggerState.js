@@ -19,7 +19,9 @@ class TriggerState extends GenericBlock {
                     defaultValue: ''
                 }
             ]
-        }, () => super.onTagChange());
+        }, () => {
+            super.onTagChange();
+        });
     }
 
     static getStaticData() {
