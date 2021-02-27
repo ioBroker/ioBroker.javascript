@@ -27,7 +27,7 @@ const RulesEditor = ({ code, onChange, themeName }) => {
         type: 'triggers',
         index: 0
     }, 'filterControlPanel');
-    const [isTourOpen, setIsTourOpen] = useState(true);
+    const [isTourOpen, setIsTourOpen] = useState(false);
     const [tourStep, setTourStep] = useState(0);
 
     React.useEffect(() => {

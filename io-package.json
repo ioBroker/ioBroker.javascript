@@ -20,9 +20,9 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.0.1",
+        "version": "5.0.2",
         "news": {
-            "5.0.1": {
+            "5.0.2": {
                 "en": "Fixed error in the rules",
                 "de": "Fehler in den Regeln behoben",
                 "ru": "Исправлена ошибка в правилах",
