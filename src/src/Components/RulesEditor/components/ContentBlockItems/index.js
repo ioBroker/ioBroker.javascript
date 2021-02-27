@@ -8,8 +8,9 @@ import CurrentItem from '../CurrentItem';
 import { useStateLocal } from '../../hooks/useStateLocal';
 import DragWrapper from '../DragWrapper';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
+import CustomDragItem from "../CardMenu/CustomDragItem";
 
-const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolean, typeBlock, userRules, setUserRules, animation }) => {
+const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolean, typeBlock, userRules, setUserRules, animation, setTourStep, tourStep, isTourOpen }) => {
     const [checkItem, setCheckItem] = useState(false);
     const [canDropCheck, setCanDropCheck] = useState(false);
     const [checkId, setCheckId] = useState(false);
@@ -60,6 +61,9 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
             >
                 <CurrentItem
                     {...el}
+                    isTourOpen={isTourOpen}
+                    setTourStep={setTourStep}
+                    tourStep={tourStep}
                     settings={el}
                     blockValue={blockValue}
                     userRules={userRules}
@@ -80,7 +84,7 @@ AdditionallyContentBlockItems.defaultProps = {
     animation: false
 };
 
-const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, border, userRules, setUserRules, iconName, adapter, socket }) => {
+const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, border, userRules, setUserRules, iconName, adapter, socket, setTourStep, tourStep, isTourOpen }) => {
     const [additionallyClickItems, setAdditionallyClickItems, checkLocal] = useStateLocal(typeBlock === 'actions' ? false : [], `additionallyClickItems_${typeBlock}`);
 
     useEffect(() => {
@@ -106,8 +110,12 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
 
     return <div className={`${cls.mainBlockItemRules} ${border ? cls.border : null}`}>
         <span id='width' className={cls.nameBlockItems}>
-            <MaterialDynamicIcon iconName={iconName} className={cls.iconThemCard} adapter={adapter} socket={socket}/>{name}</span>
+            <MaterialDynamicIcon iconName={iconName} className={cls.iconThemCard} adapter={adapter} socket={socket}/>{name}
+        </span>
         <AdditionallyContentBlockItems
+            setTourStep={setTourStep}
+            tourStep={tourStep}
+            isTourOpen={isTourOpen}
             blockValue={typeBlock === 'actions' ? 'then' : typeBlock === 'conditions' ? 0 : typeBlock}
             typeBlock={typeBlock}
             setUserRules={setUserRules}
@@ -116,32 +124,33 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
         />
         {additionally && [...Array(typeBlock === 'actions' ? 1 : userRules.conditions.length - 1)].map((e, index) => {
             const booleanAdditionally = (value = index) => Boolean(typeBlock === 'actions' ? additionallyClickItems : additionallyClickItems.find((el, idx) => idx === value && el.open));
-            return <Fragment key={`${index}_block_${typeBlock}`}><div
-                onClick={() => {
-                    if (typeBlock === 'actions') {
-                        setAdditionallyClickItems(!additionallyClickItems);
-                        return null;
-                    }
-                    let newAdditionally = JSON.parse(JSON.stringify(additionallyClickItems));
-                    if (userRules['conditions'][index + 1].length) {
-                        newAdditionally[index].open = !newAdditionally[index].open
+            return <Fragment key={`${index}_block_${typeBlock}`}>
+                <div
+                    onClick={() => {
+                        if (typeBlock === 'actions') {
+                            setAdditionallyClickItems(!additionallyClickItems);
+                            return null;
+                        }
+                        let newAdditionally = JSON.parse(JSON.stringify(additionallyClickItems));
+                        if (userRules['conditions'][index + 1].length) {
+                            newAdditionally[index].open = !newAdditionally[index].open
+                            setAdditionallyClickItems(newAdditionally);
+                            return null;
+                        }
+                        newAdditionally = newAdditionally.filter((el, idx) => idx !== index);
                         setAdditionallyClickItems(newAdditionally);
-                        return null;
-                    }
-                    newAdditionally = newAdditionally.filter((el, idx) => idx !== index);
-                    setAdditionallyClickItems(newAdditionally);
-                    setAnimation(typeBlock === 'actions' ? true : index);
-                    setTimeout(() => {
-                        setAnimation(false);
-                        setUserRules({ ...userRules, conditions: [...userRules.conditions.filter((el, idx) => idx !== index + 1)] });
-                    }, 250);
+                        setAnimation(typeBlock === 'actions' ? true : index);
+                        setTimeout(() => {
+                            setAnimation(false);
+                            setUserRules({ ...userRules, conditions: [...userRules.conditions.filter((el, idx) => idx !== index + 1)] });
+                        }, 250);
 
-                }}
-                key={index} className={cls.blockCardAdd}>
-                {booleanAdditionally() ? '-' : '+'}<div className={cls.cardAdd}>
-                    {nameAdditionally}
+                    }}
+                    key={index} className={cls.blockCardAdd}>
+                    {booleanAdditionally() ? '-' : '+'}<div className={cls.cardAdd}>
+                        {nameAdditionally}
+                    </div>
                 </div>
-            </div>
                 <AdditionallyContentBlockItems
                     blockValue={typeBlock === 'actions' ? 'else' : typeBlock === 'conditions' ? index + 1 : typeBlock}
                     typeBlock={typeBlock}

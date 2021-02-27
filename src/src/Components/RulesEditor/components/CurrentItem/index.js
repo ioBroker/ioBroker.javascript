@@ -10,7 +10,7 @@ import GenericBlock from '../GenericBlock';
 // @iobroker/javascript-block
 
 const CurrentItem = memo(props => {
-    const { setUserRules, userRules, _id, id, blockValue, active, acceptedBy } = props;
+    const { setUserRules, userRules, _id, id, blockValue, active, acceptedBy, isTourOpen, setTourStep, tourStep } = props;
     const [anchorEl, setAnchorEl] = useState(null);
     const { blocks, socket, onUpdate, setOnUpdate} = useContext(ContextWrapperCreate);
 
@@ -34,6 +34,9 @@ const CurrentItem = memo(props => {
     const blockInput = useMemo(() => {
         const CustomBlock = findElementBlocks(id) || GenericBlock;
         return <CustomBlock
+            isTourOpen={isTourOpen}
+            setTourStep={setTourStep}
+            tourStep={tourStep}
             {...props}
             onUpdate={onUpdate}
             setOnUpdate={setOnUpdate}

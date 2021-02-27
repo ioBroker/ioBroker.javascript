@@ -26,8 +26,8 @@ class ActionPrintText extends GenericBlock {
         return {
             acceptedBy: 'actions',
             name: {
-                en: 'Print text',
-                ru: 'Print text'
+                en: 'Log text',
+                ru: 'Log text'
             },
             id: 'ActionPrintText',
             icon: 'Subject',

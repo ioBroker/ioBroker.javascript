@@ -1,5 +1,11 @@
 The newest change log is in README.md
 
+## 4.10.13 (2021-01-24)
+* (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-4B)
+
+## 4.10.11 (2021-01-22)
+* (Apollon77) Optimize error handling in createState and file mirror again
+
 ## 4.10.10 (2021-01-22)
 * (Apollon77) Do not try to set a state value if object creation was not successful (Sentry IOBROKER-JAVASCRIPT-5G)
 * (Apollon77) Make sure no incorrect states are trying to be set (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)

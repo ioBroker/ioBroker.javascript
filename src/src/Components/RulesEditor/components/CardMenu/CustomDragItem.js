@@ -2,11 +2,15 @@ import React from 'react';
 import CardMenu from '.';
 import { deepCopy } from '../../helpers/deepCopy';
 import DragWrapper from '../DragWrapper';
+import {STEPS} from '../../helpers/Tour';
+
 
 const CustomDragItem = props => {
-    const { allProperties, allProperties: { acceptedBy, id }, setUserRules, userRules } = props;
+    const { allProperties, allProperties: { acceptedBy, id }, setUserRules, userRules, setTourStep, tourStep, isTourOpen } = props;
     return <DragWrapper {...props} {...allProperties}>
         <CardMenu onDoubleClick={() => {
+            (isTourOpen && tourStep === STEPS.addScheduleByDoubleClick) && setTourStep(STEPS.addOnSaveTriggerByDragAndDrop);
+
             let _id = Date.now();
             let blockValue;
             switch (acceptedBy) {

@@ -8,11 +8,13 @@ import HamburgerMenu from './components/HamburgerMenu';
 import { useStateLocal } from './hooks/useStateLocal';
 import { AppBar, Tab, Tabs } from '@material-ui/core';
 import { ContextWrapperCreate } from './components/ContextWrapper';
-import Compile from './Compile';
+import Compile from './helpers/Compile';
 import MaterialDynamicIcon from './helpers/MaterialDynamicIcon';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import './helpers/stylesVariables.scss';
+import Tour from 'reactour';
+import steps, {STEPS} from './helpers/Tour';
 
 const RulesEditor = ({ code, onChange, themeName }) => {
     // eslint-disable-next-line no-unused-vars
@@ -25,6 +27,8 @@ const RulesEditor = ({ code, onChange, themeName }) => {
         type: 'triggers',
         index: 0
     }, 'filterControlPanel');
+    const [isTourOpen, setIsTourOpen] = useState(true);
+    const [tourStep, setTourStep] = useState(0);
 
     React.useEffect(() => {
         const newUserRules = Compile.code2json(code);
@@ -68,6 +72,8 @@ const RulesEditor = ({ code, onChange, themeName }) => {
     });
 
     const handleChange = (event, newValue) => {
+        isTourOpen && (newValue === 0 && tourStep === STEPS.selectTriggers) && setTourStep(STEPS.addScheduleByDoubleClick);
+
         setFilter({
             ...filter,
             index: newValue,
@@ -97,11 +103,11 @@ const RulesEditor = ({ code, onChange, themeName }) => {
                                 value={filter.index}
                                 onChange={handleChange}
                             >
-                                <Tab icon={<MaterialDynamicIcon iconName='FlashOn' />}
+                                <Tab className="blocks-triggers" icon={<MaterialDynamicIcon iconName='FlashOn' />}
                                     {...a11yProps(0)} />
-                                <Tab icon={<MaterialDynamicIcon iconName='Help' />}
+                                <Tab className="blocks-conditions" icon={<MaterialDynamicIcon iconName='Help' />}
                                     {...a11yProps(1)} />
-                                <Tab icon={<MaterialDynamicIcon iconName='PlayForWork' />}
+                                <Tab className="blocks-actions" icon={<MaterialDynamicIcon iconName='PlayForWork' />}
                                     {...a11yProps(2)} />
                             </Tabs>
                         </AppBar>
@@ -112,6 +118,9 @@ const RulesEditor = ({ code, onChange, themeName }) => {
                                 const { name, id, icon, adapter } = el.getStaticData();
                                 return <Fragment key={id}>
                                     <CustomDragItem
+                                        setTourStep={setTourStep}
+                                        tourStep={tourStep}
+                                        isTourOpen={isTourOpen}
                                         allProperties={el.getStaticData()}
                                         name={name}
                                         icon={icon}
@@ -156,12 +165,18 @@ const RulesEditor = ({ code, onChange, themeName }) => {
             <ContentBlockItems
                 setUserRules={onChangeBlocks}
                 userRules={userRules}
+                isTourOpen={isTourOpen}
+                setTourStep={setTourStep}
+                tourStep={tourStep}
                 name="when..."
                 typeBlock="triggers"
                 iconName="FlashOn"
             />
             <ContentBlockItems
                 setUserRules={onChangeBlocks}
+                isTourOpen={isTourOpen}
+                setTourStep={setTourStep}
+                tourStep={tourStep}
                 userRules={userRules}
                 name="...and..."
                 typeBlock="conditions"
@@ -172,6 +187,9 @@ const RulesEditor = ({ code, onChange, themeName }) => {
             />
             <ContentBlockItems
                 setUserRules={onChangeBlocks}
+                isTourOpen={isTourOpen}
+                setTourStep={setTourStep}
+                tourStep={tourStep}
                 userRules={userRules}
                 name="...then"
                 typeBlock="actions"
@@ -179,8 +197,14 @@ const RulesEditor = ({ code, onChange, themeName }) => {
                 nameAdditionally="else"
                 additionally
             />
-
         </div>
+        <Tour
+            steps={steps}
+            isOpen={isTourOpen}
+            onRequestClose={() => setIsTourOpen(false)}
+            getCurrentStep={s => setTourStep(s)}
+            goToStep={tourStep}
+        />
     </div>;
 }
 

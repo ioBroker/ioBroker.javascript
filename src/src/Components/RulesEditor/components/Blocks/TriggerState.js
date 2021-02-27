@@ -1,5 +1,5 @@
 import GenericBlock from '../GenericBlock';
-import Compile from '../../Compile';
+import Compile from '../../helpers/Compile';
 
 class TriggerState extends GenericBlock {
     constructor(props) {
@@ -7,7 +7,7 @@ class TriggerState extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `on({id: "${config.oid || ''}", change: ${config.tagCard === 'on update' ? 'any' : 'ne'}}, ${Compile.STANDARD_FUNCTION_STATE});`
+        return `on({id: "${config.oid || ''}", change: "${config.tagCard === 'on update' ? 'any' : 'ne'}"}, ${Compile.STANDARD_FUNCTION_STATE});`
     }
 
     onTagChange(tagCard) {

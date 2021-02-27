@@ -1,5 +1,5 @@
 import GenericBlock from '../GenericBlock';
-import Compile from "../../Compile";
+import Compile from "../../helpers/Compile";
 import CustomInput from "../CustomInput";
 import CustomButton from "../CustomButton";
 import CustomModal from "../CustomModal";

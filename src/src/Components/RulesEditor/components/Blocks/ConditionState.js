@@ -11,31 +11,35 @@ class ConditionState extends GenericBlock {
     }
 
     static compile(config, context) {
+        let value = config.value;
+        if (value === null || value === undefined) {
+            value = false;
+        }
         if (config.tagCard !== 'includes') {
             const compare = config.tagCard === '=' ? '==' : (config.tagCard === '<>' ? '!=' : config.tagCard);
             if (config.useTrigger) {
                 if (context?.trigger?.oidType === 'string') {
-                    return `obj.state.value ${compare} "${config.value}"`;
+                    return `obj.state.value ${compare} "${value}"`;
                 } else {
-                    return `obj.state.value ${compare} ${config.value}`;
+                    return `obj.state.value ${compare} ${value}`;
                 }
             } else {
                 if (config.oidType === 'string') {
-                    return `await getStateAsync("${config.oid}").val ${compare} "${config.value}"`;
+                    return `await getStateAsync("${config.oid}").val ${compare} "${value}"`;
                 } else {
-                    return `await getStateAsync("${config.oid}").val ${compare} ${config.value}`;
+                    return `await getStateAsync("${config.oid}").val ${compare} ${value}`;
                 }
             }
         } else {
             if (config.useTrigger) {
                 if (context?.trigger?.oidType === 'string') {
-                    return `obj.state.value.includes("${config.value}")`;
+                    return `obj.state.value.includes("${value}")`;
                 } else {
                     return `false`;
                 }
             } else {
                 if (config.oidType === 'string') {
-                    return `(await getStateAsync("${config.oid}").val).includes("${config.value}")`;
+                    return `(await getStateAsync("${config.oid}").val).includes("${value}")`;
                 } else {
                     return `false`;
                 }

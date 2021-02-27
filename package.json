@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Rules Engine for ioBroker",
   "author": "bluefox <dogafox@gmail.com>",
   "contributors": [
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.4.0",
-    "@types/node": "^12.20.1",
+    "@types/node": "^12.20.4",
     "@types/request": "^2.48.5",
     "coffee-compiler": "^0.3.2",
     "coffee-script": "^1.12.7",
@@ -65,7 +65,7 @@
     "test:javascript": "node node_modules/mocha/bin/mocha --exit",
     "test": "npm run test:declarations && npm run test:javascript",
     "postinstall": "node ./install/installTypings.js",
-    "prepublishOnly1": "node node_modules/gulp/bin/gulp.js",
+    "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
     "build": "node node_modules/gulp/bin/gulp.js",
     "release": "release-script"
   }

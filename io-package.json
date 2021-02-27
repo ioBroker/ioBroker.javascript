@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.0.0",
+        "version": "5.0.1",
         "news": {
+            "5.0.1": {
+                "en": "Fixed error in the rules",
+                "de": "Fehler in den Regeln behoben",
+                "ru": "Исправлена ошибка в правилах",
+                "pt": "Erro corrigido nas regras",
+                "nl": "Fout in de regels opgelost",
+                "fr": "Correction d'une erreur dans les règles",
+                "it": "Corretto errore nelle regole",
+                "es": "Error solucionado en las reglas.",
+                "pl": "Naprawiono błąd w zasadach",
+                "zh-cn": "修正规则中的错误"
+            },
             "5.0.0": {
                 "en": "added the rules engine",
                 "de": "fügte die Regel-Engine hinzu",

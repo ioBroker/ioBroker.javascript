@@ -37,6 +37,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.0.1 (2021-02-27)
+* (bluefox) Fixed error in the rules
+
 ### 5.0.0 (2021-02-27) [Birthday edition]
 * (bluefox) added the rules engine
 
@@ -50,12 +53,6 @@ And then call `npm run build`.
 
 ### 4.10.14 (2021-01-25)
 * (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5R)
-
-### 4.10.13 (2021-01-24)
-* (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-4B)
-
-### 4.10.11 (2021-01-22)
-* (Apollon77) Optimize error handling in createState and file mirror again
 
 ## License
 
