@@ -82,7 +82,7 @@ function compileTriggers(json, context, blocks) {
 
     let text = triggers.join('\n\n');
 
-    if (json.justCheck) {
+    if (!json.justCheck) {
         text = vars.map(v => `let ${v} = false;`).join('\n') + '\n\n' + text;
     }
 
