@@ -1,4 +1,4 @@
-import { createElement, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import * as Icons from '@material-ui/icons/';
 
 const ICON_CACHE = {};
