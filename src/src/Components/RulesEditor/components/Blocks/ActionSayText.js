@@ -137,9 +137,9 @@ class ActionSayText extends GenericBlock {
         } else {
             let value = '';
             if (context.trigger?.oidType) {
-                value = '.replace(/%s/g, obj.state.value)';
+                value = '.replace(/%s/g, obj.state.value).replace(/%id/g, obj.id)';
             }
-            return `await setStateAsync("${config.instance}.tts.text", "${config.language && config.language !== '_' ? config.language + ';' : ''}${config.volume ? config.volume + ';' : ''}${(config.text || '').replace(/"/g, '\\"')}"${value});`;
+            return `await setStateAsync("${config.instance}.tts.text", "${config.language ? config.language + ';' : ''}${config.volume ? config.volume + ';' : ''}${(config.text || '').replace(/"/g, '\\"')}"${value});`;
         }
     }
 
@@ -147,7 +147,7 @@ class ActionSayText extends GenericBlock {
         const lang = i18n.getLanguage();
         const languages = Object.keys(sayitEngines).filter(l => l.startsWith(lang));
         const options = languages.map(lang => ({title: sayitEngines[lang].name, value: lang}));
-        options.unshift({title: 'Default', value: ''});
+        options.unshift({title: 'Default', value: '_'});
 
         this.setState({
             inputs: [
@@ -161,8 +161,8 @@ class ActionSayText extends GenericBlock {
                 {
                     nameRender: 'renderSelect',
                     frontText: 'Language:',
-                    options: options,
-                    defaultValue: '',
+                    options,
+                    defaultValue: '_',
                     attr: 'language',
                 },
                 {
@@ -173,8 +173,8 @@ class ActionSayText extends GenericBlock {
                     nameRender: 'renderSlider',
                     attr: 'volume',
                     defaultValue: 100,
-                    frontText: '0',
-                    backText: '100'
+                    min: 0,
+                    max: 100
                 },
                 {
                     attr: 'text',
@@ -195,7 +195,8 @@ class ActionSayText extends GenericBlock {
                 ru: 'Say It'
             },
             id: 'ActionSayText',
-            adapter: 'sayit'
+            adapter: 'sayit',
+            title: 'Say some text via sayit adapter'
         }
     }
 

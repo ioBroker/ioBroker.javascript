@@ -179,7 +179,8 @@ class ActionSetState extends GenericBlock {
             name: { en: 'Set state action', ru: 'Set state action' },
             id: 'ActionSetState',
             icon: 'PlayForWork',
-            tagCardArray: ['control', 'update']
+            tagCardArray: ['control', 'update'],
+            title: 'Control or update some state'
         }
     }
 

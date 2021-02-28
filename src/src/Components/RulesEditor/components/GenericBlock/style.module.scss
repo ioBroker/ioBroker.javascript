@@ -32,6 +32,9 @@
         color: var(--colorBlock) !important;
     }
 }
+.iconThemCardSelectable {
+    cursor: pointer;
+}
 .inputCard {
     margin-top: 10px !important;
 }

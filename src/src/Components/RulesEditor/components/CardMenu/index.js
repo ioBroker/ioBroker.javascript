@@ -6,10 +6,11 @@ import cls from './style.module.scss';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import utils from '../../helpers/utils'
 
-const CardMenu = ({ name, id, active, icon, adapter, socket, onDoubleClick }) => {
+const CardMenu = ({ name, id, active, icon, adapter, socket, onDoubleClick, title }) => {
     return <div
         onDoubleClick={onDoubleClick}
         key={id}
+        title={title}
         className={clsx(cls.switchesItem, active && cls.switchesItemActive, 'block-' + id)}
     >
         <MaterialDynamicIcon iconName={icon} className={cls.iconTheme} adapter={adapter} socket={socket} />

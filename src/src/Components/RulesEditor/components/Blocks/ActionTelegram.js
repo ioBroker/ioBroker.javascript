@@ -10,12 +10,12 @@ class ActionTelegram extends GenericBlock {
         let text = (config.text || '').replace(/"/g, '\\"');
         let value = '';
         if (context.trigger?.oidType) {
-            value = '.replace(/%s/g, obj.state.value)';
+            value = '.replace(/%s/g, obj.state.value).replace(/%id/g, obj.id)';
         }
         if (!text) {
             return '// no text defined'
         } else {
-            return `sendTo("${config.instance}", ${config.user ? `{user: ${config.user}, text: "${text}"${value}}` : `"${text}"${value}`});`;
+            return `sendTo("${config.instance}", ${config.user && config.user !== '_' ? `{user: "${(config.user || '').replace(/"/g, '\\"')}", text: "${(text || '').replace(/"/g, '\\"')}"${value}}` : `"${(text || '').replace(/"/g, '\\"')}"${value}`});`;
         }
     }
 
@@ -107,7 +107,8 @@ class ActionTelegram extends GenericBlock {
                 ru: 'Telegram'
             },
             id: 'ActionTelegram',
-            adapter: 'telegram'
+            adapter: 'telegram',
+            title: 'Sends message via telegram'
         }
     }
 

@@ -259,5 +259,9 @@
   "Change theme (actual \"%s\")": "Zmień motyw (teraz - „%s”)",
   "Hide logs": "Ukryj dzienniki",
   "Show logs": "Pokaż dzienniki",
-  "Rules description": "Twórz reguły z blokami IF, THEN, ELSE"
+  "Rules description": "Twórz reguły z blokami IF, THEN, ELSE",
+  "help_on_change": "Kod zostanie wykonany tylko wtedy, gdy wynik warunku ulegnie zmianie. Na przykład. jeśli wyzwalanie na wartość czujnika temperatury i warunek „jeśli temperatura jest wyższa niż 20 ° C”, to akcje „to” zostaną wykonane raz, gdy temperatura przekroczy 20. Następnym razem działania „to” zostaną wykonane, gdy temperatura nie udaje się poniżej 20, a następnie ponownie wzrasta powyżej 20.",
+  "help_just_check": "Kod zostanie wykonany tylko za każdym razem, gdy warunek będzie spełniony. Na przykład. jeśli wyzwalanie na wartość czujnika temperatury i warunek to „jeśli temperatura jest wyższa niż 20 ° C”, to działania „to” będą wykonywane za każdym razem, gdy czujnik wyśle temperaturę i jest powyżej 20 ° C. O 21 ° C, o 22 ° C i tak dalej.",
+  "On condition change": "W przypadku zmiany warunków",
+  "Just check": "Po prostu sprawdź"
 }

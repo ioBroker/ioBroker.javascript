@@ -413,6 +413,7 @@ class TriggerScheduleBlock extends GenericBlock {
             id: 'TriggerScheduleBlock',
             icon: 'AccessTime',
             tagCardArray: ['cron', 'wizard', 'interval', 'at', 'astro'],
+            title: 'Triggers the rule periodically or on some specific time'
         }
     }
 

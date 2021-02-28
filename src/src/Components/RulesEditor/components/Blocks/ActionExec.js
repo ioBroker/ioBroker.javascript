@@ -31,6 +31,7 @@ class ActionExec extends GenericBlock {
             },
             id: 'ActionExec',
             icon: 'Apps',
+            title: 'Executes some shell command'
         }
     }
 

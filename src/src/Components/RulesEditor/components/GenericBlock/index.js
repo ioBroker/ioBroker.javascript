@@ -4,6 +4,7 @@ import cls from './style.module.scss';
 import { Menu, MenuItem } from '@material-ui/core';
 
 import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
+import DialogError from '@iobroker/adapter-react/Dialogs/Error';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import I18n from '@iobroker/adapter-react/i18n';
 
@@ -46,6 +47,7 @@ class GenericBlock extends PureComponent {
             openTagMenu: false,
             openModal: false,
             iconTag: false,
+            error: '',
 
             oid: {},
             instanceSelectionOptions: [],
@@ -228,7 +230,10 @@ class GenericBlock extends PureComponent {
                     variant="outlined"
                     size="small"
                     value={value}
-                    onChange={onChange}
+                    onChange={val => {
+                        console.log(val);
+                        onChange(val)
+                    }}
                 />
                 {backText && <div style={{ marginLeft: 20 }} className={cls.backText}>{backText}</div>}
             </div>
@@ -265,7 +270,10 @@ class GenericBlock extends PureComponent {
             setTimeout(() => {
                 socket.getObject(value)
                     .then(obj =>
-                        this.setState({ [settings[attr]]: obj }));
+                        this.setState({
+                            [settings[attr]]: obj,
+                            error: obj?.common?.write === false ? I18n.t('Read only value selected') : ''
+                        }));
             }, 0);
         }
         // return null
@@ -323,7 +331,11 @@ class GenericBlock extends PureComponent {
     }
 
     renderIconTag = () => {
-        return <div className={cls.iconTag}>
+        return <div
+            className={cls.iconTag}
+            onClick={e => {
+                this.state.tagCardArray.length >= 3 && this.setState({ openTagMenu: e.currentTarget });
+            }}>
             {this.state.settings.tagCard}
         </div>;
     }
@@ -350,7 +362,7 @@ class GenericBlock extends PureComponent {
                 className={className}
                 options={options}
                 value={value}
-                onChange={val => onChange(val, attr)}
+                onChange={onChange}
                 multiple={multiple}
                 customValue
             />
@@ -426,7 +438,7 @@ class GenericBlock extends PureComponent {
         let { tagCardArray, openTagMenu } = this.state;
         let { tagCard } = this.state.settings;
         let result = tagCard;
-        if (tagCardArray.length > 3) {
+        if (tagCardArray.length >= 3) {
             result = <div>
                 <div aria-controls="simple-menu" aria-haspopup="true"
                     onClick={(e) => {
@@ -529,7 +541,15 @@ class GenericBlock extends PureComponent {
 
         return <Fragment>
             {iconTag ? this.renderIconTag() :
-                <MaterialDynamicIcon iconName={icon} className={cls.iconThemCard} adapter={adapter} socket={socket} />}
+                <MaterialDynamicIcon
+                    iconName={icon}
+                    className={clsx(cls.iconThemCard, this.state.tagCardArray.length >= 3 && cls.iconThemCardSelectable)}
+                    adapter={adapter}
+                    socket={socket}
+                    onClick={e => {
+                        this.state.tagCardArray.length >= 3 && this.setState({ openTagMenu: e.currentTarget });
+                    }}
+                />}
             <div className={cls.blockName}>
                 <span className={cls.nameCard}>
                     {name && name.en}
@@ -549,6 +569,7 @@ class GenericBlock extends PureComponent {
             {tagCard && <div className={cls.controlMenuTop} style={{ opacity: 1, height: 22, top: -22 }}>
                 <div onClick={() => this.onChangeTag()} className={clsx(cls.tagCard, 'tag-card') }>{this.renderTags()}</div>
             </div>}
+            {this.state.error ? <DialogError title={I18n.t('Warning')} text={this.state.error} onClose={() => this.setState({error: ''})}/> : null}
         </Fragment>;
     };
 }

@@ -259,5 +259,9 @@
   "Change theme (actual \"%s\")": "Cambiar tema (ahora - \"%s\")",
   "Hide logs": "Ocultar registros",
   "Show logs": "Mostrar registros",
-  "Rules description": "Crea reglas con bloques IF, THEN, ELSE"
+  "Rules description": "Crea reglas con bloques IF, THEN, ELSE",
+  "help_on_change": "El código se ejecutará solo si cambia el resultado de la condición. P.ej. si se activa en el valor del sensor de temperatura y la condición es \"si la temperatura es superior a 20 ° C\", las acciones \"entonces\" se ejecutarán una vez cuando la temperatura sea superior a 20. La próxima vez, las acciones \"entonces\" se ejecutarán cuando la temperatura falla por debajo de 20 y luego sube por encima de 20 nuevamente.",
+  "help_just_check": "El código se ejecutará solo cada vez que la condición sea verdadera. P.ej. si se activa en el valor del sensor de temperatura y la condición es \"si la temperatura es superior a 20 ° C\", las acciones \"entonces\" se ejecutarán cada vez que el sensor envíe la temperatura y supere los 20 ° C. Por 21 ° C, por 22 ° C y así sucesivamente.",
+  "On condition change": "En condición de cambio",
+  "Just check": "Sólo revisa"
 }

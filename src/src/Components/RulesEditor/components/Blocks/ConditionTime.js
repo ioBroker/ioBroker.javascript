@@ -73,6 +73,7 @@ class ConditionTime extends GenericBlock {
                     text: 'not equal to'
                 }
             ],
+            title: 'Compares current time with the user specific time'
         }
     }
 

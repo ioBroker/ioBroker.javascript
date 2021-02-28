@@ -22,8 +22,16 @@
 }
 .selectOnChange {
     margin-left: 12px;
-    margin-right: 20px;
     color: var(--lineColor) !important;
+    width: calc(100% - 42px);
+}
+.selectOnChangeHelp {
+    color: var(--lineColor);
+    vertical-align: middle;
+    cursor: pointer;
+}
+.selectOnChangeHelpIcon {
+    color: var(--lineColor);
 }
 @keyframes marginTop {
     0% {

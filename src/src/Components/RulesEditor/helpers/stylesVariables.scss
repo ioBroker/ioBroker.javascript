@@ -25,7 +25,7 @@ $themeGreen: (
     --backgroundMobile: #3081333b
 );
 $themeSilver: (
-    --backgroundColor: #3131313b,
+    --backgroundColor: rgba(31, 31, 31, 0.23),
     --lineColor: #f3f3f37d,
     --lineColorHover: #a0a0a0,
     --lineColorActive: #dedede,
@@ -34,7 +34,7 @@ $themeSilver: (
     --colorBlockHover: #0808088c,
     --colorInput: #ddd,
     --backgroundBlock: #c1c1c1ab,
-    --backgroundGlobalColor: #6d6d6ded,
+    --backgroundGlobalColor: rgba(28, 28, 28, 0.93),
     --backgroundMobile: #040303eb
 );
 $themeLight: (

@@ -7,14 +7,15 @@ import clsx from 'clsx';
 import CustomCheckbox from '../CustomCheckbox';
 
 const CustomSelect = ({ multiple, value, customValue, title, attr, options, style, onChange, className }) => {
-    const [inputText, setInputText] = useState(value || options[0].value);
+    const [inputText, setInputText] = useState(value === undefined ? options[0].value : value);
+
     return <FormControl
         className={clsx(cls.root, className)}
         fullWidth
         style={style}
     >
         <Select
-            value={customValue ? value : inputText}
+            value={(customValue ? value : inputText) || '_'}
             fullWidth
             multiple={multiple}
             renderValue={selected => {

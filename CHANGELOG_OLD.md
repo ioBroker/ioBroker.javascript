@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 4.10.15 (2021-01-31)
+* (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5W)
+
 ## 4.10.14 (2021-01-25)
 * (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5R)
 

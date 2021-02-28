@@ -187,6 +187,7 @@ class ConditionAstrological extends GenericBlock {
                     text: 'not equal to'
                 }
             ],
+            title: 'Compares current time with astrological event'
         }
     }
 

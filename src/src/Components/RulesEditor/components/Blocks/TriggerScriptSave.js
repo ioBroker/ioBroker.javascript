@@ -31,6 +31,7 @@ __%%ELSE%%__
             name: { en: 'Script save', ru: 'Script save' },
             id: 'TriggerScriptSave',
             icon: 'PlayArrow',
+            title: 'Triggers the on script save or the javascript instance restart'
         }
     }
 

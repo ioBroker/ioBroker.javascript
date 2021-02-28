@@ -31,7 +31,8 @@ class TriggerState extends GenericBlock {
             name: { en: 'State', ru: 'State' },
             id: 'TriggerState',
             icon: 'FlashOn',
-            tagCardArray: ['on change', 'on update']
+            tagCardArray: ['on change', 'on update'],
+            title: 'Triggers the rule on update or change of some state' // translate
         }
     }
 

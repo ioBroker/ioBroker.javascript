@@ -67,6 +67,7 @@ class ActionPause extends GenericBlock {
             },
             id: 'ActionPause',
             icon: 'Pause',
+            title: 'Make a pause between actions'
         }
     }
 

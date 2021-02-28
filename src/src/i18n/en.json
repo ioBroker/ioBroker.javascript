@@ -259,5 +259,9 @@
   "Change theme (actual \"%s\")": "Change theme (now - \"%s\")",
   "Hide logs": "Hide logs",
   "Show logs": "Show logs",
-  "Rules description": "Create rules with IF, THEN, ELSE blocks"
+  "Rules description": "Create rules with IF, THEN, ELSE blocks",
+  "help_on_change": "The code will be executed only if the condition result changes. E.g. if triggering on the temperature sensor value and the condition is \"if temperature is greater than 20°C\", the \"then\" actions will be executed once when temperature is over 20. Next time the \"then\" actions will be executed when the temperature fails under 20 and then rises over 20 again.",
+  "help_just_check": "The code will be executed only every time when condition is true. E.g. if triggering on the temperature sensor value and the condition is \"if temperature is greater than 20°C\", the \"then\" actions will be executed every time when sensor sends the temperature and it is over 20°C. By 21°C, by 22°C and so on.",
+  "On condition change": "On condition result change",
+  "Just check": "Just check"
 }

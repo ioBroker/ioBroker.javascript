@@ -20,6 +20,7 @@ class ConditionState extends GenericBlock {
             const compare = config.tagCard === '=' ? '==' : (config.tagCard === '<>' ? '!=' : config.tagCard);
             if (config.useTrigger) {
                 if (context?.trigger?.oidType === 'string') {
+                    value = value.replace(/"/g, '\\"');
                     result = `obj.state.val ${compare} "${value}"`;
                 } else {
                     if (value === '') {
@@ -29,6 +30,7 @@ class ConditionState extends GenericBlock {
                 }
             } else {
                 if (config.oidType === 'string') {
+                    value = value.replace(/"/g, '\\"');
                     result = `(await getStateAsync("${config.oid}")).val ${compare} "${value}"`;
                 } else {
                     if (value === '') {
@@ -40,24 +42,19 @@ class ConditionState extends GenericBlock {
         } else {
             if (config.useTrigger) {
                 if (context?.trigger?.oidType === 'string') {
+                    value = value.replace(/"/g, '\\"');
                     result = `obj.state.val.includes("${value}")`;
                 } else {
                     result = `false`;
                 }
             } else {
                 if (config.oidType === 'string') {
+                    value = value.replace(/"/g, '\\"');
                     result = `(await getStateAsync("${config.oid}").val).includes("${value}")`;
                 } else {
                     result = `false`;
                 }
             }
-        }
-
-        if (config.condition === 'change') {
-            const name = 'cond' + context.condition.index;
-
-            context.vars = context.vars || [];
-            context.vars.push(name);
         }
 
         return result;
@@ -342,6 +339,7 @@ class ConditionState extends GenericBlock {
                     text: 'includes'
                 }
             ],
+            title: 'Compares the state value with user defined value'
         }
     }
 

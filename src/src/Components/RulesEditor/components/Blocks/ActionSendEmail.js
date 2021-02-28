@@ -8,7 +8,7 @@ class ActionSendEmail extends GenericBlock {
     static compile(config, context) {
         let value = '';
         if (context.trigger?.oidType) {
-            value = '.replace(/%s/g, obj.state.value)';
+            value = '.replace(/%s/g, obj.state.value).replace(/%id/g, obj.id)';
         }
         if (!config.recipients) {
             return '// no recipients defined'
@@ -64,6 +64,7 @@ class ActionSendEmail extends GenericBlock {
             },
             id: 'ActionSendEmail',
             adapter: 'email',
+            title: 'Sends an email'
         }
     }
 

@@ -31,6 +31,7 @@ class ActionHTTPCall extends GenericBlock {
             },
             id: 'ActionHTTPCall',
             icon: 'Language',
+            title: 'Make a HTTP get request'
         }
     }
 

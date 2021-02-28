@@ -259,5 +259,9 @@
   "Change theme (actual \"%s\")": "更改主题（现在为“%s”）",
   "Hide logs": "隐藏日志",
   "Show logs": "显示记录",
-  "Rules description": "使用IF，THEN，ELSE块创建规则"
+  "Rules description": "使用IF，THEN，ELSE块创建规则",
+  "help_on_change": "仅当条件结果更改时，代码才会执行。例如。如果触发温度传感器值且条件为“如果温度大于20°C”，则温度超过20时将执行一次“则”动作，下一次，当温度超过20时将执行“则”动作低于20失败，然后再次超过20。",
+  "help_just_check": "仅在条件为真时才执行代码。例如。如果触发温度传感器值并且条件为“如果温度大于20°C”，则每次传感器发送温度且温度超过20°C时，将执行“然后”动作。 21°C，22°C等。",
+  "On condition change": "条件变化时",
+  "Just check": "只是检查"
 }

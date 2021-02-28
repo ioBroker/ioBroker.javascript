@@ -6,7 +6,11 @@ class ActionPrintText extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `console.log("${(config.text || '').replace(/"/g, '\\"')}");`;
+        let value = '';
+        if (context.trigger?.oidType) {
+            value = '.replace(/%s/g, obj.state.value).replace(/%id/g, obj.id)';
+        }
+        return `console.log("${(config.text || '').replace(/"/g, '\\"')}"${value});`;
     }
 
     onTagChange(tagCard) {
@@ -31,6 +35,7 @@ class ActionPrintText extends GenericBlock {
             },
             id: 'ActionPrintText',
             icon: 'Subject',
+            title: 'Print some text in log'
         }
     }
 

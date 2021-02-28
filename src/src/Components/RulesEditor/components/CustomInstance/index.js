@@ -52,7 +52,7 @@ const CustomInstance = ({ multiple, value, customValue, socket, title, attr, ada
         style={style}
     >
         <Select
-            value={customValue ? value : inputText}
+            value={(customValue ? value : inputText) || '_'}
             fullWidth
             multiple={multiple}
             renderValue={(selected) => multiple && selected.join ? selected.join(', ') : selected}
@@ -62,7 +62,8 @@ const CustomInstance = ({ multiple, value, customValue, socket, title, attr, ada
             }}
             input={<Input name={attr} id={attr + '-helper'} />}
         >
-            {options.map(item => (<MenuItem style={{placeContent:'space-between'}} key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)}{item.title2 && <div>{item.title2}</div>}</MenuItem>))}
+            {options.map(item =>
+                <MenuItem style={{placeContent:'space-between'}} key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)}{item.title2 && <div>{item.title2}</div>}</MenuItem>)}
         </Select>
         <FormHelperText>{I18n.t(title)}</FormHelperText>
     </SelectMod>;

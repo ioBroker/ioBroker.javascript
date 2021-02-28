@@ -6,13 +6,15 @@ import cls from './style.module.scss';
 import { useDrop } from 'react-dnd';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
+import IconButton from '@material-ui/core/IconButton';
+import IconHelp from '@material-ui/icons/HelpOutline';
 import { deepCopy } from '../../helpers/deepCopy';
 
 import CurrentItem from '../CurrentItem';
 import { useStateLocal } from '../../hooks/useStateLocal';
 import DragWrapper from '../DragWrapper';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
+import DialogHelp from './DialogHelp';
 
 const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolean, typeBlock, userRules, setUserRules, animation, setTourStep, tourStep, isTourOpen }) => {
     const [checkItem, setCheckItem] = useState(false);
@@ -90,6 +92,7 @@ AdditionallyContentBlockItems.defaultProps = {
 
 const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, border, userRules, setUserRules, iconName, adapter, socket, setTourStep, tourStep, isTourOpen }) => {
     const [additionallyClickItems, setAdditionallyClickItems, checkLocal] = useStateLocal(typeBlock === 'actions' ? false : [], `additionallyClickItems_${typeBlock}`);
+    const [showHelp, setShowHelp] = useState(false);
 
     useEffect(() => {
         if (typeBlock === 'conditions' && additionallyClickItems.length !== userRules['conditions'].length - 1) {
@@ -117,18 +120,23 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
             <MaterialDynamicIcon iconName={iconName} className={cls.iconThemCard} adapter={adapter} socket={socket}/>{name}
         </span>
         {typeBlock === 'conditions' && name === '...and...' ?
-            <Select
-                className={cls.selectOnChange}
-                value={userRules.justCheck || false}
-                onChange={e => {
-                    const _userRules = deepCopy('conditions', userRules);
-                    _userRules.justCheck = e.target.value;
-                    setUserRules(_userRules);
-                }}
-            >
-                <MenuItem value={false}>{I18n.t('on condition change')}</MenuItem>
-                <MenuItem value={true}>{I18n.t('just check')}</MenuItem>
-            </Select>
+            <div style={{width: '100%'}}>
+                <Select
+                    className={cls.selectOnChange}
+                    value={userRules.justCheck || false}
+                    onChange={e => {
+                        const _userRules = deepCopy('conditions', userRules);
+                        _userRules.justCheck = e.target.value;
+                        setUserRules(_userRules);
+                    }}
+                >
+                    <MenuItem value={false}>{I18n.t('on condition change')}</MenuItem>
+                    <MenuItem value={true}>{I18n.t('just check')}</MenuItem>
+                </Select>
+                <IconButton size="small" title={I18n.t('Explanation')} className={cls.selectOnChangeHelp} onClick={() => setShowHelp(true)}>
+                    <IconHelp className={cls.selectOnChangeHelpIcon}/>
+                </IconButton>
+            </div>
             : null}
         <AdditionallyContentBlockItems
             setTourStep={setTourStep}
@@ -197,6 +205,7 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
                 {nameAdditionally}
             </div>
         </div>}
+        {showHelp ? <DialogHelp onClose={() => setShowHelp(false)}/> : null}
     </div>;
 }
 

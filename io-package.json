@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.0.3",
+        "version": "5.0.4",
         "news": {
+            "5.0.4": {
+                "en": "Fixed errors in rules",
+                "de": "Fehler in Regeln behoben",
+                "ru": "Исправлены ошибки в правилах",
+                "pt": "Erros corrigidos nas regras",
+                "nl": "Fouten in regels opgelost",
+                "fr": "Correction d'erreurs dans les règles",
+                "it": "Risolti errori nelle regole",
+                "es": "Errores corregidos en las reglas",
+                "pl": "Naprawiono błędy w regułach",
+                "zh-cn": "修正规则错误"
+            },
             "5.0.3": {
                 "en": "Implemented the memory for condition",
                 "de": "Implementierte den Speicher für Bedingung",
