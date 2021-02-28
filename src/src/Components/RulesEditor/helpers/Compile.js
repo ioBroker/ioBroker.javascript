@@ -58,10 +58,13 @@ function compileTriggers(json, context, blocks) {
     }
 
     const vars = [];
+    let prelines = [];
+    let hist = json.conditions.find(conds => conds.find(cond => cond.tagCard === '()'));
+
     jsonTriggers.forEach((trigger, i) => {
         const found = findBlock(trigger.id, blocks);
         if (found) {
-            const _context = {trigger, condition: {}, justCheck: json.justCheck || (!json.conditions.length || !json.conditions[0].length)};
+            const _context = {trigger, condition: {}, justCheck: hist ? false : (json.justCheck || (!json.conditions.length || !json.conditions[0].length))};
             const text = found.compile(trigger, _context);
             const conditions = compileConditions(json.conditions, _context, blocks);
             const then = compileActions(json.actions.then, _context, blocks);
@@ -70,20 +73,27 @@ function compileTriggers(json, context, blocks) {
             // find indent
             vars.push('cond' + i);
 
+            if (_context.prelines && _context.prelines.length) {
+                _context.prelines.forEach(line => prelines.push(line));
+            }
+
             triggers.push(
                 text
-                    .replace(/__%%STATE%%__/g, 'cond' + i)
                     .replace('__%%CONDITION%%__', conditions)
                     .replace('__%%THEN%%__', then || '// ignore')
                     .replace('__%%ELSE%%__', _else || '// ignore')
+                    .replace(/__%%STATE%%__/g, 'cond' + i)
             );
         }
     });
 
     let text = triggers.join('\n\n');
 
-    if (!json.justCheck) {
+    if (!json.justCheck || hist) {
         text = vars.map(v => `let ${v} = false;`).join('\n') + '\n\n' + text;
+    }
+    if (prelines) {
+        text = prelines.join('\n') + '\n\n' + text;
     }
 
     return text;

@@ -1,5 +1,36 @@
 import GenericBlock from '../GenericBlock';
 
+const HYSTERESIS = `function __hysteresis(val, limit, state, hist, comp) {
+    let cond1, cond2;
+    if (comp === '>') {
+        cond1 = val > limit + hist;
+        cond2 = val <= limit - hist;
+    } else if (comp === '<') {
+        cond1 = val < limit - hist;
+        cond2 = val >= limit + hist;
+    } else if (comp === '>=') {
+        cond1 = val >= limit + hist;
+        cond2 = val < limit - hist;
+    } else if (comp === '<=') {
+        cond1 = val <= limit - hist;
+        cond2 = val > limit + hist;
+    } else if (comp === '=') {
+        cond1 = val <= limit + hist && val > limit - hist;
+        cond2 = val > limit + hist || val <= limit - hist;
+    } else if (comp === '<>') {
+        cond1 = val > limit + hist || val <= limit - hist;
+        cond2 = val <= limit + hist && val > limit - hist;
+    }
+     
+    if (!state && cond1) {
+        return true;
+    } else if (state && cond2) {
+        return false;
+    } else {
+        return state;
+    }
+}`;
+
 class ConditionState extends GenericBlock {
     constructor(props) {
         super(props, ConditionState.getStaticData());
@@ -16,6 +47,21 @@ class ConditionState extends GenericBlock {
             value = false;
         }
         let result;
+        if (config.tagCard === '()') {
+            context.prelines =  context.prelines || [];
+            !context.prelines.find(item => item !== HYSTERESIS) && context.prelines.push(HYSTERESIS);
+            if (config.useTrigger) {
+                if (value === '') {
+                    value = 0;
+                }
+                result = `__hysteresis(obj.state.val, ${value}, __%%STATE%%__, ${config.hist}, "${config.histComp}")`;
+            } else {
+                if (value === '') {
+                    value = 0;
+                }
+                result = `__hysteresis((await getStateAsync("${config.oid}")).val, ${value}, __%%STATE%%__, ${config.hist}, "${config.histComp}")`;
+            }
+        } else
         if (config.tagCard !== 'includes') {
             const compare = config.tagCard === '=' ? '==' : (config.tagCard === '<>' ? '!=' : config.tagCard);
             if (config.useTrigger) {
@@ -110,8 +156,19 @@ class ConditionState extends GenericBlock {
                     title: '<>',
                     title2: '[not equal]',
                     text: 'not equal to'
+                },
+                {
+                    title: '<>',
+                    title2: '[not equal]',
+                    text: 'not equal to'
+                },
+                {
+                    title: '()',
+                    title2: '[hysteresis]',
+                    text: 'hysteresis'
                 }
             ];
+
             if (oidStates) {
                 options = Object.keys(oidStates).map(val =>
                     ({value: val, title: oidStates[val]}));
@@ -189,7 +246,7 @@ class ConditionState extends GenericBlock {
             nameRender: 'renderText',
             defaultValue: '',
             attr: 'value',
-            frontText: tag?.text || 'compare with',
+            frontText: tagCard === '()' ? 'limit' : (tag?.text || 'compare with'),
             backText: oidUnit
         };
 
@@ -255,6 +312,31 @@ class ConditionState extends GenericBlock {
                 },
                 renderText,
             ];
+        }
+
+        if (tagCard === '()') {
+            inputs.splice(1, 0, {
+                nameRender: 'renderSelect',
+                attr: 'histComp',
+                defaultValue: '>',
+                frontText: 'Condition',
+                options: [
+                    {title: '>',  value: '>'},
+                    {title: '>=', value: '>='},
+                    {title: '<',  value: '<'},
+                    {title: '<=', value: '<='},
+                    {title: '=',  value: '='},
+                    {title: '<>', value: '<>'},
+                ]
+            });
+            inputs.push({
+                frontText: 'Spreading', // translate
+                nameRender: 'renderNumber',
+                noHelperText: true,
+                attr: 'hist',
+                defaultValue: 1,
+                backText: oidUnit
+            });
         }
 
         const state = {
@@ -337,6 +419,11 @@ class ConditionState extends GenericBlock {
                     title: '.',
                     title2: '[includes]',
                     text: 'includes'
+                },
+                {
+                    title: '()',
+                    title2: '[hysteresis]',
+                    text: 'hysteresis'
                 }
             ],
             title: 'Compares the state value with user defined value'

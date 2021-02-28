@@ -6,17 +6,13 @@ class ActionSendEmail extends GenericBlock {
     }
 
     static compile(config, context) {
-        let value = '';
-        if (context.trigger?.oidType) {
-            value = '.replace(/%s/g, obj.state.value).replace(/%id/g, obj.id)';
-        }
         if (!config.recipients) {
             return '// no recipients defined'
         } else {
             return `sendTo("${config.instance || 'email.0'}", {
             to:      "${config.recipients || ''}",
-            subject: "${(config.subject || 'ioBroker').replace(/"/g, '\\"')}"${value},
-            text:    "${(config.text || '').replace(/"/g, '\\"')}"${value}
+            subject: "${(config.subject || 'ioBroker').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)},
+            text:    "${(config.text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}
         });`;
         }
     }
@@ -64,7 +60,8 @@ class ActionSendEmail extends GenericBlock {
             },
             id: 'ActionSendEmail',
             adapter: 'email',
-            title: 'Sends an email'
+            title: 'Sends an email',
+            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID'
         }
     }
 

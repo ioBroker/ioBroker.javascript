@@ -627,12 +627,12 @@ Returns a javascript Date object for the specified pattern. For valid pattern va
 The returned Date object is calculated for the passed *date*. If no date is provided, the current day is used.
 
 ```js
-var sunriseEnd = getAstroDate("sunriseEnd");
+let sunriseEnd = getAstroDate("sunriseEnd");
 log("Sunrise ends today at " + sunriseEnd.toLocaleTimeString());
 
-var today = new Date();
-var tomorrow = today.setDate(today.getDate() + 1);
-var tomorrowNigh = getAstroDate("night", tomorrow);
+let today = new Date();
+let tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+let tomorrowNight = getAstroDate("night", tomorrow);
 ```
 
 ### isAstroDay

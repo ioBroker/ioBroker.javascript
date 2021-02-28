@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.0.4",
+        "version": "5.0.5",
         "news": {
+            "5.0.5": {
+                "en": "Implemented the toggle functionality",
+                "de": "Implementierte die Umschaltfunktion",
+                "ru": "Реализована функция переключения",
+                "pt": "Implementou a funcionalidade de alternância",
+                "nl": "De schakelfunctie geïmplementeerd",
+                "fr": "Implémentation de la fonctionnalité de bascule",
+                "it": "Implementata la funzionalità di attivazione / disattivazione",
+                "es": "Implementó la funcionalidad de alternar",
+                "pl": "Zaimplementowano funkcję przełączania",
+                "zh-cn": "实现了切换功能"
+            },
             "5.0.4": {
                 "en": "Fixed errors in rules",
                 "de": "Fehler in Regeln behoben",

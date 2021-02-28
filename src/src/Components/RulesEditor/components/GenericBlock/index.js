@@ -2,9 +2,12 @@ import React, { PureComponent, Fragment } from 'react';
 import cls from './style.module.scss';
 
 import { Menu, MenuItem } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import IconHelp from '@material-ui/icons/HelpOutline';
 
 import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import DialogError from '@iobroker/adapter-react/Dialogs/Error';
+import DialogMessage from '@iobroker/adapter-react/Dialogs/Message';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import I18n from '@iobroker/adapter-react/i18n';
 
@@ -40,6 +43,7 @@ class GenericBlock extends PureComponent {
             name: item.name || props.name || '',
             icon: item.icon || props.icon || '',
             adapter: item.adapter || props.adapter || '',
+            helpDialog: item.helpDialog || props.helpDialog || '',
 
             tagCardArray: item.tagCardArray || [],
 
@@ -48,6 +52,7 @@ class GenericBlock extends PureComponent {
             openModal: false,
             iconTag: false,
             error: '',
+            helpText: '',
 
             oid: {},
             instanceSelectionOptions: [],
@@ -260,7 +265,7 @@ class GenericBlock extends PureComponent {
     renderObjectID = (input, value, onChange) => {
         const { showSelectId, settings } = this.state;
         const { className, socket } = this.props;
-        const { attr, openCheckbox } = input;
+        const { attr, openCheckbox, checkReadOnly } = input;
         let visibility = true;
         if (openCheckbox) {
             visibility = typeof settings['offset'] === 'boolean' ? settings['offset'] : true
@@ -272,7 +277,7 @@ class GenericBlock extends PureComponent {
                     .then(obj =>
                         this.setState({
                             [settings[attr]]: obj,
-                            error: obj?.common?.write === false ? I18n.t('Read only value selected') : ''
+                            error: checkReadOnly && obj?.common?.write === false ? I18n.t('Read only ID selected: %s', settings[attr]) : ''
                         }));
             }, 0);
         }
@@ -334,7 +339,13 @@ class GenericBlock extends PureComponent {
         return <div
             className={cls.iconTag}
             onClick={e => {
-                this.state.tagCardArray.length >= 3 && this.setState({ openTagMenu: e.currentTarget });
+                if (this.state.settings.tagCard) {
+                    if (this.state.tagCardArray.length < 3) {
+                        this.onChangeTag();
+                    } else {
+                        this.setState({ openTagMenu: e.currentTarget })
+                    }
+                }
             }}>
             {this.state.settings.tagCard}
         </div>;
@@ -433,6 +444,14 @@ class GenericBlock extends PureComponent {
         </div>;
     };
 
+    static getReplacesInText(context) {
+        let value = '';
+        if (context.trigger?.oidType) {
+            value = '.replace(/%s/g, obj.state.value).replace(/%id/g, obj.id)';
+        }
+        return value;
+    }
+
     /////////////////////////////
     renderTags = () => {
         let { tagCardArray, openTagMenu } = this.state;
@@ -493,7 +512,7 @@ class GenericBlock extends PureComponent {
             newTagCardArray = newTagCardArray.map(el => el.title);
         }
 
-        if (tagCard && newTagCardArray.length < 4) {
+        if (tagCard && newTagCardArray.length < 3) {
             const newSettings = { ...settings };
             const newTagCard = newTagCardArray[(newTagCardArray.indexOf(tagCard) + 1) % newTagCardArray.length]
             newSettings.tagCard = newTagCard;
@@ -536,24 +555,31 @@ class GenericBlock extends PureComponent {
     }
 
     render = () => {
-        const { inputs, name, icon, iconTag, settings, adapter, settings: { tagCard } } = this.state;
+        const { inputs, name, icon, iconTag, settings, adapter, settings: { tagCard }, helpDialog } = this.state;
         const { socket, notFound } = this.props;
 
         return <Fragment>
             {iconTag ? this.renderIconTag() :
                 <MaterialDynamicIcon
                     iconName={icon}
-                    className={clsx(cls.iconThemCard, this.state.tagCardArray.length >= 3 && cls.iconThemCardSelectable)}
+                    className={clsx(cls.iconThemCard, tagCard && this.state.tagCardArray.length && cls.iconThemCardSelectable)}
                     adapter={adapter}
                     socket={socket}
                     onClick={e => {
-                        this.state.tagCardArray.length >= 3 && this.setState({ openTagMenu: e.currentTarget });
+                        if (tagCard) {
+                            if (this.state.tagCardArray.length < 3) {
+                                this.onChangeTag();
+                            } else {
+                                this.setState({ openTagMenu: e.currentTarget })
+                            }
+                        }
                     }}
                 />}
             <div className={cls.blockName}>
                 <span className={cls.nameCard}>
-                    {name && name.en}
-                    {!!notFound ? `${settings.id} not found` : ''}
+                    {name && (name[I18n.getLanguage()] || name.en)}
+                    {!!notFound ? I18n.t(`%s not found`, settings.id) : ''}
+                    {helpDialog ? <IconButton className={cls.iconHelp} size="small" onClick={() => this.setState({helpText: helpDialog})}><IconHelp/></IconButton> : null}
                 </span>
                 {inputs.filter(({ nameRender }) => this[nameRender])
                     .map(input => {
@@ -570,6 +596,7 @@ class GenericBlock extends PureComponent {
                 <div onClick={() => this.onChangeTag()} className={clsx(cls.tagCard, 'tag-card') }>{this.renderTags()}</div>
             </div>}
             {this.state.error ? <DialogError title={I18n.t('Warning')} text={this.state.error} onClose={() => this.setState({error: ''})}/> : null}
+            {this.state.helpText ? <DialogMessage title={I18n.t('Instructions')} text={this.state.helpText} onClose={() => this.setState({helpText: ''})}/> : null}
         </Fragment>;
     };
 }

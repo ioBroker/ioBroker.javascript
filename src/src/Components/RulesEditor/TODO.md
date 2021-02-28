@@ -12,3 +12,5 @@
   
 - Getting started: https://github.com/elrumordelaluz/reactour
 - Hide/Show of log resets the rules to saved state
+
+- Add following actions: whatsapp, pushover, pushsafer, pushbullet

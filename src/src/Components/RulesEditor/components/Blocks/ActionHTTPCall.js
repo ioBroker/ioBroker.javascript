@@ -6,7 +6,7 @@ class ActionHTTPCall extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `request("${(config.url || '').replace(/"/g, '\\"')}");`;
+        return `request("${(config.url || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)});`;
     }
 
     onTagChange(tagCard) {
@@ -31,7 +31,8 @@ class ActionHTTPCall extends GenericBlock {
             },
             id: 'ActionHTTPCall',
             icon: 'Language',
-            title: 'Make a HTTP get request'
+            title: 'Make a HTTP get request',
+            helpDialog: 'You can use %s in the URL to use current trigger value or %id to use the triggered object ID'
         }
     }
 

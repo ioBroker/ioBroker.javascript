@@ -6,7 +6,7 @@ class ActionExec extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `exec("${(config.exec || '').replace(/"/g, '\\"')}");`;
+        return `exec("${(config.exec || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)});`;
     }
 
     onTagChange(tagCard) {
@@ -31,7 +31,8 @@ class ActionExec extends GenericBlock {
             },
             id: 'ActionExec',
             icon: 'Apps',
-            title: 'Executes some shell command'
+            title: 'Executes some shell command',
+            helpDialog: 'You can use %s in the command to use current trigger value or %id to use the triggered object ID'
         }
     }
 

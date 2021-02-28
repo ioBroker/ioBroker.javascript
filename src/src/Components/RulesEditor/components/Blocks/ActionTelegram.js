@@ -8,14 +8,10 @@ class ActionTelegram extends GenericBlock {
 
     static compile(config, context) {
         let text = (config.text || '').replace(/"/g, '\\"');
-        let value = '';
-        if (context.trigger?.oidType) {
-            value = '.replace(/%s/g, obj.state.value).replace(/%id/g, obj.id)';
-        }
         if (!text) {
             return '// no text defined'
         } else {
-            return `sendTo("${config.instance}", ${config.user && config.user !== '_' ? `{user: "${(config.user || '').replace(/"/g, '\\"')}", text: "${(text || '').replace(/"/g, '\\"')}"${value}}` : `"${(text || '').replace(/"/g, '\\"')}"${value}`});`;
+            return `sendTo("${config.instance}", ${config.user && config.user !== '_' ? `{user: "${(config.user || '').replace(/"/g, '\\"')}", text: "${(text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}}` : `"${(text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}`});`;
         }
     }
 
@@ -108,7 +104,8 @@ class ActionTelegram extends GenericBlock {
             },
             id: 'ActionTelegram',
             adapter: 'telegram',
-            title: 'Sends message via telegram'
+            title: 'Sends message via telegram',
+            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID'
         }
     }
 

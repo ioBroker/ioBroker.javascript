@@ -16,13 +16,18 @@ class ActionSetState extends GenericBlock {
             config.value !== 'true' &&
             config.value !== 'false'
         ) {
-            value = `"${value.replace(/"/g, '\\"')}"`;
+            value = `"${value.replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}`;
         }
 
-        return `await setStateAsync("${config.oid}", ${value}, ${config.tagCard === 'update'});`;
+        if (config.toggle) {
+            return `await setStateAsync("${config.oid}", !(await getStateAsync("${config.oid}")).val, ${config.tagCard === 'update'});`;
+        } else {
+            return `await setStateAsync("${config.oid}", ${value}, ${config.tagCard === 'update'});`;
+        }
     }
 
-    _setInputs() {
+    _setInputs(toggle) {
+        toggle = toggle === undefined ? this.state.settings.toggle : toggle;
         let input;
         let type = '';
         let options;
@@ -53,29 +58,31 @@ class ActionSetState extends GenericBlock {
                 type = 'select';
             }
         }
-
+        let inputs;
         switch (type) {
             case 'number':
-                input = {
+                inputs = [{
                     backText: oidUnit || '',
                     frontText: 'with',
                     nameRender: 'renderNumber',
                     defaultValue: oidMax === undefined ? 0 : oidMax,
-                }
+                    attr: 'value'
+                }];
                 if (this.state.settings.value !== undefined && isNaN(parseFloat(this.state.settings.value))) {
                     settings = {value: oidMax === undefined ? 0 : oidMax};
                 }
                 break;
 
             case 'slider':
-                input = {
+                inputs = [{
                     nameRender: 'renderSlider',
                     defaultValue: oidMax,
                     min: oidMin,
                     max: oidMax,
                     unit: oidUnit,
                     step: oidStep,
-                };
+                    attr: 'value'
+                }];
                 const f = parseFloat(this.state.settings.value);
                 if (this.state.settings.value !== undefined &&
                     (isNaN(f) || f < oidMin || f > oidMax)
@@ -85,45 +92,60 @@ class ActionSetState extends GenericBlock {
                 break;
 
             case 'select':
-                input = {
+                inputs = [{
                     nameRender: 'renderSelect',
                     frontText: 'with',
                     options,
                     defaultValue: options[0].value,
-                };
+                    attr: 'value'
+                }];
                 if (this.state.settings.value !== undefined && !options.find(item => item.value === this.state.settings.value)) {
                     settings = {value: options[0].value};
                 }
                 break;
 
             case 'boolean':
-                input = {
-                    backText: 'true',
-                    frontText: 'false',
-                    nameRender: 'renderSwitch',
-                    defaultValue: false,
-                };
+                inputs = [
+                    {
+                        backText: 'toggle value',
+                        attr: 'toggle',
+                        nameRender: 'renderCheckbox',
+                        defaultValue: false,
+                    }
+                ];
+                if (!toggle) {
+                    inputs.push({
+                        backText: 'true',
+                        frontText: 'false',
+                        nameRender: 'renderSwitch',
+                        defaultValue: false,
+                        attr: 'value'
+                    })
+                }
+
                 if (this.state.settings.value !== undefined && this.state.settings.value !== false && this.state.settings.value !== true) {
                     settings = {value: false};
                 }
                 break;
 
             case 'button':
-                input = {
+                inputs = [{
                     nameRender: 'renderButton',
                     defaultValue: true,
-                };
+                    attr: 'value'
+                }];
                 if (this.state.settings.value !== undefined && this.state.settings.value !== true) {
                     settings = {value: true};
                 }
                 break;
 
             case 'color':
-                input = {
+                inputs = [{
                     nameRender: 'renderColor',
                     frontText: 'with',
                     defaultValue: '#FFFFFF',
-                };
+                    attr: 'value'
+                }];
                 if (this.state.settings.value !== undefined &&
                     (
                         typeof this.state.settings.value !== 'string' ||
@@ -135,29 +157,27 @@ class ActionSetState extends GenericBlock {
                 break;
 
             default:
-                input = {
+                inputs = [{
                     backText: oidUnit || '',
                     frontText: 'with',
                     nameRender: 'renderText',
-                    defaultValue: ''
-                };
+                    defaultValue: '',
+                    attr: 'value'
+                }];
                 break;
         }
-        input.attr = 'value';
 
-        return {input, newSettings: settings};
+        return {inputs, newSettings: settings};
     }
 
-    onTagChange() {
-        const {input, newSettings} = this._setInputs();
-        let inputs = [
-            {
-                nameRender: 'renderObjectID',
-                attr: 'oid',
-                defaultValue: '',
-            },
-            input
-        ];
+    onTagChange(tagCard, cb, ignore, toggle) {
+        const {inputs, newSettings} = this._setInputs(toggle);
+        inputs.unshift({
+            nameRender: 'renderObjectID',
+            attr: 'oid',
+            defaultValue: '',
+            checkReadOnly: true,
+        });
 
         this.setState({inputs}, () => super.onTagChange(null, () => {
             if (newSettings) {
@@ -169,8 +189,8 @@ class ActionSetState extends GenericBlock {
         }));
     }
 
-    onValueChanged() {
-        this.onTagChange();
+    onValueChanged(value, attr) {
+        this.onTagChange(undefined, undefined, undefined, attr === 'toggle' ? value : undefined);
     }
 
     static getStaticData() {
@@ -180,7 +200,8 @@ class ActionSetState extends GenericBlock {
             id: 'ActionSetState',
             icon: 'PlayForWork',
             tagCardArray: ['control', 'update'],
-            title: 'Control or update some state'
+            title: 'Control or update some state',
+            helpDialog: 'You can use %s in the value to use the current trigger value or %id to display the triggered object ID'
         }
     }
 

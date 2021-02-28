@@ -6,11 +6,7 @@ class ActionPrintText extends GenericBlock {
     }
 
     static compile(config, context) {
-        let value = '';
-        if (context.trigger?.oidType) {
-            value = '.replace(/%s/g, obj.state.value).replace(/%id/g, obj.id)';
-        }
-        return `console.log("${(config.text || '').replace(/"/g, '\\"')}"${value});`;
+        return `console.log("${(config.text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)});`;
     }
 
     onTagChange(tagCard) {
@@ -35,7 +31,8 @@ class ActionPrintText extends GenericBlock {
             },
             id: 'ActionPrintText',
             icon: 'Subject',
-            title: 'Print some text in log'
+            title: 'Print some text in log',
+            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID'
         }
     }
 

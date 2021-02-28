@@ -11,8 +11,8 @@
     align-items: center;
     background: #ffffff6b;
     border-radius: 4px;
-    box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
-        0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+        0 1px 3px 0 rgba(0, 0, 0, 0.12);
 }
 .cardStyleActive{
     width: 300px;
@@ -68,11 +68,11 @@
     }
 }
 .isDelete{
-    height: 0px;
-    min-height: 0px;
+    height: 0;
+    min-height: 0;
     overflow: hidden;
     padding: 0 10px;
-    margin: 0px 12px 0px 12px;
+    margin: 0 12px 0 12px;
     transition: all 0.25s;
     background: rgb(255, 255, 255);
     opacity: 0.8;

@@ -37,6 +37,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.0.5 (2021-02-28)
+* (bluefox) Implemented the toggle functionality
+
 ### 5.0.4 (2021-02-28)
 * (bluefox) Fixed errors in rules
 
@@ -48,11 +51,6 @@ And then call `npm run build`.
 
 ### 5.0.0 (2021-02-27) [Birthday edition]
 * (bluefox) added the rules engine
-
-### 4.11.0 (2021-02-16)
-* (Apollon77) Add some additional checks for getSchedules
-* (Garfonso) make sure promisified methods reject with Error instead of string so that async errors can be catched correctly
-* (Huseriato) update some german blockly translations
 
 ## License
 

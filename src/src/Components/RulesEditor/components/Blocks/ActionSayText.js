@@ -135,11 +135,7 @@ class ActionSayText extends GenericBlock {
         if (!config.text) {
             return '// no text defined'
         } else {
-            let value = '';
-            if (context.trigger?.oidType) {
-                value = '.replace(/%s/g, obj.state.value).replace(/%id/g, obj.id)';
-            }
-            return `await setStateAsync("${config.instance}.tts.text", "${config.language ? config.language + ';' : ''}${config.volume ? config.volume + ';' : ''}${(config.text || '').replace(/"/g, '\\"')}"${value});`;
+            return `await setStateAsync("${config.instance}.tts.text", "${config.language && config.language !== '_' ? config.language + ';' : ''}${config.volume ? config.volume + ';' : ''}${(config.text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)});`;
         }
     }
 
@@ -196,7 +192,8 @@ class ActionSayText extends GenericBlock {
             },
             id: 'ActionSayText',
             adapter: 'sayit',
-            title: 'Say some text via sayit adapter'
+            title: 'Say some text via sayit adapter',
+            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID'
         }
     }
 

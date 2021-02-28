@@ -15,6 +15,7 @@ import { useStateLocal } from '../../hooks/useStateLocal';
 import DragWrapper from '../DragWrapper';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import DialogHelp from './DialogHelp';
+import DialogCondition from './DialogCondition';
 
 const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolean, typeBlock, userRules, setUserRules, animation, setTourStep, tourStep, isTourOpen }) => {
     const [checkItem, setCheckItem] = useState(false);
@@ -93,6 +94,7 @@ AdditionallyContentBlockItems.defaultProps = {
 const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, border, userRules, setUserRules, iconName, adapter, socket, setTourStep, tourStep, isTourOpen }) => {
     const [additionallyClickItems, setAdditionallyClickItems, checkLocal] = useStateLocal(typeBlock === 'actions' ? false : [], `additionallyClickItems_${typeBlock}`);
     const [showHelp, setShowHelp] = useState(false);
+    const [showConditionDialog, setShowConditionDialog] = useState(false);
 
     useEffect(() => {
         if (typeBlock === 'conditions' && additionallyClickItems.length !== userRules['conditions'].length - 1) {
@@ -206,6 +208,7 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
             </div>
         </div>}
         {showHelp ? <DialogHelp onClose={() => setShowHelp(false)}/> : null}
+        {showConditionDialog ? <DialogCondition onClose={() => setShowConditionDialog(false)}/> : null}
     </div>;
 }
 

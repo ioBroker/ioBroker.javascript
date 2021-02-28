@@ -1,12 +1,15 @@
 import React, { Fragment, useCallback, useContext, useEffect, useState } from 'react';
 import cls from './style.module.scss';
+import { AppBar, Tab, Tabs } from '@material-ui/core';
+
+import I18n from '@iobroker/adapter-react/i18n';
+
 import CustomInput from './components/CustomInput';
 import { CustomDragLayer } from './components/CustomDragLayer';
 import CustomDragItem from './components/CardMenu/CustomDragItem';
 import ContentBlockItems from './components/ContentBlockItems';
 import HamburgerMenu from './components/HamburgerMenu';
 import { useStateLocal } from './hooks/useStateLocal';
-import { AppBar, Tab, Tabs } from '@material-ui/core';
 import { ContextWrapperCreate } from './components/ContextWrapper';
 import Compile from './helpers/Compile';
 import MaterialDynamicIcon from './helpers/MaterialDynamicIcon';
@@ -102,11 +105,13 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
                                 value={filter.index}
                                 onChange={handleChange}
                             >
-                                <Tab className="blocks-triggers" icon={<MaterialDynamicIcon iconName='FlashOn' />}
+                                <Tab className="blocks-triggers"
+                                     title={I18n.t('Triggers')}
+                                     icon={<MaterialDynamicIcon iconName='FlashOn' />}
                                     {...a11yProps(0)} />
-                                <Tab className="blocks-conditions" icon={<MaterialDynamicIcon iconName='Help' />}
+                                <Tab title={I18n.t('Conditions')} className="blocks-conditions" icon={<MaterialDynamicIcon iconName='Help' />}
                                     {...a11yProps(1)} />
-                                <Tab className="blocks-actions" icon={<MaterialDynamicIcon iconName='PlayForWork' />}
+                                <Tab title={I18n.t('Actions')} className="blocks-actions" icon={<MaterialDynamicIcon iconName='PlayForWork' />}
                                     {...a11yProps(2)} />
                             </Tabs>
                         </AppBar>

@@ -9,13 +9,16 @@ import CustomCheckbox from '../CustomCheckbox';
 const CustomSelect = ({ multiple, value, customValue, title, attr, options, style, onChange, className }) => {
     const [inputText, setInputText] = useState(value === undefined ? options[0].value : value);
 
+    const v = customValue ? value : inputText;
+    const text = v === '' || v === null || v === undefined ? '_' : v;
+
     return <FormControl
         className={clsx(cls.root, className)}
         fullWidth
         style={style}
     >
         <Select
-            value={(customValue ? value : inputText) || '_'}
+            value={text}
             fullWidth
             multiple={multiple}
             renderValue={selected => {
@@ -53,7 +56,7 @@ const CustomSelect = ({ multiple, value, customValue, title, attr, options, styl
             }}
             input={<Input name={attr} id={attr + '-helper'} />}
         >
-            {!multiple && options && options.map(item => <MenuItem style={{ placeContent: 'space-between' }} key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)}{item.title2 && <div>{item.title2}</div>}</MenuItem>)}
+            {!multiple && options && options.map(item => <MenuItem style={{ placeContent: 'space-between' }} key={'key-' + item.value} value={item.value === '' || item.value === null || item.value === undefined ? '_' : item.value}>{I18n.t(item.title)}{item.title2 && <div>{item.title2}</div>}</MenuItem>)}
             {multiple && options && options.map(item => <MenuItem style={{ placeContent: 'space-between' }} key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)} <CustomCheckbox customValue value={value.includes(item.value)} /></MenuItem>)}
         </Select>
         {title ? <FormHelperText>{I18n.t(title)}</FormHelperText> : null}
