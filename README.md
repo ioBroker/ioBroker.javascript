@@ -37,6 +37,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.0.3 (2021-02-28)
+* (bluefox) Implemented the memory for condition
+
 ### 5.0.2 (2021-02-27)
 * (bluefox) Fixed error in the rules
 
@@ -50,9 +53,6 @@ And then call `npm run build`.
 
 ### 4.10.15 (2021-01-31)
 * (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5W)
-
-### 4.10.14 (2021-01-25)
-* (Apollon77) Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5R)
 
 ## License
 

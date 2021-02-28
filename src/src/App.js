@@ -738,6 +738,9 @@ class App extends GenericApp {
     }
 
     renderEditor() {
+        const isAnyRulesExists = Object.keys(this.scripts).reduce((sum, id) =>
+            sum + (this.scripts[id].common.engineType === 'Rules' ? 1 : 0), 0);
+
         return <Editor
             key="editor"
             visible={!this.state.resizing}
@@ -750,6 +753,7 @@ class App extends GenericApp {
             themeType={this.state.themeType}
             themeName={this.state.themeName}
             onChange={(id, common) => this.onUpdateScript(id, common)}
+            isAnyRulesExists={isAnyRulesExists}
             onSelectedChange={(id, editing) => {
                 const newState = {};
                 let changed = false;

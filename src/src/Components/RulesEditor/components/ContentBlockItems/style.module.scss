@@ -8,8 +8,7 @@
     background: #ffffff1f;
     display: flex;
     // padding: 10px;
-    margin: 10px;
-    margin-right: 40px;
+    margin: 10px 40px 10px 10px;
     align-items: center;
     border-radius: 4px;
     // transition: height 0.2s;
@@ -21,11 +20,16 @@
     animation: marginTop 0.12s;
     // transition: margin-top 0.1s;
 }
+.selectOnChange {
+    margin-left: 12px;
+    margin-right: 20px;
+    color: var(--lineColor) !important;
+}
 @keyframes marginTop {
     0% {
-        padding: 0px;
+        padding: 0;
         margin-top: 70px;
-        height: 0px;
+        height: 0;
     }
     100% {
         padding: 10px;
@@ -34,7 +38,7 @@
     }
 }
 .emptyBlockNone {
-    height: 0px;
+    height: 0;
     animation: none;
     transition: height 0.02s;
 }
@@ -74,7 +78,7 @@
 }
 @keyframes heightBlock {
     0% {
-        height: 0%;
+        height: 0;
     }
     100% {
         height: 100%;
@@ -82,7 +86,7 @@
 }
 .contentHeightOff {
     height: 0;
-    overflow: hidden;    
+    overflow: hidden;
     animation: none;
 }
 .cardAdd {

@@ -77,13 +77,13 @@
 }
 .hamburgerWrapper {
     position: absolute;
-    width: 40px;
-    height: 28px;
+    width: 32px;
+    height: 26px;
     background: var(--backgroundColorHumburger);
-    border-radius: 0px 20px 20px 0;
+    border-radius: 0 5px 5px 0;
     display: flex;
     justify-content: center;
-    padding-top: 12px;
+    padding-top: 10px;
     left: 221px;
     top: 30px;
     border: 1px solid var(--lineColor);
@@ -93,7 +93,10 @@
 }
 .hamburgerOff {
     left: 20px;
+    padding-top: 12px;
     border-radius: 20px;
+    width: 40px;
+    height: 28px;
 }
 .nothingFound {
     color: var(--lineColor);

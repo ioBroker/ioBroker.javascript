@@ -20,6 +20,7 @@ import CustomTime from '../CustomTime';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import utils from '../../helpers/utils';
 import clsx from 'clsx';
+import {STEPS} from "../../helpers/Tour";
 
 class GenericBlock extends PureComponent {
     constructor(props, item) {
@@ -157,7 +158,7 @@ class GenericBlock extends PureComponent {
         return visibility ? <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)}>
             {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomInput
-                className={className}
+                className={clsx(className, input.className)}
                 fullWidth
                 autoComplete="off"
                 label={input.noHelperText ? '' : 'number'}
@@ -421,14 +422,20 @@ class GenericBlock extends PureComponent {
     };
 
     /////////////////////////////
-    tagGenerate = () => {
+    renderTags = () => {
         let { tagCardArray, openTagMenu } = this.state;
         let { tagCard } = this.state.settings;
         let result = tagCard;
         if (tagCardArray.length > 3) {
             result = <div>
                 <div aria-controls="simple-menu" aria-haspopup="true"
-                    onClick={(e) => this.setState({ openTagMenu: e.currentTarget })}>{result}</div>
+                    onClick={(e) => {
+                        this.setState({ openTagMenu: e.currentTarget }, () => {
+                            this.props.isTourOpen &&
+                            this.props.tourStep === STEPS.openTagsMenu &&
+                                setTimeout(() => this.props.setTourStep(STEPS.selectIntervalTag), 300);
+                        });
+                    }}>{result}</div>
                 <Menu
                     id="simple-menu"
                     anchorEl={openTagMenu}
@@ -441,8 +448,10 @@ class GenericBlock extends PureComponent {
                         if (typeof el !== 'string') {
                             tag = el.title;
                         }
-                        return <MenuItem key={tag}
+                        return <MenuItem
+                            key={tag}
                             selected={tag === tagCard}
+                            className={'tag-card-' + tag}
                             style={{ placeContent: 'space-between' }}
                             onClick={e => {
                                 const settings = { ...this.state.settings, tagCard: tag };
@@ -450,6 +459,12 @@ class GenericBlock extends PureComponent {
                                     this.props.onChange(settings);
                                     this.onTagChange(tag);
                                 });
+                                (this.props.isTourOpen &&
+                                    (this.props.tourStep === STEPS.openTagsMenu ||
+                                    this.props.tourStep === STEPS.selectIntervalTag) &&
+                                    tag === 'interval' &&
+                                    setTimeout(() => this.props.setTourStep(STEPS.selectActions), 500));
+
                             }}>{I18n.t(tag)}{typeof el !== 'string' && el.title2 && <div style={{ marginLeft: 4 }}>{el.title2}</div>}</MenuItem>
                     })}
                 </Menu>
@@ -459,7 +474,7 @@ class GenericBlock extends PureComponent {
         return result;
     };
 
-    tagGenerateNew = () => {
+    onChangeTag = () => {
         const { tagCardArray, settings, settings: { tagCard } } = this.state;
         let newTagCardArray = [...tagCardArray]
         if (typeof newTagCardArray[0] !== 'string') {
@@ -532,7 +547,7 @@ class GenericBlock extends PureComponent {
                     })}
             </div>
             {tagCard && <div className={cls.controlMenuTop} style={{ opacity: 1, height: 22, top: -22 }}>
-                <div onClick={() => this.tagGenerateNew()} className={cls.tagCard}>{this.tagGenerate()}</div>
+                <div onClick={() => this.onChangeTag()} className={clsx(cls.tagCard, 'tag-card') }>{this.renderTags()}</div>
             </div>}
         </Fragment>;
     };

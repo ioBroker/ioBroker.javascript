@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.0.2",
+        "version": "5.0.3",
         "news": {
+            "5.0.3": {
+                "en": "Implemented the memory for condition",
+                "de": "Implementierte den Speicher für Bedingung",
+                "ru": "Реализована память для условия",
+                "pt": "Implementou a memória para a condição",
+                "nl": "Het geheugen geïmplementeerd voor conditie",
+                "fr": "Implémentation de la mémoire pour la condition",
+                "it": "Implementata la memoria per la condizione",
+                "es": "Implementado la memoria para condición",
+                "pl": "Zaimplementowano pamięć warunkową",
+                "zh-cn": "实现条件存储"
+            },
             "5.0.2": {
                 "en": "Fixed error in the rules",
                 "de": "Fehler in den Regeln behoben",
@@ -282,6 +294,18 @@
                 "format12": false,
                 "leadingZeros": true
             }
+        },
+        {
+            "_id": "variables.rulesTour",
+            "common": {
+                "name": "Is tour done",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "role": "state"
+            },
+            "type": "state",
+            "native": {}
         }
     ]
 }

@@ -1,4 +1,5 @@
 import GenericBlock from '../GenericBlock';
+import Compile from "../../helpers/Compile";
 
 class TriggerScriptSave extends GenericBlock {
     constructor(props) {

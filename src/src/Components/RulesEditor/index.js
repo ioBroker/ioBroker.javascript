@@ -13,22 +13,19 @@ import MaterialDynamicIcon from './helpers/MaterialDynamicIcon';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import './helpers/stylesVariables.scss';
-import Tour from 'reactour';
-import steps, {STEPS} from './helpers/Tour';
+import {STEPS} from './helpers/Tour';
 
-const RulesEditor = ({ code, onChange, themeName }) => {
+const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourOpen }) => {
     // eslint-disable-next-line no-unused-vars
     const { blocks, socket, setOnUpdate } = useContext(ContextWrapperCreate);
     const [allBlocks, setAllBlocks] = useState([]);
     const [hamburgerOnOff, setHamburgerOnOff] = useStateLocal(false, 'hamburgerOnOff');
-    const [userRules, setUserRules] = useState(Compile.code2json(code)); //useStateLocal(DEFAULT_RULE, 'userRules');
+    const [userRules, setUserRules] = useState(Compile.code2json(code));
     const [filter, setFilter] = useStateLocal({
         text: '',
         type: 'triggers',
         index: 0
     }, 'filterControlPanel');
-    const [isTourOpen, setIsTourOpen] = useState(false);
-    const [tourStep, setTourStep] = useState(0);
 
     React.useEffect(() => {
         const newUserRules = Compile.code2json(code);
@@ -38,7 +35,6 @@ const RulesEditor = ({ code, onChange, themeName }) => {
         }
         // eslint-disable-next-line
     }, [code]);
-
 
     const setBlocksFunc = (text = filter.text, typeFunc = filter.type) => {
         if (!blocks) {
@@ -73,6 +69,7 @@ const RulesEditor = ({ code, onChange, themeName }) => {
 
     const handleChange = (event, newValue) => {
         isTourOpen && (newValue === 0 && tourStep === STEPS.selectTriggers) && setTourStep(STEPS.addScheduleByDoubleClick);
+        isTourOpen && (newValue === 2 && tourStep === STEPS.selectActions) && setTourStep(STEPS.addActionPrintText);
 
         setFilter({
             ...filter,
@@ -86,9 +83,11 @@ const RulesEditor = ({ code, onChange, themeName }) => {
         setUserRules(json);
         onChange(Compile.json2code(json, blocks));
     }, [blocks, onChange]);
+
     if (!blocks) {
         return null;
     }
+
     return <div className={clsx(cls.wrapperRules)}>
         <CustomDragLayer allBlocks={allBlocks} socket={socket} />
         <div className={cls.rootWrapper}>
@@ -198,13 +197,6 @@ const RulesEditor = ({ code, onChange, themeName }) => {
                 additionally
             />
         </div>
-        <Tour
-            steps={steps}
-            isOpen={isTourOpen}
-            onRequestClose={() => setIsTourOpen(false)}
-            getCurrentStep={s => setTourStep(s)}
-            goToStep={tourStep}
-        />
     </div>;
 }
 

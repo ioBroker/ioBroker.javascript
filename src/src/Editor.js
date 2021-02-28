@@ -45,6 +45,8 @@ import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import DialogCron from './Dialogs/Cron';
 import DialogScriptEditor from './Dialogs/ScriptEditor';
 import RulesEditor from './Components/RulesEditor';
+import steps, {STEPS} from './Components/RulesEditor/helpers/Tour';
+import Tour from 'reactour';
 
 const images = {
     'Blockly': ImgBlockly,
@@ -191,6 +193,8 @@ class Editor extends React.Component {
             showDebugMenu: false,
             toast: '',
             instancesLoaded: false,
+            isTourOpen: window.localStorage.getItem('tour') !== 'true',
+            tourStep: STEPS.selectTriggers,
         };
 
         this.setChangedInAdmin();
@@ -374,6 +378,7 @@ class Editor extends React.Component {
     UNSAFE_componentWillReceiveProps(nextProps) {
         const newState = {};
         let _changed = false;
+
         if (JSON.stringify(nextProps.runningInstances) !== JSON.stringify(this.state.runningInstances)) {
             _changed = true;
             newState.runningInstances = nextProps.runningInstances;
@@ -545,6 +550,11 @@ class Editor extends React.Component {
     }
 
     onSave() {
+        if (this.state.isTourOpen && this.state.tourStep === STEPS.saveTheScript) {
+            this.setState({isTourOpen: false});
+            window.localStorage.setItem('tour', 'true');
+        }
+
         if (this.state.changed[this.state.selected]) {
             const changed = JSON.parse(JSON.stringify(this.state.changed));
             changed[this.state.selected] = false;
@@ -856,13 +866,13 @@ class Editor extends React.Component {
             const changedAll = Object.keys(this.state.changed).filter(id => this.state.changed[id]).length;
             const changed = this.state.changed[this.state.selected];
             return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
-                    {this.state.menuOpened && this.props.onLocate && (<IconButton className={this.props.classes.toolbarButtons} key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate/></IconButton>)}
+                    {this.state.menuOpened && this.props.onLocate && <IconButton className={this.props.classes.toolbarButtons} key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate/></IconButton>}
                     {!changed && isInstanceRunning && <IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>}
                     {!changed && !isScriptRunning && <span className={ this.props.classes.notRunning }>{I18n.t('Script is not running')}</span>}
                     {!changed && isScriptRunning && !isInstanceRunning && <span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>}
-                    {changed && <Button key="save" variant="contained" className={clsx(this.props.classes.textButton, this.props.classes.saveButton)} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={ this.props.classes.textIcon }/></Button>}
-                    {(changedAll > 1 || (changedAll === 1 && !changed)) && (<Button key="saveall" variant="contained" className={this.props.classes.textButton} onClick={() => this.onSaveAll()}>{I18n.t('Save all')}<IconSave className={ this.props.classes.textIcon }/></Button>)}
-                    {changed && (<Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel className={ this.props.classes.textIcon }/></Button>)}
+                    {changed && <Button key="save" variant="contained" className={clsx(this.props.classes.textButton, this.props.classes.saveButton, 'button-save')} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={ this.props.classes.textIcon }/></Button>}
+                    {(changedAll > 1 || (changedAll === 1 && !changed)) && <Button key="saveall" variant="contained" className={this.props.classes.textButton} onClick={() => this.onSaveAll()}>{I18n.t('Save all')}<IconSave className={ this.props.classes.textIcon }/></Button>}
+                    {changed && <Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel className={ this.props.classes.textIcon }/></Button>}
                     <div style={{flex: 2}}/>
 
                     {this.state.blockly && !this.state.showCompiledCode &&
@@ -901,18 +911,26 @@ class Editor extends React.Component {
                                                                                   onClick={() => this.onConvertBlockly2JS()}
                     >Blockly=>JS</Button>}
 
-                    {(this.state.blockly || this.state.rules) && <Button key="blockly-code" aria-label="blockly"
-                                                    title={I18n.t('Show javascript code')}
-                                                    className={this.props.classes.toolbarButtons}
-                                                    color={this.state.showCompiledCode ? 'secondary' : 'inherit'}
-                                                    style={{padding: '0 5px'}}
-                                                    onClick={() => this.setState({showCompiledCode: !this.state.showCompiledCode})}>
+                    {(this.state.blockly || this.state.rules) && <Button
+                        key="blockly-code"
+                        aria-label="blockly"
+                        title={I18n.t('Show javascript code')}
+                        className={clsx(this.props.classes.toolbarButtons, 'button-js-code')}
+                        color={this.state.showCompiledCode ? 'secondary' : 'inherit'}
+                        style={{padding: '0 5px'}}
+                        onClick={() => {
+                            this.setState({showCompiledCode: !this.state.showCompiledCode});
+                            this.state.isTourOpen && this.state.tourStep === STEPS.showJavascript && this.setState({tourStep: STEPS.switchBackToRules});
+                            this.state.isTourOpen && this.state.tourStep === STEPS.switchBackToRules && this.setState({tourStep: STEPS.saveTheScript});
+                        }}>
                         <img alt={this.state.blockly?"blockly2js":"rules2js"} src={this.state.blockly?ImgBlockly2Js:ImgRules2Js} /></Button>}
-
-                    <IconButton key="debug" aria-label="Debug menu"
-                                                                 title={I18n.t('Debug options')}
-                                                                 className={this.props.classes.toolbarButtons}
-                                                                 onClick={e => this.setState({showDebugMenu: true, menuDebugAnchorEl: e.currentTarget})}>
+                    <IconButton
+                        key="debug"
+                        aria-label="Debug menu"
+                        title={I18n.t('Debug options')}
+                        className={this.props.classes.toolbarButtons}
+                        onClick={e => this.setState({showDebugMenu: true, menuDebugAnchorEl: e.currentTarget})}
+                    >
                         <Badge className={this.props.classes.badgeMargin} badgeContent={this.getDebugBadge()}>
                             <IconDebugMenu />
                         </Badge>
@@ -995,6 +1013,10 @@ class Editor extends React.Component {
 
             return <div className={clsx(this.props.classes.editorDiv)} key="flowEditorDiv">
                 <RulesEditor
+                    setTourStep={this.setTourStep}
+                    tourStep={this.state.tourStep}
+                    isTourOpen={this.state.isTourOpen}
+
                     command={this.state.cmdToBlockly}
                     key="flowEditorDiv"
                     themeType={this.state.themeType}
@@ -1153,6 +1175,29 @@ class Editor extends React.Component {
         />;
     }
 
+    setTourStep = tourStep => this.setState({tourStep});
+
+    getTour() {
+        if (this.state.instancesLoaded &&
+            this.state.selected &&
+            this.props.isAnyRulesExists === 1 &&
+            this.props.objects[this.state.selected] &&
+            this.state.rules &&
+            this.state.visible) {
+            return <Tour
+                steps={steps}
+                isOpen={this.state.isTourOpen}
+                onRequestClose={() => {
+                    this.setState({isTourOpen: false});
+                    window.localStorage.setItem('tour', 'true');
+                    this.props.socket.setState('javascript.0.variables.rulesTour', true, true);
+                }}
+                //getCurrentStep={tourStep => this.setTourStep(tourStep)}
+                goToStep={this.state.tourStep}
+            />;
+        }
+    }
+
     render() {
         if (this.state.selected && this.props.objects[this.state.selected] && this.state.blockly === null && this.state.rules === null) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
@@ -1183,6 +1228,7 @@ class Editor extends React.Component {
             this.getEditorDialog(),
             this.getDebugMenu(),
             this.getToast(),
+            this.getTour(),
         ];
     }
 }

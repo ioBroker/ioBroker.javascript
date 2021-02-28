@@ -9,7 +9,16 @@ const CustomDragItem = props => {
     const { allProperties, allProperties: { acceptedBy, id }, setUserRules, userRules, setTourStep, tourStep, isTourOpen } = props;
     return <DragWrapper {...props} {...allProperties}>
         <CardMenu onDoubleClick={() => {
-            (isTourOpen && tourStep === STEPS.addScheduleByDoubleClick) && setTourStep(STEPS.addOnSaveTriggerByDragAndDrop);
+            (isTourOpen &&
+                tourStep === STEPS.addScheduleByDoubleClick &&
+                id === 'TriggerScheduleBlock' &&
+                setTourStep(STEPS.openTagsMenu)
+            );
+            (isTourOpen &&
+                tourStep === STEPS.addActionPrintText &&
+                id === 'ActionPrintText' &&
+                setTourStep(STEPS.showJavascript)
+            );
 
             let _id = Date.now();
             let blockValue;

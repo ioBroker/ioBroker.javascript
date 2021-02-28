@@ -15,36 +15,52 @@ class ConditionState extends GenericBlock {
         if (value === null || value === undefined) {
             value = false;
         }
+        let result;
         if (config.tagCard !== 'includes') {
             const compare = config.tagCard === '=' ? '==' : (config.tagCard === '<>' ? '!=' : config.tagCard);
             if (config.useTrigger) {
                 if (context?.trigger?.oidType === 'string') {
-                    return `obj.state.value ${compare} "${value}"`;
+                    result = `obj.state.val ${compare} "${value}"`;
                 } else {
-                    return `obj.state.value ${compare} ${value}`;
+                    if (value === '') {
+                        value = 0;
+                    }
+                    result = `obj.state.val ${compare} ${value}`;
                 }
             } else {
                 if (config.oidType === 'string') {
-                    return `await getStateAsync("${config.oid}").val ${compare} "${value}"`;
+                    result = `(await getStateAsync("${config.oid}")).val ${compare} "${value}"`;
                 } else {
-                    return `await getStateAsync("${config.oid}").val ${compare} ${value}`;
+                    if (value === '') {
+                        value = 0;
+                    }
+                    result = `(await getStateAsync("${config.oid}")).val ${compare} ${value}`;
                 }
             }
         } else {
             if (config.useTrigger) {
                 if (context?.trigger?.oidType === 'string') {
-                    return `obj.state.value.includes("${value}")`;
+                    result = `obj.state.val.includes("${value}")`;
                 } else {
-                    return `false`;
+                    result = `false`;
                 }
             } else {
                 if (config.oidType === 'string') {
-                    return `(await getStateAsync("${config.oid}").val).includes("${value}")`;
+                    result = `(await getStateAsync("${config.oid}").val).includes("${value}")`;
                 } else {
-                    return `false`;
+                    result = `false`;
                 }
             }
         }
+
+        if (config.condition === 'change') {
+            const name = 'cond' + context.condition.index;
+
+            context.vars = context.vars || [];
+            context.vars.push(name);
+        }
+
+        return result;
     }
 
     _setInputs(useTrigger, tagCard, oidType, oidUnit, oidStates) {

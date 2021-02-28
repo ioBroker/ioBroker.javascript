@@ -1,9 +1,14 @@
 
 import React, { Fragment, useEffect, useState } from 'react';
-// import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
 import { useDrop } from 'react-dnd';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import { deepCopy } from '../../helpers/deepCopy';
+
 import CurrentItem from '../CurrentItem';
 import { useStateLocal } from '../../hooks/useStateLocal';
 import DragWrapper from '../DragWrapper';
@@ -111,6 +116,20 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
         <span id='width' className={cls.nameBlockItems}>
             <MaterialDynamicIcon iconName={iconName} className={cls.iconThemCard} adapter={adapter} socket={socket}/>{name}
         </span>
+        {typeBlock === 'conditions' && name === '...and...' ?
+            <Select
+                className={cls.selectOnChange}
+                value={userRules.justCheck || false}
+                onChange={e => {
+                    const _userRules = deepCopy('conditions', userRules);
+                    _userRules.justCheck = e.target.value;
+                    setUserRules(_userRules);
+                }}
+            >
+                <MenuItem value={false}>{I18n.t('on condition change')}</MenuItem>
+                <MenuItem value={true}>{I18n.t('just check')}</MenuItem>
+            </Select>
+            : null}
         <AdditionallyContentBlockItems
             setTourStep={setTourStep}
             tourStep={tourStep}

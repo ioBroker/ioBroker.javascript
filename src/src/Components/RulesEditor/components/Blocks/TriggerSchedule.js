@@ -22,10 +22,12 @@ class TriggerScheduleBlock extends GenericBlock {
 
     static compile(config, context) {
         let text = '';
+        const func = context.justCheck ? Compile.STANDARD_FUNCTION_STATE : Compile.STANDARD_FUNCTION_STATE_ONCHANGE;
+
         if (config.tagCard === 'interval') {
-            text = `setInterval(${Compile.STANDARD_FUNCTION}, ${config.interval || 1} * ${config.unit === 's' ? 1000 : (config.unit === 'm' ? 60000 : 3600000)});`;
+            text = `setInterval(${func}, ${config.interval || 1} * ${config.unit === 's' ? 1000 : (config.unit === 'm' ? 60000 : 3600000)});`;
         } else if (config.tagCard === 'cron') {
-            text = `schedule("${config.cron}", ${Compile.STANDARD_FUNCTION});`;
+            text = `schedule("${config.cron}", ${func});`;
         } else if (config.tagCard === 'at') {
             const [hours, minutes] = (config.at || '').split(':');
             let dow = '*';
@@ -58,11 +60,11 @@ class TriggerScheduleBlock extends GenericBlock {
 
                 dow = intervals.join(',')
             }
-            text = `schedule("${minutes || '0'} ${hours || '0'} * * ${dow}", ${Compile.STANDARD_FUNCTION});`;
+            text = `schedule("${minutes || '0'} ${hours || '0'} * * ${dow}", ${func});`;
         } else if (config.tagCard === 'astro') {
-            text = `schedule({astro: "${config.astro}", shift: ${config.offset ? config.offsetValue : 0}}, ${Compile.STANDARD_FUNCTION});`;
+            text = `schedule({astro: "${config.astro}", shift: ${config.offset ? config.offsetValue : 0}}, ${func});`;
         } else if (config.tagCard === 'wizard') {
-            text = `schedule('${config.wizard}', ${Compile.STANDARD_FUNCTION});`;
+            text = `schedule('${config.wizard}', ${func});`;
         }
 
         return text;
@@ -205,6 +207,7 @@ class TriggerScheduleBlock extends GenericBlock {
                     attr: 'interval',
                     frontText: 'every',
                     defaultValue: 30,
+                    className: 'block-input-interval'
                 },
                 {
                     nameRender: 'renderSelect',
