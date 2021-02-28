@@ -365,10 +365,11 @@ class GenericBlock extends PureComponent {
 
     renderSelect = (input, value, onChange) => {
         const { className } = this.props;
-        const { name, options, frontText, backText, attr, multiple } = input;
+        const { name, options, frontText, backText, attr, multiple, doNotTranslate } = input;
         return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)} style={{ whiteSpace: 'nowrap' }}>
             {frontText && <div className={cls.frontText}>{frontText}</div>}
             <CustomSelect
+                doNotTranslate={doNotTranslate}
                 title={name}
                 className={className}
                 options={options}

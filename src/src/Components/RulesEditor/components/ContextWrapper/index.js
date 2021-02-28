@@ -7,12 +7,16 @@ import React, {
 import ActionSayText from '../Blocks/ActionSayText';
 import ActionSendEmail from '../Blocks/ActionSendEmail';
 import ActionTelegram from '../Blocks/ActionTelegram';
+import ActionPushover from '../Blocks/ActionPushover';
+import ActionWhatsappcmb from '../Blocks/ActionWhatsappcmb';
 import StandardBlocks from '../StandardBlocks';
 
 const ADAPTERS = {
     telegram: ActionTelegram,
     email: ActionSendEmail,
     sayit: ActionSayText,
+    pushover: ActionPushover,
+    'whatsapp-cmb': ActionWhatsappcmb,
 }
 
 export const ContextWrapperCreate = createContext();

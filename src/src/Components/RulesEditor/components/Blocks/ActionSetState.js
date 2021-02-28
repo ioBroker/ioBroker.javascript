@@ -28,7 +28,6 @@ class ActionSetState extends GenericBlock {
 
     _setInputs(toggle) {
         toggle = toggle === undefined ? this.state.settings.toggle : toggle;
-        let input;
         let type = '';
         let options;
         const { oidType, oidUnit, oidStates, oidMax, oidMin, oidRole, oidWrite, oidStep } = this.state.settings;

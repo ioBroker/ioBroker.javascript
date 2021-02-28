@@ -11,7 +11,7 @@ class ActionTelegram extends GenericBlock {
         if (!text) {
             return '// no text defined'
         } else {
-            return `sendTo("${config.instance}", ${config.user && config.user !== '_' ? `{user: "${(config.user || '').replace(/"/g, '\\"')}", text: "${(text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}}` : `"${(text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}`});`;
+            return `sendTo("${config.instance}", "send", ${config.user && config.user !== '_' ? `{user: "${(config.user || '').replace(/"/g, '\\"')}", text: "${(text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}}` : `"${(text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}`});`;
         }
     }
 
