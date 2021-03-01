@@ -47,16 +47,16 @@ class DialogImport extends React.Component {
         }, 100);
     }
 
-    handleCancel () {
+    handleCancel() {
         this.props.onClose();
     }
 
-    handleOk () {
+    handleOk() {
         this.props.onClose(this.state.text);
     }
 
     onChange(e) {
-        this.setState({text: e.target.value});
+        this.setState({ text: e.target.value });
     }
 
     render() {
@@ -67,9 +67,9 @@ class DialogImport extends React.Component {
                 disableBackdropClick
                 disableEscapeKeyDown
                 maxWidth="lg"
-                classes={{paper: classes.dialog}}
+                classes={{ paper: classes.dialog }}
                 fullWidth={true}
-                open={true}
+                open={this.props.open}
                 aria-labelledby="import-dialog-title"
             >
                 <DialogTitle id="import-dialog-title">{I18n.t('Import blocks')}</DialogTitle>
@@ -82,12 +82,16 @@ class DialogImport extends React.Component {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button disabled={!this.state.text} onClick={event  => this.handleOk()} color="primary"><IconOk className={this.props.classes.buttonIcon}/>{I18n.t('Import')}</Button>
-                    <Button onClick={() => this.handleCancel()}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Close')}</Button>
+                    <Button disabled={!this.state.text} onClick={event => this.handleOk()} color="primary"><IconOk className={this.props.classes.buttonIcon} />{I18n.t('Import')}</Button>
+                    <Button onClick={() => this.handleCancel()}><IconCancel className={this.props.classes.buttonIcon} />{I18n.t('Close')}</Button>
                 </DialogActions>
             </Dialog>
         );
     }
+}
+
+DialogImport.defaultProps = {
+    open: true
 }
 
 DialogImport.propTypes = {

@@ -1,36 +1,38 @@
-import React, { Fragment, useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import cls from './style.module.scss';
-import { AppBar, Tab, Tabs } from '@material-ui/core';
 
-import I18n from '@iobroker/adapter-react/i18n';
-
-import CustomInput from './components/CustomInput';
 import { CustomDragLayer } from './components/CustomDragLayer';
-import CustomDragItem from './components/CardMenu/CustomDragItem';
 import ContentBlockItems from './components/ContentBlockItems';
-import HamburgerMenu from './components/HamburgerMenu';
-import { useStateLocal } from './hooks/useStateLocal';
 import { ContextWrapperCreate } from './components/ContextWrapper';
 import Compile from './helpers/Compile';
-import MaterialDynamicIcon from './helpers/MaterialDynamicIcon';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
+import Menu from './components/Menu';
+import I18n from '@iobroker/adapter-react/i18n';
 import './helpers/stylesVariables.scss';
-import {STEPS} from './helpers/Tour';
 
-const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourOpen }) => {
+import DialogExport from '../../Dialogs/Export';
+import DialogImport from '../../Dialogs/Import';
+import clsx from 'clsx';
+
+const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourOpen, command }) => {
     // eslint-disable-next-line no-unused-vars
     const { blocks, socket, setOnUpdate } = useContext(ContextWrapperCreate);
     const [allBlocks, setAllBlocks] = useState([]);
-    const [hamburgerOnOff, setHamburgerOnOff] = useStateLocal(false, 'hamburgerOnOff');
     const [userRules, setUserRules] = useState(Compile.code2json(code));
-    const [filter, setFilter] = useStateLocal({
-        text: '',
-        type: 'triggers',
-        index: 0
-    }, 'filterControlPanel');
+    const [importExport, setImportExport] = useState('');
+    const [modal, setModal] = useState(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
+        if (!!command) {
+            setImportExport(command);
+            if (!modal) {
+                setModal(true);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [command]);
+
+    useEffect(() => {
         const newUserRules = Compile.code2json(code);
         if (JSON.stringify(newUserRules) !== JSON.stringify(userRules)) {
             setUserRules(newUserRules);
@@ -39,142 +41,73 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
         // eslint-disable-next-line
     }, [code]);
 
-    const setBlocksFunc = (text = filter.text, typeFunc = filter.type) => {
-        if (!blocks) {
-            return;
-        }
-        let newAllBlocks = [...blocks];
-        newAllBlocks = newAllBlocks.filter(el => {
-            if (!text) {
-                return true;
-            }
-            const { name } = el.getStaticData();
-            return name && name.en.toLowerCase().includes(text.toLowerCase());
-        });
-        newAllBlocks = newAllBlocks.filter(el => typeFunc === el.getStaticData().acceptedBy);
-        setAllBlocks(newAllBlocks);
-    };
-
     useEffect(() => {
         document.getElementsByTagName('HTML')[0].className = themeName || 'blue';
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [themeName]);
-
-    useEffect(() => {
-        setBlocksFunc();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [blocks]);
-
-    const a11yProps = index => ({
-        id: `scrollable-force-tab-${index}`,
-        'aria-controls': `scrollable-force-tabpanel-${index}`
-    });
-
-    const handleChange = (event, newValue) => {
-        isTourOpen && (newValue === 0 && tourStep === STEPS.selectTriggers) && setTourStep(STEPS.addScheduleByDoubleClick);
-        isTourOpen && (newValue === 2 && tourStep === STEPS.selectActions) && setTourStep(STEPS.addActionPrintText);
-
-        setFilter({
-            ...filter,
-            index: newValue,
-            type: ['triggers', 'conditions', 'actions'][newValue]
-        });
-        setBlocksFunc(filter.text, ['triggers', 'conditions', 'actions'][newValue]);
-    };
 
     const onChangeBlocks = useCallback(json => {
         setUserRules(json);
         onChange(Compile.json2code(json, blocks));
     }, [blocks, onChange]);
 
+    const ref = useRef({ clientWidth: 0 });
+    const [addClass, setAddClass] = useState({ 835: false, 1035: false });
+    useEffect(() => {
+        console.log('refrefrefrefrefref', ref)
+        if (ref.current) {
+            if (ref.current.clientWidth <= 1035) {
+                setAddClass({ 835: false, 1035: true });
+            }
+            if (ref.current.clientWidth <= 835) {
+                setAddClass({ 1035: true, 835: true });
+            }
+            if (ref.current.clientWidth > 1035) {
+                setAddClass({ 835: false, 1035: false });
+            }
+            console.log(ref.current.clientWidth)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ref.current.clientWidth])
+
     if (!blocks) {
         return null;
     }
 
-    return <div className={clsx(cls.wrapperRules)}>
+    return <div className={cls.wrapperRules} ref={ref}>
         <CustomDragLayer allBlocks={allBlocks} socket={socket} />
-        <div className={cls.rootWrapper}>
-            <div className={cls.menuWrapper}>
-                <div className={`${cls.hamburgerWrapper} ${hamburgerOnOff ? cls.hamburgerOff : null}`}
-                    onClick={() => setHamburgerOnOff(!hamburgerOnOff)}><HamburgerMenu boolean={!hamburgerOnOff} />
-                </div>
-                <div className={`${cls.menuRules} ${hamburgerOnOff ? cls.menuOff : null}`}>
-                    <div className={cls.controlPanel}>
-                        <AppBar className={cls.controlPanelAppBar} position="static">
-                            <Tabs
-                                value={filter.index}
-                                onChange={handleChange}
-                            >
-                                <Tab className="blocks-triggers"
-                                     title={I18n.t('Triggers')}
-                                     icon={<MaterialDynamicIcon iconName='FlashOn' />}
-                                    {...a11yProps(0)} />
-                                <Tab title={I18n.t('Conditions')} className="blocks-conditions" icon={<MaterialDynamicIcon iconName='Help' />}
-                                    {...a11yProps(1)} />
-                                <Tab title={I18n.t('Actions')} className="blocks-actions" icon={<MaterialDynamicIcon iconName='PlayForWork' />}
-                                    {...a11yProps(2)} />
-                            </Tabs>
-                        </AppBar>
-                    </div>
-                    <div className={cls.switchesRenderWrapper}>
-                        <span>
-                            {allBlocks.map(el => {
-                                const { name, id, icon, adapter } = el.getStaticData();
-                                return <Fragment key={id}>
-                                    <CustomDragItem
-                                        setTourStep={setTourStep}
-                                        tourStep={tourStep}
-                                        isTourOpen={isTourOpen}
-                                        allProperties={el.getStaticData()}
-                                        name={name}
-                                        icon={icon}
-                                        adapter={adapter}
-                                        socket={socket}
-                                        userRules={userRules}
-                                        setUserRules={onChangeBlocks}
-                                        isActive={false}
-                                        id={id}
-                                    />
-                                </Fragment>;
-                            })}
-                            {allBlocks.length === 0 && <div className={cls.nothingFound}>
-                                Nothing found...
-                            <div className={cls.resetSearch} onClick={() => {
-                                    setFilter({
-                                        ...filter,
-                                        text: ''
-                                    });
-                                    setBlocksFunc('');
-                                }}>reset search</div>
-                            </div>}
-                        </span>
-                    </div>
-                    <div className={clsx(cls.menuTitle, cls.marginAuto)} />
-                    <CustomInput
-                        className={cls.inputWidth}
-                        fullWidth
-                        customValue
-                        value={filter.text}
-                        size="small"
-                        autoComplete="off"
-                        label="search"
-                        variant="outlined"
-                        onChange={(value) => {
-                            setFilter({ ...filter, text: value });
-                            setBlocksFunc(value);
-                        }}
-                    />
-                </div>
-            </div>
+        {importExport === "export" ?
+            <DialogExport
+                key="dialogExport"
+                onClose={() => setModal(false)}
+                open={modal}
+                text={code} /> :
+            <DialogImport open={modal} key="dialogImport" onClose={text => {
+                setModal(false);
+                if (text) {
+                    onChangeBlocks(Compile.code2json(text))
+                }
+            }} />}
+        <div className={clsx(cls.rootWrapper, addClass[835] && cls.addClass)}>
+            <Menu
+                setAllBlocks={setAllBlocks}
+                allBlocks={allBlocks}
+                userRules={userRules}
+                onChangeBlocks={onChangeBlocks}
+                setTourStep={setTourStep}
+                tourStep={tourStep}
+                addClass={addClass}
+                isTourOpen={isTourOpen}
+            />
             <ContentBlockItems
                 setUserRules={onChangeBlocks}
                 userRules={userRules}
                 isTourOpen={isTourOpen}
                 setTourStep={setTourStep}
                 tourStep={tourStep}
-                name="when..."
+                name={`${I18n.t('when')}...`}
                 typeBlock="triggers"
                 iconName="FlashOn"
+                size={addClass[835]}
             />
             <ContentBlockItems
                 setUserRules={onChangeBlocks}
@@ -182,12 +115,13 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
                 setTourStep={setTourStep}
                 tourStep={tourStep}
                 userRules={userRules}
-                name="...and..."
+                name={`...${I18n.t('and')}...`}
                 typeBlock="conditions"
                 iconName="Help"
-                nameAdditionally="or"
+                nameAdditionally={I18n.t('or')}
                 additionally
                 border
+                size={addClass[835]}
             />
             <ContentBlockItems
                 setUserRules={onChangeBlocks}
@@ -195,11 +129,12 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
                 setTourStep={setTourStep}
                 tourStep={tourStep}
                 userRules={userRules}
-                name="...then"
+                name={`...${I18n.t('then')}`}
                 typeBlock="actions"
                 iconName="PlayForWork"
-                nameAdditionally="else"
+                nameAdditionally={I18n.t('else')}
                 additionally
+                size={addClass[835]}
             />
         </div>
     </div>;

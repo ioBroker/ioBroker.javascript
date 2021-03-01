@@ -16,8 +16,9 @@ import DragWrapper from '../DragWrapper';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import DialogHelp from './DialogHelp';
 import DialogCondition from './DialogCondition';
+import clsx from 'clsx';
 
-const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolean, typeBlock, userRules, setUserRules, animation, setTourStep, tourStep, isTourOpen }) => {
+const AdditionallyContentBlockItems = ({ size, itemsSwitchesRender, blockValue, boolean, typeBlock, userRules, setUserRules, animation, setTourStep, tourStep, isTourOpen }) => {
     const [checkItem, setCheckItem] = useState(false);
     const [canDropCheck, setCanDropCheck] = useState(false);
     const [checkId, setCheckId] = useState(false);
@@ -55,7 +56,7 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
         backgroundColor = targetId === hoverBlock ? '#fb00002e' : '';
     }
 
-    return <div ref={drop} style={{ backgroundColor }} className={`${cls.contentBlockItem} ${boolean ? animation ? cls.contentHeightOn : null : cls.contentHeightOff}`}>
+    return <div ref={drop} style={{ backgroundColor }} className={`${clsx(cls.contentBlockItem,size && cls.addClassHeight)} ${boolean ? animation ? cls.contentHeightOn : null : cls.contentHeightOff}`}>
         <div className={cls.wrapperMargin}>{itemsSwitchesRender[blockValue]?.map(el => (
             <DragWrapper
                 typeBlocks={typeBlock}
@@ -78,7 +79,7 @@ const AdditionallyContentBlockItems = ({ itemsSwitchesRender, blockValue, boolea
                 />
             </DragWrapper>))}
             <div
-                style={isActive && checkItem && !checkId ? { height: document.getElementById('height').clientHeight } : null}
+                style={isActive && checkItem && !checkId ? { height: document.getElementById('height') ? document.getElementById('height').clientHeight : 200 } : null}
                 className={`${cls.emptyBlockStyle} ${isActive && checkItem && !checkId ? cls.emptyBlock : cls.emptyBlockNone}`}
             />
         </div>
@@ -91,7 +92,7 @@ AdditionallyContentBlockItems.defaultProps = {
     animation: false
 };
 
-const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, border, userRules, setUserRules, iconName, adapter, socket, setTourStep, tourStep, isTourOpen }) => {
+const ContentBlockItems = ({ size, typeBlock, name, nameAdditionally, additionally, border, userRules, setUserRules, iconName, adapter, socket, setTourStep, tourStep, isTourOpen }) => {
     const [additionallyClickItems, setAdditionallyClickItems, checkLocal] = useStateLocal(typeBlock === 'actions' ? false : [], `additionallyClickItems_${typeBlock}`);
     const [showHelp, setShowHelp] = useState(false);
     const [showConditionDialog, setShowConditionDialog] = useState(false);
@@ -117,12 +118,12 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
 
     const [animation, setAnimation] = useState(false);
 
-    return <div className={`${cls.mainBlockItemRules} ${border ? cls.border : null}`}>
+    return <div className={`${clsx(cls.mainBlockItemRules, size && cls.addClassOverflow)} ${border && !size ? cls.border : null}`}>
         <span id='width' className={cls.nameBlockItems}>
-            <MaterialDynamicIcon iconName={iconName} className={cls.iconThemCard} adapter={adapter} socket={socket}/>{name}
+            <MaterialDynamicIcon iconName={iconName} className={cls.iconThemCard} adapter={adapter} socket={socket} />{name}
         </span>
-        {typeBlock === 'conditions' && name === '...and...' ?
-            <div style={{width: '100%'}}>
+        {typeBlock === 'conditions' ?
+            <div style={{ width: '100%' }}>
                 <Select
                     className={cls.selectOnChange}
                     value={userRules.justCheck || false}
@@ -136,7 +137,7 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
                     <MenuItem value={true}>{I18n.t('just check')}</MenuItem>
                 </Select>
                 <IconButton size="small" title={I18n.t('Explanation')} className={cls.selectOnChangeHelp} onClick={() => setShowHelp(true)}>
-                    <IconHelp className={cls.selectOnChangeHelpIcon}/>
+                    <IconHelp className={cls.selectOnChangeHelpIcon} />
                 </IconButton>
             </div>
             : null}
@@ -148,6 +149,7 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
             typeBlock={typeBlock}
             setUserRules={setUserRules}
             userRules={userRules}
+            size={size}
             itemsSwitchesRender={typeBlock === 'actions' ? userRules['actions'] : typeBlock === 'conditions' ? userRules['conditions'] : userRules}
         />
         {additionally && [...Array(typeBlock === 'actions' ? 1 : userRules.conditions.length - 1)].map((e, index) => {
@@ -187,6 +189,7 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
                     userRules={userRules}
                     boolean={booleanAdditionally()}
                     animation={Boolean(animation === index)}
+                    size={size}
                 />
             </Fragment>
         })}
@@ -207,8 +210,8 @@ const ContentBlockItems = ({ typeBlock, name, nameAdditionally, additionally, bo
                 {nameAdditionally}
             </div>
         </div>}
-        {showHelp ? <DialogHelp onClose={() => setShowHelp(false)}/> : null}
-        {showConditionDialog ? <DialogCondition onClose={() => setShowConditionDialog(false)}/> : null}
+        <DialogHelp open={showHelp} onClose={() => setShowHelp(false)} />
+        <DialogCondition open={showConditionDialog} onClose={() => setShowConditionDialog(false)} />
     </div>;
 }
 

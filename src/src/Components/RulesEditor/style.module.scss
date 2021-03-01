@@ -6,162 +6,14 @@
     height: 100%;
     display: flex;
 }
-.menuRules {
-    width: 200px;
-    // height: 100%;
-    display: flex;
-    flex-direction: column;
-    background: var(--backgroundColor);
-    border-right: 1px solid var(--lineColor);
-    padding: 10px;
-    opacity: 1;
-    overflow-x: hidden;
-    transition: width 0.5s, opacity 0.2s, padding 0.5s, background 0.2s, border-right 0.2s;
-}
-.switchesRenderWrapper {
-    overflow-x: hidden;
-    overflow-y: auto;
-    direction: rtl;
-    span {
-        direction: ltr;
-    }
-}
-.menuOff {
-    width: 0;
-    opacity: 0;
-    padding: 0;
-}
-.menuTitle {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    color: var(--lineColor);
-    white-space: nowrap;
-    transition: color 0.2s;
-    &::after,
-    &::before {
-        content: "";
-        flex: 1;
-        border-bottom: 1px solid;
-    }
-    // &::after {
-    //     margin-left: 0.25em;
-    // }
-    // &::before {
-    //     margin-right: 0.25em;
-    // }
-}
-.marginAuto {
-    margin-top: auto;
-    margin-bottom: 20px;
-}
-.iconThem {
-    width: 30px !important;
-    height: 30px !important;
-    margin-left: 5px;
-    * {
-        color: #bdbdec !important;
-    }
-}
-.inputWidth {
-    margin-top: 0 !important;
-    margin-bottom: 5px !important;
-}
 .rootWrapper {
     display: flex;
     width: 100%;
 }
-.menuWrapper {
-    display: flex;
-    height: 100%;
-}
-.hamburgerWrapper {
-    position: absolute;
-    width: 32px;
-    height: 26px;
-    background: var(--backgroundColorHumburger);
-    border-radius: 0 5px 5px 0;
-    display: flex;
-    justify-content: center;
-    padding-top: 10px;
-    left: 221px;
-    top: 30px;
-    border: 1px solid var(--lineColor);
-    cursor: pointer;
-    transition: left 0.5s, border-radius 0.7s, background 0.2s, border 0.2s;
-    z-index: 10;
-}
-.hamburgerOff {
-    left: 20px;
-    padding-top: 12px;
-    border-radius: 20px;
-    width: 40px;
-    height: 28px;
-}
-.nothingFound {
-    color: var(--lineColor);
-    margin: 16px;
-    font-size: 21px;
-    transition: color 0.2s;
-}
-.resetSearch {
-    font-weight: bold;
-    color: var(--lineColor);
-    cursor: pointer;
-    margin: 10px 0;
-    transition: color 0.3s, font-size 0.3s;
-    &:hover {
-        color: var(--lineColorHover);
-        font-size: 22px;
-    }
-}
-.controlPanel {
-    display: flex;
-    // justify-content: space-around;
-    align-items: center;
-    width: 200px;
-    button {
-        width: calc(100% / 3);
-        min-width: auto;
-        color: var(--lineColor);
-        transition: color 0.2s;
-    }
-    .controlPanelAppBar {
-        background: none;
-        box-shadow: none;
-    }
-    [class*="Mui-selected"] {
-        color: var(--lineColorActive) !important;
-    }
-    [class*="MuiTabs-indicator"] {
-        background-color: var(--lineColorActive);
-    }
-    [class*="Mui-disabled"] {
-        color: #210025cc !important;
-    }
-}
-.hintContent {
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    margin: 7px 0;
-}
-.hintSquare {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-}
-
-@media screen and (max-width: 1035px) {
-    .menuWrapper {
-        position: absolute;
-        // height: 83vh;
-        z-index: 12;
-        top: 0;
-    }
-    .menuRules {
-        background: var(--backgroundMobile);
-    }
+.addClass {
+    flex-direction: column;
+    height: auto;
+    overflow: auto;
 }
 @media screen and (max-width: 835px) {
     .rootWrapper {
@@ -169,17 +21,4 @@
         height: auto;
         overflow: auto;
     }
-    .editorDivRules {
-        overflow: visible !important;
-    }
-    .menuRules {
-        position: sticky;
-        top: 0;
-        left: 0;
-        // height: 97vh;
-        z-index: 2222;
-    }
-    // .hamburgerWrapper {
-    //     position: sticky;
-    // }
 }

@@ -127,18 +127,24 @@
         color: #ffffffb3;
     }
 }
+.addClassOverflow {
+    overflow: initial;
+}
+.addClassHeight {
+    min-height: 300px;
+}
 @media screen and (max-width: 835px) {
-    .mainBlockItemRules{
+    .mainBlockItemRules {
         overflow: initial;
     }
-    .contentBlockItem{
+    .contentBlockItem {
         min-height: 300px;
     }
-    .contentHeightOff{
+    .contentHeightOff {
         min-height: 0;
         transition: min-height 0.3s;
     }
-    .contentHeightOn{
+    .contentHeightOn {
         transition: min-height 0.3s;
     }
     .border {

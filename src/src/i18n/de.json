@@ -263,5 +263,12 @@
   "help_on_change": "Der Code wird nur ausgeführt, wenn sich das Bedingungsergebnis ändert. Z.B. Wenn der Temperatursensorwert ausgelöst wird und die Bedingung \"Wenn die Temperatur größer als 20°C ist\" lautet, werden die \"Dann\" -Aktionen einmal ausgeführt, wenn die Temperatur über 20°C liegt. Das nächste Mal werden die \"Dann\" -Aktionen ausgeführt, wenn die Temperatur unter 20°C gefallen ist und dann wieder über 20°C ansteigt.",
   "help_just_check": "Der Code wird jedes Mal ausgeführt, wenn die Bedingung erfüllt ist. Z.B. Wenn der Temperatursensorwert ausgelöst wird und die Bedingung \"Wenn die Temperatur größer als 20°C ist\" lautet, werden die \"Dann\" -Aktionen jedes Mal ausgeführt, wenn der Sensor die Temperatur sendet und diese über 20°C liegt. Bei 21°C, bei 22°C und so weiter.",
   "On condition change": "Bei Bedienungsergebnisänderung",
-  "Just check": "Einfach überprüfen"
+  "Just check": "Einfach überprüfen",
+  "when": "when",
+  "and": "and",
+  "then": "then",
+  "or": "or",
+  "else": "else",
+  "Nothing found":"Nothing found",
+  "reset search":"reset search"
 }

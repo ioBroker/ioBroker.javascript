@@ -19,6 +19,7 @@ const styles = theme => ({
     textArea: {
         width: '100%',
         height: '100%',
+        overflow: 'auto'
     },
     textAreaLight: {
         background: 'lightgray'
@@ -55,8 +56,8 @@ class DialogExport extends React.Component {
 
             setTimeout(() => {
                 window.document.execCommand('copy');
-                this.setState({popper: I18n.t('Copied'), anchorEl: target});
-                setTimeout(() => this.setState({popper: '', anchorEl: null}), 1000);
+                this.setState({ popper: I18n.t('Copied'), anchorEl: target });
+                setTimeout(() => this.setState({ popper: '', anchorEl: null }), 1000);
             }, 50);
 
         }
@@ -74,9 +75,9 @@ class DialogExport extends React.Component {
                 disableBackdropClick
                 disableEscapeKeyDown
                 maxWidth="lg"
-                classes={{paper: classes.dialog}}
+                classes={{ paper: classes.dialog }}
                 fullWidth={true}
-                open={true}
+                open={this.props.open}
                 aria-labelledby="export-dialog-title"
             >
                 <DialogTitle id="export-dialog-title">{I18n.t('Export selected blocks')}</DialogTitle>
@@ -87,12 +88,12 @@ class DialogExport extends React.Component {
                     >{this.props.text}</pre>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={event  => this.onCopy(event )} color="secondary"><IconCopy className={this.props.classes.buttonIcon}/>{I18n.t('Copy to clipboard')}</Button>
-                    <Button onClick={() => this.handleCancel()} color="primary"><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Close')}</Button>
+                    <Button onClick={event => this.onCopy(event)} color="secondary"><IconCopy className={this.props.classes.buttonIcon} />{I18n.t('Copy to clipboard')}</Button>
+                    <Button onClick={() => this.handleCancel()} color="primary"><IconCancel className={this.props.classes.buttonIcon} />{I18n.t('Close')}</Button>
 
                     <Popper
                         id="popper"
-                        style={{zIndex: 10000}}
+                        style={{ zIndex: 10000 }}
                         open={!!this.state.popper}
                         placement="top"
                         anchorEl={this.state.anchorEl} transition>
@@ -104,11 +105,15 @@ class DialogExport extends React.Component {
                             </Fade>
                         )}
                     </Popper>
-                    <textarea id="copy_input" readOnly={true} style={{position: 'absolute', left: -9999}} tabIndex={-1} aria-hidden={true} value={this.props.text}/>
+                    <textarea id="copy_input" readOnly={true} style={{ position: 'absolute', left: -9999 }} tabIndex={-1} aria-hidden={true} value={this.props.text} />
                 </DialogActions>
             </Dialog>
         );
     }
+}
+
+DialogExport.defaultProps = {
+    open: true
 }
 
 DialogExport.propTypes = {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
 import Toolbar from '@material-ui/core/Toolbar';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Tabs from '@material-ui/core/Tabs';
@@ -14,21 +14,21 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 
-import {MdSave as IconSave} from 'react-icons/md';
-import {MdCancel as IconCancel} from 'react-icons/md';
-import {MdClose as IconClose} from 'react-icons/md';
-import {MdRefresh as IconRestart} from 'react-icons/md';
-import {MdInput as IconDoEdit} from 'react-icons/md';
-import {FaClock as IconCron} from 'react-icons/fa';
-import {FaClipboardList as IconSelectId} from 'react-icons/fa';
-import {FaFileExport as IconExport} from 'react-icons/fa';
-import {FaFileImport as IconImport} from 'react-icons/fa';
-import {FaFlagCheckered as IconCheck} from 'react-icons/fa';
-import {MdGpsFixed as IconLocate} from 'react-icons/md';
-import {MdClearAll as IconCloseAll} from 'react-icons/md';
-import {MdBuild as IconDebugMenu} from 'react-icons/md';
-import {MdBugReport as IconDebug} from 'react-icons/md';
-import {MdPlaylistAddCheck as IconVerbose} from 'react-icons/md';
+import { MdSave as IconSave } from 'react-icons/md';
+import { MdCancel as IconCancel } from 'react-icons/md';
+import { MdClose as IconClose } from 'react-icons/md';
+import { MdRefresh as IconRestart } from 'react-icons/md';
+import { MdInput as IconDoEdit } from 'react-icons/md';
+import { FaClock as IconCron } from 'react-icons/fa';
+import { FaClipboardList as IconSelectId } from 'react-icons/fa';
+import { FaFileExport as IconExport } from 'react-icons/fa';
+import { FaFileImport as IconImport } from 'react-icons/fa';
+import { FaFlagCheckered as IconCheck } from 'react-icons/fa';
+import { MdGpsFixed as IconLocate } from 'react-icons/md';
+import { MdClearAll as IconCloseAll } from 'react-icons/md';
+import { MdBuild as IconDebugMenu } from 'react-icons/md';
+import { MdBugReport as IconDebug } from 'react-icons/md';
+import { MdPlaylistAddCheck as IconVerbose } from 'react-icons/md';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
@@ -45,7 +45,7 @@ import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import DialogCron from './Dialogs/Cron';
 import DialogScriptEditor from './Dialogs/ScriptEditor';
 import RulesEditor from './Components/RulesEditor';
-import steps, {STEPS} from './Components/RulesEditor/helpers/Tour';
+import steps, { STEPS } from './Components/RulesEditor/helpers/Tour';
 import Tour from 'reactour';
 
 const images = {
@@ -186,6 +186,7 @@ class Editor extends React.Component {
             themeType: this.props.themeType,
             visible: props.visible,
             cmdToBlockly: '',
+            cmdToRules: '',
             menuOpened: !!this.props.menuOpened,
             menuTabsOpened: false,
             menuTabsAnchorEl: null,
@@ -224,19 +225,19 @@ class Editor extends React.Component {
             selectIdDialog: (initValue, cb) => {
                 this.selectId.callback = cb;
                 this.selectId.initValue = initValue;
-                this.setState({showSelectId: true});
+                this.setState({ showSelectId: true });
             },
             cronDialog: (initValue, cb) => {
                 this.cron.callback = cb;
                 this.cron.initValue = initValue;
-                this.setState({showCron: true});
+                this.setState({ showCron: true });
             },
             showScriptDialog: (value, args, isReturn, cb) => {
                 this.scriptDialog.callback = cb;
                 this.scriptDialog.initValue = value;
                 this.scriptDialog.args = args;
                 this.scriptDialog.isReturn = isReturn || false;
-                this.setState({showScript: true});
+                this.setState({ showScript: true });
             }
         };
 
@@ -268,7 +269,7 @@ class Editor extends React.Component {
                 });
                 window.main.objects = objects;
                 window.main.instances = instances;
-                this.setState({instancesLoaded: true});
+                this.setState({ instancesLoaded: true });
             });
     }
 
@@ -282,14 +283,14 @@ class Editor extends React.Component {
             const pos = window.main.instances.indexOf(id);
             window.main.instances.splice(pos, 1);
         } else
-        if (obj && obj.type === 'instance') {
-            // update instances
-            if (!window.main.instances.includes(id)) {
-                window.main.instances.push(id);
-                window.main.instances.sort();
+            if (obj && obj.type === 'instance') {
+                // update instances
+                if (!window.main.instances.includes(id)) {
+                    window.main.instances.push(id);
+                    window.main.instances.sort();
+                }
+                window.main.objects[id] = obj;
             }
-            window.main.objects[id] = obj;
-        }
     };
 
     setChangedInAdmin() {
@@ -479,7 +480,7 @@ class Editor extends React.Component {
                             if (this.objects[id].from && this.objects[id].from.startsWith('system.adapter.javascript.')) {
                                 this.objects[id].from = 'system.adapter.admin.0';
                                 // show that script was changed from outside
-                                this.setState({toast: I18n.t('Script %s was modified on disk.', id.split('.').pop())});
+                                this.setState({ toast: I18n.t('Script %s was modified on disk.', id.split('.').pop()) });
                             }
                         }
                     } else {
@@ -551,14 +552,14 @@ class Editor extends React.Component {
 
     onSave() {
         if (this.state.isTourOpen && this.state.tourStep === STEPS.saveTheScript) {
-            this.setState({isTourOpen: false});
+            this.setState({ isTourOpen: false });
             window.localStorage.setItem('tour', 'true');
         }
 
         if (this.state.changed[this.state.selected]) {
             const changed = JSON.parse(JSON.stringify(this.state.changed));
             changed[this.state.selected] = false;
-            this.setState({changed}, () => {
+            this.setState({ changed }, () => {
                 this.setChangedInAdmin();
                 this.props.onChange && this.props.onChange(this.state.selected, this.scripts[this.state.selected]);
             });
@@ -585,7 +586,7 @@ class Editor extends React.Component {
         const changed = JSON.parse(JSON.stringify(this.state.changed));
         changed[this.state.selected] = false;
 
-        this.setState({changed}, () => this.setChangedInAdmin());
+        this.setState({ changed }, () => this.setChangedInAdmin());
     }
 
     onRegisterSelect(func) {
@@ -605,10 +606,10 @@ class Editor extends React.Component {
                 const changed = JSON.parse(JSON.stringify(this.state.changed));
                 changed[this.state.selected] = true;
 
-                this.setState({changed, blockly: false, selected: ''}, () => {
+                this.setState({ changed, blockly: false, selected: '' }, () => {
                     this.setChangedInAdmin();
                     // force update of the editor
-                    setTimeout(() => this.setState({selected: nowSelected}), 100);
+                    setTimeout(() => this.setState({ selected: nowSelected }), 100);
                 });
             }
         });
@@ -631,7 +632,7 @@ class Editor extends React.Component {
             const changed = JSON.parse(JSON.stringify(this.state.changed));
             changed[this.state.selected] = _changed;
             this.objects[this.state.selected].from = 'system.adapter.admin.0';
-            this.setState({changed}, () => this.setChangedInAdmin());
+            this.setState({ changed }, () => this.setChangedInAdmin());
 
         }
     }
@@ -669,7 +670,7 @@ class Editor extends React.Component {
             } else {
                 const editing = JSON.parse(JSON.stringify(this.state.editing));
                 editing.splice(pos, 1);
-                const newState = {editing};
+                const newState = { editing };
                 if (id === this.state.selected) {
                     if (editing.length) {
                         if (pos === 0 || editing.length === 1) {
@@ -695,7 +696,7 @@ class Editor extends React.Component {
                     newState.showCompiledCode = false;
                 }
 
-                this.setState(newState, () =>  {
+                this.setState(newState, () => {
                     this.setChangedInAdmin();
 
                     if (newState.selected !== undefined) {
@@ -711,99 +712,105 @@ class Editor extends React.Component {
 
     showConfirmDialog(question, cb) {
         this.confirmCallback = cb;
-        this.setState({confirm: question});
+        this.setState({ confirm: question });
     }
 
     sendCommandToBlockly(cmd) {
-        this.setState({cmdToBlockly: cmd}, () =>
+        this.setState({ cmdToBlockly: cmd }, () =>
             setTimeout(() =>
-                this.setState({cmdToBlockly: ''}), 200));
+                this.setState({ cmdToBlockly: '' }), 200));
+    }
+
+    sendCommandToRules(cmd) {
+        this.setState({ cmdToRules: cmd }, () =>
+            setTimeout(() =>
+                this.setState({ cmdToRules: '' }), 200));
     }
 
     getTabs() {
         if (this.state.editing.length) {
             return [<Tabs
-                    component={'div'}
-                    key="tabs1"
-                    value={this.state.selected}
-                    onChange={(event, value) => this.onTabChange(event, value)}
-                    indicatorColor="primary"
-                    style={{position: 'relative', width: this.state.editing.length > 1 ? 'calc(100% - 50px)' : '100%', display: 'inline-block'}}
-                    textColor="primary"
-                    variant="scrollable"
-                    scrollButtons="auto"
-                >
-                    {this.state.editing.map(id => {
-                        if (!this.props.objects[id]) {
-                            const label = [
-                                <div key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</div>,
-                                <span key="icon" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>];
-                            return <Tab
-                                wrapped
-                                component={'div'}
-                                href={'#' + id}
-                                key={id}
-                                label={label}
-                                value={id}
-                                classes={{wrapper: this.props.classes.tabButtonWrapper}}
-                            />;
-                        } else {
-                            let text = this.props.objects[id].common.name;
-                            let title = '';
-                            if (text.length > 18) {
-                                title = text;
-                                text = text.substring(0, 15) + '...';
-                            }
-                            const changed = this.props.objects[id].common && this.scripts[id] && this.props.objects[id].common.source !== this.scripts[id].source;
-                            const label = [
-                                <img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon}/>,
-                                <div key="text" className={clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{text}</div>,
-                                changed ? <span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span> : null,
-                                <span key="icon2" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small"/></span>
-                                ];
-
-                            return <Tab
-                                wrapped
-                                component={'div'}
-                                href={'#' + id}
-                                key={id}
-                                label={label}
-                                className={this.props.classes.tabButton}
-                                value={id}
-                                title={title}
-                                classes={{wrapper: this.props.classes.tabButtonWrapper}}
-                            />;
+                component={'div'}
+                key="tabs1"
+                value={this.state.selected}
+                onChange={(event, value) => this.onTabChange(event, value)}
+                indicatorColor="primary"
+                style={{ position: 'relative', width: this.state.editing.length > 1 ? 'calc(100% - 50px)' : '100%', display: 'inline-block' }}
+                textColor="primary"
+                variant="scrollable"
+                scrollButtons="auto"
+            >
+                {this.state.editing.map(id => {
+                    if (!this.props.objects[id]) {
+                        const label = [
+                            <div key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</div>,
+                            <span key="icon" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small" /></span>];
+                        return <Tab
+                            wrapped
+                            component={'div'}
+                            href={'#' + id}
+                            key={id}
+                            label={label}
+                            value={id}
+                            classes={{ wrapper: this.props.classes.tabButtonWrapper }}
+                        />;
+                    } else {
+                        let text = this.props.objects[id].common.name;
+                        let title = '';
+                        if (text.length > 18) {
+                            title = text;
+                            text = text.substring(0, 15) + '...';
                         }
-                    })}
-                </Tabs>,
-                this.state.editing.length > 1 ? <IconButton
-                    key="menuButton"
-                    href="#"
-                    aria-label="Close all but current"
-                    className={this.props.classes.tabMenuButton}
-                    title={I18n.t('Close all but current')}
-                    aria-haspopup="false"
-                    onClick={_event => {
-                        const editing = [this.state.selected];
-                        // Do not close not saved tabs
-                        Object.keys(this.scripts).forEach(id =>
-                            id !== this.state.selected &&
-                            JSON.stringify(this.scripts[id]) !== JSON.stringify(this.props.objects[id].common) &&
-                            editing.push(id)
-                        );
+                        const changed = this.props.objects[id].common && this.scripts[id] && this.props.objects[id].common.source !== this.scripts[id].source;
+                        const label = [
+                            <img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon} />,
+                            <div key="text" className={clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{text}</div>,
+                            changed ? <span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span> : null,
+                            <span key="icon2" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small" /></span>
+                        ];
 
-                        window.localStorage && window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
-                        this.setState({menuTabsOpened: false, menuTabsAnchorEl: null, editing: editing});
-                    }}
-                >
-                    <IconCloseAll />
-                </IconButton> : null
+                        return <Tab
+                            wrapped
+                            component={'div'}
+                            href={'#' + id}
+                            key={id}
+                            label={label}
+                            className={this.props.classes.tabButton}
+                            value={id}
+                            title={title}
+                            classes={{ wrapper: this.props.classes.tabButtonWrapper }}
+                        />;
+                    }
+                })}
+            </Tabs>,
+            this.state.editing.length > 1 ? <IconButton
+                key="menuButton"
+                href="#"
+                aria-label="Close all but current"
+                className={this.props.classes.tabMenuButton}
+                title={I18n.t('Close all but current')}
+                aria-haspopup="false"
+                onClick={_event => {
+                    const editing = [this.state.selected];
+                    // Do not close not saved tabs
+                    Object.keys(this.scripts).forEach(id =>
+                        id !== this.state.selected &&
+                        JSON.stringify(this.scripts[id]) !== JSON.stringify(this.props.objects[id].common) &&
+                        editing.push(id)
+                    );
+
+                    window.localStorage && window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
+                    this.setState({ menuTabsOpened: false, menuTabsAnchorEl: null, editing: editing });
+                }}
+            >
+                <IconCloseAll />
+            </IconButton> : null
             ];
         } else {
             return <div key="tabs2" className={this.props.classes.toolbar}>
                 <Button key="select1" disabled={true} className={this.props.classes.hintButton} href="">
                     <span key="select2">{I18n.t('Click on this icon')}</span>
-                    <IconDoEdit key="select3" className={this.props.classes.hintIcon}/>
+                    <IconDoEdit key="select3" className={this.props.classes.hintIcon} />
                     <span key="select4">{I18n.t('for edit or create script')}</span>
                 </Button>
             </div>;
@@ -818,7 +825,7 @@ class Editor extends React.Component {
             id="menu-debug"
             anchorEl={this.state.menuDebugAnchorEl}
             open={this.state.showDebugMenu}
-            onClose={() => this.setState({showDebugMenu: false, menuDebugAnchorEl: null})}
+            onClose={() => this.setState({ showDebugMenu: false, menuDebugAnchorEl: null })}
             PaperProps={{
                 style: {
                     maxHeight: MENU_ITEM_HEIGHT * 7.5,
@@ -826,25 +833,25 @@ class Editor extends React.Component {
             }}
         >
             <MenuItem key="debugEnabled"
-                      title={I18n.t('debug_help')}
-                      onClick={event => {
-                          event.stopPropagation();
-                          event.preventDefault();
-                          this.setState({showDebugMenu: false, menuDebugAnchorEl: null, debugEnabled: !this.state.debugEnabled}, () => this.onChange({debug: this.state.debugEnabled}));
-                      }}>
-                <Checkbox checked={this.state.debugEnabled}/>
-                <IconDebug className={this.props.classes.menuIcon} style={{color: COLOR_DEBUG}}/>
+                title={I18n.t('debug_help')}
+                onClick={event => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    this.setState({ showDebugMenu: false, menuDebugAnchorEl: null, debugEnabled: !this.state.debugEnabled }, () => this.onChange({ debug: this.state.debugEnabled }));
+                }}>
+                <Checkbox checked={this.state.debugEnabled} />
+                <IconDebug className={this.props.classes.menuIcon} style={{ color: COLOR_DEBUG }} />
                 {I18n.t('debug')}
             </MenuItem>
             <MenuItem key="verboseEnabled"
-                      title={I18n.t('verbose_help')}
-                      onClick={event => {
-                          event.stopPropagation();
-                          event.preventDefault();
-                          this.setState({showDebugMenu: false, menuDebugAnchorEl: null, verboseEnabled: !this.state.verboseEnabled}, () => this.onChange({verbose: this.state.verboseEnabled}));
-                      }}>
-                <Checkbox checked={this.state.verboseEnabled}/>
-                <IconVerbose className={this.props.classes.menuIcon} style={{color: COLOR_VERBOSE}}/>
+                title={I18n.t('verbose_help')}
+                onClick={event => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    this.setState({ showDebugMenu: false, menuDebugAnchorEl: null, verboseEnabled: !this.state.verboseEnabled }, () => this.onChange({ verbose: this.state.verboseEnabled }));
+                }}>
+                <Checkbox checked={this.state.verboseEnabled} />
+                <IconVerbose className={this.props.classes.menuIcon} style={{ color: COLOR_VERBOSE }} />
                 {I18n.t('verbose')}
             </MenuItem>
         </Menu>;
@@ -852,9 +859,9 @@ class Editor extends React.Component {
 
     getDebugBadge() {
         return [
-            this.state.debugEnabled && this.state.verboseEnabled  && (<IconDebug key="DebugVerbose" className={this.props.classes.menuIcon} style={{color: COLOR_VERBOSE}}/>),
-            this.state.debugEnabled && !this.state.verboseEnabled && (<IconDebug key="DebugNoVerbose" className={this.props.classes.menuIcon} style={{color: COLOR_DEBUG}}/>),
-            !this.state.debugEnabled && this.state.verboseEnabled && (<IconVerbose key="noDebugVerbose" className={this.props.classes.menuIcon} style={{color: COLOR_VERBOSE}}/>),
+            this.state.debugEnabled && this.state.verboseEnabled && (<IconDebug key="DebugVerbose" className={this.props.classes.menuIcon} style={{ color: COLOR_VERBOSE }} />),
+            this.state.debugEnabled && !this.state.verboseEnabled && (<IconDebug key="DebugNoVerbose" className={this.props.classes.menuIcon} style={{ color: COLOR_DEBUG }} />),
+            !this.state.debugEnabled && this.state.verboseEnabled && (<IconVerbose key="noDebugVerbose" className={this.props.classes.menuIcon} style={{ color: COLOR_VERBOSE }} />),
         ]
     }
 
@@ -866,76 +873,87 @@ class Editor extends React.Component {
             const changedAll = Object.keys(this.state.changed).filter(id => this.state.changed[id]).length;
             const changed = this.state.changed[this.state.selected];
             return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
-                    {this.state.menuOpened && this.props.onLocate && <IconButton className={this.props.classes.toolbarButtons} key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate/></IconButton>}
-                    {!changed && isInstanceRunning && <IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>}
-                    {!changed && !isScriptRunning && <span className={ this.props.classes.notRunning }>{I18n.t('Script is not running')}</span>}
-                    {!changed && isScriptRunning && !isInstanceRunning && <span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>}
-                    {changed && <Button key="save" variant="contained" className={clsx(this.props.classes.textButton, this.props.classes.saveButton, 'button-save')} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={ this.props.classes.textIcon }/></Button>}
-                    {(changedAll > 1 || (changedAll === 1 && !changed)) && <Button key="saveall" variant="contained" className={this.props.classes.textButton} onClick={() => this.onSaveAll()}>{I18n.t('Save all')}<IconSave className={ this.props.classes.textIcon }/></Button>}
-                    {changed && <Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel className={ this.props.classes.textIcon }/></Button>}
-                    <div style={{flex: 2}}/>
+                {this.state.menuOpened && this.props.onLocate && <IconButton className={this.props.classes.toolbarButtons} key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate /></IconButton>}
+                {!changed && isInstanceRunning && <IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>}
+                {!changed && !isScriptRunning && <span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>}
+                {!changed && isScriptRunning && !isInstanceRunning && <span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>}
+                {changed && <Button key="save" variant="contained" className={clsx(this.props.classes.textButton, this.props.classes.saveButton, 'button-save')} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={this.props.classes.textIcon} /></Button>}
+                {(changedAll > 1 || (changedAll === 1 && !changed)) && <Button key="saveall" variant="contained" className={this.props.classes.textButton} onClick={() => this.onSaveAll()}>{I18n.t('Save all')}<IconSave className={this.props.classes.textIcon} /></Button>}
+                {changed && <Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel className={this.props.classes.textIcon} /></Button>}
+                <div style={{ flex: 2 }} />
 
-                    {this.state.blockly && !this.state.showCompiledCode &&
-                        <IconButton key="export" aria-label="Export Blocks"
-                                     title={I18n.t('Export blocks')}
-                             className={this.props.classes.toolbarButtons}
-                             onClick={() => this.sendCommandToBlockly('export')}>
+                {this.state.blockly && !this.state.showCompiledCode &&
+                    <IconButton key="export" aria-label="Export Blocks"
+                        title={I18n.t('Export blocks')}
+                        className={this.props.classes.toolbarButtons}
+                        onClick={() => this.sendCommandToBlockly('export')}>
                         <IconExport /></IconButton>}
 
-                    {this.state.blockly && !this.state.showCompiledCode &&
-                        <IconButton key="import" aria-label="Import Blocks"
-                                     title={I18n.t('Import blocks')}
-                                     className={this.props.classes.toolbarButtons}
-                                     onClick={() => this.sendCommandToBlockly('import')}>
-                            <IconImport /></IconButton>}
-
-                    {this.state.blockly && !this.state.showCompiledCode &&
-                        <IconButton key="check" aria-label="Check code"
-                                     title={I18n.t('Check blocks')}
-                                     className={this.props.classes.toolbarButtons}
-                                     onClick={() => this.sendCommandToBlockly('check')}>
-                            <IconCheck /></IconButton>}
-
-                    {!this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton key="select-cron" aria-label="create CRON"
-                                                                                        title={I18n.t('Create or edit CRON or time wizard')}
-                                                                                        className={this.props.classes.toolbarButtons}
-                                                                                        onClick={() => this.setState({showCron: true})}><IconCron/></IconButton>}
-
-                    {!this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton key="select-id" aria-label="select ID"
-                                                                                        title={I18n.t('Insert object ID')}
-                                                                                        className={this.props.classes.toolbarButtons}
-                                                                                        onClick={() => this.setState({showSelectId: true})}><IconSelectId/></IconButton>}
-
-                    {this.state.blockly && !this.state.rules && this.state.showCompiledCode && <Button key="convert2js" aria-label="convert to javascript"
-                                                                                  title={I18n.t('Convert blockly to javascript for ever.')}
-                                                                                  onClick={() => this.onConvertBlockly2JS()}
-                    >Blockly=>JS</Button>}
-
-                    {(this.state.blockly || this.state.rules) && <Button
-                        key="blockly-code"
-                        aria-label="blockly"
-                        title={I18n.t('Show javascript code')}
-                        className={clsx(this.props.classes.toolbarButtons, 'button-js-code')}
-                        color={this.state.showCompiledCode ? 'secondary' : 'inherit'}
-                        style={{padding: '0 5px'}}
-                        onClick={() => {
-                            this.setState({showCompiledCode: !this.state.showCompiledCode});
-                            this.state.isTourOpen && this.state.tourStep === STEPS.showJavascript && this.setState({tourStep: STEPS.switchBackToRules});
-                            this.state.isTourOpen && this.state.tourStep === STEPS.switchBackToRules && this.setState({tourStep: STEPS.saveTheScript});
-                        }}>
-                        <img alt={this.state.blockly?"blockly2js":"rules2js"} src={this.state.blockly?ImgBlockly2Js:ImgRules2Js} /></Button>}
-                    <IconButton
-                        key="debug"
-                        aria-label="Debug menu"
-                        title={I18n.t('Debug options')}
+                {this.state.blockly && !this.state.showCompiledCode &&
+                    <IconButton key="import" aria-label="Import Blocks"
+                        title={I18n.t('Import blocks')}
                         className={this.props.classes.toolbarButtons}
-                        onClick={e => this.setState({showDebugMenu: true, menuDebugAnchorEl: e.currentTarget})}
-                    >
-                        <Badge className={this.props.classes.badgeMargin} badgeContent={this.getDebugBadge()}>
-                            <IconDebugMenu />
-                        </Badge>
-                    </IconButton>
-                </Toolbar>;
+                        onClick={() => this.sendCommandToBlockly('import')}>
+                        <IconImport /></IconButton>}
+
+                {this.state.blockly && !this.state.showCompiledCode &&
+                    <IconButton key="check" aria-label="Check code"
+                        title={I18n.t('Check blocks')}
+                        className={this.props.classes.toolbarButtons}
+                        onClick={() => this.sendCommandToBlockly('check')}>
+                        <IconCheck /></IconButton>}
+
+                {!this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton key="select-cron" aria-label="create CRON"
+                    title={I18n.t('Create or edit CRON or time wizard')}
+                    className={this.props.classes.toolbarButtons}
+                    onClick={() => this.setState({ showCron: true })}><IconCron /></IconButton>}
+
+                {!this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton key="select-id" aria-label="select ID"
+                    title={I18n.t('Insert object ID')}
+                    className={this.props.classes.toolbarButtons}
+                    onClick={() => this.setState({ showSelectId: true })}><IconSelectId /></IconButton>}
+
+                {this.state.blockly && !this.state.rules && this.state.showCompiledCode && <Button key="convert2js" aria-label="convert to javascript"
+                    title={I18n.t('Convert blockly to javascript for ever.')}
+                    onClick={() => this.onConvertBlockly2JS()}
+                >Blockly=>JS</Button>}
+                {this.state.rules && !this.state.showCompiledCode &&
+                    <IconButton key="export" aria-label="Export Blocks"
+                        title={I18n.t('Export blocks')}
+                        className={this.props.classes.toolbarButtons}
+                        onClick={() => this.sendCommandToRules('export')}>
+                        <IconExport /></IconButton>}
+                {this.state.rules && !this.state.showCompiledCode &&
+                    <IconButton key="import" aria-label="Import Blocks"
+                        title={I18n.t('Import blocks')}
+                        className={this.props.classes.toolbarButtons}
+                        onClick={() => this.sendCommandToRules('import')}>
+                        <IconImport /></IconButton>}
+                {(this.state.blockly || this.state.rules) && <Button
+                    key="blockly-code"
+                    aria-label="blockly"
+                    title={I18n.t('Show javascript code')}
+                    className={clsx(this.props.classes.toolbarButtons, 'button-js-code')}
+                    color={this.state.showCompiledCode ? 'secondary' : 'inherit'}
+                    style={{ padding: '0 5px' }}
+                    onClick={() => {
+                        this.setState({ showCompiledCode: !this.state.showCompiledCode });
+                        this.state.isTourOpen && this.state.tourStep === STEPS.showJavascript && this.setState({ tourStep: STEPS.switchBackToRules });
+                        this.state.isTourOpen && this.state.tourStep === STEPS.switchBackToRules && this.setState({ tourStep: STEPS.saveTheScript });
+                    }}>
+                    <img alt={this.state.blockly ? "blockly2js" : "rules2js"} src={this.state.blockly ? ImgBlockly2Js : ImgRules2Js} /></Button>}
+                <IconButton
+                    key="debug"
+                    aria-label="Debug menu"
+                    title={I18n.t('Debug options')}
+                    className={this.props.classes.toolbarButtons}
+                    onClick={e => this.setState({ showDebugMenu: true, menuDebugAnchorEl: e.currentTarget })}
+                >
+                    <Badge className={this.props.classes.badgeMargin} badgeContent={this.getDebugBadge()}>
+                        <IconDebugMenu />
+                    </Badge>
+                </IconButton>
+            </Toolbar>;
         } else {
             return null;
         }
@@ -946,7 +964,7 @@ class Editor extends React.Component {
             this.props.objects[this.state.selected] &&
             this.state.blockly !== null &&
             (!this.state.blockly || this.state.showCompiledCode) &&
-            (!this.state.rules   || this.state.showCompiledCode)
+            (!this.state.rules || this.state.showCompiledCode)
         ) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
 
@@ -956,7 +974,7 @@ class Editor extends React.Component {
                     name={this.state.selected}
                     adapterName={this.props.adapterName}
                     insert={this.state.insert}
-                    onInserted={() => this.setState({insert: ''})}
+                    onInserted={() => this.setState({ insert: '' })}
                     onForceSave={() => this.onSave()}
                     searchText={this.state.searchText}
                     onRegisterSelect={func => this.onRegisterSelect(func)}
@@ -966,7 +984,7 @@ class Editor extends React.Component {
                     isDark={this.state.themeType === 'dark'}
                     socket={this.props.socket}
                     runningInstances={this.state.runningInstances}
-                    onChange={newValue => this.onChange({script: newValue})}
+                    onChange={newValue => this.onChange({ script: newValue })}
                     language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
                 />
             </div>;
@@ -993,7 +1011,7 @@ class Editor extends React.Component {
                     searchText={this.state.searchText}
                     resizing={this.props.resizing}
                     code={this.scripts[this.state.selected].source || ''}
-                    onChange={newValue => this.onChange({script: newValue})}
+                    onChange={newValue => this.onChange({ script: newValue })}
                 />
             </div>;
         } else {
@@ -1017,7 +1035,7 @@ class Editor extends React.Component {
                     tourStep={this.state.tourStep}
                     isTourOpen={this.state.isTourOpen}
 
-                    command={this.state.cmdToBlockly}
+                    command={this.state.cmdToRules}
                     key="flowEditorDiv"
                     themeType={this.state.themeType}
                     themeName={this.props.themeName}
@@ -1043,7 +1061,7 @@ class Editor extends React.Component {
                         this.confirmCallback = null;
                         cb(result);
                     }
-                    this.setState({confirm: ''});
+                    this.setState({ confirm: '' });
                 }}
             />);
         } else {
@@ -1084,7 +1102,7 @@ class Editor extends React.Component {
                 selected={selectedId}
                 statesOnly={true}
                 onClose={() => {
-                    this.setState({showSelectId: false});
+                    this.setState({ showSelectId: false });
                     if (this.selectId.callback) {
                         this.selectId.callback = null;
                     }
@@ -1095,7 +1113,7 @@ class Editor extends React.Component {
                         this.selectId.callback(selected);
                         this.selectId.callback = null;
                     } else {
-                        this.setState({insert: `'${selected}'/*${name}*/`})
+                        this.setState({ insert: `'${selected}'/*${name}*/` })
                     }
                 }}
             />;
@@ -1109,14 +1127,14 @@ class Editor extends React.Component {
             return (<DialogCron
                 key="dialogCron1"
                 cron={this.cron.callback ? this.cron.initValue || '' : this.getSelect ? this.getSelect() : '* * * * *'}
-                onClose={() => this.setState({showCron: false})}
+                onClose={() => this.setState({ showCron: false })}
                 onOk={cron => {
                     this.cron.initValue = null;
                     if (this.cron.callback) {
                         this.cron.callback(cron);
                         this.cron.callback = null;
                     } else {
-                        this.setState({insert: `'${cron}'`})
+                        this.setState({ insert: `'${cron}'` })
                     }
                 }}
             />);
@@ -1142,7 +1160,7 @@ class Editor extends React.Component {
                         result !== false && this.scriptDialog.callback(result || '');
                         this.scriptDialog.callback = null;
                     }
-                    this.setState({showScript: false});
+                    this.setState({ showScript: false });
                 }}
             />;
         } else {
@@ -1159,8 +1177,8 @@ class Editor extends React.Component {
             }}
             open={!!this.state.toast}
             autoHideDuration={6000}
-            onClose={() => this.setState({toast: ''})}
-            ContentProps={{'aria-describedby': 'message-id',}}
+            onClose={() => this.setState({ toast: '' })}
+            ContentProps={{ 'aria-describedby': 'message-id', }}
             message={<span id="message-id">{this.state.toast}</span>}
             action={[
                 <IconButton
@@ -1168,14 +1186,14 @@ class Editor extends React.Component {
                     aria-label="close"
                     color="inherit"
                     className={this.props.classes.closeToast}
-                    onClick={() => this.setState({toast: ''})}
+                    onClick={() => this.setState({ toast: '' })}
                 ><IconClose />
                 </IconButton>,
             ]}
         />;
     }
 
-    setTourStep = tourStep => this.setState({tourStep});
+    setTourStep = tourStep => this.setState({ tourStep });
 
     getTour() {
         if (this.state.instancesLoaded &&
@@ -1188,7 +1206,7 @@ class Editor extends React.Component {
                 steps={steps}
                 isOpen={this.state.isTourOpen}
                 onRequestClose={() => {
-                    this.setState({isTourOpen: false});
+                    this.setState({ isTourOpen: false });
                     window.localStorage.setItem('tour', 'true');
                     this.props.socket.setState('javascript.0.variables.rulesTour', true, true);
                 }}

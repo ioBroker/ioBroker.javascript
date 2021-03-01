@@ -12,7 +12,7 @@ import GenericBlock from '../GenericBlock';
 const CurrentItem = memo(props => {
     const { setUserRules, userRules, _id, id, blockValue, active, acceptedBy, isTourOpen, setTourStep, tourStep } = props;
     const [anchorEl, setAnchorEl] = useState(null);
-    const { blocks, socket, onUpdate, setOnUpdate} = useContext(ContextWrapperCreate);
+    const { blocks, socket, onUpdate, setOnUpdate } = useContext(ContextWrapperCreate);
 
     const findElementBlocks = useCallback(id => blocks.find(el => {
         const staticData = el.getStaticData();
@@ -37,6 +37,7 @@ const CurrentItem = memo(props => {
             isTourOpen={isTourOpen}
             setTourStep={setTourStep}
             tourStep={tourStep}
+            notFound={!findElementBlocks(id)}
             {...props}
             onUpdate={onUpdate}
             setOnUpdate={setOnUpdate}

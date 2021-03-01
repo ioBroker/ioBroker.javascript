@@ -5,10 +5,11 @@ import cls from './style.module.scss';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-const CustomInput = ({ fullWidth, disabled, multiline, rows, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue, minWidth }) => {
+const CustomInput = ({ autoFocus, fullWidth, disabled, multiline, rows, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue, minWidth }) => {
     const [inputText, setInputText] = useState('');
     return <TextField
         error={!!error}
+        autoFocus={autoFocus}
         fullWidth={fullWidth}
         label={label}
         disabled={disabled}
@@ -45,6 +46,7 @@ CustomInput.defaultProps = {
     fullWidth: false,
     autoComplete: '',
     customValue: false,
+    autoFocus: false,
     rows: 1
 };
 

@@ -24,7 +24,8 @@ import CustomTime from '../CustomTime';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import utils from '../../helpers/utils';
 import clsx from 'clsx';
-import {STEPS} from "../../helpers/Tour";
+import { STEPS } from "../../helpers/Tour";
+import { getSelectIcon } from '../../helpers/getSelectIcon';
 
 class GenericBlock extends PureComponent {
     constructor(props, item) {
@@ -71,7 +72,7 @@ class GenericBlock extends PureComponent {
         }
 
         if (JSON.stringify(settings) !== JSON.stringify(this.state.settings)) {
-            this.setState({settings});
+            this.setState({ settings });
         }
     }
 
@@ -89,7 +90,7 @@ class GenericBlock extends PureComponent {
             }
         });
         if (changed) {
-            this.setState({settings}, () => cb && cb());
+            this.setState({ settings }, () => cb && cb());
             this.props.onChange(settings);
         } else {
             cb && cb();
@@ -221,7 +222,7 @@ class GenericBlock extends PureComponent {
         const { className } = this.props;
         const { attr, frontText, backText, nameBlock, min, max, step, unit } = input;
         return <div key={attr}>
-            <div className={cls.displayFlex} style={{marginRight: 20}}>
+            <div className={cls.displayFlex} style={{ marginRight: 20 }}>
                 {frontText && <div className={cls.frontText}>{frontText}</div>}
                 <CustomSlider
                     customValue
@@ -316,20 +317,25 @@ class GenericBlock extends PureComponent {
                     this.setState({ showSelectId: false }, () => {
                         // read type of object
                         socket.getObject(selected)
-                            .then(obj => onChange({
-                                [attr]: selected,
-                                [attr + 'Role']: obj.common.role,
-                                [attr + 'Type']: obj.common.type,
-                                [attr + 'Unit']: obj.common.unit,
-                                [attr + 'States']: obj.common.states,
-                                [attr + 'Min']: obj.common.min,
-                                [attr + 'Max']: obj.common.max,
-                                [attr + 'Step']: obj.common.step,
-                                [attr + 'Def']: obj.common.def,
-                                [attr + 'Write']: obj.common.write,
-                                [attr + 'Read']: obj.common.read,
-                            }, null, () =>
-                                this.props.setOnUpdate && this.props.setOnUpdate(true)));
+                            .then(obj => {
+                                console.log(obj)
+                                console.log(getSelectIcon(obj))
+                                onChange({
+                                    [attr]: selected,
+                                    [attr + 'Role']: obj.common.role,
+                                    [attr + 'Type']: obj.common.type,
+                                    [attr + 'Unit']: obj.common.unit,
+                                    [attr + 'States']: obj.common.states,
+                                    [attr + 'Min']: obj.common.min,
+                                    [attr + 'Max']: obj.common.max,
+                                    [attr + 'Step']: obj.common.step,
+                                    [attr + 'Def']: obj.common.def,
+                                    [attr + 'Write']: obj.common.write,
+                                    [attr + 'Read']: obj.common.read,
+                                }, null, () =>
+                                    this.props.setOnUpdate && this.props.setOnUpdate(true))
+                            }
+                            );
                     })}
             /> : null}
         </div> : null;
@@ -464,7 +470,7 @@ class GenericBlock extends PureComponent {
                     onClick={(e) => {
                         this.setState({ openTagMenu: e.currentTarget }, () => {
                             this.props.isTourOpen &&
-                            this.props.tourStep === STEPS.openTagsMenu &&
+                                this.props.tourStep === STEPS.openTagsMenu &&
                                 setTimeout(() => this.props.setTourStep(STEPS.selectIntervalTag), 300);
                         });
                     }}>{result}</div>
@@ -493,7 +499,7 @@ class GenericBlock extends PureComponent {
                                 });
                                 (this.props.isTourOpen &&
                                     (this.props.tourStep === STEPS.openTagsMenu ||
-                                    this.props.tourStep === STEPS.selectIntervalTag) &&
+                                        this.props.tourStep === STEPS.selectIntervalTag) &&
                                     tag === 'interval' &&
                                     setTimeout(() => this.props.setTourStep(STEPS.selectActions), 500));
 
@@ -580,7 +586,7 @@ class GenericBlock extends PureComponent {
                 <span className={cls.nameCard}>
                     {name && (name[I18n.getLanguage()] || name.en)}
                     {!!notFound ? I18n.t(`%s not found`, settings.id) : ''}
-                    {helpDialog ? <IconButton className={cls.iconHelp} size="small" onClick={() => this.setState({helpText: helpDialog})}><IconHelp/></IconButton> : null}
+                    {helpDialog ? <IconButton className={cls.iconHelp} size="small" onClick={() => this.setState({ helpText: helpDialog })}><IconHelp /></IconButton> : null}
                 </span>
                 {inputs.filter(({ nameRender }) => this[nameRender])
                     .map(input => {
@@ -594,10 +600,10 @@ class GenericBlock extends PureComponent {
                     })}
             </div>
             {tagCard && <div className={cls.controlMenuTop} style={{ opacity: 1, height: 22, top: -22 }}>
-                <div onClick={() => this.onChangeTag()} className={clsx(cls.tagCard, 'tag-card') }>{this.renderTags()}</div>
+                <div onClick={() => this.onChangeTag()} className={clsx(cls.tagCard, 'tag-card')}>{this.renderTags()}</div>
             </div>}
-            {this.state.error ? <DialogError title={I18n.t('Warning')} text={this.state.error} onClose={() => this.setState({error: ''})}/> : null}
-            {this.state.helpText ? <DialogMessage title={I18n.t('Instructions')} text={this.state.helpText} onClose={() => this.setState({helpText: ''})}/> : null}
+            {this.state.error ? <DialogError title={I18n.t('Warning')} text={this.state.error} onClose={() => this.setState({ error: '' })} /> : null}
+            {this.state.helpText ? <DialogMessage title={I18n.t('Instructions')} text={this.state.helpText} onClose={() => this.setState({ helpText: '' })} /> : null}
         </Fragment>;
     };
 }

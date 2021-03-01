@@ -17,8 +17,7 @@ import convertCronToText from './simple-cron/cronText';
 const styles = theme => ({
     mainDiv: {
         width: '100%',
-        height: '100%',
-        overflow: 'auto'
+        height: '100%'
     },
     periodSelect: {
         //margin: '0 10px 60px 10px',

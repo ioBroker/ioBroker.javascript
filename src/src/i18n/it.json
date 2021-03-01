@@ -263,5 +263,12 @@
   "help_on_change": "Il codice verrà eseguito solo se il risultato della condizione cambia. Per esempio. se si attiva il valore del sensore di temperatura e la condizione è \"se la temperatura è maggiore di 20 ° C\", le azioni \"allora\" verranno eseguite una volta quando la temperatura è superiore a 20. La prossima volta le azioni \"allora\" verranno eseguite quando la temperatura fallisce sotto 20 e poi sale di nuovo oltre 20.",
   "help_just_check": "Il codice verrà eseguito solo ogni volta che la condizione è vera. Per esempio. se si attiva il valore del sensore di temperatura e la condizione è \"se la temperatura è maggiore di 20 ° C\", le azioni \"allora\" verranno eseguite ogni volta che il sensore invia la temperatura e questa è superiore a 20 ° C. Di 21 ° C, di 22 ° C e così via.",
   "On condition change": "A condizione che cambino",
-  "Just check": "Controlla solamente"
+  "Just check": "Controlla solamente",
+  "when":"when",
+  "and":"and",
+  "then":"then",
+  "or": "or",
+  "else": "else",
+  "Nothing found":"Nothing found",
+  "reset search":"reset search"
 }

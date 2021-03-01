@@ -15,11 +15,11 @@ const MaterialDynamicIcon = ({ iconName, className, adapter, socket, onClick }) 
     }, [adapter, socket]);
 
     if (adapter) {
-        return <img onClick={e => onClick && onClick(e)} src={url || ''} className={className} alt=""/>;
+        return <img onClick={e => onClick && onClick(e)} src={url || ''} className={className} alt="" />;
     } else {
         const Element = Icons[iconName || 'Help'];
         return <Element
-            className
+            className={className}
             onClick={e => onClick && onClick(e)}
         />;
     }

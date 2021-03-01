@@ -263,5 +263,12 @@
   "help_on_change": "Le code ne sera exécuté que si le résultat de la condition change. Par exemple. si le déclenchement sur la valeur du capteur de température et que la condition est «si la température est supérieure à 20 ° C», les actions «alors» seront exécutées une fois lorsque la température est supérieure à 20. La prochaine fois, les actions «alors» seront exécutées lorsque la température échoue sous 20 puis remonte au-dessus de 20.",
   "help_just_check": "Le code ne sera exécuté que chaque fois que la condition est vraie. Par exemple. si déclenchement sur la valeur du capteur de température et que la condition est «si la température est supérieure à 20 ° C», les actions «alors» seront exécutées à chaque fois que le capteur envoie la température et qu'elle est supérieure à 20 ° C. À 21 ° C, à 22 ° C et ainsi de suite.",
   "On condition change": "En cas de changement de condition",
-  "Just check": "Vérifiez simplement"
+  "Just check": "Vérifiez simplement",
+  "when":"when",
+  "and":"and",
+  "then":"then",
+  "or": "or",
+  "else": "else",
+  "Nothing found":"Nothing found",
+  "reset search":"reset search"
 }
