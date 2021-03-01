@@ -25,7 +25,7 @@ import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import utils from '../../helpers/utils';
 import clsx from 'clsx';
 import { STEPS } from "../../helpers/Tour";
-import { getSelectIcon } from '../../helpers/getSelectIcon';
+import { getSelectIdIcon } from '../../helpers/getSelectIcon';
 
 class GenericBlock extends PureComponent {
     constructor(props, item) {
@@ -263,6 +263,22 @@ class GenericBlock extends PureComponent {
         </div>;
     }
 
+    findIcon = obj => {
+        if (!obj) {
+            return Promise.resolve(null);
+        } else
+        if (obj.common?.icon) {
+            return Promise.resolve(getSelectIdIcon(obj, '../..'));
+        } else if (obj.type === 'state' || obj.type === 'channel') {
+            const parts = obj._id.split('.');
+            parts.pop();
+            const newId = parts.join('.');
+            return this.props.socket.getObject(newId)
+                .then(obj => this.findIcon(obj))
+                .catch(() => null);
+        }
+    }
+
     renderObjectID = (input, value, onChange) => {
         const { showSelectId, settings } = this.state;
         const { className, socket } = this.props;
@@ -275,11 +291,14 @@ class GenericBlock extends PureComponent {
         if (settings[attr] && !this.state[settings[attr]]) {
             setTimeout(() => {
                 socket.getObject(value)
-                    .then(obj =>
-                        this.setState({
-                            [settings[attr]]: obj,
-                            error: checkReadOnly && obj?.common?.write === false ? I18n.t('Read only ID selected: %s', settings[attr]) : ''
-                        }));
+                    .then(obj => {
+                        this.findIcon(obj)
+                            .then(icon => this.setState({
+                                [settings[attr]]: obj,
+                                [settings[attr] + '___icon']: icon,
+                                error: checkReadOnly && this.lastObjectIdChange && Date.now() - this.lastObjectIdChange < 1000 && obj?.common?.write === false ? I18n.t('Read only ID selected: %s', settings[attr]) : ''
+                            }))
+                    });
             }, 0);
         }
         // return null
@@ -296,6 +315,7 @@ class GenericBlock extends PureComponent {
                     customValue
                 />
                 <CustomButton
+                    icon={this.state[this.state.settings[input.attr] + '___icon']}
                     square
                     style={{ marginLeft: 7 }}
                     value='...'
@@ -314,12 +334,11 @@ class GenericBlock extends PureComponent {
                 selected={value}
                 onClose={() => this.setState({ showSelectId: false })}
                 onOk={(selected, name, common) =>
-                    this.setState({ showSelectId: false }, () => {
+                    this.setState({ showSelectId: false }, () =>
                         // read type of object
                         socket.getObject(selected)
                             .then(obj => {
-                                console.log(obj)
-                                console.log(getSelectIcon(obj))
+                                this.lastObjectIdChange = Date.now();
                                 onChange({
                                     [attr]: selected,
                                     [attr + 'Role']: obj.common.role,
@@ -334,9 +353,7 @@ class GenericBlock extends PureComponent {
                                     [attr + 'Read']: obj.common.read,
                                 }, null, () =>
                                     this.props.setOnUpdate && this.props.setOnUpdate(true))
-                            }
-                            );
-                    })}
+                            }))}
             /> : null}
         </div> : null;
     }
@@ -406,6 +423,19 @@ class GenericBlock extends PureComponent {
                 onChange={onChange}
                 customValue
                 onInstanceHide={value => this.setState({ hideAttributes: [...this.state.hideAttributes, attr] }, () => onChange(value))} // hide instance if only exactly one exists
+            />
+            {backText && <div className={cls.backText}>{backText}</div>}
+        </div>;
+    }
+
+    renderDialog = (input, value, onChange) => {
+        const { onShowDialog, frontText, backText, attr, icon } = input;
+        return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)} style={{ whiteSpace: 'nowrap' }}>
+            {frontText && <div className={cls.frontText}>{frontText}</div>}
+            <MaterialDynamicIcon
+                iconName={icon}
+                className={clsx(cls.iconDialog)}
+                onClick={e => onShowDialog && onShowDialog()}
             />
             {backText && <div className={cls.backText}>{backText}</div>}
         </div>;
@@ -561,6 +591,10 @@ class GenericBlock extends PureComponent {
         }
     }
 
+    renderSpecific() {
+        return null; // it can be overloaded
+    }
+
     render = () => {
         const { inputs, name, icon, iconTag, settings, adapter, settings: { tagCard }, helpDialog } = this.state;
         const { socket, notFound } = this.props;
@@ -604,6 +638,7 @@ class GenericBlock extends PureComponent {
             </div>}
             {this.state.error ? <DialogError title={I18n.t('Warning')} text={this.state.error} onClose={() => this.setState({ error: '' })} /> : null}
             {this.state.helpText ? <DialogMessage title={I18n.t('Instructions')} text={this.state.helpText} onClose={() => this.setState({ helpText: '' })} /> : null}
+            {this.renderSpecific()}
         </Fragment>;
     };
 }

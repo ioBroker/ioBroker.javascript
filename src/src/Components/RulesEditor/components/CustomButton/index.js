@@ -4,8 +4,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import cls from './style.module.scss';
+import CustomIcon from "../../helpers/Icon";
 
-const CustomButton = ({ fullWidth, size, onClick, style, className, value, square }) => {
+const CustomButton = ({ fullWidth, size, onClick, style, className, value, square, icon }) => {
     return <Button
         variant="outlined"
         color="primary"
@@ -15,7 +16,7 @@ const CustomButton = ({ fullWidth, size, onClick, style, className, value, squar
         className={clsx(cls.root, className, square ? cls.square : '')}
         margin="normal"
         size={size}
-    >{value}</Button>;
+    >{icon ? <CustomIcon className={cls.icon} src={icon} /> : value}</Button>;
 }
 
 CustomButton.defaultProps = {

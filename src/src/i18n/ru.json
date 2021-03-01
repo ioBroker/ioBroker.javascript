@@ -264,11 +264,14 @@
   "help_just_check": "Код будет выполняться только каждый раз, когда условие истинно. Например. при срабатывании по значению датчика температуры и условию «если температура выше 20°C», действия «затем» будут выполняться каждый раз, когда датчик отправляет значение температуры, и оно превышает 20°C. На 21°С, на 22°С и так далее.",
   "On condition change": "При изменении реузльтата условий",
   "Just check": "Просто проверить",
-  "when":"when",
-  "and":"and",
-  "then":"then",
+  "when": "when",
+  "and": "and",
+  "then": "then",
   "or": "or",
   "else": "else",
-  "Nothing found":"Nothing found",
-  "reset search":"reset search"
+  "Nothing found": "Nothing found",
+  "reset search": "reset search",
+  "Read only ID selected: %s": "Выбран идентификатор только для чтения:% s",
+  "OK": "Ok",
+  "Triggers": ""
 }

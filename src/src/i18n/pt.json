@@ -264,11 +264,14 @@
   "help_just_check": "O código será executado apenas sempre que a condição for verdadeira. Por exemplo. se disparar no valor do sensor de temperatura e a condição for \"se a temperatura for maior que 20 ° C\", as ações \"então\" serão executadas toda vez que o sensor enviar a temperatura e ela estiver acima de 20 ° C. Por 21 ° C, por 22 ° C e assim por diante.",
   "On condition change": "Na mudança de condição",
   "Just check": "Apenas verifique",
-  "when":"when",
-  "and":"and",
-  "then":"then",
+  "when": "when",
+  "and": "and",
+  "then": "then",
   "or": "or",
   "else": "else",
-  "Nothing found":"Nothing found",
-  "reset search":"reset search"
+  "Nothing found": "Nothing found",
+  "reset search": "reset search",
+  "Read only ID selected: %s": "ID somente leitura selecionada:% s",
+  "OK": "OK",
+  "Triggers": ""
 }

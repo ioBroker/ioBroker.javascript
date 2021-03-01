@@ -1,4 +1,13 @@
+import React from 'react';
 import GenericBlock from '../GenericBlock';
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import I18n from "@iobroker/adapter-react/i18n";
+import DialogActions from "@material-ui/core/DialogActions";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+
+import HysteresisImage from '../../../assets/hysteresis.png';
 
 const HYSTERESIS = `function __hysteresis(val, limit, state, hist, comp) {
     let cond1, cond2;
@@ -105,6 +114,8 @@ class ConditionState extends GenericBlock {
 
         return result;
     }
+
+    onShowHelp = () => this.setState({showHysteresisHelp: true});
 
     _setInputs(useTrigger, tagCard, oidType, oidUnit, oidStates) {
         const isAllTriggersOnState = this.isAllTriggersOnState();
@@ -246,7 +257,7 @@ class ConditionState extends GenericBlock {
             nameRender: 'renderText',
             defaultValue: '',
             attr: 'value',
-            frontText: tagCard === '()' ? 'limit' : (tag?.text || 'compare with'),
+            frontText: tagCard === '()' ? 'Limit' : (tag?.text || 'compare with'),
             backText: oidUnit
         };
 
@@ -316,6 +327,12 @@ class ConditionState extends GenericBlock {
 
         if (tagCard === '()') {
             inputs.splice(1, 0, {
+                nameRender: 'renderDialog',
+                icon: 'HelpOutline',
+                frontText: 'Explanation',
+                onShowDialog: this.onShowHelp,
+            });
+            inputs.splice(2, 0, {
                 nameRender: 'renderSelect',
                 attr: 'histComp',
                 defaultValue: '>',
@@ -330,7 +347,7 @@ class ConditionState extends GenericBlock {
                 ]
             });
             inputs.push({
-                frontText: 'Spreading', // translate
+                frontText: 'Δ',
                 nameRender: 'renderNumber',
                 noHelperText: true,
                 attr: 'hist',
@@ -432,6 +449,29 @@ class ConditionState extends GenericBlock {
 
     getData() {
         return ConditionState.getStaticData();
+    }
+
+    renderSpecific() {
+        if (this.state.showHysteresisHelp) {
+            return <Dialog
+                open={true}
+                maxWidth="md"
+                onClose={() => this.setState({showHysteresisHelp: false})}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        <img src={HysteresisImage} alt="Hysteresis"/>
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => this.setState({showHysteresisHelp: false})} color="primary" autoFocus>
+                        {I18n.t('OK')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        }
     }
 }
 

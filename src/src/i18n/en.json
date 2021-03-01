@@ -264,11 +264,14 @@
   "help_just_check": "The code will be executed only every time when condition is true. E.g. if triggering on the temperature sensor value and the condition is \"if temperature is greater than 20°C\", the \"then\" actions will be executed every time when sensor sends the temperature and it is over 20°C. By 21°C, by 22°C and so on.",
   "On condition change": "On condition result change",
   "Just check": "Just check",
-  "when":"when",
-  "and":"and",
-  "then":"then",
+  "when": "when",
+  "and": "and",
+  "then": "then",
   "or": "or",
   "else": "else",
-  "Nothing found":"Nothing found",
-  "reset search":"reset search"
+  "Nothing found": "Nothing found",
+  "reset search": "reset search",
+  "Read only ID selected: %s": "Read only ID selected: %s",
+  "OK": "OK",
+  "Triggers": "Triggers"
 }

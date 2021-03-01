@@ -264,11 +264,14 @@
   "help_just_check": "De code wordt alleen uitgevoerd als de voorwaarde waar is. Bijv. als het triggeren op de temperatuursensorwaarde en de conditie is \"als de temperatuur hoger is dan 20 ° C\", zullen de \"dan\" acties worden uitgevoerd elke keer dat de sensor de temperatuur verzendt en deze hoger is dan 20 ° C. Bij 21 ° C, bij 22 ° C enzovoort.",
   "On condition change": "Op voorwaarde verandering",
   "Just check": "Kijk maar",
-  "when":"when",
-  "and":"and",
-  "then":"then",
+  "when": "when",
+  "and": "and",
+  "then": "then",
   "or": "or",
   "else": "else",
-  "Nothing found":"Nothing found",
-  "reset search":"reset search"
+  "Nothing found": "Nothing found",
+  "reset search": "reset search",
+  "Read only ID selected: %s": "Alleen-lezen ID geselecteerd:% s",
+  "OK": "OK",
+  "Triggers": ""
 }

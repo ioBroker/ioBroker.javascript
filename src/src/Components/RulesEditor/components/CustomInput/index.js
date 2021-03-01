@@ -1,11 +1,13 @@
 import { TextField } from '@material-ui/core';
 import React, { useState } from 'react';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import cls from './style.module.scss';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import CustomIcon from '../../helpers/Icon';
 
-const CustomInput = ({ autoFocus, fullWidth, disabled, multiline, rows, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue, minWidth }) => {
+const CustomInput = ({ autoFocus, fullWidth, disabled, multiline, rows, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue, icon }) => {
     const [inputText, setInputText] = useState('');
     return <TextField
         error={!!error}
@@ -26,6 +28,10 @@ const CustomInput = ({ autoFocus, fullWidth, disabled, multiline, rows, autoComp
             !customValue && setInputText(e.target.value);
             onChange(e.target.value);
         }}
+        endAdornment={icon ?
+            <InputAdornment position="end"><CustomIcon className={cls.icon} src={icon} /></InputAdornment>
+            : null
+        }
         margin="normal"
         size={size}
     />;

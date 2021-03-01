@@ -269,6 +269,9 @@
   "then": "then",
   "or": "or",
   "else": "else",
-  "Nothing found":"Nothing found",
-  "reset search":"reset search"
+  "Nothing found": "Nothing found",
+  "reset search": "reset search",
+  "Read only ID selected: %s": "Schreibgeschützte ID ausgewählt:% s",
+  "OK": "OK",
+  "Triggers": ""
 }

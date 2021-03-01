@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.0.5",
+        "version": "5.0.6",
         "news": {
+            "5.0.6": {
+                "en": "Implemented the hysteresis",
+                "de": "Implementierte die Hysterese",
+                "ru": "Реализован гистерезис",
+                "pt": "Implementou a histerese",
+                "nl": "De hysterese geïmplementeerd",
+                "fr": "Implémentation de l'hystérésis",
+                "it": "Implementata l'isteresi",
+                "es": "Implementó la histéresis",
+                "pl": "Zaimplementowano histerezę",
+                "zh-cn": "实现了磁滞"
+            },
             "5.0.5": {
                 "en": "Implemented the toggle functionality",
                 "de": "Implementierte die Umschaltfunktion",

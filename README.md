@@ -37,6 +37,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.0.6 (2021-03-01)
+* (bluefox) Implemented the hysteresis
+
 ### 5.0.5 (2021-02-28)
 * (bluefox) Implemented the toggle functionality
 
@@ -48,9 +51,6 @@ And then call `npm run build`.
 
 ### 5.0.2 (2021-02-27)
 * (bluefox) Fixed error in the rules
-
-### 5.0.0 (2021-02-27) [Birthday edition]
-* (bluefox) added the rules engine
 
 ## License
 

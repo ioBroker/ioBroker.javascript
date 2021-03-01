@@ -264,11 +264,14 @@
   "help_just_check": "仅在条件为真时才执行代码。例如。如果触发温度传感器值并且条件为“如果温度大于20°C”，则每次传感器发送温度且温度超过20°C时，将执行“然后”动作。 21°C，22°C等。",
   "On condition change": "条件变化时",
   "Just check": "只是检查",
-  "when":"when",
-  "and":"and",
-  "then":"then",
+  "when": "when",
+  "and": "and",
+  "then": "then",
   "or": "or",
   "else": "else",
-  "Nothing found":"Nothing found",
-  "reset search":"reset search"
+  "Nothing found": "Nothing found",
+  "reset search": "reset search",
+  "Read only ID selected: %s": "选择的只读ID：％s",
+  "OK": "好的",
+  "Triggers": ""
 }
