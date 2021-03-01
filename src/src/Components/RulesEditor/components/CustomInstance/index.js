@@ -39,10 +39,12 @@ const CustomInstance = ({ multiple, value, customValue, socket, title, attr, ada
         socket && socket.getAdapterInstances(adapter)
             .then(instances => {
                 const _options = instances.map(obj => ({value: obj._id.replace('system.adapter.', ''), title: obj._id.replace('system.adapter.', '')}));
-                setOptions(_options);
                 if (_options.length === 1) {
                     onInstanceHide(_options[0].value);
+                } else {
+                    _options.unshift({value: adapter, title: I18n.t('All')});
                 }
+                setOptions(_options);
             });
     }, [socket, adapter, onInstanceHide]);
 

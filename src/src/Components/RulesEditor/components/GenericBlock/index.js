@@ -25,7 +25,7 @@ import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import utils from '../../helpers/utils';
 import clsx from 'clsx';
 import { STEPS } from "../../helpers/Tour";
-import { getSelectIdIcon } from '../../helpers/getSelectIcon';
+import { getSelectIdIcon } from '@iobroker/adapter-react/Components/Icon';
 
 class GenericBlock extends PureComponent {
     constructor(props, item) {

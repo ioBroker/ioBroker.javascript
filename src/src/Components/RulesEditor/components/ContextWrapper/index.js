@@ -9,6 +9,7 @@ import ActionSendEmail from '../Blocks/ActionSendEmail';
 import ActionTelegram from '../Blocks/ActionTelegram';
 import ActionPushover from '../Blocks/ActionPushover';
 import ActionWhatsappcmb from '../Blocks/ActionWhatsappcmb';
+import ActionPushsafer from '../Blocks/ActionPushsafer';
 import StandardBlocks from '../StandardBlocks';
 
 const ADAPTERS = {
@@ -17,6 +18,7 @@ const ADAPTERS = {
     sayit: ActionSayText,
     pushover: ActionPushover,
     'whatsapp-cmb': ActionWhatsappcmb,
+    'pushsafer': ActionPushsafer,
 }
 
 export const ContextWrapperCreate = createContext();

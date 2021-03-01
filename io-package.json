@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.0.6",
+        "version": "5.0.7",
         "news": {
+            "5.0.7": {
+                "en": "Added the pushsafer block",
+                "de": "Der Pushsafer-Block wurde hinzugefügt",
+                "ru": "Добавлен блок pushsafer",
+                "pt": "Adicionado o bloco pushsafer",
+                "nl": "Het pushsafer-blok toegevoegd",
+                "fr": "Ajout du bloc pushsafer",
+                "it": "Aggiunto il blocco pushsafer",
+                "es": "Añadido el bloque pushsafer",
+                "pl": "Dodano blok pushsafer",
+                "zh-cn": "添加了pushsafer块"
+            },
             "5.0.6": {
                 "en": "Implemented the hysteresis",
                 "de": "Implementierte die Hysterese",

@@ -4,7 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import cls from './style.module.scss';
-import CustomIcon from "../../helpers/Icon";
+import CustomIcon from '@iobroker/adapter-react/Components/Icon';
 
 const CustomButton = ({ fullWidth, size, onClick, style, className, value, square, icon }) => {
     return <Button

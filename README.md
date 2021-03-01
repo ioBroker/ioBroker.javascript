@@ -37,6 +37,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.0.7 (2021-03-02)
+* (bluefox) Added the pushsafer block
+
 ### 5.0.6 (2021-03-01)
 * (bluefox) Implemented the hysteresis
 
@@ -48,9 +51,6 @@ And then call `npm run build`.
 
 ### 5.0.3 (2021-02-28)
 * (bluefox) Implemented the memory for condition
-
-### 5.0.2 (2021-02-27)
-* (bluefox) Fixed error in the rules
 
 ## License
 

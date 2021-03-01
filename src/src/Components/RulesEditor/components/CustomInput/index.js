@@ -5,7 +5,7 @@ import cls from './style.module.scss';
 // import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import CustomIcon from '../../helpers/Icon';
+import CustomIcon from '@iobroker/adapter-react/Components/Icon';
 
 const CustomInput = ({ autoFocus, fullWidth, disabled, multiline, rows, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue, icon }) => {
     const [inputText, setInputText] = useState('');
