@@ -454,7 +454,7 @@ class GenericBlock extends PureComponent {
     static getReplacesInText(context) {
         let value = '';
         if (context.trigger?.oidType) {
-            value = '.replace(/%s/g, obj.state.value).replace(/%id/g, obj.id)';
+            value = '.replace(/%s/g, obj.state.val).replace(/%id/g, obj.id).replace(/%name/g, obj.common && obj.common.name).replace(/%old/g, obj.oldState.val)';
         }
         return value;
     }
