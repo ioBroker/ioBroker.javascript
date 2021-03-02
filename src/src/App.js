@@ -812,41 +812,37 @@ class App extends GenericApp {
                 }}>
                     {this.state.menuOpened ? <IconMenuOpened /> : <IconMenuClosed />}
                 </div>
-                {this.state.hideLog ?
+                <SplitterLayout
+                    key="splitterLayout"
+                    vertical={!this.state.logHorzLayout}
+                    primaryMinSize={100}
+                    secondaryInitialSize={this.state.hideLog ? 0 : this.logSize}
+                    //customClassName={classes.menuDiv + ' ' + classes.splitterDivWithoutMenu}
+                    onDragStart={() => this.setState({ resizing: true })}
+                    onSecondaryPaneSizeChange={size => this.state.hideLog ? 0 : this.logSize = parseFloat(size)}
+                    onDragEnd={() => {
+                        this.setState({ resizing: false });
+                        window.localStorage.setItem('App.logSize', this.logSize.toString());
+                    }}
+                >
                     <>
                         {this.renderEditor()}
-                        {this.showLogButton()}
+                        {this.state.hideLog && this.showLogButton()}
                     </>
-                    :
-                    <SplitterLayout
-                        key="splitterLayout"
-                        vertical={!this.state.logHorzLayout}
-                        primaryMinSize={100}
-                        secondaryInitialSize={this.logSize}
-                        //customClassName={classes.menuDiv + ' ' + classes.splitterDivWithoutMenu}
-                        onDragStart={() => this.setState({ resizing: true })}
-                        onSecondaryPaneSizeChange={size => this.logSize = parseFloat(size)}
-                        onDragEnd={() => {
-                            this.setState({ resizing: false });
-                            window.localStorage.setItem('App.logSize', this.logSize.toString());
+                    {!this.state.hideLog && <Log
+                        key="log"
+                        verticalLayout={!this.state.logHorzLayout}
+                        onLayoutChange={() => this.toggleLogLayout()}
+                        editing={this.state.editing}
+                        socket={this.socket}
+                        selected={this.state.selected}
+                        onHideLog={() => {
+                            window.localStorage.setItem('App.hideLog', 'true');
+                            this.setState({ hideLog: true, resizing: true });
+                            setTimeout(() => this.setState({ resizing: false }), 300);
                         }}
-                    >
-                        {this.renderEditor()}
-                        <Log
-                            key="log"
-                            verticalLayout={!this.state.logHorzLayout}
-                            onLayoutChange={() => this.toggleLogLayout()}
-                            editing={this.state.editing}
-                            socket={this.socket}
-                            selected={this.state.selected}
-                            onHideLog={() => {
-                                window.localStorage.setItem('App.hideLog', 'true');
-                                this.setState({ hideLog: true, resizing: true });
-                                setTimeout(() => this.setState({ resizing: false }), 300);
-                            }}
-                        />
-                    </SplitterLayout>
-                }
+                    />}
+                </SplitterLayout>
             </div>,
         ];
     }

@@ -11,10 +11,9 @@
     align-items: center;
     background: #ffffff6b;
     border-radius: 4px;
-    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
-        0 1px 3px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
 }
-.cardStyleActive{
+.cardStyleActive {
     width: 300px;
     z-index: 100;
 }
@@ -67,7 +66,7 @@
         color: #fff;
     }
 }
-.isDelete{
+.isDelete {
     height: 0;
     min-height: 0;
     overflow: hidden;
@@ -79,7 +78,30 @@
     box-shadow: 0 0 10px rgb(106 204 255);
 }
 @media screen and (max-width: 835px) {
-    .controlMenu{
+    .controlMenu {
         opacity: 1 !important;
+    }
+}
+.drag_mobile {
+    display: none;
+}
+@media screen and (max-width: 600px) {
+    .drag_mobile {
+        display: flex;
+        width: 30px;
+        height: 20px;
+        background: repeating-linear-gradient(
+            120deg,
+            var(--lineColorActive),
+            var(--lineColorActive) 4px,
+            var(--backgroundColorHumburger) 4px,
+            var(--backgroundColorHumburger) 8px
+        );
+        border: 1px solid var(--lineColorActive);
+        border-radius: 5px 0 0 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        cursor: pointer;
     }
 }

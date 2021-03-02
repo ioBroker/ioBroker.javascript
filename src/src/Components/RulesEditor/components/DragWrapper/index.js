@@ -7,6 +7,7 @@ import { deepCopy } from '../../helpers/deepCopy';
 import { filterElement } from '../../helpers/filterElement';
 import { findCard, moveCard } from '../../helpers/cardSort';
 import { ContextWrapperCreate } from '../ContextWrapper';
+import cls from './style.module.scss';
 
 const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, userRules, children, _id, blockValue }) => {
     const { setOnUpdate } = useContext(ContextWrapperCreate);
@@ -135,8 +136,8 @@ const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, us
     }, []);
 
     drag(drop(ref));
-
-    return <div ref={ref} style={{ opacity, }}>{children}</div>;
+    const isMobile = window.innerWidth < 600;
+    return <div ref={isMobile && _id ? null : ref} className={cls.root} style={{ opacity }}><div className={_id ? cls.drag : null} ref={_id && isMobile ? ref : null} />{children}</div>;
 }
 
 DragWrapper.defaultProps = {

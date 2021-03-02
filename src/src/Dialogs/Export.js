@@ -33,6 +33,9 @@ const styles = theme => ({
     buttonIcon: {
         marginRight: theme.spacing(1),
     },
+    overflowY: {
+        overflowY: 'hidden'
+    }
 });
 class DialogExport extends React.Component {
 
@@ -81,7 +84,8 @@ class DialogExport extends React.Component {
                 aria-labelledby="export-dialog-title"
             >
                 <DialogTitle id="export-dialog-title">{I18n.t('Export selected blocks')}</DialogTitle>
-                <DialogContent>
+                <DialogContent
+                    classes={{ root: classes.overflowY }}>
                     <pre
                         id="export-text"
                         className={classes.textArea + ' ' + (this.props.themeType === 'dark' ? '' : classes.textAreaLight)}

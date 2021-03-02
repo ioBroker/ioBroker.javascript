@@ -53,7 +53,6 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
     const ref = useRef({ clientWidth: 0 });
     const [addClass, setAddClass] = useState({ 835: false, 1035: false });
     useEffect(() => {
-        console.log('refrefrefrefrefref', ref)
         if (ref.current) {
             if (ref.current.clientWidth <= 1035) {
                 setAddClass({ 835: false, 1035: true });
@@ -64,7 +63,6 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
             if (ref.current.clientWidth > 1035) {
                 setAddClass({ 835: false, 1035: false });
             }
-            console.log(ref.current.clientWidth)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ref.current.clientWidth])
@@ -72,7 +70,6 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
     if (!blocks) {
         return null;
     }
-
     return <div className={cls.wrapperRules} ref={ref}>
         <CustomDragLayer allBlocks={allBlocks} socket={socket} />
         {importExport === "export" ?
@@ -80,13 +77,16 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
                 key="dialogExport"
                 onClose={() => setModal(false)}
                 open={modal}
-                text={code} /> :
-            <DialogImport open={modal} key="dialogImport" onClose={text => {
-                setModal(false);
-                if (text) {
-                    onChangeBlocks(Compile.code2json(text))
-                }
-            }} />}
+                text={JSON.stringify(userRules, null, 2)} /> :
+            <DialogImport
+                open={modal}
+                key="dialogImport"
+                onClose={text => {
+                    setModal(false);
+                    if (text) {
+                        onChangeBlocks(JSON.parse(text));
+                    }
+                }} />}
         <div className={clsx(cls.rootWrapper, addClass[835] && cls.addClass)}>
             <Menu
                 setAllBlocks={setAllBlocks}

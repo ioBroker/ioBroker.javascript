@@ -1,0 +1,12 @@
+.drag {
+    width: 32px;
+    height: 22px;
+    position: absolute;
+    top: 23px;
+    left: 12px;
+    z-index: 1;
+    cursor: pointer;
+}
+.root {
+    position: relative;
+}

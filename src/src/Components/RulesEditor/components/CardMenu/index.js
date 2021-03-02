@@ -1,25 +1,22 @@
 import React from 'react';
-// import I18n from '@iobroker/adapter-react/i18n';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import cls from './style.module.scss';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
-import utils from '../../helpers/utils'
+import utils from '../../helpers/utils';
 
-const CardMenu = ({ name, id, active, icon, adapter, socket, onDoubleClick, title, onTouchMove }) => {
-    return <div
-        onDoubleClick={onDoubleClick}
-        onTouchMove={onTouchMove}
-        key={id}
-        title={title}
-        className={clsx(cls.switchesItem, active && cls.switchesItemActive, 'block-' + id)}
-    >
-        <MaterialDynamicIcon iconName={icon} className={cls.iconTheme} adapter={adapter} socket={socket} />
-        <span>
-            {utils.getName(name)}
-        </span>
-    </div>;
-}
+const CardMenu = ({ name, id, active, icon, adapter, socket, onDoubleClick, title, onTouchMove }) => <div
+    onDoubleClick={onDoubleClick}
+    onTouchMove={onTouchMove}
+    key={id}
+    title={title}
+    className={clsx(cls.switchesItem, active && cls.switchesItemActive, 'block-' + id)}
+>
+    <MaterialDynamicIcon iconName={icon} className={cls.iconTheme} adapter={adapter} socket={socket} />
+    <span>
+        {utils.getName(name)}
+    </span>
+</div>;
 
 CardMenu.defaultProps = {
     name: '',

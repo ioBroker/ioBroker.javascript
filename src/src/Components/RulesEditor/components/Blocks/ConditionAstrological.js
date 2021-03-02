@@ -86,6 +86,7 @@ class ConditionAstrological extends GenericBlock {
                 {
                     nameRender: 'renderNameText',
                     defaultValue: 'Actual time of day',
+                    attr:'text'
                 },
                 {
                     frontText: 'greater than',
@@ -118,6 +119,7 @@ class ConditionAstrological extends GenericBlock {
                 {
                     nameRender: 'renderNameText',
                     defaultValue: 'Actual time of day',
+                    attr:'text'
                 },
                 {
                     frontText: tag.text,

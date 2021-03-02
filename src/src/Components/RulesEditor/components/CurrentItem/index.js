@@ -54,9 +54,27 @@ const CurrentItem = memo(props => {
         onMouseMove={handlePopoverOpen}
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
+        onMouseDown={el => {
+            if (el.ctrlKey) {
+                let newItem;
+                let newUserRules = deepCopy(acceptedBy, userRules, blockValue);
+                if (blockValue !== "triggers") {
+                    newItem = newUserRules[acceptedBy][blockValue].find(el => el._id === _id);
+                } else {
+                    newItem = newUserRules[acceptedBy].find(el => el._id === _id);
+                }
+                if (blockValue !== "triggers") {
+                    newUserRules[acceptedBy][blockValue].splice(newUserRules[acceptedBy][blockValue].indexOf(newItem), 0, { ...newItem, _id: Date.now() });
+                } else {
+                    newUserRules[acceptedBy].splice(newUserRules[acceptedBy].indexOf(newItem), 0, { ...newItem, _id: Date.now() });
+                }
+                setUserRules(newUserRules);
+            }
+        }}
         id="height"
         style={active ? { width: document.getElementById('width').clientWidth - 70 } : null}
         className={`${cls.cardStyle} ${active ? cls.cardStyleActive : null} ${isDelete ? cls.isDelete : null}`}>
+        <div className={cls.drag_mobile} />
         {blockInput}
         {setUserRules && <div className={cls.controlMenu} style={Boolean(anchorEl) ? { opacity: 1 } : { opacity: 0 }}>
             <div onClick={e => {

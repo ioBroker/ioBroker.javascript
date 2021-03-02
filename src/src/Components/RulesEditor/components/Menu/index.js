@@ -77,12 +77,12 @@ const Menu = ({ addClass, setAllBlocks, allBlocks, userRules, onChangeBlocks, se
                             onChange={handleChange}
                         >
                             <Tab className="blocks-triggers"
-                                title={I18n.t('Triggers')}
+                                title='Triggers'
                                 icon={<MaterialDynamicIcon iconName='FlashOn' />}
                                 {...a11yProps(0)} />
-                            <Tab title={I18n.t('Conditions')} className="blocks-conditions" icon={<MaterialDynamicIcon iconName='Help' />}
+                            <Tab title='Conditions' className="blocks-conditions" icon={<MaterialDynamicIcon iconName='Help' />}
                                 {...a11yProps(1)} />
-                            <Tab title={I18n.t('Actions')} className="blocks-actions" icon={<MaterialDynamicIcon iconName='PlayForWork' />}
+                            <Tab title='Actions' className="blocks-actions" icon={<MaterialDynamicIcon iconName='PlayForWork' />}
                                 {...a11yProps(2)} />
                         </Tabs>
                     </AppBar>

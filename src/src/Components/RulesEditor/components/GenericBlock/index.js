@@ -267,16 +267,16 @@ class GenericBlock extends PureComponent {
         if (!obj) {
             return Promise.resolve(null);
         } else
-        if (obj.common?.icon) {
-            return Promise.resolve(getSelectIdIcon(obj, '../..'));
-        } else if (obj.type === 'state' || obj.type === 'channel') {
-            const parts = obj._id.split('.');
-            parts.pop();
-            const newId = parts.join('.');
-            return this.props.socket.getObject(newId)
-                .then(obj => this.findIcon(obj))
-                .catch(() => null);
-        }
+            if (obj.common?.icon) {
+                return Promise.resolve(getSelectIdIcon(obj, '../..'));
+            } else if (obj.type === 'state' || obj.type === 'channel') {
+                const parts = obj._id.split('.');
+                parts.pop();
+                const newId = parts.join('.');
+                return this.props.socket.getObject(newId)
+                    .then(obj => this.findIcon(obj))
+                    .catch(() => null);
+            }
     }
 
     renderObjectID = (input, value, onChange) => {
@@ -533,7 +533,7 @@ class GenericBlock extends PureComponent {
                                     tag === 'interval' &&
                                     setTimeout(() => this.props.setTourStep(STEPS.selectActions), 500));
 
-                            }}>{I18n.t(tag)}{typeof el !== 'string' && el.title2 && <div style={{ marginLeft: 4 }}>{el.title2}</div>}</MenuItem>
+                            }}>{tag.search(/>|<|<>|<=|>=|=/) !== -1 ? tag : I18n.t(tag)}{typeof el !== 'string' && el.title2 && <div style={{ marginLeft: 4 }}>{el.title2}</div>}</MenuItem>
                     })}
                 </Menu>
             </div>;
