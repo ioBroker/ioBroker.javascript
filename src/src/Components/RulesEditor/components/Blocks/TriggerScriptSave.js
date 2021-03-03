@@ -19,6 +19,7 @@ __%%ELSE%%__
                 {
                     nameRender: 'renderNameText',
                     defaultValue: 'On script save or adapter start',
+                    attr: 'script'
                 },
             ]
         }, () => super.onTagChange());
