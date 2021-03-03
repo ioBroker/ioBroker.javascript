@@ -35,10 +35,7 @@ class ConditionTime extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'conditions',
-            name: {
-                en: 'Time condition',
-                ru: 'Time condition'
-            },
+            name: 'Time condition',
             id: 'ConditionTime',
             icon: 'Shuffle',
             tagCardArray: [

@@ -28,7 +28,7 @@ class TriggerState extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'triggers',
-            name: { en: 'State', ru: 'State' },
+            name: 'State',
             id: 'TriggerState',
             icon: 'FlashOn',
             tagCardArray: ['on change', 'on update'],

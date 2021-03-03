@@ -195,7 +195,7 @@ class ActionSetState extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: { en: 'Set state action', ru: 'Set state action' },
+            name: 'Set state action',
             id: 'ActionSetState',
             icon: 'PlayForWork',
             tagCardArray: ['control', 'update'],

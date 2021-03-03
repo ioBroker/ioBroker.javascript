@@ -28,7 +28,7 @@ __%%ELSE%%__
     static getStaticData() {
         return {
             acceptedBy: 'triggers',
-            name: { en: 'Start script', ru: 'Start script' },
+            name: 'Start script',
             id: 'TriggerScriptSave',
             icon: 'PlayArrow',
             title: 'Triggers the on script saving or the javascript instance restart'

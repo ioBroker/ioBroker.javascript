@@ -150,10 +150,7 @@ class ActionPushsafer extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: {
-                en: 'Pushsafer',
-                ru: 'Pushsafer'
-            },
+            name: 'Pushsafer',
             id: 'ActionPushsafer',
             adapter: 'pushsafer',
             title: 'Sends message via Pushsafer',

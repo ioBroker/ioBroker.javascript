@@ -25,10 +25,7 @@ class ActionHTTPCall extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: {
-                en: 'HTTP Call',
-                ru: 'HTTP Call'
-            },
+            name: 'HTTP Call',
             id: 'ActionHTTPCall',
             icon: 'Language',
             title: 'Make a HTTP get request',

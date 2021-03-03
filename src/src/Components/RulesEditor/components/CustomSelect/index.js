@@ -25,17 +25,17 @@ const CustomSelect = ({ multiple, value, customValue, title, attr, options, styl
                 if (multiple && selected.join) {
                     const onlyItem = options.find(el => el.only);
                     if (selected.includes(onlyItem.value)) {
-                        return onlyItem.titleShort || onlyItem.title;
+                        return I18n.t(onlyItem.titleShort) || I18n.t(onlyItem.title);
                     }
 
                     const titles = selected
                         .map(sel => options.find(item => item.value === sel || (sel === '_' && item.value === '')) || sel)
-                        .map(item => typeof item === 'object' ? item.titleShort || item.title : item);
+                        .map(item => typeof item === 'object' ? I18n.t(item.titleShort) || I18n.t(item.title) : I18n.t(item));
 
                     return titles.join(', ');
                 } else {
                     const item = options ? options.find(item => item.value === selected || (selected === '_' && item.value === '')) : null;
-                    return item?.title || selected;
+                    return I18n.t(item?.title) || selected;
                 }
             }}
             onChange={e => {

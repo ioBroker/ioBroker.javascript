@@ -150,10 +150,7 @@ class ConditionAstrological extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'conditions',
-            name: {
-                en: 'Astrological',
-                ru: 'Astrological'
-            },
+            name: 'Astrological',
             id: 'ConditionAstrological',
             icon: 'Brightness3',
             tagCardArray: [

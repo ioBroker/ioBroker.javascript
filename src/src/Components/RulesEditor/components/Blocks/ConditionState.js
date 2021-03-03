@@ -398,7 +398,7 @@ class ConditionState extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'conditions',
-            name: { en: 'State condition', ru: 'State condition' },
+            name: 'State condition',
             id: 'ConditionState',
             icon: 'Shuffle',
             tagCardArray: [

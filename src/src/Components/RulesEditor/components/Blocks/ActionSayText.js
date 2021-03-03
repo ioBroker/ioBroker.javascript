@@ -164,6 +164,7 @@ class ActionSayText extends GenericBlock {
                 {
                     nameRender: 'renderNameText',
                     defaultValue: 'Volume',
+                    attr: 'textVol',
                 },
                 {
                     nameRender: 'renderSlider',
@@ -186,10 +187,7 @@ class ActionSayText extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: {
-                en: 'Say It',
-                ru: 'Say It'
-            },
+            name: 'Say It',
             id: 'ActionSayText',
             adapter: 'sayit',
             title: 'Say some text via sayit adapter',

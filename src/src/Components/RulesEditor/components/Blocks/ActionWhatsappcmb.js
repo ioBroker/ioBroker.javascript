@@ -46,10 +46,7 @@ class ActionWhatsappcmb extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: {
-                en: 'Whatsapp-cmb',
-                ru: 'Whatsapp-cmb'
-            },
+            name: 'Whatsapp-cmb',
             id: 'ActionWhatsappcmb',
             adapter: 'whatsapp-cmb',
             title: 'Sends message via whatsapp-cmb',

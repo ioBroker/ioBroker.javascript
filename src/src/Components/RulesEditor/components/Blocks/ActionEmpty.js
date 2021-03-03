@@ -24,10 +24,7 @@ class ActionEmpty extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: {
-                en: 'Not found',
-                ru: 'Not found'
-            },
+            name: 'Not found',
             id: 'ActionEmpty',
             icon: 'Shuffle',
         }

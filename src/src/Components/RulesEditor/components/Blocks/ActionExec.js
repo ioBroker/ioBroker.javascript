@@ -25,10 +25,7 @@ class ActionExec extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: {
-                en: 'Exec',
-                ru: 'Exec'
-            },
+            name: 'Exec',
             id: 'ActionExec',
             icon: 'Apps',
             title: 'Executes some shell command',

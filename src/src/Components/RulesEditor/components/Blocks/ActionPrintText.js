@@ -25,10 +25,7 @@ class ActionPrintText extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: {
-                en: 'Log text',
-                ru: 'Log text'
-            },
+            name: 'Log text',
             id: 'ActionPrintText',
             icon: 'Subject',
             title: 'Print some text in log',

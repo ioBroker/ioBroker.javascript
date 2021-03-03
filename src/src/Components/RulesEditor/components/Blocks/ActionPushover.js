@@ -93,10 +93,7 @@ class ActionPushover extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: {
-                en: 'Pushover',
-                ru: 'Pushover'
-            },
+            name: 'Pushover',
             id: 'ActionPushover',
             adapter: 'pushover',
             title: 'Sends message via pushover',

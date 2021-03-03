@@ -98,10 +98,7 @@ class ActionTelegram extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: {
-                en: 'Telegram',
-                ru: 'Telegram'
-            },
+            name: 'Telegram',
             id: 'ActionTelegram',
             adapter: 'telegram',
             title: 'Sends message via telegram',

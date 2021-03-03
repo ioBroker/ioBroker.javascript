@@ -54,10 +54,7 @@ class ActionSendEmail extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: {
-                en: 'Send email',
-                ru: 'Send email'
-            },
+            name: 'Send email',
             id: 'ActionSendEmail',
             adapter: 'email',
             title: 'Sends an email',

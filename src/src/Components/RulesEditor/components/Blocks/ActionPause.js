@@ -61,10 +61,7 @@ class ActionPause extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: {
-                en: 'Pause',
-                ru: 'Pause'
-            },
+            name: 'Pause',
             id: 'ActionPause',
             icon: 'Pause',
             title: 'Make a pause between actions'

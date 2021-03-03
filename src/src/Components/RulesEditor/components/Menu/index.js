@@ -45,7 +45,7 @@ const Menu = ({ addClass, setAllBlocks, allBlocks, userRules, onChangeBlocks, se
                 return true;
             }
             const { name } = el.getStaticData();
-            return name && name.en.toLowerCase().includes(text.toLowerCase());
+            return name && I18n.t(name).toLowerCase().includes(text.toLowerCase());
         });
         newAllBlocks = newAllBlocks.filter(el => typeFunc === el.getStaticData().acceptedBy);
         setAllBlocks(newAllBlocks);

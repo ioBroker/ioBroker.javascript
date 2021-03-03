@@ -112,7 +112,7 @@ class GenericBlock extends PureComponent {
         const { attr, frontText, backText, nameBlock, name } = input;
         return <Fragment key={attr}>
             <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
-                {frontText && <div className={cls.frontText}>{frontText}</div>}
+                {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
                 <CustomInput
                     className={className}
                     autoComplete="off"
@@ -124,9 +124,9 @@ class GenericBlock extends PureComponent {
                     onChange={onChange}
                     customValue
                 />
-                {backText && <div className={cls.backText}>{backText}</div>}
+                {backText && <div className={cls.backText}>{I18n.t(backText)}</div>}
             </div>
-            {nameBlock && <div className={cls.nameBlock}>{nameBlock}</div>}
+            {nameBlock && <div className={cls.nameBlock}>{I18n.t(nameBlock)}</div>}
         </Fragment>;
     }
 
@@ -135,7 +135,7 @@ class GenericBlock extends PureComponent {
         const { attr, frontText, backText, nameBlock } = input;
         return <div key={attr}>
             <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
-                {frontText && <div className={cls.frontText}>{frontText}</div>}
+                {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
                 <CustomSwitch
                     className={className}
                     label=''
@@ -143,16 +143,16 @@ class GenericBlock extends PureComponent {
                     value={value}
                     onChange={onChange}
                 />
-                {backText && <div className={cls.backText}>{backText}</div>}
+                {backText && <div className={cls.backText}>{I18n.t(backText)}</div>}
             </div>
-            {nameBlock && <div className={cls.nameBlock}>{nameBlock}</div>}
+            {nameBlock && <div className={cls.nameBlock}>{I18n.t(nameBlock)}</div>}
         </div>;
     }
 
     renderNameText = ({ attr, signature }, value) => <div
         className={clsx(!!signature ? cls.displayItalic : cls.displayFlex, cls.blockMarginTop)}
         key={attr}>
-        {value}
+        {I18n.t(value)}
     </div>;
 
     renderNumber = (input, value, onChange) => {
@@ -164,7 +164,7 @@ class GenericBlock extends PureComponent {
             visibility = typeof settings['offset'] === 'boolean' ? settings['offset'] : true
         }
         return visibility ? <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)}>
-            {frontText && <div className={cls.frontText}>{frontText}</div>}
+            {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
             <CustomInput
                 className={clsx(className, input.className)}
                 fullWidth
@@ -177,7 +177,7 @@ class GenericBlock extends PureComponent {
                 onChange={onChange}
                 customValue
             />
-            {backText && <div className={cls.backText}>{backText}</div>}
+            {backText && <div className={cls.backText}>{I18n.t(backText)}</div>}
         </div> : null;
     }
 
@@ -185,7 +185,7 @@ class GenericBlock extends PureComponent {
         const { className } = this.props;
         const { attr, backText, frontText } = input;
         return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)}>
-            {frontText && <div className={cls.frontText}>{frontText}</div>}
+            {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
             <CustomInput
                 className={className}
                 autoComplete="off"
@@ -196,7 +196,7 @@ class GenericBlock extends PureComponent {
                 value={value}
                 onChange={onChange}
             />
-            {backText && <div className={cls.backText}>{backText}</div>}
+            {backText && <div className={cls.backText}>{I18n.t(backText)}</div>}
         </div>;
     }
 
@@ -205,7 +205,7 @@ class GenericBlock extends PureComponent {
         const { settings } = this.state;
         const { attr, backText, frontText, defaultValue } = input;
         return <div key={attr} className={cls.displayFlex}>
-            {frontText && <div className={cls.frontText}>{frontText}</div>}
+            {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
             <CustomCheckbox
                 className={className}
                 size="small"
@@ -214,7 +214,7 @@ class GenericBlock extends PureComponent {
                 customValue
                 onChange={onChange}
             />
-            {backText && <div onClick={() => onChange(typeof settings[attr] === 'boolean' ? !settings[attr] : !defaultValue)} className={cls.backText}>{backText}</div>}
+            {backText && <div onClick={() => onChange(typeof settings[attr] === 'boolean' ? !settings[attr] : !defaultValue)} className={cls.backText}>{I18n.t(backText)}</div>}
         </div>;
     }
 
@@ -223,7 +223,7 @@ class GenericBlock extends PureComponent {
         const { attr, frontText, backText, nameBlock, min, max, step, unit } = input;
         return <div key={attr}>
             <div className={cls.displayFlex} style={{ marginRight: 20 }}>
-                {frontText && <div className={cls.frontText}>{frontText}</div>}
+                {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
                 <CustomSlider
                     customValue
                     min={min}
@@ -241,9 +241,9 @@ class GenericBlock extends PureComponent {
                         onChange(val)
                     }}
                 />
-                {backText && <div style={{ marginLeft: 20 }} className={cls.backText}>{backText}</div>}
+                {backText && <div style={{ marginLeft: 20 }} className={cls.backText}>{I18n.t(backText)}</div>}
             </div>
-            {nameBlock && <div className={cls.nameBlock}>{nameBlock}</div>}
+            {nameBlock && <div className={cls.nameBlock}>{I18n.t(nameBlock)}</div>}
         </div>;
     }
 
@@ -251,7 +251,7 @@ class GenericBlock extends PureComponent {
         const { className } = this.props;
         const { attr, frontText, backText, buttonText } = input;
         return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)}>
-            {frontText && <div className={cls.frontText}>{frontText}</div>}
+            {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
             <CustomButton
                 label={buttonText}
                 fullWidth
@@ -259,7 +259,7 @@ class GenericBlock extends PureComponent {
                 className={className}
                 onClick={onClick}
             />
-            {backText && <div className={cls.backText}>{backText}</div>}
+            {backText && <div className={cls.backText}>{I18n.t(backText)}</div>}
         </div>;
     }
 
@@ -377,12 +377,12 @@ class GenericBlock extends PureComponent {
     renderTime = (input, value, onChange) => {
         const { attr, backText, frontText } = input
         return <div key={attr} className={cls.displayFlex} style={{ whiteSpace: 'nowrap' }}>
-            {frontText && <div className={cls.frontText}>{frontText}</div>}
+            {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
             <CustomTime
                 value={value}
                 onChange={onChange}
             />
-            {backText && <div className={cls.backText}>{backText}</div>}
+            {backText && <div className={cls.backText}>{I18n.t(backText)}</div>}
         </div>;
     };
 
@@ -390,7 +390,7 @@ class GenericBlock extends PureComponent {
         const { className } = this.props;
         const { name, options, frontText, backText, attr, multiple, doNotTranslate } = input;
         return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)} style={{ whiteSpace: 'nowrap' }}>
-            {frontText && <div className={cls.frontText}>{frontText}</div>}
+            {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
             <CustomSelect
                 doNotTranslate={doNotTranslate}
                 title={name}
@@ -401,7 +401,7 @@ class GenericBlock extends PureComponent {
                 multiple={multiple}
                 customValue
             />
-            {backText && <div className={cls.backText}>{backText}</div>}
+            {backText && <div className={cls.backText}>{I18n.t(backText)}</div>}
         </div>;
     };
 
@@ -412,7 +412,7 @@ class GenericBlock extends PureComponent {
             return null;
         }
         return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)} style={{ whiteSpace: 'nowrap' }}>
-            {frontText && <div className={cls.frontText}>{frontText}</div>}
+            {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
             <CustomInstance
                 socket={socket}
                 adapter={adapter}
@@ -424,20 +424,20 @@ class GenericBlock extends PureComponent {
                 customValue
                 onInstanceHide={value => this.setState({ hideAttributes: [...this.state.hideAttributes, attr] }, () => onChange(value))} // hide instance if only exactly one exists
             />
-            {backText && <div className={cls.backText}>{backText}</div>}
+            {backText && <div className={cls.backText}>{I18n.t(backText)}</div>}
         </div>;
     }
 
     renderDialog = (input, value, onChange) => {
         const { onShowDialog, frontText, backText, attr, icon } = input;
         return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)} style={{ whiteSpace: 'nowrap' }}>
-            {frontText && <div className={cls.frontText}>{frontText}</div>}
+            {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
             <MaterialDynamicIcon
                 iconName={icon}
                 className={clsx(cls.iconDialog)}
                 onClick={e => onShowDialog && onShowDialog()}
             />
-            {backText && <div className={cls.backText}>{backText}</div>}
+            {backText && <div className={cls.backText}>{I18n.t(backText)}</div>}
         </div>;
     }
 
@@ -447,7 +447,7 @@ class GenericBlock extends PureComponent {
         const { attr, nameBlock, frontText, backText } = input;
         return <div key={attr}>
             <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
-                {frontText && <div className={cls.frontText}>{frontText}</div>}
+                {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
                 <CustomInput
                     className={className}
                     autoComplete="off"
@@ -466,7 +466,7 @@ class GenericBlock extends PureComponent {
                     className={className}
                     onClick={() => this.setState({ openModal: true })}
                 />
-                {backText && <div className={cls.backText}>{backText}</div>}
+                {backText && <div className={cls.backText}>{I18n.t(backText)}</div>}
             </div>
             {openModal ? <CustomModal
                 open={true}
@@ -477,7 +477,7 @@ class GenericBlock extends PureComponent {
                 defaultValue={value}
                 textInput={true}
             /> : null}
-            {nameBlock && <div className={cls.nameBlock}>{nameBlock}</div>}
+            {nameBlock && <div className={cls.nameBlock}>{I18n.t(nameBlock)}</div>}
         </div>;
     };
 
@@ -539,7 +539,7 @@ class GenericBlock extends PureComponent {
             </div>;
         }
 
-        return result;
+        return tagCardArray.length >= 3 ? result : I18n.t(result);
     };
 
     onChangeTag = () => {
@@ -618,9 +618,9 @@ class GenericBlock extends PureComponent {
                 />}
             <div className={cls.blockName}>
                 <span className={cls.nameCard}>
-                    {name && (name[I18n.getLanguage()] || name.en)}
+                    {I18n.t(name)}
                     {!!notFound ? I18n.t(`%s not found`, settings.id) : ''}
-                    {helpDialog ? <IconButton className={cls.iconHelp} size="small" onClick={() => this.setState({ helpText: helpDialog })}><IconHelp /></IconButton> : null}
+                    {helpDialog ? <IconButton className={cls.iconHelp} size="small" onClick={() => this.setState({ helpText: I18n.t(helpDialog) })}><IconHelp /></IconButton> : null}
                 </span>
                 {inputs.filter(({ nameRender }) => this[nameRender])
                     .map(input => {

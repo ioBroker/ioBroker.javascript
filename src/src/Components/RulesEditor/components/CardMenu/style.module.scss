@@ -9,6 +9,8 @@
     transition: all 0.7s;
     color: var(--colorInput);
     span {
+        overflow: hidden;
+        text-overflow: ellipsis;
         width: 100%;
         margin-left: 15px;
         color: var(--lineColorActive);
