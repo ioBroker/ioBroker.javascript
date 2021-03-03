@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.0.7",
+        "version": "5.0.8",
         "news": {
+            "5.0.8": {
+                "en": "Translations\nAdded the \"set state with delay\" block",
+                "de": "Übersetzungen\nDer Block \"Status mit Verzögerung einstellen\" wurde hinzugefügt",
+                "ru": "Переводы\nДобавлен блок \"установить состояние с задержкой\"",
+                "pt": "Traduções\nAdicionado o bloco \"definir estado com atraso\"",
+                "nl": "Vertalingen\nHet blok \"set state with delay\" toegevoegd",
+                "fr": "Traductions\nAjout du bloc \"set state with delay\"",
+                "it": "Traduzioni\nAggiunto il blocco \"imposta stato con ritardo\"",
+                "es": "Traducciones\nSe agregó el bloque \"establecer estado con retraso\".",
+                "pl": "Tłumaczenia\nDodano blok „ustawianie stanu z opóźnieniem”",
+                "zh-cn": "笔译\n添加了“带有延迟的设置状态”块"
+            },
             "5.0.7": {
                 "en": "Added the pushsafer block",
                 "de": "Der Pushsafer-Block wurde hinzugefügt",

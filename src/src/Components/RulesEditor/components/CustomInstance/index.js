@@ -62,7 +62,7 @@ const CustomInstance = ({ multiple, value, customValue, socket, title, attr, ada
                 !customValue && setInputText(e.target.value);
                 onChange(e.target.value);
             }}
-            input={<Input name={attr} id={attr + '-helper'} />}
+            input={attr ? <Input name={attr} id={attr + '-helper'} /> : <Input name={attr} />}
         >
             {options.map(item =>
                 <MenuItem style={{placeContent:'space-between'}} key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)}{item.title2 && <div>{item.title2}</div>}</MenuItem>)}

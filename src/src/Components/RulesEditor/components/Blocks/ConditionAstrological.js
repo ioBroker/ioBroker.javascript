@@ -1,5 +1,6 @@
 import GenericBlock from '../GenericBlock';
 import SunCalc from 'suncalc2';
+import I18n from '@iobroker/adapter-react/i18n';
 
 class ConditionAstrological extends GenericBlock {
     constructor(props) {
@@ -79,7 +80,7 @@ class ConditionAstrological extends GenericBlock {
         if (astro && sunValue && sunValue[astro]) {
             const astroTime = new Date(sunValue[astro]);
             offset && astroTime.setMinutes(astroTime.getMinutes() + parseInt(offsetValue, 10));
-            time = `(${tag.text} ${ConditionAstrological._time2String(astroTime)})`;
+            time = `(${I18n.t(tag.text)} ${ConditionAstrological._time2String(astroTime)})`;
         }
 
         let inputs;
@@ -89,13 +90,14 @@ class ConditionAstrological extends GenericBlock {
                 {
                     nameRender: 'renderNameText',
                     defaultValue: 'Actual time of day',
-                    attr:'text'
+                    attr: 'text'
                 },
                 {
-                    frontText: 'greater than',
+                    frontText: tag.text,
                     attr: 'astro',
                     nameRender: 'renderSelect',
                     options,
+                    doNotTranslate2: true,
                     defaultValue: 'solarNoon'
                 },
                 {
@@ -114,6 +116,7 @@ class ConditionAstrological extends GenericBlock {
                 {
                     nameRender: 'renderNameText',
                     attr: 'textTime',
+                    doNotTranslate: true,
                     defaultValue: time,
                 }
             ];
@@ -122,13 +125,14 @@ class ConditionAstrological extends GenericBlock {
                 {
                     nameRender: 'renderNameText',
                     defaultValue: 'Actual time of day',
-                    attr:'text'
+                    attr: 'text'
                 },
                 {
                     frontText: tag.text,
                     attr: 'astro',
                     nameRender: 'renderSelect',
                     options,
+                    doNotTranslate2: true,
                     defaultValue: 'solarNoon'
                 },
                 {
@@ -139,6 +143,7 @@ class ConditionAstrological extends GenericBlock {
                 {
                     nameRender: 'renderNameText',
                     attr: 'textTime',
+                    doNotTranslate: true,
                     defaultValue: time,
                 }
             ];

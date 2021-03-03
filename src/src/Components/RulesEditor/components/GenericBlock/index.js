@@ -149,10 +149,10 @@ class GenericBlock extends PureComponent {
         </div>;
     }
 
-    renderNameText = ({ attr, signature }, value) => <div
+    renderNameText = ({ attr, signature, doNotTranslate, defaultValue }, value) => <div
         className={clsx(!!signature ? cls.displayItalic : cls.displayFlex, cls.blockMarginTop)}
         key={attr}>
-        {I18n.t(value)}
+        {doNotTranslate ? defaultValue : I18n.t(defaultValue)}
     </div>;
 
     renderNumber = (input, value, onChange) => {
@@ -388,11 +388,13 @@ class GenericBlock extends PureComponent {
 
     renderSelect = (input, value, onChange) => {
         const { className } = this.props;
-        const { name, options, frontText, backText, attr, multiple, doNotTranslate } = input;
+        const { name, options, frontText, backText, attr, multiple, doNotTranslate, doNotTranslate2 } = input;
         return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)} style={{ whiteSpace: 'nowrap' }}>
             {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
             <CustomSelect
+                attr={attr}
                 doNotTranslate={doNotTranslate}
+                doNotTranslate2={doNotTranslate2}
                 title={name}
                 className={className}
                 options={options}
@@ -414,6 +416,7 @@ class GenericBlock extends PureComponent {
         return <div key={attr} className={clsx(cls.displayFlex, cls.blockMarginTop)} style={{ whiteSpace: 'nowrap' }}>
             {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
             <CustomInstance
+                attr={attr}
                 socket={socket}
                 adapter={adapter}
                 title={name}
@@ -494,11 +497,11 @@ class GenericBlock extends PureComponent {
     renderTags = () => {
         let { tagCardArray, openTagMenu } = this.state;
         let { tagCard } = this.state.settings;
-        let result = tagCard;
+        let result = tagCard !== '=' && tagCard !== '<>' && tagCard !== '>=' && tagCard !== '()' && tagCard !== '.' && tagCard !== '<=' && tagCard !== '<' && tagCard !== '>' ? I18n.t(tagCard) : tagCard;
         if (tagCardArray.length >= 3) {
             result = <div>
                 <div aria-controls="simple-menu" aria-haspopup="true"
-                    onClick={(e) => {
+                    onClick={e => {
                         this.setState({ openTagMenu: e.currentTarget }, () => {
                             this.props.isTourOpen &&
                                 this.props.tourStep === STEPS.openTagsMenu &&
@@ -534,13 +537,13 @@ class GenericBlock extends PureComponent {
                                     tag === 'interval' &&
                                     setTimeout(() => this.props.setTourStep(STEPS.selectActions), 500));
 
-                            }}>{tag.search(/>|<|<>|<=|>=|=/) !== -1 ? tag : I18n.t(tag)}{typeof el !== 'string' && el.title2 && <div style={{ marginLeft: 4 }}>{el.title2}</div>}</MenuItem>
+                            }}>{tag.search(/>|<|<>|<=|>=|=/) !== -1 ? tag : I18n.t(tag)}{typeof el !== 'string' && el.title2 && <div style={{ marginLeft: 4 }}>{I18n.t(el.title2)}</div>}</MenuItem>
                     })}
                 </Menu>
             </div>;
         }
 
-        return tagCardArray.length >= 3 ? result : I18n.t(result);
+        return result;
     };
 
     onChangeTag = () => {

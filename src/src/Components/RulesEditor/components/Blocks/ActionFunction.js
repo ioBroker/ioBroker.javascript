@@ -28,10 +28,7 @@ class ActionFunction extends GenericBlock {
     static getStaticData() {
         return {
             acceptedBy: 'actions',
-            name: {
-                en: 'User function',
-                ru: 'User function'
-            },
+            name: 'User function',
             id: 'ActionFunction',
             icon: 'Functions',
             title: 'Write your own code',

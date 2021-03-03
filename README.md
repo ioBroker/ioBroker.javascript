@@ -37,6 +37,10 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.0.8 (2021-03-03)
+* (bluefox) Translations
+* (bluefox) Added the "set state with delay" block
+
 ### 5.0.7 (2021-03-02)
 * (bluefox) Added the pushsafer block
 
@@ -48,9 +52,6 @@ And then call `npm run build`.
 
 ### 5.0.4 (2021-02-28)
 * (bluefox) Fixed errors in rules
-
-### 5.0.3 (2021-02-28)
-* (bluefox) Implemented the memory for condition
 
 ## License
 
