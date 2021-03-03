@@ -9,7 +9,11 @@ class ConditionAstrological extends GenericBlock {
 
     static compile(config, context) {
         const compare = config.tagCard === '=' ? '===' : (config.tagCard === '<>' ? '!==' : config.tagCard);
-        return `formatDate(Date.now(), 'hh:mm') ${compare} formatDate(getAstroDate("${config.astro}", 'hh:mm'))`;
+        let offset;
+        if (config.offset) {
+            offset = parseInt(config.offsetValue, 10) || 0;
+        }
+        return `formatDate(Date.now(), 'hh:mm') ${compare} formatDate(getAstroDate("${config.astro}"${offset ? `, undefined, ${offset}` : ''}), 'hh:mm')`;
     }
 
     static _time2String(time) {

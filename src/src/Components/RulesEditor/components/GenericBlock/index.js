@@ -444,11 +444,12 @@ class GenericBlock extends PureComponent {
     renderModalInput = (input, value, onChange) => {
         const { openModal } = this.state;
         const { className } = this.props;
-        const { attr, nameBlock, frontText, backText } = input;
+        const { attr, nameBlock, frontText, backText, noTextEdit} = input;
         return <div key={attr}>
             <div className={clsx(cls.displayFlex, cls.blockMarginTop)}>
                 {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
                 <CustomInput
+                    disabled={!!noTextEdit}
                     className={className}
                     autoComplete="off"
                     fullWidth

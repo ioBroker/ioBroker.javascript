@@ -127,7 +127,7 @@ function compileConditions(conditions, context, blocks) {
                     _ors.push(found.compile(block, context));
                 }
             });
-            result.push(_ors.join(' && '));
+            result.push('(' + _ors.join(') &&\n                  (') + ')');
         } else {
             const found = findBlock(ors.id, blocks);
             if (found) {

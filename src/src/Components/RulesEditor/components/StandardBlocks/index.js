@@ -9,6 +9,7 @@ import ActionExec from '../Blocks/ActionExec';
 import ActionHTTPCall from '../Blocks/ActionHTTPCall';
 import ActionPrintText from '../Blocks/ActionPrintText';
 import ActionPause from '../Blocks/ActionPause';
+import ActionFunction from '../Blocks/ActionFunction';
 
 const StandardBlocks = [
     TriggerSchedule,
@@ -22,6 +23,7 @@ const StandardBlocks = [
     ActionHTTPCall,
     ActionPrintText,
     ActionPause,
+    ActionFunction,
 ];
 
 export default StandardBlocks;
