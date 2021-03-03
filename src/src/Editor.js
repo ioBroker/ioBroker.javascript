@@ -1036,7 +1036,7 @@ class Editor extends React.Component {
                     isTourOpen={this.state.isTourOpen}
 
                     command={this.state.cmdToRules}
-                    key="flowEditorDiv"
+                    key="flowEditor"
                     themeType={this.state.themeType}
                     themeName={this.props.themeName}
                     searchText={this.state.searchText}
@@ -1203,6 +1203,7 @@ class Editor extends React.Component {
             this.state.rules &&
             this.state.visible) {
             return <Tour
+                key="tour"
                 steps={steps}
                 isOpen={this.state.isTourOpen}
                 onRequestClose={() => {

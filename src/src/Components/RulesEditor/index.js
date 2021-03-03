@@ -70,8 +70,8 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
     if (!blocks) {
         return null;
     }
-    return <div className={cls.wrapperRules} ref={ref}>
-        <CustomDragLayer allBlocks={allBlocks} socket={socket} />
+    return <div key="rulesEditor" className={cls.wrapperRules} ref={ref}>
+        {<CustomDragLayer allBlocks={allBlocks} socket={socket} />}
         {importExport === "export" ?
             <DialogExport
                 key="dialogExport"
@@ -87,7 +87,7 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
                         onChangeBlocks(JSON.parse(text));
                     }
                 }} />}
-        <div className={clsx(cls.rootWrapper, addClass[835] && cls.addClass)}>
+        {<div className={clsx(cls.rootWrapper, addClass[835] && cls.addClass)}>
             <Menu
                 setAllBlocks={setAllBlocks}
                 allBlocks={allBlocks}
@@ -136,7 +136,7 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
                 additionally
                 size={addClass[835]}
             />
-        </div>
+        </div>}
     </div>;
 }
 

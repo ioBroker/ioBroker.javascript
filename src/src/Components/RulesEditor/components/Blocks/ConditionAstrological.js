@@ -1,6 +1,5 @@
 import GenericBlock from '../GenericBlock';
-// import Compile from "../../Compile";
-import SunCalc from "suncalc2";
+import SunCalc from 'suncalc2';
 
 class ConditionAstrological extends GenericBlock {
     constructor(props) {
