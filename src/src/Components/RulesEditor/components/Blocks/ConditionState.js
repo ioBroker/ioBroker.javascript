@@ -55,6 +55,7 @@ class ConditionState extends GenericBlock {
         if (value === null || value === undefined) {
             value = false;
         }
+
         let result;
         if (config.tagCard === '()') {
             context.prelines =  context.prelines || [];
@@ -68,6 +69,10 @@ class ConditionState extends GenericBlock {
                 if (value === '') {
                     value = 0;
                 }
+                if (typeof value === 'string' && parseFloat(value.trim()).toString() !== value.trim()) {
+                    value = `"${value}"`;
+                }
+
                 result = `__hysteresis((await getStateAsync("${config.oid}")).val, ${value}, __%%STATE%%__, ${config.hist}, "${config.histComp}")`;
             }
         } else
@@ -81,6 +86,9 @@ class ConditionState extends GenericBlock {
                     if (value === '') {
                         value = 0;
                     }
+                    if (typeof value === 'string' && parseFloat(value.trim()).toString() !== value.trim()) {
+                        value = `"${value}"`;
+                    }
                     result = `obj.state.val ${compare} ${value}`;
                 }
             } else {
@@ -90,6 +98,9 @@ class ConditionState extends GenericBlock {
                 } else {
                     if (value === '') {
                         value = 0;
+                    }
+                    if (typeof value === 'string' && parseFloat(value.trim()).toString() !== value.trim()) {
+                        value = `"${value}"`;
                     }
                     result = `(await getStateAsync("${config.oid}")).val ${compare} ${value}`;
                 }

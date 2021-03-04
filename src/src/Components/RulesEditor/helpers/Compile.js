@@ -118,7 +118,7 @@ function compileConditions(conditions, context, blocks) {
     let result = [];
     let i = 0;
     conditions && conditions.forEach(ors => {
-        if (ors.hasOwnProperty('length')) {
+        if (ors.hasOwnProperty('length') && ors.length) {
             const _ors = [];
             _ors && ors.forEach(block => {
                 const found = findBlock(block.id, blocks);
@@ -135,7 +135,6 @@ function compileConditions(conditions, context, blocks) {
                 result.push(found.compile(ors, context));
             }
         }
-
     });
 
     if (!result.length) {

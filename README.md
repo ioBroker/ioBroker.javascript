@@ -37,6 +37,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.0.9 (2021-03-04)
+* (bluefox) fixed the error if no condition 
+
 ### 5.0.8 (2021-03-03)
 * (bluefox) Translations
 * (bluefox) Added the "set state with delay" block
@@ -49,9 +52,6 @@ And then call `npm run build`.
 
 ### 5.0.5 (2021-02-28)
 * (bluefox) Implemented the toggle functionality
-
-### 5.0.4 (2021-02-28)
-* (bluefox) Fixed errors in rules
 
 ## License
 

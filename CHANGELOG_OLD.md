@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 5.0.4 (2021-02-28)
+* (bluefox) Fixed errors in rules
+
 ## 5.0.3 (2021-02-28)
 * (bluefox) Implemented the memory for condition
 

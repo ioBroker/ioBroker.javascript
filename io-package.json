@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.0.8",
+        "version": "5.0.9",
         "news": {
+            "5.0.9": {
+                "en": "fixed the error if no condition",
+                "de": "Der Fehler wurde behoben, wenn keine Bedingung vorliegt",
+                "ru": "исправлена ошибка при отсутствии условия",
+                "pt": "corrigiu o erro se nenhuma condição",
+                "nl": "de fout opgelost als er geen voorwaarde was",
+                "fr": "corrigé l'erreur si aucune condition",
+                "it": "risolto l'errore se nessuna condizione",
+                "es": "corrigió el error si no hay condición",
+                "pl": "naprawiono błąd, jeśli nie ma warunku",
+                "zh-cn": "如果没有条件，则修复错误"
+            },
             "5.0.8": {
                 "en": "Translations\nAdded the \"set state with delay\" block",
                 "de": "Übersetzungen\nDer Block \"Status mit Verzögerung einstellen\" wurde hinzugefügt",
