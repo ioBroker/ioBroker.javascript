@@ -425,5 +425,13 @@
   "ms": "ms",
   "Set with delay": "Ustaw z opóźnieniem",
   "clear running": "czysty bieg",
-  "toggle value": "wartość przełączania"
+  "toggle value": "wartość przełączania",
+  "Any month": "Dowolny miesiąc",
+  "Any": "Każdy",
+  "with date": "z datą",
+  "Date": "Data",
+  "Month": "Miesiąc",
+  "Januar": "Januar",
+  "Februar": "Februar",
+  "March ": "Marsz"
 }

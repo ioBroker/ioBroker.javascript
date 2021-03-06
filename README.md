@@ -37,6 +37,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.0.10 (2021-03-07)
+* (bluefox) added date to the time condition
+
 ### 5.0.9 (2021-03-04)
 * (bluefox) fixed the error if no condition 
 
@@ -49,9 +52,6 @@ And then call `npm run build`.
 
 ### 5.0.6 (2021-03-01)
 * (bluefox) Implemented the hysteresis
-
-### 5.0.5 (2021-02-28)
-* (bluefox) Implemented the toggle functionality
 
 ## License
 

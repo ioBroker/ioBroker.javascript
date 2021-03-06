@@ -425,5 +425,13 @@
   "ms": "ms",
   "Set with delay": "Setzen mit Verzögerung",
   "clear running": "laufende abbrechen",
-  "toggle value": "Wert umschalten"
+  "toggle value": "Wert umschalten",
+  "Any month": "Jeden Monat",
+  "Any": "Egal",
+  "with date": "mit Datum",
+  "Date": "Datum",
+  "Month": "Monat",
+  "Januar": "Januar",
+  "Februar": "Februar",
+  "March ": "März"
 }

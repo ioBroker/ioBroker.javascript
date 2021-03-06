@@ -265,16 +265,17 @@ Blockly.JavaScript['on_ext'] = function(block) {
         if (id) {
             firstID = id;
             id = id.replace(/\./g, '\\\\.').replace(/\(/g, '\\\\(').replace(/\)/g, '\\\\)').replace(/\[/g, '\\\\[');
-            if (oids.indexOf(id) === -1) oids.push(id);
+            if (oids.indexOf(id) === -1) {
+                oids.push(id);
+            }
         }
     }
     var oid;
     if (oids.length === 1) {
         oid = firstID;
     } else {
-        oid = 'new RegExp(' + (oids.join(' + "|" + ') || '') + ')';
+        oid = 'new RegExp(' + (oids.join(' + "$|" + ') || '') + '$)';
     }
-
 
     var code = 'on({id: ' + oid + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + '}, async function (obj) {\n  ' +
         (oids.length === 1 ? 'var value = obj.state.val;\n  var oldValue = obj.oldState.val;\n' : '') +

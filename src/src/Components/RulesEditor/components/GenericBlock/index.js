@@ -20,6 +20,7 @@ import CustomSelect from '../CustomSelect';
 import CustomSlider from '../CustomSlider';
 import CustomSwitch from '../CustomSwitch';
 import CustomTime from '../CustomTime';
+import CustomDate from '../CustomDate';
 
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import utils from '../../helpers/utils';
@@ -482,6 +483,18 @@ class GenericBlock extends PureComponent {
                 textInput={true}
             /> : null}
             {nameBlock && <div className={cls.nameBlock}>{I18n.t(nameBlock)}</div>}
+        </div>;
+    };
+
+    renderDate = (input, value, onChange) => {
+        const { attr, backText, frontText } = input
+        return <div key={attr} className={cls.displayFlex} style={{ whiteSpace: 'nowrap' }}>
+            {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
+            <CustomDate
+                value={value}
+                onChange={onChange}
+            />
+            {backText && <div className={cls.backText}>{I18n.t(backText)}</div>}
         </div>;
     };
 
