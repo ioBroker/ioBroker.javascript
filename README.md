@@ -37,6 +37,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.0.11 (2021-03-07)
+* (bluefox) added date to the time condition
+
 ### 5.0.10 (2021-03-07)
 * (bluefox) added date to the time condition
 
@@ -49,9 +52,6 @@ And then call `npm run build`.
 
 ### 5.0.7 (2021-03-02)
 * (bluefox) Added the pushsafer block
-
-### 5.0.6 (2021-03-01)
-* (bluefox) Implemented the hysteresis
 
 ## License
 

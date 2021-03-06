@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 5.0.6 (2021-03-01)
+* (bluefox) Implemented the hysteresis
+
 ## 5.0.5 (2021-02-28)
 * (bluefox) Implemented the toggle functionality
 
