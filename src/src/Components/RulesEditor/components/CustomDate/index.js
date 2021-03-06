@@ -1,4 +1,4 @@
-import { FormControl, FormHelperText, Input, MenuItem, Select } from '@material-ui/core';
+import { FormControl, MenuItem, Select } from '@material-ui/core';
 import React from 'react';
 import cls from './style.module.scss';
 import PropTypes from 'prop-types';
