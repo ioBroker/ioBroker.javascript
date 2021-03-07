@@ -274,7 +274,7 @@ Blockly.JavaScript['on_ext'] = function(block) {
     if (oids.length === 1) {
         oid = firstID;
     } else {
-        oid = 'new RegExp(' + (oids.join(' + "$|" + ') || '') + '$)';
+        oid = 'new RegExp(' + (oids.join(' + "$|" + ') || '') + ' + "$")';
     }
 
     var code = 'on({id: ' + oid + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + '}, async function (obj) {\n  ' +

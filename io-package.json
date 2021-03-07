@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.0.11",
+        "version": "5.0.12",
         "news": {
+            "5.0.12": {
+                "en": "fixed error in blockly",
+                "de": "Fehler in blockly behoben",
+                "ru": "исправлена ошибка блочного",
+                "pt": "erro corrigido em bloco",
+                "nl": "vaste fout in blockly",
+                "fr": "erreur fixe en bloc",
+                "it": "corretto errore in blocco",
+                "es": "error fijo en blockly",
+                "pl": "naprawiono błąd w bloku",
+                "zh-cn": "固定错误"
+            },
             "5.0.11": {
                 "en": "added date to the time condition",
                 "de": "Datum zur Zeitbedingung hinzugefügt",

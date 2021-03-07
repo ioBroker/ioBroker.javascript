@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 5.0.7 (2021-03-02)
+* (bluefox) Added the pushsafer block
+
 ## 5.0.6 (2021-03-01)
 * (bluefox) Implemented the hysteresis
 
