@@ -37,7 +37,7 @@ And then call `npm run build`.
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.0.14 (2021-03-11)
 * (bluefox) fixed the font for the editor 
 
 ### 5.0.12 (2021-03-07)
@@ -51,10 +51,6 @@ And then call `npm run build`.
 
 ### 5.0.9 (2021-03-04)
 * (bluefox) fixed the error if no condition 
-
-### 5.0.8 (2021-03-03)
-* (bluefox) Translations
-* (bluefox) Added the "set state with delay" block
 
 ## License
 

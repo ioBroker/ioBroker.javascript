@@ -1,5 +1,9 @@
 The newest change log is in README.md
 
+## 5.0.8 (2021-03-03)
+* (bluefox) Translations
+* (bluefox) Added the "set state with delay" block
+
 ## 5.0.7 (2021-03-02)
 * (bluefox) Added the pushsafer block
 

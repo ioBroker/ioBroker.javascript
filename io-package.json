@@ -20,8 +20,32 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.0.12",
+        "version": "5.0.14",
         "news": {
+            "5.0.14": {
+                "en": "fixed the font for the editor",
+                "de": "Die Schriftart für den Editor wurde korrigiert",
+                "ru": "исправлен шрифт для редактора",
+                "pt": "corrigiu a fonte para o editor",
+                "nl": "het lettertype voor de editor opgelost",
+                "fr": "correction de la police pour l'éditeur",
+                "it": "corretto il carattere per l'editor",
+                "es": "se arregló la fuente para el editor",
+                "pl": "poprawiono czcionkę dla edytora",
+                "zh-cn": "修复了编辑器的字体"
+            },
+            "5.0.13": {
+                "en": "fixed the font for the editor",
+                "de": "Die Schriftart für den Editor wurde korrigiert",
+                "ru": "исправлен шрифт для редактора",
+                "pt": "corrigiu a fonte para o editor",
+                "nl": "het lettertype voor de editor opgelost",
+                "fr": "correction de la police pour l'éditeur",
+                "it": "corretto il carattere per l'editor",
+                "es": "se arregló la fuente para el editor",
+                "pl": "poprawiono czcionkę dla edytora",
+                "zh-cn": "修复了编辑器的字体"
+            },
             "5.0.12": {
                 "en": "fixed error in blockly",
                 "de": "Fehler in blockly behoben",

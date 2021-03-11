@@ -243,6 +243,9 @@ gulp.task('6-patch', () => new Promise(resolve => {
     }
     if (fs.existsSync(__dirname + '/admin-config/vs/base/browser/ui/codicons/codicon/codicon.ttf')) {
         const codicon = fs.readFileSync(__dirname + '/admin-config/vs/base/browser/ui/codicons/codicon/codicon.ttf');
+        if (!fs.existsSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/')) {
+            fs.mkdirSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/', {recursive: true});
+        }
         fs.writeFileSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf', codicon);
     }
     resolve();
