@@ -241,6 +241,10 @@ gulp.task('6-patch', () => new Promise(resolve => {
 
         fs.writeFileSync(__dirname + '/src/build/index.html', code);
     }
+    if (fs.existsSync(__dirname + '/admin-config/vs/base/browser/ui/codicons/codicon/codicon.ttf')) {
+        const codicon = fs.readFileSync(__dirname + '/admin-config/vs/base/browser/ui/codicons/codicon/codicon.ttf');
+        fs.writeFileSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf', codicon);
+    }
     resolve();
 }));
 
