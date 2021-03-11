@@ -37,6 +37,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) fixed the font for the editor 
+
 ### 5.0.12 (2021-03-07)
 * (bluefox) fixed error in blockly
 

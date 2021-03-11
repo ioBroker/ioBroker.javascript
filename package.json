@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.4.0",
-    "@types/node": "^12.20.4",
+    "@types/node": "^12.20.5",
     "@types/request": "^2.48.5",
     "coffee-compiler": "^0.3.2",
     "coffee-script": "^1.12.7",
