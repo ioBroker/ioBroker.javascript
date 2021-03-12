@@ -245,6 +245,7 @@ declare global {
 		type PartialObject = PartialStateObject | PartialChannelObject | PartialDeviceObject | PartialOtherObject;
 
 		type GetStateCallback<T extends StateValue = any> = (err?: string | null, state?: State<T> | AbsentState) => void | Promise<void>;
+		type ExistsStateCallback<T extends StateValue = any> = (err?: string | null, exists?: Boolean) => void | Promise<void>;
 
 		type GetBinaryStateCallback = (err?: string | null, state?: Buffer) => void | Promise<void>;
 		type GetBinaryStatePromise = Promise<NonNullCallbackReturnTypeOf<GetBinaryStateCallback>>;
@@ -788,6 +789,7 @@ declare global {
 	/**
 	 * Checks if the state with the given ID exists
 	 */
+	function existsState(id: string, callback: iobJS.ExistsStateCallback): void;
 	function existsState(id: string): boolean;
 	function existsStateAsync(id: string): Promise<boolean>;
 	/**
