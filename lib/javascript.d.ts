@@ -245,7 +245,7 @@ declare global {
 		type PartialObject = PartialStateObject | PartialChannelObject | PartialDeviceObject | PartialOtherObject;
 
 		type GetStateCallback<T extends StateValue = any> = (err?: string | null, state?: State<T> | AbsentState) => void | Promise<void>;
-		type ExistsStateCallback<T extends StateValue = any> = (err?: string | null, exists?: Boolean) => void | Promise<void>;
+		type ExistsStateCallback = (err?: string | null, exists?: Boolean) => void | Promise<void>;
 
 		type GetBinaryStateCallback = (err?: string | null, state?: Buffer) => void | Promise<void>;
 		type GetBinaryStatePromise = Promise<NonNullCallbackReturnTypeOf<GetBinaryStateCallback>>;
