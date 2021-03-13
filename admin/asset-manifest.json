@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/static/css/main.6cb0b5d0.chunk.css",
-    "main.js": "/static/js/main.26dffe00.chunk.js",
-    "main.js.map": "/static/js/main.26dffe00.chunk.js.map",
+    "main.js": "/static/js/main.94e8facf.chunk.js",
+    "main.js.map": "/static/js/main.94e8facf.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.4f1bbf1b.js",
     "runtime-main.js.map": "/static/js/runtime-main.4f1bbf1b.js.map",
     "static/css/2.2ae070eb.chunk.css": "/static/css/2.2ae070eb.chunk.css",
@@ -12,7 +12,7 @@
     "static/css/2.2ae070eb.chunk.css.map": "/static/css/2.2ae070eb.chunk.css.map",
     "static/css/main.6cb0b5d0.chunk.css.map": "/static/css/main.6cb0b5d0.chunk.css.map",
     "static/js/2.5efb8bfd.chunk.js.LICENSE.txt": "/static/js/2.5efb8bfd.chunk.js.LICENSE.txt",
-    "static/js/main.26dffe00.chunk.js.LICENSE.txt": "/static/js/main.26dffe00.chunk.js.LICENSE.txt",
+    "static/js/main.94e8facf.chunk.js.LICENSE.txt": "/static/js/main.94e8facf.chunk.js.LICENSE.txt",
     "static/media/hysteresis.04ebd02c.png": "/static/media/hysteresis.04ebd02c.png"
   },
   "entrypoints": [
@@ -20,6 +20,6 @@
     "static/css/2.2ae070eb.chunk.css",
     "static/js/2.5efb8bfd.chunk.js",
     "static/css/main.6cb0b5d0.chunk.css",
-    "static/js/main.26dffe00.chunk.js"
+    "static/js/main.94e8facf.chunk.js"
   ]
 }

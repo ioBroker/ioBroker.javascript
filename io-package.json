@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.0.14",
+        "version": "5.0.15",
         "news": {
+            "5.0.15": {
+                "en": "Rules: added \"use trigger value\" for the \"set action\" blocks",
+                "de": "Regeln: \"Triggerwert verwenden\" für die \"Aktion setzen\" -Blöcke hinzugefügt",
+                "ru": "Правила: добавлено «использовать значение триггера» для блоков «установить действие».",
+                "pt": "Regras: adicionado \"usar valor de gatilho\" para os blocos de \"definir ação\"",
+                "nl": "Regels: \"use trigger value\" toegevoegd voor de \"set action\" blokken",
+                "fr": "Règles: ajout de \"utiliser la valeur de déclenchement\" pour les blocs \"définir l'action\"",
+                "it": "Regole: aggiunto \"usa valore trigger\" per i blocchi \"imposta azione\"",
+                "es": "Reglas: se agregó \"usar valor de activación\" para los bloques \"establecer acción\"",
+                "pl": "Reguły: dodano „użyj wartości wyzwalacza” dla bloków „ustaw akcję”",
+                "zh-cn": "规则：为“设置动作”块添加了“使用触发值”"
+            },
             "5.0.14": {
                 "en": "fixed the font for the editor",
                 "de": "Die Schriftart für den Editor wurde korrigiert",
@@ -249,18 +261,6 @@
                 "es": "Optimice el manejo de errores en createState y file mirror nuevamente",
                 "pl": "Zoptymalizuj obsługę błędów w createState i ponownie dubluj pliki",
                 "zh-cn": "重新优化createState和文件镜像中的错误处理"
-            },
-            "4.10.10": {
-                "en": "Do not try to set a state value if object creation was not successful (Sentry IOBROKER-JAVASCRIPT-5G)\nMake sure no incorrect states are trying to be set (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
-                "de": "Versuchen Sie nicht, einen Statuswert festzulegen, wenn die Objekterstellung nicht erfolgreich war (Sentry IOBROKER-JAVASCRIPT-5G).\nStellen Sie sicher, dass keine falschen Zustände festgelegt werden sollen (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A).",
-                "ru": "Не пытайтесь установить значение состояния, если создание объекта не удалось (Sentry IOBROKER-JAVASCRIPT-5G)\nУбедитесь, что не устанавливаются неправильные состояния (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
-                "pt": "Não tente definir um valor de estado se a criação do objeto não foi bem-sucedida (Sentry IOBROKER-JAVASCRIPT-5G)\nCertifique-se de que nenhum estado incorreto esteja tentando ser definido (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
-                "nl": "Probeer geen statuswaarde in te stellen als het maken van een object niet is gelukt (Sentry IOBROKER-JAVASCRIPT-5G)\nZorg ervoor dat er geen onjuiste statussen worden ingesteld (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
-                "fr": "N'essayez pas de définir une valeur d'état si la création d'objet a échoué (Sentry IOBROKER-JAVASCRIPT-5G)\nAssurez-vous qu'aucun état incorrect ne tente d'être défini (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
-                "it": "Non tentare di impostare un valore di stato se la creazione dell'oggetto non è andata a buon fine (Sentry IOBROKER-JAVASCRIPT-5G)\nAssicurati che non stiano tentando di impostare stati errati (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
-                "es": "No intente establecer un valor de estado si la creación del objeto no fue exitosa (Sentry IOBROKER-JAVASCRIPT-5G)\nAsegúrese de que no se estén intentando establecer estados incorrectos (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
-                "pl": "Nie próbuj ustawiać wartości stanu, jeśli utworzenie obiektu nie powiodło się (Sentry IOBROKER-JAVASCRIPT-5G)\nUpewnij się, że nie próbujesz ustawić żadnych nieprawidłowych stanów (Sentry IOBROKER-JAVASCRIPT-5F, IOBROKER-JAVASCRIPT-5A)",
-                "zh-cn": "如果对象创建不成功，请勿尝试设置状态值（Sentry IOBROKER-JAVASCRIPT-5G）\n确保没有试图设置不正确的状态（Sentry IOBROKER-JAVASCRIPT-5F，IOBROKER-JAVASCRIPT-5A）"
             }
         },
         "desc": {

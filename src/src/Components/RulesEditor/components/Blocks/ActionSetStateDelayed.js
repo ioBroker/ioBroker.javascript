@@ -5,32 +5,44 @@ class ActionSetStateDelayed extends GenericBlock {
         super(props, ActionSetStateDelayed.getStaticData());
     }
 
+    isAllTriggersOnState() {
+        return this.props.userRules?.triggers?.find(item => item.id === 'TriggerState') &&
+            !this.props.userRules?.triggers?.find(item => item.id !== 'TriggerState');
+    }
+
     static compile(config, context) {
         let value = config.value;
-        if (value === undefined || value === null) {
-            value = '';
-        }
-
-        if (typeof config.value === 'string' &&
-            parseFloat(config.value).toString() !== config.value &&
-            config.value !== 'true' &&
-            config.value !== 'false'
-        ) {
-            value = `"${value.replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}`;
-        }
-
-        if (config.toggle) {
-            return `setStateDelayed("${config.oid}", !(await getStateAsync("${config.oid}")).val, ${config.tagCard === 'update'}, ${parseInt(config.delay, 10)}, ${config.clearRunning ? 'true': 'false'});`;
+        if (config.useTrigger) {
+            value = config.toggle ? '!obj.state.val' : 'obj.state.val';
         } else {
-            return `setStateDelayed("${config.oid}", ${value}, ${config.tagCard === 'update'}, ${parseInt(config.delay, 10)}, ${config.clearRunning ? 'true': 'false'});`;
+            if (value === undefined || value === null) {
+                value = '';
+            }
+
+            if (typeof config.value === 'string' &&
+                parseFloat(config.value).toString() !== config.value &&
+                config.value !== 'true' &&
+                config.value !== 'false'
+            ) {
+                value = `"${value.replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}`;
+            }
+        }
+
+        if (config.toggle && !config.useTrigger) {
+            return `setStateDelayed("${config.oid}", !(await getStateAsync("${config.oid}")).val, ${config.tagCard === 'update'}, ${parseInt(config.delay, 10)}, ${config.clearRunning ? 'true' : 'false'});`;
+        } else {
+            return `setStateDelayed("${config.oid}", ${value}, ${config.tagCard === 'update'}, ${parseInt(config.delay, 10)}, ${config.clearRunning ? 'true' : 'false'});`;
         }
     }
 
-    _setInputs(toggle) {
+    _setInputs(useTrigger, toggle) {
+        const isAllTriggersOnState = this.isAllTriggersOnState();
+
         toggle = toggle === undefined ? this.state.settings.toggle : toggle;
+        useTrigger = useTrigger === undefined ? this.state.settings.useTrigger : useTrigger;
         let type = '';
         let options;
-        const { oidType, oidUnit, oidStates, oidMax, oidMin, oidRole, oidWrite, oidStep } = this.state.settings;
+        const {oidType, oidUnit, oidStates, oidMax, oidMin, oidRole, oidWrite, oidStep} = this.state.settings;
         let settings;
 
         if (oidType) {
@@ -58,112 +70,138 @@ class ActionSetStateDelayed extends GenericBlock {
             }
         }
         let inputs;
-        switch (type) {
-            case 'number':
-                inputs = [{
-                    backText: oidUnit || '',
-                    frontText: 'with',
-                    nameRender: 'renderNumber',
-                    defaultValue: oidMax === undefined ? 0 : oidMax,
-                    attr: 'value'
-                }];
-                if (this.state.settings.value !== undefined && isNaN(parseFloat(this.state.settings.value))) {
-                    settings = {value: oidMax === undefined ? 0 : oidMax};
-                }
-                break;
-
-            case 'slider':
-                inputs = [{
-                    nameRender: 'renderSlider',
-                    defaultValue: oidMax,
-                    min: oidMin,
-                    max: oidMax,
-                    unit: oidUnit,
-                    step: oidStep,
-                    attr: 'value'
-                }];
-                const f = parseFloat(this.state.settings.value);
-                if (this.state.settings.value !== undefined &&
-                    (isNaN(f) || f < oidMin || f > oidMax)
-                ) {
-                    settings = {value: oidMax};
-                }
-                break;
-
-            case 'select':
-                inputs = [{
-                    nameRender: 'renderSelect',
-                    frontText: 'with',
-                    options,
-                    defaultValue: options[0].value,
-                    attr: 'value'
-                }];
-                if (this.state.settings.value !== undefined && !options.find(item => item.value === this.state.settings.value)) {
-                    settings = {value: options[0].value};
-                }
-                break;
-
-            case 'boolean':
-                inputs = [
-                    {
-                        backText: 'toggle value',
-                        attr: 'toggle',
-                        nameRender: 'renderCheckbox',
-                        defaultValue: false,
-                    }
-                ];
-                if (!toggle) {
-                    inputs.push({
-                        backText: 'true',
-                        frontText: 'false',
-                        nameRender: 'renderSwitch',
-                        defaultValue: false,
+        if (isAllTriggersOnState && useTrigger) {
+            inputs = [
+                {
+                    backText: 'use trigger value',
+                    nameRender: 'renderCheckbox',
+                    attr: 'useTrigger',
+                    defaultValue: false,
+                },
+            ];
+            if (type === 'boolean') {
+                inputs.push({
+                    backText: 'toggle value',
+                    attr: 'toggle',
+                    nameRender: 'renderCheckbox',
+                    defaultValue: false,
+                });
+            }
+        } else {
+            switch (type) {
+                case 'number':
+                    inputs = [{
+                        backText: oidUnit || '',
+                        frontText: 'with',
+                        nameRender: 'renderNumber',
+                        defaultValue: oidMax === undefined ? 0 : oidMax,
                         attr: 'value'
-                    })
-                }
+                    }];
+                    if (this.state.settings.value !== undefined && isNaN(parseFloat(this.state.settings.value))) {
+                        settings = {value: oidMax === undefined ? 0 : oidMax};
+                    }
+                    break;
 
-                if (this.state.settings.value !== undefined && this.state.settings.value !== false && this.state.settings.value !== true) {
-                    settings = {value: false};
-                }
-                break;
+                case 'slider':
+                    inputs = [{
+                        nameRender: 'renderSlider',
+                        defaultValue: oidMax,
+                        min: oidMin,
+                        max: oidMax,
+                        unit: oidUnit,
+                        step: oidStep,
+                        attr: 'value'
+                    }];
+                    const f = parseFloat(this.state.settings.value);
+                    if (this.state.settings.value !== undefined &&
+                        (isNaN(f) || f < oidMin || f > oidMax)
+                    ) {
+                        settings = {value: oidMax};
+                    }
+                    break;
 
-            case 'button':
-                inputs = [{
-                    nameRender: 'renderButton',
-                    defaultValue: true,
-                    attr: 'value'
-                }];
-                if (this.state.settings.value !== undefined && this.state.settings.value !== true) {
-                    settings = {value: true};
-                }
-                break;
+                case 'select':
+                    inputs = [{
+                        nameRender: 'renderSelect',
+                        frontText: 'with',
+                        options,
+                        defaultValue: options[0].value,
+                        attr: 'value'
+                    }];
+                    if (this.state.settings.value !== undefined && !options.find(item => item.value === this.state.settings.value)) {
+                        settings = {value: options[0].value};
+                    }
+                    break;
 
-            case 'color':
-                inputs = [{
-                    nameRender: 'renderColor',
-                    frontText: 'with',
-                    defaultValue: '#FFFFFF',
-                    attr: 'value'
-                }];
-                if (this.state.settings.value !== undefined &&
-                    (
-                        typeof this.state.settings.value !== 'string' ||
-                        (typeof this.state.settings.value.startsWith('#') &&
-                         typeof this.state.settings.value.startsWith('rgb'))
+                case 'boolean':
+                    inputs = [
+                        {
+                            backText: 'toggle value',
+                            attr: 'toggle',
+                            nameRender: 'renderCheckbox',
+                            defaultValue: false,
+                        }
+                    ];
+                    if (!toggle) {
+                        inputs.push({
+                            backText: 'true',
+                            frontText: 'false',
+                            nameRender: 'renderSwitch',
+                            defaultValue: false,
+                            attr: 'value'
+                        });
+                    }
+
+                    if (this.state.settings.value !== undefined && this.state.settings.value !== false && this.state.settings.value !== true) {
+                        settings = {value: false};
+                    }
+                    break;
+
+                case 'button':
+                    inputs = [{
+                        nameRender: 'renderButton',
+                        defaultValue: true,
+                        attr: 'value'
+                    }];
+                    if (this.state.settings.value !== undefined && this.state.settings.value !== true) {
+                        settings = {value: true};
+                    }
+                    break;
+
+                case 'color':
+                    inputs = [{
+                        nameRender: 'renderColor',
+                        frontText: 'with',
+                        defaultValue: '#FFFFFF',
+                        attr: 'value'
+                    }];
+                    if (this.state.settings.value !== undefined &&
+                        (
+                            typeof this.state.settings.value !== 'string' ||
+                            (typeof this.state.settings.value.startsWith('#') &&
+                                typeof this.state.settings.value.startsWith('rgb'))
                         )) {
-                    settings = {value: '#FFFFFF'};
-                }
-                break;
+                        settings = {value: '#FFFFFF'};
+                    }
+                    break;
 
-            default:
-                inputs = [{
-                    backText: oidUnit || '',
-                    frontText: 'with',
-                    nameRender: 'renderText',
-                    defaultValue: '',
-                    attr: 'value'
-                }];
-                break;
+                default:
+                    inputs = [{
+                        backText: oidUnit || '',
+                        frontText: 'with',
+                        nameRender: 'renderText',
+                        defaultValue: '',
+                        attr: 'value'
+                    }];
+                    break;
+            }
+            if (isAllTriggersOnState) {
+                inputs.unshift({
+                    backText: 'use trigger value',
+                    nameRender: 'renderCheckbox',
+                    attr: 'useTrigger',
+                });
+            }
         }
 
         inputs.push({
@@ -171,6 +209,7 @@ class ActionSetStateDelayed extends GenericBlock {
             frontText: 'Delay',
             nameRender: 'renderNumber',
             defaultValue: '1000',
+            noHelperText: true,
             attr: 'delay'
         });
         inputs.push({
@@ -183,8 +222,9 @@ class ActionSetStateDelayed extends GenericBlock {
         return {inputs, newSettings: settings};
     }
 
-    onTagChange(tagCard, cb, ignore, toggle) {
-        const {inputs, newSettings} = this._setInputs(toggle);
+    onTagChange(tagCard, cb, ignore, toggle, useTrigger) {
+        useTrigger = useTrigger === undefined ? this.state.settings.useTrigger : useTrigger;
+        const {inputs, newSettings} = this._setInputs(useTrigger, toggle);
         inputs.unshift({
             nameRender: 'renderObjectID',
             attr: 'oid',
@@ -202,8 +242,12 @@ class ActionSetStateDelayed extends GenericBlock {
         }));
     }
 
-    onValueChanged(value, attr) {
-        this.onTagChange(undefined, undefined, undefined, attr === 'toggle' ? value : undefined);
+    onValueChanged(value, attr, context) {
+        this.onTagChange(undefined, undefined, undefined, attr === 'toggle' ? value : undefined, attr === 'useTrigger' ? value : undefined);
+    }
+
+    onUpdate() {
+        this.onTagChange();
     }
 
     static getStaticData() {
