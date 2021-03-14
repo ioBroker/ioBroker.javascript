@@ -92,11 +92,19 @@ if (''.endsWith === undefined) {
 ///
 
 let webstormDebug;
+let debugMode;
 if (process.argv) {
     for (let a = 1; a < process.argv.length; a++) {
         if (process.argv[a].startsWith('--webstorm')) {
             webstormDebug = process.argv[a].replace(/^(.*?=\s*)/, '');
-            break;
+        }
+        if (process.argv[a] === '--debugScript') {
+            if (!process.argv[a + 1]) {
+                console.log('No script name provided');
+                process.exit(300);
+            } else {
+                debugMode = process.argv[a + 1];
+            }
         }
     }
 }
@@ -206,7 +214,6 @@ function loadTypeScriptDeclarations() {
     }
 }
 
-
 const context = {
     mods,
     objects:          {},
@@ -231,6 +238,7 @@ const context = {
     messageBusHandlers: {},
     logSubscriptions: {},
     updateLogSubscriptions,
+    debugMode,
     timeSettings:     {
         format12: false,
         leadingZeros: true
@@ -252,6 +260,7 @@ const ignoreObjectChange = new Set();
 
 /** @type {ioBroker.Adapter} */
 let adapter;
+
 function startAdapter(options) {
     options = options || {};
     Object.assign(options, {
@@ -785,7 +794,7 @@ function main() {
                                         bare: true
                                     }, (err, js) => {
                                         if (err) {
-                                            adapter.log.error('coffee compile ' + err);
+                                            adapter.log.error(`coffee compile ${err}`);
                                             return;
                                         }
                                         globalScript += js + '\n';
@@ -1167,13 +1176,13 @@ context.logError = function (msg, e, offs) {
 };
 
 function createActiveObject(id, enabled, cb) {
-    const idActive = adapter.namespace + '.scriptEnabled.' + id.substring('script.js.'.length);
+    const idActive = `${adapter.namespace}.scriptEnabled.${id.substring('script.js.'.length)}`;
 
     if (!context.objects[idActive]) {
         context.objects[idActive] = {
             _id: idActive,
             common: {
-                name: 'scriptEnabled.' + id.substring('script.js.'.length),
+                name: `scriptEnabled.${id.substring('script.js.'.length)}`,
                 desc: 'controls script activity',
                 type: 'boolean',
                 write: true,
@@ -1367,7 +1376,15 @@ function installLibraries(callback) {
 }
 
 function createVM(source, name) {
-    source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + ' and ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ));\n";
+    if (debugMode && name !== debugMode) {
+        return false;
+    }
+
+    if (!debugMode) {
+        source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + ' and ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ));\n";
+    } else {
+        source = 'debugger;' + source;
+    }
     try {
         if (VMScript) {
             return {
@@ -1384,7 +1401,7 @@ function createVM(source, name) {
             };
         }
     } catch (e) {
-        context.logError(name + ' compile failed:\r\nat ', e);
+        context.logError(`${name} compile failed:\r\nat `, e);
         return false;
     }
 }
@@ -1444,14 +1461,14 @@ function unsubscribe(id) {
     }
 
     if (typeof id !== 'string') {
-        adapter.log.error('unsubscribe: invalid type of id - ' + typeof id);
+        adapter.log.error(`unsubscribe: invalid type of id - ${typeof id}`);
         return;
     }
     const parts = id.split('.');
     const _adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
     if (context.objects[_adapter] && context.objects[_adapter].common && context.objects[_adapter].common.subscribable) {
         const a = parts[0] + '.' + parts[1];
-        const alive = 'system.adapter.' + a + '.alive';
+        const alive = `system.adapter.${a}.alive`;
         if (context.adapterSubs[alive]) {
             const pos = context.adapterSubs[alive].indexOf(id);
             if (pos !== -1) context.adapterSubs[alive].splice(pos, 1);
@@ -1595,8 +1612,8 @@ function stop(name, callback) {
 
 function prepareScript(obj, callback) {
     if (obj &&
-        obj.common.enabled &&
-        obj.common.engine === 'system.adapter.' + adapter.namespace &&
+        (obj.common.enabled || debugMode === obj._id) &&
+        obj.common.engine === `system.adapter.${adapter.namespace}` &&
         obj.common.source) {
         const name = obj._id;
 
@@ -1606,7 +1623,7 @@ function prepareScript(obj, callback) {
             typeof callback === 'function' && callback(false, name);
             return;
         }
-        adapter.setState('scriptEnabled.' + nameId, true, true);
+        adapter.setState(`scriptEnabled.${nameId}`, true, true);
         obj.common.engineType = obj.common.engineType || '';
 
         if ((obj.common.engineType.toLowerCase().startsWith('javascript') || obj.common.engineType === 'Blockly' || obj.common.engineType === 'Rules')) {
@@ -1625,11 +1642,11 @@ function prepareScript(obj, callback) {
             // CoffeeScript
             coffeeCompiler.fromSource(obj.common.source, { sourceMap: false, bare: true }, (err, js) => {
                 if (err) {
-                    adapter.log.error(name + ' coffee compile ' + err);
+                    adapter.log.error(`${name} coffee compile ${err}`);
                     typeof callback === 'function' && callback(false, name);
                     return;
                 }
-                adapter.log.info('Start coffescript ' + name);
+                adapter.log.info(`Start coffescript ${name}`);
                 context.scripts[name] = createVM(`(async () => {\n${globalScript + '\n' + js}\n})();`, name);
                 context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
                 typeof callback === 'function' && callback(true, name);
@@ -1724,7 +1741,7 @@ function load(nameOrObject, callback) {
     } else {
         adapter.getForeignObject(nameOrObject, (err, obj) => {
             if (!obj || err) {
-                err && adapter.log.error('Invalid script "' + nameOrObject + '": ' + err);
+                err && adapter.log.error(`Invalid script "${nameOrObject}": ${err}`);
                 typeof callback === 'function' && callback(false, nameOrObject);
             } else {
                 return load(obj, callback);
