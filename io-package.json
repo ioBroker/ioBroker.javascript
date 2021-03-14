@@ -438,6 +438,38 @@
             },
             "type": "state",
             "native": {}
+        },
+        {
+            "_id": "debug",
+            "common": {
+                "name": "Debug variables"
+            },
+            "type": "channel",
+            "native": {}
+        },
+        {
+            "_id": "debug.to",
+            "common": {
+                "name": "Send data to debugger",
+                "type": "string",
+                "read": false,
+                "write": true,
+                "role": "json"
+            },
+            "type": "state",
+            "native": {}
+        },
+        {
+            "_id": "debug.from",
+            "common": {
+                "name": "Data from debugger",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "role": "json"
+            },
+            "type": "state",
+            "native": {}
         }
     ]
 }

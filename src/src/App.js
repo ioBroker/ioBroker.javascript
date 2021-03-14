@@ -752,6 +752,7 @@ class App extends GenericApp {
             searchText={this.state.searchText}
             themeType={this.state.themeType}
             themeName={this.state.themeName}
+            theme={this.state.theme}
             onChange={(id, common) => this.onUpdateScript(id, common)}
             isAnyRulesExists={isAnyRulesExists}
             onSelectedChange={(id, editing) => {

@@ -45,6 +45,7 @@ import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import DialogCron from './Dialogs/Cron';
 import DialogScriptEditor from './Dialogs/ScriptEditor';
 import RulesEditor from './Components/RulesEditor';
+import Debugger from './Components/Debugger';
 import steps, { STEPS } from './Components/RulesEditor/helpers/Tour';
 import Tour from 'reactour';
 
@@ -196,6 +197,7 @@ class Editor extends React.Component {
             instancesLoaded: false,
             isTourOpen: window.localStorage.getItem('tour') !== 'true',
             tourStep: STEPS.selectTriggers,
+            debug: false,
         };
 
         this.setChangedInAdmin();
@@ -942,6 +944,12 @@ class Editor extends React.Component {
                         this.state.isTourOpen && this.state.tourStep === STEPS.switchBackToRules && this.setState({ tourStep: STEPS.saveTheScript });
                     }}>
                     <img alt={this.state.blockly ? "blockly2js" : "rules2js"} src={this.state.blockly ? ImgBlockly2Js : ImgRules2Js} /></Button>}
+                {((!this.state.blockly && !this.state.rules) || (this.state.blockly || this.state.rules) && this.state.showCompiledCode) && <Button
+                    color={this.state.debug ? 'primary' : 'default'}
+                    onClick={() => this.setState({debug: !this.state.debug})}
+                >
+                    debug
+                </Button>}
                 <IconButton
                     key="debug"
                     aria-label="Debug menu"
@@ -960,7 +968,8 @@ class Editor extends React.Component {
     }
 
     getScriptEditor() {
-        if (this.state.selected &&
+        if (!this.state.debug &&
+            this.state.selected &&
             this.props.objects[this.state.selected] &&
             this.state.blockly !== null &&
             (!this.state.blockly || this.state.showCompiledCode) &&
@@ -994,7 +1003,8 @@ class Editor extends React.Component {
     }
 
     getBlocklyEditor() {
-        if (this.state.instancesLoaded &&
+        if (!this.state.debug &&
+            this.state.instancesLoaded &&
             this.state.selected &&
             this.props.objects[this.state.selected] &&
             this.state.blockly &&
@@ -1020,7 +1030,8 @@ class Editor extends React.Component {
     }
 
     getRulesEditor() {
-        if (this.state.instancesLoaded &&
+        if (!this.state.debug &&
+            this.state.instancesLoaded &&
             this.state.selected &&
             this.props.objects[this.state.selected] &&
             this.state.rules &&
@@ -1052,7 +1063,7 @@ class Editor extends React.Component {
 
     getConfirmDialog() {
         if (this.state.confirm) {
-            return (<DialogConfirm
+            return <DialogConfirm
                 key="dialogConfirm1"
                 text={this.state.confirm}
                 onClose={result => {
@@ -1063,7 +1074,7 @@ class Editor extends React.Component {
                     }
                     this.setState({ confirm: '' });
                 }}
-            />);
+            />;
         } else {
             return null;
         }
@@ -1217,6 +1228,20 @@ class Editor extends React.Component {
         }
     }
 
+    renderDebug() {
+        if (this.state.debug) {
+            return <Debugger
+                socket={this.props.socket}
+                theme={this.props.theme}
+                themeName={this.props.themeName}
+                themeType={this.props.themeType}
+                src={this.state.selected}
+                />;
+        } else {
+            return null;
+        }
+    }
+
     render() {
         if (this.state.selected && this.props.objects[this.state.selected] && this.state.blockly === null && this.state.rules === null) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
@@ -1241,6 +1266,7 @@ class Editor extends React.Component {
             this.getScriptEditor(),
             this.getBlocklyEditor(),
             this.getRulesEditor(),
+            this.renderDebug(),
             this.getConfirmDialog(),
             this.getSelectIdDialog(),
             this.getCronDialog(),

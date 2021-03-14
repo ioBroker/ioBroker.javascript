@@ -35,6 +35,7 @@ const coffeeCompiler = require('coffee-compiler');
 const tsc            = require('virtual-tsc');
 const nodeSchedule   = require('node-schedule');
 const Mirror         = require('./lib/mirror');
+const fork           = require('child_process').fork;
 
 const mods = {
     fs:               {},
@@ -454,6 +455,10 @@ function startAdapter(options) {
                 return;
             }
 
+            if (id === adapter.namespace + '.debug.to' && !state.ack) {
+                debugSendToInspector(state.val);
+            }
+
             const oldState = context.states[id];
             if (state) {
                 if (oldState) {
@@ -468,7 +473,7 @@ function startAdapter(options) {
                             const parts = id.split('.');
                             const a = parts[2] + '.' + parts[3];
                             for (let t = 0; t < context.adapterSubs[id].length; t++) {
-                                adapter.log.info('Detected coming adapter "' + a + '". Send subscribe: ' + context.adapterSubs[id][t]);
+                                adapter.log.info(`Detected coming adapter "${a}". Send subscribe: ${context.adapterSubs[id][t]}`);
                                 adapter.sendTo(a, 'subscribe', context.adapterSubs[id][t]);
                             }
                         }
@@ -604,6 +609,7 @@ function startAdapter(options) {
                         }
                         break;
                     }
+
                     case 'calcAstro': {
                         if (obj.message) {
                             const sunriseOffset = parseInt(obj.message.sunriseOffset  === undefined ? adapter.config.sunriseOffset : obj.message.sunriseOffset, 10) || 0;
@@ -639,6 +645,16 @@ function startAdapter(options) {
                                 nextSunset
                             }, obj.callback);
                         }
+                        break;
+                    }
+
+                    case 'debug': {
+                        debugScript(obj.message);
+                        break;
+                    }
+                    case 'debugStop': {
+                        debugStop()
+                            .then(() => console.log('stopped'));
                         break;
                     }
                 }
@@ -1329,7 +1345,12 @@ function installNpm(npmLib, callback) {
 
     child.on('err', err => {
         adapter.log.error(`Cannot install ${npmLib}: ${err}`);
-        if (typeof callback === 'function') callback(npmLib);
+        typeof callback === 'function' && callback(npmLib);
+        callback = null;
+    });
+    child.on('error', err => {
+        adapter.log.error(`Cannot install ${npmLib}: ${err}`);
+        typeof callback === 'function' && callback(npmLib);
         callback = null;
     });
 
@@ -1841,6 +1862,134 @@ function getData(callback) {
         adapter.log.info('received all objects');
         statesReady && typeof callback === 'function' && callback();
     });
+}
+
+const debugState = {
+    scriptName: '',
+    child: null,
+    promiseOnEnd: null,
+    paused: false,
+    started: 0,
+};
+
+function debugStop() {
+    if (debugState.child) {
+        debugSendToInspector({cmd: 'end'});
+        debugState.endTimeout = setTimeout(() => {
+            debugState.endTimeout = null;
+            debugState.child.kill('SIGTERM');
+        }, 1000);
+    } else {
+        debugState.promiseOnEnd = Promise.resolve();
+    }
+
+    return debugState.promiseOnEnd
+        .then(() => {
+            debugState.child = null;
+            debugState.running = false;
+            debugState.scriptName = '';
+            debugState.endTimeout && clearTimeout(debugState.endTimeout);
+            debugState.endTimeout = null;
+        });
+}
+
+function debugDisableScript(id) {
+    const obj = context.objects[id];
+    if (obj && obj.common && obj.common.enabled) {
+        return adapter.extendForeignObjectAsync(obj._id, {common: {enabled: false}});
+    } else {
+        return Promise.resolve();
+    }
+}
+
+function debugSendToInspector(message) {
+    if (debugState.child) {
+        debugState.child.send(message);
+    } else {
+        adapter.log.error(`Cannot send command to terminated inspector`);
+        return adapter.setState('debug.from', JSON.stringify({error: `Cannot send command to terminated inspector`}));
+    }
+}
+
+function debugScript(data) {
+    if (Date.now() - debugState.started < 1000) {
+        console.log('Start ignored');
+        return;
+    }
+
+    debugState.started = Date.now();
+    // stop script if it running
+    debugDisableScript(data.scriptName)
+        .then(() => debugStop())
+        .then(() => {
+            debugState.scriptName   = data.scriptName;
+            debugState.breakOnStart = data.breakOnStart;
+
+            debugState.promiseOnEnd = new Promise(resolve => {
+                const options = {
+                    stdio: ['ignore', 'inherit', 'inherit', 'ipc']
+                    //stdio: ['pipe', 'pipe', 'pipe', 'ipc']
+                };
+
+                debugState.child = fork(__dirname + '/inspect.js', [], options);
+
+                /*debugState.child.stdout.setEncoding('utf8');
+                debugState.child.stderr.setEncoding('utf8');
+                debugState.child.stdout.on('data', childPrint);
+                debugState.child.stderr.on('data', childPrint);*/
+
+                debugState.child.on('message', message => {
+                    if (typeof message === 'string') {
+                        try {
+                            message = JSON.parse(message);
+                        } catch (e) {
+                            return adapter.log.error(`Cannot parse message from inspector: ${message}`);
+                        }
+                    }
+
+                    adapter.setState('debug.from', JSON.stringify(message), true);
+
+                    switch (message.cmd) {
+                        case 'ready': {
+                            debugSendToInspector({cmd: 'start', scriptName: debugState.scriptName});
+                            break;
+                        }
+
+                        case 'watched': {
+                            console.log(`WATCHED: ${JSON.stringify(message)}`);
+                            break;
+                        }
+
+                        case 'paused': {
+                            debugState.paused = true;
+                            console.log(`PAUSED`);
+                            break;
+                        }
+
+                        case 'resumed' : {
+                            debugState.paused = false;
+                            console.log(`STARTED`);
+                            break;
+                        }
+
+                        case 'log' : {
+                            console.log(`[${message.severity}] ${message.text}`);
+                            break;
+                        }
+
+                        case 'readyToDebug': {
+                            console.log(`readyToDebug (set breakpoints): [${message.scriptId}] ${message.script}`);
+                            break;
+                        }
+                    }
+                });
+
+                debugState.child.on('exit', code => {
+                    debugState.child = null;
+                    resolve(code);
+                });
+            })
+        });
 }
 
 // If started as allInOne mode => return function to create instance

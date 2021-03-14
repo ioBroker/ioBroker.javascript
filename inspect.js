@@ -134,6 +134,7 @@ class NodeInspector {
         this.options = options;
         this.stdin = stdin;
         this.stdout = stdout;
+        this.scripts = {};
 
         this.paused = true;
         this.child = null;
@@ -163,30 +164,37 @@ class NodeInspector {
             if (domain === 'Debugger' && name === 'scriptParsed') {
                 if (params.url.includes(scriptToDebug)) {
                     console.log('My scriptID: ' + params.scriptId);
-                    this.scripId = params.scriptId;
+                    this.mainScriptId = params.scriptId;
                     // load text of script
-                    this.Debugger.getScriptSource({ scriptId: this.scripId })
-                        .then(script => {
-                            this.script = script.scriptSource;
-                            // console.log('SCRIPT: ' + this.script);
-                        });
+                    this.scripts[this.mainScriptId ] = this.Debugger.getScriptSource({ scriptId: this.mainScriptId })
+                        .then(script => ({script: script.scriptSource, scriptId: this.mainScriptId}));
                 }
-            }
-
+            } else
+            if (domain === 'Debugger' && name === 'resumed') {
+                this.Debugger.emit(name, params);
+                sendToHost({cmd: 'resumed', context: params});
+            } else
             if (domain === 'Debugger' && name === 'paused') {
                 console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
                 this.Debugger.emit(name, params);
 
-                if (!global._AAA) {
-                    global._AAA = true;
-                    setTimeout(() => {
-                        this.Debugger
-                            .setBreakpoint({ location: {scriptId: this.scripId, lineNumber: 4, columnNumber: 0}})
+                if (!alreadyPausedOnFirstLine) {
+                    alreadyPausedOnFirstLine = true;
+                    this.scripts[this.mainScriptId]
+                        .then(data =>
+                            sendToHost({cmd: 'readyToDebug', scriptId: data.scriptId, script: data.script, context: params}));
+                    /*    this.Debugger
+                            .setBreakpoint({ location: {scriptId: this.mainScriptId, lineNumber: 4, columnNumber: 0}})
                             .then(result => console.log(JSON.stringify(result)));
                         this.Debugger.resume();
-                    }, 3000);
+                    }, 3000);*/
+                } else {
+                    //this.scripts[params.loca]
+                    //    .then(data =>
+                    sendToHost({cmd: 'paused', context: params});
                 }
             }
+
             if (domain === 'Runtime') {
                 //console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
             }
@@ -194,9 +202,15 @@ class NodeInspector {
                 const text = params.args[0].value;
                 if (text.includes(scriptToDebug)) {
                     console.log(`${fullName} [${params.executionContextId}]: => ${text}`);
+                    sendToHost({cmd: 'log', severity: 'info', text});
                 }
-            } else if (domain === 'Runtime') {
-                //console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
+            } else if (domain === 'Runtime' && params.id === 2) {
+                if (name === 'executionContextCreated') {
+                    console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
+                } else if (name === 'executionContextDestroyed') {
+                    console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
+                    sendToHost({cmd: 'finished', context: params});
+                }
             }
 
             /*if (domain in this) {
@@ -373,7 +387,7 @@ function startInspect(argv = process.argv.slice(2), stdin = process.stdin, stdou
     }
 
     const options = parseArgv(argv);
-    const inspector = new NodeInspector(options, stdin, stdout);
+    inspector = new NodeInspector(options, stdin, stdout);
 
     stdin.resume();
 
@@ -393,6 +407,113 @@ function startInspect(argv = process.argv.slice(2), stdin = process.stdin, stdou
     /* eslint-enable no-console */
 }
 
-const scriptToDebug = 'script.js.Skript_1';
+let inspector;
+let scriptToDebug;
+let alreadyPausedOnFirstLine = false;
 
-startInspect(['main.js', '--debug', '--debugScript', scriptToDebug]);
+process.on('message', message => {
+    if (typeof message === 'string') {
+        try {
+            message = JSON.parse(message);
+        } catch (e) {
+            return console.error(`Cannot parse: ${message}`);
+        }
+    }
+    processCommand(message);
+});
+
+sendToHost({cmd: 'ready'});
+
+// possible commands
+// start           - {cmd: 'start', scriptName: 'script.js.myName'} - start the debugging
+// end             - {cmd: 'end'} - end the debugging and stop process
+// source          - {cmd: 'source', scriptId} - read text of script by id
+// watch           - {cmd: 'watch', expressions: ['i']} - add to watch the variable
+// unwatch         - {cmd: 'unwatch', expressions: ['i']} - add to watch the variable
+
+// sb              - {cmd: 'sb', breakpoints: [{scriptId: 50, lineNumber: 4, columnNumber: 0}]} - set breakpoint
+// cb              - {cmd: 'cb', breakpoints: [{scriptId: 50, lineNumber: 4, columnNumber: 0}]} - clear breakpoint
+
+// pause           - {cmd: 'pause'} - pause execution
+// cont            - {cmd: 'cont'} - resume execution
+// next            - {cmd: 'next'} - Continue to next line in current file
+// step            - {cmd: 'step'} - Step into, potentially entering a function
+// out             - {cmd: 'step'} - Step out, leaving the current function
+
+function processCommand(data) {
+    if (data.cmd === 'start') {
+        scriptToDebug = data.scriptName;
+        startInspect(['main.js', '--debug', '--debugScript', scriptToDebug]);
+    } else if (data.cmd === 'end') {
+        process.exit();
+    } else if (data.cmd === 'source') {
+        inspector.Debugger.getScriptSource({scriptId: data.scriptId})
+            .then(script => sendToHost({cmd: 'script', scriptId: data.scriptId, text: script.scriptSource}));
+    } else if (data.cmd === 'cont') {
+        inspector.Debugger.resume()
+            .catch(e => sendToHost({cmd: 'error', error: e}));
+    } else if (data.cmd === 'next') {
+        inspector.Debugger.stepOver()
+            .catch(e => sendToHost({cmd: 'error', error: e}));
+    } else if (data.cmd === 'pause') {
+        inspector.Debugger.pause()
+            .catch(e => sendToHost({cmd: 'error', error: e}));
+    } else if (data.cmd === 'step') {
+        inspector.Debugger.stepInto()
+            .catch(e => sendToHost({cmd: 'error', error: e}));
+    } else if (data.cmd === 'out') {
+        inspector.Debugger.stepOut()
+            .catch(e => sendToHost({cmd: 'error', error: e}));
+    } else if (data.cmd === 'sb') {
+        Promise.all(data.breakpoints.map(bp =>
+            inspector.Debugger.setBreakpoint({
+                location: {
+                    scriptId: bp.scriptId,
+                    lineNumber: bp.lineNumber,
+                    columnNumber: bp.columnNumber
+                }
+            })
+                .catch(e =>
+                    sendToHost({cmd: 'error', error: `Cannot set breakpoint: ${e}`, errorContext: e, bp}))));
+    } else if (data.cmd === 'cb') {
+        Promise.all(data.breakpoints.map(bp =>
+            inspector.Debugger.clearBreakpoint({
+                location: {
+                    scriptId: bp.scriptId,
+                    lineNumber: bp.lineNumber,
+                    columnNumber: bp.columnNumber
+                }
+            })
+                .catch(e =>
+                    sendToHost({cmd: 'error', error: `Cannot clear breakpoint: ${e}`, errorContext: e, bp}))));
+    } else if (data.cmd === 'watch') {
+        Promise.all(data.expressions.map(expr =>
+            inspector.Debugger.watch(expr)
+                .catch(e =>
+                    sendToHost({cmd: 'error', error: `Cannot watch expr: ${e}`, errorContext: e, expr}))))
+            .then(() => console.log('Watch done'));
+    } else if (data.cmd === 'unwatch') {
+        Promise.all(data.expressions.map(expr =>
+            inspector.Debugger.unwatch(expr)
+                .catch(e =>
+                    sendToHost({cmd: 'error', error: `Cannot unwatch expr: ${e}`, errorContext: e, expr}))))
+            .then(() => console.log('Watch done'));
+    } else {
+        console.error('Unknown command: ' + JSON.stringify(data));
+    }
+}
+
+function sendToHost(data) {
+    if (data.cmd === 'error') {
+        console.error(data.text);
+        data.expr && console.error(`[EXPRESSION] ${data.expr}`);
+        data.bp && console.error(`[BP] ${data.bp}`);
+    }
+
+    if (typeof data !== 'string') {
+        data = JSON.stringify(data);
+    }
+
+    process.send && process.send(data);
+}
+

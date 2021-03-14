@@ -51,7 +51,6 @@ class ScriptEditor extends React.Component {
         this.editor.executeEdits('', [{range: range, text: text, forceMoveMarkers: true}]);
     }
 
-
     editorDidMount(editor, monaco) {
         this.monaco = monaco;
         this.editor = editor;
@@ -69,20 +68,18 @@ class ScriptEditor extends React.Component {
             automaticLayout: true,
             readOnly: this.state.readOnly
         };
-        return (
-            <MonacoEditor
-                width="100%"
-                height="100%"
-                languages={['javascript', 'typescript']}
-                language={this.state.language}
-                theme={this.state.isDark ? 'vs-dark': ''}
-                value={this.originalCode}
-                searchText={this.props.searchText}
-                options={options}
-                onChange={newValue => this.onChange(newValue)}
-                editorDidMount={(editor, monaco) => this.editorDidMount(editor, monaco)}
-            />
-        );
+        return <MonacoEditor
+            width="100%"
+            height="100%"
+            languages={['javascript', 'typescript']}
+            language={this.state.language}
+            theme={this.state.isDark ? 'vs-dark': ''}
+            value={this.originalCode}
+            searchText={this.props.searchText}
+            options={options}
+            onChange={newValue => this.onChange(newValue)}
+            editorDidMount={(editor, monaco) => this.editorDidMount(editor, monaco)}
+        />;
     }
 }
 
