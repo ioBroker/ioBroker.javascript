@@ -89,7 +89,7 @@ function runScript(script, scriptArgs, inspectHost, inspectPort, childPrint) {
                 child.stdout.setEncoding('utf8');
                 child.stderr.setEncoding('utf8');
                 // child.stdout.on('data', childPrint);
-                child.stderr.on('data', childPrint);
+                child.stderr.on('data', text => childPrint(text, true));
 
                 let output = '';
                 function waitForListenHint(text) {
@@ -183,11 +183,6 @@ class NodeInspector {
                     this.scripts[this.mainScriptId]
                         .then(data =>
                             sendToHost({cmd: 'readyToDebug', scriptId: data.scriptId, script: data.script, context: params}));
-                    /*    this.Debugger
-                            .setBreakpoint({ location: {scriptId: this.mainScriptId, lineNumber: 4, columnNumber: 0}})
-                            .then(result => console.log(JSON.stringify(result)));
-                        this.Debugger.resume();
-                    }, 3000);*/
                 } else {
                     //this.scripts[params.loca]
                     //    .then(data =>
@@ -198,11 +193,12 @@ class NodeInspector {
             if (domain === 'Runtime') {
                 //console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
             }
-            if (domain === 'Runtime' && name === 'consoleAPICalled' && params.type === 'log'/* && params.executionContextId === 2*/) {
+            if (domain === 'Runtime' && name === 'consoleAPICalled' && (params.type === 'log' || params.type === 'warn' || params.type === 'debug' || params.type === 'error')/* && params.executionContextId === 2*/) {
                 const text = params.args[0].value;
-                if (text.includes(scriptToDebug)) {
+                if (text.includes('$$' + scriptToDebug + '$$')) {
                     console.log(`${fullName} [${params.executionContextId}]: => ${text}`);
-                    sendToHost({cmd: 'log', severity: 'info', text});
+                    const [severity, _text] = text.split('$$' + scriptToDebug + '$$');
+                    sendToHost({cmd: 'log', severity: severity, text: _text, ts: params.args[1].value});
                 }
             } else if (domain === 'Runtime' && params.id === 2) {
                 if (name === 'executionContextCreated') {
@@ -310,8 +306,8 @@ class NodeInspector {
         this.stdout.write(oneline ? text : `${text}\n`);
     }
 
-    childPrint(text) {
-        this.print(
+    childPrint(text, isError) {
+        isError && this.print(
             text.toString()
                 .split(/\r\n|\r|\n/g)
                 .filter((chunk) => !!chunk)
@@ -323,6 +319,7 @@ class NodeInspector {
         }
         if (/Waiting for the debugger to disconnect\.\.\.\n$/.test(text)) {
             this.killChild();
+            sendToHost({cmd: 'finished', text});
         }
     }
 }
@@ -448,7 +445,8 @@ function processCommand(data) {
         process.exit();
     } else if (data.cmd === 'source') {
         inspector.Debugger.getScriptSource({scriptId: data.scriptId})
-            .then(script => sendToHost({cmd: 'script', scriptId: data.scriptId, text: script.scriptSource}));
+            .then(script =>
+                sendToHost({cmd: 'script', scriptId: data.scriptId, text: script.scriptSource}));
     } else if (data.cmd === 'cont') {
         inspector.Debugger.resume()
             .catch(e => sendToHost({cmd: 'error', error: e}));
@@ -465,6 +463,8 @@ function processCommand(data) {
         inspector.Debugger.stepOut()
             .catch(e => sendToHost({cmd: 'error', error: e}));
     } else if (data.cmd === 'sb') {
+        console.log(JSON.stringify(data));
+
         Promise.all(data.breakpoints.map(bp =>
             inspector.Debugger.setBreakpoint({
                 location: {
@@ -473,19 +473,20 @@ function processCommand(data) {
                     columnNumber: bp.columnNumber
                 }
             })
+                .then(result =>
+                    ({id: result.breakpointId, location: result.actualLocation}))
                 .catch(e =>
-                    sendToHost({cmd: 'error', error: `Cannot set breakpoint: ${e}`, errorContext: e, bp}))));
+                    sendToHost({cmd: 'error', error: `Cannot set breakpoint: ${e}`, errorContext: e, bp}))))
+            .then(breakpoints =>
+                sendToHost({cmd: 'sb', breakpoints}));
     } else if (data.cmd === 'cb') {
-        Promise.all(data.breakpoints.map(bp =>
-            inspector.Debugger.clearBreakpoint({
-                location: {
-                    scriptId: bp.scriptId,
-                    lineNumber: bp.lineNumber,
-                    columnNumber: bp.columnNumber
-                }
-            })
+        Promise.all(data.breakpoints.map(breakpointId =>
+            inspector.Debugger.removeBreakpoint({breakpointId})
+                .then(() => breakpointId)
                 .catch(e =>
-                    sendToHost({cmd: 'error', error: `Cannot clear breakpoint: ${e}`, errorContext: e, bp}))));
+                    sendToHost({cmd: 'error', error: `Cannot clear breakpoint: ${e}`, errorContext: e, id: breakpointId}))))
+            .then(breakpoints =>
+                sendToHost({cmd: 'cb', breakpoints}));
     } else if (data.cmd === 'watch') {
         Promise.all(data.expressions.map(expr =>
             inspector.Debugger.watch(expr)
@@ -498,8 +499,19 @@ function processCommand(data) {
                 .catch(e =>
                     sendToHost({cmd: 'error', error: `Cannot unwatch expr: ${e}`, errorContext: e, expr}))))
             .then(() => console.log('Watch done'));
+    } else if (data.cmd === 'scope') {
+        Promise.all(data.scopes.filter(scope => scope && scope.object && scope.object.objectId).map(scope =>
+            inspector.Runtime.getProperties({
+                objectId: scope.object.objectId,
+                generatePreview: true,
+            })
+                .then(result => ({type: scope.type, properties: result}))
+                .catch(e =>
+                    sendToHost({cmd: 'error', error: `Cannot get scopes expr: ${e}`, errorContext: e}))))
+            .then(scopes =>
+                sendToHost({cmd: 'scope', scopes: scopes}));
     } else {
-        console.error('Unknown command: ' + JSON.stringify(data));
+        console.error(`Unknown command: ${JSON.stringify(data)}`);
     }
 }
 

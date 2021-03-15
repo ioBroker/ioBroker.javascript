@@ -745,7 +745,7 @@ class Editor extends React.Component {
                 {this.state.editing.map(id => {
                     if (!this.props.objects[id]) {
                         const label = [
-                            <div key="text" className={this.props.classes.tabText + ' ' + (this.isScriptChanged(id) ? this.props.classes.tabChanged : '')}>{id.split('.').pop()}</div>,
+                            <div key="text" className={clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{id.split('.').pop()}</div>,
                             <span key="icon" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small" /></span>];
                         return <Tab
                             wrapped
@@ -1228,15 +1228,16 @@ class Editor extends React.Component {
         }
     }
 
-    renderDebug() {
+    getDebug() {
         if (this.state.debug) {
             return <Debugger
+                key="debugger"
                 socket={this.props.socket}
                 theme={this.props.theme}
                 themeName={this.props.themeName}
                 themeType={this.props.themeType}
                 src={this.state.selected}
-                />;
+            />;
         } else {
             return null;
         }
@@ -1266,7 +1267,7 @@ class Editor extends React.Component {
             this.getScriptEditor(),
             this.getBlocklyEditor(),
             this.getRulesEditor(),
-            this.renderDebug(),
+            this.getDebug(),
             this.getConfirmDialog(),
             this.getSelectIdDialog(),
             this.getCronDialog(),

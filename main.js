@@ -507,8 +507,11 @@ function startAdapter(options) {
         },
 
         unload: callback => {
-            stopTimeSchedules();
-            stopAllScripts(callback);
+            debugStop()
+                .then(() => {
+                    stopTimeSchedules();
+                    stopAllScripts(callback);
+                });
         },
 
         ready: () => {
@@ -1878,7 +1881,7 @@ function debugStop() {
         debugState.endTimeout = setTimeout(() => {
             debugState.endTimeout = null;
             debugState.child.kill('SIGTERM');
-        }, 1000);
+        }, 500);
     } else {
         debugState.promiseOnEnd = Promise.resolve();
     }
@@ -1907,7 +1910,7 @@ function debugSendToInspector(message) {
         debugState.child.send(message);
     } else {
         adapter.log.error(`Cannot send command to terminated inspector`);
-        return adapter.setState('debug.from', JSON.stringify({error: `Cannot send command to terminated inspector`}));
+        return adapter.setState('debug.from', JSON.stringify({error: `Cannot send command to terminated inspector`}), true);
     }
 }
 
@@ -1985,6 +1988,7 @@ function debugScript(data) {
                 });
 
                 debugState.child.on('exit', code => {
+                    adapter.setState('debug.from', JSON.stringify({cmd: 'debugStopped'}), true);
                     debugState.child = null;
                     resolve(code);
                 });
