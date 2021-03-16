@@ -88,7 +88,7 @@ function runScript(script, scriptArgs, inspectHost, inspectPort, childPrint) {
                 const child = spawn(process.execPath, args);
                 child.stdout.setEncoding('utf8');
                 child.stderr.setEncoding('utf8');
-                // child.stdout.on('data', childPrint);
+                child.stdout.on('data', childPrint);
                 child.stderr.on('data', text => childPrint(text, true));
 
                 let output = '';
@@ -160,7 +160,6 @@ class NodeInspector {
         this.handleDebugEvent = (fullName, params) => {
             const [domain, name] = fullName.split('.');
 
-            //console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
             if (domain === 'Debugger' && name === 'scriptParsed') {
                 if (params.url.includes(scriptToDebug)) {
                     console.log('My scriptID: ' + params.scriptId);
@@ -169,13 +168,21 @@ class NodeInspector {
                     this.scripts[this.mainScriptId ] = this.Debugger.getScriptSource({ scriptId: this.mainScriptId })
                         .then(script => ({script: script.scriptSource, scriptId: this.mainScriptId}));
                 }
+                return;
             } else
             if (domain === 'Debugger' && name === 'resumed') {
                 this.Debugger.emit(name, params);
                 sendToHost({cmd: 'resumed', context: params});
+                return;
             } else
             if (domain === 'Debugger' && name === 'paused') {
-                console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
+                console.log('PAUSED!!');
+                if (!alreadyPausedOnFirstLine && params.reason === 'exception') {
+                    // ignore all exceptions by start
+                    this.Debugger.resume();
+                    return;
+                }
+                //console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
                 this.Debugger.emit(name, params);
 
                 if (!alreadyPausedOnFirstLine) {
@@ -188,18 +195,27 @@ class NodeInspector {
                     //    .then(data =>
                     sendToHost({cmd: 'paused', context: params});
                 }
+                return;
             }
 
             if (domain === 'Runtime') {
                 //console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
             }
-            if (domain === 'Runtime' && name === 'consoleAPICalled' && (params.type === 'log' || params.type === 'warn' || params.type === 'debug' || params.type === 'error')/* && params.executionContextId === 2*/) {
+            if (domain === 'Runtime' && name === 'consoleAPICalled') {
                 const text = params.args[0].value;
                 if (text.includes('$$' + scriptToDebug + '$$')) {
                     console.log(`${fullName} [${params.executionContextId}]: => ${text}`);
                     const [severity, _text] = text.split('$$' + scriptToDebug + '$$');
-                    sendToHost({cmd: 'log', severity: severity, text: _text, ts: params.args[1].value});
+                    sendToHost({cmd: 'log', severity: severity, text: _text, ts: params.args[1] && params.args[1].value ? params.args[1].value : Date.now() });
+                } else if (params.type === 'warning' || params.type === 'error') {
+                    sendToHost({
+                        cmd: 'log',
+                        severity: params.type === 'warning' ? 'warn' : 'error',
+                        text,
+                        ts: Date.now()
+                    });
                 }
+                return;
             } else if (domain === 'Runtime' && params.id === 2) {
                 if (name === 'executionContextCreated') {
                     console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
@@ -207,7 +223,13 @@ class NodeInspector {
                     console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
                     sendToHost({cmd: 'finished', context: params});
                 }
+                return;
+            } else if (domain === 'Debugger' && name === 'scriptFailedToParse') {
+                // ignore
+                return;
             }
+
+            console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
 
             /*if (domain in this) {
                 this[domain].emit(name, params);
@@ -372,7 +394,7 @@ function parseArgv([target, ...args]) {
 
 function startInspect(argv = process.argv.slice(2), stdin = process.stdin, stdout = process.stdout) {
     /* eslint-disable no-console */
-    if (argv.length < 1) {
+    /*if (argv.length < 1) {
         const invokedAs = runAsStandalone ?
             'node-inspect' :
             `${process.argv0} ${process.argv[1]}`;
@@ -381,7 +403,7 @@ function startInspect(argv = process.argv.slice(2), stdin = process.stdin, stdou
         console.error(`       ${invokedAs} <host>:<port>`);
         console.error(`       ${invokedAs} -p <pid>`);
         process.exit(1);
-    }
+    }*/
 
     const options = parseArgv(argv);
     inspector = new NodeInspector(options, stdin, stdout);
@@ -510,6 +532,21 @@ function processCommand(data) {
                     sendToHost({cmd: 'error', error: `Cannot get scopes expr: ${e}`, errorContext: e}))))
             .then(scopes =>
                 sendToHost({cmd: 'scope', scopes: scopes}));
+    } else if (data.cmd === 'setValue') {
+        inspector.Debugger.setVariableValue({
+            variableName: data.variableName,
+            scopeNumber: data.scopeNumber,
+            newValue: data.newValue,
+            callFrameId: data.callFrameId,
+        })
+            .catch(e =>
+                sendToHost({cmd: 'setValue', variableName: `Cannot setValue: ${e}`, errorContext: e}))
+            .then(() =>
+                sendToHost(data));
+    } else if (data.cmd === 'stopOnException') {
+        inspector.Debugger.setPauseOnExceptions({state: data.state ? 'all' : 'none'})
+            .catch(e =>
+                sendToHost({cmd: 'setValue', variableName: `Cannot setValue: ${e}`, errorContext: e}));
     } else {
         console.error(`Unknown command: ${JSON.stringify(data)}`);
     }

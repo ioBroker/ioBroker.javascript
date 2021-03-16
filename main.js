@@ -456,7 +456,7 @@ function startAdapter(options) {
             }
 
             if (id === adapter.namespace + '.debug.to' && !state.ack) {
-                debugSendToInspector(state.val);
+                return !debugMode && debugSendToInspector(state.val);
             }
 
             const oldState = context.states[id];
@@ -652,11 +652,11 @@ function startAdapter(options) {
                     }
 
                     case 'debug': {
-                        debugScript(obj.message);
+                        !debugMode && debugScript(obj.message);
                         break;
                     }
                     case 'debugStop': {
-                        debugStop()
+                        !debugMode && debugStop()
                             .then(() => console.log('stopped'));
                         break;
                     }
@@ -1635,7 +1635,16 @@ function stop(name, callback) {
 }
 
 function prepareScript(obj, callback) {
-    if (obj &&
+    if (obj && obj.common && obj.common.enabled && debugState.scriptName === obj._id) {
+        const id = obj._id;
+        return debugStop()
+            .then(() => {
+                adapter.log.info(`Debugging of ${id} was stopped, because started in normal mode`);
+                prepareScript(obj, callback);
+            });
+    }
+
+    if (obj && obj.common &&
         (obj.common.enabled || debugMode === obj._id) &&
         obj.common.engine === `system.adapter.${adapter.namespace}` &&
         obj.common.source) {
@@ -1907,10 +1916,15 @@ function debugDisableScript(id) {
 
 function debugSendToInspector(message) {
     if (debugState.child) {
-        debugState.child.send(message);
+        try {
+            debugState.child.send(message);
+        } catch (e) {
+            debugStop()
+                .then(() => adapter.log.info(`Debugging of ${id} was stopped, because started in normal mode`));
+        }
     } else {
         adapter.log.error(`Cannot send command to terminated inspector`);
-        return adapter.setState('debug.from', JSON.stringify({error: `Cannot send command to terminated inspector`}), true);
+        return adapter.setState('debug.from', JSON.stringify({cmd: 'error', error: `Cannot send command to terminated inspector`, id: 1}), true);
     }
 }
 
@@ -1959,7 +1973,7 @@ function debugScript(data) {
                         }
 
                         case 'watched': {
-                            console.log(`WATCHED: ${JSON.stringify(message)}`);
+                            //console.log(`WATCHED: ${JSON.stringify(message)}`);
                             break;
                         }
 
@@ -1971,7 +1985,7 @@ function debugScript(data) {
 
                         case 'resumed' : {
                             debugState.paused = false;
-                            console.log(`STARTED`);
+                            //console.log(`STARTED`);
                             break;
                         }
 

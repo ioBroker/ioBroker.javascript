@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
@@ -8,12 +8,20 @@ import Toolbar from '@material-ui/core/Toolbar';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import IconButton from '@material-ui/core/IconButton';
 
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import Input from '@material-ui/core/Input';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import ListItemText from '@material-ui/core/ListItemText';
+
 import {MdClose as IconClose, MdPlayArrow as IconRun} from 'react-icons/md';
 import { MdPause as IconPause } from 'react-icons/md';
 import { MdArrowForward as IconNext } from 'react-icons/md';
 import { MdArrowDownward as IconStep } from 'react-icons/md';
 import { MdArrowUpward as IconOut } from 'react-icons/md';
 import { MdRefresh as IconRestart } from 'react-icons/md';
+import { MdWarning as IconException } from 'react-icons/md';
+import { MdCheck as CheckIcon } from 'react-icons/md';
 
 
 import I18n from '@iobroker/adapter-react/i18n';
@@ -65,18 +73,12 @@ const styles = theme => ({
         textAlign: 'right',
         fontSize: 14,
         marginRight: 1,
-        borderRight: '1px solid #555'
+        borderRight: '1px solid #555',
+        cursor: 'pointer'
     },
     lineBreakpoint: {
         background: '#330000',
         color: 'white',
-        ':after': {
-            content: '""',
-            width: 16,
-            height: 16,
-            borderRadius: 16,
-            background: 'yellow'
-        }
     },
     lineCode: {
         //whiteSpace: 'nowrap',
@@ -116,15 +118,22 @@ const styles = theme => ({
         opacity: 0.8,
     },
     consoleSeverity: {
+        verticalAlign: 'top',
         width: 50,
         textTransform: 'uppercase',
     },
     consoleTime: {
+        whiteSpace: 'nowrap',
+        verticalAlign: 'top',
         width: 170,
+
     },
     consoleText: {
         fontFamily: 'Lucida Console, Courier, monospace',
-        paddingTop: 4
+        paddingTop: 4,
+        '&>pre': {
+            margin: 0
+        }
     },
 
     selectedFrame: {
@@ -150,17 +159,53 @@ const styles = theme => ({
         padding: 8,
         cursor: 'pointer'
     },
+
+    frameRoot: {
+        paddingTop: 0,
+        paddingBottom: 0,
+    },
+    frameTextRoot: {
+        margin: 0,
+    },
+
+    scopeType: {
+        textTransform: 'uppercase',
+        width: 50,
+    },
+    scopeType_local: {
+        color: '#53a944'
+    },
+    scopeType_closure: {
+        color: '#365b80'
+    },
+    scopeName: {
+        fontWeight: 'bold',
+        color: '#bc5b5b'
+    },
+    scopeValue: {
+        color: '#3b709f'
+    },
+    scopeValueEditable: {
+        cursor: 'pointer'
+    }
 });
 
 class Debugger extends React.Component {
     constructor(props) {
         super(props);
+        let breakpoints = window.localStorage.getItem('javascript.tools.bp.' + this.props.src);
+        try {
+            breakpoints = breakpoints ? JSON.parse(breakpoints) : [];
+        } catch (e) {
+            breakpoints = [];
+        }
+
         this.state = {
             starting: true,
             selected: null,
             tabs: {},
             script: '',
-            breakpoints: [],
+            breakpoints,
             expressions: {},
             running: false,
             error: '',
@@ -168,6 +213,7 @@ class Debugger extends React.Component {
             paused: true,
             location: null,
             toolsTab: window.localStorage.getItem('javascript.tools.tab') || 'console',
+            stopOnException: window.localStorage.getItem('javascript.tools.stopOnException') === 'true',
             console: [],
             finished: false,
             currentFrame: 0,
@@ -189,10 +235,16 @@ class Debugger extends React.Component {
             let breakpoints = JSON.parse(JSON.stringify(this.state.breakpoints));
             breakpoints = breakpoints.map(item => item.location);
             this.setState({breakpoints: []}, () => {
-                this.sendToInstance({breakpoints, cmd: 'sb'})
+                this.sendToInstance({breakpoints, cmd: 'sb'});
+                if (this.state.stopOnException) {
+                    this.sendToInstance({cmd: 'stopOnException', state: true});
+                }
 
                 cb && cb();
             });
+        } else if (this.state.stopOnException) {
+            this.sendToInstance({cmd: 'stopOnException', state: true});
+            cb && cb();
         } else {
             cb && cb();
         }
@@ -238,6 +290,7 @@ class Debugger extends React.Component {
                     selected: this.mainScriptId,
                     script: data.script,
                     tabs,
+                    currentFrame: 0,
                     started: true,
                     paused: true,
                     location: this.getLocation(data.context),
@@ -249,13 +302,15 @@ class Debugger extends React.Component {
                 const location = this.getLocation(data.context);
                 const tabs = JSON.parse(JSON.stringify(this.state.tabs));
                 const parts = data.context.callFrames[0].url.split('iobroker.javascript');
-                tabs[location.scriptId] = parts[1] || parts[0];
+                tabs[location.scriptId] = (parts[1] || parts[0]).replace('script.js.', '');
 
                 const newState = {
                     tabs,
                     paused: true,
                     location,
+                    currentFrame: 0,
                     context: data.context,
+                    scope: {id: (data.context && data.context.callFrames && data.context.callFrames[0] && data.context.callFrames[0].id) || 0}
                 };
 
                 newState.script = this.scripts[location.scriptId] || I18n.t('loading...');
@@ -304,6 +359,7 @@ class Debugger extends React.Component {
                         breakpoints.push(bp);
                     }
                 });
+                changed && window.localStorage.setItem('javascript.tools.bp.' + this.props.src, JSON.stringify(breakpoints));
                 changed && this.setState({breakpoints});
             } else if (data.cmd === 'cb') {
                 const breakpoints = JSON.parse(JSON.stringify(this.state.breakpoints));
@@ -317,14 +373,26 @@ class Debugger extends React.Component {
                         changed = true;
                     }
                 });
-
+                changed && window.localStorage.setItem('javascript.tools.bp.' + this.props.src, JSON.stringify(breakpoints));
                 changed && this.setState({breakpoints});
             } else if (data.cmd === 'scope') {
-                const global = data.scopes.find(scope => scope.type === 'global') || null;
+                //const global = data.scopes.find(scope => scope.type === 'global') || null;
                 const local = data.scopes.find(scope => scope.type === 'local') || null;
                 const closure = data.scopes.find(scope => scope.type === 'closure') || null;
 
-                this.setState({scopes: {global, local, closure}});
+                this.setState({scopes: {local, closure, id: this.state.scope.id + '_' + this.state.currentFrame}});
+            } else if (data.cmd === 'setValue') {
+                const scopes = JSON.parse(JSON.stringify(this.state.scopes));
+                let item;
+                if (data.scopeNumber === 0) {
+                    item = scopes.local && scopes.local.properties && scopes.local.properties.result && scopes.local.properties.result.find(item => item.name === data.variableName);
+                } else {
+                    item = scopes.closure && scopes.closure.properties && scopes.closure.properties.result && scopes.closure.properties.result && scopes.closure.properties.result.find(item => item.name === data.variableName);
+                }
+                if (item) {
+                    item.value.value = data.newValue.value;
+                    this.setState({scopes});
+                }
             } else  {
                 console.error('Unknown command: ' + JSON.stringify(data));
             }
@@ -372,7 +440,7 @@ class Debugger extends React.Component {
         const tabs = JSON.parse(JSON.stringify(this.state.tabs));
         delete tabs[id];
         const newState = {tabs, script: this.scripts[this.mainScriptId], selected: this.mainScriptId};
-        if (this.state.location.scriptId !== this.mainScriptId) {
+        if (this.state.location && this.state.location.scriptId !== this.mainScriptId) {
             newState.location = null;
         }
         this.setState(newState);
@@ -438,6 +506,13 @@ class Debugger extends React.Component {
             this.props.socket.sendTo(this.state.instance, 'debug', {scriptName: this.props.src}));
     }
 
+    onToggleException() {
+        const stopOnException = !this.state.stopOnException;
+        window.localStorage.getItem('javascript.tools.stopOnException', stopOnException ? 'true' : 'false');
+        this.setState({stopOnException}, () =>
+            this.sendToInstance({cmd: 'stopOnException', state: stopOnException}));
+    }
+
     renderToolbar() {
         if (this.state.started) {
             return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
@@ -453,6 +528,7 @@ class Debugger extends React.Component {
                 {!this.state.finished && <IconButton className={this.props.classes.buttonNext} disabled={!this.state.paused} onClick={() => this.onNext()}  title={I18n.t('Go to next line')}><IconNext/></IconButton>}
                 {!this.state.finished && <IconButton className={this.props.classes.buttonStep} disabled={!this.state.paused} onClick={() => this.onStepIn()}  title={I18n.t('Step into function')}><IconStep/></IconButton>}
                 {!this.state.finished && <IconButton className={this.props.classes.buttonOut} disabled={!this.state.paused} onClick={() => this.onStepOut()}  title={I18n.t('Step out from function')}><IconOut/></IconButton>}
+                {!this.state.finished && <IconButton className={this.props.classes.buttonException} color={this.state.stopOnException ? 'primary' : 'default'} disabled={!this.state.paused} onClick={() => this.onToggleException()} title={I18n.t('Stop on exception')}><IconException/></IconButton>}
             </Toolbar>;
         } else {
             return null;
@@ -504,27 +580,45 @@ class Debugger extends React.Component {
     }
 
     renderExpressions() {
-        return <div style={{width: '100%', height: '100%', overflow: 'auto'}}>
-            <div style={{width: '100%'}}>
-                <IconButton>+</IconButton>
-            </div>
-            <table style={{width: '100%', height: '100%'}}>
-                {Object.keys(this.state.expressions).map(exp =>
-                    <tr><td>{exp.expr}</td><td>{this.state.expressions[exp].value}</td></tr>)}
-            </table>
-        </div>;
+        if (!this.state.paused) {
+            return null;
+        }
+        return Object.keys(this.state.expressions).map(exp =>
+            <tr key={`user_${exp.expr}`}>
+                <td className={clsx(this.props.classes.scopeType, this.props.classes['scopeType_user'])}>user</td>
+                <td className={this.props.classes.scopeName}>{exp.expr}</td>
+                <td className={clsx(this.props.classes.scopeValue, !this.state.currentFrame && this.props.classes.scopeValueEditable)}>{
+                    !this.state.currentFrame ? this.state.expressions[exp].value : '--'
+                }</td>
+            </tr>
+        );
     }
 
     renderOneFrameTitle(frame, i) {
         if (this.mainScriptId === this.state.selected && frame.location.scriptId !== this.mainScriptId) {
             return null;
         }
-        return <div style={{width: '100%'}} className={clsx(this.state.currentFrame === i && this.props.classes.selectedFrame)}>
-            {frame.functionName || 'anonymous'}(), {frame.url}: ({frame.location.lineNumber}:{frame.location.columnNumber})
-        </div>;
+        const fileName = frame.url.split('/').pop().replace(/^script\.js\./, '');
+        return <ListItem
+            key={frame.id}
+            button
+            onClick={() => {
+                this.setState({currentFrame: i, scopes: {}}, () =>
+                    this.readCurrentScope());
+            }}
+            dense={true}
+            classes={{root: clsx(this.props.classes.frameRoot, this.state.currentFrame === i && this.props.classes.selectedFrame)}}
+        >
+            <ListItemText
+                classes={{root: this.props.classes.frameTextRoot}}
+                title={frame.url}
+                primary={frame.functionName || 'anonymous'}
+                secondary={`${fileName} (${frame.location.lineNumber}:${frame.location.columnNumber})`}
+            />
+        </ListItem>;
     }
 
-    formatValue(value) {
+    formatValue(value, forEdit) {
         if (!value) {
             return 'none';
         } else if (value.type === 'function') {
@@ -534,7 +628,7 @@ class Debugger extends React.Component {
         } else if (value.value === null) {
             return 'null';
         } else if (value.type === 'string') {
-            return `"${value.value}"`;
+            return forEdit ? value.value : `"${value.value}"`;
         } else if (value.type === 'boolean') {
             return value.value.toString();
         } else if (value.type === 'object') {
@@ -544,26 +638,95 @@ class Debugger extends React.Component {
         }
     }
 
+    onWriteScopeValue() {
+        if (this.scopeValue === 'true') {
+            this.scopeValue = true;
+        } else if (this.scopeValue === 'false') {
+            this.scopeValue = false;
+        } else if (this.scopeValue === 'null') {
+            this.scopeValue = null;
+        } else if (this.scopeValue === 'undefined') {
+            this.scopeValue = undefined;
+        } else
+        if (parseFloat(this.scopeValue).toString() === this.scopeValue) {
+            this.scopeValue = parseFloat(this.scopeValue);
+        }
+
+        this.sendToInstance({
+            cmd: 'setValue',
+            variableName: this.state.editValue.name,
+            scopeNumber: 0,
+            newValue: {
+                value: this.scopeValue
+            },
+            callFrameId: this.state.context.callFrames[this.state.currentFrame].callFrameId
+        });
+        this.setState({editValue: null});
+        this.scopeValue = null;
+    }
+
+    renderScope(scopeId, item, type) {
+        const editable = !this.state.currentFrame && item.value && (item.value.type === 'undefined' || item.value.type === 'string' || item.value.type === 'number' || item.value.type === 'boolean');
+
+        const el = this.state.editValue && this.state.editValue.type === type && this.state.editValue.name === item.name ?
+            <Input
+                fullWidth
+                margin="dense"
+                onBlur={() => this.state.editValue && this.setState({editValue: null})}
+                defaultValue={this.formatValue(item.value, true)}
+                onKeyUp={e => e.keyCode === 13 && this.onWriteScopeValue()}
+                onChange={e =>
+                    this.scopeValue = e.target.value}
+                endAdornment={
+                    <InputAdornment position="end">
+                        <IconButton onClick={() => this.onWriteScopeValue()}>
+                            <CheckIcon/>
+                        </IconButton>
+                    </InputAdornment>
+                }
+            />
+            :
+            this.formatValue(item.value)
+
+        return <tr key={`${type}_${scopeId}_${item.name}`}>
+            <td className={clsx(this.props.classes.scopeType, this.props.classes['scopeType_' + type])}>{type}</td>
+            <td className={this.props.classes.scopeName}>{item.name}</td>
+            <td className={clsx(this.props.classes.scopeValue, !this.state.currentFrame && editable && this.props.classes.scopeValueEditable)}
+                onClick={() => {
+                    if (editable) {
+                        this.scopeValue = item.value.value;
+                        this.setState({editValue: {scopeId, type, valueType: item.value.type, name: item.name, value: item.value.value}});
+                    }
+                }}>
+                {el}
+            </td>
+        </tr>;
+    }
+
     renderScopes(frame) {
-        if (!frame) {
+        if (!frame || !this.state.paused) {
             return null;
         } else {
             // first local
             let result = [];
-            let items = this.state.scopes?.local?.properties?.result.map(item => <div key={'g_' + 'item.name'}>[local]{item.name}: {this.formatValue(item.value)}</div>);
+            let items = this.renderExpressions();
+            items = this.state.scopes?.local?.properties?.result.map(item => this.renderScope(this.state.scopes.id, item, 'local'));
             items && items.forEach(item => result.push(item));
-            items = this.state.scopes?.closure?.properties?.result.map(item => <div key={'c_' + 'item.name'}>[closure]{item.name}: {this.formatValue(item.value)}</div>);
+            items = this.state.scopes?.closure?.properties?.result.map(item => this.renderScope(this.state.scopes.id, item, 'local'));
             items && items.forEach(item => result.push(item));
-            return result;
+            return <table style={{width: '100%'}}><tbody>{result}</tbody></table>;
         }
     }
 
     renderFrames() {
+        if (!this.state.paused) {
+            return null;
+        }
         return <div style={{width: '100%', height: '100%', overflow: 'hidden', fontSize: 12}}>
-            <div style={{width: 400, height: '100%', overflow: 'auto', display: 'inline-block', verticalAlign: 'top'}}>
+            <List style={{width: 300, height: '100%', overflow: 'auto', display: 'inline-block', verticalAlign: 'top'}}>
                 {this.state.context ? this.state.context.callFrames.map((frame, i) => this.renderOneFrameTitle(frame, i)) : null}
-            </div>
-            <div style={{width: 'calc(100% - 400px)', height: '100%', display: 'inline-block', verticalAlign: 'top'}}>
+            </List>
+            <div style={{width: 'calc(100% - 300px)', height: '100%', display: 'inline-block', verticalAlign: 'top'}}>
                 {this.renderScopes(this.state.context?.callFrames[this.state.currentFrame])}
             </div>
 
@@ -572,11 +735,13 @@ class Debugger extends React.Component {
 
     renderConsole() {
         return <table style={{width: '100%'}}>
+            <tbody>
             {this.state.console.map(line => <tr className={clsx(this.props.classes.consoleLine, this.props.classes['console_' + line.severity])}>
                 <td className={this.props.classes.consoleSeverity}>{line.severity}</td>
                 <td className={this.props.classes.consoleTime}>{new Date(line.ts).toISOString()}</td>
-                <td className={this.props.classes.consoleText}>{line.text}</td>
+                <td className={this.props.classes.consoleText}><pre>{line.text}</pre></td>
             </tr>)}
+            </tbody>
         </table>;
     }
 
@@ -604,12 +769,10 @@ class Debugger extends React.Component {
                     scrollButtons="auto"
                 >
                     <Tab label={I18n.t('Stack')} value="stack"/>
-                    <Tab label={I18n.t('Expressions')} value="expressions"/>
                     <Tab label={I18n.t('Console')} value="console"/>
                 </Tabs>
                 <div style={{width: '100%', height: 'calc(100% - 50px)', overflow: 'auto'}}>
                     {this.state.toolsTab === 'stack' ? this.renderFrames() : null}
-                    {this.state.toolsTab === 'expressions' ? this.renderExpressions() : null}
                     {this.state.toolsTab === 'console' ? this.renderConsole() : null}
                 </div>
             </div>;

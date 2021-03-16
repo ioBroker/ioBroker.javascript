@@ -29,6 +29,7 @@ import { MdClearAll as IconCloseAll } from 'react-icons/md';
 import { MdBuild as IconDebugMenu } from 'react-icons/md';
 import { MdBugReport as IconDebug } from 'react-icons/md';
 import { MdPlaylistAddCheck as IconVerbose } from 'react-icons/md';
+import { MdBugReport as IconDebugMode } from 'react-icons/md';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
@@ -197,7 +198,6 @@ class Editor extends React.Component {
             instancesLoaded: false,
             isTourOpen: window.localStorage.getItem('tour') !== 'true',
             tourStep: STEPS.selectTriggers,
-            debug: false,
         };
 
         this.setChangedInAdmin();
@@ -545,6 +545,7 @@ class Editor extends React.Component {
             _changed = true;
             newState.visible = nextProps.visible;
         }
+
         _changed && this.setState(newState, () => this.setChangedInAdmin());
     }
 
@@ -944,12 +945,12 @@ class Editor extends React.Component {
                         this.state.isTourOpen && this.state.tourStep === STEPS.switchBackToRules && this.setState({ tourStep: STEPS.saveTheScript });
                     }}>
                     <img alt={this.state.blockly ? "blockly2js" : "rules2js"} src={this.state.blockly ? ImgBlockly2Js : ImgRules2Js} /></Button>}
-                {((!this.state.blockly && !this.state.rules) || (this.state.blockly || this.state.rules) && this.state.showCompiledCode) && <Button
-                    color={this.state.debug ? 'primary' : 'default'}
-                    onClick={() => this.setState({debug: !this.state.debug})}
+                {((!this.state.blockly && !this.state.rules) || (this.state.blockly || this.state.rules) && this.state.showCompiledCode) && <IconButton
+                    color={this.props.debugMode ? 'primary' : 'default'}
+                    onClick={() => this.props.onDebugModeChange(!this.props.debugMode)}
                 >
-                    debug
-                </Button>}
+                    <IconDebugMode style={{fontSize: 32}}/>
+                </IconButton>}
                 <IconButton
                     key="debug"
                     aria-label="Debug menu"
@@ -968,7 +969,7 @@ class Editor extends React.Component {
     }
 
     getScriptEditor() {
-        if (!this.state.debug &&
+        if (!this.props.debugMode &&
             this.state.selected &&
             this.props.objects[this.state.selected] &&
             this.state.blockly !== null &&
@@ -1003,7 +1004,7 @@ class Editor extends React.Component {
     }
 
     getBlocklyEditor() {
-        if (!this.state.debug &&
+        if (!this.props.debugMode &&
             this.state.instancesLoaded &&
             this.state.selected &&
             this.props.objects[this.state.selected] &&
@@ -1030,7 +1031,7 @@ class Editor extends React.Component {
     }
 
     getRulesEditor() {
-        if (!this.state.debug &&
+        if (!this.props.debugMode &&
             this.state.instancesLoaded &&
             this.state.selected &&
             this.props.objects[this.state.selected] &&
@@ -1229,7 +1230,7 @@ class Editor extends React.Component {
     }
 
     getDebug() {
-        if (this.state.debug) {
+        if (this.props.debugMode) {
             return <Debugger
                 key="debugger"
                 socket={this.props.socket}
@@ -1295,6 +1296,8 @@ Editor.propTypes = {
     searchText: PropTypes.string,
     themeName: PropTypes.string,
     themeType: PropTypes.string,
+    onDebugModeChange: PropTypes.func,
+    debugMode: PropTypes.bool,
 };
 
 export default withStyles(styles)(Editor);

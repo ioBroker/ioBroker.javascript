@@ -253,6 +253,7 @@ class App extends GenericApp {
             message: '',
             searchText: '',
             hideLog: window.localStorage.getItem('App.hideLog') === 'true',
+            debugMode: false,
         });
 
         const newState = {};
@@ -743,6 +744,8 @@ class App extends GenericApp {
 
         return <Editor
             key="editor"
+            debugMode={this.state.debugMode}
+            onDebugModeChange={value => this.setState({debugMode: value})}
             visible={!this.state.resizing}
             socket={this.socket}
             adapterName={this.adapterName}
@@ -828,9 +831,9 @@ class App extends GenericApp {
                 >
                     <>
                         {this.renderEditor()}
-                        {this.state.hideLog && this.showLogButton()}
+                        {!this.state.debugMode && this.state.hideLog && this.showLogButton()}
                     </>
-                    {!this.state.hideLog && <Log
+                    {!this.state.debugMode && !this.state.hideLog && <Log
                         key="log"
                         verticalLayout={!this.state.logHorzLayout}
                         onLayoutChange={() => this.toggleLogLayout()}
