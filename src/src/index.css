@@ -50,14 +50,14 @@ body {
   background: #59fd8c;
 }
 .monacoCurrentLineDark {
-  background: #153c20;
+  background: #165b2c;
 }
 .monacoCurrentFullLine {
   background: #cbffdc;
   opacity: 0.7;
 }
 .monacoCurrentFullLineDark {
-  background: #06180b;
+  background: #0e3b1f;
   opacity: 0.7;
 }
 .monacoBreakPointDark {

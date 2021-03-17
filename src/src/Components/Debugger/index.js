@@ -1,18 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import SplitterLayout from 'react-splitter-layout';
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Toolbar from '@material-ui/core/Toolbar';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import IconButton from '@material-ui/core/IconButton';
-
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Input from '@material-ui/core/Input';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import ListItemText from '@material-ui/core/ListItemText';
 
 import {MdClose as IconClose, MdPlayArrow as IconRun} from 'react-icons/md';
 import { MdPause as IconPause } from 'react-icons/md';
@@ -21,14 +16,14 @@ import { MdArrowDownward as IconStep } from 'react-icons/md';
 import { MdArrowUpward as IconOut } from 'react-icons/md';
 import { MdRefresh as IconRestart } from 'react-icons/md';
 import { MdWarning as IconException } from 'react-icons/md';
-import { MdCheck as CheckIcon } from 'react-icons/md';
 
 
 import I18n from '@iobroker/adapter-react/i18n';
 import {withStyles} from '@material-ui/core/styles';
 import DialogError from '../../Dialogs/Error';
 import Editor from './Editor';
-import SplitterLayout from "react-splitter-layout";
+import Console from './Console';
+import Stack from './Stack';
 
 const styles = theme => ({
     root: {
@@ -63,46 +58,9 @@ const styles = theme => ({
         color: 'blue'
     },
 
-    consoleLine: {
-        fontSize: 14,
-    },
-    console_log: {
-
-    },
-    console_warn: {
-        backgroundColor: 'orange',
-    },
-    console_error: {
-        backgroundColor: 'red',
-    },
-    console_debug: {
-        opacity: 0.8,
-    },
-    consoleSeverity: {
-        verticalAlign: 'top',
-        width: 50,
-        textTransform: 'uppercase',
-    },
-    consoleTime: {
-        whiteSpace: 'nowrap',
-        verticalAlign: 'top',
-        width: 170,
-
-    },
-    consoleText: {
-        fontFamily: 'Lucida Console, Courier, monospace',
-        paddingTop: 4,
-        '&>pre': {
-            margin: 0
-        }
-    },
-
-    selectedFrame: {
-        backgroundColor: 'gray',
-        color: 'white'
-    },
     tabFile: {
         textTransform: 'inherit',
+        color: theme.palette.type === 'dark' ? '#DDD' : 'inherit'
     },
     tabText: {
         maxWidth: 130,
@@ -121,36 +79,10 @@ const styles = theme => ({
         cursor: 'pointer'
     },
 
-    frameRoot: {
-        paddingTop: 0,
-        paddingBottom: 0,
-    },
-    frameTextRoot: {
-        margin: 0,
-    },
-
-    scopeType: {
-        textTransform: 'uppercase',
-        width: 50,
-    },
-    scopeType_local: {
-        color: '#53a944'
-    },
-    scopeType_closure: {
-        color: '#365b80'
-    },
-    scopeName: {
-        fontWeight: 'bold',
-        color: '#bc5b5b'
-    },
-    scopeValue: {
-        color: '#3b709f'
-    },
-    scopeValueEditable: {
-        cursor: 'pointer'
-    },
     tabsRoot: {
         minHeight: 24,
+        background: theme.palette.type === 'dark' ? '#333' : '#CCC',
+        color: theme.palette.type === 'dark' ? 'white' : 'inherit'
     },
     tabRoot: {
         minHeight: 24,
@@ -175,7 +107,7 @@ class Debugger extends React.Component {
             tabs: {},
             script: '',
             breakpoints,
-            expressions: {},
+            expressions: [],
             running: false,
             error: '',
             started: false,
@@ -188,8 +120,6 @@ class Debugger extends React.Component {
             currentFrame: 0,
             scopes: {},
         };
-
-        this.refCurrentLine = React.createRef();
 
         this.scripts = {};
         this.mainScriptId = null;
@@ -264,7 +194,9 @@ class Debugger extends React.Component {
                     paused: true,
                     location: this.getLocation(data.context),
                     context: data.context,
-                }, () => this.reinitBreakpoints(() => this.readCurrentScope()));
+                }, () =>
+                    this.reinitBreakpoints(() =>
+                        this.readCurrentScope()));
             } else if (data.cmd === 'paused') {
                 const ts = Date.now() + '.' + Math.random() * 10000;
                 data.context.callFrames && data.context.callFrames.forEach((item, i) => item.id = ts + i);
@@ -289,20 +221,15 @@ class Debugger extends React.Component {
                     this.readCurrentScope();
                     if (!this.scripts[location.scriptId]) {
                         this.sendToInstance({cmd: 'source', scriptId: location.scriptId});
-                    } else {
-                        this.scrollToCurrentLine();
                     }
                 });
             } else if (data.cmd === 'script') {
                 this.scripts[data.scriptId] = data.text;
                 if (this.state.selected === data.scriptId) {
-                    this.setState({script: this.scripts[data.scriptId]}, () =>
-                        this.scrollToCurrentLine());
+                    this.setState({script: this.scripts[data.scriptId]});
                 }
             } else if (data.cmd === 'resumed') {
-                this.setState({
-                    paused: false,
-                });
+                this.setState({paused: false});
             } else if (data.cmd === 'log') {
                 if (this.state.toolsTab === 'console') {
                     this.console = null;
@@ -368,10 +295,6 @@ class Debugger extends React.Component {
         } catch (e) {
 
         }
-    }
-
-    scrollToCurrentLine() {
-        this.refCurrentLine.current?.scrollIntoView();
     }
 
     componentDidMount() {
@@ -520,32 +443,6 @@ class Debugger extends React.Component {
 
     renderCode() {
         if (this.state.script && this.state.started) {
-            /*const lines = this.state.script.split(/\r\n|\n/);
-
-            return <div className={this.props.classes.editor}>
-                {lines.map((line, i) => {
-                    const isStoppedOnLine = this.state.paused && this.state.location &&
-                        this.state.selected === this.state.location.scriptId &&
-                        i === this.state.location.lineNumber;
-
-                    const isBreakpoint = this.state.breakpoints.find(bp =>
-                        this.state.selected === bp.location.scriptId && i === bp.location.lineNumber);
-
-                    return <div key={this.state.selected + '_' + i} className={this.props.classes.line}>
-                        <div className={clsx(this.props.classes.lineNumber, isBreakpoint && this.props.classes.lineBreakpoint)}
-                            onClick={() => this.toggleBreakpoint(i)}
-                        >{i}</div>
-                        {isStoppedOnLine ?
-                            <div ref={this.refCurrentLine} className={clsx(this.props.classes.lineCode, isStoppedOnLine && this.props.classes.lineCurrent)}>
-                                {line.substring(0, this.state.location.columnNumber)}
-                                <span className={this.props.classes.lineCurrentCode}>{line.substring(this.state.location.columnNumber)}</span>
-                            </div>
-                            :
-                            <div className={this.props.classes.lineCode}>{line}</div>
-                        }
-                    </div>;
-                })}
-            </div>;*/
             const breakpoints = this.state.breakpoints.filter(bp => bp.location.scriptId === this.state.selected);
 
             return <Editor
@@ -565,172 +462,49 @@ class Debugger extends React.Component {
         }
     }
 
-    renderExpressions() {
-        if (!this.state.paused) {
-            return null;
-        }
-        return Object.keys(this.state.expressions).map(exp =>
-            <tr key={`user_${exp.expr}`}>
-                <td className={clsx(this.props.classes.scopeType, this.props.classes['scopeType_user'])}>user</td>
-                <td className={this.props.classes.scopeName}>{exp.expr}</td>
-                <td className={clsx(this.props.classes.scopeValue, !this.state.currentFrame && this.props.classes.scopeValueEditable)}>{
-                    !this.state.currentFrame ? this.state.expressions[exp].value : '--'
-                }</td>
-            </tr>
-        );
-    }
-
-    renderOneFrameTitle(frame, i) {
-        if (this.mainScriptId === this.state.selected && frame.location.scriptId !== this.mainScriptId) {
-            return null;
-        }
-        const fileName = frame.url.split('/').pop().replace(/^script\.js\./, '');
-        return <ListItem
-            key={frame.id}
-            button
-            onClick={() => {
-                this.setState({currentFrame: i, scopes: {}}, () =>
-                    this.readCurrentScope());
-            }}
-            dense={true}
-            classes={{root: clsx(this.props.classes.frameRoot, this.state.currentFrame === i && this.props.classes.selectedFrame)}}
-        >
-            <ListItemText
-                classes={{root: this.props.classes.frameTextRoot}}
-                title={frame.url}
-                primary={frame.functionName || 'anonymous'}
-                secondary={`${fileName} (${frame.location.lineNumber}:${frame.location.columnNumber})`}
-            />
-        </ListItem>;
-    }
-
-    formatValue(value, forEdit) {
-        if (!value) {
-            return 'none';
-        } else if (value.type === 'function') {
-            return value.description ? (value.description.length > 100 ? value.description.substring(0, 100) + '...' : value.description) : 'function';
-        } else if (value.value === undefined) {
-            return 'undefined';
-        } else if (value.value === null) {
-            return 'null';
-        } else if (value.type === 'string') {
-            return forEdit ? value.value : `"${value.value}"`;
-        } else if (value.type === 'boolean') {
-            return value.value.toString();
-        } else if (value.type === 'object') {
-            return JSON.stringify(value.value);
-        }else {
-            return value.value.toString();
-        }
-    }
-
-    onWriteScopeValue() {
-        if (this.scopeValue === 'true') {
-            this.scopeValue = true;
-        } else if (this.scopeValue === 'false') {
-            this.scopeValue = false;
-        } else if (this.scopeValue === 'null') {
-            this.scopeValue = null;
-        } else if (this.scopeValue === 'undefined') {
-            this.scopeValue = undefined;
-        } else
-        if (parseFloat(this.scopeValue).toString() === this.scopeValue) {
-            this.scopeValue = parseFloat(this.scopeValue);
-        }
-
-        this.sendToInstance({
-            cmd: 'setValue',
-            variableName: this.state.editValue.name,
-            scopeNumber: 0,
-            newValue: {
-                value: this.scopeValue
-            },
-            callFrameId: this.state.context.callFrames[this.state.currentFrame].callFrameId
-        });
-        this.setState({editValue: null});
-        this.scopeValue = null;
-    }
-
-    renderScope(scopeId, item, type) {
-        const editable = !this.state.currentFrame && item.value && (item.value.type === 'undefined' || item.value.type === 'string' || item.value.type === 'number' || item.value.type === 'boolean');
-
-        const el = this.state.editValue && this.state.editValue.type === type && this.state.editValue.name === item.name ?
-            <Input
-                fullWidth
-                margin="dense"
-                onBlur={() => this.state.editValue && this.setState({editValue: null})}
-                defaultValue={this.formatValue(item.value, true)}
-                onKeyUp={e => e.keyCode === 13 && this.onWriteScopeValue()}
-                onChange={e =>
-                    this.scopeValue = e.target.value}
-                endAdornment={
-                    <InputAdornment position="end">
-                        <IconButton onClick={() => this.onWriteScopeValue()}>
-                            <CheckIcon/>
-                        </IconButton>
-                    </InputAdornment>
-                }
-            />
-            :
-            this.formatValue(item.value)
-
-        return <tr key={`${type}_${scopeId}_${item.name}`}>
-            <td className={clsx(this.props.classes.scopeType, this.props.classes['scopeType_' + type])}>{type}</td>
-            <td className={this.props.classes.scopeName}>{item.name}</td>
-            <td className={clsx(this.props.classes.scopeValue, !this.state.currentFrame && editable && this.props.classes.scopeValueEditable)}
-                onClick={() => {
-                    if (editable) {
-                        this.scopeValue = item.value.value;
-                        this.setState({editValue: {scopeId, type, valueType: item.value.type, name: item.name, value: item.value.value}});
-                    }
-                }}>
-                {el}
-            </td>
-        </tr>;
-    }
-
-    renderScopes(frame) {
-        if (!frame || !this.state.paused) {
-            return null;
-        } else {
-            // first local
-            let result = [];
-            let items = this.renderExpressions();
-            items = this.state.scopes?.local?.properties?.result.map(item => this.renderScope(this.state.scopes.id, item, 'local'));
-            items && items.forEach(item => result.push(item));
-            items = this.state.scopes?.closure?.properties?.result.map(item => this.renderScope(this.state.scopes.id, item, 'local'));
-            items && items.forEach(item => result.push(item));
-            return <table style={{width: '100%'}}><tbody>{result}</tbody></table>;
-        }
-    }
-
     renderFrames() {
         if (!this.state.paused) {
             return null;
         }
-        return <div style={{width: '100%', height: '100%', overflow: 'hidden', fontSize: 12}}>
-            <List style={{width: 300, height: '100%', overflow: 'auto', display: 'inline-block', verticalAlign: 'top'}}>
-                {this.state.context ? this.state.context.callFrames.map((frame, i) => this.renderOneFrameTitle(frame, i)) : null}
-            </List>
-            <div style={{width: 'calc(100% - 300px)', height: '100%', display: 'inline-block', verticalAlign: 'top'}}>
-                {this.renderScopes(this.state.context?.callFrames[this.state.currentFrame])}
-            </div>
 
-        </div>;
+        return <Stack
+            currentScriptId={this.state.selected}
+            scopes={this.state.scopes}
+            expressions={this.state.expressions}
+            callFrames={this.state.context?.callFrames}
+            currentFrame={this.state.currentFrame}
+            onChangeCurrentFrame={i => {
+                this.setState({currentFrame: i, scopes: {}}, () =>
+                    this.readCurrentScope())
+            }}
+            onWriteScopeValue={obj => {
+                this.sendToInstance({
+                    cmd: 'setValue',
+                    variableName: obj.variableName,
+                    scopeNumber: obj.scopeNumber,
+                    newValue: obj.newValue,
+                    callFrameId: obj.callFrameId
+                });
+            }}
+            onExpressionDelete={i => {
+                const expressions = JSON.parse(JSON.stringify(this.state.expressions));
+                expressions.splice(i, 1);
+                this.setState({expressions});
+            }}
+            onExpressionAdd={() => {
+                const expressions = JSON.parse(JSON.stringify(this.state.expressions));
+                expressions.push({name: '', value: {value: ''}});
+                this.setState({expressions});
+            }}
+        />;
     }
 
     renderConsole() {
-        return <table style={{width: '100%'}}>
-            <tbody>
-            {this.state.console.map((line, i) => <tr
-                key={i}
-                className={clsx(this.props.classes.consoleLine, this.props.classes['console_' + line.severity])}>
-                <td className={this.props.classes.consoleSeverity}>{line.severity}</td>
-                <td className={this.props.classes.consoleTime}>{new Date(line.ts).toISOString()}</td>
-                <td className={this.props.classes.consoleText}><pre>{line.text}</pre></td>
-            </tr>)}
-            </tbody>
-        </table>;
+        return <Console
+            theme={this.props.theme}
+            console={this.state.console}
+            onClearAllLogs={() => this.setState({console: []})}
+        />;
     }
 
     renderTools() {
@@ -777,9 +551,7 @@ class Debugger extends React.Component {
                 vertical={true}
                 secondaryInitialSize={this.toolSize}
                 onSecondaryPaneSizeChange={size => this.toolSize = parseFloat(size)}
-                onDragEnd={() => {
-                    window.localStorage.setItem('App.toolSize', this.toolSize.toString());
-                }}
+                onDragEnd={() => window.localStorage.setItem('App.toolSize', this.toolSize.toString())}
                 style={{width: '100%', height: 'calc(100% - 73px)', overflow: 'hidden'}}
             >
                 <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
