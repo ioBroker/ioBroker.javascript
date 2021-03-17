@@ -47,12 +47,17 @@ const styles = theme => ({
     scopeType_closure: {
         color: '#365b80'
     },
+    scopeType_user: {
+        color: '#a48a15'
+    },
     scopeName: {
         fontWeight: 'bold',
-        color: '#bc5b5b'
+        color: '#bc5b5b',
+        minWidth: 100,
+        maxWidth: 300,
     },
     scopeValue: {
-        color: '#3b709f'
+        color: '#3b709f',
     },
     scopeButton: {
         width: 32
@@ -98,7 +103,36 @@ class Stack extends React.Component {
         };
     }
 
+    onExpressionNameUpdate() {
+        this.props.onExpressionNameUpdate(this.state.editValue.index, this.scopeValue, () => {
+            this.setState({editValue: null});
+            this.scopeValue = null;
+        });
+    }
+
     renderExpression(item, i) {
+        const name = this.state.editValue && this.state.editValue.type === 'expressionName' && this.state.editValue.index === i ?
+            <Input
+                fullWidth
+                margin="dense"
+                onBlur={() => this.state.editValue && this.setState({editValue: null})}
+                defaultValue={Stack.formatValue(item.value, true)}
+                onKeyUp={e => e.keyCode === 13 && this.onExpressionNameUpdate()}
+
+                onChange={e =>
+                    this.scopeValue = e.target.value}
+
+                endAdornment={
+                    <InputAdornment position="end">
+                        <IconButton onClick={() => this.onExpressionNameUpdate()}>
+                            <CheckIcon/>
+                        </IconButton>
+                    </InputAdornment>
+                }
+            />
+            :
+            item.name;
+
         const el = this.state.editValue && this.state.editValue.type === 'expression' && this.state.editValue.index === i ?
             <Input
                 fullWidth
@@ -123,9 +157,22 @@ class Stack extends React.Component {
 
         return <tr key={`user_${i}${item.name}`}>
             <td className={clsx(this.props.classes.scopeType, this.props.classes['scopeType_user'])}>user</td>
-            <td className={this.props.classes.scopeName}>{item.name}</td>
-            <td className={clsx(this.props.classes.scopeValue, this.props.classes.scopeValueEditable)}
+            <td className={this.props.classes.scopeName}
                 onClick={() => {
+                    this.scopeValue = item.name || '';
+                    this.setState({
+                        editValue: {
+                            type: 'expressionName',
+                            valueType: 'string',
+                            index: i,
+                            name: item.name,
+                            value: item.name || ''
+                        }
+                    });
+                }}
+            >{name}</td>
+            <td className={clsx(this.props.classes.scopeValue, false && this.props.classes.scopeValueEditable)}
+                /*onClick={() => {
                     this.scopeValue = item.value?.value || '';
                     this.setState({
                         editValue: {
@@ -136,13 +183,13 @@ class Stack extends React.Component {
                             value: item.value?.value || ''
                         }
                     });
-                }}
+                }}*/
             >{el}</td>
             <td className={this.props.classes.scopeButton}>
                 <IconButton
                     size="small"
                     disabled={this.state.editValue}
-                    onClick={this.onExpressionDelete(i)}
+                    onClick={() => this.props.onExpressionDelete(i)}
                 >
                     <IconDelete/>
                 </IconButton>
@@ -151,8 +198,7 @@ class Stack extends React.Component {
     }
 
     renderExpressions() {
-        return null;
-        return Object.keys(this.props.expressions).map((item, i) => this.renderExpression(item, i));
+        return this.props.expressions.map((item, i) => this.renderExpression(item, i));
     }
 
     renderOneFrameTitle(frame, i) {
@@ -275,10 +321,9 @@ class Stack extends React.Component {
             return null;
         } else {
             // first local
-            let result = [];
-            let items = this.renderExpressions();
+            let result = this.renderExpressions();
 
-            items = this.props.scopes?.local?.properties?.result.map(item => this.renderScope(this.props.scopes.id, item, 'local'));
+            let items = this.props.scopes?.local?.properties?.result.map(item => this.renderScope(this.props.scopes.id, item, 'local'));
             items && items.forEach(item => result.push(item));
 
             items = this.props.scopes?.closure?.properties?.result.map(item => this.renderScope(this.props.scopes.id, item, 'local'));
@@ -311,7 +356,18 @@ class Stack extends React.Component {
             </div>
             <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
                 <div className={this.props.classes.toolbarScopes}>
-                    <IconButton size="small" onClick={() => this.props.onExpressionAdd()}><IconAdd/></IconButton>
+                    <IconButton size="small" onClick={() => this.props.onExpressionAdd((i, item) => {
+                        this.scopeValue = item.name || '';
+                        this.setState({
+                            editValue: {
+                                type: 'expressionName',
+                                valueType: 'string',
+                                index: i,
+                                name: item.name,
+                                value: item.name || ''
+                            }
+                        });
+                    })}><IconAdd/></IconButton>
                 </div>
                 <div className={this.props.classes.scopesAfterToolbar}>
                     {this.props.callFrames && this.props.callFrames.length && this.renderScopes(this.props.callFrames[this.props.currentFrame])}
@@ -332,6 +388,7 @@ Stack.propTypes = {
     onWriteScopeValue: PropTypes.func,
     onExpressionDelete: PropTypes.func,
     onExpressionAdd: PropTypes.func,
+    onExpressionNameUpdate: PropTypes.func,
 };
 
 export default withStyles(styles)(Stack);

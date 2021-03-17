@@ -87,30 +87,6 @@ class Editor extends React.Component {
                 onToggleBreakpoint={i => this.props.onToggleBreakpoint(i)}
             />
         </div>;
-        /*return <div className={this.props.classes.editor}>
-            {this.state.lines.map((line, i) => {
-                const isStoppedOnLine = this.props.paused && this.props.location &&
-                    this.props.sourceId === this.props.location.scriptId &&
-                    i === this.props.location.lineNumber;
-
-                const isBreakpoint = this.props.breakpoints.find(bp =>
-                    this.props.sourceId === bp.location.scriptId && i === bp.location.lineNumber);
-
-                return <div key={this.props.sourceId + '_' + i} className={this.props.classes.line}>
-                    <div className={clsx(this.props.classes.lineNumber, isBreakpoint && this.props.classes.lineBreakpoint)}
-                         onClick={() => this.props.toggleBreakpoint(i)}
-                    >{i}</div>
-                    {isStoppedOnLine ?
-                        <div ref={this.refCurrentLine} className={clsx(this.props.classes.lineCode, isStoppedOnLine && this.props.classes.lineCurrent)}>
-                            {line.substring(0, this.props.location.columnNumber)}
-                            <span className={this.props.classes.lineCurrentCode}>{line.substring(this.props.location.columnNumber)}</span>
-                        </div>
-                        :
-                        <div className={this.props.classes.lineCode}>{line}</div>
-                    }
-                </div>;
-            })}
-        </div>;*/
     }
 }
 

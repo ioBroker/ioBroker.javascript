@@ -426,6 +426,22 @@ function startInspect(argv = process.argv.slice(2), stdin = process.stdin, stdou
     /* eslint-enable no-console */
 }
 
+function extractErrorMessage(stack) {
+    if (!stack) {
+        return '<unknown>';
+    }
+    const m = stack.match(/^\w+: ([^\n]+)/);
+    return m ? m[1] : stack;
+}
+
+function convertResultToError(result) {
+    const { className, description } = result;
+    const err = new Error(extractErrorMessage(description));
+    err.stack = description;
+    Object.defineProperty(err, 'name', { value: className });
+    return err;
+}
+
 let inspector;
 let scriptToDebug;
 let alreadyPausedOnFirstLine = false;
@@ -462,7 +478,7 @@ sendToHost({cmd: 'ready'});
 function processCommand(data) {
     if (data.cmd === 'start') {
         scriptToDebug = data.scriptName;
-        startInspect(['main.js', '--debug', '--debugScript', scriptToDebug]);
+        startInspect(['main.js', data.instance || 0, '--debug', '--debugScript', scriptToDebug]);
     } else if (data.cmd === 'end') {
         process.exit();
     } else if (data.cmd === 'source') {
@@ -543,6 +559,25 @@ function processCommand(data) {
                 sendToHost({cmd: 'setValue', variableName: `Cannot setValue: ${e}`, errorContext: e}))
             .then(() =>
                 sendToHost(data));
+    } else if (data.cmd === 'expressions') {
+        Promise.all(data.expressions.map(item =>
+            inspector.Debugger.evaluateOnCallFrame({
+                callFrameId: data.callFrameId,
+                expression: item.name,
+                objectGroup: 'node-inspect',
+                generatePreview: true,
+            })
+                .then(({ result, wasThrown }) => {
+                    if (wasThrown) {
+                        return {name: item.name, result: convertResultToError(result)};
+                    } else {
+                        return {name: item.name, result};
+                    }
+                })
+                .catch(e =>
+                    sendToHost({cmd: 'expressions', variableName: `Cannot setValue: ${e}`, errorContext: e}))))
+            .then(expressions =>
+                sendToHost({cmd: 'expressions', expressions}));
     } else if (data.cmd === 'stopOnException') {
         inspector.Debugger.setPauseOnExceptions({state: data.state ? 'all' : 'none'})
             .catch(e =>

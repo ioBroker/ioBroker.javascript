@@ -878,6 +878,7 @@ class App extends GenericApp {
                 >
                     <div className={classes.mainDiv} key="menu">
                         <SideMenu
+                            debugMode={this.state.debugMode}
                             key="sidemenu"
                             scripts={this.scripts}
                             scriptsHash={this.state.scriptsHash}

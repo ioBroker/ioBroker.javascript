@@ -81,7 +81,7 @@ const styles = theme => ({
 
     tabsRoot: {
         minHeight: 24,
-        background: theme.palette.type === 'dark' ? '#333' : '#CCC',
+        background: theme.palette.type === 'dark' ? '#333' : '#e6e6e6',
         color: theme.palette.type === 'dark' ? 'white' : 'inherit'
     },
     tabRoot: {
@@ -168,6 +168,24 @@ class Debugger extends React.Component {
         }
     }
 
+    readExpressions(i) {
+        if (this.state.expressions.length && this.state.context?.callFrames && this.state.context.callFrames[this.state.currentFrame]) {
+            if (i !== undefined) {
+                this.sendToInstance({
+                    cmd: 'expressions',
+                    expressions: [this.state.expressions[i]],
+                    callFrameId: this.state.context.callFrames[this.state.currentFrame].callFrameId
+                });
+            } else {
+                this.sendToInstance({
+                    cmd: 'expressions',
+                    expressions: this.state.expressions,
+                    callFrameId: this.state.context.callFrames[this.state.currentFrame].callFrameId
+                });
+            }
+        }
+    }
+
     fromInstance = (id, state) => {
         try {
             const data = JSON.parse(state.val);
@@ -195,8 +213,10 @@ class Debugger extends React.Component {
                     location: this.getLocation(data.context),
                     context: data.context,
                 }, () =>
-                    this.reinitBreakpoints(() =>
-                        this.readCurrentScope()));
+                    this.reinitBreakpoints(() => {
+                        this.readCurrentScope();
+                        this.readExpressions();
+                    }));
             } else if (data.cmd === 'paused') {
                 const ts = Date.now() + '.' + Math.random() * 10000;
                 data.context.callFrames && data.context.callFrames.forEach((item, i) => item.id = ts + i);
@@ -219,6 +239,7 @@ class Debugger extends React.Component {
 
                 this.setState(newState, () => {
                     this.readCurrentScope();
+                    this.readExpressions();
                     if (!this.scripts[location.scriptId]) {
                         this.sendToInstance({cmd: 'source', scriptId: location.scriptId});
                     }
@@ -289,8 +310,15 @@ class Debugger extends React.Component {
                     item.value.value = data.newValue.value;
                     this.setState({scopes});
                 }
+            } else if (data.cmd === 'expressions') {
+                // update values
+                data.expressions.forEach(item => {
+
+                });
+
+                console.log('expressions: ' + JSON.stringify(data));
             } else  {
-                console.error('Unknown command: ' + JSON.stringify(data));
+                console.error(`Unknown command: ${JSON.stringify(data)}`);
             }
         } catch (e) {
 
@@ -400,7 +428,7 @@ class Debugger extends React.Component {
 
     onToggleException() {
         const stopOnException = !this.state.stopOnException;
-        window.localStorage.getItem('javascript.tools.stopOnException', stopOnException ? 'true' : 'false');
+        window.localStorage.setItem('javascript.tools.stopOnException', stopOnException ? 'true' : 'false');
         this.setState({stopOnException}, () =>
             this.sendToInstance({cmd: 'stopOnException', state: stopOnException}));
     }
@@ -474,8 +502,10 @@ class Debugger extends React.Component {
             callFrames={this.state.context?.callFrames}
             currentFrame={this.state.currentFrame}
             onChangeCurrentFrame={i => {
-                this.setState({currentFrame: i, scopes: {}}, () =>
-                    this.readCurrentScope())
+                this.setState({currentFrame: i, scopes: {}}, () => {
+                    this.readCurrentScope();
+                    this.readExpressions();
+                })
             }}
             onWriteScopeValue={obj => {
                 this.sendToInstance({
@@ -491,10 +521,23 @@ class Debugger extends React.Component {
                 expressions.splice(i, 1);
                 this.setState({expressions});
             }}
-            onExpressionAdd={() => {
+            onExpressionAdd={cb => {
                 const expressions = JSON.parse(JSON.stringify(this.state.expressions));
                 expressions.push({name: '', value: {value: ''}});
-                this.setState({expressions});
+                this.setState({expressions}, () => cb && cb(expressions.length - 1, this.state.expressions[expressions.length - 1]));
+            }}
+            onExpressionNameUpdate={(i, name, cb) => {
+                const expressions = JSON.parse(JSON.stringify(this.state.expressions));
+                if (!name) {
+                    expressions.splice(i, 1);
+                } else {
+                    expressions[i].name = name;
+                }
+
+                this.setState({expressions}, () => {
+                    name && this.readExpressions(i);
+                    cb && cb();
+                });
             }}
         />;
     }

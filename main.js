@@ -1968,7 +1968,7 @@ function debugScript(data) {
 
                     switch (message.cmd) {
                         case 'ready': {
-                            debugSendToInspector({cmd: 'start', scriptName: debugState.scriptName});
+                            debugSendToInspector({cmd: 'start', scriptName: debugState.scriptName, instance: adapter.instance});
                             break;
                         }
 

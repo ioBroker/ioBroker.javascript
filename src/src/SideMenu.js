@@ -84,6 +84,10 @@ const styles = theme => ({
     toolbarButtons: {
         color: theme.palette.type === 'dark'? 'white !important' : 'black !important'
     },
+    iconButtonsDisabled: {
+        filter: 'grayscale(100%)',
+        opacity: 0.5,
+    },
     toolbarSearch: {
         width: 'calc(100% - 105px)',
         lineHeight: '34px',
@@ -751,29 +755,41 @@ class SideDrawer extends React.Component {
             }
 
             return [
-                <IconButton className={this.props.classes.iconButtons}
-                             onClick={e => {
-                                e.stopPropagation();
-                                this.props.onEnableDisable && this.props.onEnableDisable(item.id, !item.enabled)
-                             }}
-                            title={item.enabled ? I18n.t('Pause script') : I18n.t('Run script')}
-                            key="startStop"
-                            style={{color}}>
-                            {item.enabled ? (<IconPause/>) : (<IconPlay/>)}
+                <IconButton
+                    className={clsx(this.props.classes.iconButtons, this.props.debugMode && this.props.classes.iconButtonsDisabled)}
+                    onClick={e => {
+                        e.stopPropagation();
+                        this.props.onEnableDisable && this.props.onEnableDisable(item.id, !item.enabled)
+                    }}
+                    title={item.enabled ? I18n.t('Pause script') : I18n.t('Run script')}
+                    disabled={this.props.debugMode}
+                    key="startStop"
+                    style={{color}}>
+                    {item.enabled ? <IconPause/> : <IconPlay/>}
                 </IconButton>,
                 this.state.width > NARROW_WIDTH ? <IconButton
                     key="delete"
+                    className={clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
                     title={I18n.t('Delete script')}
-                    disabled={item.id === GLOBAL_ID || item.id === COMMON_ID}
+                    disabled={item.id === GLOBAL_ID || item.id === COMMON_ID || this.props.debugMode}
                     onClick={e => this.onDelete(item, e)}><IconDelete/></IconButton> : null,
-                <IconButton key="openInEdit" title={I18n.t('Edit script or just double click')} onClick={e => this.onEdit(item, e)}><IconDoEdit/></IconButton>,
+                <IconButton
+                    className={clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
+                    disabled={this.props.debugMode}
+                    key="openInEdit"
+                    title={I18n.t('Edit script or just double click')}
+                    onClick={e => this.onEdit(item, e)}
+                >
+                    <IconDoEdit/>
+                </IconButton>,
             ];
         } else if (this.state.width > NARROW_WIDTH) {
             if (item.id !== ROOT_ID && item.id !== COMMON_ID && item.id !== GLOBAL_ID && (!children || !children.length)) {
                 return <IconButton
+                    className={clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
                     key="delete"
                     title={I18n.t('Delete folder')}
-                    disabled={item.id === GLOBAL_ID || item.id === COMMON_ID}
+                    disabled={item.id === GLOBAL_ID || item.id === COMMON_ID || this.props.debugMode}
                     onClick={e => this.onDelete(item, e)}><IconDelete/></IconButton>;
             } else {
                 return null;
@@ -886,14 +902,15 @@ class SideDrawer extends React.Component {
                 <span key="title">{title}</span>
             ];
         }
+        const reorder = this.state.reorder && !this.props.debugMode;
 
         const style = Object.assign({
             marginLeft: depthPx,
-            cursor:     item.type === 'folder' && this.state.reorder ? 'default' : 'inherit',
+            cursor:     item.type === 'folder' && reorder ? 'default' : 'inherit',
             width:      `calc(100% - ${depthPx}px)`
-        }, item.id === this.state.selected && !this.state.reorder ? SELECTED_STYLE : {});
+        }, item.id === this.state.selected && !reorder ? SELECTED_STYLE : {});
 
-        if (!this.state.reorder) {
+        if (!reorder) {
             style.opacity = item.filteredPartly ? 0.5 : 1;
         }
 
@@ -914,9 +931,9 @@ class SideDrawer extends React.Component {
         }
         let iconClass;
         if (item.type === 'folder') {
-            iconClass = clsx(this.props.classes.folderIcon, this.state.reorder ? this.props.classes.folderIconReorder : this.props.classes.folderIconNoReorder);
+            iconClass = clsx(this.props.classes.folderIcon, reorder ? this.props.classes.folderIconReorder : this.props.classes.folderIconNoReorder);
         } else {
-            iconClass = clsx(this.props.classes.scriptIcon, this.state.reorder ? this.props.classes.scriptIconReorder : this.props.classes.scriptIconNoReorder);
+            iconClass = clsx(this.props.classes.scriptIcon, reorder ? this.props.classes.scriptIconReorder : this.props.classes.scriptIconNoReorder);
         }
 
         let childrenCount = null;
@@ -929,11 +946,11 @@ class SideDrawer extends React.Component {
             style={style}
             className={clsx(
                 item.type === 'folder' ? this.props.classes.folder : this.props.classes.script,
-                this.state.reorder && item.type === 'folder' && 'folder-reorder',
-                this.state.reorder && item.type !== 'folder' && 'script-reorder',
-                this.state.reorder && this.props.classes.reorder,
-                this.state.reorder && item.type !== 'folder' &&  this.props.classes.scriptReorder,
-                this.state.reorder && item.type === 'folder' && this.props.classes.folderReorder,
+                reorder && item.type === 'folder' && 'folder-reorder',
+                reorder && item.type !== 'folder' && 'script-reorder',
+                reorder && this.props.classes.reorder,
+                reorder && item.type !== 'folder' &&  this.props.classes.scriptReorder,
+                reorder && item.type === 'folder' && this.props.classes.folderReorder,
                 )}
             onClick={e => this.onClick(item, e)}
             onDoubleClick={e => this.onDblClick(item, e)}
@@ -942,15 +959,15 @@ class SideDrawer extends React.Component {
                 classes={{root: this.props.classes.listItemIcon}}
             >{
                 item.type === 'folder' ? (
-                        this.state.reorder || isExpanded ?
-                            <IconFolderOpened className={iconClass} style={iconStyle} onClick={e => !this.state.reorder && this.onToggle(item.id, e)}/> :
-                            <IconFolder       className={iconClass} style={iconStyle} onClick={e => !this.state.reorder && this.onToggle(item.id, e)}/>
+                        reorder || isExpanded ?
+                            <IconFolderOpened className={iconClass} style={iconStyle} onClick={e => !reorder && this.onToggle(item.id, e)}/> :
+                            <IconFolder       className={iconClass} style={iconStyle} onClick={e => !reorder && this.onToggle(item.id, e)}/>
                     )
                     :
                     <img className={iconClass} alt={item.type} src={images[item.type] || images.def}/>
             }</ListItemIcon>
             <ListItemText
-                classes={{primary: item.id === this.state.selected && !this.state.reorder ? this.props.classes.selected : undefined}}
+                classes={{primary: item.id === this.state.selected && !reorder ? this.props.classes.selected : undefined}}
                 style={this.getTextStyle(item)} primary={(<span>{title}{childrenCount}</span>)}/>
             <ListItemSecondaryAction>{this.renderItemButtonsOnEnd(item, children)}</ListItemSecondaryAction>
         </ListItem>;
@@ -980,15 +997,16 @@ class SideDrawer extends React.Component {
         if (item.type === 'folder' && (this.state.statusFilter || this.state.typeFilter) && !childrenFiltered.length) {
             return;
         }
+        const reorder = this.state.reorder && !this.props.debugMode;
 
         const element = this.renderListItem(item, children, childrenFiltered);
         const result = [];
         let reactChildren;
-        if (children && (this.state.reorder || this.state.expanded.includes(item.id) || item.id === ROOT_ID)) {
+        if (children && (reorder || this.state.expanded.includes(item.id) || item.id === ROOT_ID)) {
             reactChildren = children.map(it => this.renderOneItem(items, it));
         }
 
-        if (this.state.reorder) {
+        if (reorder) {
             if (item.type === 'folder') {
                 result.push(<Droppable key={'droppable_' + item.id} onDrop={e => this.onDragFinish(e.name, item.id)}>
                     <Draggable key={'draggable_' + item.id} name={item.id}>{element}</Draggable>
@@ -1133,8 +1151,8 @@ class SideDrawer extends React.Component {
             }}
         >
             {this.state.width <= NARROW_WIDTH ? <MenuItem
-                key="deleted"
-                disabled={!this.state.selected || this.state.selected === GLOBAL_ID || this.state.selected === COMMON_ID || (children && children.length)}
+                key="delete"
+                disabled={this.props.debugMode || !this.state.selected || this.state.selected === GLOBAL_ID || this.state.selected === COMMON_ID || (children && children.length)}
                 onClick={event => {
                     event.stopPropagation();
                     event.preventDefault();
@@ -1147,13 +1165,16 @@ class SideDrawer extends React.Component {
                         this.onDelete(this.state.selected).then(() => {}));
                 }}><IconDelete className={this.props.classes.iconDropdownMenu}  style={{color: 'red'}}/>{I18n.t('Delete')}
             </MenuItem> : null}
-            <MenuItem key="expertMode" selected={this.state.expertMode}
-                      onClick={event => {
-                          event.stopPropagation();
-                          event.preventDefault();
-                          this.onCloseMenu(() =>
-                              this.props.onExpertModeChange && this.props.onExpertModeChange(!this.state.expertMode));
-                      }}><IconExpert className={this.props.classes.iconDropdownMenu} style={{color: 'orange'}}/>{I18n.t('Expert mode')}
+            <MenuItem
+                key="expertMode"
+                selected={this.state.expertMode}
+                onClick={event => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    this.onCloseMenu(() =>
+                        this.props.onExpertModeChange && this.props.onExpertModeChange(!this.state.expertMode));
+                }}>
+                <IconExpert className={this.props.classes.iconDropdownMenu} style={{color: this.state.expertMode ? 'orange' : 'inherit'}}/>{I18n.t('Expert mode')}
             </MenuItem>
             {this.props.onExport && <MenuItem
                 key="exportAll"
@@ -1202,7 +1223,8 @@ class SideDrawer extends React.Component {
     getToolbarButtons() {
         const result = [];
         const classes = this.props.classes;
-        if (this.state.searchMode) {
+        const reorder = this.state.reorder && !this.props.debugMode;
+        if (this.state.searchMode && !this.props.debugMode) {
             result.push(<RootRef key="searchInputRoof" rootRef={this.inputRef}><Input
                 key="searchInput"
                 value={this.state.searchText}
@@ -1247,7 +1269,7 @@ class SideDrawer extends React.Component {
                 }}
             ><IconClear fontSize="small"/></IconButton>);
         } else {
-            if (!this.state.reorder) {
+            if (!reorder) {
                 // Open Menu
                 result.push(<IconButton
                     key="menuButton"
@@ -1277,19 +1299,21 @@ class SideDrawer extends React.Component {
 
                 // New Script
                 result.push(<IconButton
+                    disabled={this.props.debugMode}
                     key="new-script"
                     title={I18n.t('Create new script')}
-                    className={classes.toolbarButtons}
-                    style={{color: this.state.reorder ? 'red' : 'inherit'}}
+                    className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
+                    style={{color: reorder ? 'red' : 'inherit'}}
                     onClick={e => this.onAddNew(e)}
                 ><IconAdd/></IconButton>);
 
                 // New Folder
                 result.push(<IconButton
+                    disabled={this.props.debugMode}
                     key="new-folder"
                     title={I18n.t('Create new folder')}
-                    className={classes.toolbarButtons}
-                    style={{color: this.state.reorder ? 'red' : 'inherit'}}
+                    className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
+                    style={{color: reorder ? 'red' : 'inherit'}}
                     onClick={() => this.onAddNewFolder()}
                 ><IconAddFolder/></IconButton>);
             }
@@ -1297,10 +1321,10 @@ class SideDrawer extends React.Component {
             // Search
             result.push(<IconButton
                 key="search"
-                disabled={this.state.reorder}
-                className={classes.toolbarButtons}
+                disabled={reorder || this.props.debugMode}
+                className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
                 title={I18n.t('Search in scripts')}
-                style={{float: 'right', opacity: this.state.reorder ? 0 : 1}}
+                style={{float: 'right', opacity: this.props.debugMode ? 0.5 : (reorder ? 0 : 1)}}
                 onClick={e => {
                     e.stopPropagation();
                     this.setState({searchMode: true});
@@ -1309,22 +1333,25 @@ class SideDrawer extends React.Component {
 
             // Reorder button
             result.push(<IconButton
+                disabled={this.props.debugMode}
                 key="reorder"
                 title={I18n.t('Reorder scripts in folders')}
-                className={classes.toolbarButtons}
-                style={{color: this.state.reorder ? 'red' : 'inherit', float: 'right'}}
+                className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
+                style={{color: reorder ? 'red' : 'inherit', float: 'right'}}
                 onClick={e => {
                     e.stopPropagation();
                     this.setState({reorder: !this.state.reorder});
                 }}
             ><IconReorder/></IconButton>);
 
-            if (!this.state.reorder && this.state.selected && this.state.selected !== GLOBAL_ID && this.state.selected !== COMMON_ID) {
+            if (!reorder && this.state.selected && this.state.selected !== GLOBAL_ID && this.state.selected !== COMMON_ID) {
                 // Rename
-                result.push(<IconButton className={classes.toolbarButtons}
-                                         title={I18n.t('Rename')}
-                                         key="rename"
-                                         onClick={e => this.onRename(e)}
+                result.push(<IconButton
+                    className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
+                    disabled={this.props.debugMode}
+                    title={I18n.t('Rename')}
+                    key="rename"
+                    onClick={e => this.onRename(e)}
                 ><IconEdit/></IconButton>);
 
 
@@ -1367,7 +1394,7 @@ class SideDrawer extends React.Component {
     }
 
     getBottomButtons() {
-        if (this.state.reorder) {
+        if (this.state.reorder || this.props.debugMode) {
             return null;
         }
         return [
@@ -1532,9 +1559,8 @@ class SideDrawer extends React.Component {
                 instances={this.props.instances}
                 type={this.state.creatingScript}
                 parent={this.parent}
-                onAdd={(id, name, instance, type) => {
-                    this.props.onAddNew && this.props.onAddNew(id, name, false, instance, type);
-                }}
+                onAdd={(id, name, instance, type) =>
+                    this.props.onAddNew && this.props.onAddNew(id, name, false, instance, type)}
             /> : null,
 
             this.state.copingScript ? <DialogNew
@@ -1565,9 +1591,8 @@ class SideDrawer extends React.Component {
                 parents={this.getFolders()}
                 name={this.getUniqueFolderName()}
                 parent={this.parent}
-                onAdd={(id, name) => {
-                    this.props.onAddNew && this.props.onAddNew(id, name, true);
-                }}
+                onAdd={(id, name) =>
+                    this.props.onAddNew && this.props.onAddNew(id, name, true)}
             /> : null,
             this.state.errorText ? <DialogError onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/> : null
         ];
@@ -1596,7 +1621,8 @@ SideDrawer.propTypes = {
     onExport: PropTypes.func,
     onSearch: PropTypes.func,
     onThemeChange: PropTypes.func,
-    width: PropTypes.number
+    width: PropTypes.number,
+    debugMode: PropTypes.bool,
 };
 
 export default withStyles(styles)(SideDrawer);

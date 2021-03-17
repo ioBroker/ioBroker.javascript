@@ -14,7 +14,6 @@ import {withStyles} from '@material-ui/core/styles/index';
 const IconVerticalSplit   = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAACFJREFUeAFjAIJRwP////8PYIKWHCigNQdKj/pn1D+jAABTG16wVQqVpQAAAABJRU5ErkJggg==';
 const IconHorizontalSplit = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAABtJREFUeAFjAIJRwP8fCj7QkENn/4z6Z5QzCgBjbWaoyx1PqQAAAABJRU5ErkJggg==';
 
-
 function getTimeString(d) {
     let text;
     let i = d.getHours();
@@ -46,12 +45,14 @@ const styles = theme => ({
         overflow: 'hidden'
     },
     logBoxInner: {
+        display: 'inline-block',
         color: theme.palette.type === 'dark' ? 'white' : 'black',
         width: `calc(100% - ${TOOLBOX_WIDTH}px)`,
         height: '100%',
-        marginLeft: TOOLBOX_WIDTH,
+        //marginLeft: TOOLBOX_WIDTH,
         overflow: 'auto',
-        position: 'relative'
+        position: 'relative',
+        verticalAlign: 'top',
     },
     info: {
         background: theme.palette.type === 'dark' ? 'darkgrey' : 'lightgrey',
@@ -81,13 +82,16 @@ const styles = theme => ({
 
     },
     toolbox: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        marginLeft: 2,
+        //position: 'absolute',
+        //top: 0,
+        //left: 0,
+        //marginLeft: 2,
         width: TOOLBOX_WIDTH,
         height: '100%',
-        boxShadow: '2px 0px 4px -1px rgba(0, 0, 0, 0.2), 4px 0px 5px 0px rgba(0, 0, 0, 0.14), 1px 0px 10px 0px rgba(0, 0, 0, 0.12)'
+        boxShadow: '2px 0px 4px -1px rgba(0, 0, 0, 0.2), 4px 0px 5px 0px rgba(0, 0, 0, 0.14), 1px 0px 10px 0px rgba(0, 0, 0, 0.12)',
+        display: 'inline-block',
+        verticalAlign: 'top',
+        overflow: 'hidden',
     },
     trTime: {
         width: 90
@@ -141,7 +145,6 @@ class Log extends React.Component {
         };
         this.lastIndex = null;
         this.messagesEnd = React.createRef();
-        this.logHandlerBound = this.logHandler.bind(this);
     }
 
     generateLine(message) {
@@ -155,10 +158,12 @@ class Log extends React.Component {
     scrollToBottom() {
         this.messagesEnd && this.messagesEnd.current && this.messagesEnd.current.scrollIntoView({behavior: 'smooth'});
     }
-    logHandler(message) {
+    logHandler = message => {
         let allLines = this.state.lines;
         const selected = this.state.editing.find(id => message.message.indexOf(id) !== -1);
-        if (!selected) return;
+        if (!selected) {
+            return;
+        }
 
         let lines = allLines[selected] || [];
         let text = gText[selected] || [];
@@ -181,11 +186,11 @@ class Log extends React.Component {
     }
 
     componentDidMount() {
-        this.props.socket.registerLogHandler(this.logHandlerBound);
+        this.props.socket.registerLogHandler(this.logHandler);
     }
 
     componentWillUnmount() {
-        this.props.socket.unregisterLogHandler(this.logHandlerBound);
+        this.props.socket.unregisterLogHandler(this.logHandler);
     }
 
     componentDidUpdate() {
@@ -207,11 +212,12 @@ class Log extends React.Component {
 
         if (JSON.stringify(props.editing) !== JSON.stringify(state.editing)) {
             const editing = JSON.parse(JSON.stringify(props.editing));
+            changed = true;
             let allLines = state.lines;
 
             for (const id in gText) {
                 if (gText.hasOwnProperty(id)) {
-                    if (editing.indexOf(id) === -1) {
+                    if (!editing.includes(id)) {
                         delete gText[id];
                         delete allLines[id];
                     }
@@ -238,6 +244,17 @@ class Log extends React.Component {
         this.setState({lines: allLines});
     }
 
+    renderLogList(lines) {
+        if (this.state.selected && lines && lines.length) {
+            return <div className={this.props.classes.logBoxInner} key="logList">
+                <table key="logTable" className={this.props.classes.table}><tbody>{lines}</tbody></table>
+                <div key="logScrollPoint" ref={this.messagesEnd} style={{float: 'left', clear: 'both'}}/>
+            </div>;
+        } else {
+            return <div key="logList" className={this.props.classes.logBoxInner} style={{paddingLeft: 10}}>{I18n.t('Log outputs')}</div>;
+        }
+    }
+
     render() {
         const lines = this.state.selected && this.state.lines[this.state.selected];
         return <div className={this.props.classes.logBox}>
@@ -248,13 +265,7 @@ class Log extends React.Component {
                 {this.props.onLayoutChange ? <IconButton className={this.props.classes.iconButtons} onClick={() => this.props.onLayoutChange()} title={I18n.t('Change layout')}><img className={this.props.classes.layoutIcon} alt="split" src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit} /></IconButton> : null}
                 <IconButton className={this.props.classes.iconButtons} onClick={() => this.props.onHideLog()} title={I18n.t('Hide logs')}><IconHide /></IconButton>
             </div>
-            {this.state.selected && lines && lines.length ?
-                <div className={this.props.classes.logBoxInner} key="logList">
-                    <table key="logTable" className={this.props.classes.table}><tbody>{lines}</tbody></table>
-                    <div key="logScrollPoint" ref={this.messagesEnd} style={{float: 'left', clear: 'both'}}/>
-                </div> :
-                <div key="logList" className={this.props.classes.logBoxInner} style={{paddingLeft: 10}}>{I18n.t('Log outputs')}</div>
-            }
+            {this.renderLogList(lines)}
         </div>;
     }
 }

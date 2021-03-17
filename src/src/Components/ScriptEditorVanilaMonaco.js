@@ -332,6 +332,15 @@ class ScriptEditor extends React.Component {
         this.setEditorTypings(name);
     }
 
+    scrollToLineIfNeeded(lineNumber) {
+        if (this.editor) {
+            const ranges = this.editor.getVisibleRanges();
+            if (!ranges || !ranges[0] || ranges[0].startLineNumber > lineNumber || lineNumber > ranges[0].endLineNumber) {
+                this.editor.revealLineInCenter(lineNumber);
+            }
+        }
+    }
+
     UNSAFE_componentWillReceiveProps(nextProps) {
         const options = {};
         if (this.state.name !== nextProps.name) {
@@ -339,7 +348,7 @@ class ScriptEditor extends React.Component {
             this.initNewScript(nextProps.name, nextProps.code);
         }
 
-        // if some running instance will be foung and
+        // if some running instance will be found and
         if (JSON.stringify(nextProps.runningInstances) !== this.runningInstancesStr) {
             this.runningInstancesStr = JSON.stringify(nextProps.runningInstances);
             if (!this.state.typingsLoaded) {
@@ -352,8 +361,7 @@ class ScriptEditor extends React.Component {
             this.originalCode = nextProps.code;
             this.editor.setValue(this.originalCode);
             this.showDecorators();
-            this.location && this.editor.revealLineInCenter(this.location.lineNumber + 1);
-            //this.location && this.editor.setPosition(this.location.lineNumber + 1, this.location.columnNumber + 1);
+            this.location && this.scrollToLineIfNeeded(this.location.lineNumber + 1);
         }
 
         if (nextProps.searchText !== this.lastSearch) {
@@ -366,7 +374,7 @@ class ScriptEditor extends React.Component {
             this.location = nextProps.location;
             this.breakpoints = nextProps.breakpoints;
             this.showDecorators();
-            this.editor && this.location && this.editor.revealLineInCenter(this.location.lineNumber + 1);
+            this.editor && this.location && this.scrollToLineIfNeeded(this.location.lineNumber + 1);
             //this.editor && this.location && this.editor.setPosition(this.location.lineNumber + 1, this.location.columnNumber + 1);
         } else if (JSON.stringify(nextProps.breakpoints) !== JSON.stringify(this.breakpoints)) {
             this.breakpoints = nextProps.breakpoints;
@@ -374,7 +382,7 @@ class ScriptEditor extends React.Component {
         } else if (JSON.stringify(nextProps.location) !== JSON.stringify(this.location)) {
             this.location = nextProps.location;
             this.showDecorators();
-            this.editor && this.location && this.editor.revealLineInCenter(this.location.lineNumber + 1);
+            this.editor && this.location && this.scrollToLineIfNeeded(this.location.lineNumber + 1);
             //this.editor && this.location && this.editor.setPosition(this.location.lineNumber + 1, this.location.columnNumber + 1);
         }
 

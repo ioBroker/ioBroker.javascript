@@ -72,6 +72,10 @@ const styles = theme => ({
         padding: 4,
         marginLeft: 4
     },
+    toolbarButtonsDisabled: {
+        filter: 'grayscale(100%)',
+        opacity: 0.5,
+    },
     editorDiv: {
         height: `calc(100% - ${theme.toolbar.height + 38/*Theme.toolbar.height */ + 5}px)`,
         width: '100%',
@@ -641,6 +645,9 @@ class Editor extends React.Component {
     }
 
     onTabChange(event, selected) {
+        if (this.props.debugMode) {
+            return;
+        }
         window.localStorage && window.localStorage.setItem('Editor.selected', selected);
         const common = this.scripts[selected] || (this.props.objects[selected] && this.props.objects[selected].common);
         this.setState({
@@ -769,10 +776,11 @@ class Editor extends React.Component {
                             <img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon} />,
                             <div key="text" className={clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{text}</div>,
                             changed ? <span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span> : null,
-                            <span key="icon2" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small" /></span>
+                            (!this.props.debugMode || this.state.selected !== id) && <span key="icon2" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small" /></span>,
                         ];
 
                         return <Tab
+                            disabled={this.state.selected !== id && this.props.debugMode}
                             wrapped
                             component={'div'}
                             href={'#' + id}
@@ -821,7 +829,9 @@ class Editor extends React.Component {
     }
 
     getDebugMenu() {
-        if (!this.state.showDebugMenu) return null;
+        if (!this.state.showDebugMenu) {
+            return null;
+        }
 
         return <Menu
             key="menuDebug"
@@ -877,7 +887,7 @@ class Editor extends React.Component {
             const changed = this.state.changed[this.state.selected];
             return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
                 {this.state.menuOpened && this.props.onLocate && <IconButton className={this.props.classes.toolbarButtons} key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate /></IconButton>}
-                {!changed && isInstanceRunning && <IconButton key="restart" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>}
+                {!changed && isInstanceRunning && <IconButton key="restart" disabled={this.props.debugMode} variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>}
                 {!changed && !isScriptRunning && <span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>}
                 {!changed && isScriptRunning && !isInstanceRunning && <span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>}
                 {changed && <Button key="save" variant="contained" className={clsx(this.props.classes.textButton, this.props.classes.saveButton, 'button-save')} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={this.props.classes.textIcon} /></Button>}
@@ -932,28 +942,36 @@ class Editor extends React.Component {
                         className={this.props.classes.toolbarButtons}
                         onClick={() => this.sendCommandToRules('import')}>
                         <IconImport /></IconButton>}
+
+                {!changed && (this.props.debugMode || (!this.state.blockly && !this.state.rules) || ((this.state.blockly || this.state.rules) && this.state.showCompiledCode)) && <IconButton
+                    className={this.props.classes.toolbarButtons}
+                    color={this.props.debugMode ? 'primary' : 'default'}
+                    disabled={!this.props.debugMode && !isInstanceRunning}
+                    onClick={() => this.props.onDebugModeChange(!this.props.debugMode)}
+                >
+                    <IconDebugMode style={{fontSize: 32}}/>
+                </IconButton>}
+
                 {(this.state.blockly || this.state.rules) && <Button
                     key="blockly-code"
                     aria-label="blockly"
                     title={I18n.t('Show javascript code')}
-                    className={clsx(this.props.classes.toolbarButtons, 'button-js-code')}
+                    className={clsx(this.props.classes.toolbarButtons, 'button-js-code', this.props.debugMode && this.props.classes.toolbarButtonsDisabled)}
                     color={this.state.showCompiledCode ? 'secondary' : 'inherit'}
+                    disabled={this.props.debugMode}
                     style={{ padding: '0 5px' }}
                     onClick={() => {
+                        if (this.props.debugMode) {
+                            return;
+                        }
                         this.setState({ showCompiledCode: !this.state.showCompiledCode });
                         this.state.isTourOpen && this.state.tourStep === STEPS.showJavascript && this.setState({ tourStep: STEPS.switchBackToRules });
                         this.state.isTourOpen && this.state.tourStep === STEPS.switchBackToRules && this.setState({ tourStep: STEPS.saveTheScript });
                     }}>
                     <img alt={this.state.blockly ? "blockly2js" : "rules2js"} src={this.state.blockly ? ImgBlockly2Js : ImgRules2Js} /></Button>}
-                {((!this.state.blockly && !this.state.rules) || ((this.state.blockly || this.state.rules) && this.state.showCompiledCode)) && <IconButton
-                    color={this.props.debugMode ? 'primary' : 'default'}
-                    disabled={!isInstanceRunning}
-                    onClick={() => this.props.onDebugModeChange(!this.props.debugMode)}
-                >
-                    <IconDebugMode style={{fontSize: 32}}/>
-                </IconButton>}
                 <IconButton
                     key="debug"
+                    disabled={this.props.debugMode}
                     aria-label="Debug menu"
                     title={I18n.t('Debug options')}
                     className={this.props.classes.toolbarButtons}
