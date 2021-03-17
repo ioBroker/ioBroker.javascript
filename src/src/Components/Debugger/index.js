@@ -25,14 +25,16 @@ import { MdCheck as CheckIcon } from 'react-icons/md';
 
 
 import I18n from '@iobroker/adapter-react/i18n';
-import {withStyles} from "@material-ui/core/styles";
-import DialogError from "../../Dialogs/Error";
+import {withStyles} from '@material-ui/core/styles';
+import DialogError from '../../Dialogs/Error';
+import Editor from './Editor';
+import SplitterLayout from "react-splitter-layout";
 
 const styles = theme => ({
     root: {
         width: '100%',
         height: `calc(100% - ${theme.toolbar.height + 38/*Theme.toolbar.height */ + 5}px)`,
-        overflow: 'auto',
+        overflow: 'hidden',
         position: 'relative'
     },
     toolbar: {
@@ -59,47 +61,6 @@ const styles = theme => ({
     },
     buttonOut: {
         color: 'blue'
-    },
-    line: {
-        width: '100%',
-        whiteSpace: 'nowrap',
-    },
-    lineNumber: {
-        width: 40,
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        display: 'inline-block',
-        fontFamily: 'Lucida Console, Courier, monospace',
-        textAlign: 'right',
-        fontSize: 14,
-        marginRight: 1,
-        borderRight: '1px solid #555',
-        cursor: 'pointer'
-    },
-    lineBreakpoint: {
-        background: '#330000',
-        color: 'white',
-    },
-    lineCode: {
-        //whiteSpace: 'nowrap',
-        display: 'inline-block',
-        fontFamily: 'Lucida Console, Courier, monospace',
-        fontSize: 14,
-        margin: 0,
-        whiteSpace: 'pre',
-    },
-    lineCurrentCode: {
-        background: 'red',
-        color: 'white',
-    },
-    lineCurrent: {
-        background: '#880000',
-        color: 'white',
-    },
-    editor: {
-        width: '100%',
-        height: '100%',
-        overflow: 'auto',
     },
 
     consoleLine: {
@@ -187,6 +148,12 @@ const styles = theme => ({
     },
     scopeValueEditable: {
         cursor: 'pointer'
+    },
+    tabsRoot: {
+        minHeight: 24,
+    },
+    tabRoot: {
+        minHeight: 24,
     }
 });
 
@@ -199,6 +166,8 @@ class Debugger extends React.Component {
         } catch (e) {
             breakpoints = [];
         }
+
+        this.toolSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.toolSize')) || 150 : 150;
 
         this.state = {
             starting: true,
@@ -451,7 +420,7 @@ class Debugger extends React.Component {
             return <Tabs
                 component={'div'}
                 indicatorColor="primary"
-                style={{ position: 'relative', width: '100%', display: 'inline-block' }}
+                style={{ position: 'relative', width: 'calc(100% - 300px)', display: 'inline-block' }}
                 value={this.state.selected}
                 onChange={(event, value) => {
                     if (this.scripts[value]) {
@@ -529,6 +498,7 @@ class Debugger extends React.Component {
                 {!this.state.finished && <IconButton className={this.props.classes.buttonStep} disabled={!this.state.paused} onClick={() => this.onStepIn()}  title={I18n.t('Step into function')}><IconStep/></IconButton>}
                 {!this.state.finished && <IconButton className={this.props.classes.buttonOut} disabled={!this.state.paused} onClick={() => this.onStepOut()}  title={I18n.t('Step out from function')}><IconOut/></IconButton>}
                 {!this.state.finished && <IconButton className={this.props.classes.buttonException} color={this.state.stopOnException ? 'primary' : 'default'} disabled={!this.state.paused} onClick={() => this.onToggleException()} title={I18n.t('Stop on exception')}><IconException/></IconButton>}
+                {this.renderTabs()}
             </Toolbar>;
         } else {
             return null;
@@ -550,7 +520,7 @@ class Debugger extends React.Component {
 
     renderCode() {
         if (this.state.script && this.state.started) {
-            const lines = this.state.script.split(/\r\n|\n/);
+            /*const lines = this.state.script.split(/\r\n|\n/);
 
             return <div className={this.props.classes.editor}>
                 {lines.map((line, i) => {
@@ -575,7 +545,23 @@ class Debugger extends React.Component {
                         }
                     </div>;
                 })}
-            </div>;
+            </div>;*/
+            const breakpoints = this.state.breakpoints.filter(bp => bp.location.scriptId === this.state.selected);
+
+            return <Editor
+                runningInstances={this.props.runningInstances}
+                socket={this.props.socket}
+                adapterName={this.props.adapterName}
+                scriptName={this.state.tabs[this.state.selected]}
+                sourceId={this.state.selected}
+                script={this.state.script}
+                paused={this.state.paused}
+                breakpoints={breakpoints}
+                location={this.state.location}
+                themeType={this.props.themeType}
+                themeName={this.props.themeName}
+                onToggleBreakpoint={i => this.toggleBreakpoint(i)}
+            />
         }
     }
 
@@ -736,7 +722,9 @@ class Debugger extends React.Component {
     renderConsole() {
         return <table style={{width: '100%'}}>
             <tbody>
-            {this.state.console.map(line => <tr className={clsx(this.props.classes.consoleLine, this.props.classes['console_' + line.severity])}>
+            {this.state.console.map((line, i) => <tr
+                key={i}
+                className={clsx(this.props.classes.consoleLine, this.props.classes['console_' + line.severity])}>
                 <td className={this.props.classes.consoleSeverity}>{line.severity}</td>
                 <td className={this.props.classes.consoleTime}>{new Date(line.ts).toISOString()}</td>
                 <td className={this.props.classes.consoleText}><pre>{line.text}</pre></td>
@@ -749,9 +737,10 @@ class Debugger extends React.Component {
         if (this.state.tabs && this.state.started) {
             return <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
                 <Tabs
+                    classes={{root: this.props.classes.tabsRoot}}
                     component={'div'}
                     indicatorColor="primary"
-                    style={{ position: 'relative', width: '100%', display: 'inline-block' }}
+                    style={{ position: 'relative', width: '100%' }}
                     value={this.state.toolsTab}
                     onChange={(event, value) => {
                         const newState = {toolsTab: value};
@@ -768,10 +757,10 @@ class Debugger extends React.Component {
                     }}
                     scrollButtons="auto"
                 >
-                    <Tab label={I18n.t('Stack')} value="stack"/>
-                    <Tab label={I18n.t('Console')} value="console"/>
+                    <Tab classes={{root: this.props.classes.tabRoot}} label={I18n.t('Stack')} value="stack"/>
+                    <Tab classes={{root: this.props.classes.tabRoot}} label={I18n.t('Console')} value="console"/>
                 </Tabs>
-                <div style={{width: '100%', height: 'calc(100% - 50px)', overflow: 'auto'}}>
+                <div style={{width: '100%', height: 'calc(100% - 109px)', overflow: 'auto'}}>
                     {this.state.toolsTab === 'stack' ? this.renderFrames() : null}
                     {this.state.toolsTab === 'console' ? this.renderConsole() : null}
                 </div>
@@ -783,22 +772,31 @@ class Debugger extends React.Component {
         return <div key="debugger" style={this.props.style} className={clsx(this.props.classes.root, this.props.className)}>
             {this.state.starting ? <LinearProgress/> : null}
             {this.renderToolbar()}
-            {this.renderTabs()}
-            <div style={{width: '100%', height: 'calc(100% - 100px)', overflow: 'hidden'}}>
-                <div style={{width: '100%', height: 'calc(100% - 300px)', overflow: 'hidden'}}>
+            <SplitterLayout
+                primaryMinSize={100}
+                vertical={true}
+                secondaryInitialSize={this.toolSize}
+                onSecondaryPaneSizeChange={size => this.toolSize = parseFloat(size)}
+                onDragEnd={() => {
+                    window.localStorage.setItem('App.toolSize', this.toolSize.toString());
+                }}
+                style={{width: '100%', height: 'calc(100% - 73px)', overflow: 'hidden'}}
+            >
+                <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
                     {this.renderCode()}
                 </div>
-                <div style={{width: '100%', height: 300, overflow: 'hidden'}}>
+                <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
                     {this.renderTools()}
                 </div>
-            </div>
-
+            </SplitterLayout>
             {this.renderError()}
         </div>;
     }
 }
 
 Debugger.propTypes = {
+    runningInstances: PropTypes.object,
+    adapterName: PropTypes.string,
     src: PropTypes.string,
     socket: PropTypes.object,
     className: PropTypes.string,

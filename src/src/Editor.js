@@ -945,8 +945,9 @@ class Editor extends React.Component {
                         this.state.isTourOpen && this.state.tourStep === STEPS.switchBackToRules && this.setState({ tourStep: STEPS.saveTheScript });
                     }}>
                     <img alt={this.state.blockly ? "blockly2js" : "rules2js"} src={this.state.blockly ? ImgBlockly2Js : ImgRules2Js} /></Button>}
-                {((!this.state.blockly && !this.state.rules) || (this.state.blockly || this.state.rules) && this.state.showCompiledCode) && <IconButton
+                {((!this.state.blockly && !this.state.rules) || ((this.state.blockly || this.state.rules) && this.state.showCompiledCode)) && <IconButton
                     color={this.props.debugMode ? 'primary' : 'default'}
+                    disabled={!isInstanceRunning}
                     onClick={() => this.props.onDebugModeChange(!this.props.debugMode)}
                 >
                     <IconDebugMode style={{fontSize: 32}}/>
@@ -1231,14 +1232,22 @@ class Editor extends React.Component {
 
     getDebug() {
         if (this.props.debugMode) {
-            return <Debugger
-                key="debugger"
-                socket={this.props.socket}
-                theme={this.props.theme}
-                themeName={this.props.themeName}
-                themeType={this.props.themeType}
-                src={this.state.selected}
-            />;
+            const isInstanceRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].engine && this.state.runningInstances[this.scripts[this.state.selected].engine];
+            if (isInstanceRunning) {
+                return <Debugger
+                    key="debugger"
+                    runningInstances={this.state.runningInstances}
+                    adapterName={this.props.adapterName}
+                    socket={this.props.socket}
+                    theme={this.props.theme}
+                    themeName={this.props.themeName}
+                    themeType={this.props.themeType}
+                    src={this.state.selected}
+                />;
+            } else {
+                setTimeout(() => this.props.onDebugModeChange(false));
+                return null;
+            }
         } else {
             return null;
         }

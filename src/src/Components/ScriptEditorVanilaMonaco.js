@@ -96,7 +96,8 @@ class ScriptEditor extends React.Component {
             this.editor = this.monaco.editor.create(this.monacoDiv, {
                 lineNumbers: 'on',
                 scrollBeyondLastLine: false,
-                automaticLayout: true
+                automaticLayout: true,
+                glyphMargin: !!this.props.breakpoints,
             });
 
             this.editor.onDidChangeModelContent(e =>
@@ -109,7 +110,12 @@ class ScriptEditor extends React.Component {
             this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.KEY_S, () =>
                 this.onForceSave());
 
-            setTimeout(() => this.highlightText(this.state.searchText));
+            setTimeout(() => {
+                this.highlightText(this.state.searchText);
+                this.location = this.props.location;
+                this.breakpoints = this.props.breakpoints;
+                this.showDecorators();
+            });
         }
         const options = {
             selectOnLineNumbers: true,
@@ -117,12 +123,21 @@ class ScriptEditor extends React.Component {
             automaticLayout: true,
             readOnly: this.state.readOnly,
             language: this.state.language,
-            isDark: this.state.isDark
+            isDark: this.state.isDark,
         };
 
         this.setEditorOptions(options);
         this.editor.focus();
         this.editor.setValue(this.originalCode);
+        if (this.props.onToggleBreakpoint) {
+            this.editor.onMouseDown(e => {
+                if (e.target.detail && e.target.detail.glyphMarginLeft !== undefined) {
+                    this.props.onToggleBreakpoint(e.target.position.lineNumber - 1);
+                }
+            });
+        } else {
+            this.editor.onMouseDown(null);
+        }
     }
 
     /**
@@ -271,6 +286,41 @@ class ScriptEditor extends React.Component {
         }
     }
 
+    showDecorators() {
+        this.decorations = this.decorations || [];
+        const decorations = [];
+        if (this.location) {
+            decorations.push({
+                range: new this.monaco.Range(this.location.lineNumber + 1, this.location.columnNumber + 1, this.location.lineNumber + 1, 1000),
+                options: {
+                    isWholeLine: false,
+                    className: this.props.isDark ? 'monacoCurrentLineDark' : 'monacoCurrentLine',
+                }
+            });
+            decorations.push({
+                range: new this.monaco.Range(this.location.lineNumber + 1, 0, this.location.lineNumber + 1, 0),
+                options: {
+                    isWholeLine: true,
+                    className: this.props.isDark ? 'monacoCurrentFullLineDark' : 'monacoCurrentFullLine',
+                }
+            });
+        }
+
+        if (this.breakpoints) {
+            this.breakpoints.forEach(bp => {
+                decorations.push({
+                    range: new this.monaco.Range(bp.location.lineNumber + 1, 0, bp.location.lineNumber + 1, 100),
+                    options: {
+                        isWholeLine: true,
+                        glyphMarginClassName: this.props.isDark ? 'monacoBreakPointDark' : 'monacoBreakPoint',
+                    }
+                });
+            });
+        }
+        this.editor && (this.decorations =
+            this.editor.deltaDecorations(this.decorations, decorations));
+    }
+
     initNewScript(name, code) {
         this.setState({name});
         this.originalCode = code || '';
@@ -301,11 +351,31 @@ class ScriptEditor extends React.Component {
         if (!nextProps.changed && nextProps.code !== this.originalCode) {
             this.originalCode = nextProps.code;
             this.editor.setValue(this.originalCode);
+            this.showDecorators();
+            this.location && this.editor.revealLineInCenter(this.location.lineNumber + 1);
+            //this.location && this.editor.setPosition(this.location.lineNumber + 1, this.location.columnNumber + 1);
         }
 
         if (nextProps.searchText !== this.lastSearch) {
             this.lastSearch = nextProps.searchText;
             this.highlightText(this.lastSearch);
+        }
+
+        if (JSON.stringify(nextProps.location) !== JSON.stringify(this.location) &&
+            JSON.stringify(nextProps.breakpoints) !== JSON.stringify(this.breakpoints)) {
+            this.location = nextProps.location;
+            this.breakpoints = nextProps.breakpoints;
+            this.showDecorators();
+            this.editor && this.location && this.editor.revealLineInCenter(this.location.lineNumber + 1);
+            //this.editor && this.location && this.editor.setPosition(this.location.lineNumber + 1, this.location.columnNumber + 1);
+        } else if (JSON.stringify(nextProps.breakpoints) !== JSON.stringify(this.breakpoints)) {
+            this.breakpoints = nextProps.breakpoints;
+            this.showDecorators();
+        } else if (JSON.stringify(nextProps.location) !== JSON.stringify(this.location)) {
+            this.location = nextProps.location;
+            this.showDecorators();
+            this.editor && this.location && this.editor.revealLineInCenter(this.location.lineNumber + 1);
+            //this.editor && this.location && this.editor.setPosition(this.location.lineNumber + 1, this.location.columnNumber + 1);
         }
 
         if (this.state.language !== (nextProps.language || 'javascript')) {
@@ -374,6 +444,10 @@ ScriptEditor.propTypes = {
     searchText: PropTypes.string,
     checkJs: PropTypes.bool,
     changed: PropTypes.bool,
+
+    breakpoints: PropTypes.array,
+    location: PropTypes.object,
+    onToggleBreakpoint: PropTypes.func,
 };
 
 export default ScriptEditor;
