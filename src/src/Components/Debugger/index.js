@@ -469,7 +469,7 @@ class Debugger extends React.Component {
     }
 
     renderTabs() {
-        const disabled = this.state.tabs && this.state.started;
+        const disabled = !this.state.tabs || !this.state.started;
         return <Tabs
             component={'div'}
             indicatorColor="primary"
