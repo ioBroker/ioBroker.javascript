@@ -879,6 +879,22 @@ class Editor extends React.Component {
         ]
     }
 
+    getAskAboutDebug() {
+        if (this.state.askAboutDebug) {
+            return <DialogConfirm
+                onClose={result => {
+                    this.setState({askAboutDebug: false}, () =>
+                        this.props.onDebugModeChange(true));
+                }}
+                ok={I18n.t('Yes')}
+                cancel={I18n.t('Cancel')}
+                text={I18n.t('The script will be stopped and must be activated manually after debugging. Continue?')}
+            />;
+        } else {
+            return null;
+        }
+    }
+
     getToolbar() {
         const isInstanceRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].engine && this.state.runningInstances[this.scripts[this.state.selected].engine];
         const isScriptRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].enabled;
@@ -948,7 +964,13 @@ class Editor extends React.Component {
                     className={this.props.classes.toolbarButtons}
                     color={this.props.debugMode ? 'primary' : 'default'}
                     disabled={!this.props.debugMode && !isInstanceRunning}
-                    onClick={() => this.props.onDebugModeChange(!this.props.debugMode)}
+                    onClick={() => {
+                        if (!this.props.debugMode && isScriptRunning) {
+                            this.setState({askAboutDebug: true})
+                        } else {
+                            this.props.onDebugModeChange(!this.props.debugMode);
+                        }
+                    }}
                 >
                     <IconDebugMode style={{fontSize: 32}}/>
                 </IconButton>}
@@ -1294,6 +1316,7 @@ class Editor extends React.Component {
             this.getTabs(),
             this.getToolbar(),
             this.getScriptEditor(),
+            this.getAskAboutDebug(),
             this.getBlocklyEditor(),
             this.getRulesEditor(),
             this.getDebug(),

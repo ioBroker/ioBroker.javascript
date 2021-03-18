@@ -313,5 +313,7 @@
   "Februar": "Februari",
   "March ": "maart",
   "Condition": "Staat",
-  "Limit": "Begrenzing"
+  "Limit": "Begrenzing",
+  "The script will be stopped and must be activated manually after debugging. Continue?": "Het script wordt gestopt en moet na het debuggen handmatig worden geactiveerd. Doorgaan met?",
+  "Yes": "Ja"
 }

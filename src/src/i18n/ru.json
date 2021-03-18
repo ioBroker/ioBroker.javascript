@@ -313,5 +313,7 @@
   "Februar": "Февраль",
   "March ": "марш",
   "Condition": "Условие",
-  "Limit": "Предел"
+  "Limit": "Предел",
+  "The script will be stopped and must be activated manually after debugging. Continue?": "Cкрипт будет остановлен и должен быть активирован вручную после отладки. Продолжать?",
+  "Yes": "Да"
 }

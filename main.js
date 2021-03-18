@@ -1407,7 +1407,11 @@ function createVM(source, name) {
     if (!debugMode) {
         source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + ' and ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ));\n";
     } else {
-        source = 'debugger;' + source;
+        if (source.startsWith('(async () => {\n')) {
+            source = '(async () => {debugger;\n' + source.substring('(async () => {\n'.length);
+        } else {
+            source = 'debugger;' + source;
+        }
     }
     try {
         if (VMScript) {

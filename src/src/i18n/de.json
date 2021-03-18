@@ -313,5 +313,7 @@
   "Februar": "Februar",
   "March ": "März",
   "Condition": "Bedingung",
-  "Limit": "Grenze"
+  "Limit": "Grenze",
+  "The script will be stopped and must be activated manually after debugging. Continue?": "Das Skript wird gestoppt und muss nach dem Debuggen manuell aktiviert werden. Fortsetzen?",
+  "Yes": "Ja"
 }

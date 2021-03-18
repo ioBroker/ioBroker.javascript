@@ -326,6 +326,7 @@ class ScriptEditor extends React.Component {
         this.originalCode = code || '';
         this.editor && this.editor.setValue(code);
         this.highlightText(this.lastSearch);
+        this.showDecorators();
         //this.setEditorLanguage();
         // Update the typings because global scripts need different typings than normal scripts
         // and each global script has different typings

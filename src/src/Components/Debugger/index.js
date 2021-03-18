@@ -10,7 +10,6 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
@@ -22,7 +21,6 @@ import { MdArrowDownward as IconStep } from 'react-icons/md';
 import { MdArrowUpward as IconOut } from 'react-icons/md';
 import { MdRefresh as IconRestart } from 'react-icons/md';
 import { MdWarning as IconException } from 'react-icons/md';
-
 
 import I18n from '@iobroker/adapter-react/i18n';
 import {withStyles} from '@material-ui/core/styles';
@@ -63,6 +61,9 @@ const styles = theme => ({
     buttonOut: {
         color: 'blue'
     },
+    buttonException: {
+
+    },
 
     tabFile: {
         textTransform: 'inherit',
@@ -92,6 +93,25 @@ const styles = theme => ({
     },
     tabRoot: {
         minHeight: 24,
+    },
+
+    bpListItem: {
+        borderTop: '1px dashed #bfbfbf44',
+    },
+    monospace: {
+        fontFamily: 'Courier New, monospace',
+        whiteSpace: 'pre',
+        fontSize: 12,
+    },
+    arrow: {
+        color: '#fffa4f',
+    },
+    splitter: {
+        height: 'calc(100% - 52px)',
+        '& .layout-pane': {
+            overflow: 'hidden',
+            height: '100%'
+        }
     }
 });
 
@@ -210,6 +230,12 @@ class Debugger extends React.Component {
             if (data.cmd === 'readyToDebug') {
                 this.mainScriptId = data.scriptId;
                 this.scripts[data.scriptId] = data.script;
+                if (data.script.startsWith('(async () => {debugger;\n')) {
+                    this.scripts[data.scriptId] = '(async () => {\n' + data.script.substring('(async () => {debugger;\n'.length);
+                } else if (data.script.startsWith('debugger;')) {
+                    this.scripts[data.scriptId] = data.script.substring('debugger;'.length);
+                }
+
                 const tabs = JSON.parse(JSON.stringify(this.state.tabs));
                 tabs[data.scriptId] = this.props.src.replace('script.js.', '');
 
@@ -220,7 +246,7 @@ class Debugger extends React.Component {
                     starting: false,
                     finished: false,
                     selected: this.mainScriptId,
-                    script: data.script,
+                    script: this.scripts[data.scriptId],
                     tabs,
                     currentFrame: 0,
                     started: true,
@@ -312,6 +338,8 @@ class Debugger extends React.Component {
                 const local = data.scopes.find(scope => scope.type === 'local') || null;
                 const closure = data.scopes.find(scope => scope.type === 'closure') || null;
 
+                console.log(JSON.stringify(closure));
+
                 this.setState({scopes: {local, closure, id: this.state.scope.id + '_' + this.state.currentFrame}});
             } else if (data.cmd === 'setValue') {
                 const scopes = JSON.parse(JSON.stringify(this.state.scopes));
@@ -357,8 +385,18 @@ class Debugger extends React.Component {
 
     getTextAtLocation(location) {
         let line = this.state.script.split(/\r\n|\n/)[location.lineNumber];
-        line = line.substr(location.columnNumber, 20);
-        return line;
+        let arrow = '';
+        if (location.columnNumber >= 10) {
+            line = line.substring(location.columnNumber - 10, location.columnNumber + 20);
+            arrow = ''.padStart(10, ' ') + '↑';
+        } else {
+            line = line.substring(0, 30 - location.columnNumber);
+            arrow = ''.padStart(location.columnNumber, ' ') + '↑';
+        }
+        return [
+            <div className={this.props.classes.monospace}>{line}</div>,
+            <div className={clsx(this.props.classes.monospace, this.props.classes.arrow)}>{arrow}</div>
+        ];
     }
 
     renderQueryBreakpoints() {
@@ -368,6 +406,8 @@ class Debugger extends React.Component {
                 <List>
                     {this.state.queryBreakpoints.map((bp, i) => (
                         <ListItem
+                            classes={{root: this.props.classes.bpListItem}}
+                            dense={true}
                             button
                             onClick={() => {
                                 this.sendToInstance({breakpoints: [bp], cmd: 'sb'});
@@ -375,8 +415,9 @@ class Debugger extends React.Component {
                             }}
                             key={i}>
                             <ListItemText
+                                classes={{primary: this.props.classes.bpListPrimary, secondary: this.props.classes.bpListSecondary}}
                                 primary={this.getTextAtLocation(bp)}
-                                secondary={bp.lineNumber + ':' + bp.columnNumber} />
+                            />
                         </ListItem>
                     ))}
                 </List>
@@ -428,38 +469,37 @@ class Debugger extends React.Component {
     }
 
     renderTabs() {
-        if (this.state.tabs && this.state.started) {
-            return <Tabs
-                component={'div'}
-                indicatorColor="primary"
-                style={{ position: 'relative', width: 'calc(100% - 300px)', display: 'inline-block' }}
-                value={this.state.selected}
-                onChange={(event, value) => {
-                    if (this.scripts[value]) {
-                        this.setState({selected: value, script: this.scripts[value]});
-                    } else {
-                        this.setState({selected: value, script: 'loading...'}, () =>
-                            this.sendToInstance({cmd: 'source', scriptId: value}));
+        const disabled = this.state.tabs && this.state.started;
+        return <Tabs
+            component={'div'}
+            indicatorColor="primary"
+            style={{ position: 'relative', width: 'calc(100% - 300px)', display: 'inline-block' }}
+            value={this.state.selected}
+            onChange={(event, value) => {
+                if (this.scripts[value]) {
+                    this.setState({selected: value, script: this.scripts[value]});
+                } else {
+                    this.setState({selected: value, script: 'loading...'}, () =>
+                        this.sendToInstance({cmd: 'source', scriptId: value}));
+                }
+            }}
+            scrollButtons="auto"
+        >
+            {Object.keys(this.state.tabs || [])
+                .map(id => {
+                    let label = id;
+                    let title = this.state.tabs[id] || '';
+                    if (this.state.tabs[id]) {
+                        label = this.state.tabs[id].split('/').pop();
                     }
-                }}
-                scrollButtons="auto"
-            >
-                {Object.keys(this.state.tabs)
-                    .map(id => {
-                        let label = id;
-                        let title = this.state.tabs[id] || '';
-                        if (this.state.tabs[id]) {
-                            label = this.state.tabs[id].split('/').pop();
-                        }
-                        label = [
-                            <div key="text" className={clsx(this.props.classes.tabText)}>{label}</div>,
-                            id !== this.mainScriptId && <span key="icon" className={this.props.classes.closeButton}>
-                                <IconClose key="close" onClick={e => this.closeTab(id, e)} fontSize="small" /></span>];
+                    label = [
+                        <div key="text" className={clsx(this.props.classes.tabText)}>{label}</div>,
+                        id !== this.mainScriptId && <span key="icon" className={this.props.classes.closeButton}>
+                            <IconClose key="close" onClick={e => this.closeTab(id, e)} fontSize="small" /></span>];
 
-                        return <Tab classes={{root: this.props.classes.tabFile}} label={label} title={title} key={id} value={id}/>;
-                    })}
-            </Tabs>;
-        }
+                    return <Tab disabled={disabled} classes={{root: this.props.classes.tabFile}} label={label} title={title} key={id} value={id}/>;
+                })}
+        </Tabs>;
     }
 
     onResume() {
@@ -495,26 +535,23 @@ class Debugger extends React.Component {
     }
 
     renderToolbar() {
-        if (this.state.started) {
-            return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
-                <IconButton className={this.props.classes.buttonRestart} disabled={!this.state.started} onClick={() => this.onRestart()}  title={I18n.t('Restart')}><IconRestart/></IconButton>
-                {
-                    !this.state.finished && this.state.paused ?
-                        <IconButton className={this.props.classes.buttonRun} onClick={() => this.onResume()}
-                                    title={I18n.t('Resume execution')}><IconRun/></IconButton>
-                        :
-                        !this.state.finished && <IconButton className={this.props.classes.buttonPause} onClick={() => this.onPause()}
-                                    title={I18n.t('Pause execution')}><IconPause/></IconButton>
-                }
-                {!this.state.finished && <IconButton className={this.props.classes.buttonNext} disabled={!this.state.paused} onClick={() => this.onNext()}  title={I18n.t('Go to next line')}><IconNext/></IconButton>}
-                {!this.state.finished && <IconButton className={this.props.classes.buttonStep} disabled={!this.state.paused} onClick={() => this.onStepIn()}  title={I18n.t('Step into function')}><IconStep/></IconButton>}
-                {!this.state.finished && <IconButton className={this.props.classes.buttonOut} disabled={!this.state.paused} onClick={() => this.onStepOut()}  title={I18n.t('Step out from function')}><IconOut/></IconButton>}
-                {!this.state.finished && <IconButton className={this.props.classes.buttonException} color={this.state.stopOnException ? 'primary' : 'default'} disabled={!this.state.paused} onClick={() => this.onToggleException()} title={I18n.t('Stop on exception')}><IconException/></IconButton>}
-                {this.renderTabs()}
-            </Toolbar>;
-        } else {
-            return null;
-        }
+        const disabled = !this.state.started;
+        return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
+            <IconButton className={this.props.classes.buttonRestart} disabled={disabled} onClick={() => this.onRestart()}  title={I18n.t('Restart')}><IconRestart/></IconButton>
+            {
+                !this.state.finished && this.state.paused ?
+                    <IconButton className={this.props.classes.buttonRun} disabled={disabled} onClick={() => this.onResume()}
+                                title={I18n.t('Resume execution')}><IconRun/></IconButton>
+                    :
+                    !this.state.finished && <IconButton disabled={disabled} className={this.props.classes.buttonPause} onClick={() => this.onPause()}
+                                title={I18n.t('Pause execution')}><IconPause/></IconButton>
+            }
+            {!this.state.finished && <IconButton className={this.props.classes.buttonNext} disabled={disabled || !this.state.paused} onClick={() => this.onNext()}  title={I18n.t('Go to next line')}><IconNext/></IconButton>}
+            {!this.state.finished && <IconButton className={this.props.classes.buttonStep} disabled={disabled || !this.state.paused} onClick={() => this.onStepIn()}  title={I18n.t('Step into function')}><IconStep/></IconButton>}
+            {!this.state.finished && <IconButton className={this.props.classes.buttonOut} disabled={disabled || !this.state.paused} onClick={() => this.onStepOut()}  title={I18n.t('Step out from function')}><IconOut/></IconButton>}
+            {!this.state.finished && <IconButton className={this.props.classes.buttonException} color={this.state.stopOnException ? 'primary' : 'default'} disabled={disabled || !this.state.paused} onClick={() => this.onToggleException()} title={I18n.t('Stop on exception')}><IconException/></IconButton>}
+            {this.renderTabs()}
+        </Toolbar>;
     }
 
     getPossibleBreakpoints(bp) {
@@ -621,38 +658,37 @@ class Debugger extends React.Component {
     }
 
     renderTools() {
-        if (this.state.tabs && this.state.started) {
-            return <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
-                <Tabs
-                    classes={{root: this.props.classes.tabsRoot}}
-                    component={'div'}
-                    indicatorColor="primary"
-                    style={{ position: 'relative', width: '100%' }}
-                    value={this.state.toolsTab}
-                    onChange={(event, value) => {
-                        const newState = {toolsTab: value};
+        const disabled = !this.state.tabs || !this.state.started;
+        return <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
+            <Tabs
+                classes={{root: this.props.classes.tabsRoot}}
+                component={'div'}
+                indicatorColor="primary"
+                style={{ position: 'relative', width: '100%' }}
+                value={this.state.toolsTab}
+                onChange={(event, value) => {
+                    const newState = {toolsTab: value};
 
-                        // load logs from buffer
-                        if (this.console) {
-                            newState.console = this.console;
-                            this.console = null;
-                        }
+                    // load logs from buffer
+                    if (this.console) {
+                        newState.console = this.console;
+                        this.console = null;
+                    }
 
-                        window.localStorage.setItem('javascript.tools.tab', value);
+                    window.localStorage.setItem('javascript.tools.tab', value);
 
-                        this.setState(newState);
-                    }}
-                    scrollButtons="auto"
-                >
-                    <Tab classes={{root: this.props.classes.tabRoot}} label={I18n.t('Stack')} value="stack"/>
-                    <Tab classes={{root: this.props.classes.tabRoot}} label={I18n.t('Console')} value="console"/>
-                </Tabs>
-                <div style={{width: '100%', height: 'calc(100% - 109px)', overflow: 'auto'}}>
-                    {this.state.toolsTab === 'stack' ? this.renderFrames() : null}
-                    {this.state.toolsTab === 'console' ? this.renderConsole() : null}
-                </div>
-            </div>;
-        }
+                    this.setState(newState);
+                }}
+                scrollButtons="auto"
+            >
+                <Tab classes={{root: this.props.classes.tabRoot}} disabled={disabled} label={I18n.t('Stack')} value="stack"/>
+                <Tab classes={{root: this.props.classes.tabRoot}} disabled={disabled} label={I18n.t('Console')} value="console"/>
+            </Tabs>
+            <div style={{width: '100%', height: 'calc(100% - 36px)', overflow: 'hidden'}}>
+                {this.state.toolsTab === 'stack' && !disabled ? this.renderFrames() : null}
+                {this.state.toolsTab === 'console' && !disabled ? this.renderConsole() : null}
+            </div>
+        </div>;
     }
 
     render() {
@@ -660,12 +696,13 @@ class Debugger extends React.Component {
             {this.state.starting ? <LinearProgress/> : null}
             {this.renderToolbar()}
             <SplitterLayout
+                customClassName={this.props.classes.splitter}
                 primaryMinSize={100}
                 vertical={true}
                 secondaryInitialSize={this.toolSize}
                 onSecondaryPaneSizeChange={size => this.toolSize = parseFloat(size)}
                 onDragEnd={() => window.localStorage.setItem('App.toolSize', this.toolSize.toString())}
-                style={{width: '100%', height: 'calc(100% - 73px)', overflow: 'hidden'}}
+                //style={{width: '100%', height: 'calc(100% - 73px)', overflow: 'hidden'}}
             >
                 <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
                     {this.renderCode()}

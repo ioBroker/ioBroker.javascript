@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.0.15",
+        "version": "5.1.0",
         "news": {
+            "5.1.0": {
+                "en": "Implemented the debug of scripts possibility",
+                "de": "Implementierung der Möglichkeit zum Debuggen von Skripten",
+                "ru": "Реализована возможность отладки скриптов.",
+                "pt": "Implementada a possibilidade de depuração de scripts",
+                "nl": "Mogelijkheid tot debuggen van scripts geïmplementeerd",
+                "fr": "Implémentation de la possibilité de débogage des scripts",
+                "it": "Implementata la possibilità di debug degli script",
+                "es": "Implementada la posibilidad de depuración de scripts.",
+                "pl": "Zaimplementowano możliwość debugowania skryptów",
+                "zh-cn": "实现了脚本调试的可能性"
+            },
             "5.0.15": {
                 "en": "Rules: added \"use trigger value\" for the \"set action\" blocks",
                 "de": "Regeln: \"Triggerwert verwenden\" für die \"Aktion setzen\" -Blöcke hinzugefügt",
@@ -249,18 +261,6 @@
                 "es": "Maneje más casos con nombres de script / id de estado no válidos (Sentry IOBROKER-JAVASCRIPT-4B)",
                 "pl": "Obsługuj więcej przypadków z nieprawidłowymi nazwami skryptów / identyfikatorami stanów (Sentry IOBROKER-JAVASCRIPT-4B)",
                 "zh-cn": "使用无效的脚本名称/状态ID处理更多案件（Sentry IOBROKER-JAVASCRIPT-4B）"
-            },
-            "4.10.11": {
-                "en": "Optimize error handling in createState and file mirror again",
-                "de": "Optimieren Sie die Fehlerbehandlung in createState und file Mirror erneut",
-                "ru": "Оптимизируйте обработку ошибок в createState и снова зеркалируйте файлы",
-                "pt": "Otimize o tratamento de erros em createState e espelho de arquivo novamente",
-                "nl": "Optimaliseer foutafhandeling in createState en bestandsspiegel opnieuw",
-                "fr": "Optimiser à nouveau la gestion des erreurs dans createState et file mirror",
-                "it": "Ottimizza nuovamente la gestione degli errori in createState e file mirror",
-                "es": "Optimice el manejo de errores en createState y file mirror nuevamente",
-                "pl": "Zoptymalizuj obsługę błędów w createState i ponownie dubluj pliki",
-                "zh-cn": "重新优化createState和文件镜像中的错误处理"
             }
         },
         "desc": {

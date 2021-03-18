@@ -82,10 +82,6 @@ const styles = theme => ({
 
     },
     toolbox: {
-        //position: 'absolute',
-        //top: 0,
-        //left: 0,
-        //marginLeft: 2,
         width: TOOLBOX_WIDTH,
         height: '100%',
         boxShadow: '2px 0px 4px -1px rgba(0, 0, 0, 0.2), 4px 0px 5px 0px rgba(0, 0, 0, 0.14), 1px 0px 10px 0px rgba(0, 0, 0, 0.12)',
@@ -148,11 +144,11 @@ class Log extends React.Component {
     }
 
     generateLine(message) {
-        return (<tr key={'tr_' + message.ts + '_' + message.message.substr(-10)} className={this.props.classes[message.severity]}>
+        return <tr key={'tr_' + message.ts + '_' + message.message.substr(-10)} className={this.props.classes[message.severity]}>
             <td key="tdTime" className={this.props.classes.trTime}>{getTimeString(new Date(message.ts))}</td>
             <td key="tdSeverity" className={this.props.classes.trSeverity}>{message.severity}</td>
             <td key="tdMessage">{message.message}</td>
-        </tr>);
+        </tr>;
     }
 
     scrollToBottom() {

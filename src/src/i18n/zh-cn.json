@@ -313,5 +313,7 @@
   "Februar": "二月",
   "March ": "行进",
   "Condition": "健康）状况",
-  "Limit": "限制"
+  "Limit": "限制",
+  "The script will be stopped and must be activated manually after debugging. Continue?": "该脚本将停止，并且必须在调试后手动激活。继续？",
+  "Yes": "是的"
 }

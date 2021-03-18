@@ -313,5 +313,7 @@
   "Februar": "Februar",
   "March ": "Marsz",
   "Condition": "Stan: schorzenie",
-  "Limit": "Limit"
+  "Limit": "Limit",
+  "The script will be stopped and must be activated manually after debugging. Continue?": "Skrypt zostanie zatrzymany i należy go aktywować ręcznie po debugowaniu. Kontyntynuj?",
+  "Yes": "tak"
 }

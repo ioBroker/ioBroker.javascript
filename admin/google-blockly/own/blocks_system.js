@@ -561,7 +561,7 @@ Blockly.JavaScript['control_ex'] = function(block) {
     var type          = block.getFieldValue('TYPE');
     type = type === true || type === 'true' || type === 'TRUE';
     clearRunning = clearRunning === true || clearRunning === 'true' || clearRunning === 'TRUE';
-    return 'setStateDelayed(' + valueObjectID + ', ' + value + ', ' + type + ', parseInt((' + valueDelay + ' || "").toString(), 10), ' + clearRunning + ');\n';
+    return 'setStateDelayed(' + valueObjectID + ', ' + value + ', ' + type + ', parseInt(((' + valueDelay + ') || "").toString(), 10), ' + clearRunning + ');\n';
 };
 
 // --- create state --------------------------------------------------

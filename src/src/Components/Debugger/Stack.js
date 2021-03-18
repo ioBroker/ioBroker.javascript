@@ -16,6 +16,8 @@ import {MdCheck as CheckIcon} from 'react-icons/md';
 import {MdAdd as IconAdd} from 'react-icons/md';
 import {MdDelete as IconDelete} from 'react-icons/md';
 
+import I18n from '@iobroker/adapter-react/i18n';
+
 const styles = theme => ({
     frameRoot: {
         paddingTop: 0,
@@ -54,7 +56,9 @@ const styles = theme => ({
     },
     scopeName: {
         color: '#bc5b5b',
-        width: '100%'
+        width: 'calc(100% - 82px)',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
     },
     scopeButton: {
         width: 32
@@ -101,9 +105,11 @@ const styles = theme => ({
         verticalAlign: 'top',
         display: 'inline-block',
         color: '#3b709f',
+        whiteSpace: 'nowrap',
     },
     scopeButtonDel: {
         padding: 0,
+        float: 'right',
     },
 
     valueNull: {
@@ -161,7 +167,13 @@ class Stack extends React.Component {
                 margin="dense"
                 onBlur={() => this.state.editValue && this.setState({editValue: null})}
                 defaultValue={item.name}
-                onKeyUp={e => e.keyCode === 13 && this.onExpressionNameUpdate()}
+                onKeyUp={e => {
+                    if (e.keyCode === 13) {
+                        this.onExpressionNameUpdate();
+                    } else if (e.keyCode === 27) {
+                        this.setState({editValue: null});
+                    }
+                }}
 
                 onChange={e =>
                     this.scopeValue = e.target.value}
@@ -176,7 +188,7 @@ class Stack extends React.Component {
             />
             :
             [
-                <div key="name" className={this.props.classes.scopeNameName}>{item.name}</div>,
+                <div key="name" className={this.props.classes.scopeNameName} title={I18n.t('Double click to edit expression')}>{item.name}</div>,
                 <div key="=" className={this.props.classes.scopeNameEqual}> = </div>,
                 <div key="val" className={this.props.classes.scopeNameValue}>{this.formatValue(item.value)}</div>
             ];
@@ -197,16 +209,14 @@ class Stack extends React.Component {
                     });
                 }}
             >{name}</td>
-            <td className={this.props.classes.scopeButton}>
-                <IconButton
-                    className={this.props.classes.scopeButtonDel}
-                    size="small"
-                    disabled={!!this.state.editValue}
-                    onClick={() => this.props.onExpressionDelete(i)}
-                >
-                    <IconDelete/>
-                </IconButton>
-            </td>
+            <IconButton
+                className={this.props.classes.scopeButtonDel}
+                size="small"
+                disabled={!!this.state.editValue}
+                onClick={() => this.props.onExpressionDelete(i)}
+            >
+                <IconDelete/>
+            </IconButton>
         </tr>
     }
 
@@ -278,14 +288,14 @@ class Stack extends React.Component {
             if (forEdit) {
                 return JSON.stringify(value.value);
             } else {
-                const text = <ReactJson
-                    style={{backgroundColor: 'inherit'}}
+                return <ReactJson
+                    enableClipboard={false}
+                    style={{backgroundColor: 'inherit', marginTop: 3}}
                     src={value.value}
                     collapsed={true}
                     theme={this.props.themeType === 'dark' ? 'brewer' : 'rjv-default'}
                     displayDataTypes={false}
                 />;
-                return <span className={this.props.classes.valueObject}>{text}</span>;
             }
         } else {
             return value.value.toString();
@@ -310,7 +320,8 @@ class Stack extends React.Component {
             variableName: this.state.editValue.name,
             scopeNumber: 0,
             newValue: {
-                value: this.scopeValue
+                value: this.scopeValue,
+                valueType: typeof this.scopeValue,
             },
             callFrameId: this.props.callFrames[this.props.currentFrame].callFrameId
         });
@@ -320,36 +331,45 @@ class Stack extends React.Component {
     }
 
     componentDidUpdate() {
-        this.editRef.current?.select();
+        //this.editRef.current?.select();
         this.editRef.current?.focus();
     }
 
     renderScope(scopeId, item, type) {
-        const editable = !this.props.currentFrame && item.value && (item.value.type === 'undefined' || item.value.type === 'string' || item.value.type === 'number' || item.value.type === 'boolean');
+        const editable = !this.props.currentFrame && item.value && (item.value.type === 'undefined' || item.value.type === 'string' || item.value.type === 'number' || item.value.type === 'boolean' || item.value?.value === null || item.value?.value === undefined);
 
         const el = this.state.editValue && this.state.editValue.type === type && this.state.editValue.name === item.name ?
-            <Input
-                inputRef={this.editRef}
-                fullWidth
-                margin="dense"
-                onBlur={() => this.state.editValue && this.setState({editValue: null})}
-                defaultValue={this.formatValue(item.value, true)}
-                onKeyUp={e => e.keyCode === 13 && this.onWriteScopeValue()}
-                onChange={e =>
-                    this.scopeValue = e.target.value}
-                endAdornment={
-                    <InputAdornment position="end">
-                        <IconButton onClick={() => this.onWriteScopeValue()}>
-                            <CheckIcon/>
-                        </IconButton>
-                    </InputAdornment>
-                }
-            />
-            :
             [
                 <div key="name" className={this.props.classes.scopeNameName}>{item.name}</div>,
                 <div key="=" className={this.props.classes.scopeNameEqual}> = </div>,
-                <div key="val" className={this.props.classes.scopeNameValue}>{this.formatValue(item.value)}</div>
+                <Input
+                    inputRef={this.editRef}
+                    margin="dense"
+                    onBlur={() => this.state.editValue && this.setState({editValue: null})}
+                    defaultValue={this.formatValue(item.value, true)}
+                    onKeyUp={e => {
+                        if (e.keyCode === 13) {
+                            this.onWriteScopeValue()
+                        } else if (e.keyCode === 27) {
+                            this.setState({editValue: null})
+                        }
+                    }}
+                    onChange={e =>
+                        this.scopeValue = e.target.value}
+                    endAdornment={
+                        <InputAdornment position="end">
+                            <IconButton onClick={() => this.onWriteScopeValue()}>
+                                <CheckIcon/>
+                            </IconButton>
+                        </InputAdornment>
+                    }
+                />
+            ]
+            :
+            [
+                <div key="name" className={this.props.classes.scopeNameName} title={I18n.t('Double click to write value')}>{item.name}</div>,
+                <div key="=" className={this.props.classes.scopeNameEqual}> = </div>,
+                <div key="val" className={this.props.classes.scopeNameValue}>{this.formatValue(item.value)} ({item.value.type})</div>
             ];
 
 
@@ -372,7 +392,6 @@ class Stack extends React.Component {
                     }
                 }}
             >{el}</td>
-            <td className={this.props.classes.scopeButton}/>
         </tr>;
     }
 
@@ -408,19 +427,19 @@ class Stack extends React.Component {
             onSecondaryPaneSizeChange={size => this.framesSize = parseFloat(size)}
             onDragEnd={() => window.localStorage.setItem('App.framesSize', this.framesSize.toString())}
         >
-            <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
+            <div style={{width: '100%', height: '100%', overflow: 'auto'}}>
                 <List classes={{root: this.props.classes.listRoot}}>
                     {this.props.callFrames ? this.props.callFrames.map((frame, i) =>
                         this.renderOneFrameTitle(frame, i)) : null}
                 </List>
             </div>
-            <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
+            <div style={{width: '100%', height: '100%', overflow: 'auto'}}>
                 <div className={this.props.classes.toolbarScopes}>
                     <IconButton size="small" onClick={() => this.props.onExpressionAdd((i, item) => {
                         this.scopeValue = item.name || '';
                         this.setState({
                             editValue: {
-                                type: 'expressionName',
+                                type: 'expression',
                                 valueType: 'string',
                                 index: i,
                                 name: item.name,
