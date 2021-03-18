@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
-import IconButton from "@material-ui/core/IconButton";
+import IconButton from '@material-ui/core/IconButton';
 import {
     MdContentCopy as IconCopy,
     MdDeleteForever as IconDelete,
     MdVerticalAlignBottom as IconBottom,
-    MdVisibilityOff as IconHide
-} from "react-icons/md";
-import I18n from "@iobroker/adapter-react/i18n";
+} from 'react-icons/md';
+import I18n from '@iobroker/adapter-react/i18n';
 
 const TOOLBOX_WIDTH = 34;
 
@@ -199,17 +198,6 @@ class Console extends React.Component {
             </div>
             {this.renderLogList(lines)}
         </div>;
-        /*return <table style={{width: '100%'}}>
-            <tbody>
-            {this.props.console.map((line, i) => <tr
-                key={i}
-                className={clsx(this.props.classes.consoleLine, this.props.classes['console_' + line.severity])}>
-                <td className={this.props.classes.consoleSeverity}>{line.severity}</td>
-                <td className={this.props.classes.consoleTime}>{new Date(line.ts).toISOString()}</td>
-                <td className={this.props.classes.consoleText}><pre>{line.text}</pre></td>
-            </tr>)}
-            </tbody>
-        </table>;*/
     }
 }
 
