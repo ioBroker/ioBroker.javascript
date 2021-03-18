@@ -31,7 +31,8 @@
     "sass": "^1.32.5",
     "suncalc2": "^1.8.1",
     "reactour": "^1.18.1",
-    "styled-components": "^5.2.1"
+    "styled-components": "^5.2.1",
+    "react-json-view": "^1.21.3"
   },
   "scripts": {
     "start": "react-scripts start",

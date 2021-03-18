@@ -565,6 +565,7 @@ function processCommand(data) {
                 callFrameId: data.callFrameId,
                 expression: item.name,
                 objectGroup: 'node-inspect',
+                returnByValue: true,
                 generatePreview: true,
             })
                 .then(({ result, wasThrown }) => {
@@ -581,7 +582,13 @@ function processCommand(data) {
     } else if (data.cmd === 'stopOnException') {
         inspector.Debugger.setPauseOnExceptions({state: data.state ? 'all' : 'none'})
             .catch(e =>
-                sendToHost({cmd: 'setValue', variableName: `Cannot setValue: ${e}`, errorContext: e}));
+                sendToHost({cmd: 'stopOnException', variableName: `Cannot stopOnException: ${e}`, errorContext: e}));
+    } else if (data.cmd === 'getPossibleBreakpoints') {
+        inspector.Debugger.getPossibleBreakpoints({start: data.start, end: data.end})
+            .then(breakpoints =>
+                sendToHost({cmd: 'getPossibleBreakpoints', breakpoints}))
+            .catch(e =>
+                sendToHost({cmd: 'getPossibleBreakpoints', variableName: `Cannot getPossibleBreakpoints: ${e}`, errorContext: e}));
     } else {
         console.error(`Unknown command: ${JSON.stringify(data)}`);
     }

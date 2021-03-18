@@ -63,8 +63,14 @@ body {
 .monacoBreakPointDark {
   background: #800000;
   border-radius: 50%;
+  width: 16px !important;
+  height: 16px !important;
+  margin-left: 4px;
 }
 .monacoBreakPoint {
   background: #d71a1a;
   border-radius: 50%;
+  width: 16px !important;
+  height: 16px !important;
+  margin-left: 4px;
 }

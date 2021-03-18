@@ -39,11 +39,12 @@ import ImgRules2Js from './assets/rules2js.png';
 import ImgRules from './assets/rules.png';
 
 import I18n from '@iobroker/adapter-react/i18n';
+import DialogCron from '@iobroker/adapter-react/Dialogs/Cron';
+
 import ScriptEditorComponent from './Components/ScriptEditorVanilaMonaco';
 import BlocklyEditor from './Components/BlocklyEditor';
 import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
 import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
-import DialogCron from './Dialogs/Cron';
 import DialogScriptEditor from './Dialogs/ScriptEditor';
 import RulesEditor from './Components/RulesEditor';
 import Debugger from './Components/Debugger';
@@ -943,7 +944,7 @@ class Editor extends React.Component {
                         onClick={() => this.sendCommandToRules('import')}>
                         <IconImport /></IconButton>}
 
-                {!changed && (this.props.debugMode || (!this.state.blockly && !this.state.rules) || ((this.state.blockly || this.state.rules) && this.state.showCompiledCode)) && <IconButton
+                {this.props.expertMode && !changed && (this.props.debugMode || (!this.state.blockly && !this.state.rules) || ((this.state.blockly || this.state.rules) && this.state.showCompiledCode)) && <IconButton
                     className={this.props.classes.toolbarButtons}
                     color={this.props.debugMode ? 'primary' : 'default'}
                     disabled={!this.props.debugMode && !isInstanceRunning}
@@ -1155,7 +1156,7 @@ class Editor extends React.Component {
 
     getCronDialog() {
         if (this.state.showCron) {
-            return (<DialogCron
+            return <DialogCron
                 key="dialogCron1"
                 cron={this.cron.callback ? this.cron.initValue || '' : this.getSelect ? this.getSelect() : '* * * * *'}
                 onClose={() => this.setState({ showCron: false })}
@@ -1165,10 +1166,10 @@ class Editor extends React.Component {
                         this.cron.callback(cron);
                         this.cron.callback = null;
                     } else {
-                        this.setState({ insert: `'${cron}'` })
+                        this.setState({ insert: `'${cron}'` });
                     }
                 }}
-            />);
+            />;
         } else {
             return null;
         }
@@ -1325,6 +1326,7 @@ Editor.propTypes = {
     themeType: PropTypes.string,
     onDebugModeChange: PropTypes.func,
     debugMode: PropTypes.bool,
+    expertMode: PropTypes.bool,
 };
 
 export default withStyles(styles)(Editor);

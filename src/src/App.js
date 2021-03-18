@@ -756,6 +756,7 @@ class App extends GenericApp {
             themeType={this.state.themeType}
             themeName={this.state.themeName}
             theme={this.state.theme}
+            expertMode={this.state.expertMode}
             onChange={(id, common) => this.onUpdateScript(id, common)}
             isAnyRulesExists={isAnyRulesExists}
             onSelectedChange={(id, editing) => {
@@ -793,12 +794,21 @@ class App extends GenericApp {
         </div>;
     }
 
+    renderErrorDialog() {
+        return this.state.errorText ?
+            <DialogError
+                key="dialogError"
+                onClose={() => this.setState({ errorText: '' })}
+                text={this.state.errorText}
+            /> :
+            null;
+    }
+
     renderMain() {
         const { classes } = this.props;
-        const errorDialog = this.state.errorText ? <DialogError key="dialogError" onClose={() => this.setState({ errorText: '' })} text={this.state.errorText} /> : null;
         return [
             this.state.message ? <DialogMessage key="dialogMessage" onClose={() => this.setState({ message: '' })} text={this.state.message} /> : null,
-            errorDialog,
+            this.renderErrorDialog(),
             this.state.importFile ? <DialogImportFile key="dialogImportFile" onClose={data => this.onImport(data)} /> : null,
             this.state.confirm ? <DialogConfirm
                 key="dialogConfirm"

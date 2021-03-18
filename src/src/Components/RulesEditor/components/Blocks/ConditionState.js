@@ -1,11 +1,13 @@
 import React from 'react';
+
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
+
 import GenericBlock from '../GenericBlock';
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import I18n from "@iobroker/adapter-react/i18n";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
+import I18n from '@iobroker/adapter-react/i18n';
 
 import HysteresisImage from '../../../assets/hysteresis.png';
 
@@ -180,11 +182,6 @@ class ConditionState extends GenericBlock {
                     text: 'not equal to'
                 },
                 {
-                    title: '<>',
-                    title2: '[not equal]',
-                    text: 'not equal to'
-                },
-                {
                     title: '()',
                     title2: '[hysteresis]',
                     text: 'hysteresis'
@@ -269,6 +266,7 @@ class ConditionState extends GenericBlock {
             defaultValue: '',
             attr: 'value',
             frontText: tagCard === '()' ? 'Limit' : (tag?.text || 'compare with'),
+            doNotTranslateBack: true,
             backText: oidUnit
         };
 
@@ -279,6 +277,7 @@ class ConditionState extends GenericBlock {
                 options,
                 attr: 'value',
                 frontText: tag?.text || 'compare with',
+                doNotTranslateBack: true,
                 backText: oidUnit
             };
             if (!options.find(item => item.value === this.state.settings.value)) {
@@ -348,6 +347,7 @@ class ConditionState extends GenericBlock {
                 attr: 'histComp',
                 defaultValue: '>',
                 frontText: 'Condition',
+                doNotTranslate: true,
                 options: [
                     {title: '>',  value: '>'},
                     {title: '>=', value: '>='},
@@ -359,10 +359,12 @@ class ConditionState extends GenericBlock {
             });
             inputs.push({
                 frontText: 'Δ',
+                doNotTranslate: true,
                 nameRender: 'renderNumber',
                 noHelperText: true,
                 attr: 'hist',
                 defaultValue: 1,
+                doNotTranslateBack: true,
                 backText: oidUnit
             });
         }
@@ -481,7 +483,9 @@ class ConditionState extends GenericBlock {
                         {I18n.t('OK')}
                     </Button>
                 </DialogActions>
-            </Dialog>
+            </Dialog>;
+        } else {
+            return null;
         }
     }
 }

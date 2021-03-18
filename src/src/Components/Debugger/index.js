@@ -8,6 +8,12 @@ import Tab from '@material-ui/core/Tab';
 import Toolbar from '@material-ui/core/Toolbar';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import IconButton from '@material-ui/core/IconButton';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
 
 import {MdClose as IconClose, MdPlayArrow as IconRun} from 'react-icons/md';
 import { MdPause as IconPause } from 'react-icons/md';
@@ -99,6 +105,14 @@ class Debugger extends React.Component {
             breakpoints = [];
         }
 
+        let expressions = window.localStorage.getItem('javascript.tools.exps.' + this.props.src);
+        try {
+            expressions = expressions ? JSON.parse(expressions) : [];
+            expressions = expressions.map(name => ({name}));
+        } catch (e) {
+            expressions = [];
+        }
+
         this.toolSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.toolSize')) || 150 : 150;
 
         this.state = {
@@ -107,7 +121,7 @@ class Debugger extends React.Component {
             tabs: {},
             script: '',
             breakpoints,
-            expressions: [],
+            expressions,
             running: false,
             error: '',
             started: false,
@@ -119,6 +133,7 @@ class Debugger extends React.Component {
             finished: false,
             currentFrame: 0,
             scopes: {},
+            queryBreakpoints: null,
         };
 
         this.scripts = {};
@@ -234,7 +249,7 @@ class Debugger extends React.Component {
                     scope: {id: (data.context && data.context.callFrames && data.context.callFrames[0] && data.context.callFrames[0].id) || 0}
                 };
 
-                newState.script = this.scripts[location.scriptId] || I18n.t('loading...');
+                newState.script = this.scripts[location.scriptId] === undefined ? I18n.t('loading...') : this.scripts[location.scriptId];
                 newState.selected = location.scriptId;
 
                 this.setState(newState, () => {
@@ -312,16 +327,62 @@ class Debugger extends React.Component {
                 }
             } else if (data.cmd === 'expressions') {
                 // update values
+                let expressions = JSON.parse(JSON.stringify(this.state.expressions));
+                let changed = false;
                 data.expressions.forEach(item => {
-
+                    const expression = expressions.find(it => it.name === item.name);
+                    if (expression) {
+                        changed = true;
+                        expression.value = item.result;
+                    }
                 });
+                changed && this.setState({expressions});
 
                 console.log('expressions: ' + JSON.stringify(data));
-            } else  {
+            } else if (data.cmd === 'getPossibleBreakpoints') {
+                if (data.breakpoints?.locations?.length === 1) {
+                    this.sendToInstance({breakpoints: data.breakpoints.locations, cmd: 'sb'});
+                } else if (!data.breakpoints?.locations?.length) {
+                    window.alert('cannot set');
+                } else {
+                    this.setState({queryBreakpoints: data.breakpoints.locations});
+                }
+            } else {
                 console.error(`Unknown command: ${JSON.stringify(data)}`);
             }
         } catch (e) {
 
+        }
+    }
+
+    getTextAtLocation(location) {
+        let line = this.state.script.split(/\r\n|\n/)[location.lineNumber];
+        line = line.substr(location.columnNumber, 20);
+        return line;
+    }
+
+    renderQueryBreakpoints() {
+        if (this.state.queryBreakpoints) {
+            return <Dialog onClose={() => this.setState({queryBreakpoints: null})} aria-labelledby="bp-dialog-title" open={true}>
+                <DialogTitle id="bp-dialog-title">{I18n.t('Select breakpoint')}</DialogTitle>
+                <List>
+                    {this.state.queryBreakpoints.map((bp, i) => (
+                        <ListItem
+                            button
+                            onClick={() => {
+                                this.sendToInstance({breakpoints: [bp], cmd: 'sb'});
+                                this.setState({queryBreakpoints: null})
+                            }}
+                            key={i}>
+                            <ListItemText
+                                primary={this.getTextAtLocation(bp)}
+                                secondary={bp.lineNumber + ':' + bp.columnNumber} />
+                        </ListItem>
+                    ))}
+                </List>
+            </Dialog>;
+        } else {
+            return null;
         }
     }
 
@@ -456,16 +517,20 @@ class Debugger extends React.Component {
         }
     }
 
+    getPossibleBreakpoints(bp) {
+        const end = {...bp, columnNumber: 1000};
+        this.sendToInstance({cmd: 'getPossibleBreakpoints', start: bp, end});
+    }
+
     toggleBreakpoint(lineNumber) {
         let bp = this.state.breakpoints.find(item => item.location.scriptId === this.state.selected && item.location.lineNumber === lineNumber);
-        const breakpoints = JSON.parse(JSON.stringify(this.state.breakpoints));
         if (bp) {
+            const breakpoints = JSON.parse(JSON.stringify(this.state.breakpoints));
             this.setState({breakpoints}, () =>
                 this.sendToInstance({breakpoints: [bp.id], cmd: 'cb'}));
         } else {
             bp = {scriptId: this.state.selected, lineNumber, columnNumber: 0};
-            this.setState({breakpoints}, () =>
-                this.sendToInstance({breakpoints: [bp], cmd: 'sb'}));
+            this.getPossibleBreakpoints(bp);
         }
     }
 
@@ -499,6 +564,7 @@ class Debugger extends React.Component {
             currentScriptId={this.state.selected}
             scopes={this.state.scopes}
             expressions={this.state.expressions}
+            themeType={this.props.themeType}
             callFrames={this.state.context?.callFrames}
             currentFrame={this.state.currentFrame}
             onChangeCurrentFrame={i => {
@@ -520,6 +586,7 @@ class Debugger extends React.Component {
                 const expressions = JSON.parse(JSON.stringify(this.state.expressions));
                 expressions.splice(i, 1);
                 this.setState({expressions});
+                window.localStorage.setItem('javascript.tools.exps.' + this.props.src, JSON.stringify(expressions.map(item => item.name)));
             }}
             onExpressionAdd={cb => {
                 const expressions = JSON.parse(JSON.stringify(this.state.expressions));
@@ -530,6 +597,8 @@ class Debugger extends React.Component {
                 const expressions = JSON.parse(JSON.stringify(this.state.expressions));
                 if (!name) {
                     expressions.splice(i, 1);
+                } else if (expressions.find(item => item.name === name)) {
+                    return cb && cb(false);
                 } else {
                     expressions[i].name = name;
                 }
@@ -538,6 +607,7 @@ class Debugger extends React.Component {
                     name && this.readExpressions(i);
                     cb && cb();
                 });
+                window.localStorage.setItem('javascript.tools.exps.' + this.props.src, JSON.stringify(expressions.map(item => item.name)));
             }}
         />;
     }
@@ -599,6 +669,7 @@ class Debugger extends React.Component {
             >
                 <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
                     {this.renderCode()}
+                    {this.renderQueryBreakpoints()}
                 </div>
                 <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
                     {this.renderTools()}
