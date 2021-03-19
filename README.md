@@ -27,7 +27,7 @@ Just run `npm i` in the root and in the src folders.
 And then call `npm run build`.
 
 ## Todo
-- new rule editor (future releases)
+- Goto current line in debugger
 - heating profile (future releases)
 - ...
 

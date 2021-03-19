@@ -254,6 +254,7 @@ class App extends GenericApp {
             searchText: '',
             hideLog: window.localStorage.getItem('App.hideLog') === 'true',
             debugMode: false,
+            debugInstance: null,
         });
 
         const newState = {};
@@ -745,7 +746,13 @@ class App extends GenericApp {
         return <Editor
             key="editor"
             debugMode={this.state.debugMode}
-            onDebugModeChange={value => this.setState({debugMode: value})}
+            onDebugModeChange={value => {
+                if (!value) {
+                    this.setState({debugMode: false, debugInstance: null});
+                } else {
+                    this.setState({debugMode: true});
+                }
+            }}
             visible={!this.state.resizing}
             socket={this.socket}
             adapterName={this.adapterName}
@@ -759,6 +766,7 @@ class App extends GenericApp {
             expertMode={this.state.expertMode}
             onChange={(id, common) => this.onUpdateScript(id, common)}
             isAnyRulesExists={isAnyRulesExists}
+            debugInstance={this.state.debugInstance}
             onSelectedChange={(id, editing) => {
                 const newState = {};
                 let changed = false;
@@ -889,6 +897,10 @@ class App extends GenericApp {
                     <div className={classes.mainDiv} key="menu">
                         <SideMenu
                             debugMode={this.state.debugMode}
+                            onDebugInstance={data => {
+
+                                this.setState({debugInstance: data, debugMode: !!data});
+                            }}
                             key="sidemenu"
                             scripts={this.scripts}
                             scriptsHash={this.state.scriptsHash}

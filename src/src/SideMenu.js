@@ -43,6 +43,7 @@ import {FaFileImport as IconImport} from 'react-icons/fa';
 import {MdPalette as IconDark} from 'react-icons/md';
 import {MdUnfoldMore as IconExpandAll} from 'react-icons/md';
 import {MdUnfoldLess as IconCollapseAll} from 'react-icons/md';
+import {MdBugReport as IconDebug} from 'react-icons/md';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
@@ -55,6 +56,7 @@ import DialogDelete from './Dialogs/Delete';
 import DialogAddNewScript from './Dialogs/AddNewScript';
 import DialogNew from './Dialogs/New';
 import DialogError from './Dialogs/Error';
+import DialogAdapterDebug from "./Dialogs/AdapterDebug";
 
 const MENU_ITEM_HEIGHT = 48;
 const COLOR_RUN = green[400];
@@ -445,6 +447,7 @@ class SideDrawer extends React.Component {
             statusFilter: window.localStorage ? window.localStorage.getItem('SideMenu.statusFilter') || '' : '',
             runningInstances: this.props.runningInstances || {},
             scriptsHash: props.scriptsHash,
+            showAdapterDebug: false,
         };
 
         const newExp = this.ensureSelectedIsVisible();
@@ -1216,6 +1219,16 @@ class SideDrawer extends React.Component {
                                                }}>
                 <IconCopy className={this.props.classes.iconDropdownMenu} />{I18n.t('Copy script')}
             </MenuItem>}
+            {this.state.expertMode && <MenuItem
+                key="debugInstance"
+                onClick={event => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    this.onCloseMenu(() =>
+                        this.setState({showAdapterDebug: true}));
+                }}>
+                <IconDebug className={this.props.classes.iconDropdownMenu}/>{I18n.t('Debug instance')}
+            </MenuItem>}
         </Menu>;
     }
 
@@ -1487,6 +1500,16 @@ class SideDrawer extends React.Component {
         ];
     }
 
+    getAdapterDebugDialog() {
+        if (this.state.showAdapterDebug) {
+            return <DialogAdapterDebug
+                socket={this.props.socket}
+                onClose={() => this.setState({showAdapterDebug: false})}
+                onDebug={(instance, adapter) => this.setState({showAdapterDebug: false}, () => this.props.onDebugInstance({instance, adapter}))}
+            />;
+        }
+    }
+
     render() {
         const {classes} = this.props;
 
@@ -1594,7 +1617,10 @@ class SideDrawer extends React.Component {
                 onAdd={(id, name) =>
                     this.props.onAddNew && this.props.onAddNew(id, name, true)}
             /> : null,
-            this.state.errorText ? <DialogError onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/> : null
+
+            this.state.errorText ? <DialogError onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/> : null,
+
+            this.getAdapterDebugDialog(),
         ];
     }
 }
@@ -1621,6 +1647,7 @@ SideDrawer.propTypes = {
     onExport: PropTypes.func,
     onSearch: PropTypes.func,
     onThemeChange: PropTypes.func,
+    onDebugInstance: PropTypes.func,
     width: PropTypes.number,
     debugMode: PropTypes.bool,
 };

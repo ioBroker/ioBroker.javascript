@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import Tour from 'reactour';
 
 import Toolbar from '@material-ui/core/Toolbar';
 import { withStyles } from '@material-ui/core/styles';
@@ -40,16 +41,15 @@ import ImgRules from './assets/rules.png';
 
 import I18n from '@iobroker/adapter-react/i18n';
 import DialogCron from '@iobroker/adapter-react/Dialogs/Cron';
+import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
+import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 
 import ScriptEditorComponent from './Components/ScriptEditorVanilaMonaco';
 import BlocklyEditor from './Components/BlocklyEditor';
-import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
-import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import DialogScriptEditor from './Dialogs/ScriptEditor';
 import RulesEditor from './Components/RulesEditor';
 import Debugger from './Components/Debugger';
 import steps, { STEPS } from './Components/RulesEditor/helpers/Tour';
-import Tour from 'reactour';
 
 const images = {
     'Blockly': ImgBlockly,
@@ -203,6 +203,7 @@ class Editor extends React.Component {
             instancesLoaded: false,
             isTourOpen: window.localStorage.getItem('tour') !== 'true',
             tourStep: STEPS.selectTriggers,
+            showAdapterDebug: false,
         };
 
         this.setChangedInAdmin();
@@ -743,7 +744,7 @@ class Editor extends React.Component {
             return [<Tabs
                 component={'div'}
                 key="tabs1"
-                value={this.state.selected}
+                value={this.props.debugInstance ? this.props.debugInstance.adapter : this.state.selected}
                 onChange={(event, value) => this.onTabChange(event, value)}
                 indicatorColor="primary"
                 style={{ position: 'relative', width: this.state.editing.length > 1 ? 'calc(100% - 50px)' : '100%', display: 'inline-block' }}
@@ -777,11 +778,11 @@ class Editor extends React.Component {
                             <img key="icon" alt={""} src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon} />,
                             <div key="text" className={clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{text}</div>,
                             changed ? <span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span> : null,
-                            (!this.props.debugMode || this.state.selected !== id) && <span key="icon2" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small" /></span>,
+                            (!this.props.debugInstance && (!this.props.debugMode || this.state.selected !== id)) && <span key="icon2" className={this.props.classes.closeButton}><IconClose key="close" onClick={e => this.onTabClose(id, e)} fontSize="small" /></span>,
                         ];
 
                         return <Tab
-                            disabled={this.state.selected !== id && this.props.debugMode}
+                            disabled={this.props.debugInstance || (this.state.selected !== id && this.props.debugMode)}
                             wrapped
                             component={'div'}
                             href={'#' + id}
@@ -794,6 +795,18 @@ class Editor extends React.Component {
                         />;
                     }
                 })}
+                {this.props.debugInstance ? <Tab
+                    disabled={false}
+                    wrapped
+                    component={'div'}
+                    href={'#' + this.props.debugInstance.adapter}
+                    key={this.props.debugInstance.adapter}
+                    label={this.props.debugInstance.adapter}
+                    className={this.props.classes.tabButton}
+                    value={this.props.debugInstance.adapter}
+                    title={this.props.debugInstance.adapter}
+                    classes={{ wrapper: this.props.classes.tabButtonWrapper }}
+                /> : ''}
             </Tabs>,
             this.state.editing.length > 1 ? <IconButton
                 key="menuButton"
@@ -1283,7 +1296,8 @@ class Editor extends React.Component {
                     theme={this.props.theme}
                     themeName={this.props.themeName}
                     themeType={this.props.themeType}
-                    src={this.state.selected}
+                    src={this.props.debugInstance ? this.props.debugInstance.adapter : this.state.selected}
+                    debugInstance={this.props.debugInstance}
                 />;
             } else {
                 setTimeout(() => this.props.onDebugModeChange(false));
@@ -1349,6 +1363,7 @@ Editor.propTypes = {
     themeType: PropTypes.string,
     onDebugModeChange: PropTypes.func,
     debugMode: PropTypes.bool,
+    debugInstance: PropTypes.object,
     expertMode: PropTypes.bool,
 };
 

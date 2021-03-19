@@ -160,6 +160,35 @@ class Debugger extends React.Component {
         this.mainScriptId = null;
     }
 
+    componentDidMount() {
+        new Promise(resolve => {
+            if (this.props.debugInstance) {
+                resolve(this.props.debugInstance.instance);
+            } else {
+                this.props.socket.getObject(this.props.src)
+                    .then(obj => obj?.common?.engine?.replace('system.adapter.', ''));
+            }
+        })
+            .then(instance =>
+                this.setState({instance: instance}, () => {
+                    if (this.state.instance) {
+                        this.props.socket.setState(this.state.instance + '.debug.from', '{"cmd": "subscribed"}', true);
+                        //.then(() => );
+                        setTimeout(() =>
+                            this.props.socket.subscribeState(this.state.instance + '.debug.from', this.fromInstance), 200);
+                    } else {
+                        this.setState({error: 'Unknown instance'});
+                    }
+                }));
+    }
+
+    componentWillUnmount() {
+        if (this.state.instance) {
+            this.props.socket.unsubscribeState(this.state.instance + '.debug.from', this.fromInstance);
+            this.props.socket.sendTo(this.state.instance, 'debugStop');
+        }
+    }
+
     sendToInstance(cmd) {
         this.props.socket.setState(this.state.instance + '.debug.to', JSON.stringify(cmd));
     }
@@ -225,7 +254,7 @@ class Debugger extends React.Component {
         try {
             const data = JSON.parse(state.val);
             if (data.cmd === 'subscribed') {
-                this.props.socket.sendTo(this.state.instance, 'debug', {scriptName: this.props.src});
+                this.props.socket.sendTo(this.state.instance, 'debug', this.props.debugInstance || {scriptName: this.props.src});
             } else
             if (data.cmd === 'readyToDebug') {
                 this.mainScriptId = data.scriptId;
@@ -237,7 +266,7 @@ class Debugger extends React.Component {
                 }
 
                 const tabs = JSON.parse(JSON.stringify(this.state.tabs));
-                tabs[data.scriptId] = this.props.src.replace('script.js.', '');
+                tabs[data.scriptId] = this.props.debugInstance ? data.url: this.props.src.replace('script.js.', '');
 
                 const ts = Date.now() + '.' + Math.random() * 10000;
                 data.context.callFrames && data.context.callFrames.forEach((item, i) => item.id = ts + i);
@@ -305,7 +334,11 @@ class Debugger extends React.Component {
             } else if (data.cmd === 'error') {
                 this.setState({error: data.error});
             } else if (data.cmd === 'finished' || data.cmd === 'debugStopped') {
-                this.setState({finished: true});
+                this.setState({
+                    finished: true,
+                    starting: false,
+                    started: true,
+                });
             } else if (data.cmd === 'sb') {
                 const breakpoints = JSON.parse(JSON.stringify(this.state.breakpoints));
                 let changed = false;
@@ -427,28 +460,6 @@ class Debugger extends React.Component {
         }
     }
 
-    componentDidMount() {
-        this.props.socket.getObject(this.props.src)
-            .then(obj =>
-                this.setState({instance: obj?.common?.engine?.replace('system.adapter.', '')}, () => {
-                    if (this.state.instance) {
-                        this.props.socket.setState(this.state.instance + '.debug.from', '{"cmd": "subscribed"}', true)
-                            //.then(() => );
-                        setTimeout(() =>
-                            this.props.socket.subscribeState(this.state.instance + '.debug.from', this.fromInstance), 400);
-                    } else {
-                        this.setState({error: 'Unknown instance'});
-                    }
-                }));
-    }
-
-    componentWillUnmount() {
-        if (this.state.instance) {
-            this.props.socket.unsubscribeState(this.state.instance + '.debug.from', this.fromInstance);
-            this.props.socket.sendTo(this.state.instance, 'debugStop');
-        }
-    }
-
     renderError() {
         if (this.state.error) {
             return <DialogError key="dialogError" onClose={() => this.setState({ error: '' })} text={this.state.error} />;
@@ -524,7 +535,7 @@ class Debugger extends React.Component {
 
     onRestart() {
         this.setState({started: false, starting: true}, () =>
-            this.props.socket.sendTo(this.state.instance, 'debug', {scriptName: this.props.src}));
+            this.props.socket.sendTo(this.state.instance, 'debug', this.props.debugInstance || {scriptName: this.props.src}));
     }
 
     onToggleException() {
@@ -721,12 +732,13 @@ Debugger.propTypes = {
     runningInstances: PropTypes.object,
     adapterName: PropTypes.string,
     src: PropTypes.string,
-    socket: PropTypes.object,
+    socket: PropTypes.object.isRequired,
     className: PropTypes.string,
     style: PropTypes.object,
     themeType: PropTypes.string,
     theme: PropTypes.object,
     themeName: PropTypes.string,
+    debugInstance: PropTypes.object,
 };
 
 export default withStyles(styles)(Debugger);

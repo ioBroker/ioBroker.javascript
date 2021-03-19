@@ -652,7 +652,7 @@ function startAdapter(options) {
                     }
 
                     case 'debug': {
-                        !debugMode && debugScript(obj.message);
+                        !debugMode && debugStart(obj.message);
                         break;
                     }
                     case 'debugStop': {
@@ -1932,7 +1932,7 @@ function debugSendToInspector(message) {
     }
 }
 
-function debugScript(data) {
+function debugStart(data) {
     if (Date.now() - debugState.started < 1000) {
         console.log('Start ignored');
         return;
@@ -1943,7 +1943,14 @@ function debugScript(data) {
     debugDisableScript(data.scriptName)
         .then(() => debugStop())
         .then(() => {
-            debugState.scriptName   = data.scriptName;
+            if (data.adapter) {
+                debugState.adapterInstance = data.adapter;
+                debugState.scriptName = '';
+            } else {
+                debugState.adapterInstance = '';
+                debugState.scriptName = data.scriptName;
+            }
+
             debugState.breakOnStart = data.breakOnStart;
 
             debugState.promiseOnEnd = new Promise(resolve => {
@@ -1951,8 +1958,12 @@ function debugScript(data) {
                     stdio: ['ignore', 'inherit', 'inherit', 'ipc']
                     //stdio: ['pipe', 'pipe', 'pipe', 'ipc']
                 };
+                const args = [];
+                if (debugState.adapterInstance) {
+                    args.push('--breakOnStart');
+                }
 
-                debugState.child = fork(__dirname + '/inspect.js', [], options);
+                debugState.child = fork(__dirname + '/inspect.js', args, options);
 
                 /*debugState.child.stdout.setEncoding('utf8');
                 debugState.child.stderr.setEncoding('utf8');
@@ -1968,11 +1979,11 @@ function debugScript(data) {
                         }
                     }
 
-                    adapter.setState('debug.from', JSON.stringify(message), true);
+                    message.cmd !== 'ready' && adapter.setState('debug.from', JSON.stringify(message), true);
 
                     switch (message.cmd) {
                         case 'ready': {
-                            debugSendToInspector({cmd: 'start', scriptName: debugState.scriptName, instance: adapter.instance});
+                            debugSendToInspector({cmd: 'start', scriptName: debugState.scriptName, adapterInstance: debugState.adapterInstance, instance: adapter.instance});
                             break;
                         }
 
@@ -2010,7 +2021,7 @@ function debugScript(data) {
                     debugState.child = null;
                     resolve(code);
                 });
-            })
+            });
         });
 }
 

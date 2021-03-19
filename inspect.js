@@ -24,8 +24,17 @@ const { spawn } = require('child_process');
 const { EventEmitter } = require('events');
 const net = require('net');
 const util = require('util');
+const path = require('path');
+const fs = require('fs');
 
-const runAsStandalone = typeof __dirname !== 'undefined';
+let breakOnStart;
+for (let i = 0; i < process.argv.length; i++) {
+    if (process.argv[i] === '--breakOnStart') {
+        breakOnStart = true;
+    }
+}
+
+//const runAsStandalone = typeof __dirname !== 'undefined';
 
 const InspectClient = require('node-inspect/lib/internal/inspect_client');
 const createRepl = require('./lib/debugger');
@@ -84,7 +93,7 @@ function runScript(script, scriptArgs, inspectHost, inspectPort, childPrint) {
     return portIsFree(inspectHost, inspectPort)
         .then(() => {
             return new Promise((resolve) => {
-                const args = [`--inspect=${inspectPort}`].concat([script], scriptArgs);
+                const args = [breakOnStart ? `--inspect-brk=${inspectPort}` : `--inspect=${inspectPort}`].concat([script], scriptArgs);
                 const child = spawn(process.execPath, args);
                 child.stdout.setEncoding('utf8');
                 child.stderr.setEncoding('utf8');
@@ -161,9 +170,11 @@ class NodeInspector {
             const [domain, name] = fullName.split('.');
 
             if (domain === 'Debugger' && name === 'scriptParsed') {
-                if (params.url.includes(scriptToDebug)) {
+                //console.log(params.url);
+                if ((scriptToDebug && params.url.includes(scriptToDebug)) || (instanceToDebug && params.url.includes(instanceToDebug))) {
                     console.log('My scriptID: ' + params.scriptId);
                     this.mainScriptId = params.scriptId;
+                    this.mainFile = params.url.replace('file:///', '');
                     // load text of script
                     this.scripts[this.mainScriptId ] = this.Debugger.getScriptSource({ scriptId: this.mainScriptId })
                         .then(script => ({script: script.scriptSource, scriptId: this.mainScriptId}));
@@ -189,7 +200,7 @@ class NodeInspector {
                     alreadyPausedOnFirstLine = true;
                     this.scripts[this.mainScriptId]
                         .then(data =>
-                            sendToHost({cmd: 'readyToDebug', scriptId: data.scriptId, script: data.script, context: params}));
+                            sendToHost({cmd: 'readyToDebug', scriptId: data.scriptId, script: data.script, context: params, url: this.mainFile}));
                 } else {
                     //this.scripts[params.loca]
                     //    .then(data =>
@@ -203,10 +214,12 @@ class NodeInspector {
             }
             if (domain === 'Runtime' && name === 'consoleAPICalled') {
                 const text = params.args[0].value;
-                if (text.includes('$$' + scriptToDebug + '$$')) {
+                if (instanceToDebug) {
+                    sendToHost({cmd: 'log', severity: params.type === 'warning' ? 'warn' : 'error', text, ts: Date.now() });
+                } else if (text.includes('$$' + scriptToDebug + '$$')) {
                     console.log(`${fullName} [${params.executionContextId}]: => ${text}`);
                     const [severity, _text] = text.split('$$' + scriptToDebug + '$$');
-                    sendToHost({cmd: 'log', severity: severity, text: _text, ts: params.args[1] && params.args[1].value ? params.args[1].value : Date.now() });
+                    sendToHost({cmd: 'log', severity, text: _text, ts: params.args[1] && params.args[1].value ? params.args[1].value : Date.now() });
                 } else if (params.type === 'warning' || params.type === 'error') {
                     sendToHost({
                         cmd: 'log',
@@ -216,7 +229,7 @@ class NodeInspector {
                     });
                 }
                 return;
-            } else if (domain === 'Runtime' && params.id === 2) {
+            } else if (domain === 'Runtime' && (params.id === 2 || params.executionContextId === 2)) {
                 if (name === 'executionContextCreated') {
                     console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
                 } else if (name === 'executionContextDestroyed') {
@@ -224,12 +237,17 @@ class NodeInspector {
                     sendToHost({cmd: 'finished', context: params});
                 }
                 return;
+            } else if (domain === 'Runtime' && name === 'executionContextDestroyed' && params.executionContextId === 1) {
+                sendToHost({cmd: 'finished', context: params});
+                console.log('Exited!');
+                setTimeout(() =>
+                    process.exit(125), 200);
             } else if (domain === 'Debugger' && name === 'scriptFailedToParse') {
                 // ignore
                 return;
             }
 
-            console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
+            console.warn(`${fullName}: =>\n${JSON.stringify(params, null, 2)}`);
 
             /*if (domain in this) {
                 this[domain].emit(name, params);
@@ -444,6 +462,7 @@ function convertResultToError(result) {
 
 let inspector;
 let scriptToDebug;
+let instanceToDebug;
 let alreadyPausedOnFirstLine = false;
 
 process.on('message', message => {
@@ -478,7 +497,37 @@ sendToHost({cmd: 'ready'});
 function processCommand(data) {
     if (data.cmd === 'start') {
         scriptToDebug = data.scriptName;
-        startInspect(['main.js', data.instance || 0, '--debug', '--debugScript', scriptToDebug]);
+        instanceToDebug = data.adapterInstance;
+        if (scriptToDebug) {
+            startInspect(['main.js', data.instance || 0, '--debug', '--debugScript', scriptToDebug]);
+        } else {
+            const [adapter, instance] = instanceToDebug.split('.');
+            let file;
+            try {
+                file = require.resolve('iobroker.' + adapter);
+            } catch (e) {
+                // try to locate in the same dir
+                const dir = path.normalize(path.join(__dirname, '..', 'iobroker.' + adapter));
+                if (fs.existsSync(dir)) {
+                    const pack = require(path.join(dir, 'package.json'));
+                    if (fs.existsSync(path.join(dir, pack.main || (adapter + '.js')))) {
+                        file = path.join(dir, pack.main || (adapter + '.js'));
+                    }
+                }
+
+                if (!file) {
+                    sendToHost({cmd: 'error', error: 'Cannot locate iobroker.' + adapter, errorContext: e});
+                    return setTimeout(() => {
+                        sendToHost({cmd: 'finished', context: 'Cannot locate iobroker.' + adapter});
+                        setTimeout(() => process.exit(124), 500);
+                    }, 200);
+                }
+            }
+            file = file.replace(/\\/g, '/');
+            instanceToDebug = file;
+            console.log(`Start ${file} ${instance} --debug`);
+            startInspect([file, instance, '--debug']);
+        }
     } else if (data.cmd === 'end') {
         process.exit();
     } else if (data.cmd === 'source') {

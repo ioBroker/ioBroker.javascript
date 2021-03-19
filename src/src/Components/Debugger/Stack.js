@@ -234,7 +234,8 @@ class Stack extends React.Component {
             button
             onClick={() => this.props.onChangeCurrentFrame(i)}
             dense={true}
-            classes={{root: clsx(this.props.classes.frameRoot, this.props.currentFrame === i && this.props.classes.selectedFrame)}}
+            selected={this.props.currentFrame === i}
+            classes={{root: this.props.classes.frameRoot}}
         >
             <ListItemText
                 classes={{root: this.props.classes.frameTextRoot, primary: this.props.classes.frameTextPrimary, secondary: this.props.classes.frameTextSecondary}}
