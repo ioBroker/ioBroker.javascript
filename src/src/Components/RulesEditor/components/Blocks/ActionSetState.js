@@ -1,4 +1,15 @@
 import GenericBlock from '../GenericBlock';
+import {withStyles} from "@material-ui/core/styles";
+import I18n from "@iobroker/adapter-react/i18n";
+
+const styles = theme => ({
+    valueAck: {
+        color: '#b02323'
+    },
+    valueNotAck: {
+        color: '#12ac15'
+    },
+});
 
 class ActionSetState extends GenericBlock {
     constructor(props) {
@@ -27,12 +38,34 @@ class ActionSetState extends GenericBlock {
                 value = `"${value.replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}`;
             }
         }
+        let v;
 
         if (config.toggle && !config.useTrigger) {
-            return `await setStateAsync("${config.oid}", !(await getStateAsync("${config.oid}")).val, ${config.tagCard === 'update'});`;
+            v = `const subActionVar${config._id} = !(await getStateAsync("${config.oid}")).val`;
         } else {
-            return `await setStateAsync("${config.oid}", ${value}, ${config.tagCard === 'update'});`;
+            v = `const subActionVar${config._id} = ${value}`;
         }
+        return `${v};
+\t\t_sendToFrontEnd(${config._id}, {val: subActionVar${config._id}, ack: ${config.tagCard === 'update'}});
+\t\tawait setStateAsync("${config.oid}", subActionVar${config._id}, ${config.tagCard === 'update'});`;
+    }
+
+    static renderValue(val) {
+        if (val === null) {
+            return 'null';
+        } else if (val === undefined) {
+            return 'undefined';
+        } else if (Array.isArray(val)) {
+            return val.join(', ');
+        } else if (typeof val === 'object') {
+            return JSON.stringify(val);
+        } else {
+            return val.toString();
+        }
+    }
+
+    renderDebug(debugMessage) {
+        return <span>{I18n.t('Set:')} <span className={debugMessage.data.ack ? this.props.classes.valueAck : this.props.classes.valueNotAck}>{ActionSetState.renderValue(debugMessage.data.val)}</span></span>;
     }
 
     _setInputs(useTrigger, toggle) {
@@ -254,4 +287,4 @@ class ActionSetState extends GenericBlock {
     }
 }
 
-export default ActionSetState;
+export default withStyles(styles)(ActionSetState);

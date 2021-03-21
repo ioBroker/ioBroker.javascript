@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useContext, useMemo, useState } from 'react';
+import React, {memo, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
 import { deepCopy } from '../../helpers/deepCopy';
@@ -12,7 +12,12 @@ import GenericBlock from '../GenericBlock';
 const CurrentItem = memo(props => {
     const { setUserRules, userRules, _id, id, blockValue, active, acceptedBy, isTourOpen, setTourStep, tourStep } = props;
     const [anchorEl, setAnchorEl] = useState(null);
-    const { blocks, socket, onUpdate, setOnUpdate } = useContext(ContextWrapperCreate);
+    const { blocks, socket, onUpdate, setOnUpdate, onDebugMessage } = useContext(ContextWrapperCreate);
+
+    useEffect(() => {
+        console.log('New message !!' + JSON.stringify(onDebugMessage));
+    }, [onDebugMessage]);
+
 
     const findElementBlocks = useCallback(id => blocks.find(el => {
         const staticData = el.getStaticData();
@@ -41,12 +46,13 @@ const CurrentItem = memo(props => {
             {...props}
             onUpdate={onUpdate}
             setOnUpdate={setOnUpdate}
+            onDebugMessage={onDebugMessage}
             onChange={onChange}
             className={null}
             socket={socket}
         />;
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userRules, onUpdate]);
+    }, [userRules, onUpdate, onDebugMessage]);
 
     const [isDelete, setIsDelete] = useState(false);
 

@@ -26,6 +26,7 @@ export const ContextWrapperCreate = createContext();
 export const ContextWrapper = ({ children, socket }) => {
     const [blocks, setBlocks] = useState(null);
     const [onUpdate, setOnUpdate] = useState(false);
+    const [onDebugMessage, setOnDebugMessage] = useState(false);
 
     useEffect(() => {
         onUpdate && setOnUpdate(false);
@@ -43,7 +44,7 @@ export const ContextWrapper = ({ children, socket }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return <ContextWrapperCreate.Provider value={{ blocks, socket, onUpdate, setOnUpdate }}>
+    return <ContextWrapperCreate.Provider value={{ blocks, socket, onUpdate, setOnUpdate, onDebugMessage, setOnDebugMessage}}>
         {children}
     </ContextWrapperCreate.Provider>;
 };

@@ -57,17 +57,20 @@ class ConditionState extends GenericBlock {
         if (value === null || value === undefined) {
             value = false;
         }
+        let debugValue = '';
 
         let result;
         if (config.tagCard === '()') {
             context.prelines =  context.prelines || [];
             !context.prelines.find(item => item !== HYSTERESIS) && context.prelines.push(HYSTERESIS);
             if (config.useTrigger) {
+                debugValue = 'obj.state.val';
                 if (value === '') {
                     value = 0;
                 }
-                result = `__hysteresis(obj.state.val, ${value}, __%%STATE%%__, ${config.hist}, "${config.histComp}")`;
+                result = `__hysteresis(subCondVar${config._id}, ${value}, __%%STATE%%__, ${config.hist}, "${config.histComp}")`;
             } else {
+                debugValue = `(await getStateAsync("${config.oid}")).val`;
                 if (value === '') {
                     value = 0;
                 }
@@ -75,15 +78,16 @@ class ConditionState extends GenericBlock {
                     value = `"${value}"`;
                 }
 
-                result = `__hysteresis((await getStateAsync("${config.oid}")).val, ${value}, __%%STATE%%__, ${config.hist}, "${config.histComp}")`;
+                result = `__hysteresis(subCondVar${config._id}, ${value}, __%%STATE%%__, ${config.hist}, "${config.histComp}")`;
             }
         } else
         if (config.tagCard !== 'includes') {
             const compare = config.tagCard === '=' ? '==' : (config.tagCard === '<>' ? '!=' : config.tagCard);
             if (config.useTrigger) {
+                debugValue = 'obj.state.val';
                 if (context?.trigger?.oidType === 'string') {
                     value = value.replace(/"/g, '\\"');
-                    result = `obj.state.val ${compare} "${value}"`;
+                    result = `subCondVar${config._id} ${compare} "${value}"`;
                 } else {
                     if (value === '') {
                         value = 0;
@@ -91,12 +95,13 @@ class ConditionState extends GenericBlock {
                     if (typeof value === 'string' && parseFloat(value.trim()).toString() !== value.trim()) {
                         value = `"${value}"`;
                     }
-                    result = `obj.state.val ${compare} ${value}`;
+                    result = `subCondVar${config._id} ${compare} ${value}`;
                 }
             } else {
+                debugValue = `(await getStateAsync("${config.oid}")).val`;
                 if (config.oidType === 'string') {
                     value = value.replace(/"/g, '\\"');
-                    result = `(await getStateAsync("${config.oid}")).val ${compare} "${value}"`;
+                    result = `subCondVar${config._id} ${compare} "${value}"`;
                 } else {
                     if (value === '') {
                         value = 0;
@@ -104,11 +109,12 @@ class ConditionState extends GenericBlock {
                     if (typeof value === 'string' && parseFloat(value.trim()).toString() !== value.trim()) {
                         value = `"${value}"`;
                     }
-                    result = `(await getStateAsync("${config.oid}")).val ${compare} ${value}`;
+                    result = `subCondVar${config._id} ${compare} ${value}`;
                 }
             }
         } else {
             if (config.useTrigger) {
+                debugValue = 'obj.state.val';
                 if (context?.trigger?.oidType === 'string') {
                     value = value.replace(/"/g, '\\"');
                     result = `obj.state.val.includes("${value}")`;
@@ -116,16 +122,30 @@ class ConditionState extends GenericBlock {
                     result = `false`;
                 }
             } else {
+                debugValue = `(await getStateAsync("${config.oid}")).val`;
                 if (config.oidType === 'string') {
                     value = value.replace(/"/g, '\\"');
-                    result = `(await getStateAsync("${config.oid}").val).includes("${value}")`;
+                    result = `subCondVar${config._id}.includes("${value}")`;
                 } else {
                     result = `false`;
                 }
             }
         }
+        context.conditionsVars.push(`const subCondVar${config._id} = ${debugValue};`);
+        context.conditionsVars.push(`const subCond${config._id} = ${result};`);
+        context.conditionsDebug.push(`_sendToFrontEnd(${config._id}, {result: subCond${config._id}, value: subCondVar${config._id}, compareWith: ${value}});`);
+        return 'subCond' + config._id;
+    }
 
-        return result;
+    renderDebug(debugMessage) {
+        const condition = this.state.settings.tagCard;
+        if (condition === '()') {
+            // TODO
+        } else {
+            return debugMessage.data.result.toString().toUpperCase() + ' [' + debugMessage.data.value + ' ' + condition + ' ' + debugMessage.data.compareWith + ']';
+        }
+
+        return I18n.t('Triggered');
     }
 
     onShowHelp = () => this.setState({showHysteresisHelp: true});

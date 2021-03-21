@@ -22,7 +22,8 @@ class TriggerScheduleBlock extends GenericBlock {
 
     static compile(config, context) {
         let text = '';
-        const func = context.justCheck ? Compile.STANDARD_FUNCTION_STATE : Compile.STANDARD_FUNCTION_STATE_ONCHANGE;
+        let func = context.justCheck ? Compile.STANDARD_FUNCTION_STATE : Compile.STANDARD_FUNCTION_STATE_ONCHANGE;
+        func = func.replace('"__%%DEBUG_TRIGGER%%__"', `_sendToFrontEnd(${config._id}, {trigger: true})`);
 
         if (config.tagCard === 'interval') {
             text = `setInterval(${func}, ${config.interval || 1} * ${config.unit === 's' ? 1000 : (config.unit === 'm' ? 60000 : 3600000)});`;
@@ -217,6 +218,10 @@ class TriggerScheduleBlock extends GenericBlock {
                 }
             ]
         }, () => super.onTagChange());
+    }
+
+    renderDebug(debugMessage) {
+        return I18n.t('Triggered');
     }
 
     onValueChanged(value, attr) {

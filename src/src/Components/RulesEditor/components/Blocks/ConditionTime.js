@@ -22,6 +22,8 @@ class ConditionTime extends GenericBlock {
 
     static compile(config, context) {
         const compare = config.tagCard === '=' ? '===' : (config.tagCard === '<>' ? '!==' : config.tagCard);
+        let cond;
+
         if (config.withDate) {
             let [month, date] = (config.date || '01.01').toString().split('.');
             date = parseInt(date, 10) || 0;
@@ -38,17 +40,20 @@ class ConditionTime extends GenericBlock {
                 date = 0;
             }
             if (date && month) {
-                return `formatDate(Date.now(), 'MM.DD-hh:mm') ${compare} "${config.date}-${config.time}"`;
+                cond = `formatDate(Date.now(), 'MM.DD-hh:mm') ${compare} "${config.date}-${config.time}"`;
             } else if (date === 0 && month) {
-                return `formatDate(Date.now(), 'MM-hh:mm') ${compare} "${month.toString().padStart(2, '0')}-${config.time}"`;
+                cond = `formatDate(Date.now(), 'MM-hh:mm') ${compare} "${month.toString().padStart(2, '0')}-${config.time}"`;
             } else if (month === 0 && date) {
-                return `formatDate(Date.now(), 'DD-hh:mm') ${compare} "${date.toString().padStart(2, '0')}-${config.time}"`;
+                cond = `formatDate(Date.now(), 'DD-hh:mm') ${compare} "${date.toString().padStart(2, '0')}-${config.time}"`;
             } else {
-                return `formatDate(Date.now(), 'hh:mm') ${compare} "${config.time}"`;
+                cond = `formatDate(Date.now(), 'hh:mm') ${compare} "${config.time}"`;
             }
         } else {
-            return `formatDate(Date.now(), 'hh:mm') ${compare} "${config.time}"`;
+            cond = `formatDate(Date.now(), 'hh:mm') ${compare} "${config.time}"`;
         }
+        context.conditionsVars.push(`const subCond${config._id} = ${cond};`);
+        context.conditionsDebug.push(`_sendToFrontEnd(${config._id}, {result: subCond${config._id}});`);
+        return 'subCond' + config._id;
     }
 
     _setInputs(tagCard, withDate, ) {

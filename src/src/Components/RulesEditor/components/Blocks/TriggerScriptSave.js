@@ -1,4 +1,6 @@
 import GenericBlock from '../GenericBlock';
+import I18n from "@iobroker/adapter-react/i18n";
+import Compile from '../../helpers/Compile';
 
 class TriggerScriptSave extends GenericBlock {
     constructor(props) {
@@ -6,11 +8,11 @@ class TriggerScriptSave extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `if (__%%CONDITION%%__) {
-__%%THEN%%__
-} else {
-__%%ELSE%%__
-}`;
+        return Compile.NO_FUNCTION.replace('"__%%DEBUG_TRIGGER%%__"', `_sendToFrontEnd(${config._id}, {trigger: true})`);
+    }
+
+    renderDebug(debugMessage) {
+        return I18n.t('Triggered');
     }
 
     onTagChange(tagCard) {

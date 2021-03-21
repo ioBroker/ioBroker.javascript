@@ -1,7 +1,12 @@
 // eslint-disable-next-line no-unused-vars
 
 const STANDARD_FUNCTION_STATE = `async function (obj) {
+    "__%%DEBUG_TRIGGER%%__";
+    __%%CONDITIONS_VARS%%__
     const _cond = __%%CONDITION%%__;
+    
+    "__%%DEBUG_CONDITIONS%%__";
+    
     if (_cond) {
 __%%THEN%%__
     } else {
@@ -9,7 +14,12 @@ __%%ELSE%%__
     }
 }`;
 const STANDARD_FUNCTION_STATE_ONCHANGE = `async function (obj) {
+    "__%%DEBUG_TRIGGER%%__";
+    __%%CONDITIONS_VARS%%__
     const _cond = __%%CONDITION%%__;
+    
+    "__%%DEBUG_CONDITIONS%%__";
+    
     if (__%%STATE%%__ === false && _cond) {
         __%%STATE%%__ = true;    
 __%%THEN%%__
@@ -20,7 +30,12 @@ __%%ELSE%%__
 }`;
 const STANDARD_FUNCTION =
 `async function () {
+    "__%%DEBUG_TRIGGER%%__";
+    __%%CONDITIONS_VARS%%__
     const _cond = __%%CONDITION%%__;
+    
+    "__%%DEBUG_CONDITIONS%%__";
+    
     if (_cond) {
 __%%THEN%%__
     } else {
@@ -30,7 +45,12 @@ __%%ELSE%%__
 
 const STANDARD_FUNCTION_ONCHANGE =
 `async function () {
+    "__%%DEBUG_TRIGGER%%__";
+    __%%CONDITIONS_VARS%%__
     const _cond = __%%CONDITION%%__;
+    
+    "__%%DEBUG_CONDITIONS%%__";
+    
     if (__%%STATE%%__ === false && _cond) {
         __%%STATE%%__ = true;    
 __%%THEN%%__
@@ -38,6 +58,18 @@ __%%THEN%%__
         __%%STATE%%__ = false;    
 __%%ELSE%%__
     }
+}`;
+
+const NO_FUNCTION = `"__%%DEBUG_TRIGGER%%__";
+__%%CONDITIONS_VARS%%__
+const _cond = __%%CONDITION%%__;
+
+"__%%DEBUG_CONDITIONS%%__";
+
+if (_cond) {
+__%%THEN%%__
+} else {
+__%%ELSE%%__
 }`;
 
 const DEFAULT_RULE = {
@@ -64,7 +96,13 @@ function compileTriggers(json, context, blocks) {
     jsonTriggers.forEach((trigger, i) => {
         const found = findBlock(trigger.id, blocks);
         if (found) {
-            const _context = {trigger, condition: {}, justCheck: hist ? false : (json.justCheck || (!json.conditions.length || !json.conditions[0].length))};
+            const _context = {
+                trigger,
+                condition: {},
+                justCheck: hist ? false : (json.justCheck || (!json.conditions.length || !json.conditions[0].length)),
+                conditionsDebug: [],
+                conditionsVars: [],
+            };
             const text = found.compile(trigger, _context);
             const conditions = compileConditions(json.conditions, _context, blocks);
             const then = compileActions(json.actions.then, _context, blocks);
@@ -77,8 +115,15 @@ function compileTriggers(json, context, blocks) {
                 _context.prelines.forEach(line => prelines.push(line));
             }
 
+            if (text.includes('    __%%CONDITIONS_VARS%%__')) {
+                _context.conditionsVars = _context.conditionsVars.map((v, i) => i ? '    ' + v : v);
+                _context.conditionsDebug = _context.conditionsDebug.map((v, i) => i ? '    ' + v : v);
+            }
+
             triggers.push(
                 text
+                    .replace('__%%CONDITIONS_VARS%%__', _context.conditionsVars.join('\n'))
+                    .replace('"__%%DEBUG_CONDITIONS%%__";', _context.conditionsDebug.join('\n'))
                     .replace('__%%CONDITION%%__', conditions)
                     .replace('__%%THEN%%__', then || '// ignore')
                     .replace('__%%ELSE%%__', _else || '// ignore')
@@ -190,6 +235,7 @@ const Compile = {
     STANDARD_FUNCTION_ONCHANGE,
     STANDARD_FUNCTION_STATE,
     STANDARD_FUNCTION_STATE_ONCHANGE,
+    NO_FUNCTION,
 };
 
 export default Compile;

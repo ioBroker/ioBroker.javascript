@@ -241,9 +241,10 @@ const context = {
     updateLogSubscriptions,
     debugMode,
     timeSettings:     {
-        format12: false,
+        format12:     false,
         leadingZeros: true
-    }
+    },
+    rulesOpened:      null, //opened rules
 };
 
 const regExGlobalOld = /_global$/;
@@ -655,9 +656,23 @@ function startAdapter(options) {
                         !debugMode && debugStart(obj.message);
                         break;
                     }
+
                     case 'debugStop': {
                         !debugMode && debugStop()
                             .then(() => console.log('stopped'));
+                        break;
+                    }
+
+                    case 'rulesOn': {
+                        context.rulesOpened = obj.message;
+                        console.log('Enable messaging for ' + context.rulesOpened);
+                        break;
+                    }
+
+                    case 'rulesOff': {
+                        // may be if (context.rulesOpened === obj.message)
+                        console.log('Disable messaging for ' + context.rulesOpened);
+                        context.rulesOpened = null;
                         break;
                     }
                 }

@@ -63,7 +63,10 @@ class GenericBlock extends PureComponent {
             hideAttributes: [], // e.g. instance
 
             settings,
+            debugMessage: null,
         };
+
+        this.debugHideTimeout = null;
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
@@ -72,9 +75,28 @@ class GenericBlock extends PureComponent {
             settings.tagCard = typeof this.state.tagCardArray[0] !== 'string' ? this.state.tagCardArray[0].title : this.state.tagCardArray[0];
         }
 
+        let newState = null;
+
+        if (nextProps.onDebugMessage && nextProps.onDebugMessage.blockId === this.props._id) {
+            newState = {};
+            newState.debugMessage = JSON.parse(JSON.stringify(nextProps.onDebugMessage));
+            this.debugHideTimeout && clearTimeout(this.debugHideTimeout);
+            this.debugHideTimeout = setTimeout(() =>
+                this.setState({ debugMessage: null }),
+                nextProps.onDebugMessage.hideTimeout || 5000);
+        }
+
         if (JSON.stringify(settings) !== JSON.stringify(this.state.settings)) {
+            newState = newState || {};
+            newState.settings = settings;
             this.setState({ settings });
         }
+        newState && this.setState(newState);
+    }
+
+    componentWillUnmount() {
+        this.debugHideTimeout && clearTimeout(this.debugHideTimeout);
+        this.debugHideTimeout = null;
     }
 
     // called every time, the tagCard changes or at start
@@ -613,6 +635,16 @@ class GenericBlock extends PureComponent {
         return null; // it can be overloaded
     }
 
+    renderDebugInfo() {
+        if (this.state.debugMessage) {
+            return <div className={cls.debugInfo} key={this.state.debugMessage.ts} style={{ opacity: 1, height: 22, bottom: -22 }}>
+                {this.renderDebug ? this.renderDebug(this.state.debugMessage) : I18n.t('executed')}
+            </div>;
+        } else {
+            return null;
+        }
+    }
+
     render = () => {
         const { inputs, name, icon, iconTag, settings, adapter, settings: { tagCard }, helpDialog } = this.state;
         const { socket, notFound } = this.props;
@@ -654,6 +686,7 @@ class GenericBlock extends PureComponent {
             {tagCard && <div className={cls.controlMenuTop} style={{ opacity: 1, height: 22, top: -22 }}>
                 <div onClick={() => this.onChangeTag()} className={clsx(cls.tagCard, 'tag-card')}>{this.renderTags()}</div>
             </div>}
+            {this.renderDebugInfo()}
             {this.state.error ? <DialogError title={I18n.t('Warning')} text={this.state.error} onClose={() => this.setState({ error: '' })} /> : null}
             {this.state.helpText ? <DialogMessage title={I18n.t('Instructions')} text={this.state.helpText} onClose={() => this.setState({ helpText: '' })} /> : null}
             {this.renderSpecific()}

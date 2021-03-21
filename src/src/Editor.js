@@ -1098,6 +1098,7 @@ class Editor extends React.Component {
 
             return <div className={clsx(this.props.classes.editorDiv)} key="flowEditorDiv">
                 <RulesEditor
+                    scriptId={this.state.selected}
                     setTourStep={this.setTourStep}
                     tourStep={this.state.tourStep}
                     isTourOpen={this.state.isTourOpen}

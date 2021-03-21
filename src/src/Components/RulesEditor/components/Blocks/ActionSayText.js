@@ -135,8 +135,14 @@ class ActionSayText extends GenericBlock {
         if (!config.text) {
             return '// no text defined'
         } else {
-            return `await setStateAsync("${config.instance}.tts.text", "${config.language && config.language !== '_' ? config.language + ';' : ''}${config.volume ? config.volume + ';' : ''}${(config.text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)});`;
+            return `const subActionVar${config._id} = "${config.language && config.language !== '_' ? config.language + ';' : ''}${config.volume ? config.volume + ';' : ''}${(config.text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)};
+\t\t_sendToFrontEnd(${config._id}, {text: subActionVar${config._id}});
+\t\tawait setStateAsync("${config.instance}.tts.text", subActionVar${config._id});`;
         }
+    }
+
+    renderDebug(debugMessage) {
+        return I18n.t('Say:') + ' ' + debugMessage.data.exec;
     }
 
     onTagChange(tagCard) {

@@ -1,4 +1,5 @@
 import GenericBlock from '../GenericBlock';
+import I18n from "@iobroker/adapter-react/i18n";
 
 class ActionPrintText extends GenericBlock {
     constructor(props) {
@@ -6,7 +7,13 @@ class ActionPrintText extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `console.log("${(config.text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)});`;
+        return `const subActionVar${config._id} = "${(config.text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)};
+\t\t_sendToFrontEnd(${config._id}, {text: subActionVar${config._id}});
+\t\tconsole.log(subActionVar${config._id});`;
+    }
+
+    renderDebug(debugMessage) {
+        return I18n.t('Log: %s', debugMessage.data.text);
     }
 
     onTagChange(tagCard) {

@@ -6,9 +6,13 @@ class ActionExec extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `exec("${(config.exec || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)});`;
+        return `const subActionVar${config._id} = "${(config.exec || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)};
+\t\t_sendToFrontEnd(${config._id}, {exec: subActionVar${config._id}});
+\t\tconsole.log(subActionVar${config._id});`;
     }
-
+    renderDebug(debugMessage) {
+        return 'Exec: ' + debugMessage.data.exec;
+    }
     onTagChange(tagCard) {
         this.setState({
             inputs: [

@@ -470,6 +470,18 @@
             },
             "type": "state",
             "native": {}
+        },
+        {
+            "_id": "debug.rules",
+            "common": {
+                "name": "Data from engine to rules",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "role": "json"
+            },
+            "type": "state",
+            "native": {}
         }
     ]
 }

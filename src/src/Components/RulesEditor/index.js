@@ -14,13 +14,65 @@ import DialogExport from '../../Dialogs/Export';
 import DialogImport from '../../Dialogs/Import';
 import clsx from 'clsx';
 
-const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourOpen, command }) => {
+const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourOpen, command, scriptId }) => {
     // eslint-disable-next-line no-unused-vars
-    const { blocks, socket, setOnUpdate } = useContext(ContextWrapperCreate);
+    const { blocks, socket, setOnUpdate, setOnDebugMessage } = useContext(ContextWrapperCreate);
     const [allBlocks, setAllBlocks] = useState([]);
     const [userRules, setUserRules] = useState(Compile.code2json(code));
     const [importExport, setImportExport] = useState('');
     const [modal, setModal] = useState(false);
+    //const [jsAlive, setJsAlive] = useState(false);
+    //const [jsInstance, setJsInstance] = useState(false);
+
+    useEffect(() => {
+        let _jsInstance;
+        let _jsAlive;
+        const handler = (id, obj) => {
+            if (id === _jsInstance + '.alive') {
+                if (_jsAlive !== obj?.val) {
+                    _jsAlive = obj?.val;
+                    //setJsAlive(_jsAlive);
+                    _jsAlive && socket.sendTo(_jsInstance.replace(/^system\.adapter\./, ''), 'rulesOn', scriptId);
+                }
+            } else {
+                if (_jsInstance !== obj?.common?.engine) {
+                    _jsInstance && socket.unsubscribeState(`${_jsInstance}.alive`, handler);
+                    _jsAlive && socket.sendTo(_jsInstance.replace(/^system\.adapter\./, ''), 'rulesOn', scriptId);
+                    _jsInstance = obj?.common?.engine;
+                    //setJsInstance(_jsInstance);
+                    _jsInstance && socket.subscribeState(`${_jsInstance}.alive`, handler);
+                }
+            }
+        };
+        const handlerStatus = (id, state) => {
+            try {
+                let msg = JSON.parse(state.val);
+                // if not from previous session
+                if (msg.ruleId === scriptId && Date.now() - msg.ts < 1000) {
+                    setOnDebugMessage({blockId: msg.blockId, data: msg.data, ts: msg.ts});
+                }
+            } catch (e) {
+                console.error('Cannot parse')
+            }
+        };
+
+        socket.getObject(scriptId)
+            .then(obj => {
+                _jsInstance = obj?.common?.engine;
+                //setJsInstance(_jsInstance);
+                socket.subscribeObject(scriptId, handler);
+                _jsInstance && socket.subscribeState(`${_jsInstance}.alive`, handler);
+                socket.subscribeState(_jsInstance.replace(/^system\.adapter\./, '') + '.debug.rules', handlerStatus);
+            });
+
+        return function cleanup() {
+            _jsInstance && socket.unsubscribeObject(`${_jsInstance}.alive`, handler);
+            socket.unsubscribeState(scriptId, handler);
+            _jsAlive && socket.sendTo(_jsInstance.replace(/^system\.adapter\./, ''), 'rulesOff', scriptId);
+            socket.unsubscribeState(_jsInstance.replace(/^system\.adapter\./, '') + '.debug.rules', handlerStatus);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         if (!!command) {
@@ -70,6 +122,7 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
     if (!blocks) {
         return null;
     }
+
     return <div key="rulesEditor" className={cls.wrapperRules} ref={ref}>
         {<CustomDragLayer allBlocks={allBlocks} socket={socket} />}
         {importExport === "export" ?
@@ -142,7 +195,16 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
 
 RulesEditor.propTypes = {
     onChange: PropTypes.func,
-    code: PropTypes.string
+    code: PropTypes.string,
+    scriptId: PropTypes.string,
+    setTourStep: PropTypes.func,
+    tourStep: PropTypes.number,
+    command: PropTypes.string,
+    themeType: PropTypes.string,
+    themeName: PropTypes.string,
+    searchText: PropTypes.string,
+    resizing: PropTypes.bool,
+
 };
 
 export default RulesEditor;

@@ -14,7 +14,10 @@ class ConditionAstrological extends GenericBlock {
         if (config.offset) {
             offset = parseInt(config.offsetValue, 10) || 0;
         }
-        return `formatDate(Date.now(), 'hh:mm') ${compare} formatDate(getAstroDate("${config.astro}"${offset ? `, undefined, ${offset}` : ''}), 'hh:mm')`;
+        const cond = `formatDate(Date.now(), 'hh:mm') ${compare} formatDate(getAstroDate("${config.astro}"${offset ? `, undefined, ${offset}` : ''}), 'hh:mm')`;
+        context.conditionsVars.push(`const subCond${config._id} = ${cond};`);
+        context.conditionsDebug.push(`_sendToFrontEnd(${config._id}, {result: ${cond}});`);
+        return cond;
     }
 
     static _time2String(time) {

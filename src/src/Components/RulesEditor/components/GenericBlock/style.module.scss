@@ -1,3 +1,18 @@
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    1% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+
 .cardStyle {
     cursor: pointer;
     position: relative;
@@ -107,6 +122,15 @@
     width: 100%;
     overflow: hidden;
     transition: opacity 0.5s, height 0.5s, top 0.5s;
+}
+.debugInfo {
+    font-size: 12px;
+    font-style: italic;
+    color: var(--debugColor);
+    position: absolute;
+    display: flex;
+    opacity: 0;
+    animation: fadeIn 0.3s ease-out;
 }
 .tagCard {
     text-align: center;
