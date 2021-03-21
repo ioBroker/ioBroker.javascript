@@ -12,9 +12,13 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Grid from '@material-ui/core/Grid';
 import ListItemText from '@material-ui/core/ListItemText';
+import Input from '@material-ui/core/Input';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import IconButton from '@material-ui/core/IconButton';
 
 import IconOk from '@material-ui/icons/Check';
 import IconCancel from '@material-ui/icons/Cancel';
+import IconClose from '@material-ui/icons/Close';
 
 import I18n from '@iobroker/adapter-react/i18n';
 
@@ -25,6 +29,16 @@ const styles = theme => ({
     icon: {
         width: 24,
         height: 24,
+    },
+    filter: {
+        width: '100%',
+    },
+    filterWithButton: {
+        width: '100%',
+    },
+    title: {
+        fontWeight: 'bold',
+        marginTop: theme.spacing(2),
     }
 });
 
@@ -34,6 +48,7 @@ class DialogAdapterDebug extends React.Component {
         super(props);
         this.state = {
             instances: [],
+            filter: window.localStorage.getItem('javascript.debug.filter') || '',
             showAskForStop: false,
             jsInstance: window.localStorage.getItem('javascript.debug.instance') || '',
             jsInstanceHost: '',
@@ -54,6 +69,7 @@ class DialogAdapterDebug extends React.Component {
                         icon: item.common?.icon ? `../../adapter/${adapter}/${item.common.icon}` : '',
                     };
                 });
+                instances.sort((a, b) => a.id > b.id ? 1 : (a.id < b.id ? -1 : 0));
                 let jsInstance = this.state.jsInstance || '';
                 let jsInstanceObj = this.state.jsInstance && instances.find(item => item.id === this.state.jsInstance);
                 let jsInstanceHost;
@@ -91,13 +107,14 @@ class DialogAdapterDebug extends React.Component {
         }
     };
 
+
     renderJavascriptList() {
         const js = this.state.instances.filter(item => item.id.startsWith('javascript.'));
         if (js.length < 2) {
             return null;
         } else {
             return <Grid item>
-                <div>{I18n.t('Host')}</div>
+                <div className={this.props.classes.title}>{I18n.t('Host')}</div>
                 <List component="nav">
                     {js.map(item => <ListItem
                         button
@@ -116,9 +133,10 @@ class DialogAdapterDebug extends React.Component {
         if (!this.state.jsInstance) {
             return <Grid item/>;
         } else {
-            const instances = this.state.instances.filter(item => item.id !== this.state.jsInstance && item.host === this.state.jsInstanceHost);
+            const instances = this.state.instances.filter(item =>
+                item.id !== this.state.jsInstance && item.host === this.state.jsInstanceHost && (!this.state.filter || item.id.includes(this.state.filter.toLowerCase()) ));
             return <Grid item>
-                <div>{I18n.t('Instances')}</div>
+                <div className={this.props.classes.title}>{I18n.t('Instances')}</div>
                 <List component="nav">
                     {instances.map(item => <ListItem
                         button
@@ -139,16 +157,43 @@ class DialogAdapterDebug extends React.Component {
             disableBackdropClick
             disableEscapeKeyDown
             maxWidth="md"
-            fullWidth={true}
+            fullWidth={false}
             open={true}
             aria-labelledby="confirmation-dialog-title"
         >
             <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('Debug instance')}</DialogTitle>
             <DialogContent>
-                <Grid container>
-                    {this.renderJavascriptList()}
-                    {this.renderInstances()}
+                <Grid container direction="column">
+                    <Grid item>
+                        <Input
+                            classes={{root: this.props.classes.filterWithButton}}
+                            value={this.state.filter}
+                            placeholder={I18n.t('Filter')}
+                            onChange={e => {
+                                this.setState({filter: e.target.value});
+                                window.localStorage.setItem('javascript.debug.filter', e.target.value);
+                            }}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    {this.state.filter ? <IconButton
+                                        size="small"
+                                        aria-label="toggle password visibility"
+                                        onClick={() => this.setState({filter: ''})}
+                                    >
+                                        <IconClose />
+                                    </IconButton> : ''}
+                                </InputAdornment>
+                            }
+                        />
+                    </Grid>
+                    <Grid item>
+                        <Grid container>
+                            {this.renderJavascriptList()}
+                            {this.renderInstances()}
+                        </Grid>
+                    </Grid>
                 </Grid>
+
             </DialogContent>
             <DialogActions>
                 <Button onClick={this.handleOk} disabled={!this.state.jsInstance || !this.state.adapterToDebug} color="primary"><IconOk className={this.props.classes.buttonIcon}/>{I18n.t('Start')}</Button>

@@ -916,9 +916,9 @@ class Editor extends React.Component {
             const changedAll = Object.keys(this.state.changed).filter(id => this.state.changed[id]).length;
             const changed = this.state.changed[this.state.selected];
             return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
-                {this.state.menuOpened && this.props.onLocate && <IconButton className={this.props.classes.toolbarButtons} key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate /></IconButton>}
-                {!changed && isInstanceRunning && <IconButton key="restart" disabled={this.props.debugMode} variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>}
-                {!changed && !isScriptRunning && <span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>}
+                {!this.props.debugInstance && this.state.menuOpened && this.props.onLocate && <IconButton className={this.props.classes.toolbarButtons} key="locate" title={I18n.t('Locate file')} onClick={() => this.props.onLocate(this.state.selected)}><IconLocate /></IconButton>}
+                {!this.props.debugInstance && !changed && isInstanceRunning && <IconButton key="restart" disabled={this.props.debugMode} variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onRestart()} title={I18n.t('Restart')}><IconRestart /></IconButton>}
+                {!this.props.debugInstance && !changed && !isScriptRunning && <span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>}
                 {!changed && isScriptRunning && !isInstanceRunning && <span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>}
                 {changed && <Button key="save" variant="contained" className={clsx(this.props.classes.textButton, this.props.classes.saveButton, 'button-save')} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={this.props.classes.textIcon} /></Button>}
                 {(changedAll > 1 || (changedAll === 1 && !changed)) && <Button key="saveall" variant="contained" className={this.props.classes.textButton} onClick={() => this.onSaveAll()}>{I18n.t('Save all')}<IconSave className={this.props.classes.textIcon} /></Button>}
@@ -946,12 +946,12 @@ class Editor extends React.Component {
                         onClick={() => this.sendCommandToBlockly('check')}>
                         <IconCheck /></IconButton>}
 
-                {!this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton key="select-cron" aria-label="create CRON"
+                {!this.props.debugMode && !this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton key="select-cron" aria-label="create CRON"
                     title={I18n.t('Create or edit CRON or time wizard')}
                     className={this.props.classes.toolbarButtons}
                     onClick={() => this.setState({ showCron: true })}><IconCron /></IconButton>}
 
-                {!this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton key="select-id" aria-label="select ID"
+                {!this.props.debugMode && !this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton key="select-id" aria-label="select ID"
                     title={I18n.t('Insert object ID')}
                     className={this.props.classes.toolbarButtons}
                     onClick={() => this.setState({ showSelectId: true })}><IconSelectId /></IconButton>}

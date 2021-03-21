@@ -406,7 +406,7 @@ class Stack extends React.Component {
             let items = this.props.scopes?.local?.properties?.result.map(item => this.renderScope(this.props.scopes.id, item, 'local'));
             items && items.forEach(item => result.push(item));
 
-            items = this.props.scopes?.closure?.properties?.result.map(item => this.renderScope(this.props.scopes.id, item, 'local'));
+            items = this.props.scopes?.closure?.properties?.result.map(item => this.renderScope(this.props.scopes.id, item, 'closure'));
             items && items.forEach(item => result.push(item));
 
             return <table style={{width: '100%'}}>

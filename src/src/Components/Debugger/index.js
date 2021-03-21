@@ -13,6 +13,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
+import Badge from '@material-ui/core/Badge';
 
 import {MdClose as IconClose, MdPlayArrow as IconRun} from 'react-icons/md';
 import { MdPause as IconPause } from 'react-icons/md';
@@ -154,6 +155,9 @@ class Debugger extends React.Component {
             currentFrame: 0,
             scopes: {},
             queryBreakpoints: null,
+            logErrors: 0,
+            logWarnings: 0,
+            logs: 0,
         };
 
         this.scripts = {};
@@ -166,7 +170,7 @@ class Debugger extends React.Component {
                 resolve(this.props.debugInstance.instance);
             } else {
                 this.props.socket.getObject(this.props.src)
-                    .then(obj => obj?.common?.engine?.replace('system.adapter.', ''));
+                    .then(obj => resolve(obj?.common?.engine?.replace('system.adapter.', '')));
             }
         })
             .then(instance =>
@@ -328,6 +332,13 @@ class Debugger extends React.Component {
                     console.push({text: data.text, severity: data.severity, ts: data.ts});
                     this.setState({console});
                 } else {
+                    if (data.severity === 'error') {
+                        this.setState({logErrors: this.state.logErrors + 1});
+                    } else if (data.severity === 'warn') {
+                        this.setState({logWarnings: this.state.logWarnings + 1});
+                    } else {
+                        this.setState({logs: this.state.logs + 1});
+                    }
                     this.console = this.console || [...this.state.console];
                     this.console.push({text: data.text, severity: data.severity, ts: data.ts});
                 }
@@ -664,12 +675,30 @@ class Debugger extends React.Component {
         return <Console
             theme={this.props.theme}
             console={this.state.console}
-            onClearAllLogs={() => this.setState({console: []})}
+            onClearAllLogs={() => this.setState({console: [], logErrors: 0, logWarning: 0, logs: 0})}
         />;
     }
 
     renderTools() {
         const disabled = !this.state.tabs || !this.state.started;
+
+        let _console;
+        if (this.state.logErrors) {
+            _console = <Badge badgeContent={this.state.logErrors} color="error">
+                <span>{I18n.t('Console')}</span>
+            </Badge>;
+        } else if (this.state.logWarnings) {
+            _console = <Badge badgeContent={this.state.logWarnings} color="secondary">
+                <span>{I18n.t('Console')}</span>
+            </Badge>;
+        } else if (this.state.logs) {
+            _console = <Badge badgeContent={this.state.logs} color="default">
+                <span>{I18n.t('Console')}</span>
+            </Badge>;
+        } else {
+            _console = I18n.t('Console');
+        }
+
         return <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
             <Tabs
                 classes={{root: this.props.classes.tabsRoot}}
@@ -681,9 +710,12 @@ class Debugger extends React.Component {
                     const newState = {toolsTab: value};
 
                     // load logs from buffer
-                    if (this.console) {
+                    if (this.console && value === 'console') {
                         newState.console = this.console;
                         this.console = null;
+                        newState.logs = 0;
+                        newState.logWarnings = 0;
+                        newState.logErrors = 0;
                     }
 
                     window.localStorage.setItem('javascript.tools.tab', value);
@@ -693,7 +725,12 @@ class Debugger extends React.Component {
                 scrollButtons="auto"
             >
                 <Tab classes={{root: this.props.classes.tabRoot}} disabled={disabled} label={I18n.t('Stack')} value="stack"/>
-                <Tab classes={{root: this.props.classes.tabRoot}} disabled={disabled} label={I18n.t('Console')} value="console"/>
+                <Tab
+                    classes={{root: this.props.classes.tabRoot}}
+                    disabled={disabled}
+                    label={_console}
+                    value="console"
+                />
             </Tabs>
             <div style={{width: '100%', height: 'calc(100% - 36px)', overflow: 'hidden'}}>
                 {this.state.toolsTab === 'stack' && !disabled ? this.renderFrames() : null}

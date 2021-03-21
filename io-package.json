@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.1.0",
+        "version": "5.1.1",
         "news": {
+            "5.1.1": {
+                "en": "Implemented the debug of the instances from javascript adapter",
+                "de": "Das Debuggen der Instanzen vom Javascript-Adapter wurde implementiert",
+                "ru": "Реализована отладка экземпляров из адаптера javascript.",
+                "pt": "Implementado o debug das instâncias do adaptador javascript",
+                "nl": "De foutopsporing van de instanties geïmplementeerd vanaf de javascript-adapter",
+                "fr": "Implémentation du débogage des instances depuis l'adaptateur javascript",
+                "it": "Implementato il debug delle istanze dall'adattatore javascript",
+                "es": "Implementé la depuración de las instancias desde el adaptador javascript.",
+                "pl": "Zaimplementowano debugowanie instancji z adaptera javascript",
+                "zh-cn": "通过javascript适配器实现了实例的调试"
+            },
             "5.1.0": {
                 "en": "Implemented the debug of scripts possibility",
                 "de": "Implementierung der Möglichkeit zum Debuggen von Skripten",
@@ -249,18 +261,6 @@
                 "es": "Manejar más casos con nombres de script / id de estado no válidos (Sentry IOBROKER-JAVASCRIPT-5R)",
                 "pl": "Obsługuj więcej przypadków z nieprawidłowymi nazwami skryptów / identyfikatorami stanów (Sentry IOBROKER-JAVASCRIPT-5R)",
                 "zh-cn": "使用无效的脚本名称/状态ID处理更多案件（Sentry IOBROKER-JAVASCRIPT-5R）"
-            },
-            "4.10.13": {
-                "en": "Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-4B)",
-                "de": "Behandeln Sie weitere Fälle mit ungültigen Skriptnamen / Status-IDs (Sentry IOBROKER-JAVASCRIPT-4B).",
-                "ru": "Обработка большего количества случаев с недопустимыми именами сценариев / идентификаторами состояний (Sentry IOBROKER-JAVASCRIPT-4B)",
-                "pt": "Trate mais casos com nomes de script / ids de estado inválidos (Sentry IOBROKER-JAVASCRIPT-4B)",
-                "nl": "Behandel meer gevallen met ongeldige scriptnamen / status-id's (Sentry IOBROKER-JAVASCRIPT-4B)",
-                "fr": "Gérez plus de cas avec des noms de script / ID d'état non valides (Sentry IOBROKER-JAVASCRIPT-4B)",
-                "it": "Gestisci più casi con nomi di script / id di stato non validi (Sentry IOBROKER-JAVASCRIPT-4B)",
-                "es": "Maneje más casos con nombres de script / id de estado no válidos (Sentry IOBROKER-JAVASCRIPT-4B)",
-                "pl": "Obsługuj więcej przypadków z nieprawidłowymi nazwami skryptów / identyfikatorami stanów (Sentry IOBROKER-JAVASCRIPT-4B)",
-                "zh-cn": "使用无效的脚本名称/状态ID处理更多案件（Sentry IOBROKER-JAVASCRIPT-4B）"
             }
         },
         "desc": {

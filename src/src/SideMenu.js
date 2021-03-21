@@ -1170,6 +1170,7 @@ class SideDrawer extends React.Component {
             </MenuItem> : null}
             <MenuItem
                 key="expertMode"
+                disabled={this.props.debugMode}
                 selected={this.state.expertMode}
                 onClick={event => {
                     event.stopPropagation();
@@ -1189,6 +1190,7 @@ class SideDrawer extends React.Component {
                 <IconExport className={this.props.classes.iconDropdownMenu} />{I18n.t('Export all scripts')}
             </MenuItem>}
             {this.props.onImport && <MenuItem
+                disabled={this.props.debugMode}
                 key="import"
                 onClick={event => {
                     event.stopPropagation();
@@ -1220,6 +1222,7 @@ class SideDrawer extends React.Component {
                 <IconCopy className={this.props.classes.iconDropdownMenu} />{I18n.t('Copy script')}
             </MenuItem>}
             {this.state.expertMode && <MenuItem
+                disabled={this.props.debugMode}
                 key="debugInstance"
                 onClick={event => {
                     event.stopPropagation();
