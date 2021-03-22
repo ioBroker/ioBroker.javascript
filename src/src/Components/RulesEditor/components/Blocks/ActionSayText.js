@@ -125,7 +125,6 @@ const sayitEngines = {
     "tr-TR_AP_Female":          {gender: "Female", engine: "polly",   params: ['accessKey', 'secretKey', 'region'], language: "tr-TR",      ename: "Filiz",      ssml: true, name: "AWS Polly - tr-TR - Female - Filiz"}
 };
 
-
 class ActionSayText extends GenericBlock {
     constructor(props) {
         super(props, ActionSayText.getStaticData());
@@ -133,16 +132,18 @@ class ActionSayText extends GenericBlock {
 
     static compile(config, context) {
         if (!config.text) {
-            return '// no text defined'
+            return `// no text defined
+_sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
         } else {
-            return `const subActionVar${config._id} = "${config.language && config.language !== '_' ? config.language + ';' : ''}${config.volume ? config.volume + ';' : ''}${(config.text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)};
+            return `// Sayit ${config.text || ''}
+\t\tconst subActionVar${config._id} = "${config.language && config.language !== '_' ? config.language + ';' : ''}${config.volume ? config.volume + ';' : ''}${(config.text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)};
 \t\t_sendToFrontEnd(${config._id}, {text: subActionVar${config._id}});
 \t\tawait setStateAsync("${config.instance}.tts.text", subActionVar${config._id});`;
         }
     }
 
     renderDebug(debugMessage) {
-        return I18n.t('Say:') + ' ' + debugMessage.data.exec;
+        return `${I18n.t('Say:')} ${debugMessage.data.text}`;
     }
 
     onTagChange(tagCard) {

@@ -1,4 +1,5 @@
 import GenericBlock from '../GenericBlock';
+import I18n from "@iobroker/adapter-react/i18n";
 
 class ActionPause extends GenericBlock {
     constructor(props) {
@@ -6,8 +7,16 @@ class ActionPause extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `await wait(${config.pause} * ${config.unit === 'ms' ? 1 : 
-            (config.unit === 's' ? 1000 : (config.unit === 'm' ? 60000 : 3600000))});`;
+        const ms = config.unit === 'ms' ? 1 : (config.unit === 's' ? 1000 : (config.unit === 'm' ? 60000 : 3600000))
+
+        return `// pause for ${ms}ms
+\t\t_sendToFrontEnd(${config._id}, {paused: true});\n
+\t\tawait wait(${config.pause} * ${ms});\n
+\t\t_sendToFrontEnd(${config._id}, {paused: false});`;
+    }
+
+    renderDebug(debugMessage) {
+        return I18n.t('Paused: %s', debugMessage.data.paused);
     }
 
     _getOptions(pause) {

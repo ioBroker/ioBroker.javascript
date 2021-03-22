@@ -45,7 +45,8 @@ class ActionSetState extends GenericBlock {
         } else {
             v = `const subActionVar${config._id} = ${value}`;
         }
-        return `${v};
+        return `// set state ${config.oid} to ${config.toggle && !config.useTrigger ? 'toggle' : value} 
+\t\t${v};
 \t\t_sendToFrontEnd(${config._id}, {val: subActionVar${config._id}, ack: ${config.tagCard === 'update'}});
 \t\tawait setStateAsync("${config.oid}", subActionVar${config._id}, ${config.tagCard === 'update'});`;
     }

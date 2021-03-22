@@ -1,4 +1,5 @@
 import GenericBlock from '../GenericBlock';
+import I18n from '@iobroker/adapter-react/i18n';
 
 class ActionWhatsappcmb extends GenericBlock {
     constructor(props) {
@@ -9,10 +10,18 @@ class ActionWhatsappcmb extends GenericBlock {
     static compile(config, context) {
         let text = (config.text || '').replace(/"/g, '\\"');
         if (!text) {
-            return '// no text defined'
+            return `// no text defined
+_sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
         } else {
-            return `sendTo("${config.instance}", "send", {text: "${(text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}${config.phone ? `, phone: "${config.phone.replace(/"/g, '\\"')}"` : ''}});`;
+            return `// whatsapp ${text || ''}
+\t\tconst subActionVar${config._id} = "${(text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)};
+\t\t_sendToFrontEnd(${config._id}, {text: subActionVar${config._id}});
+\t\tsendTo("${config.instance}", "send", {text: subActionVar${config._id}${config.phone ? `, phone: "${config.phone.replace(/"/g, '\\"')}"` : ''}});`;
         }
+    }
+
+    renderDebug(debugMessage) {
+        return `${I18n.t('Sent:')} ${debugMessage.data.text}`;
     }
 
     onTagChange(tagCard) {

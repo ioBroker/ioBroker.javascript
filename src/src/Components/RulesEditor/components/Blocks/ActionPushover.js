@@ -9,15 +9,23 @@ class ActionPushover extends GenericBlock {
     static compile(config, context) {
         let text = (config.text || '').replace(/"/g, '\\"');
         if (!text) {
-            return '// no text defined'
+            return `// no text defined
+_sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
         } else {
-            return `sendTo("${config.instance}", "send", {
-            message: "${text}"${GenericBlock.getReplacesInText(context)},
-            title: "${(config.title || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)},
-            sound: "${config.sound}"
-            priority: ${config.priority}
-        });`;
+            return `// Pushover ${config.text || ''}
+\t\tconst subActionVar${config._id} = "${text}"${GenericBlock.getReplacesInText(context)};
+\t\t_sendToFrontEnd(${config._id}, {text: subActionVar${config._id}});\`;            
+\t\tsendTo("${config.instance}", "send", {
+\t\t    message: subActionVar${config._id},
+\t\t    title: "${(config.title || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)},
+\t\t    sound: "${config.sound}",
+\t\t    priority: ${config.priority}
+\t\t});`;
         }
+    }
+
+    renderDebug(debugMessage) {
+        return 'Sent: ' + debugMessage.data.text;
     }
 
     onTagChange(tagCard) {

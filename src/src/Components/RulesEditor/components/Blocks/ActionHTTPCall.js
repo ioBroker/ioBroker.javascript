@@ -6,7 +6,14 @@ class ActionHTTPCall extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `request("${(config.url || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)});`;
+        return `// HTTP request ${config.url}
+\t\tconst subActionVar${config._id} = "${(config.url || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)};
+\t\t_sendToFrontEnd(${config._id}, {url: subActionVar${config._id}});
+\t\trequest(subActionVar${config._id});`;
+    }
+
+    renderDebug(debugMessage) {
+        return 'URL: ' + debugMessage.data.url;
     }
 
     onTagChange(tagCard) {

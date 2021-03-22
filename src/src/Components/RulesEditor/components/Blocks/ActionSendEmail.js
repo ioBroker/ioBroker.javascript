@@ -1,4 +1,5 @@
 import GenericBlock from '../GenericBlock';
+import I18n from '@iobroker/adapter-react/i18n';
 
 class ActionSendEmail extends GenericBlock {
     constructor(props) {
@@ -7,14 +8,22 @@ class ActionSendEmail extends GenericBlock {
 
     static compile(config, context) {
         if (!config.recipients) {
-            return '// no recipients defined'
+            return `// no recipients defined'
+_sendToFrontEnd(${config._id}, {text: 'No recipients defined'});`;
         } else {
-            return `sendTo("${config.instance || 'email.0'}", {
-            to:      "${config.recipients || ''}",
-            subject: "${(config.subject || 'ioBroker').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)},
-            text:    "${(config.text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}
-        });`;
+            return `// Send Email ${config.text || ''}
+\t\tconst subActionVar${config._id} = "${(config.text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)};
+\t\t_sendToFrontEnd(${config._id}, {text: subActionVar${config._id}});
+\t\tsendTo("${config.instance || 'email.0'}", {
+\t\t    to:      "${config.recipients || ''}",
+\t\t    subject: "${(config.subject || 'ioBroker').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)},
+\t\t    text:    subActionVar${config._id}
+\t\t});`;
         }
+    }
+
+    renderDebug(debugMessage) {
+        return `${I18n.t('Sent:')} ${debugMessage.data.text}`;
     }
 
     onTagChange(tagCard) {

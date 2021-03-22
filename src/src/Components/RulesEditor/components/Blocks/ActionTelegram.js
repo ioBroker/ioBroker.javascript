@@ -1,4 +1,5 @@
 import GenericBlock from '../GenericBlock';
+import i18n from '@iobroker/adapter-react/i18n';
 
 class ActionTelegram extends GenericBlock {
     constructor(props) {
@@ -9,10 +10,18 @@ class ActionTelegram extends GenericBlock {
     static compile(config, context) {
         let text = (config.text || '').replace(/"/g, '\\"');
         if (!text) {
-            return '// no text defined'
+            return `// no text defined
+_sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
         } else {
-            return `sendTo("${config.instance}", "send", ${config.user && config.user !== '_' ? `{user: "${(config.user || '').replace(/"/g, '\\"')}", text: "${(text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}}` : `"${(text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}`});`;
+            return `// Telegram ${text || ''}
+\t\tconst subActionVar${config._id} = "${(text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)};
+\t\t_sendToFrontEnd(${config._id}, {text: subActionVar${config._id}});
+\t\tsendTo("${config.instance}", "send", ${config.user && config.user !== '_' ? `{user: "${(config.user || '').replace(/"/g, '\\"')}", text: subActionVar${config._id}}` : `subActionVar${config._id}`});`;
         }
+    }
+
+    renderDebug(debugMessage) {
+        return `${I18n.t('Sent:')} ${debugMessage.data.text}`;
     }
 
     onValueChanged(value, attr) {

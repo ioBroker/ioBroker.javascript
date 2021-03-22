@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 5.0.12 (2021-03-07)
+* (bluefox) fixed error in blockly
+
 ## 5.0.11 (2021-03-07)
 * (bluefox) added date to the time condition
 

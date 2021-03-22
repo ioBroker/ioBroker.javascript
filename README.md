@@ -37,6 +37,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.1.2 (2021-03-22)
+* (bluefox) Showed the runtime information for the rules
+
 ### 5.1.1 (2021-03-21)
 * (bluefox) Implemented the debug of the instances from javascript adapter
 
@@ -48,9 +51,6 @@ And then call `npm run build`.
 
 ### 5.0.14 (2021-03-11)
 * (bluefox) fixed the font for the editor 
-
-### 5.0.12 (2021-03-07)
-* (bluefox) fixed error in blockly
 
 ## License
 

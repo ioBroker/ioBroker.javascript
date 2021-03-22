@@ -1,5 +1,5 @@
 import GenericBlock from '../GenericBlock';
-import I18n from "@iobroker/adapter-react/i18n";
+import I18n from '@iobroker/adapter-react/i18n';
 
 class ActionPrintText extends GenericBlock {
     constructor(props) {
@@ -7,7 +7,8 @@ class ActionPrintText extends GenericBlock {
     }
 
     static compile(config, context) {
-        return `const subActionVar${config._id} = "${(config.text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)};
+        return `// Log ${config.text}
+\t\tconst subActionVar${config._id} = "${(config.text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)};
 \t\t_sendToFrontEnd(${config._id}, {text: subActionVar${config._id}});
 \t\tconsole.log(subActionVar${config._id});`;
     }

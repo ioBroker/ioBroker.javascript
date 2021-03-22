@@ -156,7 +156,7 @@ function compileActions(actions, context, blocks) {
             result.push(found.compile(action, context));
         }
     });
-    return `\t\t${result.join('\n\t\t')}` || '';
+    return `\t\t${result.join('\n\n\t\t')}` || '';
 }
 
 function compileConditions(conditions, context, blocks) {

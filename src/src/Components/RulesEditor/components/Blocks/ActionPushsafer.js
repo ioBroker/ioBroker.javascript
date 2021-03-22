@@ -9,17 +9,25 @@ class ActionPushsafer extends GenericBlock {
     static compile(config, context) {
         let text = (config.text || '').replace(/"/g, '\\"');
         if (!text) {
-            return '// no text defined'
+            return `// no text defined
+_sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
         } else {
-            return `sendTo("${config.instance}", "send", {
-            message: "${text}"${GenericBlock.getReplacesInText(context)},
-            title: "${(config.title || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)},
-            ${config.device ? `device: "${config.device}",` : ''}
-            ${config.sound && config.sound !== '_' ? `sound: "${config.sound}",` : ''}
-            priority: ${config.priority},
-            ${config.vibration && config.vibration !== '_' ? `vibration: ${config.vibration},` : ''}
-        });`;
+            return `// Pushsafer ${config.text || ''}
+\t\tconst subActionVar${config._id} = "${text}"${GenericBlock.getReplacesInText(context)};
+\t\t_sendToFrontEnd(${config._id}, {text: subActionVar${config._id}});            
+\t\tsendTo("${config.instance}", "send", {
+\t\t    message: subActionVar${config._id},
+\t\t    title: "${(config.title || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)},
+\t\t    ${config.device ? `device: "${config.device}",` : ''}
+\t\t    ${config.sound && config.sound !== '_' ? `sound: "${config.sound}",` : ''}
+\t\t    priority: ${config.priority},
+\t\t    ${config.vibration && config.vibration !== '_' ? `vibration: ${config.vibration},` : ''}
+\t\t});`;
         }
+    }
+
+    renderDebug(debugMessage) {
+        return 'Sent: ' + debugMessage.data.text;
     }
 
     onTagChange(tagCard) {

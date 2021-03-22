@@ -1,4 +1,5 @@
 import GenericBlock from '../GenericBlock';
+import I18n from '@iobroker/adapter-react/i18n';
 
 class ActionFunction extends GenericBlock {
     constructor(props) {
@@ -6,9 +7,18 @@ class ActionFunction extends GenericBlock {
     }
 
     static compile(config, context) {
-        const lines = (config.func || '').split('\n').map((line, i) => i ? '        ' + line : line);
+        const lines = (config.func || '')
+            .split('\n')
+            .map((line, i) => '        ' + line);
+
+        lines.unshift(`\t\t_sendToFrontEnd(${config._id}, {func: 'executed'});`);
+        lines.unshift(`// user function`);
 
         return lines.join('\n');
+    }
+
+    renderDebug(debugMessage) {
+        return I18n.t('Function: executed');
     }
 
     onTagChange(tagCard) {

@@ -1,4 +1,5 @@
 import GenericBlock from '../GenericBlock';
+import I18n from '@iobroker/adapter-react/i18n';
 
 class ActionSetStateDelayed extends GenericBlock {
     constructor(props) {
@@ -27,12 +28,35 @@ class ActionSetStateDelayed extends GenericBlock {
                 value = `"${value.replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)}`;
             }
         }
-
+        let v;
         if (config.toggle && !config.useTrigger) {
-            return `setStateDelayed("${config.oid}", !(await getStateAsync("${config.oid}")).val, ${config.tagCard === 'update'}, ${parseInt(config.delay, 10)}, ${config.clearRunning ? 'true' : 'false'});`;
+            v = `const subActionVar${config._id} = !(await getStateAsync("${config.oid}")).val`;
         } else {
-            return `setStateDelayed("${config.oid}", ${value}, ${config.tagCard === 'update'}, ${parseInt(config.delay, 10)}, ${config.clearRunning ? 'true' : 'false'});`;
+            v = `const subActionVar${config._id} = ${value}`;
         }
+
+        return `// set delayed state ${config.oid} to ${config.toggle && !config.useTrigger ? 'toggle' : value} with delay of ${config.delay}ms
+\t\t${v};
+\t\t_sendToFrontEnd(${config._id}, {val: subActionVar${config._id}, ack: ${config.tagCard === 'update'}});
+\t\tsetStateDelayed("${config.oid}", subActionVar${config._id}, ${config.tagCard === 'update'}, ${parseInt(config.delay, 10)}, ${config.clearRunning ? 'true' : 'false'});`;
+    }
+
+    static renderValue(val) {
+        if (val === null) {
+            return 'null';
+        } else if (val === undefined) {
+            return 'undefined';
+        } else if (Array.isArray(val)) {
+            return val.join(', ');
+        } else if (typeof val === 'object') {
+            return JSON.stringify(val);
+        } else {
+            return val.toString();
+        }
+    }
+
+    renderDebug(debugMessage) {
+        return <span>{I18n.t('Set:')} <span className={debugMessage.data.ack ? this.props.classes.valueAck : this.props.classes.valueNotAck}>{ActionSetStateDelayed.renderValue(debugMessage.data.val)}</span></span>;
     }
 
     _setInputs(useTrigger, toggle) {
