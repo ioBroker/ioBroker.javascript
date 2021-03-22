@@ -1,5 +1,5 @@
 import GenericBlock from '../GenericBlock';
-import i18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react/i18n';
 
 class ActionTelegram extends GenericBlock {
     constructor(props) {
