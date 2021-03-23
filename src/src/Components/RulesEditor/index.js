@@ -14,9 +14,9 @@ import DialogExport from '../../Dialogs/Export';
 import DialogImport from '../../Dialogs/Import';
 import clsx from 'clsx';
 
-const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourOpen, command, scriptId }) => {
+const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourOpen, command, scriptId, changed, running }) => {
     // eslint-disable-next-line no-unused-vars
-    const { blocks, socket, setOnUpdate, setOnDebugMessage } = useContext(ContextWrapperCreate);
+    const { blocks, socket, setOnUpdate, setOnDebugMessage, setEnableSimulation } = useContext(ContextWrapperCreate);
     const [allBlocks, setAllBlocks] = useState([]);
     const [userRules, setUserRules] = useState(Compile.code2json(code));
     const [importExport, setImportExport] = useState('');
@@ -62,17 +62,21 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
                 //setJsInstance(_jsInstance);
                 socket.subscribeObject(scriptId, handler);
                 _jsInstance && socket.subscribeState(`${_jsInstance}.alive`, handler);
-                socket.subscribeState(_jsInstance.replace(/^system\.adapter\./, '') + '.debug.rules', handlerStatus);
+                _jsInstance && socket.subscribeState(_jsInstance.replace(/^system\.adapter\./, '') + '.debug.rules', handlerStatus);
             });
 
         return function cleanup() {
             _jsInstance && socket.unsubscribeObject(`${_jsInstance}.alive`, handler);
             socket.unsubscribeState(scriptId, handler);
-            _jsAlive && socket.sendTo(_jsInstance.replace(/^system\.adapter\./, ''), 'rulesOff', scriptId);
-            socket.unsubscribeState(_jsInstance.replace(/^system\.adapter\./, '') + '.debug.rules', handlerStatus);
+            _jsAlive && _jsInstance && socket.sendTo(_jsInstance.replace(/^system\.adapter\./, ''), 'rulesOff', scriptId);
+            _jsInstance && socket.unsubscribeState(_jsInstance.replace(/^system\.adapter\./, '') + '.debug.rules', handlerStatus);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        setEnableSimulation(!changed && running);
+    }, [changed, running, setEnableSimulation]);
 
     useEffect(() => {
         if (!!command) {

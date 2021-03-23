@@ -25,7 +25,7 @@ import CustomDate from '../CustomDate';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import utils from '../../helpers/utils';
 import clsx from 'clsx';
-import { STEPS } from "../../helpers/Tour";
+import { STEPS } from '../../helpers/Tour';
 import { getSelectIdIcon } from '@iobroker/adapter-react/Components/Icon';
 
 class GenericBlock extends PureComponent {
@@ -64,6 +64,7 @@ class GenericBlock extends PureComponent {
 
             settings,
             debugMessage: null,
+            enableSimulation: this.props.enableSimulation,
         };
 
         this.debugHideTimeout = null;
@@ -89,8 +90,13 @@ class GenericBlock extends PureComponent {
         if (JSON.stringify(settings) !== JSON.stringify(this.state.settings)) {
             newState = newState || {};
             newState.settings = settings;
-            this.setState({ settings });
         }
+
+        if (this.state.enableSimulation !== nextProps.enableSimulation) {
+            newState = newState || {};
+            newState.enableSimulation = nextProps.enableSimulation;
+        }
+
         newState && this.setState(newState);
     }
 

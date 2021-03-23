@@ -1095,6 +1095,8 @@ class Editor extends React.Component {
             this.state.visible
         ) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
+            const isInstanceRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].engine && this.state.runningInstances[this.scripts[this.state.selected].engine];
+            const isScriptRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].enabled;
 
             return <div className={clsx(this.props.classes.editorDiv)} key="flowEditorDiv">
                 <RulesEditor
@@ -1102,7 +1104,8 @@ class Editor extends React.Component {
                     setTourStep={this.setTourStep}
                     tourStep={this.state.tourStep}
                     isTourOpen={this.state.isTourOpen}
-
+                    changed={this.state.changed[this.state.selected]}
+                    running={isInstanceRunning && isScriptRunning}
                     command={this.state.cmdToRules}
                     key="flowEditor"
                     themeType={this.state.themeType}

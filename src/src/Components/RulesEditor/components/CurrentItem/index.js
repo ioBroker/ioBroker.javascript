@@ -12,7 +12,7 @@ import GenericBlock from '../GenericBlock';
 const CurrentItem = memo(props => {
     const { setUserRules, userRules, _id, id, blockValue, active, acceptedBy, isTourOpen, setTourStep, tourStep } = props;
     const [anchorEl, setAnchorEl] = useState(null);
-    const { blocks, socket, onUpdate, setOnUpdate, onDebugMessage } = useContext(ContextWrapperCreate);
+    const { blocks, socket, onUpdate, setOnUpdate, onDebugMessage, enableSimulation } = useContext(ContextWrapperCreate);
 
     useEffect(() => {
         console.log('New message !!' + JSON.stringify(onDebugMessage));
@@ -46,13 +46,14 @@ const CurrentItem = memo(props => {
             {...props}
             onUpdate={onUpdate}
             setOnUpdate={setOnUpdate}
+            enableSimulation={enableSimulation}
             onDebugMessage={onDebugMessage}
             onChange={onChange}
             className={null}
             socket={socket}
         />;
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userRules, onUpdate, onDebugMessage]);
+    }, [userRules, onUpdate, onDebugMessage, enableSimulation]);
 
     const [isDelete, setIsDelete] = useState(false);
 
