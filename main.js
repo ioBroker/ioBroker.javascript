@@ -1978,7 +1978,7 @@ function debugStart(data) {
                     args.push('--breakOnStart');
                 }
 
-                debugState.child = fork(__dirname + '/inspect.js', args, options);
+                debugState.child = fork(__dirname + '/lib/inspect.js', args, options);
 
                 /*debugState.child.stdout.setEncoding('utf8');
                 debugState.child.stderr.setEncoding('utf8');
@@ -2030,9 +2030,16 @@ function debugStart(data) {
                         }
                     }
                 });
+                debugState.child.on('error', error => {
+                    adapter.log.error('Cannot start inspector: ' + error);
+                    adapter.setState('debug.from', JSON.stringify({cmd: 'error', error}), true);
+                });
 
                 debugState.child.on('exit', code => {
-                    adapter.setState('debug.from', JSON.stringify({cmd: 'debugStopped'}), true);
+                    if (code) {
+                        adapter.setState('debug.from', JSON.stringify({cmd: 'error', error: 'invalid response code: ' + code}), true);
+                    }
+                    adapter.setState('debug.from', JSON.stringify({cmd: 'debugStopped', code}), true);
                     debugState.child = null;
                     resolve(code);
                 });

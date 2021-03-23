@@ -37,6 +37,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.1.3 (2021-03-23)
+* (bluefox) fixed the error in the debugging
+
 ### 5.1.2 (2021-03-22)
 * (bluefox) Showed the runtime information for the rules
 
@@ -48,9 +51,6 @@ And then call `npm run build`.
 
 ### 5.0.15 (2021-03-13)
 * (bluefox) Rules: added "use trigger value" for the "set action" blocks
-
-### 5.0.14 (2021-03-11)
-* (bluefox) fixed the font for the editor 
 
 ## License
 

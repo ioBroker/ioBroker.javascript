@@ -13,4 +13,5 @@ gulpfile.js
 !/package.json
 !/LICENSE
 !/main.js
+!/inspect.js
 !/README.md

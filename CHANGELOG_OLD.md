@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 5.0.14 (2021-03-11)
+* (bluefox) fixed the font for the editor 
+
 ## 5.0.12 (2021-03-07)
 * (bluefox) fixed error in blockly
 

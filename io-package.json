@@ -20,31 +20,19 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.1.2",
+        "version": "5.1.3",
         "news": {
-            "5.1.2": {
-                "en": "Showed the runtime information for the rules",
-                "de": "Zeigt die Laufzeitinformationen für die Regeln an",
-                "ru": "Показал информацию о времени выполнения для правил",
-                "pt": "Mostrou as informações de tempo de execução para as regras",
-                "nl": "Toont de runtime-informatie voor de regels",
-                "fr": "Affiche les informations d'exécution pour les règles",
-                "it": "Ha mostrato le informazioni di runtime per le regole",
-                "es": "Mostró la información de tiempo de ejecución para las reglas",
-                "pl": "Pokazano informacje o czasie wykonywania reguł",
-                "zh-cn": "显示了规则的运行时信息"
-            },
-            "5.1.1": {
-                "en": "Implemented the debug of the instances from javascript adapter",
-                "de": "Das Debuggen der Instanzen vom Javascript-Adapter wurde implementiert",
-                "ru": "Реализована отладка экземпляров из адаптера javascript.",
-                "pt": "Implementado o debug das instâncias do adaptador javascript",
-                "nl": "De foutopsporing van de instanties geïmplementeerd vanaf de javascript-adapter",
-                "fr": "Implémentation du débogage des instances depuis l'adaptateur javascript",
-                "it": "Implementato il debug delle istanze dall'adattatore javascript",
-                "es": "Implementé la depuración de las instancias desde el adaptador javascript.",
-                "pl": "Zaimplementowano debugowanie instancji z adaptera javascript",
-                "zh-cn": "通过javascript适配器实现了实例的调试"
+            "5.1.3": {
+                "en": "fixed the error in the debugging",
+                "de": "Der Fehler beim Debuggen wurde behoben",
+                "ru": "исправлена ошибка в отладке",
+                "pt": "corrigiu o erro na depuração",
+                "nl": "de fout in de foutopsporing opgelost",
+                "fr": "corrigé l'erreur dans le débogage",
+                "it": "risolto l'errore nel debug",
+                "es": "corrigió el error en la depuración",
+                "pl": "naprawiono błąd w debugowaniu",
+                "zh-cn": "修复了调试中的错误"
             },
             "5.1.0": {
                 "en": "Implemented the debug of scripts possibility",
@@ -285,21 +273,17 @@
             "blokly"
         ],
         "materialize": true,
-        "materializeTabN": true,
         "readme": "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
         "enabled": true,
-        "main": "main.js",
         "license": "MIT",
         "compact": true,
-        "engineTypes": [
-            "Blockly",
-            "Javascript/js",
-            "Coffeescript/coffee",
-            "TypeScript/ts"
-        ],
         "adminTab": {
             "singleton": true,
-            "name": "Scripts"
+            "name": {
+                "en": "Scripts",
+                "de": "Skripte",
+                "ru": "Скрипты"
+            }
         },
         "docs": {
             "en": [
