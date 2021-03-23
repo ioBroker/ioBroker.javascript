@@ -34,6 +34,7 @@ const Transition = React.forwardRef((props, ref) =>
 class TriggerState extends GenericBlock {
     constructor(props) {
         super(props, TriggerState.getStaticData());
+        this.inputRef = React.createRef();
     }
 
     static compile(config, context) {
@@ -64,6 +65,19 @@ class TriggerState extends GenericBlock {
         }
     }
 
+    onWriteValue() {
+        this.setState({openSimulate: false});
+        let simulateValue = this.state.simulateValue;
+        window.localStorage.setItem(`javascript.app.${this.state.settings.oid}_ack`, this.state.simulateAck);
+        if (this.state.settings.oidType === 'boolean') {
+            simulateValue = simulateValue === true || simulateValue === 'true' || simulateValue === '1';
+        } else if (this.state.settings.oidType === 'number') {
+            simulateValue = parseFloat(simulateValue) || 0;
+        }
+        window.localStorage.setItem(`javascript.app.${this.state.settings.oid}`, simulateValue);
+        this.props.socket.setState(this.state.settings.oid, simulateValue, !!this.state.simulateAck);
+    }
+
     renderWriteState() {
         return <>
             <Button
@@ -71,9 +85,16 @@ class TriggerState extends GenericBlock {
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                    this.simulateValue = window.localStorage.getItem('javascript.app.' + this.state.settings.oid) || '';
-                    this.simulateAck = window.localStorage.getItem(`javascript.app.${this.state.settings.oid}_ack`) === 'true';
-                    this.setState({openSimulate: true});
+                    this.setState({
+                        openSimulate: true,
+                        simulateValue: this.state.settings.oidType === 'boolean' ?
+                            window.localStorage.getItem('javascript.app.' + this.state.settings.oid) === 'true' :
+                            (window.localStorage.getItem('javascript.app.' + this.state.settings.oid) || ''),
+                        simulateAck: window.localStorage.getItem(`javascript.app.${this.state.settings.oid}_ack`) === 'true'
+                    });
+                    setTimeout(() => {
+                        this.inputRef.current?.focus();
+                    }, 200);
                 }}>{I18n.t('Simulate')}</Button>
             <Dialog
                 open={!!this.state.openSimulate}
@@ -88,26 +109,28 @@ class TriggerState extends GenericBlock {
                     {this.state.settings.oidType === 'boolean' ?
                         <FormControlLabel
                             control={<Switch
-                                defaultChecked={!!this.simulateValue}
-                                onChange={e => {
-                                    this.simulateValue = e.target.checked;
-                                }}
+                                inputRef={this.inputRef}
+                                onKeyUp={e => e.keyCode === 13 && this.onWriteValue()}
+                                value={!!this.state.simulateValue}
+                                onChange={e => this.setState({simulateValue: e.target.checked})}
                             />}
                             label={I18n.t('Value')}
                         />
                         : <TextField
+                            inputRef={this.inputRef}
                             label={I18n.t('Value')}
                             fullWidth={true}
-                            defaultValue={this.simulateValue}
-                            onChange={e => this.simulateValue = e.target.value}
+                            onKeyUp={e => e.keyCode === 13 && this.onWriteValue()}
+                            value={this.state.simulateValue}
+                            onChange={e => this.setState({simulateValue: e.target.value})}
                         />
                     }
                     <br/>
                     <FormControlLabel
                         control={
                             <Checkbox
-                                defaultChecked={this.simulateAck}
-                                onChange={e => this.simulateAck = e.target.checked}
+                                checked={!!this.state.simulateAck}
+                                onChange={e => this.setState({simulateAck: e.target.checked})}
                                 color="primary"
                             />
                         }
@@ -117,17 +140,7 @@ class TriggerState extends GenericBlock {
                 <DialogActions>
                     <Button
                         variant="contained"
-                        onClick={() => {
-                            this.setState({openSimulate: false});
-                            window.localStorage.setItem(`javascript.app.${this.state.settings.oid}_ack`, this.simulateAck);
-                            if (this.state.settings.oidType === 'boolean') {
-                                this.simulateValue = this.simulateValue === true || this.simulateValue === 'true' || this.simulateValue === '1';
-                            } else if (this.state.settings.oidType === 'number') {
-                                this.simulateValue = parseFloat(this.simulateValue) || 0;
-                            }
-                            window.localStorage.setItem('javascript.app.' + this.state.settings.oid, this.simulateValue);
-                            this.props.socket.setState(this.state.settings.oid, this.simulateValue, this.simulateAck);
-                        }}
+                        onClick={() => this.onWriteValue()}
                         color="primary">
                         <IconCheck/>{I18n.t('Write')}
                     </Button>
