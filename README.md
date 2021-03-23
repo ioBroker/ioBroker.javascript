@@ -37,6 +37,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.1.4 (2021-03-23)
+* (bluefox) fixed the error with the simulation
+
 ### 5.1.3 (2021-03-23)
 * (bluefox) fixed the error in the debugging
 
@@ -48,9 +51,6 @@ And then call `npm run build`.
 
 ### 5.1.0 (2021-03-19)
 * (bluefox) Implemented the debug of scripts possibility
-
-### 5.0.15 (2021-03-13)
-* (bluefox) Rules: added "use trigger value" for the "set action" blocks
 
 ## License
 

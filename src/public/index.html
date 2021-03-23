@@ -30,6 +30,17 @@
             cb && cb();
           }
         };
+
+        // try reload if server is offline
+        if (src.indexOf('socket.io.js') !== -1) {
+          script.onerror = function () {
+            console.error('Cannot load socket.io. Retry in 5 seconds');
+            setTimeout(function (){
+              window.location.reload();
+            }, 5000);
+          };
+        }
+
         script.type='text/javascript';
         script.src = src;
         head.appendChild(script);

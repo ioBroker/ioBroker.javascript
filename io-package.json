@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.1.3",
+        "version": "5.1.4",
         "news": {
+            "5.1.4": {
+                "en": "fixed the error with the simulation",
+                "de": "Der Fehler bei der Simulation wurde behoben",
+                "ru": "исправлена ошибка моделирования",
+                "pt": "corrigiu o erro com a simulação",
+                "nl": "de fout opgelost met de simulatie",
+                "fr": "corrigé l'erreur avec la simulation",
+                "it": "risolto l'errore con la simulazione",
+                "es": "corrigió el error con la simulación",
+                "pl": "naprawiono błąd w symulacji",
+                "zh-cn": "通过仿真修复了错误"
+            },
             "5.1.3": {
                 "en": "fixed the error in the debugging",
                 "de": "Der Fehler beim Debuggen wurde behoben",

@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 5.0.15 (2021-03-13)
+* (bluefox) Rules: added "use trigger value" for the "set action" blocks
+
 ## 5.0.14 (2021-03-11)
 * (bluefox) fixed the font for the editor 
 
