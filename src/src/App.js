@@ -350,6 +350,10 @@ class App extends GenericApp {
         }
     };
 
+    onToggleExpertMode(expertMode) {
+        this.onExpertModeChange(expertMode);
+    }
+
     compareScripts(newScripts) {
         const oldIds = Object.keys(this.scripts);
         const newIds = Object.keys(newScripts);
@@ -917,7 +921,7 @@ class App extends GenericApp {
                             onThemeChange={themeName => {
                                 Utils.setThemeName(themeName);
                                 const themeType = Utils.getThemeType(themeName);
-                                this.setState({ themeName, themeType }, () => this.props.onThemeChange(themeName))
+                                this.setState({ themeName, themeType }, () => this.props.onThemeChange(themeName));
                             }}
                             runningInstances={this.state.runningInstances}
                             onExpertModeChange={this.onExpertModeChange.bind(this)}
