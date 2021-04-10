@@ -456,7 +456,7 @@ function startAdapter(options) {
                 return;
             }
 
-            if (id === adapter.namespace + '.debug.to' && !state.ack) {
+            if (id === adapter.namespace + '.debug.to' && stats && !state.ack) {
                 return !debugMode && debugSendToInspector(state.val);
             }
 
@@ -1908,7 +1908,7 @@ function debugStop() {
         debugSendToInspector({cmd: 'end'});
         debugState.endTimeout = setTimeout(() => {
             debugState.endTimeout = null;
-            debugState.child.kill('SIGTERM');
+            debugState.child && debugState.child.kill('SIGTERM');
         }, 500);
     } else {
         debugState.promiseOnEnd = Promise.resolve();
