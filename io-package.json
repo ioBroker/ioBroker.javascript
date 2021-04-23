@@ -327,7 +327,8 @@
             "sentry": {
                 "dsn": "https://f3b9740caaee4ee69eb68019d71526ff@sentry.iobroker.net/15"
             }
-        }
+        },
+        "tier": 1
     },
     "native": {
         "latitude": "",
