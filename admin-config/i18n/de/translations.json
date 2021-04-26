@@ -1,5 +1,5 @@
 {
-    "Add module": "Modul hinzufügen",
+    "Add module": "Homebridge-Plugin hinzufügen",
     "Additional npm modules:": "Zusätzliche NPM-Module",
     "Allow self signed certificates for URL requests": "Erlaube selbstsignierte Zertifikate für URL-Anfragen",
     "Astro settings": "Astro-Einstellungen",
@@ -12,7 +12,7 @@
     "Javascript scripts adapter settings": "Adapter-Einstellungen Javascript",
     "Latitude °:": "Breite °",
     "Longitude °:": "Länge °",
-    "Module names": "Modulnamen",
+    "Module names": "Homebridge-Pluginnamen",
     "Security relevant": "sicherheitsrelevant",
     "Settings": "Einstellungen",
     "Use system settings:": "Verwenden Sie die Systemeinstellungen",
