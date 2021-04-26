@@ -89,7 +89,7 @@ gulp.task('flat=>i18n', done => {
             }
             words[key] = index[key][lang];
         });
-        fs.writeFileSync(dir + '/' + lang + '.json', JSON.stringify(words, null, 2));
+        fs.writeFileSync(dir + '/' + lang + '.json', JSON.stringify(words, null, 4));
     });
     done();
 });
@@ -156,7 +156,7 @@ function build() {
         const version = JSON.parse(fs.readFileSync(__dirname + '/package.json').toString('utf8')).version;
         const data = JSON.parse(fs.readFileSync(__dirname + '/src/package.json').toString('utf8'));
         data.version = version;
-        fs.writeFileSync(__dirname + '/src/package.json', JSON.stringify(data, null, 2));
+        fs.writeFileSync(__dirname + '/src/package.json', JSON.stringify(data, null, 4));
 
         console.log(options.cwd);
 
