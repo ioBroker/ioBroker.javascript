@@ -1,5 +1,5 @@
 {
-    "Add module": "Добавить модуль",
+    "Add module": "Добавить NPM модуль",
     "Additional npm modules:": "Дополнительные NPM Модули",
     "Allow self signed certificates for URL requests": "Разрешить самоподписанные сертификаты для запросов URL",
     "Astro settings": "Настройки астро-функций",
@@ -7,7 +7,7 @@
     "Enable command \"exec\":": "Разрешить команду \"exec\"",
     "Enable command \"sendToHost\":": "Разрешить команду \"sendToHost\"",
     "Enable command \"setObject\":": "Разрешить команду \"setObject\"",
-    "Help": "Используйте формат 49.1245, а <b>не</b> 49°34'0\", иначе градусы автоматически переведутся в нужный формат",
+    "Help": "Используйте формат 49.1245, а <b>не</b> 49°34'0\", иначе градусы автоматически переведутся в нужный формат.",
     "Invalid format. Use A°B'C\"D": "Неправильный формат. Используется г°м'с\"Н",
     "Javascript scripts adapter settings": "Настройки скриптов Javascript",
     "Latitude °:": "Широта °",
@@ -24,7 +24,7 @@
     "tooltip_enableSendToHost": "Разрешить посылать специальные сообщения в скриптах",
     "tooltip_enableSetObject": "Разрешить изменять системные объекты в скриптах",
     "tooltip_latitude": "Широта в виде 5.435 для астро функций",
-    "tooltip_libraries": "Дополнительные NPM пакеты через запятую. Их можно использовать в скриптах, как require('name')",
+    "tooltip_libraries": "Дополнительные NPM пакеты через запятую. Их можно использовать в скриптах, как require('name').",
     "tooltip_longitude": "Широта в виде 5.435 для астро функций",
     "tooltip_useSystemGPS": "Использовать координаты из системных настроек"
 }
