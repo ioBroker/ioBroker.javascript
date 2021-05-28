@@ -3,7 +3,7 @@
     "Additional npm modules:": "Дополнительные NPM Модули",
     "Allow self signed certificates for URL requests": "Разрешить самоподписанные сертификаты для запросов URL",
     "Astro settings": "Настройки астро-функций",
-    "Do not subscribe all states on start:": "Оптимизация состояний",
+    "Do not subscribe all states on start:": "Не подписываться при запуске на все состояния",
     "Enable command \"exec\":": "Разрешить команду \"exec\"",
     "Enable command \"sendToHost\":": "Разрешить команду \"sendToHost\"",
     "Enable command \"setObject\":": "Разрешить команду \"setObject\"",
