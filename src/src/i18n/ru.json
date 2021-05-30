@@ -270,7 +270,7 @@
     "All": "Все",
     "Write your own code": "Напишите свой код",
     "User function": "Функция пользователя",
-    "This is advances option. You can write your own code here and it will be executed on trigger": "Это авансовый вариант. Вы можете написать здесь свой код, и он будет выполняться при триггере.",
+    "This is advances option. You can write your own code here and it will be executed on trigger": "Это расширеный вариант. Вы можете написать здесь свой код и он будет выполняться по триггеру.",
     "greater than": "больше чем",
     "offset": "сдвиг",
     "Function": "Функция",
