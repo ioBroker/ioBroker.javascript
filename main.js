@@ -239,6 +239,7 @@ const context = {
     messageBusHandlers: {},
     logSubscriptions: {},
     updateLogSubscriptions,
+    convertBackStringifiedValues,
     debugMode,
     timeSettings:     {
         format12:     false,
@@ -253,6 +254,17 @@ const regExGlobalNew = /script\.js\.global\./;
 function checkIsGlobal(obj) {
     return obj && obj.common && (regExGlobalOld.test(obj.common.name) || regExGlobalNew.test(obj._id));
 }
+
+function convertBackStringifiedValues(id, state) {
+    if (state && state.val && typeof state.val === 'string' &&
+        context.objects[id] && context.objects[id].common && context.objects[id].common.type &&
+        (context.objects[id].common.type === 'array' || context.objects[id].common.type === 'object')) {
+        state.val = JSON.parse(state.val);
+    }
+    return state;
+}
+
+
 /**
  * @type {Set<string>}
  * Stores the IDs of script objects whose change should be ignored because
@@ -492,7 +504,7 @@ function startAdapter(options) {
                     context.stateIds.splice(pos, 1);
                 }
             }
-            const _eventObj = eventObj.createEventObject(context, id, state, oldState);
+            const _eventObj = eventObj.createEventObject(context, id, context.convertBackStringifiedValues(id, state), context.convertBackStringifiedValues(id, oldState));
 
             // if this state matches any subscriptions
             for (let i = 0, l = context.subscriptions.length; i < l; i++) {
@@ -733,6 +745,8 @@ function startAdapter(options) {
 
     return adapter;
 }
+
+
 
 function main() {
     // todo
