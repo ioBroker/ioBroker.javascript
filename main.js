@@ -259,7 +259,11 @@ function convertBackStringifiedValues(id, state) {
     if (state && state.val && typeof state.val === 'string' &&
         context.objects[id] && context.objects[id].common && context.objects[id].common.type &&
         (context.objects[id].common.type === 'array' || context.objects[id].common.type === 'object')) {
-        state.val = JSON.parse(state.val);
+        try {
+            state.val = JSON.parse(state.val);
+        } catch (err) {
+            context.logWithLineInfo && context.logWithLineInfo.warn(`Could not parse value for id ${id} into ${context.objects[id].common.type}: ${err.message}`);
+        }
     }
     return state;
 }
