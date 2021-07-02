@@ -1230,7 +1230,7 @@ function createActiveObject(id, enabled, cb) {
         };
         adapter.setForeignObject(idActive, context.objects[idActive], err => {
             if (!err) {
-                adapter.setForeignState(idActive, enabled, true, cb);
+                adapter.setForeignState(idActive, !!enabled, true, cb);
             } else if (cb) {
                 cb();
             }
@@ -1238,7 +1238,7 @@ function createActiveObject(id, enabled, cb) {
     } else {
         adapter.getForeignState(idActive, (err, state) => {
             if (state && state.val !== enabled) {
-                adapter.setForeignState(idActive, enabled, true, cb);
+                adapter.setForeignState(idActive, !!enabled, true, cb);
             } else if (cb) {
                 cb();
             }
