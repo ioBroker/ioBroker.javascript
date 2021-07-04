@@ -256,8 +256,8 @@ function checkIsGlobal(obj) {
 }
 
 function convertBackStringifiedValues(id, state) {
-    if (state && state.val && typeof state.val === 'string' &&
-        context.objects[id] && context.objects[id].common && context.objects[id].common.type &&
+    if (state && typeof state.val === 'string' &&
+        context.objects[id] && context.objects[id].common &&
         (context.objects[id].common.type === 'array' || context.objects[id].common.type === 'object')) {
         try {
             state.val = JSON.parse(state.val);
