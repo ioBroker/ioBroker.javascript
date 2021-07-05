@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.2.0",
+        "version": "5.2.1",
         "news": {
+            "5.2.1": {
+                "en": "IMPORTANT: Admin 5.1.9 is now required for this JavaScript version!\nAdjust logging for \"array\"/\"object\" type handling",
+                "de": "WICHTIG: Für diese JavaScript-Version wird jetzt Admin 5.1.9 benötigt!\nPassen Sie die Protokollierung für die Behandlung des Typs \"Array\"/\"Objekt\" an",
+                "ru": "ВАЖНО: для этой версии JavaScript теперь требуется Admin 5.1.9!\nНастроить ведение журнала для обработки типа \"массив\" / \"объект\"",
+                "pt": "IMPORTANTE: Admin 5.1.9 agora é necessário para esta versão JavaScript!\nAjuste o registro para manipulação de tipo \"array\" / \"objeto\"",
+                "nl": "BELANGRIJK: Admin 5.1.9 is nu vereist voor deze JavaScript-versie!\nLogboekregistratie aanpassen voor verwerking van het type \"array\"/\"object\"",
+                "fr": "IMPORTANT : Admin 5.1.9 est désormais requis pour cette version JavaScript !\nAjuster la journalisation pour la gestion de type « tableau »/« objet »",
+                "it": "IMPORTANTE: per questa versione JavaScript è ora richiesto l'amministratore 5.1.9!\nRegola la registrazione per la gestione del tipo \"array\"/\"oggetto\"",
+                "es": "IMPORTANTE: ¡Ahora se requiere Admin 5.1.9 para esta versión de JavaScript!\nAjustar el registro para el manejo del tipo \"matriz\" / \"objeto\"",
+                "pl": "WAŻNE: Admin 5.1.9 jest teraz wymagany dla tej wersji JavaScript!\nDostosuj logowanie do obsługi typu „tablica”/„obiekt”",
+                "zh-cn": "重要提示：此 JavaScript 版本现在需要 Admin 5.1.9！\n调整“数组”/“对象”类型处理的日志记录"
+            },
             "5.2.0": {
                 "en": "Handle state values for object types \"array\"/\"object\" stringifed as required by js-controller 3.3\nadd adapter to tier 1 for js-controller 3.3 (this means will be started first!)\nImplemented the change of theme and the expert mode via admin\nfixed the error with the simulation\nBlockly: Allow Value read from datapoint as switch input\nBlockly: add text_multiline block\nPrevent crash case(Sentry IOBROKER-JAVASCRIPT-70)",
                 "de": "Behandeln Sie Zustandswerte für die Objekttypen \"array\"/\"object\" stringifed wie von js-controller 3.3 gefordert\nAdapter zu Tier 1 für js-controller 3.3 hinzufügen (dies bedeutet, dass zuerst gestartet wird!)\nDen Themenwechsel und den Expertenmodus über den Admin umgesetzt\nden Fehler mit der Simulation behoben\nBlockly: Wert lesen vom Datenpunkt als Schalteingang zulassen\nBlockly: Text_multiline-Block hinzufügen\nCrash-Fall verhindern (Sentry IOBROKER-JAVASCRIPT-70)",
@@ -249,18 +261,6 @@
                 "es": "Agregue algunas comprobaciones adicionales para getSchedules\nasegúrese de que los métodos prometidos se rechacen con Error en lugar de cadena para que los errores asíncronos se puedan detectar correctamente\nactualizar algunas traducciones alemanas en bloques",
                 "pl": "Dodaj dodatkowe sprawdzenia dotyczące getSchedules\nupewnij się, że obiecane metody odrzucają z błędem zamiast ciągu, aby błędy asynchroniczne mogły być poprawnie przechwytywane\nzaktualizuj niektóre niemieckie tłumaczenia blokowe",
                 "zh-cn": "为getSchedules添加一些其他检查\n确保承诺的方法使用Error而不是String拒绝，以便可以正确捕获异步错误\n更新一些德语块翻译"
-            },
-            "4.10.15": {
-                "en": "Handle more cases with invalid script names/state-ids (Sentry IOBROKER-JAVASCRIPT-5W)",
-                "de": "Behandeln Sie weitere Fälle mit ungültigen Skriptnamen / Status-IDs (Sentry IOBROKER-JAVASCRIPT-5W).",
-                "ru": "Обработка большего количества случаев с недопустимыми именами скриптов / идентификаторами состояний (Sentry IOBROKER-JAVASCRIPT-5W)",
-                "pt": "Trate mais casos com nomes de script / ids de estado inválidos (Sentry IOBROKER-JAVASCRIPT-5W)",
-                "nl": "Behandel meer gevallen met ongeldige scriptnamen / status-ID's (Sentry IOBROKER-JAVASCRIPT-5W)",
-                "fr": "Gérez plus de cas avec des noms de script / ID d'état non valides (Sentry IOBROKER-JAVASCRIPT-5W)",
-                "it": "Gestisci più casi con nomi di script / id di stato non validi (Sentry IOBROKER-JAVASCRIPT-5W)",
-                "es": "Manejar más casos con nombres de script / id de estado no válidos (Sentry IOBROKER-JAVASCRIPT-5W)",
-                "pl": "Obsługuj więcej przypadków z nieprawidłowymi nazwami skryptów / identyfikatorami stanów (Sentry IOBROKER-JAVASCRIPT-5W)",
-                "zh-cn": "使用无效的脚本名称/状态ID处理更多案件（Sentry IOBROKER-JAVASCRIPT-5W）"
             }
         },
         "desc": {

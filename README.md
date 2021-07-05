@@ -40,7 +40,7 @@ And then call `npm run build`.
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 5.2.1 (2021-07-05)
 * IMPORTANT: Admin 5.1.9 is now required for this JavaScript version!
 * (Apollon77) Adjust logging for "array"/"object" type handling
 
@@ -61,9 +61,6 @@ And then call `npm run build`.
 
 ### 5.1.1 (2021-03-21)
 * (bluefox) Implemented the debug of the instances from javascript adapter
-
-### 5.1.0 (2021-03-19)
-* (bluefox) Implemented the debug of scripts possibility
 
 ## License
 

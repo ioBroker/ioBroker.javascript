@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 5.1.0 (2021-03-19)
+* (bluefox) Implemented the debug of scripts possibility
+
 ## 5.0.15 (2021-03-13)
 * (bluefox) Rules: added "use trigger value" for the "set action" blocks
 
