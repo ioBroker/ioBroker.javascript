@@ -40,6 +40,10 @@ And then call `npm run build`.
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* IMPORTANT: Admin 5.1.9 is now required for this JavaScript version!
+* (Apollon77) Adjust logging for "array"/"object" type handling
+
 ### 5.2.0 (2021-07-04)
 * (Apollon77) Handle state values for object types "array"/"object" stringifed as required by js-controller 3.3
 * (foxriver76) add adapter to tier 1 for js-controller 3.3 (this means will be started first!)

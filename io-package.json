@@ -317,7 +317,7 @@
         ],
         "globalDependencies": [
             {
-                "admin": ">=4.0.1"
+                "admin": ">=5.1.9"
             }
         ],
         "type": "logic",

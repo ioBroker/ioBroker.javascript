@@ -262,7 +262,11 @@ function convertBackStringifiedValues(id, state) {
         try {
             state.val = JSON.parse(state.val);
         } catch (err) {
-            context.logWithLineInfo && context.logWithLineInfo.warn(`Could not parse value for id ${id} into ${context.objects[id].common.type}: ${err.message}`);
+            if (id.startsWith('javascript.') || id.startsWith('0_userdata.0')) {
+                adapter.log.info(`Could not parse value for id ${id} into ${context.objects[id].common.type}: ${err.message}`);
+            } else {
+                adapter.log.debug(`Could not parse value for id ${id} into ${context.objects[id].common.type}: ${err.message}`);
+            }
         }
     }
     return state;
