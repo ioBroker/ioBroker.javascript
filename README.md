@@ -45,7 +45,7 @@ And then call `npm run build`.
 * (Apollon77) Adjust logging for "array"/"object" type handling
 
 ### 5.2.0 (2021-07-04)
-* (Apollon77) Handle state values for object types "array"/"object" stringifed as required by js-controller 3.3
+* (Apollon77) BREAKING: Convert state values for object types "array"/"object" to stringified  as required by js-controller 3.3. This means such objects should not be "JSON.parsed" after reading!
 * (foxriver76) add adapter to tier 1 for js-controller 3.3 (this means will be started first!)
 * (bluefox) Implemented the change of theme and the expert mode via admin
 * (bluefox) fixed the error with the simulation
