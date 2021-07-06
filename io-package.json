@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.2.1",
+        "version": "5.2.2",
         "news": {
+            "5.2.2": {
+                "en": "Add support to install npm packages as defined version (name@version)",
+                "de": "Unterstützung für die Installation von npm-Paketen als definierte Version (name@version) hinzufügen",
+                "ru": "Добавить поддержку для установки пакетов npm в соответствии с определенной версией (имя @ версия)",
+                "pt": "Adicione suporte para instalar pacotes npm conforme a versão definida (nome @ versão)",
+                "nl": "Ondersteuning toevoegen om npm-pakketten te installeren als gedefinieerde versie (naam@versie)",
+                "fr": "Ajout de la prise en charge pour installer les packages npm en tant que version définie (nom@version)",
+                "it": "Aggiungi il supporto per installare i pacchetti npm come versione definita (nome@versione)",
+                "es": "Agregue soporte para instalar paquetes npm como versión definida (nombre @ versión)",
+                "pl": "Dodaj obsługę instalacji pakietów npm jako zdefiniowanej wersji (nazwa@wersja)",
+                "zh-cn": "添加支持将 npm 包安装为定义的版本 (name@version)"
+            },
             "5.2.1": {
                 "en": "IMPORTANT: Admin 5.1.9 is now required for this JavaScript version!\nAdjust logging for \"array\"/\"object\" type handling",
                 "de": "WICHTIG: Für diese JavaScript-Version wird jetzt Admin 5.1.9 benötigt!\nPassen Sie die Protokollierung für die Behandlung des Typs \"Array\"/\"Objekt\" an",
@@ -249,18 +261,6 @@
                 "es": "agregó el motor de reglas",
                 "pl": "dodano silnik reguł",
                 "zh-cn": "添加了规则引擎"
-            },
-            "4.11.0": {
-                "en": "Add some additional checks for getSchedules\nmake sure promisified methods reject with Error instead of string so that async errors can be catched correctly\nupdate some german blockly translations",
-                "de": "Fügen Sie einige zusätzliche Überprüfungen für getSchedules hinzu\nStellen Sie sicher, dass versprochene Methoden mit Fehler anstelle von Zeichenfolge zurückweisen, damit asynchrone Fehler korrekt abgefangen werden können\nAktualisiere einige deutsche Blockübersetzungen",
-                "ru": "Добавьте дополнительные проверки для getSchedules\nубедитесь, что обещанные методы отклоняются с ошибкой вместо строки, чтобы ошибки async могли быть правильно отловлены\nобновить некоторые немецкие блочные переводы",
-                "pt": "Adicione algumas verificações adicionais para getSchedules\ncertifique-se de que os métodos prometidos sejam rejeitados com Error em vez de string para que os erros assíncronos possam ser detectados corretamente\natualizar algumas traduções em alemão",
-                "nl": "Voeg wat extra controles toe voor getSchedules\nzorg ervoor dat beloofde methoden weigeren met Error in plaats van string, zodat asynchrone fouten correct kunnen worden opgevangen\nupdate enkele Duitse blokachtige vertalingen",
-                "fr": "Ajouter des vérifications supplémentaires pour getSchedules\nassurez-vous que les méthodes promises rejettent avec Error au lieu de string afin que les erreurs asynchrones puissent être détectées correctement\nmettre à jour quelques traductions en bloc allemand",
-                "it": "Aggiungi alcuni controlli aggiuntivi per getSchedules\nassicurati che i metodi promessi rifiutino con Errore invece che con stringa in modo che gli errori asincroni possano essere rilevati correttamente\naggiornare alcune traduzioni a blocchi in tedesco",
-                "es": "Agregue algunas comprobaciones adicionales para getSchedules\nasegúrese de que los métodos prometidos se rechacen con Error en lugar de cadena para que los errores asíncronos se puedan detectar correctamente\nactualizar algunas traducciones alemanas en bloques",
-                "pl": "Dodaj dodatkowe sprawdzenia dotyczące getSchedules\nupewnij się, że obiecane metody odrzucają z błędem zamiast ciągu, aby błędy asynchroniczne mogły być poprawnie przechwytywane\nzaktualizuj niektóre niemieckie tłumaczenia blokowe",
-                "zh-cn": "为getSchedules添加一些其他检查\n确保承诺的方法使用Error而不是String拒绝，以便可以正确捕获异步错误\n更新一些德语块翻译"
             }
         },
         "desc": {

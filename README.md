@@ -40,7 +40,7 @@ And then call `npm run build`.
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 5.2.2 (2021-07-06)
 * (Apollon77) Add support to install npm packages as defined version (name@version)
 
 ### 5.2.1 (2021-07-05)
@@ -61,9 +61,6 @@ And then call `npm run build`.
 
 ### 5.1.2 (2021-03-22)
 * (bluefox) Showed the runtime information for the rules
-
-### 5.1.1 (2021-03-21)
-* (bluefox) Implemented the debug of the instances from javascript adapter
 
 ## License
 

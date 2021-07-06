@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 5.1.1 (2021-03-21)
+* (bluefox) Implemented the debug of the instances from javascript adapter
+
 ## 5.1.0 (2021-03-19)
 * (bluefox) Implemented the debug of scripts possibility
 
