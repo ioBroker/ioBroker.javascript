@@ -1412,7 +1412,8 @@ function installLibraries(callback) {
         for (let lib = 0; lib < libraries.length; lib++) {
             if (libraries[lib] && libraries[lib].trim()) {
                 libraries[lib] = libraries[lib].trim();
-                if (!nodeFS.existsSync(__dirname + '/node_modules/' + libraries[lib] + '/package.json')) {
+                const libName = libraries[lib].split('@')[0];
+                if (!nodeFS.existsSync(__dirname + '/node_modules/' + libName + '/package.json')) {
 
                     if (!attempts[libraries[lib]]) {
                         attempts[libraries[lib]] = 1;
