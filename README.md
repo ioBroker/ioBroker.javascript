@@ -41,7 +41,7 @@ And then call `npm run build`.
 ## Changelog
 
 ### __WORK IN PROGRESS__
-* (Apollon77) Adjust check for installed npm packages when installing a defined version
+* (Apollon77) Add support to install npm packages as defined version (name@version)
 
 ### 5.2.1 (2021-07-05)
 * IMPORTANT: Admin 5.1.9 is now required for this JavaScript version!
