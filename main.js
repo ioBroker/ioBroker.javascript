@@ -170,7 +170,8 @@ function loadTypeScriptDeclarations() {
         const installedLibs = adapter.config.libraries.split(/[,;\s]+/).map(s => s.trim()).filter(s => !!s);
         const wantsTypings = adapter.config.libraryTypings.split(/[,;\s]+/).map(s => s.trim()).filter(s => !!s);
         // Add all installed libraries the user has requested typings for to the list of packages
-        for (const lib of installedLibs) {
+        for (let lib of installedLibs) {
+            lib = lib.split('@')[0];
             if (
                 wantsTypings.indexOf(lib) > -1
                 && packages.indexOf(lib) === -1
