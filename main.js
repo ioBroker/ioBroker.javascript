@@ -167,11 +167,13 @@ function loadTypeScriptDeclarations() {
         && typeof adapter.config.libraries === 'string'
         && typeof adapter.config.libraryTypings === 'string'
     ) {
-        const installedLibs = adapter.config.libraries.split(/[,;\s]+/).map(s => s.trim()).filter(s => !!s);
+        const installedLibs = adapter.config.libraries
+          .split(/[,;\s]+/)
+          .map((s) => s.trim().split('@')[0])
+          .filter((s) => !!s);
         const wantsTypings = adapter.config.libraryTypings.split(/[,;\s]+/).map(s => s.trim()).filter(s => !!s);
         // Add all installed libraries the user has requested typings for to the list of packages
-        for (let lib of installedLibs) {
-            lib = lib.split('@')[0];
+        for (const lib of installedLibs) {
             if (
                 wantsTypings.indexOf(lib) > -1
                 && packages.indexOf(lib) === -1
