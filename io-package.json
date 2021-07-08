@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.2.2",
+        "version": "5.2.3",
         "news": {
+            "5.2.3": {
+                "en": "Fix imports like \"rxjs/operators\" for versioned npm modules",
+                "de": "Importe wie \"rxjs/operators\" für versionierte npm-Module behoben",
+                "ru": "Исправить импорт, такой как \"rxjs / operator\", для модулей npm с поддержкой версий.",
+                "pt": "Corrija importações como \"rxjs / Operadores\" para módulos NPM com versão",
+                "nl": "Herstel importen zoals \"rxjs/operators\" voor npm-modules met versiebeheer",
+                "fr": "Correction des importations comme \"rxjs/operators\" pour les modules npm versionnés",
+                "it": "Correggi le importazioni come \"rxjs/operators\" per i moduli npm con versione",
+                "es": "Corregir importaciones como \"rxjs / operadores\" para módulos npm versionados",
+                "pl": "Napraw importy, takie jak „rxjs/operators” dla wersjonowanych modułów npm",
+                "zh-cn": "修复像“rxjs/operators”这样的版本化 npm 模块的导入"
+            },
             "5.2.2": {
                 "en": "Add support to install npm packages as defined version (name@version)",
                 "de": "Unterstützung für die Installation von npm-Paketen als definierte Version (name@version) hinzufügen",
@@ -249,18 +261,6 @@
                 "es": "Error solucionado en las reglas.",
                 "pl": "Naprawiono błąd w zasadach",
                 "zh-cn": "修正规则中的错误"
-            },
-            "5.0.0": {
-                "en": "added the rules engine",
-                "de": "fügte die Regel-Engine hinzu",
-                "ru": "добавлен движок правил",
-                "pt": "adicionou o mecanismo de regras",
-                "nl": "heeft de regels-engine toegevoegd",
-                "fr": "ajouté le moteur de règles",
-                "it": "aggiunto il motore delle regole",
-                "es": "agregó el motor de reglas",
-                "pl": "dodano silnik reguł",
-                "zh-cn": "添加了规则引擎"
             }
         },
         "desc": {
