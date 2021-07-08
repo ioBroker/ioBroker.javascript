@@ -40,6 +40,9 @@ And then call `npm run build`.
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (agross) Fix imports like "rxjs/operators" for versioned npm modules
+
 ### 5.2.2 (2021-07-06)
 * (Apollon77) Add support to install npm packages as defined version (name@version)
 
