@@ -47,10 +47,10 @@ And then call `npm run build`.
 * (Apollon77) Add support to install npm packages as defined version (name@version)
 
 ### 5.2.1 (2021-07-05)
-* IMPORTANT: Admin 5.1.9 is now required for this JavaScript version!
 * (Apollon77) Adjust logging for "array"/"object" type handling
 
 ### 5.2.0 (2021-07-04)
+* IMPORTANT: Admin 5.1.9 is now required for this JavaScript version!
 * (Apollon77) BREAKING: Convert state values for object types "array"/"object" to stringified  as required by js-controller 3.3. This means such objects should not be "JSON.parsed" after reading!
 * (foxriver76) add adapter to tier 1 for js-controller 3.3 (this means will be started first!)
 * (bluefox) Implemented the change of theme and the expert mode via admin
