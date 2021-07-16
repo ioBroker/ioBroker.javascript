@@ -392,16 +392,12 @@ export const Droppable = (props) => {
     </div>;
 };
 
-export const Draggable = (props) => {
+export const Draggable = props => {
     const { name } = props;
     const [{ opacity }, drag] = useDrag({
-        item: {
-            name,
-            type: 'script'
-        },
-        collect: (monitor) => ({
-            opacity: monitor.isDragging() ? 0.3 : 1,
-        }),
+        type: 'script',
+        item: () => ({name}),
+        collect: monitor => ({opacity: monitor.isDragging() ? 0.3 : 1,}),
     });
     // About transform: https://github.com/react-dnd/react-dnd/issues/832#issuecomment-442071628
     return <div ref={drag} style={{ opacity, transform: 'translate3d(0, 0, 0)' }}>

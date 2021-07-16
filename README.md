@@ -39,6 +39,8 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.2.5 (2021-07-16)
+* (bluefox) Added fallback for admin4
 
 ### 5.2.3 (2021-07-08)
 * (agross) Fix imports like "rxjs/operators" for versioned npm modules
@@ -58,9 +60,6 @@ And then call `npm run build`.
 * (Xyolyp) Blockly: Allow Value read from datapoint as switch input
 * (ThomasPohl) Blockly: add text_multiline block
 * (Apollon77) Prevent crash case(Sentry IOBROKER-JAVASCRIPT-70)
-
-### 5.1.3 (2021-03-23)
-* (bluefox) fixed the error in the debugging
 
 ## License
 

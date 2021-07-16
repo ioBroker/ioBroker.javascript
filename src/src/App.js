@@ -296,8 +296,45 @@ class App extends GenericApp {
             });
     }
 
+    // BF(2021.07.16): support fallback on admin4. Remove it after one year
+    getAdapterInstances() {
+        return new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                this.socket.getObjectView(
+                    `system.adapter.${this.adapterName}.`,
+                    `system.adapter.${this.adapterName}.\u9999`,
+                    'instance'
+                )
+                    .then(items => {
+                        timeout = null;
+                        resolve(Object.keys(items).map(id => items[id]));
+                    })
+                    .catch(e => {
+                        timeout = null;
+                        reject(e);
+                    });
+            }, 2000);
+
+            return this.socket.getAdapterInstances(this.adapterName)
+                .then(result => {
+                    if (timeout) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                        return resolve(result);
+                    }
+                })
+                .catch(e => {
+                    if (timeout) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                        reject(e);
+                    }
+                });
+        });
+    }
+
     subscribeOnInstances() {
-        return this.socket.getAdapterInstances(this.adapterName)
+        return this.getAdapterInstances()
             .then(instancesArray => {
                 const instances = instancesArray.map(obj => parseInt(obj._id.split('.').pop())).sort();
                 const runningInstances = {};
@@ -573,15 +610,9 @@ class App extends GenericApp {
                         if (newCommon.engineType !== undefined) {
                             obj.common.engineType = newCommon.engineType || 'Javascript/js';
                         }
-
-                        return new Promise((resolve, reject) =>
-                            this.socket.getRawSocket().emit('extendObject', oldId, obj, err =>
-                                err ? reject(err) : resolve()));
-                    } else {
-                        return new Promise((resolve, reject) =>
-                            this.socket.getRawSocket().emit('extendObject', oldId, obj, err =>
-                                err ? reject(err) : resolve()));
                     }
+
+                    return this.socket.extendObject(oldId, obj);
                 } else {
                     // let prefix;
 

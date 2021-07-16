@@ -20,8 +20,32 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.2.3",
+        "version": "5.2.5",
         "news": {
+            "5.2.5": {
+                "en": "Added fallback for admin4",
+                "de": "Fallback für admin4 hinzugefügt",
+                "ru": "Добавлен резервный вариант для admin4",
+                "pt": "Adicionado substituto para admin4",
+                "nl": "Terugval toegevoegd voor admin4",
+                "fr": "Ajout de la solution de secours pour admin4",
+                "it": "Aggiunto fallback per admin4",
+                "es": "Respaldo agregado para admin4",
+                "pl": "Dodano rezerwę dla admin4",
+                "zh-cn": "为 admin4 添加了后备"
+            },
+            "5.2.4": {
+                "en": "Added fallback for admin4",
+                "de": "Fallback für admin4 hinzugefügt",
+                "ru": "Добавлен резервный вариант для admin4",
+                "pt": "Adicionado substituto para admin4",
+                "nl": "Terugval toegevoegd voor admin4",
+                "fr": "Ajout de la solution de secours pour admin4",
+                "it": "Aggiunto fallback per admin4",
+                "es": "Respaldo agregado para admin4",
+                "pl": "Dodano rezerwę dla admin4",
+                "zh-cn": "为 admin4 添加了后备"
+            },
             "5.2.3": {
                 "en": "Fix imports like \"rxjs/operators\" for versioned npm modules",
                 "de": "Importe wie \"rxjs/operators\" für versionierte npm-Module behoben",
@@ -237,30 +261,6 @@
                 "es": "Errores corregidos en las reglas",
                 "pl": "Naprawiono błędy w regułach",
                 "zh-cn": "修正规则错误"
-            },
-            "5.0.3": {
-                "en": "Implemented the memory for condition",
-                "de": "Implementierte den Speicher für Bedingung",
-                "ru": "Реализована память для условия",
-                "pt": "Implementou a memória para a condição",
-                "nl": "Het geheugen geïmplementeerd voor conditie",
-                "fr": "Implémentation de la mémoire pour la condition",
-                "it": "Implementata la memoria per la condizione",
-                "es": "Implementado la memoria para condición",
-                "pl": "Zaimplementowano pamięć warunkową",
-                "zh-cn": "实现条件存储"
-            },
-            "5.0.2": {
-                "en": "Fixed error in the rules",
-                "de": "Fehler in den Regeln behoben",
-                "ru": "Исправлена ошибка в правилах",
-                "pt": "Erro corrigido nas regras",
-                "nl": "Fout in de regels opgelost",
-                "fr": "Correction d'une erreur dans les règles",
-                "it": "Corretto errore nelle regole",
-                "es": "Error solucionado en las reglas.",
-                "pl": "Naprawiono błąd w zasadach",
-                "zh-cn": "修正规则中的错误"
             }
         },
         "desc": {

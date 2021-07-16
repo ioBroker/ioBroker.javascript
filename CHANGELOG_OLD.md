@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 5.1.3 (2021-03-23)
+* (bluefox) fixed the error in the debugging
+
 ## 5.1.2 (2021-03-22)
 * (bluefox) Showed the runtime information for the rules
 
