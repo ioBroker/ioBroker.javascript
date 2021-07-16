@@ -324,7 +324,7 @@ class App extends GenericApp {
                     }
                 })
                 .catch(e => {
-                    if (timeout) {
+                    if (timeout && e !== 'unknown command') {
                         clearTimeout(timeout);
                         timeout = null;
                         reject(e);

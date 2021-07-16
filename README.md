@@ -39,7 +39,7 @@ And then call `npm run build`.
 -->
 
 ## Changelog
-### 5.2.5 (2021-07-16)
+### 5.2.6 (2021-07-16)
 * (bluefox) Added fallback for admin4
 
 ### 5.2.3 (2021-07-08)

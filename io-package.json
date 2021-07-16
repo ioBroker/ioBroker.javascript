@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.2.5",
+        "version": "5.2.6",
         "news": {
+            "5.2.6": {
+                "en": "Added fallback for admin4",
+                "de": "Fallback für admin4 hinzugefügt",
+                "ru": "Добавлен резервный вариант для admin4",
+                "pt": "Adicionado substituto para admin4",
+                "nl": "Terugval toegevoegd voor admin4",
+                "fr": "Ajout de la solution de secours pour admin4",
+                "it": "Aggiunto fallback per admin4",
+                "es": "Respaldo agregado para admin4",
+                "pl": "Dodano rezerwę dla admin4",
+                "zh-cn": "为 admin4 添加了后备"
+            },
             "5.2.5": {
                 "en": "Added fallback for admin4",
                 "de": "Fallback für admin4 hinzugefügt",
@@ -249,18 +261,6 @@
                 "es": "Implementó la funcionalidad de alternar",
                 "pl": "Zaimplementowano funkcję przełączania",
                 "zh-cn": "实现了切换功能"
-            },
-            "5.0.4": {
-                "en": "Fixed errors in rules",
-                "de": "Fehler in Regeln behoben",
-                "ru": "Исправлены ошибки в правилах",
-                "pt": "Erros corrigidos nas regras",
-                "nl": "Fouten in regels opgelost",
-                "fr": "Correction d'erreurs dans les règles",
-                "it": "Risolti errori nelle regole",
-                "es": "Errores corregidos en las reglas",
-                "pl": "Naprawiono błędy w regułach",
-                "zh-cn": "修正规则错误"
             }
         },
         "desc": {
