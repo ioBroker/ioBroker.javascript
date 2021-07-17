@@ -39,6 +39,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.2.7 (2021-07-17)
+* (bluefox) Fixed error in rules
+
 ### 5.2.6 (2021-07-16)
 * (bluefox) Added fallback for admin4
 
@@ -50,16 +53,6 @@ And then call `npm run build`.
 
 ### 5.2.1 (2021-07-05)
 * (Apollon77) Adjust logging for "array"/"object" type handling
-
-### 5.2.0 (2021-07-04)
-* IMPORTANT: Admin 5.1.9 is now required for this JavaScript version!
-* (Apollon77) BREAKING: Convert state values for object types "array"/"object" to stringified  as required by js-controller 3.3. This means such objects should not be "JSON.parsed" after reading!
-* (foxriver76) add adapter to tier 1 for js-controller 3.3 (this means will be started first!)
-* (bluefox) Implemented the change of theme and the expert mode via admin
-* (bluefox) fixed the error with the simulation
-* (Xyolyp) Blockly: Allow Value read from datapoint as switch input
-* (ThomasPohl) Blockly: add text_multiline block
-* (Apollon77) Prevent crash case(Sentry IOBROKER-JAVASCRIPT-70)
 
 ## License
 

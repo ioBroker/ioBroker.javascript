@@ -24,7 +24,7 @@ const AdditionallyContentBlockItems = ({ size, itemsSwitchesRender, blockValue, 
     const [checkId, setCheckId] = useState(false);
     const [hoverBlock, setHoverBlock] = useState('');
 
-    const [{ canDrop, isOver, offset, targetId }, drop] = useDrop({
+    const options = useDrop({
         accept: 'box',
         drop: () => ({ blockValue }),
         hover: ({ acceptedBy, _id }, monitor) => {
@@ -36,13 +36,15 @@ const AdditionallyContentBlockItems = ({ size, itemsSwitchesRender, blockValue, 
             setCanDropCheck(acceptedBy === typeBlock);
             return acceptedBy === typeBlock;
         },
-        collect: (monitor) => ({
+        collect: monitor => ({
             isOver: monitor.isOver(),
-            canDrop: monitor.canDrop(),
+            canDrop: monitor.getItem()?.acceptedBy === typeBlock,
             offset: monitor.getClientOffset(),
             targetId: monitor.targetId
         }),
     });
+
+    const [{ canDrop, isOver, offset, targetId }, drop] = options;
 
     useEffect(() => { setHoverBlock('') }, [offset]);
 

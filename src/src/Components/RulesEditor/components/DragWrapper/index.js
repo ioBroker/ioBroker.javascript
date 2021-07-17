@@ -12,7 +12,8 @@ import cls from './style.module.scss';
 const DragWrapper = ({ typeBlocks, allProperties, id, isActive, setUserRules, userRules, children, _id, blockValue }) => {
     const { setOnUpdate } = useContext(ContextWrapperCreate);
     const [{ opacity }, drag, preview] = useDrag({
-        item: { ...allProperties, type: 'box', id, isActive, _id },
+        type: 'box',
+        item: () => ({ ...allProperties, id, isActive, _id }),
         end: (item, monitor) => {
             let { acceptedBy } = item;
             let dropResult = monitor.getDropResult();

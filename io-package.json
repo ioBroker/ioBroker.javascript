@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.2.6",
+        "version": "5.2.7",
         "news": {
+            "5.2.7": {
+                "en": "Fixed error in rules",
+                "de": "Fehler in den Regeln behoben",
+                "ru": "Исправлена ошибка в правилах",
+                "pt": "Erro corrigido nas regras",
+                "nl": "Fout in regels opgelost",
+                "fr": "Correction d'une erreur dans les règles",
+                "it": "Risolto errore nelle regole",
+                "es": "Error solucionado en las reglas",
+                "pl": "Naprawiono błąd w zasadach",
+                "zh-cn": "修正了规则错误"
+            },
             "5.2.6": {
                 "en": "Added fallback for admin4",
                 "de": "Fallback für admin4 hinzugefügt",
@@ -249,18 +261,6 @@
                 "es": "Implementó la histéresis",
                 "pl": "Zaimplementowano histerezę",
                 "zh-cn": "实现了磁滞"
-            },
-            "5.0.5": {
-                "en": "Implemented the toggle functionality",
-                "de": "Implementierte die Umschaltfunktion",
-                "ru": "Реализована функция переключения",
-                "pt": "Implementou a funcionalidade de alternância",
-                "nl": "De schakelfunctie geïmplementeerd",
-                "fr": "Implémentation de la fonctionnalité de bascule",
-                "it": "Implementata la funzionalità di attivazione / disattivazione",
-                "es": "Implementó la funcionalidad de alternar",
-                "pl": "Zaimplementowano funkcję przełączania",
-                "zh-cn": "实现了切换功能"
             }
         },
         "desc": {
