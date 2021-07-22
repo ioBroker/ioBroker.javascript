@@ -39,6 +39,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.2.8 (2021-07-22)
+* (bluefox) Fixed the debug of scripts
+
 ### 5.2.7 (2021-07-17)
 * (bluefox) Fixed error in rules
 
@@ -50,9 +53,6 @@ And then call `npm run build`.
 
 ### 5.2.2 (2021-07-06)
 * (Apollon77) Add support to install npm packages as defined version (name@version)
-
-### 5.2.1 (2021-07-05)
-* (Apollon77) Adjust logging for "array"/"object" type handling
 
 ## License
 

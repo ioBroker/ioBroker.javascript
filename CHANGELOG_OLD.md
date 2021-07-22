@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 5.2.1 (2021-07-05)
+* (Apollon77) Adjust logging for "array"/"object" type handling
+
 ## 5.2.0 (2021-07-04)
 * IMPORTANT: Admin 5.1.9 is now required for this JavaScript version!
 * (Apollon77) BREAKING: Convert state values for object types "array"/"object" to stringified  as required by js-controller 3.3. This means such objects should not be "JSON.parsed" after reading!

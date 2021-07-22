@@ -300,19 +300,14 @@ class App extends GenericApp {
     getAdapterInstances() {
         return new Promise((resolve, reject) => {
             let timeout = setTimeout(() => {
+                timeout = null;
                 this.socket.getObjectView(
                     `system.adapter.${this.adapterName}.`,
                     `system.adapter.${this.adapterName}.\u9999`,
                     'instance'
                 )
-                    .then(items => {
-                        timeout = null;
-                        resolve(Object.keys(items).map(id => items[id]));
-                    })
-                    .catch(e => {
-                        timeout = null;
-                        reject(e);
-                    });
+                    .then(items => resolve(Object.keys(items).map(id => items[id])))
+                    .catch(e => reject(e));
             }, 2000);
 
             return this.socket.getAdapterInstances(this.adapterName)

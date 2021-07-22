@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.2.7",
+        "version": "5.2.8",
         "news": {
+            "5.2.8": {
+                "en": "Fixed the debug of scripts",
+                "de": "Fehler bei Skripten behoben",
+                "ru": "Исправлена отладка скриптов",
+                "pt": "Corrigida a depuração de scripts",
+                "nl": "Debug van scripts opgelost",
+                "fr": "Correction du débogage des scripts",
+                "it": "Corretto il debug degli script",
+                "es": "Se corrigió la depuración de scripts.",
+                "pl": "Naprawiono debugowanie skryptów",
+                "zh-cn": "修复了脚本的调试"
+            },
             "5.2.7": {
                 "en": "Fixed error in rules",
                 "de": "Fehler in den Regeln behoben",
@@ -249,18 +261,6 @@
                 "es": "Añadido el bloque pushsafer",
                 "pl": "Dodano blok pushsafer",
                 "zh-cn": "添加了pushsafer块"
-            },
-            "5.0.6": {
-                "en": "Implemented the hysteresis",
-                "de": "Implementierte die Hysterese",
-                "ru": "Реализован гистерезис",
-                "pt": "Implementou a histerese",
-                "nl": "De hysterese geïmplementeerd",
-                "fr": "Implémentation de l'hystérésis",
-                "it": "Implementata l'isteresi",
-                "es": "Implementó la histéresis",
-                "pl": "Zaimplementowano histerezę",
-                "zh-cn": "实现了磁滞"
             }
         },
         "desc": {

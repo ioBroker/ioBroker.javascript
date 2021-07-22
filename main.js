@@ -479,7 +479,7 @@ function startAdapter(options) {
                 return;
             }
 
-            if (id === adapter.namespace + '.debug.to' && stats && !state.ack) {
+            if (id === adapter.namespace + '.debug.to' && state && !state.ack) {
                 return !debugMode && debugSendToInspector(state.val);
             }
 

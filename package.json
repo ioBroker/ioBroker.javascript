@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "5.2.7",
+  "version": "5.2.8",
   "description": "Rules Engine for ioBroker",
   "author": "bluefox <dogafox@gmail.com>",
   "contributors": [
@@ -46,11 +46,11 @@
   },
   "devDependencies": {
     "@alcalzone/release-script": "^2.2.0",
-    "@types/iobroker": "^3.3.1",
+    "@types/iobroker": "^3.3.4",
     "alcalzone-shared": "^4.0.0",
     "chai": "^4.3.4",
     "del": "^6.0.0",
-    "eslint": "^7.30.0",
+    "eslint": "^7.31.0",
     "gulp": "^4.0.2",
     "gulp-rename": "^2.0.0",
     "gulp-replace": "^1.1.3",
