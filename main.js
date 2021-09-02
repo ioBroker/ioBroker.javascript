@@ -174,10 +174,7 @@ function loadTypeScriptDeclarations() {
         const wantsTypings = adapter.config.libraryTypings.split(/[,;\s]+/).map(s => s.trim()).filter(s => !!s);
         // Add all installed libraries the user has requested typings for to the list of packages
         for (const lib of installedLibs) {
-            if (
-                wantsTypings.indexOf(lib) > -1
-                && packages.indexOf(lib) === -1
-            ) {
+            if (wantsTypings.includes(lib) && !packages.includes(lib)) {
                 packages.push(lib);
             }
         }
@@ -185,13 +182,12 @@ function loadTypeScriptDeclarations() {
         // If typings are requested for them, also add them if the base module is installed
         for (const lib of wantsTypings) {
             // Extract the package name and check if we need to add it
-            if (lib.indexOf('/') === -1) continue;
+            if (!lib.includes('/')) {
+                continue;
+            }
             const pkgName = lib.substr(0, lib.indexOf('/'));
 
-            if (
-                installedLibs.indexOf(pkgName) > -1
-                && packages.indexOf(lib) === -1
-            ) {
+            if (installedLibs.includes(pkgName) && !packages.includes(lib)) {
                 packages.push(lib);
             }
         }
@@ -310,7 +306,7 @@ function startAdapter(options) {
                 // update context.enums array
                 if (obj) {
                     // If new
-                    if (context.enums.indexOf(id) === -1) {
+                    if (context.enums.includes(id) === -1) {
                         context.enums.push(id);
                         context.enums.sort();
                     }
@@ -402,13 +398,6 @@ function startAdapter(options) {
                 }
                 // added new script to this engine
             } else if (context.objects[id].common) {
-                const n = getName(id);
-
-                if (n !== context.objects[id].common.name) {
-                    if (n) removeFromNames(id);
-                    if (context.objects[id].common.name) addToNames(obj);
-                }
-
                 // Object just changed
                 if (obj.type !== 'script') {
                     context.objects[id] = obj;
@@ -417,6 +406,22 @@ function startAdapter(options) {
                         // set language for debug messages
                         if (obj.common && obj.common.language) {
                             words.setLanguage(obj.common.language);
+                        }
+                    }
+
+                    const n = getName(id);
+                    let nn = context.objects[id].common.name;
+
+                    if (nn && typeof nn === 'object') {
+                        nn = nn[words.getLanguage()] || nn.en;
+                    }
+
+                    if (n !== nn) {
+                        if (n) {
+                            removeFromNames(id);
+                        }
+                        if (nn) {
+                            addToNames(obj);
                         }
                     }
 
@@ -502,7 +507,7 @@ function startAdapter(options) {
                             }
                         }
                     }
-                } else if (/*!oldState && */context.stateIds.indexOf(id) === -1) {
+                } else if (/*!oldState && */!context.stateIds.includes(id)) {
                     context.stateIds.push(id);
                     context.stateIds.sort();
                 }
@@ -1198,7 +1203,7 @@ function addGetProperty(object) {
 }
 
 function fixLineNo(line) {
-    if (line.indexOf('javascript.js:') >= 0) {
+    if (line.includes('javascript.js:')) {
         return line;
     }
     if (!/script[s]?\.js[.\\/]/.test(line)) {
@@ -1216,7 +1221,7 @@ function fixLineNo(line) {
 
 context.logError = function (msg, e, offs) {
     const stack = e.stack ? e.stack.toString().split('\n') : (e ? e.toString() : '');
-    if (msg.indexOf('\n') < 0) {
+    if (!msg.includes('\n')) {
         msg = msg.replace(/[: ]*$/, ': ');
     }
 
@@ -1311,9 +1316,15 @@ function createProblemObject(id, cb) {
 
 function addToNames(obj) {
     const id = obj._id;
+
     if (obj.common && obj.common.name) {
-        const name = obj.common.name;
-        if (typeof name !== 'string') return;
+        let name = obj.common.name;
+        if (name && typeof name === 'object') {
+            name = name[words.getLanguage()] || name.en;
+        }
+        if (!name || typeof name !== 'string') { // TODO, take name in current language
+            return;
+        }
 
         if (!context.names[name]) {
             context.names[name] = id;
@@ -1351,7 +1362,9 @@ function getName(id) {
         if (context.names.hasOwnProperty(n)) {
             if (context.names[n] && typeof context.names[n] === 'object') {
                 pos = context.names[n].indexOf(id);
-                if (pos !== -1) return n;
+                if (pos !== -1) {
+                    return n;
+                }
             } else if (context.names[n] === id) {
                 return n;
             }
@@ -1534,14 +1547,16 @@ function unsubscribe(id) {
         return;
     }
     const parts = id.split('.');
-    const _adapter = 'system.adapter.' + parts[0] + '.' + parts[1];
+    const _adapter = `system.adapter.${parts[0]}.${parts[1]}`;
     if (context.objects[_adapter] && context.objects[_adapter].common && context.objects[_adapter].common.subscribable) {
         const a = parts[0] + '.' + parts[1];
         const alive = `system.adapter.${a}.alive`;
         if (context.adapterSubs[alive]) {
             const pos = context.adapterSubs[alive].indexOf(id);
-            if (pos !== -1) context.adapterSubs[alive].splice(pos, 1);
-            if (!context.adapterSubs[alive].length) delete context.adapterSubs[alive];
+            pos !== -1 && context.adapterSubs[alive].splice(pos, 1);
+            if (!context.adapterSubs[alive].length) {
+                delete context.adapterSubs[alive];
+            }
         }
         adapter.sendTo(a, 'unsubscribe', id);
     }
@@ -1913,7 +1928,6 @@ function getData(callback) {
         adapter.config.sunsetOffset = adapter.config.sunsetOffset || 0;
         adapter.config.sunsetLimitStart = adapter.config.sunsetLimitStart || '18:00';
         adapter.config.sunsetLimitEnd = adapter.config.sunsetLimitEnd || '23:00';
-
 
         objectsReady = true;
         adapter.log.info('received all objects');

@@ -324,5 +324,15 @@
   "Stop on exception": "Остановить при исключении",
   "Console": "Приставка",
   "Stack": "Stack",
-  "Pause execution": "Приостановить выполнение"
+  "Pause execution": "Приостановить выполнение",
+  "Simulate": "Симулировать",
+  "Trigger with value": "Триггер со значением",
+  "Value": "Значение",
+  "Write": "Напишите",
+  "Ack": "Подтверждение",
+  "Start": "Начинать",
+  "Filter": "Фильтр",
+  "Instances": "Экземпляры",
+  "Triggered": "Срабатывает",
+  "Function: executed": "Функция: выполнено"
 }

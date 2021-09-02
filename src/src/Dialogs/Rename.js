@@ -13,15 +13,12 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import IconCancel from '@material-ui/icons/Cancel';
+import IconOk from '@material-ui/icons/Check';
+
 import I18n from '@iobroker/adapter-react/i18n';
 
-import IconCancel from '@material-ui/icons/Cancel';
-import IconOk from "@material-ui/icons/Check";
-
 const styles = theme => ({
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    }
 });
 
 class DialogRename extends React.Component {
@@ -72,63 +69,60 @@ class DialogRename extends React.Component {
     };
 
     render() {
-        return (
-            <Dialog
-                disableBackdropClick
-                disableEscapeKeyDown
-                maxWidth="md"
-                fullWidth={true}
-                open={true}
-                aria-labelledby="confirmation-dialog-title"
-            >
-                <DialogTitle id="confirmation-dialog-title">{I18n.t('Rename')}</DialogTitle>
-                <DialogContent>
-                    <form noValidate autoComplete="off">
-                        <TextField
-                            style={{width: '100%'}}
-                            id="standard-name"
-                            autoFocus
-                            label={I18n.t('Name')}
-                            value={this.state.name}
-                            onKeyPress={(ev) => {
-                                if (ev.key === 'Enter') {
-                                    // Do code here
-                                    ev.preventDefault();
-                                    setTimeout(() => this.handleOk(), 200);
-                                }
-                            }}
-                            onChange={e => this.handleChange(e.target.value)}
-                            margin="normal"
-                        />
-                        <TextField
-                            id="standard-name-id"
-                            style={{width: '100%'}}
-                            label={I18n.t('ID')}
-                            value={this.state.id}
-                            disabled={true}
-                            margin="normal"
-                        />
-                        {
-                            this.isShowInstance && (
-                                <FormControl>
-                                    <InputLabel htmlFor="instance">{I18n.t('Instance')}</InputLabel>
-                                    <Select
-                                        value={this.state.instance}
-                                        onChange={e => this.setState({instance: parseInt(e.target.value, 10)})}
-                                        inputProps={{name: 'instance', id: 'instance'}}
-                                    >
-                                        {this.props.instances.map(instance => <MenuItem key={instance} value={instance}>{instance || '0'}</MenuItem>)}
-                                    </Select>
-                                </FormControl>)
-                        }
-                    </form>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={this.handleOk} color="primary"><IconOk className={this.props.classes.buttonIcon}/>{I18n.t('Ok')}</Button>
-                    <Button onClick={this.handleCancel}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Cancel')}</Button>
-                </DialogActions>
-            </Dialog>
-        );
+        return <Dialog
+            onClose={(event, reason) => false}
+            maxWidth="md"
+            fullWidth={true}
+            open={true}
+            aria-labelledby="confirmation-dialog-title"
+        >
+            <DialogTitle id="confirmation-dialog-title">{I18n.t('Rename')}</DialogTitle>
+            <DialogContent>
+                <form noValidate autoComplete="off">
+                    <TextField
+                        style={{width: '100%'}}
+                        id="standard-name"
+                        autoFocus
+                        label={I18n.t('Name')}
+                        value={this.state.name}
+                        onKeyPress={(ev) => {
+                            if (ev.key === 'Enter') {
+                                // Do code here
+                                ev.preventDefault();
+                                setTimeout(() => this.handleOk(), 200);
+                            }
+                        }}
+                        onChange={e => this.handleChange(e.target.value)}
+                        margin="normal"
+                    />
+                    <TextField
+                        id="standard-name-id"
+                        style={{width: '100%'}}
+                        label={I18n.t('ID')}
+                        value={this.state.id}
+                        disabled={true}
+                        margin="normal"
+                    />
+                    {
+                        this.isShowInstance && (
+                            <FormControl>
+                                <InputLabel htmlFor="instance">{I18n.t('Instance')}</InputLabel>
+                                <Select
+                                    value={this.state.instance}
+                                    onChange={e => this.setState({instance: parseInt(e.target.value, 10)})}
+                                    inputProps={{name: 'instance', id: 'instance'}}
+                                >
+                                    {this.props.instances.map(instance => <MenuItem key={instance} value={instance}>{instance || '0'}</MenuItem>)}
+                                </Select>
+                            </FormControl>)
+                    }
+                </form>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="contained" onClick={this.handleOk} color="primary" startIcon={<IconOk/>}>{I18n.t('Ok')}</Button>
+                <Button variant="contained" onClick={this.handleCancel} startIcon={<IconCancel/>}>{I18n.t('Cancel')}</Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 

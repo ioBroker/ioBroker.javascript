@@ -324,5 +324,15 @@
   "Stop on exception": "异常停止",
   "Console": "安慰",
   "Stack": "堆",
-  "Pause execution": "暂停执行"
+  "Pause execution": "暂停执行",
+  "Simulate": "模拟",
+  "Trigger with value": "用值触发",
+  "Value": "价值",
+  "Write": "写",
+  "Ack": "确认",
+  "Start": "开始",
+  "Filter": "筛选",
+  "Instances": "实例",
+  "Triggered": "触发",
+  "Function: executed": "功能：执行"
 }

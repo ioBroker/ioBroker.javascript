@@ -30,9 +30,6 @@ const styles = theme => ({
     dialogPaper: {
         height: 'calc(100% - 96px)'
     },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    }
 });
 
 class DialogCron extends React.Component {
@@ -72,63 +69,60 @@ class DialogCron extends React.Component {
     }
 
     render() {
-        return (
-            <Dialog
-                disableBackdropClick
-                disableEscapeKeyDown
-                maxWidth="md"
-                fullWidth={true}
-                classes={{paper: this.props.classes.dialogPaper}}
-                open={true}
-                aria-labelledby="cron-dialog-title"
-            >
-                <DialogTitle id="cron-dialog-title">{this.props.title || I18n.t('Define schedule...')}</DialogTitle>
-                <DialogContent style={{height: '100%', overflow: 'hidden'}}>
-                    {!this.props.simple && (<div>
-                        <Radio
-                            key="wizard"
-                            checked={this.state.mode === 'wizard'}
-                            onChange={e => this.setMode('wizard')}
-                        /><label onClick={e => this.setMode('wizard')}
-                                 style={this.state.mode !== 'wizard' ? {color: 'lightgrey'} : {}}>{I18n.t('sc_wizard')}</label>
+        return <Dialog
+            onClose={(event, reason) => false}
+            maxWidth="md"
+            fullWidth={true}
+            classes={{paper: this.props.classes.dialogPaper}}
+            open={true}
+            aria-labelledby="cron-dialog-title"
+        >
+            <DialogTitle id="cron-dialog-title">{this.props.title || I18n.t('Define schedule...')}</DialogTitle>
+            <DialogContent style={{height: '100%', overflow: 'hidden'}}>
+                {!this.props.simple && (<div>
+                    <Radio
+                        key="wizard"
+                        checked={this.state.mode === 'wizard'}
+                        onChange={e => this.setMode('wizard')}
+                    /><label onClick={e => this.setMode('wizard')}
+                             style={this.state.mode !== 'wizard' ? {color: 'lightgrey'} : {}}>{I18n.t('sc_wizard')}</label>
 
-                        <Radio
-                            key="simple"
-                            checked={this.state.mode === 'simple'}
-                            onChange={e => this.setMode('simple')}
-                        /><label onClick={e => this.setMode('simple')}
-                                 style={this.state.mode !== 'simple' ? {color: 'lightgrey'} : {}}>{I18n.t('sc_simple')}</label>
-                        <Radio
-                            key="complex"
-                            checked={this.state.mode === 'complex'}
-                            onChange={e => this.setMode('complex')}
-                        /><label onClick={e => this.setMode('complex')} style={this.state.mode !== 'complex' ? {color: 'lightgrey'} : {}}>{I18n.t('sc_cron')}</label></div>)}
+                    <Radio
+                        key="simple"
+                        checked={this.state.mode === 'simple'}
+                        onChange={e => this.setMode('simple')}
+                    /><label onClick={e => this.setMode('simple')}
+                             style={this.state.mode !== 'simple' ? {color: 'lightgrey'} : {}}>{I18n.t('sc_simple')}</label>
+                    <Radio
+                        key="complex"
+                        checked={this.state.mode === 'complex'}
+                        onChange={e => this.setMode('complex')}
+                    /><label onClick={e => this.setMode('complex')} style={this.state.mode !== 'complex' ? {color: 'lightgrey'} : {}}>{I18n.t('sc_cron')}</label></div>)}
 
-                    {this.state.mode === 'simple' &&
-                        (<SimpleCron
-                            cronExpression={this.state.cron}
-                            onChange={cron => this.setState({cron})}
-                            language={I18n.getLanguage()}
-                        />)}
-                    {this.state.mode === 'wizard' &&
-                        (<Schedule
-                            schedule={this.state.cron}
-                            onChange={cron => this.setState({cron})}
-                            language={I18n.getLanguage()}
-                        />)}
-                    {this.state.mode === 'complex' &&
-                        (<ComplexCron
-                            cronExpression={this.state.cron}
-                            onChange={cron => this.setState({cron})}
-                            language={I18n.getLanguage()}
-                        />)}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => this.handleOk()}     color="primary"><IconOk className={this.props.classes.buttonIcon}/>{this.props.ok || I18n.t('Ok')}</Button>
-                    <Button onClick={() => this.handleCancel()}><IconCancel className={this.props.classes.buttonIcon}/>{this.props.cancel || I18n.t('Cancel')}</Button>
-                </DialogActions>
-            </Dialog>
-        );
+                {this.state.mode === 'simple' &&
+                    (<SimpleCron
+                        cronExpression={this.state.cron}
+                        onChange={cron => this.setState({cron})}
+                        language={I18n.getLanguage()}
+                    />)}
+                {this.state.mode === 'wizard' &&
+                    (<Schedule
+                        schedule={this.state.cron}
+                        onChange={cron => this.setState({cron})}
+                        language={I18n.getLanguage()}
+                    />)}
+                {this.state.mode === 'complex' &&
+                    (<ComplexCron
+                        cronExpression={this.state.cron}
+                        onChange={cron => this.setState({cron})}
+                        language={I18n.getLanguage()}
+                    />)}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => this.handleOk()} color="primary" startIcon={<IconOk/>}>{this.props.ok || I18n.t('Ok')}</Button>
+                <Button onClick={() => this.handleCancel()} startIcon={<IconCancel/>}>{this.props.cancel || I18n.t('Cancel')}</Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 

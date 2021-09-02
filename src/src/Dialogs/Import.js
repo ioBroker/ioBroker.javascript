@@ -25,10 +25,8 @@ const styles = theme => ({
         height: '100%',
         overflow: 'hidden'
     },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    },
 });
+
 class DialogImport extends React.Component {
     constructor(props) {
         super(props);
@@ -62,31 +60,28 @@ class DialogImport extends React.Component {
     render() {
         const classes = this.props.classes;
 
-        return (
-            <Dialog
-                disableBackdropClick
-                disableEscapeKeyDown
-                maxWidth="lg"
-                classes={{ paper: classes.dialog }}
-                fullWidth={true}
-                open={this.props.open}
-                aria-labelledby="import-dialog-title"
-            >
-                <DialogTitle id="import-dialog-title">{I18n.t('Import blocks')}</DialogTitle>
-                <DialogContent className={classes.fullHeight}>
-                    <textarea
-                        autoFocus
-                        id="import-text-area"
-                        className={classes.textArea}
-                        onChange={e => this.onChange(e)}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button disabled={!this.state.text} onClick={event => this.handleOk()} color="primary"><IconOk className={this.props.classes.buttonIcon} />{I18n.t('Import')}</Button>
-                    <Button onClick={() => this.handleCancel()}><IconCancel className={this.props.classes.buttonIcon} />{I18n.t('Close')}</Button>
-                </DialogActions>
-            </Dialog>
-        );
+        return <Dialog
+            onClose={(event, reason) => false}
+            maxWidth="lg"
+            classes={{ paper: classes.dialog }}
+            fullWidth={true}
+            open={this.props.open}
+            aria-labelledby="import-dialog-title"
+        >
+            <DialogTitle id="import-dialog-title">{I18n.t('Import blocks')}</DialogTitle>
+            <DialogContent className={classes.fullHeight}>
+                <textarea
+                    autoFocus
+                    id="import-text-area"
+                    className={classes.textArea}
+                    onChange={e => this.onChange(e)}
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button variant="contained" disabled={!this.state.text} onClick={event => this.handleOk()} color="primary" startIcon={<IconOk/>}>{I18n.t('Import')}</Button>
+                <Button variant="contained" onClick={() => this.handleCancel()} startIcon={<IconCancel/>}>{I18n.t('Close')}</Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 

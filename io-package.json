@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.2.8",
+        "version": "5.2.9",
         "news": {
+            "5.2.9": {
+                "en": "Make sure day of weeks is an array (Sentry IOBROKER-JAVASCRIPT-7Y)\nReport to sentry is disabled in GUI if sentry is deactivated\nFixed many GitHub issues",
+                "de": "Stellen Sie sicher, dass der Wochentag ein Array ist (Sentry IOBROKER-JAVASCRIPT-7Y)\nBericht an Wache ist in der GUI deaktiviert, wenn Wache deaktiviert ist\nViele GitHub-Probleme behoben",
+                "ru": "Убедитесь, что день недели - это массив (Sentry IOBROKER-JAVASCRIPT-7Y)\nОтчет для часовой отключен в графическом интерфейсе, если часовая отключена\nИсправлено множество проблем с GitHub.",
+                "pt": "Certifique-se de que o dia das semanas seja uma matriz (Sentry IOBROKER-JAVASCRIPT-7Y)\nO relatório para a sentinela é desativado na GUI se a sentinela estiver desativada\nMuitos problemas do GitHub corrigidos",
+                "nl": "Zorg ervoor dat de dag van de weken een array is (Sentry IOBROKER-JAVASCRIPT-7Y)\nRapporteren aan schildwacht is uitgeschakeld in GUI als schildwacht is gedeactiveerd\nVeel GitHub-problemen opgelost",
+                "fr": "Assurez-vous que le jour des semaines est un tableau (Sentry IOBROKER-JAVASCRIPT-7Y)\nLe rapport à sentinelle est désactivé dans l'interface graphique si sentinelle est désactivée\nCorrection de nombreux problèmes GitHub",
+                "it": "Assicurati che il giorno della settimana sia un array (Sentry IOBROKER-JAVASCRIPT-7Y)\nSegnala a sentinella è disabilitato nella GUI se sentinella è disattivata\nRisolti molti problemi con GitHub",
+                "es": "Asegúrese de que el día de las semanas sea una matriz (Sentry IOBROKER-JAVASCRIPT-7Y)\nInformar al centinela está deshabilitado en la GUI si el centinela está desactivado\nSe corrigieron muchos problemas de GitHub",
+                "pl": "Upewnij się, że dzień tygodnia jest tablicą (Sentry IOBROKER-JAVASCRIPT-7Y)\nRaport do wartownika jest wyłączony w GUI, jeśli działko jest wyłączone\nNaprawiono wiele problemów z GitHub",
+                "zh-cn": "确保星期几是一个数组 (Sentry IOBROKER-JAVASCRIPT-7Y)\n如果哨兵被停用，则在 GUI 中禁用向哨兵报告\n修复了许多 GitHub 问题"
+            },
             "5.2.8": {
                 "en": "Fixed the debug of scripts",
                 "de": "Fehler bei Skripten behoben",
@@ -249,18 +261,6 @@
                 "es": "Traducciones\nSe agregó el bloque \"establecer estado con retraso\".",
                 "pl": "Tłumaczenia\nDodano blok „ustawianie stanu z opóźnieniem”",
                 "zh-cn": "笔译\n添加了“带有延迟的设置状态”块"
-            },
-            "5.0.7": {
-                "en": "Added the pushsafer block",
-                "de": "Der Pushsafer-Block wurde hinzugefügt",
-                "ru": "Добавлен блок pushsafer",
-                "pt": "Adicionado o bloco pushsafer",
-                "nl": "Het pushsafer-blok toegevoegd",
-                "fr": "Ajout du bloc pushsafer",
-                "it": "Aggiunto il blocco pushsafer",
-                "es": "Añadido el bloque pushsafer",
-                "pl": "Dodano blok pushsafer",
-                "zh-cn": "添加了pushsafer块"
             }
         },
         "desc": {

@@ -34,9 +34,6 @@ const styles = theme => ({
     argsTitle: {
         color: theme.palette.type === 'dark' ? 'white' : 'black',
         fontWeight: 'bold'
-    },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
     }
 });
 
@@ -82,8 +79,7 @@ class DialogScriptEditor extends React.Component {
         const classes = this.props.classes;
 
         return <Dialog
-            disableBackdropClick
-            disableEscapeKeyDown
+            onClose={(event, reason) => false}
             maxWidth="lg"
             classes={{paper: classes.dialog}}
             fullWidth={true}
@@ -114,8 +110,8 @@ class DialogScriptEditor extends React.Component {
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => this.handleOk()} color="primary"><IconSave className={this.props.classes.buttonIcon}/>{I18n.t('Save')}</Button>
-                <Button onClick={() => this.handleCancel()}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Cancel')}</Button>
+                <Button variant="contained" onClick={() => this.handleOk()} color="primary" startIcon={<IconSave/>}>{I18n.t('Save')}</Button>
+                <Button variant="contained" onClick={() => this.handleCancel()} startIcon={<IconCancel/>}>{I18n.t('Cancel')}</Button>
             </DialogActions>
         </Dialog>;
     }

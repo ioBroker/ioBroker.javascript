@@ -14,11 +14,8 @@ import I18n from '@iobroker/adapter-react/i18n';
 import {withStyles} from "@material-ui/core/styles";
 
 const styles = theme => ({
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    }
-});
 
+});
 
 class DialogDelete extends React.Component {
     constructor(props) {
@@ -48,26 +45,22 @@ class DialogDelete extends React.Component {
     };
 
     render() {
-        return (
-            <Dialog
-                disableBackdropClick
-                disableEscapeKeyDown
-                maxWidth="md"
-                fullWidth={true}
-                open={true}
-                aria-labelledby="confirmation-dialog-title"
-            >
-                <DialogTitle id="confirmation-dialog-title">{I18n.t('Are you sure?')}</DialogTitle>
-                <DialogContent>
-                    <IconDelete/>
-                    <span style={{fontSize: 14, fontWeight: 'bold'}}>{I18n.t('Delete %s', this.state.name)}</span>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={this.handleOk} color="primary"><IconOk className={this.props.classes.buttonIcon}/>{I18n.t('Ok')}</Button>
-                    <Button onClick={this.handleCancel}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Cancel')}</Button>
-                </DialogActions>
-            </Dialog>
-        );
+        return <Dialog
+            onClose={(event, reason) => false}
+            maxWidth="md"
+            open={true}
+            aria-labelledby="confirmation-dialog-title"
+        >
+            <DialogTitle id="confirmation-dialog-title">{I18n.t('Are you sure?')}</DialogTitle>
+            <DialogContent>
+                <IconDelete/>
+                <span style={{fontSize: 14, fontWeight: 'bold'}}>{I18n.t('Delete %s', this.state.name)}</span>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="contained" onClick={this.handleOk} color="primary" startIcon={<IconOk/>}>{I18n.t('Ok')}</Button>
+                <Button variant="contained" onClick={this.handleCancel} startIcon={<IconCancel/>}>{I18n.t('Cancel')}</Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 

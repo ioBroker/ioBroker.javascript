@@ -14,7 +14,7 @@ const CardMenu = ({ name, id, active, icon, adapter, socket, onDoubleClick, titl
 >
     <MaterialDynamicIcon iconName={icon} className={cls.iconTheme} adapter={adapter} socket={socket} />
     <span>
-        {I18n.t(name)}
+        {name ? I18n.t(name) : ''}
     </span>
 </div>;
 

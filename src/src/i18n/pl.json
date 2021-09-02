@@ -324,5 +324,15 @@
   "Stop on exception": "Zatrzymaj się na wyjątku",
   "Console": "Konsola",
   "Stack": "Stack",
-  "Pause execution": "Wstrzymaj wykonanie"
+  "Pause execution": "Wstrzymaj wykonanie",
+  "Simulate": "Symulować",
+  "Trigger with value": "Wyzwalacz z wartością",
+  "Value": "Wartość",
+  "Write": "Pisać",
+  "Ack": "Potwierdzony",
+  "Start": "Początek",
+  "Filter": "Filtr",
+  "Instances": "Instancje",
+  "Triggered": "Rozsierdzony",
+  "Function: executed": "Funkcja: wykonywana"
 }

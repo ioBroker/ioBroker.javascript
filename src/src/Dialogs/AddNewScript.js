@@ -32,9 +32,6 @@ const styles = theme => ({
     text: {
         maxWidth: 200,
     },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    },
     complexity: {
         fontWeight: 'bold',
         fontStyle: 'italic',
@@ -53,7 +50,7 @@ class DialogAddNew extends React.Component {
 
     openHtml(html) {
         const lang = I18n.getLanguage();
-        if (lang === 'de' || lang === 'ru') {
+        if (!html.includes('javascript.md') && (lang === 'de' || lang === 'ru')) {
             html = html.replace(/\/en\//, '/' + lang + '/');
         }
         const win = window.open(html, '_blank');
@@ -99,7 +96,7 @@ class DialogAddNew extends React.Component {
             </CardActionArea>
             <CardActions>
                 <Button size="small" color="primary" onClick={() => this.props.onClose && this.props.onClose('TypeScript/ts')}>{I18n.t('Add')}</Button>
-                <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#global-functions')}>{I18n.t('Learn More')}</Button>
+                <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md')}>{I18n.t('Learn More')}</Button>
             </CardActions>
         </Card>;
     }
@@ -141,14 +138,13 @@ class DialogAddNew extends React.Component {
             </CardActionArea>
             <CardActions>
                 <Button size="small" color="primary" onClick={() => this.props.onClose && this.props.onClose('Rules')}>{I18n.t('Add')}</Button>
-                <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/blockly.md')}>{I18n.t('Learn More')}</Button>
+                <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md')}>{I18n.t('Learn More')}</Button>
             </CardActions>
         </Card>);
     }
     render() {
         return <Dialog
-            disableBackdropClick
-            disableEscapeKeyDown
+            onClose={(event, reason) => false}
             maxWidth="lg"
             fullWidth={true}
             open={true}
@@ -162,7 +158,7 @@ class DialogAddNew extends React.Component {
                 {this.getTSCard()}
             </DialogContent>
             <DialogActions>
-                <Button onClick={this.handleCancel}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Cancel')}</Button>
+                <Button onClick={this.handleCancel} startIcon={<IconCancel/>}>{I18n.t('Cancel')}</Button>
             </DialogActions>
         </Dialog>;
     }

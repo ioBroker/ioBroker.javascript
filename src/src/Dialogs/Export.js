@@ -30,9 +30,6 @@ const styles = theme => ({
     typography: {
         padding: theme.spacing(2),
     },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    },
     overflowY: {
         overflowY: 'hidden'
     }
@@ -72,47 +69,44 @@ class DialogExport extends React.Component {
     render() {
         const classes = this.props.classes;
 
-        return (
-            <Dialog
-                key="export-dialog"
-                disableBackdropClick
-                disableEscapeKeyDown
-                maxWidth="lg"
-                classes={{ paper: classes.dialog }}
-                fullWidth={true}
-                open={this.props.open}
-                aria-labelledby="export-dialog-title"
-            >
-                <DialogTitle id="export-dialog-title">{I18n.t('Export selected blocks')}</DialogTitle>
-                <DialogContent
-                    classes={{ root: classes.overflowY }}>
-                    <pre
-                        id="export-text"
-                        className={classes.textArea + ' ' + (this.props.themeType === 'dark' ? '' : classes.textAreaLight)}
-                    >{this.props.text}</pre>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={event => this.onCopy(event)} color="secondary"><IconCopy className={this.props.classes.buttonIcon} />{I18n.t('Copy to clipboard')}</Button>
-                    <Button onClick={() => this.handleCancel()} color="primary"><IconCancel className={this.props.classes.buttonIcon} />{I18n.t('Close')}</Button>
+        return <Dialog
+            key="export-dialog"
+            onClose={(event, reason) => false}
+            maxWidth="lg"
+            classes={{ paper: classes.dialog }}
+            fullWidth={true}
+            open={this.props.open}
+            aria-labelledby="export-dialog-title"
+        >
+            <DialogTitle id="export-dialog-title">{I18n.t('Export selected blocks')}</DialogTitle>
+            <DialogContent
+                classes={{ root: classes.overflowY }}>
+                <pre
+                    id="export-text"
+                    className={classes.textArea + ' ' + (this.props.themeType === 'dark' ? '' : classes.textAreaLight)}
+                >{this.props.text}</pre>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="contained" onClick={event => this.onCopy(event)} color="secondary" startIcon={<IconCopy/>}>{I18n.t('Copy to clipboard')}</Button>
+                <Button variant="contained" onClick={() => this.handleCancel()} color="primary" startIcon={<IconCancel/>}>{I18n.t('Close')}</Button>
 
-                    <Popper
-                        id="popper"
-                        style={{ zIndex: 10000 }}
-                        open={!!this.state.popper}
-                        placement="top"
-                        anchorEl={this.state.anchorEl} transition>
-                        {({ TransitionProps }) => (
-                            <Fade {...TransitionProps} timeout={350}>
-                                <Paper>
-                                    <p className={classes.typography}>{this.state.popper}</p>
-                                </Paper>
-                            </Fade>
-                        )}
-                    </Popper>
-                    <textarea id="copy_input" readOnly={true} style={{ position: 'absolute', left: -9999 }} tabIndex={-1} aria-hidden={true} value={this.props.text} />
-                </DialogActions>
-            </Dialog>
-        );
+                <Popper
+                    id="popper"
+                    style={{ zIndex: 10000 }}
+                    open={!!this.state.popper}
+                    placement="top"
+                    anchorEl={this.state.anchorEl} transition>
+                    {({ TransitionProps }) => (
+                        <Fade {...TransitionProps} timeout={350}>
+                            <Paper>
+                                <p className={classes.typography}>{this.state.popper}</p>
+                            </Paper>
+                        </Fade>
+                    )}
+                </Popper>
+                <textarea id="copy_input" readOnly={true} style={{ position: 'absolute', left: -9999 }} tabIndex={-1} aria-hidden={true} value={this.props.text} />
+            </DialogActions>
+        </Dialog>;
     }
 }
 

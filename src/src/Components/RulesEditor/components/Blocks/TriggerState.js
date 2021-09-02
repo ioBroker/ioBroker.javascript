@@ -69,11 +69,13 @@ class TriggerState extends GenericBlock {
         this.setState({openSimulate: false});
         let simulateValue = this.state.simulateValue;
         window.localStorage.setItem(`javascript.app.${this.state.settings.oid}_ack`, this.state.simulateAck);
+
         if (this.state.settings.oidType === 'boolean') {
             simulateValue = simulateValue === true || simulateValue === 'true' || simulateValue === '1';
         } else if (this.state.settings.oidType === 'number') {
             simulateValue = parseFloat(simulateValue) || 0;
         }
+
         window.localStorage.setItem(`javascript.app.${this.state.settings.oid}`, simulateValue);
         this.props.socket.setState(this.state.settings.oid, simulateValue, !!this.state.simulateAck);
     }
@@ -92,9 +94,7 @@ class TriggerState extends GenericBlock {
                             (window.localStorage.getItem('javascript.app.' + this.state.settings.oid) || ''),
                         simulateAck: window.localStorage.getItem(`javascript.app.${this.state.settings.oid}_ack`) === 'true'
                     });
-                    setTimeout(() => {
-                        this.inputRef.current?.focus();
-                    }, 200);
+                    setTimeout(() => this.inputRef.current?.focus(), 200);
                 }}>{I18n.t('Simulate')}</Button>
             <Dialog
                 open={!!this.state.openSimulate}

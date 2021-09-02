@@ -324,5 +324,15 @@
   "Stop on exception": "Stop bij uitzondering",
   "Console": "Troosten",
   "Stack": "Stack",
-  "Pause execution": "Uitvoering pauzeren"
+  "Pause execution": "Uitvoering pauzeren",
+  "Simulate": "Simuleren",
+  "Trigger with value": "Trigger met waarde",
+  "Value": "Waarde",
+  "Write": "Schrijven",
+  "Ack": "Erkend",
+  "Start": "Begin",
+  "Filter": "Filter",
+  "Instances": "Instanties",
+  "Triggered": "Veroorzaakt",
+  "Function: executed": "Functie: uitgevoerd"
 }

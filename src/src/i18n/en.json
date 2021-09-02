@@ -324,5 +324,15 @@
   "Stop on exception": "Stop on exception",
   "Console": "Console",
   "Stack": "Stack",
-  "Pause execution": "Pause execution"
+  "Pause execution": "Pause execution",
+  "Simulate": "Simulate",
+  "Trigger with value": "Trigger with value",
+  "Value": "Value",
+  "Write": "Write",
+  "Ack": "Acknowledged",
+  "Start": "Start",
+  "Filter": "Filter",
+  "Instances": "Instances",
+  "Triggered": "Triggered",
+  "Function: executed": "Function: executed"
 }

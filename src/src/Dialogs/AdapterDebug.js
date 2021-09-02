@@ -154,11 +154,10 @@ class DialogAdapterDebug extends React.Component {
 
     render() {
         return <Dialog
-            disableBackdropClick
-            disableEscapeKeyDown
             maxWidth="md"
             fullWidth={false}
             open={true}
+            onClose={(event, reason) => false}
             aria-labelledby="confirmation-dialog-title"
         >
             <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('Debug instance')}</DialogTitle>
@@ -196,8 +195,8 @@ class DialogAdapterDebug extends React.Component {
 
             </DialogContent>
             <DialogActions>
-                <Button onClick={this.handleOk} disabled={!this.state.jsInstance || !this.state.adapterToDebug} color="primary"><IconOk className={this.props.classes.buttonIcon}/>{I18n.t('Start')}</Button>
-                <Button onClick={() => this.props.onClose()}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Close')}</Button>
+                <Button variant="contained" onClick={this.handleOk} disabled={!this.state.jsInstance || !this.state.adapterToDebug} color="primary" startIcon={<IconOk/>}>{I18n.t('Start')}</Button>
+                <Button variant="contained" onClick={() => this.props.onClose()} startIcon={<IconCancel/>}>{I18n.t('Close')}</Button>
             </DialogActions>
         </Dialog>;
     }

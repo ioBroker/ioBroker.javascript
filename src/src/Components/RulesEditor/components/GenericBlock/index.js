@@ -71,6 +71,11 @@ class GenericBlock extends PureComponent {
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
+        if (!nextProps || !nextProps.settings) {
+            console.log(JSON.stringify(nextProps));
+            return;
+        }
+
         const settings = JSON.parse(JSON.stringify(nextProps.settings));
         if (!settings.tagCard && this.state.tagCardArray && this.state.tagCardArray.length) {
             settings.tagCard = typeof this.state.tagCardArray[0] !== 'string' ? this.state.tagCardArray[0].title : this.state.tagCardArray[0];

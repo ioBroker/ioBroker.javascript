@@ -22,9 +22,6 @@ const styles = theme => ({
             color: theme.palette.error.contrastText,
         }
     },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    }
 });
 
 class DialogError extends React.Component {
@@ -37,28 +34,26 @@ class DialogError extends React.Component {
     };
 
     render() {
-        return (
-            <Dialog
-                open={true}
-                maxWidth="sm"
-                fullWidth={true}
-                onClose={() => this.handleOk()}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle className={this.props.classes.titleBackground}
-                             classes={{root: this.props.classes.titleColor}}
-                             id="alert-dialog-title">{this.props.title || I18n.t('Error')}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        {this.props.text || I18n.t('Unknown error!')}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => this.handleOk()} color="primary" autoFocus><IconOk className={this.props.classes.buttonIcon}/>{I18n.t('Ok')}</Button>
-                </DialogActions>
-            </Dialog>
-        );
+        return <Dialog
+            open={true}
+            maxWidth="sm"
+            fullWidth={true}
+            onClose={() => this.handleOk()}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle className={this.props.classes.titleBackground}
+                         classes={{root: this.props.classes.titleColor}}
+                         id="alert-dialog-title">{this.props.title || I18n.t('Error')}</DialogTitle>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    {this.props.text || I18n.t('Unknown error!')}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="contained" onClick={() => this.handleOk()} color="primary" autoFocus startIcon={<IconOk/>}>{I18n.t('Ok')}</Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 

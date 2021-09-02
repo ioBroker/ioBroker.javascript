@@ -69,11 +69,9 @@ const styles = theme => ({
         color: '#868686',
         position: 'absolute',
         zIndex: 1,
-    },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    },
+    }
 });
+
 class DialogImportFile extends React.Component {
 
     constructor(props) {
@@ -146,71 +144,68 @@ class DialogImportFile extends React.Component {
         const classes = this.props.classes;
         const className = classes.dropzone + ' ' + (this.state.imageStatus === 'accepted' ? classes.dropzoneAccepted : (this.state.imageStatus === 'rejected' ? classes.dropzoneRejected : ''));
 
-        return (
-            <Dialog
-                disableBackdropClick
-                disableEscapeKeyDown
-                maxWidth="lg"
-                classes={{paper: classes.dialog}}
-                fullWidth={true}
-                open={true}
-                aria-labelledby="import-dialog-title"
-            >
-                <DialogTitle id="import-dialog-title">{I18n.t('Import scripts')}</DialogTitle>
-                <DialogContent className={classes.fullHeight}>
-                    <Dropzone   key='image-drop'
+        return <Dialog
+            onClose={(event, reason) => false}
+            maxWidth="lg"
+            classes={{paper: classes.dialog}}
+            fullWidth={true}
+            open={true}
+            aria-labelledby="import-dialog-title"
+        >
+            <DialogTitle id="import-dialog-title">{I18n.t('Import scripts')}</DialogTitle>
+            <DialogContent className={classes.fullHeight}>
+                <Dropzone   key='image-drop'
 
-                                maxSize={50000000}
-                                acceptClassName={classes.dropzoneAccepted}
-                                rejectClassName={classes.dropzoneRejected}
-                                onDrop={files => this.handleDropFile(files)}
-                                multiple={false}
-                                accept='application/zip,application/x-zip-compressed'
-                                className={className}>
-                        {
-                            ({ getRootProps, getInputProps, isDragActive, isDragReject}) => {
-                                if (isDragReject) {
-                                    if (this.state.imageStatus !== 'rejected') {
-                                        this.setState({imageStatus: 'rejected'});
-                                    }
-                                    return (
-                                        <div className={this.props.classes.dropzoneDiv} {...getRootProps()}>
-                                            <input {...getInputProps()} />
-                                            <span key="text" className={this.props.classes.text}>{I18n.t('Some files will be rejected')}</span>
-                                            <IconNo key="icon" className={this.props.classes.icon + ' ' + this.props.classes.iconError}/>
-                                        </div>);
-                                } else if (isDragActive) {
-                                    if (this.state.imageStatus !== 'accepted') {
-                                        this.setState({imageStatus: 'accepted'});
-                                    }
-
-                                    return (
-                                        <div className={this.props.classes.dropzoneDiv} {...getRootProps()}>
-                                            <input {...getInputProps()} />
-                                            <span key="text" className={this.props.classes.text}>{I18n.t('All files will be accepted')}</span>
-                                            <IconPlus key="icon" className={this.props.classes.icon + ' ' + this.props.classes.iconOk}/>
-                                        </div>);
-                                } else {
-                                    if (this.state.imageStatus !== 'wait') {
-                                        this.setState({imageStatus: 'wait'});
-                                    }
-                                    return (
-                                        <div className={this.props.classes.dropzoneDiv} {...getRootProps()}>
-                                            <input {...getInputProps()} />
-                                            <span key="text" className={this.props.classes.text}>{I18n.t('Drop some files here or click...')}</span>
-                                            <IconUpload key="icon" className={this.props.classes.icon}/>
-                                        </div>);
+                            maxSize={50000000}
+                            acceptClassName={classes.dropzoneAccepted}
+                            rejectClassName={classes.dropzoneRejected}
+                            onDrop={files => this.handleDropFile(files)}
+                            multiple={false}
+                            accept='application/zip,application/x-zip-compressed'
+                            className={className}>
+                    {
+                        ({ getRootProps, getInputProps, isDragActive, isDragReject}) => {
+                            if (isDragReject) {
+                                if (this.state.imageStatus !== 'rejected') {
+                                    this.setState({imageStatus: 'rejected'});
                                 }
+                                return (
+                                    <div className={this.props.classes.dropzoneDiv} {...getRootProps()}>
+                                        <input {...getInputProps()} />
+                                        <span key="text" className={this.props.classes.text}>{I18n.t('Some files will be rejected')}</span>
+                                        <IconNo key="icon" className={this.props.classes.icon + ' ' + this.props.classes.iconError}/>
+                                    </div>);
+                            } else if (isDragActive) {
+                                if (this.state.imageStatus !== 'accepted') {
+                                    this.setState({imageStatus: 'accepted'});
+                                }
+
+                                return (
+                                    <div className={this.props.classes.dropzoneDiv} {...getRootProps()}>
+                                        <input {...getInputProps()} />
+                                        <span key="text" className={this.props.classes.text}>{I18n.t('All files will be accepted')}</span>
+                                        <IconPlus key="icon" className={this.props.classes.icon + ' ' + this.props.classes.iconOk}/>
+                                    </div>);
+                            } else {
+                                if (this.state.imageStatus !== 'wait') {
+                                    this.setState({imageStatus: 'wait'});
+                                }
+                                return (
+                                    <div className={this.props.classes.dropzoneDiv} {...getRootProps()}>
+                                        <input {...getInputProps()} />
+                                        <span key="text" className={this.props.classes.text}>{I18n.t('Drop some files here or click...')}</span>
+                                        <IconUpload key="icon" className={this.props.classes.icon}/>
+                                    </div>);
                             }
                         }
-                    </Dropzone>
-                    {this.state.error ? (<DialogError text={this.state.error} onClose={() => this.setState({error: ''})}/>) : null}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => this.handleCancel()}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Close')}</Button>
-                </DialogActions>
-            </Dialog>
-        );
+                    }
+                </Dropzone>
+                {this.state.error ? (<DialogError text={this.state.error} onClose={() => this.setState({error: ''})}/>) : null}
+            </DialogContent>
+            <DialogActions>
+                <Button variant="contained" onClick={() => this.handleCancel()} startIcon={<IconCancel/>}>{I18n.t('Close')}</Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 

@@ -19,11 +19,8 @@ import IconCancel from '@material-ui/icons/Cancel';
 import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    }
-});
 
+});
 
 class DialogNew extends React.Component {
     constructor(props) {
@@ -71,94 +68,91 @@ class DialogNew extends React.Component {
     };
 
     render() {
-        return (
-            <Dialog
-                disableBackdropClick
-                disableEscapeKeyDown
-                maxWidth="md"
-                fullWidth={true}
-                open={true}
-                aria-labelledby="confirmation-dialog-title"
-            >
-                <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('Create new')}</DialogTitle>
-                <DialogContent>
-                    <form noValidate autoComplete="off">
-                        <TextField
+        return <Dialog
+            onClose={(event, reason) => false}
+            maxWidth="md"
+            fullWidth={true}
+            open={true}
+            aria-labelledby="confirmation-dialog-title"
+        >
+            <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('Create new')}</DialogTitle>
+            <DialogContent>
+                <form noValidate autoComplete="off">
+                    <TextField
+                        style={{width: '100%'}}
+                        id="standard-name"
+                        autoFocus
+                        error={!!this.state.error}
+                        label={I18n.t('Name')}
+                        value={this.state.name}
+                        helperText={this.state.error}
+                        onKeyPress={(ev) => {
+                            if (ev.key === 'Enter') {
+                                // Do code here
+                                ev.preventDefault();
+                                setTimeout(() => this.handleOk(), 200);
+                            }
+                        }}
+                        onChange={e => this.handleChange(e.target.value)}
+                        margin="normal"
+                    />
+                    <FormControl style={{minWidth: 100}}>
+                        <InputLabel htmlFor="parent">{I18n.t('Folder')}</InputLabel>
+                        <Select
                             style={{width: '100%'}}
-                            id="standard-name"
-                            autoFocus
-                            error={!!this.state.error}
-                            label={I18n.t('Name')}
-                            value={this.state.name}
-                            helperText={this.state.error}
-                            onKeyPress={(ev) => {
-                                if (ev.key === 'Enter') {
-                                    // Do code here
-                                    ev.preventDefault();
-                                    setTimeout(() => this.handleOk(), 200);
-                                }
-                            }}
-                            onChange={e => this.handleChange(e.target.value)}
-                            margin="normal"
-                        />
-                        <FormControl style={{minWidth: 100}}>
-                            <InputLabel htmlFor="parent">{I18n.t('Folder')}</InputLabel>
-                            <Select
-                                style={{width: '100%'}}
-                                value={this.state.parent}
-                                onChange={e => this.setState({parent: e.target.value})}
-                                inputProps={{name: 'parent', id: 'parent',}}
-                            >
-                                {this.props.parents.map(parent => {
-                                    const parts = parent.id.split('.');
-                                    parts.splice(0, 2); // remove script.js
-                                    const names = [];
-                                    let id = 'script.js';
-                                    parts.forEach((n, i) => {
-                                        id += '.' + n;
-                                        const el = this.props.parents.find(item => item.id === id);
-                                        if (el) {
-                                            names.push(el.name);
-                                        } else {
-                                            names.push(n);
-                                        }
-                                    });
-                                    if (!names.length) {
-                                        names.push(parent.name);
+                            value={this.state.parent}
+                            onChange={e => this.setState({parent: e.target.value})}
+                            inputProps={{name: 'parent', id: 'parent',}}
+                        >
+                            {this.props.parents.map(parent => {
+                                const parts = parent.id.split('.');
+                                parts.splice(0, 2); // remove script.js
+                                const names = [];
+                                let id = 'script.js';
+                                parts.forEach((n, i) => {
+                                    id += '.' + n;
+                                    const el = this.props.parents.find(item => item.id === id);
+                                    if (el) {
+                                        names.push(el.name);
+                                    } else {
+                                        names.push(n);
                                     }
-                                    return (<MenuItem key={parent.id} value={parent.id}>{names.join(' / ')}</MenuItem>)
-                                })}
+                                });
+                                if (!names.length) {
+                                    names.push(parent.name);
+                                }
+                                return (<MenuItem key={parent.id} value={parent.id}>{names.join(' / ')}</MenuItem>)
+                            })}
+                        </Select>
+                    </FormControl>
+                    <TextField
+                        id="standard-name-id"
+                        style={{width: '100%'}}
+                        label={I18n.t('ID')}
+                        value={this.getId()}
+                        disabled={true}
+                        margin="normal"
+                    />
+                    {
+                        this.isShowInstance && (
+                            <FormControl>
+                            <InputLabel htmlFor="instance">{I18n.t('Instance')}</InputLabel>
+                            <Select
+                                value={this.state.instance}
+                                onChange={e => this.setState({instance: parseInt(e.target.value, 10)})}
+                                inputProps={{name: 'instance', id: 'instance',}}
+                            >
+                                {this.props.instances.map(instance => (<MenuItem key={'instance' + instance} value={instance}>{instance || '0'}</MenuItem>))}
                             </Select>
-                        </FormControl>
-                        <TextField
-                            id="standard-name-id"
-                            style={{width: '100%'}}
-                            label={I18n.t('ID')}
-                            value={this.getId()}
-                            disabled={true}
-                            margin="normal"
-                        />
-                        {
-                            this.isShowInstance && (
-                                <FormControl>
-                                <InputLabel htmlFor="instance">{I18n.t('Instance')}</InputLabel>
-                                <Select
-                                    value={this.state.instance}
-                                    onChange={e => this.setState({instance: parseInt(e.target.value, 10)})}
-                                    inputProps={{name: 'instance', id: 'instance',}}
-                                >
-                                    {this.props.instances.map(instance => (<MenuItem key={'instance' + instance} value={instance}>{instance || '0'}</MenuItem>))}
-                                </Select>
-                            </FormControl>)
-                        }
-                    </form>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={this.handleOk} disabled={!!this.state.error} color="primary"><IconOk className={this.props.classes.buttonIcon}/>{I18n.t('Ok')}</Button>
-                    <Button onClick={this.handleCancel}><IconCancel className={this.props.classes.buttonIcon}/>{I18n.t('Cancel')}</Button>
-                </DialogActions>
-            </Dialog>
-        );
+                        </FormControl>)
+                    }
+                </form>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="contained" onClick={this.handleOk} disabled={!!this.state.error} color="primary" startIcon={<IconOk/>}>{I18n.t('Ok')}</Button>
+                <Button variant="contained" onClick={this.handleCancel} startIcon={<IconCancel/>}>{I18n.t('Cancel')}</Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 

@@ -1,9 +1,9 @@
 import React from 'react';
+import * as Sentry from '@sentry/browser';
+import * as SentryIntegrations from '@sentry/integrations';
 import { withStyles } from '@material-ui/core/styles';
 import SplitterLayout from 'react-splitter-layout';
-import { MdMenu as IconMenuClosed } from 'react-icons/md';
-import { MdArrowBack as IconMenuOpened } from 'react-icons/md';
-import { MdVisibility as IconShowLog } from 'react-icons/md';
+import { version } from '../package.json';
 
 import 'react-splitter-layout/lib/index.css';
 
@@ -13,6 +13,10 @@ import I18n from '@iobroker/adapter-react/i18n';
 import DialogMessage from '@iobroker/adapter-react/Dialogs/Message';
 import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
 import Utils from '@iobroker/adapter-react/Components/Utils';
+
+import { MdMenu as IconMenuClosed } from 'react-icons/md';
+import { MdArrowBack as IconMenuOpened } from 'react-icons/md';
+import { MdVisibility as IconShowLog } from 'react-icons/md';
 
 import SideMenu from './SideMenu';
 import Log from './Log';
@@ -265,8 +269,44 @@ class App extends GenericApp {
             .then(result => {
                 newState.instances = result.instances;
                 newState.runningInstances = result.runningInstances;
-                return this.readAdaptersWithBlockly();
+
+                return new Promise(resolve => {
+                    const socket = this.socket;
+
+                    if (socket.systemConfig.common.diag !== 'none') {
+                        this.socket.getAdapterInstances(window.adapterName)
+                            .then(instances => {
+                                const sentryEnabled = !!instances.find(item => !item.common.disableDataReporting);
+
+                                // if not local development
+                                if (window.sentryDSN && sentryEnabled && window.location.host !== 'localhost:3000') {
+                                    Sentry.init({
+                                        dsn: window.sentryDSN,
+                                        release: `iobroker.${window.adapterName}@${version}`,
+                                        integrations: [
+                                            new SentryIntegrations.Dedupe()
+                                        ]
+                                    });
+
+                                    // BF 2021.08.31: may be this is not required as executed in adapter-react
+                                    this.socket.getObject('system.meta.uuid')
+                                        .then(uuidObj => {
+                                            if (uuidObj && uuidObj.native && uuidObj.native.uuid) {
+                                                Sentry.configureScope(scope =>
+                                                    scope.setUser({id: uuidObj.native.uuid}));
+                                            }
+                                            resolve();
+                                        });
+                                } else {
+                                    resolve();
+                                }
+                            });
+                    } else {
+                        resolve();
+                    }
+                });
             })
+            .then(() => this.readAdaptersWithBlockly())
             .then(() => this.socket.getHosts())
             .then(hosts => {
                 this.hosts = hosts.map(obj => obj._id);
@@ -480,7 +520,8 @@ class App extends GenericApp {
                         _id: newId,
                         type: 'channel',
                         common: {
-                            name: newName || id.split('.').pop()
+                            name: newName || id.split('.').pop(),
+                            expert: true
                         },
                         native: {}
                     };
@@ -498,6 +539,8 @@ class App extends GenericApp {
                         .then(() => {
                             nId = newId + nId.substring(id.length);
                             obj._id = nId;
+                            obj.common = obj.common || {};
+                            obj.common.expert = true;
                             return this.socket.setObject(nId, obj);
                         })
                         .then(() => this.renameGroup(id, newId, newName, _list))
@@ -630,6 +673,7 @@ class App extends GenericApp {
 
                                 // Name must always exist
                                 _obj.common.name = newCommon.name;
+                                _obj.common.expert = true;
 
                                 _obj._id = newId; // prefix + newCommon.name.replace(/[\s"']/g, '_');
 
@@ -641,6 +685,7 @@ class App extends GenericApp {
 
                     // Name must always exist
                     _obj.common.name = newCommon.name;
+                    _obj.common.expert = true;
 
                     _obj._id = newId; // prefix + newCommon.name.replace(/[\s"']/g, '_');
 

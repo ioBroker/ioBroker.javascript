@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 5.2.2 (2021-07-06)
+* (Apollon77) Add support to install npm packages as defined version (name@version)
+
 ## 5.2.1 (2021-07-05)
 * (Apollon77) Adjust logging for "array"/"object" type handling
 

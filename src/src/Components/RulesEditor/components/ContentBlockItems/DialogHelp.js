@@ -1,10 +1,14 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+
+import IconOk from '@material-ui/icons/Check';
+
 import I18n from '@iobroker/adapter-react/i18n';
-import PropTypes from 'prop-types';
 
 const DialogHelp = ({ onClose, open }) => <Dialog
     open={open}
@@ -27,7 +31,7 @@ const DialogHelp = ({ onClose, open }) => <Dialog
         </div>
     </DialogContent>
     <DialogActions>
-        <Button onClick={onClose} color="primary" autoFocus>
+        <Button onClick={onClose} color="primary" autoFocus startIcon={<IconOk/>}>
             {I18n.t('OK')}
         </Button>
     </DialogActions>
