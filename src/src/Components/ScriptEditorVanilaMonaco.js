@@ -87,6 +87,7 @@ class ScriptEditor extends React.Component {
             compilerOptions.checkJs = this.props.checkJs !== false;
             compilerOptions.noLib = true;
             compilerOptions.lib = [];
+            compilerOptions.useUnknownInCatchVariables = false;
             compilerOptions.moduleResolution = this.monaco.languages.typescript.ModuleResolutionKind.NodeJs;
             this.monaco.languages.typescript.typescriptDefaults.setCompilerOptions(compilerOptions);
 
