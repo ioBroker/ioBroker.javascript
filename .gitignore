@@ -10,3 +10,7 @@ iob_npm.dode
 /src/package-lock.json
 package-lock.json
 /src/.eslintcache
+
+
+# ioBroker dev-server
+.dev-server/
