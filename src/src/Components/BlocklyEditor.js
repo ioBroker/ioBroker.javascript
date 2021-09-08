@@ -499,7 +499,8 @@ class BlocklyEditor extends React.Component {
                     length:     3,
                     colour:     '#ccc',
                     snap:       true
-                }
+                },
+                sounds: false, // disable sounds
             }
         );
         // for blockly itself
@@ -518,13 +519,14 @@ class BlocklyEditor extends React.Component {
             if (masterEvent.type === this.Blockly.Events.UI || masterEvent.type === this.Blockly.Events.CREATE) {
                 return;  // Don't mirror UI events.
             }
-            if (this.ignoreChanges) return;
+            if (this.ignoreChanges) {
+                return;
+            }
             this.changeTimer && clearTimeout(this.changeTimer);
             this.changeTimer = setTimeout(() => {
                 this.changeTimer = null;
                 this.onBlocklyChanged();
             }, 200);
-
         });
         this.loadCode();
         this.onResize();
@@ -555,7 +557,9 @@ class BlocklyEditor extends React.Component {
     }
 
     componentWillUnmount() {
-        if (!this.blocklyWorkspace) return;
+        if (!this.blocklyWorkspace) {
+            return;
+        }
         this.blocklyWorkspace.dispose();
         this.blocklyWorkspace = null;
         this.changeTimer && clearTimeout(this.changeTimer);
@@ -603,6 +607,7 @@ class BlocklyEditor extends React.Component {
             /> :
             null;
     }
+
     renderErrorDialog() {
         return this.state.error ?
             <DialogError

@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.2.9",
+        "version": "5.2.10",
         "news": {
+            "5.2.10": {
+                "en": "Parse variables to floats for mathematical operations\nNames with the dot at the end are not allowed anymore\nThe blockly sounds are disabled",
+                "de": "Parsen Sie Variablen in Floats für mathematische Operationen\nNamen mit dem Punkt am Ende sind nicht mehr erlaubt\nDie Blockgeräusche sind deaktiviert",
+                "ru": "Преобразование переменных в числа с плавающей запятой для математических операций\nИмена с точкой в конце больше не допускаются\nБлочные звуки отключены",
+                "pt": "Analisar variáveis para flutuantes para operações matemáticas\nNomes com o ponto no final não são mais permitidos\nOs sons de bloqueio estão desabilitados",
+                "nl": "Variabelen ontleden naar floats voor wiskundige bewerkingen\nNamen met de punt aan het einde zijn niet meer toegestaan\nDe blokkeringsgeluiden zijn uitgeschakeld",
+                "fr": "Analyser les variables en flottants pour les opérations mathématiques\nLes noms avec un point à la fin ne sont plus autorisés\nLes sons en bloc sont désactivés",
+                "it": "Analizza le variabili in float per operazioni matematiche\nI nomi con il punto alla fine non sono più ammessi\nI suoni bloccati sono disabilitati",
+                "es": "Analizar variables a flotantes para operaciones matemáticas\nLos nombres con el punto al final ya no están permitidos.\nLos sonidos en bloque están desactivados",
+                "pl": "Parsuj zmienne do pływaków dla operacji matematycznych\nImiona z kropką na końcu nie są już dozwolone\nBlokowe dźwięki są wyłączone",
+                "zh-cn": "将变量解析为浮点数以进行数学运算\n不再允许以点结尾的名称\n块状声音被禁用"
+            },
             "5.2.9": {
                 "en": "Make sure day of weeks is an array (Sentry IOBROKER-JAVASCRIPT-7Y)\nReport to sentry is disabled in GUI if sentry is deactivated\nFixed many GitHub issues",
                 "de": "Stellen Sie sicher, dass der Wochentag ein Array ist (Sentry IOBROKER-JAVASCRIPT-7Y)\nBericht an Wache ist in der GUI deaktiviert, wenn Wache deaktiviert ist\nViele GitHub-Probleme behoben",
@@ -249,18 +261,6 @@
                 "es": "corrigió el error si no hay condición",
                 "pl": "naprawiono błąd, jeśli nie ma warunku",
                 "zh-cn": "如果没有条件，则修复错误"
-            },
-            "5.0.8": {
-                "en": "Translations\nAdded the \"set state with delay\" block",
-                "de": "Übersetzungen\nDer Block \"Status mit Verzögerung einstellen\" wurde hinzugefügt",
-                "ru": "Переводы\nДобавлен блок \"установить состояние с задержкой\"",
-                "pt": "Traduções\nAdicionado o bloco \"definir estado com atraso\"",
-                "nl": "Vertalingen\nHet blok \"set state with delay\" toegevoegd",
-                "fr": "Traductions\nAjout du bloc \"set state with delay\"",
-                "it": "Traduzioni\nAggiunto il blocco \"imposta stato con ritardo\"",
-                "es": "Traducciones\nSe agregó el bloque \"establecer estado con retraso\".",
-                "pl": "Tłumaczenia\nDodano blok „ustawianie stanu z opóźnieniem”",
-                "zh-cn": "笔译\n添加了“带有延迟的设置状态”块"
             }
         },
         "desc": {

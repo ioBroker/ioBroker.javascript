@@ -460,6 +460,9 @@ class App extends GenericApp {
     }
 
     onRename(oldId, newId, newName, newInstance) {
+        if (newId.trim().endsWith('.')) {
+            newId = newId.replace(/\.\s*$/, '_');
+        }
         console.log(`Rename ${oldId} => ${newId}`);
         let promise;
         this.setState({ updating: true });

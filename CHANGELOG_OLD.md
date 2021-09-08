@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 5.2.3 (2021-07-08)
+* (agross) Fix imports like "rxjs/operators" for versioned npm modules
+
 ## 5.2.2 (2021-07-06)
 * (Apollon77) Add support to install npm packages as defined version (name@version)
 
