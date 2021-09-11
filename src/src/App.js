@@ -201,15 +201,13 @@ class App extends GenericApp {
                 }
             }
 
-
-
-
             if (obj && obj[id].common && obj[id].common.blockly) {
                 this.confirmCallback = result => result && window.location.reload();
                 newState.confirm = I18n.t('Some blocks were updated. Reload admin?');
                 changed = true;
             }
         }
+
         changed && this.setState(newState);
     };
 

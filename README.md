@@ -39,6 +39,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.2.11 (2021-09-11)
+* (bluefox) Fixed the font in the editor
+
 ### 5.2.10 (2021-09-08)
 * (bluefox) Parse variables to floats for mathematical operations
 * (bluefox) Names with the dot at the end are not allowed anymore
