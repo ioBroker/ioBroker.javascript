@@ -652,7 +652,7 @@ class App extends GenericApp {
                             obj.common.engineType = newCommon.engineType || 'Javascript/js';
                         }
                     }
-
+                    obj.type = 'script';
                     return this.socket.extendObject(oldId, obj);
                 } else {
                     // let prefix;
@@ -677,6 +677,7 @@ class App extends GenericApp {
                                 // Name must always exist
                                 _obj.common.name = newCommon.name;
                                 _obj.common.expert = true;
+                                _obj.type = 'script';
 
                                 _obj._id = newId; // prefix + newCommon.name.replace(/[\s"']/g, '_');
 
@@ -689,7 +690,7 @@ class App extends GenericApp {
                     // Name must always exist
                     _obj.common.name = newCommon.name;
                     _obj.common.expert = true;
-
+                    _obj.type = 'script';
                     _obj._id = newId; // prefix + newCommon.name.replace(/[\s"']/g, '_');
 
                     return this.socket.setObject(newId, _obj);
