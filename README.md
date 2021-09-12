@@ -39,7 +39,7 @@ And then call `npm run build`.
 -->
 
 ## Changelog
-### 5.2.11 (2021-09-11)
+### 5.2.12 (2021-09-12)
 * (bluefox) Fixed the font in the editor
 
 ### 5.2.10 (2021-09-08)
@@ -57,9 +57,6 @@ And then call `npm run build`.
 
 ### 5.2.7 (2021-07-17)
 * (bluefox) Fixed error in rules
-
-### 5.2.6 (2021-07-16)
-* (bluefox) Added fallback for admin4
 
 ## License
 

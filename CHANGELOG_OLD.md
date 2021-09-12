@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 5.2.6 (2021-07-16)
+* (bluefox) Added fallback for admin4
+
 ## 5.2.3 (2021-07-08)
 * (agross) Fix imports like "rxjs/operators" for versioned npm modules
 

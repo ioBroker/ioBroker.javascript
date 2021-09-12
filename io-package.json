@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.2.10",
+        "version": "5.2.12",
         "news": {
+            "5.2.12": {
+                "en": "Fixed the font in the editor",
+                "de": "Die Schriftart im Editor korrigiert",
+                "ru": "Исправлен шрифт в редакторе",
+                "pt": "Corrigida a fonte no editor",
+                "nl": "Het lettertype in de editor gerepareerd",
+                "fr": "Correction de la police dans l'éditeur",
+                "it": "Risolto il problema con il carattere nell'editor",
+                "es": "Se corrigió la fuente en el editor.",
+                "pl": "Poprawiono czcionkę w edytorze",
+                "zh-cn": "修复了编辑器中的字体"
+            },
             "5.2.10": {
                 "en": "Parse variables to floats for mathematical operations\nNames with the dot at the end are not allowed anymore\nThe blockly sounds are disabled",
                 "de": "Parsen Sie Variablen in Floats für mathematische Operationen\nNamen mit dem Punkt am Ende sind nicht mehr erlaubt\nDie Blockgeräusche sind deaktiviert",
@@ -249,18 +261,6 @@
                 "es": "fecha agregada a la condición de tiempo",
                 "pl": "dodana data do warunku czasowego",
                 "zh-cn": "将日期添加到时间条件"
-            },
-            "5.0.9": {
-                "en": "fixed the error if no condition",
-                "de": "Der Fehler wurde behoben, wenn keine Bedingung vorliegt",
-                "ru": "исправлена ошибка при отсутствии условия",
-                "pt": "corrigiu o erro se nenhuma condição",
-                "nl": "de fout opgelost als er geen voorwaarde was",
-                "fr": "corrigé l'erreur si aucune condition",
-                "it": "risolto l'errore se nessuna condizione",
-                "es": "corrigió el error si no hay condición",
-                "pl": "naprawiono błąd, jeśli nie ma warunku",
-                "zh-cn": "如果没有条件，则修复错误"
             }
         },
         "desc": {
