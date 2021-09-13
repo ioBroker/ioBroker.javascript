@@ -20,8 +20,20 @@
             "Apollon77 <iobroker@fischer-ka.de>",
             "AlCalzone"
         ],
-        "version": "5.2.12",
+        "version": "5.2.13",
         "news": {
+            "5.2.13": {
+                "en": "Fixed the loading of Node.js typings",
+                "de": "Das Laden von Node.js-Typisierungen wurde behoben",
+                "ru": "Исправлена загрузка наборов Node.js",
+                "pt": "Corrigido o carregamento de tipificações Node.js",
+                "nl": "Het laden van Node.js-typeringen opgelost",
+                "fr": "Correction du chargement des typages Node.js",
+                "it": "Corretto il caricamento delle digitazioni Node.js",
+                "es": "Se corrigió la carga de tipificaciones de Node.js",
+                "pl": "Naprawiono ładowanie typowań Node.js",
+                "zh-cn": "修复了 Node.js 类型的加载"
+            },
             "5.2.12": {
                 "en": "Fixed the font in the editor",
                 "de": "Die Schriftart im Editor korrigiert",
@@ -239,18 +251,6 @@
                 "zh-cn": "固定错误"
             },
             "5.0.11": {
-                "en": "added date to the time condition",
-                "de": "Datum zur Zeitbedingung hinzugefügt",
-                "ru": "добавлена дата к условию времени",
-                "pt": "adicionou data à condição de tempo",
-                "nl": "datum toegevoegd aan de tijdvoorwaarde",
-                "fr": "date ajoutée à la condition d'heure",
-                "it": "data aggiunta alla condizione temporale",
-                "es": "fecha agregada a la condición de tiempo",
-                "pl": "dodana data do warunku czasowego",
-                "zh-cn": "将日期添加到时间条件"
-            },
-            "5.0.10": {
                 "en": "added date to the time condition",
                 "de": "Datum zur Zeitbedingung hinzugefügt",
                 "ru": "добавлена дата к условию времени",

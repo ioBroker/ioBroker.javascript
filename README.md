@@ -39,6 +39,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.2.13 (2021-09-13)
+* (AlCalzone) Fixed the loading of Node.js typings 
+ 
 ### 5.2.12 (2021-09-12)
 * (bluefox) Fixed the font in the editor
 
@@ -54,9 +57,6 @@ And then call `npm run build`.
 
 ### 5.2.8 (2021-07-22)
 * (bluefox) Fixed the debug of scripts
-
-### 5.2.7 (2021-07-17)
-* (bluefox) Fixed error in rules
 
 ## License
 

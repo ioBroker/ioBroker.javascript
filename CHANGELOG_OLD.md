@@ -1,5 +1,8 @@
 The newest change log is in README.md
 
+## 5.2.7 (2021-07-17)
+* (bluefox) Fixed error in rules
+
 ## 5.2.6 (2021-07-16)
 * (bluefox) Added fallback for admin4
 
