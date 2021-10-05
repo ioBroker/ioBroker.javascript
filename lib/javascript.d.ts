@@ -334,8 +334,8 @@ declare global {
 
 			/** Configures this state as an alias for another state */
 			alias?: {
-				/** The target state id */
-				id: string;
+				/** The target state id or two target states used for reading and writing values */
+				id: string | { read: string; write: string };
 				/** An optional conversion function when reading, e.g. `"(val − 32) * 5/9"` */
 				read?: string;
 				/** An optional conversion function when reading, e.g. `"(val * 9/5) + 32"` */
