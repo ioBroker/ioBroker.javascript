@@ -72,10 +72,21 @@ describe("Mirror", () => {
         const symlink = path.join(watched, "symlinked-directory");
         fs.symlinkSync(unwatched, symlink, "dir");
 
-        mirror.onFileChange = (_event, file) => {
-          expect(file).to.equal(path.join(symlink, path.basename(script)));
+        mirror.onFileChange = (event, file) => {
+          if (process.platform === 'linux') {
+            expect(file).to.equal(path.join(symlink, path.basename(script)));
 
-          done();
+            done();
+          }
+
+          if (process.platform === 'darwin') {
+            if (
+              event === "rename" &&
+              file === path.join(symlink, path.basename(script))
+            ) {
+              done();
+            }
+          }
         };
 
         mirror.watchFolders(watched);
