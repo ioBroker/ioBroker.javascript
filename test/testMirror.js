@@ -29,7 +29,7 @@ describe("Mirror", () => {
         fs.closeSync(fs.openSync(script, "w"));
 
         mirror.onFileChange = (_event, file) => {
-          expect(file).to.equal(script);
+          expect(path.normalize(file)).to.equal(script);
 
           done();
         };
@@ -51,7 +51,7 @@ describe("Mirror", () => {
         fs.symlinkSync(script, symlink);
 
         mirror.onFileChange = (_event, file) => {
-          expect(file).to.equal(symlink);
+          expect(path.normalize(file)).to.equal(symlink);
 
           done();
         };
@@ -73,13 +73,13 @@ describe("Mirror", () => {
         fs.symlinkSync(unwatched, symlink, "dir");
 
         mirror.onFileChange = (event, file) => {
-          if (process.platform === 'linux') {
-            expect(file).to.equal(path.join(symlink, path.basename(script)));
+          if (process.platform === "linux" || process.platform === "win32") {
+            expect(path.normalize(file)).to.equal(path.join(symlink, path.basename(script)));
 
             done();
           }
 
-          if (process.platform === 'darwin') {
+          if (process.platform === "darwin") {
             if (
               event === "rename" &&
               file === path.join(symlink, path.basename(script))
