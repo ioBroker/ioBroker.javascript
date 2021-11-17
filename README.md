@@ -39,6 +39,11 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (AlCalzone) Typings imrovement
+* (winnyschuster) added "Solar noon" to astro-list
+* (agross) Allowed to define different states for reading and writing alias values
+ 
 ### 5.2.13 (2021-09-13)
 * (AlCalzone) Fixed the loading of Node.js typings 
  
