@@ -410,7 +410,7 @@ function startAdapter(options) {
                     }
 
                     const n = getName(id);
-                    let nn = context.objects[id].common.name;
+                    let nn = context.objects[id].common ? context.objects[id].common.name : '';
 
                     if (nn && typeof nn === 'object') {
                         nn = nn[words.getLanguage()] || nn.en;
