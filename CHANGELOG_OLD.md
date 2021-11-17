@@ -1,4 +1,6 @@
 The newest change log is in README.md
+## 5.2.8 (2021-07-22)
+* (bluefox) Fixed the debug of scripts
 
 ## 5.2.7 (2021-07-17)
 * (bluefox) Fixed error in rules
@@ -41,7 +43,7 @@ The newest change log is in README.md
 * (bluefox) Rules: added "use trigger value" for the "set action" blocks
 
 ## 5.0.14 (2021-03-11)
-* (bluefox) fixed the font for the editor 
+* (bluefox) fixed the font for the editor
 
 ## 5.0.12 (2021-03-07)
 * (bluefox) fixed error in blockly
@@ -53,7 +55,7 @@ The newest change log is in README.md
 * (bluefox) added date to the time condition
 
 ## 5.0.9 (2021-03-04)
-* (bluefox) fixed the error if no condition 
+* (bluefox) fixed the error if no condition
 
 ## 5.0.8 (2021-03-03)
 * (bluefox) Translations
@@ -165,7 +167,7 @@ The newest change log is in README.md
 * (bluefox) Added new block in blockly: "pause" 
 * (bluefox) Changed the order of folders and scripts to "folders first".
 * (bluefox) Extend the documentation.
-* (bluefox) Corrected the error with blockly and "day of week" conversion. 
+* (bluefox) Corrected the error with blockly and "day of week" conversion.
 
 ## 4.8.4 (2020-09-21)
 * (bluefox) Make the mirroring instance adjustable

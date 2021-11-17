@@ -1,486 +1,330 @@
 {
-    "common": {
-        "name": "javascript",
-        "title": "Script Engine",
-        "titleLang": {
-            "en": "Script Engine",
-            "de": "Skriptausführung",
-            "ru": "Скрипты",
-            "pt": "Script Engine",
-            "nl": "Script-engine",
-            "fr": "Moteur de script",
-            "it": "Motore di script",
-            "es": "Motor de script",
-            "pl": "Silnik skryptowy",
-            "zh-cn": "脚本引擎"
-        },
-        "authors": [
-            "bluefox <dogafox@gmail.com>",
-            "hobbyquaker <hq@ccu.io>",
-            "Apollon77 <iobroker@fischer-ka.de>",
-            "AlCalzone"
-        ],
-        "version": "5.2.13",
-        "news": {
-            "5.2.13": {
-                "en": "Fixed the loading of Node.js typings",
-                "de": "Das Laden von Node.js-Typisierungen wurde behoben",
-                "ru": "Исправлена загрузка наборов Node.js",
-                "pt": "Corrigido o carregamento de tipificações Node.js",
-                "nl": "Het laden van Node.js-typeringen opgelost",
-                "fr": "Correction du chargement des typages Node.js",
-                "it": "Corretto il caricamento delle digitazioni Node.js",
-                "es": "Se corrigió la carga de tipificaciones de Node.js",
-                "pl": "Naprawiono ładowanie typowań Node.js",
-                "zh-cn": "修复了 Node.js 类型的加载"
-            },
-            "5.2.12": {
-                "en": "Fixed the font in the editor",
-                "de": "Die Schriftart im Editor korrigiert",
-                "ru": "Исправлен шрифт в редакторе",
-                "pt": "Corrigida a fonte no editor",
-                "nl": "Het lettertype in de editor gerepareerd",
-                "fr": "Correction de la police dans l'éditeur",
-                "it": "Risolto il problema con il carattere nell'editor",
-                "es": "Se corrigió la fuente en el editor.",
-                "pl": "Poprawiono czcionkę w edytorze",
-                "zh-cn": "修复了编辑器中的字体"
-            },
-            "5.2.10": {
-                "en": "Parse variables to floats for mathematical operations\nNames with the dot at the end are not allowed anymore\nThe blockly sounds are disabled",
-                "de": "Parsen Sie Variablen in Floats für mathematische Operationen\nNamen mit dem Punkt am Ende sind nicht mehr erlaubt\nDie Blockgeräusche sind deaktiviert",
-                "ru": "Преобразование переменных в числа с плавающей запятой для математических операций\nИмена с точкой в конце больше не допускаются\nБлочные звуки отключены",
-                "pt": "Analisar variáveis para flutuantes para operações matemáticas\nNomes com o ponto no final não são mais permitidos\nOs sons de bloqueio estão desabilitados",
-                "nl": "Variabelen ontleden naar floats voor wiskundige bewerkingen\nNamen met de punt aan het einde zijn niet meer toegestaan\nDe blokkeringsgeluiden zijn uitgeschakeld",
-                "fr": "Analyser les variables en flottants pour les opérations mathématiques\nLes noms avec un point à la fin ne sont plus autorisés\nLes sons en bloc sont désactivés",
-                "it": "Analizza le variabili in float per operazioni matematiche\nI nomi con il punto alla fine non sono più ammessi\nI suoni bloccati sono disabilitati",
-                "es": "Analizar variables a flotantes para operaciones matemáticas\nLos nombres con el punto al final ya no están permitidos.\nLos sonidos en bloque están desactivados",
-                "pl": "Parsuj zmienne do pływaków dla operacji matematycznych\nImiona z kropką na końcu nie są już dozwolone\nBlokowe dźwięki są wyłączone",
-                "zh-cn": "将变量解析为浮点数以进行数学运算\n不再允许以点结尾的名称\n块状声音被禁用"
-            },
-            "5.2.9": {
-                "en": "Make sure day of weeks is an array (Sentry IOBROKER-JAVASCRIPT-7Y)\nReport to sentry is disabled in GUI if sentry is deactivated\nFixed many GitHub issues",
-                "de": "Stellen Sie sicher, dass der Wochentag ein Array ist (Sentry IOBROKER-JAVASCRIPT-7Y)\nBericht an Wache ist in der GUI deaktiviert, wenn Wache deaktiviert ist\nViele GitHub-Probleme behoben",
-                "ru": "Убедитесь, что день недели - это массив (Sentry IOBROKER-JAVASCRIPT-7Y)\nОтчет для часовой отключен в графическом интерфейсе, если часовая отключена\nИсправлено множество проблем с GitHub.",
-                "pt": "Certifique-se de que o dia das semanas seja uma matriz (Sentry IOBROKER-JAVASCRIPT-7Y)\nO relatório para a sentinela é desativado na GUI se a sentinela estiver desativada\nMuitos problemas do GitHub corrigidos",
-                "nl": "Zorg ervoor dat de dag van de weken een array is (Sentry IOBROKER-JAVASCRIPT-7Y)\nRapporteren aan schildwacht is uitgeschakeld in GUI als schildwacht is gedeactiveerd\nVeel GitHub-problemen opgelost",
-                "fr": "Assurez-vous que le jour des semaines est un tableau (Sentry IOBROKER-JAVASCRIPT-7Y)\nLe rapport à sentinelle est désactivé dans l'interface graphique si sentinelle est désactivée\nCorrection de nombreux problèmes GitHub",
-                "it": "Assicurati che il giorno della settimana sia un array (Sentry IOBROKER-JAVASCRIPT-7Y)\nSegnala a sentinella è disabilitato nella GUI se sentinella è disattivata\nRisolti molti problemi con GitHub",
-                "es": "Asegúrese de que el día de las semanas sea una matriz (Sentry IOBROKER-JAVASCRIPT-7Y)\nInformar al centinela está deshabilitado en la GUI si el centinela está desactivado\nSe corrigieron muchos problemas de GitHub",
-                "pl": "Upewnij się, że dzień tygodnia jest tablicą (Sentry IOBROKER-JAVASCRIPT-7Y)\nRaport do wartownika jest wyłączony w GUI, jeśli działko jest wyłączone\nNaprawiono wiele problemów z GitHub",
-                "zh-cn": "确保星期几是一个数组 (Sentry IOBROKER-JAVASCRIPT-7Y)\n如果哨兵被停用，则在 GUI 中禁用向哨兵报告\n修复了许多 GitHub 问题"
-            },
-            "5.2.8": {
-                "en": "Fixed the debug of scripts",
-                "de": "Fehler bei Skripten behoben",
-                "ru": "Исправлена отладка скриптов",
-                "pt": "Corrigida a depuração de scripts",
-                "nl": "Debug van scripts opgelost",
-                "fr": "Correction du débogage des scripts",
-                "it": "Corretto il debug degli script",
-                "es": "Se corrigió la depuración de scripts.",
-                "pl": "Naprawiono debugowanie skryptów",
-                "zh-cn": "修复了脚本的调试"
-            },
-            "5.2.7": {
-                "en": "Fixed error in rules",
-                "de": "Fehler in den Regeln behoben",
-                "ru": "Исправлена ошибка в правилах",
-                "pt": "Erro corrigido nas regras",
-                "nl": "Fout in regels opgelost",
-                "fr": "Correction d'une erreur dans les règles",
-                "it": "Risolto errore nelle regole",
-                "es": "Error solucionado en las reglas",
-                "pl": "Naprawiono błąd w zasadach",
-                "zh-cn": "修正了规则错误"
-            },
-            "5.2.6": {
-                "en": "Added fallback for admin4",
-                "de": "Fallback für admin4 hinzugefügt",
-                "ru": "Добавлен резервный вариант для admin4",
-                "pt": "Adicionado substituto para admin4",
-                "nl": "Terugval toegevoegd voor admin4",
-                "fr": "Ajout de la solution de secours pour admin4",
-                "it": "Aggiunto fallback per admin4",
-                "es": "Respaldo agregado para admin4",
-                "pl": "Dodano rezerwę dla admin4",
-                "zh-cn": "为 admin4 添加了后备"
-            },
-            "5.2.5": {
-                "en": "Added fallback for admin4",
-                "de": "Fallback für admin4 hinzugefügt",
-                "ru": "Добавлен резервный вариант для admin4",
-                "pt": "Adicionado substituto para admin4",
-                "nl": "Terugval toegevoegd voor admin4",
-                "fr": "Ajout de la solution de secours pour admin4",
-                "it": "Aggiunto fallback per admin4",
-                "es": "Respaldo agregado para admin4",
-                "pl": "Dodano rezerwę dla admin4",
-                "zh-cn": "为 admin4 添加了后备"
-            },
-            "5.2.4": {
-                "en": "Added fallback for admin4",
-                "de": "Fallback für admin4 hinzugefügt",
-                "ru": "Добавлен резервный вариант для admin4",
-                "pt": "Adicionado substituto para admin4",
-                "nl": "Terugval toegevoegd voor admin4",
-                "fr": "Ajout de la solution de secours pour admin4",
-                "it": "Aggiunto fallback per admin4",
-                "es": "Respaldo agregado para admin4",
-                "pl": "Dodano rezerwę dla admin4",
-                "zh-cn": "为 admin4 添加了后备"
-            },
-            "5.2.3": {
-                "en": "Fix imports like \"rxjs/operators\" for versioned npm modules",
-                "de": "Importe wie \"rxjs/operators\" für versionierte npm-Module behoben",
-                "ru": "Исправить импорт, такой как \"rxjs / operator\", для модулей npm с поддержкой версий.",
-                "pt": "Corrija importações como \"rxjs / Operadores\" para módulos NPM com versão",
-                "nl": "Herstel importen zoals \"rxjs/operators\" voor npm-modules met versiebeheer",
-                "fr": "Correction des importations comme \"rxjs/operators\" pour les modules npm versionnés",
-                "it": "Correggi le importazioni come \"rxjs/operators\" per i moduli npm con versione",
-                "es": "Corregir importaciones como \"rxjs / operadores\" para módulos npm versionados",
-                "pl": "Napraw importy, takie jak „rxjs/operators” dla wersjonowanych modułów npm",
-                "zh-cn": "修复像“rxjs/operators”这样的版本化 npm 模块的导入"
-            },
-            "5.2.2": {
-                "en": "Add support to install npm packages as defined version (name@version)",
-                "de": "Unterstützung für die Installation von npm-Paketen als definierte Version (name@version) hinzufügen",
-                "ru": "Добавить поддержку для установки пакетов npm в соответствии с определенной версией (имя @ версия)",
-                "pt": "Adicione suporte para instalar pacotes npm conforme a versão definida (nome @ versão)",
-                "nl": "Ondersteuning toevoegen om npm-pakketten te installeren als gedefinieerde versie (naam@versie)",
-                "fr": "Ajout de la prise en charge pour installer les packages npm en tant que version définie (nom@version)",
-                "it": "Aggiungi il supporto per installare i pacchetti npm come versione definita (nome@versione)",
-                "es": "Agregue soporte para instalar paquetes npm como versión definida (nombre @ versión)",
-                "pl": "Dodaj obsługę instalacji pakietów npm jako zdefiniowanej wersji (nazwa@wersja)",
-                "zh-cn": "添加支持将 npm 包安装为定义的版本 (name@version)"
-            },
-            "5.2.1": {
-                "en": "IMPORTANT: Admin 5.1.9 is now required for this JavaScript version!\nAdjust logging for \"array\"/\"object\" type handling",
-                "de": "WICHTIG: Für diese JavaScript-Version wird jetzt Admin 5.1.9 benötigt!\nPassen Sie die Protokollierung für die Behandlung des Typs \"Array\"/\"Objekt\" an",
-                "ru": "ВАЖНО: для этой версии JavaScript теперь требуется Admin 5.1.9!\nНастроить ведение журнала для обработки типа \"массив\" / \"объект\"",
-                "pt": "IMPORTANTE: Admin 5.1.9 agora é necessário para esta versão JavaScript!\nAjuste o registro para manipulação de tipo \"array\" / \"objeto\"",
-                "nl": "BELANGRIJK: Admin 5.1.9 is nu vereist voor deze JavaScript-versie!\nLogboekregistratie aanpassen voor verwerking van het type \"array\"/\"object\"",
-                "fr": "IMPORTANT : Admin 5.1.9 est désormais requis pour cette version JavaScript !\nAjuster la journalisation pour la gestion de type « tableau »/« objet »",
-                "it": "IMPORTANTE: per questa versione JavaScript è ora richiesto l'amministratore 5.1.9!\nRegola la registrazione per la gestione del tipo \"array\"/\"oggetto\"",
-                "es": "IMPORTANTE: ¡Ahora se requiere Admin 5.1.9 para esta versión de JavaScript!\nAjustar el registro para el manejo del tipo \"matriz\" / \"objeto\"",
-                "pl": "WAŻNE: Admin 5.1.9 jest teraz wymagany dla tej wersji JavaScript!\nDostosuj logowanie do obsługi typu „tablica”/„obiekt”",
-                "zh-cn": "重要提示：此 JavaScript 版本现在需要 Admin 5.1.9！\n调整“数组”/“对象”类型处理的日志记录"
-            },
-            "5.2.0": {
-                "en": "BREAKING: Convert state values for object types \\\"array\\\"/\\\"object\\\" to stringified  as required by js-controller 3.3. This means such objects should not be \\\"JSON.parsed\\\" after reading!\nadd adapter to tier 1 for js-controller 3.3 (this means will be started first!)\nImplemented the change of theme and the expert mode via admin\nfixed the error with the simulation\nBlockly: Allow Value read from datapoint as switch input\nBlockly: add text_multiline block\nPrevent crash case(Sentry IOBROKER-JAVASCRIPT-70)",
-                "de": "BREAKING: Konvertieren Sie Zustandswerte für die Objekttypen \\\"array\\\"/\\\"object\\\" in stringified, wie von js-controller 3.3 gefordert. Das bedeutet, dass solche Objekte nach dem Lesen nicht \\\"JSON.parsed\\\" werden sollten!\nAdapter zu Tier 1 für js-controller 3.3 hinzufügen (dies bedeutet, dass zuerst gestartet wird!)\nDen Themenwechsel und den Expertenmodus über den Admin umgesetzt\nden Fehler mit der Simulation behoben\nBlockly: Wert lesen vom Datenpunkt als Schalteingang zulassen\nBlockly: Text_multiline-Block hinzufügen\nCrash-Fall verhindern (Sentry IOBROKER-JAVASCRIPT-70)",
-                "ru": "BREAKING: Преобразуйте значения состояния для типов объектов \\\"массив\\\" / \\\"объект\\\" в строковые, как того требует js-controller 3.3. Это означает, что такие объекты не должны обрабатываться \\\"JSON.parsed\\\" после прочтения!\nдобавить адаптер на tier 1 для js-controller 3.3 (значит будет запущен первым!)\nРеализована смена темы и экспертного режима через админку.\nисправлена ошибка с симуляцией\nБлочно: разрешить чтение значения из точки данных в качестве входа переключателя\nBlockly: добавить блок text_multiline\nСлучай предотвращения сбоя (Sentry IOBROKER-JAVASCRIPT-70)",
-                "pt": "QUEBRANDO: Converte valores de estado para tipos de objeto \\\"array\\\" / \\\"object\\\" para stringified conforme exigido por js-controller 3.3. Isso significa que esses objetos não devem ser \\\"JSON.parsed\\\" após a leitura!\nadicione o adaptador ao nível 1 para js-controller 3.3 (isso significa que será iniciado primeiro!)\nImplementou a mudança de tema e o modo especialista via admin\ncorrigiu o erro com a simulação\nBlockly: Permitir valor lido do ponto de dados como entrada do switch\nBlockly: add text_multiline block\nPrevenir caso de travamento (Sentry IOBROKER-JAVASCRIPT-70)",
-                "nl": "BREAKING: Converteer statuswaarden voor objecttypes \\\"array\\\"/\\\"object\\\" naar stringified zoals vereist door js-controller 3.3. Dit betekent dat dergelijke objecten na het lezen niet \\\"JSON.parsed\\\" mogen zijn!\nvoeg adapter toe aan tier 1 voor js-controller 3.3 (dit betekent dat het eerst wordt gestart!)\nDe verandering van thema en de expertmodus geïmplementeerd via admin\nde fout verholpen met de simulatie\nBlockly: Sta waarde lezen van datapunt toe als schakelaarinvoer\nBlockly: voeg text_multiline block toe\nCrashgeval voorkomen (Sentry IOBROKER-JAVASCRIPT-70)",
-                "fr": "RUPTURE : convertissez les valeurs d'état pour les types d'objets « tableau »/« objet » en chaîne comme requis par js-controller 3.3. Cela signifie que ces objets ne doivent pas être \\\"JSON.parsed\\\" après la lecture !\najouter un adaptateur au niveau 1 pour js-controller 3.3 (cela signifie qu'il sera démarré en premier !)\nImplémentation du changement de thème et du mode expert via admin\ncorrection de l'erreur avec la simulation\nBlockly : autoriser la lecture de la valeur à partir du point de données en tant qu'entrée de commutateur\nBlockly : ajouter un bloc text_multiline\nEmpêcher le crash (Sentry IOBROKER-JAVASCRIPT-70)",
-                "it": "INTERRUZIONE: Converti i valori di stato per i tipi di oggetto \\\"array\\\"/\\\"oggetto\\\" in stringati come richiesto da js-controller 3.3. Ciò significa che tali oggetti non dovrebbero essere \\\"JSON.parsed\\\" dopo la lettura!\naggiungi l'adattatore al livello 1 per js-controller 3.3 (questo significa che verrà avviato per primo!)\nImplementato il cambio di tema e la modalità esperto tramite admin\nrisolto l'errore con la simulazione\nBlockly: consenti la lettura del valore dal punto dati come input dell'interruttore\nBlockly: aggiungi text_multiline block\nPrevenire crash case (Sentry IOBROKER-JAVASCRIPT-70)",
-                "es": "ROMPIENDO: Convierta los valores de estado para los tipos de objeto \\\"matriz\\\" / \\\"objeto\\\" en cadenas como lo requiere js-controller 3.3. Esto significa que tales objetos no deben ser \\\"analizados JSON\\\" después de leerlos.\nagregue el adaptador al nivel 1 para js-controller 3.3 (¡esto significa que se iniciará primero!)\nImplementé el cambio de tema y el modo experto a través de admin.\ncorrigió el error con la simulación\nBlockly: Permitir que el valor se lea desde el punto de datos como entrada de interruptor\nBlockly: agregar bloque text_multiline\nCaso de prevención de accidentes (Sentry IOBROKER-JAVASCRIPT-70)",
-                "pl": "ZŁAMANIE: Konwertuj wartości stanu dla typów obiektów \\\"array\\\"/\\\"object\\\" na łańcuchowe zgodnie z wymaganiami js-controller 3.3. Oznacza to, że takie obiekty nie powinny być \\\"JSON.parsed\\\" po przeczytaniu!\ndodaj adapter do warstwy 1 dla js-controller 3.3 (oznacza to, że zostanie uruchomiony jako pierwszy!)\nWdrożono zmianę motywu i trybu eksperta przez admin ad\nnaprawiono błąd w symulacji\nBlokowo: Zezwól na odczytanie wartości z punktu danych jako wejście przełącznika\nBlockly: dodaj blok text_multiline\nZapobiegaj awariom (Sentry IOBROKER-JAVASCRIPT-70)",
-                "zh-cn": "根据 js-controller 3.3 的要求处理对象类型“数组”/“对象”字符串化的状态值\n将适配器添加到 js-controller 3.3 的第 1 层（这意味着将首先启动！）\n通过admin实现了主题和专家模式的变化\n修复了模拟错误\nBlockly：允许从数据点读取值作为开关输入\n块状：添加 text_multiline 块\n防止崩溃案例(Sentry IOBROKER-JAVASCRIPT-70)"
-            },
-            "5.1.3": {
-                "en": "fixed the error in the debugging",
-                "de": "Der Fehler beim Debuggen wurde behoben",
-                "ru": "исправлена ошибка в отладке",
-                "pt": "corrigiu o erro na depuração",
-                "nl": "de fout in de foutopsporing opgelost",
-                "fr": "corrigé l'erreur dans le débogage",
-                "it": "risolto l'errore nel debug",
-                "es": "corrigió el error en la depuración",
-                "pl": "naprawiono błąd w debugowaniu",
-                "zh-cn": "修复了调试中的错误"
-            },
-            "5.1.0": {
-                "en": "Implemented the debug of scripts possibility",
-                "de": "Implementierung der Möglichkeit zum Debuggen von Skripten",
-                "ru": "Реализована возможность отладки скриптов.",
-                "pt": "Implementada a possibilidade de depuração de scripts",
-                "nl": "Mogelijkheid tot debuggen van scripts geïmplementeerd",
-                "fr": "Implémentation de la possibilité de débogage des scripts",
-                "it": "Implementata la possibilità di debug degli script",
-                "es": "Implementada la posibilidad de depuración de scripts.",
-                "pl": "Zaimplementowano możliwość debugowania skryptów",
-                "zh-cn": "实现了脚本调试的可能性"
-            },
-            "5.0.15": {
-                "en": "Rules: added \"use trigger value\" for the \"set action\" blocks",
-                "de": "Regeln: \"Triggerwert verwenden\" für die \"Aktion setzen\" -Blöcke hinzugefügt",
-                "ru": "Правила: добавлено «использовать значение триггера» для блоков «установить действие».",
-                "pt": "Regras: adicionado \"usar valor de gatilho\" para os blocos de \"definir ação\"",
-                "nl": "Regels: \"use trigger value\" toegevoegd voor de \"set action\" blokken",
-                "fr": "Règles: ajout de \"utiliser la valeur de déclenchement\" pour les blocs \"définir l'action\"",
-                "it": "Regole: aggiunto \"usa valore trigger\" per i blocchi \"imposta azione\"",
-                "es": "Reglas: se agregó \"usar valor de activación\" para los bloques \"establecer acción\"",
-                "pl": "Reguły: dodano „użyj wartości wyzwalacza” dla bloków „ustaw akcję”",
-                "zh-cn": "规则：为“设置动作”块添加了“使用触发值”"
-            },
-            "5.0.14": {
-                "en": "fixed the font for the editor",
-                "de": "Die Schriftart für den Editor wurde korrigiert",
-                "ru": "исправлен шрифт для редактора",
-                "pt": "corrigiu a fonte para o editor",
-                "nl": "het lettertype voor de editor opgelost",
-                "fr": "correction de la police pour l'éditeur",
-                "it": "corretto il carattere per l'editor",
-                "es": "se arregló la fuente para el editor",
-                "pl": "poprawiono czcionkę dla edytora",
-                "zh-cn": "修复了编辑器的字体"
-            },
-            "5.0.13": {
-                "en": "fixed the font for the editor",
-                "de": "Die Schriftart für den Editor wurde korrigiert",
-                "ru": "исправлен шрифт для редактора",
-                "pt": "corrigiu a fonte para o editor",
-                "nl": "het lettertype voor de editor opgelost",
-                "fr": "correction de la police pour l'éditeur",
-                "it": "corretto il carattere per l'editor",
-                "es": "se arregló la fuente para el editor",
-                "pl": "poprawiono czcionkę dla edytora",
-                "zh-cn": "修复了编辑器的字体"
-            },
-            "5.0.12": {
-                "en": "fixed error in blockly",
-                "de": "Fehler in blockly behoben",
-                "ru": "исправлена ошибка блочного",
-                "pt": "erro corrigido em bloco",
-                "nl": "vaste fout in blockly",
-                "fr": "erreur fixe en bloc",
-                "it": "corretto errore in blocco",
-                "es": "error fijo en blockly",
-                "pl": "naprawiono błąd w bloku",
-                "zh-cn": "固定错误"
-            },
-            "5.0.11": {
-                "en": "added date to the time condition",
-                "de": "Datum zur Zeitbedingung hinzugefügt",
-                "ru": "добавлена дата к условию времени",
-                "pt": "adicionou data à condição de tempo",
-                "nl": "datum toegevoegd aan de tijdvoorwaarde",
-                "fr": "date ajoutée à la condition d'heure",
-                "it": "data aggiunta alla condizione temporale",
-                "es": "fecha agregada a la condición de tiempo",
-                "pl": "dodana data do warunku czasowego",
-                "zh-cn": "将日期添加到时间条件"
-            }
-        },
-        "desc": {
-            "en": "Javascript/Blockly Script Engine for ioBroker",
-            "de": "Javascript/Blockly Skriptausführung für ioBroker",
-            "ru": "Выполнение Javascript/Blockly скриптов для ioBroker"
-        },
-        "platform": "Javascript/Node.js",
-        "mode": "daemon",
-        "loglevel": "info",
-        "icon": "javascript.png",
-        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin-config/javascript.png",
-        "keywords": [
-            "js",
-            "javascript",
-            "typescript",
-            "coffeescript",
-            "rules",
-            "automate",
-            "scriptengine",
-            "blockly",
-            "blokly"
-        ],
-        "materialize": true,
-        "readme": "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
-        "enabled": true,
-        "license": "MIT",
-        "compact": true,
-        "adminTab": {
-            "singleton": true,
-            "name": {
-                "en": "Scripts",
-                "de": "Skripte",
-                "ru": "Скрипты"
-            }
-        },
-        "docs": {
-            "en": [
-                "docs/en/javascript.md",
-                "docs/en/blockly.md"
-            ],
-            "ru": [
-                "docs/ru/blockly.md"
-            ],
-            "de": [
-                "docs/de/usage.md",
-                "docs/de/blockly.md"
-            ]
-        },
-        "dependencies": [
-            {
-                "js-controller": ">=2.2.0"
-            }
-        ],
-        "globalDependencies": [
-            {
-                "admin": ">=5.1.9"
-            }
-        ],
-        "type": "logic",
-        "messagebox": true,
-        "logTransporter": true,
-        "plugins": {
-            "sentry": {
-                "dsn": "https://f3b9740caaee4ee69eb68019d71526ff@sentry.iobroker.net/15"
-            }
-        },
-        "tier": 1,
-        "connectionType": "none",
-        "dataSource": "none"
+  "common": {
+    "name": "javascript",
+    "title": "Script Engine",
+    "titleLang": {
+      "en": "Script Engine",
+      "de": "Skriptausführung",
+      "ru": "Скрипты",
+      "pt": "Script Engine",
+      "nl": "Script-engine",
+      "fr": "Moteur de script",
+      "it": "Motore di script",
+      "es": "Motor de script",
+      "pl": "Silnik skryptowy",
+      "zh-cn": "脚本引擎"
     },
-    "native": {
-        "latitude": "",
-        "longitude": "",
-        "enableSetObject": false,
-        "enableSendToHost": false,
-        "enableExec": false,
-        "libraries": "",
-        "libraryTypings": "",
-        "subscribe": false,
-        "useSystemGPS": true,
-        "mirrorPath": "",
-        "mirrorInstance": 0,
-        "allowSelfSignedCerts": false,
-        "sunriseEvent": "nightEnd",
-        "sunriseOffset": 0,
-        "sunriseLimitStart": "06:00",
-        "sunriseLimitEnd": "12:00",
-        "sunsetEvent": "dusk",
-        "sunsetOffset": 0,
-        "sunsetLimitStart": "18:00",
-        "sunsetLimitEnd": "23:00"
-    },
-    "objects": [
-        {
-            "_id": "_design/script",
-            "language": "javascript",
-            "views": {
-                "javascript": {
-                    "map": "function(doc) { if (doc.type === 'script' && doc.common.engineType.match(/^[jJ]ava[sS]cript|^[cC]offee[sS]cript|^[tT]ype[sS]cript|^Blockly/)) emit(doc.common.name, doc); }"
-                }
-            }
-        },
-        {
-            "_id": "script.js",
-            "common": {
-                "name": "js"
-            },
-            "type": "device",
-            "native": {}
-        },
-        {
-            "_id": "script.js.common",
-            "common": {
-                "name": "common"
-            },
-            "type": "channel",
-            "native": {}
-        },
-        {
-            "_id": "script.js.global",
-            "common": {
-                "name": "global"
-            },
-            "type": "channel",
-            "native": {}
-        }
+    "authors": [
+      "bluefox <dogafox@gmail.com>",
+      "hobbyquaker <hq@ccu.io>",
+      "Apollon77 <iobroker@fischer-ka.de>",
+      "AlCalzone"
     ],
-    "instanceObjects": [
-        {
-            "_id": "variables",
-            "common": {
-                "name": "Useful variables"
-            },
-            "type": "channel",
-            "native": {}
-        },
-        {
-            "_id": "variables.isDayTime",
-            "common": {
-                "name": "Is day time",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "role": "indicator"
-            },
-            "type": "state",
-            "native": {}
-        },
-        {
-            "_id": "variables.dayTime",
-            "common": {
-                "name": "Actual day time",
-                "desc": "Like 13:34, you can set native.format12 to true to have 1:32",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "role": "state"
-            },
-            "type": "state",
-            "native": {
-                "format12": false,
-                "leadingZeros": true
-            }
-        },
-        {
-            "_id": "variables.rulesTour",
-            "common": {
-                "name": "Is tour done",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "role": "state"
-            },
-            "type": "state",
-            "native": {}
-        },
-        {
-            "_id": "debug",
-            "common": {
-                "name": "Debug variables"
-            },
-            "type": "channel",
-            "native": {}
-        },
-        {
-            "_id": "debug.to",
-            "common": {
-                "name": "Send data to debugger",
-                "type": "string",
-                "read": false,
-                "write": true,
-                "role": "json"
-            },
-            "type": "state",
-            "native": {}
-        },
-        {
-            "_id": "debug.from",
-            "common": {
-                "name": "Data from debugger",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "role": "json"
-            },
-            "type": "state",
-            "native": {}
-        },
-        {
-            "_id": "debug.rules",
-            "common": {
-                "name": "Data from engine to rules",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "role": "json"
-            },
-            "type": "state",
-            "native": {}
+    "version": "5.2.14",
+    "news": {
+      "5.2.14": {
+        "en": "Typings imrovement\nadded \"Solar noon\" to astro-list\nAllowed to define different states for reading and writing alias values",
+        "de": "Verbesserung der Eingaben\n\"Sonnenmittag\" zur Astro-Liste hinzugefügt\nErlaubt, verschiedene Zustände zum Lesen und Schreiben von Alias-Werten zu definieren",
+        "ru": "Улучшение типографий\nдобавлен \"Солнечный полдень\" в астро-лист\nРазрешено определять различные состояния для чтения и записи значений псевдонима",
+        "pt": "Melhoria de digitação\nadicionado \"meio-dia solar\" à lista de astrologia\nTem permissão para definir diferentes estados para ler e escrever valores de alias",
+        "nl": "Verbetering van typen\n\"Zonne-middag\" toegevoegd aan astro-lijst\nToegestaan om verschillende statussen te definiëren voor het lezen en schrijven van aliaswaarden",
+        "fr": "Amélioration de la dactylographie\na ajouté \"midi solaire\" à la liste des astro\nAutorisé à définir différents états pour la lecture et l'écriture des valeurs d'alias",
+        "it": "Miglioramento delle digitazioni\naggiunto \"mezzogiorno solare\" all'elenco astronomico\nConsentito di definire diversi stati per la lettura e la scrittura di valori alias",
+        "es": "Mejora de Typings\nañadido \"mediodía solar\" a la lista de astro\nPermitido definir diferentes estados para leer y escribir valores de alias",
+        "pl": "Poprawa pisania\ndodano „Słoneczne południe” do astro-listy\nUmożliwiono zdefiniowanie różnych stanów odczytu i zapisu wartości aliasów",
+        "zh-cn": "打字改进\n在天文列表中添加了“太阳正午”\n允许为读取和写入别名值定义不同的状态"
+      },
+      "5.2.13": {
+        "en": "Fixed the loading of Node.js typings",
+        "de": "Das Laden von Node.js-Typisierungen wurde behoben",
+        "ru": "Исправлена загрузка наборов Node.js",
+        "pt": "Corrigido o carregamento de tipificações Node.js",
+        "nl": "Het laden van Node.js-typeringen opgelost",
+        "fr": "Correction du chargement des typages Node.js",
+        "it": "Corretto il caricamento delle digitazioni Node.js",
+        "es": "Se corrigió la carga de tipificaciones de Node.js",
+        "pl": "Naprawiono ładowanie typowań Node.js",
+        "zh-cn": "修复了 Node.js 类型的加载"
+      },
+      "5.2.12": {
+        "en": "Fixed the font in the editor",
+        "de": "Die Schriftart im Editor korrigiert",
+        "ru": "Исправлен шрифт в редакторе",
+        "pt": "Corrigida a fonte no editor",
+        "nl": "Het lettertype in de editor gerepareerd",
+        "fr": "Correction de la police dans l'éditeur",
+        "it": "Risolto il problema con il carattere nell'editor",
+        "es": "Se corrigió la fuente en el editor.",
+        "pl": "Poprawiono czcionkę w edytorze",
+        "zh-cn": "修复了编辑器中的字体"
+      },
+      "5.2.10": {
+        "en": "Parse variables to floats for mathematical operations\nNames with the dot at the end are not allowed anymore\nThe blockly sounds are disabled",
+        "de": "Parsen Sie Variablen in Floats für mathematische Operationen\nNamen mit dem Punkt am Ende sind nicht mehr erlaubt\nDie Blockgeräusche sind deaktiviert",
+        "ru": "Преобразование переменных в числа с плавающей запятой для математических операций\nИмена с точкой в конце больше не допускаются\nБлочные звуки отключены",
+        "pt": "Analisar variáveis para flutuantes para operações matemáticas\nNomes com o ponto no final não são mais permitidos\nOs sons de bloqueio estão desabilitados",
+        "nl": "Variabelen ontleden naar floats voor wiskundige bewerkingen\nNamen met de punt aan het einde zijn niet meer toegestaan\nDe blokkeringsgeluiden zijn uitgeschakeld",
+        "fr": "Analyser les variables en flottants pour les opérations mathématiques\nLes noms avec un point à la fin ne sont plus autorisés\nLes sons en bloc sont désactivés",
+        "it": "Analizza le variabili in float per operazioni matematiche\nI nomi con il punto alla fine non sono più ammessi\nI suoni bloccati sono disabilitati",
+        "es": "Analizar variables a flotantes para operaciones matemáticas\nLos nombres con el punto al final ya no están permitidos.\nLos sonidos en bloque están desactivados",
+        "pl": "Parsuj zmienne do pływaków dla operacji matematycznych\nImiona z kropką na końcu nie są już dozwolone\nBlokowe dźwięki są wyłączone",
+        "zh-cn": "将变量解析为浮点数以进行数学运算\n不再允许以点结尾的名称\n块状声音被禁用"
+      },
+      "5.2.9": {
+        "en": "Make sure day of weeks is an array (Sentry IOBROKER-JAVASCRIPT-7Y)\nReport to sentry is disabled in GUI if sentry is deactivated\nFixed many GitHub issues",
+        "de": "Stellen Sie sicher, dass der Wochentag ein Array ist (Sentry IOBROKER-JAVASCRIPT-7Y)\nBericht an Wache ist in der GUI deaktiviert, wenn Wache deaktiviert ist\nViele GitHub-Probleme behoben",
+        "ru": "Убедитесь, что день недели - это массив (Sentry IOBROKER-JAVASCRIPT-7Y)\nОтчет для часовой отключен в графическом интерфейсе, если часовая отключена\nИсправлено множество проблем с GitHub.",
+        "pt": "Certifique-se de que o dia das semanas seja uma matriz (Sentry IOBROKER-JAVASCRIPT-7Y)\nO relatório para a sentinela é desativado na GUI se a sentinela estiver desativada\nMuitos problemas do GitHub corrigidos",
+        "nl": "Zorg ervoor dat de dag van de weken een array is (Sentry IOBROKER-JAVASCRIPT-7Y)\nRapporteren aan schildwacht is uitgeschakeld in GUI als schildwacht is gedeactiveerd\nVeel GitHub-problemen opgelost",
+        "fr": "Assurez-vous que le jour des semaines est un tableau (Sentry IOBROKER-JAVASCRIPT-7Y)\nLe rapport à sentinelle est désactivé dans l'interface graphique si sentinelle est désactivée\nCorrection de nombreux problèmes GitHub",
+        "it": "Assicurati che il giorno della settimana sia un array (Sentry IOBROKER-JAVASCRIPT-7Y)\nSegnala a sentinella è disabilitato nella GUI se sentinella è disattivata\nRisolti molti problemi con GitHub",
+        "es": "Asegúrese de que el día de las semanas sea una matriz (Sentry IOBROKER-JAVASCRIPT-7Y)\nInformar al centinela está deshabilitado en la GUI si el centinela está desactivado\nSe corrigieron muchos problemas de GitHub",
+        "pl": "Upewnij się, że dzień tygodnia jest tablicą (Sentry IOBROKER-JAVASCRIPT-7Y)\nRaport do wartownika jest wyłączony w GUI, jeśli działko jest wyłączone\nNaprawiono wiele problemów z GitHub",
+        "zh-cn": "确保星期几是一个数组 (Sentry IOBROKER-JAVASCRIPT-7Y)\n如果哨兵被停用，则在 GUI 中禁用向哨兵报告\n修复了许多 GitHub 问题"
+      },
+      "5.2.8": {
+        "en": "Fixed the debug of scripts",
+        "de": "Fehler bei Skripten behoben",
+        "ru": "Исправлена отладка скриптов",
+        "pt": "Corrigida a depuração de scripts",
+        "nl": "Debug van scripts opgelost",
+        "fr": "Correction du débogage des scripts",
+        "it": "Corretto il debug degli script",
+        "es": "Se corrigió la depuración de scripts.",
+        "pl": "Naprawiono debugowanie skryptów",
+        "zh-cn": "修复了脚本的调试"
+      },
+      "5.2.7": {
+        "en": "Fixed error in rules",
+        "de": "Fehler in den Regeln behoben",
+        "ru": "Исправлена ошибка в правилах",
+        "pt": "Erro corrigido nas regras",
+        "nl": "Fout in regels opgelost",
+        "fr": "Correction d'une erreur dans les règles",
+        "it": "Risolto errore nelle regole",
+        "es": "Error solucionado en las reglas",
+        "pl": "Naprawiono błąd w zasadach",
+        "zh-cn": "修正了规则错误"
+      }
+    },
+    "desc": {
+      "en": "Javascript/Blockly Script Engine for ioBroker",
+      "de": "Javascript/Blockly Skriptausführung für ioBroker",
+      "ru": "Выполнение Javascript/Blockly скриптов для ioBroker"
+    },
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "loglevel": "info",
+    "icon": "javascript.png",
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin-config/javascript.png",
+    "keywords": [
+      "js",
+      "javascript",
+      "typescript",
+      "coffeescript",
+      "rules",
+      "automate",
+      "scriptengine",
+      "blockly",
+      "blokly"
+    ],
+    "materialize": true,
+    "readme": "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
+    "enabled": true,
+    "license": "MIT",
+    "compact": true,
+    "adminTab": {
+      "singleton": true,
+      "name": {
+        "en": "Scripts",
+        "de": "Skripte",
+        "ru": "Скрипты"
+      }
+    },
+    "docs": {
+      "en": [
+        "docs/en/javascript.md",
+        "docs/en/blockly.md"
+      ],
+      "ru": [
+        "docs/ru/blockly.md"
+      ],
+      "de": [
+        "docs/de/usage.md",
+        "docs/de/blockly.md"
+      ]
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=2.2.0"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=5.1.9"
+      }
+    ],
+    "type": "logic",
+    "messagebox": true,
+    "logTransporter": true,
+    "plugins": {
+      "sentry": {
+        "dsn": "https://f3b9740caaee4ee69eb68019d71526ff@sentry.iobroker.net/15"
+      }
+    },
+    "tier": 1,
+    "connectionType": "none",
+    "dataSource": "none"
+  },
+  "native": {
+    "latitude": "",
+    "longitude": "",
+    "enableSetObject": false,
+    "enableSendToHost": false,
+    "enableExec": false,
+    "libraries": "",
+    "libraryTypings": "",
+    "subscribe": false,
+    "useSystemGPS": true,
+    "mirrorPath": "",
+    "mirrorInstance": 0,
+    "allowSelfSignedCerts": false,
+    "sunriseEvent": "nightEnd",
+    "sunriseOffset": 0,
+    "sunriseLimitStart": "06:00",
+    "sunriseLimitEnd": "12:00",
+    "sunsetEvent": "dusk",
+    "sunsetOffset": 0,
+    "sunsetLimitStart": "18:00",
+    "sunsetLimitEnd": "23:00"
+  },
+  "objects": [
+    {
+      "_id": "_design/script",
+      "language": "javascript",
+      "views": {
+        "javascript": {
+          "map": "function(doc) { if (doc.type === 'script' && doc.common.engineType.match(/^[jJ]ava[sS]cript|^[cC]offee[sS]cript|^[tT]ype[sS]cript|^Blockly/)) emit(doc.common.name, doc); }"
         }
-    ]
+      }
+    },
+    {
+      "_id": "script.js",
+      "common": {
+        "name": "js"
+      },
+      "type": "device",
+      "native": {}
+    },
+    {
+      "_id": "script.js.common",
+      "common": {
+        "name": "common"
+      },
+      "type": "channel",
+      "native": {}
+    },
+    {
+      "_id": "script.js.global",
+      "common": {
+        "name": "global"
+      },
+      "type": "channel",
+      "native": {}
+    }
+  ],
+  "instanceObjects": [
+    {
+      "_id": "variables",
+      "common": {
+        "name": "Useful variables"
+      },
+      "type": "channel",
+      "native": {}
+    },
+    {
+      "_id": "variables.isDayTime",
+      "common": {
+        "name": "Is day time",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "role": "indicator"
+      },
+      "type": "state",
+      "native": {}
+    },
+    {
+      "_id": "variables.dayTime",
+      "common": {
+        "name": "Actual day time",
+        "desc": "Like 13:34, you can set native.format12 to true to have 1:32",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "role": "state"
+      },
+      "type": "state",
+      "native": {
+        "format12": false,
+        "leadingZeros": true
+      }
+    },
+    {
+      "_id": "variables.rulesTour",
+      "common": {
+        "name": "Is tour done",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "role": "state"
+      },
+      "type": "state",
+      "native": {}
+    },
+    {
+      "_id": "debug",
+      "common": {
+        "name": "Debug variables"
+      },
+      "type": "channel",
+      "native": {}
+    },
+    {
+      "_id": "debug.to",
+      "common": {
+        "name": "Send data to debugger",
+        "type": "string",
+        "read": false,
+        "write": true,
+        "role": "json"
+      },
+      "type": "state",
+      "native": {}
+    },
+    {
+      "_id": "debug.from",
+      "common": {
+        "name": "Data from debugger",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "role": "json"
+      },
+      "type": "state",
+      "native": {}
+    },
+    {
+      "_id": "debug.rules",
+      "common": {
+        "name": "Data from engine to rules",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "role": "json"
+      },
+      "type": "state",
+      "native": {}
+    }
+  ]
 }

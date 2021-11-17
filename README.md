@@ -39,14 +39,14 @@ And then call `npm run build`.
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.2.14 (2021-11-17)
 * (AlCalzone) Typings imrovement
 * (winnyschuster) added "Solar noon" to astro-list
 * (agross) Allowed to define different states for reading and writing alias values
- 
+
 ### 5.2.13 (2021-09-13)
-* (AlCalzone) Fixed the loading of Node.js typings 
- 
+* (AlCalzone) Fixed the loading of Node.js typings
+
 ### 5.2.12 (2021-09-12)
 * (bluefox) Fixed the font in the editor
 
@@ -59,9 +59,6 @@ And then call `npm run build`.
 * (Apollon77) Make sure day of weeks is an array (Sentry IOBROKER-JAVASCRIPT-7Y)
 * (bluefox) Report to sentry is disabled in GUI if sentry is deactivated
 * (bluefox) Fixed many GitHub issues
-
-### 5.2.8 (2021-07-22)
-* (bluefox) Fixed the debug of scripts
 
 ## License
 
