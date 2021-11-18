@@ -39,8 +39,7 @@ And then call `npm run build`.
 -->
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 5.2.15 (2021-11-18)
 * (agross) Added the monitoring of symlinks my mirroring
 * (Apollon77) Fix two crash cases reported by Sentry
 
@@ -59,11 +58,6 @@ And then call `npm run build`.
 * (bluefox) Parse variables to floats for mathematical operations
 * (bluefox) Names with the dot at the end are not allowed anymore
 * (bluefox) The blockly sounds are disabled
-
-### 5.2.9 (2021-09-02)
-* (Apollon77) Make sure day of weeks is an array (Sentry IOBROKER-JAVASCRIPT-7Y)
-* (bluefox) Report to sentry is disabled in GUI if sentry is deactivated
-* (bluefox) Fixed many GitHub issues
 
 ## License
 

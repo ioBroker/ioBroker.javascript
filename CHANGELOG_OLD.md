@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 5.2.9 (2021-09-02)
+* (Apollon77) Make sure day of weeks is an array (Sentry IOBROKER-JAVASCRIPT-7Y)
+* (bluefox) Report to sentry is disabled in GUI if sentry is deactivated
+* (bluefox) Fixed many GitHub issues
+
 ## 5.2.8 (2021-07-22)
 * (bluefox) Fixed the debug of scripts
 

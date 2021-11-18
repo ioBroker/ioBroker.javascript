@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.2.14",
+    "version": "5.2.15",
     "news": {
+      "5.2.15": {
+        "en": "Added the monitoring of symlinks my mirroring\nFix two crash cases reported by Sentry",
+        "de": "Die Überwachung von Symlinks wurde meiner Spiegelung hinzugefügt\nBehebung von zwei Absturzfällen, die von Sentry gemeldet wurden",
+        "ru": "Добавлен мониторинг симлинков моего зеркалирования\nИсправить два случая сбоя, о которых сообщает Sentry",
+        "pt": "Adicionado o monitoramento de links simbólicos meu espelhamento\nCorrigir dois casos de falha relatados pelo Sentry",
+        "nl": "Toegevoegd de monitoring van symbolische links mijn mirroring\nHerstel twee crashgevallen gemeld door Sentry",
+        "fr": "Ajout de la surveillance des liens symboliques ma mise en miroir\nCorrection de deux cas de plantage signalés par Sentry",
+        "it": "Aggiunto il monitoraggio dei collegamenti simbolici al mio mirroring\nRisolti due casi di crash segnalati da Sentry",
+        "es": "Se agregó la supervisión de enlaces simbólicos a mi duplicación.\nArregle dos casos de fallas reportados por Sentry",
+        "pl": "Dodano monitorowanie dowiązań symbolicznych w moim dublowaniu\nNapraw dwa przypadki awarii zgłoszone przez Sentry",
+        "zh-cn": "添加了对符号链接的监控我的镜像\n修复 Sentry 报告的两个崩溃案例"
+      },
       "5.2.14": {
         "en": "Typings imrovement\nadded \"Solar noon\" to astro-list\nAllowed to define different states for reading and writing alias values",
         "de": "Verbesserung der Eingaben\n\"Sonnenmittag\" zur Astro-Liste hinzugefügt\nErlaubt, verschiedene Zustände zum Lesen und Schreiben von Alias-Werten zu definieren",
@@ -93,18 +105,6 @@
         "es": "Se corrigió la depuración de scripts.",
         "pl": "Naprawiono debugowanie skryptów",
         "zh-cn": "修复了脚本的调试"
-      },
-      "5.2.7": {
-        "en": "Fixed error in rules",
-        "de": "Fehler in den Regeln behoben",
-        "ru": "Исправлена ошибка в правилах",
-        "pt": "Erro corrigido nas regras",
-        "nl": "Fout in regels opgelost",
-        "fr": "Correction d'une erreur dans les règles",
-        "it": "Risolto errore nelle regole",
-        "es": "Error solucionado en las reglas",
-        "pl": "Naprawiono błąd w zasadach",
-        "zh-cn": "修正了规则错误"
       }
     },
     "desc": {
