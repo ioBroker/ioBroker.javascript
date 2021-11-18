@@ -41,6 +41,7 @@ And then call `npm run build`.
 ## Changelog
 
 ### __WORK IN PROGRESS__
+* (agross) Added the monitoring of symlinks my mirroring
 * (Apollon77) Fix two crash cases reported by Sentry
 
 ### 5.2.14 (2021-11-17)
