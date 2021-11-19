@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.2.15",
+    "version": "5.2.16",
     "news": {
+      "5.2.16": {
+        "en": "Fixed fonts",
+        "de": "Feste Schriftarten",
+        "ru": "Фиксированные шрифты",
+        "pt": "Fontes fixas",
+        "nl": "Vaste lettertypen",
+        "fr": "Polices fixes",
+        "it": "Caratteri fissi",
+        "es": "Fuentes fijas",
+        "pl": "Naprawiono czcionki",
+        "zh-cn": "固定字体"
+      },
       "5.2.15": {
         "en": "Added the monitoring of symlinks my mirroring\nFix two crash cases reported by Sentry",
         "de": "Die Überwachung von Symlinks wurde meiner Spiegelung hinzugefügt\nBehebung von zwei Absturzfällen, die von Sentry gemeldet wurden",

@@ -39,6 +39,9 @@ And then call `npm run build`.
 -->
 
 ## Changelog
+### 5.2.16 (2021-11-19)
+* (bluefox) Fixed the font in the editor
+
 ### 5.2.15 (2021-11-18)
 * (agross) Added the monitoring of symlinks my mirroring
 * (Apollon77) Fix two crash cases reported by Sentry
