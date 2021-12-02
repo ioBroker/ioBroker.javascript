@@ -189,6 +189,62 @@ Blockly.JavaScript['timeouts_settimeout'] = function(block) {
     return name + ' = setTimeout(async function () {\n' + statements_name + '}, ' + delay + ');\n';
 };
 
+// --- setTimeout delay -----------------------------------------------------------
+Blockly.Timeouts.blocks['timeouts_settimeout_variable'] =
+    '<block type="timeouts_settimeout">'
+    + '     <value name="NAME">'
+    + '     </value>'
+    + '     <value name="DELAY_MS">'
+    + '         <shadow type="math_number">'
+    + '             <field name="NUM">1000</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['timeouts_settimeout_variable'] = {
+    init: function() {
+        var nameField = new Blockly.FieldTextInput(
+            Blockly.Timeouts.findLegalName('timeout', this),
+            Blockly.Timeouts.rename);
+
+        nameField.setSpellcheck(false);
+
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('timeouts_settimeout'))
+            .appendField(nameField, 'NAME')
+            .appendField(Blockly.Translate('timeouts_settimeout_in'))
+            .appendValueInput("DELAY_MS").setCheck('Number')
+            .appendField(Blockly.Translate('timeouts_settimeout_ms'));
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setInputsInline(false);
+        this.setColour(Blockly.Timeouts.HUE);
+        this.setTooltip(Blockly.Translate('timeouts_settimeout_tooltip'));
+        this.setHelpUrl(getHelp('timeouts_settimeout_help'));
+    },
+    isTimeout_: true,
+    getVars: function () {
+        return [this.getFieldValue('NAME')];
+    },
+    getVarModels: function () {
+        var name = this.getFieldValue('NAME');
+        return [{getId: function () {return name;}, name: name, type: 'timeout'}];
+    }
+};
+
+Blockly.JavaScript['timeouts_settimeout_variable'] = function(block) {
+    var delay = block.getFieldValue('DELAY_MS');
+    var name  = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
+    var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    return name + ' = setTimeout(async function () {\n' + statements_name + '}, ' + delay + ');\n';
+};
+
 // --- clearTimeout -----------------------------------------------------------
 Blockly.Timeouts.getAllTimeouts = function (workspace) {
     var blocks = workspace.getAllBlocks();
