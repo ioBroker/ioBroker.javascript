@@ -189,9 +189,9 @@ Blockly.JavaScript['timeouts_settimeout'] = function(block) {
     return name + ' = setTimeout(async function () {\n' + statements_name + '}, ' + delay + ');\n';
 };
 
-// --- setTimeout delay -----------------------------------------------------------
+// --- setTimeout variable -----------------------------------------------------------
 Blockly.Timeouts.blocks['timeouts_settimeout_variable'] =
-    '<block type="timeouts_settimeout">'
+    '<block type="timeouts_settimeout_variable">'
     + '     <value name="NAME">'
     + '     </value>'
     + '     <value name="DELAY_MS">'
@@ -214,8 +214,10 @@ Blockly.Blocks['timeouts_settimeout_variable'] = {
         this.appendDummyInput()
             .appendField(Blockly.Translate('timeouts_settimeout'))
             .appendField(nameField, 'NAME')
-            .appendField(Blockly.Translate('timeouts_settimeout_in'))
-            .appendValueInput("DELAY_MS").setCheck('Number')
+            .appendField(Blockly.Translate('timeouts_settimeout_in'));
+
+        this.appendValueInput('DELAY_MS')
+            .setCheck('Number')
             .appendField(Blockly.Translate('timeouts_settimeout_ms'));
 
         this.appendStatementInput('STATEMENT')
@@ -223,7 +225,7 @@ Blockly.Blocks['timeouts_settimeout_variable'] = {
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+        this.setInputsInline(true);
         this.setColour(Blockly.Timeouts.HUE);
         this.setTooltip(Blockly.Translate('timeouts_settimeout_tooltip'));
         this.setHelpUrl(getHelp('timeouts_settimeout_help'));
@@ -239,10 +241,10 @@ Blockly.Blocks['timeouts_settimeout_variable'] = {
 };
 
 Blockly.JavaScript['timeouts_settimeout_variable'] = function(block) {
-    var delay = block.getFieldValue('DELAY_MS');
+    var delay = Blockly.JavaScript.valueToCode(block, 'DELAY_MS', Blockly.JavaScript.ORDER_ATOMIC);
     var name  = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    return name + ' = setTimeout(async function () {\n' + statements_name + '}, ' + delay + ');\n';
+    return name + ' = setTimeout(async function () {\n' + statements_name + '}, parseInt(' + delay + '));\n';
 };
 
 // --- clearTimeout -----------------------------------------------------------
