@@ -114,7 +114,7 @@ Objekt ID mit Dialog selektieren
 getstate
 ID auswählen
 Wert
-anerkannt
+bestätigt
 Zeitstempel
 Letze Änderung
 Qualität
