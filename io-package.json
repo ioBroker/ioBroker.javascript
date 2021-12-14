@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.2.17",
+    "version": "5.2.18",
     "news": {
+      "5.2.18": {
+        "en": "Fixed some german translations\nFixed astro schedules",
+        "de": "Einige deutsche Übersetzungen korrigiert\nFeste Astrozeitpläne",
+        "ru": "Исправлены некоторые немецкие переводы\nФиксированные астро-графики",
+        "pt": "Corrigidas algumas traduções para o alemão\nProgramações de astro corrigidas",
+        "nl": "Enkele Duitse vertalingen gerepareerd\nVaste astro-schema's",
+        "fr": "Correction de certaines traductions allemandes\nHoraires astro fixes",
+        "it": "Risolte alcune traduzioni in tedesco\nOrari astronomici fissi",
+        "es": "Se corrigieron algunas traducciones alemanas.\nHorarios astro fijos",
+        "pl": "Naprawiono niektóre niemieckie tłumaczenia\nStałe harmonogramy astro",
+        "zh-cn": "修正了一些德语翻译\n固定的天文时间表"
+      },
       "5.2.17": {
         "en": "Fixed some german translations\nFixed astro schedules",
         "de": "Einige deutsche Übersetzungen korrigiert\nFeste Astrozeitpläne",
@@ -93,18 +105,6 @@
         "es": "Se corrigió la fuente en el editor.",
         "pl": "Poprawiono czcionkę w edytorze",
         "zh-cn": "修复了编辑器中的字体"
-      },
-      "5.2.10": {
-        "en": "Parse variables to floats for mathematical operations\nNames with the dot at the end are not allowed anymore\nThe blockly sounds are disabled",
-        "de": "Parsen Sie Variablen in Floats für mathematische Operationen\nNamen mit dem Punkt am Ende sind nicht mehr erlaubt\nDie Blockgeräusche sind deaktiviert",
-        "ru": "Преобразование переменных в числа с плавающей запятой для математических операций\nИмена с точкой в конце больше не допускаются\nБлочные звуки отключены",
-        "pt": "Analisar variáveis para flutuantes para operações matemáticas\nNomes com o ponto no final não são mais permitidos\nOs sons de bloqueio estão desabilitados",
-        "nl": "Variabelen ontleden naar floats voor wiskundige bewerkingen\nNamen met de punt aan het einde zijn niet meer toegestaan\nDe blokkeringsgeluiden zijn uitgeschakeld",
-        "fr": "Analyser les variables en flottants pour les opérations mathématiques\nLes noms avec un point à la fin ne sont plus autorisés\nLes sons en bloc sont désactivés",
-        "it": "Analizza le variabili in float per operazioni matematiche\nI nomi con il punto alla fine non sono più ammessi\nI suoni bloccati sono disabilitati",
-        "es": "Analizar variables a flotantes para operaciones matemáticas\nLos nombres con el punto al final ya no están permitidos.\nLos sonidos en bloque están desactivados",
-        "pl": "Parsuj zmienne do pływaków dla operacji matematycznych\nImiona z kropką na końcu nie są już dozwolone\nBlokowe dźwięki są wyłączone",
-        "zh-cn": "将变量解析为浮点数以进行数学运算\n不再允许以点结尾的名称\n块状声音被禁用"
       }
     },
     "desc": {
