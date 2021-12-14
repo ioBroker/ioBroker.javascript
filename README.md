@@ -38,8 +38,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
-
-### __WORK IN PROGRESS__
+### 5.2.17 (2021-12-14)
 * (klein0r) Fixed some german translations
 * (winnyschuster) Fixed astro schedules
 
@@ -57,14 +56,6 @@ And then call `npm run build`.
 
 ### 5.2.13 (2021-09-13)
 * (AlCalzone) Fixed the loading of Node.js typings
-
-### 5.2.12 (2021-09-12)
-* (bluefox) Fixed the font in the editor
-
-### 5.2.10 (2021-09-08)
-* (bluefox) Parse variables to floats for mathematical operations
-* (bluefox) Names with the dot at the end are not allowed anymore
-* (bluefox) The blockly sounds are disabled
 
 ## License
 The MIT License (MIT)

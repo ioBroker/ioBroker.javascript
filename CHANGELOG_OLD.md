@@ -1,4 +1,12 @@
 The newest change log is in README.md
+## 5.2.12 (2021-09-12)
+* (bluefox) Fixed the font in the editor
+
+## 5.2.10 (2021-09-08)
+* (bluefox) Parse variables to floats for mathematical operations
+* (bluefox) Names with the dot at the end are not allowed anymore
+* (bluefox) The blockly sounds are disabled
+
 ## 5.2.9 (2021-09-02)
 * (Apollon77) Make sure day of weeks is an array (Sentry IOBROKER-JAVASCRIPT-7Y)
 * (bluefox) Report to sentry is disabled in GUI if sentry is deactivated
