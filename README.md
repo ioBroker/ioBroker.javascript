@@ -24,59 +24,49 @@ Hier kann man die Beschreibung von [Blockly](docs/de/blockly.md) finden.
 **This adapter uses Sentry libraries to automatically report exceptions and code errors to the developers.** For more details and for information how to disable the error reporting see [Sentry-Plugin Documentation](https://github.com/ioBroker/plugin-sentry#plugin-sentry)! Sentry reporting is used starting with js-controller 3.0.
 
 ## How to build (only for developers)
-
 Just run `npm i` in the root and in the src folders.
 
 And then call `npm run build`.
 
 ## Todo
-
 - Goto current line in debugger
 - heating profile (future releases)
 - ...
 
 ## Changelog
-
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
 
 ### __WORK IN PROGRESS__
-
 * (klein0r) Fixed some german translations
+* (winnyschuster) Fixed astro schedules
 
 ### 5.2.16 (2021-11-19)
-
 * (bluefox) Fixed the font in the editor
 
 ### 5.2.15 (2021-11-18)
-
 * (agross) Added the monitoring of symlinks my mirroring
 * (Apollon77) Fix two crash cases reported by Sentry
 
 ### 5.2.14 (2021-11-17)
-
 * (AlCalzone) Typings improvement
 * (winnyschuster) added "Solar noon" to astro-list
 * (agross) Allow to define different states for reading and writing alias values
 
 ### 5.2.13 (2021-09-13)
-
 * (AlCalzone) Fixed the loading of Node.js typings
 
 ### 5.2.12 (2021-09-12)
-
 * (bluefox) Fixed the font in the editor
 
 ### 5.2.10 (2021-09-08)
-
 * (bluefox) Parse variables to floats for mathematical operations
 * (bluefox) Names with the dot at the end are not allowed anymore
 * (bluefox) The blockly sounds are disabled
 
 ## License
-
 The MIT License (MIT)
 
 Copyright (c) 2014-2021 bluefox <dogafox@gmail.com>,

@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import * as Sentry from '@sentry/browser';
 import * as SentryIntegrations from '@sentry/integrations';
 import { withStyles } from '@material-ui/core/styles';
@@ -331,7 +332,33 @@ class App extends GenericApp {
                 this.socket.subscribeObject('system.host.*', this.onHostChanged);
 
                 this.setState(newState);
+                this.loadPlugins();
             });
+    }
+
+    loadPlugins() {
+        if (!this.pluginsLoaded) {
+            this.pluginsLoaded = true;
+            const div = window.document.createElement('div');
+            div.socket = this.socket;
+            div.setAttribute('id', 'hello');
+            window.document.body.appendChild(div);
+            window.jsPlugins = {};
+            window.React = React;
+
+            const script = window.document.createElement('script');
+            script.onload = () => {
+                ReactDOM.render(React.createElement(window.jsPlugins.JSPluginDemo, {
+                    socket: this.socket,
+                    theme: this.state.theme,
+                    themeName: this.state.themeName,
+                    themeType: this.state.themeType
+                }), div);
+            };
+
+            script.src = './plugins/bundle.js';
+            window.document.documentElement.firstChild.appendChild(script);
+        }
     }
 
     // BF(2021.07.16): support fallback on admin4. Remove it after one year
