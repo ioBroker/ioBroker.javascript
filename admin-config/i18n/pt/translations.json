@@ -1,5 +1,5 @@
 {
-    "Add module": "Adicionar módulo",
+    "Add module": "Adicionar módulo NPM",
     "Additional npm modules:": "Módulos npm adicionais",
     "Allow self signed certificates for URL requests": "Permitir certificados autoassinados para solicitações de URL",
     "Astro settings": "Configurações Astro",
@@ -12,7 +12,7 @@
     "Javascript scripts adapter settings": "Configurações do adaptador de scripts Javascript",
     "Latitude °:": "Latitude °",
     "Longitude °:": "Longitude °",
-    "Module names": "Nomes de módulos",
+    "Module names": "Nomes de módulos NPM",
     "Security relevant": "Segurança relevante",
     "Settings": "Configurações",
     "Use system settings:": "Use as configurações do sistema",
