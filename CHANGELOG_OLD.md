@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 5.2.13 (2021-09-13)
+* (AlCalzone) Fixed the loading of Node.js typings
+
 ## 5.2.12 (2021-09-12)
 * (bluefox) Fixed the font in the editor
 
