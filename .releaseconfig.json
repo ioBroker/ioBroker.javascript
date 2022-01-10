@@ -2,6 +2,6 @@
   "all": true,
   "plugins": ["iobroker", "license"],
   "exec": {
-    "beforePush": "npm run build"
+    "before_commit": "npm run build"
   }
 }
