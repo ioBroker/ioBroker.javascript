@@ -1,6 +1,6 @@
 {
     "name": "js",
-    "version": "5.2.17",
+    "version": "5.2.18",
     "private": true,
     "dependencies": {
         "@iobroker/adapter-react": "^2.0.14",

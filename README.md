@@ -38,6 +38,10 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
+
+### __WORK IN PROGRESS__
+* (AlCalzone) Fix broken dependency
+
 ### 5.2.18 (2021-12-14)
 * (klein0r) Fixed some german translations
 * (winnyschuster) Fixed astro schedules
