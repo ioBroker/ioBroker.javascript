@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2020 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2022 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -13,10 +13,10 @@ const rename     = require('gulp-rename');
 const replace    = require('gulp-replace');
 const del        = require('del');
 const cp         = require('child_process');
-
-const pkg       = require('./package.json');
-const iopackage = require('./io-package.json');
-const version   = (pkg && pkg.version) ? pkg.version : iopackage.common.version;
+const JSZip      = require('jszip');
+const pkg        = require('./package.json');
+const iopackage  = require('./io-package.json');
+const version    = (pkg && pkg.version) ? pkg.version : iopackage.common.version;
 /*const appName   = getAppName();
 
 function getAppName() {
@@ -241,14 +241,23 @@ gulp.task('6-patch', () => new Promise(resolve => {
 
         fs.writeFileSync(__dirname + '/src/build/index.html', code);
     }
-    if (fs.existsSync(__dirname + '/admin-config/vs/base/browser/ui/codicons/codicon/codicon.ttf')) {
-        const codicon = fs.readFileSync(__dirname + '/admin-config/vs/base/browser/ui/codicons/codicon/codicon.ttf');
-        if (!fs.existsSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/')) {
-            fs.mkdirSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/', {recursive: true});
-        }
-        fs.writeFileSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf', codicon);
-    }
-    resolve();
+
+    // this is workaround for TTF file. somehow it will always corrupt so we pack it into ZIP
+    JSZip.loadAsync(fs.readFileSync(__dirname + '/admin-config/vs/base/browser/ui/codicons/codicon/codicon.zip'))
+        .then(zip => {
+            zip.file('codicon.ttf').async('arraybuffer')
+                .then(data => {
+                    if (!fs.existsSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/')) {
+                        fs.mkdirSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/', {recursive: true});
+                    }
+
+                    if (data.byteLength !== 62324) {
+                        throw new Error('invalid font file!');
+                    }
+                    fs.writeFileSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf', Buffer.from(data));
+                    resolve();
+                });
+        });
 }));
 
 gulp.task('6-patch-dep',  gulp.series('5-copy-dep', '6-patch'));
@@ -774,8 +783,6 @@ gulp.task('adminLanguagesFlat2words', done => {
     languagesFlat2words('./admin-config/');
     done();
 });
-
-
 
 
 gulp.task('updatePackages', done => {

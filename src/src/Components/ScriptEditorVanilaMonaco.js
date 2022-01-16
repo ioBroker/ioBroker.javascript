@@ -246,12 +246,13 @@ class ScriptEditor extends React.Component {
                 content: this.typings[path],
             });
         }
-        // BF: check https://microsoft.github.io/monaco-editor/playground.html#extending-language-services-semantic-tokens-provider-example
+
+        // TODO BF: check https://microsoft.github.io/monaco-editor/playground.html#extending-language-services-semantic-tokens-provider-example
         // to support 0.21.0
 
-        if (this.monaco.languages.typescript.typescriptDefaults.setExtraLibs) {
+        if (this.monaco && this.monaco.languages.typescript.typescriptDefaults.setExtraLibs) {
             this.monaco.languages.typescript.typescriptDefaults.setExtraLibs(wantedTypings);
-        } else if (this.monaco.languages.typescript.typescriptDefaults.addExtraLib) {
+        } else if (this.monaco && this.monaco.languages.typescript.typescriptDefaults.addExtraLib) {
             const existingLibs = this.monaco.languages.typescript.typescriptDefaults.getExtraLibs();
             wantedTypings.forEach(lib => {
                 if (!existingLibs[lib.filePath]) {

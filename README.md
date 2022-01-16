@@ -38,8 +38,11 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
+### __WORK IN PROGRESS__
+* (bluefox) Fixed build process
+
 ### 5.2.19 (2022-01-10)
-* (AlCalzone) Fix broken dependency
+* (AlCalzone) Fixed broken dependency
 
 ### 5.2.18 (2021-12-14)
 * (klein0r) Fixed some german translations
