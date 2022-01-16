@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.2.20",
+    "version": "5.2.21",
     "news": {
+      "5.2.21": {
+        "en": "Fixed build process",
+        "de": "Build-Prozess behoben",
+        "ru": "Исправлен процесс сборки",
+        "pt": "Processo de compilação corrigido",
+        "nl": "Vast bouwproces",
+        "fr": "Processus de construction fixe",
+        "it": "Risolto il problema con il processo di compilazione",
+        "es": "Proceso de construcción fijo",
+        "pl": "Poprawiony proces kompilacji",
+        "zh-cn": "固定的构建过程"
+      },
       "5.2.20": {
         "en": "Fixed build process",
         "de": "Build-Prozess behoben",
@@ -93,18 +105,6 @@
         "es": "Se agregó la supervisión de enlaces simbólicos a mi duplicación.\nArregle dos casos de fallas reportados por Sentry",
         "pl": "Dodano monitorowanie dowiązań symbolicznych w moim dublowaniu\nNapraw dwa przypadki awarii zgłoszone przez Sentry",
         "zh-cn": "添加了对符号链接的监控我的镜像\n修复 Sentry 报告的两个崩溃案例"
-      },
-      "5.2.14": {
-        "en": "Typings imrovement\nadded \"Solar noon\" to astro-list\nAllowed to define different states for reading and writing alias values",
-        "de": "Verbesserung der Eingaben\n\"Sonnenmittag\" zur Astro-Liste hinzugefügt\nErlaubt, verschiedene Zustände zum Lesen und Schreiben von Alias-Werten zu definieren",
-        "ru": "Улучшение типографий\nдобавлен \"Солнечный полдень\" в астро-лист\nРазрешено определять различные состояния для чтения и записи значений псевдонима",
-        "pt": "Melhoria de digitação\nadicionado \"meio-dia solar\" à lista de astrologia\nTem permissão para definir diferentes estados para ler e escrever valores de alias",
-        "nl": "Verbetering van typen\n\"Zonne-middag\" toegevoegd aan astro-lijst\nToegestaan om verschillende statussen te definiëren voor het lezen en schrijven van aliaswaarden",
-        "fr": "Amélioration de la dactylographie\na ajouté \"midi solaire\" à la liste des astro\nAutorisé à définir différents états pour la lecture et l'écriture des valeurs d'alias",
-        "it": "Miglioramento delle digitazioni\naggiunto \"mezzogiorno solare\" all'elenco astronomico\nConsentito di definire diversi stati per la lettura e la scrittura di valori alias",
-        "es": "Mejora de Typings\nañadido \"mediodía solar\" a la lista de astro\nPermitido definir diferentes estados para leer y escribir valores de alias",
-        "pl": "Poprawa pisania\ndodano „Słoneczne południe” do astro-listy\nUmożliwiono zdefiniowanie różnych stanów odczytu i zapisu wartości aliasów",
-        "zh-cn": "打字改进\n在天文列表中添加了“太阳正午”\n允许为读取和写入别名值定义不同的状态"
       }
     },
     "desc": {
