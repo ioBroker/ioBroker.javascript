@@ -243,7 +243,7 @@ gulp.task('6-patch', () => new Promise(resolve => {
     }
 
     // this is workaround for TTF file. somehow it will always corrupt so we pack it into ZIP
-    JSZip.loadAsync(fs.readFileSync(__dirname + '/admin-config/vs/base/browser/ui/codicons/codicon/codicon.zip'))
+    JSZip.loadAsync(fs.readFileSync(__dirname + '/admin-config/vsFont/codicon.zip'))
         .then(zip => {
             zip.file('codicon.ttf').async('arraybuffer')
                 .then(data => {
