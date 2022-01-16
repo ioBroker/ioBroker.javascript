@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.2.19",
+    "version": "5.2.20",
     "news": {
+      "5.2.20": {
+        "en": "Fixed build process",
+        "de": "Build-Prozess behoben",
+        "ru": "Исправлен процесс сборки",
+        "pt": "Processo de compilação corrigido",
+        "nl": "Vast bouwproces",
+        "fr": "Processus de construction fixe",
+        "it": "Risolto il problema con il processo di compilazione",
+        "es": "Proceso de construcción fijo",
+        "pl": "Poprawiony proces kompilacji",
+        "zh-cn": "固定的构建过程"
+      },
       "5.2.19": {
         "en": "Fix broken dependency",
         "de": "Gebrochene Abhängigkeit beheben",
@@ -93,18 +105,6 @@
         "es": "Mejora de Typings\nañadido \"mediodía solar\" a la lista de astro\nPermitido definir diferentes estados para leer y escribir valores de alias",
         "pl": "Poprawa pisania\ndodano „Słoneczne południe” do astro-listy\nUmożliwiono zdefiniowanie różnych stanów odczytu i zapisu wartości aliasów",
         "zh-cn": "打字改进\n在天文列表中添加了“太阳正午”\n允许为读取和写入别名值定义不同的状态"
-      },
-      "5.2.13": {
-        "en": "Fixed the loading of Node.js typings",
-        "de": "Das Laden von Node.js-Typisierungen wurde behoben",
-        "ru": "Исправлена загрузка наборов Node.js",
-        "pt": "Corrigido o carregamento de tipificações Node.js",
-        "nl": "Het laden van Node.js-typeringen opgelost",
-        "fr": "Correction du chargement des typages Node.js",
-        "it": "Corretto il caricamento delle digitazioni Node.js",
-        "es": "Se corrigió la carga de tipificaciones de Node.js",
-        "pl": "Naprawiono ładowanie typowań Node.js",
-        "zh-cn": "修复了 Node.js 类型的加载"
       }
     },
     "desc": {
