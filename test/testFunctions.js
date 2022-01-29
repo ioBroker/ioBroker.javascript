@@ -87,8 +87,8 @@ describe('Test JS', function () {
     before('Test JS: Start js-controller', function (_done) {
         this.timeout(600000); // because of first install from npm
 
-        setup.setupController(function () {
-            const config = setup.getAdapterConfig();
+        setup.setupController(async function () {
+            const config = await setup.getAdapterConfig();
             // enable adapter
             config.common.enabled  = true;
             config.common.loglevel = 'debug';
@@ -96,7 +96,7 @@ describe('Test JS', function () {
             config.native.longitude = 43.273709;
             config.native.latitude  = 6.5798918;
 
-            setup.setAdapterConfig(config.common, config.native);
+            await setup.setAdapterConfig(config.common, config.native);
 
             setup.startController(false, function (id, obj) {
                 onObjectChanged && onObjectChanged(id, obj);
