@@ -15,7 +15,7 @@
     "Clear search input": "Sucheingabe löschen",
     "Click on this icon": "Auf dieses Symbol klicken",
     "Close": "Schließen",
-    "Close all but current": "Schließen Sie alle außer aktuell",
+    "Close all but current": "Alle anderen außer dem Aktiven schließen",
     "Collapse all": "Alles einklappen",
     "Configuration not saved.": "Die Konfiguration ist nicht gespeichert.",
     "Convert blockly to javascript for ever.": "Blockly dauerhaft in Javascript konvertieren.",
