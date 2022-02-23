@@ -342,6 +342,10 @@ function startAdapter(options) {
             // send changes to disk mirror
             mirror && mirror.onObjectChange(id, obj);
 
+            const formerObj = context.objects[id];
+
+            updateObjectContext(id, obj); // Update all Meta object data
+
             context.subscriptionsObject.forEach(sub => {
                 // ToDo: implement comparing with id.0.* too
                 if (sub.pattern === id) {
@@ -352,10 +356,6 @@ function startAdapter(options) {
                     }
                 }
             });
-
-            const formerObj = context.objects[id];
-
-            updateObjectContext(id, obj); // Update all Meta object data
 
             // handle Script object updates
             if (!obj && formerObj && formerObj.type === 'script') {
