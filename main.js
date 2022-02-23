@@ -217,36 +217,37 @@ function loadTypeScriptDeclarations() {
 
 const context = {
     mods,
-    objects:          {},
-    states:           {},
-    stateIds:         [],
-    errorLogFunction: null,
-    subscriptions:    [],
+    objects:             {},
+    states:              {},
+    interimStateValues:  {},
+    stateIds:            [],
+    errorLogFunction:    null,
+    subscriptions:       [],
     subscriptionsObject: [],
-    adapterSubs:      {},
-    subscribedPatterns: {},
-    cacheObjectEnums: {},
-    isEnums:          false, // If some subscription wants enum
-    channels:         null,
-    devices:          null,
-    logWithLineInfo:  null,
-    scheduler:        null,
-    timers:           {},
-    enums:            [],
-    timerId:          0,
-    names:            {},
-    scripts:          {},
-    messageBusHandlers: {},
-    logSubscriptions: {},
+    adapterSubs:         {},
+    subscribedPatterns:  {},
+    cacheObjectEnums:    {},
+    isEnums:             false, // If some subscription wants enum
+    channels:            null,
+    devices:             null,
+    logWithLineInfo:     null,
+    scheduler:           null,
+    timers:              {},
+    enums:               [],
+    timerId:             0,
+    names:               {},
+    scripts:             {},
+    messageBusHandlers:  {},
+    logSubscriptions:    {},
     updateLogSubscriptions,
     convertBackStringifiedValues,
     updateObjectContext,
     debugMode,
-    timeSettings:     {
-        format12:     false,
-        leadingZeros: true
+    timeSettings:        {
+        format12:        false,
+        leadingZeros:    true
     },
-    rulesOpened:      null, //opened rules
+    rulesOpened:         null, //opened rules
 };
 
 const regExGlobalOld = /_global$/;
@@ -437,6 +438,10 @@ function startAdapter(options) {
         },
 
         stateChange: (id, state) => {
+            if (context.interimStateValues[id] !== undefined) {
+                // any update invalidates the remembered interim value
+                delete context.interimStateValues[id];
+            }
             if (!id || id.startsWith('messagebox.') || id.startsWith('log.')) {
                 return;
             }
