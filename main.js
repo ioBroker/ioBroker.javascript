@@ -728,7 +728,7 @@ function updateObjectContext(id, obj) {
     if (obj) {
         // add state to state ID's list
         if (obj.type === 'state') {
-            if (!context.stateIds.includes(id) {
+            if (!context.stateIds.includes(id)) {
                 context.stateIds.push(id);
                 context.stateIds.sort();
             }
