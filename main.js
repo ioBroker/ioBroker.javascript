@@ -727,14 +727,44 @@ function startAdapter(options) {
 function updateObjectContext(id, obj) {
     if (obj) {
         // add state to state ID's list
-        if (obj.type === 'state' && !context.stateIds.includes(id)) {
-            context.stateIds.push(id);
-            context.stateIds.sort();
+        if (obj.type === 'state') {
+            if (!context.stateIds.includes(id) {
+                context.stateIds.push(id);
+                context.stateIds.sort();
+            }
+            if (context.devices && context.channels) {
+                const parts = id.split('.');
+                parts.pop();
+                const chn = parts.join('.');
+                context.channels[chn] = context.channels[chn] || [];
+                context.channels[chn].push(id);
+
+                parts.pop();
+                const dev = parts.join('.');
+                context.devices[dev] = context.devices[dev] || [];
+                context.devices[dev].push(id);
+            }
         }
     } else {
         // delete object from state ID's list
         const pos = context.stateIds.indexOf(id);
         pos !== -1 && context.stateIds.splice(pos, 1);
+        if (context.devices && context.channels) {
+            const parts = id.split('.');
+            parts.pop();
+            const chn = parts.join('.');
+            if (context.channels[chn]) {
+                const posChn = context.channels[chn].indexOf(id);
+                posChn !== -1 && context.channels[chn].splice(posChn, 1);
+            }
+
+            parts.pop();
+            const dev = parts.join('.');
+            if (context.devices[dev]) {
+                const posDev = context.devices[dev].indexOf(id);
+                posDev !== -1 && context.devices[dev].splice(posDev, 1);
+            }
+        }
     }
 
     if (!obj && context.objects[id]) {
