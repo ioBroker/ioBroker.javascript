@@ -75,6 +75,7 @@ const { targetTsLib, tsCompilerOptions, jsDeclarationCompilerOptions } = require
 const { hashSource } = require('./lib/tools');
 
 const packageJson = require('./package.json');
+const {EXIT_CODES} = require("@iobroker/adapter-core");
 const adapterName = packageJson.name.split('.').pop();
 const scriptCodeMarker = 'script.js.';
 const stopCounters =  {};
@@ -239,6 +240,7 @@ const context = {
     logSubscriptions: {},
     updateLogSubscriptions,
     convertBackStringifiedValues,
+    updateObjectContext,
     debugMode,
     timeSettings:     {
         format12:     false,
@@ -290,10 +292,14 @@ function startAdapter(options) {
 
         useFormatDate: true, // load float formatting
 
+        /**
+         * @param id { string }
+         * @param obj { ioBroker.Object }
+         */
         objectChange: (id, obj) => {
             // Check if we should ignore this change (once!) because we just updated the compiled sources
             if (ignoreObjectChange.has(id)) {
-                // Update the cached object and do nothing more
+                // Update the cached script object and do nothing more
                 context.objects[id] = obj;
                 ignoreObjectChange.delete(id);
                 return;
@@ -306,7 +312,7 @@ function startAdapter(options) {
                 // update context.enums array
                 if (obj) {
                     // If new
-                    if (context.enums.includes(id) === -1) {
+                    if (!context.enums.includes(id)) {
                         context.enums.push(id);
                         context.enums.sort();
                     }
@@ -316,6 +322,13 @@ function startAdapter(options) {
                     if (pos !== -1) {
                         context.enums.splice(pos, 1);
                     }
+                }
+            }
+
+            if (obj && id === 'system.config') {
+                // set language for debug messages
+                if (obj.common && obj.common.language) {
+                    words.setLanguage(obj.common.language);
                 }
             }
 
@@ -329,7 +342,7 @@ function startAdapter(options) {
             mirror && mirror.onObjectChange(id, obj);
 
             context.subscriptionsObject.forEach(sub => {
-                // ToDo: implement comparation with id.0.* too
+                // ToDo: implement comparing with id.0.* too
                 if (sub.pattern === id) {
                     try {
                         sub.callback(id, obj);
@@ -339,26 +352,21 @@ function startAdapter(options) {
                 }
             });
 
-            if (obj) {
-                // add state to state ID's list
-                if (obj.type === 'state' && !context.stateIds.includes(id)) {
-                    context.stateIds.push(id);
-                    context.stateIds.sort();
-                }
-            } else {
-                // delete object from state ID's list
-                const pos = context.stateIds.indexOf(id);
-                pos !== -1 && context.stateIds.splice(pos, 1);
-            }
+            const formerObj = context.objects[id];
 
-            if (!obj) {
-                // object deleted
-                if (!context.objects[id]) {
-                    return;
-                }
+            updateObjectContext(id, obj); // Update all Meta object data
 
-                // Script deleted => remove it
-                if (context.objects[id].type === 'script' && context.objects[id].common.engine === 'system.adapter.' + adapter.namespace) {
+            // handle Script object updates
+            if (!obj && formerObj && formerObj.type === 'script') {
+                // Object Deleted just now
+                if (checkIsGlobal(formerObj)) {
+                    // it was a global Script and it was enabled and is now deleted => restart adapter
+                    if (formerObj.enabled) {
+                        adapter.log.info(`Active global Script ${id} deleted. Restart instance.`);
+                        adapter.restart();
+                    }
+                } else if (formerObj.common && formerObj.common.engine === `system.adapter.${adapter.namespace}`) {
+                    // It was a non-global Script and deleted => stop and remove it
                     stop(id);
 
                     // delete scriptEnabled.blabla variable
@@ -371,111 +379,60 @@ function startAdapter(options) {
                     adapter.delObject(idProblem);
                     adapter.delState(idProblem);
                 }
-
-                removeFromNames(id);
-                delete context.objects[id];
-            } else if (!context.objects[id]) {
-                // New object
-                context.objects[id] = obj;
-
-                addToNames(obj);
-
-                if (obj.type === 'script' && obj.common.engine === 'system.adapter.' + adapter.namespace) {
-                    // create states for scripts
-                    createActiveObject(id, obj.common.enabled, () => createProblemObject(id));
-
+            } else if (!formerObj && obj && obj.type === 'script') {
+                // New script that do not existed before
+                if (checkIsGlobal(obj)) {
+                    // new global script added => restart adapter
                     if (obj.common.enabled) {
-                        if (checkIsGlobal(obj)) {
-                            // restart adapter
-                            adapter.getForeignObject('system.adapter.' + adapter.namespace, (err, _obj) =>
-                                _obj && adapter.setForeignObject('system.adapter.' + adapter.namespace, _obj));
-                            return;
-                        }
-
-                        // Start script
-                        load(id);
+                        adapter.log.info(`Active global Script ${id} created. Restart instance.`);
+                        adapter.restart();
                     }
-                }
-                // added new script to this engine
-            } else if (context.objects[id].common) {
-                // Object just changed
-                if (obj.type !== 'script') {
-                    context.objects[id] = obj;
-
-                    if (id === 'system.config') {
-                        // set language for debug messages
-                        if (obj.common && obj.common.language) {
-                            words.setLanguage(obj.common.language);
-                        }
-                    }
-
-                    const n = getName(id);
-                    let nn = context.objects[id].common ? context.objects[id].common.name : '';
-
-                    if (nn && typeof nn === 'object') {
-                        nn = nn[words.getLanguage()] || nn.en;
-                    }
-
-                    if (n !== nn) {
-                        if (n) {
-                            removeFromNames(id);
-                        }
-                        if (nn) {
-                            addToNames(obj);
-                        }
-                    }
-
-                    return;
-                }
-
-                // Analyse type = 'script'
-
-                if (checkIsGlobal(context.objects[id])) {
-                    // restart adapter
-                    adapter.getForeignObject('system.adapter.' + adapter.namespace, (err, obj) =>
-                        obj && adapter.setForeignObject('system.adapter.' + adapter.namespace, obj));
-
-                    return;
-                }
-
-                if (obj.common && obj.common.engine === 'system.adapter.' + adapter.namespace) {
-                    // create states for scripts
+                } else if (obj.common && obj.common.engine === `system.adapter.${adapter.namespace}`) {
+                    // new non global script - create states for scripts
                     createActiveObject(id, obj.common.enabled, () => createProblemObject(id));
-                }
-
-                if ((context.objects[id].common.enabled && !obj.common.enabled) ||
-                    (context.objects[id].common.engine === 'system.adapter.' + adapter.namespace && obj.common.engine !== 'system.adapter.' + adapter.namespace)) {
-
-                    // Script disabled
-                    if (context.objects[id].common.enabled && context.objects[id].common.engine === 'system.adapter.' + adapter.namespace) {
-                        // Remove it from executing
-                        context.objects[id] = obj;
-                        stop(id);
-                    } else {
-                        context.objects[id] = obj;
-                    }
-                } else if ((!context.objects[id].common.enabled && obj.common.enabled) ||
-                    (context.objects[id].common.engine !== 'system.adapter.' + adapter.namespace && obj.common.engine === 'system.adapter.' + adapter.namespace)) {
-                    // Script enabled
-                    context.objects[id] = obj;
-
-                    if (context.objects[id].common.enabled && context.objects[id].common.engine === 'system.adapter.' + adapter.namespace) {
-                        // Start script
+                    if (obj.common.enabled) {
+                        // if enabled => Start script
                         load(id);
                     }
-                } else { //if (obj.common.source !== context.objects[id].common.source) {
-                    context.objects[id] = obj;
+                }
+            } else if (obj && obj.type === 'script' && formerObj && formerObj.common) {
+                // Script changed ...
+                if (checkIsGlobal(obj)) {
+                    if (obj.common.enabled || formerObj.common.enabled) {
+                        adapter.log.info(`Global Script ${id} updated. Restart instance.`);
+                        adapter.restart();
+                    }
+                } else { // No global script
+                    if (obj.common && obj.common.engine === 'system.adapter.' + adapter.namespace) {
+                        // create states for scripts
+                        createActiveObject(id, obj.common.enabled, () => createProblemObject(id));
+                    }
 
-                    // Source changed => restart it
-                    stopCounters[id] = stopCounters[id] ? stopCounters[id] + 1 : 1;
-                    stop(id, (res, _id) =>
-                        // only start again after stop when "last" object change to prevent problems on
-                        // multiple changes in fast frequency
-                        !--stopCounters[id] && load(_id));
-                } /*else {
-                // Something changed or not for us
-                objects[id] = obj;
-            }*/
+                    if ((formerObj.common.enabled && !obj.common.enabled) ||
+                        (formerObj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.engine !== 'system.adapter.' + adapter.namespace)) {
+
+                        // Script disabled
+                        if (formerObj.common.enabled && formerObj.common.engine === 'system.adapter.' + adapter.namespace) {
+                            // Remove it from executing
+                            stop(id);
+                        }
+                    } else if ((!formerObj.common.enabled && obj.common.enabled) ||
+                        (formerObj.common.engine !== 'system.adapter.' + adapter.namespace && obj.common.engine === 'system.adapter.' + adapter.namespace)) {
+                        // Script enabled
+
+                        if (formerObj.common.enabled && formerObj.common.engine === 'system.adapter.' + adapter.namespace) {
+                            // Start script
+                            load(id);
+                        }
+                    } else { //if (obj.common.source !== formerObj.common.source) {
+                        // Source changed => restart it
+                        stopCounters[id] = stopCounters[id] ? stopCounters[id] + 1 : 1;
+                        stop(id, (res, _id) =>
+                            // only start again after stop when "last" object change to prevent problems on
+                            // multiple changes in fast frequency
+                            !--stopCounters[id] && load(_id));
+                    }
+                }
             }
         },
 
@@ -762,6 +719,48 @@ function startAdapter(options) {
     return adapter;
 }
 
+function updateObjectContext(id, obj) {
+    if (obj) {
+        // add state to state ID's list
+        if (obj.type === 'state' && !context.stateIds.includes(id)) {
+            context.stateIds.push(id);
+            context.stateIds.sort();
+        }
+    } else {
+        // delete object from state ID's list
+        const pos = context.stateIds.indexOf(id);
+        pos !== -1 && context.stateIds.splice(pos, 1);
+    }
+
+    if (!obj && context.objects[id]) {
+        // objects was deleted
+        removeFromNames(id);
+        delete context.objects[id];
+    } else if (obj && !context.objects[id]) {
+        // object was added
+        context.objects[id] = obj;
+        addToNames(obj);
+    } else if (obj && context.objects[id].common) {
+        // Object just changed
+        context.objects[id] = obj;
+
+        const n = getName(id);
+        let nn = context.objects[id].common ? context.objects[id].common.name : '';
+
+        if (nn && typeof nn === 'object') {
+            nn = nn[words.getLanguage()] || nn.en;
+        }
+
+        if (n !== nn) {
+            if (n) {
+                removeFromNames(id);
+            }
+            if (nn) {
+                addToNames(obj);
+            }
+        }
+    }
+}
 
 
 function main() {
@@ -779,7 +778,7 @@ function main() {
         tsServer.provideAmbientDeclarations(tsAmbient);
         jsDeclarationServer.provideAmbientDeclarations(tsAmbient);
     } catch (e) {
-        adapter.log.warn('Could not read TypeScript ambient declarations: ' + e);
+        adapter.log.warn('Could not read TypeScript ambient declarations: ' + e.message);
         // This should not happen, so send a error report to Sentry
         if (adapter.supportsFeature && adapter.supportsFeature('PLUGINS')) {
             const sentryInstance = adapter.getPluginInstance('sentry');
@@ -1886,18 +1885,22 @@ function getData(callback) {
     adapter.log.info('requesting all objects');
 
     adapter.getObjectList({ include_docs: true }, (err, res) => {
-        res = res.rows;
+        if (err || !res) {
+            adapter.log.error(`Could not initialize objects: ${err.message}`);
+            adapter.terminate(EXIT_CODES.START_IMMEDIATELY_AFTER_STOP);
+            return;
+        }
         context.objects = {};
-        for (let i = 0; i < res.length; i++) {
-            if (!res[i].doc) {
-                adapter.log.debug('Got empty object for index ' + i + ' (' + res[i].id + ')');
+        for (let i = 0; i < res.rows.length; i++) {
+            if (!res.rows[i].doc) {
+                adapter.log.debug('Got empty object for index ' + i + ' (' + res.rows[i].id + ')');
                 continue;
             }
-            context.objects[res[i].doc._id] = res[i].doc;
-            res[i].doc.type === 'enum' && context.enums.push(res[i].doc._id);
+            context.objects[res.rows[i].doc._id] = res.rows[i].doc;
+            res.rows[i].doc.type === 'enum' && context.enums.push(res.rows[i].doc._id);
 
             // Collect all names
-            addToNames(context.objects[res[i].doc._id]);
+            addToNames(context.objects[res.rows[i].doc._id]);
         }
         addGetProperty(context.objects);
 
