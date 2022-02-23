@@ -133,6 +133,7 @@
     "enabled": true,
     "license": "MIT",
     "compact": true,
+    "eraseOnUpload": true,
     "adminTab": {
       "singleton": true,
       "name": {
