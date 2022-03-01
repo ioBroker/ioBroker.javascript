@@ -38,6 +38,15 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
+
+### __WORK IN PROGRESS__
+* (Apollon77) Prevent some crash cases reported by Sentry (IOBROKER-JAVASCRIPT-A3)
+* (Apollon77) Fix Enum Updates
+* (Apollon77) Optimize making sure data are current for synchronous return of states/objects even for asynchronous action cases before
+* (Apollon77) Make sure admin files is cleaned up on update
+* (Apollon77) update channel/device structures for $ selector on object updates
+* (Apollon77) Adjustments for js-controller 4.0
+
 ### 5.2.21 (2022-01-16)
 * (bluefox) Fixed build process
 
