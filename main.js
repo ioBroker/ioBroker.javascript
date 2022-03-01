@@ -1920,7 +1920,7 @@ function getData(callback) {
     adapter.log.info('requesting all objects');
 
     adapter.getObjectList({ include_docs: true }, (err, res) => {
-        if (err || !res) {
+        if (err || !res || !res.rows) {
             adapter.log.error(`Could not initialize objects: ${err.message}`);
             adapter.terminate(EXIT_CODES.START_IMMEDIATELY_AFTER_STOP);
             return;
@@ -1928,7 +1928,7 @@ function getData(callback) {
         context.objects = {};
         for (let i = 0; i < res.rows.length; i++) {
             if (!res.rows[i].doc) {
-                adapter.log.debug('Got empty object for index ' + i + ' (' + res.rows[i].id + ')');
+                adapter.log.debug(`Got empty object for index ${i} (${res.rows[i].id})`);
                 continue;
             }
             context.objects[res.rows[i].doc._id] = res.rows[i].doc;
