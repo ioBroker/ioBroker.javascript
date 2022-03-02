@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.2.21",
+    "version": "5.3.0",
     "news": {
+      "5.3.0": {
+        "en": "Prevent some crash cases reported by Sentry (IOBROKER-JAVASCRIPT-A3)\nFix Enum Updates\nOptimize making sure data are current for synchronous return of states/objects even for asynchronous action cases before\nMake sure admin files is cleaned up on update\nupdate channel/device structures for $ selector on object updates\nAdjustments for js-controller 4.0",
+        "de": "Einige von Sentry gemeldete Absturzfälle verhindern (IOBROKER-JAVASCRIPT-A3)\nEnum-Updates beheben\nOptimieren Sie, indem Sie sicherstellen, dass die Daten für die synchrone Rückgabe von Zuständen/Objekten auch für asynchrone Aktionsfälle zuvor aktuell sind\nStellen Sie sicher, dass die Verwaltungsdateien beim Update bereinigt werden\nKanal-/Gerätestrukturen für $-Selektor bei Objektaktualisierungen aktualisieren\nAnpassungen für js-controller 4.0",
+        "ru": "Предотвращение некоторых случаев сбоев, о которых сообщает Sentry (IOBROKER-JAVASCRIPT-A3)\nИсправление обновлений перечисления\nОптимизируйте, чтобы убедиться, что данные актуальны для синхронного возврата состояний/объектов даже для случаев асинхронного действия до\nУбедитесь, что файлы администратора очищены при обновлении\nобновлять структуру канала/устройства для селектора $ при обновлении объекта\nНастройки для js-контроллера 4.0",
+        "pt": "Prevenir alguns casos de travamento relatados pelo Sentry (IOBROKER-JAVASCRIPT-A3)\nCorrigir atualizações de enumeração\nOtimize certificando-se de que os dados estejam atualizados para retorno síncrono de estados/objetos, mesmo para casos de ação assíncrona antes\nCertifique-se de que os arquivos de administrador sejam limpos na atualização\natualizar estruturas de canal/dispositivo para seletor $ em atualizações de objetos\nAjustes para o controlador js 4.0",
+        "nl": "Voorkom enkele crashgevallen gemeld door Sentry (IOBROKER-JAVASCRIPT-A3)\nEnum-updates repareren\nOptimaliseer en zorg ervoor dat gegevens actueel zijn voor synchrone terugkeer van toestanden/objecten, zelfs voor asynchrone actiegevallen eerder\nZorg ervoor dat de admin-bestanden worden opgeschoond bij de update\nupdate kanaal/apparaatstructuren voor $ selector op objectupdates\nAanpassingen voor js-controller 4.0",
+        "fr": "Empêcher certains cas de plantage signalés par Sentry (IOBROKER-JAVASCRIPT-A3)\nCorrection des mises à jour d'énumération\nOptimiser en s'assurant que les données sont à jour pour le retour synchrone des états/objets même pour les cas d'action asynchrones avant\nAssurez-vous que les fichiers d'administration sont nettoyés lors de la mise à jour\nmettre à jour les structures de canaux/dispositifs pour le sélecteur $ sur les mises à jour d'objets\nAjustements pour js-controller 4.0",
+        "it": "Prevenire alcuni casi di crash segnalati da Sentry (IOBROKER-JAVASCRIPT-A3)\nCorreggi gli aggiornamenti Enum\nOttimizza assicurandoti che i dati siano aggiornati per il ritorno sincrono di stati/oggetti anche per i casi di azione asincrona prima\nAssicurati che i file di amministrazione vengano ripuliti durante l'aggiornamento\naggiorna le strutture del canale/dispositivo per il selettore $ sugli aggiornamenti degli oggetti\nRegolazioni per js-controller 4.0",
+        "es": "Evite algunos casos de bloqueo informados por Sentry (IOBROKER-JAVASCRIPT-A3)\nCorregir actualizaciones de enumeración\nOptimice asegurándose de que los datos estén actualizados para el retorno síncrono de estados/objetos incluso para casos de acción asíncrona antes\nAsegúrese de que los archivos de administración se limpien en la actualización\nactualizar las estructuras de canal/dispositivo para el selector $ en las actualizaciones de objetos\nAjustes para js-controller 4.0",
+        "pl": "Zapobiegaj niektórym przypadkom awarii zgłaszanych przez Sentry (IOBROKER-JAVASCRIPT-A3)\nNapraw aktualizacje Enum\nZoptymalizuj, upewniając się, że dane są aktualne dla synchronicznego zwracania stanów/obiektów, nawet w przypadku działań asynchronicznych wcześniej\nUpewnij się, że pliki administratora zostały wyczyszczone podczas aktualizacji\nzaktualizuj struktury kanałów/urządzeń dla selektora $ przy aktualizacjach obiektów\nKorekty dla js-controller 4.0",
+        "zh-cn": "防止 Sentry 报告的一些崩溃案例 (IOBROKER-JAVASCRIPT-A3)\n修复枚举更新\n优化确保数据是最新的，以同步返回状态/对象，即使是之前的异步操作案例\n确保在更新时清理管理文件\n更新对象更新时 $ 选择器的通道/设备结构\njs-controller 4.0 的调整"
+      },
       "5.2.21": {
         "en": "Fixed build process",
         "de": "Build-Prozess behoben",
@@ -93,18 +105,6 @@
         "es": "Fuentes fijas",
         "pl": "Naprawiono czcionki",
         "zh-cn": "固定字体"
-      },
-      "5.2.15": {
-        "en": "Added the monitoring of symlinks my mirroring\nFix two crash cases reported by Sentry",
-        "de": "Die Überwachung von Symlinks wurde meiner Spiegelung hinzugefügt\nBehebung von zwei Absturzfällen, die von Sentry gemeldet wurden",
-        "ru": "Добавлен мониторинг симлинков моего зеркалирования\nИсправить два случая сбоя, о которых сообщает Sentry",
-        "pt": "Adicionado o monitoramento de links simbólicos meu espelhamento\nCorrigir dois casos de falha relatados pelo Sentry",
-        "nl": "Toegevoegd de monitoring van symbolische links mijn mirroring\nHerstel twee crashgevallen gemeld door Sentry",
-        "fr": "Ajout de la surveillance des liens symboliques ma mise en miroir\nCorrection de deux cas de plantage signalés par Sentry",
-        "it": "Aggiunto il monitoraggio dei collegamenti simbolici al mio mirroring\nRisolti due casi di crash segnalati da Sentry",
-        "es": "Se agregó la supervisión de enlaces simbólicos a mi duplicación.\nArregle dos casos de fallas reportados por Sentry",
-        "pl": "Dodano monitorowanie dowiązań symbolicznych w moim dublowaniu\nNapraw dwa przypadki awarii zgłoszone przez Sentry",
-        "zh-cn": "添加了对符号链接的监控我的镜像\n修复 Sentry 报告的两个崩溃案例"
       }
     },
     "desc": {

@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 5.2.15 (2021-11-18)
+* (agross) Added the monitoring of symlinks my mirroring
+* (Apollon77) Fix two crash cases reported by Sentry
+
 ## 5.2.14 (2021-11-17)
 * (AlCalzone) Typings improvement
 * (winnyschuster) added "Solar noon" to astro-list

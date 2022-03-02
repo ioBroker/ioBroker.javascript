@@ -38,8 +38,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
-
-### __WORK IN PROGRESS__
+### 5.3.0 (2022-03-02)
 * (Apollon77) Prevent some crash cases reported by Sentry (IOBROKER-JAVASCRIPT-A3)
 * (Apollon77) Fix Enum Updates
 * (Apollon77) Optimize making sure data are current for synchronous return of states/objects even for asynchronous action cases before
@@ -59,10 +58,6 @@ And then call `npm run build`.
 
 ### 5.2.16 (2021-11-19)
 * (bluefox) Fixed the font in the editor
-
-### 5.2.15 (2021-11-18)
-* (agross) Added the monitoring of symlinks my mirroring
-* (Apollon77) Fix two crash cases reported by Sentry
 
 ## License
 The MIT License (MIT)
