@@ -38,9 +38,8 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
-
-### __WORK IN PROGRESS__
-* (Apollon77) Add missing callback check in setObject 
+### 5.3.1 (2022-03-03)
+* (Apollon77) Add missing callback check in setObject
 
 ### 5.3.0 (2022-03-02)
 * (Apollon77) Prevent some crash cases reported by Sentry (IOBROKER-JAVASCRIPT-A3)
@@ -59,9 +58,6 @@ And then call `npm run build`.
 ### 5.2.18 (2021-12-14)
 * (klein0r) Fixed some german translations
 * (winnyschuster) Fixed astro schedules
-
-### 5.2.16 (2021-11-19)
-* (bluefox) Fixed the font in the editor
 
 ## License
 The MIT License (MIT)
