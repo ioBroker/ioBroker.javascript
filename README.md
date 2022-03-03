@@ -38,6 +38,10 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
+
+### __WORK IN PROGRESS__
+* (Apollon77) Add missing callback check in setObject 
+
 ### 5.3.0 (2022-03-02)
 * (Apollon77) Prevent some crash cases reported by Sentry (IOBROKER-JAVASCRIPT-A3)
 * (Apollon77) Fix Enum Updates
