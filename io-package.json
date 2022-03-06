@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.3.1",
+    "version": "5.3.2",
     "news": {
+      "5.3.2": {
+        "en": "fix problem that scripts were not starting when scriptsEnabled State was triggered (or startScript was used)\nMake sure callbacks on startScript/stopScript work and Async variants also resolve\nMake sure startScriptAsync, stopScriptAsync and runScriptAsync resolve in debug mode too",
+        "de": "Behebung des Problems, dass Skripte nicht gestartet wurden, wenn scriptsEnabled State ausgelöst wurde (oder startScript verwendet wurde)\nStellen Sie sicher, dass Callbacks auf startScript/stopScript funktionieren und Async-Varianten ebenfalls aufgelöst werden\nStellen Sie sicher, dass startScriptAsync, stopScriptAsync und runScriptAsync auch im Debugmodus aufgelöst werden",
+        "ru": "исправить проблему, из-за которой скрипты не запускались, когда срабатывало состояние scriptsEnabled (или использовался startScript)\nУбедитесь, что обратные вызовы на startScript/stopScript работают, а варианты Async также разрешаются.\nУбедитесь, что startScriptAsync, stopScriptAsync и runScriptAsync разрешаются и в режиме отладки.",
+        "pt": "corrigir o problema que os scripts não estavam iniciando quando o estado scriptsEnabled foi acionado (ou startScript foi usado)\nCertifique-se de que os retornos de chamada no startScript/stopScript funcionam e as variantes Async também resolvem\nCertifique-se de que startScriptAsync, stopScriptAsync e runScriptAsync também resolvam no modo de depuração",
+        "nl": "probleem oplossen dat scripts niet startten toen scriptsEnabled State werd geactiveerd (of startScript werd gebruikt)\nZorg ervoor dat callbacks op startScript/stopScript werken en dat Async-varianten ook worden opgelost\nZorg ervoor dat startScriptAsync, stopScriptAsync en runScriptAsync ook worden opgelost in de foutopsporingsmodus",
+        "fr": "résout le problème que les scripts ne démarraient pas lorsque l'état scriptsEnabled était déclenché (ou que startScript était utilisé)\nAssurez-vous que les rappels sur startScript/stopScript fonctionnent et que les variantes Async se résolvent également\nAssurez-vous que startScriptAsync, stopScriptAsync et runScriptAsync se résolvent également en mode débogage",
+        "it": "risolvere il problema per cui gli script non si avviavano quando è stato attivato lo stato scriptsEnabled (o è stato utilizzato startScript)\nAssicurati che anche i callback su startScript/stopScript funzionino e le varianti Async vengano risolte\nAssicurati che startScriptAsync, stopScriptAsync e runScriptAsync si risolvano anche in modalità di debug",
+        "es": "solucionar el problema de que los scripts no se iniciaban cuando se activaba scriptsEnabled State (o se usaba startScript)\nAsegúrese de que las devoluciones de llamada en startScript/stopScript funcionen y las variantes asíncronas también se resuelvan\nAsegúrese de que startScriptAsync, stopScriptAsync y runScriptAsync también se resuelvan en modo de depuración.",
+        "pl": "naprawienie problemu polegającego na tym, że skrypty nie uruchamiały się po wywołaniu scriptsEnabled State (lub użyciu startScript)\nUpewnij się, że wywołania zwrotne w startScript/stopScript działają, a warianty Async również się rozwiązują\nUpewnij się, że startScriptAsync, stopScriptAsync i runScriptAsync są również rozwiązywane w trybie debugowania",
+        "zh-cn": "修复触发scriptsEnabled状态（或使用startScript）时脚本未启动的问题\n确保 startScript/stopScript 上的回调正常工作并且异步变体也可以解决\n确保 startScriptAsync、stopScriptAsync 和 runScriptAsync 也在调试模式下解析"
+      },
       "5.3.1": {
         "en": "Add missing callback check in setObject",
         "de": "Fehlende Callback-Prüfung in setObject hinzugefügt",
@@ -83,18 +95,6 @@
         "zh-cn": "修复损坏的依赖"
       },
       "5.2.18": {
-        "en": "Fixed some german translations\nFixed astro schedules",
-        "de": "Einige deutsche Übersetzungen korrigiert\nFeste Astrozeitpläne",
-        "ru": "Исправлены некоторые немецкие переводы\nФиксированные астро-графики",
-        "pt": "Corrigidas algumas traduções para o alemão\nProgramações de astro corrigidas",
-        "nl": "Enkele Duitse vertalingen gerepareerd\nVaste astro-schema's",
-        "fr": "Correction de certaines traductions allemandes\nHoraires astro fixes",
-        "it": "Risolte alcune traduzioni in tedesco\nOrari astronomici fissi",
-        "es": "Se corrigieron algunas traducciones alemanas.\nHorarios astro fijos",
-        "pl": "Naprawiono niektóre niemieckie tłumaczenia\nStałe harmonogramy astro",
-        "zh-cn": "修正了一些德语翻译\n固定的天文时间表"
-      },
-      "5.2.17": {
         "en": "Fixed some german translations\nFixed astro schedules",
         "de": "Einige deutsche Übersetzungen korrigiert\nFeste Astrozeitpläne",
         "ru": "Исправлены некоторые немецкие переводы\nФиксированные астро-графики",

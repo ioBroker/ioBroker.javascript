@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 5.2.18 (2021-12-14)
+* (klein0r) Fixed some german translations
+* (winnyschuster) Fixed astro schedules
+
 ## 5.2.16 (2021-11-19)
 * (bluefox) Fixed the font in the editor
 
