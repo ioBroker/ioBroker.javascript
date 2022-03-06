@@ -38,6 +38,10 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
+
+### __WORK IN PROGRESS__
+* (Apollon77) Make sure startScriptAsync, stopScriptAsync and runScriptAsync resolve in debug mode too
+
 ### 5.3.1 (2022-03-03)
 * (Apollon77) Add missing callback check in setObject
 
