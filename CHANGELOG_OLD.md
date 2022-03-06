@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 5.2.19 (2022-01-10)
+* (AlCalzone) Fixed broken dependency
+
 ## 5.2.18 (2021-12-14)
 * (klein0r) Fixed some german translations
 * (winnyschuster) Fixed astro schedules

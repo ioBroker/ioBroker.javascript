@@ -38,7 +38,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
-### __WORK IN PROGRESS__
+### 5.3.3 (2022-03-06)
 * (bluefox) Added async functions: createStateAsync, deleteStateAsync
 
 ### 5.3.2 (2022-03-06)
@@ -59,9 +59,6 @@ And then call `npm run build`.
 
 ### 5.2.21 (2022-01-16)
 * (bluefox) Fixed build process
-
-### 5.2.19 (2022-01-10)
-* (AlCalzone) Fixed broken dependency
 
 ## License
 The MIT License (MIT)

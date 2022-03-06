@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.3.2",
+    "version": "5.3.3",
     "news": {
+      "5.3.3": {
+        "en": "Added async functions: createStateAsync, deleteStateAsync",
+        "de": "Asynchrone Funktionen hinzugefügt: createStateAsync, deleteStateAsync",
+        "ru": "Добавлены асинхронные функции: createStateAsync, deleteStateAsync.",
+        "pt": "Funções assíncronas adicionadas: createStateAsync, deleteStateAsync",
+        "nl": "Toegevoegde asynchrone functies: createStateAsync, deleteStateAsync",
+        "fr": "Fonctions asynchrones ajoutées : createStateAsync, deleteStateAsync",
+        "it": "Aggiunte funzioni asincrone: createStateAsync, deleteStateAsync",
+        "es": "Funciones asincrónicas agregadas: createStateAsync, deleteStateAsync",
+        "pl": "Dodano funkcje asynchroniczne: createStateAsync, deleteStateAsync",
+        "zh-cn": "添加了异步函数：createStateAsync、deleteStateAsync"
+      },
       "5.3.2": {
         "en": "fix problem that scripts were not starting when scriptsEnabled State was triggered (or startScript was used)\nMake sure callbacks on startScript/stopScript work and Async variants also resolve\nMake sure startScriptAsync, stopScriptAsync and runScriptAsync resolve in debug mode too",
         "de": "Behebung des Problems, dass Skripte nicht gestartet wurden, wenn scriptsEnabled State ausgelöst wurde (oder startScript verwendet wurde)\nStellen Sie sicher, dass Callbacks auf startScript/stopScript funktionieren und Async-Varianten ebenfalls aufgelöst werden\nStellen Sie sicher, dass startScriptAsync, stopScriptAsync und runScriptAsync auch im Debugmodus aufgelöst werden",
@@ -93,18 +105,6 @@
         "es": "Arreglar la dependencia rota",
         "pl": "Napraw zepsutą zależność",
         "zh-cn": "修复损坏的依赖"
-      },
-      "5.2.18": {
-        "en": "Fixed some german translations\nFixed astro schedules",
-        "de": "Einige deutsche Übersetzungen korrigiert\nFeste Astrozeitpläne",
-        "ru": "Исправлены некоторые немецкие переводы\nФиксированные астро-графики",
-        "pt": "Corrigidas algumas traduções para o alemão\nProgramações de astro corrigidas",
-        "nl": "Enkele Duitse vertalingen gerepareerd\nVaste astro-schema's",
-        "fr": "Correction de certaines traductions allemandes\nHoraires astro fixes",
-        "it": "Risolte alcune traduzioni in tedesco\nOrari astronomici fissi",
-        "es": "Se corrigieron algunas traducciones alemanas.\nHorarios astro fijos",
-        "pl": "Naprawiono niektóre niemieckie tłumaczenia\nStałe harmonogramy astro",
-        "zh-cn": "修正了一些德语翻译\n固定的天文时间表"
       }
     },
     "desc": {
