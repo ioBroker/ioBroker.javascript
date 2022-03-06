@@ -421,7 +421,7 @@ function startAdapter(options) {
                         (formerObj.common.engine !== 'system.adapter.' + adapter.namespace && obj.common.engine === 'system.adapter.' + adapter.namespace)) {
                         // Script enabled
 
-                        if (formerObj.common.enabled && formerObj.common.engine === 'system.adapter.' + adapter.namespace) {
+                        if (obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace) {
                             // Start script
                             load(id);
                         }
