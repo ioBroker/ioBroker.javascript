@@ -36,7 +36,9 @@
     - [getIdByName](#getidbyname)
     - [getEnums](#getenums)
     - [createState](#createstate)
+    - [createStateAsync](#createstateasync)
     - [deleteState](#deletestate)
+    - [deleteStateAsync](#deletestateasync)
     - [sendTo](#sendto)
     - [sendToHost](#sendtohost)
     - [setInterval](#setinterval)
@@ -945,7 +947,7 @@ getEnums('rooms');
 ```js
 createState(name, initialValue, forceCreation, common, native, callback);
 ```
-Create state and object in javascript space if does not exist, e.g. "javascript.0.mystate".
+Create state and object in javascript space if it does not exist, e.g. "javascript.0.mystate".
 
 #### Parameters:
 
@@ -963,6 +965,13 @@ It is possible short type of createState:
 - `createState('myVariable', {name: 'My own variable', unit: '°C'}, function () {log('created');});`
 - `createState('myVariable', 1, {name: 'My own variable', unit: '°C'})` - create variable if does not exist with specific name and units
 
+### createStateAsync
+```js
+await createStateAsync(name, initialValue, forceCreation, common, native);
+```
+
+Same as `createState`, but the promise will be returned.
+
 ### deleteState
 ```js
 deleteState(name, callback);
@@ -973,6 +982,13 @@ Delete state and object in javascript space, e.g. "javascript.0.mystate". States
 deleteState('myVariable')
 ```
 simply delete variable if exists.
+
+### deleteStateAsync
+```js
+await deleteStateAsync(name);
+```
+
+Same as `deleteState`, but the promise will be returned.
 
 ### sendTo
 ```js
