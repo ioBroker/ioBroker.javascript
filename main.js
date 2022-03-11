@@ -239,6 +239,7 @@ const context = {
     scripts:             {},
     messageBusHandlers:  {},
     logSubscriptions:    {},
+    folderCreationVerifiedObjects: {},
     updateLogSubscriptions,
     convertBackStringifiedValues,
     updateObjectContext,
@@ -765,6 +766,8 @@ function updateObjectContext(id, obj) {
                 posDev !== -1 && context.devices[dev].splice(posDev, 1);
             }
         }
+
+        delete context.folderCreationVerifiedObjects[id];
     }
 
     if (!obj && context.objects[id]) {
