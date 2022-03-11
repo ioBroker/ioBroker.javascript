@@ -38,7 +38,6 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
-
 ### __WORK IN PROGRESS__
 * (Apollon77) Automatically create missing folder objects when states are created using createState
 
