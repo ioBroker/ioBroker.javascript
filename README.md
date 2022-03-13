@@ -40,6 +40,8 @@ And then call `npm run build`.
 -->
 ### __WORK IN PROGRESS__
 * (Apollon77) Automatically create missing folder objects when states are created using createState
+* (Apollon77) Fix special characters in blockly subscribe logic
+* (Apollon77) Fix timing issue where state updates could not be current on startup
 
 ### 5.3.3 (2022-03-06)
 * (bluefox) Added async functions: createStateAsync, deleteStateAsync

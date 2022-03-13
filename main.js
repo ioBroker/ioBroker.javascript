@@ -283,6 +283,9 @@ function convertBackStringifiedValues(id, state) {
  */
 const ignoreObjectChange = new Set();
 
+let objectsInitDone = false;
+let statesInitDone = false;
+
 /** @type {ioBroker.Adapter} */
 let adapter;
 
@@ -306,6 +309,16 @@ function startAdapter(options) {
                 ignoreObjectChange.delete(id);
                 return;
             }
+
+            // When still in initializing: already remember current values,
+            // but data structures are initialized elsewhere
+            if (!objectsInitDone) {
+                if (obj) {
+                    context.objects[id] = obj;
+                }
+                return;
+            }
+
 
             if (id.startsWith('enum.')) {
                 // clear cache
@@ -449,6 +462,15 @@ function startAdapter(options) {
 
             if (id === adapter.namespace + '.debug.to' && state && !state.ack) {
                 return !debugMode && debugSendToInspector(state.val);
+            }
+
+            // When still in initializing: already remember current values,
+            // but data structures are initialized elsewhere
+            if (!statesInitDone) {
+                if (state) {
+                    context.states[id] = state;
+                }
+                return;
             }
 
             const oldState = context.states[id];
@@ -860,15 +882,9 @@ function main() {
         // Load the TS declarations for Node.js and all 3rd party modules
         loadTypeScriptDeclarations();
 
-        getData(async () => {
+        getData(() => {
             dayTimeSchedules(adapter, context);
             timeSchedule(adapter, context);
-
-            await adapter.subscribeForeignObjectsAsync('*');
-
-            if (!adapter.config.subscribe) {
-                await adapter.subscribeForeignStatesAsync('*');
-            }
 
             // Warning. It could have a side-effect in compact mode, so all adapters will accept self signed certificates
             if (adapter.config.allowSelfSignedCerts) {
@@ -1899,15 +1915,24 @@ function patternMatching(event, patternFunctions) {
 }
 
 async function getData(callback) {
-    let statesReady;
-    let objectsReady;
+    await adapter.subscribeForeignObjectsAsync('*');
+
+    if (!adapter.config.subscribe) {
+        await adapter.subscribeForeignStatesAsync('*');
+    }
+
     adapter.log.info('requesting all states');
     adapter.getForeignStates('*', (err, res) => {
         if (!adapter.config.subscribe) {
-            context.states = res;
-        }
+            if (err || !res) {
+                adapter.log.error(`Could not initialize states: ${err.message}`);
+                adapter.terminate(EXIT_CODES.START_IMMEDIATELY_AFTER_STOP);
+                return;
+            }
+            context.states = Object.assign(res, context.states);
 
-        addGetProperty(context.states);
+            addGetProperty(context.states);
+        }
 
         // remember all IDs
         for (const id in res) {
@@ -1915,9 +1940,9 @@ async function getData(callback) {
                 context.stateIds.push(id);
             }
         }
-        statesReady = true;
+        statesInitDone = true;
         adapter.log.info('received all states');
-        objectsReady && typeof callback === 'function' && callback();
+        objectsInitDone && typeof callback === 'function' && callback();
     });
 
     adapter.log.info('requesting all objects');
@@ -1934,8 +1959,10 @@ async function getData(callback) {
                 adapter.log.debug(`Got empty object for index ${i} (${res.rows[i].id})`);
                 continue;
             }
-            context.objects[res.rows[i].doc._id] = res.rows[i].doc;
-            res.rows[i].doc.type === 'enum' && context.enums.push(res.rows[i].doc._id);
+            if (context.objects[res.rows[i].doc._id] === undefined) { // If was already there ignore
+                context.objects[res.rows[i].doc._id] = res.rows[i].doc;
+            }
+            context.objects[res.rows[i].doc._id].type === 'enum' && context.enums.push(res.rows[i].doc._id);
 
             // Collect all names
             addToNames(context.objects[res.rows[i].doc._id]);
@@ -1974,9 +2001,9 @@ async function getData(callback) {
         adapter.config.sunsetLimitStart = adapter.config.sunsetLimitStart || '18:00';
         adapter.config.sunsetLimitEnd = adapter.config.sunsetLimitEnd || '23:00';
 
-        objectsReady = true;
+        objectsInitDone = true;
         adapter.log.info('received all objects');
-        statesReady && typeof callback === 'function' && callback();
+        statesInitDone && typeof callback === 'function' && callback();
     });
 }
 
