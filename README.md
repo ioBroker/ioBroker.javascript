@@ -43,7 +43,7 @@ And then call `npm run build`.
 * (Apollon77) Fix special characters in blockly subscribe logic
 * (Apollon77) Fix timing issue where state updates could not be current on startup
 * (Apollon77) Fix state name handing
-* (Apollon77) FIx potential crash cases reported by Sentry
+* (Apollon77) Fix potential crash cases reported by Sentry
 
 ### 5.3.3 (2022-03-06)
 * (bluefox) Added async functions: createStateAsync, deleteStateAsync
