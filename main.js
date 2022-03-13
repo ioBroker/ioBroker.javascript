@@ -860,14 +860,14 @@ function main() {
         // Load the TS declarations for Node.js and all 3rd party modules
         loadTypeScriptDeclarations();
 
-        getData(() => {
+        getData(async () => {
             dayTimeSchedules(adapter, context);
             timeSchedule(adapter, context);
 
-            adapter.subscribeForeignObjects('*');
+            await adapter.subscribeForeignObjectsAsync('*');
 
             if (!adapter.config.subscribe) {
-                adapter.subscribeForeignStates('*');
+                await adapter.subscribeForeignStatesAsync('*');
             }
 
             // Warning. It could have a side-effect in compact mode, so all adapters will accept self signed certificates
@@ -1898,7 +1898,7 @@ function patternMatching(event, patternFunctions) {
     return matched;
 }
 
-function getData(callback) {
+async function getData(callback) {
     let statesReady;
     let objectsReady;
     adapter.log.info('requesting all states');
