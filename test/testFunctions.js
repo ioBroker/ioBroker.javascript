@@ -248,7 +248,7 @@ describe('Test JS', function () {
     });
 
     it('Test JS: check creation of state', function (done) {
-        this.timeout(2000);
+        this.timeout(3000);
         // add script
         const script = {
             'common': {
@@ -284,7 +284,7 @@ describe('Test JS', function () {
     });
 
     it('Test JS: check creation of state for other instance', function (done) {
-        this.timeout(2000);
+        this.timeout(3000);
         // add script
         const script = {
             'common': {
@@ -320,7 +320,7 @@ describe('Test JS', function () {
     });
 
     it('Test JS: check deletion of state', function (done) {
-        this.timeout(2000);
+        this.timeout(3000);
         // add script
         const script = {
             'common': {
@@ -346,11 +346,11 @@ describe('Test JS', function () {
                 const onStateChanged = function (id, state) {
                     if (id === 'javascript.0.test1' && state === null) {
                         removeStateChangedHandler(onStateChanged);
-                        
+
                         states.getState('javascript.0.test1', (err, state) => {
                             expect(err).to.be.not.ok;
                             expect(state).to.be.not.ok;
-                            
+
                             objects.getObject('javascript.0.test1', (err, obj) => {
                                 expect(err).to.be.not.ok;
                                 expect(obj).to.be.not.ok;
@@ -369,7 +369,7 @@ describe('Test JS', function () {
     });
 
     it('Test JS: check deletion of foreign state', function (done) {
-        this.timeout(2000);
+        this.timeout(3000);
         // add script
         const script = {
             'common': {
@@ -443,7 +443,7 @@ describe('Test JS', function () {
     });
 
     it('Test JS: write objects.json file must not work', function (done) {
-        this.timeout(2000);
+        this.timeout(3000);
         // add script
         const script = {
             'common': {
@@ -470,7 +470,7 @@ describe('Test JS', function () {
     });
 
     it('Test JS: write objects.json not in data directory must work', function (done) {
-        this.timeout(2000);
+        this.timeout(3000);
         const time = new Date().toString();
         const fs = require('fs');
 
