@@ -1454,7 +1454,7 @@ function removeFromNames(id) {
 
     if (n) {
         let pos;
-        if (context.names[n] === 'object') {
+        if (Array.isArray(context.names[n])) {
             pos = context.names[n].indexOf(id);
             if (pos !== -1) {
                 context.names[n].splice(pos, 1);
@@ -1472,7 +1472,7 @@ function getName(id) {
     let pos;
     for (const n in context.names) {
         if (context.names.hasOwnProperty(n)) {
-            if (context.names[n] && typeof context.names[n] === 'object') {
+            if (context.names[n] && Array.isArray(context.names[n])) {
                 pos = context.names[n].indexOf(id);
                 if (pos !== -1) {
                     return n;
