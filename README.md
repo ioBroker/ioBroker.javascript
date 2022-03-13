@@ -38,7 +38,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
-### __WORK IN PROGRESS__
+### 5.4.0 (2022-03-13)
 * (Apollon77) Automatically create missing folder objects when states are created using createState
 * (Apollon77) Fix special characters in blockly subscribe logic
 * (Apollon77) Fix timing issue where state updates could not be current on startup
@@ -63,9 +63,6 @@ And then call `npm run build`.
 * (Apollon77) Make sure admin files is cleaned up on update
 * (Apollon77) update channel/device structures for $ selector on object updates
 * (Apollon77) Adjustments for js-controller 4.0
-
-### 5.2.21 (2022-01-16)
-* (bluefox) Fixed build process
 
 ## License
 The MIT License (MIT)

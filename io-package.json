@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.3.3",
+    "version": "5.4.0",
     "news": {
+      "5.4.0": {
+        "en": "Automatically create missing folder objects when states are created using createState\nFix special characters in blockly subscribe logic\nFix timing issue where state updates could not be current on startup\nFix state name handing\nFix potential crash cases reported by Sentry",
+        "de": "Automatisches Erstellen fehlender Ordnerobjekte, wenn Zustände mit createState erstellt werden\nKorrigieren Sie Sonderzeichen in der Blockly-Subscribe-Logik\nBehebung eines Zeitproblems, bei dem Statusaktualisierungen beim Start nicht aktuell sein konnten\nKorrigieren Sie die Übergabe von Staatsnamen\nBeheben Sie potenzielle Absturzfälle, die von Sentry gemeldet wurden",
+        "ru": "Автоматически создавать отсутствующие объекты папок при создании состояний с помощью createState.\nИсправление специальных символов в логике блочной подписки\nИсправлена ошибка синхронизации, из-за которой обновления состояния не могли быть текущими при запуске.\nИсправить передачу имени штата\nИсправить потенциальные случаи сбоев, о которых сообщает Sentry.",
+        "pt": "Crie automaticamente objetos de pasta ausentes quando os estados forem criados usando createState\nCorrige caracteres especiais na lógica de assinatura em bloco\nCorrige o problema de tempo em que as atualizações de estado não podiam ser atualizadas na inicialização\nCorrigir a entrega do nome do estado\nCorrigir possíveis casos de travamento relatados pelo Sentinela",
+        "nl": "Automatisch ontbrekende mapobjecten maken wanneer staten worden gemaakt met createState\nSpeciale tekens corrigeren in logica voor blokkering van abonnementen\nProbleem met timing oplossen waarbij statusupdates niet actueel konden zijn bij het opstarten\nOverhandigen van staatsnaam repareren\nHerstel mogelijke crashgevallen gemeld door Sentry",
+        "fr": "Créer automatiquement des objets de dossier manquants lors de la création d'états à l'aide de createState\nCorrection des caractères spéciaux dans la logique d'abonnement en bloc\nCorrection d'un problème de synchronisation où les mises à jour d'état ne pouvaient pas être à jour au démarrage\nCorrection de la gestion du nom de l'état\nCorrection des cas de plantage potentiels signalés par Sentry",
+        "it": "Crea automaticamente oggetti cartella mancanti quando gli stati vengono creati utilizzando createState\nCorreggi i caratteri speciali nella logica di sottoscrizione a blocchi\nRisolto il problema dei tempi per cui gli aggiornamenti di stato non potevano essere aggiornati all'avvio\nRisolto il problema con la consegna del nome dello stato\nRisolvi potenziali casi di crash segnalati da Sentry",
+        "es": "Cree automáticamente objetos de carpeta que faltan cuando se crean estados usando createState\nArreglar caracteres especiales en la lógica de suscripción en bloque\nSolucionar el problema de tiempo donde las actualizaciones de estado no podían estar actualizadas al inicio\nArreglar la entrega de nombres de estado\nSolucionar posibles casos de bloqueo informados por Sentry",
+        "pl": "Automatycznie twórz brakujące obiekty folderów, gdy stany są tworzone za pomocą createState\nNapraw znaki specjalne w logice blokowania subskrypcji\nNapraw problem z czasem, w którym aktualizacje stanu nie mogą być aktualne podczas uruchamiania\nNapraw przekazywanie nazwy stanu\nNapraw potencjalne awarie zgłoszone przez Sentry",
+        "zh-cn": "使用 createState 创建状态时自动创建缺少的文件夹对象\n修复块订阅逻辑中的特殊字符\n修复启动时状态更新无法为最新的计时问题\n修复状态名称处理\n修复 Sentry 报告的潜在崩溃案例"
+      },
       "5.3.3": {
         "en": "Added async functions: createStateAsync, deleteStateAsync",
         "de": "Asynchrone Funktionen hinzugefügt: createStateAsync, deleteStateAsync",
@@ -93,18 +105,6 @@
         "es": "Proceso de construcción fijo",
         "pl": "Poprawiony proces kompilacji",
         "zh-cn": "固定的构建过程"
-      },
-      "5.2.19": {
-        "en": "Fix broken dependency",
-        "de": "Gebrochene Abhängigkeit beheben",
-        "ru": "Исправить сломанную зависимость",
-        "pt": "Corrigir dependência quebrada",
-        "nl": "Verbroken afhankelijkheid herstellen",
-        "fr": "Réparer la dépendance cassée",
-        "it": "Correggi la dipendenza interrotta",
-        "es": "Arreglar la dependencia rota",
-        "pl": "Napraw zepsutą zależność",
-        "zh-cn": "修复损坏的依赖"
       }
     },
     "desc": {

@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 5.2.21 (2022-01-16)
+* (bluefox) Fixed build process
+
 ## 5.2.19 (2022-01-10)
 * (AlCalzone) Fixed broken dependency
 
