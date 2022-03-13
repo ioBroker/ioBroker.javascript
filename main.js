@@ -72,10 +72,11 @@ const {
     transformGlobalDeclarations
 } = require('./lib/typescriptTools');
 const { targetTsLib, tsCompilerOptions, jsDeclarationCompilerOptions } = require('./lib/typescriptSettings');
-const { hashSource } = require('./lib/tools');
+const { hashSource, isObject } = require('./lib/tools');
 
 const packageJson = require('./package.json');
 const {EXIT_CODES} = require("@iobroker/adapter-core");
+const {isDeepStrictEqual} = require("util");
 const adapterName = packageJson.name.split('.').pop();
 const scriptCodeMarker = 'script.js.';
 const stopCounters =  {};
@@ -243,6 +244,7 @@ const context = {
     updateLogSubscriptions,
     convertBackStringifiedValues,
     updateObjectContext,
+    prepareStateObject,
     debugMode,
     timeSettings:        {
         format12:        false,
@@ -275,6 +277,51 @@ function convertBackStringifiedValues(id, state) {
     return state;
 }
 
+function prepareStateObject(id, state, isAck) {
+    if (state === null) {
+        state = {val: null};
+    }
+
+    if (isAck === true || isAck === false || isAck === 'true' || isAck === 'false') {
+        if (isObject(state) && state.val !== undefined) {
+            // we assume that we were given a state object if
+            // state is an object that contains a `val` property
+            state.ack = isAck;
+        } else {
+            // otherwise assume that the given state is the value to be set
+            state = {val: state, ack: isAck};
+        }
+    }
+
+    // set other values to have a full state object
+    // mirrors logic from statesInRedis
+    if (state.ts === undefined) {
+        state.ts = Date.now();
+    }
+
+    if (state.q === undefined) {
+        state.q = 0;
+    }
+
+    state.from =
+        typeof state.from === 'string' && state.from !== '' ? state.from : `system.adapter.${adapter.namespace}`;
+
+    if (state.lc === undefined) {
+        if (!context.states[id]) {
+            state.lc = state.ts;
+        } else {
+            // isDeepStrictEqual works on objects and primitive values
+            const hasChanged = !isDeepStrictEqual(context.states[id].val, state.val);
+            if (!context.states[id].lc || hasChanged) {
+                state.lc = state.ts;
+            } else {
+                state.lc = context.states[id].lc;
+            }
+        }
+    }
+
+    return state;
+}
 
 /**
  * @type {Set<string>}
@@ -1313,7 +1360,13 @@ function createActiveObject(id, enabled, cb) {
         };
         adapter.setForeignObject(idActive, context.objects[idActive], err => {
             if (!err) {
-                adapter.setForeignState(idActive, !!enabled, true, cb);
+                const intermediateStateValue = prepareStateObject(idActive, !!enabled, true);
+                adapter.setForeignState(idActive, !!enabled, true, () => {
+                    if (enabled) {
+                        context.interimStateValues[idActive] = intermediateStateValue;
+                    }
+                    cb && cb();
+                });
             } else if (cb) {
                 cb();
             }
@@ -1321,7 +1374,13 @@ function createActiveObject(id, enabled, cb) {
     } else {
         adapter.getForeignState(idActive, (err, state) => {
             if (state && state.val !== enabled) {
-                adapter.setForeignState(idActive, !!enabled, true, cb);
+                const intermediateStateValue = prepareStateObject(idActive, !!enabled, true);
+                adapter.setForeignState(idActive, !!enabled, true, () => {
+                    if (!!enabled) {
+                        context.interimStateValues[id] = intermediateStateValue;
+                    }
+                    cb && cb();
+                });
             } else if (cb) {
                 cb();
             }
@@ -1773,7 +1832,9 @@ function prepareScript(obj, callback) {
             typeof callback === 'function' && callback(false, name);
             return;
         }
-        adapter.setState(`scriptEnabled.${nameId}`, true, true);
+        const idActive = `scriptEnabled.${nameId}`;
+        context.interimStateValues[idActive] = prepareStateObject(idActive, true, true);
+        adapter.setState(idActive, true, true);
         obj.common.engineType = obj.common.engineType || '';
 
         if ((obj.common.engineType.toLowerCase().startsWith('javascript') || obj.common.engineType === 'Blockly' || obj.common.engineType === 'Rules')) {
