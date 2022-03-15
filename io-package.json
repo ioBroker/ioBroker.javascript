@@ -205,7 +205,7 @@
       "language": "javascript",
       "views": {
         "javascript": {
-          "map": "function(doc) { if (doc.type === 'script' && doc.common.engineType.match(/^[jJ]ava[sS]cript|^[cC]offee[sS]cript|^[tT]ype[sS]cript|^Blockly/)) emit(doc.common.name, doc); }"
+          "map": "function(doc) { if (doc.type === 'script' && doc.common.engineType.match(/^[jJ]ava[sS]cript|^[cC]offee[sS]cript|^[tT]ype[sS]cript|^Blockly|^Rules/)) emit(doc.common.name, doc); }"
         }
       }
     },

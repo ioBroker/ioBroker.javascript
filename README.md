@@ -38,6 +38,10 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
+
+### __WORK IN PROGRESS__
+* (Apollon77) Fix automatic start of Rules scripts when starting adapter
+
 ### 5.4.1 (2022-03-15)
 * (Apollon77) Fix blockly subscribes broken in 5.4.0
 

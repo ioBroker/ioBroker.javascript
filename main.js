@@ -1376,7 +1376,7 @@ function createActiveObject(id, enabled, cb) {
             if (state && state.val !== enabled) {
                 const intermediateStateValue = prepareStateObject(idActive, !!enabled, true);
                 adapter.setForeignState(idActive, !!enabled, true, () => {
-                    if (!!enabled) {
+                    if (enabled) {
                         context.interimStateValues[id] = intermediateStateValue;
                     }
                     cb && cb();
