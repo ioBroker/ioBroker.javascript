@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 5.3.1 (2022-03-03)
+* (Apollon77) Add missing callback check in setObject
+
 ## 5.3.0 (2022-03-02)
 * (Apollon77) Prevent some crash cases reported by Sentry (IOBROKER-JAVASCRIPT-A3)
 * (Apollon77) Fix Enum Updates

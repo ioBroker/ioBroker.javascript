@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.4.1",
+    "version": "5.4.2",
     "news": {
+      "5.4.2": {
+        "en": "Fix automatic start of Rules scripts when starting adapter",
+        "de": "Automatisches Starten von Regelskripten beim Start des Adapters behoben",
+        "ru": "Исправлен автоматический запуск скриптов Rules при запуске адаптера.",
+        "pt": "Corrige o início automático de scripts de regras ao iniciar o adaptador",
+        "nl": "Automatische start van Regelscripts repareren bij het starten van de adapter",
+        "fr": "Correction du démarrage automatique des scripts de règles lors du démarrage de l'adaptateur",
+        "it": "Risolto il problema con l'avvio automatico degli script delle regole all'avvio dell'adattatore",
+        "es": "Arreglar el inicio automático de los scripts de reglas al iniciar el adaptador",
+        "pl": "Napraw automatyczne uruchamianie skryptów reguł podczas uruchamiania adaptera",
+        "zh-cn": "修复启动适配器时规则脚本的自动启动"
+      },
       "5.4.1": {
         "en": "Fix blockly subscribes broken in 5.4.0",
         "de": "In 5.4.0 fehlerhafte Blockly-Abonnements behoben",
@@ -93,18 +105,6 @@
         "es": "Evite algunos casos de bloqueo informados por Sentry (IOBROKER-JAVASCRIPT-A3)\nCorregir actualizaciones de enumeración\nOptimice asegurándose de que los datos estén actualizados para el retorno síncrono de estados/objetos incluso para casos de acción asíncrona antes\nAsegúrese de que los archivos de administración se limpien en la actualización\nactualizar las estructuras de canal/dispositivo para el selector $ en las actualizaciones de objetos\nAjustes para js-controller 4.0",
         "pl": "Zapobiegaj niektórym przypadkom awarii zgłaszanych przez Sentry (IOBROKER-JAVASCRIPT-A3)\nNapraw aktualizacje Enum\nZoptymalizuj, upewniając się, że dane są aktualne dla synchronicznego zwracania stanów/obiektów, nawet w przypadku działań asynchronicznych wcześniej\nUpewnij się, że pliki administratora zostały wyczyszczone podczas aktualizacji\nzaktualizuj struktury kanałów/urządzeń dla selektora $ przy aktualizacjach obiektów\nKorekty dla js-controller 4.0",
         "zh-cn": "防止 Sentry 报告的一些崩溃案例 (IOBROKER-JAVASCRIPT-A3)\n修复枚举更新\n优化确保数据是最新的，以同步返回状态/对象，即使是之前的异步操作案例\n确保在更新时清理管理文件\n更新对象更新时 $ 选择器的通道/设备结构\njs-controller 4.0 的调整"
-      },
-      "5.2.21": {
-        "en": "Fixed build process",
-        "de": "Build-Prozess behoben",
-        "ru": "Исправлен процесс сборки",
-        "pt": "Processo de compilação corrigido",
-        "nl": "Vast bouwproces",
-        "fr": "Processus de construction fixe",
-        "it": "Risolto il problema con il processo di compilazione",
-        "es": "Proceso de construcción fijo",
-        "pl": "Poprawiony proces kompilacji",
-        "zh-cn": "固定的构建过程"
       }
     },
     "desc": {
