@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.4.0",
+    "version": "5.4.1",
     "news": {
+      "5.4.1": {
+        "en": "Fix blockly subscribes broken in 5.4.0",
+        "de": "In 5.4.0 fehlerhafte Blockly-Abonnements behoben",
+        "ru": "Исправить блочную подписку, сломанную в 5.4.0",
+        "pt": "Corrigir assinaturas em bloco quebradas no 5.4.0",
+        "nl": "Repareer blockly-abonnementen verbroken in 5.4.0",
+        "fr": "Correction des abonnements bloqués cassés dans 5.4.0",
+        "it": "Risolto il problema con gli abbonamenti bloccati interrotti nella 5.4.0",
+        "es": "Arreglar suscripciones bloqueadas rotas en 5.4.0",
+        "pl": "Napraw blokowe subskrypcje zepsute w 5.4.0",
+        "zh-cn": "修复 5.4.0 中损坏的块订阅"
+      },
       "5.4.0": {
         "en": "Automatically create missing folder objects when states are created using createState\nFix special characters in blockly subscribe logic\nFix timing issue where state updates could not be current on startup\nFix state name handing\nFix potential crash cases reported by Sentry",
         "de": "Automatisches Erstellen fehlender Ordnerobjekte, wenn Zustände mit createState erstellt werden\nKorrigieren Sie Sonderzeichen in der Blockly-Subscribe-Logik\nBehebung eines Zeitproblems, bei dem Statusaktualisierungen beim Start nicht aktuell sein konnten\nKorrigieren Sie die Übergabe von Staatsnamen\nBeheben Sie potenzielle Absturzfälle, die von Sentry gemeldet wurden",
@@ -83,18 +95,6 @@
         "zh-cn": "防止 Sentry 报告的一些崩溃案例 (IOBROKER-JAVASCRIPT-A3)\n修复枚举更新\n优化确保数据是最新的，以同步返回状态/对象，即使是之前的异步操作案例\n确保在更新时清理管理文件\n更新对象更新时 $ 选择器的通道/设备结构\njs-controller 4.0 的调整"
       },
       "5.2.21": {
-        "en": "Fixed build process",
-        "de": "Build-Prozess behoben",
-        "ru": "Исправлен процесс сборки",
-        "pt": "Processo de compilação corrigido",
-        "nl": "Vast bouwproces",
-        "fr": "Processus de construction fixe",
-        "it": "Risolto il problema con il processo di compilazione",
-        "es": "Proceso de construcción fijo",
-        "pl": "Poprawiony proces kompilacji",
-        "zh-cn": "固定的构建过程"
-      },
-      "5.2.20": {
         "en": "Fixed build process",
         "de": "Build-Prozess behoben",
         "ru": "Исправлен процесс сборки",

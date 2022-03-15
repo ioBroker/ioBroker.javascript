@@ -38,8 +38,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
-
-### __WORK IN PROGRESS__
+### 5.4.1 (2022-03-15)
 * (Apollon77) Fix blockly subscribes broken in 5.4.0
 
 ### 5.4.0 (2022-03-13)
@@ -59,14 +58,6 @@ And then call `npm run build`.
 
 ### 5.3.1 (2022-03-03)
 * (Apollon77) Add missing callback check in setObject
-
-### 5.3.0 (2022-03-02)
-* (Apollon77) Prevent some crash cases reported by Sentry (IOBROKER-JAVASCRIPT-A3)
-* (Apollon77) Fix Enum Updates
-* (Apollon77) Optimize making sure data are current for synchronous return of states/objects even for asynchronous action cases before
-* (Apollon77) Make sure admin files is cleaned up on update
-* (Apollon77) update channel/device structures for $ selector on object updates
-* (Apollon77) Adjustments for js-controller 4.0
 
 ## License
 The MIT License (MIT)
