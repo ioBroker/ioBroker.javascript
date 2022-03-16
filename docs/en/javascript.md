@@ -248,110 +248,112 @@ on('adapter.0.device.channel.sensor', function (obj) {
 
 You can use following parameters to specify the trigger:
 
-| parameter   | type/value | description                                                                                            |
-|-----------  |-------     |-------------------                                                                                     |
-| logic       | string     |       "and" or "or" logic to combine the conditions \(default: "and"\)                                 |
-|             |            |                                                                                                        |
-| id          | string     |       id is equal to given one                                                                         |
-|             | RegExp     |       id matched to regular expression                                                                 |
-|             | Array      |       id matched to a list of allowed IDs                                                              |
-|             |            |                                                                                                        |
-| name        | string     |       name is equal to given one                                                                       |
-|             | RegExp     |       name matched to regular expression                                                               |
-|             | Array      |       name matched to a list of allowed names                                                          |
-|             |            |                                                                                                        |
-| change      | string     |       "eq", "ne", "gt", "ge", "lt", "le", "any"                                                        |
-|             |   "eq"     |       (equal)            New value must be equal to old one (state.val == oldState.val)                |
-|             |   "ne"     |       (not equal)        New value must be not equal to the old one (state.val != oldState.val) **If pattern is id-string this value is used by default**    |
-|             |   "gt"     |       (greater)          New value must be greater than old value (state.val > oldState.val)           |
-|             |   "ge"     |       (greater or equal) New value must be greater or equal to old one (state.val >= oldState.val)     |
-|             |   "lt"     |       (smaller)          New value must be smaller than old one (state.val < oldState.val)             |
-|             |   "le"     |       (smaller or equal) New value must be smaller or equal to old value (state.val <= oldState.val)   |
-|             |  "any"     |       Trigger will be raised if just the new value comes                                               |
-|             |            |                                                                                                        |
-| val         | mixed      |       New value must be equal to given one                                                             |
-| valNe       | mixed      |       New value must be not equal to given one                                                         |
-| valGt       | mixed      |       New value must be greater than given one                                                         |
-| valGe       | mixed      |       New value must be greater or equal to given one                                                  |
-| valLt       | mixed      |       New value must be smaller than given one                                                         |
-| valLe       | mixed      |       New value must be smaller or equal to given one                                                  |
-|             |            |                                                                                                        |
-| ack         | boolean    |       Acknowledged state of new value is equal to given one                                            |
-| q           | number     |       Quality code state of new value is equal to given one. You can use '*' for matching to any code  |
-|             |            |                                                                                                        |
-| oldVal      | mixed      |       Previous value must be equal to given one                                                        |
-| oldValNe    | mixed      |       Previous value must be not equal to given one                                                    |
-| oldValGt    | mixed      |       Previous value must be greater than given one                                                    |
-| oldValGe    | mixed      |       Previous value must be greater or equal to given one                                             |
-| oldValLt    | mixed      |       Previous value must be smaller than given one                                                    |
-| oldValLe    | mixed      |       Previous value must be smaller or equal to given one                                             |
-|             |            |                                                                                                        |
-| oldAck      | bool       |       Acknowledged state of previous value is equal to given one                                       |
-| oldQ        | number     |       Quality code state of previous value is equal to given one. You can use '*' for matching to any code  |
-|             |            |                                                                                                        |
-| ts          | string     |       New value time stamp must be equal to given one (state.ts == ts)                                 |
-| tsGt        | string     |       New value time stamp must be not equal to the given one (state.ts != ts)                         |
-| tsGe        | string     |       New value time stamp must be greater than given value (state.ts > ts)                            |
-| tsLt        | string     |       New value time stamp must be greater or equal to given one (state.ts >= ts)                      |
-| tsLe        | string     |       New value time stamp must be smaller than given one (state.ts < ts)                              |
-|             |            |                                                                                                        |
-| oldTs       | string     |       Previous time stamp must be equal to given one (oldState.ts == ts)                               |
-| oldTsGt     | string     |       Previous time stamp must be not equal to the given one (oldState.ts != ts)                       |
-| oldTsGe     | string     |       Previous time stamp must be greater than given value (oldState.ts > ts)                          |
-| oldTsLt     | string     |       Previous time stamp must be greater or equal to given one (oldState.ts >= ts)                    |
-| oldTsLe     | string     |       Previous time stamp must be smaller than given one (oldState.ts < ts)                            |
-|             |            |                                                                                                        |
-| lc          | string     |       Last change time stamp must be equal to given one (state.lc == lc)                               |
-| lcGt        | string     |       Last change time stamp must be not equal to the given one (state.lc != lc)                       |
-| lcGe        | string     |       Last change time stamp must be greater than given value (state.lc > lc)                          |
-| lcLt        | string     |       Last change time stamp must be greater or equal to given one (state.lc >= lc)                    |
-| lcLe        | string     |       Last change time stamp must be smaller than given one (state.lc < lc)                            |
-|             |            |                                                                                                        |
-| oldLc       | string     |       Previous last change time stamp must be equal to given one (oldState.lc == lc)                   |
-| oldLcGt     | string     |       Previous last change time stamp must be not equal to the given one (oldState.lc != lc)           |
-| oldLcGe     | string     |       Previous last change time stamp must be greater than given value (oldState.lc > lc)              |
-| oldLcLt     | string     |       Previous last change time stamp must be greater or equal to given one (oldState.lc >= lc)        |
-| oldLcLe     | string     |       Previous last change time stamp must be smaller than given one (oldState.lc < lc)                |
-|             |            |                                                                                                        |
-| channelId   | string     |       Channel ID must be equal to given one                                                            |
-|             | RegExp     |       Channel ID matched to regular expression                                                         |
-|             | Array      |       Channel ID matched to a list of allowed channel IDs                                              |
-|             |            |                                                                                                        |
-| channelName | string     |       Channel name must be equal to given one                                                          |
-|             | RegExp     |       Channel name matched to regular expression                                                       |
-|             | Array      |       Channel name matched to a list of allowed channel names                                          |
-|             |            |                                                                                                        |
-| deviceId    | string     |       Device ID must be equal to given one                                                             |
-|             | RegExp     |       Device ID matched to regular expression                                                          |
-|             | Array      |       Device ID matched to a list of allowed device IDs                                                |
-|             |            |                                                                                                        |
-| deviceName  | string     |       Device name must be equal to given one                                                           |
-|             | RegExp     |       Device name matched to regular expression                                                        |
-|             | Array      |       Device name matched to a list of allowed device names                                            |
-|             |            |                                                                                                        |
-| enumId      | string     |       State belongs to given enum                                                                      |
-|             | RegExp     |       One enum ID of the state satisfies the given regular expression                                  |
-|             | Array      |       One enum ID of the state is in the given list of enum IDs                                        |
-|             |            |                                                                                                        |
-| enumName    | string     |       State belongs to given enum                                                                      |
-|             | RegExp     |       One enum name of the state satisfies the given regular expression                                |
-|             | Array      |       One enum name of the state is in the given list of enum names                                    |
-|             |            |                                                                                                        |
-| from        | string     |       New value is from defined adapter                                                                |
-|             | RegExp     |       New value is from an adapter that matches the regular expression                                 |
-|             | Array      |       New value is from an adapter that appears in the given list of allowed adapters                  |
-|             |            |                                                                                                        |
-| fromNe      | string     |       New value is not from defined adapter                                                            |
-|             | RegExp     |       New value is not from an adapter that matches the regular expression                             |
-|             | Array      |       New value is not from an adapter that appears in the given list of forbidden adapters            |
-|             |            |                                                                                                        |
-| oldFrom     | string     |       Old value is from defined adapter                                                                |
-|             | RegExp     |       Old value is from an adapter that matches the regular expression                                 |
-|             | Array      |       Old value is from an adapter that appears in the given list of allowed adapters                  |
-|             |            |                                                                                                        |
-| oldFromNe   | string     |       Old value is not from defined adapter                                                            |
-|             | RegExp     |       Old value is not from an adapter that matches the regular expression                             |
-|             | Array      |       Old value is not from an adapter that appears in the given list of forbidden adapters            |
+| parameter   | type/value | description                                                                                                                                         |
+|-----------  |-------     |-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| logic       | string     | "and" or "or" logic to combine the conditions \(default: "and"\)                                                                                    |
+|             |            |                                                                                                                                                     |
+| id          | string     | id is equal to given one                                                                                                                            |
+|             | RegExp     | id matched to regular expression                                                                                                                    |
+|             | Array      | id matched to a list of allowed IDs                                                                                                                 |
+|             |            |                                                                                                                                                     |
+| name        | string     | name is equal to given one                                                                                                                          |
+|             | RegExp     | name matched to regular expression                                                                                                                  |
+|             | Array      | name matched to a list of allowed names                                                                                                             |
+|             |            |                                                                                                                                                     |
+| change      | string     | "eq", "ne", "gt", "ge", "lt", "le", "any"                                                                                                           |
+|             |   "eq"     | (equal)            New value must be equal to old one (state.val == oldState.val)                                                                   |
+|             |   "ne"     | (not equal)        New value must be not equal to the old one (state.val != oldState.val) **If pattern is id-string this value is used by default** |
+|             |   "gt"     | (greater)          New value must be greater than old value (state.val > oldState.val)                                                              |
+|             |   "ge"     | (greater or equal) New value must be greater or equal to old one (state.val >= oldState.val)                                                        |
+|             |   "lt"     | (smaller)          New value must be smaller than old one (state.val < oldState.val)                                                                |
+|             |   "le"     | (smaller or equal) New value must be smaller or equal to old value (state.val <= oldState.val)                                                      |
+|             |  "any"     | Trigger will be raised if just the new value comes                                                                                                  |
+|             |            |                                                                                                                                                     |
+| val         | mixed      | New value must be equal to given one                                                                                                                |
+| valNe       | mixed      | New value must be not equal to given one                                                                                                            |
+| valGt       | mixed      | New value must be greater than given one                                                                                                            |
+| valGe       | mixed      | New value must be greater or equal to given one                                                                                                     |
+| valLt       | mixed      | New value must be smaller than given one                                                                                                            |
+| valLe       | mixed      | New value must be smaller or equal to given one                                                                                                     |
+|             |            |                                                                                                                                                     |
+| ack         | boolean    | Acknowledged state of new value is equal to given one                                                                                               |
+| q           | number     | Quality code state of new value is equal to given one. You can use '*' for matching to any code. **If not provided q = 0 is set as pattern!**       |
+|             |            |                                                                                                                                                     |
+| oldVal      | mixed      | Previous value must be equal to given one                                                                                                           |
+| oldValNe    | mixed      | Previous value must be not equal to given one                                                                                                       |
+| oldValGt    | mixed      | Previous value must be greater than given one                                                                                                       |
+| oldValGe    | mixed      | Previous value must be greater or equal to given one                                                                                                |
+| oldValLt    | mixed      | Previous value must be smaller than given one                                                                                                       |
+| oldValLe    | mixed      | Previous value must be smaller or equal to given one                                                                                                |
+|             |            |                                                                                                                                                     |
+| oldAck      | bool       | Acknowledged state of previous value is equal to given one                                                                                          |
+| oldQ        | number     | Quality code state of previous value is equal to given one. You can use '*' for matching to any code                                                |
+|             |            |                                                                                                                                                     |
+| ts          | string     | New value time stamp must be equal to given one (state.ts == ts)                                                                                    |
+| tsGt        | string     | New value time stamp must be not equal to the given one (state.ts != ts)                                                                            |
+| tsGe        | string     | New value time stamp must be greater than given value (state.ts > ts)                                                                               |
+| tsLt        | string     | New value time stamp must be greater or equal to given one (state.ts >= ts)                                                                         |
+| tsLe        | string     | New value time stamp must be smaller than given one (state.ts < ts)                                                                                 |
+|             |            |                                                                                                                                                     |
+| oldTs       | string     | Previous time stamp must be equal to given one (oldState.ts == ts)                                                                                  |
+| oldTsGt     | string     | Previous time stamp must be not equal to the given one (oldState.ts != ts)                                                                          |
+| oldTsGe     | string     | Previous time stamp must be greater than given value (oldState.ts > ts)                                                                             |
+| oldTsLt     | string     | Previous time stamp must be greater or equal to given one (oldState.ts >= ts)                                                                       |
+| oldTsLe     | string     | Previous time stamp must be smaller than given one (oldState.ts < ts)                                                                               |
+|             |            |                                                                                                                                                     |
+| lc          | string     | Last change time stamp must be equal to given one (state.lc == lc)                                                                                  |
+| lcGt        | string     | Last change time stamp must be not equal to the given one (state.lc != lc)                                                                          |
+| lcGe        | string     | Last change time stamp must be greater than given value (state.lc > lc)                                                                             |
+| lcLt        | string     | Last change time stamp must be greater or equal to given one (state.lc >= lc)                                                                       |
+| lcLe        | string     | Last change time stamp must be smaller than given one (state.lc < lc)                                                                               |
+|             |            |                                                                                                                                                     |
+| oldLc       | string     | Previous last change time stamp must be equal to given one (oldState.lc == lc)                                                                      |
+| oldLcGt     | string     | Previous last change time stamp must be not equal to the given one (oldState.lc != lc)                                                              |
+| oldLcGe     | string     | Previous last change time stamp must be greater than given value (oldState.lc > lc)                                                                 |
+| oldLcLt     | string     | Previous last change time stamp must be greater or equal to given one (oldState.lc >= lc)                                                           |
+| oldLcLe     | string     | Previous last change time stamp must be smaller than given one (oldState.lc < lc)                                                                   |
+|             |            |                                                                                                                                                     |
+| channelId   | string     | Channel ID must be equal to given one                                                                                                               |
+|             | RegExp     | Channel ID matched to regular expression                                                                                                            |
+|             | Array      | Channel ID matched to a list of allowed channel IDs                                                                                                 |
+|             |            |                                                                                                                                                     |
+| channelName | string     | Channel name must be equal to given one                                                                                                             |
+|             | RegExp     | Channel name matched to regular expression                                                                                                          |
+|             | Array      | Channel name matched to a list of allowed channel names                                                                                             |
+|             |            |                                                                                                                                                     |
+| deviceId    | string     | Device ID must be equal to given one                                                                                                                |
+|             | RegExp     | Device ID matched to regular expression                                                                                                             |
+|             | Array      | Device ID matched to a list of allowed device IDs                                                                                                   |
+|             |            |                                                                                                                                                     |
+| deviceName  | string     | Device name must be equal to given one                                                                                                              |
+|             | RegExp     | Device name matched to regular expression                                                                                                           |
+|             | Array      | Device name matched to a list of allowed device names                                                                                               |
+|             |            |                                                                                                                                                     |
+| enumId      | string     | State belongs to given enum                                                                                                                         |
+|             | RegExp     | One enum ID of the state satisfies the given regular expression                                                                                     |
+|             | Array      | One enum ID of the state is in the given list of enum IDs                                                                                           |
+|             |            |                                                                                                                                                     |
+| enumName    | string     | State belongs to given enum                                                                                                                         |
+|             | RegExp     | One enum name of the state satisfies the given regular expression                                                                                   |
+|             | Array      | One enum name of the state is in the given list of enum names                                                                                       |
+|             |            |                                                                                                                                                     |
+| from        | string     | New value is from defined adapter                                                                                                                   |
+|             | RegExp     | New value is from an adapter that matches the regular expression                                                                                    |
+|             | Array      | New value is from an adapter that appears in the given list of allowed adapters                                                                     |
+|             |            |                                                                                                                                                     |
+| fromNe      | string     | New value is not from defined adapter                                                                                                               |
+|             | RegExp     | New value is not from an adapter that matches the regular expression                                                                                |
+|             | Array      | New value is not from an adapter that appears in the given list of forbidden adapters                                                               |
+|             |            |                                                                                                                                                     |
+| oldFrom     | string     | Old value is from defined adapter                                                                                                                   |
+|             | RegExp     | Old value is from an adapter that matches the regular expression                                                                                    |
+|             | Array      | Old value is from an adapter that appears in the given list of allowed adapters                                                                     |
+|             |            |                                                                                                                                                     |
+| oldFromNe   | string     | Old value is not from defined adapter                                                                                                               |
+|             | RegExp     | Old value is not from an adapter that matches the regular expression                                                                                |
+|             | Array      | Old value is not from an adapter that appears in the given list of forbidden adapters                                                               |
+
+If you want to also get state deletions/expiries as trigger you need to use change with "ne" (default when ID is provided) or "any" AND q with "*" as filter!
 
 Examples:
 Trigger on all states with ID `'*.STATE'` if they are acknowledged and have new value `true`.
