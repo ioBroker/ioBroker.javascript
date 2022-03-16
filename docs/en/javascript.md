@@ -183,27 +183,7 @@ on(pattern, callbackOrId, value);
 The callback function will return the object as parameter with following content:
 ```js
     {
-    	'_id' : 'javascript.0.myplayer',
-    	'type' : 'state',
-    	'common' : {
-    		'def' :    0,
-            'min'  :   0,
-            'max'  :   6,
-    		'type' :   'number',
-    		'read' :   true,
-    		'write' :  true,
-    		'states' : { 0:'stop', 1:'play', 2:'pause', 3:'next', 4:'previous', 5:'mute', 6:'unmute'},
-    		'role' :   'media.state',
-    		'desc' :   'Player handling',
-    		'name' :   'MyPlayer'
-    	},
-    	'native' : {},
-    	'channelId' :   'channelID',
-    	'channelName' : 'channelName',
-    	'deviceId' :    'deviceID',
-    	'deviceName' :  'deviceName',
-    	'enumIds' : [],
-    	'enumNames' : [],
+    	'id' : 'javascript.0.myplayer',
     	'state' : {
     		'val' :  'new state',
     		'ts' :   1416149118,
@@ -230,7 +210,7 @@ var timer;
 createState('counter', 0);
 
 // On change
-on('adapter.0.device.channel.sensor', function (obj) {
+on('adapter.0.device.channel.sensor', function (data) {
     // But not ofter than 30 seconds
     if (!timer) {
         timer = setTimeout(function () {
@@ -353,8 +333,6 @@ You can use following parameters to specify the trigger:
 |             | RegExp     | Old value is not from an adapter that matches the regular expression                                                                                |
 |             | Array      | Old value is not from an adapter that appears in the given list of forbidden adapters                                                               |
 
-If you want to also get state deletions/expiries as trigger you need to use change with "ne" (default when ID is provided) or "any" AND q with "*" as filter!
-
 Examples:
 Trigger on all states with ID `'*.STATE'` if they are acknowledged and have new value `true`.
 
@@ -385,8 +363,6 @@ on('stateId1', 'stateId2');
 
 All changes of *stateId1* will be written to *stateId2*.
 
-Please note, that by default "change" is equal to "any", except when only id as string is set (like `on("id", function (){});`). In last case change will be set to "ne".
-
 If the `value` parameter is set in combination with state id as the second parameter, on any change the state will filled with the `value`.
 ```js
 on('stateId1', 'stateId2', 'triggered');
@@ -397,7 +373,11 @@ setState('stateId1', 'new value');
 
 Function "on" returns handler back. This handler can be used by unsubscribe.
 
-*Notice:* by default only states with quality 0x00 will be passed to callback function. If you want to get all events, add {q: '*'} to pattern structure.
+*Notice:* By default only states with quality 0x00 will be passed to callback function. If you want to get all events, add {q: '*'} to pattern structure.
+
+*Notice:* Please note, that by default "change" is equal to "any", except when only id as string is set (like `on("id", function (){});`). In last case change will be set to "ne".
+
+*Notice:* If you want to also get state deletions/expires as trigger you need to use change with "ne" or "any" AND q with "*" as filter!
 
 *Notice:* from 4.3.2 it is possible to write type of trigger as second parameter: `on('my.id.0', 'any', obj => console.log(obj.state.val));`
 
