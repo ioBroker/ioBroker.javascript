@@ -38,8 +38,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
-
-### __WORK IN PROGRESS__
+### 5.4.3 (2022-03-17)
 * (Apollon77) Fix handling of month schedules with given date list
 * (Apollon77) Optimize scheduling to make sure to not miss triggers if callbacks would need too long
 
@@ -58,11 +57,6 @@ And then call `npm run build`.
 
 ### 5.3.3 (2022-03-06)
 * (bluefox) Added async functions: createStateAsync, deleteStateAsync
-
-### 5.3.2 (2022-03-06)
-* (Apollon77) fix problem that scripts were not starting when scriptsEnabled State was triggered (or startScript was used)
-* (Apollon77) Make sure callbacks on startScript/stopScript work and Async variants also resolve
-* (Apollon77) Make sure startScriptAsync, stopScriptAsync and runScriptAsync resolve in debug mode too
 
 ## License
 The MIT License (MIT)
