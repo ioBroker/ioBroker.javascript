@@ -22,18 +22,6 @@
     ],
     "version": "5.4.4",
     "news": {
-      "5.4.4": {
-        "en": "Fix existsState and existsObject",
-        "de": "ExistiertState und ExistiertObjekt korrigiert",
-        "ru": "Исправление existsState и existsObject",
-        "pt": "Correção de existState e existObject",
-        "nl": "Bestaande Staat en ExistObject repareren",
-        "fr": "Correction de l'état de l'état et de l'objet de l'existence",
-        "it": "Risolto il problema esiste Stato ed Esiste Oggetto",
-        "es": "Repara existState y existeObject",
-        "pl": "Napraw stan istnieje i istniejeObject",
-        "zh-cn": "修复 existsState 和 existsObject"
-      },
       "5.4.3": {
         "en": "Fix handling of month schedules with given date list\nOptimize scheduling to make sure to not miss triggers if callbacks would need too long",
         "de": "Behandlung von Monatsplänen mit gegebener Datumsliste korrigiert\nOptimieren Sie die Planung, um sicherzustellen, dass Sie keine Trigger verpassen, wenn Rückrufe zu lange dauern würden",

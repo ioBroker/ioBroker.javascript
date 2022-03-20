@@ -38,7 +38,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
-### 5.4.4 (2022-03-20)
+### __WORK IN PROGRES__
 * (Apollon77) Fix existsState and existsObject
 
 ### 5.4.3 (2022-03-17)
