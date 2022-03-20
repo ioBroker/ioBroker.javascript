@@ -38,6 +38,10 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
+
+### __WORK IN PROGRESS__
+* (Apollon77) Fix existsState and existsObject
+
 ### 5.4.3 (2022-03-17)
 * (Apollon77) Fix handling of month schedules with given date list
 * (Apollon77) Optimize scheduling to make sure to not miss triggers if callbacks would need too long
