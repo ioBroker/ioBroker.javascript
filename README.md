@@ -38,8 +38,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
-
-### __WORK IN PROGRESS__
+### 5.4.4 (2022-03-20)
 * (Apollon77) Fix existsState and existsObject
 
 ### 5.4.3 (2022-03-17)
@@ -58,9 +57,6 @@ And then call `npm run build`.
 * (Apollon77) Fix timing issue where state updates could not be current on startup
 * (Apollon77) Fix state name handing
 * (Apollon77) Fix potential crash cases reported by Sentry
-
-### 5.3.3 (2022-03-06)
-* (bluefox) Added async functions: createStateAsync, deleteStateAsync
 
 ## License
 The MIT License (MIT)

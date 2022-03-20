@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 5.3.3 (2022-03-06)
+* (bluefox) Added async functions: createStateAsync, deleteStateAsync
+
 ## 5.3.2 (2022-03-06)
 * (Apollon77) fix problem that scripts were not starting when scriptsEnabled State was triggered (or startScript was used)
 * (Apollon77) Make sure callbacks on startScript/stopScript work and Async variants also resolve

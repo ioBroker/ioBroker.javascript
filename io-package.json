@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.4.3",
+    "version": "5.4.4",
     "news": {
+      "5.4.4": {
+        "en": "Fix existsState and existsObject",
+        "de": "ExistiertState und ExistiertObjekt korrigiert",
+        "ru": "Исправление existsState и existsObject",
+        "pt": "Correção de existState e existObject",
+        "nl": "Bestaande Staat en ExistObject repareren",
+        "fr": "Correction de l'état de l'état et de l'objet de l'existence",
+        "it": "Risolto il problema esiste Stato ed Esiste Oggetto",
+        "es": "Repara existState y existeObject",
+        "pl": "Napraw stan istnieje i istniejeObject",
+        "zh-cn": "修复 existsState 和 existsObject"
+      },
       "5.4.3": {
         "en": "Fix handling of month schedules with given date list\nOptimize scheduling to make sure to not miss triggers if callbacks would need too long",
         "de": "Behandlung von Monatsplänen mit gegebener Datumsliste korrigiert\nOptimieren Sie die Planung, um sicherzustellen, dass Sie keine Trigger verpassen, wenn Rückrufe zu lange dauern würden",
@@ -93,18 +105,6 @@
         "es": "solucionar el problema de que los scripts no se iniciaban cuando se activaba scriptsEnabled State (o se usaba startScript)\nAsegúrese de que las devoluciones de llamada en startScript/stopScript funcionen y las variantes asíncronas también se resuelvan\nAsegúrese de que startScriptAsync, stopScriptAsync y runScriptAsync también se resuelvan en modo de depuración.",
         "pl": "naprawienie problemu polegającego na tym, że skrypty nie uruchamiały się po wywołaniu scriptsEnabled State (lub użyciu startScript)\nUpewnij się, że wywołania zwrotne w startScript/stopScript działają, a warianty Async również się rozwiązują\nUpewnij się, że startScriptAsync, stopScriptAsync i runScriptAsync są również rozwiązywane w trybie debugowania",
         "zh-cn": "修复触发scriptsEnabled状态（或使用startScript）时脚本未启动的问题\n确保 startScript/stopScript 上的回调正常工作并且异步变体也可以解决\n确保 startScriptAsync、stopScriptAsync 和 runScriptAsync 也在调试模式下解析"
-      },
-      "5.3.1": {
-        "en": "Add missing callback check in setObject",
-        "de": "Fehlende Callback-Prüfung in setObject hinzugefügt",
-        "ru": "Добавить отсутствующую проверку обратного вызова в setObject",
-        "pt": "Adicionar verificação de retorno de chamada ausente em setObject",
-        "nl": "Voeg ontbrekende terugbelcontrole toe in setObject",
-        "fr": "Ajouter une vérification de rappel manquante dans setObject",
-        "it": "Aggiungi il controllo della richiamata mancante in setObject",
-        "es": "Agregar verificación de devolución de llamada faltante en setObject",
-        "pl": "Dodaj brakujące sprawdzenie wywołania zwrotnego w setObject",
-        "zh-cn": "在 setObject 中添加缺少的回调检查"
       }
     },
     "desc": {
