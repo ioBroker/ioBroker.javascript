@@ -59,6 +59,21 @@ const mods = {
     wake_on_lan:      require('wake_on_lan')
 };
 
+/**
+ * List of forbidden Locations for a mirror directory
+ * relative to the default data diretcory
+ * @type {*[]}
+ */
+const forbiddenMirrorLocations = [
+    '', // Data dir itself
+    'backup-objects',
+    'files',
+    'backitup',
+    '../backups',
+    '../node_modules',
+    '../log'
+];
+
 const utils     = require('@iobroker/adapter-core'); // Get common adapter utils
 const words     = require('./lib/words');
 const sandBox   = require('./lib/sandbox');
@@ -1087,11 +1102,24 @@ function main() {
                 if (adapter.config.mirrorPath) {
                     adapter.config.mirrorInstance = parseInt(adapter.config.mirrorInstance, 10) || 0;
                     if (adapter.instance === adapter.config.mirrorInstance) {
-                        mirror = new Mirror({
-                            adapter,
-                            log: adapter.log,
-                            diskRoot: adapter.config.mirrorPath
-                        });
+                        const ioBDataDir = utils.getAbsoluteDefaultDataDir() + nodePath.sep;
+                        adapter.config.mirrorPath = nodePath.normalize(adapter.config.mirrorPath);
+                        let mirrorForbidden = false;
+                        for (let dir of forbiddenMirrorLocations) {
+                            dir = nodePath.join(ioBDataDir, dir) + nodePath.sep;
+                            if (dir.includes(adapter.config.mirrorPath)) {
+                                adapter.log.error(`The Mirror directory is not allowed to be a central ioBroker directory!`);
+                                adapter.log.error(`Directory ${adapter.config.mirrorPath} is not allowed to mirror files!`);
+                                mirrorForbidden = true;
+                            }
+                        }
+                        if (!mirrorForbidden) {
+                            mirror = new Mirror({
+                                adapter,
+                                log: adapter.log,
+                                diskRoot: adapter.config.mirrorPath
+                            });
+                        }
                     }
                 }
 
