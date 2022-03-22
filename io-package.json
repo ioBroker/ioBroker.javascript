@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.5.0",
+    "version": "5.5.1",
     "news": {
+      "5.5.1": {
+        "en": "Added new rules action block: sum two states (or minus)",
+        "de": "Neuer Aktionsblock für Regeln hinzugefügt: Summiere zwei Zustände (oder minus)",
+        "ru": "Добавлен новый блок действий правил: суммировать два состояния (или минус)",
+        "pt": "Adicionado novo bloco de ação de regras: soma dois estados (ou menos)",
+        "nl": "Nieuw actieblok voor regels toegevoegd: som twee toestanden (of min) op",
+        "fr": "Ajout d'un nouveau bloc d'action de règles : somme de deux états (ou moins)",
+        "it": "Aggiunto nuovo blocco azione regole: somma due stati (o meno)",
+        "es": "Se agregó un nuevo bloque de acción de reglas: suma dos estados (o menos)",
+        "pl": "Dodano nowy blok akcji reguł: zsumuj dwa stany (lub minus)",
+        "zh-cn": "添加了新的规则动作块：将两个状态相加（或减去）"
+      },
       "5.5.0": {
         "en": "Prevent Mirror directory being set to central ioBroker directories because can produce various issues\nFixed existsState and existsObject\nFixed translations",
         "de": "Verhindern Sie, dass das Spiegelverzeichnis auf zentrale ioBroker-Verzeichnisse eingestellt wird, da dies zu verschiedenen Problemen führen kann\nExistiertState und ExistiertObjekt behoben\nÜbersetzungen korrigiert",
@@ -93,18 +105,6 @@
         "es": "Cree automáticamente objetos de carpeta que faltan cuando se crean estados usando createState\nArreglar caracteres especiales en la lógica de suscripción en bloque\nSolucionar el problema de tiempo donde las actualizaciones de estado no podían estar actualizadas al inicio\nArreglar la entrega de nombres de estado\nSolucionar posibles casos de bloqueo informados por Sentry",
         "pl": "Automatycznie twórz brakujące obiekty folderów, gdy stany są tworzone za pomocą createState\nNapraw znaki specjalne w logice blokowania subskrypcji\nNapraw problem z czasem, w którym aktualizacje stanu nie mogą być aktualne podczas uruchamiania\nNapraw przekazywanie nazwy stanu\nNapraw potencjalne awarie zgłoszone przez Sentry",
         "zh-cn": "使用 createState 创建状态时自动创建缺少的文件夹对象\n修复块订阅逻辑中的特殊字符\n修复启动时状态更新无法为最新的计时问题\n修复状态名称处理\n修复 Sentry 报告的潜在崩溃案例"
-      },
-      "5.3.3": {
-        "en": "Added async functions: createStateAsync, deleteStateAsync",
-        "de": "Asynchrone Funktionen hinzugefügt: createStateAsync, deleteStateAsync",
-        "ru": "Добавлены асинхронные функции: createStateAsync, deleteStateAsync.",
-        "pt": "Funções assíncronas adicionadas: createStateAsync, deleteStateAsync",
-        "nl": "Toegevoegde asynchrone functies: createStateAsync, deleteStateAsync",
-        "fr": "Fonctions asynchrones ajoutées : createStateAsync, deleteStateAsync",
-        "it": "Aggiunte funzioni asincrone: createStateAsync, deleteStateAsync",
-        "es": "Funciones asincrónicas agregadas: createStateAsync, deleteStateAsync",
-        "pl": "Dodano funkcje asynchroniczne: createStateAsync, deleteStateAsync",
-        "zh-cn": "添加了异步函数：createStateAsync、deleteStateAsync"
       }
     },
     "desc": {

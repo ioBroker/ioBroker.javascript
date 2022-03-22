@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 5.4.1 (2022-03-15)
+* (Apollon77) Fix blockly subscribes broken in 5.4.0
+
 ## 5.4.0 (2022-03-13)
 * (Apollon77) Automatically create missing folder objects when states are created using createState
 * (Apollon77) Fix special characters in blockly subscribe logic
