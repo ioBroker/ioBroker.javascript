@@ -40,6 +40,7 @@ And then call `npm run build`.
 -->
 ### __WORK IN PROGRESS__
 * (Apollon77) Prevent Mirror directory being set to central ioBroker directories because can produce various issues
+* (Apollon77) Fix existsState and existsObject
 
 ### 5.4.5 (2022-03-20)
 * (Apollon77) Fix existsState and existsObject
