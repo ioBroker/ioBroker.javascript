@@ -737,6 +737,16 @@ function startAdapter(options) {
                         context.rulesOpened = null;
                         break;
                     }
+
+                    case 'getIoBrokerDataDir': {
+                        if (obj.message) {
+                            obj.callback && adapter.sendTo(obj.from, obj.command, {
+                                dataDir: utils.getAbsoluteDefaultDataDir(),
+                                sep: nodePath.sep
+                            }, obj.callback);
+                        }
+                        break;
+                    }
                 }
             }
         },
@@ -1094,7 +1104,7 @@ function main() {
                         let mirrorForbidden = false;
                         for (let dir of forbiddenMirrorLocations) {
                             dir = nodePath.join(ioBDataDir, dir) + nodePath.sep;
-                            if (dir.includes(adapter.config.mirrorPath)) {
+                            if (dir.includes(adapter.config.mirrorPath) || adapter.config.mirrorPath.startsWith(dir)) {
                                 adapter.log.error(`The Mirror directory is not allowed to be a central ioBroker directory!`);
                                 adapter.log.error(`Directory ${adapter.config.mirrorPath} is not allowed to mirror files!`);
                                 mirrorForbidden = true;

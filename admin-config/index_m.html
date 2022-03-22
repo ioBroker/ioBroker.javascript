@@ -33,6 +33,8 @@
         '../node_modules',
         '../log'
     ];
+    var ioBrokerDataDir = '/opt/iobroker'; // Use as default because most systems are linux
+    var pathSep = '/'; // Use as default because most systems are linux
 
     function setValue(id, value, onChange) {
         var $value = $('#' + id + '.value');
@@ -267,6 +269,14 @@
             $mirrorInstance.select();
         });
 
+        // get the iobroker data dir and path separator
+        sendTo(null, 'getIoBrokerDataDir', null, function (response) {
+            if (!response) return;
+            if (response.dataDir) ioBrokerDataDir = response.dataDir;
+            if (response.sep) pathSep = response.sep;
+            console.log('Update ioBroker Directory to ' + ioBrokerDataDir + ' with pathSeparator ' + pathSep);
+        });
+
         gSettings = settings;
 
         $('.value').each(function () {
@@ -384,6 +394,12 @@
         });
     }
 
+    function pathJoin(parts, sep){
+        var separator = sep || '/';
+        var replace   = new RegExp(separator+'{1,}', 'g');
+        return parts.join(separator).replace(replace, separator);
+    }
+
     function save(callback) {
         var obj = {};
 
@@ -412,8 +428,13 @@
         }
 
         if (obj.mirrorPath) {
-            if (forbiddenMirrorLocations.indexOf(obj.mirrorPath) !== -1) {
-                showError('This path is not allowed for mirroring. Please change it.');
+            var ioBDataDir = ioBrokerDataDir + pathSep;
+            for (var dir of forbiddenMirrorLocations) {
+                dir = pathJoin([ioBDataDir, dir], pathSep) + pathSep;
+                if (dir.includes(obj.mirrorPath) || obj.mirrorPath.startsWith(dir)) {
+                    showError('This path is not allowed for mirroring. Please change it.');
+                    break;
+                }
             }
         }
 

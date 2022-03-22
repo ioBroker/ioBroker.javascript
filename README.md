@@ -26,10 +26,11 @@ Executes Javascript, Typescript Scripts.
 The Script Filesystem Mirroring will store all Sourve Files of the Scripts in your Filesystem to allow you to edit the Files in your favourite Script editor beside the Web-Editor. All changes are synced in both directions.
 
 When enabling the Script Filesystem mirroring please make sure to create a **dedicated new directory** and **do not** use an existing directory with other content. Please alsomake sure that no other script or process changes files in the provided directory to prevent access issues.
+Any location needs to be writable by the "iobroker" user!
 
-Since v5.5.0 odf the JavaScript adapterteh following locations (relative to the ioBroker Base directory, usually `/opt/iobroker`) are not allowed to be used:
+Since v5.5.0 of the JavaScript adapter the following locations (relative to the ioBroker Base directory, usually `/opt/iobroker`) are not allowed to be used:
 * The ioBroker base directory itself and any path above!
-* `./iobroker-data` 
+* `./iobroker-data` itself, custom subdirectory (choose a name taht do not overlap with any adapter!)
 * `./iobroker-data/backup-objects` or anything below
 * `./iobroker-data/files` or anything below
 * `./iobroker-data/backitup` or anything below
