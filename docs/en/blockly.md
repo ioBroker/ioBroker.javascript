@@ -446,12 +446,12 @@ The object ID must be selected from dialog and the value must be defined too. De
 
 You can read the explanation [here](https://github.com/ioBroker/ioBroker/wiki/Adapter-Development-Documentation#commands-and-statuses).
 
-This block writes command into state (ack=false). Additionally the delay can be specified.
+This block writes command into state (ack=false). Additionally, the delay can be specified.
 If delay is not 0, the state will be set not immediately but after defined in milliseconds period of time.
 
 You can stop all running delayed sets by issuing of control command. 
 
-E.g in following schema the state "Light" will be controlled only once (in 2 seconds):
+E.g. in following schema the state "Light" will be controlled only once (in 2 seconds):
 ![Control state](img/system_control_1_en.png)
 
 ```xml
@@ -548,7 +548,7 @@ Typical usage example:
 
 This block simply binds two states with each other.
 
-You can achieve the same with this blocks:
+You can achieve the same with these blocks:
 
 ![Bind state](img/system_bind_1_en.png)
 
@@ -661,7 +661,7 @@ Although no warning will be printed by the second execution, because the state y
 ### Get value of state
 ![Get value of state](img/system_get_value_en.png)
 
-You can use this block to get the value of state. Additionally to value you can get following attributes:
+You can use this block to get the value of state. Additionally, to value you can get following attributes:
 - Value
 - Acknowledge - command = false or update = true
 - Timestamp in ms from 1970.1.1 (It has type "Date object")
@@ -807,7 +807,7 @@ If parsing of outputs must be done:
 ```
 
 By analysing of outputs 3 special variables will be created: 
-- result, consists normal output to the console (e.g. for "ls /opt" it consist "iobroker nodejs")
+- result, consists normal output to the console (e.g. for "ls /opt" it consists "iobroker nodejs")
 - error object if command cannot be executed by javascript module
 - stderr, error output of executed program
 
@@ -842,9 +842,9 @@ To send message to some specific instance, you should select the installed adapt
 
 Property *message* is mandatory and exactly this text will be sent to client. 
 
-User name ID is optional and this is ID from [telegram](https://core.telegram.org/bots/api#user) (Unique identifier for user or bot).
+Username ID is optional and this is ID from [telegram](https://core.telegram.org/bots/api#user) (Unique identifier for user or bot).
 
-Additionally if the log level is not "none", the same message will be sent to log.
+Additionally, if the log level is not "none", the same message will be sent to log.
 
 ### Send to SayIt
 ![Send to SayIt](img/sendto_sayit_en.png)
@@ -853,7 +853,7 @@ This block is used to send text to sayit instance to pronounce this text.
 
 Of course the sayit adapter must be installed and configured.
 
-To send message to some specific instance, you should select the installed adapter instance (Normally sayit.0), elsewise message will be sent to all existing instances.
+To send message to some specific instance, you should select the installed adapter instance (Normally `sayit.0`), elsewise message will be sent to all existing instances.
 
 Property *message* is mandatory and exactly this text will be pronounced. 
 
@@ -861,7 +861,7 @@ You must check the language property. This will be used for text2speech engine.
 
 Volume is optional (normally from 0 to 100).
 
-Additionally if the log level is not "none", the same message will be sent to log.
+Additionally, if the log level is not "none", the same message will be sent to log.
 
 ### Send to pushover
 ![Send to pushover](img/sendto_pushover_en.png)
@@ -874,9 +874,9 @@ To send message to some specific instance, you should select the installed adapt
 
 Property *message* is mandatory and exactly this text will be sent to client. 
 
-All other properties are optional and you can read bout them [here](https://pushover.net/api):
+All other properties are optional, and you can read bout them [here](https://pushover.net/api):
 
-- *device ID* - your user's device name to send the message directly to that device, rather than all of the user's devices (multiple devices may be separated by a comma)
+- *device ID* - your user's device name to send the message directly to that device, rather than all the user's devices (multiple devices may be separated by a comma)
 - *title* - your message's title, otherwise your app's name is used
 - *URL* - a supplementary URL to show with your message
 - *URL title* - a title for your supplementary URL, otherwise just the URL is shown
@@ -884,7 +884,7 @@ All other properties are optional and you can read bout them [here](https://push
 - *time in ms* - a Unix timestamp of your message's date and time to display to the user, rather than the time your message is received by our API
 - *sound* - the name of one of the sounds supported by device clients to override the user's default sound choice
 
-Additionally if the log level is not "none", the same message will be sent to log.
+Additionally, if the log level is not "none", the same message will be sent to log.
 
 ### Send email
 ![Send to email](img/sendto_email_en.png)
@@ -946,14 +946,14 @@ You can refer to files as ```<img src='cid:file1'/>```. "file1" and "file2" are 
 </block>
 ```
 
-Additionally if the log level is not "none", the same message will be sent to log.
+Additionally, if the log level is not "none", the same message will be sent to log.
 
 ### Custom sendTo block
 ![Custom sendTo block](img/sendto_custom_en.png)
 
 This is just a help block to send internal system message (sendTo) to any adapter. 
 
-Of course you can use custom function block to do anything crazy, and to send messages too.
+Of course, you can use custom function block to do anything crazy, and to send messages too.
 
 You can define your own parameters for sendTo command:
 
@@ -1015,7 +1015,7 @@ Example how to send SQL query to sql adapter:
 </xml>
 ```
 
-If you will use only one parameter with empty name, so no structure will created, like here:
+If you use only one parameter with empty name, so no structure will be created, like here:
 
 ```javascript
 var obj, result;
@@ -1127,7 +1127,7 @@ sendTo("sql.0", "getHistory", {
   });
 ```
 
-If you will start value with "{" it will be interpreted as JSON string. Use double quotes in string.
+If you start value with "{" it will be interpreted as JSON string. Use double quotes in string.
 
 ## Date and Time blocks
 ### Time comparision
@@ -1152,7 +1152,7 @@ There are following compare modes:
     - E.g. if time must be between 12:00 and 20:00. It will be checked if actual time grater or equal than 12:00 and less than 20:00. 20:00 will return false.
     - or for instance between 21:00 and 8:00. In the last case it will be checked if time greater or equal to 21:00 or less than 8:00.
 
-- not between, if the time is not in the given period of the day time. If the time less than start and greater or equal to end. (if start time is greater than end time, it will be checked if the time greater or equal than end and smaller than start)
+- not between, if the time is not in the given period of the daytime. If the time less than start and greater or equal to end. (if start time is greater than end time, it will be checked if the time greater or equal than end and smaller than start)
 
 Following time formats are valid:
 - YYYY-MM-DD hh:mm:ss
@@ -1163,7 +1163,7 @@ Following time formats are valid:
 ### Actual time comparision
 ![Actual time comparision](img/datetime_compare_en.png)
 
-This block is used to compare the day time with actual time. It has the same logic as [Time comparision](#time-comparision), but limits cannot be a blocks and it compares only actual time. (for compatibility with old versions)
+This block is used to compare the day time with actual time. It has the same logic as [Time comparision](#time-comparision), but limits cannot be a blocks, and it compares only actual time. (for compatibility with old versions)
 
 ### Get actual time im specific format
 ![Get actual time im specific format](img/datetime_actualtime_en.png)
@@ -1229,14 +1229,14 @@ Following values can be used as attribute in astro-function:
 - nightEnd: night ends (morning astronomical twilight starts)
 - nauticalDawn: nautical dawn (morning nautical twilight starts)
 - dawn: dawn (morning nautical twilight ends, morning civil twilight starts)
-- nadir: nadir (darkest moment of the night, sun is in the lowest position)
+- nadir: nadir (the darkest moment of the night, sun is in the lowest position)
 
 The return value has type "Date Object", what is just the number of milliseconds from 1970.01.01.
 
 **Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
 
 ## Convert blocks
-Sometimes it is required to convert value into other type. Following blocks allow to convert value into specific types.
+Sometimes it is required to convert value into other type. Following blocks allow converting value into specific types.
 
 ### Convert to number
 ![Convert to number](img/convert_tonumber_en.png)
@@ -1518,7 +1518,7 @@ Generally CRON rule consist of 5 or 6 parts:
 For every part following formats are allowed:
 - \* - fire every (second, minute, hour, ...)
 - X (e.g. 5) - fire only in this second, minute, hour...
-- from-to (e.g 1-9) - fire only in this interval
+- from-to (e.g. 1-9) - fire only in this interval
 - \*/X (e.g. \*/5) - fire every X seconds, minutes... In case of "\*/5" for hours the trigger will fire on 0, 5, 10, 15 and on 20 hours.
 - numbers and intervals can be combined by comma (e.g 1,3,4-6). Do not make spaces between numbers, because space is delimiter for rule's parts.
 
@@ -1553,7 +1553,7 @@ or if seconds used:
  * * * * * *  schedule
 ```
 
-But there is a good help for you to build such a rules. By clicking on rule the CRON dialog will be opened and you can specify by mouse your rule.
+But there is a good help for you to build such a rules. By clicking on rule the CRON dialog will be opened, and you can specify by mouse your rule.
 
 ![Schedule](img/trigger_schedule_1_en.png)
 
@@ -1575,7 +1575,7 @@ Execute some action on astrological event. Following events are possible:
 - nightEnd: night ends (morning astronomical twilight starts)
 - nauticalDawn: nautical dawn (morning nautical twilight starts)
 - dawn: dawn (morning nautical twilight ends, morning civil twilight starts)
-- nadir: nadir (darkest moment of the night, sun is in the lowest position)
+- nadir: nadir (the darkest moment of the night, sun is in the lowest position)
 
 **Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
 
@@ -1937,14 +1937,14 @@ By first motion the light should go on and after the last motion after 30 second
 ### Execution by interval
 ![Execution by interval](img/timeouts_interval_en.png)
 
-This block allows you to execute some action periodically. Of course there is a CRON block, but CRON block has a smallest interval one second.
+This block allows you to execute some action periodically. Of course there is a CRON block, but CRON block has the smallest interval one second.
 This block can execute actions in milliseconds periods. 
 
 If you set the interval too small (under 100ms) it can be, that intervals will be bigger.
 
 Similar to timeout block you can set unique interval name too.
 
-An additional feature is to set the interval by using a variable, just replace the "ms" with an predefined variable:
+An additional feature is to set the interval by using a variable, just replace the "ms" with a predefined variable:
 ![Execution by interval variable](img/Timer_variable_en.PNG)
 
 
@@ -1957,7 +1957,7 @@ With the help of this block you can cancel periodically execution of interval bl
 
 ### If else block
 
-### Comparision block
+### Comparison block
 
 ### Logical AND/OR block
 
@@ -2116,7 +2116,7 @@ Inside these blocks variable "value" yet exist, but anyway to read their values 
 ### Create function from blocks with no return value
 ![Create function from blocks with no return value](img/functions_function_en.png)
 
-With this block you can combine some repeat sequences into function and than use this function everywhere in current blockly.
+With this block you can combine some repeat sequences into function and then use this function everywhere in current blockly.
 
 Here is an example of function that just prints into log current time.
 
@@ -2168,7 +2168,7 @@ You can find this new function in the blocks menu:
 
 ![Create function from blocks with no return value](img/functions_function_4_en.png)
 
-Additionally you can specify arguments for the function too via configuration dialog. You can edit the names of arguments in hte same dialog.
+Additionally, you can specify arguments for the function too via configuration dialog. You can edit the names of arguments in hte same dialog.
 
 ![Create function from blocks with no return value](img/functions_function_1_en.png)
 
@@ -2221,7 +2221,7 @@ Here is an example of function that prints the sum of first argument and the sec
 </xml>
 ```
 
-You can find the arguments in the variables menu:
+You can find the arguments in the variables' menu:
 
 ![Create function from blocks with no return value](img/functions_function_6_en.png)
 

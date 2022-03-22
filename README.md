@@ -23,14 +23,14 @@ Executes Javascript, Typescript Scripts.
   * Описание по [blockly](docs/ru/blockly.md) можно найти [здесь](docs/ru/blockly.md).
 
 ## Forbidden directories for Script Filesystem Mirroring
-The Script Filesystem Mirroring will store all Sourve Files of the Scripts in your Filesystem to allow you to edit the Files in your favourite Script editor beside the Web-Editor. All changes are synced in both directions.
+The Script Filesystem Mirroring will store all Sourсe Files of the Scripts in your Filesystem to allow you to edit the Files in your favourite Script editor beside the Web-Editor. All changes are synced in both directions.
 
-When enabling the Script Filesystem mirroring please make sure to create a **dedicated new directory** and **do not** use an existing directory with other content. Please alsomake sure that no other script or process changes files in the provided directory to prevent access issues.
+When enabling the Script Filesystem mirroring please make sure to create a **dedicated new directory** and **do not** use an existing directory with other content. Please also make sure that no other script or process changes files in the provided directory to prevent access issues.
 Any location needs to be writable by the "iobroker" user!
 
 Since v5.5.0 of the JavaScript adapter the following locations (relative to the ioBroker Base directory, usually `/opt/iobroker`) are not allowed to be used:
 * The ioBroker base directory itself and any path above!
-* `./iobroker-data` itself, custom subdirectory (choose a name taht do not overlap with any adapter!)
+* `./iobroker-data` itself, custom subdirectory (choose a name that do not overlap with any adapter!)
 * `./iobroker-data/backup-objects` or anything below
 * `./iobroker-data/files` or anything below
 * `./iobroker-data/backitup` or anything below
@@ -53,6 +53,9 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Added new rules action block: sum two states (or minus)
+
 ### 5.5.0 (2022-03-22)
 * (Apollon77) Prevent Mirror directory being set to central ioBroker directories because can produce various issues
 * (Apollon77) Fixed existsState and existsObject

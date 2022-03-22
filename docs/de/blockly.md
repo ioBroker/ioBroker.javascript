@@ -252,20 +252,20 @@ Beispiel zum importieren:
 
 &nbsp;
 ## Beispiel 3
-**Verschicke eine eMail wenn die Außentemperatur höher als 25 Grad Celsius ist.**
+**Verschicke eine E-Mail, wenn die Außentemperatur höher als 25 Grad Celsius ist.**
 
 ![Getting started 3](img/getting_started_3_de.png)
 
 Erklärung:
 
-Zuerst müssen wir eine Variable definieren um zu speichern, dass die eMail für den aktuellen Temperaturalarm bereits gesendet wurde und diese Variable auf "falsch" setzen.
+Zuerst müssen wir eine Variable definieren um zu speichern, dass die E-Mail für den aktuellen Temperaturalarm bereits gesendet wurde und diese Variable auf "falsch" setzen.
 Dann beobachten wir die Veränderungen der Temperatur. Wir könnten dieses Skript auch periodisch ausführen, aber das ist nicht so effektiv.
 
-Wenn sich die Temperatur ändert vergleichen wir den aktuellen Wert mit 25 und prüfen ob die eMail bereits verschickt wurde oder nicht.
-Wenn die eMail noch nicht versendet war, speichern wir dass wir sie jetzt senden und senden sie auch. Natürlich muss der eMail-Adapter vorher installiert und konfiguriert worden sein.
+Wenn sich die Temperatur ändert vergleichen wir den aktuellen Wert mit 25 und prüfen, ob die E-Mail bereits verschickt wurde oder nicht.
+Wenn die E-Mail noch nicht versendet war, speichern wir, dass wir sie jetzt senden und senden sie auch. Natürlich muss der E-Mail-Adapter vorher installiert und konfiguriert worden sein.
 
-Wenn die Temperatur unter 23 Grad fällt setzen wir die Variable "emailSent" zurück, damit beim nächsten Temperaturalarm wieder eine eMail gesendet wird. 
-Dazu wird die aktuelle Temperatur mit 23 verglichen und es werden keine eMails geschickt, solange die Temperatur um 25 Grad schwankt.
+Wenn die Temperatur unter 23 Grad fällt setzen wir die Variable "emailSent" zurück, damit beim nächsten Temperaturalarm wieder eine E-Mail gesendet wird. 
+Dazu wird die aktuelle Temperatur mit 23 verglichen und es werden keine E-Mails geschickt, solange die Temperatur um 25 Grad schwankt.
 
 Um den "falls ... sonst falls ..." Block zu erstellen klickt man auf das Zahnrad und fügt die zusätzlich benötigten Elemente dem "falls" Block hinzu.
 
@@ -275,7 +275,7 @@ Man kann zu jedem Block einen Kommentar hinterlegen, indem man "Kommentar hinzuf
 
 ![Getting started 3](img/getting_started_3_2_de.png)
 
-Man kann größere Blöcke einklappen um eine bessere Übersicht zu erhalten, indem man im Kontextmenü den Punkt "Block einklappen" auswählt. 
+Man kann größere Blöcke einklappen, um eine bessere Übersicht zu erhalten, indem man im Kontextmenü den Punkt "Block einklappen" auswählt. 
 
 ![Getting started 3](img/getting_started_3_3_de.png)
 
@@ -448,9 +448,9 @@ Beispiel zum importieren:
 
 Man kann 4 verschiedene Schweregrade für die Nachrichten definieren:
 - debug (dazu muss der debug-Level der Javascript Instanz aktiviert sein.)
-- info (default, zumindest der info log level muss ider Javascript Instanz aktiviert sein.)
+- info (default, zumindest der info log level muss in der Javascript Instanz aktiviert sein.)
 - warning 
-- error (wird immer angezeigt. Die anderen Level können ignoriert werden, wenn es entsprechend in der der Javascript Instanz eingestellt ist.)
+- error (wird immer angezeigt. Die anderen Level können ignoriert werden, wenn es entsprechend in der Javascript Instanz eingestellt ist.)
 
 
 &nbsp;
@@ -490,7 +490,7 @@ So wird in dem folgenden Beispiel der Datenpunkt "Licht" nur einmal geschaltet (
 
 
 &nbsp;
-Beispiel zum importieren:
+Beispiel zum Importieren:
 
 ```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -572,7 +572,7 @@ Im Gegensatz zu dem vorherigen Beispiel wird der Zustand von "Licht" in dem folg
 ### Aktualisiere State
 ![Update state](img/system_update_en.png)
 
-Dieser Block ist ähnlich dem [Steuere Block](#steuere-state), aber er setzt nur den aktuellen Wert. Es wird kein Befehl zum steuern der Hardware gesendet.
+Dieser Block ist ähnlich dem [Steuere Block](#steuere-state), aber er setzt nur den aktuellen Wert. Es wird kein Befehl zum Steuern der Hardware gesendet.
 
 Typische Anwendung dieses Blocks:
 
@@ -585,15 +585,15 @@ Typische Anwendung dieses Blocks:
 
 Dieser Block bindet zwei Zustände aneinander.
 
-Man kann das gleiche mit diesen Blöcken erreichen:
+Man kann das Gleiche mit diesen Blöcken erreichen:
 
 ![Bind state](img/system_bind_1_en.png)
 
-Man kann auswählen, ob der Wert nur weitergeleitet wird,  wenn sich die Quelle ändert, oder bei jeder Aktualisierung.
+Man kann auswählen, ob der Wert nur weitergeleitet wird, wenn sich die Quelle ändert, oder bei jeder Aktualisierung.
 
 
 &nbsp;
-Beispiel zum importieren:
+Beispiel zum Importieren:
 ```xml 
 <block xmlns="http://www.w3.org/1999/xhtml" type="on_ext" id="w/@=5/5!D;8wn4DZ;jzG" x="287.99999999999943" y="37.999999999999716">
   <mutation items="1"></mutation>
@@ -626,7 +626,7 @@ Beispiel zum importieren:
 
 Universal write block that can do the same as ["Update state"](#update-state) and ["Control state"](#control-state) together. 
 
-But in compare with them you can define Object ID and delay with other blocks to make your script more universal.
+But in compare with them, you can define Object ID and delay with other blocks to make your script more universal.
 
 ### Create state
 ![Create state](img/system_create_en.png)
@@ -696,9 +696,9 @@ Typische Anwendung dieses Blocks:
 </xml>
 ```
 
-Man kann den neu erzeugten State bereits in dem Block sekber nutzen. 
+Man kann den neu erzeugten State bereits in dem Block selber nutzen. 
 
-Der folgende Code gibt bei der ersten Ausführung einen Fehler aus, weil'subscribe' für "myState" das Objekt nicht finden kann:
+Der folgende Code gibt bei der ersten Ausführung einen Fehler aus, weil 'subscribe' für "myState" das Objekt nicht finden kann:
  
 ![Create state](img/system_create_sample2_en.png)
 
@@ -715,7 +715,7 @@ Dieser Block dient dazu den Wert eines Datenpunktes auszulesen. Folgende Attribu
 - Timestamp in ms seit dem 01.01.1970 (Hat den Typ "Datumsobjekt")
 - Letzte Änderung des Wertes in ms seit dem 01.01.1970 (Hat den Typ "Datumsobjekt")
 - Qualität
-- Quelle - Name der Instanz, die den letzten Wert geschrieben hat, wie z.B. "system.adapter.javascript.0"
+- Quelle - Name der Instanz, die den letzten Wert geschrieben hat, wie z.B. `system.adapter.javascript.0`
 
 
 &nbsp;
@@ -767,7 +767,7 @@ Beispiel um die Zeit der letzten Änderung des Wertes auszugeben:
 ### Objekt ID
 ![Get Object ID](img/system_get_id_en.png)
 
-Dieses ist ein einfacher Hilfsblock um komfortabel die Objekt ID zum triggern des Blocks auszuwählen.
+Dieses ist ein einfacher Hilfsblock um komfortabel die Objekt-ID zum triggern des Blocks auszuwählen.
 
 Der ID Auswahldialog wird durch Anklicken von "Objekt ID" geöffnet.
 
@@ -874,12 +874,12 @@ Wenn eine Ausgabe erfolgen soll:
 
 &nbsp;
 
-Zur Anlayse der Ausgabe werden 3 besondere Variable erzeugt:
-- Ergebnis, enthält die reguläre Ausgabe auf die Konsole (z.B für den Befehl "ls /opt" lautet die Ausgabe "iobroker nodejs")
+Zur Analyse der Ausgabe werden 3 besondere Variable erzeugt:
+- Ergebnis, enthält die reguläre Ausgabe auf die Konsole (z.B. für den Befehl "ls /opt" lautet die Ausgabe "iobroker nodejs")
 - Fehlerobjekt, wenn der Befehl vom JavaScript Modul nicht ausgeführt werden konnte
 - stderr, die Fehlerausgabe des ausgeführten Programms
 
-Zusätzlich wird die selbe Ausgabe auch im log erscheinen, wenn der loglevel nicht auf 'none' steht.
+Zusätzlich wird die selbe Ausgabe auch im Log erscheinen, wenn der loglevel nicht auf 'none' steht.
 
 
 &nbsp;
@@ -895,7 +895,7 @@ Beispiel:
 
 ![request URL](img/action_request_1_en.png)
 
-Zur Anlayse der Ausgabe werden 3 besondere Variable erzeugt:
+Zur Analyse der Ausgabe werden 3 besondere Variable erzeugt:
 - Ergebnis, enthält den body der angeforderten Seite
 - Fehler, enthält eine Fehlerbeschreibung
 - Antwort (nur für Fortgeschrittene), Spezialobjekt vom Typ [http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
@@ -923,7 +923,7 @@ Das Feld *Meldung* ist zwingend notwendig und der dort enthaltene Text wird exak
 
 User name ID is optional and this is ID from [telegram](https://core.telegram.org/bots/api#user) (Unique identifier for user or bot).
 
-Additionally if the log level is not "none", the same message will be sent to log.
+Additionally, if the log level is not "none", the same message will be sent to log.
 
 
 &nbsp;
@@ -931,11 +931,11 @@ Additionally if the log level is not "none", the same message will be sent to lo
 ### Send to SayIt
 ![Send to SayIt](img/sendto_sayit_en.png)
 
-This block is used to send text to sayit instance to pronounce this text.
+This block is used to send text to `sayit` instance to pronounce this text.
 
-Of course the sayit adapter must be installed and configured.
+Of course the `sayit` adapter must be installed and configured.
 
-To send message to some specific instance, you should select the installed adapter instance (Normally sayit.0), elsewise message will be sent to all existing instances.
+To send message to some specific instance, you should select the installed adapter instance (Normally `sayit.0`), elsewise message will be sent to all existing instances.
 
 Property *message* is mandatory and exactly this text will be pronounced. 
 
@@ -943,7 +943,7 @@ You must check the language property. This will be used for text2speech engine.
 
 Volume is optional (normally from 0 to 100).
 
-Additionally if the log level is not "none", the same message will be sent to log.
+Additionally, if the log level is not "none", the same message will be sent to log.
 
 
 &nbsp;
@@ -959,9 +959,9 @@ To send message to some specific instance, you should select the installed adapt
 
 Property *message* is mandatory and exactly this text will be sent to client. 
 
-All other properties are optional and you can read bout them [here](https://pushover.net/api):
+All other properties are optional, and you can read bout them [here](https://pushover.net/api):
 
-- *device ID* - your user's device name to send the message directly to that device, rather than all of the user's devices (multiple devices may be separated by a comma)
+- *device ID* - your user's device name to send the message directly to that device, rather than all the user's devices (multiple devices may be separated by a comma)
 - *title* - your message's title, otherwise your app's name is used
 - *URL* - a supplementary URL to show with your message
 - *URL title* - a title for your supplementary URL, otherwise just the URL is shown
@@ -969,7 +969,7 @@ All other properties are optional and you can read bout them [here](https://push
 - *time in ms* - a Unix timestamp of your message's date and time to display to the user, rather than the time your message is received by our API
 - *sound* - the name of one of the sounds supported by device clients to override the user's default sound choice
 
-Additionally if the log level is not "none", the same message will be sent to log.
+Additionally, if the log level is not "none", the same message will be sent to log.
 
 
 &nbsp;
@@ -1034,7 +1034,7 @@ You can refer to files as ```<img src='cid:file1'/>```. "file1" and "file2" are 
 </block>
 ```
 
-Additionally if the log level is not "none", the same message will be sent to log.
+Additionally, if the log level is not "none", the same message will be sent to log.
 
 
 &nbsp;
@@ -1044,7 +1044,7 @@ Additionally if the log level is not "none", the same message will be sent to lo
 
 This is just a help block to send internal system message (sendTo) to any adapter. 
 
-Of course you can use custom function block to do anything crazy, and to send messages too.
+Of course, you can use custom function block to do anything crazy, and to send messages too.
 
 You can define your own parameters for sendTo command:
 
@@ -1106,7 +1106,7 @@ Example how to send SQL query to sql adapter:
 </xml>
 ```
 
-If you will use only one parameter with empty name, so no structure will created, like here:
+If you use only one parameter with empty name, so no structure will be created, like here:
 
 ```javascript
 var obj, result;
@@ -1218,7 +1218,7 @@ sendTo("sql.0", "getHistory", {
   });
 ```
 
-If you will start value with "{" it will be interpreted as JSON string. Use double quotes in string.
+If you start value with "{" it will be interpreted as JSON string. Use double quotes in string.
 
 
 &nbsp;
@@ -1227,7 +1227,7 @@ If you will start value with "{" it will be interpreted as JSON string. Use doub
 &nbsp;
 
 ## Date and Time blocks
-### Time comparision
+### Time comparison
 ![Time comparision](img/datetime_compare_ex_en.png)
 
 If used operator "between" or "not between", the block looks like this:
@@ -1249,7 +1249,7 @@ There are following compare modes:
     - E.g. if time must be between 12:00 and 20:00. It will be checked if actual time grater or equal than 12:00 and less than 20:00. 20:00 will return false.
     - or for instance between 21:00 and 8:00. In the last case it will be checked if time greater or equal to 21:00 or less than 8:00.
 
-- not between, if the time is not in the given period of the day time. If the time less than start and greater or equal to end. (if start time is greater than end time, it will be checked if the time greater or equal than end and smaller than start)
+- not between, if the time is not in the given period of the daytime. If the time less than start and greater or equal to end. (if start time is greater than end time, it will be checked if the time greater or equal than end and smaller than start)
 
 Following time formats are valid:
 - YYYY-MM-DD hh:mm:ss
@@ -1263,7 +1263,7 @@ Following time formats are valid:
 ### Actual time comparision
 ![Actual time comparision](img/datetime_compare_en.png)
 
-This block is used to compare the day time with actual time. It has the same logic as [Time comparision](#time-comparision), but limits cannot be a blocks and it compares only actual time. (for compatibility with old versions)
+This block is used to compare the day time with actual time. It has the same logic as [Time comparision](#time-comparision), but limits cannot be a blocks, and it compares only actual time. (for compatibility with old versions)
 
 
 &nbsp;
@@ -1285,7 +1285,7 @@ Following formats are supported:
 - month as number - get month as number from 1 to 12,
 - month as text - get month as text. Language must be specified.      
 - month as short text - get month as text: Jan, Feb,  Mar,  Apr, May, June, July, Aug, Sept, Oct, Nov, Dec. Language must be specified.     
-- short year - Year from 0 to 99, e.g for 2016 the result will be 16.         
+- short year - Year from 0 to 99, e.g. for 2016 the result will be 16.         
 - full year - Full year: 2016
 - week day text - Get day of week as text.
 - short week day - Get day of week as short text: Su, Mo, Tu, We, Th, Fr, Sa.
@@ -1335,7 +1335,7 @@ Following values can be used as attribute in astro-function:
 - nightEnd: night ends (morning astronomical twilight starts)
 - nauticalDawn: nautical dawn (morning nautical twilight starts)
 - dawn: dawn (morning nautical twilight ends, morning civil twilight starts)
-- nadir: nadir (darkest moment of the night, sun is in the lowest position)
+- nadir: nadir (the darkest moment of the night, sun is in the lowest position)
 
 The return value has type "Date Object", what is just the number of milliseconds from 1970.01.01.
 
@@ -1348,7 +1348,7 @@ The return value has type "Date Object", what is just the number of milliseconds
 &nbsp;
 
 ## Convert blocks
-Sometimes it is required to convert value into other type. Following blocks allow to convert value into specific types.
+Sometimes it is required to convert value into other type. Following blocks allow converting value into specific types.
 
 ### Convert to number
 ![Convert to number](img/convert_tonumber_en.png)
@@ -1720,11 +1720,11 @@ Execute some action on astrological event. Following events are possible:
 - nightEnd: night ends (morning astronomical twilight starts)
 - nauticalDawn: nautical dawn (morning nautical twilight starts)
 - dawn: dawn (morning nautical twilight ends, morning civil twilight starts)
-- nadir: nadir (darkest moment of the night, sun is in the lowest position)
+- nadir: nadir (the darkest moment of the night, sun is in the lowest position)
 
 **Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
 
-Additionally you can set the offset in minutes to astrological event, e.g. to fire the trigger 1 hour before down: 
+Additionally, you can set the offset in minutes to astrological event, e.g. to fire the trigger 1 hour before down: 
 
 ![Schedule](img/trigger_astro_1_en.png)
 
@@ -1916,7 +1916,7 @@ if you know Javascript it is the same function as setTimeout.
 
 There is no "pause" in blockly, but you can use this block to simulate pause. If you place all blocks, that must be executed after the pause you will achieve the same effect as with pause.
 
-An additional feature is to set the interval by using a variable, just replace the "ms" with an predefined variable:
+An additional feature is to set the interval by using a variable, just replace the "ms" with a predefined variable:
 ![Execution by interval variable](img/Timer_variable_en.PNG)
 
 
@@ -2070,7 +2070,7 @@ By first motion the light should go on and after the last motion after 30 second
 ### Execution by interval
 ![Execution by interval](img/timeouts_interval_en.png)
 
-This block allows you to execute some action periodically. Of course there is a CRON block, but CRON block has a smallest interval one second.
+This block allows you to execute some action periodically. Of course there is a CRON block, but CRON block has the smallest interval one second.
 This block can execute actions in milliseconds periods. 
 
 If you set the interval too small (under 100ms) it can be, that intervals will be bigger.

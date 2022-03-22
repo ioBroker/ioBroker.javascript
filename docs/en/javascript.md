@@ -546,7 +546,7 @@ Following values can be used as attribute in astro-function:
 
 **Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
 
-**Note:** On some places sometines it could be so, that no night/nightEnd exists. Please read [here](https://github.com/mourner/suncalc/issues/70) about it.
+**Note:** On some places sometimes it could be so, that no night/nightEnd exists. Please read [here](https://github.com/mourner/suncalc/issues/70) about it.
 
 **Note:** you can use "on" function for schedule with small modification:
 ```js
@@ -735,7 +735,7 @@ clearStateDelayed('Kitchen.Light.Lamp'); // Clear all running delayed tasks for 
 getStateDelayed(id);
 ```
 
-This is synchronous call and you will get the list of all running timers (setStateDelayed) for this id.
+This is synchronous call, and you will get the list of all running timers (setStateDelayed) for this id.
 You can call this function without id and get timers for all IDs.
 In case you call this function for some specific object ID you will get following answer:
 
@@ -803,7 +803,7 @@ getBinaryState(id, function (err, data) {});
 ```
 Same as getState, but for the binary states, like files, images, buffers.
 The difference is that such a state has no ack, ts, lc, quality and so on flags und should be used only for binary "things".
-The object's common.type must be equal to 'file'.
+The object's `common.type` must be equal to 'file'.
 This function must be always used with callback. "data" is a buffer.
 
 ### existsState
@@ -826,7 +826,7 @@ getObject(id, enumName);
 ```
 Get description of object id as stored in system.
 You can specify the enumeration name. If this is defined, two additional attributes will be added to result: enumIds and enumNames.
-These arrays has all enumerations, where ID is member of. E.g:
+These arrays have all enumerations, where ID is member of. E.g:
 
 ```js
 getObject('adapter.N.objectName', 'rooms');
@@ -861,7 +861,7 @@ existsObject(id)
 ```
 the function returns in this case true or false.
 
-Checks if a object exists.
+Checks if an object exists.
 
 
 ### extendObject
@@ -929,11 +929,11 @@ getEnums('rooms');
 ```js
 createState(name, initialValue, forceCreation, common, native, callback);
 ```
-Create state and object in javascript space if it does not exist, e.g. "javascript.0.mystate".
+Create state and object in javascript space if it does not exist, e.g. `javascript.0.mystate`.
 
 #### Parameters:
 
-- `name`: name of the state without namespace, e.g. "mystate"
+- `name`: name of the state without namespace, e.g. `mystate`
 - `initialValue`: variable can be initialized after created. Value "undefined" means do not initialize value.
 - `forceCreation`: create state independent of if state yet exists or not.
 - `common`: common description of object see description [here](https://github.com/ioBroker/ioBroker/blob/master/doc/SCHEMA.md#state)
@@ -942,10 +942,10 @@ Create state and object in javascript space if it does not exist, e.g. "javascri
 
 It is possible short type of createState:
 
-- `createState('myVariable')` - simply create variable if does not exist
-- `createState('myVariable', 1)` - create variable if does not exist and initialize it with value 1
+- `createState('myVariable')` - simply create variable if it does not exist
+- `createState('myVariable', 1)` - create variable if it does not exist and initialize it with value 1
 - `createState('myVariable', {name: 'My own variable', unit: '°C'}, function () {log('created');});`
-- `createState('myVariable', 1, {name: 'My own variable', unit: '°C'})` - create variable if does not exist with specific name and units
+- `createState('myVariable', 1, {name: 'My own variable', unit: '°C'})` - create variable if it does not exist with specific name and units
 
 ### createStateAsync
 ```js
@@ -958,7 +958,7 @@ Same as `createState`, but the promise will be returned.
 ```js
 deleteState(name, callback);
 ```
-Delete state and object in javascript space, e.g. "javascript.0.mystate". States from other adapters cannot be deleted.
+Delete state and object in javascript space, e.g. `javascript.0.mystate`. States from other adapters cannot be deleted.
 
 ```js
 deleteState('myVariable')
@@ -977,7 +977,7 @@ Same as `deleteState`, but the promise will be returned.
 sendTo(adapter, command, message, callback);
 ```
 
-Send message to a specific or all adapter instances. When using the adapter name the message is send to all instances.
+Send message to a specific or all adapter instances. When using the adapter name the message is sent to all instances.
 
 To get specific information about messages you must read the documentation for particular adapter.
 
@@ -987,8 +987,8 @@ Example:
 sendTo('telegram', {user: 'UserName', text: 'Test message'});
 ```
 
-Some adapters also support responses to the send messages. (e.g. history, sql, telegram)
-The response is only returned in the callback if the message is send to a specific instance!
+Some adapters also support responses to the sent messages. (e.g. history, sql, telegram)
+The response is only returned in the callback if the message is sent to a specific instance!
 
 Example with response:
 
@@ -1146,7 +1146,7 @@ Format of selector:
 ```
 
 name can be: state, channel, device or schedule
-"idfilter" can have wildcards '*'
+`idfilter` can have wildcards '*'
 
 Prefixes ***(not implemented - should be discussed)*** :
 
@@ -1176,7 +1176,7 @@ $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').on(function (obj) 
 }
 ```
 This code searches in channels.
-Find all channels with `common.role="switch"` and belongs to enum.rooms.Wohnzimmer.
+Find all channels with `common.role="switch"` and belongs to `enum.rooms.Wohnzimmer`.
 Take all their states, where id ends with `".STATE"` and make subscription on all these states.
 If some of these states changes the callback will be called like for "on" function.
 
@@ -1219,14 +1219,14 @@ readFile('vis.0', '/main/vis-views.json', function (error, data) {
 //});
 ```
 
-By default working directory/adapter is "javascript.0".
+By default, working directory/adapter is `javascript.0`.
 
 ### writeFile
 ```js
 writeFile(adapter, fileName, bytes, function (error) { });
 ```
 
-The optional error code will be given in callback. Argument *adapter* can be ommited.
+The optional error code will be given in callback. Argument *adapter* can be omitted.
 fileName is the name of file in DB. All files are stored in folder "javascript". if you want to write to other folders, e.g. to "/vis.0/" use setFile for that.
 
 The file that looks like `'/subfolder/file.txt'` will be stored under `"/javascript/subfolder/file.txt"` and can be accessed over web server with `"http://ip:8082/javascript/subfolder/file.txt"`
@@ -1311,7 +1311,7 @@ getHistory('sql.0', {
 ```
 Possible options you can find [here](https://github.com/ioBroker/ioBroker.history#access-values-from-javascript-adapter).
 
-Additionally to these parameters you must specify "id" and you may specify timeout (default: 20000ms).
+Additionally, to these parameters you must specify "id" and you may specify timeout (default: 20000ms).
 
 One more example:
 ```js

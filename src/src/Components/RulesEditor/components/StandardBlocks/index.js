@@ -11,6 +11,7 @@ import ActionPrintText from '../Blocks/ActionPrintText';
 import ActionPause from '../Blocks/ActionPause';
 import ActionFunction from '../Blocks/ActionFunction';
 import ActionSetStateDelayed from '../Blocks/ActionSetStateDelayed';
+import ActionOperateStates from '../Blocks/ActionOperateStates';
 
 const StandardBlocks = [
     TriggerSchedule,
@@ -26,6 +27,7 @@ const StandardBlocks = [
     ActionPause,
     ActionFunction,
     ActionSetStateDelayed,
+    ActionOperateStates,
 ];
 
 export default StandardBlocks;

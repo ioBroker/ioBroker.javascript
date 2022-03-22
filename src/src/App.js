@@ -337,6 +337,7 @@ class App extends GenericApp {
     }
 
     loadPlugins() {
+        return;
         if (!this.pluginsLoaded) {
             this.pluginsLoaded = true;
             const div = window.document.createElement('div');

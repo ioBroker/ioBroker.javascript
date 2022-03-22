@@ -49,7 +49,6 @@ class GenericBlock extends PureComponent {
 
             tagCardArray: item.tagCardArray || [],
 
-            showSelectId: false,
             openTagMenu: false,
             openModal: false,
             iconTag: false,
@@ -314,9 +313,10 @@ class GenericBlock extends PureComponent {
     }
 
     renderObjectID = (input, value, onChange) => {
-        const { showSelectId, settings } = this.state;
-        const { className, socket } = this.props;
         const { attr, openCheckbox, checkReadOnly } = input;
+        const { settings } = this.state;
+        const showSelectId = this.state['showSelectId' + attr];
+        const { className, socket } = this.props;
         let visibility = true;
         if (openCheckbox) {
             visibility = typeof settings['offset'] === 'boolean' ? settings['offset'] : true
@@ -335,9 +335,11 @@ class GenericBlock extends PureComponent {
                     });
             }, 0);
         }
+
         // return null
         return visibility ? <div className={cls.blockMarginTop} key={attr}>
             <div className={cls.displayFlex}>
+                {input.title ? <div>{I18n.t(input.title)}</div> : null}
                 <CustomInput
                     className={className}
                     autoComplete="off"
@@ -354,21 +356,30 @@ class GenericBlock extends PureComponent {
                     style={{ marginLeft: 7 }}
                     value='...'
                     className={className}
-                    onClick={() => this.setState({ showSelectId: true })}
+                    onClick={() => {
+                        const settings = {};
+                        settings['showSelectId' + attr] = true;
+                        this.setState(settings);
+                    }}
                 />
             </div>
             {this.state[this.state.settings[input.attr]] && <div className={clsx(cls.nameBlock, cls.displayItalic)}>{Utils.getObjectNameFromObj(this.state[settings[attr]], I18n.getLanguage())}</div>}
             {showSelectId ? <DialogSelectID
-                key="tableSelect"
                 imagePrefix="../.."
                 dialogName={'javascript'}
                 themeType={Utils.getThemeName()}
                 socket={socket}
                 statesOnly={true}
                 selected={value}
-                onClose={() => this.setState({ showSelectId: false })}
-                onOk={(selected, name, common) =>
-                    this.setState({ showSelectId: false }, () =>
+                onClose={() => {
+                    const settings = {};
+                    settings['showSelectId' + attr] = false;
+                    this.setState(settings);
+                }}
+                onOk={(selected, name, common) => {
+                    const settings = {};
+                    settings['showSelectId' + attr] = false;
+                    this.setState(settings, () =>
                         // read type of object
                         socket.getObject(selected)
                             .then(obj => {
@@ -388,6 +399,7 @@ class GenericBlock extends PureComponent {
                                 }, null, () =>
                                     this.props.setOnUpdate && this.props.setOnUpdate(true))
                             }))}
+            }
             /> : null}
         </div> : null;
     }
