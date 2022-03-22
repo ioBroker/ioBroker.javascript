@@ -20,6 +20,21 @@
     var useOpenLayers = true;
     var OSM = null;
 
+    /**
+     * List of forbidden Locations for a mirror directory
+     * relative to the default data diretcory
+     * @type {*[]}
+     */
+    var forbiddenMirrorLocations = [
+        '', // Data dir itself
+        'backup-objects',
+        'files',
+        'backitup',
+        '../backups',
+        '../node_modules',
+        '../log'
+    ];
+
     function setValue(id, value, onChange) {
         var $value = $('#' + id + '.value');
         if ($value.attr('type') === 'checkbox') {
@@ -95,7 +110,7 @@
                         anchorXUnits: 'fraction',
                         anchorYUnits: 'pixels',
                         opacity: 0.75,
-                        src: '../../img/pin.png'
+                        src: './pin.png'
                     }))
                 });
 
@@ -397,6 +412,12 @@
             $('#longitude').val(obj.longitude);
         }
 
+        if (obj.mirrorPath) {
+            if (forbiddenMirrorLocations.indexOf(obj.mirrorPath) !== -1) {
+                showError('This path is not allowed for mirroring. Please change it.');
+            }
+        }
+
         callback(obj);
     }
 </script>
@@ -423,7 +444,7 @@
         <div id="tab-main"  class="col s12 page">
             <div class="row">
                 <div class="col s6 m4 l2">
-                    <img src="javascript.png" class="logo">
+                    <img src="javascript.png" class="logo" alt="logo"/>
                 </div>
             </div>
             <div class="row">
@@ -441,7 +462,7 @@
             <div class="row">
                 <div class="col s8">
                     <input id="mirrorPath" class="value" type="text"/>
-                    <label for="mirrorPath" class="translate">Mirror scripts to file path:</label>
+                    <label for="mirrorPath" class="translate">Mirror scripts to file path</label>
                 </div>
                 <div class="col s4">
                     <select id="mirrorInstance" class="value"></select>
@@ -472,7 +493,7 @@
             <div class="row">
                 <div class="input-field col s12">
                     <input type="checkbox" id="allowSelfSignedCerts" class="value" />
-                    <span for="allowSelfSignedCerts" class="translate">Allow self signed certificates for URL requests</span>
+                    <span for="allowSelfSignedCerts" class="translate">Allow self-signed certificates for URL requests</span>
                 </div>
             </div>
         </div>

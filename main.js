@@ -61,7 +61,7 @@ const mods = {
 
 /**
  * List of forbidden Locations for a mirror directory
- * relative to the default data diretcory
+ * relative to the default data directory
  * @type {*[]}
  */
 const forbiddenMirrorLocations = [
@@ -89,24 +89,11 @@ const { targetTsLib, tsCompilerOptions, jsDeclarationCompilerOptions } = require
 const { hashSource, isObject } = require('./lib/tools');
 
 const packageJson = require('./package.json');
-const {EXIT_CODES} = require("@iobroker/adapter-core");
-const {isDeepStrictEqual} = require("util");
+const {EXIT_CODES} = require('@iobroker/adapter-core');
+const {isDeepStrictEqual} = require('util');
 const adapterName = packageJson.name.split('.').pop();
 const scriptCodeMarker = 'script.js.';
 const stopCounters =  {};
-
-// for node version <= 0.12
-if (''.startsWith === undefined) {
-    String.prototype.startsWith = function (s) {
-        return this.indexOf(s) === 0;
-    };
-}
-if (''.endsWith === undefined) {
-    String.prototype.endsWith = function (s) {
-        return this.slice(0 - s.length) === s;
-    };
-}
-///
 
 let webstormDebug;
 let debugMode;
@@ -184,9 +171,10 @@ function loadTypeScriptDeclarations() {
         && typeof adapter.config.libraryTypings === 'string'
     ) {
         const installedLibs = adapter.config.libraries
-          .split(/[,;\s]+/)
-          .map((s) => s.trim().split('@')[0])
-          .filter((s) => !!s);
+            .split(/[,;\s]+/)
+            .map((s) => s.trim().split('@')[0])
+            .filter((s) => !!s);
+
         const wantsTypings = adapter.config.libraryTypings.split(/[,;\s]+/).map(s => s.trim()).filter(s => !!s);
         // Add all installed libraries the user has requested typings for to the list of packages
         for (const lib of installedLibs) {
@@ -1993,8 +1981,9 @@ function patternMatching(event, patternFunctions) {
     let matched = false;
     for (let i = 0, len = patternFunctions.length; i < len; i++) {
         if (patternFunctions[i](event)) {
-            if (patternFunctions.logic === 'or') return true;
-
+            if (patternFunctions.logic === 'or') {
+                return true;
+            }
             matched = true;
         } else if (patternFunctions.logic === 'and') {
             return false;
