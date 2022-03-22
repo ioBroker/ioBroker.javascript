@@ -62,6 +62,7 @@ const mods = {
 /**
  * List of forbidden Locations for a mirror directory
  * relative to the default data directory
+ * ATTENTION: Same list is also located in index_m.html!!
  * @type {*[]}
  */
 const forbiddenMirrorLocations = [
