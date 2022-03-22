@@ -739,12 +739,10 @@ function startAdapter(options) {
                     }
 
                     case 'getIoBrokerDataDir': {
-                        if (obj.message) {
-                            obj.callback && adapter.sendTo(obj.from, obj.command, {
-                                dataDir: utils.getAbsoluteDefaultDataDir(),
-                                sep: nodePath.sep
-                            }, obj.callback);
-                        }
+                        obj.callback && adapter.sendTo(obj.from, obj.command, {
+                            dataDir: utils.getAbsoluteDefaultDataDir(),
+                            sep: nodePath.sep
+                        }, obj.callback);
                         break;
                     }
                 }

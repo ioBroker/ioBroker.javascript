@@ -433,7 +433,7 @@
                 dir = pathJoin([ioBDataDir, dir], pathSep) + pathSep;
                 if (dir.includes(obj.mirrorPath) || obj.mirrorPath.startsWith(dir)) {
                     showError('This path is not allowed for mirroring. Please change it.');
-                    break;
+                    return;
                 }
             }
         }
