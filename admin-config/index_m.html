@@ -39,7 +39,7 @@
     function setValue(id, value, onChange) {
         var $value = $('#' + id + '.value');
         if ($value.attr('type') === 'checkbox') {
-            $value.prop('checked', value).on('change', function() {
+            $value.prop('checked', value).on('change', function () {
                 var id = $(this).attr('id');
                 if (id === 'useSystemGPS') {
                     showHideSettings();
@@ -49,7 +49,7 @@
                 onChange();
             });
         } else {
-            $value.val(value).on('change', function() {
+            $value.val(value).on('change', function () {
                 var id = $(this).attr('id');
                 gSettings[id] = $(this).val();
                 if (id === 'longitude' || id === 'latitude') {
@@ -193,7 +193,7 @@
 
             // load google API
             $.ajax({
-                // please do not miss use this api key!
+                // please do not misuse this api key!
                 url: 'https://maps.googleapis.com/maps/api/js?key=' + key + '&signed_in=true&callback=initMap',
                 dataType: 'script',
                 cache: true
@@ -205,20 +205,20 @@
                 url: '../../lib/js/ol.js',
                 dataType: 'script',
                 cache: true
-            }).done(function() {
+            }).done(function () {
                 //setTimeout(updateMap, 500);
             });
 
             $.ajax({
                 url: '../../lib/css/ol.css',
-                success: function(data){
+                success: function (data) {
                     $('head').append('<style>' + data + '</style>');
                 }
             });
         }
 
         if (settings.sunriseEvent === undefined) {
-            settings.sunriseEvent = "nightEnd";
+            settings.sunriseEvent = 'nightEnd';
         }
         if (settings.sunriseOffset === undefined) {
             settings.sunriseOffset = 0;
@@ -271,9 +271,15 @@
 
         // get the iobroker data dir and path separator
         sendTo(null, 'getIoBrokerDataDir', null, function (response) {
-            if (!response) return;
-            if (response.dataDir) ioBrokerDataDir = response.dataDir;
-            if (response.sep) pathSep = response.sep;
+            if (!response) {
+                return;
+            }
+            if (response.dataDir) {
+                ioBrokerDataDir = response.dataDir;
+            }
+            if (response.sep) {
+                pathSep = response.sep;
+            }
             console.log('Update ioBroker Directory to ' + ioBrokerDataDir + ' with pathSeparator ' + pathSep);
         });
 
@@ -396,7 +402,7 @@
 
     function pathJoin(parts, sep){
         var separator = sep || '/';
-        var replace   = new RegExp(separator+'{1,}', 'g');
+        var replace   = new RegExp(separator + '{1,}', 'g');
         return parts.join(separator).replace(replace, separator);
     }
 
