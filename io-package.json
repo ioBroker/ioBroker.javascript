@@ -162,7 +162,7 @@
     ],
     "globalDependencies": [
       {
-        "admin": ">=5.1.9"
+        "admin": ">=5.1.28"
       }
     ],
     "type": "logic",
@@ -175,7 +175,60 @@
     },
     "tier": 1,
     "connectionType": "none",
-    "dataSource": "none"
+    "dataSource": "none",
+    "messages": [
+      {
+        "condition": {
+          "operand": "and",
+          "rules": [
+            "oldVersion<5.5.0",
+            "newVersion>=5.5.0"
+          ]
+        },
+        "title": {
+          "en": "Check used script mirror path!",
+          "de": "Überprüfen Sie den verwendeten Skript-Spiegelpfad!",
+          "ru": "Проверьте используемый путь к зеркалу скрипта!",
+          "pt": "Verifique o caminho do espelho de script usado!",
+          "nl": "Controleer het gebruikte scriptspiegelpad!",
+          "fr": "Vérifiez le chemin du miroir de script utilisé !",
+          "it": "Controlla il percorso del mirror dello script utilizzato!",
+          "es": "¡Compruebe la ruta del espejo del script usado!",
+          "pl": "Sprawdź używaną ścieżkę lustrzaną skryptu!",
+          "zh-cn": "检查使用的脚本镜像路径！"
+        },
+        "text": {
+          "en": "If the script mirror feature is used to save scripts also in the file system and a directory inside the ioBroker directory is configured, then you need to check if this mirroring location is still allowed! If not the adapter logs an error on startup and mirroring is deactivated! For a list of forbidden locations please check the adapter Readme.",
+          "de": "Wenn die Skript-Spiegelungsfunktion verwendet wird, um Skripte auch im Dateisystem zu speichern, und ein Verzeichnis innerhalb des ioBroker-Verzeichnisses konfiguriert ist, muss geprüft werden, ob dieser Spiegelungsspeicherort noch zulässig ist! Andernfalls meldet der Adapter beim Start einen Fehler und die Spiegelung wird deaktiviert! Eine Liste verbotener Orte ist in der Adapter-Readme zu finden.",
+          "ru": "Если функция зеркалирования скриптов используется для сохранения скриптов также в файловой системе и настроен каталог внутри каталога ioBroker, то вам необходимо проверить, разрешено ли это местоположение зеркалирования! В противном случае адаптер регистрирует ошибку при запуске, и зеркалирование деактивируется! Список запрещенных мест см. в файле Readme адаптера.",
+          "pt": "Se o recurso de espelhamento de script for usado para salvar scripts também no sistema de arquivos e um diretório dentro do diretório ioBroker estiver configurado, você precisará verificar se esse local de espelhamento ainda é permitido! Caso contrário, o adaptador registra um erro na inicialização e o espelhamento é desativado! Para obter uma lista de locais proibidos, verifique o Readme do adaptador.",
+          "nl": "Als de functie voor het spiegelen van scripts wordt gebruikt om scripts ook in het bestandssysteem op te slaan en een map in de ioBroker-map is geconfigureerd, moet u controleren of deze spiegellocatie nog steeds is toegestaan! Als dit niet het geval is, registreert de adapter een fout bij het opstarten en is spiegelen gedeactiveerd! Raadpleeg de adapter Readme voor een lijst met verboden locaties.",
+          "fr": "Si la fonctionnalité de mise en miroir des scripts est utilisée pour enregistrer également les scripts dans le système de fichiers et qu'un répertoire à l'intérieur du répertoire ioBroker est configuré, vous devez vérifier si cet emplacement de mise en miroir est toujours autorisé ! Si ce n'est pas le cas, l'adaptateur enregistre une erreur au démarrage et la mise en miroir est désactivée ! Pour une liste des emplacements interdits, veuillez consulter le fichier Readme de l'adaptateur.",
+          "it": "Se la funzione di mirroring degli script viene utilizzata per salvare gli script anche nel file system ed è configurata una directory all'interno della directory di ioBroker, è necessario verificare se questa posizione di mirroring è ancora consentita! In caso contrario, l'adattatore registra un errore all'avvio e il mirroring è disattivato! Per un elenco delle posizioni vietate, controllare il file Readme dell'adattatore.",
+          "es": "Si la función de duplicación de secuencias de comandos se utiliza para guardar secuencias de comandos también en el sistema de archivos y se configura un directorio dentro del directorio de ioBroker, ¡entonces debe verificar si esta ubicación de duplicación todavía está permitida! De lo contrario, el adaptador registra un error al iniciarse y la duplicación se desactiva. Para obtener una lista de ubicaciones prohibidas, consulte el archivo Léame del adaptador.",
+          "pl": "Jeśli funkcja kopii lustrzanej skryptów jest używana do zapisywania skryptów również w systemie plików, a katalog w katalogu ioBroker jest skonfigurowany, musisz sprawdzić, czy ta lokalizacja kopii lustrzanej jest nadal dozwolona! Jeśli nie, adapter rejestruje błąd podczas uruchamiania, a dublowanie jest wyłączone! Listę zabronionych lokalizacji można znaleźć w pliku Readme adaptera.",
+          "zh-cn": "如果使用脚本镜像功能将脚本也保存在文件系统中，并且配置了 ioBroker 目录内的目录，那么您需要检查该镜像位置是否仍然允许！如果不是，适配器会在启动时记录错误并且镜像被禁用！有关禁止位置的列表，请查看适配器自述文件。"
+        },
+        "link": "https://github.com/ioBroker/ioBroker.javascript#forbidden-directories-for-script-filesystem-mirroring",
+        "level": "warn",
+        "linkText": {
+          "en": "List of the forbidden Mirror locations",
+          "de": "Liste der verbotenen Mirror-Standorte",
+          "ru": "Список запрещенных локаций Зеркала",
+          "pt": "Lista dos locais de espelho proibidos",
+          "nl": "Lijst met de verboden Mirror-locaties",
+          "fr": "Liste des emplacements Mirror interdits",
+          "it": "Elenco delle posizioni degli specchi proibiti",
+          "es": "Lista de las ubicaciones de Mirror prohibidas",
+          "pl": "Lista zakazanych lokalizacji Lustrzanych",
+          "zh-cn": "禁止镜像位置列表"
+        },
+        "buttons": [
+          "agree",
+          "cancel"
+        ]
+      }
+    ]
   },
   "native": {
     "latitude": "",
