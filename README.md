@@ -53,7 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 5.5.0 (2022-03-22)
 * (Apollon77) Prevent Mirror directory being set to central ioBroker directories because can produce various issues
 * (Apollon77) Fixed existsState and existsObject
 * (bluefox) Fixed translations
@@ -70,13 +70,6 @@ And then call `npm run build`.
 
 ### 5.4.1 (2022-03-15)
 * (Apollon77) Fix blockly subscribes broken in 5.4.0
-
-### 5.4.0 (2022-03-13)
-* (Apollon77) Automatically create missing folder objects when states are created using createState
-* (Apollon77) Fix special characters in blockly subscribe logic
-* (Apollon77) Fix timing issue where state updates could not be current on startup
-* (Apollon77) Fix state name handing
-* (Apollon77) Fix potential crash cases reported by Sentry
 
 ## License
 The MIT License (MIT)

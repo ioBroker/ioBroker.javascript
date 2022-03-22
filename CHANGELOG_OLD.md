@@ -1,4 +1,11 @@
 The newest change log is in README.md
+## 5.4.0 (2022-03-13)
+* (Apollon77) Automatically create missing folder objects when states are created using createState
+* (Apollon77) Fix special characters in blockly subscribe logic
+* (Apollon77) Fix timing issue where state updates could not be current on startup
+* (Apollon77) Fix state name handing
+* (Apollon77) Fix potential crash cases reported by Sentry
+
 ## 5.3.3 (2022-03-06)
 * (bluefox) Added async functions: createStateAsync, deleteStateAsync
 
