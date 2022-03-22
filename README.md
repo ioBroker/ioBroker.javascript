@@ -8,20 +8,34 @@
 ![Test and Release](https://github.com/ioBroker/ioBroker.javascript/workflows/Test%20and%20Release/badge.svg)
 [![Translation status](https://weblate.iobroker.net/widgets/adapters/-/javascript/svg-badge.svg)](https://weblate.iobroker.net/engage/adapters/?utm_source=widget)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.javascript.svg)](https://www.npmjs.com/package/iobroker.javascript)
+**This adapter uses Sentry libraries to automatically report exceptions and code errors to the developers.** For more details and for information how to disable the error reporting see [Sentry-Plugin Documentation](https://github.com/ioBroker/plugin-sentry#plugin-sentry)! Sentry reporting is used starting with js-controller 3.0.
 
 Executes Javascript, Typescript Scripts.
 
-[Function documentation](docs/en/javascript.md)
+## Documentation
+* [Function documentation](docs/en/javascript.md)
 
-[Benutzung](docs/de/usage.md)
+* [Benutzung](docs/de/usage.md)
 
-Here you can find description of [blockly](docs/en/blockly.md).
+* Blockly
+  * Here you can find description of [blockly](docs/en/blockly.md). 
+  * Hier kann man die Beschreibung von [Blockly](docs/de/blockly.md) finden. 
+  * Описание по [blockly](docs/ru/blockly.md) можно найти [здесь](docs/ru/blockly.md).
 
-Hier kann man die Beschreibung von [Blockly](docs/de/blockly.md) finden.
+## Forbidden directories for Script Filesystem Mirroring
+The Script Filesystem Mirroring will store all Sourve Files of the Scripts in your Filesystem to allow you to edit the Files in your favourite Script editor beside the Web-Editor. All changes are synced in both directions.
 
-Описание по [blockly](docs/ru/blockly.md) можно найти [здесь](docs/ru/blockly.md).
+When enabling the Script Filesystem mirroring please make sure to create a **dedicated new directory** and **do not** use an existing directory with other content. Please alsomake sure that no other script or process changes files in the provided directory to prevent access issues.
 
-**This adapter uses Sentry libraries to automatically report exceptions and code errors to the developers.** For more details and for information how to disable the error reporting see [Sentry-Plugin Documentation](https://github.com/ioBroker/plugin-sentry#plugin-sentry)! Sentry reporting is used starting with js-controller 3.0.
+Since v5.5.0 odf the JavaScript adapterteh following locations (relative to the ioBroker Base directory, usually `/opt/iobroker`) are not allowed to be used:
+* The ioBroker base directory itself and any path above!
+* `./iobroker-data` 
+* `./iobroker-data/backup-objects` or anything below
+* `./iobroker-data/files` or anything below
+* `./iobroker-data/backitup` or anything below
+* `./backups` or anything below
+* `./node_modules` or anything below
+* `./log` or anything below
 
 ## How to build (only for developers)
 Just run `npm i` in the root and in the src folders.

@@ -65,7 +65,6 @@ const mods = {
  * @type {*[]}
  */
 const forbiddenMirrorLocations = [
-    '', // Data dir itself
     'backup-objects',
     'files',
     'backitup',
@@ -1111,6 +1110,7 @@ function main() {
                                 adapter.log.error(`The Mirror directory is not allowed to be a central ioBroker directory!`);
                                 adapter.log.error(`Directory ${adapter.config.mirrorPath} is not allowed to mirror files!`);
                                 mirrorForbidden = true;
+                                break;
                             }
                         }
                         if (!mirrorForbidden) {
