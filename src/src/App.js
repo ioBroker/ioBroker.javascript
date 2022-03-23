@@ -338,7 +338,7 @@ class App extends GenericApp {
 
     loadPlugins() {
         return;
-        if (!this.pluginsLoaded) {
+        /*if (!this.pluginsLoaded) {
             this.pluginsLoaded = true;
             const div = window.document.createElement('div');
             div.socket = this.socket;
@@ -359,7 +359,7 @@ class App extends GenericApp {
 
             script.src = './plugins/bundle.js';
             window.document.documentElement.firstChild.appendChild(script);
-        }
+        }*/
     }
 
     // BF(2021.07.16): support fallback on admin4. Remove it after one year
