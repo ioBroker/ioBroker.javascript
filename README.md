@@ -53,7 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### 5.5.1 (2022-03-22)
+### **WORK IN PROGRESS**
 * (bluefox) Added new rules action block: sum two states (or minus)
 
 ### 5.5.0 (2022-03-22)
