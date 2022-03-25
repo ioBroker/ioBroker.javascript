@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 5.4.2 (2022-03-15)
+* (Apollon77) Fix automatic start of Rules scripts when starting adapter
+
 ## 5.4.1 (2022-03-15)
 * (Apollon77) Fix blockly subscribes broken in 5.4.0
 

@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.5.2",
+    "version": "5.5.3",
     "news": {
+      "5.5.3": {
+        "en": "Fixed getObjectAsync function if object does not exist",
+        "de": "Die getObjectAsync-Funktion wurde korrigiert, wenn das Objekt nicht existiert",
+        "ru": "Исправлена функция getObjectAsync, если объект не существует.",
+        "pt": "Corrigida a função getObjectAsync se o objeto não existir",
+        "nl": "Vaste getObjectAsync-functie als object niet bestaat",
+        "fr": "Correction de la fonction getObjectAsync si l'objet n'existe pas",
+        "it": "Risolto il problema con la funzione getObjectAsync se l'oggetto non esiste",
+        "es": "Se corrigió la función getObjectAsync si el objeto no existe",
+        "pl": "Naprawiono funkcję getObjectAsync, jeśli obiekt nie istnieje",
+        "zh-cn": "如果对象不存在，则修复 getObjectAsync 函数"
+      },
       "5.5.2": {
         "en": "Added new rules action block: sum two states (or minus)",
         "de": "Neuer Aktionsblock für Regeln hinzugefügt: Summiere zwei Zustände (oder minus)",
@@ -93,18 +105,6 @@
         "es": "Arreglar el inicio automático de los scripts de reglas al iniciar el adaptador",
         "pl": "Napraw automatyczne uruchamianie skryptów reguł podczas uruchamiania adaptera",
         "zh-cn": "修复启动适配器时规则脚本的自动启动"
-      },
-      "5.4.1": {
-        "en": "Fix blockly subscribes broken in 5.4.0",
-        "de": "In 5.4.0 fehlerhafte Blockly-Abonnements behoben",
-        "ru": "Исправить блочную подписку, сломанную в 5.4.0",
-        "pt": "Corrigir assinaturas em bloco quebradas no 5.4.0",
-        "nl": "Repareer blockly-abonnementen verbroken in 5.4.0",
-        "fr": "Correction des abonnements bloqués cassés dans 5.4.0",
-        "it": "Risolto il problema con gli abbonamenti bloccati interrotti nella 5.4.0",
-        "es": "Arreglar suscripciones bloqueadas rotas en 5.4.0",
-        "pl": "Napraw blokowe subskrypcje zepsute w 5.4.0",
-        "zh-cn": "修复 5.4.0 中损坏的块订阅"
       }
     },
     "desc": {
