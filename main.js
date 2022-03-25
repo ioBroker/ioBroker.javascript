@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2021 bluefox <dogafox@gmail.com>,
+ * Copyright (c) 2014-2022 bluefox <dogafox@gmail.com>,
  *
  * Copyright (c) 2014      hobbyquaker
 */
@@ -425,7 +425,7 @@ function startAdapter(options) {
             if (!obj && formerObj && formerObj.type === 'script') {
                 // Object Deleted just now
                 if (checkIsGlobal(formerObj)) {
-                    // it was a global Script and it was enabled and is now deleted => restart adapter
+                    // it was a global Script, and it was enabled and is now deleted => restart adapter
                     if (formerObj.enabled) {
                         adapter.log.info(`Active global Script ${id} deleted. Restart instance.`);
                         adapter.restart();
@@ -445,7 +445,7 @@ function startAdapter(options) {
                     adapter.delState(idProblem);
                 }
             } else if (!formerObj && obj && obj.type === 'script') {
-                // New script that do not existed before
+                // New script that does not exist before
                 if (checkIsGlobal(obj)) {
                     // new global script added => restart adapter
                     if (obj.common.enabled) {
@@ -453,7 +453,7 @@ function startAdapter(options) {
                         adapter.restart();
                     }
                 } else if (obj.common && obj.common.engine === `system.adapter.${adapter.namespace}`) {
-                    // new non global script - create states for scripts
+                    // new non-global script - create states for scripts
                     createActiveObject(id, obj.common.enabled, () => createProblemObject(id));
                     if (obj.common.enabled) {
                         // if enabled => Start script

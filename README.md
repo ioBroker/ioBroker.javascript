@@ -53,6 +53,9 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Fixed getObjectAsync function if object does not exist
+
 ### 5.5.2 (2022-03-23)
 * (bluefox) Added new rules action block: sum two states (or minus)
 
