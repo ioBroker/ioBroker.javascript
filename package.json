@@ -72,7 +72,8 @@
     "lib/",
     "io-package.json",
     "LICENSE",
-    "main.js"
+    "main.js",
+    "admin-config/vsFont/codicon.json"
   ],
   "scripts": {
     "test:declarations": "tsc -p test/lib/TS/tsconfig.json && tsc -p test/lib/JS/tsconfig.json",

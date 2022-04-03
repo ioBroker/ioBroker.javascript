@@ -244,7 +244,7 @@ gulp.task('6-patch', () => new Promise(resolve => {
 
     const buffer = Buffer.from(JSON.parse(fs.readFileSync(__dirname + '/admin-config/vsFont/codicon.json')));
 
-    // this is workaround for TTF file. somehow it will always corrupt so we pack it into ZIP
+    // this is workaround for TTF file. somehow it will always corrupt, so we pack it into ZIP
     JSZip.loadAsync(buffer)
         .then(zip => {
             zip.file('codicon.ttf').async('arraybuffer')

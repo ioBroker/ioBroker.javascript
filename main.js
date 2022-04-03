@@ -92,6 +92,8 @@ const { hashSource, isObject } = require('./lib/tools');
 const packageJson = require('./package.json');
 const {EXIT_CODES} = require('@iobroker/adapter-core');
 const {isDeepStrictEqual} = require('util');
+const JSZip = require('jszip');
+const fs = require('fs');
 const adapterName = packageJson.name.split('.').pop();
 const scriptCodeMarker = 'script.js.';
 const stopCounters =  {};
@@ -882,6 +884,9 @@ function updateObjectContext(id, obj) {
 
 
 function main() {
+    patchFont()
+        .then(patched => patched && adapter.log.debug('Font patched'));
+
     // todo
     context.errorLogFunction = webstormDebug ? console : adapter.log;
     activeStr = adapter.namespace + '.scriptEnabled.';
@@ -2244,6 +2249,39 @@ function debugStart(data) {
                 });
             });
         });
+}
+
+function patchFont() {
+    const fs = require('fs');
+    let stat;
+    try {
+        stat = fs.statSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf');
+    } catch (error) {
+        // ignore
+    }
+    if (!stat || stat.size !== 62324) {
+        const buffer = Buffer.from(JSON.parse(fs.readFileSync(__dirname + '/admin-config/vsFont/codicon.json')));
+
+        return require('jszip').loadAsync(buffer)
+            .then(zip => {
+                zip.file('codicon.ttf').async('arraybuffer')
+                    .then(data => {
+                        if (data.byteLength !== 62324) {
+                            throw new Error('invalid font file!');
+                        }
+                        fs.writeFileSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf', Buffer.from(data));
+                        // upload this file
+                        return adapter.writeFileAsync('javascript.admin', 'vs/base/browser/ui/codicons/codicon/codicon.ttf', data);
+                    })
+                    .then(() => true)
+                    .catch(error => {
+                        adapter.log.error('Cannot patch font: ' + error);
+                        return false;
+                    });
+            });
+    } else {
+        return Promise.resolve(false);
+    }
 }
 
 // If started as allInOne mode => return function to create instance

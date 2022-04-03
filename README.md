@@ -53,6 +53,9 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Tried to solve problem with the font
+
 ### 5.5.3 (2022-03-25)
 * (bluefox) Fixed getObjectAsync function if object does not exist
 
