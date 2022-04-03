@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.5.3",
+    "version": "5.5.4",
     "news": {
+      "5.5.4": {
+        "en": "Tried to solve problem with the font",
+        "de": "Versucht, Problem mit der Schriftart zu lösen",
+        "ru": "Пробовал решить проблему со шрифтом",
+        "pt": "Tentei resolver o problema com a fonte",
+        "nl": "Geprobeerd om het probleem met het lettertype op te lossen",
+        "fr": "J'ai essayé de résoudre le problème avec la police",
+        "it": "Ho provato a risolvere il problema con il carattere",
+        "es": "Intenté resolver el problema con la fuente.",
+        "pl": "Próbowałem rozwiązać problem z czcionką",
+        "zh-cn": "试图解决字体问题"
+      },
       "5.5.3": {
         "en": "Fixed getObjectAsync function if object does not exist",
         "de": "Die getObjectAsync-Funktion wurde korrigiert, wenn das Objekt nicht existiert",
@@ -93,18 +105,6 @@
         "es": "Arreglar el manejo de los horarios mensuales con la lista de fechas dada\nOptimice la programación para asegurarse de no perder los disparadores si las devoluciones de llamadas necesitaran demasiado tiempo",
         "pl": "Naprawiono obsługę harmonogramów miesięcznych z podaną listą dat\nZoptymalizuj harmonogram, aby nie przegapić wyzwalaczy, jeśli wywołania zwrotne będą wymagały zbyt dużo czasu",
         "zh-cn": "使用给定的日期列表修复月份时间表的处理\n优化调度以确保在回调需要太长时间时不会错过触发器"
-      },
-      "5.4.2": {
-        "en": "Fix automatic start of Rules scripts when starting adapter",
-        "de": "Automatisches Starten von Regelskripten beim Start des Adapters behoben",
-        "ru": "Исправлен автоматический запуск скриптов Rules при запуске адаптера.",
-        "pt": "Corrige o início automático de scripts de regras ao iniciar o adaptador",
-        "nl": "Automatische start van Regelscripts repareren bij het starten van de adapter",
-        "fr": "Correction du démarrage automatique des scripts de règles lors du démarrage de l'adaptateur",
-        "it": "Risolto il problema con l'avvio automatico degli script delle regole all'avvio dell'adattatore",
-        "es": "Arreglar el inicio automático de los scripts de reglas al iniciar el adaptador",
-        "pl": "Napraw automatyczne uruchamianie skryptów reguł podczas uruchamiania adaptera",
-        "zh-cn": "修复启动适配器时规则脚本的自动启动"
       }
     },
     "desc": {
