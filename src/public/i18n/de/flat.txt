@@ -116,7 +116,7 @@ ID auswählen
 Wert
 bestätigt
 Zeitstempel
-Letze Änderung
+Letzte Änderung
 Qualität
 Quelle
 Zustandswert nehmen
@@ -259,7 +259,7 @@ letzte Änderung
 vorheriger Wert
 vorheriger Zeitstempel
 vorherige Quialität
-vorherige Ursprung
+vorheriger Ursprung
 vorherige Bestätigung
 vorherige letzte Änderung
 Dieser Block darf nur innerhalb "Falls Objekt" Block verwendet werden
