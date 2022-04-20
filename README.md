@@ -53,6 +53,10 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### __WORK IN PROGRESS__
+* (Apollon77) make sure values of new or changed alias objects are initialized properly
+
 ### 5.5.4 (2022-04-03)
 * (bluefox) Tried to solve problem with the font
 

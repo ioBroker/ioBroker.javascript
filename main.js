@@ -412,6 +412,21 @@ function startAdapter(options) {
 
             updateObjectContext(id, obj); // Update all Meta object data
 
+            // for alias object changes on state objects we need to manually update the
+            // state cache value because new value is only published on next change
+            if (obj && obj.type === 'state' && id.startsWith('alias.0.')) {
+                adapter.getState(id, (err, state) => {
+                    if (err) {
+                        return;
+                    }
+                    if (state) {
+                        context.states[id] = state;
+                    } else if (context.states[id] !== undefined) {
+                        delete context.states[id];
+                    }
+                });
+            }
+
             context.subscriptionsObject.forEach(sub => {
                 // ToDo: implement comparing with id.0.* too
                 if (sub.pattern === id) {
