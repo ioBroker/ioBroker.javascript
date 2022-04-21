@@ -1,6 +1,7 @@
 const expect = require('chai').expect;
 const Scheduler = require('../lib/scheduler');
 const tk = require('timekeeper');
+const suncalc = require('suncalc2');
 
 describe('Test Scheduler', function() {
 
@@ -10,7 +11,7 @@ describe('Test Scheduler', function() {
         tk.travel(time);
 
         console.log(new Date());
-        const s = new Scheduler(null, Date);
+        const s = new Scheduler(null, Date, suncalc);
         s.add( '{"time":{"exactTime":true,"start":"23:59"},"period":{"years":1,"yearDate":31,"yearMonth":12}}', 'someName', () => {
             console.log(new Date());
             done();
@@ -23,8 +24,44 @@ describe('Test Scheduler', function() {
         tk.travel(time);
 
         console.log(new Date());
-        const s = new Scheduler(null, Date);
+        const s = new Scheduler(null, Date, suncalc);
         s.add( '{"time":{"exactTime":true,"start":"23:59"},"period":{"years":1,"yearDate":31,"yearMonth":12}}', 'someName1', () => {
+            expect(false).to.be.true;
+        });
+        setTimeout(done, 5000);
+    }).timeout(65000);
+
+    it('Test Scheduler: Should trigger on DUSK(uppercase)', function (done) {
+        const kcLat = 49.0068705;
+        const kcLon = 8.4034195;
+        const dat = new Date('2030-6-21 12:00:00');
+        const evtName='dusk'
+        const time = suncalc.getTimes(dat, kcLat, kcLon)[evtName];
+        time.setSeconds(-5)
+        console.log('Wait ...');
+        tk.travel(time);
+
+        console.log(new Date());
+        const s = new Scheduler(null, Date, suncalc, kcLat, kcLon);
+        s.add('{"time":{"exactTime":true,"start":"'+evtName.toUpperCase()+'"},"period":{"days":1}}', 'someName2', () => {
+            console.log(new Date());
+            done();
+        });
+    }).timeout(65000);
+
+    it('Test Scheduler: Should not trigger on duskx when wrong name', function (done) {
+        const kcLat = 49.0068705;
+        const kcLon = 8.4034195;
+        const dat = new Date('2030-6-21 12:00:00');
+        const evtName = 'dusk';
+        const time = suncalc.getTimes(dat, kcLat, kcLon)[evtName];
+        time.setSeconds(-5)
+        console.log('Wait ...');
+        tk.travel(time);
+
+        console.log(new Date());
+        const s = new Scheduler(null, Date, suncalc, kcLat, kcLon);
+        s.add('{"time":{"exactTime":true,"start":"'+evtName.toUpperCase()+'x"},"period":{"days":1}}', 'someName3', () => {
             expect(false).to.be.true;
         });
         setTimeout(done, 5000);
