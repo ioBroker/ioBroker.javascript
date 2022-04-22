@@ -31,13 +31,13 @@ describe('Test Scheduler', function() {
         setTimeout(done, 5000);
     }).timeout(65000);
 
-    it('Test Scheduler: Should trigger on DUSK(uppercase)', function (done) {
+    it('Test Scheduler: Should trigger on case independent names', function (done) {
         const kcLat = 49.0068705;
         const kcLon = 8.4034195;
         const dat = new Date('2030-6-21 12:00:00');
         const evtName='dusk'
         const time = suncalc.getTimes(dat, kcLat, kcLon)[evtName];
-        time.setSeconds(-5)
+        time.setSeconds(-3)
         console.log('Wait ...');
         tk.travel(time);
 
@@ -49,19 +49,37 @@ describe('Test Scheduler', function() {
         });
     }).timeout(65000);
 
-    it('Test Scheduler: Should not trigger on duskx when wrong name', function (done) {
+    it('Test Scheduler: Should not trigger on wrong name', function (done) {
         const kcLat = 49.0068705;
         const kcLon = 8.4034195;
         const dat = new Date('2030-6-21 12:00:00');
         const evtName = 'dusk';
         const time = suncalc.getTimes(dat, kcLat, kcLon)[evtName];
-        time.setSeconds(-5)
+        time.setSeconds(-3)
         console.log('Wait ...');
         tk.travel(time);
 
         console.log(new Date());
         const s = new Scheduler(null, Date, suncalc, kcLat, kcLon);
         s.add('{"time":{"exactTime":true,"start":"'+evtName.toUpperCase()+'x"},"period":{"days":1}}', 'someName3', () => {
+            expect(false).to.be.true;
+        });
+        setTimeout(done, 5000);
+    }).timeout(65000);
+
+    it('Test Scheduler: Should not trigger on empty name', function (done) {
+        const kcLat = 49.0068705;
+        const kcLon = 8.4034195;
+        const dat = new Date('2030-6-21 12:00:00');
+        const evtName = 'dusk';
+        const time = suncalc.getTimes(dat, kcLat, kcLon)[evtName];
+        time.setSeconds(-3)
+        console.log('Wait ...');
+        tk.travel(time);
+
+        console.log(new Date());
+        const s = new Scheduler(null, Date, suncalc, kcLat, kcLon);
+        s.add('{"time":{"exactTime":true,"start":""},"period":{"days":1}}', 'someName3', () => {
             expect(false).to.be.true;
         });
         setTimeout(done, 5000);
