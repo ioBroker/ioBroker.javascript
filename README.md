@@ -56,6 +56,7 @@ And then call `npm run build`.
 
 ### __WORK IN PROGRESS__
 * (Apollon77) make sure values of new or changed alias objects are initialized properly
+* (winnyschuster) Enhance scheduler logic and astro events offered by wizard
 
 ### 5.5.4 (2022-04-03)
 * (bluefox) Tried to solve problem with the font
