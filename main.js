@@ -415,7 +415,7 @@ function startAdapter(options) {
             // for alias object changes on state objects we need to manually update the
             // state cache value because new value is only published on next change
             if (obj && obj.type === 'state' && id.startsWith('alias.0.')) {
-                adapter.getState(id, (err, state) => {
+                adapter.getForeignState(id, (err, state) => {
                     if (err) {
                         return;
                     }
