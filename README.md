@@ -58,6 +58,7 @@ And then call `npm run build`.
 * (Apollon77) make sure values of new or changed alias objects are initialized properly
 * (winnyschuster) Enhance scheduler logic and astro events offered by wizard
 * (Apollon77) Respect expected value changes when determining if a value is changed
+* (Apollon77) Make state properties c(omment) and user available to scripts too
 
 ### 5.5.4 (2022-04-03)
 * (bluefox) Tried to solve problem with the font
