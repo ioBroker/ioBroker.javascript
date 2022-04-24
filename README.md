@@ -59,6 +59,7 @@ And then call `npm run build`.
 * (winnyschuster) Enhance scheduler logic and astro events offered by wizard
 * (Apollon77) Respect expected value changes when determining if a value is changed
 * (Apollon77) Make state properties c(omment) and user available to scripts too
+* (Apollon77) Fix remembering intermediate state values when state values are subscribed
 
 ### 5.5.4 (2022-04-03)
 * (bluefox) Tried to solve problem with the font
