@@ -298,6 +298,9 @@ function prepareStateObject(id, state, isAck) {
         }
     }
 
+    if (adapter.config.subscribe) {
+        return state;
+    }
     // set other values to have a full state object
     // mirrors logic from statesInRedis
     if (state.ts === undefined) {
@@ -1407,7 +1410,7 @@ function createActiveObject(id, enabled, cb) {
             if (!err) {
                 const intermediateStateValue = prepareStateObject(idActive, !!enabled, true);
                 adapter.setForeignState(idActive, !!enabled, true, () => {
-                    if (enabled) {
+                    if (enabled && !adapter.config.subscribe) {
                         context.interimStateValues[idActive] = intermediateStateValue;
                     }
                     cb && cb();
@@ -1421,7 +1424,7 @@ function createActiveObject(id, enabled, cb) {
             if (state && state.val !== enabled) {
                 const intermediateStateValue = prepareStateObject(idActive, !!enabled, true);
                 adapter.setForeignState(idActive, !!enabled, true, () => {
-                    if (enabled) {
+                    if (enabled && !adapter.config.subscribe) {
                         context.interimStateValues[id] = intermediateStateValue;
                     }
                     cb && cb();
@@ -1878,7 +1881,9 @@ function prepareScript(obj, callback) {
             return;
         }
         const idActive = `scriptEnabled.${nameId}`;
-        context.interimStateValues[idActive] = prepareStateObject(`${adapter.namespace}.${idActive}`, true, true);
+        if (!adapter.config.subscribe) {
+            context.interimStateValues[idActive] = prepareStateObject(`${adapter.namespace}.${idActive}`, true, true);
+        }
         adapter.setState(idActive, true, true);
         obj.common.engineType = obj.common.engineType || '';
 
