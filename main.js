@@ -312,15 +312,16 @@ function prepareStateObject(id, state, isAck) {
         typeof state.from === 'string' && state.from !== '' ? state.from : `system.adapter.${adapter.namespace}`;
 
     if (state.lc === undefined) {
-        if (!context.states[id]) {
+        const formerStateValue = context.interimStateValues[id] || context.states[id];
+        if (!formerStateValue) {
             state.lc = state.ts;
         } else {
             // isDeepStrictEqual works on objects and primitive values
-            const hasChanged = !isDeepStrictEqual(context.states[id].val, state.val);
-            if (!context.states[id].lc || hasChanged) {
+            const hasChanged = !isDeepStrictEqual(formerStateValue.val, state.val);
+            if (!formerStateValue.lc || hasChanged) {
                 state.lc = state.ts;
             } else {
-                state.lc = context.states[id].lc;
+                state.lc = formerStateValue.lc;
             }
         }
     }
@@ -1877,7 +1878,7 @@ function prepareScript(obj, callback) {
             return;
         }
         const idActive = `scriptEnabled.${nameId}`;
-        context.interimStateValues[idActive] = prepareStateObject(idActive, true, true);
+        context.interimStateValues[idActive] = prepareStateObject(`${adapter.namespace}.${idActive}`, true, true);
         adapter.setState(idActive, true, true);
         obj.common.engineType = obj.common.engineType || '';
 
