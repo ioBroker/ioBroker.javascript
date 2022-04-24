@@ -383,12 +383,16 @@ Blockly.Blocks['on_source'] = {
                 [Blockly.Translate('on_source_state_from'),     'state.from'],
                 [Blockly.Translate('on_source_state_ack'),      'state.ack'],
                 [Blockly.Translate('on_source_state_lc'),       'state.lc'],
+                [Blockly.Translate('on_source_state_c'),        'state.c'],
+                [Blockly.Translate('on_source_state_user'),     'state.user'],
                 [Blockly.Translate('on_source_oldstate_val'),   'oldState.val'],
                 [Blockly.Translate('on_source_oldstate_ts'),    'oldState.ts'],
                 [Blockly.Translate('on_source_oldstate_q'),     'oldState.q'],
                 [Blockly.Translate('on_source_oldstate_from'),  'oldState.from'],
                 [Blockly.Translate('on_source_oldstate_ack'),   'oldState.ack'],
-                [Blockly.Translate('on_source_oldstate_lc'),    'oldState.lc']
+                [Blockly.Translate('on_source_oldstate_lc'),    'oldState.lc'],
+                [Blockly.Translate('on_source_oldstate_c'),     'oldState.c'],
+                [Blockly.Translate('on_source_oldstate_user'),    'oldState.user']
             ]), 'ATTR');
 
         this.setInputsInline(true);
