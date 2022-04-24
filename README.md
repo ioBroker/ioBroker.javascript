@@ -53,8 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-
-### __WORK IN PROGRESS__
+### 5.6.0 (2022-04-24)
 * (Apollon77) Make state properties c(omment) and user available to scripts too
 * (Apollon77) make sure values of new or changed alias objects are initialized properly
 * (winnyschuster) Enhance scheduler logic and astro events offered by wizard
@@ -75,9 +74,6 @@ And then call `npm run build`.
 * (Apollon77) Prevent Mirror directory being set to central ioBroker directories because can produce various issues
 * (Apollon77) Fixed existsState and existsObject
 * (bluefox) Fixed translations
-
-### 5.4.5 (2022-03-20)
-* (Apollon77) Fix existsState and existsObject
 
 ## License
 The MIT License (MIT)
