@@ -55,10 +55,10 @@ And then call `npm run build`.
 -->
 
 ### __WORK IN PROGRESS__
+* (Apollon77) Make state properties c(omment) and user available to scripts too
 * (Apollon77) make sure values of new or changed alias objects are initialized properly
 * (winnyschuster) Enhance scheduler logic and astro events offered by wizard
 * (Apollon77) Respect expected value changes when determining if a value is changed
-* (Apollon77) Make state properties c(omment) and user available to scripts too
 * (Apollon77) Fix remembering intermediate state values when state values are subscribed
 * (Apollon77) fix setState logic when states are not subscribed
 
