@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@alcalzone/release-script": "^3.5.6",
-    "@alcalzone/release-script-plugin-iobroker": "^3.5.7",
+    "@alcalzone/release-script-plugin-iobroker": "^3.5.8",
     "@alcalzone/release-script-plugin-license": "^3.5.8",
     "@types/iobroker": "^4.0.1",
     "alcalzone-shared": "^4.0.1",
