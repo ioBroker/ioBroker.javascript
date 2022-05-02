@@ -30,11 +30,12 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.0",
-    "@types/node": "^16.11.26",
+    "@types/node": "^16.11.33",
     "@types/request": "^2.48.8",
     "coffee-compiler": "^0.3.2",
     "coffee-script": "^1.12.7",
     "jsonata": "^1.8.6",
+    "jszip": "^3.9.1",
     "node-inspect": "^2.0.0",
     "node-schedule": "2.1.0",
     "request": "^2.88.2",
@@ -42,14 +43,13 @@
     "suncalc2": "^1.8.1",
     "typescript": "^4.6.4",
     "virtual-tsc": "^0.6.2",
-    "wake_on_lan": "^1.0.0",
-    "jszip": "^3.8.0"
+    "wake_on_lan": "^1.0.0"
   },
   "devDependencies": {
-    "@alcalzone/release-script": "^3.5.6",
-    "@alcalzone/release-script-plugin-iobroker": "^3.5.7",
-    "@alcalzone/release-script-plugin-license": "^3.5.8",
-    "@types/iobroker": "^4.0.1",
+    "@alcalzone/release-script": "^3.5.9",
+    "@alcalzone/release-script-plugin-iobroker": "^3.5.9",
+    "@alcalzone/release-script-plugin-license": "^3.5.9",
+    "@types/iobroker": "^4.0.2",
     "alcalzone-shared": "^4.0.1",
     "chai": "^4.3.6",
     "del": "^6.0.0",

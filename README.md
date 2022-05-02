@@ -53,6 +53,10 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### __WORK IN PROGRESS__
+* (Apollon77) Allow to subscribe multiple object ID lists in blockly
+
 ### 5.6.0 (2022-04-24)
 * (Apollon77) Make state properties c(omment) and user available to scripts too
 * (Apollon77) make sure values of new or changed alias objects are initialized properly

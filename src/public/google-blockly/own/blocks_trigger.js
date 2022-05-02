@@ -259,20 +259,28 @@ Blockly.JavaScript['on_ext'] = function(block) {
     }
 
     var oids = [];
-    var firstID;
     for (var n = 0; n < block.itemCount_; n++) {
         var id =  Blockly.JavaScript.valueToCode(block, 'OID' + n, Blockly.JavaScript.ORDER_COMMA);
         if (id) {
             id = id.toString();
-            firstID = id;
-            if (oids.indexOf(id) === -1) {
-                oids.push(id);
+            if (id.startsWith('[') && id.endsWith(']')) {
+                var idArr = id.substring(1, id.length - 1).split(',');
+                idArr.forEach(oid => {
+                    oid = oid.trim();
+                    if (oids.indexOf(oid) === -1) {
+                        oids.push(oid);
+                    }
+                });
+            } else {
+                if (oids.indexOf(id) === -1) {
+                    oids.push(id);
+                }
             }
         }
     }
     var oid;
     if (oids.length === 1) {
-        oid = firstID;
+        oid = oids[0];
     } else {
         oid = '[' + oids.join(',') + ']';
     }
