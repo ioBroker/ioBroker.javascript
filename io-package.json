@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.6.0",
+    "version": "5.6.1",
     "news": {
+      "5.6.1": {
+        "en": "Allow to subscribe multiple object ID lists in blockly",
+        "de": "Erlauben, mehrere Objekt-ID-Listen blockweise zu abonnieren",
+        "ru": "Разрешить подписку на несколько списков идентификаторов объектов в блоках",
+        "pt": "Permitir a inscrição de várias listas de ID de objeto em blocos",
+        "nl": "Sta toe om meerdere object-ID-lijsten in blockly te abonneren",
+        "fr": "Autoriser l'abonnement à plusieurs listes d'ID d'objets en bloc",
+        "it": "Consenti di sottoscrivere più elenchi di ID oggetto in blocco",
+        "es": "Permitir suscribirse a múltiples listas de ID de objetos en bloque",
+        "pl": "Zezwalaj na subskrybowanie wielu list identyfikatorów obiektów w blokach",
+        "zh-cn": "允许以块方式订阅多个对象 ID 列表"
+      },
       "5.6.0": {
         "en": "Make state properties c(omment) and user available to scripts too\nmake sure values of new or changed alias objects are initialized properly\nEnhance scheduler logic and astro events offered by wizard\nRespect expected value changes when determining if a value is changed\nFix remembering intermediate state values when state values are subscribed\nfix setState logic when states are not subscribed",
         "de": "Stellen Sie die Zustandseigenschaften c(Kommentar) und Benutzer auch für Skripte zur Verfügung\nStellen Sie sicher, dass die Werte neuer oder geänderter Alias-Objekte ordnungsgemäß initialisiert werden\nVerbessern Sie die Planungslogik und Astro-Ereignisse, die vom Assistenten angeboten werden\nRespektieren Sie erwartete Wertänderungen, wenn Sie feststellen, ob sich ein Wert geändert hat\nBehebung des Erinnerns von Zwischenzustandswerten, wenn Zustandswerte abonniert werden\nsetState-Logik behoben, wenn Zustände nicht abonniert sind",
@@ -93,18 +105,6 @@
         "es": "Evite que el directorio Mirror se establezca en directorios centrales de ioBroker porque puede producir varios problemas\nSe corrigió el estado y el objeto existentes.\nTraducciones fijas",
         "pl": "Zapobiegaj ustawianiu katalogu Mirror na centralne katalogi ioBroker, ponieważ może to powodować różne problemy\nNaprawiono istniejeStan i istniejeObject\nNaprawiono tłumaczenia",
         "zh-cn": "防止将镜像目录设置为中央 ioBroker 目录，因为可能会产生各种问题\n修复了 existsState 和 existsObject\n固定翻译"
-      },
-      "5.4.5": {
-        "en": "Fix existsState and existsObject",
-        "de": "ExistiertState und ExistiertObjekt korrigiert",
-        "ru": "Исправление existsState и existsObject",
-        "pt": "Correção de existState e existObject",
-        "nl": "Bestaande Staat en ExistObject repareren",
-        "fr": "Correction de l'état de l'état et de l'objet de l'existence",
-        "it": "Risolto il problema esiste Stato ed Esiste Oggetto",
-        "es": "Repara existState y existeObject",
-        "pl": "Napraw stan istnieje i istniejeObject",
-        "zh-cn": "修复 existsState 和 existsObject"
       }
     },
     "desc": {

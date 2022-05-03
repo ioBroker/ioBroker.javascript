@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 5.5.0 (2022-03-22)
+* (Apollon77) Prevent Mirror directory being set to central ioBroker directories because can produce various issues
+* (Apollon77) Fixed existsState and existsObject
+* (bluefox) Fixed translations
+
 ## 5.4.5 (2022-03-20)
 * (Apollon77) Fix existsState and existsObject
 

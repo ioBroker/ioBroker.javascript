@@ -53,8 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-
-### __WORK IN PROGRESS__
+### 5.6.1 (2022-05-03)
 * (Apollon77) Allow to subscribe multiple object ID lists in blockly
 
 ### 5.6.0 (2022-04-24)
@@ -73,11 +72,6 @@ And then call `npm run build`.
 
 ### 5.5.2 (2022-03-23)
 * (bluefox) Added new rules action block: sum two states (or minus)
-
-### 5.5.0 (2022-03-22)
-* (Apollon77) Prevent Mirror directory being set to central ioBroker directories because can produce various issues
-* (Apollon77) Fixed existsState and existsObject
-* (bluefox) Fixed translations
 
 ## License
 The MIT License (MIT)
