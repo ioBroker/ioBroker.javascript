@@ -263,27 +263,15 @@ Blockly.JavaScript['on_ext'] = function(block) {
         var id =  Blockly.JavaScript.valueToCode(block, 'OID' + n, Blockly.JavaScript.ORDER_COMMA);
         if (id) {
             id = id.toString();
-            if (id.startsWith('[') && id.endsWith(']')) {
-                var idArr = id.substring(1, id.length - 1).split(',');
-                idArr.forEach(oid => {
-                    oid = oid.trim();
-                    if (oids.indexOf(oid) === -1) {
-                        oids.push(oid);
-                    }
-                });
-            } else {
-                if (oids.indexOf(id) === -1) {
-                    oids.push(id);
-                }
+            if (id.startsWith('\'') && id.endsWith('\'')) {
+                id = '[' + id + ']';
+            }
+            if (oids.indexOf(id) === -1) {
+                oids.push(id);
             }
         }
     }
-    var oid;
-    if (oids.length === 1) {
-        oid = oids[0];
-    } else {
-        oid = '[' + oids.join(',') + ']';
-    }
+    var oid = '[].concat(' + oids.join(').concat(') + ')';
 
     var code = 'on({id: ' + oid + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + '}, async function (obj) {\n  ' +
         (oids.length === 1 ? 'var value = obj.state.val;\n  var oldValue = obj.oldState.val;\n' : '') +
