@@ -1469,8 +1469,28 @@ messageTo('messageName', dataWithNoResponse);
 onMessage('messageName', (data, callback) => {console.log('Received data: ' + data); callback(null, Date.now())});
 ```
 
-Subscribes on message bus and delivers response via callback.
+Subscribes on javascript adapter message bus and delivers response via callback.
 The response from script which sends response as first will be accepted as answer, all other answers will be ignored.
+
+To send a message to an JavaScript script which is then received by this handler use [messageTo](#messageTo).
+
+To send a message from any other adapter use
+
+```
+    adapter.sendTo('javascript.0', 'toScript', {
+        script: 'script.js.messagetest', 
+        message: 'messageName', 
+        data: {
+            flag: true
+        }
+    });
+```
+
+to send a message from CLI use
+
+```
+iob message javascript.0 toScript '{"script": "script.js.messagetest", "message": "messageName", "data": {"flag": true}}'
+```
 
 ### onMessageUnregister
 ```

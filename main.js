@@ -646,12 +646,13 @@ function startAdapter(options) {
             if (obj) {
                 switch (obj.command) {
                     // process messageTo commands
+                    case 'toScript':
                     case 'jsMessageBus':
                         if (obj.message && (
                             obj.message.instance === null ||
                             obj.message.instance === undefined ||
-                            ('javascript.' + obj.instance === adapter.namespace) ||
-                            (obj.instance === adapter.namespace)
+                            ('javascript.' + obj.message.instance === adapter.namespace) ||
+                            (obj.message.instance === adapter.namespace)
                         )) {
                             Object.keys(context.messageBusHandlers).forEach(name => {
                                 // script name could be script.js.xxx or only xxx

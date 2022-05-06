@@ -53,6 +53,11 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### __WORK IN PROGRESS__
+* (Apollon77) Allow sending of messages to scripts also from adapters and CLI by sending "toScript" message (see [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#onmessage))
+* (Apollon77) Lists returned by $-selector are now unified and do not contain double entries 
+* (Apollon77) Fix subscribe multiple object ID lists in blockly
+
 ### 5.6.1 (2022-05-03)
 * (Apollon77) Allow to subscribe multiple object ID lists in blockly
 * (Apollon77) Make sure lists returned by $-selector do not contain duplicates
