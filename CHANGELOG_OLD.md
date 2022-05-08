@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 5.5.2 (2022-03-23)
+* (bluefox) Added new rules action block: sum two states (or minus)
+
 ## 5.5.0 (2022-03-22)
 * (Apollon77) Prevent Mirror directory being set to central ioBroker directories because can produce various issues
 * (Apollon77) Fixed existsState and existsObject

@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.6.1",
+    "version": "5.7.0",
     "news": {
+      "5.7.0": {
+        "en": "Allow sending of messages to scripts also from adapters and CLI by sending \"toScript\" message (see [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#onmessage))\nLists returned by $-selector are now unified and do not contain double entries \nFix subscribe multiple object ID lists in blockly",
+        "de": "Erlauben Sie das Senden von Nachrichten an Skripte auch von Adaptern und CLI, indem Sie eine „toScript“-Nachricht senden (siehe [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md# onmessage))\nVon $-selector zurückgegebene Listen sind jetzt vereinheitlicht und enthalten keine doppelten Einträge\nKorrigieren Sie das Abonnieren mehrerer Objekt-ID-Listen in Blockly",
+        "ru": "Разрешить отправку сообщений скриптам также из адаптеров и CLI, отправив сообщение «toScript» (см. [Документацию onMessage](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md# в сообщении))\nСписки, возвращаемые $-селектором, теперь унифицированы и не содержат двойных записей.\nИсправить подписку на несколько списков идентификаторов объектов в блочном режиме.",
+        "pt": "Permita o envio de mensagens para scripts também de adaptadores e CLI enviando a mensagem \"toScript\" (consulte [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md# na mensagem))\nAs listas retornadas pelo $-selector agora são unificadas e não contêm entradas duplas\nCorrige a inscrição de várias listas de IDs de objetos em blocos",
+        "nl": "Sta het verzenden van berichten naar scripts ook toe vanaf adapters en CLI door een \"toScript\"-bericht te verzenden (zie [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md# een bericht))\nLijsten die worden geretourneerd door $-selector zijn nu verenigd en bevatten geen dubbele invoer\nFix abonneren op meerdere object-ID-lijsten in blockly",
+        "fr": "Autoriser l'envoi de messages aux scripts également à partir des adaptateurs et de la CLI en envoyant le message \"toScript\" (voir [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md# sur message))\nLes listes renvoyées par $-selector sont maintenant unifiées et ne contiennent pas de doubles entrées\nCorrection de l'abonnement à plusieurs listes d'ID d'objets en bloc",
+        "it": "Consenti l'invio di messaggi agli script anche da adattatori e CLI inviando un messaggio \"toScript\" (vedi [documentazione onMessage](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md# sul messaggio))\nGli elenchi restituiti da $-selector sono ora unificati e non contengono voci doppie\nRisolto il problema con la sottoscrizione di più elenchi di ID oggetto in blocco",
+        "es": "Permita el envío de mensajes a scripts también desde adaptadores y CLI enviando un mensaje \"toScript\" (consulte [documentación de onMessage] (https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#) enmensaje))\nLas listas devueltas por $-selector ahora están unificadas y no contienen entradas dobles\nArreglar suscribirse a múltiples listas de ID de objetos en blockly",
+        "pl": "Zezwalaj na wysyłanie wiadomości do skryptów również z adapterów i CLI, wysyłając wiadomość \"toScript\" (patrz [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md# onmessage))\nListy zwracane przez $-selector są teraz ujednolicone i nie zawierają podwójnych wpisów\nNaprawiono subskrybowanie wielu list identyfikatorów obiektów w blokach",
+        "zh-cn": "通过发送“toScript”消息，也允许从适配器和 CLI 向脚本发送消息（请参阅 [onMessage 文档](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#留言））\n$-selector 返回的列表现在是统一的并且不包含双重条目\n修复在块中订阅多个对象 ID 列表"
+      },
       "5.6.1": {
         "en": "Allow to subscribe multiple object ID lists in blockly",
         "de": "Erlauben, mehrere Objekt-ID-Listen blockweise zu abonnieren",
@@ -93,18 +105,6 @@
         "es": "Se agregó un nuevo bloque de acción de reglas: suma dos estados (o menos)",
         "pl": "Dodano nowy blok akcji reguł: zsumuj dwa stany (lub minus)",
         "zh-cn": "添加了新的规则动作块：将两个状态相加（或减去）"
-      },
-      "5.5.0": {
-        "en": "Prevent Mirror directory being set to central ioBroker directories because can produce various issues\nFixed existsState and existsObject\nFixed translations",
-        "de": "Verhindern Sie, dass das Spiegelverzeichnis auf zentrale ioBroker-Verzeichnisse eingestellt wird, da dies zu verschiedenen Problemen führen kann\nExistiertState und ExistiertObjekt behoben\nÜbersetzungen korrigiert",
-        "ru": "Предотвратить настройку каталога зеркала на центральные каталоги ioBroker, поскольку это может привести к различным проблемам.\nИсправлены existsState и existsObject\nИсправлены переводы",
-        "pt": "Impedir que o diretório Mirror seja definido como diretórios centrais do ioBroker, pois pode produzir vários problemas\nCorrigido existState e existObject\nTraduções fixas",
-        "nl": "Voorkom dat Mirror-directory wordt ingesteld op centrale ioBroker-directories, omdat dit verschillende problemen kan veroorzaken\nVaste existState en existObject\nVaste vertalingen",
-        "fr": "Empêcher que le répertoire miroir ne soit défini sur les répertoires centraux ioBroker, car cela peut entraîner divers problèmes\nCorrection de l'état de l'état et de l'objet de l'existence\nTraductions fixes",
-        "it": "Impedisci che la directory Mirror venga impostata su directory ioBroker centrali perché può produrre vari problemi\nRisolto il problema esisteState ed esisteOggetto\nTraduzioni fisse",
-        "es": "Evite que el directorio Mirror se establezca en directorios centrales de ioBroker porque puede producir varios problemas\nSe corrigió el estado y el objeto existentes.\nTraducciones fijas",
-        "pl": "Zapobiegaj ustawianiu katalogu Mirror na centralne katalogi ioBroker, ponieważ może to powodować różne problemy\nNaprawiono istniejeStan i istniejeObject\nNaprawiono tłumaczenia",
-        "zh-cn": "防止将镜像目录设置为中央 ioBroker 目录，因为可能会产生各种问题\n修复了 existsState 和 existsObject\n固定翻译"
       }
     },
     "desc": {

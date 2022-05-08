@@ -53,7 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### __WORK IN PROGRESS__
+### 5.7.0 (2022-05-08)
 * (Apollon77) Allow sending of messages to scripts also from adapters and CLI by sending "toScript" message (see [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#onmessage))
 * (Apollon77) Lists returned by $-selector are now unified and do not contain double entries 
 * (Apollon77) Fix subscribe multiple object ID lists in blockly
@@ -75,9 +75,6 @@ And then call `npm run build`.
 
 ### 5.5.3 (2022-03-25)
 * (bluefox) Fixed getObjectAsync function if object does not exist
-
-### 5.5.2 (2022-03-23)
-* (bluefox) Added new rules action block: sum two states (or minus)
 
 ## License
 The MIT License (MIT)
