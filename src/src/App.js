@@ -136,6 +136,7 @@ class App extends GenericApp {
             socket: {
                 autoSubscribeLog: true,
             },
+            sentryDSN: window.sentryDSN,
         });
 
         // this.logIndex = 0;
@@ -269,43 +270,8 @@ class App extends GenericApp {
                 newState.instances = result.instances;
                 newState.runningInstances = result.runningInstances;
 
-                return new Promise(resolve => {
-                    const socket = this.socket;
-
-                    if (socket.systemConfig.common.diag !== 'none') {
-                        this.socket.getAdapterInstances(window.adapterName)
-                            .then(instances => {
-                                const sentryEnabled = !!instances.find(item => !item.common.disableDataReporting);
-
-                                // if not local development
-                                if (window.sentryDSN && sentryEnabled && window.location.host !== 'localhost:3000') {
-                                    Sentry.init({
-                                        dsn: window.sentryDSN,
-                                        release: `iobroker.${window.adapterName}@${version}`,
-                                        integrations: [
-                                            new SentryIntegrations.Dedupe()
-                                        ]
-                                    });
-
-                                    // BF 2021.08.31: may be this is not required as executed in adapter-react
-                                    this.socket.getObject('system.meta.uuid')
-                                        .then(uuidObj => {
-                                            if (uuidObj && uuidObj.native && uuidObj.native.uuid) {
-                                                Sentry.configureScope(scope =>
-                                                    scope.setUser({id: uuidObj.native.uuid}));
-                                            }
-                                            resolve();
-                                        });
-                                } else {
-                                    resolve();
-                                }
-                            });
-                    } else {
-                        resolve();
-                    }
-                });
+                return this.readAdaptersWithBlockly();
             })
-            .then(() => this.readAdaptersWithBlockly())
             .then(() => this.socket.getHosts())
             .then(hosts => {
                 this.hosts = hosts.map(obj => obj._id);
