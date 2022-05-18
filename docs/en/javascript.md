@@ -1518,7 +1518,7 @@ messageTo('messageName', dataWithNoResponse);
 
 ### onMessage
 ```
-onMessage('messageName', (data, callback) => {console.log('Received data: ' + data); callback(null, Date.now())});
+onMessage('messageName', (data, callback) => {console.log('Received data: ' + data); callback({result: Date.now()})});
 ```
 
 Subscribes on javascript adapter message bus and delivers response via callback.

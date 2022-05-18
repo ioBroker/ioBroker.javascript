@@ -53,8 +53,11 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Implemented onFile and offFile functions
+
 ### 5.7.0 (2022-05-08)
-* (Apollon77) Allow sending of messages to scripts also from adapters and CLI by sending "toScript" message (see [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#onmessage))
+* (Apollon77) Allow sending of messages to the scripts also from adapters and CLI by sending "toScript" message (see [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#onmessage))
 * (Apollon77) Lists returned by $-selector are now unified and do not contain double entries 
 * (Apollon77) Fix subscribe multiple object ID lists in blockly
 
@@ -63,7 +66,7 @@ And then call `npm run build`.
 * (Apollon77) Make sure lists returned by $-selector do not contain duplicates
 
 ### 5.6.0 (2022-04-24)
-* (Apollon77) Make state properties c(omment) and user available to scripts too
+* (Apollon77) Make state properties "c"(omment) and user available to scripts too
 * (Apollon77) make sure values of new or changed alias objects are initialized properly
 * (winnyschuster) Enhance scheduler logic and astro events offered by wizard
 * (Apollon77) Respect expected value changes when determining if a value is changed
