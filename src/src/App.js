@@ -1,10 +1,7 @@
 import React from 'react';
 // import ReactDOM from 'react-dom';
-import * as Sentry from '@sentry/browser';
-import * as SentryIntegrations from '@sentry/integrations';
 import { withStyles } from '@material-ui/core/styles';
 import SplitterLayout from 'react-splitter-layout';
-import { version } from '../package.json';
 
 import 'react-splitter-layout/lib/index.css';
 
