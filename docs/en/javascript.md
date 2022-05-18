@@ -1301,6 +1301,8 @@ Arguments in callback:
 - `fileData` - file content of type `Buffer` if file is binary (detected by extension) or `string`. Delivered only if `withFile`;
 - `mimeType` - mime type of file, like `image/jpeg`. Delivered only if `withFile`;
 
+**Important**: this functionality is only available with js-controller@4.1.x or newer.
+
 ### offFile
 ```js
 offFile(id, fileName);
@@ -1310,6 +1312,8 @@ onFile(id, fileName);
 Unsubscribe from file changes:
 - `id` is ID of object of type `meta`, like `vis.0`
 - `fileName` is file name or pattern, like `main/*` or `main/vis-view.json`
+
+**Important**: this functionality is only available with js-controller@4.1.x or newer.
 
 ### onStop
 ```js
