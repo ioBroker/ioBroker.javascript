@@ -230,9 +230,14 @@ class Editor extends React.Component {
             objects: {},
             getObject: (id, cb) => this.props.socket.getObject(id).then(obj => cb && cb(null, obj)).catch(err => cb && cb(err)),
             instances: [],
-            selectIdDialog: (initValue, cb) => {
+            selectIdDialog: (initValue, type, cb) => {
+                if (typeof type === 'function') {
+                    cb = type;
+                    type = null;
+                }
                 this.selectId.callback = cb;
                 this.selectId.initValue = initValue;
+                this.selectId.type = type;
                 this.setState({ showSelectId: true });
             },
             cronDialog: (initValue, cb) => {
@@ -1171,7 +1176,8 @@ class Editor extends React.Component {
                 themeType={this.state.themeType}
                 socket={this.props.socket}
                 selected={selectedId}
-                statesOnly={true}
+                // statesOnly={!this.selectId.type || this.selectId.type === 'state'}
+                types={[this.selectId.type || 'state']}
                 onClose={() => {
                     this.setState({ showSelectId: false });
                     if (this.selectId.callback) {

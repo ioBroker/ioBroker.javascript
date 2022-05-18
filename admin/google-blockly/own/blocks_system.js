@@ -20,7 +20,7 @@ Blockly.System = {
 
 // --- Debug output --------------------------------------------------
 Blockly.System.blocks['debug'] =
-      '<block type="debug">'
+    '<block type="debug">'
     + '     <value name="TEXT">'
     + '         <shadow type="text">'
     + '             <field name="TEXT">test</field>'
@@ -783,9 +783,7 @@ Blockly.System.blocks['field_oid'] =
     + '</block>';
 
 Blockly.Blocks['field_oid'] = {
-    // Checkbox.
     init: function() {
-
         this.appendDummyInput()
             .appendField(Blockly.Translate('field_oid_OID'));
 
@@ -801,9 +799,35 @@ Blockly.Blocks['field_oid'] = {
 
 Blockly.JavaScript['field_oid'] = function(block) {
     var oid = block.getFieldValue('oid');
-    return ['\'' + oid + '\'', Blockly.JavaScript.ORDER_ATOMIC]
+    return ['\'' + oid + '\'', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
+// --- select OID meta--------------------------------------------------
+Blockly.System.blocks['field_oid_meta'] =
+    '<block type="field_oid_meta">'
+    + '     <value name="TEXT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['field_oid_meta'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('field_oid_OID'));
+
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldOID('default', 'meta'), 'oid');
+
+        this.setInputsInline(true);
+        this.setColour(Blockly.System.HUE);
+        this.setOutput(true, 'String');
+        this.setTooltip(Blockly.Translate('field_oid_tooltip'));
+    }
+};
+
+Blockly.JavaScript['field_oid_meta'] = function(block) {
+    var oid = block.getFieldValue('oid');
+    return ['\'' + oid + '\'', Blockly.JavaScript.ORDER_ATOMIC];
+};
 
 // --- get attribute --------------------------------------------------
 Blockly.System.blocks['get_attr'] =
@@ -843,7 +867,6 @@ Blockly.JavaScript['get_attr'] = function(block) {
     return ['getAttr(' + obj + ', ' + path + ')', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
-
 // --- regex --------------------------------------------------
 Blockly.System.blocks['regex'] =
     '<block type="regex">'
@@ -872,7 +895,6 @@ Blockly.JavaScript['regex'] = function(block) {
     var oid = block.getFieldValue('TEXT');
     return ['new RegExp("' + oid + '")', Blockly.JavaScript.ORDER_ATOMIC]
 };
-
 
 // --- selector --------------------------------------------------
 Blockly.System.blocks['selector'] =

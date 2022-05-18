@@ -197,6 +197,9 @@ JJJJ.MM.DD uu:mm:ss.sss
 Krijg actuele tijd of
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Time-outs
+Pauze
+Pauzeer de uitvoering gedurende een bepaalde tijd
+wait
 Executie
 time-out
 in
@@ -256,12 +259,16 @@ staat kwaliteit
 oorsprong van waarde
 is commando of update
 laatste verandering van staat
+opmerking van laatste staat
+gebruiker van de laatste staat
 vorige waarde
 vorige timestamp
 vorige kwaliteit
 vorige oorsprong
 vorige opdracht of update
 vorige laatste wijziging
+vorige opmerking
+vorige gebruiker
 Dit blok mag alleen binnen het gebeurtenisblok worden gebruikt
 planning
 Doe iets op cron-schema
@@ -316,3 +323,11 @@ Doen
 Doet iets als de voorwaarde waar is. Als er geen overeenkomende case is, wordt de standaardfunctie uitgevoerd.
 Deze functie wordt uitgevoerd als er geen overeenkomende gevallen zijn.
 Dit is een variabele voor conditie.
+Gebeurtenis: als bestand
+Bestandspatroon
+Met bestandsgegevens
+Als een bestand is gewijzigd of bijgewerkt
+onFile
+Bestandsgebeurtenis annuleren
+Abonnement opzeggen bij bestandswijziging
+offFile

@@ -197,6 +197,9 @@ YYYY.MM.DD hh:mm:ss.sss
 Get actual time or 
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Timeouts
+Pauza
+Wstrzymaj wykonanie na określony czas
+wait
 Execution
 timeout
 in
@@ -256,12 +259,16 @@ state quality
 origin of value
 is command or update
 last change of state
+komentarz ostatniego stanu
+użytkownik ostatniego stanu
 previous value
 previous timestamp
 previous quality
 previous origin
 previous command or update
 previous last change
+poprzedni komentarz
+poprzedni użytkownik
 This block must be used only inside of event block
 schedule
 Do something on cron schedule
@@ -316,3 +323,11 @@ zrobić
 Robi coś, jeśli warunek jest spełniony. Jeśli nie ma pasującego przypadku, zostanie wykonana funkcja domyślna.
 Ta funkcja będzie działać, jeśli nie ma pasujących przypadków.
 Jest to zmienna warunku.
+Zdarzenie: jeśli plik
+Wzór pliku
+Z danymi pliku
+Jeśli jakiś plik został zmieniony lub zaktualizowany
+onFile
+Anuluj zdarzenie pliku
+Anuluj subskrypcję po zmianie pliku
+offFile

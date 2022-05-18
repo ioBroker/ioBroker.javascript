@@ -197,6 +197,9 @@ YYYY.MM.DD hh:mm:ss.sss
 Get actual time or 
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Timeouts
+Pause
+Pause the execution for defined time
+wait
 Execution
 timeout
 in
@@ -256,12 +259,16 @@ state quality
 origin of value
 is command or update
 last change of state
+comment of last state
+user of last state
 previous value
 previous timestamp
 previous quality
 previous origin
 previous command or update
 previous last change
+previous comment
+previous user
 This block must be used only inside of event block
 schedule
 Do something on cron schedule
@@ -316,3 +323,11 @@ do
 Does something if the condition is true. If there isn't a matching case the default function will be executed.
 This function will run if there aren't any matching cases.
 This is a variable for condition.
+Event: file update
+File pattern
+With file data
+If some file changed or updated
+onFile
+Cancel file event
+Cancel subscription on file change
+offFile
