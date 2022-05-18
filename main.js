@@ -1663,7 +1663,9 @@ function createVM(source, name) {
     }
 
     if (!debugMode) {
-        source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + ' and ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ));\n";
+        source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + '," +
+            " ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ) + " +
+            "' and ' + __engine.__subscriptionsFile + ' file subscription' + (__engine.__subscriptionsFile === 1 ? '' : 's' ));\n";
     } else {
         if (source.startsWith('(async () => {\n')) {
             source = '(async () => {debugger;\n' + source.substring('(async () => {\n'.length);
@@ -1843,6 +1845,11 @@ function stop(name, callback) {
                 }
             }
         });
+        for (let i = context.subscriptionsFile.length - 1; i >= 0; i--) {
+            if (context.subscriptionsFile[i].name === name) {
+                context.subscriptionsFile.splice(i, 1)[0];
+            }
+        }
 
         for (let i = context.subscriptionsObject.length - 1; i >= 0; i--) {
             if (context.subscriptionsObject[i].name === name) {
