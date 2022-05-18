@@ -15,7 +15,7 @@
     - [getFileSubscriptions](#getfilesubscriptions)
     - [schedule](#schedule)
         - [Time schedule](#time-schedule)
-        - [Astro-function](#astro--function)
+        - [Astro-function](#astro-function)
     - [getSchedules](#getschedules)
     - [clearSchedule](#clearschedule)
     - [getAttr](#getattr)
