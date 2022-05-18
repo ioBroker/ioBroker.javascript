@@ -29,7 +29,7 @@ describe('TypeScript tools', () => {
 
         it('forces non-global scripts to be treated as modules (part 1)', () => {
             const source = `const foo = 1;`;
-            const expected = /^export \{\};$/m;
+            const expected = /^export \{};$/m;
             const transformed = transformScriptBeforeCompilation(source, false);
             expect(transformed).to.match(expected);
         });
@@ -37,14 +37,14 @@ describe('TypeScript tools', () => {
         it('forces non-global scripts to be treated as modules (part 2)', () => {
             const source = `import fs from "fs";
 const foo = 1;`;
-            const expected = /^export \{\};$/m;
+            const expected = /^export \{};$/m;
             const transformed = transformScriptBeforeCompilation(source, false);
             // There is an import, we don't need an empty export now
             expect(transformed).not.to.match(expected);
         });
 
         it('exports every exportable thing in global scripts', () => {
-            // simplified repro for #694 (Part 1)
+            // simplified reproduction for #694 (Part 1)
             const source = `
 import * as fs from "fs";
 class Foo {
@@ -60,7 +60,7 @@ export class Foo {
         });
 
         it('wraps global augmentations in `declare global`', () => {
-            // simplified repro for #698
+            // simplified reproduction for #698
             const source = `
 interface Date {
     getWeekYear(): number;
@@ -79,7 +79,7 @@ export {};`.trim().replace(/\r?\n/g, EOL);
 
     describe('transformGlobalDeclarations', () => {
         it('wraps export declare statements in `declare global`', () => {
-            // simplified repro for #694 (Part 2)
+            // simplified reproduction for #694 (Part 2)
             const source = `
 import * as fs from "fs";
 export declare class Foo {

@@ -12,6 +12,7 @@
     - [subscribe - same as on](#subscribe---same-as-on)
     - [unsubscribe](#unsubscribe)
     - [getSubscriptions](#getsubscriptions)
+    - [getFileSubscriptions](#getfilesubscriptions)
     - [schedule](#schedule)
         - [Time schedule](#time-schedule)
         - [Astro-function](#astro--function)
@@ -55,6 +56,8 @@
     - [readFile](#readfile)
     - [writeFile](#writefile)
     - [delFile](#delFile)
+    - [onFile](#onFile)
+    - [offFile](#offFile)
     - [onStop](#onstop)
     - [getHistory](#gethistory)
     - [runScript](#runscript)
@@ -84,12 +87,12 @@ so they will be called again and again even if the new version of script exists 
 ```js
 var http = require('http');
 // Read www.google.com page
-http.request('www.google.com', function(res) {
+http.request('www.google.com', function (res) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
         log('BODY: ' + chunk);
         });
-}).on('error', function(e) {
+}).on('error', function (e) {
         log('problem with request: ' + e.message, 'error');
 });
 ```
@@ -99,13 +102,13 @@ was deleted by user before callback returns. The callback will be executed anywa
 You can use `cb` function to wrap you callback, like this
 
 ```js
-http.request('www.google.com', cb(function(res) {
-      res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-        log('BODY: ' + chunk);
-      }));
-}).on('error', cb(function(e) {
-      log('problem with request: ' + e.message, 'error');
+http.request('www.google.com', cb(function (res) {
+    res.setEncoding('utf8');
+    res.on('data', function (chunk) {
+      log('BODY: ' + chunk);
+    });
+})).on('error', cb(function (e) {
+    log('problem with request: ' + e.message, 'error');
 }));
 ```
 to be sure, that no callback will be called if script is deleted or modified.
@@ -183,20 +186,20 @@ on(pattern, callbackOrId, value);
 The callback function will return the object as parameter with following content:
 ```js
     {
-    	'id' : 'javascript.0.myplayer',
-    	'state' : {
-    		'val' :  'new state',
-    		'ts' :   1416149118,
-    		'ack' :  true,
-    		'lc' :   1416149118,
-    		'from' : 'system.adapter.sonos.0'
+    	'id': 'javascript.0.myplayer',
+    	'state': {
+    		'val':  'new state',
+    		'ts':   1416149118,
+    		'ack':  true,
+    		'lc':   1416149118,
+    		'from': 'system.adapter.sonos.0'
     	},
-    	'oldState' : {
-    		'val' :  'old state',
-    		'ts' :   1416148233,
-    		'ack' :  true,
-    		'lc' :   1416145154,
-    		'from' : 'system.adapter.sonos.0'
+    	'oldState': {
+    		'val':  'old state',
+    		'ts':   1416148233,
+    		'ack':  true,
+    		'lc':   1416145154,
+    		'from': 'system.adapter.sonos.0'
     	}
     }
 ```
@@ -338,10 +341,10 @@ Trigger on all states with ID `'*.STATE'` if they are acknowledged and have new 
 
 ```js
 {
-    id: /\.STATE$/,
-    val: true,
-    ack: true,
-    logic: "and"
+    "id": /\.STATE$/,
+    "val": true,
+    "ack": true,
+    "logic": "and"
 }
 ```
 
@@ -420,13 +423,29 @@ Get the list of subscriptions.
 Example of result:
 ```js
 {
-	"megad.0.dataPointName" : [
+	"megad.0.dataPointName": [
 		{
 			"name" : "script.js.NameOfScript",
 			"pattern" : {
 				"id" : "megad.0.dataPointName",
 				"change" : "ne"
 			}
+		}
+	]
+}
+```
+
+### getFileSubscriptions
+Get the list of file subscriptions.
+
+Example of result:
+```js
+{
+	"vis.0$%$main/*": [
+		{
+			"name" : "script.js.NameOfScript",
+			"id" : "vis.0",
+            "fileNamePattern": "main/*"
 		}
 	]
 }
@@ -562,6 +581,7 @@ on({astro: "sunset", shift: 10}, function () {
     log((new Date()).toString() + " - 10 minutes after sunset!");
 });
 ```
+
 ### getSchedules
 ```js
 const list = getSchedules(true);
@@ -582,7 +602,6 @@ Example output:
 2020-11-01 20:15:19.929  - {"type":"cron","pattern":"0 * * * *","scriptName":"script.js.Heizung","id":"cron_1604258108384_74924"}
 2020-11-01 20:15:19.931  - {"type":"schedule","schedule":"{"period":{}}","scriptName":"script.js.Heizung","id":"schedule_19576"}
 ```
- 
 
 ### clearSchedule
 If **no** "astro" function used you can cancel the schedule later. To allow this the schedule object must be saved:
@@ -635,21 +654,20 @@ If `timeToCompare` is not given, so the actual time will be used.
 
 The following operations are possible:
 
-- `">"` - if given time is greater as startTime
-- `">="` - if given time is greater or equal to startTime
-- `"<"` - if given time is less as startTime
-- `"<="` - if given time is less or equal to startTime
-- `"=="` - if given time is equal to startTime
-- `"<>"` - if given time is not equal to startTime
-- `"between"` - if given time is between startTime and endTime
-- `"not between"` - if given time is not between startTime and endTime
+- `">"` - if given time is greater than `startTime`
+- `">="` - if given time is greater or equal to `startTime`
+- `"<"` - if given time is less than `startTime`
+- `"<="` - if given time is less or equal to `startTime`
+- `"=="` - if given time is equal to `startTime`
+- `"<>"` - if given time is not equal to `startTime`
+- `"between"` - if given time is between `startTime` and `endTime`
+- `"not between"` - if given time is not between `startTime` and `endTime`
 
 Time can be Date object or Date with time or just time.
 
 You can use astro-names for the time definition. All 3 parameters can be set as astro time.
-Following values are possible: 'sunrise', 'sunset', 'sunriseEnd', 'sunsetStart', 'dawn', 'dusk', 'nauticalDawn', 'nauticalDusk', 'nightEnd', 'night', 'goldenHourEnd', 'goldenHour'.
+Following values are possible: `sunrise`, `sunset`, `sunriseEnd`, `sunsetStart`, `dawn`, `dusk`, `nauticalDawn`, `nauticalDusk`, `nightEnd`, `night`, `goldenHourEnd`, `goldenHour`.
 See [Astro](#astro--function) for detail.
-
 
 ```js
 console.log(compareTime('sunsetStart', 'sunsetEnd', 'between') ? 'Now is sunrise' : 'Now is no sunrise');
@@ -695,8 +713,7 @@ setBinaryState(id, state, callback);
 ```
 Same as setState, but for the binary states, like files, images, buffers.
 The difference is that such a state has no ack, ts, lc, quality and so on flags und should be used only for binary things.
-The object's common.type must be equal to 'file'.
-
+The object's `common.type` must be equal to 'file'.
 
 ### setStateDelayed
 ```js
@@ -749,7 +766,7 @@ getStateDelayed('hm-rpc.0.LQE91119.1.STATE');
 ]
 ```
 
-If you will ask for all IDS the answer will looks like:
+If you ask for all IDS the answer will look like:
 
 ```js
 getStateDelayed();
@@ -776,7 +793,7 @@ You can ask by timerId directly. In this case the answer will be:
 getStateDelayed(3);
 
 // returns an object like
-{id: "hm-rpc.0.LQE91119.2.LEVEL", left: 5679, delay: 10000, val: 100,  ack: false}
+{"id": "hm-rpc.0.LQE91119.2.LEVEL", "left": 5679, "delay": 10000, "val": 100,  "ack": false}
 ```
 
 ### getState
@@ -794,7 +811,7 @@ Returns state with the given id in the following form:
 }
 ```
 
-If state does not exist, a warning will be printed in the logs and the object: ```{val: null, notExist: true}``` will be returned.
+If state does not exist, a warning will be printed in the logs and the object: `{val: null, notExist: true}` will be returned.
 To suppress the warning check if the state exists before calling getState (see [existsState](#existsState)).
 
 ### getBinaryState
@@ -988,7 +1005,7 @@ sendTo('telegram', {user: 'UserName', text: 'Test message'});
 ```
 
 Some adapters also support responses to the sent messages. (e.g. history, sql, telegram)
-The response is only returned in the callback if the message is sent to a specific instance!
+The response is only returned to the callback if the message is sent to a specific instance!
 
 Example with response:
 
@@ -1173,7 +1190,7 @@ Lets take a look at:
 ```js
 $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').on(function (obj) {
    log('New state ' + obj.id + ' = ' + obj.state.val);
-}
+});
 ```
 This code searches in channels.
 Find all channels with `common.role="switch"` and belongs to `enum.rooms.Wohnzimmer`.
@@ -1193,7 +1210,9 @@ You can interrupt the "each" loop by returning the false value, like:
 // print two first IDs of on all switches in "Wohnzimmer"
 $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').each(function (id, i) {
     console.log(id);
-    if (i == 1) return false;
+    if (i == 1) {
+        return false;
+    }
 });
 ```
 
@@ -1262,6 +1281,35 @@ delFile(adapter, fileName, function (error) {});
 Delete file or directory. fileName is the name of file or directory in DB.
 
 This function is alias for *unlink*.
+
+### onFile
+```js
+onFile(id, fileName, withFile, function (id, fileName, size, fileData, mimeType) {});
+// or 
+onFile(id, fileName, function (id, fileName, size) {});
+```
+
+Subscribe on file changes:
+- `id` is ID of object of type `meta`, like `vis.0` 
+- `fileName` is file name or pattern, like `main/*` or `main/vis-view.json`
+- `withFile` if the content of file should be delivered in callback or not. the delivery of file content costs memory and time, so if you want to be just informed about changes, set `withFile`to false.
+
+Arguments in callback: 
+- `id` - ID of `meta` object;
+- `fileName` - file name (not pattern);
+- `size` - new file size;
+- `fileData` - file content of type `Buffer` if file is binary (detected by extension) or `string`. Delivered only if `withFile`;
+- `mimeType` - mime type of file, like `image/jpeg`. Delivered only if `withFile`;
+
+### offFile
+```js
+offFile(id, fileName);
+// or 
+onFile(id, fileName);
+```
+Unsubscribe from file changes:
+- `id` is ID of object of type `meta`, like `vis.0`
+- `fileName` is file name or pattern, like `main/*` or `main/vis-view.json`
 
 ### onStop
 ```js
@@ -1546,7 +1594,7 @@ onLogUnregister(logHandler);
 onLogUnregister('warn');
 ```
 
-Unsubscribes from this logs.
+Unsubscribes from these logs.
 
 ## Global script variables
 ### scriptName
