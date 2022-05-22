@@ -891,7 +891,13 @@ declare global {
 
 		type StateChangeHandler<TOld extends StateValue = any, TNew extends TOld = any> = (obj: ChangedStateObject<TOld, TNew>) => void | Promise<void>;
 
-		type FileChangeHandler = (id: string, fileName: string, size: number, data?: Buffer | string, mimeType?: string) => void | Promise<void>;
+		type FileChangeHandler<WithFile extends boolean> =
+			// Variant 1: WithFile is false, data/mimeType is definitely not there
+			[WithFile] extends [false] ? (id: string, fileName: string, size: number, data?: undefined, mimeType?: undefined) => void | Promise<void>
+			// Variant 2: WithFile is true, data (and mimeType?) is definitely there
+			: [WithFile] extends [true] ? (id: string, fileName: string, size: number, data: Buffer | string, mimeType?: string) => void | Promise<void>
+			// Variant 3: WithFile is not known, data/mimeType might be there
+			: (id: string, fileName: string, size: number, data?: Buffer | string, mimeType?: string) => void | Promise<void>;
 
 		type SetObjectCallback = (err?: string | null, obj?: { id: string }) => void | Promise<void>;
 		type SetObjectPromise = Promise<NonNullCallbackReturnTypeOf<SetObjectCallback>>;
@@ -1298,8 +1304,8 @@ declare global {
 	 * @param withFile If the content of the file must be returned in callback (high usage of memory)
 	 * @param handler Callback: function (id, fileName, size, data, mimeType) {}
 	 */
-	function onFile(id: string, filePattern: string | string[], withFile: boolean, handler: iobJS.FileChangeHandler): any;
-	function onFile(id: string, filePattern: string | string[], handler: iobJS.FileChangeHandler): any;
+	function onFile<WithFile extends boolean>(id: string, filePattern: string | string[], withFile: WithFile, handler: iobJS.FileChangeHandler<WithFile>): any;
+	function onFile(id: string, filePattern: string | string[], handler: iobJS.FileChangeHandler<false>): any;
 
 	/**
 	 * Un-subscribe from the changes of the matched files.
