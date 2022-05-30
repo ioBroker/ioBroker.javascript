@@ -37,16 +37,15 @@ if (typeof goog !== 'undefined') {
 /**
  * Class for an editable text field.
  * @param {string} text The initial content of the field.
- * @param {Function=} opt_validator An optional function that is called
- *     to validate any constraints on what the user entered.  Takes the new
- *     text as an argument and returns either the accepted text, a replacement
- *     text, or null to abort the change.
+ * @param {string} type Type of objects (default: state)
  * @extends {Blockly.Field}
  * @constructor
  */
-Blockly.FieldOID = function(text) {
+Blockly.FieldOID = function(text, type) {
     Blockly.FieldOID.superClass_.constructor.call(this, text);
+    this._type = type;
 };
+
 if (typeof goog !== 'undefined') {
     goog.inherits(Blockly.FieldOID, Blockly.Field);
 } else {
@@ -171,7 +170,7 @@ Blockly.FieldOID.prototype.getDisplayText_ = function() {
 Blockly.FieldOID.prototype.showEditor_ = function(opt_quietInput) {
     this.workspace_ = this.sourceBlock_.workspace;
     var that = this;
-    window.main && window.main.selectIdDialog && window.main.selectIdDialog(this.getValue(), function (newId){ newId !== null && that.setValue(newId);});
+    window.main && window.main.selectIdDialog && window.main.selectIdDialog(this.getValue(), this._type, function (newId) { newId !== null && that.setValue(newId);});
 };
 
 /**

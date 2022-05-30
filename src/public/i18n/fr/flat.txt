@@ -197,6 +197,9 @@ YYYY.MM.DD hh:mm:ss.sss
 Obtenez le temps réel ou
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Délais
+Pause
+Suspendre l'exécution pendant une durée définie
+wait
 Exécution
 temps libre
 dans
@@ -256,12 +259,16 @@ qualité de l'état
 origine de la valeur
 est la commande ou la mise à jour
 dernier changement d'état
+commentaire du dernier état
+utilisateur du dernier état
 valeur précédente
 Horodatage précédent
 qualité précédente
 origine précédente
 commande précédente ou mise à jour
 précédent dernier changement
+commentaire précédent
+utilisateur précédent
 Ce bloc doit être utilisé uniquement à l'intérieur du bloc d'événements
 programme
 Faire quelque chose sur le calendrier cron
@@ -316,3 +323,11 @@ faire
 Fait quelque chose si la condition est vraie. S'il n'y a pas de cas correspondant, la fonction par défaut sera exécutée.
 Cette fonction s'exécutera s'il n'y a pas de cas correspondants.
 Il s'agit d'une variable de condition.
+Evénement : si fichier
+Modèle de fichier
+Avec les données du fichier
+Si un fichier a été modifié ou mis à jour
+onFile
+Annuler l'événement de fichier
+Annuler l'abonnement en cas de changement de fichier
+offFile

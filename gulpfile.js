@@ -751,14 +751,14 @@ gulp.task('blocklyLanguagesFlat2words', done => {
         }
     }
 
-    text += 'Blockly.Translate = function (word, lang) {\n' +
+    text += '\nBlockly.Translate = function (word, lang) {\n' +
         '    lang = lang || systemLang;\n' +
         '    if (Blockly.Words && Blockly.Words[word]) {\n' +
         '        return Blockly.Words[word][lang] || Blockly.Words[word].en;\n' +
         '    } else {\n' +
         '        return word;\n' +
         '    }\n' +
-        '};\n\n';
+        '};\n';
 
     text += '\nif (typeof module !== \'undefined\' && typeof module.parent !== \'undefined\') {\n' +
         '    module.exports = Blockly;\n' +

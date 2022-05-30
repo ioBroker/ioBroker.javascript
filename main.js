@@ -90,8 +90,8 @@ const { targetTsLib, tsCompilerOptions, jsDeclarationCompilerOptions } = require
 const { hashSource, isObject } = require('./lib/tools');
 
 const packageJson = require('./package.json');
-const {EXIT_CODES} = require('@iobroker/adapter-core');
-const {isDeepStrictEqual} = require('util');
+const { EXIT_CODES } = require('@iobroker/adapter-core');
+const { isDeepStrictEqual } = require('util');
 const JSZip = require('jszip');
 const fs = require('fs');
 const adapterName = packageJson.name.split('.').pop();
@@ -229,9 +229,11 @@ const context = {
     stateIds:            [],
     errorLogFunction:    null,
     subscriptions:       [],
+    subscriptionsFile:   [],
     subscriptionsObject: [],
-    adapterSubs:         {},
     subscribedPatterns:  {},
+    subscribedPatternsFile:  {},
+    adapterSubs:         {},
     cacheObjectEnums:    {},
     isEnums:             false, // If some subscription wants enum
     channels:            null,
@@ -332,6 +334,29 @@ function prepareStateObject(id, state, isAck) {
     return state;
 }
 
+
+function fileMatching(sub, id, fileName) {
+    if (sub.idRegEx) {
+        if (!sub.idRegEx.test(id)) {
+            return false;
+        }
+    } else {
+        if (sub.id !== id) {
+            return false;
+        }
+    }
+    if (sub.fileRegEx) {
+        if (!sub.fileRegEx.test(fileName)) {
+            return false;
+        }
+    } else {
+        if (sub.fileNamePattern !== fileName) {
+            return false;
+        }
+    }
+
+    return true;
+}
 /**
  * @type {Set<string>}
  * Stores the IDs of script objects whose change should be ignored because
@@ -584,6 +609,20 @@ function startAdapter(options) {
                 if (sub && patternMatching(_eventObj, sub.patternCompareFunctions)) {
                     try {
                         sub.callback(_eventObj);
+                    } catch (err) {
+                        adapter.log.error(`Error in callback: ${err}`);
+                    }
+                }
+            }
+        },
+
+        fileChange: (id, fileName, size) => {
+            // if this file matches any subscriptions
+            for (let i = 0, l = context.subscriptionsFile.length; i < l; i++) {
+                const sub = context.subscriptionsFile[i];
+                if (sub && fileMatching(sub, id, fileName)) {
+                    try {
+                        sub.callback(id, fileName, size, sub.withFile);
                     } catch (err) {
                         adapter.log.error(`Error in callback: ${err}`);
                     }
@@ -1624,7 +1663,9 @@ function createVM(source, name) {
     }
 
     if (!debugMode) {
-        source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + ' and ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ));\n";
+        source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + '," +
+            " ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ) + " +
+            "' and ' + __engine.__subscriptionsFile + ' file subscription' + (__engine.__subscriptionsFile === 1 ? '' : 's' ));\n";
     } else {
         if (source.startsWith('(async () => {\n')) {
             source = '(async () => {debugger;\n' + source.substring('(async () => {\n'.length);
@@ -1661,6 +1702,7 @@ function execute(script, name, verbose, debug) {
     script.name = name;
     script._id = Math.floor(Math.random() * 0xFFFFFFFF);
     script.subscribes = {};
+    script.subscribesFile = {};
     adapter.setState('scriptProblem.' + name.substring('script.js.'.length), { val: false, ack: true, expire: 1000 });
 
     const sandbox = sandBox(script, name, verbose, debug, context);
@@ -1767,8 +1809,7 @@ function stop(name, callback) {
         context.isEnums = false;
         if (adapter.config.subscribe) {
             // check all subscribed IDs
-            for (const id in context.scripts[name].subscribes) {
-                if (!context.scripts[name].subscribes.hasOwnProperty(id)) continue;
+            Object.keys(context.scripts[name].subscribes).forEach(id => {
                 if (context.subscribedPatterns[id]) {
                     context.subscribedPatterns[id] -= context.scripts[name].subscribes[id];
                     if (context.subscribedPatterns[id] <= 0) {
@@ -1779,7 +1820,7 @@ function stop(name, callback) {
                         }
                     }
                 }
-            }
+            });
         }
 
         for (let i = context.subscriptions.length - 1; i >= 0; i--) {
@@ -1790,6 +1831,23 @@ function stop(name, callback) {
                 if (!context.isEnums && context.subscriptions[i].pattern.enumName || context.subscriptions[i].pattern.enumId) {
                     context.isEnums = true;
                 }
+            }
+        }
+
+        // check all subscribed files
+        Object.keys(context.scripts[name].subscribesFile).forEach(key => {
+            if (context.subscribedPatternsFile[key]) {
+                context.subscribedPatternsFile[key] -= context.scripts[name].subscribesFile[key];
+                if (context.subscribedPatternsFile[key] <= 0) {
+                    const [id, file] = key.split('$%$');
+                    adapter.unsubscribeForeignFiles(id, file);
+                    delete context.subscribedPatternsFile[key];
+                }
+            }
+        });
+        for (let i = context.subscriptionsFile.length - 1; i >= 0; i--) {
+            if (context.subscriptionsFile[i].name === name) {
+                context.subscriptionsFile.splice(i, 1)[0];
             }
         }
 

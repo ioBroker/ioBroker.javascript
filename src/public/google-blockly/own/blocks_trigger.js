@@ -917,11 +917,107 @@ Blockly.JavaScript['cron_builder'] = function(block) {
 
     var code =
         (withSeconds === 'TRUE' || withSeconds === 'true' || withSeconds === true ?
-        seconds + '.toString().trim() + \' \' + ' : '') +
+            seconds + '.toString().trim() + \' \' + ' : '') +
         minutes + '.toString().trim() + \' \' + ' +
         hours   + '.toString().trim() + \' \' + ' +
         days    + '.toString().trim() + \' \' + ' +
         months  + '.toString().trim() + \' \' + ' +
         dow     + '.toString().trim()';
     return [code, Blockly.JavaScript.ORDER_ATOMIC]
+};
+
+// --- onFile -----------------------------------------------------------
+Blockly.Trigger.blocks['onFile'] =
+    '<block type="onFile">'
+    + '     <value name="OID">'
+    + '         <shadow type="field_oid_meta">'
+    + '             <field name="oid">Meta Object ID</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="FILE">'
+    + '         <shadow type="text">'
+    + '             <field name="FILE_NAME">*</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="WITH_FILE">'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['onFile'] = {
+    init: function() {
+        this.appendValueInput('OID')
+            .appendField(Blockly.Translate('onFile'))
+            .setCheck(null);
+
+        this.appendValueInput('FILE')
+            .appendField(Blockly.Translate('onFile_file'))
+            .setCheck(null);
+
+        this.appendDummyInput('WITH_FILE_INPUT')
+            .appendField(Blockly.Translate('onFile_withFile'))
+            .appendField(new Blockly.FieldCheckbox('FALSE'), 'WITH_FILE');
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setInputsInline(false);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setTooltip(Blockly.Translate('onFile_tooltip'));
+        this.setHelpUrl(getHelp('onFile_help'));
+    }
+};
+Blockly.JavaScript['onFile'] = function (block) {
+    var value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    var file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
+    var withFile = block.getFieldValue('WITH_FILE');
+    var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    var objectname = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+
+    return 'onFile(' + value_objectid + (objectname ? '/*' + objectname + '*/' : '') + ', ' +
+        file + ', ' + (withFile === 'TRUE' ? 'true' : 'false') +
+        ', async function (id, fileName, size, data, mimeType) {\n  ' + statements_name + '});\n';
+};
+
+// --- onFile -----------------------------------------------------------
+Blockly.Trigger.blocks['offFile'] =
+    '<block type="offFile">'
+    + '     <value name="OID">'
+    + '         <shadow type="field_oid_meta">'
+    + '             <field name="oid">Meta Object ID</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="FILE">'
+    + '         <shadow type="text">'
+    + '             <field name="FILE_NAME">*</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['offFile'] = {
+    init: function() {
+        this.appendValueInput('OID')
+            .appendField(Blockly.Translate('offFile'))
+            .setCheck(null);
+
+        this.appendValueInput('FILE')
+            .appendField(Blockly.Translate('onFile_file'))
+            .setCheck(null);
+
+        this.setPreviousStatement(true, null);
+        this.setInputsInline(false);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setTooltip(Blockly.Translate('offFile_tooltip'));
+        this.setHelpUrl(getHelp('offFile_help'));
+    }
+};
+Blockly.JavaScript['offFile'] = function (block) {
+    var value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    var file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
+    var objectname = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+
+    return 'offFile(' + value_objectid + (objectname ? '/*' + objectname + '*/' : '') + ', ' + file + ');\n';
 };

@@ -80,10 +80,7 @@ describe('Mirror', () => {
                     }
 
                     if (process.platform === 'darwin') {
-                        if (
-                            event === 'rename' &&
-              file === path.join(symlink, path.basename(script))
-                        ) {
+                        if (event === 'rename' && file === path.join(symlink, path.basename(script))) {
                             done();
                         }
                     }
@@ -147,10 +144,7 @@ describe('Mirror', () => {
                     }
 
                     if (process.platform === 'darwin') {
-                        if (
-                            event === 'rename' &&
-              file === path.join(symlink, path.basename(script))
-                        ) {
+                        if (event === 'rename' && file === path.join(symlink, path.basename(script))) {
                             done();
                         }
                     }

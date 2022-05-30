@@ -197,6 +197,9 @@ AAAA.MM.DD hh:mm:ss.sss
 Receba o horário atual ou
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Timeouts
+Pausa
+Pause a execução por tempo definido
+wait
 Executar
 Atraso
 em
@@ -256,12 +259,16 @@ qualidade
 origem
 é comando ou atualização
 última mudança
+comentário do último estado
+usuário do último estado
 valor anterior
 timestamp anterior
 qualidade anterior
 origem anterior
 comando ou atualização anterior
 última mudança anterior
+comentário anterior
+usuário anterior
 Este bloco só pode ser usado dentro do bloco "Se objeto"
 cronograma
 Execução por tempo
@@ -316,3 +323,11 @@ Faz
 Faz alguma coisa se a condição for verdadeira. Se não houver um caso correspondente, a função padrão será executada.
 Esta função será executada se não houver casos correspondentes.
 Esta é uma variável para a condição.
+Evento: se arquivo
+Padrão de arquivo
+Com dados de arquivo
+Se algum arquivo mudou ou atualizou
+onFile
+Cancelar evento de arquivo
+Cancelar assinatura na alteração do arquivo
+offFile

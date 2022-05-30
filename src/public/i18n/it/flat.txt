@@ -197,6 +197,9 @@ YYYY.MM.DD hh:mm:ss.sss
 Ottieni tempo reale o
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Timeout
+Pausa
+Metti in pausa l'esecuzione per un tempo definito
+wait
 Esecuzione
 tempo scaduto
 in
@@ -256,12 +259,16 @@ qualità dello stato
 origine del valore
 è comando o aggiornamento
 ultimo cambio di stato
+commento dell'ultimo stato
+utente dell'ultimo stato
 valore precedente
 timestamp precedente
 qualità precedente
 origine precedente
 comando precedente o aggiornamento
 precedente ultima modifica
+commento precedente
+utente precedente
 Questo blocco deve essere utilizzato solo all'interno del blocco eventi
 programma
 Fai qualcosa su cron schedule
@@ -316,3 +323,11 @@ fare
 Fa qualcosa se la condizione è vera. Se non esiste un caso corrispondente, verrà eseguita la funzione predefinita.
 Questa funzione verrà eseguita se non ci sono casi corrispondenti.
 Questa è una variabile per condizione.
+Evento: se file
+Modello di file
+Con dati di file
+Se qualche file è cambiato o aggiornato
+onFile
+Annulla evento file
+Annulla l'abbonamento in caso di modifica del file
+offFile

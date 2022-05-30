@@ -73,7 +73,7 @@ describe('Test Scheduler', function() {
         const dat = new Date('2030-6-21 12:00:00');
         const evtName = 'dusk';
         const time = suncalc.getTimes(dat, kcLat, kcLon)[evtName];
-        time.setSeconds(-3)
+        time.setSeconds(-3);
         console.log('Wait ...');
         tk.travel(time);
 

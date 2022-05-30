@@ -116,7 +116,7 @@ ID auswählen
 Wert
 bestätigt
 Zeitstempel
-Letzte Änderung
+Letze Änderung
 Qualität
 Quelle
 Zustandswert nehmen
@@ -197,6 +197,9 @@ JJJJ.MM.TT SS:mm:ss.sss
 Sende eine Meldung über Telegram
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Timeouts
+Pause
+Unterbrechen Sie die Ausführung für eine definierte Zeit
+wait
 Ausführen
 Verzögerung
 in
@@ -228,10 +231,10 @@ ist gleich wie letztes
 ist wahr
 ist unwahr
 on---subscribe-on-changes-or-updates-of-some-state
-anerkannt ist
+Auslösung durch
 egal
-Update
-Befehl
+bestätigte Änderung
+unbestätigte Änderung
 Falls Objekt
 Bei Zustandsänderung
 Objekt ID
@@ -256,12 +259,16 @@ Qualität
 Ursprung
 Befehl oder Aktualisierung
 letzte Änderung
+Kommentar des letzten Zustands
+Benutzer des letzten Zustands
 vorheriger Wert
 vorheriger Zeitstempel
 vorherige Quialität
-vorheriger Ursprung
+vorherige Ursprung
 vorherige Bestätigung
 vorherige letzte Änderung
+vorheriger Kommentar
+vorheriger Benutzer
 Dieser Block darf nur innerhalb "Falls Objekt" Block verwendet werden
 Zeitplan
 Ausführen nach Zeitplan
@@ -316,3 +323,11 @@ machen
 Tut etwas, wenn die Bedingung erfüllt ist. Wenn es keinen passenden Fall gibt, wird die Standardfunktion ausgeführt.
 Diese Funktion wird ausgeführt, wenn keine übereinstimmenden Fälle vorliegen.
 Dies ist eine Variable für die Bedingung.
+Ereignis: Datei geändert
+Dateimuster
+Mit Dateidaten
+Wenn sich eine Datei geändert oder aktualisiert hat
+onFile
+Dateiereignis abbrechen
+Abonnement bei Dateiänderung kündigen
+offFile
