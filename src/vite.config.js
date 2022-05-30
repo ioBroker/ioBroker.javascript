@@ -39,10 +39,6 @@ export default defineConfig(({ mode }) => {
                         singleton: true,
                         // requiredVersion: pkg.dependencies['@mui/material'],
                     },
-                    'react-ace': {
-                        singleton: true,
-                        // requiredVersion: pkg.dependencies['@mui/material'],
-                    },
                     'prop-types': {
                         singleton: true,
                         // requiredVersion: pkg.dependencies['@mui/material'],

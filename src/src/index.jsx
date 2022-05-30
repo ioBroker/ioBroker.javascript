@@ -39,3 +39,18 @@ build();
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: http://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+/*
+    improved VSCode editor. This has to be down here, or we get conflicts
+    between loader.js and require calls in jQuery and other loaded modules
+*/
+// loader must be after socket.io, elsewise there is no window.io
+const loadDynamicScript = window.loadDynamicScript;
+loadDynamicScript(window.location.port === '3000' ? window.location.protocol + '//' + window.location.hostname + ':8081/lib/js/socket.io.js' : './../../lib/js/socket.io.js', function () {
+        
+    loadDynamicScript('vs/loader.js', function () {
+        loadDynamicScript('vs/configure.js', function () {
+        typeof window.socketLoadedHandler === 'function' && window.socketLoadedHandler();
+        });
+    });
+});
