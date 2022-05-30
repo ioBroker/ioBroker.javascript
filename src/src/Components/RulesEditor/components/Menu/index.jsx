@@ -1,8 +1,8 @@
 import React, { Fragment, useContext, useEffect } from 'react';
 import cls from './style.module.scss';
-import { AppBar, ClickAwayListener, Tab, Tabs } from '@material-ui/core';
+import { AppBar, ClickAwayListener, Tab, Tabs } from '@mui/material';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import CustomInput from '../CustomInput';
 import CustomDragItem from '../CardMenu/CustomDragItem';

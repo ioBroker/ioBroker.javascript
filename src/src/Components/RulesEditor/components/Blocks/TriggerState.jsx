@@ -1,23 +1,23 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 
 import GenericBlock from '../GenericBlock';
 import Compile from '../../helpers/Compile';
-import Button from '@material-ui/core/Button';
-import Switch from '@material-ui/core/Switch';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import TextField from '@material-ui/core/TextField';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Slide from '@material-ui/core/Slide';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import Button from '@mui/material/Button';
+import Switch from '@mui/material/Switch';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import TextField from '@mui/material/TextField';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 import { MdCancel as IconCancel } from 'react-icons/md';
 import { MdCheck as IconCheck } from 'react-icons/md';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 const styles = theme => ({
     valueAck: {

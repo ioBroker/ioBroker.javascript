@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { MuiThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { version } from '../package.json';
-import theme from '@iobroker/adapter-react/Theme';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import theme from '@iobroker/adapter-react-v5/Theme';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
@@ -21,14 +21,16 @@ console.log('iobroker.' + window.adapterName + '@' + version + ' using theme "' 
 
 function build() {
     const isMobile = window.innerWidth < 600;
-    return ReactDOM.render(<MuiThemeProvider theme={theme(themeName)}>
-        <DndProvider backend={isMobile ? TouchBackend : HTML5Backend}>
-            <App onThemeChange={_theme => {
-                themeName = _theme;
-                build();
-            }} />
-        </DndProvider>
-    </MuiThemeProvider>, document.getElementById('root'));
+    return ReactDOM.render(<StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme(themeName)}>
+            <DndProvider backend={isMobile ? TouchBackend : HTML5Backend}>
+                <App onThemeChange={_theme => {
+                    themeName = _theme;
+                    build();
+                }} />
+            </DndProvider>
+        </ThemeProvider>
+    </StyledEngineProvider>, document.getElementById('root'));
 
 }
 

@@ -3,7 +3,7 @@ import cls from './style.module.scss';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-import { Slider } from '@material-ui/core';
+import { Slider } from '@mui/material';
 
 const CustomSlider = ({ fullWidth, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue, min, max, step, unit }) => {
     const [inputText, setInputText] = useState(0);

@@ -7,10 +7,10 @@ import CustomInput from '../CustomInput';
 import CustomButton from '../CustomButton';
 import CustomModal from '../CustomModal';
 
-import ComplexCron from '@iobroker/adapter-react/Components/ComplexCron';
-import Schedule from '@iobroker/adapter-react/Components/Schedule';
-import convertCronToText from '@iobroker/adapter-react/Components/SimpleCron/cronText';
-import I18n from '@iobroker/adapter-react/i18n';
+import ComplexCron from '@iobroker/adapter-react-v5/Components/ComplexCron';
+import Schedule from '@iobroker/adapter-react-v5/Components/Schedule';
+import convertCronToText from '@iobroker/adapter-react-v5/Components/SimpleCron/cronText';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 const DEFAULT_WIZARD = '{"time":{"start":"00:00","end":"24:00","mode":"hours","interval":1},"period":{"days":1}}';
 

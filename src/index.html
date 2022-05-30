@@ -47,16 +47,7 @@
       }
 
       loadDynamicScript(window.location.port === '3000' ? window.location.protocol + '//' + window.location.hostname + ':8081/lib/js/socket.io.js' : './../../lib/js/socket.io.js', function () {
-        /*
-          improved VSCode editor. This has to be down here, or we get conflicts
-          between loader.js and require calls in jQuery and other loaded modules
-        */
-        // loader must be after socket.io, elsewise there is no window.io
-        loadDynamicScript('vs/loader.js', function () {
-          loadDynamicScript('vs/configure.js', function () {
-            typeof window.socketLoadedHandler === 'function' && window.socketLoadedHandler();
-          });
-        });
+        
       });
     </script>
     <!--
@@ -104,7 +95,23 @@
     </script>
 
     <div id="root"></div>
-    <script type="module" src="/src/index.jsx"></script>
+    <script type="module" src="/src/index.jsx" onload="
+        /*
+          improved VSCode editor. This has to be down here, or we get conflicts
+          between loader.js and require calls in jQuery and other loaded modules
+        */
+        // loader must be after socket.io, elsewise there is no window.io
+        // loadDynamicScript('vs/loader.js', function () {
+        //   loadDynamicScript('vs/configure.js', function () {
+        //     typeof window.socketLoadedHandler === 'function' && window.socketLoadedHandler();
+        //   });
+        // });
+        loadDynamicScript('vs/loader.js', function () {
+          loadDynamicScript('vs/configure.js', function () {
+            typeof window.socketLoadedHandler === 'function' && window.socketLoadedHandler();
+          });
+        });
+    "></script>
 
     <xml id="toolbox" style="display: none">
       <category><block>%%CUSTOM_BLOCKS%%</block></category>

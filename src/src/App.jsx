@@ -2,18 +2,18 @@ import React from 'react';
 // import ReactDOM from 'react-dom';
 import * as Sentry from '@sentry/browser';
 import * as SentryIntegrations from '@sentry/integrations';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import SplitterLayout from 'react-splitter-layout';
 import { version } from '../package.json';
 
 import 'react-splitter-layout/lib/index.css';
 
-import GenericApp from '@iobroker/adapter-react/GenericApp';
-import Loader from '@iobroker/adapter-react/Components/Loader'
-import I18n from '@iobroker/adapter-react/i18n';
-import DialogMessage from '@iobroker/adapter-react/Dialogs/Message';
-import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import GenericApp from '@iobroker/adapter-react-v5/GenericApp';
+import Loader from '@iobroker/adapter-react-v5/Components/Loader'
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import DialogMessage from '@iobroker/adapter-react-v5/Dialogs/Message';
+import DialogConfirm from '@iobroker/adapter-react-v5/Dialogs/Confirm';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 import { MdMenu as IconMenuClosed } from 'react-icons/md';
 import { MdArrowBack as IconMenuOpened } from 'react-icons/md';
@@ -44,7 +44,7 @@ const styles = theme => ({
             height: '100%',
         },
         '& .layout-splitter': {
-            background: theme.palette.type === 'dark' ? '#595858' : '#ccc;'
+            background: theme.palette.mode === 'dark' ? '#595858' : '#ccc;'
         }
     },
     mainDiv: {

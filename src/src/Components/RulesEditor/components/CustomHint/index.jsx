@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Fab, Tooltip, withStyles } from '@material-ui/core';
-import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
+import { Fab, Tooltip } from '@mui/material';
+import withStyles from '@mui/styles/withStyles';
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 
 const LightTooltip = withStyles(theme => ({
     tooltip: {

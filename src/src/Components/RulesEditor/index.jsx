@@ -7,7 +7,7 @@ import { ContextWrapperCreate } from './components/ContextWrapper';
 import Compile from './helpers/Compile';
 import PropTypes from 'prop-types';
 import Menu from './components/Menu';
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 import './helpers/stylesVariables.scss';
 
 import DialogExport from '../../Dialogs/Export';

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import * as Icons from '@material-ui/icons/';
+import * as Icons from '@mui/icons-material/';
 
 const ICON_CACHE = {};
 

@@ -1,26 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from "@material-ui/core/styles";
+import withStyles from '@mui/styles/withStyles';
 
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Grid from '@material-ui/core/Grid';
-import ListItemText from '@material-ui/core/ListItemText';
-import Input from '@material-ui/core/Input';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
+import Button from '@mui/material/Button';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Dialog from '@mui/material/Dialog';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Grid from '@mui/material/Grid';
+import ListItemText from '@mui/material/ListItemText';
+import Input from '@mui/material/Input';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
 
-import IconOk from '@material-ui/icons/Check';
-import IconCancel from '@material-ui/icons/Cancel';
-import IconClose from '@material-ui/icons/Close';
+import IconOk from '@mui/icons-material/Check';
+import IconCancel from '@mui/icons-material/Cancel';
+import IconClose from '@mui/icons-material/Close';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 const styles = theme => ({
     buttonIcon: {

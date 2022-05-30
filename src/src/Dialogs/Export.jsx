@@ -1,19 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
-import Popper from '@material-ui/core/Popper';
-import Fade from '@material-ui/core/Fade';
-import Paper from '@material-ui/core/Paper';
+import withStyles from '@mui/styles/withStyles';
+import Button from '@mui/material/Button';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Dialog from '@mui/material/Dialog';
+import Popper from '@mui/material/Popper';
+import Fade from '@mui/material/Fade';
+import Paper from '@mui/material/Paper';
 
-import IconCopy from '@material-ui/icons/FileCopy';
-import IconCancel from '@material-ui/icons/Cancel';
+import IconCopy from '@mui/icons-material/FileCopy';
+import IconCancel from '@mui/icons-material/Cancel';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 const styles = theme => ({
     textArea: {

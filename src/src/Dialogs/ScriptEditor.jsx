@@ -1,17 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
+import withStyles from '@mui/styles/withStyles';
+import Button from '@mui/material/Button';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Dialog from '@mui/material/Dialog';
 
-import IconSave from '@material-ui/icons/Save';
-import IconCancel from '@material-ui/icons/Cancel';
+import IconSave from '@mui/icons-material/Save';
+import IconCancel from '@mui/icons-material/Cancel';
 
 import ScriptEditorComponent from '../Components/ScriptEditorVanilaMonaco';
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 const styles = theme => ({
     textArea: {
@@ -26,13 +26,13 @@ const styles = theme => ({
         overflow: 'hidden'
     },
     args: {
-        color: theme.palette.type === 'dark' ? 'white' : 'black',
+        color: theme.palette.mode === 'dark' ? 'white' : 'black',
         height: 30,
         width: '100%',
         fontSize: 16
     },
     argsTitle: {
-        color: theme.palette.type === 'dark' ? 'white' : 'black',
+        color: theme.palette.mode === 'dark' ? 'white' : 'black',
         fontWeight: 'bold'
     }
 });

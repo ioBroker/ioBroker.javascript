@@ -1,15 +1,15 @@
 import React, { PureComponent, Fragment } from 'react';
 import cls from './style.module.scss';
 
-import { Menu, MenuItem } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import IconHelp from '@material-ui/icons/HelpOutline';
+import { Menu, MenuItem } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import IconHelp from '@mui/icons-material/HelpOutline';
 
-import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
-import DialogError from '@iobroker/adapter-react/Dialogs/Error';
-import DialogMessage from '@iobroker/adapter-react/Dialogs/Message';
-import Utils from '@iobroker/adapter-react/Components/Utils';
-import I18n from '@iobroker/adapter-react/i18n';
+import DialogSelectID from '@iobroker/adapter-react-v5/Dialogs/SelectID';
+import DialogError from '@iobroker/adapter-react-v5/Dialogs/Error';
+import DialogMessage from '@iobroker/adapter-react-v5/Dialogs/Message';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import CustomButton from '../CustomButton';
 import CustomCheckbox from '../CustomCheckbox';
@@ -26,7 +26,7 @@ import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import utils from '../../helpers/utils';
 import clsx from 'clsx';
 import { STEPS } from '../../helpers/Tour';
-import { getSelectIdIcon } from '@iobroker/adapter-react/Components/Icon';
+import { getSelectIdIcon } from '@iobroker/adapter-react-v5/Components/Icon';
 
 class GenericBlock extends PureComponent {
     constructor(props, item) {
@@ -578,25 +578,27 @@ class GenericBlock extends PureComponent {
                         if (typeof el !== 'string') {
                             tag = el.title;
                         }
-                        return <MenuItem
-                            key={tag}
-                            selected={tag === tagCard}
-                            className={'tag-card-' + tag}
-                            style={{ placeContent: 'space-between' }}
-                            onClick={() => {
-                                const settings = { ...this.state.settings, tagCard: tag };
-                                this.setState({ openTagMenu: null, settings }, () => {
-                                    this.props.onChange(settings);
-                                    this.onTagChange(tag);
-                                });
-                                (this.props.isTourOpen &&
-                                    (this.props.tourStep === STEPS.openTagsMenu ||
-                                        this.props.tourStep === STEPS.selectIntervalTag) &&
-                                    tag === 'interval' &&
-                                    setTimeout(() => this.props.setTourStep(STEPS.selectActions), 500));
+                        return (
+                            <MenuItem
+                                key={tag}
+                                selected={tag === tagCard}
+                                className={'tag-card-' + tag}
+                                style={{ placeContent: 'space-between' }}
+                                onClick={() => {
+                                    const settings = { ...this.state.settings, tagCard: tag };
+                                    this.setState({ openTagMenu: null, settings }, () => {
+                                        this.props.onChange(settings);
+                                        this.onTagChange(tag);
+                                    });
+                                    (this.props.isTourOpen &&
+                                        (this.props.tourStep === STEPS.openTagsMenu ||
+                                            this.props.tourStep === STEPS.selectIntervalTag) &&
+                                        tag === 'interval' &&
+                                        setTimeout(() => this.props.setTourStep(STEPS.selectActions), 500));
 
-                            }}>{tag.search(/>|<|<>|<=|>=|=/) !== -1 ? tag : I18n.t(tag)}{typeof el !== 'string' && el.title2 && <div style={{ marginLeft: 4 }}>{I18n.t(el.title2)}</div>}
-                        </MenuItem>
+                                }}>{tag.search(/>|<|<>|<=|>=|=/) !== -1 ? tag : I18n.t(tag)}{typeof el !== 'string' && el.title2 && <div style={{ marginLeft: 4 }}>{I18n.t(el.title2)}</div>}
+                            </MenuItem>
+                        );
                     })}
                 </Menu>
             </div>;

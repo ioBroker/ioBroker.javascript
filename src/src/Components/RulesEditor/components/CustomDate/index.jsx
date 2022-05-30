@@ -1,9 +1,9 @@
-import { FormControl, MenuItem, Select } from '@material-ui/core';
+import { FormControl, MenuItem, Select } from '@mui/material';
 import React from 'react';
 import cls from './style.module.scss';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 const DAYS = [
     31, // 1

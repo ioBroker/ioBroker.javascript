@@ -1,22 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import {withStyles} from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import SplitterLayout from 'react-splitter-layout';
 import ReactJson  from 'react-json-view';
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Input from '@material-ui/core/Input';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Input from '@mui/material/Input';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
 
 import {MdCheck as CheckIcon} from 'react-icons/md';
 import {MdAdd as IconAdd} from 'react-icons/md';
 import {MdDelete as IconDelete} from 'react-icons/md';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 const styles = theme => ({
     frameRoot: {
@@ -27,7 +27,7 @@ const styles = theme => ({
         margin: 0,
     },
     frameTextPrimary: {
-        color: theme.palette.type === 'dark' ? '#CCC' : '#333',
+        color: theme.palette.mode === 'dark' ? '#CCC' : '#333',
     },
     frameTextSecondary: {
         fontStyle: 'italic',
@@ -81,7 +81,7 @@ const styles = theme => ({
         width: 24,
         display: 'inline-block',
         height: '100%',
-        background: theme.palette.type === 'dark' ? '#222' : '#EEE',
+        background: theme.palette.mode === 'dark' ? '#222' : '#EEE',
         verticalAlign: 'top',
     },
     scopesAfterToolbar: {
@@ -98,7 +98,7 @@ const styles = theme => ({
     },
     scopeNameEqual: {
         display: 'inline-block',
-        color: theme.palette.type === 'dark' ? '#EEE' : '#222',
+        color: theme.palette.mode === 'dark' ? '#EEE' : '#222',
         verticalAlign: 'top',
     },
     scopeNameValue: {
@@ -180,7 +180,7 @@ class Stack extends React.Component {
 
                 endAdornment={
                     <InputAdornment position="end">
-                        <IconButton onClick={() => this.onExpressionNameUpdate()}>
+                        <IconButton onClick={() => this.onExpressionNameUpdate()} size="large">
                             <CheckIcon/>
                         </IconButton>
                     </InputAdornment>
@@ -359,7 +359,7 @@ class Stack extends React.Component {
                         this.scopeValue = e.target.value}
                     endAdornment={
                         <InputAdornment position="end">
-                            <IconButton onClick={() => this.onWriteScopeValue()}>
+                            <IconButton onClick={() => this.onWriteScopeValue()} size="large">
                                 <CheckIcon/>
                             </IconButton>
                         </InputAdornment>

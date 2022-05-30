@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
-import Button from '@material-ui/core/Button';
-import { Dialog, DialogActions, DialogContent } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import { Dialog, DialogActions, DialogContent } from '@mui/material';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
-import i18n from '@iobroker/adapter-react/i18n';
+import i18n from '@iobroker/adapter-react-v5/i18n';
 import CustomInput from "../CustomInput";
 
 const CustomModal = ({ open, onClose, children, titleButtonApply, titleButtonClose, onApply, className, textInput, defaultValue}) => {

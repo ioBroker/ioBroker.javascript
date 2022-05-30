@@ -1,20 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
+import withStyles from '@mui/styles/withStyles';
+import Button from '@mui/material/Button';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Dialog from '@mui/material/Dialog';
 import Dropzone from 'react-dropzone';
 import DialogError from './Error';
 import {MdFileUpload as IconUpload} from 'react-icons/md';
 import {MdCancel as IconNo} from 'react-icons/md';
 import {MdPlusOne as IconPlus} from 'react-icons/md';
 
-import IconCancel from '@material-ui/icons/Cancel';
+import IconCancel from '@mui/icons-material/Cancel';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 const styles = theme => ({
     dialog: {

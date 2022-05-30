@@ -1,26 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import {withStyles} from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import IconButton from '@material-ui/core/IconButton';
+import withStyles from '@mui/styles/withStyles';
+import Drawer from '@mui/material/Drawer';
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
 import { useDrag, useDrop, DndProvider as DragDropContext  } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Input from '@material-ui/core/Input';
-import RootRef from '@material-ui/core/RootRef';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Input from '@mui/material/Input';
 
-import red from '@material-ui/core/colors/red';
-import green from '@material-ui/core/colors/green';
-import yellow from '@material-ui/core/colors/yellow';
 
 import {MdMoreVert as IconMore} from 'react-icons/md';
 import {FaFolder as IconFolder} from 'react-icons/fa';
@@ -50,13 +46,15 @@ import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
 import ImgRules from './assets/rules.png';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 import DialogRename from './Dialogs/Rename';
 import DialogDelete from './Dialogs/Delete';
 import DialogAddNewScript from './Dialogs/AddNewScript';
 import DialogNew from './Dialogs/New';
 import DialogError from './Dialogs/Error';
 import DialogAdapterDebug from "./Dialogs/AdapterDebug";
+
+import { red, green, yellow } from '@mui/material/colors';
 
 const MENU_ITEM_HEIGHT = 48;
 const COLOR_RUN = green[400];
@@ -84,7 +82,7 @@ const styles = theme => ({
         height: theme.toolbar.height
     },
     toolbarButtons: {
-        color: theme.palette.type === 'dark'? 'white !important' : 'black !important'
+        color: theme.palette.mode === 'dark'? 'white !important' : 'black !important'
     },
     iconButtonsDisabled: {
         filter: 'grayscale(100%)',
@@ -137,7 +135,7 @@ const styles = theme => ({
         marginRight: 4,
     },
     folder: {
-        //background: theme.palette.type === 'dark' ? '#6a6a6a' : '#e2e2e2',
+        //background: theme.palette.mode === 'dark' ? '#6a6a6a' : '#e2e2e2',
         cursor: 'pointer',
         padding: 0,
         userSelect: 'none'
@@ -199,7 +197,7 @@ const styles = theme => ({
         '&:hover': {
             backgroundColor: '#dbdbdb'
         },
-        color: theme.palette.type === 'dark' ? '#ffffff' : '#111111',
+        color: theme.palette.mode === 'dark' ? '#ffffff' : '#111111',
         cursor: 'pointer',
         marginTop: 1,
         marginRight: 2,
@@ -763,7 +761,8 @@ class SideDrawer extends React.Component {
                     title={item.enabled ? I18n.t('Pause script') : I18n.t('Run script')}
                     disabled={this.props.debugMode}
                     key="startStop"
-                    style={{color}}>
+                    style={{color}}
+                    size="large">
                     {item.enabled ? <IconPause/> : <IconPlay/>}
                 </IconButton>,
                 this.state.width > NARROW_WIDTH ? <IconButton
@@ -771,25 +770,29 @@ class SideDrawer extends React.Component {
                     className={clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
                     title={I18n.t('Delete script')}
                     disabled={item.id === GLOBAL_ID || item.id === COMMON_ID || this.props.debugMode}
-                    onClick={e => this.onDelete(item, e)}><IconDelete/></IconButton> : null,
+                    onClick={e => this.onDelete(item, e)}
+                    size="large"><IconDelete/></IconButton> : null,
                 <IconButton
                     className={clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
                     disabled={this.props.debugMode}
                     key="openInEdit"
                     title={I18n.t('Edit script or just double click')}
                     onClick={e => this.onEdit(item, e)}
-                >
+                    size="large">
                     <IconDoEdit/>
                 </IconButton>,
             ];
         } else if (this.state.width > NARROW_WIDTH) {
             if (item.id !== ROOT_ID && item.id !== COMMON_ID && item.id !== GLOBAL_ID && (!children || !children.length)) {
-                return <IconButton
-                    className={clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
-                    key="delete"
-                    title={I18n.t('Delete folder')}
-                    disabled={item.id === GLOBAL_ID || item.id === COMMON_ID || this.props.debugMode}
-                    onClick={e => this.onDelete(item, e)}><IconDelete/></IconButton>;
+                return (
+                    <IconButton
+                        className={clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
+                        key="delete"
+                        title={I18n.t('Delete folder')}
+                        disabled={item.id === GLOBAL_ID || item.id === COMMON_ID || this.props.debugMode}
+                        onClick={e => this.onDelete(item, e)}
+                        size="large"><IconDelete/></IconButton>
+                );
             } else {
                 return null;
             }
@@ -1237,7 +1240,7 @@ class SideDrawer extends React.Component {
         const classes = this.props.classes;
         const reorder = this.state.reorder && !this.props.debugMode;
         if (this.state.searchMode && !this.props.debugMode) {
-            result.push(<RootRef key="searchInputRoof" rootRef={this.inputRef}><Input
+            result.push(<><Input
                 key="searchInput"
                 value={this.state.searchText}
                 className={classes.toolbarSearch}
@@ -1253,7 +1256,7 @@ class SideDrawer extends React.Component {
                         this.props.onSearch && this.props.onSearch(this.state.searchText);
                     }, 400);
                 }}
-            /></RootRef>);
+            /></>);
 
             result.push(<IconButton
                 key="disableSearch"
@@ -1264,7 +1267,7 @@ class SideDrawer extends React.Component {
                     e.stopPropagation();
                     this.filterList(false, () => this.props.onSearch && this.props.onSearch(this.state.searchText));
                 }}
-            ><IconClose /></IconButton>);
+                size="large"><IconClose /></IconButton>);
 
             this.state.searchText && result.push(<IconButton
                 key="cleanSearch"
@@ -1279,7 +1282,7 @@ class SideDrawer extends React.Component {
                         this.props.onSearch && this.props.onSearch(this.state.searchText);
                     });
                 }}
-            ><IconClear fontSize="small"/></IconButton>);
+                size="large"><IconClear fontSize="small"/></IconButton>);
         } else {
             if (!reorder) {
                 // Open Menu
@@ -1294,7 +1297,7 @@ class SideDrawer extends React.Component {
                         event.preventDefault();
                         this.setState({menuOpened: true, menuAnchorEl: event.currentTarget});
                     }}
-                >
+                    size="large">
                     {/*<Badge className={classes.margin} badgeContent={this.getFilterBadge()}>*/}
                         <IconMore />
                     {/*</Badge>*/}
@@ -1317,7 +1320,7 @@ class SideDrawer extends React.Component {
                     className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
                     style={{color: reorder ? 'red' : 'inherit'}}
                     onClick={e => this.onAddNew(e)}
-                ><IconAdd/></IconButton>);
+                    size="large"><IconAdd/></IconButton>);
 
                 // New Folder
                 result.push(<IconButton
@@ -1327,7 +1330,7 @@ class SideDrawer extends React.Component {
                     className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
                     style={{color: reorder ? 'red' : 'inherit'}}
                     onClick={() => this.onAddNewFolder()}
-                ><IconAddFolder/></IconButton>);
+                    size="large"><IconAddFolder/></IconButton>);
             }
 
             // Search
@@ -1341,7 +1344,7 @@ class SideDrawer extends React.Component {
                     e.stopPropagation();
                     this.setState({searchMode: true});
                 }}
-            ><IconFind/></IconButton>);
+                size="large"><IconFind/></IconButton>);
 
             // Reorder button
             result.push(<IconButton
@@ -1354,7 +1357,7 @@ class SideDrawer extends React.Component {
                     e.stopPropagation();
                     this.setState({reorder: !this.state.reorder});
                 }}
-            ><IconReorder/></IconButton>);
+                size="large"><IconReorder/></IconButton>);
 
             if (!reorder && this.state.selected && this.state.selected !== GLOBAL_ID && this.state.selected !== COMMON_ID) {
                 // Rename
@@ -1364,7 +1367,7 @@ class SideDrawer extends React.Component {
                     title={I18n.t('Rename')}
                     key="rename"
                     onClick={e => this.onRename(e)}
-                ><IconEdit/></IconButton>);
+                    size="large"><IconEdit/></IconButton>);
 
 
                 // const selectedItem = this.state.listItems.find(i => i.id === this.state.selected);

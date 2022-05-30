@@ -1,13 +1,13 @@
 
 import React, { Fragment, useEffect, useState } from 'react';
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
 import { useDrop } from 'react-dnd';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import IconButton from '@material-ui/core/IconButton';
-import IconHelp from '@material-ui/icons/HelpOutline';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import IconButton from '@mui/material/IconButton';
+import IconHelp from '@mui/icons-material/HelpOutline';
 import { deepCopy } from '../../helpers/deepCopy';
 
 import CurrentItem from '../CurrentItem';

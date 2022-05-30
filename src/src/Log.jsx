@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from '@mui/material/IconButton';
 import {MdDeleteForever as IconDelete} from 'react-icons/md';
 import {MdVerticalAlignBottom as IconBottom} from 'react-icons/md';
 import {MdContentCopy as IconCopy} from 'react-icons/md';
 import {MdVisibilityOff as IconHide} from 'react-icons/md';
 
-import I18n from '@iobroker/adapter-react/i18n';
-import {withStyles} from '@material-ui/core/styles/index';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import withStyles from '@mui/styles/withStyles';
 
 // replace later with MdHorizontalSplit and MdVerticalSplit
 const IconVerticalSplit   = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAACFJREFUeAFjAIJRwP////8PYIKWHCigNQdKj/pn1D+jAABTG16wVQqVpQAAAABJRU5ErkJggg==';
@@ -46,7 +46,7 @@ const styles = theme => ({
     },
     logBoxInner: {
         display: 'inline-block',
-        color: theme.palette.type === 'dark' ? 'white' : 'black',
+        color: theme.palette.mode === 'dark' ? 'white' : 'black',
         width: `calc(100% - ${TOOLBOX_WIDTH}px)`,
         height: '100%',
         //marginLeft: TOOLBOX_WIDTH,
@@ -55,26 +55,26 @@ const styles = theme => ({
         verticalAlign: 'top',
     },
     info: {
-        background: theme.palette.type === 'dark' ? 'darkgrey' : 'lightgrey',
-        color: theme.palette.type === 'dark' ?  'black' : 'black'
+        background: theme.palette.mode === 'dark' ? 'darkgrey' : 'lightgrey',
+        color: theme.palette.mode === 'dark' ?  'black' : 'black'
     },
     error: {
         background: '#FF0000',
-        color: theme.palette.type === 'dark' ?  'black' : 'white'
+        color: theme.palette.mode === 'dark' ?  'black' : 'white'
     },
     warn: {
         background: '#FF8000',
-        color: theme.palette.type === 'dark' ?  'black' : 'white'
+        color: theme.palette.mode === 'dark' ?  'black' : 'white'
     },
     debug: {
         background: 'gray',
         opacity: 0.8,
-        color: theme.palette.type === 'dark' ?  'black' : 'white'
+        color: theme.palette.mode === 'dark' ?  'black' : 'white'
     },
     silly: {
         background: 'gray',
         opacity: 0.6,
-        color: theme.palette.type === 'dark' ? 'black' : 'white'
+        color: theme.palette.mode === 'dark' ? 'black' : 'white'
     },
     table: {
         fontFamily: 'monospace',
@@ -104,8 +104,8 @@ const styles = theme => ({
     layoutIcon: {
         width: 24,
         height: 24,
-        background: theme.palette.type === 'dark' ? '#9d9d9d' : undefined,
-        borderRadius: theme.palette.type === 'dark' ? 30 : undefined,
+        background: theme.palette.mode === 'dark' ? '#9d9d9d' : undefined,
+        borderRadius: theme.palette.mode === 'dark' ? 30 : undefined,
     },
 });
 
@@ -253,16 +253,36 @@ class Log extends React.Component {
 
     render() {
         const lines = this.state.selected && this.state.lines[this.state.selected];
-        return <div className={this.props.classes.logBox}>
-            <div className={this.props.classes.toolbox} key="toolbox">
-                <IconButton className={this.props.classes.iconButtons} onClick={() => this.setState({goBottom: !this.state.goBottom})} color={this.state.goBottom ? 'secondary' : ''}><IconBottom/></IconButton>
-                {lines && lines.length ? <IconButton className={this.props.classes.iconButtons} onClick={() => this.clearLog()}><IconDelete/></IconButton> : null}
-                {lines && lines.length ? <IconButton className={this.props.classes.iconButtons} onClick={() => this.onCopy()}><IconCopy/></IconButton> : null}
-                {this.props.onLayoutChange ? <IconButton className={this.props.classes.iconButtons} onClick={() => this.props.onLayoutChange()} title={I18n.t('Change layout')}><img className={this.props.classes.layoutIcon} alt="split" src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit} /></IconButton> : null}
-                <IconButton className={this.props.classes.iconButtons} onClick={() => this.props.onHideLog()} title={I18n.t('Hide logs')}><IconHide /></IconButton>
+        return (
+            <div className={this.props.classes.logBox}>
+                <div className={this.props.classes.toolbox} key="toolbox">
+                    <IconButton
+                        className={this.props.classes.iconButtons}
+                        onClick={() => this.setState({goBottom: !this.state.goBottom})}
+                        color={this.state.goBottom ? 'secondary' : ''}
+                        size="large"><IconBottom/></IconButton>
+                    {lines && lines.length ? <IconButton
+                        className={this.props.classes.iconButtons}
+                        onClick={() => this.clearLog()}
+                        size="large"><IconDelete/></IconButton> : null}
+                    {lines && lines.length ? <IconButton
+                        className={this.props.classes.iconButtons}
+                        onClick={() => this.onCopy()}
+                        size="large"><IconCopy/></IconButton> : null}
+                    {this.props.onLayoutChange ? <IconButton
+                        className={this.props.classes.iconButtons}
+                        onClick={() => this.props.onLayoutChange()}
+                        title={I18n.t('Change layout')}
+                        size="large"><img className={this.props.classes.layoutIcon} alt="split" src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit} /></IconButton> : null}
+                    <IconButton
+                        className={this.props.classes.iconButtons}
+                        onClick={() => this.props.onHideLog()}
+                        title={I18n.t('Hide logs')}
+                        size="large"><IconHide /></IconButton>
+                </div>
+                {this.renderLogList(lines)}
             </div>
-            {this.renderLogList(lines)}
-        </div>;
+        );
     }
 }
 

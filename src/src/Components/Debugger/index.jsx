@@ -3,17 +3,17 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import SplitterLayout from 'react-splitter-layout';
 
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Toolbar from '@material-ui/core/Toolbar';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
-import Badge from '@material-ui/core/Badge';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Toolbar from '@mui/material/Toolbar';
+import LinearProgress from '@mui/material/LinearProgress';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import Badge from '@mui/material/Badge';
 
 import {MdClose as IconClose, MdPlayArrow as IconRun} from 'react-icons/md';
 import { MdPause as IconPause } from 'react-icons/md';
@@ -23,8 +23,8 @@ import { MdArrowUpward as IconOut } from 'react-icons/md';
 import { MdRefresh as IconRestart } from 'react-icons/md';
 import { MdWarning as IconException } from 'react-icons/md';
 
-import I18n from '@iobroker/adapter-react/i18n';
-import {withStyles} from '@material-ui/core/styles';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import withStyles from '@mui/styles/withStyles';
 import DialogError from '../../Dialogs/Error';
 import Editor from './Editor';
 import Console from './Console';
@@ -68,7 +68,7 @@ const styles = theme => ({
 
     tabFile: {
         textTransform: 'inherit',
-        color: theme.palette.type === 'dark' ? '#DDD' : 'inherit'
+        color: theme.palette.mode === 'dark' ? '#DDD' : 'inherit'
     },
     tabText: {
         maxWidth: 130,
@@ -89,8 +89,8 @@ const styles = theme => ({
 
     tabsRoot: {
         minHeight: 24,
-        background: theme.palette.type === 'dark' ? '#333' : '#e6e6e6',
-        color: theme.palette.type === 'dark' ? 'white' : 'inherit'
+        background: theme.palette.mode === 'dark' ? '#333' : '#e6e6e6',
+        color: theme.palette.mode === 'dark' ? 'white' : 'inherit'
     },
     tabRoot: {
         minHeight: 24,
@@ -558,22 +558,58 @@ class Debugger extends React.Component {
 
     renderToolbar() {
         const disabled = !this.state.started;
-        return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
-            <IconButton className={this.props.classes.buttonRestart} disabled={disabled} onClick={() => this.onRestart()}  title={I18n.t('Restart')}><IconRestart/></IconButton>
-            {
-                !this.state.finished && this.state.paused ?
-                    <IconButton className={this.props.classes.buttonRun} disabled={disabled} onClick={() => this.onResume()}
-                                title={I18n.t('Resume execution')}><IconRun/></IconButton>
-                    :
-                    !this.state.finished && <IconButton disabled={disabled} className={this.props.classes.buttonPause} onClick={() => this.onPause()}
-                                title={I18n.t('Pause execution')}><IconPause/></IconButton>
-            }
-            {!this.state.finished && <IconButton className={this.props.classes.buttonNext} disabled={disabled || !this.state.paused} onClick={() => this.onNext()}  title={I18n.t('Go to next line')}><IconNext/></IconButton>}
-            {!this.state.finished && <IconButton className={this.props.classes.buttonStep} disabled={disabled || !this.state.paused} onClick={() => this.onStepIn()}  title={I18n.t('Step into function')}><IconStep/></IconButton>}
-            {!this.state.finished && <IconButton className={this.props.classes.buttonOut} disabled={disabled || !this.state.paused} onClick={() => this.onStepOut()}  title={I18n.t('Step out from function')}><IconOut/></IconButton>}
-            {!this.state.finished && <IconButton className={this.props.classes.buttonException} color={this.state.stopOnException ? 'primary' : 'default'} disabled={disabled || !this.state.paused} onClick={() => this.onToggleException()} title={I18n.t('Stop on exception')}><IconException/></IconButton>}
-            {this.renderTabs()}
-        </Toolbar>;
+        return (
+            <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
+                <IconButton
+                    className={this.props.classes.buttonRestart}
+                    disabled={disabled}
+                    onClick={() => this.onRestart()}
+                    title={I18n.t('Restart')}
+                    size="large"><IconRestart/></IconButton>
+                {
+                    !this.state.finished && this.state.paused ?
+                        <IconButton
+                            className={this.props.classes.buttonRun}
+                            disabled={disabled}
+                            onClick={() => this.onResume()}
+                            title={I18n.t('Resume execution')}
+                            size="large"><IconRun/></IconButton>
+                        :
+                        !this.state.finished && <IconButton
+                            disabled={disabled}
+                            className={this.props.classes.buttonPause}
+                            onClick={() => this.onPause()}
+                            title={I18n.t('Pause execution')}
+                            size="large"><IconPause/></IconButton>
+                }
+                {!this.state.finished && <IconButton
+                    className={this.props.classes.buttonNext}
+                    disabled={disabled || !this.state.paused}
+                    onClick={() => this.onNext()}
+                    title={I18n.t('Go to next line')}
+                    size="large"><IconNext/></IconButton>}
+                {!this.state.finished && <IconButton
+                    className={this.props.classes.buttonStep}
+                    disabled={disabled || !this.state.paused}
+                    onClick={() => this.onStepIn()}
+                    title={I18n.t('Step into function')}
+                    size="large"><IconStep/></IconButton>}
+                {!this.state.finished && <IconButton
+                    className={this.props.classes.buttonOut}
+                    disabled={disabled || !this.state.paused}
+                    onClick={() => this.onStepOut()}
+                    title={I18n.t('Step out from function')}
+                    size="large"><IconOut/></IconButton>}
+                {!this.state.finished && <IconButton
+                    className={this.props.classes.buttonException}
+                    color={this.state.stopOnException ? 'primary' : 'default'}
+                    disabled={disabled || !this.state.paused}
+                    onClick={() => this.onToggleException()}
+                    title={I18n.t('Stop on exception')}
+                    size="large"><IconException/></IconButton>}
+                {this.renderTabs()}
+            </Toolbar>
+        );
     }
 
     getPossibleBreakpoints(bp) {

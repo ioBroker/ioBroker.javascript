@@ -1,17 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
+import Button from '@mui/material/Button';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Dialog from '@mui/material/Dialog';
 import {MdDelete as IconDelete} from 'react-icons/md';
 
-import IconOk from '@material-ui/icons/Check';
-import IconCancel from '@material-ui/icons/Cancel';
+import IconOk from '@mui/icons-material/Check';
+import IconCancel from '@mui/icons-material/Cancel';
 
-import I18n from '@iobroker/adapter-react/i18n';
-import {withStyles} from "@material-ui/core/styles";
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import withStyles from '@mui/styles/withStyles';
 
 const styles = theme => ({
 

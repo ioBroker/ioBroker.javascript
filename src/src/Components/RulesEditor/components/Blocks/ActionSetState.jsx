@@ -1,6 +1,6 @@
 import GenericBlock from '../GenericBlock';
-import {withStyles} from "@material-ui/core/styles";
-import I18n from "@iobroker/adapter-react/i18n";
+import withStyles from '@mui/styles/withStyles';
+import I18n from "@iobroker/adapter-react-v5/i18n";
 
 const styles = theme => ({
     valueAck: {

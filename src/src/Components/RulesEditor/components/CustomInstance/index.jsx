@@ -1,6 +1,7 @@
-import { FormControl, FormHelperText, Input, MenuItem, Select, withStyles } from '@material-ui/core';
+import { FormControl, FormHelperText, Input, MenuItem, Select } from '@mui/material';
+import withStyles from '@mui/styles/withStyles';
 import React, { useEffect, useState } from 'react';
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 import PropTypes from 'prop-types';
 
 const SelectMod = withStyles({

@@ -1,29 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
+import withStyles from '@mui/styles/withStyles';
+import IconButton from '@mui/material/IconButton';
 import {
     MdContentCopy as IconCopy,
     MdDeleteForever as IconDelete,
     MdVerticalAlignBottom as IconBottom,
 } from 'react-icons/md';
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 const TOOLBOX_WIDTH = 34;
 
 const styles = theme => ({
     consoleLine: {
         fontSize: 14,
-        color: theme.palette.type === 'dark' ? '#EEE' : '#222'
+        color: theme.palette.mode === 'dark' ? '#EEE' : '#222'
     },
     console_log: {
 
     },
     console_warn: {
-        backgroundColor: theme.palette.type === 'dark' ? '#885900' : '#ffa500',
+        backgroundColor: theme.palette.mode === 'dark' ? '#885900' : '#ffa500',
     },
     console_error: {
-        backgroundColor: theme.palette.type === 'dark' ? '#7a0000' : '#FF0000',
+        backgroundColor: theme.palette.mode === 'dark' ? '#7a0000' : '#FF0000',
     },
     console_debug: {
         opacity: 0.6,
@@ -57,7 +57,7 @@ const styles = theme => ({
     },
     logBoxInner: {
         display: 'inline-block',
-        color: theme.palette.type === 'dark' ? 'white' : 'black',
+        color: theme.palette.mode === 'dark' ? 'white' : 'black',
         width: `calc(100% - ${TOOLBOX_WIDTH}px)`,
         height: '100%',
         //marginLeft: TOOLBOX_WIDTH,
@@ -66,26 +66,26 @@ const styles = theme => ({
         verticalAlign: 'top',
     },
     info: {
-        background: theme.palette.type === 'dark' ? 'darkgrey' : 'lightgrey',
-        color: theme.palette.type === 'dark' ?  'black' : 'black'
+        background: theme.palette.mode === 'dark' ? 'darkgrey' : 'lightgrey',
+        color: theme.palette.mode === 'dark' ?  'black' : 'black'
     },
     error: {
         background: '#FF0000',
-        color: theme.palette.type === 'dark' ?  'black' : 'white'
+        color: theme.palette.mode === 'dark' ?  'black' : 'white'
     },
     warn: {
         background: '#FF8000',
-        color: theme.palette.type === 'dark' ?  'black' : 'white'
+        color: theme.palette.mode === 'dark' ?  'black' : 'white'
     },
     debug: {
         background: 'gray',
         opacity: 0.8,
-        color: theme.palette.type === 'dark' ?  'black' : 'white'
+        color: theme.palette.mode === 'dark' ?  'black' : 'white'
     },
     silly: {
         background: 'gray',
         opacity: 0.6,
-        color: theme.palette.type === 'dark' ? 'black' : 'white'
+        color: theme.palette.mode === 'dark' ? 'black' : 'white'
     },
     table: {
         fontFamily: 'monospace',
@@ -190,14 +190,26 @@ class Console extends React.Component {
 
     render() {
         const lines = this.props.console;
-        return <div className={this.props.classes.logBox}>
-            <div className={this.props.classes.toolbox} key="toolbox">
-                <IconButton className={this.props.classes.iconButtons} onClick={() => this.setState({goBottom: !this.state.goBottom})} color={this.state.goBottom ? 'secondary' : ''}><IconBottom/></IconButton>
-                {lines && lines.length ? <IconButton className={this.props.classes.iconButtons} onClick={() => this.props.onClearAllLogs()}><IconDelete/></IconButton> : null}
-                {lines && lines.length ? <IconButton className={this.props.classes.iconButtons} onClick={() => this.onCopy()}><IconCopy/></IconButton> : null}
+        return (
+            <div className={this.props.classes.logBox}>
+                <div className={this.props.classes.toolbox} key="toolbox">
+                    <IconButton
+                        className={this.props.classes.iconButtons}
+                        onClick={() => this.setState({goBottom: !this.state.goBottom})}
+                        color={this.state.goBottom ? 'secondary' : ''}
+                        size="large"><IconBottom/></IconButton>
+                    {lines && lines.length ? <IconButton
+                        className={this.props.classes.iconButtons}
+                        onClick={() => this.props.onClearAllLogs()}
+                        size="large"><IconDelete/></IconButton> : null}
+                    {lines && lines.length ? <IconButton
+                        className={this.props.classes.iconButtons}
+                        onClick={() => this.onCopy()}
+                        size="large"><IconCopy/></IconButton> : null}
+                </div>
+                {this.renderLogList(lines)}
             </div>
-            {this.renderLogList(lines)}
-        </div>;
+        );
     }
 }
 

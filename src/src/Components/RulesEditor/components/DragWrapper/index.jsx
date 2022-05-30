@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef } from 'react';
-// import I18n from '@iobroker/adapter-react/i18n';
+// import I18n from '@iobroker/adapter-react-v5/i18n';
 import PropTypes from 'prop-types';
 import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';

@@ -1,10 +1,10 @@
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import React from 'react';
-// import I18n from '@iobroker/adapter-react/i18n';
+// import I18n from '@iobroker/adapter-react-v5/i18n';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import cls from './style.module.scss';
-import CustomIcon from '@iobroker/adapter-react/Components/Icon';
+import CustomIcon from '@iobroker/adapter-react-v5/Components/Icon';
 
 const CustomButton = ({ fullWidth, size, onClick, style, className, value, square, icon }) => {
     return <Button
