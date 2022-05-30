@@ -54,7 +54,8 @@ And then call `npm run build`.
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-* (bluefox) Implemented onFile and offFile functions
+* (bluefox) Implemented onFile and offFile functions (available with js-controller 4.1+)
+* (Apollon77) Add sendToAsync und sendToHostAsync methods
 
 ### 5.7.0 (2022-05-08)
 * (Apollon77) Allow sending of messages to the scripts also from adapters and CLI by sending "toScript" message (see [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#onmessage))
