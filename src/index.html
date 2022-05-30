@@ -2,14 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <link rel="shortcut icon" href="./favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="theme-color" content="#000000">
     <!--
       manifest.json provides metadata used when your web app is added to the
       homescreen on Android. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <!-- BF: 2020.11.04 - activate it later to let monaco be in systemLang and not in browser language -->
     <!--script type="text/javascript" src="_socket/info.js"></script-->
 
@@ -46,7 +46,7 @@
         head.appendChild(script);
       }
 
-      loadDynamicScript(window.location.port === '3000' ? window.location.protocol + '//' + window.location.hostname + ':8081/lib/js/socket.io.js' : '%PUBLIC_URL%/../../lib/js/socket.io.js', function () {
+      loadDynamicScript(window.location.port === '3000' ? window.location.protocol + '//' + window.location.hostname + ':8081/lib/js/socket.io.js' : './../../lib/js/socket.io.js', function () {
         /*
           improved VSCode editor. This has to be down here, or we get conflicts
           between loader.js and require calls in jQuery and other loaded modules
@@ -60,11 +60,11 @@
       });
     </script>
     <!--
-       Notice the use of %PUBLIC_URL% in the tags above.
+       Notice the use of . in the tags above.
        It will be replaced with the URL of the `public` folder during the build.
        Only files inside the `public` folder can be referenced from the HTML.
 
-       Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+       Unlike "/favicon.ico" or "favicon.ico", "./favicon.ico" will
        work correctly both with client-side routing and a non-root public URL.
        Learn how to configure a non-root public URL by running `npm run build`.
      -->
@@ -104,6 +104,7 @@
     </script>
 
     <div id="root"></div>
+    <script type="module" src="/src/index.jsx"></script>
 
     <xml id="toolbox" style="display: none">
       <category><block>%%CUSTOM_BLOCKS%%</block></category>
