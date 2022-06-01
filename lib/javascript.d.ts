@@ -40,7 +40,7 @@ type AddMissingNever<T, Keys extends string | number | symbol> = {
 /**
  * Takes a union of objects and returns an object type
  * which has all properties that exist on at least one of the objects.
- * 
+ *
  * E.g. CombineObjectUnion<{a: 1} | {b: 2}> = {a: 1; b: 2};
  */
 type CombineObjectUnion<
@@ -52,7 +52,7 @@ type CombineObjectUnion<
 /**
  * Takes a union of ioBroker Object types and returns a combined object type
  * which has all properties that could exist on at least one of the objects.
- * 
+ *
  * Note: This is not entirely sound to work with, but better for JS and working with read objects
  */
 type AnyOf<
@@ -267,7 +267,7 @@ declare global {
 
 		type ObjectIdToObjectType<
 			T extends string,
-			Read extends "read" | "write" = "read", 
+			Read extends "read" | "write" = "read",
 			O =
 				// State must come before Adapter or system.adapter.admin.0.foobar will resolve to AdapterObject
 				T extends ObjectIDs.State ? StateObject :
@@ -891,6 +891,14 @@ declare global {
 
 		type StateChangeHandler<TOld extends StateValue = any, TNew extends TOld = any> = (obj: ChangedStateObject<TOld, TNew>) => void | Promise<void>;
 
+		type FileChangeHandler<WithFile extends boolean> =
+			// Variant 1: WithFile is false, data/mimeType is definitely not there
+			[WithFile] extends [false] ? (id: string, fileName: string, size: number, data?: undefined, mimeType?: undefined) => void | Promise<void>
+			// Variant 2: WithFile is true, data (and mimeType?) is definitely there
+			: [WithFile] extends [true] ? (id: string, fileName: string, size: number, data: Buffer | string, mimeType?: string) => void | Promise<void>
+			// Variant 3: WithFile is not known, data/mimeType might be there
+			: (id: string, fileName: string, size: number, data?: Buffer | string, mimeType?: string) => void | Promise<void>;
+
 		type SetObjectCallback = (err?: string | null, obj?: { id: string }) => void | Promise<void>;
 		type SetObjectPromise = Promise<NonNullCallbackReturnTypeOf<SetObjectCallback>>;
 
@@ -1272,7 +1280,7 @@ declare global {
 	function pushover(msg: any): void;
 
 	/**
-	 * Subscribe to changes of the matched states.
+	 * Subscribe to the changes of the matched states.
 	 */
 	function on(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler): any;
 	function on(
@@ -1280,13 +1288,31 @@ declare global {
 		handler: iobJS.StateChangeHandler
 	): any;
 	/**
-	 * Subscribe to changes of the matched states.
+	 * Subscribe to the changes of the matched states.
 	 */
 	function subscribe(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler): any;
 	function subscribe(
 		astroOrScheduleOrOptions: iobJS.AstroSchedule | iobJS.SubscribeTime | iobJS.SubscribeOptions,
 		handler: iobJS.StateChangeHandler
 	): any;
+
+	/**
+	 * Subscribe to the changes of the matched files.
+	 * The return value can be used for offFile later
+	 * @param id ID of meta-object, like `vis.0`
+	 * @param filePattern File name or file pattern, like `main/*`
+	 * @param withFile If the content of the file must be returned in callback (high usage of memory)
+	 * @param handler Callback: function (id, fileName, size, data, mimeType) {}
+	 */
+	function onFile<WithFile extends boolean>(id: string, filePattern: string | string[], withFile: WithFile, handler: iobJS.FileChangeHandler<WithFile>): any;
+	function onFile(id: string, filePattern: string | string[], handler: iobJS.FileChangeHandler<false>): any;
+
+	/**
+	 * Un-subscribe from the changes of the matched files.
+	 * @param id ID of meta-object, like `vis.0`. You can provide here can be a returned object from onFile. In this case no filePattern required.
+	 * @param filePattern File name or file pattern, like `main/*`
+	 */
+	function offFile(id: string | any, filePattern?: string | string[]): boolean;
 
 	/**
 	 * Registers a one-time subscription which automatically unsubscribes after the first invocation
@@ -1352,7 +1378,8 @@ declare global {
 
 	/**
 	 * Calculates the astro time which corresponds to the given pattern.
-	 * For valid patterns, see @link{https://github.com/ioBroker/ioBroker.javascript#astro--function}
+	 * For valid patterns, see @link{https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#astro-function}
+	 * @param pattern One of predefined patterns, like: sunrise, sunriseEnd, ...
 	 * @param date (optional) The date for which the astro time should be calculated. Default = today
 	 * @param offsetMinutes (optional) The amount of minutes to be added to the return value.
 	 */
@@ -1374,7 +1401,7 @@ declare global {
 
 	/**
 	 * Sets a state to the given value after a timeout has passed.
-	 * Returns the timer so it can be manually cleared with clearStateDelayed
+	 * Returns the timer, so it can be manually cleared with clearStateDelayed
 	 * @param id The ID of the state to be set
 	 * @param delay The delay in milliseconds
 	 * @param clearRunning (optional) Whether an existing timeout for this state should be cleared
@@ -1408,6 +1435,8 @@ declare global {
 	/**
 	 * Sets a binary state to the given value
 	 * @param id The ID of the state to be set
+	 * @param state binary data as buffer
+	 * @param callback called when the operation finished
 	 */
 	function setBinaryState(id: string, state: Buffer, callback?: iobJS.SetStateCallback): void;
 	function setBinaryStateAsync(id: string, state: Buffer): iobJS.SetStatePromise;
@@ -1416,7 +1445,7 @@ declare global {
 	 * Returns the state with the given ID.
 	 * If the adapter is configured to subscribe to all states on start,
 	 * this can be called synchronously and immediately returns the state.
-	 * Otherwise you need to provide a callback.
+	 * Otherwise, you need to provide a callback.
 	 */
 	function getState<T extends iobJS.StateValue = any>(id: string, callback: iobJS.GetStateCallback<T>): void;
 	function getState<T extends iobJS.StateValue = any>(id: string): iobJS.State<T> | iobJS.AbsentState;
@@ -1426,7 +1455,7 @@ declare global {
 	 * Returns the binary state with the given ID.
 	 * If the adapter is configured to subscribe to all states on start,
 	 * this can be called synchronously and immediately returns the state.
-	 * Otherwise you need to provide a callback.
+	 * Otherwise, you need to provide a callback.
 	 */
 	function getBinaryState(id: string, callback: iobJS.GetStateCallback): void;
 	function getBinaryState(id: string): Buffer;

@@ -23,7 +23,7 @@ Executes Javascript, Typescript Scripts.
   * Описание по [blockly](docs/ru/blockly.md) можно найти [здесь](docs/ru/blockly.md).
 
 ## Forbidden directories for Script Filesystem Mirroring
-The Script Filesystem Mirroring will store all Sourсe Files of the Scripts in your Filesystem to allow you to edit the Files in your favourite Script editor beside the Web-Editor. All changes are synced in both directions.
+The Script Filesystem Mirroring will store all Source Files of the Scripts in your Filesystem to allow you to edit the Files in your favourite Script editor beside the Web-Editor. All changes are synced in both directions.
 
 When enabling the Script Filesystem mirroring please make sure to create a **dedicated new directory** and **do not** use an existing directory with other content. Please also make sure that no other script or process changes files in the provided directory to prevent access issues.
 Any location needs to be writable by the "iobroker" user!
@@ -53,8 +53,13 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Implemented onFile and offFile functions (available with js-controller 4.1+)
+* (Apollon77) Add sendToAsync und sendToHostAsync methods
+* (bluefox) Added support of custom rule plugins (actually only telegram)
+
 ### 5.7.0 (2022-05-08)
-* (Apollon77) Allow sending of messages to scripts also from adapters and CLI by sending "toScript" message (see [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#onmessage))
+* (Apollon77) Allow sending of messages to the scripts also from adapters and CLI by sending "toScript" message (see [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#onmessage))
 * (Apollon77) Lists returned by $-selector are now unified and do not contain double entries 
 * (Apollon77) Fix subscribe multiple object ID lists in blockly
 
@@ -63,7 +68,7 @@ And then call `npm run build`.
 * (Apollon77) Make sure lists returned by $-selector do not contain duplicates
 
 ### 5.6.0 (2022-04-24)
-* (Apollon77) Make state properties c(omment) and user available to scripts too
+* (Apollon77) Make state properties "c"(omment) and user available to scripts too
 * (Apollon77) make sure values of new or changed alias objects are initialized properly
 * (winnyschuster) Enhance scheduler logic and astro events offered by wizard
 * (Apollon77) Respect expected value changes when determining if a value is changed

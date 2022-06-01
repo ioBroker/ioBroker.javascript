@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 
 import './index.css';
@@ -21,7 +21,9 @@ console.log('iobroker.' + window.adapterName + '@' + version + ' using theme "' 
 
 function build() {
     const isMobile = window.innerWidth < 600;
-    return ReactDOM.render(<StyledEngineProvider injectFirst>
+    const container = document.getElementById('root');
+    const root = createRoot(container);
+    return root.render(<StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme(themeName)}>
             <DndProvider backend={isMobile ? TouchBackend : HTML5Backend}>
                 <App onThemeChange={_theme => {
@@ -30,7 +32,7 @@ function build() {
                 }} />
             </DndProvider>
         </ThemeProvider>
-    </StyledEngineProvider>, document.getElementById('root'));
+    </StyledEngineProvider>);
 
 }
 
@@ -47,7 +49,7 @@ serviceWorker.unregister();
 // loader must be after socket.io, elsewise there is no window.io
 const loadDynamicScript = window.loadDynamicScript;
 loadDynamicScript(window.location.port === '3000' ? window.location.protocol + '//' + window.location.hostname + ':8081/lib/js/socket.io.js' : './../../lib/js/socket.io.js', function () {
-        
+
     loadDynamicScript('vs/loader.js', function () {
         loadDynamicScript('vs/configure.js', function () {
         typeof window.socketLoadedHandler === 'function' && window.socketLoadedHandler();

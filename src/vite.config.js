@@ -59,6 +59,7 @@ export default defineConfig(({ mode }) => {
         },
         build: {
             cssCodeSplit: false,
+            sourcemap: true
         },
         optimizeDeps: {
             esbuildOptions: {

@@ -28,7 +28,7 @@ const selected = $('selector');
 selected.getState<number>()!.val.toFixed();
 selected.getBinaryState()!.readInt16BE(0);
 
-schedule({astro: "night"}, () => { });
+schedule({ astro: "night" }, () => { });
 
 // TODO: Add more tests
 
@@ -53,4 +53,22 @@ if (state1.notExist) {
 $("*").setState(1);
 
 // Repro from #636
-$("*").each(async () => {});
+$("*").each(async () => { });
+
+onFile('vis.0', 'main/*', true, (id, fileName, size, data, mimeType) => {
+	assertTrue<Equals<typeof id, string>>();
+	assertTrue<Equals<typeof fileName, string>>();
+	assertTrue<Equals<typeof size, number>>();
+	assertTrue<Equals<typeof data, string | Buffer>>();
+	assertTrue<Equals<typeof mimeType, string | undefined>>();
+});
+
+onFile('vis.0', 'main/*', false, (id, fileName, size, data, mimeType) => {
+	assertTrue<Equals<typeof data, undefined>>();
+	assertTrue<Equals<typeof mimeType, undefined>>();
+});
+
+onFile('vis.0', 'main/*', Math.random() > 0, (id, fileName, size, data, mimeType) => {
+	assertTrue<Equals<typeof data, string | Buffer | undefined>>();
+	assertTrue<Equals<typeof mimeType, string | undefined>>();
+});

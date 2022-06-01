@@ -17,13 +17,6 @@ const JSZip      = require('jszip');
 const pkg        = require('./package.json');
 const iopackage  = require('./io-package.json');
 const version    = (pkg && pkg.version) ? pkg.version : iopackage.common.version;
-/*const appName   = getAppName();
-
-function getAppName() {
-    const parts = __dirname.replace(/\\/g, '/').split('/');
-    return parts[parts.length - 1].split('.')[0].toLowerCase();
-}
-*/
 
 const dir = __dirname + '/src/src/i18n/';
 gulp.task('i18n=>flat', done => {
@@ -99,10 +92,10 @@ gulp.task('clean', () => {
         // 'src/node_modules/**/*',
         'admin/**/*',
         'admin/*',
-        'src/build/**/*'
+        'src/dist/**/*'
     ]).then(() => del([
         // 'src/node_modules',
-        'src/build',
+        'src/dist',
         'admin/'
     ]));
 });
@@ -160,15 +153,15 @@ function build() {
 
         console.log(options.cwd);
 
-        let script = __dirname + '/src/node_modules/react-scripts/scripts/build.js';
+        let script =  __dirname + '/src/node_modules/vite/bin/vite.js';
         if (!fs.existsSync(script)) {
-            script = __dirname + '/node_modules/react-scripts/scripts/build.js';
+            script = __dirname + '/node_modules/vite/bin/vite.js';
         }
         if (!fs.existsSync(script)) {
             console.error('Cannot find execution file: ' + script);
             reject('Cannot find execution file: ' + script);
         } else {
-            const child = cp.fork(script, [], options);
+            const child = cp.fork(script, ['build'], options);
             child.stdout.on('data', data => console.log(data.toString()));
             child.stderr.on('data', data => console.log(data.toString()));
             child.on('close', code => {
@@ -189,27 +182,27 @@ function copyFiles() {
     ]).then(() => {
         return Promise.all([
             gulp.src([
-                'src/build/**/*',
-                '!src/build/index.html',
-                '!src/build/static/js/main.*.chunk.js',
-                '!src/build/i18n/**/*',
-                '!src/build/i18n',
+                'src/dist/**/*',
+                '!src/dist/index.html',
+                '!src/dist/assets/*.js',
+                '!src/dist/i18n/**/*',
+                '!src/dist/i18n',
                 'admin-config/*'
             ])
                 .pipe(gulp.dest('admin/')),
 
             gulp.src([
-                'src/build/index.html',
+                'src/dist/index.html',
             ])
                 .pipe(replace('href="/', 'href="'))
                 .pipe(replace('src="/', 'src="'))
                 .pipe(rename('tab.html'))
                 .pipe(gulp.dest('admin/')),
             gulp.src([
-                'src/build/static/js/main.*.chunk.js',
+                'src/dist/assets/*.js',
             ])
-                .pipe(replace('s.p+"static/media/copy-content', '"./static/media/copy-content'))
-                .pipe(gulp.dest('admin/static/js/')),
+                .pipe(replace('"/assets', '"./assets'))
+                .pipe(gulp.dest('admin/assets/')),
         ]);
     });
 }
@@ -230,8 +223,8 @@ gulp.task('6-patch', () => new Promise(resolve => {
 
         fs.writeFileSync(__dirname + '/admin/tab.html', code);
     }
-    if (fs.existsSync(__dirname + '/src/build/index.html')) {
-        let code = fs.readFileSync(__dirname + '/src/build/index.html').toString('utf8');
+    if (fs.existsSync(__dirname + '/src/dist/index.html')) {
+        let code = fs.readFileSync(__dirname + '/src/dist/index.html').toString('utf8');
         code = code.replace(/<script>var head=document\.getElementsByTagName\("head"\)\[0\][^<]+<\/script>/,
             `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./../../lib/js/socket.io.js"></script>`);
         // add monaco script at the end
@@ -239,7 +232,7 @@ gulp.task('6-patch', () => new Promise(resolve => {
             code = code.replace('</body></html>', `<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script></body></html>`);
         }
 
-        fs.writeFileSync(__dirname + '/src/build/index.html', code);
+        fs.writeFileSync(__dirname + '/src/dist/index.html', code);
     }
 
     const buffer = Buffer.from(JSON.parse(fs.readFileSync(__dirname + '/admin-config/vsFont/codicon.json')));
@@ -751,14 +744,14 @@ gulp.task('blocklyLanguagesFlat2words', done => {
         }
     }
 
-    text += 'Blockly.Translate = function (word, lang) {\n' +
+    text += '\nBlockly.Translate = function (word, lang) {\n' +
         '    lang = lang || systemLang;\n' +
         '    if (Blockly.Words && Blockly.Words[word]) {\n' +
         '        return Blockly.Words[word][lang] || Blockly.Words[word].en;\n' +
         '    } else {\n' +
         '        return word;\n' +
         '    }\n' +
-        '};\n\n';
+        '};\n';
 
     text += '\nif (typeof module !== \'undefined\' && typeof module.parent !== \'undefined\') {\n' +
         '    module.exports = Blockly;\n' +

@@ -197,6 +197,9 @@ YYYY.MM.DD hh: mm: ss.sss
 Obtenga tiempo real o
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Tiempos de espera
+Pausa
+Pausar la ejecución por un tiempo definido
+wait
 Ejecución
 se acabó el tiempo
 en
@@ -256,12 +259,16 @@ calidad del estado
 origen del valor
 es comando o actualización
 último cambio de estado
+comentario del ultimo estado
+usuario del último estado
 valor anterior
 fecha y hora anterior
 calidad previa
 origen anterior
 comando anterior o actualización
 último cambio anterior
+comentario anterior
+usuario anterior
 Este bloque debe usarse solo dentro del bloque de evento
 programar
 Hacer algo en el cronograma cron
@@ -316,3 +323,11 @@ hacer
 Hace algo si la condición es verdadera. Si no hay un caso coincidente, se ejecutará la función predeterminada.
 Esta función se ejecutará si no hay casos coincidentes.
 Esta es una variable para la condición.
+Evento: si el archivo
+patrón de archivo
+Con datos de archivo
+Si algún archivo cambió o actualizó
+onFile
+Cancelar evento de archivo
+Cancelar suscripción en cambio de archivo
+offFile

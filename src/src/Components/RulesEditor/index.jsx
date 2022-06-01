@@ -44,15 +44,18 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
                 }
             }
         };
+
         const handlerStatus = (id, state) => {
-            try {
-                let msg = JSON.parse(state.val);
-                // if not from previous session
-                if (msg.ruleId === scriptId && Date.now() - msg.ts < 1000) {
-                    setOnDebugMessage({blockId: msg.blockId, data: msg.data, ts: msg.ts});
+            if (state) {
+                try {
+                    let msg = JSON.parse(state.val);
+                    // if not from previous session
+                    if (msg.ruleId === scriptId && Date.now() - msg.ts < 1000) {
+                        setOnDebugMessage({blockId: msg.blockId, data: msg.data, ts: msg.ts});
+                    }
+                } catch (e) {
+                    console.error('Cannot parse: ' + state.val);
                 }
-            } catch (e) {
-                console.error('Cannot parse')
             }
         };
 

@@ -31,7 +31,7 @@
           }
         };
 
-        // try reload if server is offline
+        // try to reload if server is offline
         if (src.indexOf('socket.io.js') !== -1) {
           script.onerror = function () {
             console.error('Cannot load socket.io. Retry in 5 seconds');
@@ -74,11 +74,6 @@
     <script type="text/javascript" src="google-blockly/own/blocks_procedures.js"></script>
     <script type="text/javascript" src="google-blockly/own/blocks_timeout.js"></script>
     <script type="text/javascript" src="google-blockly/own/blocks_switch.js"></script>
-    <style>
-      .iobVerticalSplitter .layout-pane-primary {
-        overflow: hidden !important;
-      }
-    </style>
   </head>
   <body>
     <noscript>
@@ -88,13 +83,12 @@
         if ((window.localStorage && window.localStorage.getItem('App.theme')) === 'dark') {
             window.document.body.style.background = 'black';
         }
-
     </script>
 
     <div id="root"></div>
     <script type="module" src="/src/index.jsx"></script>
     <script>
-              
+
     </script>
 
     <xml id="toolbox" style="display: none">

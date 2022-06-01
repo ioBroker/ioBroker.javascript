@@ -49,6 +49,8 @@
         - [Clear schedule](#clear-schedule)
         - [CRON dialog](#cron-dialog)
         - [CRON rule](#cron-rule)
+        - [Trigger on file update](#trigger-on-file-update)
+        - [Cancel event on file update](#cancel-event-on-file-update)
     - [Timeouts](#timeouts)
         - [Wait/Pause](#wait)
         - [Delayed execution](#delayed-execution)
@@ -1579,7 +1581,7 @@ Execute some action on astrological event. Following events are possible:
 
 **Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
 
-Additionally you can set the offset in minutes to astrological event, e.g. to fire the trigger 1 hour before down: 
+Additionally, you can set the offset in minutes to astrological event, e.g. to fire the trigger 1 hour before down: 
 
 ![Schedule](img/trigger_astro_1_en.png)
 
@@ -1742,6 +1744,51 @@ With additional parameter "with seconds" you can specify seconds for CRON rule t
 ![Schedule](img/trigger_cron_rule_2_en.png)
 
 This block can be used (like [CRON dialog](#cron-dialog)) only with [Named schedule](#named-schedule) block.
+
+### Trigger on file update
+![onFile](img/trigger_onFile_en.png)
+
+You can subscribe on file updates and execute some action. E.g. here the content of `vis´ will be printed out every time the project updated:
+```
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="@-v}))=J7?dr9n$tR,=j">data</variable>
+  </variables>
+  <block type="onFile" id="4`C)*,R0DVN@nRaM@/[N" x="188" y="37">
+    <field name="WITH_FILE">TRUE</field>
+    <value name="OID">
+      <shadow type="field_oid_meta" id="K^Qc~2T8{V+K017=]c^d">
+        <field name="oid">vis.0</field>
+      </shadow>
+    </value>
+    <value name="FILE">
+      <shadow type="text" id="A7UXrl-.!o]Oi9g[eBxr">
+        <field name="TEXT">main/*</field>
+      </shadow>
+    </value>
+    <statement name="STATEMENT">
+      <block type="debug" id="fl3BZ)}mE7qw[`W*ZUx}">
+        <field name="Severity">log</field>
+        <value name="TEXT">
+          <shadow type="text" id="se+gg@!ryr*!AO~Bx3uX">
+            <field name="TEXT">test</field>
+          </shadow>
+          <block type="variables_get" id="E{)LJvx~EH~shD%3!);w">
+            <field name="VAR" id="@-v}))=J7?dr9n$tR,=j">data</field>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+</xml>
+```
+**Important**: this functionality is only available with js-controller@4.1.x or newer.
+
+### Cancel event on file update
+![onFile](img/trigger_offFile_en.png)
+With this block you can unsubscribe from events by file update.
+
+**Important**: this functionality is only available with js-controller@4.1.x or newer.
 
 ## Timeouts
 ### Wait/Pause

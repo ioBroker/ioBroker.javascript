@@ -1,8 +1,8 @@
 const expect = require('chai').expect;
-const setup  = require(__dirname + '/lib/setup');
+const setup  = require('./lib/setup');
 
-let objects = null;
-let states  = null;
+let objects  = null;
+let states   = null;
 
 const stateChangedHandlers = new Set();
 function onStateChanged(id, state) {
@@ -82,8 +82,7 @@ function checkValueOfState(id, value, cb, counter) {
     });
 }
 
-describe('Test JS', function () {
-
+describe.only('Test JS', function () {
     before('Test JS: Start js-controller', function (_done) {
         this.timeout(600000); // because of first install from npm
 
@@ -98,49 +97,47 @@ describe('Test JS', function () {
 
             await setup.setAdapterConfig(config.common, config.native);
 
-            setup.startController(false, function (id, obj) {
-                onObjectChanged && onObjectChanged(id, obj);
-            }, function (id, state) {
-                onStateChanged && onStateChanged(id, state);
-            },
-            function (_objects, _states) {
-                objects = _objects;
-                states  = _states;
-                states.subscribe('*');
-                let script = {
-                    'common': {
-                        'name':         'new script global',
-                        'engineType':   'Javascript/js',
-                        'source':       "function setTestState(val) {\ncreateState('testGlobal', val, function () {\nsetState('testGlobal', val);\n});\n}",
-                        'enabled':      true,
-                        'engine':       'system.adapter.javascript.0'
-                    },
-                    'type':             'script',
-                    '_id':              'script.js.global.TestGlobalNew.Script',
-                    'native': {}
-                };
-                objects.setObject(script._id, script, err => {
-                    expect(err).to.be.not.ok;
-                    script = {
+            setup.startController(
+                false,
+                (id, obj) => onObjectChanged && onObjectChanged(id, obj),
+                (id, state) => onStateChanged && onStateChanged(id, state),
+                (_objects, _states) => {
+                    objects = _objects;
+                    states  = _states;
+                    states.subscribe('*');
+                    let script = {
                         'common': {
-                            'name': 'Old script global',
-                            'engineType': 'Javascript/js',
-                            'source': "function setTestStateOld(val) {\ncreateState('testGlobalOld', val, function () {\nsetState('testGlobalOld', val);\n});\n}",
-                            'enabled': true,
-                            'engine': 'system.adapter.javascript.0'
+                            'name':         'new script global',
+                            'engineType':   'Javascript/js',
+                            'source':       "function setTestState(val) {\ncreateState('testGlobal', val, function () {\nsetState('testGlobal', val);\n});\n}",
+                            'enabled':      true,
+                            'engine':       'system.adapter.javascript.0'
                         },
-                        'type': 'script',
-                        '_id': 'script.js.global.TestGlobalOld.Script',
+                        'type':             'script',
+                        '_id':              'script.js.global.TestGlobalNew.Script',
                         'native': {}
                     };
                     objects.setObject(script._id, script, err => {
                         expect(err).to.be.not.ok;
-                        setup.startAdapter(objects, states, function () {
-                            _done();
+                        script = {
+                            'common': {
+                                'name': 'Old script global',
+                                'engineType': 'Javascript/js',
+                                'source': "function setTestStateOld(val) {\ncreateState('testGlobalOld', val, function () {\nsetState('testGlobalOld', val);\n});\n}",
+                                'enabled': true,
+                                'engine': 'system.adapter.javascript.0'
+                            },
+                            'type': 'script',
+                            '_id': 'script.js.global.TestGlobalOld.Script',
+                            'native': {}
+                        };
+                        objects.setObject(script._id, script, err => {
+                            expect(err).to.be.not.ok;
+                            setup.startAdapter(objects, states, () => _done());
                         });
                     });
-                });
-            });
+                }
+            );
         });
     });
 
@@ -663,7 +660,7 @@ describe('Test JS', function () {
 
                     checkValueOfState('javascript.0.delayed', 9, err => {
                         expect(err).to.be.not.ok;
-                        states.getState('javascript.0.delayed', function (err, stateStop) {
+                        states.getState('javascript.0.delayed', function (err/*, stateStop */) {
                             expect(err).to.be.not.ok;
                             done();
                         });
@@ -828,12 +825,16 @@ describe('Test JS', function () {
         };
 
         objects.setObject(stopScript._id, stopScript, err => {
+            expect(err).to.be.not.ok;
+
             objects.getObject(stopScript._id, (err, obj) => {
                 expect(err).to.be.not.ok;
                 expect(obj.common.enabled).to.be.false;
+
                 objects.setObject(script._id, script, err => {
                     expect(err).to.be.not.ok;
-                    setTimeout(function () {
+
+                    setTimeout(() => {
                         objects.getObject(stopScript._id, (err, obj) => {
                             expect(err).to.be.not.ok;
                             expect(obj.common.enabled).to.be.true;
@@ -974,7 +975,6 @@ describe('Test JS', function () {
     }).timeout(5000);
 
     it('Test JS: test ON misc', function (done) {
-
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         function scriptFunction (param) {
@@ -1408,7 +1408,7 @@ describe('Test JS', function () {
         // add script
         const script = {
             'common': {
-                'name':         'test ON any',
+                'name':         'test messaging',
                 'engineType':   'Javascript/js',
                 'source':       `
 createState('onMessage', false, () => {
@@ -1435,7 +1435,7 @@ createState('onMessage', false, () => {
 
         let count = 3;
         const onStateChanged = function (id, state) {
-            console.log('ON CHNAGE. ' + id  + ' ' + JSON.stringify(state));
+            console.log(`ON CHANGE. ${id} ${JSON.stringify(state)}`);
             if (
                 (id === 'javascript.0.messageTo'      && state.val === 5    && state.ack === true) ||
                 (id === 'javascript.0.messageDeleted' && state.val === true && state.ack === true) ||
@@ -1451,8 +1451,63 @@ createState('onMessage', false, () => {
 
         objects.setObject(script._id, script, err =>
             expect(err).to.be.not.ok);
-
     }).timeout(5000);
+
+    it('Test JS: subscribe on file', done => {
+        // add script
+        const script = {
+            'common': {
+                'name':         'test onFile',
+                'engineType':   'Javascript/js',
+                'source':       `
+createState('file', false, () => {
+    onFile('vis.0', 'main/*', true, (id, fileName, size, fileData, mimeType) => {
+        setState('javascript.0.file', fileData.toString(), true);
+        offFile('vis.0', 'main/*');
+    });
+});`,
+                'enabled':      true,
+                'engine':       'system.adapter.javascript.0'
+            },
+            'type':             'script',
+            '_id':              'script.js.test_read1',
+            'native': {}
+        };
+
+        let fileReceived = false;
+        const onStateChanged = function (id, state) {
+            console.log(`ON CHANGE. ${id} ${JSON.stringify(state)}`);
+            if (id === 'javascript.0.file' && state.val === 'abcdef') {
+                if (!fileReceived) {
+                    fileReceived = true;
+                    objects.writeFile('vis.0', 'main/data.txt', '12345', err =>
+                        expect(err).to.be.not.ok);
+
+                    setTimeout(() => {
+                        removeStateChangedHandler(onStateChanged);
+                        done();
+                    }, 3000);
+                } else {
+                    // after offFile we may not receive any updates
+                    expect(state.val).to.be.false;
+                }
+            }
+        };
+
+        addStateChangedHandler(onStateChanged);
+
+        objects.setObject('vis.0', {type: 'meta', common: {}}, () => {
+            objects.setObject(script._id, script, err => {
+                expect(err).to.be.not.ok;
+
+                // let the script be started
+                setTimeout(() => {
+                    objects.writeFile('vis.0', 'main/data.txt', 'abcdef', err =>
+                        expect(err).to.be.not.ok);
+                }, 4000);
+            });
+        });
+    }).timeout(15000);
 
     after('Test JS: Stop js-controller', function (done) {
         this.timeout(6000);

@@ -16,6 +16,10 @@ body {
   height: 100%;
 }
 
+.iobVerticalSplitter .layout-pane-primary {
+  overflow: hidden !important;
+}
+
 #root {
   width: 100%;
   height: 100%;
