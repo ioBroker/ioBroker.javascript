@@ -260,25 +260,25 @@ class Log extends React.Component {
                         className={this.props.classes.iconButtons}
                         onClick={() => this.setState({goBottom: !this.state.goBottom})}
                         color={this.state.goBottom ? 'secondary' : ''}
-                        size="large"><IconBottom/></IconButton>
+                        size="medium"><IconBottom/></IconButton>
                     {lines && lines.length ? <IconButton
                         className={this.props.classes.iconButtons}
                         onClick={() => this.clearLog()}
-                        size="large"><IconDelete/></IconButton> : null}
+                        size="medium"><IconDelete/></IconButton> : null}
                     {lines && lines.length ? <IconButton
                         className={this.props.classes.iconButtons}
                         onClick={() => this.onCopy()}
-                        size="large"><IconCopy/></IconButton> : null}
+                        size="medium"><IconCopy/></IconButton> : null}
                     {this.props.onLayoutChange ? <IconButton
                         className={this.props.classes.iconButtons}
                         onClick={() => this.props.onLayoutChange()}
                         title={I18n.t('Change layout')}
-                        size="large"><img className={this.props.classes.layoutIcon} alt="split" src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit} /></IconButton> : null}
+                        size="medium"><img className={this.props.classes.layoutIcon} alt="split" src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit} /></IconButton> : null}
                     <IconButton
                         className={this.props.classes.iconButtons}
                         onClick={() => this.props.onHideLog()}
                         title={I18n.t('Hide logs')}
-                        size="large"><IconHide /></IconButton>
+                        size="medium"><IconHide /></IconButton>
                 </div>
                 {this.renderLogList(lines)}
             </div>

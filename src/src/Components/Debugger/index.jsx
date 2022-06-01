@@ -565,7 +565,7 @@ class Debugger extends React.Component {
                     disabled={disabled}
                     onClick={() => this.onRestart()}
                     title={I18n.t('Restart')}
-                    size="large"><IconRestart/></IconButton>
+                    size="medium"><IconRestart/></IconButton>
                 {
                     !this.state.finished && this.state.paused ?
                         <IconButton
@@ -573,40 +573,40 @@ class Debugger extends React.Component {
                             disabled={disabled}
                             onClick={() => this.onResume()}
                             title={I18n.t('Resume execution')}
-                            size="large"><IconRun/></IconButton>
+                            size="medium"><IconRun/></IconButton>
                         :
                         !this.state.finished && <IconButton
                             disabled={disabled}
                             className={this.props.classes.buttonPause}
                             onClick={() => this.onPause()}
                             title={I18n.t('Pause execution')}
-                            size="large"><IconPause/></IconButton>
+                            size="medium"><IconPause/></IconButton>
                 }
                 {!this.state.finished && <IconButton
                     className={this.props.classes.buttonNext}
                     disabled={disabled || !this.state.paused}
                     onClick={() => this.onNext()}
                     title={I18n.t('Go to next line')}
-                    size="large"><IconNext/></IconButton>}
+                    size="medium"><IconNext/></IconButton>}
                 {!this.state.finished && <IconButton
                     className={this.props.classes.buttonStep}
                     disabled={disabled || !this.state.paused}
                     onClick={() => this.onStepIn()}
                     title={I18n.t('Step into function')}
-                    size="large"><IconStep/></IconButton>}
+                    size="medium"><IconStep/></IconButton>}
                 {!this.state.finished && <IconButton
                     className={this.props.classes.buttonOut}
                     disabled={disabled || !this.state.paused}
                     onClick={() => this.onStepOut()}
                     title={I18n.t('Step out from function')}
-                    size="large"><IconOut/></IconButton>}
+                    size="medium"><IconOut/></IconButton>}
                 {!this.state.finished && <IconButton
                     className={this.props.classes.buttonException}
                     color={this.state.stopOnException ? 'primary' : 'default'}
                     disabled={disabled || !this.state.paused}
                     onClick={() => this.onToggleException()}
                     title={I18n.t('Stop on exception')}
-                    size="large"><IconException/></IconButton>}
+                    size="medium"><IconException/></IconButton>}
                 {this.renderTabs()}
             </Toolbar>
         );

@@ -80,6 +80,7 @@ class DialogRename extends React.Component {
             <DialogContent>
                 <form noValidate autoComplete="off">
                     <TextField
+                        variant="standard"
                         style={{width: '100%'}}
                         id="standard-name"
                         autoFocus
@@ -96,6 +97,7 @@ class DialogRename extends React.Component {
                         margin="normal"
                     />
                     <TextField
+                        variant="standard"
                         id="standard-name-id"
                         style={{width: '100%'}}
                         label={I18n.t('ID')}
@@ -105,9 +107,10 @@ class DialogRename extends React.Component {
                     />
                     {
                         this.isShowInstance && (
-                            <FormControl>
+                            <FormControl variant="standard">
                                 <InputLabel htmlFor="instance">{I18n.t('Instance')}</InputLabel>
                                 <Select
+                                    variant="standard"
                                     value={this.state.instance}
                                     onChange={e => this.setState({instance: parseInt(e.target.value, 10)})}
                                     inputProps={{name: 'instance', id: 'instance'}}
@@ -120,7 +123,7 @@ class DialogRename extends React.Component {
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" onClick={this.handleOk} color="primary" startIcon={<IconOk/>}>{I18n.t('Ok')}</Button>
-                <Button variant="contained" onClick={this.handleCancel} startIcon={<IconCancel/>}>{I18n.t('Cancel')}</Button>
+                <Button color="grey" variant="contained" onClick={this.handleCancel} startIcon={<IconCancel/>}>{I18n.t('Cancel')}</Button>
             </DialogActions>
         </Dialog>;
     }

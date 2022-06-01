@@ -196,7 +196,7 @@ class DialogAdapterDebug extends React.Component {
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" onClick={this.handleOk} disabled={!this.state.jsInstance || !this.state.adapterToDebug} color="primary" startIcon={<IconOk/>}>{I18n.t('Start')}</Button>
-                <Button variant="contained" onClick={() => this.props.onClose()} startIcon={<IconCancel/>}>{I18n.t('Close')}</Button>
+                <Button color="grey" variant="contained" onClick={() => this.props.onClose()} startIcon={<IconCancel/>}>{I18n.t('Close')}</Button>
             </DialogActions>
         </Dialog>;
     }

@@ -180,7 +180,7 @@ class Stack extends React.Component {
 
                 endAdornment={
                     <InputAdornment position="end">
-                        <IconButton onClick={() => this.onExpressionNameUpdate()} size="large">
+                        <IconButton onClick={() => this.onExpressionNameUpdate()} size="medium">
                             <CheckIcon/>
                         </IconButton>
                     </InputAdornment>
@@ -359,7 +359,7 @@ class Stack extends React.Component {
                         this.scopeValue = e.target.value}
                     endAdornment={
                         <InputAdornment position="end">
-                            <IconButton onClick={() => this.onWriteScopeValue()} size="large">
+                            <IconButton onClick={() => this.onWriteScopeValue()} size="medium">
                                 <CheckIcon/>
                             </IconButton>
                         </InputAdornment>

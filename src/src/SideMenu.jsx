@@ -762,7 +762,7 @@ class SideDrawer extends React.Component {
                     disabled={this.props.debugMode}
                     key="startStop"
                     style={{color}}
-                    size="large">
+                    size="medium">
                     {item.enabled ? <IconPause/> : <IconPlay/>}
                 </IconButton>,
                 this.state.width > NARROW_WIDTH ? <IconButton
@@ -771,14 +771,14 @@ class SideDrawer extends React.Component {
                     title={I18n.t('Delete script')}
                     disabled={item.id === GLOBAL_ID || item.id === COMMON_ID || this.props.debugMode}
                     onClick={e => this.onDelete(item, e)}
-                    size="large"><IconDelete/></IconButton> : null,
+                    size="medium"><IconDelete/></IconButton> : null,
                 <IconButton
                     className={clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
                     disabled={this.props.debugMode}
                     key="openInEdit"
                     title={I18n.t('Edit script or just double click')}
                     onClick={e => this.onEdit(item, e)}
-                    size="large">
+                    size="medium">
                     <IconDoEdit/>
                 </IconButton>,
             ];
@@ -791,7 +791,7 @@ class SideDrawer extends React.Component {
                         title={I18n.t('Delete folder')}
                         disabled={item.id === GLOBAL_ID || item.id === COMMON_ID || this.props.debugMode}
                         onClick={e => this.onDelete(item, e)}
-                        size="large"><IconDelete/></IconButton>
+                        size="medium"><IconDelete/></IconButton>
                 );
             } else {
                 return null;
@@ -1267,7 +1267,7 @@ class SideDrawer extends React.Component {
                     e.stopPropagation();
                     this.filterList(false, () => this.props.onSearch && this.props.onSearch(this.state.searchText));
                 }}
-                size="large"><IconClose /></IconButton>);
+                size="medium"><IconClose /></IconButton>);
 
             this.state.searchText && result.push(<IconButton
                 key="cleanSearch"
@@ -1282,7 +1282,7 @@ class SideDrawer extends React.Component {
                         this.props.onSearch && this.props.onSearch(this.state.searchText);
                     });
                 }}
-                size="large"><IconClear fontSize="small"/></IconButton>);
+                size="medium"><IconClear fontSize="small"/></IconButton>);
         } else {
             if (!reorder) {
                 // Open Menu
@@ -1297,7 +1297,7 @@ class SideDrawer extends React.Component {
                         event.preventDefault();
                         this.setState({menuOpened: true, menuAnchorEl: event.currentTarget});
                     }}
-                    size="large">
+                    size="medium">
                     {/*<Badge className={classes.margin} badgeContent={this.getFilterBadge()}>*/}
                         <IconMore />
                     {/*</Badge>*/}
@@ -1320,7 +1320,7 @@ class SideDrawer extends React.Component {
                     className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
                     style={{color: reorder ? 'red' : 'inherit'}}
                     onClick={e => this.onAddNew(e)}
-                    size="large"><IconAdd/></IconButton>);
+                    size="medium"><IconAdd/></IconButton>);
 
                 // New Folder
                 result.push(<IconButton
@@ -1330,7 +1330,7 @@ class SideDrawer extends React.Component {
                     className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
                     style={{color: reorder ? 'red' : 'inherit'}}
                     onClick={() => this.onAddNewFolder()}
-                    size="large"><IconAddFolder/></IconButton>);
+                    size="medium"><IconAddFolder/></IconButton>);
             }
 
             // Search
@@ -1344,7 +1344,7 @@ class SideDrawer extends React.Component {
                     e.stopPropagation();
                     this.setState({searchMode: true});
                 }}
-                size="large"><IconFind/></IconButton>);
+                size="medium"><IconFind/></IconButton>);
 
             // Reorder button
             result.push(<IconButton
@@ -1357,7 +1357,7 @@ class SideDrawer extends React.Component {
                     e.stopPropagation();
                     this.setState({reorder: !this.state.reorder});
                 }}
-                size="large"><IconReorder/></IconButton>);
+                size="medium"><IconReorder/></IconButton>);
 
             if (!reorder && this.state.selected && this.state.selected !== GLOBAL_ID && this.state.selected !== COMMON_ID) {
                 // Rename
@@ -1367,7 +1367,7 @@ class SideDrawer extends React.Component {
                     title={I18n.t('Rename')}
                     key="rename"
                     onClick={e => this.onRename(e)}
-                    size="large"><IconEdit/></IconButton>);
+                    size="medium"><IconEdit/></IconButton>);
 
 
                 // const selectedItem = this.state.listItems.find(i => i.id === this.state.selected);

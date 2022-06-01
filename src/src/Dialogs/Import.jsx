@@ -79,7 +79,7 @@ class DialogImport extends React.Component {
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" disabled={!this.state.text} onClick={event => this.handleOk()} color="primary" startIcon={<IconOk/>}>{I18n.t('Import')}</Button>
-                <Button variant="contained" onClick={() => this.handleCancel()} startIcon={<IconCancel/>}>{I18n.t('Close')}</Button>
+                <Button color="grey" variant="contained" onClick={() => this.handleCancel()} startIcon={<IconCancel/>}>{I18n.t('Close')}</Button>
             </DialogActions>
         </Dialog>;
     }

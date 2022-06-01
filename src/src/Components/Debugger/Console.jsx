@@ -197,15 +197,15 @@ class Console extends React.Component {
                         className={this.props.classes.iconButtons}
                         onClick={() => this.setState({goBottom: !this.state.goBottom})}
                         color={this.state.goBottom ? 'secondary' : ''}
-                        size="large"><IconBottom/></IconButton>
+                        size="medium"><IconBottom/></IconButton>
                     {lines && lines.length ? <IconButton
                         className={this.props.classes.iconButtons}
                         onClick={() => this.props.onClearAllLogs()}
-                        size="large"><IconDelete/></IconButton> : null}
+                        size="medium"><IconDelete/></IconButton> : null}
                     {lines && lines.length ? <IconButton
                         className={this.props.classes.iconButtons}
                         onClick={() => this.onCopy()}
-                        size="large"><IconCopy/></IconButton> : null}
+                        size="medium"><IconCopy/></IconButton> : null}
                 </div>
                 {this.renderLogList(lines)}
             </div>

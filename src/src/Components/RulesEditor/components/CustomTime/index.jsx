@@ -6,6 +6,7 @@ import clsx from 'clsx';
 
 const CustomTime = ({ value, style, onChange, className }) => {
     return <TextField
+        variant="standard"
         id="time"
         type="time"
         onChange={(e) => onChange(e.currentTarget.value)}

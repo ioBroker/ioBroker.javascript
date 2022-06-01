@@ -117,6 +117,7 @@ class TriggerState extends GenericBlock {
                             label={I18n.t('Value')}
                         />
                         : <TextField
+                            variant="standard"
                             inputRef={this.inputRef}
                             label={I18n.t('Value')}
                             fullWidth={true}
@@ -144,7 +145,7 @@ class TriggerState extends GenericBlock {
                         color="primary">
                         <IconCheck/>{I18n.t('Write')}
                     </Button>
-                    <Button
+                    <Button color="grey"
                         variant="contained"
                         onClick={() => this.setState({openSimulate: false})}
                     >

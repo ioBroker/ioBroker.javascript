@@ -203,7 +203,7 @@ class DialogImportFile extends React.Component {
                 {this.state.error ? (<DialogError text={this.state.error} onClose={() => this.setState({error: ''})}/>) : null}
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" onClick={() => this.handleCancel()} startIcon={<IconCancel/>}>{I18n.t('Close')}</Button>
+                <Button color="grey" variant="contained" onClick={() => this.handleCancel()} startIcon={<IconCancel/>}>{I18n.t('Close')}</Button>
             </DialogActions>
         </Dialog>;
     }

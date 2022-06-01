@@ -36,7 +36,7 @@ const CustomModal = ({ open, onClose, children, titleButtonApply, titleButtonClo
             <Button onClick={() => onApply(textInput ? value : null)}  variant="contained" color="primary">
                 {i18n.t(titleButtonApply)}
             </Button>
-            <Button onClick={onClose} variant="contained">
+            <Button color="grey" onClick={onClose} variant="contained">
                 {i18n.t(titleButtonClose)}
             </Button>
         </DialogActions>

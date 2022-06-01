@@ -127,6 +127,7 @@ const ContentBlockItems = ({ size, typeBlock, name, nameAdditionally, additional
         {typeBlock === 'conditions' ?
             <div style={{ width: '100%' }}>
                 <Select
+                    variant="standard"
                     className={cls.selectOnChange}
                     value={userRules.justCheck || false}
                     onChange={e => {

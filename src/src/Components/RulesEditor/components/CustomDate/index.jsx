@@ -43,10 +43,12 @@ const CustomDate = ({ value, onChange, className, title, style }) => {
 
     return <div>
         <FormControl
+            variant="standard"
             className={clsx(cls.root, className)}
             style={style}
         >
             <Select
+                variant="standard"
                 className={clsx(cls.root, className)}
                 margin="dense"
                 label={I18n.t('Month')}
@@ -70,10 +72,12 @@ const CustomDate = ({ value, onChange, className, title, style }) => {
             </Select>
         </FormControl>
         <FormControl
+            variant="standard"
             className={clsx(cls.root, className)}
             style={style}
         >
             <Select
+                variant="standard"
                 className={clsx(cls.root, className)}
                 margin="dense"
                 label={I18n.t('Date')}

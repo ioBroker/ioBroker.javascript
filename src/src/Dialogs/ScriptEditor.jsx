@@ -111,7 +111,7 @@ class DialogScriptEditor extends React.Component {
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" onClick={() => this.handleOk()} color="primary" startIcon={<IconSave/>}>{I18n.t('Save')}</Button>
-                <Button variant="contained" onClick={() => this.handleCancel()} startIcon={<IconCancel/>}>{I18n.t('Cancel')}</Button>
+                <Button color="grey" variant="contained" onClick={() => this.handleCancel()} startIcon={<IconCancel/>}>{I18n.t('Cancel')}</Button>
             </DialogActions>
         </Dialog>;
     }

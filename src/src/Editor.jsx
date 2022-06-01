@@ -827,13 +827,13 @@ class Editor extends React.Component {
                     window.localStorage && window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
                     this.setState({ menuTabsOpened: false, menuTabsAnchorEl: null, editing: editing });
                 }}
-                size="large">
+                size="medium">
                 <IconCloseAll />
             </IconButton> : null
             ];
         } else {
             return <div key="tabs2" className={this.props.classes.toolbar}>
-                <Button key="select1" disabled={true} className={this.props.classes.hintButton} href="">
+                <Button color="grey" key="select1" disabled={true} className={this.props.classes.hintButton} href="">
                     <span key="select2">{I18n.t('Click on this icon')}</span>
                     <IconDoEdit key="select3" className={this.props.classes.hintIcon} />
                     <span key="select4">{I18n.t('for edit or create script')}</span>
@@ -922,7 +922,7 @@ class Editor extends React.Component {
                         key="locate"
                         title={I18n.t('Locate file')}
                         onClick={() => this.props.onLocate(this.state.selected)}
-                        size="large"><IconLocate /></IconButton>}
+                        size="medium"><IconLocate /></IconButton>}
                     {!this.props.debugInstance && !changed && isInstanceRunning && <IconButton
                         key="restart"
                         disabled={this.props.debugMode}
@@ -930,12 +930,12 @@ class Editor extends React.Component {
                         className={this.props.classes.toolbarButtons}
                         onClick={() => this.onRestart()}
                         title={I18n.t('Restart')}
-                        size="large"><IconRestart /></IconButton>}
+                        size="medium"><IconRestart /></IconButton>}
                     {!this.props.debugInstance && !changed && !isScriptRunning && <span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>}
                     {!changed && isScriptRunning && !isInstanceRunning && <span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>}
-                    {changed && <Button key="save" variant="contained" className={clsx(this.props.classes.textButton, this.props.classes.saveButton, 'button-save')} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={this.props.classes.textIcon} /></Button>}
-                    {(changedAll > 1 || (changedAll === 1 && !changed)) && <Button key="saveall" variant="contained" className={this.props.classes.textButton} onClick={() => this.onSaveAll()}>{I18n.t('Save all')}<IconSave className={this.props.classes.textIcon} /></Button>}
-                    {changed && <Button key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel className={this.props.classes.textIcon} /></Button>}
+                    {changed && <Button color="grey" key="save" variant="contained" className={clsx(this.props.classes.textButton, this.props.classes.saveButton, 'button-save')} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={this.props.classes.textIcon} /></Button>}
+                    {(changedAll > 1 || (changedAll === 1 && !changed)) && <Button color="grey" key="saveall" variant="contained" className={this.props.classes.textButton} onClick={() => this.onSaveAll()}>{I18n.t('Save all')}<IconSave className={this.props.classes.textIcon} /></Button>}
+                    {changed && <Button color="grey" key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel className={this.props.classes.textIcon} /></Button>}
                     <div style={{ flex: 2 }} />
 
                     {this.state.blockly && !this.state.showCompiledCode &&
@@ -945,7 +945,7 @@ class Editor extends React.Component {
                             title={I18n.t('Export blocks')}
                             className={this.props.classes.toolbarButtons}
                             onClick={() => this.sendCommandToBlockly('export')}
-                            size="large">
+                            size="medium">
                             <IconExport /></IconButton>}
 
                     {this.state.blockly && !this.state.showCompiledCode &&
@@ -955,7 +955,7 @@ class Editor extends React.Component {
                             title={I18n.t('Import blocks')}
                             className={this.props.classes.toolbarButtons}
                             onClick={() => this.sendCommandToBlockly('import')}
-                            size="large">
+                            size="medium">
                             <IconImport /></IconButton>}
 
                     {this.state.blockly && !this.state.showCompiledCode &&
@@ -965,7 +965,7 @@ class Editor extends React.Component {
                             title={I18n.t('Check blocks')}
                             className={this.props.classes.toolbarButtons}
                             onClick={() => this.sendCommandToBlockly('check')}
-                            size="large">
+                            size="medium">
                             <IconCheck /></IconButton>}
 
                     {!this.props.debugMode && !this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton
@@ -974,7 +974,7 @@ class Editor extends React.Component {
                         title={I18n.t('Create or edit CRON or time wizard')}
                         className={this.props.classes.toolbarButtons}
                         onClick={() => this.setState({ showCron: true })}
-                        size="large"><IconCron /></IconButton>}
+                        size="medium"><IconCron /></IconButton>}
 
                     {!this.props.debugMode && !this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton
                         key="select-id"
@@ -982,9 +982,9 @@ class Editor extends React.Component {
                         title={I18n.t('Insert object ID')}
                         className={this.props.classes.toolbarButtons}
                         onClick={() => this.setState({ showSelectId: true })}
-                        size="large"><IconSelectId /></IconButton>}
+                        size="medium"><IconSelectId /></IconButton>}
 
-                    {this.state.blockly && !this.state.rules && this.state.showCompiledCode && <Button key="convert2js" aria-label="convert to javascript"
+                    {this.state.blockly && !this.state.rules && this.state.showCompiledCode && <Button color="grey" key="convert2js" aria-label="convert to javascript"
                         title={I18n.t('Convert blockly to javascript for ever.')}
                         onClick={() => this.onConvertBlockly2JS()}
                     >Blockly=>JS</Button>}
@@ -995,7 +995,7 @@ class Editor extends React.Component {
                             title={I18n.t('Export blocks')}
                             className={this.props.classes.toolbarButtons}
                             onClick={() => this.sendCommandToRules('export')}
-                            size="large">
+                            size="medium">
                             <IconExport /></IconButton>}
                     {this.state.rules && !this.state.showCompiledCode &&
                         <IconButton
@@ -1004,7 +1004,7 @@ class Editor extends React.Component {
                             title={I18n.t('Import blocks')}
                             className={this.props.classes.toolbarButtons}
                             onClick={() => this.sendCommandToRules('import')}
-                            size="large">
+                            size="medium">
                             <IconImport /></IconButton>}
 
                     {this.props.expertMode && !changed && (this.props.debugMode || (!this.state.blockly && !this.state.rules) || ((this.state.blockly || this.state.rules) && this.state.showCompiledCode)) && <IconButton
@@ -1018,7 +1018,7 @@ class Editor extends React.Component {
                                 this.props.onDebugModeChange(!this.props.debugMode);
                             }
                         }}
-                        size="large">
+                        size="medium">
                         <IconDebugMode style={{fontSize: 32}}/>
                     </IconButton>}
 
@@ -1046,7 +1046,7 @@ class Editor extends React.Component {
                         title={I18n.t('Debug options')}
                         className={this.props.classes.toolbarButtons}
                         onClick={e => this.setState({ showDebugMenu: true, menuDebugAnchorEl: e.currentTarget })}
-                        size="large">
+                        size="medium">
                         <Badge className={this.props.classes.badgeMargin} badgeContent={this.getDebugBadge()}>
                             <IconDebugMenu />
                         </Badge>
@@ -1294,7 +1294,7 @@ class Editor extends React.Component {
                         color="inherit"
                         className={this.props.classes.closeToast}
                         onClick={() => this.setState({ toast: '' })}
-                        size="large"><IconClose />
+                        size="medium"><IconClose />
                     </IconButton>,
                 ]}
             />

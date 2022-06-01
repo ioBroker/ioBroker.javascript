@@ -13,11 +13,13 @@ const CustomSelect = ({ multiple, value, customValue, title, attr, options, styl
     const text = v === '' || v === null || v === undefined ? '_' : v;
 
     return <FormControl
+    variant="standard"
         className={clsx(cls.root, className)}
         fullWidth
         style={style}
     >
         <Select
+            variant="standard"
             value={text}
             fullWidth
             multiple={multiple}

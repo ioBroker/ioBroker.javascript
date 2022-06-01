@@ -55,6 +55,7 @@ const CustomInstance = ({ multiple, value, customValue, socket, title, attr, ada
         style={style}
     >
         <Select
+            variant="standard"
             value={(customValue ? value : inputText) || '_'}
             fullWidth
             multiple={multiple}
