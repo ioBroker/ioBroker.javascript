@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.7.0",
+    "version": "5.8.0",
     "news": {
+      "5.8.0": {
+        "en": "Implemented onFile and offFile functions (available with js-controller 4.1+)\nAdd sendToAsync und sendToHostAsync methods\nAdded support of custom rule plugins (actually only telegram)",
+        "de": "Implementierte onFile- und offFile-Funktionen (verfügbar mit js-controller 4.1+)\nFügen Sie die Methoden sendToAsync und sendToHostAsync hinzu\nUnterstützung von benutzerdefinierten Regel-Plugins hinzugefügt (eigentlich nur Telegramm)",
+        "ru": "Реализованы функции onFile и offFile (доступно с js-контроллером 4.1+)\nДобавьте методы sendToAsync и sendToHostAsync.\nДобавлена поддержка плагинов пользовательских правил (фактически только телеграм)",
+        "pt": "Funções onFile e offFile implementadas (disponíveis com js-controller 4.1+)\nAdicionar métodos sendToAsync e sendToHostAsync\nAdicionado suporte de plugins de regras personalizadas (na verdade, apenas telegrama)",
+        "nl": "Geïmplementeerde onFile- en offFile-functies (beschikbaar met js-controller 4.1+)\nSendToAsync en sendToHostAsync-methoden toevoegen\nOndersteuning toegevoegd voor plug-ins voor aangepaste regels (eigenlijk alleen telegram)",
+        "fr": "Implémentation des fonctions onFile et offFile (disponible avec js-controller 4.1+)\nAjouter les méthodes sendToAsync et sendToHostAsync\nAjout de la prise en charge des plugins de règles personnalisées (en fait uniquement télégramme)",
+        "it": "Funzioni onFile e offFile implementate (disponibili con js-controller 4.1+)\nAggiungi i metodi sendToAsync e sendToHostAsync\nAggiunto supporto per plugin di regole personalizzate (in realtà solo telegramma)",
+        "es": "Funciones onFile y offFile implementadas (disponibles con js-controller 4.1+)\nAgregar métodos sendToAsync y sendToHostAsync\nSe agregó soporte de complementos de reglas personalizadas (en realidad solo telegrama)",
+        "pl": "Zaimplementowane funkcje onFile i offFile (dostępne z kontrolerem js 4.1+)\nDodaj metody sendToAsync i sendToHostAsync\nDodano obsługę wtyczek reguł niestandardowych (właściwie tylko telegram)",
+        "zh-cn": "实现了 onFile 和 offFile 函数（js-controller 4.1+ 可用）\n添加 sendToAsync 和 sendToHostAsync 方法\n添加了对自定义规则插件的支持（实际上只有电报）"
+      },
       "5.7.0": {
         "en": "Allow sending of messages to scripts also from adapters and CLI by sending \"toScript\" message (see [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#onmessage))\nLists returned by $-selector are now unified and do not contain double entries \nFix subscribe multiple object ID lists in blockly",
         "de": "Erlauben Sie das Senden von Nachrichten an Skripte auch von Adaptern und CLI, indem Sie eine „toScript“-Nachricht senden (siehe [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md# onmessage))\nVon $-selector zurückgegebene Listen sind jetzt vereinheitlicht und enthalten keine doppelten Einträge\nKorrigieren Sie das Abonnieren mehrerer Objekt-ID-Listen in Blockly",
@@ -83,18 +95,6 @@
         "zh-cn": "如果对象不存在，则修复 getObjectAsync 函数"
       },
       "5.5.2": {
-        "en": "Added new rules action block: sum two states (or minus)",
-        "de": "Neuer Aktionsblock für Regeln hinzugefügt: Summiere zwei Zustände (oder minus)",
-        "ru": "Добавлен новый блок действий правил: суммировать два состояния (или минус)",
-        "pt": "Adicionado novo bloco de ação de regras: soma dois estados (ou menos)",
-        "nl": "Nieuw actieblok voor regels toegevoegd: som twee toestanden (of min) op",
-        "fr": "Ajout d'un nouveau bloc d'action de règles : somme de deux états (ou moins)",
-        "it": "Aggiunto nuovo blocco azione regole: somma due stati (o meno)",
-        "es": "Se agregó un nuevo bloque de acción de reglas: suma dos estados (o menos)",
-        "pl": "Dodano nowy blok akcji reguł: zsumuj dwa stany (lub minus)",
-        "zh-cn": "添加了新的规则动作块：将两个状态相加（或减去）"
-      },
-      "5.5.1": {
         "en": "Added new rules action block: sum two states (or minus)",
         "de": "Neuer Aktionsblock für Regeln hinzugefügt: Summiere zwei Zustände (oder minus)",
         "ru": "Добавлен новый блок действий правил: суммировать два состояния (или минус)",
