@@ -42,7 +42,12 @@ export default defineConfig(({ mode }) => {
                     'prop-types': {
                         singleton: true,
                         // requiredVersion: pkg.dependencies['@mui/material'],
-                    }
+                    },
+                    './src/GenericBlock.jsx': {
+                        singleton: true,
+                        version: '1.0.0',
+                        packageName: './src/GenericBlock.jsx'
+                    },
                 }
             })
         ],
@@ -51,6 +56,9 @@ export default defineConfig(({ mode }) => {
                 '/files': 'http://localhost:8081',
                 '/adapter': 'http://localhost:8081',
             }
+        },
+        build: {
+            cssCodeSplit: false,
         },
         optimizeDeps: {
             esbuildOptions: {
