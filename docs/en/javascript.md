@@ -625,7 +625,7 @@ If the first attribute is string, the function will try to parse the string as J
 ```js
 getAstroDate(pattern, date);
 ```
-Returns a javascript Date object for the specified pattern. For valid pattern values see the [Astro](#astro--function) section in the *schedule* function.
+Returns a javascript Date object for the specified astro-name (e.g. "sunrise" or "sunriseEnd"). For valid values see the list of allowed values in the [Astro](#astro--function) section in the *schedule* function.
 
 The returned Date object is calculated for the passed *date*. If no date is provided, the current day is used.
 
@@ -637,6 +637,9 @@ let today = new Date();
 let tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
 let tomorrowNight = getAstroDate("night", tomorrow);
 ```
+
+**Nore: Depending on your geographical location there can be cases where e.g. 'night'/'nightEnd' do not exist on certain timepoints (e.g. locations north in may/June each year!**
+You can use webpages like [suncalc.net](http://suncalc.net) to check if the timepoints are correct.
 
 ### isAstroDay
 ```js

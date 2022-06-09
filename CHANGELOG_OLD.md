@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 5.5.3 (2022-03-25)
+* (bluefox) Fixed getObjectAsync function if object does not exist
+
 ## 5.5.2 (2022-03-23)
 * (bluefox) Added new rules action block: sum two states (or minus)
 

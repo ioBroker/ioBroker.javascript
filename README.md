@@ -53,7 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 5.8.0 (2022-06-01)
 * (bluefox) Implemented onFile and offFile functions (available with js-controller 4.1+)
 * (Apollon77) Add sendToAsync und sendToHostAsync methods
 * (bluefox) Added support of custom rule plugins (actually only telegram)
@@ -77,9 +77,6 @@ And then call `npm run build`.
 
 ### 5.5.4 (2022-04-03)
 * (bluefox) Tried to solve problem with the font
-
-### 5.5.3 (2022-03-25)
-* (bluefox) Fixed getObjectAsync function if object does not exist
 
 ## License
 The MIT License (MIT)
