@@ -92,8 +92,6 @@ const { hashSource, isObject } = require('./lib/tools');
 const packageJson = require('./package.json');
 const { EXIT_CODES } = require('@iobroker/adapter-core');
 const { isDeepStrictEqual } = require('util');
-const JSZip = require('jszip');
-const fs = require('fs');
 const adapterName = packageJson.name.split('.').pop();
 const scriptCodeMarker = 'script.js.';
 const stopCounters =  {};
@@ -816,7 +814,7 @@ function startAdapter(options) {
          * so we have a chance to handle it ourself.
          * @param {Error} err
          */
-        error: (err) => {
+        error: err => {
             // Identify unhandled errors originating from callbacks in scripts
             // These are not caught by wrapping the execution code in try-catch
             if (err && typeof err.stack === 'string') {
