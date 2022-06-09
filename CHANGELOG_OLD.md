@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 5.5.4 (2022-04-03)
+* (bluefox) Tried to solve problem with the font
+
 ## 5.5.3 (2022-03-25)
 * (bluefox) Fixed getObjectAsync function if object does not exist
 

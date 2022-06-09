@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.8.0",
+    "version": "5.8.1",
     "news": {
+      "5.8.1": {
+        "en": "Allowed to use javascript behind reverse proxy\nIf adapter parameter set to null in `writeFile/readFile`, it will be used `0_userdata.0`",
+        "de": "Gestattet, javascript hinter Reverse Proxy zu verwenden\nWenn Adapter-Parameter auf Null in schreibenDatei/readFile gesetzt, wird es 0_userdata.0 verwendet",
+        "ru": "Разрешено использовать javascript за обратным прокси\nЕсли параметр адаптера установлен на null в WriteFile/readFile, он будет использоваться 0_userdata.0",
+        "pt": "Permitido usar javascript atrás do proxy reverso\nSe o parâmetro adaptador definido para null no writeFile/readFile, ele será usado 0_userdata.0",
+        "nl": "Genoemd om javascript te gebruiken achter omgekeerde proxy\nAls de adapter parameter op het niveau staat, wordt het 0userdata gebruikt",
+        "fr": "Permet d ' utiliser le javascript derrière le proxy inverse\nSi le paramètre adaptateur est nul dans writeFile/readFile, il sera utilisé 0_userdata.0",
+        "it": "Permesso di utilizzare javascript dietro proxy inverso\nSe il parametro dell'adattatore impostato a null in writeFile/readFile, verrà utilizzato 0_userdata.0",
+        "es": "Permitido utilizar javascript detrás del proxy inverso\nSi el parámetro adaptador se establece para null en WriteFile/readFile, se utilizará 0_userdata.0",
+        "pl": "Wszystko do używania javascriptu za odwrotną proxy\nJeśli parametr adaptujący zostanie ustawiony w pisaniu/czytaniu pliku, zostanie użyty 0_userdata.0",
+        "zh-cn": "允许在反常剂后面使用木图。\n如果调整后参数以注销File/pFile,则将使用0._userdata.0。"
+      },
       "5.8.0": {
         "en": "Implemented onFile and offFile functions (available with js-controller 4.1+)\nAdd sendToAsync und sendToHostAsync methods\nAdded support of custom rule plugins (actually only telegram)",
         "de": "Implementierte onFile- und offFile-Funktionen (verfügbar mit js-controller 4.1+)\nFügen Sie die Methoden sendToAsync und sendToHostAsync hinzu\nUnterstützung von benutzerdefinierten Regel-Plugins hinzugefügt (eigentlich nur Telegramm)",
@@ -93,18 +105,6 @@
         "es": "Se corrigió la función getObjectAsync si el objeto no existe",
         "pl": "Naprawiono funkcję getObjectAsync, jeśli obiekt nie istnieje",
         "zh-cn": "如果对象不存在，则修复 getObjectAsync 函数"
-      },
-      "5.5.2": {
-        "en": "Added new rules action block: sum two states (or minus)",
-        "de": "Neuer Aktionsblock für Regeln hinzugefügt: Summiere zwei Zustände (oder minus)",
-        "ru": "Добавлен новый блок действий правил: суммировать два состояния (или минус)",
-        "pt": "Adicionado novo bloco de ação de regras: soma dois estados (ou menos)",
-        "nl": "Nieuw actieblok voor regels toegevoegd: som twee toestanden (of min) op",
-        "fr": "Ajout d'un nouveau bloc d'action de règles : somme de deux états (ou moins)",
-        "it": "Aggiunto nuovo blocco azione regole: somma due stati (o meno)",
-        "es": "Se agregó un nuevo bloque de acción de reglas: suma dos estados (o menos)",
-        "pl": "Dodano nowy blok akcji reguł: zsumuj dwa stany (lub minus)",
-        "zh-cn": "添加了新的规则动作块：将两个状态相加（或减去）"
       }
     },
     "desc": {
