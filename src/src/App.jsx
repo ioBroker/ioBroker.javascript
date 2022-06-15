@@ -116,19 +116,18 @@ const styles = theme => ({
 
 class App extends GenericApp {
     constructor(props) {
-        const modules = import.meta.globEager('./i18n/*.json');
         super(props, {
             translations: {
-                en: modules['./i18n/en.json'].default,
-                de: modules['./i18n/de.json'].default,
-                ru: modules['./i18n/ru.json'].default,
-                pt: modules['./i18n/pt.json'].default,
-                nl: modules['./i18n/nl.json'].default,
-                fr: modules['./i18n/fr.json'].default,
-                it: modules['./i18n/it.json'].default,
-                es: modules['./i18n/es.json'].default,
-                pl: modules['./i18n/pl.json'].default,
-                'zh-cn': modules['./i18n/zh-cn.json'].default,
+                'en': require('./i18n/en'),
+                'de': require('./i18n/de'),
+                'es': require('./i18n/es'),
+                'fr': require('./i18n/fr'),
+                'it': require('./i18n/it'),
+                'nl': require('./i18n/nl'),
+                'pl': require('./i18n/pl'),
+                'pt': require('./i18n/pt'),
+                'ru': require('./i18n/ru'),
+                'zh-cn': require('./i18n/zh-cn'),
             },
             bottomButtons: false,
             socket: {

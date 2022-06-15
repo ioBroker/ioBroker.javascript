@@ -27,6 +27,7 @@
         "react-inlinesvg": "^3.0.0",
         "react-json-view": "^1.21.3",
         "react-monaco-editor": "^0.48.0",
+        "react-scripts": "^5.0.1",
         "react-splitter-layout": "^4.0.0",
         "react-text-mask": "^5.4.3",
         "react-treeview-mui": "^0.1.2",
@@ -36,9 +37,12 @@
         "suncalc2": "^1.8.1"
     },
     "scripts": {
-        "start": "vite",
-        "build": "vite build",
-        "preview": "vite preview --port 3000"
+        "start": "craco start",
+        "old-start": "react-scripts start",
+        "lint": "eslint --fix --ext .js,.jsx src",
+        "build": "craco build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject"
     },
     "eslintConfig": {
         "extends": "react-app"
@@ -50,6 +54,9 @@
         "not op_mini all"
     ],
     "devDependencies": {
+        "@craco/craco": "^6.4.3",
+        "craco-esbuild": "^0.5.1",
+        "craco-module-federation": "^1.1.0",
         "@honkhonk/vite-plugin-svgr": "^1.1.0",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@dilesoft/vite-plugin-federation-dynamic": "^1.1.9",
