@@ -4,6 +4,7 @@ const makeShared = pkgs => {
         packageName => {
             result[packageName] = {
                 requiredVersion: '*',
+                singleton: true,
             };
         },
     );
