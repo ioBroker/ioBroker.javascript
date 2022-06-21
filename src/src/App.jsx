@@ -181,7 +181,7 @@ class App extends GenericApp {
 
         if (id.match(/^system\.adapter\.[-_\w\d]+\$/)) {
             // update instances
-            if (id.startsWith('system.adapter.' + this.adapterName + '.')) {
+            if (id.startsWith(`system.adapter.${this.adapterName}.`)) {
                 if (obj && obj.type === 'instance') {
                     if (!this.state.instances.includes(id)) {
                         newState.instances = [...this.state.instances];
@@ -189,10 +189,10 @@ class App extends GenericApp {
                         newState.instances.sort();
                         changed = true;
                         // request alive
-                        this.socket.subscribeState(obj._id + '.alive', this.onInstanceAliveChange());
+                        this.socket.subscribeState(obj._id + '.alive', this.onInstanceAliveChange);
                     }
                 } else if (!obj && this.state.instances.includes(id)) {
-                    this.socket.unsubscribeState(id + '.alive', this.onInstanceAliveChange());
+                    this.socket.unsubscribeState(id + '.alive', this.onInstanceAliveChange);
                     newState.instances = [...this.state.instances];
                     const pos = newState.instances.indexOf(id);
                     newState.instances.splice(pos, 1);
@@ -295,74 +295,15 @@ class App extends GenericApp {
                 this.socket.subscribeObject('system.host.*', this.onHostChanged);
 
                 this.setState(newState);
-                this.loadPlugins();
             });
     }
 
-    loadPlugins() {
-        return;
-        /*if (!this.pluginsLoaded) {
-            this.pluginsLoaded = true;
-            const div = window.document.createElement('div');
-            div.socket = this.socket;
-            div.setAttribute('id', 'hello');
-            window.document.body.appendChild(div);
-            window.jsPlugins = {};
-            window.React = React;
-
-            const script = window.document.createElement('script');
-            script.onload = () => {
-                ReactDOM.render(React.createElement(window.jsPlugins.JSPluginDemo, {
-                    socket: this.socket,
-                    theme: this.state.theme,
-                    themeName: this.state.themeName,
-                    themeType: this.state.themeType
-                }), div);
-            };
-
-            script.src = './plugins/bundle.js';
-            window.document.documentElement.firstChild.appendChild(script);
-        }*/
-    }
-
-    // BF(2021.07.16): support fallback on admin4. Remove it after one year
-    getAdapterInstances() {
-        return new Promise((resolve, reject) => {
-            let timeout = setTimeout(() => {
-                timeout = null;
-                this.socket.getObjectView(
-                    `system.adapter.${this.adapterName}.`,
-                    `system.adapter.${this.adapterName}.\u9999`,
-                    'instance'
-                )
-                    .then(items => resolve(Object.keys(items).map(id => items[id])))
-                    .catch(e => reject(e));
-            }, 2000);
-
-            return this.socket.getAdapterInstances(this.adapterName)
-                .then(result => {
-                    if (timeout) {
-                        clearTimeout(timeout);
-                        timeout = null;
-                        return resolve(result);
-                    }
-                })
-                .catch(e => {
-                    if (timeout && e !== 'unknown command') {
-                        clearTimeout(timeout);
-                        timeout = null;
-                        reject(e);
-                    }
-                });
-        });
-    }
-
     subscribeOnInstances() {
-        return this.getAdapterInstances()
+        return this.socket.getAdapterInstances(this.adapterName)
             .then(instancesArray => {
                 const instances = instancesArray.map(obj => parseInt(obj._id.split('.').pop())).sort();
                 const runningInstances = {};
-                instances.forEach(id => runningInstances['system.adapter.' + this.adapterName + '.' + id] = false);
+                instances.forEach(id => runningInstances[`system.adapter.${this.adapterName}.${id}`] = false);
 
                 const promises = [];
 

@@ -310,7 +310,7 @@ class Editor extends React.Component {
         const isChanged = Object.keys(this.state.changed).find(id => this.state.changed[id]);
 
         if (typeof window.parent !== 'undefined' && window.parent) {
-            window.parent.configNotSaved = isChanged;
+            window.parent.configNotSaved = !!isChanged;
         }
     }
 
@@ -329,7 +329,7 @@ class Editor extends React.Component {
             JSON.stringify(this.scripts[id]) !== JSON.stringify(this.props.objects[id].common));
 
         if (!!isChanged) {
-            console.log('Script ' + console.log('Script ' + JSON.stringify(this.scripts[isChanged])));
+            console.log('Script ' + JSON.stringify(this.scripts[isChanged]));
             const message = I18n.t('Configuration not saved.');
             e = e || window.event;
             // For IE and Firefox
