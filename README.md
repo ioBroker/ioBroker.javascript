@@ -53,7 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 5.8.2 (2022-06-22)
 * (bluefox) Updated some packages 
 * (bluefox) Made it work with ioBroker cloud
 

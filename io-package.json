@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.8.1",
+    "version": "5.8.2",
     "news": {
+      "5.8.2": {
+        "en": "Updated some packages \nMade it work with ioBroker cloud",
+        "de": "Einige Pakete aktualisiert\nEs funktioniert mit ioBroker Cloud",
+        "ru": "Обновлены некоторые пакеты\nСделано в ioBroker cloud",
+        "pt": "Atualizado alguns pacotes\nFez com que funcionasse com a nuvem ioBroker",
+        "nl": "Verhoog wat pakketten\nIk liet het werken met ioBrokerwolk",
+        "fr": "Mise à jour de certains paquets\nIl a fait fonctionner avec ioBroker cloud",
+        "it": "Aggiornato alcuni pacchetti\nHa fatto funzionare con ioBroker cloud",
+        "es": "Actualización de algunos paquetes\nLo hizo funcionar con la nube de yoBroker",
+        "pl": "Ulepszenia niektórych pakietów\nUprawiała się w chmurze ioBrokera",
+        "zh-cn": "更新了一些一揽子计划\n马约恩岛与奥布罗克云合作"
+      },
       "5.8.1": {
         "en": "Allowed to use javascript behind reverse proxy\nIf adapter parameter set to null in `writeFile/readFile`, it will be used `0_userdata.0`",
         "de": "Gestattet, javascript hinter Reverse Proxy zu verwenden\nWenn Adapter-Parameter auf Null in schreibenDatei/readFile gesetzt, wird es 0_userdata.0 verwendet",
@@ -93,18 +105,6 @@
         "es": "Intenté resolver el problema con la fuente.",
         "pl": "Próbowałem rozwiązać problem z czcionką",
         "zh-cn": "试图解决字体问题"
-      },
-      "5.5.3": {
-        "en": "Fixed getObjectAsync function if object does not exist",
-        "de": "Die getObjectAsync-Funktion wurde korrigiert, wenn das Objekt nicht existiert",
-        "ru": "Исправлена функция getObjectAsync, если объект не существует.",
-        "pt": "Corrigida a função getObjectAsync se o objeto não existir",
-        "nl": "Vaste getObjectAsync-functie als object niet bestaat",
-        "fr": "Correction de la fonction getObjectAsync si l'objet n'existe pas",
-        "it": "Risolto il problema con la funzione getObjectAsync se l'oggetto non esiste",
-        "es": "Se corrigió la función getObjectAsync si el objeto no existe",
-        "pl": "Naprawiono funkcję getObjectAsync, jeśli obiekt nie istnieje",
-        "zh-cn": "如果对象不存在，则修复 getObjectAsync 函数"
       }
     },
     "desc": {

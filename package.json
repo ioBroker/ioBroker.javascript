@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "5.8.1",
+  "version": "5.8.2",
   "description": "Rules Engine for ioBroker",
   "author": "bluefox <dogafox@gmail.com>",
   "contributors": [
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.0",
-    "@types/node": "^18.0.0",
+    "@types/node": "^16.11.41",
     "@types/request": "^2.48.8",
     "coffee-compiler": "^0.3.2",
     "coffee-script": "^1.12.7",
