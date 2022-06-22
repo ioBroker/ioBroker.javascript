@@ -53,6 +53,10 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Updated some packages 
+* (bluefox) Made it work with ioBroker cloud 
+
 ### 5.8.1 (2022-06-09)
 * (bluefox) Allowed to use javascript behind reverse proxy
 * (bluefox) If adapter parameter set to null in `writeFile/readFile`, it will be used `0_userdata.0`
