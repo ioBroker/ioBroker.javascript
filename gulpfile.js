@@ -48,7 +48,7 @@ gulp.task('i18n=>flat', done => {
         keys.forEach(key => {
             words.push(index[key][lang]);
         });
-        fs.writeFileSync(dir + '/flat/' + lang + '.txt', words.join('\n'));
+        fs.writeFileSync(`${dir}/flat/${lang}.txt`, words.join('\n'));
     });
     fs.writeFileSync(dir + '/flat/index.txt', keys.join('\n'));
     done();
@@ -153,9 +153,9 @@ function build() {
 
         console.log(options.cwd);
 
-        let script =  __dirname + '/src/node_modules/vite/bin/vite.js';
+        let script =  __dirname + '/src/node_modules/@craco/craco/bin/craco.js';
         if (!fs.existsSync(script)) {
-            script = __dirname + '/node_modules/vite/bin/vite.js';
+            script = __dirname + '/node_modules/@craco/craco/bin/craco.js';
         }
         if (!fs.existsSync(script)) {
             console.error('Cannot find execution file: ' + script);

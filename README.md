@@ -55,7 +55,7 @@ And then call `npm run build`.
 -->
 ### **WORK IN PROGRESS**
 * (bluefox) Updated some packages 
-* (bluefox) Made it work with ioBroker cloud 
+* (bluefox) Made it work with ioBroker cloud
 
 ### 5.8.1 (2022-06-09)
 * (bluefox) Allowed to use javascript behind reverse proxy
@@ -74,14 +74,6 @@ And then call `npm run build`.
 ### 5.6.1 (2022-05-03)
 * (Apollon77) Allow to subscribe multiple object ID lists in blockly
 * (Apollon77) Make sure lists returned by $-selector do not contain duplicates
-
-### 5.6.0 (2022-04-24)
-* (Apollon77) Make state properties "c"(omment) and user available to scripts too
-* (Apollon77) make sure values of new or changed alias objects are initialized properly
-* (winnyschuster) Enhance scheduler logic and astro events offered by wizard
-* (Apollon77) Respect expected value changes when determining if a value is changed
-* (Apollon77) Fix remembering intermediate state values when state values are subscribed
-* (Apollon77) fix setState logic when states are not subscribed
 
 ## License
 The MIT License (MIT)
