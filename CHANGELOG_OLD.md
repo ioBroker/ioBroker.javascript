@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 5.6.1 (2022-05-03)
+* (Apollon77) Allow to subscribe multiple object ID lists in blockly
+* (Apollon77) Make sure lists returned by $-selector do not contain duplicates
+
 ## 5.5.4 (2022-04-03)
 * (bluefox) Tried to solve problem with the font
 

@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.8.2",
+    "version": "5.8.3",
     "news": {
+      "5.8.3": {
+        "en": "Updated the object select dialog",
+        "de": "Update des Objektauswahldialogs",
+        "ru": "Обновление объекта выберите диалог",
+        "pt": "Atualizado o objeto selecionar diálogo",
+        "nl": "Verhoog het object",
+        "fr": "Mise à jour du dialogue de sélection de l'objet",
+        "it": "Aggiornato il dialogo selezionare oggetto",
+        "es": "Actualizado el diálogo de selección del objeto",
+        "pl": "Zaktualizowany obiekt wybiera dialogi",
+        "zh-cn": "二. 更新目标"
+      },
       "5.8.2": {
         "en": "Updated some packages \nMade it work with ioBroker cloud",
         "de": "Einige Pakete aktualisiert\nEs funktioniert mit ioBroker Cloud",
@@ -93,18 +105,6 @@
         "es": "Haga que las propiedades de estado c (comentario) y el usuario también estén disponibles para los scripts\nasegúrese de que los valores de los objetos de alias nuevos o modificados se inicialicen correctamente\nMejore la lógica del programador y los eventos astronómicos ofrecidos por el asistente\nRespete los cambios de valor esperados al determinar si se cambia un valor\nCorrección de recordar valores de estado intermedios cuando se suscriben valores de estado\narreglar la lógica setState cuando los estados no están suscritos",
         "pl": "Udostępnij również skryptom właściwości stanu c(omment) i użytkownika\nupewnij się, że wartości nowych lub zmienionych obiektów aliasów są prawidłowo zainicjowane\nUlepsz logikę harmonogramu i zdarzenia astro oferowane przez kreator\nSzanuj oczekiwane zmiany wartości podczas określania, czy wartość uległa zmianie\nNapraw zapamiętywanie pośrednich wartości stanu, gdy wartości stanu są subskrybowane\nnapraw logikę setState, gdy stany nie są subskrybowane",
         "zh-cn": "使状态属性 c(omment) 和用户也可用于脚本\n确保正确初始化新的或更改的别名对象的值\n增强向导提供的调度程序逻辑和天文事件\n在确定值是否发生变化时尊重预期值的变化\n修复订阅状态值时记住中间状态值的问题\n修复未订阅状态时的 setState 逻辑"
-      },
-      "5.5.4": {
-        "en": "Tried to solve problem with the font",
-        "de": "Versucht, Problem mit der Schriftart zu lösen",
-        "ru": "Пробовал решить проблему со шрифтом",
-        "pt": "Tentei resolver o problema com a fonte",
-        "nl": "Geprobeerd om het probleem met het lettertype op te lossen",
-        "fr": "J'ai essayé de résoudre le problème avec la police",
-        "it": "Ho provato a risolvere il problema con il carattere",
-        "es": "Intenté resolver el problema con la fuente.",
-        "pl": "Próbowałem rozwiązać problem z czcionką",
-        "zh-cn": "试图解决字体问题"
       }
     },
     "desc": {
