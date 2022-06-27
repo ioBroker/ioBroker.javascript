@@ -92,10 +92,10 @@ gulp.task('clean', () => {
         // 'src/node_modules/**/*',
         'admin/**/*',
         'admin/*',
-        'src/dist/**/*'
+        'src/build/**/*'
     ]).then(() => del([
         // 'src/node_modules',
-        'src/dist',
+        'src/build',
         'admin/'
     ]));
 });
@@ -182,24 +182,24 @@ function copyFiles() {
     ]).then(() => {
         return Promise.all([
             gulp.src([
-                'src/dist/**/*',
-                '!src/dist/index.html',
-                '!src/dist/assets/*.js',
-                '!src/dist/i18n/**/*',
-                '!src/dist/i18n',
+                'src/build/**/*',
+                '!src/build/index.html',
+                '!src/build/static/js/main.*.chunk.js',
+                '!src/build/i18n/**/*',
+                '!src/build/i18n',
                 'admin-config/*'
             ])
                 .pipe(gulp.dest('admin/')),
 
             gulp.src([
-                'src/dist/index.html',
+                'src/build/index.html',
             ])
                 .pipe(replace('href="/', 'href="'))
                 .pipe(replace('src="/', 'src="'))
                 .pipe(rename('tab.html'))
                 .pipe(gulp.dest('admin/')),
             gulp.src([
-                'src/dist/assets/*.js',
+                'src/build/static/js/main.*.chunk.js',
             ])
                 .pipe(replace('"/assets', '"./assets'))
                 .pipe(gulp.dest('admin/assets/')),
@@ -223,8 +223,8 @@ gulp.task('6-patch', () => new Promise(resolve => {
 
         fs.writeFileSync(__dirname + '/admin/tab.html', code);
     }
-    if (fs.existsSync(__dirname + '/src/dist/index.html')) {
-        let code = fs.readFileSync(__dirname + '/src/dist/index.html').toString('utf8');
+    if (fs.existsSync(__dirname + '/src/build/index.html')) {
+        let code = fs.readFileSync(__dirname + '/src/build/index.html').toString('utf8');
         code = code.replace(/<script>var head=document\.getElementsByTagName\("head"\)\[0\][^<]+<\/script>/,
             `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./../../lib/js/socket.io.js"></script>`);
         // add monaco script at the end
@@ -232,7 +232,7 @@ gulp.task('6-patch', () => new Promise(resolve => {
             code = code.replace('</body></html>', `<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script></body></html>`);
         }
 
-        fs.writeFileSync(__dirname + '/src/dist/index.html', code);
+        fs.writeFileSync(__dirname + '/src/build/index.html', code);
     }
 
     const buffer = Buffer.from(JSON.parse(fs.readFileSync(__dirname + '/admin-config/vsFont/codicon.json')));
