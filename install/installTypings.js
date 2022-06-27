@@ -14,7 +14,7 @@ function fail(reason) {
     process.exit(0);
 }
 
-// Find latest version on npm
+// Find the latest version on npm
 console.log('Installing NodeJS typings...');
 npmCommand('view', ['@types/node', 'version'], {stdout: 'pipe', stderr: 'pipe'})
     .then(cmdResult => {
