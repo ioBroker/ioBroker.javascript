@@ -53,6 +53,9 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Added preparations for cloud
+
 ### 5.8.3 (2022-06-27)
 * (bluefox) Updated the object select dialog
 

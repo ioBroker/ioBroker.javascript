@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
+import { StylesProvider, createGenerateClassName } from '@mui/styles';
 
 import './index.css';
 import App from './App';
@@ -24,21 +25,26 @@ let themeName = Utils.getThemeName();
 
 console.log('iobroker.' + window.adapterName + '@' + pgk.version + ' using theme "' + themeName + '"');
 
+const generateClassName = createGenerateClassName({
+    productionPrefix: 'iob',
+});
+
 function build() {
     const isMobile = window.innerWidth < 600;
     const container = document.getElementById('root');
     const root = createRoot(container);
-    return root.render(<StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme(themeName)}>
-            <DndProvider backend={isMobile ? TouchBackend : HTML5Backend}>
-                <App onThemeChange={_theme => {
-                    themeName = _theme;
-                    build();
-                }} />
-            </DndProvider>
-        </ThemeProvider>
-    </StyledEngineProvider>);
-
+    return root.render(<StylesProvider generateClassName={generateClassName}>
+        <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={theme(themeName)}>
+                <DndProvider backend={isMobile ? TouchBackend : HTML5Backend}>
+                    <App onThemeChange={_theme => {
+                        themeName = _theme;
+                        build();
+                    }} />
+                </DndProvider>
+            </ThemeProvider>
+        </StyledEngineProvider>
+    </StylesProvider>);
 }
 
 build();
