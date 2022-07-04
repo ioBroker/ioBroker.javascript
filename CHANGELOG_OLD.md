@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 5.7.0 (2022-05-08)
+* (Apollon77) Allow sending of messages to the scripts also from adapters and CLI by sending "toScript" message (see [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#onmessage))
+* (Apollon77) Lists returned by $-selector are now unified and do not contain double entries 
+* (Apollon77) Fix subscribe multiple object ID lists in blockly
+
 ## 5.6.1 (2022-05-03)
 * (Apollon77) Allow to subscribe multiple object ID lists in blockly
 * (Apollon77) Make sure lists returned by $-selector do not contain duplicates
