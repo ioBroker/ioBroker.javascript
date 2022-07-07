@@ -5,7 +5,7 @@ const cracoModuleFederation = require('craco-module-federation');
 module.exports = {
     plugins: [
         { plugin: CracoEsbuildPlugin },
-        { plugin: cracoModuleFederation}
+        { plugin: cracoModuleFederation }
     ],
     devServer: {
         proxy: {
