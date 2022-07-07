@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.8.4",
+    "version": "5.8.5",
     "news": {
+      "5.8.5": {
+        "en": "Added preparations for cloud",
+        "de": "Präparate für die Wolke hinzugefügt",
+        "ru": "Добавлена подготовка к облаку",
+        "pt": "Preparações adicionadas para a nuvem",
+        "nl": "Voegde voorbereidingen voor wolken",
+        "fr": "Préparations supplémentaires pour le cloud",
+        "it": "Aggiunti i preparativi per il cloud",
+        "es": "Preparativos adicionales para la nube",
+        "pl": "Zadaniowe przygotowania do chmur",
+        "zh-cn": "增加云雾准备"
+      },
       "5.8.3": {
         "en": "Updated the object select dialog",
         "de": "Update des Objektauswahldialogs",

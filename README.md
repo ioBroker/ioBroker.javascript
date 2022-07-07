@@ -53,7 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 5.8.5 (2022-07-07)
 * (bluefox) Added preparations for cloud
 
 ### 5.8.3 (2022-06-27)
