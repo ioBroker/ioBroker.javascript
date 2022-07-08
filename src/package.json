@@ -54,7 +54,7 @@
         "not op_mini all"
     ],
     "devDependencies": {
-        "@craco/craco": "^6.4.4",
+        "@craco/craco": "^6.4.5",
         "craco-esbuild": "^0.5.1",
         "craco-module-federation": "^1.1.0",
         "eslint": "^8.19.0",
