@@ -6,6 +6,7 @@ updates:
       interval: monthly
       time: "04:00"
       timezone: Europe/Berlin
+
   - package-ecosystem: npm
     directory: "/"
     schedule:
@@ -13,4 +14,13 @@ updates:
       time: "04:00"
       timezone: Europe/Berlin
     open-pull-requests-limit: 7
+    versioning-strategy: increase
+
+  - package-ecosystem: npm
+    directory: "/src"
+    schedule:
+      interval: monthly
+      time: "04:00"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 20
     versioning-strategy: increase
