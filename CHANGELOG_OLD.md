@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 5.8.0 (2022-06-01)
+* (bluefox) Implemented onFile and offFile functions (available with js-controller 4.1+)
+* (Apollon77) Add sendToAsync und sendToHostAsync methods
+* (bluefox) Added support of custom rule plugins (actually only telegram)
+
 ## 5.7.0 (2022-05-08)
 * (Apollon77) Allow sending of messages to the scripts also from adapters and CLI by sending "toScript" message (see [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#onmessage))
 * (Apollon77) Lists returned by $-selector are now unified and do not contain double entries 

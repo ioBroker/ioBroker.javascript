@@ -53,7 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 5.8.6 (2022-07-12)
 * (klein0r) Fixed function edit dialog (cursor jumps to first position)
 * (klein0r) Added error message when using number or boolean as trigger id
 
@@ -70,11 +70,6 @@ And then call `npm run build`.
 ### 5.8.1 (2022-06-09)
 * (bluefox) Allowed to use javascript behind reverse proxy
 * (bluefox) If adapter parameter set to null in `writeFile/readFile`, it will be used `0_userdata.0`
-
-### 5.8.0 (2022-06-01)
-* (bluefox) Implemented onFile and offFile functions (available with js-controller 4.1+)
-* (Apollon77) Add sendToAsync und sendToHostAsync methods
-* (bluefox) Added support of custom rule plugins (actually only telegram)
 
 ## License
 The MIT License (MIT)

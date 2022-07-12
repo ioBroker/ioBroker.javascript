@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.8.5",
+    "version": "5.8.6",
     "news": {
+      "5.8.6": {
+        "en": "Fixed function edit dialog (cursor jumps to first position)\nAdded error message when using number or boolean as trigger id",
+        "de": "Behobene Funktion bearbeiten Dialog (Kursor springt in die erste Position)\nFehlermeldung bei Verwendung von Nummer oder Boolean als Trigger-ID hinzugefügt",
+        "ru": "Фиксированный диалог редактирования функции (курсор прыгает в первую позицию)\nДобавлено сообщение об ошибке при использовании номера или boolean как триггер id",
+        "pt": "Caixa de diálogo de edição de função fixa (cursor salta para a primeira posição)\nAdicionado mensagem de erro ao usar número ou boolean como gatilho id",
+        "nl": "Gerepareerde functie edit dialog (cursor springt naar eerste positie)\nVergissingsbericht bij gebruik van nummer of boolean als trigger",
+        "fr": "Boîte de dialogue d'édition de fonction fixe (tailleur saute à la première position)\nAjout du message d'erreur lors de l'utilisation du nombre ou du boolean comme trigger id",
+        "it": "Finestra di dialogo Modifica funzione fissa (cursor salta in prima posizione)\nAggiunto messaggio di errore quando si utilizza il numero o boolean come trigger id",
+        "es": "Diálogo de edición de funciones fijas (apuntas de precursor a primera posición)\nMensaje de error añadido cuando se utiliza el número o booleano como disparador id",
+        "pl": "Kształtowanie funkcji edytowanych (ok\nPoniższa wiadomość błędu przy użyciu numeru lub booleana jako wyzwalanie idyda",
+        "zh-cn": "固定功能的口号(头寸)\n在使用人数或诱因时增加错误信息"
+      },
       "5.8.5": {
         "en": "Added preparations for cloud",
         "de": "Präparate für die Wolke hinzugefügt",
@@ -93,18 +105,6 @@
         "es": "Permita el envío de mensajes a scripts también desde adaptadores y CLI enviando un mensaje \"toScript\" (consulte [documentación de onMessage] (https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#) enmensaje))\nLas listas devueltas por $-selector ahora están unificadas y no contienen entradas dobles\nArreglar suscribirse a múltiples listas de ID de objetos en blockly",
         "pl": "Zezwalaj na wysyłanie wiadomości do skryptów również z adapterów i CLI, wysyłając wiadomość \"toScript\" (patrz [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md# onmessage))\nListy zwracane przez $-selector są teraz ujednolicone i nie zawierają podwójnych wpisów\nNaprawiono subskrybowanie wielu list identyfikatorów obiektów w blokach",
         "zh-cn": "通过发送“toScript”消息，也允许从适配器和 CLI 向脚本发送消息（请参阅 [onMessage 文档](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#留言））\n$-selector 返回的列表现在是统一的并且不包含双重条目\n修复在块中订阅多个对象 ID 列表"
-      },
-      "5.6.1": {
-        "en": "Allow to subscribe multiple object ID lists in blockly",
-        "de": "Erlauben, mehrere Objekt-ID-Listen blockweise zu abonnieren",
-        "ru": "Разрешить подписку на несколько списков идентификаторов объектов в блоках",
-        "pt": "Permitir a inscrição de várias listas de ID de objeto em blocos",
-        "nl": "Sta toe om meerdere object-ID-lijsten in blockly te abonneren",
-        "fr": "Autoriser l'abonnement à plusieurs listes d'ID d'objets en bloc",
-        "it": "Consenti di sottoscrivere più elenchi di ID oggetto in blocco",
-        "es": "Permitir suscribirse a múltiples listas de ID de objetos en bloque",
-        "pl": "Zezwalaj na subskrybowanie wielu list identyfikatorów obiektów w blokach",
-        "zh-cn": "允许以块方式订阅多个对象 ID 列表"
       }
     },
     "desc": {
