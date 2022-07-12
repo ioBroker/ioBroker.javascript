@@ -41,6 +41,7 @@ class DialogScriptEditor extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            changed: false,
             source: this.props.source,
         };
         if (!this.state.source && this.props.isReturn) {
@@ -72,7 +73,7 @@ class DialogScriptEditor extends React.Component {
     }
 
     onChange(value) {
-        this.setState({source: value});
+        this.setState({changed: true, source: value});
     }
 
     render() {
@@ -103,6 +104,7 @@ class DialogScriptEditor extends React.Component {
                     socket={this.props.socket}
                     readOnly={false}
                     checkJs={false}
+                    changed={this.state.changed}
                     code={this.state.source}
                     isDark={this.props.themeType === 'dark'}
                     onChange={newValue => this.onChange(newValue)}
