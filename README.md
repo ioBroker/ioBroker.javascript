@@ -53,7 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 5.8.7 (2022-07-12)
 * (klein0r) Fixed function edit dialog (cursor jumps to first position)
 * (klein0r) Added error message when using number or boolean as trigger id
 

@@ -1,6 +1,6 @@
 {
     "name": "js",
-    "version": "5.8.6",
+    "version": "5.8.7",
     "private": true,
     "dependencies": {
         "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
