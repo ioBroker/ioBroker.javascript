@@ -28,12 +28,16 @@
   "optionalDependencies": {
     "vm2": "^3.9.10"
   },
+  "depsComment": {
+    "coffee-script": "is required only for node 14. As coffee-compiler requires coffeescript for nodes>14 and coffee-script for nodes<=14"
+  },
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.0",
     "@types/node": "^18.0.3",
     "@types/request": "^2.48.8",
     "coffee-compiler": "^0.3.2",
     "coffeescript": "^1.12.7",
+    "coffee-script": "^1.12.7",
     "jsonata": "^1.8.6",
     "jszip": "^3.10.0",
     "node-inspect": "^2.0.0",

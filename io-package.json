@@ -22,18 +22,6 @@
     ],
     "version": "5.8.6",
     "news": {
-      "5.8.6": {
-        "en": "Fixed function edit dialog (cursor jumps to first position)\nAdded error message when using number or boolean as trigger id",
-        "de": "Behobene Funktion bearbeiten Dialog (Kursor springt in die erste Position)\nFehlermeldung bei Verwendung von Nummer oder Boolean als Trigger-ID hinzugefügt",
-        "ru": "Фиксированный диалог редактирования функции (курсор прыгает в первую позицию)\nДобавлено сообщение об ошибке при использовании номера или boolean как триггер id",
-        "pt": "Caixa de diálogo de edição de função fixa (cursor salta para a primeira posição)\nAdicionado mensagem de erro ao usar número ou boolean como gatilho id",
-        "nl": "Gerepareerde functie edit dialog (cursor springt naar eerste positie)\nVergissingsbericht bij gebruik van nummer of boolean als trigger",
-        "fr": "Boîte de dialogue d'édition de fonction fixe (tailleur saute à la première position)\nAjout du message d'erreur lors de l'utilisation du nombre ou du boolean comme trigger id",
-        "it": "Finestra di dialogo Modifica funzione fissa (cursor salta in prima posizione)\nAggiunto messaggio di errore quando si utilizza il numero o boolean come trigger id",
-        "es": "Diálogo de edición de funciones fijas (apuntas de precursor a primera posición)\nMensaje de error añadido cuando se utiliza el número o booleano como disparador id",
-        "pl": "Kształtowanie funkcji edytowanych (ok\nPoniższa wiadomość błędu przy użyciu numeru lub booleana jako wyzwalanie idyda",
-        "zh-cn": "固定功能的口号(头寸)\n在使用人数或诱因时增加错误信息"
-      },
       "5.8.5": {
         "en": "Added preparations for cloud",
         "de": "Präparate für die Wolke hinzugefügt",
