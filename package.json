@@ -81,6 +81,7 @@
     "test": "npm run test:declarations && npm run test:javascript",
     "postinstall": "node ./install/installTypings.js",
     "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
+    "build": "node node_modules/gulp/bin/gulp.js",
     "release": "release-script",
     "release-patch": "release-script patch --yes",
     "release-minor": "release-script minor --yes",
