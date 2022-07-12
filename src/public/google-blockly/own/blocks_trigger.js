@@ -364,6 +364,10 @@ Blockly.Blocks['on_source'] = {
      * @this Blockly.Block
      */
     init: function() {
+
+        this.appendDummyInput()
+            .appendField('↪');
+
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('on_source_id'),             'id'],

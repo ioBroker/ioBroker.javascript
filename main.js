@@ -1662,7 +1662,9 @@ function createVM(source, name) {
 
     if (!debugMode) {
         source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + '," +
-            " ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ) + " +
+            " ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ) + '," +
+            " ' + __engine.__subscriptionsMessage + ' message' + (__engine.__subscriptionsMessage === 1 ? '' : 's' ) + '," +
+            " ' + __engine.__subscriptionsLog + ' log' + (__engine.__subscriptionsLog === 1 ? '' : 's' ) + " +
             "' and ' + __engine.__subscriptionsFile + ' file subscription' + (__engine.__subscriptionsFile === 1 ? '' : 's' ));\n";
     } else {
         if (source.startsWith('(async () => {\n')) {
