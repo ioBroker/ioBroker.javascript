@@ -829,6 +829,33 @@ Blockly.JavaScript['field_oid_meta'] = function(block) {
     return ['\'' + oid + '\'', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
+// --- select OID script--------------------------------------------------
+Blockly.System.blocks['field_oid_script'] =
+    '<block type="field_oid_script">'
+    + '     <value name="TEXT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['field_oid_script'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('field_oid_OID'));
+
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldOID('default', 'script'), 'oid');
+
+        this.setInputsInline(true);
+        this.setColour(Blockly.System.HUE);
+        this.setOutput(true, 'String');
+        this.setTooltip(Blockly.Translate('field_oid_tooltip'));
+    }
+};
+
+Blockly.JavaScript['field_oid_script'] = function(block) {
+    var oid = block.getFieldValue('oid');
+    return ['\'' + oid + '\'', Blockly.JavaScript.ORDER_ATOMIC];
+};
+
 // --- get attribute --------------------------------------------------
 Blockly.System.blocks['get_attr'] =
     '<block type="get_attr">'

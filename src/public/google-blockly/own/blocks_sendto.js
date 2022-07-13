@@ -356,7 +356,10 @@ Blockly.Sendto.blocks['sendto_otherscript'] =
     + '     </value>'
     + '     <value name="INSTANCE">'
     + '     </value>'
-    + '     <value name="SCRIPT">'
+    + '     <value name="OID">'
+    + '         <shadow type="field_oid_script">'
+    + '             <field name="oid">Script Object ID</field>'
+    + '         </shadow>'
     + '     </value>'
     + '     <value name="MESSAGE">'
     + '     </value>'
@@ -393,8 +396,9 @@ Blockly.Blocks['sendto_otherscript'] = {
             .appendField(Blockly.Translate('sendto_otherscript_instance'))
             .appendField(new Blockly.FieldDropdown(options), "INSTANCE");
 
-        this.appendValueInput('SCRIPT')
-            .appendField(Blockly.Translate('sendto_otherscript_script'));
+        this.appendValueInput('OID')
+            .appendField(Blockly.Translate('sendto_otherscript_script'))
+            .setCheck(null);
 
         this.appendDummyInput('MESSAGE')
             .appendField(Blockly.Translate('sendto_otherscript_message'))
@@ -415,16 +419,18 @@ Blockly.Blocks['sendto_otherscript'] = {
 
 Blockly.JavaScript['sendto_otherscript'] = function(block) {
     var dropdown_instance = block.getFieldValue('INSTANCE');
-    var script  = Blockly.JavaScript.valueToCode(block, 'SCRIPT', Blockly.JavaScript.ORDER_ATOMIC);
+    var value_objectid  = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     var message = block.getFieldValue('MESSAGE');
     var data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
+
+    var objectname = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
 
     if (!data) {
         data = 'true';
     }
 
     var text = '{\n';
-    text += '    script: ' + script + ',\n';
+    text += '    script: ' + value_objectid + ',' + (objectname ? '/*' + objectname + '*/' : '') + '\n';
     text += '    message: "' + message + '",\n';
     text += '    data: ' + data + '\n';
 
