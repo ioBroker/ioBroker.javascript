@@ -214,8 +214,8 @@ gulp.task('5-copy-dep', gulp.series('3-build-dep', '5-copy'));
 gulp.task('6-patch', () => new Promise(resolve => {
     if (fs.existsSync(__dirname + '/admin/tab.html')) {
         let code = fs.readFileSync(__dirname + '/admin/tab.html').toString('utf8');
-        code = code.replace(/<script>var head=document\.getElementsByTagName\("head"\)\[0\][^<]+<\/script>/,
-            `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./../../lib/js/socket.io.js"></script>`);
+        //code = code.replace(/<script>var head=document\.getElementsByTagName\("head"\)\[0\][^<]+<\/script>/,
+        //    `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./../../lib/js/socket.io.js"></script>`);
         // add monaco script at the end
         if (!code.includes(`<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script>`)) {
             code = code.replace('</body></html>', `<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script></body></html>`);
@@ -225,8 +225,8 @@ gulp.task('6-patch', () => new Promise(resolve => {
     }
     if (fs.existsSync(__dirname + '/src/build/index.html')) {
         let code = fs.readFileSync(__dirname + '/src/build/index.html').toString('utf8');
-        code = code.replace(/<script>var head=document\.getElementsByTagName\("head"\)\[0\][^<]+<\/script>/,
-            `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./../../lib/js/socket.io.js"></script>`);
+        //code = code.replace(/<script>var head=document\.getElementsByTagName\("head"\)\[0\][^<]+<\/script>/,
+        //    `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./../../lib/js/socket.io.js"></script>`);
         // add monaco script at the end
         if (!code.includes(`<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script>`)) {
             code = code.replace('</body></html>', `<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script></body></html>`);

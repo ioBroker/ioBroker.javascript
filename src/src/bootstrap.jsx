@@ -60,10 +60,9 @@ serviceWorker.unregister();
 // loader must be after socket.io, elsewise there is no window.io
 const loadDynamicScript = window.loadDynamicScript;
 loadDynamicScript(window.location.port === '3000' ? window.location.protocol + '//' + window.location.hostname + ':8081/lib/js/socket.io.js' : './../../lib/js/socket.io.js', function () {
-
     loadDynamicScript('vs/loader.js', function () {
         loadDynamicScript('vs/configure.js', function () {
-        typeof window.socketLoadedHandler === 'function' && window.socketLoadedHandler();
+            typeof window.socketLoadedHandler === 'function' && window.socketLoadedHandler();
         });
     });
 });
