@@ -55,6 +55,7 @@ And then call `npm run build`.
 -->
 ### **WORK IN PROGRESS**
 * (klein0r) Added variable timeout block
+* (klein0r) Added getinterval and gettimeout blocks
 
 ### 5.8.7 (2022-07-12)
 * (klein0r) Fixed function edit dialog (cursor jumps to first position)
