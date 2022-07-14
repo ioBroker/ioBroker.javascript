@@ -930,6 +930,45 @@ Blockly.JavaScript['cron_builder'] = function(block) {
     return [code, Blockly.JavaScript.ORDER_ATOMIC]
 };
 
+// --- onMessage -----------------------------------------------------------
+Blockly.Trigger.blocks['onMessage'] =
+    '<block type="onMessage">'
+    + '     <value name="NAME">'
+    + '     </value>'
+    + '     <value name="MESSAGE">'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['onMessage'] = {
+    init: function() {
+        this.appendDummyInput('NAME')
+            .appendField(Blockly.Translate('onMessage'));
+
+        this.appendDummyInput('MESSAGE')
+            .appendField(Blockly.Translate('onMessage_message'))
+            .appendField(new Blockly.FieldTextInput('customMessage'), 'MESSAGE');
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setInputsInline(false);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setTooltip(Blockly.Translate('onMessage_tooltip'));
+        this.setHelpUrl(getHelp('onMessage_help'));
+    }
+};
+
+Blockly.JavaScript['onMessage'] = function (block) {
+    var message = block.getFieldValue('MESSAGE');
+    var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    return 'onMessage("' + message + '", async function (data) {\n  ' + statements_name + '});\n';
+};
+
 // --- onFile -----------------------------------------------------------
 Blockly.Trigger.blocks['onFile'] =
     '<block type="onFile">'

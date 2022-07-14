@@ -348,3 +348,93 @@ Blockly.JavaScript['sendto_custom'] = function (block) {
         return 'sendTo("' + instance + '", "' + command + '", {' + (args.length ? args.join(',') + '\n' : '') + '});\n' + logText;
     }
 };
+
+// --- sendTo JavaScript --------------------------------------------------
+Blockly.Sendto.blocks['sendto_otherscript'] =
+    '<block type="sendto_otherscript">'
+    + '     <value name="NAME">'
+    + '     </value>'
+    + '     <value name="INSTANCE">'
+    + '     </value>'
+    + '     <value name="OID">'
+    + '         <shadow type="field_oid_script">'
+    + '             <field name="oid">Script Object ID</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="MESSAGE">'
+    + '     </value>'
+    + '     <value name="DATA">'
+    + '         <shadow type="math_number">'
+    + '             <field name="NUM">1</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['sendto_otherscript'] = {
+    init: function() {
+        var options = [[Blockly.Translate('sendto_otherscript_anyInstance'), '']];
+        if (typeof main !== 'undefined' && main.instances) {
+            for (var i = 0; i < main.instances.length; i++) {
+                var m = main.instances[i].match(/^system.adapter.javascript.(\d+)$/);
+                if (m) {
+                    var n = parseInt(m[1], 10);
+                    options.push(['javascript.' + n, '.' + n]);
+                }
+            }
+        }
+
+        if (!options.length) {
+            for (var u = 0; u <= 4; u++) {
+                options.push(['javascript.' + u, '.' + u]);
+            }
+        }
+
+        this.appendDummyInput('NAME')
+            .appendField(Blockly.Translate('sendto_otherscript_name'))
+
+        this.appendDummyInput('INSTANCE')
+            .appendField(Blockly.Translate('sendto_otherscript_instance'))
+            .appendField(new Blockly.FieldDropdown(options), "INSTANCE");
+
+        this.appendValueInput('OID')
+            .appendField(Blockly.Translate('sendto_otherscript_script'))
+            .setCheck(null);
+
+        this.appendDummyInput('MESSAGE')
+            .appendField(Blockly.Translate('sendto_otherscript_message'))
+            .appendField(new Blockly.FieldTextInput('customMessage'), 'MESSAGE');
+
+        this.appendValueInput('DATA')
+            .appendField(Blockly.Translate('sendto_otherscript_data'));
+
+        this.setInputsInline(false);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setColour(Blockly.Sendto.HUE);
+        this.setTooltip(Blockly.Translate('sendto_otherscript_tooltip'));
+        this.setHelpUrl(Blockly.Translate('sendto_otherscript_help'));
+    }
+};
+
+Blockly.JavaScript['sendto_otherscript'] = function(block) {
+    var dropdown_instance = block.getFieldValue('INSTANCE');
+    var value_objectid  = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    var message = block.getFieldValue('MESSAGE');
+    var data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
+
+    var objectname = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+
+    if (!data) {
+        data = 'true';
+    }
+
+    var text = '{\n';
+    text += '    script: ' + value_objectid + ',' + (objectname ? '/*' + objectname + '*/' : '') + '\n';
+    text += '    message: "' + message + '",\n';
+    text += '    data: ' + data + '\n';
+
+    text += '}';
+
+    return 'sendTo("javascript' + dropdown_instance + '", "toScript", ' + text + ');\n';
+};

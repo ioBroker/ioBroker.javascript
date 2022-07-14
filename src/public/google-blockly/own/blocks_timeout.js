@@ -301,6 +301,35 @@ Blockly.JavaScript['timeouts_cleartimeout'] = function(block) {
     return '(function () {if (' + name + ') {clearTimeout(' + name + '); ' + name + ' = null;}})();\n';
 };
 
+// --- getTimeout -----------------------------------------------------------
+Blockly.Timeouts.blocks['timeouts_gettimeout'] =
+    '<block type="timeouts_gettimeout">'
+    + '     <value name="NAME">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['timeouts_gettimeout'] = {
+    init: function() {
+        this.appendDummyInput("NAME")
+            .appendField(Blockly.Translate('timeouts_gettimeout'))
+            .appendField(new Blockly.FieldDropdown(function () {
+                return window.scripts.blocklyWorkspace ? Blockly.Timeouts.getAllTimeouts(window.scripts.blocklyWorkspace) : [];
+            }), "NAME");
+
+        this.setInputsInline(true);
+        this.setOutput(true);
+        this.setColour(Blockly.Timeouts.HUE);
+        this.setTooltip(Blockly.Translate('timeouts_gettimeout_tooltip'));
+        this.setHelpUrl(getHelp('timeouts_gettimeout_help'));
+    }
+};
+
+Blockly.JavaScript['timeouts_gettimeout'] = function(block) {
+    var name = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
+
+    return [name, Blockly.JavaScript.ORDER_ATOMIC];;
+};
+
 // --- setInterval -----------------------------------------------------------
 Blockly.Timeouts.blocks['timeouts_setinterval'] =
     '<block type="timeouts_setinterval">'
@@ -368,6 +397,64 @@ Blockly.JavaScript['timeouts_setinterval'] = function(block) {
     return name + ' = setInterval(async function () {\n' + statements_name + '}, ' + delay + ');\n';
 };
 
+// --- setInterval variable -----------------------------------------------------------
+Blockly.Timeouts.blocks['timeouts_setinterval_variable'] =
+    '<block type="timeouts_setinterval_variable">'
+    + '     <value name="NAME">'
+    + '     </value>'
+    + '     <value name="INTERVAL_MS">'
+    + '         <shadow type="math_number">'
+    + '             <field name="NUM">1000</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['timeouts_setinterval_variable'] = {
+    init: function() {
+        var nameField = new Blockly.FieldTextInput(
+            Blockly.Timeouts.findLegalName(Blockly.Translate('timeouts_setinterval_name'), this),
+            Blockly.Timeouts.rename);
+
+        nameField.setSpellcheck(false);
+
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('timeouts_setinterval'))
+            .appendField(nameField, 'NAME')
+            .appendField(Blockly.Translate('timeouts_setinterval_in'));
+
+        this.appendValueInput('INTERVAL_MS')
+            .setCheck('Number')
+            .appendField(Blockly.Translate('timeouts_settimeout_ms'));
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setInputsInline(true);
+        this.setColour(Blockly.Timeouts.HUE);
+        this.setTooltip(Blockly.Translate('timeouts_setinterval_tooltip'));
+        this.setHelpUrl(getHelp('timeouts_setinterval_help'));
+    },
+    isInterval_: true,
+    getVars: function () {
+        return [this.getFieldValue('NAME')];
+    },
+    getVarModels: function () {
+        var name = this.getFieldValue('NAME');
+        return [{getId: function () {return name;}, name: name, type: 'interval'}];
+    }
+};
+
+Blockly.JavaScript['timeouts_setinterval_variable'] = function(block) {
+    var delay = Blockly.JavaScript.valueToCode(block, 'INTERVAL_MS', Blockly.JavaScript.ORDER_ATOMIC);
+    var name  = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
+    var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    return name + ' = setInterval(async function () {\n' + statements_name + '}, parseInt(' + delay + '));\n';
+};
+
 // --- clearInterval -----------------------------------------------------------
 Blockly.Timeouts.blocks['timeouts_clearinterval'] =
     '<block type="timeouts_clearinterval">'
@@ -421,4 +508,33 @@ Blockly.JavaScript['timeouts_clearinterval'] = function(block) {
     var name = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
 
     return '(function () {if (' + name + ') {clearInterval(' + name + '); ' + name + ' = null;}})();\n';
+};
+
+// --- getInterval -----------------------------------------------------------
+Blockly.Timeouts.blocks['timeouts_getinterval'] =
+    '<block type="timeouts_getinterval">'
+    + '     <value name="NAME">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['timeouts_getinterval'] = {
+    init: function() {
+        this.appendDummyInput("NAME")
+            .appendField(Blockly.Translate('timeouts_getinterval'))
+            .appendField(new Blockly.FieldDropdown(function () {
+                return window.scripts.blocklyWorkspace ? Blockly.Timeouts.getAllIntervals(window.scripts.blocklyWorkspace) : [];
+            }), "NAME");
+
+        this.setInputsInline(true);
+        this.setOutput(true);
+        this.setColour(Blockly.Timeouts.HUE);
+        this.setTooltip(Blockly.Translate('timeouts_getinterval_tooltip'));
+        this.setHelpUrl(getHelp('timeouts_getinterval_help'));
+    }
+};
+
+Blockly.JavaScript['timeouts_getinterval'] = function(block) {
+    var name = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
+
+    return [name, Blockly.JavaScript.ORDER_ATOMIC];;
 };
