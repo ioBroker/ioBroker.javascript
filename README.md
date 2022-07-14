@@ -55,8 +55,8 @@ And then call `npm run build`.
 -->
 ### **WORK IN PROGRESS**
 * (klein0r) Added variable timeout block
-* (klein0r) Added getinterval and gettimeout blocks
-* (klein0r) Added sendTo for scripts and message trigger
+* (klein0r) Added `getInterval` and `getTimeout` blocks
+* (klein0r) Added `sendTo` for scripts and message trigger blocks
 
 ### 5.8.8 (2022-07-13)
 * (bluefox) Corrected error by start of GUI

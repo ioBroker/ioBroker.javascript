@@ -390,11 +390,11 @@ Blockly.Blocks['sendto_otherscript'] = {
         }
 
         this.appendDummyInput('NAME')
-            .appendField(Blockly.Translate('sendto_otherscript_name'))
+            .appendField(Blockly.Translate('sendto_otherscript_name'));
 
         this.appendDummyInput('INSTANCE')
             .appendField(Blockly.Translate('sendto_otherscript_instance'))
-            .appendField(new Blockly.FieldDropdown(options), "INSTANCE");
+            .appendField(new Blockly.FieldDropdown(options), 'INSTANCE');
 
         this.appendValueInput('OID')
             .appendField(Blockly.Translate('sendto_otherscript_script'))

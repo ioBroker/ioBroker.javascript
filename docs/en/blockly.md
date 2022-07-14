@@ -25,6 +25,7 @@
         - [Send to pushover](#send-to-pushover)
         - [Send email](#send-email)
         - [Custom sendTo block](#custom-sendto-block)
+        - [Send to other script](#send-to-other-script)
     - [Date and Time blocks](#date-and-time-blocks)
         - [Time comparision](#time-comparision)
         - [Actual time comparision](#actual-time-comparision)
@@ -51,6 +52,7 @@
         - [CRON rule](#cron-rule)
         - [Trigger on file update](#trigger-on-file-update)
         - [Cancel event on file update](#cancel-event-on-file-update)
+        - [Trigger on script event](#trigger-on-script-event)
     - [Timeouts](#timeouts)
         - [Wait/Pause](#wait)
         - [Delayed execution](#delayed-execution)
@@ -1129,10 +1131,16 @@ sendTo("sql.0", "getHistory", {
   });
 ```
 
-If you start value with "{" it will be interpreted as JSON string. Use double quotes in string.
+If you start value with `{` it will be interpreted as JSON string. Use double quotes in string.
+
+### Send to other script
+![Send to other script](img/sendto_otherscript_1_en.png)
+
+With this block you can send message to other script and this message could be processed by [Event - receive message](#trigger-on-script-event) block.
+
 
 ## Date and Time blocks
-### Time comparision
+### Time comparison
 ![Time comparision](img/datetime_compare_ex_en.png)
 
 If used operator "between" or "not between", the block looks like this:
@@ -1789,6 +1797,11 @@ You can subscribe on file updates and execute some action. E.g. here the content
 With this block you can unsubscribe from events by file update.
 
 **Important**: this functionality is only available with js-controller@4.1.x or newer.
+
+### Trigger on script event
+![Trigger on script event](img/trigger_onScript_en.png)
+
+With this block you can subscribe on inter-scripts events and execute some action.
 
 ## Timeouts
 ### Wait/Pause

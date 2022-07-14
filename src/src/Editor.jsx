@@ -1211,6 +1211,7 @@ class Editor extends React.Component {
                 themeType={this.state.themeType}
                 socket={this.props.socket}
                 selected={selectedId}
+                expertMode={this.selectId.type === 'script' ? true : undefined}
                 // statesOnly={!this.selectId.type || this.selectId.type === 'state'}
                 types={[this.selectId.type || 'state']}
                 onClose={() => {
