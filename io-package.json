@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.8.8",
+    "version": "5.8.9",
     "news": {
+      "5.8.9": {
+        "en": "Added variable timeout block\nAdded `getInterval` and `getTimeout` blocks\nAdded `sendTo` for scripts and message trigger blocks",
+        "de": "Hinzugefügt variable Timeout Block\nHinzugefügt getInterval und getTimeout Blöcke\nHinzugefügt: Für Skripte und Nachrichten-Triggerblöcke",
+        "ru": "Добавлен переменный блок timeout\nДобавлены getInterval и getTimeout блоки\nДобавлена отправка Для скриптов и сообщений триггер блоков",
+        "pt": "Adicionado bloco de tempo limite variável\nAdicionado getInterval e getTimeout blocos\nAdicionado enviar Para scripts e blocos de gatilho de mensagem",
+        "nl": "Vertaling:\nGevoegd bij het krijgen van Timeout blokken\nVertaling: Naar scripts en berichten",
+        "fr": "Ajout d'un timeout variable\nAjouté getInterval and getTimeout blocks\nAjouté Pour les scripts et les blocs de déclenchement de message",
+        "it": "Aggiunto blocco timeout variabile\nAggiunto getInterval e getTimeout blocchi\nAggiunto il messaggio A per gli script e blocchi di trigger dei messaggi",
+        "es": "Bloque de tiempo variable\nAñadido getInterval and getTimeout bloques\nEnviar Para para scripts y bloques de activación de mensajes",
+        "pl": "Zmienna czasowa\nAdded getInterval and getTime blocks (ang.)\nAdded sender Dla skryptów i wiadomości blokuje bloki skryptów",
+        "zh-cn": "增加变量的时间限制\n增加联接和后政权的陷阱\n增 发 说明和讯息触发因素"
+      },
       "5.8.8": {
         "en": "Corrected error by start of GUI",
         "de": "Fehler beim Start von GUI behoben",
@@ -93,18 +105,6 @@
         "es": "Permitido utilizar javascript detrás del proxy inverso\nSi el parámetro adaptador se establece para null en WriteFile/readFile, se utilizará 0_userdata.0",
         "pl": "Wszystko do używania javascriptu za odwrotną proxy\nJeśli parametr adaptujący zostanie ustawiony w pisaniu/czytaniu pliku, zostanie użyty 0_userdata.0",
         "zh-cn": "允许在反常剂后面使用木图。\n如果调整后参数以注销File/pFile,则将使用0._userdata.0。"
-      },
-      "5.8.0": {
-        "en": "Implemented onFile and offFile functions (available with js-controller 4.1+)\nAdd sendToAsync und sendToHostAsync methods\nAdded support of custom rule plugins (actually only telegram)",
-        "de": "Implementierte onFile- und offFile-Funktionen (verfügbar mit js-controller 4.1+)\nFügen Sie die Methoden sendToAsync und sendToHostAsync hinzu\nUnterstützung von benutzerdefinierten Regel-Plugins hinzugefügt (eigentlich nur Telegramm)",
-        "ru": "Реализованы функции onFile и offFile (доступно с js-контроллером 4.1+)\nДобавьте методы sendToAsync и sendToHostAsync.\nДобавлена поддержка плагинов пользовательских правил (фактически только телеграм)",
-        "pt": "Funções onFile e offFile implementadas (disponíveis com js-controller 4.1+)\nAdicionar métodos sendToAsync e sendToHostAsync\nAdicionado suporte de plugins de regras personalizadas (na verdade, apenas telegrama)",
-        "nl": "Geïmplementeerde onFile- en offFile-functies (beschikbaar met js-controller 4.1+)\nSendToAsync en sendToHostAsync-methoden toevoegen\nOndersteuning toegevoegd voor plug-ins voor aangepaste regels (eigenlijk alleen telegram)",
-        "fr": "Implémentation des fonctions onFile et offFile (disponible avec js-controller 4.1+)\nAjouter les méthodes sendToAsync et sendToHostAsync\nAjout de la prise en charge des plugins de règles personnalisées (en fait uniquement télégramme)",
-        "it": "Funzioni onFile e offFile implementate (disponibili con js-controller 4.1+)\nAggiungi i metodi sendToAsync e sendToHostAsync\nAggiunto supporto per plugin di regole personalizzate (in realtà solo telegramma)",
-        "es": "Funciones onFile y offFile implementadas (disponibles con js-controller 4.1+)\nAgregar métodos sendToAsync y sendToHostAsync\nSe agregó soporte de complementos de reglas personalizadas (en realidad solo telegrama)",
-        "pl": "Zaimplementowane funkcje onFile i offFile (dostępne z kontrolerem js 4.1+)\nDodaj metody sendToAsync i sendToHostAsync\nDodano obsługę wtyczek reguł niestandardowych (właściwie tylko telegram)",
-        "zh-cn": "实现了 onFile 和 offFile 函数（js-controller 4.1+ 可用）\n添加 sendToAsync 和 sendToHostAsync 方法\n添加了对自定义规则插件的支持（实际上只有电报）"
       }
     },
     "desc": {

@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 5.8.2 (2022-06-22)
+* (bluefox) Updated some packages 
+* (bluefox) Made it work with ioBroker cloud
+
 ## 5.8.1 (2022-06-09)
 * (bluefox) Allowed to use javascript behind reverse proxy
 * (bluefox) If adapter parameter set to null in `writeFile/readFile`, it will be used `0_userdata.0`

@@ -53,7 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 5.8.9 (2022-07-14)
 * (klein0r) Added variable timeout block
 * (klein0r) Added `getInterval` and `getTimeout` blocks
 * (klein0r) Added `sendTo` for scripts and message trigger blocks
@@ -70,10 +70,6 @@ And then call `npm run build`.
 
 ### 5.8.3 (2022-06-27)
 * (bluefox) Updated the object select dialog
-
-### 5.8.2 (2022-06-22)
-* (bluefox) Updated some packages 
-* (bluefox) Made it work with ioBroker cloud
 
 ## License
 The MIT License (MIT)
