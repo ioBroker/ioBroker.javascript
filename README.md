@@ -53,7 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 5.8.10 (2022-07-15)
 * (klein0r) Added variable timeout block
 * (klein0r) Added `getInterval` and `getTimeout` blocks
 * (klein0r) Added `sendTo` for scripts and message trigger blocks

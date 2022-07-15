@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.8.9",
+    "version": "5.8.10",
     "news": {
+      "5.8.10": {
+        "en": "Added variable timeout block\nAdded `getInterval` and `getTimeout` blocks\nAdded `sendTo` for scripts and message trigger blocks\nCorrected the syntax highlighting",
+        "de": "Hinzugefügt variable Timeout Block\nHinzugefügt getInterval und getTimeout Blöcke\nHinzugefügt: Für Skripte und Nachrichten-Triggerblöcke\nKorrektur der Syntax-Highlighting",
+        "ru": "Добавлен переменный блок timeout\nДобавлены getInterval и getTimeout блоки\nДобавлена отправка Для скриптов и сообщений триггер блоков\nИсправлена подсветка синтаксиса",
+        "pt": "Adicionado bloco de tempo limite variável\nAdicionado getInterval e getTimeout blocos\nAdicionado enviar Para scripts e blocos de gatilho de mensagem\nCorrigido o destaque da sintaxe",
+        "nl": "Vertaling:\nGevoegd bij het krijgen van Timeout blokken\nVertaling: Naar scripts en berichten\nVertaling:",
+        "fr": "Ajout d'un timeout variable\nAjouté getInterval and getTimeout blocks\nAjouté Pour les scripts et les blocs de déclenchement de message\nCorrection de la syntaxe",
+        "it": "Aggiunto blocco timeout variabile\nAggiunto getInterval e getTimeout blocchi\nAggiunto il messaggio A per gli script e blocchi di trigger dei messaggi\nCorretto l'evidenziazione della sintassi",
+        "es": "Bloque de tiempo variable\nAñadido getInterval and getTimeout bloques\nEnviar Para para scripts y bloques de activación de mensajes\nCorregido la sintaxis resaltando",
+        "pl": "Zmienna czasowa\nAdded getInterval and getTime blocks (ang.)\nAdded sender Dla skryptów i wiadomości blokuje bloki skryptów\nKwalifikacje podkreślają składnię",
+        "zh-cn": "增加变量的时间限制\n增加联接和后政权的陷阱\n增 发 说明和讯息触发因素\n更正了总括号内。"
+      },
       "5.8.9": {
         "en": "Added variable timeout block\nAdded `getInterval` and `getTimeout` blocks\nAdded `sendTo` for scripts and message trigger blocks",
         "de": "Hinzugefügt variable Timeout Block\nHinzugefügt getInterval und getTimeout Blöcke\nHinzugefügt: Für Skripte und Nachrichten-Triggerblöcke",
@@ -93,18 +105,6 @@
         "es": "Actualización de algunos paquetes\nLo hizo funcionar con la nube de yoBroker",
         "pl": "Ulepszenia niektórych pakietów\nUprawiała się w chmurze ioBrokera",
         "zh-cn": "更新了一些一揽子计划\n马约恩岛与奥布罗克云合作"
-      },
-      "5.8.1": {
-        "en": "Allowed to use javascript behind reverse proxy\nIf adapter parameter set to null in `writeFile/readFile`, it will be used `0_userdata.0`",
-        "de": "Gestattet, javascript hinter Reverse Proxy zu verwenden\nWenn Adapter-Parameter auf Null in schreibenDatei/readFile gesetzt, wird es 0_userdata.0 verwendet",
-        "ru": "Разрешено использовать javascript за обратным прокси\nЕсли параметр адаптера установлен на null в WriteFile/readFile, он будет использоваться 0_userdata.0",
-        "pt": "Permitido usar javascript atrás do proxy reverso\nSe o parâmetro adaptador definido para null no writeFile/readFile, ele será usado 0_userdata.0",
-        "nl": "Genoemd om javascript te gebruiken achter omgekeerde proxy\nAls de adapter parameter op het niveau staat, wordt het 0userdata gebruikt",
-        "fr": "Permet d ' utiliser le javascript derrière le proxy inverse\nSi le paramètre adaptateur est nul dans writeFile/readFile, il sera utilisé 0_userdata.0",
-        "it": "Permesso di utilizzare javascript dietro proxy inverso\nSe il parametro dell'adattatore impostato a null in writeFile/readFile, verrà utilizzato 0_userdata.0",
-        "es": "Permitido utilizar javascript detrás del proxy inverso\nSi el parámetro adaptador se establece para null en WriteFile/readFile, se utilizará 0_userdata.0",
-        "pl": "Wszystko do używania javascriptu za odwrotną proxy\nJeśli parametr adaptujący zostanie ustawiony w pisaniu/czytaniu pliku, zostanie użyty 0_userdata.0",
-        "zh-cn": "允许在反常剂后面使用木图。\n如果调整后参数以注销File/pFile,则将使用0._userdata.0。"
       }
     },
     "desc": {
