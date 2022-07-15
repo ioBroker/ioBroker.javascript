@@ -1580,7 +1580,7 @@ function installNpm(npmLib, callback) {
 
     // Also, set the working directory (cwd) of the process instead of using --prefix
     // because that has ugly bugs on Windows
-    const cmd = `npm install ${npmLib} --production`;
+    const cmd = `npm install ${npmLib} --omit=dev`;
     adapter.log.info(`${cmd} (System call)`);
     // Install node modules as system call
 
