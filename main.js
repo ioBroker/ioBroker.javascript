@@ -15,20 +15,7 @@
 /* jshint shadow: true */
 'use strict';
 
-let NodeVM;
-let VMScript;
-let vm;
-if (true || parseInt(process.versions.node.split('.')[0]) < 6) {
-    vm = require('vm');
-} else {
-    try {
-        const VM2 = require('vm2');
-        NodeVM = VM2.NodeVM;
-        VMScript = VM2.VMScript;
-    } catch (e) {
-        vm = require('vm');
-    }
-}
+const vm             = require('vm');
 const nodeFS         = require('fs');
 const nodePath       = require('path');
 const coffeeCompiler = require('coffee-compiler');
@@ -1673,21 +1660,16 @@ function createVM(source, name) {
             source = 'debugger;' + source;
         }
     }
+
     try {
-        if (VMScript) {
-            return {
-                script: new VMScript(source, name)
-            };
-        } else {
-            const options = {
-                filename: name,
-                displayErrors: true
-                //lineOffset: globalScriptLines
-            };
-            return {
-                script: vm.createScript(source, options)
-            };
-        }
+        const options = {
+            filename: name,
+            displayErrors: true
+            //lineOffset: globalScriptLines
+        };
+        return {
+            script: vm.createScript(source, options)
+        };
     } catch (e) {
         context.logError(`${name} compile failed:\r\nat `, e);
         return false;
@@ -1707,34 +1689,15 @@ function execute(script, name, verbose, debug) {
 
     const sandbox = sandBox(script, name, verbose, debug, context);
 
-    if (NodeVM) {
-        const vm = new NodeVM({
-            sandbox,
-            require: {
-                external: true,
-                builtin: ['*'],
-                root: '',
-                mock: mods
-            }
+    try {
+        script.script.runInNewContext(sandbox, {
+            filename: name,
+            displayErrors: true
+            //lineOffset: globalScriptLines
         });
-
-        try {
-            vm.run(script.script, name);
-        } catch (e) {
-            adapter.setState('scriptProblem.' + name.substring('script.js.'.length), true, true);
-            context.logError(name, e);
-        }
-    } else {
-        try {
-            script.script.runInNewContext(sandbox, {
-                filename: name,
-                displayErrors: true
-                //lineOffset: globalScriptLines
-            });
-        } catch (e) {
-            adapter.setState('scriptProblem.' + name.substring('script.js.'.length), true, true);
-            context.logError(name, e);
-        }
+    } catch (e) {
+        adapter.setState('scriptProblem.' + name.substring('script.js.'.length), true, true);
+        context.logError(name, e);
     }
 }
 

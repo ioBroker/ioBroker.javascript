@@ -25,9 +25,6 @@
   "engines": {
     "node": ">=10.0.0"
   },
-  "optionalDependencies": {
-    "vm2": "^3.9.10"
-  },
   "depsComment": {
     "coffee-script": "is required only for node 14. As coffee-compiler requires coffeescript for nodes>14 and coffee-script for nodes<=14"
   },
