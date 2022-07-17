@@ -1001,7 +1001,6 @@ function main() {
                 globalScript = '';
                 globalDeclarations = '';
                 knownGlobalDeclarationsByScript = {};
-                let count = 0;
                 if (doc && doc.rows && doc.rows.length) {
                     // assemble global script
                     for (let g = 0; g < doc.rows.length; g++) {
@@ -1011,22 +1010,12 @@ function main() {
                             if (obj && obj.common.enabled) {
                                 const engineType = (obj.common.engineType || '').toLowerCase();
                                 if (engineType.startsWith('coffee')) {
-                                    count++;
                                     try {
                                         const convertedJs = CoffeeScript.compile(obj.common.source, { bare: true });
 
                                         adapter.log.debug(`Converted global coffescript to js: \n ${convertedJs}`);
 
                                         globalScript += convertedJs + '\n';
-                                        if (!--count) {
-                                            globalScriptLines = globalScript.split(/\r\n|\n|\r/g).length;
-                                            // load all scripts
-                                            for (let i = 0; i < doc.rows.length; i++) {
-                                                if (!checkIsGlobal(doc.rows[i].value)) {
-                                                    load(doc.rows[i].value._id);
-                                                }
-                                            }
-                                        }
                                     } catch (err) {
                                         adapter.log.error(`coffee compile ${err}`);
                                     }
@@ -1128,16 +1117,14 @@ function main() {
                     }
                 }
 
-                if (!count) {
-                    globalScript = globalScript.replace(/\r\n/g, '\n');
-                    globalScriptLines = globalScript.split(/\n/g).length - 1;
+                globalScript = globalScript.replace(/\r\n/g, '\n');
+                globalScriptLines = globalScript.split(/\n/g).length - 1;
 
-                    if (doc && doc.rows && doc.rows.length) {
-                        // load all scripts
-                        for (let i = 0; i < doc.rows.length; i++) {
-                            if (!checkIsGlobal(doc.rows[i].value)) {
-                                load(doc.rows[i].value);
-                            }
+                if (doc && doc.rows && doc.rows.length) {
+                    // load all scripts
+                    for (let i = 0; i < doc.rows.length; i++) {
+                        if (!checkIsGlobal(doc.rows[i].value)) {
+                            load(doc.rows[i].value);
                         }
                     }
                 }
