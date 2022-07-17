@@ -18,7 +18,7 @@
 const vm             = require('vm');
 const nodeFS         = require('fs');
 const nodePath       = require('path');
-const coffeeCompiler = require('coffee-compiler');
+const CoffeeScript   = require('coffeescript');
 const tsc            = require('virtual-tsc');
 const nodeSchedule   = require('node-schedule');
 const Mirror         = require('./lib/mirror');
@@ -1012,15 +1012,12 @@ function main() {
                                 const engineType = (obj.common.engineType || '').toLowerCase();
                                 if (engineType.startsWith('coffee')) {
                                     count++;
-                                    coffeeCompiler.fromSource(obj.common.source, {
-                                        sourceMap: false,
-                                        bare: true
-                                    }, (err, js) => {
-                                        if (err) {
-                                            adapter.log.error(`coffee compile ${err}`);
-                                            return;
-                                        }
-                                        globalScript += js + '\n';
+                                    try {
+                                        const convertedJs = CoffeeScript.compile(obj.common.source, { bare: true });
+
+                                        adapter.log.debug(`Converted global coffescript to js: \n ${convertedJs}`);
+
+                                        globalScript += convertedJs + '\n';
                                         if (!--count) {
                                             globalScriptLines = globalScript.split(/\r\n|\n|\r/g).length;
                                             // load all scripts
@@ -1030,7 +1027,9 @@ function main() {
                                                 }
                                             }
                                         }
-                                    });
+                                    } catch (err) {
+                                        adapter.log.error(`coffee compile ${err}`);
+                                    }
                                 } else if (engineType.startsWith('typescript')) {
                                     // TypeScript
                                     adapter.log.info(`${obj._id}: compiling TypeScript source...`);
@@ -1923,17 +1922,20 @@ function prepareScript(obj, callback) {
             typeof callback === 'function' && callback(true, name);
         } else if (obj.common.engineType.toLowerCase().startsWith('coffee')) {
             // CoffeeScript
-            coffeeCompiler.fromSource(obj.common.source, { sourceMap: false, bare: true }, (err, js) => {
-                if (err) {
-                    adapter.log.error(`${name} coffee compile ${err}`);
-                    typeof callback === 'function' && callback(false, name);
-                    return;
-                }
+            try {
+                const convertedJs = CoffeeScript.compile(obj.common.source, { bare: true });
+
+                adapter.log.debug(`Converted coffescript ${name} to js: \n ${convertedJs}`);
+
                 adapter.log.info(`Start coffescript ${name}`);
-                context.scripts[name] = createVM(`(async () => {\n${globalScript + '\n' + js}\n})();`, name);
+                context.scripts[name] = createVM(`(async () => {\n${globalScript + '\n' + convertedJs}\n})();`, name);
                 context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
                 typeof callback === 'function' && callback(true, name);
-            });
+
+            } catch (err) {
+                adapter.log.error(`${name} coffee compile ${err}`);
+                typeof callback === 'function' && callback(false, name);
+            }
         } else if (obj.common.engineType.toLowerCase().startsWith('typescript')) {
             // TypeScript
             adapter.log.info(`${name}: compiling TypeScript source...`);

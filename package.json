@@ -32,8 +32,6 @@
     "@iobroker/adapter-core": "^2.6.0",
     "@types/node": "^18.0.3",
     "@types/request": "^2.48.8",
-    "coffee-compiler": "^0.3.2",
-    "coffee-script": "^1.12.7",
     "coffeescript": "^1.12.7",
     "jsonata": "^1.8.6",
     "jszip": "^3.10.0",
