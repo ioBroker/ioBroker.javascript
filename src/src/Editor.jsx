@@ -1326,7 +1326,7 @@ class Editor extends React.Component {
                 onRequestClose={() => {
                     this.setState({ isTourOpen: false });
                     window.localStorage.setItem('tour', 'true');
-                    this.props.socket.setState('javascript.0.variables.rulesTour', true, true);
+                    this.props.socket.setState('javascript.0.variables.rulesTour', { val: true, ack: true });
                 }}
                 //getCurrentStep={tourStep => this.setTourStep(tourStep)}
                 goToStep={this.state.tourStep}

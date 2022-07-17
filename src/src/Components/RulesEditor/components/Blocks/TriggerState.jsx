@@ -77,7 +77,7 @@ class TriggerState extends GenericBlock {
         }
 
         window.localStorage.setItem(`javascript.app.${this.state.settings.oid}`, simulateValue);
-        this.props.socket.setState(this.state.settings.oid, simulateValue, !!this.state.simulateAck);
+        this.props.socket.setState(this.state.settings.oid, { val: simulateValue, ack: !!this.state.simulateAck });
     }
 
     renderWriteState() {
