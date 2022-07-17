@@ -42,6 +42,7 @@ import {MdBugReport as IconDebug} from 'react-icons/md';
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
+import ImgCoffeeScript from './assets/coffeescript.png';
 import ImgRules from './assets/rules.png';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
@@ -225,6 +226,7 @@ const images = {
     def: ImgJS,
     'Rules':ImgRules,
     'TypeScript/ts': ImgTypeScript,
+    'CoffeeScript/coffee': ImgCoffeeScript,
 };
 
 const getObjectName = (id, obj, lang) => {
@@ -1484,10 +1486,22 @@ class SideDrawer extends React.Component {
                 }}
             />,
             <img
+                key="filterCoffee"
+                className={this.props.classes.footerButtons}
+                alt="CoffeeScript"
+                style={{opacity: this.state.typeFilter === 'CoffeeScript/coffee' ? 1 : 0.3, background: this.state.typeFilter === 'CoffeeScript/coffee' ? 'gray' : 'inherit'}}
+                src={images['CoffeeScript/coffee'] || images.def}
+                onClick={event => {
+                    const typeFilter = this.state.typeFilter === 'CoffeeScript/coffee' ? '' : 'CoffeeScript/coffee';
+                    window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
+                this.setState({typeFilter});
+                }}
+            />,
+            <img
                 key="filterRules"
                 className={this.props.classes.footerButtons}
                 alt="Rules"
-                style={{opacity: this.state.typeFilter === 'Rules' ? 1 : 0.3, background: this.state.typeFilter === 'TypeScript/ts' ? 'gray' : 'inherit'}}
+                style={{opacity: this.state.typeFilter === 'Rules' ? 1 : 0.3, background: this.state.typeFilter === 'Rules' ? 'gray' : 'inherit'}}
                 src={images['Rules'] || images.def}
                 onClick={event => {
                     const typeFilter = this.state.typeFilter === 'Rules' ? '' : 'Rules';

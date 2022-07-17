@@ -174,7 +174,7 @@ class ScriptEditor extends React.Component {
         }
     }
 
-    /** @typedef {"javascript" | "typescript" | "coffee"} EditorLanguage */
+    /** @typedef {"javascript" | "typescript" | "coffeescript"} EditorLanguage */
 
     /**
      * Sets the language of the code editor
@@ -195,7 +195,7 @@ class ScriptEditor extends React.Component {
         const extension =
             language === 'javascript' ? 'js'
                 : (language === 'typescript' ? 'ts'
-                    : (language === 'coffee' ? 'coffee'
+                    : (language === 'coffeescript' ? 'coffee'
                         : language));
 
         // get rid of the original model
