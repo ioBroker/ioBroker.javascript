@@ -102,7 +102,7 @@ class DialogAddNew extends React.Component {
     }
 
     getBlocklyCard() {
-        return (<Card className={this.props.classes.card}>
+        return <Card className={this.props.classes.card}>
             <CardActionArea onClick={() => this.props.onClose && this.props.onClose('Blockly')}>
                 <CardMedia
                     className={this.props.classes.media}
@@ -119,11 +119,11 @@ class DialogAddNew extends React.Component {
                 <Button size="small" color="primary" onClick={() => this.props.onClose && this.props.onClose('Blockly')}>{I18n.t('Add')}</Button>
                 <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/blockly.md')}>{I18n.t('Learn More')}</Button>
             </CardActions>
-        </Card>);
+        </Card>;
     }
 
     getRulesCard() {
-        return (<Card className={this.props.classes.card}>
+        return <Card className={this.props.classes.card}>
             <CardActionArea onClick={() => this.props.onClose && this.props.onClose('Rules')}>
                 <CardMedia
                     className={this.props.classes.media}
@@ -140,18 +140,19 @@ class DialogAddNew extends React.Component {
                 <Button size="small" color="primary" onClick={() => this.props.onClose && this.props.onClose('Rules')}>{I18n.t('Add')}</Button>
                 <Button size="small" color="primary" onClick={() => this.openHtml('https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md')}>{I18n.t('Learn More')}</Button>
             </CardActions>
-        </Card>);
+        </Card>;
     }
+
     render() {
         return <Dialog
-            onClose={(event, reason) => false}
+            onClose={() => false}
             maxWidth="lg"
-            fullWidth={true}
+            fullWidth
             open={true}
             aria-labelledby="confirmation-dialog-title"
         >
             <DialogTitle id="confirmation-dialog-title">{I18n.t('Add new script')}</DialogTitle>
-            <DialogContent style={{textAlign: 'center'}}>
+            <DialogContent style={{ textAlign: 'center' }}>
                 {this.getRulesCard()}
                 {this.getBlocklyCard()}
                 {this.getJSCard()}

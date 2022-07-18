@@ -188,15 +188,13 @@ class ScriptEditor extends React.Component {
         const uri   = model.uri.path;
 
         const filenameWithoutExtension =
-            typeof uri === 'string' && uri.indexOf('.') > -1
+            typeof uri === 'string' && uri.includes('.')
                 ? uri.substr(0, uri.lastIndexOf('.'))
                 : 'index';
 
         const extension =
             language === 'javascript' ? 'js'
-                : (language === 'typescript' ? 'ts'
-                    : (language === 'coffeescript' ? 'coffee'
-                        : language));
+                : (language === 'typescript' ? 'ts' : language);
 
         // get rid of the original model
         model.dispose();

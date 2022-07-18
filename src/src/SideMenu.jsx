@@ -16,33 +16,32 @@ import Input from '@mui/material/Input';
 import { useDrag, useDrop, DndProvider as DragDropContext  } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-import {MdMoreVert as IconMore} from 'react-icons/md';
-import {FaFolder as IconFolder} from 'react-icons/fa';
-import {FaFolderOpen as IconFolderOpened} from 'react-icons/fa';
-import {MdContentCopy as IconCopy} from 'react-icons/md';
-import {MdDelete as IconDelete} from 'react-icons/md';
-import {MdInput as IconDoEdit} from 'react-icons/md';
-import {MdClose as IconClear} from 'react-icons/md';
-import {MdFormatClear as IconClose} from 'react-icons/md';
-import {MdPlayArrow as IconPlay} from 'react-icons/md';
-import {MdAdd as IconAdd} from 'react-icons/md';
-import {MdCreateNewFolder as IconAddFolder} from 'react-icons/md';
-import {MdPause as IconPause} from 'react-icons/md';
-import {MdSwapVert as IconReorder} from 'react-icons/md';
-import {MdEdit as IconEdit} from 'react-icons/md';
-import {MdSearch as IconFind} from 'react-icons/md';
-import {MdPersonPin as IconExpert} from 'react-icons/md';
-import {FaFileExport as IconExport} from 'react-icons/fa';
-import {FaFileImport as IconImport} from 'react-icons/fa';
-import {MdPalette as IconDark} from 'react-icons/md';
-import {MdUnfoldMore as IconExpandAll} from 'react-icons/md';
-import {MdUnfoldLess as IconCollapseAll} from 'react-icons/md';
-import {MdBugReport as IconDebug} from 'react-icons/md';
+import { MdMoreVert as IconMore } from 'react-icons/md';
+import { FaFolder as IconFolder } from 'react-icons/fa';
+import { FaFolderOpen as IconFolderOpened } from 'react-icons/fa';
+import { MdContentCopy as IconCopy } from 'react-icons/md';
+import { MdDelete as IconDelete } from 'react-icons/md';
+import { MdInput as IconDoEdit } from 'react-icons/md';
+import { MdClose as IconClear } from 'react-icons/md';
+import { MdFormatClear as IconClose } from 'react-icons/md';
+import { MdPlayArrow as IconPlay } from 'react-icons/md';
+import { MdAdd as IconAdd } from 'react-icons/md';
+import { MdCreateNewFolder as IconAddFolder } from 'react-icons/md';
+import { MdPause as IconPause } from 'react-icons/md';
+import { MdSwapVert as IconReorder } from 'react-icons/md';
+import { MdEdit as IconEdit } from 'react-icons/md';
+import { MdSearch as IconFind } from 'react-icons/md';
+import { MdPersonPin as IconExpert } from 'react-icons/md';
+import { FaFileExport as IconExport } from 'react-icons/fa';
+import { FaFileImport as IconImport } from 'react-icons/fa';
+import { MdPalette as IconDark } from 'react-icons/md';
+import { MdUnfoldMore as IconExpandAll } from 'react-icons/md';
+import { MdUnfoldLess as IconCollapseAll } from 'react-icons/md';
+import { MdBugReport as IconDebug } from 'react-icons/md';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
-import ImgCoffeeScript from './assets/coffeescript.png';
 import ImgRules from './assets/rules.png';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
@@ -51,7 +50,7 @@ import DialogDelete from './Dialogs/Delete';
 import DialogAddNewScript from './Dialogs/AddNewScript';
 import DialogNew from './Dialogs/New';
 import DialogError from './Dialogs/Error';
-import DialogAdapterDebug from "./Dialogs/AdapterDebug";
+import DialogAdapterDebug from './Dialogs/AdapterDebug';
 
 import { red, green, yellow } from '@mui/material/colors';
 
@@ -226,7 +225,6 @@ const images = {
     def: ImgJS,
     'Rules':ImgRules,
     'TypeScript/ts': ImgTypeScript,
-    'CoffeeScript/coffee': ImgCoffeeScript,
 };
 
 const getObjectName = (id, obj, lang) => {
@@ -1481,18 +1479,6 @@ class SideDrawer extends React.Component {
                 src={images['TypeScript/ts'] || images.def}
                 onClick={event => {
                     const typeFilter = this.state.typeFilter === 'TypeScript/ts' ? '' : 'TypeScript/ts';
-                    window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
-                this.setState({typeFilter});
-                }}
-            />,
-            <img
-                key="filterCoffee"
-                className={this.props.classes.footerButtons}
-                alt="CoffeeScript"
-                style={{opacity: this.state.typeFilter === 'CoffeeScript/coffee' ? 1 : 0.3, background: this.state.typeFilter === 'CoffeeScript/coffee' ? 'gray' : 'inherit'}}
-                src={images['CoffeeScript/coffee'] || images.def}
-                onClick={event => {
-                    const typeFilter = this.state.typeFilter === 'CoffeeScript/coffee' ? '' : 'CoffeeScript/coffee';
                     window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
                 this.setState({typeFilter});
                 }}

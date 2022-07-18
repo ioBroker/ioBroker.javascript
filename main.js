@@ -997,120 +997,142 @@ function main() {
                 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
             }
 
-            adapter.getObjectView('script', 'javascript', {}, (err, doc) => {
+            adapter.getObjectView('script', 'javascript', {}, async (err, doc) => {
                 globalScript = '';
                 globalDeclarations = '';
                 knownGlobalDeclarationsByScript = {};
                 if (doc && doc.rows && doc.rows.length) {
                     // assemble global script
                     for (let g = 0; g < doc.rows.length; g++) {
-                        if (checkIsGlobal(doc.rows[g].value)) {
-                            const obj = doc.rows[g].value;
-
-                            if (obj && obj.common.enabled) {
+                        const obj = doc.rows[g].value;
+                        if (checkIsGlobal(obj)) {
+                            if (obj && obj.common) {
                                 const engineType = (obj.common.engineType || '').toLowerCase();
+                                // TODO: BF - 2022.07.18 - Remove it completely in next release
                                 if (engineType.startsWith('coffee')) {
                                     try {
-                                        const convertedJs = CoffeeScript.compile(obj.common.source, { bare: true });
-
-                                        adapter.log.debug(`Converted global coffescript to js: \n ${convertedJs}`);
-
-                                        globalScript += convertedJs + '\n';
+                                        obj.common.source = CoffeeScript.compile(obj.common.source, { bare: true });
+                                        obj.common.engineType = 'Javascript/js';
+                                        adapter.setForeignObject(obj._id, obj);
+                                        adapter.log.info(`Converted global coffescript "${obj._id}" to js permanently: \n ${obj.common.source}`);
                                     } catch (err) {
+                                        obj.common.enabled = false;
+                                        adapter.setForeignObject(obj._id, obj); // try to write scrips as fast as possible to avoid multiple restarts
                                         adapter.log.error(`coffee compile ${err}`);
                                     }
-                                } else if (engineType.startsWith('typescript')) {
-                                    // TypeScript
-                                    adapter.log.info(`${obj._id}: compiling TypeScript source...`);
-                                    // In order to compile global TypeScript, we need to do some transformations
-                                    // 1. For top-level-await, some statements must be wrapped in an immediately-invoked async function
-                                    // 2. If any global script uses `import`, the declarations are no longer visible if they are not exported with `declare global`
-                                    const transformedSource = transformScriptBeforeCompilation(obj.common.source, true);
-                                    // The source code must be transformed in order to support top level await
-                                    // Global scripts must not be treated as a module, otherwise their methods
-                                    // cannot be found by the normal scripts
-                                    // We need to hash both global declarations that are known until now
-                                    // AND the script source, because changing either can change the compilation output
-                                    const sourceHash = hashSource(tsSourceHashBase + globalDeclarations + transformedSource);
+                                    continue; // it will be used after adapter restart
+                                }
 
-                                    /** @type {string | undefined} */
-                                    let compiled;
-                                    /** @type {string | undefined} */
-                                    let declarations;
-                                    // If we already stored the compiled source code and the original source hash,
-                                    // use the hash to check whether we can rely on the compiled source code or
-                                    // if we need to compile it again
-                                    if (
-                                        typeof obj.common.compiled === 'string'
-                                        && typeof obj.common.sourceHash === 'string'
-                                        && sourceHash === obj.common.sourceHash
-                                    ) {
-                                        // We can reuse the stored source
-                                        compiled = obj.common.compiled;
-                                        declarations = obj.common.declarations;
-                                        adapter.log.info(`${obj._id}: source code did not change, using cached compilation result...`);
-                                    } else {
-                                        // We don't have a hashed source code or the original source changed, compile it
+                                if (obj.common.enabled) {
+                                    if (engineType.startsWith('typescript')) {
+                                        // TypeScript
+                                        adapter.log.info(`${obj._id}: compiling TypeScript source...`);
+                                        // In order to compile global TypeScript, we need to do some transformations
+                                        // 1. For top-level-await, some statements must be wrapped in an immediately-invoked async function
+                                        // 2. If any global script uses `import`, the declarations are no longer visible if they are not exported with `declare global`
+                                        const transformedSource = transformScriptBeforeCompilation(obj.common.source, true);
+                                        // The source code must be transformed in order to support top level await
+                                        // Global scripts must not be treated as a module, otherwise their methods
+                                        // cannot be found by the normal scripts
+                                        // We need to hash both global declarations that are known until now
+                                        // AND the script source, because changing either can change the compilation output
+                                        const sourceHash = hashSource(tsSourceHashBase + globalDeclarations + transformedSource);
+
+                                        /** @type {string | undefined} */
+                                        let compiled;
+                                        /** @type {string | undefined} */
+                                        let declarations;
+                                        // If we already stored the compiled source code and the original source hash,
+                                        // use the hash to check whether we can rely on the compiled source code or
+                                        // if we need to compile it again
+                                        if (
+                                            typeof obj.common.compiled === 'string'
+                                            && typeof obj.common.sourceHash === 'string'
+                                            && sourceHash === obj.common.sourceHash
+                                        ) {
+                                            // We can reuse the stored source
+                                            compiled = obj.common.compiled;
+                                            declarations = obj.common.declarations;
+                                            adapter.log.info(`${obj._id}: source code did not change, using cached compilation result...`);
+                                        } else {
+                                            // We don't have a hashed source code or the original source changed, compile it
+                                            const filename = scriptIdToTSFilename(obj._id);
+                                            let tsCompiled;
+                                            try {
+                                                tsCompiled = tsServer.compile(filename, transformedSource);
+                                            } catch (e) {
+                                                adapter.log.error(`${obj._id}: TypeScript compilation failed:\n${e}`);
+                                                continue;
+                                            }
+
+                                            const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
+
+                                            if (tsCompiled.success) {
+                                                if (errors.length > 0) {
+                                                    adapter.log.warn(`${obj._id}: TypeScript compilation completed with errors:\n${errors}`);
+                                                } else {
+                                                    adapter.log.info(`${obj._id}: TypeScript compilation successful`);
+                                                }
+                                                compiled = tsCompiled.result;
+                                                // Global scripts that have been transformed to support `import` need to have their declarations transformed aswell
+                                                declarations = transformGlobalDeclarations(tsCompiled.declarations || '');
+
+                                                const newCommon = {
+                                                    sourceHash,
+                                                    compiled,
+                                                };
+                                                if (declarations) newCommon.declarations = declarations;
+
+                                                // Store the compiled source and the original source hash, so we don't need to do the work again next time
+                                                ignoreObjectChange.add(obj._id); // ignore the next change and don't restart scripts
+                                                adapter.extendForeignObject(obj._id, {
+                                                    common: newCommon
+                                                });
+                                            } else {
+                                                adapter.log.error(`${obj._id}: TypeScript compilation failed:\n${errors}`);
+                                                continue;
+                                            }
+                                        }
+                                        globalScript += compiled + '\n';
+                                        // if declarations were generated, remember them
+                                        if (declarations != null) {
+                                            provideDeclarationsForGlobalScript(obj._id, declarations);
+                                        }
+                                    } else { // javascript
+                                        const sourceCode = obj.common.source;
+                                        globalScript += sourceCode + '\n';
+
+                                        // try to compile the declarations so TypeScripts can use
+                                        // functions defined in global JavaScripts
                                         const filename = scriptIdToTSFilename(obj._id);
                                         let tsCompiled;
                                         try {
-                                            tsCompiled = tsServer.compile(filename, transformedSource);
+                                            tsCompiled = jsDeclarationServer.compile(filename, sourceCode);
                                         } catch (e) {
-                                            adapter.log.error(`${obj._id}: TypeScript compilation failed:\n${e}`);
+                                            adapter.log.warn(`${obj._id}: Error while generating type declarations, skipping:\n${e}`);
                                             continue;
                                         }
-
-                                        const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
-
-                                        if (tsCompiled.success) {
-                                            if (errors.length > 0) {
-                                                adapter.log.warn(`${obj._id}: TypeScript compilation completed with errors:\n${errors}`);
-                                            } else {
-                                                adapter.log.info(`${obj._id}: TypeScript compilation successful`);
-                                            }
-                                            compiled = tsCompiled.result;
-                                            // Global scripts that have been transformed to support `import` need to have their declarations transformed aswell
-                                            declarations = transformGlobalDeclarations(tsCompiled.declarations || '');
-
-                                            const newCommon = {
-                                                sourceHash,
-                                                compiled,
-                                            };
-                                            if (declarations) newCommon.declarations = declarations;
-
-                                            // Store the compiled source and the original source hash, so we don't need to do the work again next time
-                                            ignoreObjectChange.add(obj._id); // ignore the next change and don't restart scripts
-                                            adapter.extendForeignObject(obj._id, {
-                                                common: newCommon
-                                            });
-                                        } else {
-                                            adapter.log.error(`${obj._id}: TypeScript compilation failed:\n${errors}`);
-                                            continue;
+                                        // if declarations were generated, remember them
+                                        if (tsCompiled.success && tsCompiled.declarations != null) {
+                                            provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
                                         }
                                     }
-                                    globalScript += compiled + '\n';
-                                    // if declarations were generated, remember them
-                                    if (declarations != null) {
-                                        provideDeclarationsForGlobalScript(obj._id, declarations);
-                                    }
-                                } else { // javascript
-                                    const sourceCode = obj.common.source;
-                                    globalScript += sourceCode + '\n';
 
-                                    // try to compile the declarations so TypeScripts can use
-                                    // functions defined in global JavaScripts
-                                    const filename = scriptIdToTSFilename(obj._id);
-                                    let tsCompiled;
-                                    try {
-                                        tsCompiled = jsDeclarationServer.compile(filename, sourceCode);
-                                    } catch (e) {
-                                        adapter.log.warn(`${obj._id}: Error while generating type declarations, skipping:\n${e}`);
-                                        continue;
-                                    }
-                                    // if declarations were generated, remember them
-                                    if (tsCompiled.success && tsCompiled.declarations != null) {
-                                        provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
-                                    }
+                                }
+                            }
+                        } else if (obj && obj.common) {
+                            const engineType = (obj.common.engineType || '').toLowerCase();
+                            // TODO: BF - 2022.07.18 - Remove it completely in next release
+                            if (engineType.startsWith('coffee')) {
+                                try {
+                                    obj.common.source = CoffeeScript.compile(obj.common.source, { bare: true });
+                                    obj.common.engineType = 'Javascript/js';
+                                    await adapter.setForeignObjectAsync(obj._id, obj);
+                                    adapter.log.info(`Converted coffescript "${obj._id}" to js permanently: \n ${obj.common.source}`);
+                                } catch (err) {
+                                    obj.common.enabled = false;
+                                    adapter.setForeignObject(obj._id, obj);
+                                    adapter.log.error(`coffee compile ${err}`);
                                 }
                             }
                         }
@@ -1558,7 +1580,7 @@ function installNpm(npmLib, callback) {
     // Install node modules as system call
 
     // System call used for update of js-controller itself,
-    // because during installation npm packet will be deleted too, but some files must be loaded even during the install process.
+    // because during installation npm packet will be deleted too, but some files must be loaded even during the installation process.
     const child = mods['child_process'].exec(cmd, {
         windowsHide: true,
         cwd: path,
@@ -1907,22 +1929,6 @@ function prepareScript(obj, callback) {
             context.scripts[name] = createVM(`(async () => {\n${globalScript + obj.common.source}\n})();`, sourceFn);
             context.scripts[name] && execute(context.scripts[name], sourceFn, obj.common.verbose, obj.common.debug);
             typeof callback === 'function' && callback(true, name);
-        } else if (obj.common.engineType.toLowerCase().startsWith('coffee')) {
-            // CoffeeScript
-            try {
-                const convertedJs = CoffeeScript.compile(obj.common.source, { bare: true });
-
-                adapter.log.debug(`Converted coffescript ${name} to js: \n ${convertedJs}`);
-
-                adapter.log.info(`Start coffescript ${name}`);
-                context.scripts[name] = createVM(`(async () => {\n${globalScript + '\n' + convertedJs}\n})();`, name);
-                context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
-                typeof callback === 'function' && callback(true, name);
-
-            } catch (err) {
-                adapter.log.error(`${name} coffee compile ${err}`);
-                typeof callback === 'function' && callback(false, name);
-            }
         } else if (obj.common.engineType.toLowerCase().startsWith('typescript')) {
             // TypeScript
             adapter.log.info(`${name}: compiling TypeScript source...`);
