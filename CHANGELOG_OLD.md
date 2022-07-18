@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 5.8.3 (2022-06-27)
+* (bluefox) Updated the object select dialog
+
 ## 5.8.2 (2022-06-22)
 * (bluefox) Updated some packages 
 * (bluefox) Made it work with ioBroker cloud

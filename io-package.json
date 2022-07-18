@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "5.8.10",
+    "version": "6.0.0",
     "news": {
+      "6.0.0": {
+        "en": "Removed support of coffeescript\nAll coffee-scripts will be compiled to javascript permanently",
+        "de": "Entfernte Unterstützung von Coffeescript\nAlle Coffee-scripts werden in Javascript dauerhaft kompiliert",
+        "ru": "Удаленная поддержка Coffeescript\nВсе кофейные скрипты будут компилированы на javascript навсегда",
+        "pt": "Suporte removido do coffeescript\nTodos os coffee-scripts serão compilados para javascript permanentemente",
+        "nl": "Verwijderde ondersteuning van koffie\nAlle koffie-scripten zullen permanent op Javascript staan",
+        "fr": "Enlevé le support de caféscript\nTous les descriptifs de café seront compilés à javascript en permanence",
+        "it": "Sostegno rimosso del coffeescript\nTutti i coffee-script saranno compilati a javascript in modo permanente",
+        "es": "Soporte extraído de cafetera\nTodas las recetas de café serán compiladas en javascript permanentemente",
+        "pl": "Przewiduje wsparcie kawy\nWszystkie zapisy kawy zostały skompilowane na stałe",
+        "zh-cn": "取消对咖啡说明的支持\n将把所有咖啡说明汇编成永久的小册子。"
+      },
       "5.8.10": {
         "en": "Added variable timeout block\nAdded `getInterval` and `getTimeout` blocks\nAdded `sendTo` for scripts and message trigger blocks\nCorrected the syntax highlighting",
         "de": "Hinzugefügt variable Timeout Block\nHinzugefügt getInterval und getTimeout Blöcke\nHinzugefügt: Für Skripte und Nachrichten-Triggerblöcke\nKorrektur der Syntax-Highlighting",
@@ -93,18 +105,6 @@
         "es": "Actualizado el diálogo de selección del objeto",
         "pl": "Zaktualizowany obiekt wybiera dialogi",
         "zh-cn": "二. 更新目标"
-      },
-      "5.8.2": {
-        "en": "Updated some packages \nMade it work with ioBroker cloud",
-        "de": "Einige Pakete aktualisiert\nEs funktioniert mit ioBroker Cloud",
-        "ru": "Обновлены некоторые пакеты\nСделано в ioBroker cloud",
-        "pt": "Atualizado alguns pacotes\nFez com que funcionasse com a nuvem ioBroker",
-        "nl": "Verhoog wat pakketten\nIk liet het werken met ioBrokerwolk",
-        "fr": "Mise à jour de certains paquets\nIl a fait fonctionner avec ioBroker cloud",
-        "it": "Aggiornato alcuni pacchetti\nHa fatto funzionare con ioBroker cloud",
-        "es": "Actualización de algunos paquetes\nLo hizo funcionar con la nube de yoBroker",
-        "pl": "Ulepszenia niektórych pakietów\nUprawiała się w chmurze ioBrokera",
-        "zh-cn": "更新了一些一揽子计划\n马约恩岛与奥布罗克云合作"
       }
     },
     "desc": {
