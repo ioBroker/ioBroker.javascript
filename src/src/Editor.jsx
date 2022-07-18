@@ -35,6 +35,7 @@ import { MdBugReport as IconDebugMode } from 'react-icons/md';
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
+import ImgCoffeeScript from './assets/coffeescript.png';
 import ImgBlockly2Js from './assets/blockly2js.png';
 import ImgRules2Js from './assets/rules2js.png';
 import ImgRules from './assets/rules.png';
@@ -57,6 +58,7 @@ const images = {
     'Rules': ImgRules,
     def: ImgJS,
     'TypeScript/ts': ImgTypeScript,
+    'CoffeeScript/coffee': ImgCoffeeScript,
 };
 
 const MENU_ITEM_HEIGHT = 48;
@@ -1090,7 +1092,7 @@ class Editor extends React.Component {
                     socket={this.props.socket}
                     runningInstances={this.state.runningInstances}
                     onChange={newValue => this.onChange({ script: newValue })}
-                    language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
+                    language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : this.scripts[this.state.selected].engineType === 'CoffeeScript/coffee' ? 'coffeescript' : 'javascript'}
                 />
             </div>;
         } else {
@@ -1324,7 +1326,7 @@ class Editor extends React.Component {
                 onRequestClose={() => {
                     this.setState({ isTourOpen: false });
                     window.localStorage.setItem('tour', 'true');
-                    this.props.socket.setState('javascript.0.variables.rulesTour', true, true);
+                    this.props.socket.setState('javascript.0.variables.rulesTour', { val: true, ack: true });
                 }}
                 //getCurrentStep={tourStep => this.setTourStep(tourStep)}
                 goToStep={this.state.tourStep}

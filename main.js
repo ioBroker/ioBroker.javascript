@@ -15,23 +15,10 @@
 /* jshint shadow: true */
 'use strict';
 
-let NodeVM;
-let VMScript;
-let vm;
-if (true || parseInt(process.versions.node.split('.')[0]) < 6) {
-    vm = require('vm');
-} else {
-    try {
-        const VM2 = require('vm2');
-        NodeVM = VM2.NodeVM;
-        VMScript = VM2.VMScript;
-    } catch (e) {
-        vm = require('vm');
-    }
-}
+const vm             = require('vm');
 const nodeFS         = require('fs');
 const nodePath       = require('path');
-const coffeeCompiler = require('coffee-compiler');
+const CoffeeScript   = require('coffeescript');
 const tsc            = require('virtual-tsc');
 const nodeSchedule   = require('node-schedule');
 const Mirror         = require('./lib/mirror');
@@ -1014,7 +1001,6 @@ function main() {
                 globalScript = '';
                 globalDeclarations = '';
                 knownGlobalDeclarationsByScript = {};
-                let count = 0;
                 if (doc && doc.rows && doc.rows.length) {
                     // assemble global script
                     for (let g = 0; g < doc.rows.length; g++) {
@@ -1024,26 +1010,15 @@ function main() {
                             if (obj && obj.common.enabled) {
                                 const engineType = (obj.common.engineType || '').toLowerCase();
                                 if (engineType.startsWith('coffee')) {
-                                    count++;
-                                    coffeeCompiler.fromSource(obj.common.source, {
-                                        sourceMap: false,
-                                        bare: true
-                                    }, (err, js) => {
-                                        if (err) {
-                                            adapter.log.error(`coffee compile ${err}`);
-                                            return;
-                                        }
-                                        globalScript += js + '\n';
-                                        if (!--count) {
-                                            globalScriptLines = globalScript.split(/\r\n|\n|\r/g).length;
-                                            // load all scripts
-                                            for (let i = 0; i < doc.rows.length; i++) {
-                                                if (!checkIsGlobal(doc.rows[i].value)) {
-                                                    load(doc.rows[i].value._id);
-                                                }
-                                            }
-                                        }
-                                    });
+                                    try {
+                                        const convertedJs = CoffeeScript.compile(obj.common.source, { bare: true });
+
+                                        adapter.log.debug(`Converted global coffescript to js: \n ${convertedJs}`);
+
+                                        globalScript += convertedJs + '\n';
+                                    } catch (err) {
+                                        adapter.log.error(`coffee compile ${err}`);
+                                    }
                                 } else if (engineType.startsWith('typescript')) {
                                     // TypeScript
                                     adapter.log.info(`${obj._id}: compiling TypeScript source...`);
@@ -1142,16 +1117,14 @@ function main() {
                     }
                 }
 
-                if (!count) {
-                    globalScript = globalScript.replace(/\r\n/g, '\n');
-                    globalScriptLines = globalScript.split(/\n/g).length - 1;
+                globalScript = globalScript.replace(/\r\n/g, '\n');
+                globalScriptLines = globalScript.split(/\n/g).length - 1;
 
-                    if (doc && doc.rows && doc.rows.length) {
-                        // load all scripts
-                        for (let i = 0; i < doc.rows.length; i++) {
-                            if (!checkIsGlobal(doc.rows[i].value)) {
-                                load(doc.rows[i].value);
-                            }
+                if (doc && doc.rows && doc.rows.length) {
+                    // load all scripts
+                    for (let i = 0; i < doc.rows.length; i++) {
+                        if (!checkIsGlobal(doc.rows[i].value)) {
+                            load(doc.rows[i].value);
                         }
                     }
                 }
@@ -1673,21 +1646,16 @@ function createVM(source, name) {
             source = 'debugger;' + source;
         }
     }
+
     try {
-        if (VMScript) {
-            return {
-                script: new VMScript(source, name)
-            };
-        } else {
-            const options = {
-                filename: name,
-                displayErrors: true
-                //lineOffset: globalScriptLines
-            };
-            return {
-                script: vm.createScript(source, options)
-            };
-        }
+        const options = {
+            filename: name,
+            displayErrors: true
+            //lineOffset: globalScriptLines
+        };
+        return {
+            script: vm.createScript(source, options)
+        };
     } catch (e) {
         context.logError(`${name} compile failed:\r\nat `, e);
         return false;
@@ -1707,34 +1675,15 @@ function execute(script, name, verbose, debug) {
 
     const sandbox = sandBox(script, name, verbose, debug, context);
 
-    if (NodeVM) {
-        const vm = new NodeVM({
-            sandbox,
-            require: {
-                external: true,
-                builtin: ['*'],
-                root: '',
-                mock: mods
-            }
+    try {
+        script.script.runInNewContext(sandbox, {
+            filename: name,
+            displayErrors: true
+            //lineOffset: globalScriptLines
         });
-
-        try {
-            vm.run(script.script, name);
-        } catch (e) {
-            adapter.setState('scriptProblem.' + name.substring('script.js.'.length), true, true);
-            context.logError(name, e);
-        }
-    } else {
-        try {
-            script.script.runInNewContext(sandbox, {
-                filename: name,
-                displayErrors: true
-                //lineOffset: globalScriptLines
-            });
-        } catch (e) {
-            adapter.setState('scriptProblem.' + name.substring('script.js.'.length), true, true);
-            context.logError(name, e);
-        }
+    } catch (e) {
+        adapter.setState('scriptProblem.' + name.substring('script.js.'.length), true, true);
+        context.logError(name, e);
     }
 }
 
@@ -1960,17 +1909,20 @@ function prepareScript(obj, callback) {
             typeof callback === 'function' && callback(true, name);
         } else if (obj.common.engineType.toLowerCase().startsWith('coffee')) {
             // CoffeeScript
-            coffeeCompiler.fromSource(obj.common.source, { sourceMap: false, bare: true }, (err, js) => {
-                if (err) {
-                    adapter.log.error(`${name} coffee compile ${err}`);
-                    typeof callback === 'function' && callback(false, name);
-                    return;
-                }
+            try {
+                const convertedJs = CoffeeScript.compile(obj.common.source, { bare: true });
+
+                adapter.log.debug(`Converted coffescript ${name} to js: \n ${convertedJs}`);
+
                 adapter.log.info(`Start coffescript ${name}`);
-                context.scripts[name] = createVM(`(async () => {\n${globalScript + '\n' + js}\n})();`, name);
+                context.scripts[name] = createVM(`(async () => {\n${globalScript + '\n' + convertedJs}\n})();`, name);
                 context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
                 typeof callback === 'function' && callback(true, name);
-            });
+
+            } catch (err) {
+                adapter.log.error(`${name} coffee compile ${err}`);
+                typeof callback === 'function' && callback(false, name);
+            }
         } else if (obj.common.engineType.toLowerCase().startsWith('typescript')) {
             // TypeScript
             adapter.log.info(`${name}: compiling TypeScript source...`);

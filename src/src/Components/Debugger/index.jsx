@@ -176,7 +176,7 @@ class Debugger extends React.Component {
             .then(instance =>
                 this.setState({instance: instance}, () => {
                     if (this.state.instance) {
-                        this.props.socket.setState(this.state.instance + '.debug.from', '{"cmd": "subscribed"}', true);
+                        this.props.socket.setState(this.state.instance + '.debug.from', { val: '{"cmd": "subscribed"}', ack: true });
                         //.then(() => );
                         setTimeout(() =>
                             this.props.socket.subscribeState(this.state.instance + '.debug.from', this.fromInstance), 200);
@@ -194,7 +194,7 @@ class Debugger extends React.Component {
     }
 
     sendToInstance(cmd) {
-        this.props.socket.setState(this.state.instance + '.debug.to', JSON.stringify(cmd));
+        this.props.socket.setState(this.state.instance + '.debug.to', { val: JSON.stringify(cmd), ack: true });
     }
 
     reinitBreakpoints(cb) {
