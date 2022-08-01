@@ -9,7 +9,7 @@
         "@mui/material": "^5.8.7",
         "@mui/styles": "^5.8.7",
         "@sentry/browser": "^7.8.0",
-        "@sentry/integrations": "^7.5.1",
+        "@sentry/integrations": "^7.8.0",
         "clsx": "^1.2.1",
         "lodash": "^4.17.21",
         "monaco-editor": "~0.33.0",
