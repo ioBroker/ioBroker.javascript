@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
-        "@iobroker/adapter-react-v5": "^3.1.20",
+        "@iobroker/adapter-react-v5": "^3.1.26",
         "@mui/icons-material": "^5.8.4",
         "@mui/material": "^5.9.2",
         "@mui/styles": "^5.9.2",
