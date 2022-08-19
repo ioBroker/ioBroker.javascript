@@ -53,7 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 6.0.1 (2022-08-19)
 * (bluefox) Fixed the wizard schedule
 * (bluefox) Done small fixes on GUI
 
@@ -73,9 +73,6 @@ And then call `npm run build`.
 ### 5.8.7 (2022-07-12)
 * (klein0r) Fixed function edit dialog (cursor jumps to first position)
 * (klein0r) Added error message when using number or boolean as trigger id
-
-### 5.8.5 (2022-07-07)
-* (bluefox) Added preparations for cloud
 
 ## License
 The MIT License (MIT)

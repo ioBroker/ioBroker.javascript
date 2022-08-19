@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 5.8.5 (2022-07-07)
+* (bluefox) Added preparations for cloud
+
 ## 5.8.3 (2022-06-27)
 * (bluefox) Updated the object select dialog
 

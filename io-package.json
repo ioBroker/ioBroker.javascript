@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "6.0.0",
+    "version": "6.0.1",
     "news": {
+      "6.0.1": {
+        "en": "Fixed the wizard schedule\nDone small fixes on GUI",
+        "de": "Der Wizard Zeitplan wurde behoben\nFertige kleine Korrekturen auf GUI",
+        "ru": "Исправлено расписание мастера\nНебольшие исправления на GUI",
+        "pt": "Corrigido o cronograma do assistente\nFeito pequenas correções em GUI",
+        "nl": "Het tovenaarschema is klaar\nGereed met kleine fixes op GUI",
+        "fr": "Correction de l'horaire de l'assistant\nFait de petites corrections sur GUI",
+        "it": "Risolto il programma della procedura guidata\nFatto piccole correzioni su GUI",
+        "es": "Arreglado el programa del mago\nHecho pequeñas correcciones en GUI",
+        "pl": "Fixed wizard schedule (ang.)\nDo niewielkich zmian na GUI",
+        "zh-cn": "确定妻子时间表\nA. 古伊人小偷"
+      },
       "6.0.0": {
         "en": "Removed support of coffeescript\nAll coffee-scripts will be compiled to javascript permanently",
         "de": "Entfernte Unterstützung von Coffeescript\nAlle Coffee-scripts werden in Javascript dauerhaft kompiliert",
@@ -93,18 +105,6 @@
         "es": "Preparativos adicionales para la nube",
         "pl": "Zadaniowe przygotowania do chmur",
         "zh-cn": "增加云雾准备"
-      },
-      "5.8.3": {
-        "en": "Updated the object select dialog",
-        "de": "Update des Objektauswahldialogs",
-        "ru": "Обновление объекта выберите диалог",
-        "pt": "Atualizado o objeto selecionar diálogo",
-        "nl": "Verhoog het object",
-        "fr": "Mise à jour du dialogue de sélection de l'objet",
-        "it": "Aggiornato il dialogo selezionare oggetto",
-        "es": "Actualizado el diálogo de selección del objeto",
-        "pl": "Zaktualizowany obiekt wybiera dialogi",
-        "zh-cn": "二. 更新目标"
       }
     },
     "desc": {
