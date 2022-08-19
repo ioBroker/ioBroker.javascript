@@ -1543,8 +1543,19 @@ declare global {
 	 * @param command (optional) Command name of the target instance. Default: "send"
 	 * @param message The message (e.g. params) to send.
 	 */
-	function sendTo(instanceName: string, message: string | object, callback?: iobJS.MessageCallback | iobJS.MessageCallbackInfo): void;
 	function sendTo(instanceName: string, command: string, message: string | object, callback?: iobJS.MessageCallback | iobJS.MessageCallbackInfo): void;
+	function sendTo(instanceName: string, message: string | object, callback?: iobJS.MessageCallback | iobJS.MessageCallbackInfo): void;
+	function sendToAsync(instanceName: string, message: string | object): Promise<iobJS.MessageCallback | iobJS.MessageCallbackInfo>;
+	function sendToAsync(instanceName: string, command: string, message: string | object): Promise<iobJS.MessageCallback | iobJS.MessageCallbackInfo>;
+
+	/**
+	 * Sends a message to a specific instance or all instances of some specific adapter.
+	 * @param host Host name.
+	 * @param command Command name for the target host.
+	 * @param message The message (e.g. params) to send.
+	 */
+	function sendToHost(host: string, command: string, message: string | object, callback?: iobJS.MessageCallback | iobJS.MessageCallbackInfo): void;
+	function sendToHostAsync(host: string, command: string, message: string | object): Promise<iobJS.MessageCallback | iobJS.MessageCallbackInfo>;
 
 	type CompareTimeOperations =
 		"between" | "not between" |
@@ -1610,6 +1621,7 @@ declare global {
 	function delFileAsync(id: string, name: string): Promise<void>;
 
 	function getHistory(instance: any, options: any, callback: any): any;
+	function getHistoryAsync(instance: any, options: any): Promise<any>;
 
 	/**
 	 * Starts or restarts a script by name
