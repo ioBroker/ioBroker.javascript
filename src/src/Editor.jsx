@@ -757,7 +757,7 @@ class Editor extends React.Component {
                 value={this.props.debugInstance ? this.props.debugInstance.adapter : this.state.selected}
                 onChange={(event, value) => this.onTabChange(event, value)}
                 indicatorColor="primary"
-                style={{ position: 'relative', width: this.state.editing.length > 1 ? 'calc(100% - 50px)' : '100%', display: 'inline-block' }}
+                style={{ position: 'relative', marginLeft: 10, width: this.state.editing.length > 1 ? 'calc(100% - 50px)' : '100%', display: 'inline-block' }}
                 textColor="primary"
                 variant="scrollable"
                 scrollButtons="auto"

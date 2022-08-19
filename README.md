@@ -53,6 +53,10 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Fixed the wizard schedule
+* (bluefox) Done small fixes on GUI
+
 ### 6.0.0 (2022-07-18)
 * (bluefox) Removed support of coffeescript
 * (bluefox) All coffee-scripts will be compiled to javascript permanently
