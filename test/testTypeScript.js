@@ -258,11 +258,17 @@ Date.prototype.getWeekYear = function () {
 
 const d = new Date();
 d.getWeekYear()
+`,
+        // Repro from #1106
+        `
+function test(): void {
+    log("test global");
+}
 `
     ];
 
     for (let i = 0; i < tests.length; i++) {
-    // for (const i of [1]) {
+        // for (const i of [1]) {
         it(`Test #${i + 1}`, () => {
             const transformedSource = transformScriptBeforeCompilation(tests[i], true);
             const filename = scriptIdToTSFilename(`script.js.test_${i + 1}`);
