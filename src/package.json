@@ -26,7 +26,7 @@
         "react-icons": "^4.4.0",
         "react-inlinesvg": "^3.0.0",
         "react-json-view": "^1.21.3",
-        "react-monaco-editor": "^0.49.0",
+        "react-monaco-editor": "^0.50.1",
         "react-scripts": "^5.0.1",
         "react-splitter-layout": "^4.0.0",
         "react-text-mask": "^5.4.3",
