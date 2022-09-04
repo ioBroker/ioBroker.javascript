@@ -34,7 +34,7 @@
     "@types/request": "^2.48.8",
     "coffeescript": "^1.12.7",
     "jsonata": "^1.8.6",
-    "jszip": "^3.10.0",
+    "jszip": "^3.10.1",
     "node-inspect": "^2.0.0",
     "node-schedule": "2.1.0",
     "request": "^2.88.2",
