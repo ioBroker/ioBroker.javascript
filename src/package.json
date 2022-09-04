@@ -22,7 +22,7 @@
         "react-dom": "^18.2.0",
         "react-dropzone": "^14.2.2",
         "react-fullscreen": "^0.1.0",
-        "react-i18next": "^11.18.3",
+        "react-i18next": "^11.18.5",
         "react-icons": "^4.4.0",
         "react-inlinesvg": "^3.0.0",
         "react-json-view": "^1.21.3",
