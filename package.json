@@ -52,7 +52,7 @@
     "alcalzone-shared": "^4.0.1",
     "chai": "^4.3.6",
     "del": "^6.1.1",
-    "eslint": "^8.20.0",
+    "eslint": "^8.23.0",
     "gulp": "^4.0.2",
     "gulp-rename": "^2.0.0",
     "gulp-replace": "^1.1.3",
