@@ -32,7 +32,7 @@
     "@iobroker/adapter-core": "^2.6.0",
     "@types/node": "^18.7.14",
     "@types/request": "^2.48.8",
-    "coffeescript": "^1.12.7",
+    "coffeescript": "^2.7.0",
     "jsonata": "^1.8.6",
     "jszip": "^3.10.1",
     "node-inspect": "^2.0.0",
