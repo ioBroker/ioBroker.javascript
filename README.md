@@ -53,6 +53,9 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (AlCalzone) Downgrade Typescript to prevent errors with global typescript scripts
+
 ### 6.0.1 (2022-08-19)
 * (bluefox) Fixed the wizard schedule
 * (bluefox) Done small fixes on GUI
