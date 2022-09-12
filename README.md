@@ -53,7 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 6.0.2 (2022-09-12)
 * (AlCalzone) Downgrade Typescript to prevent errors with global typescript scripts
 
 ### 6.0.1 (2022-08-19)
@@ -72,10 +72,6 @@ And then call `npm run build`.
 
 ### 5.8.8 (2022-07-13)
 * (bluefox) Corrected error by start of GUI
-
-### 5.8.7 (2022-07-12)
-* (klein0r) Fixed function edit dialog (cursor jumps to first position)
-* (klein0r) Added error message when using number or boolean as trigger id
 
 ## License
 The MIT License (MIT)

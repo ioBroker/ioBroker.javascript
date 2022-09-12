@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "6.0.1",
+    "version": "6.0.2",
     "news": {
+      "6.0.2": {
+        "en": "Downgrade Typescript to prevent errors with global typescript scripts",
+        "de": "Herunterfahren Typescript, um Fehler mit globalen Typscript-Skripten zu verhindern",
+        "ru": "Downgrade Typescript для предотвращения ошибок с помощью глобальных сценариев typescript",
+        "pt": "Downgrade Typescript para evitar erros com scripts de tipo global",
+        "nl": "Downgrade Typescript om fouten te voorkomen met globale scripts",
+        "fr": "Typescript de mise à niveau pour éviter les erreurs avec les scripts de typescript mondiaux",
+        "it": "Downgrade Typescript per evitare errori con script di tipografia globali",
+        "es": "Tiposcript de Downgrade para prevenir errores con scripts de tiposcript globales",
+        "pl": "Wspomnienie typu Downgrade (ang. Downgrade Typescript), aby zapobiec błędom w tworzeniu scenariusza globalnego",
+        "zh-cn": "D. 防止全球表格错误的等级说明"
+      },
       "6.0.1": {
         "en": "Fixed the wizard schedule\nDone small fixes on GUI",
         "de": "Der Wizard Zeitplan wurde behoben\nFertige kleine Korrekturen auf GUI",
@@ -93,18 +105,6 @@
         "es": "Diálogo de edición de funciones fijas (apuntas de precursor a primera posición)\nMensaje de error añadido cuando se utiliza el número o booleano como disparador id",
         "pl": "Kształtowanie funkcji edytowanych (ok\nPoniższa wiadomość błędu przy użyciu numeru lub booleana jako wyzwalanie idyda",
         "zh-cn": "固定功能的口号(头寸)\n在使用人数或诱因时增加错误信息"
-      },
-      "5.8.5": {
-        "en": "Added preparations for cloud",
-        "de": "Präparate für die Wolke hinzugefügt",
-        "ru": "Добавлена подготовка к облаку",
-        "pt": "Preparações adicionadas para a nuvem",
-        "nl": "Voegde voorbereidingen voor wolken",
-        "fr": "Préparations supplémentaires pour le cloud",
-        "it": "Aggiunti i preparativi per il cloud",
-        "es": "Preparativos adicionales para la nube",
-        "pl": "Zadaniowe przygotowania do chmur",
-        "zh-cn": "增加云雾准备"
       }
     },
     "desc": {
