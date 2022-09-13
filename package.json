@@ -29,7 +29,7 @@
     "coffee-script": "is required only for node 14. As coffee-compiler requires coffeescript for nodes>14 and coffee-script for nodes<=14"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^2.6.5",
+    "@iobroker/adapter-core": "^2.6.6",
     "@types/node": "^16.11.58",
     "@types/request": "^2.48.8",
     "coffeescript": "^1.12.7",
