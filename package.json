@@ -29,8 +29,8 @@
     "coffee-script": "is required only for node 14. As coffee-compiler requires coffeescript for nodes>14 and coffee-script for nodes<=14"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^2.6.0",
-    "@types/node": "^18.7.14",
+    "@iobroker/adapter-core": "^2.6.3",
+    "@types/node": "^16.11.58",
     "@types/request": "^2.48.8",
     "coffeescript": "^1.12.7",
     "jsonata": "^1.8.6",
@@ -49,10 +49,10 @@
     "@alcalzone/release-script-plugin-iobroker": "^3.5.9",
     "@alcalzone/release-script-plugin-license": "^3.5.9",
     "@types/iobroker": "^4.0.4",
-    "alcalzone-shared": "^4.0.3",
+    "alcalzone-shared": "^4.0.8",
     "chai": "^4.3.6",
     "del": "^6.1.1",
-    "eslint": "^8.23.0",
+    "eslint": "^8.23.1",
     "gulp": "^4.0.2",
     "gulp-rename": "^2.0.0",
     "gulp-replace": "^1.1.3",

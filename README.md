@@ -53,7 +53,7 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### 6.0.2 (2022-09-12)
+### **WORK IN PROGRESS**
 * (AlCalzone) Downgrade Typescript to prevent errors with global typescript scripts
 
 ### 6.0.1 (2022-08-19)
