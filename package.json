@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "6.0.2",
+  "version": "6.0.3",
   "description": "Rules Engine for ioBroker",
   "author": "bluefox <dogafox@gmail.com>",
   "contributors": [

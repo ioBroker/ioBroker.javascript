@@ -20,8 +20,20 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "6.0.2",
+    "version": "6.0.3",
     "news": {
+      "6.0.3": {
+        "en": "Downgrade Typescript to prevent errors with global typescript scripts",
+        "de": "Herunterfahren Typescript, um Fehler mit globalen Typscript-Skripten zu verhindern",
+        "ru": "Downgrade Typescript для предотвращения ошибок с помощью глобальных сценариев typescript",
+        "pt": "Downgrade Typescript para evitar erros com scripts de tipo global",
+        "nl": "Downgrade Typescript om fouten te voorkomen met globale scripts",
+        "fr": "Typescript de mise à niveau pour éviter les erreurs avec les scripts de typescript mondiaux",
+        "it": "Downgrade Typescript per evitare errori con script di tipografia globali",
+        "es": "Tiposcript de Downgrade para prevenir errores con scripts de tiposcript globales",
+        "pl": "Wspomnienie typu Downgrade (ang. Downgrade Typescript), aby zapobiec błędom w tworzeniu scenariusza globalnego",
+        "zh-cn": "D. 防止全球表格错误的等级说明"
+      },
       "6.0.2": {
         "en": "Downgrade Typescript to prevent errors with global typescript scripts",
         "de": "Herunterfahren Typescript, um Fehler mit globalen Typscript-Skripten zu verhindern",
@@ -93,18 +105,6 @@
         "es": "Error corregido por inicio de GUI",
         "pl": "Poprawne błędy poprzez rozpoczęcie GUI",
         "zh-cn": "古伊伊伊人开始纠正错误"
-      },
-      "5.8.7": {
-        "en": "Fixed function edit dialog (cursor jumps to first position)\nAdded error message when using number or boolean as trigger id",
-        "de": "Behobene Funktion bearbeiten Dialog (Kursor springt in die erste Position)\nFehlermeldung bei Verwendung von Nummer oder Boolean als Trigger-ID hinzugefügt",
-        "ru": "Фиксированный диалог редактирования функции (курсор прыгает в первую позицию)\nДобавлено сообщение об ошибке при использовании номера или boolean как триггер id",
-        "pt": "Caixa de diálogo de edição de função fixa (cursor salta para a primeira posição)\nAdicionado mensagem de erro ao usar número ou boolean como gatilho id",
-        "nl": "Gerepareerde functie edit dialog (cursor springt naar eerste positie)\nVergissingsbericht bij gebruik van nummer of boolean als trigger",
-        "fr": "Boîte de dialogue d'édition de fonction fixe (tailleur saute à la première position)\nAjout du message d'erreur lors de l'utilisation du nombre ou du boolean comme trigger id",
-        "it": "Finestra di dialogo Modifica funzione fissa (cursor salta in prima posizione)\nAggiunto messaggio di errore quando si utilizza il numero o boolean come trigger id",
-        "es": "Diálogo de edición de funciones fijas (apuntas de precursor a primera posición)\nMensaje de error añadido cuando se utiliza el número o booleano como disparador id",
-        "pl": "Kształtowanie funkcji edytowanych (ok\nPoniższa wiadomość błędu przy użyciu numeru lub booleana jako wyzwalanie idyda",
-        "zh-cn": "固定功能的口号(头寸)\n在使用人数或诱因时增加错误信息"
       }
     },
     "desc": {
