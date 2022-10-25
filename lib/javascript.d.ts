@@ -1268,7 +1268,8 @@ declare global {
 	/**
 	 * Executes a system command
 	 */
-	function exec(command: string, options?: Record<string, unknown>, callback?: (err: Error | null | undefined, stdout: string, stderr: string) => void | Promise<void>): child_process.ChildProcess;
+	function exec(command: string, callback?: (err: Error | null | undefined, stdout: string, stderr: string) => void | Promise<void>): child_process.ChildProcess;
+	function exec(command: string, options: Record<string, unknown>, callback?: (err: Error | null | undefined, stdout: string, stderr: string) => void | Promise<void>): child_process.ChildProcess;
 
 	/**
 	 * Sends an email using the email adapter.

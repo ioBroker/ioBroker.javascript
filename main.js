@@ -1187,6 +1187,8 @@ function main() {
                         if (currentSetStatePerMinuteCounter > adapter.config.maxSetStatePerMinute) {
                             context.scripts[id].setStatePerMinuteProblemCounter++;
                             adapter.log.debug(`Script ${id} has reached the maximum of ${adapter.config.maxSetStatePerMinute} setState calls per minute in ${context.scripts[id].setStatePerMinuteProblemCounter} consecutive minutes`);
+                            // Allow "too high counters" for 1 minute for script starts or such and only
+                            // stop script when lasts longer
                             if (context.scripts[id].setStatePerMinuteProblemCounter > 1) {
                                 adapter.log.error(`Script ${id} is calling setState more than ${adapter.config.maxSetStatePerMinute} times per minute! Stopping Script now! Please check your script!`);
                                 stop(id);
