@@ -54,5 +54,6 @@
   "tooltip_latitude": "Breedtegraad als 5.345 om astro-functies te gebruiken",
   "tooltip_libraries": "Extra NPM-bibliotheken gedeeld door een komma. U kunt ze benaderen met require ('name') in scripts.",
   "tooltip_longitude": "Lengtegraad als 5.345 om astro-functies te gebruiken",
-  "tooltip_useSystemGPS": "Gebruik coördinaten van systeeminstellingen"
+  "tooltip_useSystemGPS": "Gebruik coördinaten van systeeminstellingen",
+  "Maximum setState requests per Minute per Script": "Maximum stelt verzoeken per Minute per Script"
 }

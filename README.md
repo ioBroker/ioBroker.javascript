@@ -53,6 +53,14 @@ And then call `npm run build`.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### __WORK IN PROGRESS__
+* (Apollon77) Add a configurable check for number of setStates per Minute to prevent scripts from taking down ioBroker. Default are 1000 setState per minute. Only stops if the number is reached 2 minutes in a row!
+* (Apollon77) Add createAlias method to create aliases for states
+* (Apollon77) Add setStateDelayed to selector
+* (Apollon77) Add options to exec command
+* (Apollon77) Fix issues with cancelling schedules when stopping scripts
+
 ### 6.0.3 (2022-09-14)
 * (AlCalzone) Downgrade Typescript to prevent errors with global typescript scripts
 

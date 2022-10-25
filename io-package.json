@@ -250,7 +250,8 @@
     "sunsetEvent": "dusk",
     "sunsetOffset": 0,
     "sunsetLimitStart": "18:00",
-    "sunsetLimitEnd": "23:00"
+    "sunsetLimitEnd": "23:00",
+    "maxSetStatePerMinute": 1000
   },
   "objects": [
     {

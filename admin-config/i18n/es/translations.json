@@ -54,5 +54,6 @@
   "tooltip_latitude": "Latitud como 5.345 para usar funciones astro",
   "tooltip_libraries": "Bibliotecas adicionales de NPM divididas por comas. Puede acceder a ellos con require ('nombre') en las secuencias de comandos.",
   "tooltip_longitude": "Longitud como 5.345 para usar funciones astro",
-  "tooltip_useSystemGPS": "Usa las coordenadas de la configuración del sistema"
+  "tooltip_useSystemGPS": "Usa las coordenadas de la configuración del sistema",
+  "Maximum setState requests per Minute per Script": "Máximas solicitudes de Estados por minuto por script"
 }

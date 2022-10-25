@@ -13,7 +13,7 @@ updates:
       interval: monthly
       time: "04:00"
       timezone: Europe/Berlin
-    open-pull-requests-limit: 7
+    open-pull-requests-limit: 5
     versioning-strategy: increase
     ignore:
       # Typescript should not be updated automatically, except patch updates
@@ -27,5 +27,5 @@ updates:
       interval: monthly
       time: "04:00"
       timezone: Europe/Berlin
-    open-pull-requests-limit: 20
+    open-pull-requests-limit: 5
     versioning-strategy: increase

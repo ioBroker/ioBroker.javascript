@@ -212,5 +212,18 @@ systemDictionary = {
         "es": "Próxima puesta de sol:",
         "pl": "Następny zachód słońca:",
         "zh-cn": "下一日落："
+    },
+    "Maximum setState requests per Minute per Script": {
+        "en": "Maximum setState requests per Minute per Script",
+        "de": "Maximale SetState-Anfragen pro Minute pro Skript",
+        "ru": "Максимальный наборГосударственные запросы в минуту на скрипт",
+        "pt": "Pedidos de status máximos por minuto por script",
+        "nl": "Maximum stelt verzoeken per Minute per Script",
+        "fr": "Demandes d'état maximale par minute par Script",
+        "it": "Numero massimo di richieste per Minute per Script",
+        "es": "Máximas solicitudes de Estados por minuto por script",
+        "pl": "Maksymum setState (ang.)",
+        "uk": "Максимальна кількість запитів за протоколом",
+        "zh-cn": "Maximum国家请求每分钟"
     }
 };

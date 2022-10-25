@@ -54,5 +54,6 @@
     "tooltip_latitude": "纬度为5.345以使用astro功能",
     "tooltip_libraries": "增加外部NPM库, 请使用逗号分隔。您可以在脚本中使用require('name')调用它们。",
     "tooltip_longitude": "经度为5.345使用astro函数",
-    "tooltip_useSystemGPS": "使用系统设置中的坐标"
+    "tooltip_useSystemGPS": "使用系统设置中的坐标",
+    "Maximum setState requests per Minute per Script": "Maximum国家请求每分钟"
 }
