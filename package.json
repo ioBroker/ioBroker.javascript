@@ -48,7 +48,7 @@
     "@alcalzone/release-script": "^3.5.9",
     "@alcalzone/release-script-plugin-iobroker": "^3.5.9",
     "@alcalzone/release-script-plugin-license": "^3.5.9",
-    "@types/iobroker": "^4.0.4",
+    "@types/iobroker": "^4.0.5",
     "alcalzone-shared": "^4.0.8",
     "chai": "^4.3.6",
     "del": "^6.1.1",
