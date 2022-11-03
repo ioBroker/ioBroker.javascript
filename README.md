@@ -52,6 +52,9 @@ And then call `npm run build`.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (Apollon77) Prevent adapter crash when script could not be compiled
+
 ### 6.1.2 (2022-11-03)
 * (bluefox) Added ukrainian translation
 

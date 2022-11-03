@@ -1178,6 +1178,7 @@ function main() {
                 // CHeck setState counter per minute and stop script if too high
                 setStateCountCheckInterval = setInterval(() => {
                     Object.keys(context.scripts).forEach(id => {
+                        if (!context.scripts[id]) return;
                         const currentSetStatePerMinuteCounter = context.scripts[id].setStatePerMinuteCounter;
                         context.scripts[id].setStatePerMinuteCounter = 0;
                         if (currentSetStatePerMinuteCounter > adapter.config.maxSetStatePerMinute) {
@@ -1952,7 +1953,12 @@ function prepareScript(obj, callback) {
                 sourceFn = mods.path.join(webstormDebug, fn + '.js');
             }
             context.scripts[name] = createVM(`(async () => {\n${globalScript + obj.common.source}\n})();`, sourceFn);
-            context.scripts[name] && execute(context.scripts[name], sourceFn, obj.common.verbose, obj.common.debug);
+            if (!context.scripts[name]) {
+                delete context.scripts[name];
+                typeof callback === 'function' && callback(false, name);
+                return;
+            }
+            execute(context.scripts[name], sourceFn, obj.common.verbose, obj.common.debug);
             typeof callback === 'function' && callback(true, name);
         } else if (obj.common.engineType.toLowerCase().startsWith('typescript')) {
             // TypeScript
@@ -2013,7 +2019,12 @@ function prepareScript(obj, callback) {
                 }
             }
             context.scripts[name] = createVM(globalScript + '\n' + compiled, name);
-            context.scripts[name] && execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
+            if (!context.scripts[name]) {
+                delete context.scripts[name];
+                typeof callback === 'function' && callback(false, name);
+                return;
+            }
+            execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
             typeof callback === 'function' && callback(true, name);
         }
     } else {
