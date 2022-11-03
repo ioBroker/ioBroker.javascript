@@ -339,5 +339,9 @@
   "store in": "store in",
   "ID1": "ID1",
   "ID2": "ID2",
-  "Operations with two states": "Operations with two states"
+  "Operations with two states": "Operations with two states",
+  "debug_label": "Debug",
+  "debug_help": "This is a special mode in which states and objects will not change. But only information about each planned change will be displayed in the protocol.",
+  "verbose_label": "Verbose log outputs",
+  "verbose_help": "Adds debug output to the log for many system commands"
 }

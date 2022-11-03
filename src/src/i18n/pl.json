@@ -339,5 +339,9 @@
   "store in": "przechowywać",
   "ID1": "ID1",
   "ID2": "ID2",
-  "Operations with two states": "Operacje z dwoma stanami"
+  "Operations with two states": "Operacje z dwoma stanami",
+  "debug_label": "Odpluskwić",
+  "debug_help": "Jest to specjalny tryb, w którym stany i obiekty się nie zmieniają. Jednak w protokole będą wyświetlane tylko informacje o każdej planowanej zmianie.",
+  "verbose_label": "Pełne dane wyjściowe dziennika",
+  "verbose_help": "Dodaje wyniki debugowania do dziennika dla wielu poleceń systemowych"
 }

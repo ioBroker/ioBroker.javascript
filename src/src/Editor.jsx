@@ -879,7 +879,7 @@ class Editor extends React.Component {
                 }}>
                 <Checkbox checked={this.state.debugEnabled} />
                 <IconDebug className={this.props.classes.menuIcon} style={{ color: COLOR_DEBUG }} />
-                {I18n.t('debug')}
+                {I18n.t('debug_label')}
             </MenuItem>
             <MenuItem key="verboseEnabled"
                 title={I18n.t('verbose_help')}
@@ -890,7 +890,7 @@ class Editor extends React.Component {
                 }}>
                 <Checkbox checked={this.state.verboseEnabled} />
                 <IconVerbose className={this.props.classes.menuIcon} style={{ color: COLOR_VERBOSE }} />
-                {I18n.t('verbose')}
+                {I18n.t('verbose_label')}
             </MenuItem>
         </Menu>;
     }

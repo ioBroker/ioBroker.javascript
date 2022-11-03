@@ -339,5 +339,9 @@
   "store in": "conservare in",
   "ID1": "ID1",
   "ID2": "ID2",
-  "Operations with two states": "Operazioni con due stati"
+  "Operations with two states": "Operazioni con due stati",
+  "debug_label": "Debug",
+  "debug_help": "Questa è una modalità speciale in cui gli stati e gli oggetti non cambieranno. Ma nel protocollo verranno visualizzate solo le informazioni su ogni modifica pianificata.",
+  "verbose_label": "Output di log dettagliati",
+  "verbose_help": "Aggiunge l'output di debug al registro per molti comandi di sistema"
 }

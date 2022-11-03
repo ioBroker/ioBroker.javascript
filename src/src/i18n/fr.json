@@ -339,5 +339,9 @@
   "store in": "stocker dans",
   "ID1": "ID1",
   "ID2": "ID2",
-  "Operations with two states": "Opérations à deux états"
+  "Operations with two states": "Opérations à deux états",
+  "debug_label": "Déboguer",
+  "debug_help": "Il s'agit d'un mode spécial dans lequel les états et les objets ne changeront pas. Mais seules les informations sur chaque changement prévu seront affichées dans le protocole.",
+  "verbose_label": "Sorties de journal détaillées",
+  "verbose_help": "Ajoute une sortie de débogage au journal pour de nombreuses commandes système"
 }
