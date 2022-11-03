@@ -31,11 +31,14 @@ const getOrLoadRemote = (remote, shareScope, remoteFallbackUrl = undefined) =>
         if (!window[remote]) {
             // search dom to see if remote tag exists, but might still be loading (async)
             const existingRemote = document.querySelector(`[data-webpack="${remote}"]`);
-            // when remote is loaded..
+            // when remote is loaded...
             const onload = async () => {
                 // check if it was initialized
+                if (!window[remote]) {
+                    return reject(`Cannot load Remote "${remote}" to inject`);
+                }
                 if (!window[remote].__initialized) {
-                    // if share scope doesnt exist (like in webpack 4) then expect shareScope to be a manual object
+                    // if share scope doesn't exist (like in webpack 4) then expect shareScope to be a manual object
                     if (typeof __webpack_share_scopes__ === 'undefined') {
                         // use default share scope object passed in manually
                         await window[remote].init(shareScope.default);
