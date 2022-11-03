@@ -179,8 +179,6 @@ exec('ls /var/log', function (error, stdout, stderr) {
 Node.js uses /bin/sh to execute commands. If you want to use another shell you can use the options object as described in the Node.js documentation for child_process.exec.
 It is best practice to always use fill path names to commands to make sure the right command is executed.
 
-```js
-
 **Notice:** you must enable *Enable command "setObject"* option to call it.
 
 ### on - Subscribe on changes or updates of some state
