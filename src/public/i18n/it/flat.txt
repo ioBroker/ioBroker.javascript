@@ -211,6 +211,9 @@ setTimeout
 chiaro
 Cancella l'esecuzione del ritardo
 clearTimeout
+tempo scaduto
+tempo scaduto
+gettimeout
 Esecuzione
 intervallo
 ogni
@@ -220,6 +223,9 @@ setInterval
 intervallo chiaro
 Cancella l'esecuzione dell'intervallo
 clearInterval
+intervallo
+intervallo
+getinterval
 Grilletto
 era cambiato
 è stato aggiornato
@@ -331,3 +337,15 @@ onFile
 Annulla evento file
 Annulla l'abbonamento in caso di modifica del file
 offFile
+altri script
+Esempio
+tutte le istanze
+copione
+messaggio
+dati
+altri script
+altri script
+Evento: messaggio ricevuto
+messaggio
+messaggio
+onMessage

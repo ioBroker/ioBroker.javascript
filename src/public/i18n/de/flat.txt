@@ -211,6 +211,9 @@ settimeout
 stop
 Ausführungsverzögerung anhalten
 cleartimeout
+Verzögerung
+Verzögerung
+gettimeout
 Ausführen
 Intervall
 alle
@@ -220,6 +223,9 @@ setinterval
 stop zyklische Ausführung
 Ausführungsintervall anhalten
 clearinterval
+Intervall
+Intervall
+getinterval
 Trigger
 wurde geändert
 wurde aktualisiert
@@ -331,3 +337,15 @@ onFile
 Dateiereignis abbrechen
 Abonnement bei Dateiänderung kündigen
 offFile
+anderes script
+instanz
+Alle Instanzen
+skript
+Meldung
+daten
+anderes script
+anderes script
+Ereignis: Nachricht empfangen
+Meldung
+Meldung
+onMessage

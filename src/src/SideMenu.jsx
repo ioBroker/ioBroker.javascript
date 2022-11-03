@@ -745,7 +745,7 @@ class SideDrawer extends React.Component {
         }
         if (item.type !== 'folder') {
             let color = item.enabled ? COLOR_RUN : COLOR_PAUSE;
-            if (item.enabled && this.state.problems.indexOf(item.id) !== -1) {
+            if (item.enabled && this.state.problems.includes(item.id)) {
                 color = COLOR_PROBLEM;
             }
 
@@ -759,9 +759,10 @@ class SideDrawer extends React.Component {
                     title={item.enabled ? I18n.t('Pause script') : I18n.t('Run script')}
                     disabled={this.props.debugMode}
                     key="startStop"
-                    style={{color}}
-                    size="medium">
-                    {item.enabled ? <IconPause/> : <IconPlay/>}
+                    style={{ color }}
+                    size="medium"
+                >
+                    {item.enabled ? <IconPause /> : <IconPlay />}
                 </IconButton>,
                 this.state.width > NARROW_WIDTH ? <IconButton
                     key="delete"
@@ -769,7 +770,10 @@ class SideDrawer extends React.Component {
                     title={I18n.t('Delete script')}
                     disabled={item.id === GLOBAL_ID || item.id === COMMON_ID || this.props.debugMode}
                     onClick={e => this.onDelete(item, e)}
-                    size="medium"><IconDelete/></IconButton> : null,
+                    size="medium"
+                >
+                    <IconDelete/>
+                </IconButton> : null,
                 <IconButton
                     className={clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
                     disabled={this.props.debugMode}
@@ -1106,7 +1110,7 @@ class SideDrawer extends React.Component {
         }
 
         // eslint-disable-next-line
-        while (this.state.listItems.find(it => it.id === this.parent + '.' + word.replace(/\.\s/g, '_') + i)) {
+        while (this.state.listItems.find(it => it.id === `${this.parent}.${word.replace(/\.\s/g, '_')}${i}`)) {
             i++;
         }
         /*ignore jslint end*/
@@ -1116,10 +1120,10 @@ class SideDrawer extends React.Component {
     getUniqueFolderName() {
         let i = 1;
         // eslint-disable-next-line
-        while (this.state.listItems.find(it => it.id === this.parent + '.' + I18n.t('Folder') + '_' + i)) {
+        while (this.state.listItems.find(it => it.id === `${this.parent}.${I18n.t('Folder')}_${i}`)) {
             i++;
         }
-        return I18n.t('Folder') + ' ' + i;
+        return `${I18n.t('Folder')} ${i}`;
     }
 
     onCloseMenu(cb) {
@@ -1128,12 +1132,12 @@ class SideDrawer extends React.Component {
 
     getFilterBadge() {
         return [
-            this.state.statusFilter === true && (<IconPlay className={this.props.classes.filterIcon} style={{color: COLOR_RUN}}/>),
-            this.state.statusFilter === false && (<IconPause className={this.props.classes.filterIcon} style={{color: COLOR_PAUSE}}/>),
-            this.state.typeFilter === 'Blockly' && ('Bl'),
-            this.state.typeFilter === 'Javascript/js' && ('JS'),
-            this.state.typeFilter === 'TypeScript/ts' && ('TS'),
-        ]
+            this.state.statusFilter === true && <IconPlay className={this.props.classes.filterIcon} style={{color: COLOR_RUN}}/>,
+            this.state.statusFilter === false && <IconPause className={this.props.classes.filterIcon} style={{color: COLOR_PAUSE}}/>,
+            this.state.typeFilter === 'Blockly' && 'Bl',
+            this.state.typeFilter === 'Javascript/js' && 'JS',
+            this.state.typeFilter === 'TypeScript/ts' && 'TS',
+        ];
     }
 
     getMainMenu(children, selectedItem) {
@@ -1198,9 +1202,8 @@ class SideDrawer extends React.Component {
             </MenuItem>}
             {this.props.onThemeChange && <MenuItem
                 key="dark"
-                onClick={event =>
+                onClick={() =>
                     this.onCloseMenu(() => {
-
                         // TODO: use Utils.toggleTheme(themeName)
                         // newThemeName = Utils.toggleTheme(themeName);
                         const newThemeName = this.state.themeName === 'dark' ? 'blue' :
@@ -1238,7 +1241,7 @@ class SideDrawer extends React.Component {
         const classes = this.props.classes;
         const reorder = this.state.reorder && !this.props.debugMode;
         if (this.state.searchMode && !this.props.debugMode) {
-            result.push(<><Input
+            result.push(<Input
                 key="searchInput"
                 value={this.state.searchText}
                 className={classes.toolbarSearch}
@@ -1254,7 +1257,7 @@ class SideDrawer extends React.Component {
                         this.props.onSearch && this.props.onSearch(this.state.searchText);
                     }, 400);
                 }}
-            /></>);
+            />);
 
             result.push(<IconButton
                 key="disableSearch"
@@ -1414,7 +1417,7 @@ class SideDrawer extends React.Component {
             <IconPause
                 key="filterByRunning"
                 className={this.props.classes.footerButtons}
-                style={{color: COLOR_RUN, opacity: this.state.statusFilter === 'running' ? 1 : 0.3, background: this.state.statusFilter === 'running' ? 'gray' : 'inherit'}}
+                style={{ color: COLOR_RUN, opacity: this.state.statusFilter === 'running' ? 1 : 0.3, background: this.state.statusFilter === 'running' ? 'gray' : 'inherit' }}
                 title={I18n.t('Show only running scripts')}
                 onClick={event => {
                     event.stopPropagation();
@@ -1429,8 +1432,8 @@ class SideDrawer extends React.Component {
                 key="filterByPaused"
                 title={I18n.t('Show only paused scripts')}
                 className={this.props.classes.footerButtons}
-                style={{color: COLOR_PAUSE, opacity: this.state.statusFilter === 'paused' ? 1 : 0.3, background: this.state.statusFilter === 'paused' ? 'gray' : 'inherit'}}
-                onClick={event => {
+                style={{ color: COLOR_PAUSE, opacity: this.state.statusFilter === 'paused' ? 1 : 0.3, background: this.state.statusFilter === 'paused' ? 'gray' : 'inherit' }}
+                onClick={() => {
                     const statusFilter = this.state.statusFilter === 'paused' ? '' : 'paused';
                     window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
                     this.setState({statusFilter});
@@ -1440,8 +1443,8 @@ class SideDrawer extends React.Component {
                 key="filterByProblem"
                 title={I18n.t('Show only scripts with problems')}
                 className={this.props.classes.footerButtons}
-                style={{color: COLOR_PROBLEM, opacity: this.state.statusFilter === 'problems' ? 1 : 0.3, background: this.state.statusFilter === 'problems' ? 'gray' : 'inherit'}}
-                onClick={event => {
+                style={{ color: COLOR_PROBLEM, opacity: this.state.statusFilter === 'problems' ? 1 : 0.3, background: this.state.statusFilter === 'problems' ? 'gray' : 'inherit' }}
+                onClick={() => {
                     const statusFilter = this.state.statusFilter === 'problems' ? '' : 'problems';
                     window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
                     this.setState({statusFilter});
@@ -1451,9 +1454,9 @@ class SideDrawer extends React.Component {
                 key="filterBlockly"
                 className={this.props.classes.footerButtons}
                 alt="Blockly"
-                style={{opacity: this.state.typeFilter === 'Blockly' ? 1 : 0.3, background: this.state.typeFilter === 'Blockly' ? 'gray' : 'inherit'}}
+                style={{ opacity: this.state.typeFilter === 'Blockly' ? 1 : 0.3, background: this.state.typeFilter === 'Blockly' ? 'gray' : 'inherit' }}
                 src={images.Blockly || images.def}
-                onClick={event => {
+                onClick={() => {
                     const typeFilter = this.state.typeFilter === 'Blockly' ? '' : 'Blockly';
                     window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
                     this.setState({typeFilter});
@@ -1463,9 +1466,9 @@ class SideDrawer extends React.Component {
                 key="filterJS"
                 className={this.props.classes.footerButtons}
                 alt="Javascript"
-                style={{opacity: this.state.typeFilter === 'Javascript/js' ? 1 : 0.3, background: this.state.typeFilter === 'Javascript/js' ? 'gray' : 'inherit'}}
+                style={{ opacity: this.state.typeFilter === 'Javascript/js' ? 1 : 0.3, background: this.state.typeFilter === 'Javascript/js' ? 'gray' : 'inherit' }}
                 src={images['Javascript/js'] || images.def}
-                onClick={event => {
+                onClick={() => {
                     const typeFilter = this.state.typeFilter === 'Javascript/js' ? '' : 'Javascript/js';
                     window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
                     this.setState({typeFilter});
@@ -1475,9 +1478,9 @@ class SideDrawer extends React.Component {
                 key="filterTS"
                 className={this.props.classes.footerButtons}
                 alt="TypeScript"
-                style={{opacity: this.state.typeFilter === 'TypeScript/ts' ? 1 : 0.3, background: this.state.typeFilter === 'TypeScript/ts' ? 'gray' : 'inherit'}}
+                style={{ opacity: this.state.typeFilter === 'TypeScript/ts' ? 1 : 0.3, background: this.state.typeFilter === 'TypeScript/ts' ? 'gray' : 'inherit' }}
                 src={images['TypeScript/ts'] || images.def}
-                onClick={event => {
+                onClick={() => {
                     const typeFilter = this.state.typeFilter === 'TypeScript/ts' ? '' : 'TypeScript/ts';
                     window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
                 this.setState({typeFilter});
@@ -1487,7 +1490,7 @@ class SideDrawer extends React.Component {
                 key="filterRules"
                 className={this.props.classes.footerButtons}
                 alt="Rules"
-                style={{opacity: this.state.typeFilter === 'Rules' ? 1 : 0.3, background: this.state.typeFilter === 'Rules' ? 'gray' : 'inherit'}}
+                style={{ opacity: this.state.typeFilter === 'Rules' ? 1 : 0.3, background: this.state.typeFilter === 'Rules' ? 'gray' : 'inherit' }}
                 src={images['Rules'] || images.def}
                 onClick={event => {
                     const typeFilter = this.state.typeFilter === 'Rules' ? '' : 'Rules';

@@ -18,75 +18,6 @@ const pkg        = require('./package.json');
 const iopackage  = require('./io-package.json');
 const version    = (pkg && pkg.version) ? pkg.version : iopackage.common.version;
 
-const dir = __dirname + '/src/src/i18n/';
-gulp.task('i18n=>flat', done => {
-    const files = fs.readdirSync(dir).filter(name => name.match(/\.json$/));
-    const index = {};
-    const langs = [];
-    files.forEach(file => {
-        const lang = file.replace(/\.json$/, '');
-        langs.push(lang);
-        const text = require(dir + file);
-
-        for (const id in text) {
-            if (text.hasOwnProperty(id)) {
-                index[id] = index[id] || {};
-                index[id][lang] = text[id] === undefined ? id : text[id];
-            }
-        }
-    });
-
-    const keys = Object.keys(index);
-    keys.sort();
-
-    if (!fs.existsSync(dir + '/flat/')) {
-        fs.mkdirSync(dir + '/flat/');
-    }
-
-    langs.forEach(lang => {
-        const words = [];
-        keys.forEach(key => {
-            words.push(index[key][lang]);
-        });
-        fs.writeFileSync(`${dir}/flat/${lang}.txt`, words.join('\n'));
-    });
-    fs.writeFileSync(dir + '/flat/index.txt', keys.join('\n'));
-    done();
-});
-
-gulp.task('flat=>i18n', done => {
-    if (!fs.existsSync(dir + '/flat/')) {
-        console.error(dir + '/flat/ directory not found');
-        return done();
-    }
-    const keys = fs.readFileSync(dir + '/flat/index.txt').toString().split(/[\r\n]/);
-    while (!keys[keys.length - 1]) keys.splice(keys.length - 1, 1);
-
-    const files = fs.readdirSync(dir + '/flat/').filter(name => name.match(/\.txt$/) && name !== 'index.txt');
-    const index = {};
-    const langs = [];
-    files.forEach(file => {
-        const lang = file.replace(/\.txt$/, '');
-        langs.push(lang);
-        const lines = fs.readFileSync(dir + '/flat/' + file).toString().split(/[\r\n]/);
-        lines.forEach((word, i) => {
-            index[keys[i]] = index[keys[i]] || {};
-            index[keys[i]][lang] = word;
-        });
-    });
-    langs.forEach(lang => {
-        const words = {};
-        keys.forEach((key, line) => {
-            if (!index[key]) {
-                console.log('No word ' + key + ', ' + lang + ', line: ' + line);
-            }
-            words[key] = index[key][lang];
-        });
-        fs.writeFileSync(dir + '/' + lang + '.json', JSON.stringify(words, null, 4));
-    });
-    done();
-});
-
 gulp.task('clean', () => {
     return del([
         // 'src/node_modules/**/*',
@@ -271,7 +202,8 @@ const languages =  {
     it: {},
     es: {},
     pl: {},
-    'zh-cn': {}
+    'zh-cn': {},
+    uk: {},
 };
 
 function lang2data(lang, isFlat) {
@@ -400,7 +332,9 @@ function words2languages(src) {
             fs.mkdirSync(src + 'i18n/');
         }
         for (const l in langs) {
-            if (!langs.hasOwnProperty(l)) continue;
+            if (!langs.hasOwnProperty(l)) {
+                continue;
+            }
             const keys = Object.keys(langs[l]);
             keys.sort();
             const obj = {};
@@ -416,117 +350,6 @@ function words2languages(src) {
     } else {
         console.error('Cannot read or parse ' + fileName);
     }
-}
-function words2languagesFlat(src) {
-    const langs = Object.assign({}, languages);
-    const data = readWordJs(src);
-    if (data) {
-        for (const word in data) {
-            if (data.hasOwnProperty(word)) {
-                for (const lang in data[word]) {
-                    if (data[word].hasOwnProperty(lang)) {
-                        langs[lang][word] = data[word][lang];
-                        //  pre-fill all other languages
-                        for (const j in langs) {
-                            if (langs.hasOwnProperty(j)) {
-                                langs[j][word] = langs[j][word] || EMPTY;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        const keys = Object.keys(langs.en);
-        keys.sort();
-        for (const l in langs) {
-            if (!langs.hasOwnProperty(l)) continue;
-            const obj = {};
-            for (let k = 0; k < keys.length; k++) {
-                obj[keys[k]] = langs[l][keys[k]];
-            }
-            langs[l] = obj;
-        }
-        if (!fs.existsSync(src + 'i18n/')) {
-            fs.mkdirSync(src + 'i18n/');
-        }
-        for (const ll in langs) {
-            if (!langs.hasOwnProperty(ll)) continue;
-            if (!fs.existsSync(src + 'i18n/' + ll)) {
-                fs.mkdirSync(src + 'i18n/' + ll);
-            }
-
-            fs.writeFileSync(src + 'i18n/' + ll + '/flat.txt', lang2data(langs[ll], langs.en));
-        }
-        fs.writeFileSync(src + 'i18n/flat.txt', keys.join('\n'));
-    } else {
-        console.error('Cannot read or parse ' + fileName);
-    }
-}
-function languagesFlat2words(src) {
-    const dirs = fs.readdirSync(src + 'i18n/');
-    const langs = {};
-    const bigOne = {};
-    const order = Object.keys(languages);
-    dirs.sort((a, b) => {
-        const posA = order.indexOf(a);
-        const posB = order.indexOf(b);
-        if (posA === -1 && posB === -1) {
-            if (a > b) return 1;
-            if (a < b) return -1;
-            return 0;
-        } else if (posA === -1) {
-            return -1;
-        } else if (posB === -1) {
-            return 1;
-        } else {
-            if (posA > posB) return 1;
-            if (posA < posB) return -1;
-            return 0;
-        }
-    });
-    const keys = fs.readFileSync(src + 'i18n/flat.txt').toString().split('\n');
-
-    for (let l = 0; l < dirs.length; l++) {
-        if (dirs[l] === 'flat.txt') continue;
-        const lang = dirs[l];
-        const values = fs.readFileSync(src + 'i18n/' + lang + '/flat.txt').toString().split('\n');
-        langs[lang] = {};
-        keys.forEach((word, i) => langs[lang][word] = values[i]);
-
-        const words = langs[lang];
-        for (const word in words) {
-            if (words.hasOwnProperty(word)) {
-                bigOne[word] = bigOne[word] || {};
-                if (words[word] !== EMPTY) {
-                    bigOne[word][lang] = words[word];
-                }
-            }
-        }
-    }
-    // read actual words.js
-    const aWords = readWordJs();
-
-    const temporaryIgnore = ['pt', 'fr', 'nl', 'es', 'flat.txt'];
-    if (aWords) {
-        // Merge words together
-        for (const w in aWords) {
-            if (aWords.hasOwnProperty(w)) {
-                if (!bigOne[w]) {
-                    console.warn('Take from actual words.js: ' + w);
-                    bigOne[w] = aWords[w];
-                }
-                dirs.forEach(lang => {
-                    if (temporaryIgnore.indexOf(lang) !== -1) return;
-                    if (!bigOne[w][lang]) {
-                        console.warn('Missing "' + lang + '": ' + w);
-                    }
-                });
-            }
-        }
-
-    }
-
-    writeWordJs(bigOne, src);
 }
 function languages2words(src) {
     const dirs = fs.readdirSync(src + 'i18n/');
@@ -568,7 +391,6 @@ function languages2words(src) {
     // read actual words.js
     const aWords = readWordJs();
 
-    const temporaryIgnore = ['pt', 'fr', 'nl', 'it'];
     if (aWords) {
         // Merge words together
         for (const w in aWords) {
@@ -578,9 +400,8 @@ function languages2words(src) {
                     bigOne[w] = aWords[w];
                 }
                 dirs.forEach(lang => {
-                    if (temporaryIgnore.indexOf(lang) !== -1) return;
                     if (!bigOne[w][lang]) {
-                        console.warn('Missing "' + lang + '": ' + w);
+                        console.warn(`Missing "${lang}": ${w}`);
                     }
                 });
             }
@@ -600,6 +421,7 @@ gulp.task('blockly2languagesFlat', done => {
             if (data.hasOwnProperty(word)) {
                 for (const lang in data[word]) {
                     if (data[word].hasOwnProperty(lang)) {
+                        langs[lang] = langs[lang] || {};
                         langs[lang][word] = data[word][lang];
                         //  pre-fill all other languages
                         for (const j in langs) {
@@ -626,11 +448,11 @@ gulp.task('blockly2languagesFlat', done => {
         }
         for (const ll in langs) {
             if (!langs.hasOwnProperty(ll)) continue;
-            if (!fs.existsSync(src + 'i18n/' + ll)) {
-                fs.mkdirSync(src + 'i18n/' + ll);
+            if (!fs.existsSync(`${src}i18n/${ll}`)) {
+                fs.mkdirSync(`${src}i18n/${ll}`);
             }
 
-            fs.writeFileSync(src + 'i18n/' + ll + '/flat.txt', lang2data(langs[ll], langs.en));
+            fs.writeFileSync(`${src}i18n/${ll}/flat.txt`, lang2data(langs[ll], langs.en));
         }
         fs.writeFileSync(src + 'i18n/flat.txt', keys.join('\n'));
     } else {
@@ -639,7 +461,6 @@ gulp.task('blockly2languagesFlat', done => {
 
     done();
 });
-
 gulp.task('blocklyLanguagesFlat2words', done => {
     const src = './src/public/';
     const dirs = fs.readdirSync(src + 'i18n/');
@@ -663,12 +484,14 @@ gulp.task('blocklyLanguagesFlat2words', done => {
             return 0;
         }
     });
-    const keys = fs.readFileSync(src + 'i18n/flat.txt').toString().split('\n');
+    const keys = fs.readFileSync(`${src}i18n/flat.txt`).toString().split('\n');
 
     for (let l = 0; l < dirs.length; l++) {
-        if (dirs[l] === 'flat.txt') continue;
+        if (dirs[l] === 'flat.txt') {
+            continue;
+        }
         const lang = dirs[l];
-        const values = fs.readFileSync(src + 'i18n/' + lang + '/flat.txt').toString().split('\n');
+        const values = fs.readFileSync(`${src}i18n/${lang}/flat.txt`).toString().split('\n');
         langs[lang] = {};
         keys.forEach((word, i) => langs[lang][word] = values[i]);
 
@@ -695,9 +518,11 @@ gulp.task('blocklyLanguagesFlat2words', done => {
                     bigOne[w] = aWords[w];
                 }
                 dirs.forEach(lang => {
-                    if (temporaryIgnore.indexOf(lang) !== -1) return;
+                    if (temporaryIgnore.includes(lang)) {
+                        return;
+                    }
                     if (!bigOne[w][lang]) {
-                        console.warn('Missing "' + lang + '": ' + w);
+                        console.warn(`Missing "${lang}": ${w}`);
                     }
                 });
             }
@@ -715,24 +540,24 @@ gulp.task('blocklyLanguagesFlat2words', done => {
     for (const word_ in data) {
         if (data.hasOwnProperty(word_)) {
             if (word_[0] >= 'A' && word_[0] <= 'Z') {
-                text += '\n// --- ' + word_.toUpperCase() + ' --------------------------------------------------\n';
+                text += `\n// --- ${word_.toUpperCase()} --------------------------------------------------\n`;
                 group = word_.toLowerCase();
             } else {
                 const parts = word_.split('_');
                 if (parts[0] !== block) {
                     block = parts[0];
-                    text += '\n// --- ' + group + ' ' + block + ' --------------------------------------------------\n';
+                    text += `\n// --- ${group} ${block} --------------------------------------------------\n`;
                 }
             }
 
-            text += 'Blockly.Words[\'' + padRight(word_.replace(/'/g, "\\'") + '\']', 40) + '= {';
+            text += `Blockly.Words['${padRight(`${word_.replace(/'/g, "\\'")}']`, 40)}= {`;
             let line = '';
             for (const lang_ in data[word_]) {
                 if (data[word_].hasOwnProperty(lang_)) {
                     if (data[word_].en.indexOf('--') !== -1) {
-                        line += "'" + lang_ + "': '" + padRight(data[word_].en.replace(/'/g, "\\'") + "',", 50) + ' ';
+                        line += `'${lang_}': '${padRight(`${data[word_].en.replace(/'/g, "\\'")}',`, 50)} `;
                     } else {
-                        line += "'" + lang_ + "': '" + padRight(data[word_][lang_].replace(/'/g, "\\'") + "',", 50) + ' ';
+                        line += `'${lang_}': '${padRight(`${data[word_][lang_].replace(/'/g, "\\'")}',`, 50)} `;
                     }
                 }
             }
@@ -769,16 +594,6 @@ gulp.task('adminLanguages2words', done => {
     languages2words('./admin-config/');
     done();
 });
-gulp.task('adminWords2languagesFlat', done => {
-    words2languagesFlat('./admin-config/');
-    done();
-});
-
-gulp.task('adminLanguagesFlat2words', done => {
-    languagesFlat2words('./admin-config/');
-    done();
-});
-
 
 gulp.task('updatePackages', done => {
     iopackage.common.version = pkg.version;

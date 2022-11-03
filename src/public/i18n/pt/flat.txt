@@ -211,6 +211,9 @@ settimeout
 parar
 Parar a execução com atraso
 cleartimeout
+Atraso
+Atraso
+gettimeout
 Executar
 intervalo
 todo
@@ -220,6 +223,9 @@ setinterval
 parar
 Parar a execução cíclica
 clearinterval
+intervalo
+intervalo
+getinterval
 Trigger
 foi alterado
 foi atualizado
@@ -331,3 +337,15 @@ onFile
 Cancelar evento de arquivo
 Cancelar assinatura na alteração do arquivo
 offFile
+outros scripts
+instância
+todas as instâncias
+script
+mensagem
+dados
+outros scripts
+outros scripts
+Evento: Mensagem recebida
+mensagem
+mensagem
+onMessage

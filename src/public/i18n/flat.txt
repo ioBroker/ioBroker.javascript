@@ -211,6 +211,9 @@ timeouts_settimeout_help
 timeouts_cleartimeout
 timeouts_cleartimeout_tooltip
 timeouts_cleartimeout_help
+timeouts_gettimeout
+timeouts_gettimeout_tooltip
+timeouts_gettimeout_help
 timeouts_setinterval
 timeouts_setinterval_name
 timeouts_setinterval_in
@@ -220,6 +223,9 @@ timeouts_setinterval_help
 timeouts_clearinterval
 timeouts_clearinterval_tooltip
 timeouts_clearinterval_help
+timeouts_getinterval
+timeouts_getinterval_tooltip
+timeouts_getinterval_help
 Trigger
 on_onchange
 on_any
@@ -331,3 +337,15 @@ onFile_help
 offFile
 offFile_tooltip
 offFile_help
+sendto_otherscript_name
+sendto_otherscript_instance
+sendto_otherscript_anyInstance
+sendto_otherscript_script
+sendto_otherscript_message
+sendto_otherscript_data
+sendto_otherscript_tooltip
+sendto_otherscript_help
+onMessage
+onMessage_message
+onMessage_tooltip
+onMessage_help

@@ -211,6 +211,9 @@ settimeout
 clear
 Clear delay execution
 cleartimeout
+timeout
+timeout
+gettimeout
 Execution
 interval
 every
@@ -220,6 +223,9 @@ setinterval
 clear interval
 Clear interval execution
 clearinterval
+interval
+interval
+getinterval
 Trigger
 was changed
 was updated
@@ -331,3 +337,15 @@ onFile
 Anuluj zdarzenie pliku
 Anuluj subskrypcję po zmianie pliku
 offFile
+inny scenariusz
+Instancja
+all instances
+scenariusz
+komunikat
+dane
+inny scenariusz
+inny scenariusz
+Zdarzenie: odebrano wiadomość
+komunikat
+komunikat
+onMessage

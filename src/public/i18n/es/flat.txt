@@ -211,6 +211,9 @@ settimeout
 claro
 Ejecución de retraso claro
 cleartimeout
+se acabó el tiempo
+se acabó el tiempo
+gettimeout
 Ejecución
 intervalo
 cada
@@ -220,6 +223,9 @@ setinterval
 intervalo claro
 Ejecución de intervalo claro
 clearinterval
+intervalo
+intervalo
+getinterval
 Desencadenar
 fue cambiado
 fue actualizado
@@ -331,3 +337,15 @@ onFile
 Cancelar evento de archivo
 Cancelar suscripción en cambio de archivo
 offFile
+otro script
+Instancia
+todas las instancias
+guión
+mensaje
+datos
+otro script
+otro script
+Evento: Mensaje recibido
+mensaje
+mensaje
+onMessage

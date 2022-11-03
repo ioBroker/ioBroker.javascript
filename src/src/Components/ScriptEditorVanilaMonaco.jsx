@@ -236,8 +236,12 @@ class ScriptEditor extends React.Component {
             // global scripts don't get to see all other global scripts
             // but only a part of them
             if (isGlobalScript) {
-                if (path === 'global.d.ts') continue;
-                if (path.startsWith('script.js.global') && path !== partialDeclarationsPath) continue;
+                if (path === 'global.d.ts') {
+                    continue;
+                }
+                if (path.startsWith('script.js.global') && path !== partialDeclarationsPath) {
+                    continue;
+                }
             }
             wantedTypings.push({
                 filePath: path,
@@ -267,10 +271,12 @@ class ScriptEditor extends React.Component {
     insertTextIntoEditor(text) {
         const selection = this.editor.getSelection();
         const range = new this.monaco.Range(
-            selection.startLineNumber, selection.startColumn,
-            selection.endLineNumber, selection.endColumn
+            selection.startLineNumber,
+            selection.startColumn,
+            selection.endLineNumber,
+            selection.endColumn,
         );
-        this.editor.executeEdits('', [{range: range, text: text, forceMoveMarkers: true}]);
+        this.editor.executeEdits('', [{ range: range, text: text, forceMoveMarkers: true }]);
         this.editor.focus();
     }
 
@@ -358,7 +364,7 @@ class ScriptEditor extends React.Component {
         }
 
         // if the code not yet changed, update the new code
-        if (!nextProps.changed && nextProps.code !== this.originalCode) {
+        if (!nextProps.changed && (nextProps.code !== this.originalCode || nextProps.code !== this.editor.getValue())) {
             this.originalCode = nextProps.code;
             this.editor.setValue(this.originalCode);
             this.showDecorators();
@@ -371,7 +377,8 @@ class ScriptEditor extends React.Component {
         }
 
         if (JSON.stringify(nextProps.location) !== JSON.stringify(this.location) &&
-            JSON.stringify(nextProps.breakpoints) !== JSON.stringify(this.breakpoints)) {
+            JSON.stringify(nextProps.breakpoints) !== JSON.stringify(this.breakpoints)
+        ) {
             this.location = nextProps.location;
             this.breakpoints = nextProps.breakpoints;
             this.showDecorators();

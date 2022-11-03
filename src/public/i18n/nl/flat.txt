@@ -211,6 +211,9 @@ setTimeout
 duidelijk
 Duidelijke uitvoering van vertragingen
 clearTimeout
+time-out
+time-out
+gettimeout
 Executie
 interval
 elk
@@ -220,6 +223,9 @@ setInterval
 interval wissen
 Interval-uitvoering wissen
 clearInterval
+interval
+interval
+getinterval
 In gang zetten
 was veranderd
 is geupdated
@@ -331,3 +337,15 @@ onFile
 Bestandsgebeurtenis annuleren
 Abonnement opzeggen bij bestandswijziging
 offFile
+andere script
+Voorbeeld
+alle instanties
+Script
+bericht
+data
+andere script
+andere script
+Gebeurtenis: bericht ontvangen
+bericht
+bericht
+onMessage

@@ -15,6 +15,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 
+import { red, green, yellow } from '@mui/material/colors';
+
 import { MdSave as IconSave } from 'react-icons/md';
 import { MdCancel as IconCancel } from 'react-icons/md';
 import { MdClose as IconClose } from 'react-icons/md';
@@ -31,7 +33,8 @@ import { MdBuild as IconDebugMenu } from 'react-icons/md';
 import { MdBugReport as IconDebug } from 'react-icons/md';
 import { MdPlaylistAddCheck as IconVerbose } from 'react-icons/md';
 import { MdBugReport as IconDebugMode } from 'react-icons/md';
-
+import { MdPlayArrow as IconPlay } from 'react-icons/md';
+import { MdPause as IconPause } from 'react-icons/md';
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
@@ -62,6 +65,8 @@ const images = {
 const MENU_ITEM_HEIGHT = 48;
 const COLOR_DEBUG = '#02a102';
 const COLOR_VERBOSE = '#70aae9';
+const COLOR_RUN = green[400];
+const COLOR_PAUSE = red[400];
 
 const styles = theme => ({
 
@@ -148,7 +153,8 @@ const styles = theme => ({
     },
     notRunning: {
         color: '#ffbc00',
-        marginRight: theme.spacing(1)
+        marginRight: theme.spacing(1),
+        marginLeft: theme.spacing(1),
     },
     tabButton: {
         minHeight: 48,
@@ -569,6 +575,12 @@ class Editor extends React.Component {
         this.props.onRestart && this.props.onRestart(this.state.selected);
     }
 
+    onStartStop() {
+        const common = JSON.parse(JSON.stringify(this.scripts[this.state.selected]));
+        common.enabled = !common.enabled;
+        this.props.onChange && this.props.onChange(this.state.selected, common);
+    }
+
     onSave() {
         if (this.state.isTourOpen && this.state.tourStep === STEPS.saveTheScript) {
             this.setState({ isTourOpen: false });
@@ -647,7 +659,6 @@ class Editor extends React.Component {
         }
         const _changed = JSON.stringify(this.scripts[this.state.selected]) !== JSON.stringify(this.props.objects[this.state.selected].common);
         if (_changed !== (this.state.changed[this.state.selected] || false)) {
-
             const changed = JSON.parse(JSON.stringify(this.state.changed));
             changed[this.state.selected] = _changed;
             this.objects[this.state.selected].from = 'system.adapter.admin.0';
@@ -681,7 +692,7 @@ class Editor extends React.Component {
         e && e.stopPropagation();
 
         const pos = this.state.editing.indexOf(id);
-        if (this.state.editing.indexOf(id) !== -1) {
+        if (this.state.editing.includes(id)) {
             if (this.isScriptChanged(id)) {
                 this.showConfirmDialog(I18n.t('Discard changes for %s', this.props.objects[id].common.name), ok => {
                     if (ok) {
@@ -803,7 +814,7 @@ class Editor extends React.Component {
                             classes={{ wrapper: this.props.classes.tabButtonWrapper }}
                         />;
                     } else {
-                        let text = Editor.getText(this.props.objects[id].common.name);
+                        let text = Editor.getText(this.props.objects[id].common.name) || '';
                         let title = this.getScriptFullName(id);
                         if (text.length > 18) {
                             text = text.substring(0, 15) + '...';
@@ -961,7 +972,10 @@ class Editor extends React.Component {
                         key="locate"
                         title={I18n.t('Locate file')}
                         onClick={() => this.props.onLocate(this.state.selected)}
-                        size="medium"><IconLocate /></IconButton>}
+                        size="medium"
+                    >
+                        <IconLocate />
+                    </IconButton>}
                     {!this.props.debugInstance && !changed && isInstanceRunning && <IconButton
                         key="restart"
                         disabled={this.props.debugMode}
@@ -969,7 +983,22 @@ class Editor extends React.Component {
                         className={this.props.classes.toolbarButtons}
                         onClick={() => this.onRestart()}
                         title={I18n.t('Restart')}
-                        size="medium"><IconRestart /></IconButton>}
+                        size="medium"
+                    >
+                        <IconRestart />
+                    </IconButton>}
+                    {!this.props.debugInstance && !changed && <IconButton
+                        key="start-stop"
+                        disabled={this.props.debugMode}
+                        variant="contained"
+                        className={this.props.classes.toolbarButtons}
+                        onClick={() => this.onStartStop()}
+                        title={isScriptRunning ? I18n.t('Pause script') : I18n.t('Run script')}
+                        size="medium"
+                        style={{ color: isScriptRunning ? COLOR_RUN : COLOR_PAUSE }}
+                    >
+                        {isScriptRunning ? <IconPause /> : <IconPlay />}
+                    </IconButton>}
                     {!this.props.debugInstance && !changed && !isScriptRunning && <span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>}
                     {!changed && isScriptRunning && !isInstanceRunning && <span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>}
                     {changed && <Button color="grey" key="save" variant="contained" className={clsx(this.props.classes.textButton, this.props.classes.saveButton, 'button-save')} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={this.props.classes.textIcon} /></Button>}
@@ -1334,32 +1363,30 @@ class Editor extends React.Component {
     }
 
     getToast() {
-        return (
-            <Snackbar
-                key="toast"
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                }}
-                open={!!this.state.toast}
-                autoHideDuration={6000}
-                onClose={() => this.setState({ toast: '' })}
-                ContentProps={{ 'aria-describedby': 'message-id', }}
-                message={<span id="message-id">{this.state.toast}</span>}
-                action={[
-                    <IconButton
-                        key="close"
-                        aria-label="close"
-                        color="inherit"
-                        className={this.props.classes.closeToast}
-                        onClick={() => this.setState({ toast: '' })}
-                        size="medium"
-                    >
-                        <IconClose />
-                    </IconButton>,
-                ]}
-            />
-        );
+        return <Snackbar
+            key="toast"
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+            }}
+            open={!!this.state.toast}
+            autoHideDuration={6000}
+            onClose={() => this.setState({ toast: '' })}
+            ContentProps={{ 'aria-describedby': 'message-id' }}
+            message={<span id="message-id">{this.state.toast}</span>}
+            action={[
+                <IconButton
+                    key="close"
+                    aria-label="close"
+                    color="inherit"
+                    className={this.props.classes.closeToast}
+                    onClick={() => this.setState({ toast: '' })}
+                    size="medium"
+                >
+                    <IconClose />
+                </IconButton>,
+            ]}
+        />;
     }
 
     setTourStep = tourStep => this.setState({ tourStep });

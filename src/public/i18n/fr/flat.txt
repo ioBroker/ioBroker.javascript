@@ -211,6 +211,9 @@ settimeout
 clair
 Effacer l'exécution du délai
 cleartimeout
+temps libre
+temps libre
+gettimeout
 Exécution
 intervalle
 chaque
@@ -220,6 +223,9 @@ setinterval
 intervalle clair
 Effacer l'intervalle d'exécution
 clearinterval
+intervalle
+intervalle
+getinterval
 Déclencheur
 a été changé
 a été mis à jour
@@ -331,3 +337,15 @@ onFile
 Annuler l'événement de fichier
 Annuler l'abonnement en cas de changement de fichier
 offFile
+autre script
+Exemple
+toutes les instances
+scénario
+message
+données
+autre script
+autre script
+Événement : Message reçu
+message
+message
+onMessage
