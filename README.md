@@ -52,7 +52,7 @@ And then call `npm run build`.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 6.1.1 (2022-11-03)
 * (bluefox) Added ukrainian translation
 
 ### 6.1.0 (2022-11-03)
@@ -73,12 +73,6 @@ And then call `npm run build`.
 ### 6.0.0 (2022-07-18)
 * (bluefox) Removed support of coffeescript
 * (bluefox) All coffee-scripts will be compiled to javascript permanently
-
-### 5.8.10 (2022-07-15)
-* (klein0r) Added variable timeout block
-* (klein0r) Added `getInterval` and `getTimeout` blocks
-* (klein0r) Added `sendTo` for scripts and message trigger blocks
-* (bluefox) Corrected the syntax highlighting
 
 ## License
 The MIT License (MIT)

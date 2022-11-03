@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "6.1.0",
+    "version": "6.1.1",
     "news": {
+      "6.1.1": {
+        "en": "Added ukrainian translation",
+        "de": "Hinzugefügt ukrainische Übersetzung",
+        "ru": "Добавлен украинский перевод",
+        "pt": "Adicionado tradução ukrainian",
+        "nl": "Vertaling:",
+        "fr": "Ajout de la traduction ukrainienne",
+        "it": "Aggiunto ukrainian traduzione",
+        "es": "Traducción ucraniana",
+        "pl": "Addedukrainian translation",
+        "uk": "Додано переклад українською мовою",
+        "zh-cn": "增加培训员"
+      },
       "6.1.0": {
         "en": "Add a configurable check for number of setStates per Minute to prevent scripts from taking down ioBroker. Default are 1000 setState per minute. Only stops if the number is reached 2 minutes in a row!\nAdd createAlias method to create aliases for states\nAdd setStateDelayed to selector\nAdd options to exec command\nFix issues with cancelling schedules when stopping scripts\nCorrected debug mode",
         "de": "Fügen Sie eine konfigurierbare Überprüfung für die Anzahl der setStates pro Minute hinzu, um zu verhindern, dass Skripte ioBroker abnehmen. Standard sind 1000 setState pro Minute. Nur stoppt, wenn die Zahl 2 Minuten in Folge erreicht wird!\nFügen Sie createAlias-Methode hinzu, um Alias für Staaten zu erstellen\nSetStateDelayed to selector hinzufügen\nOptionen zum Befehl exec hinzufügen\nBehebt Probleme mit Abbrechen der Termine beim Stoppen von Skripten\nKorrigierter Debug-Modus",
@@ -94,18 +107,6 @@
         "es": "Bloque de tiempo variable\nAñadido getInterval and getTimeout bloques\nEnviar Para para scripts y bloques de activación de mensajes\nCorregido la sintaxis resaltando",
         "pl": "Zmienna czasowa\nAdded getInterval and getTime blocks (ang.)\nAdded sender Dla skryptów i wiadomości blokuje bloki skryptów\nKwalifikacje podkreślają składnię",
         "zh-cn": "增加变量的时间限制\n增加联接和后政权的陷阱\n增 发 说明和讯息触发因素\n更正了总括号内。"
-      },
-      "5.8.9": {
-        "en": "Added variable timeout block\nAdded `getInterval` and `getTimeout` blocks\nAdded `sendTo` for scripts and message trigger blocks",
-        "de": "Hinzugefügt variable Timeout Block\nHinzugefügt getInterval und getTimeout Blöcke\nHinzugefügt: Für Skripte und Nachrichten-Triggerblöcke",
-        "ru": "Добавлен переменный блок timeout\nДобавлены getInterval и getTimeout блоки\nДобавлена отправка Для скриптов и сообщений триггер блоков",
-        "pt": "Adicionado bloco de tempo limite variável\nAdicionado getInterval e getTimeout blocos\nAdicionado enviar Para scripts e blocos de gatilho de mensagem",
-        "nl": "Vertaling:\nGevoegd bij het krijgen van Timeout blokken\nVertaling: Naar scripts en berichten",
-        "fr": "Ajout d'un timeout variable\nAjouté getInterval and getTimeout blocks\nAjouté Pour les scripts et les blocs de déclenchement de message",
-        "it": "Aggiunto blocco timeout variabile\nAggiunto getInterval e getTimeout blocchi\nAggiunto il messaggio A per gli script e blocchi di trigger dei messaggi",
-        "es": "Bloque de tiempo variable\nAñadido getInterval and getTimeout bloques\nEnviar Para para scripts y bloques de activación de mensajes",
-        "pl": "Zmienna czasowa\nAdded getInterval and getTime blocks (ang.)\nAdded sender Dla skryptów i wiadomości blokuje bloki skryptów",
-        "zh-cn": "增加变量的时间限制\n增加联接和后政权的陷阱\n增 发 说明和讯息触发因素"
       }
     },
     "desc": {

@@ -1,4 +1,10 @@
 The newest change log is in README.md
+## 5.8.10 (2022-07-15)
+* (klein0r) Added variable timeout block
+* (klein0r) Added `getInterval` and `getTimeout` blocks
+* (klein0r) Added `sendTo` for scripts and message trigger blocks
+* (bluefox) Corrected the syntax highlighting
+
 ## 5.8.8 (2022-07-13)
 * (bluefox) Corrected error by start of GUI
 
