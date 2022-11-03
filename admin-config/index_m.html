@@ -253,6 +253,9 @@
         if (settings.mirrorInstance === undefined) {
             settings.mirrorInstance = 0;
         }
+        if (settings.maxSetStatePerMinute === undefined) {
+            settings.maxSetStatePerMinute = 1000;
+        }
         $('.astro-calc').on('change', function () {
             updateAstroTimes();
         }).on('keyup', function () {
@@ -514,6 +517,12 @@
                 <div class="input-field col s12 m6">
                     <input type="checkbox" id="subscribe" class="value" />
                     <span for="subscribe" class="translate">Do not subscribe all states on start:</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input class="value validate" placeholder="1000" id="maxSetStatePerMinute" type="number" min="20" max="100000">
+                    <span for="maxSetStatePerMinute" class="translate">Maximum setState requests per Minute per Script</span>
                 </div>
             </div>
             <div class="row">

@@ -54,5 +54,6 @@
   "tooltip_latitude": "Latitude come 5.345 per utilizzare le funzioni astro",
   "tooltip_libraries": "Ulteriori librerie NPM divise per virgola. Puoi accedervi con require ('name') negli script.",
   "tooltip_longitude": "Longitudine come 5.345 per utilizzare le funzioni astro",
-  "tooltip_useSystemGPS": "Usa le coordinate dalle impostazioni di sistema"
+  "tooltip_useSystemGPS": "Usa le coordinate dalle impostazioni di sistema",
+  "Maximum setState requests per Minute per Script": "Numero massimo di richieste per Minute per Script"
 }

@@ -161,7 +161,7 @@ Default severity is ***'info'***
 
 ### exec - execute some OS command, like "cp file1 file2"
 ```js
-exec(cmd, callback);
+exec(cmd, [options], callback);
 ```
 
 Execute system command and get the outputs.
@@ -175,6 +175,11 @@ exec('ls /var/log', function (error, stdout, stderr) {
     console.log('stdout: ' + stdout);
 });
 ```
+
+Node.js uses /bin/sh to execute commands. If you want to use another shell you can use the options object as described in the Node.js documentation for child_process.exec.
+It is best practice to always use fill path names to commands to make sure the right command is executed.
+
+```js
 
 **Notice:** you must enable *Enable command "setObject"* option to call it.
 
@@ -623,7 +628,7 @@ If the first attribute is string, the function will try to parse the string as J
 
 ### getAstroDate
 ```js
-getAstroDate(pattern, date);
+getAstroDate(pattern, date, offsetMinutes);
 ```
 Returns a javascript Date object for the specified astro-name (e.g. "sunrise" or "sunriseEnd"). For valid values see the list of allowed values in the [Astro](#astro--function) section in the *schedule* function.
 
@@ -955,7 +960,7 @@ Create state and object in javascript space if it does not exist, e.g. `javascri
 
 - `name`: name of the state without namespace, e.g. `mystate`
 - `initialValue`: variable can be initialized after created. Value "undefined" means do not initialize value.
-- `forceCreation`: create state independent of if state yet exists or not.
+- `forceCreation`: create/overwrite state independent of if state yet exists or not.
 - `common`: common description of object see description [here](https://github.com/ioBroker/ioBroker/blob/master/doc/SCHEMA.md#state)
 - `native`: native description of object. Any specific information.
 - `callback`: called after state is created and initialized.
@@ -991,6 +996,36 @@ await deleteStateAsync(name);
 ```
 
 Same as `deleteState`, but the promise will be returned.
+
+### createAlias
+```js
+createAlias(name, alias, forceCreation, common, native, callback);
+```
+Create alias in alias.0 space if it does not exist, e.g. `javascript.0.myalias` and reference to a state or read/write states.
+The common definition is taken from the read alias id object, but a provided common takes precedence.
+
+#### Parameters:
+
+- `name`: name of the alias state with or without alias namespace, e.g. `mystate` (namespace "alias.0." will be added)
+- `alias`: can be either an existing state id as string or a object with full alias definition including read/write ids and read/write functions. 
+- `forceCreation`: create/overwrite alias independent of if state yet exists or not.
+- `common`: common description of alias object see description [here](https://github.com/ioBroker/ioBroker/blob/master/doc/SCHEMA.md#state). Values provided here will take precedence over the common definition of the read alias id object.
+- `native`: native description of object. Any specific information.
+- `callback`: called after state is created and initialized.
+
+It is possible short type of createState:
+
+- `createState('myAlias', 'myVariable')` - simply create alias.0.myAlias that refernces to javascript.X.myVariable if it does not exist
+- `createState('myAlias', {id: {read: 'myReadValiable', write: 'myWriteVariable'}})` - create alias and refence to different read/write states
+
+For other details see createState.
+
+### createAliasAsync
+```js
+await createAliasAsync(name, alias, forceCreation, common, native);
+```
+
+Same as `createAlias`, but the promise will be returned.
 
 ### sendTo
 ```js

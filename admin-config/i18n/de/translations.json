@@ -54,5 +54,6 @@
   "tooltip_latitude": "Der Breitengrad im Format 5.345 für Astro-Funktion",
   "tooltip_libraries": "Zusätzliche NPM Pakete mit Komma getrennt. Man kann die Pakete mit require('name') benutzen.",
   "tooltip_longitude": "Der Längengrad im Format 5.345 für Astro-Funktion",
-  "tooltip_useSystemGPS": "Die Koordinaten aus den Systemeinstellungen verwenden"
+  "tooltip_useSystemGPS": "Die Koordinaten aus den Systemeinstellungen verwenden",
+  "Maximum setState requests per Minute per Script": "Maximale SetState-Anfragen pro Minute pro Skript"
 }

@@ -20,7 +20,6 @@ const nodeFS         = require('fs');
 const nodePath       = require('path');
 const CoffeeScript   = require('coffeescript');
 const tsc            = require('virtual-tsc');
-const nodeSchedule   = require('node-schedule');
 const Mirror         = require('./lib/mirror');
 const fork           = require('child_process').fork;
 
@@ -43,7 +42,8 @@ const mods = {
     zlib:             require('zlib'),
     suncalc:          require('suncalc2'),
     request:          require('./lib/request'),
-    wake_on_lan:      require('wake_on_lan')
+    wake_on_lan:      require('wake_on_lan'),
+    nodeSchedule:     require('node-schedule')
 };
 
 /**
@@ -82,6 +82,7 @@ const { isDeepStrictEqual } = require('util');
 const adapterName = packageJson.name.split('.').pop();
 const scriptCodeMarker = 'script.js.';
 const stopCounters =  {};
+let setStateCountCheckInterval = null;
 
 let webstormDebug;
 let debugMode;
@@ -615,6 +616,7 @@ function startAdapter(options) {
             debugStop()
                 .then(() => {
                     stopTimeSchedules();
+                    setStateCountCheckInterval && clearInterval(setStateCountCheckInterval);
                     stopAllScripts(callback);
                 });
         },
@@ -622,6 +624,7 @@ function startAdapter(options) {
         ready: () => {
             mods.request.setLogger(adapter.log);
 
+            adapter.config.maxSetStatePerMinute = parseInt(adapter.config.maxSetStatePerMinute, 10) || 1000;
             if (adapter.supportsFeature && adapter.supportsFeature('PLUGINS')) {
                 const sentryInstance = adapter.getPluginInstance('sentry');
                 if (sentryInstance) {
@@ -1172,6 +1175,27 @@ function main() {
                     }
                 }
 
+                // CHeck setState counter per minute and stop script if too high
+                setStateCountCheckInterval = setInterval(() => {
+                    Object.keys(context.scripts).forEach(id => {
+                        const currentSetStatePerMinuteCounter = context.scripts[id].setStatePerMinuteCounter;
+                        context.scripts[id].setStatePerMinuteCounter = 0;
+                        if (currentSetStatePerMinuteCounter > adapter.config.maxSetStatePerMinute) {
+                            context.scripts[id].setStatePerMinuteProblemCounter++;
+                            adapter.log.debug(`Script ${id} has reached the maximum of ${adapter.config.maxSetStatePerMinute} setState calls per minute in ${context.scripts[id].setStatePerMinuteProblemCounter} consecutive minutes`);
+                            // Allow "too high counters" for 1 minute for script starts or such and only
+                            // stop script when lasts longer
+                            if (context.scripts[id].setStatePerMinuteProblemCounter > 1) {
+                                adapter.log.error(`Script ${id} is calling setState more than ${adapter.config.maxSetStatePerMinute} times per minute! Stopping Script now! Please check your script!`);
+                                stop(id);
+                            }
+                        } else if (context.scripts[id].setStatePerMinuteProblemCounter > 0) {
+                            context.scripts[id].setStatePerMinuteProblemCounter--;
+                            adapter.log.debug(`Script ${id} has NOT reached the maximum of ${adapter.config.maxSetStatePerMinute} setState calls per minute. Decrease problem counter to ${context.scripts[id].setStatePerMinuteProblemCounter}`);
+                        }
+                    });
+                }, 60000);
+
             });
         });
     });
@@ -1585,10 +1609,10 @@ function installNpm(npmLib, callback) {
         cwd: path,
     });
 
-    child.stdout.on('data', buf =>
+    child.stdout && child.stdout.on('data', buf =>
         adapter.log.info(buf.toString('utf8')));
 
-    child.stderr.on('data', buf =>
+    child.stderr && child.stderr.on('data', buf =>
         adapter.log.error(buf.toString('utf8')));
 
     child.on('err', err => {
@@ -1692,6 +1716,8 @@ function execute(script, name, verbose, debug) {
     script._id = Math.floor(Math.random() * 0xFFFFFFFF);
     script.subscribes = {};
     script.subscribesFile = {};
+    script.setStatePerMinuteCounter = 0;
+    script.setStatePerMinuteProblemCounter = 0;
     adapter.setState('scriptProblem.' + name.substring('script.js.'.length), { val: false, ack: true, expire: 1000 });
 
     const sandbox = sandBox(script, name, verbose, debug, context);
@@ -1840,7 +1866,7 @@ function stop(name, callback) {
         for (let i = 0; i < context.scripts[name].schedules.length; i++) {
             if (context.scripts[name].schedules[i]) {
                 const _name = context.scripts[name].schedules[i].name;
-                if (!nodeSchedule.cancelJob(context.scripts[name].schedules[i])) {
+                if (!mods.nodeSchedule.cancelJob(context.scripts[name].schedules[i])) {
                     adapter.log.error(`Error by canceling scheduled job "${_name}"`);
                 }
             }
@@ -1849,7 +1875,7 @@ function stop(name, callback) {
         // Stop all time wizards jobs
         for (let i = 0; i < context.scripts[name].wizards.length; i++) {
             if (context.scripts[name].wizards[i]) {
-                context.scheduler.remove(context.scripts[name].wizards[i]);
+                context.scheduler && context.scheduler.remove(context.scripts[name].wizards[i]);
             }
         }
 
@@ -2053,7 +2079,7 @@ async function getData(callback) {
     adapter.getForeignStates('*', (err, res) => {
         if (!adapter.config.subscribe) {
             if (err || !res) {
-                adapter.log.error(`Could not initialize states: ${err.message}`);
+                adapter.log.error(`Could not initialize states: ${err ? err.message : 'no result'}`);
                 adapter.terminate(EXIT_CODES.START_IMMEDIATELY_AFTER_STOP);
                 return;
             }
@@ -2077,7 +2103,7 @@ async function getData(callback) {
 
     adapter.getObjectList({ include_docs: true }, (err, res) => {
         if (err || !res || !res.rows) {
-            adapter.log.error(`Could not initialize objects: ${err.message}`);
+            adapter.log.error(`Could not initialize objects: ${err ? err.message : 'no result'}`);
             adapter.terminate(EXIT_CODES.START_IMMEDIATELY_AFTER_STOP);
             return;
         }
@@ -2179,7 +2205,7 @@ function debugSendToInspector(message) {
             debugState.child.send(message);
         } catch (e) {
             debugStop()
-                .then(() => adapter.log.info(`Debugging of ${debugState.scriptName} was stopped, because started in normal mode`));
+                .then(() => adapter.log.info(`Debugging of "${debugState.scriptName}" was stopped, because started in normal mode`));
         }
     } else {
         adapter.log.error(`Cannot send command to terminated inspector`);
@@ -2225,7 +2251,7 @@ function debugStart(data) {
                 debugState.child.stdout.on('data', childPrint);
                 debugState.child.stderr.on('data', childPrint);*/
 
-                debugState.child.on('message', message => {
+                debugState.child && debugState.child.on('message', message => {
                     if (typeof message === 'string') {
                         try {
                             message = JSON.parse(message);
@@ -2270,12 +2296,12 @@ function debugStart(data) {
                         }
                     }
                 });
-                debugState.child.on('error', error => {
+                debugState.child && debugState.child.on('error', error => {
                     adapter.log.error('Cannot start inspector: ' + error);
                     adapter.setState('debug.from', JSON.stringify({cmd: 'error', error}), true);
                 });
 
-                debugState.child.on('exit', code => {
+                debugState.child && debugState.child.on('exit', code => {
                     if (code) {
                         adapter.setState('debug.from', JSON.stringify({cmd: 'error', error: 'invalid response code: ' + code}), true);
                     }

@@ -306,6 +306,15 @@ declare global {
 			role?: string;
 		}
 
+		interface StateCommonAlias {
+			/** The target state id or two target states used for reading and writing values */
+			id: string | { read: string; write: string };
+			/** An optional conversion function when reading, e.g. `"(val − 32) * 5/9"` */
+			read?: string;
+			/** An optional conversion function when reading, e.g. `"(val * 9/5) + 32"` */
+			write?: string;
+		}
+
 		interface StateCommon extends ObjectCommon {
 			/** Type of this state. See https://github.com/ioBroker/ioBroker/blob/master/doc/SCHEMA.md#state-commonrole for a detailed description */
 			type?: CommonType;
@@ -333,14 +342,7 @@ declare global {
 			defAck?: boolean;
 
 			/** Configures this state as an alias for another state */
-			alias?: {
-				/** The target state id or two target states used for reading and writing values */
-				id: string | { read: string; write: string };
-				/** An optional conversion function when reading, e.g. `"(val − 32) * 5/9"` */
-				read?: string;
-				/** An optional conversion function when reading, e.g. `"(val * 9/5) + 32"` */
-				write?: string;
-			};
+			alias?: StateCommonAlias;
 
 			/**
 			 * Dictionary of possible values for this state in the form
@@ -1065,6 +1067,7 @@ declare global {
 			 */
 			setState(state: State | StateValue | SettableState, ack?: boolean, callback?: SetStateCallback): this;
 			setStateAsync(state: State | StateValue | SettableState, ack?: boolean): Promise<void>;
+			setStateDelayed(state: any, isAck?: boolean, delay?: number, clearRunning?: boolean, callback?: SetStateCallback): this;
 
 			/**
 			 * Sets all queried binary states to the given value.
@@ -1265,7 +1268,7 @@ declare global {
 	/**
 	 * Executes a system command
 	 */
-	function exec(command: string, callback?: (err: Error | null | undefined, stdout: string, stderr: string) => void | Promise<void>): child_process.ChildProcess;
+	const exec: typeof import("child_process").exec;
 
 	/**
 	 * Sends an email using the email adapter.
@@ -1527,6 +1530,19 @@ declare global {
 	function createStateAsync(name: string, common: Partial<iobJS.StateCommon>, native?: any): iobJS.SetStatePromise;
 	function createStateAsync(name: string, initValue: iobJS.StateValue, common: Partial<iobJS.StateCommon>): iobJS.SetStatePromise;
 	function createStateAsync(name: string, initValue: iobJS.StateValue, common: Partial<iobJS.StateCommon>, native?: any): iobJS.SetStatePromise;
+
+	function createAlias(name: string, alias: string | iobJS.StateCommonAlias, callback?: iobJS.SetStateCallback): void;
+	function createAlias(name: string, alias: string | iobJS.StateCommonAlias, forceCreation: boolean, callback?: iobJS.SetStateCallback): void;
+	function createAlias(name: string, alias: string | iobJS.StateCommonAlias, forceCreation: boolean, common: Partial<iobJS.StateCommon>, callback?: iobJS.SetStateCallback): void;
+	function createAlias(name: string, alias: string | iobJS.StateCommonAlias, forceCreation: boolean, common: Partial<iobJS.StateCommon>, native: any, callback?: iobJS.SetStateCallback): void;
+	function createAlias(name: string, alias: string | iobJS.StateCommonAlias, common: Partial<iobJS.StateCommon>, callback?: iobJS.SetStateCallback): void;
+	function createAlias(name: string, alias: string | iobJS.StateCommonAlias, common: Partial<iobJS.StateCommon>, native: any, callback?: iobJS.SetStateCallback): void;
+
+	function createAliasAsync(name: string, alias: string | iobJS.StateCommonAlias, forceCreation?: boolean, common?: Partial<iobJS.StateCommon>, native?: any): iobJS.SetStatePromise;
+	function createAliasAsync(name: string, alias: string | iobJS.StateCommonAlias, common: Partial<iobJS.StateCommon>): iobJS.SetStatePromise;
+	function createAliasAsync(name: string, alias: string | iobJS.StateCommonAlias, common: Partial<iobJS.StateCommon>, native?: any): iobJS.SetStatePromise;
+
+
 
 	/**
 	 * Deletes the state with the given ID

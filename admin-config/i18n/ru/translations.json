@@ -54,5 +54,6 @@
   "tooltip_latitude": "Широта в виде 5.435 для астро функций",
   "tooltip_libraries": "Дополнительные NPM пакеты через запятую. Их можно использовать в скриптах, как require('name').",
   "tooltip_longitude": "Широта в виде 5.435 для астро функций",
-  "tooltip_useSystemGPS": "Использовать координаты из системных настроек"
+  "tooltip_useSystemGPS": "Использовать координаты из системных настроек",
+  "Maximum setState requests per Minute per Script": "Максимальный наборГосударственные запросы в минуту на скрипт"
 }
