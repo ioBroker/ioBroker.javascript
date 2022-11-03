@@ -965,10 +965,10 @@ Create state and object in javascript space if it does not exist, e.g. `javascri
 
 It is possible short type of createState:
 
-- `createState('myVariable')` - simply create variable if it does not exist
-- `createState('myVariable', 1)` - create variable if it does not exist and initialize it with value 1
-- `createState('myVariable', {name: 'My own variable', unit: '°C'}, function () {log('created');});`
-- `createState('myVariable', 1, {name: 'My own variable', unit: '°C'})` - create variable if it does not exist with specific name and units
+- `createState('myDatapoint')` - simply create datapoint if it does not exist
+- `createState('myDatapoint', 1)` - create datapoint if it does not exist and initialize it with value 1
+- `createState('myDatapoint', {name: 'My own datapoint', unit: '°C'}, function () {log('created');});`
+- `createState('myDatapoint', 1, {name: 'My own datapoint', unit: '°C'})` - create variable if it does not exist with specific name and units
 
 ### createStateAsync
 ```js
@@ -984,7 +984,7 @@ deleteState(name, callback);
 Delete state and object in javascript space, e.g. `javascript.0.mystate`. States from other adapters cannot be deleted.
 
 ```js
-deleteState('myVariable')
+deleteState('myDatapoint')
 ```
 simply delete variable if exists.
 
@@ -1013,8 +1013,8 @@ The common definition is taken from the read alias id object, but a provided com
 
 It is possible short type of createState:
 
-- `createState('myAlias', 'myVariable')` - simply create alias.0.myAlias that refernces to javascript.X.myVariable if it does not exist
-- `createState('myAlias', {id: {read: 'myReadValiable', write: 'myWriteVariable'}})` - create alias and refence to different read/write states
+- `createState('myAlias', 'myDatapoint')` - simply create alias.0.myAlias that refernces to javascript.X.myDatapoint if it does not exist
+- `createState('myAlias', {id: {read: 'myReadDatapoint', write: 'myWriteDatapoint'}})` - create alias and refence to different read/write states
 
 For other details see createState.
 
