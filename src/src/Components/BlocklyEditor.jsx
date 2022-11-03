@@ -458,7 +458,7 @@ class BlocklyEditor extends React.Component {
         this.onChange();
     }
 
-    componentDidUpdate() {
+    async componentDidUpdate() {
         if (!this.blockly) {
             return;
         }
@@ -472,7 +472,7 @@ class BlocklyEditor extends React.Component {
         }
 
         window.addEventListener('resize', this.onResizeBind, false);
-        toolboxText = toolboxText || this.getToolbox();
+        toolboxText = toolboxText || (await this.getToolbox());
         toolboxXml  = toolboxXml  || this.Blockly.Xml.textToDom(toolboxText);
 
         this.blocklyWorkspace = this.Blockly.inject(
@@ -572,9 +572,19 @@ class BlocklyEditor extends React.Component {
         this.props.onChange && this.props.onChange(this.originalCode);
     }
 
-    getToolbox() {
+    async getToolbox(retry) {
         // Interpolate translated messages into toolbox.
-        let toolboxText = window.document.getElementById('toolbox').outerHTML;
+        const el =  window.document.getElementById('toolbox');
+        let toolboxText = el && el.outerHTML;
+        if (!toolboxText) {
+            if (!retry) {
+                return new Promise(resolve =>
+                    setTimeout(() => resolve(this.getToolbox(true)), 500));
+            } else {
+                console.error('Cannot load blocks!');
+                return '';
+            }
+        }
         toolboxText = toolboxText.replace(/{(\w+)}/g, (m, p1) => window.MSG[p1]);
 
         if (this.Blockly.CustomBlocks) {

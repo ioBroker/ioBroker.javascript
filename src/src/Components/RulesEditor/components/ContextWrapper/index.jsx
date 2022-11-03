@@ -141,7 +141,17 @@ export const ContextWrapper = ({ children, socket }) => {
                     await fetch(file)
                         .then(data => data.json())
                         .then(json => I18n.extendTranslations(json, lang))
-                        .catch(error => console.log(`Cannot load i18n "${file}": ${error}`));
+                        .catch(error => {
+                            if (lang !== 'en') {
+                                // try to load english
+                                return fetch(`${i18nURL}/i18n/en.json`)
+                                    .then(data => data.json())
+                                    .then(json => I18n.extendTranslations(json, lang))
+                                    .catch(error => console.error(`Cannot load i18n "${file}": ${error}`))
+                            } else {
+                                console.log(`Cannot load i18n "${file}": ${error}`)
+                            }
+                        });
                 } else if (obj.common.javascriptRules.i18n && typeof obj.common.javascriptRules.i18n === 'object') {
                     try {
                         I18n.extendTranslations(obj.common.javascriptRules.i18n);
