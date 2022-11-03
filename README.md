@@ -52,7 +52,7 @@ And then call `npm run build`.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 6.1.0 (2022-11-03)
 * (Apollon77) Add a configurable check for number of setStates per Minute to prevent scripts from taking down ioBroker. Default are 1000 setState per minute. Only stops if the number is reached 2 minutes in a row!
 * (Apollon77) Add createAlias method to create aliases for states
 * (Apollon77) Add setStateDelayed to selector
@@ -76,9 +76,6 @@ And then call `npm run build`.
 * (klein0r) Added `getInterval` and `getTimeout` blocks
 * (klein0r) Added `sendTo` for scripts and message trigger blocks
 * (bluefox) Corrected the syntax highlighting
-
-### 5.8.8 (2022-07-13)
-* (bluefox) Corrected error by start of GUI
 
 ## License
 The MIT License (MIT)

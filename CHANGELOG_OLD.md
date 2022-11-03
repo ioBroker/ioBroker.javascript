@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 5.8.8 (2022-07-13)
+* (bluefox) Corrected error by start of GUI
+
 ## 5.8.7 (2022-07-12)
 * (klein0r) Fixed function edit dialog (cursor jumps to first position)
 * (klein0r) Added error message when using number or boolean as trigger id

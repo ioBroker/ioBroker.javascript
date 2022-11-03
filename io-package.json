@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "6.0.3",
+    "version": "6.1.0",
     "news": {
+      "6.1.0": {
+        "en": "Add a configurable check for number of setStates per Minute to prevent scripts from taking down ioBroker. Default are 1000 setState per minute. Only stops if the number is reached 2 minutes in a row!\nAdd createAlias method to create aliases for states\nAdd setStateDelayed to selector\nAdd options to exec command\nFix issues with cancelling schedules when stopping scripts\nCorrected debug mode",
+        "de": "Fügen Sie eine konfigurierbare Überprüfung für die Anzahl der setStates pro Minute hinzu, um zu verhindern, dass Skripte ioBroker abnehmen. Standard sind 1000 setState pro Minute. Nur stoppt, wenn die Zahl 2 Minuten in Folge erreicht wird!\nFügen Sie createAlias-Methode hinzu, um Alias für Staaten zu erstellen\nSetStateDelayed to selector hinzufügen\nOptionen zum Befehl exec hinzufügen\nBehebt Probleme mit Abbrechen der Termine beim Stoppen von Skripten\nKorrigierter Debug-Modus",
+        "ru": "Добавьте конфигурируемую проверку на количество установленных Штат в минуту, чтобы предотвратить скрипты от снятия ioBroker. По умолчанию 1000 setState в минуту. Только останавливается, если число достигнет 2 минуты подряд!\nДобавьте метод созданияAlias для создания псевдонимов для государств\nДобавить setStateЗадержка для селектора\nДобавьте опции в команду exec\nИсправление вопросов с отменой графиков при остановке скриптов\nИсправлен режим отладки",
+        "pt": "Adicione uma verificação configurável para o número de setStates per Minute para evitar que os scripts derrubem o ioBroker. Padrão são 1000 setState por minuto. Apenas pára se o número for atingido 2 minutos consecutivos!\nAdicionar método createAlias para criar aliases para estados\nAdicionar setStateDelayed ao seletor\nAdicionar opções ao comando exec\nCorrigir problemas com agendas de cancelamento ao parar scripts\nModo de depuração corrigido",
+        "nl": "Voeg een configurabele cheque toe voor een aantal sets per Minute om te voorkomen dat scripten ioBroker neerhalen. Default is 1000 setstate per minuut. Het stopt alleen als het nummer 2 minuten op rij is!\nVoeg Alias methode toe om aliassen te creëren voor staten\nVertaling:\nVoeg de opties toe om commando's te overtreden\nVertaling:\nVertaling:",
+        "fr": "Ajouter un contrôle configurable pour le nombre de setStates par Minute pour empêcher les scripts de descendre ioBroker. Les défauts sont de 1000 États par minute. Seulement s'arrête si le nombre est atteint 2 minutes de suite !\nAjouter la méthode createAlias pour créer des alias pour les états\nAjouter le setStateDelayed to selector\nAjouter des options à la commande exec\nCorrection des problèmes avec les horaires d'annulation lors de l'arrêt des scripts\nMode de débogage corrigé",
+        "it": "Aggiungi un controllo configurabile per il numero di setStates per Minute per evitare che gli script scendano ioBroker. I default sono 1000 setState al minuto. Si ferma solo se il numero è raggiunto 2 minuti di fila!\nAggiungi il metodo createAlias per creare alias per gli stati\nAggiungi setStateDelayed al selettore\nAggiungere le opzioni al comando exec\nRisolvere i problemi con gli orari di cancellazione quando si fermano gli script\nModalità di debug corretto",
+        "es": "Agregue un cheque configurable para el número de estados fijados por minuto para evitar que los scripts derriban ioBroker. Por defecto son 1000 Estados por minuto. Sólo para si el número es alcanzado 2 minutos seguidos!\nAgregar método createAlias para crear alias para los estados\nAñadir setStateDelayed to selector\nAñadir opciones al comando exec\nArreglar problemas con los horarios de cancelación cuando detenga scripts\nModo de depuración corregido",
+        "pl": "Addd – konfigurowalny kontrola dla wielu ustaw States per Minute w celu zapobiegania skryptom zamiast ciągników ioBrokera. Uszkodzenia wynosi 1000 punktów na minutę. Zatrzymują się one, jeśli liczba sięga 2 minuty w rzędzie!\nAddd tworzy metodę Aliasa w celu stworzenia aliaz\nAdd setStateDelay\nAdddition to perform command\nZagadnienia z odwołaniem harmonogramów w momencie zatrzymywania scenariuszy\nPoprawka",
+        "uk": "Додати конфігураційну перевірку для кількості setStates для запобігання скриптів від зняття ioBroker. За замовчуванням 1000 setState за хвилину. Тільки зупиняється, якщо число досягне 2 хвилин поспіль!\nДодати метод створенняAlias для створення псевдонімів для станів\nДодати setStateDelayed для selector\nДодати параметри до команди exec\nВиправлення питань з графіками скасування при зупинці сценаріїв\nВиправлений режим відключення",
+        "zh-cn": "增加一分钟的固定国家数量的易燃检查,以防止言词不致降。 被告每分钟一分钟。 只有停止数以2分钟计的加元!\n增加创设别语的方法\n增 编\n增加特区指挥的选择\n冻结时间表的固定问题\n改编"
+      },
       "6.0.3": {
         "en": "Downgrade Typescript to prevent errors with global typescript scripts",
         "de": "Herunterfahren Typescript, um Fehler mit globalen Typscript-Skripten zu verhindern",
@@ -93,18 +106,6 @@
         "es": "Bloque de tiempo variable\nAñadido getInterval and getTimeout bloques\nEnviar Para para scripts y bloques de activación de mensajes",
         "pl": "Zmienna czasowa\nAdded getInterval and getTime blocks (ang.)\nAdded sender Dla skryptów i wiadomości blokuje bloki skryptów",
         "zh-cn": "增加变量的时间限制\n增加联接和后政权的陷阱\n增 发 说明和讯息触发因素"
-      },
-      "5.8.8": {
-        "en": "Corrected error by start of GUI",
-        "de": "Fehler beim Start von GUI behoben",
-        "ru": "Исправлена ошибка при запуске GUI",
-        "pt": "Erro corrigido pelo início da GUI",
-        "nl": "Verplicht door GUI",
-        "fr": "Erreur corrigée au début de l'interface graphique",
-        "it": "Errore corretto dall'inizio della GUI",
-        "es": "Error corregido por inicio de GUI",
-        "pl": "Poprawne błędy poprzez rozpoczęcie GUI",
-        "zh-cn": "古伊伊伊人开始纠正错误"
       }
     },
     "desc": {
