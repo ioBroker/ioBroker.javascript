@@ -15,7 +15,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 
-import { red, green, yellow } from '@mui/material/colors';
+import { red, green } from '@mui/material/colors';
 
 import { MdSave as IconSave } from 'react-icons/md';
 import { MdCancel as IconCancel } from 'react-icons/md';
