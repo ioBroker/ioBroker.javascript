@@ -55,5 +55,5 @@
   "tooltip_libraries": "Additional NPM libraries divided by comma. You can access them with require('name') in scripts.",
   "tooltip_longitude": "Longitude as 5.345 to use astro functions",
   "tooltip_useSystemGPS": "Use coordinates from system settings",
-  "Maximum setState requests per Minute per Script": "Maksymum setState żądań na minutę na skrypt",
+  "Maximum setState requests per Minute per Script": "Maksymum setState żądań na minutę na skrypt"
 }
