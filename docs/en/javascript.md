@@ -968,7 +968,7 @@ It is possible short type of createState:
 - `createState('myDatapoint')` - simply create datapoint if it does not exist
 - `createState('myDatapoint', 1)` - create datapoint if it does not exist and initialize it with value 1
 - `createState('myDatapoint', {name: 'My own datapoint', unit: '°C'}, function () {log('created');});`
-- `createState('myDatapoint', 1, {name: 'My own datapoint', unit: '°C'})` - create variable if it does not exist with specific name and units
+- `createState('myDatapoint', 1, {name: 'My own datapoint', unit: '°C'})` - create datapoint if it does not exist with specific name and units
 
 ### createStateAsync
 ```js
@@ -986,7 +986,7 @@ Delete state and object in javascript space, e.g. `javascript.0.mystate`. States
 ```js
 deleteState('myDatapoint')
 ```
-simply delete variable if exists.
+simply delete datapoint if exists.
 
 ### deleteStateAsync
 ```js
