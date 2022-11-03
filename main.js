@@ -106,12 +106,8 @@ const isCI = !!process.env.CI;
 // ambient declarations for typescript
 /** @type {Record<string, string>} */
 let tsAmbient;
-/** @type {tsc.Server} */
-let tsServer;
-/** @type {tsc.Server} */
-let jsDeclarationServer;
 
-// TypeScript scripts are only recompiled if their source hash changes. If an adapter update fixes compilation bugs,
+// TypeScript's scripts are only recompiled if their source hash changes. If an adapter update fixes compilation bugs,
 // a user won't notice until he changes and re-saves the script. In order to avoid that, we also include the
 // adapter version and TypeScript version in the hash
 const tsSourceHashBase = `versions:adapter=${packageJson.version},typescript=${packageJson.dependencies.typescript}`;
@@ -1363,9 +1359,12 @@ tsc.setTypeScriptResolveOptions({
     paths: [require.resolve('typescript')],
 });
 // compiler instance for typescript
-tsServer = new tsc.Server(tsCompilerOptions, tsLog);
+/** @type {tsc.Server} */
+const tsServer = new tsc.Server(tsCompilerOptions, tsLog);
+
 // compiler instance for global JS declarations
-jsDeclarationServer = new tsc.Server(
+/** @type {tsc.Server} */
+const jsDeclarationServer = new tsc.Server(
     jsDeclarationCompilerOptions,
     isCI ? false : undefined
 );
@@ -1842,7 +1841,7 @@ function stop(name, callback) {
             if (context.scripts[name].schedules[i]) {
                 const _name = context.scripts[name].schedules[i].name;
                 if (!nodeSchedule.cancelJob(context.scripts[name].schedules[i])) {
-                    adapter.log.error('Error by canceling scheduled job "' + _name + '"');
+                    adapter.log.error(`Error by canceling scheduled job "${_name}"`);
                 }
             }
         }
@@ -2180,7 +2179,7 @@ function debugSendToInspector(message) {
             debugState.child.send(message);
         } catch (e) {
             debugStop()
-                .then(() => adapter.log.info(`Debugging of ${id} was stopped, because started in normal mode`));
+                .then(() => adapter.log.info(`Debugging of ${debugState.scriptName} was stopped, because started in normal mode`));
         }
     } else {
         adapter.log.error(`Cannot send command to terminated inspector`);
