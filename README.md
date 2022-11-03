@@ -52,7 +52,7 @@ And then call `npm run build`.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 6.1.1 (2022-11-03)
+### **WORK IN PROGRESS**
 * (bluefox) Added ukrainian translation
 
 ### 6.1.0 (2022-11-03)

@@ -22,19 +22,6 @@
     ],
     "version": "6.1.1",
     "news": {
-      "6.1.1": {
-        "en": "Added ukrainian translation",
-        "de": "Hinzugefügt ukrainische Übersetzung",
-        "ru": "Добавлен украинский перевод",
-        "pt": "Adicionado tradução ukrainian",
-        "nl": "Vertaling:",
-        "fr": "Ajout de la traduction ukrainienne",
-        "it": "Aggiunto ukrainian traduzione",
-        "es": "Traducción ucraniana",
-        "pl": "Addedukrainian translation",
-        "uk": "Додано переклад українською мовою",
-        "zh-cn": "增加培训员"
-      },
       "6.1.0": {
         "en": "Add a configurable check for number of setStates per Minute to prevent scripts from taking down ioBroker. Default are 1000 setState per minute. Only stops if the number is reached 2 minutes in a row!\nAdd createAlias method to create aliases for states\nAdd setStateDelayed to selector\nAdd options to exec command\nFix issues with cancelling schedules when stopping scripts\nCorrected debug mode",
         "de": "Fügen Sie eine konfigurierbare Überprüfung für die Anzahl der setStates pro Minute hinzu, um zu verhindern, dass Skripte ioBroker abnehmen. Standard sind 1000 setState pro Minute. Nur stoppt, wenn die Zahl 2 Minuten in Folge erreicht wird!\nFügen Sie createAlias-Methode hinzu, um Alias für Staaten zu erstellen\nSetStateDelayed to selector hinzufügen\nOptionen zum Befehl exec hinzufügen\nBehebt Probleme mit Abbrechen der Termine beim Stoppen von Skripten\nKorrigierter Debug-Modus",
