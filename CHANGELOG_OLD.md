@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 6.0.0 (2022-07-18)
+* (bluefox) Removed support of coffeescript
+* (bluefox) All coffee-scripts will be compiled to javascript permanently
+
 ## 5.8.10 (2022-07-15)
 * (klein0r) Added variable timeout block
 * (klein0r) Added `getInterval` and `getTimeout` blocks

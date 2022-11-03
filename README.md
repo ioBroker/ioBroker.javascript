@@ -52,7 +52,7 @@ And then call `npm run build`.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 6.1.3 (2022-11-03)
 * (Apollon77) Prevent adapter crash when script could not be compiled
 
 ### 6.1.2 (2022-11-03)
@@ -72,10 +72,6 @@ And then call `npm run build`.
 ### 6.0.1 (2022-08-19)
 * (bluefox) Fixed the wizard schedule
 * (bluefox) Done small fixes on GUI
-
-### 6.0.0 (2022-07-18)
-* (bluefox) Removed support of coffeescript
-* (bluefox) All coffee-scripts will be compiled to javascript permanently
 
 ## License
 The MIT License (MIT)

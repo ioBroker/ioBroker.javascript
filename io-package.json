@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "6.1.2",
+    "version": "6.1.3",
     "news": {
+      "6.1.3": {
+        "en": "Prevent adapter crash when script could not be compiled",
+        "de": "Verhindern von Adapterabsturz, wenn Skript nicht kompiliert werden konnte",
+        "ru": "Предотвратить сбой адаптера, когда сценарий нельзя компилировать",
+        "pt": "Impedir a falha do adaptador quando o script não pôde ser compilado",
+        "nl": "Vertaling:",
+        "fr": "Prévenir le crash de l'adaptateur lorsque le script ne peut pas être compilé",
+        "it": "Evitare l'arresto dell'adattatore quando lo script non potrebbe essere compilato",
+        "es": "Evitar el bloqueo del adaptador cuando el script no se pudo compilar",
+        "pl": "Zastosowanie przepustowości, gdy skrypt nie może być skompilowany",
+        "uk": "Запобігання аварійної ситуації адаптера, коли скрипт не може бути складений",
+        "zh-cn": "在无法编制说明时,预防性改编"
+      },
       "6.1.2": {
         "en": "Added ukrainian translation",
         "de": "Hinzugefügt ukrainische Übersetzung",
@@ -95,18 +108,6 @@
         "es": "Soporte extraído de cafetera\nTodas las recetas de café serán compiladas en javascript permanentemente",
         "pl": "Przewiduje wsparcie kawy\nWszystkie zapisy kawy zostały skompilowane na stałe",
         "zh-cn": "取消对咖啡说明的支持\n将把所有咖啡说明汇编成永久的小册子。"
-      },
-      "5.8.10": {
-        "en": "Added variable timeout block\nAdded `getInterval` and `getTimeout` blocks\nAdded `sendTo` for scripts and message trigger blocks\nCorrected the syntax highlighting",
-        "de": "Hinzugefügt variable Timeout Block\nHinzugefügt getInterval und getTimeout Blöcke\nHinzugefügt: Für Skripte und Nachrichten-Triggerblöcke\nKorrektur der Syntax-Highlighting",
-        "ru": "Добавлен переменный блок timeout\nДобавлены getInterval и getTimeout блоки\nДобавлена отправка Для скриптов и сообщений триггер блоков\nИсправлена подсветка синтаксиса",
-        "pt": "Adicionado bloco de tempo limite variável\nAdicionado getInterval e getTimeout blocos\nAdicionado enviar Para scripts e blocos de gatilho de mensagem\nCorrigido o destaque da sintaxe",
-        "nl": "Vertaling:\nGevoegd bij het krijgen van Timeout blokken\nVertaling: Naar scripts en berichten\nVertaling:",
-        "fr": "Ajout d'un timeout variable\nAjouté getInterval and getTimeout blocks\nAjouté Pour les scripts et les blocs de déclenchement de message\nCorrection de la syntaxe",
-        "it": "Aggiunto blocco timeout variabile\nAggiunto getInterval e getTimeout blocchi\nAggiunto il messaggio A per gli script e blocchi di trigger dei messaggi\nCorretto l'evidenziazione della sintassi",
-        "es": "Bloque de tiempo variable\nAñadido getInterval and getTimeout bloques\nEnviar Para para scripts y bloques de activación de mensajes\nCorregido la sintaxis resaltando",
-        "pl": "Zmienna czasowa\nAdded getInterval and getTime blocks (ang.)\nAdded sender Dla skryptów i wiadomości blokuje bloki skryptów\nKwalifikacje podkreślają składnię",
-        "zh-cn": "增加变量的时间限制\n增加联接和后政权的陷阱\n增 发 说明和讯息触发因素\n更正了总括号内。"
       }
     },
     "desc": {
