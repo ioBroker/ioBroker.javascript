@@ -23,7 +23,7 @@ window.sentryDSN = 'https://504499a725eb4898930d3b9e9da95740@sentry.iobroker.net
 
 let themeName = Utils.getThemeName();
 
-console.log('iobroker.' + window.adapterName + '@' + pgk.version + ' using theme "' + themeName + '"');
+console.log(`iobroker.${window.adapterName}@${pgk.version} using theme "${themeName}"`);
 
 const generateClassName = createGenerateClassName({
     productionPrefix: 'iob',

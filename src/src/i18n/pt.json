@@ -339,5 +339,9 @@
   "store in": "armazenar em",
   "ID1": "ID1",
   "ID2": "ID2",
-  "Operations with two states": "Operações com dois estados"
+  "Operations with two states": "Operações com dois estados",
+  "debug_label": "Depurar",
+  "debug_help": "Este é um modo especial no qual estados e objetos não serão alterados. Mas apenas as informações sobre cada mudança planejada serão exibidas no protocolo.",
+  "verbose_label": "Saídas de log detalhadas",
+  "verbose_help": "Adiciona saída de depuração ao log para muitos comandos do sistema"
 }

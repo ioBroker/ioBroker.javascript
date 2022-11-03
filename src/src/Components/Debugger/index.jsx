@@ -15,7 +15,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import Badge from '@mui/material/Badge';
 
-import {MdClose as IconClose, MdPlayArrow as IconRun} from 'react-icons/md';
+import { MdClose as IconClose, MdPlayArrow as IconRun } from 'react-icons/md';
 import { MdPause as IconPause } from 'react-icons/md';
 import { MdArrowForward as IconNext } from 'react-icons/md';
 import { MdArrowDownward as IconStep } from 'react-icons/md';
@@ -194,7 +194,7 @@ class Debugger extends React.Component {
     }
 
     sendToInstance(cmd) {
-        this.props.socket.setState(this.state.instance + '.debug.to', { val: JSON.stringify(cmd), ack: true });
+        this.props.socket.setState(this.state.instance + '.debug.to', { val: JSON.stringify(cmd), ack: false });
     }
 
     reinitBreakpoints(cb) {

@@ -4,12 +4,12 @@
     "private": true,
     "dependencies": {
         "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
-        "@iobroker/adapter-react-v5": "^3.1.34",
+        "@iobroker/adapter-react-v5": "^3.2.3",
         "@mui/icons-material": "^5.10.9",
-        "@mui/material": "^5.10.10",
+        "@mui/material": "^5.10.12",
         "@mui/styles": "^5.10.10",
-        "@sentry/browser": "^7.16.0",
-        "@sentry/integrations": "^7.16.0",
+        "@sentry/browser": "^7.17.3",
+        "@sentry/integrations": "^7.17.3",
         "clsx": "^1.2.1",
         "lodash": "^4.17.21",
         "monaco-editor": "~0.34.1",
@@ -22,7 +22,7 @@
         "react-dom": "^18.2.0",
         "react-dropzone": "^14.2.3",
         "react-fullscreen": "^0.1.0",
-        "react-i18next": "^11.18.6",
+        "react-i18next": "^12.0.0",
         "react-icons": "^4.6.0",
         "react-inlinesvg": "^3.0.1",
         "react-json-view": "^1.21.3",
@@ -34,7 +34,12 @@
         "reactour": "^1.18.7",
         "sass": "^1.55.0",
         "styled-components": "^5.3.6",
-        "suncalc2": "^1.8.1"
+        "suncalc2": "^1.8.1",
+        "@craco/craco": "^6.4.5",
+        "craco-esbuild": "^0.5.2",
+        "craco-module-federation": "^1.1.0",
+        "eslint": "^8.26.0",
+        "eslint-config-react-app": "^7.0.1"
     },
     "scripts": {
         "start": "craco start",
@@ -52,12 +57,5 @@
         "not dead",
         "not ie <= 11",
         "not op_mini all"
-    ],
-    "devDependencies": {
-        "@craco/craco": "^6.4.5",
-        "craco-esbuild": "^0.5.2",
-        "craco-module-federation": "^1.1.0",
-        "eslint": "^8.24.0",
-        "eslint-config-react-app": "^7.0.1"
-    }
+    ]
 }
