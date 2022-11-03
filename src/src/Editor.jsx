@@ -749,6 +749,30 @@ class Editor extends React.Component {
                 this.setState({ cmdToRules: '' }), 200));
     }
 
+    static getText(text) {
+        if (typeof text === 'object') {
+            return text[I18n.getLanguage()] || text.en;
+        }
+        return text;
+    }
+
+    getScriptFullName(id) {
+        const parts = id.split('.');
+        parts.shift(); // remove "script."
+        parts.shift(); // remove "js."
+        const result = [];
+        let _id = 'script.js';
+        for (let i = 0; i < parts.length; i++) {
+            _id += '.' + parts[i];
+            if (this.props.objects[_id] && this.props.objects[_id].common) {
+                result.push(Editor.getText(this.props.objects[_id].common.name));
+            } else {
+                result.push(parts[i]);
+            }
+        }
+        return `/ ${result.join(' / ')}`;
+    }
+
     getTabs() {
         if (this.state.editing.length) {
             return [<Tabs
@@ -766,7 +790,9 @@ class Editor extends React.Component {
                     if (!this.props.objects[id]) {
                         const label = [
                             <div key="text" className={clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{id.split('.').pop()}</div>,
-                            <span key="icon" className={this.props.classes.closeButton}><IconClose className={this.props.classes.closeButtonIcon} onClick={e => this.onTabClose(id, e)} fontSize="small" /></span>];
+                            <span key="icon" className={this.props.classes.closeButton}>
+                                <IconClose className={this.props.classes.closeButtonIcon} onClick={e => this.onTabClose(id, e)} fontSize="small" />
+                            </span>];
                         return <Tab
                             wrapped
                             component={'div'}
@@ -777,17 +803,19 @@ class Editor extends React.Component {
                             classes={{ wrapper: this.props.classes.tabButtonWrapper }}
                         />;
                     } else {
-                        let text = this.props.objects[id].common.name;
-                        let title = '';
+                        let text = Editor.getText(this.props.objects[id].common.name);
+                        let title = this.getScriptFullName(id);
                         if (text.length > 18) {
-                            title = text;
                             text = text.substring(0, 15) + '...';
                         }
                         const changed = this.props.objects[id].common && this.scripts[id] && this.props.objects[id].common.source !== this.scripts[id].source;
                         const label = [
                             <div key="text" className={clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{text}</div>,
                             changed ? <span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span> : null,
-                            (!this.props.debugInstance && (!this.props.debugMode || this.state.selected !== id)) && <span key="close" className={this.props.classes.closeButton}><IconClose className={this.props.classes.closeButtonIcon} onClick={e => this.onTabClose(id, e)} fontSize="small" /></span>,
+                            (!this.props.debugInstance && (!this.props.debugMode || this.state.selected !== id)) &&
+                                <span key="close" className={this.props.classes.closeButton}>
+                                    <IconClose className={this.props.classes.closeButtonIcon} onClick={e => this.onTabClose(id, e)} fontSize="small" />
+                                </span>,
                         ];
 
                         return <Tab
@@ -897,17 +925,17 @@ class Editor extends React.Component {
 
     getDebugBadge() {
         return [
-            this.state.debugEnabled && this.state.verboseEnabled && (<IconDebug key="DebugVerbose" className={this.props.classes.menuIcon} style={{ color: COLOR_VERBOSE }} />),
-            this.state.debugEnabled && !this.state.verboseEnabled && (<IconDebug key="DebugNoVerbose" className={this.props.classes.menuIcon} style={{ color: COLOR_DEBUG }} />),
-            !this.state.debugEnabled && this.state.verboseEnabled && (<IconVerbose key="noDebugVerbose" className={this.props.classes.menuIcon} style={{ color: COLOR_VERBOSE }} />),
+            this.state.debugEnabled && this.state.verboseEnabled && <IconDebug key="DebugVerbose" className={this.props.classes.menuIcon} style={{ color: COLOR_VERBOSE }} />,
+            this.state.debugEnabled && !this.state.verboseEnabled && <IconDebug key="DebugNoVerbose" className={this.props.classes.menuIcon} style={{ color: COLOR_DEBUG }} />,
+            !this.state.debugEnabled && this.state.verboseEnabled && <IconVerbose key="noDebugVerbose" className={this.props.classes.menuIcon} style={{ color: COLOR_VERBOSE }} />,
         ]
     }
 
     getAskAboutDebug() {
         if (this.state.askAboutDebug) {
             return <DialogConfirm
-                onClose={result => {
-                    this.setState({askAboutDebug: false}, () =>
+                onClose={() => {
+                    this.setState({ askAboutDebug: false }, () =>
                         this.props.onDebugModeChange(true));
                 }}
                 ok={I18n.t('Yes')}
@@ -956,8 +984,10 @@ class Editor extends React.Component {
                             title={I18n.t('Export blocks')}
                             className={this.props.classes.toolbarButtons}
                             onClick={() => this.sendCommandToBlockly('export')}
-                            size="medium">
-                            <IconExport /></IconButton>}
+                            size="medium"
+                        >
+                            <IconExport />
+                        </IconButton>}
 
                     {this.state.blockly && !this.state.showCompiledCode &&
                         <IconButton
@@ -966,8 +996,10 @@ class Editor extends React.Component {
                             title={I18n.t('Import blocks')}
                             className={this.props.classes.toolbarButtons}
                             onClick={() => this.sendCommandToBlockly('import')}
-                            size="medium">
-                            <IconImport /></IconButton>}
+                            size="medium"
+                        >
+                            <IconImport />
+                        </IconButton>}
 
                     {this.state.blockly && !this.state.showCompiledCode &&
                         <IconButton
@@ -976,8 +1008,10 @@ class Editor extends React.Component {
                             title={I18n.t('Check blocks')}
                             className={this.props.classes.toolbarButtons}
                             onClick={() => this.sendCommandToBlockly('check')}
-                            size="medium">
-                            <IconCheck /></IconButton>}
+                            size="medium"
+                        >
+                            <IconCheck />
+                        </IconButton>}
 
                     {!this.props.debugMode && !this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton
                         key="select-cron"
@@ -985,7 +1019,10 @@ class Editor extends React.Component {
                         title={I18n.t('Create or edit CRON or time wizard')}
                         className={this.props.classes.toolbarButtons}
                         onClick={() => this.setState({ showCron: true })}
-                        size="medium"><IconCron /></IconButton>}
+                        size="medium"
+                    >
+                        <IconCron />
+                    </IconButton>}
 
                     {!this.props.debugMode && !this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton
                         key="select-id"
@@ -993,7 +1030,10 @@ class Editor extends React.Component {
                         title={I18n.t('Insert object ID')}
                         className={this.props.classes.toolbarButtons}
                         onClick={() => this.setState({ showSelectId: true })}
-                        size="medium"><IconSelectId /></IconButton>}
+                        size="medium"
+                    >
+                        <IconSelectId />
+                    </IconButton>}
 
                     {this.state.blockly && !this.state.rules && this.state.showCompiledCode && <Button color="grey" key="convert2js" aria-label="convert to javascript"
                         title={I18n.t('Convert blockly to javascript for ever.')}
@@ -1006,8 +1046,10 @@ class Editor extends React.Component {
                             title={I18n.t('Export blocks')}
                             className={this.props.classes.toolbarButtons}
                             onClick={() => this.sendCommandToRules('export')}
-                            size="medium">
-                            <IconExport /></IconButton>}
+                            size="medium"
+                        >
+                            <IconExport />
+                        </IconButton>}
                     {this.state.rules && !this.state.showCompiledCode &&
                         <IconButton
                             key="import"
@@ -1015,8 +1057,10 @@ class Editor extends React.Component {
                             title={I18n.t('Import blocks')}
                             className={this.props.classes.toolbarButtons}
                             onClick={() => this.sendCommandToRules('import')}
-                            size="medium">
-                            <IconImport /></IconButton>}
+                            size="medium"
+                        >
+                            <IconImport />
+                        </IconButton>}
 
                     {this.props.expertMode && !changed && (this.props.debugMode || (!this.state.blockly && !this.state.rules) || ((this.state.blockly || this.state.rules) && this.state.showCompiledCode)) && <IconButton
                         className={this.props.classes.toolbarButtons}
@@ -1024,13 +1068,14 @@ class Editor extends React.Component {
                         disabled={!this.props.debugMode && !isInstanceRunning}
                         onClick={() => {
                             if (!this.props.debugMode && isScriptRunning) {
-                                this.setState({askAboutDebug: true})
+                                this.setState({ askAboutDebug: true })
                             } else {
                                 this.props.onDebugModeChange(!this.props.debugMode);
                             }
                         }}
-                        size="medium">
-                        <IconDebugMode style={{fontSize: 32}}/>
+                        size="medium"
+                    >
+                        <IconDebugMode style={{ fontSize: 32 }} />
                     </IconButton>}
 
                     {(this.state.blockly || this.state.rules) && <Button
@@ -1057,7 +1102,8 @@ class Editor extends React.Component {
                         title={I18n.t('Debug options')}
                         className={this.props.classes.toolbarButtons}
                         onClick={e => this.setState({ showDebugMenu: true, menuDebugAnchorEl: e.currentTarget })}
-                        size="medium">
+                        size="medium"
+                    >
                         <Badge className={this.props.classes.badgeMargin} badgeContent={this.getDebugBadge()}>
                             <IconDebugMenu />
                         </Badge>
@@ -1307,7 +1353,9 @@ class Editor extends React.Component {
                         color="inherit"
                         className={this.props.classes.closeToast}
                         onClick={() => this.setState({ toast: '' })}
-                        size="medium"><IconClose />
+                        size="medium"
+                    >
+                        <IconClose />
                     </IconButton>,
                 ]}
             />

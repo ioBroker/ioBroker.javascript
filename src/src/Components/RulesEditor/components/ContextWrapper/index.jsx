@@ -151,15 +151,6 @@ export const ContextWrapper = ({ children, socket }) => {
                 }
 
                 try {
-                    // const Component = await window.importFederation(
-                    //     obj.common.name,
-                    //     {
-                    //         url,
-                    //         format: 'esm',
-                    //         from: 'vite'
-                    //     },
-                    //     obj.common.javascriptRules.name
-                    // );
                     const Component = (await loadComponent(obj.common.javascriptRules.name, 'default', `./${obj.common.javascriptRules.name}`, url)()).default;
 
                     if (Component) {
@@ -168,7 +159,7 @@ export const ContextWrapper = ({ children, socket }) => {
                         ADAPTERS[obj.common.name] = null;
                     }
                 } catch (e) {
-                    console.error(e);
+                    console.error(`Cannot load component: ${e}`);
                 }
             }
 
