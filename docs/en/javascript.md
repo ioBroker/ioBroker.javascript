@@ -1011,12 +1011,12 @@ The common definition is taken from the read alias id object, but a provided com
 - `native`: native description of object. Any specific information.
 - `callback`: called after state is created and initialized.
 
-It is possible short type of createState:
+It is possible short type of createAlias:
 
-- `createState('myAlias', 'myDatapoint')` - simply create alias.0.myAlias that refernces to javascript.X.myDatapoint if it does not exist
-- `createState('myAlias', {id: {read: 'myReadDatapoint', write: 'myWriteDatapoint'}})` - create alias and refence to different read/write states
+- `createAlias('myAlias', 'myDatapoint')` - simply create alias.0.myAlias that refernces to javascript.X.myDatapoint if it does not exist
+- `createAlias('myAlias', {id: {read: 'myReadDatapoint', write: 'myWriteDatapoint'}})` - create alias and refence to different read/write states
 
-For other details see createState.
+For other details see createState, it is simmilar.
 
 ### createAliasAsync
 ```js
