@@ -1005,9 +1005,9 @@ The common definition is taken from the read alias id object, but a provided com
 #### Parameters:
 
 - `name`: name of the alias state with or without alias namespace, e.g. `mystate` (namespace "alias.0." will be added)
-- `alias`: can be either an existing state id as string or a object with full alias definition including read/write ids and read/write functions. 
+- `alias`: can be either an existing state id as string or a object with full alias definition including read/write ids and read/write functions. Not: Alias definitions can not be set as part of the common parameter!
 - `forceCreation`: create/overwrite alias independent of if state yet exists or not.
-- `common`: common description of alias object see description [here](https://github.com/ioBroker/ioBroker/blob/master/doc/SCHEMA.md#state). Values provided here will take precedence over the common definition of the read alias id object.
+- `common`: common description of alias object see description [here](https://github.com/ioBroker/ioBroker/blob/master/doc/SCHEMA.md#state). Values provided here will take precedence over the common definition of the read alias id object. Not: Alias definitions can not be set as part of this common parameter, see alias parameter!
 - `native`: native description of object. Any specific information.
 - `callback`: called after state is created and initialized.
 
