@@ -524,7 +524,7 @@ class SideDrawer extends React.Component {
         if (changed && !this.problemsTimer) {
             this.problemsTimer = setTimeout(() => {
                 this.problemsTimer = null;
-                this.setState({problems: this.problems});
+                this.setState({ problems: this.problems });
                 this.problems = null;
             }, 300);
         }
@@ -713,8 +713,8 @@ class SideDrawer extends React.Component {
         window.localStorage.setItem('SideMenu.expanded', JSON.stringify(expanded || this.state.expanded));
     }
 
-    showError(err) {
-        this.setState({errorText: err});
+    showError(errorText) {
+        this.setState({ errorText });
     }
 
     onToggle(id, e) {
@@ -735,7 +735,7 @@ class SideDrawer extends React.Component {
             expanded.push(id);
             expanded.sort();
         }
-        this.setState({expanded});
+        this.setState({ expanded });
         this.saveExpanded(expanded);
     }
 
@@ -805,9 +805,9 @@ class SideDrawer extends React.Component {
         e && e.stopPropagation();
         return new Promise(resolve => {
             if (typeof item !== 'object') {
-                this.setState({deleting: item});
+                this.setState({ deleting: item });
             } else {
-                this.setState({deleting: item.id});
+                this.setState({ deleting: item.id });
             }
         });
     }
@@ -893,9 +893,9 @@ class SideDrawer extends React.Component {
             const pos = title.toLowerCase().indexOf(this.state.searchText.toLowerCase());
             if (pos !== -1) {
                 title = [
-                    (<span key="first">{title.substring(0, pos)}</span>),
-                    (<span key="second" style={{color: 'orange'}}>{title.substring(pos, pos + this.state.searchText.length)}</span>),
-                    (<span key="third">{title.substring(pos + this.state.searchText.length)}</span>),
+                    <span key="first">{title.substring(0, pos)}</span>,
+                    <span key="second" style={{ color: 'orange' }}>{title.substring(pos, pos + this.state.searchText.length)}</span>,
+                    <span key="third">{title.substring(pos + this.state.searchText.length)}</span>,
                 ];
             }
         }
@@ -959,26 +959,24 @@ class SideDrawer extends React.Component {
             onClick={e => this.onClick(item, e)}
             onDoubleClick={e => this.onDblClick(item, e)}
         >
-            <ListItemIcon
-                classes={{root: this.props.classes.listItemIcon}}
-            >{
+            <ListItemIcon classes={{ root: this.props.classes.listItemIcon }}>{
                 item.type === 'folder' ? (
                         reorder || isExpanded ?
-                            <IconFolderOpened className={iconClass} style={iconStyle} onClick={e => !reorder && this.onToggle(item.id, e)}/> :
-                            <IconFolder       className={iconClass} style={iconStyle} onClick={e => !reorder && this.onToggle(item.id, e)}/>
+                            <IconFolderOpened className={iconClass} style={iconStyle} onClick={e => !reorder && this.onToggle(item.id, e)} /> :
+                            <IconFolder       className={iconClass} style={iconStyle} onClick={e => !reorder && this.onToggle(item.id, e)} />
                     )
                     :
-                    <img className={iconClass} alt={item.type} src={images[item.type] || images.def}/>
+                    <img className={iconClass} alt={item.type} src={images[item.type] || images.def} />
             }</ListItemIcon>
             <ListItemText
-                classes={{primary: item.id === this.state.selected && !reorder ? this.props.classes.selected : undefined}}
-                style={this.getTextStyle(item)} primary={(<span>{title}{childrenCount}</span>)}/>
+                classes={{ primary: item.id === this.state.selected && !reorder ? this.props.classes.selected : undefined }}
+                style={this.getTextStyle(item)} primary={<span>{title}{childrenCount}</span>} />
             <ListItemSecondaryAction>{this.renderItemButtonsOnEnd(item, children)}</ListItemSecondaryAction>
         </ListItem>;
     }
 
     onDragFinish(source, target) {
-        let newId = target + '.' + source.split('.').pop();
+        let newId = `${target}.${source.split('.').pop()}`;
         if (newId !== source) {
             // If target yet exists => add Copy to
             if (this.state.listItems.find(item => item.id === newId)) {
@@ -990,7 +988,7 @@ class SideDrawer extends React.Component {
         return undefined;
     }
 
-    renderOneItem(items, item, dragging) {
+    renderOneItem(items, item /* , dragging */) {
         let childrenFiltered = (this.state.statusFilter || this.state.typeFilter) && items.filter(i => i.parent === item.id ? !this.isFilteredOut(i) : false);
         let children = items.filter(i => i.parent === item.id);
 
@@ -1012,12 +1010,12 @@ class SideDrawer extends React.Component {
 
         if (reorder) {
             if (item.type === 'folder') {
-                result.push(<Droppable key={'droppable_' + item.id} onDrop={e => this.onDragFinish(e.name, item.id)}>
-                    <Draggable key={'draggable_' + item.id} name={item.id}>{element}</Draggable>
+                result.push(<Droppable key={`droppable_${item.id}`} onDrop={e => this.onDragFinish(e.name, item.id)}>
+                    <Draggable key={`draggable_${item.id}`} name={item.id}>{element}</Draggable>
                     {reactChildren || null}
                 </Droppable>);
             } else {
-                result.push(<Draggable key={'draggable_' + item.id} name={item.id}>
+                result.push(<Draggable key={`draggable_${item.id}`} name={item.id}>
                     {element}
                     {reactChildren || null}
                 </Draggable>);
@@ -1037,8 +1035,8 @@ class SideDrawer extends React.Component {
                 this.renderOneItem(items, item));
 
         return <List
-            dense={true}
-            disablePadding={true}
+            dense
+            disablePadding
             className={this.props.classes.mainList}
         >
             {result}
@@ -1057,7 +1055,7 @@ class SideDrawer extends React.Component {
         }
 
         this.parent = parent;
-        this.setState({choosingType: true});
+        this.setState({ choosingType: true });
     }
 
     onCopy(e, id) {
@@ -1072,7 +1070,7 @@ class SideDrawer extends React.Component {
         }
 
         this.parent = parent;
-        this.setState({copingScript: id});
+        this.setState({ copingScript: id });
     }
 
     onAddNewFolder(e) {
@@ -1087,17 +1085,17 @@ class SideDrawer extends React.Component {
         }
 
         this.parent = parent;
-        this.setState({creatingFolder: true});
+        this.setState({ creatingFolder: true });
     }
 
     onRename(e) {
         e && e.stopPropagation();
-        this.setState({renaming: this.state.selected});
+        this.setState({ renaming: this.state.selected });
     }
 
     getUniqueName(copyId) {
         let i = 1;
-        let word = I18n.t('Script') + ' ';
+        let word = `${I18n.t('Script')} `;
         if (copyId) {
             let name = getObjectName(copyId, this.props.scripts[copyId]);
             const m = name.match(/\d+$/);
@@ -1127,13 +1125,13 @@ class SideDrawer extends React.Component {
     }
 
     onCloseMenu(cb) {
-        this.setState({menuOpened: false, menuAnchorEl: null, menuAnchorFilterEl: null}, cb);
+        this.setState({ menuOpened: false, menuAnchorEl: null, menuAnchorFilterEl: null }, cb);
     }
 
     getFilterBadge() {
         return [
-            this.state.statusFilter === true && <IconPlay className={this.props.classes.filterIcon} style={{color: COLOR_RUN}}/>,
-            this.state.statusFilter === false && <IconPause className={this.props.classes.filterIcon} style={{color: COLOR_PAUSE}}/>,
+            this.state.statusFilter === true && <IconPlay className={this.props.classes.filterIcon} style={{ color: COLOR_RUN }}/>,
+            this.state.statusFilter === false && <IconPause className={this.props.classes.filterIcon} style={{ color: COLOR_PAUSE }}/>,
             this.state.typeFilter === 'Blockly' && 'Bl',
             this.state.typeFilter === 'Javascript/js' && 'JS',
             this.state.typeFilter === 'TypeScript/ts' && 'TS',
@@ -1146,11 +1144,11 @@ class SideDrawer extends React.Component {
             id="long-menu"
             anchorEl={this.state.menuAnchorEl}
             open={this.state.menuOpened}
-            onClose={() => this.setState({menuOpened: false, menuAnchorEl: null})}
+            onClose={() => this.setState({ menuOpened: false, menuAnchorEl: null })}
             PaperProps={{
                 style: {
                     maxHeight: MENU_ITEM_HEIGHT * 7.5,
-                    //width: 200,
+                    // width: 200,
                 },
             }}
         >
@@ -1165,9 +1163,9 @@ class SideDrawer extends React.Component {
                         return;
                     }
 
-                    this.setState({menuOpened: false, menuAnchorEl: null}, () =>
+                    this.setState({ menuOpened: false, menuAnchorEl: null }, () =>
                         this.onDelete(this.state.selected).then(() => {}));
-                }}><IconDelete className={this.props.classes.iconDropdownMenu}  style={{color: 'red'}}/>{I18n.t('Delete')}
+                }}><IconDelete className={this.props.classes.iconDropdownMenu}  style={{ color: 'red' }}/>{I18n.t('Delete')}
             </MenuItem> : null}
             <MenuItem
                 key="expertMode"
@@ -1179,7 +1177,7 @@ class SideDrawer extends React.Component {
                     this.onCloseMenu(() =>
                         this.props.onExpertModeChange && this.props.onExpertModeChange(!this.state.expertMode));
                 }}>
-                <IconExpert className={this.props.classes.iconDropdownMenu} style={{color: this.state.expertMode ? 'orange' : 'inherit'}}/>{I18n.t('Expert mode')}
+                <IconExpert className={this.props.classes.iconDropdownMenu} style={{ color: this.state.expertMode ? 'orange' : 'inherit' }}/>{I18n.t('Expert mode')}
             </MenuItem>
             {this.props.onExport && <MenuItem
                 key="exportAll"
@@ -1228,9 +1226,9 @@ class SideDrawer extends React.Component {
                     event.stopPropagation();
                     event.preventDefault();
                     this.onCloseMenu(() =>
-                        this.setState({showAdapterDebug: true}));
+                        this.setState({ showAdapterDebug: true }));
                 }}>
-                <IconDebug className={this.props.classes.iconDropdownMenu}/>{I18n.t('Debug instance')}
+                <IconDebug className={this.props.classes.iconDropdownMenu} />{I18n.t('Debug instance')}
             </MenuItem>}
         </Menu>;
     }
@@ -1246,10 +1244,10 @@ class SideDrawer extends React.Component {
                 value={this.state.searchText}
                 className={classes.toolbarSearch}
                 ref={this.inputRef}
-                autoFocus={true}
+                autoFocus
                 placeholder={I18n.t('Search...')}
                 onChange={e => {
-                    this.setState({searchText: e.target.value});
+                    this.setState({ searchText: e.target.value });
                     this.filterTimer && clearTimeout(this.filterTimer);
                     this.filterTimer = setTimeout(() => {
                         this.filterTimer = null;
@@ -1262,7 +1260,7 @@ class SideDrawer extends React.Component {
             result.push(<IconButton
                 key="disableSearch"
                 className={classes.toolbarButtons}
-                style={{float: 'right'}}
+                style={{ float: 'right' }}
                 title={I18n.t('End search mode')}
                 onClick={e => {
                     e.stopPropagation();
@@ -1275,10 +1273,10 @@ class SideDrawer extends React.Component {
                 mini="true"
                 title={I18n.t('Clear search input')}
                 className={classes.toolbarButtons}
-                style={{marginTop: 7, float: 'right'}}
+                style={{ marginTop: 7, float: 'right' }}
                 onClick={e => {
                     e.stopPropagation();
-                    this.setState({searchText: ''}, () => {
+                    this.setState({ searchText: '' }, () => {
                         this.filterList(true);
                         this.props.onSearch && this.props.onSearch(this.state.searchText);
                     });
@@ -1296,7 +1294,7 @@ class SideDrawer extends React.Component {
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
-                        this.setState({menuOpened: true, menuAnchorEl: event.currentTarget});
+                        this.setState({ menuOpened: true, menuAnchorEl: event.currentTarget });
                     }}
                     size="medium">
                     {/*<Badge className={classes.margin} badgeContent={this.getFilterBadge()}>*/}
@@ -1319,7 +1317,7 @@ class SideDrawer extends React.Component {
                     key="new-script"
                     title={I18n.t('Create new script')}
                     className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
-                    style={{color: reorder ? 'red' : 'inherit'}}
+                    style={{ color: reorder ? 'red' : 'inherit' }}
                     onClick={e => this.onAddNew(e)}
                     size="medium"><IconAdd/></IconButton>);
 
@@ -1329,7 +1327,7 @@ class SideDrawer extends React.Component {
                     key="new-folder"
                     title={I18n.t('Create new folder')}
                     className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
-                    style={{color: reorder ? 'red' : 'inherit'}}
+                    style={{ color: reorder ? 'red' : 'inherit' }}
                     onClick={() => this.onAddNewFolder()}
                     size="medium"><IconAddFolder/></IconButton>);
             }
@@ -1340,10 +1338,10 @@ class SideDrawer extends React.Component {
                 disabled={reorder || this.props.debugMode}
                 className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
                 title={I18n.t('Search in scripts')}
-                style={{float: 'right', opacity: this.props.debugMode ? 0.5 : (reorder ? 0 : 1)}}
+                style={{ float: 'right', opacity: this.props.debugMode ? 0.5 : (reorder ? 0 : 1) }}
                 onClick={e => {
                     e.stopPropagation();
-                    this.setState({searchMode: true});
+                    this.setState({ searchMode: true });
                 }}
                 size="medium"><IconFind/></IconButton>);
 
@@ -1353,10 +1351,10 @@ class SideDrawer extends React.Component {
                 key="reorder"
                 title={I18n.t('Reorder scripts in folders')}
                 className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
-                style={{color: reorder ? 'red' : 'inherit', float: 'right'}}
+                style={{ color: reorder ? 'red' : 'inherit', float: 'right' }}
                 onClick={e => {
                     e.stopPropagation();
-                    this.setState({reorder: !this.state.reorder});
+                    this.setState({ reorder: !this.state.reorder });
                 }}
                 size="medium"><IconReorder/></IconButton>);
 
@@ -1369,7 +1367,6 @@ class SideDrawer extends React.Component {
                     key="rename"
                     onClick={e => this.onRename(e)}
                     size="medium"><IconEdit/></IconButton>);
-
 
                 // const selectedItem = this.state.listItems.find(i => i.id === this.state.selected);
                 // if (selectedItem && selectedItem.type !== 'folder') {
@@ -1397,7 +1394,7 @@ class SideDrawer extends React.Component {
     }
 
     onCollapseAll() {
-        this.setState({expanded: []});
+        this.setState({ expanded: [] });
         this.saveExpanded([]);
     }
 
@@ -1405,7 +1402,7 @@ class SideDrawer extends React.Component {
         const expanded = [];
         this.state.listItems.forEach(item =>
             this.state.listItems.find(it => it.parent === item.id) && expanded.push(item.id));
-        this.setState({expanded});
+        this.setState({ expanded });
         this.saveExpanded(expanded);
     }
 
@@ -1424,7 +1421,7 @@ class SideDrawer extends React.Component {
                     event.preventDefault();
                     const statusFilter = this.state.statusFilter === 'running' ? '' : 'running';
                     window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
-                    this.setState({statusFilter});
+                    this.setState({ statusFilter });
                 }}
             />,
 
@@ -1436,7 +1433,7 @@ class SideDrawer extends React.Component {
                 onClick={() => {
                     const statusFilter = this.state.statusFilter === 'paused' ? '' : 'paused';
                     window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
-                    this.setState({statusFilter});
+                    this.setState({ statusFilter });
                 }}
             />,
             <IconPause
@@ -1447,7 +1444,7 @@ class SideDrawer extends React.Component {
                 onClick={() => {
                     const statusFilter = this.state.statusFilter === 'problems' ? '' : 'problems';
                     window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
-                    this.setState({statusFilter});
+                    this.setState({ statusFilter });
                 }}
             />,
             <img
@@ -1459,7 +1456,7 @@ class SideDrawer extends React.Component {
                 onClick={() => {
                     const typeFilter = this.state.typeFilter === 'Blockly' ? '' : 'Blockly';
                     window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
-                    this.setState({typeFilter});
+                    this.setState({ typeFilter });
                 }}
             />,
             <img
@@ -1471,7 +1468,7 @@ class SideDrawer extends React.Component {
                 onClick={() => {
                     const typeFilter = this.state.typeFilter === 'Javascript/js' ? '' : 'Javascript/js';
                     window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
-                    this.setState({typeFilter});
+                    this.setState({ typeFilter });
                 }}
             />,
             <img
@@ -1483,7 +1480,7 @@ class SideDrawer extends React.Component {
                 onClick={() => {
                     const typeFilter = this.state.typeFilter === 'TypeScript/ts' ? '' : 'TypeScript/ts';
                     window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
-                this.setState({typeFilter});
+                this.setState({ typeFilter });
                 }}
             />,
             <img
@@ -1495,11 +1492,11 @@ class SideDrawer extends React.Component {
                 onClick={event => {
                     const typeFilter = this.state.typeFilter === 'Rules' ? '' : 'Rules';
                     window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
-                this.setState({typeFilter});
+                this.setState({ typeFilter });
                 }}
             />,
-            <IconExpandAll key="expandAll" className={this.props.classes.footerButtons + ' ' + this.props.classes.footerButtonsRight} title={I18n.t('Expand all')} onClick={() => this.onExpandAll()}/>,
-            this.state.expanded.length ? <IconCollapseAll key="collapseAll" className={this.props.classes.footerButtons + ' ' + this.props.classes.footerButtonsRight} title={I18n.t('Collapse all')} onClick={() => this.onCollapseAll()}/> : null,
+            <IconExpandAll key="expandAll" className={`${this.props.classes.footerButtons} ${this.props.classes.footerButtonsRight}`} title={I18n.t('Expand all')} onClick={() => this.onExpandAll()} />,
+            this.state.expanded.length ? <IconCollapseAll key="collapseAll" className={`${this.props.classes.footerButtons} ${this.props.classes.footerButtonsRight}`} title={I18n.t('Collapse all')} onClick={() => this.onCollapseAll()} /> : null,
         ];
     }
 
@@ -1507,8 +1504,8 @@ class SideDrawer extends React.Component {
         if (this.state.showAdapterDebug) {
             return <DialogAdapterDebug
                 socket={this.props.socket}
-                onClose={() => this.setState({showAdapterDebug: false})}
-                onDebug={(instance, adapter) => this.setState({showAdapterDebug: false}, () => this.props.onDebugInstance({instance, adapter}))}
+                onClose={() => this.setState({ showAdapterDebug: false })}
+                onDebug={(instance, adapter) => this.setState({ showAdapterDebug: false }, () => this.props.onDebugInstance({instance, adapter}))}
             />;
         }
     }
@@ -1524,7 +1521,7 @@ class SideDrawer extends React.Component {
                 key="drawer"
                 variant="permanent"
                 className={classes.menu}
-                classes={{paper: classes.drawerPaper}}
+                classes={{ paper: classes.drawerPaper }}
                 anchor='left'
                 onClick={() => this.onClick({id: ''})}
             >
@@ -1553,7 +1550,7 @@ class SideDrawer extends React.Component {
                 folder={renamingItem.type === 'folder'}
                 instance={renamingItem.instance}
                 instances={this.props.instances}
-                onClose={() => this.setState({renaming: false})}
+                onClose={() => this.setState({ renaming: false })}
                 onRename={(oldId, newName, newId, newInstance) => this.props.onRename && this.props.onRename(oldId, newName, newId, newInstance)}
             /> : null,
 
@@ -1561,25 +1558,25 @@ class SideDrawer extends React.Component {
                 key="dialog-delete"
                 name={this.state.listItems.find(i => i.id === this.state.deleting).title}
                 id={this.state.deleting}
-                onClose={() => this.setState({deleting: false})}
+                onClose={() => this.setState({ deleting: false })}
                 onDelete={id => this.props.onDelete && this.props.onDelete(id)}
             /> : null,
 
             this.state.choosingType ? <DialogAddNewScript
                 key="dialog-script-type"
                 onClose={type => {
-                    this.setState({choosingType: false});
-                    type && this.setState({creatingScript: type})
+                    this.setState({ choosingType: false });
+                    type && this.setState({ creatingScript: type })
                 }}
             /> : null,
 
             this.state.creatingScript ? <DialogNew
                 key="dialog-new-script"
-                onClose={() => this.setState({creatingScript: false})}
+                onClose={() => this.setState({ creatingScript: false })}
                 title={I18n.t('Create new script')}
-                name={ this.getUniqueName() }
-                parents={ this.getFolders() }
-                folder={ false }
+                name={this.getUniqueName()}
+                parents={this.getFolders()}
+                folder={false}
                 existingItems={this.state.listItems.map(item => item.id)}
                 instance={this.props.instances[0] || 0}
                 instances={this.props.instances}
@@ -1591,9 +1588,9 @@ class SideDrawer extends React.Component {
 
             this.state.copingScript ? <DialogNew
                 key="dialog-copy-script"
-                onClose={() => this.setState({copingScript: ''})}
+                onClose={() => this.setState({ copingScript: '' })}
                 title={I18n.t('Copy script')}
-                name={ this.getUniqueName(this.state.copingScript) }
+                name={this.getUniqueName(this.state.copingScript)}
                 parents={this.getFolders()}
                 folder={false}
                 instance={parseInt((copingItem && copingItem.common && copingItem.common.engine && copingItem.common.engine.split('.').pop()) || 0, 10)}
@@ -1612,7 +1609,7 @@ class SideDrawer extends React.Component {
 
             this.state.creatingFolder ? <DialogNew
                 key="dialog-new-folder"
-                onClose={() => this.setState({creatingFolder: false})}
+                onClose={() => this.setState({ creatingFolder: false })}
                 title={I18n.t('Create new folder')}
                 parents={this.getFolders()}
                 name={this.getUniqueFolderName()}
@@ -1621,7 +1618,7 @@ class SideDrawer extends React.Component {
                     this.props.onAddNew && this.props.onAddNew(id, name, true)}
             /> : null,
 
-            this.state.errorText ? <DialogError onClose={() => this.setState({errorText: ''})} text={this.state.errorText}/> : null,
+            this.state.errorText ? <DialogError onClose={() => this.setState({ errorText: '' })} text={this.state.errorText} /> : null,
 
             this.getAdapterDebugDialog(),
         ];
