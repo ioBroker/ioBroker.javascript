@@ -54,6 +54,7 @@ And then call `npm run build`.
 -->
 ### **WORK IN PROGRESS**
 * (bluefox) Corrected small error in rules
+* (bluefox) Tried to fix debug mode
 
 ### 6.1.3 (2022-11-03)
 * (Apollon77) Prevent adapter crash when script could not be compiled
