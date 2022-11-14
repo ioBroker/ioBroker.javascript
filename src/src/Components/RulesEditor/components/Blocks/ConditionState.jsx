@@ -134,7 +134,7 @@ class ConditionState extends GenericBlock {
         context.conditionsVars.push(`const subCondVar${config._id} = ${debugValue};`);
         context.conditionsVars.push(`const subCond${config._id} = ${result};`);
         context.conditionsDebug.push(`_sendToFrontEnd(${config._id}, {result: subCond${config._id}, value: subCondVar${config._id}, compareWith: "${value}"});`);
-        return 'subCond' + config._id;
+        return `subCond${config._id}`;
     }
 
     renderDebug(debugMessage) {
