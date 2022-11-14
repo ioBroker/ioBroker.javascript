@@ -225,7 +225,7 @@ class Debugger extends React.Component {
     }
 
     readCurrentScope() {
-        const frame = this.state.context.callFrames[this.state.currentFrame];
+        const frame = this.state.context?.callFrames && this.state.context.callFrames[this.state.currentFrame];
         if (frame) {
             const scopes = frame.scopeChain.filter(scope => scope.type !== 'global');
             if (scopes.length) {
@@ -264,7 +264,7 @@ class Debugger extends React.Component {
                 this.mainScriptId = data.scriptId;
                 this.scripts[data.scriptId] = data.script;
                 if (data.script.startsWith('(async () => {debugger;\n')) {
-                    this.scripts[data.scriptId] = '(async () => {\n' + data.script.substring('(async () => {debugger;\n'.length);
+                    this.scripts[data.scriptId] = `(async () => {\n${data.script.substring('(async () => {debugger;\n'.length)}`;
                 } else if (data.script.startsWith('debugger;')) {
                     this.scripts[data.scriptId] = data.script.substring('debugger;'.length);
                 }
@@ -272,8 +272,8 @@ class Debugger extends React.Component {
                 const tabs = JSON.parse(JSON.stringify(this.state.tabs));
                 tabs[data.scriptId] = this.props.debugInstance ? data.url: this.props.src.replace('script.js.', '');
 
-                const ts = Date.now() + '.' + Math.random() * 10000;
-                data.context.callFrames && data.context.callFrames.forEach((item, i) => item.id = ts + i);
+                const ts = `${Date.now()}.${Math.random() * 10000}`;
+                data.context?.callFrames && data.context.callFrames.forEach((item, i) => item.id = ts + i);
 
                 this.setState({
                     starting: false,
@@ -292,8 +292,8 @@ class Debugger extends React.Component {
                         this.readExpressions();
                     }));
             } else if (data.cmd === 'paused') {
-                const ts = Date.now() + '.' + Math.random() * 10000;
-                data.context.callFrames && data.context.callFrames.forEach((item, i) => item.id = ts + i);
+                const ts = `${Date.now()}.${Math.random() * 10000}`;
+                data.context?.callFrames && data.context.callFrames.forEach((item, i) => item.id = ts + i);
                 const location = this.getLocation(data.context);
                 const tabs = JSON.parse(JSON.stringify(this.state.tabs));
                 const parts = data.context.callFrames[0].url.split('iobroker.javascript');
@@ -305,7 +305,7 @@ class Debugger extends React.Component {
                     location,
                     currentFrame: 0,
                     context: data.context,
-                    scope: {id: (data.context && data.context.callFrames && data.context.callFrames[0] && data.context.callFrames[0].id) || 0}
+                    scope: {id: (data.context?.callFrames && data.context.callFrames[0] && data.context.callFrames[0].id) || 0}
                 };
 
                 newState.script = this.scripts[location.scriptId] === undefined ? I18n.t('loading...') : this.scripts[location.scriptId];
@@ -384,7 +384,7 @@ class Debugger extends React.Component {
 
                 console.log(JSON.stringify(closure));
 
-                this.setState({scopes: {local, closure, id: this.state.scope.id + '_' + this.state.currentFrame}});
+                this.setState({scopes: {local, closure, id: `${this.state.scope.id}_${this.state.currentFrame}`}});
             } else if (data.cmd === 'setValue') {
                 const scopes = JSON.parse(JSON.stringify(this.state.scopes));
                 let item;

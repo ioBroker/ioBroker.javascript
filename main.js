@@ -538,7 +538,7 @@ function startAdapter(options) {
                 return;
             }
 
-            if (id === adapter.namespace + '.debug.to' && state && !state.ack) {
+            if (id === `${adapter.namespace}.debug.to` && state && !state.ack) {
                 return !debugMode && debugSendToInspector(state.val);
             }
 
@@ -925,14 +925,13 @@ function updateObjectContext(id, obj) {
     }
 }
 
-
 function main() {
-    patchFont()
+    !debugMode && patchFont()
         .then(patched => patched && adapter.log.debug('Font patched'));
 
     // todo
     context.errorLogFunction = webstormDebug ? console : adapter.log;
-    activeStr = adapter.namespace + '.scriptEnabled.';
+    activeStr = `${adapter.namespace}.scriptEnabled.`;
 
     mods.fs = new require('./lib/protectFs')(adapter.log);
 
@@ -944,7 +943,7 @@ function main() {
         tsServer.provideAmbientDeclarations(tsAmbient);
         jsDeclarationServer.provideAmbientDeclarations(tsAmbient);
     } catch (e) {
-        adapter.log.warn('Could not read TypeScript ambient declarations: ' + e.message);
+        adapter.log.warn(`Could not read TypeScript ambient declarations: ${e.message}`);
         // This should not happen, so send a error report to Sentry
         if (adapter.supportsFeature && adapter.supportsFeature('PLUGINS')) {
             const sentryInstance = adapter.getPluginInstance('sentry');
@@ -1650,7 +1649,7 @@ function installLibraries(callback) {
                 if (versionChunkPos > -1) {
                     libName = libName.slice(0, versionChunkPos);
                 }
-                if (!nodeFS.existsSync(__dirname + '/node_modules/' + libName + '/package.json')) {
+                if (!nodeFS.existsSync(`${__dirname}/node_modules/${libName}/package.json`)) {
 
                     if (!attempts[libraries[lib]]) {
                         attempts[libraries[lib]] = 1;
@@ -1687,9 +1686,9 @@ function createVM(source, name) {
             "' and ' + __engine.__subscriptionsFile + ' file subscription' + (__engine.__subscriptionsFile === 1 ? '' : 's' ));\n";
     } else {
         if (source.startsWith('(async () => {\n')) {
-            source = '(async () => {debugger;\n' + source.substring('(async () => {\n'.length);
+            source = `(async () => {debugger;\n${source.substring('(async () => {\n'.length)}`;
         } else {
-            source = 'debugger;' + source;
+            source = `debugger;${source}`;
         }
     }
 
@@ -1697,10 +1696,10 @@ function createVM(source, name) {
         const options = {
             filename: name,
             displayErrors: true
-            //lineOffset: globalScriptLines
+            // lineOffset: globalScriptLines
         };
         return {
-            script: vm.createScript(source, options)
+            script: new vm.Script(source, options),
         };
     } catch (e) {
         context.logError(`${name} compile failed:\r\nat `, e);
@@ -1927,7 +1926,8 @@ function prepareScript(obj, callback) {
     if (obj && obj.common &&
         (obj.common.enabled || debugMode === obj._id) &&
         obj.common.engine === `system.adapter.${adapter.namespace}` &&
-        obj.common.source) {
+        obj.common.source
+    ) {
         const name = obj._id;
 
         const nameId = name.substring('script.js.'.length);
@@ -2231,7 +2231,7 @@ function debugStart(data) {
     }
 
     debugState.started = Date.now();
-    // stop script if it running
+    // stop script if it's running
     debugDisableScript(data.scriptName)
         .then(() => debugStop())
         .then(() => {
@@ -2255,7 +2255,7 @@ function debugStart(data) {
                     args.push('--breakOnStart');
                 }
 
-                debugState.child = fork(__dirname + '/lib/inspect.js', args, options);
+                debugState.child = fork(`${__dirname}/lib/inspect.js`, args, options);
 
                 /*debugState.child.stdout.setEncoding('utf8');
                 debugState.child.stderr.setEncoding('utf8');
@@ -2286,7 +2286,7 @@ function debugStart(data) {
 
                         case 'paused': {
                             debugState.paused = true;
-                            console.log(`PAUSED`);
+                            console.log(`host: PAUSED`);
                             break;
                         }
 
@@ -2302,19 +2302,19 @@ function debugStart(data) {
                         }
 
                         case 'readyToDebug': {
-                            console.log(`readyToDebug (set breakpoints): [${message.scriptId}] ${message.script}`);
+                            console.log(`host: readyToDebug (set breakpoints): [${message.scriptId}] ${message.script}`);
                             break;
                         }
                     }
                 });
                 debugState.child && debugState.child.on('error', error => {
-                    adapter.log.error('Cannot start inspector: ' + error);
+                    adapter.log.error(`Cannot start inspector: ${error}`);
                     adapter.setState('debug.from', JSON.stringify({cmd: 'error', error}), true);
                 });
 
                 debugState.child && debugState.child.on('exit', code => {
                     if (code) {
-                        adapter.setState('debug.from', JSON.stringify({cmd: 'error', error: 'invalid response code: ' + code}), true);
+                        adapter.setState('debug.from', JSON.stringify({cmd: 'error', error: `invalid response code: ${code}`}), true);
                     }
                     adapter.setState('debug.from', JSON.stringify({cmd: 'debugStopped', code}), true);
                     debugState.child = null;
@@ -2325,15 +2325,14 @@ function debugStart(data) {
 }
 
 function patchFont() {
-    const fs = require('fs');
     let stat;
     try {
-        stat = fs.statSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf');
+        stat = nodeFS.statSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`);
     } catch (error) {
         // ignore
     }
     if (!stat || stat.size !== 62324) {
-        const buffer = Buffer.from(JSON.parse(fs.readFileSync(__dirname + '/admin-config/vsFont/codicon.json')));
+        const buffer = Buffer.from(JSON.parse(nodeFS.readFileSync(__dirname + '/admin-config/vsFont/codicon.json')));
 
         return require('jszip').loadAsync(buffer)
             .then(zip => {
@@ -2342,13 +2341,13 @@ function patchFont() {
                         if (data.byteLength !== 62324) {
                             throw new Error('invalid font file!');
                         }
-                        fs.writeFileSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf', Buffer.from(data));
+                        nodeFS.writeFileSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`, Buffer.from(data));
                         // upload this file
                         return adapter.writeFileAsync('javascript.admin', 'vs/base/browser/ui/codicons/codicon/codicon.ttf', data);
                     })
                     .then(() => true)
                     .catch(error => {
-                        adapter.log.error('Cannot patch font: ' + error);
+                        adapter.log.error(`Cannot patch font: ${error}`);
                         return false;
                     });
             });
