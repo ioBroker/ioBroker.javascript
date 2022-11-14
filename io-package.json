@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "6.1.3",
+    "version": "6.1.4",
     "news": {
+      "6.1.4": {
+        "en": "Corrected small error in rules\nTried to fix debug mode",
+        "de": "Kleine Fehler in den Regeln korrigiert\nVersuchen, Debug-Modus zu beheben",
+        "ru": "Исправлена небольшая ошибка в правилах\nПопробовал исправить режим debug",
+        "pt": "Erro pequeno corrigido em regras\nTentei corrigir o modo de depuração",
+        "nl": "Een kleine fout in de regels\nProbeerde debug mode te repareren",
+        "fr": "Petite erreur corrigée dans les règles\nTrié pour fixer le mode de débogage",
+        "it": "Corretto piccolo errore nelle regole\nProvato a correggere la modalità debug",
+        "es": "Corregido pequeño error en las reglas\nTrató de arreglar el modo de depuración",
+        "pl": "Wykwalifikowanie małego błędu w zasadach\nPoprawić tryb debugowania",
+        "uk": "Виправлена невелика помилка в правилах\nПереглянуто для фіксації режима відключення",
+        "zh-cn": "规则中的小错误\n九. 模棱两可的模式"
+      },
       "6.1.3": {
         "en": "Prevent adapter crash when script could not be compiled",
         "de": "Verhindern von Adapterabsturz, wenn Skript nicht kompiliert werden konnte",
@@ -96,18 +109,6 @@
         "es": "Arreglado el programa del mago\nHecho pequeñas correcciones en GUI",
         "pl": "Fixed wizard schedule (ang.)\nDo niewielkich zmian na GUI",
         "zh-cn": "确定妻子时间表\nA. 古伊人小偷"
-      },
-      "6.0.0": {
-        "en": "Removed support of coffeescript\nAll coffee-scripts will be compiled to javascript permanently",
-        "de": "Entfernte Unterstützung von Coffeescript\nAlle Coffee-scripts werden in Javascript dauerhaft kompiliert",
-        "ru": "Удаленная поддержка Coffeescript\nВсе кофейные скрипты будут компилированы на javascript навсегда",
-        "pt": "Suporte removido do coffeescript\nTodos os coffee-scripts serão compilados para javascript permanentemente",
-        "nl": "Verwijderde ondersteuning van koffie\nAlle koffie-scripten zullen permanent op Javascript staan",
-        "fr": "Enlevé le support de caféscript\nTous les descriptifs de café seront compilés à javascript en permanence",
-        "it": "Sostegno rimosso del coffeescript\nTutti i coffee-script saranno compilati a javascript in modo permanente",
-        "es": "Soporte extraído de cafetera\nTodas las recetas de café serán compiladas en javascript permanentemente",
-        "pl": "Przewiduje wsparcie kawy\nWszystkie zapisy kawy zostały skompilowane na stałe",
-        "zh-cn": "取消对咖啡说明的支持\n将把所有咖啡说明汇编成永久的小册子。"
       }
     },
     "desc": {

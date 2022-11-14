@@ -52,7 +52,7 @@ And then call `npm run build`.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 6.1.4 (2022-11-14)
 * (bluefox) Corrected small error in rules
 * (bluefox) Tried to fix debug mode
 
@@ -72,10 +72,6 @@ And then call `npm run build`.
 
 ### 6.0.3 (2022-09-14)
 * (AlCalzone) Downgrade Typescript to prevent errors with global typescript scripts
-
-### 6.0.1 (2022-08-19)
-* (bluefox) Fixed the wizard schedule
-* (bluefox) Done small fixes on GUI
 
 ## License
 The MIT License (MIT)
