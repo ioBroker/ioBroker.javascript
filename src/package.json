@@ -8,7 +8,7 @@
         "@mui/icons-material": "^5.10.9",
         "@mui/material": "^5.10.13",
         "@mui/styles": "^5.10.10",
-        "@sentry/browser": "^7.19.0",
+        "@sentry/browser": "^7.22.0",
         "@sentry/integrations": "^7.19.0",
         "clsx": "^1.2.1",
         "lodash": "^4.17.21",
