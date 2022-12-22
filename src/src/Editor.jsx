@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import Tour from 'reactour';
 
 import Toolbar from '@mui/material/Toolbar';
@@ -42,10 +41,9 @@ import ImgBlockly2Js from './assets/blockly2js.png';
 import ImgRules2Js from './assets/rules2js.png';
 import ImgRules from './assets/rules.png';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import DialogCron from '@iobroker/adapter-react-v5/Dialogs/Cron';
-import DialogConfirm from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import DialogSelectID from '@iobroker/adapter-react-v5/Dialogs/SelectID';
+import {
+    I18n, Utils, Cron as DialogCron, Confirm as DialogConfirm, SelectID as DialogSelectID,
+} from '@iobroker/adapter-react-v5';
 
 import ScriptEditorComponent from './Components/ScriptEditorVanilaMonaco';
 import BlocklyEditor from './Components/BlocklyEditor';
@@ -800,7 +798,7 @@ class Editor extends React.Component {
                 {this.state.editing.map(id => {
                     if (!this.props.objects[id]) {
                         const label = [
-                            <div key="text" className={clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{id.split('.').pop()}</div>,
+                            <div key="text" className={Utils.clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{id.split('.').pop()}</div>,
                             <span key="icon" className={this.props.classes.closeButton}>
                                 <IconClose className={this.props.classes.closeButtonIcon} onClick={e => this.onTabClose(id, e)} fontSize="small" />
                             </span>];
@@ -821,7 +819,7 @@ class Editor extends React.Component {
                         }
                         const changed = this.props.objects[id].common && this.scripts[id] && this.props.objects[id].common.source !== this.scripts[id].source;
                         const label = [
-                            <div key="text" className={clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{text}</div>,
+                            <div key="text" className={Utils.clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{text}</div>,
                             changed ? <span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span> : null,
                             (!this.props.debugInstance && (!this.props.debugMode || this.state.selected !== id)) &&
                                 <span key="close" className={this.props.classes.closeButton}>
@@ -883,7 +881,7 @@ class Editor extends React.Component {
             ];
         } else {
             return <div key="tabs2" className={this.props.classes.toolbar}>
-                <Button color="grey" key="select1" disabled={true} className={this.props.classes.hintButton} href="">
+                <Button color="grey" key="select1" disabled className={this.props.classes.hintButton} href="">
                     <span key="select2">{I18n.t('Click on this icon')}</span>
                     <IconDoEdit key="select3" className={this.props.classes.hintIcon} />
                     <span key="select4">{I18n.t('for edit or create script')}</span>
@@ -1001,7 +999,7 @@ class Editor extends React.Component {
                     </IconButton>}
                     {!this.props.debugInstance && !changed && !isScriptRunning && <span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>}
                     {!changed && isScriptRunning && !isInstanceRunning && <span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>}
-                    {changed && <Button color="grey" key="save" variant="contained" className={clsx(this.props.classes.textButton, this.props.classes.saveButton, 'button-save')} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={this.props.classes.textIcon} /></Button>}
+                    {changed && <Button color="grey" key="save" variant="contained" className={Utils.clsx(this.props.classes.textButton, this.props.classes.saveButton, 'button-save')} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={this.props.classes.textIcon} /></Button>}
                     {(changedAll > 1 || (changedAll === 1 && !changed)) && <Button color="grey" key="saveall" variant="contained" className={this.props.classes.textButton} onClick={() => this.onSaveAll()}>{I18n.t('Save all')}<IconSave className={this.props.classes.textIcon} /></Button>}
                     {changed && <Button color="grey" key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel className={this.props.classes.textIcon} /></Button>}
                     <div style={{ flex: 2 }} />
@@ -1111,7 +1109,7 @@ class Editor extends React.Component {
                         key="blockly-code"
                         aria-label="blockly"
                         title={I18n.t('Show javascript code')}
-                        className={clsx(this.props.classes.toolbarButtons, 'button-js-code', this.props.debugMode && this.props.classes.toolbarButtonsDisabled)}
+                        className={Utils.clsx(this.props.classes.toolbarButtons, 'button-js-code', this.props.debugMode && this.props.classes.toolbarButtonsDisabled)}
                         color={this.state.showCompiledCode ? 'secondary' : 'inherit'}
                         disabled={this.props.debugMode}
                         style={{ padding: '0 5px' }}
@@ -1219,7 +1217,7 @@ class Editor extends React.Component {
             const isInstanceRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].engine && this.state.runningInstances[this.scripts[this.state.selected].engine];
             const isScriptRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].enabled;
 
-            return <div className={clsx(this.props.classes.editorDiv)} key="flowEditorDiv">
+            return <div className={Utils.clsx(this.props.classes.editorDiv)} key="flowEditorDiv">
                 <RulesEditor
                     scriptId={this.state.selected}
                     setTourStep={this.setTourStep}

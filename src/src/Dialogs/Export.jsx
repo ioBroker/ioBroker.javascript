@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@mui/styles/withStyles';
+
 import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -13,7 +14,7 @@ import Paper from '@mui/material/Paper';
 import IconCopy from '@mui/icons-material/FileCopy';
 import IconCancel from '@mui/icons-material/Cancel';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     textArea: {
@@ -34,13 +35,13 @@ const styles = theme => ({
         overflowY: 'hidden'
     }
 });
-class DialogExport extends React.Component {
 
+class DialogExport extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             anchorEl: null,
-            popper: ''
+            popper: '',
         };
     }
     handleCancel = () => {
@@ -48,22 +49,13 @@ class DialogExport extends React.Component {
     };
 
     onCopy(event) {
-        const el = window.document.getElementById('copy_input');
-        if (el) {
-            el.select();
-            window.document.execCommand('copy');
-            const target = event.currentTarget;
+        Utils.copyToClipboard(this.props.text);
+        const anchorEl = event.currentTarget;
 
-            setTimeout(() => {
-                window.document.execCommand('copy');
-                this.setState({ popper: I18n.t('Copied'), anchorEl: target });
-                setTimeout(() => this.setState({ popper: '', anchorEl: null }), 1000);
-            }, 50);
-
-        }
-        /*el.value = this.props.text;
-        window.document.body.appendChild(el);
-        el.select();*/
+        setTimeout(() => {
+            this.setState({ popper: I18n.t('Copied'), anchorEl });
+            setTimeout(() => this.setState({ popper: '', anchorEl: null }), 1000);
+        }, 50);
     }
 
     render() {
@@ -74,7 +66,7 @@ class DialogExport extends React.Component {
             onClose={(event, reason) => false}
             maxWidth="lg"
             classes={{ paper: classes.dialog }}
-            fullWidth={true}
+            fullWidth
             open={this.props.open}
             aria-labelledby="export-dialog-title"
         >
@@ -83,7 +75,7 @@ class DialogExport extends React.Component {
                 classes={{ root: classes.overflowY }}>
                 <pre
                     id="export-text"
-                    className={classes.textArea + ' ' + (this.props.themeType === 'dark' ? '' : classes.textAreaLight)}
+                    className={`${classes.textArea} ${this.props.themeType === 'dark' ? '' : classes.textAreaLight}`}
                 >{this.props.text}</pre>
             </DialogContent>
             <DialogActions>
@@ -104,7 +96,7 @@ class DialogExport extends React.Component {
                         </Fade>
                     )}
                 </Popper>
-                <textarea id="copy_input" readOnly={true} style={{ position: 'absolute', left: -9999 }} tabIndex={-1} aria-hidden={true} value={this.props.text} />
+                <textarea id="copy_input" readOnly style={{ position: 'absolute', left: -9999 }} tabIndex={-1} aria-hidden value={this.props.text} />
             </DialogActions>
         </Dialog>;
     }

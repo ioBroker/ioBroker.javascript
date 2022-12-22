@@ -1,9 +1,10 @@
-import { FormControl, FormHelperText, Input, MenuItem, Select } from '@mui/material';
 import React, { useState } from 'react';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { FormControl, FormHelperText, Input, MenuItem, Select } from '@mui/material';
 import PropTypes from 'prop-types';
+
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
+
 import cls from './style.module.scss';
-import clsx from 'clsx';
 import CustomCheckbox from '../CustomCheckbox';
 
 const CustomSelect = ({ multiple, value, customValue, title, attr, options, style, onChange, className, doNotTranslate, doNotTranslate2 }) => {
@@ -14,7 +15,7 @@ const CustomSelect = ({ multiple, value, customValue, title, attr, options, styl
 
     return <FormControl
     variant="standard"
-        className={clsx(cls.root, className)}
+        className={Utils.clsx(cls.root, className)}
         fullWidth
         style={style}
     >
@@ -69,10 +70,10 @@ const CustomSelect = ({ multiple, value, customValue, title, attr, options, styl
                 }
                 onChange(e.target.value, attr);
             }}
-            input={attr ? <Input name={attr} id={attr + '-helper'} /> : <Input name={attr} />}
+            input={attr ? <Input name={attr} id={`${attr}-helper`} /> : <Input name={attr} />}
         >
-            {!multiple && options && options.map(item => <MenuItem style={{ placeContent: 'space-between' }} key={'key-' + item.value} value={item.value === '' || item.value === null || item.value === undefined ? '_' : item.value}>{doNotTranslate ? item.title : I18n.t(item.title)}{item.title2 && <div>{doNotTranslate2 ? item.title2 : I18n.t(item.title2)}</div>}</MenuItem>)}
-            {multiple && options && options.map(item => <MenuItem style={{ placeContent: 'space-between' }} key={'key-' + item.value} value={item.value || '_'}>{doNotTranslate ? item.title : I18n.t(item.title)} <CustomCheckbox customValue value={value.includes(item.value)} /></MenuItem>)}
+            {!multiple && options && options.map(item => <MenuItem style={{ placeContent: 'space-between' }} key={`key-${item.value}`} value={item.value === '' || item.value === null || item.value === undefined ? '_' : item.value}>{doNotTranslate ? item.title : I18n.t(item.title)}{item.title2 && <div>{doNotTranslate2 ? item.title2 : I18n.t(item.title2)}</div>}</MenuItem>)}
+            {multiple && options && options.map(item => <MenuItem style={{ placeContent: 'space-between' }} key={`key-${item.value}`} value={item.value || '_'}>{doNotTranslate ? item.title : I18n.t(item.title)} <CustomCheckbox customValue value={value.includes(item.value)} /></MenuItem>)}
         </Select>
         {title ? <FormHelperText>{I18n.t(title)}</FormHelperText> : null}
     </FormControl>;

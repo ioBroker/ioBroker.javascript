@@ -6,11 +6,9 @@ import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
 
 import GenericApp from '@iobroker/adapter-react-v5/GenericApp';
-import Loader from '@iobroker/adapter-react-v5/Components/Loader'
-import I18n from '@iobroker/adapter-react-v5/i18n';
 import DialogMessage from '@iobroker/adapter-react-v5/Dialogs/Message';
 import DialogConfirm from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import { I18n, Utils, AdminConnection, Loader } from '@iobroker/adapter-react-v5';
 
 import { MdMenu as IconMenuClosed } from 'react-icons/md';
 import { MdArrowBack as IconMenuOpened } from 'react-icons/md';
@@ -117,6 +115,7 @@ const styles = theme => ({
 class App extends GenericApp {
     constructor(props) {
         super(props, {
+            Connection: AdminConnection,
             translations: {
                 en: require('./i18n/en'),
                 de: require('./i18n/de'),

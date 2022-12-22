@@ -1,14 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import withStyles from '@mui/styles/withStyles';
 
 import IconButton from '@mui/material/IconButton';
-import {MdDeleteForever as IconDelete} from 'react-icons/md';
-import {MdVerticalAlignBottom as IconBottom} from 'react-icons/md';
-import {MdContentCopy as IconCopy} from 'react-icons/md';
-import {MdVisibilityOff as IconHide} from 'react-icons/md';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import withStyles from '@mui/styles/withStyles';
+import { MdDeleteForever as IconDelete } from 'react-icons/md';
+import { MdVerticalAlignBottom as IconBottom } from 'react-icons/md';
+import { MdContentCopy as IconCopy } from 'react-icons/md';
+import { MdVisibilityOff as IconHide } from 'react-icons/md';
+
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 // replace later with MdHorizontalSplit and MdVerticalSplit
 const IconVerticalSplit   = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAACFJREFUeAFjAIJRwP////8PYIKWHCigNQdKj/pn1D+jAABTG16wVQqVpQAAAABJRU5ErkJggg==';
@@ -108,15 +109,6 @@ const styles = theme => ({
         borderRadius: theme.palette.mode === 'dark' ? 30 : undefined,
     },
 });
-
-function copyToClipboard(str) {
-    const el = window.document.createElement('textarea');
-    el.value = str;
-    window.document.body.appendChild(el);
-    el.select();
-    window.document.execCommand('copy');
-    window.document.body.removeChild(el);
-}
 
 function paddingMs(ms) {
     if (ms < 10) {
@@ -226,7 +218,7 @@ class Log extends React.Component {
     }
 
     onCopy() {
-        copyToClipboard((gText[this.state.selected] || []).join('\n'));
+        Utils.copyToClipboard((gText[this.state.selected] || []).join('\n'));
     }
 
     clearLog() {

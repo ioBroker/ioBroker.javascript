@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import cls from './style.module.scss';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
 import { Slider } from '@mui/material';
+
+import { Utils } from '@iobroker/adapter-react-v5';
+
+import cls from './style.module.scss';
 
 const CustomSlider = ({ fullWidth, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue, min, max, step, unit }) => {
     const [inputText, setInputText] = useState(0);
@@ -40,7 +42,7 @@ const CustomSlider = ({ fullWidth, autoComplete, label, error, size, variant, va
         type={type}
         //helperText={error || ''}
         style={style}
-        className={clsx(cls.root, className)}
+        className={Utils.clsx(cls.root, className)}
         autoComplete={autoComplete}
         onChange={(e, newValue) => {
             !customValue && setInputText(newValue);

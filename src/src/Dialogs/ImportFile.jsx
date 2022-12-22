@@ -148,8 +148,8 @@ class DialogImportFile extends React.Component {
             onClose={(event, reason) => false}
             maxWidth="lg"
             classes={{paper: classes.dialog}}
-            fullWidth={true}
-            open={true}
+            fullWidth
+            open={!0}
             aria-labelledby="import-dialog-title"
         >
             <DialogTitle id="import-dialog-title">{I18n.t('Import scripts')}</DialogTitle>

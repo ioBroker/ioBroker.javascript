@@ -64,7 +64,7 @@ class DialogImport extends React.Component {
             onClose={(event, reason) => false}
             maxWidth="lg"
             classes={{ paper: classes.dialog }}
-            fullWidth={true}
+            fullWidth
             open={this.props.open}
             aria-labelledby="import-dialog-title"
         >

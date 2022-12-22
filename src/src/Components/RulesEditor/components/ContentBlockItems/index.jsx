@@ -1,22 +1,22 @@
-
 import React, { Fragment, useEffect, useState } from 'react';
-import I18n from '@iobroker/adapter-react-v5/i18n';
 import PropTypes from 'prop-types';
-import cls from './style.module.scss';
 import { useDrop } from 'react-dnd';
+
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import IconHelp from '@mui/icons-material/HelpOutline';
-import { deepCopy } from '../../helpers/deepCopy';
 
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
+
+import cls from './style.module.scss';
+import { deepCopy } from '../../helpers/deepCopy';
 import CurrentItem from '../CurrentItem';
 import { useStateLocal } from '../../hooks/useStateLocal';
 import DragWrapper from '../DragWrapper';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import DialogHelp from './DialogHelp';
 import DialogCondition from './DialogCondition';
-import clsx from 'clsx';
 
 const AdditionallyContentBlockItems = ({ size, itemsSwitchesRender, blockValue, boolean, typeBlock, userRules, setUserRules, animation, setTourStep, tourStep, isTourOpen }) => {
     const [checkItem, setCheckItem] = useState(false);
@@ -58,7 +58,7 @@ const AdditionallyContentBlockItems = ({ size, itemsSwitchesRender, blockValue, 
         backgroundColor = targetId === hoverBlock ? '#fb00002e' : '';
     }
 
-    return <div ref={drop} style={{ backgroundColor }} className={`${clsx(cls.contentBlockItem,size && cls.addClassHeight)} ${boolean ? animation ? cls.contentHeightOn : null : cls.contentHeightOff}`}>
+    return <div ref={drop} style={{ backgroundColor }} className={`${Utils.clsx(cls.contentBlockItem,size && cls.addClassHeight)} ${boolean ? animation ? cls.contentHeightOn : null : cls.contentHeightOff}`}>
         <div className={cls.wrapperMargin}>{itemsSwitchesRender[blockValue]?.map(el => (
             <DragWrapper
                 typeBlocks={typeBlock}
@@ -120,7 +120,7 @@ const ContentBlockItems = ({ size, typeBlock, name, nameAdditionally, additional
 
     const [animation, setAnimation] = useState(false);
 
-    return <div className={`${clsx(cls.mainBlockItemRules, size && cls.addClassOverflow)} ${border && !size ? cls.border : null}`}>
+    return <div className={`${Utils.clsx(cls.mainBlockItemRules, size && cls.addClassOverflow)} ${border && !size ? cls.border : null}`}>
         <span id='width' className={cls.nameBlockItems}>
             <MaterialDynamicIcon iconName={iconName} className={cls.iconThemCard} adapter={adapter} socket={socket} />{name}
         </span>

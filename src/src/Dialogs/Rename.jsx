@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 
 import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -17,9 +16,6 @@ import IconCancel from '@mui/icons-material/Cancel';
 import IconOk from '@mui/icons-material/Check';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
-
-const styles = theme => ({
-});
 
 class DialogRename extends React.Component {
     constructor(props) {
@@ -72,8 +68,8 @@ class DialogRename extends React.Component {
         return <Dialog
             onClose={(event, reason) => false}
             maxWidth="md"
-            fullWidth={true}
-            open={true}
+            fullWidth
+            open={!0}
             aria-labelledby="confirmation-dialog-title"
         >
             <DialogTitle id="confirmation-dialog-title">{I18n.t('Rename')}</DialogTitle>
@@ -102,7 +98,7 @@ class DialogRename extends React.Component {
                         style={{width: '100%'}}
                         label={I18n.t('ID')}
                         value={this.state.id}
-                        disabled={true}
+                        disabled
                         margin="normal"
                     />
                     {
@@ -139,4 +135,4 @@ DialogRename.propTypes = {
     folder: PropTypes.bool,
 };
 
-export default withStyles(styles)(DialogRename);
+export default DialogRename;

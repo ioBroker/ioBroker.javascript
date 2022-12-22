@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@mui/styles/withStyles';
+
 import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -10,8 +11,9 @@ import Dialog from '@mui/material/Dialog';
 import IconSave from '@mui/icons-material/Save';
 import IconCancel from '@mui/icons-material/Cancel';
 
-import ScriptEditorComponent from '../Components/ScriptEditorVanilaMonaco';
 import I18n from '@iobroker/adapter-react-v5/i18n';
+
+import ScriptEditorComponent from '../Components/ScriptEditorVanilaMonaco';
 
 const styles = theme => ({
     textArea: {
@@ -47,7 +49,6 @@ class DialogScriptEditor extends React.Component {
         if (!this.state.source && this.props.isReturn) {
             this.state.source = '\nreturn false';
         }
-
     }
 
     componentDidMount() {
@@ -83,8 +84,8 @@ class DialogScriptEditor extends React.Component {
             onClose={(event, reason) => false}
             maxWidth="lg"
             classes={{paper: classes.dialog}}
-            fullWidth={true}
-            open={true}
+            fullWidth
+            open={!0}
             aria-labelledby="source-dialog-title"
         >
             <DialogTitle id="source-dialog-title">{I18n.t('Function editor')}</DialogTitle>

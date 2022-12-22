@@ -74,7 +74,7 @@ class Editor extends React.Component {
                 key="scriptEditor2"
                 name={this.props.scriptName}
                 adapterName={this.props.adapterName}
-                readOnly={true}
+                readOnly
                 code={this.props.script || ''}
                 isDark={this.props.themeType === 'dark'}
                 socket={this.props.socket}

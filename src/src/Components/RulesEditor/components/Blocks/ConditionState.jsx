@@ -487,7 +487,7 @@ class ConditionState extends GenericBlock {
     renderSpecific() {
         if (this.state.showHysteresisHelp) {
             return <Dialog
-                open={true}
+                open={!0}
                 maxWidth="md"
                 onClose={() => this.setState({showHysteresisHelp: false})}
                 aria-labelledby="alert-dialog-title"

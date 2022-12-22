@@ -48,7 +48,7 @@ class DialogDelete extends React.Component {
         return <Dialog
             onClose={(event, reason) => false}
             maxWidth="md"
-            open={true}
+            open={!0}
             aria-labelledby="confirmation-dialog-title"
         >
             <DialogTitle id="confirmation-dialog-title">{I18n.t('Are you sure?')}</DialogTitle>

@@ -1,22 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import withStyles from '@mui/styles/withStyles';
 import SplitterLayout from 'react-splitter-layout';
 import ReactJson  from 'react-json-view';
 
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Input from '@mui/material/Input';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 
-import {MdCheck as CheckIcon} from 'react-icons/md';
-import {MdAdd as IconAdd} from 'react-icons/md';
-import {MdDelete as IconDelete} from 'react-icons/md';
+import { MdCheck as CheckIcon } from 'react-icons/md';
+import { MdAdd as IconAdd } from 'react-icons/md';
+import { MdDelete as IconDelete } from 'react-icons/md';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     frameRoot: {
@@ -194,7 +193,7 @@ class Stack extends React.Component {
             ];
 
         return <tr key={`user_${i}${item.name}`}>
-            <td className={clsx(this.props.classes.scopeType, this.props.classes['scopeType_user'])}>user</td>
+            <td className={Utils.clsx(this.props.classes.scopeType, this.props.classes['scopeType_user'])}>user</td>
             <td className={this.props.classes.scopeName}
                 onDoubleClick={() => {
                     this.scopeValue = item.name || '';
@@ -229,13 +228,12 @@ class Stack extends React.Component {
             return null;
         }
         const fileName = frame.url.split('/').pop().replace(/^script\.js\./, '');
-        return <ListItem
+        return <ListItemButton
             key={frame.id}
-            button
             onClick={() => this.props.onChangeCurrentFrame(i)}
-            dense={true}
+            dense
             selected={this.props.currentFrame === i}
-            classes={{root: this.props.classes.frameRoot}}
+            classes={{ root: this.props.classes.frameRoot }}
         >
             <ListItemText
                 classes={{root: this.props.classes.frameTextRoot, primary: this.props.classes.frameTextPrimary, secondary: this.props.classes.frameTextSecondary}}
@@ -243,7 +241,7 @@ class Stack extends React.Component {
                 primary={frame.functionName || 'anonymous'}
                 secondary={`${fileName} (${frame.location.lineNumber}:${frame.location.columnNumber})`}
             />
-        </ListItem>;
+        </ListItemButton>;
     }
 
     formatValue(value, forEdit) {
@@ -293,7 +291,7 @@ class Stack extends React.Component {
                     enableClipboard={false}
                     style={{backgroundColor: 'inherit', marginTop: 3}}
                     src={value.value}
-                    collapsed={true}
+                    collapsed
                     theme={this.props.themeType === 'dark' ? 'brewer' : 'rjv-default'}
                     displayDataTypes={false}
                 />;
@@ -375,9 +373,9 @@ class Stack extends React.Component {
 
 
         return <tr key={`${type}_${scopeId}_${item.name}`}>
-            <td className={clsx(this.props.classes.scopeType, this.props.classes['scopeType_' + type])}>{type}</td>
+            <td className={Utils.clsx(this.props.classes.scopeType, this.props.classes['scopeType_' + type])}>{type}</td>
             <td
-                className={clsx(this.props.classes.scopeName, !this.props.currentFrame && editable && this.props.classes.scopeValueEditable)}
+                className={Utils.clsx(this.props.classes.scopeName, !this.props.currentFrame && editable && this.props.classes.scopeValueEditable)}
                 onDoubleClick={() => {
                     if (editable) {
                         this.scopeValue = item.value.value;

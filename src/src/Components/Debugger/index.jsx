@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
+import withStyles from '@mui/styles/withStyles';
 import SplitterLayout from 'react-splitter-layout';
 
 import Tabs from '@mui/material/Tabs';
@@ -9,7 +9,7 @@ import Toolbar from '@mui/material/Toolbar';
 import LinearProgress from '@mui/material/LinearProgress';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
@@ -23,8 +23,8 @@ import { MdArrowUpward as IconOut } from 'react-icons/md';
 import { MdRefresh as IconRestart } from 'react-icons/md';
 import { MdWarning as IconException } from 'react-icons/md';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import withStyles from '@mui/styles/withStyles';
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
+
 import DialogError from '../../Dialogs/Error';
 import Editor from './Editor';
 import Console from './Console';
@@ -438,21 +438,20 @@ class Debugger extends React.Component {
             arrow = ''.padStart(location.columnNumber, ' ') + '↑';
         }
         return [
-            <div className={this.props.classes.monospace}>{line}</div>,
-            <div className={clsx(this.props.classes.monospace, this.props.classes.arrow)}>{arrow}</div>
+            <div key="line" className={this.props.classes.monospace}>{line}</div>,
+            <div key="arrow" className={Utils.clsx(this.props.classes.monospace, this.props.classes.arrow)}>{arrow}</div>
         ];
     }
 
     renderQueryBreakpoints() {
         if (this.state.queryBreakpoints) {
-            return <Dialog onClose={() => this.setState({queryBreakpoints: null})} aria-labelledby="bp-dialog-title" open={true}>
+            return <Dialog onClose={() => this.setState({ queryBreakpoints: null })} aria-labelledby="bp-dialog-title" open={!0}>
                 <DialogTitle id="bp-dialog-title">{I18n.t('Select breakpoint')}</DialogTitle>
                 <List>
                     {this.state.queryBreakpoints.map((bp, i) => (
-                        <ListItem
+                        <ListItemButton
                             classes={{root: this.props.classes.bpListItem}}
-                            dense={true}
-                            button
+                            dense
                             onClick={() => {
                                 this.sendToInstance({breakpoints: [bp], cmd: 'sb'});
                                 this.setState({queryBreakpoints: null})
@@ -462,7 +461,7 @@ class Debugger extends React.Component {
                                 classes={{primary: this.props.classes.bpListPrimary, secondary: this.props.classes.bpListSecondary}}
                                 primary={this.getTextAtLocation(bp)}
                             />
-                        </ListItem>
+                        </ListItemButton>
                     ))}
                 </List>
             </Dialog>;
@@ -515,7 +514,7 @@ class Debugger extends React.Component {
                         label = this.state.tabs[id].split('/').pop();
                     }
                     label = [
-                        <div key="text" className={clsx(this.props.classes.tabText)}>{label}</div>,
+                        <div key="text" className={Utils.clsx(this.props.classes.tabText)}>{label}</div>,
                         id !== this.mainScriptId && <span key="icon" className={this.props.classes.closeButton}>
                             <IconClose key="close" onClick={e => this.closeTab(id, e)} fontSize="small" /></span>];
 
@@ -776,13 +775,13 @@ class Debugger extends React.Component {
     }
 
     render() {
-        return <div key="debugger" style={this.props.style} className={clsx(this.props.classes.root, this.props.className)}>
+        return <div key="debugger" style={this.props.style} className={Utils.clsx(this.props.classes.root, this.props.className)}>
             {this.state.starting ? <LinearProgress/> : null}
             {this.renderToolbar()}
             <SplitterLayout
                 customClassName={this.props.classes.splitter}
                 primaryMinSize={100}
-                vertical={true}
+                vertical
                 secondaryInitialSize={this.toolSize}
                 onSecondaryPaneSizeChange={size => this.toolSize = parseFloat(size)}
                 onDragEnd={() => window.localStorage.setItem('App.toolSize', this.toolSize.toString())}

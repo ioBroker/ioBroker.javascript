@@ -148,7 +148,7 @@ class DialogAddNew extends React.Component {
             onClose={() => false}
             maxWidth="lg"
             fullWidth
-            open={true}
+            open={!0}
             aria-labelledby="confirmation-dialog-title"
         >
             <DialogTitle id="confirmation-dialog-title">{I18n.t('Add new script')}</DialogTitle>

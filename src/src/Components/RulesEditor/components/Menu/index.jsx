@@ -1,8 +1,11 @@
 import React, { Fragment, useContext, useEffect } from 'react';
-import cls from './style.module.scss';
+import PropTypes from 'prop-types';
+
 import { AppBar, ClickAwayListener, Tab, Tabs } from '@mui/material';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
+
+import cls from './style.module.scss';
 
 import CustomInput from '../CustomInput';
 import CustomDragItem from '../CardMenu/CustomDragItem';
@@ -10,8 +13,6 @@ import HamburgerMenu from '../HamburgerMenu';
 import { useStateLocal } from '../../hooks/useStateLocal';
 import { ContextWrapperCreate } from '../ContextWrapper';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
-import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import { STEPS } from '../../helpers/Tour';
 
 const Menu = ({ addClass, setAllBlocks, allBlocks, userRules, onChangeBlocks, setTourStep, tourStep, isTourOpen }) => {
@@ -65,11 +66,11 @@ const Menu = ({ addClass, setAllBlocks, allBlocks, userRules, onChangeBlocks, se
         touchEvent="onTouchStart"
         onClickAway={() => setHamburgerOnOff(true)}
     >
-        <div className={clsx(cls.menuWrapper, addClass[1035] && cls.addClassMenu)}>
+        <div className={Utils.clsx(cls.menuWrapper, addClass[1035] && cls.addClassMenu)}>
             <div className={`${cls.hamburgerWrapper} ${hamburgerOnOff ? cls.hamburgerOff : null}`}
                 onClick={() => setHamburgerOnOff(!hamburgerOnOff)}><HamburgerMenu boolean={!hamburgerOnOff} />
             </div>
-            <div className={`${clsx(cls.menuRules, addClass[1035] && cls.addClassBackground, addClass[835] && cls.addClassPosition)} ${hamburgerOnOff ? cls.menuOff : null}`}>
+            <div className={`${Utils.clsx(cls.menuRules, addClass[1035] && cls.addClassBackground, addClass[835] && cls.addClassPosition)} ${hamburgerOnOff ? cls.menuOff : null}`}>
                 <div className={cls.controlPanel}>
                     <AppBar className={cls.controlPanelAppBar} position="static">
                         <Tabs
@@ -121,7 +122,7 @@ const Menu = ({ addClass, setAllBlocks, allBlocks, userRules, onChangeBlocks, se
                         </div>}
                     </span>
                 </div>
-                <div className={clsx(cls.menuTitle, cls.marginAuto)} />
+                <div className={Utils.clsx(cls.menuTitle, cls.marginAuto)} />
                 <CustomInput
                     className={cls.inputWidth}
                     fullWidth

@@ -1,9 +1,10 @@
-import { FormControl, MenuItem, Select } from '@mui/material';
 import React from 'react';
-import cls from './style.module.scss';
+import { FormControl, MenuItem, Select } from '@mui/material';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
+
+import cls from './style.module.scss';
 
 const DAYS = [
     31, // 1
@@ -44,16 +45,16 @@ const CustomDate = ({ value, onChange, className, title, style }) => {
     return <div>
         <FormControl
             variant="standard"
-            className={clsx(cls.root, className)}
+            className={Utils.clsx(cls.root, className)}
             style={style}
         >
             <Select
                 variant="standard"
-                className={clsx(cls.root, className)}
+                className={Utils.clsx(cls.root, className)}
                 margin="dense"
                 label={I18n.t('Month')}
                 onChange={e =>
-                    onChange(e.target.value.toString().padStart(2, '0') + '.' + date.toString().padStart(2, '0'))}
+                    onChange(`${e.target.value.toString().padStart(2, '0')}.${date.toString().padStart(2, '0')}`)}
                 value={month}
             >
                 <MenuItem style={{ placeContent: 'space-between' }} key={0} value={0}>{I18n.t('Any month')}</MenuItem>
@@ -73,16 +74,16 @@ const CustomDate = ({ value, onChange, className, title, style }) => {
         </FormControl>
         <FormControl
             variant="standard"
-            className={clsx(cls.root, className)}
+            className={Utils.clsx(cls.root, className)}
             style={style}
         >
             <Select
                 variant="standard"
-                className={clsx(cls.root, className)}
+                className={Utils.clsx(cls.root, className)}
                 margin="dense"
                 label={I18n.t('Date')}
                 onChange={e =>
-                    onChange(month.toString().padStart(2, '0') + '.' + e.target.value.toString().padStart(2, '0'))}
+                    onChange(`${month.toString().padStart(2, '0')}.${e.target.value.toString().padStart(2, '0')}`)}
                 value={date}
             >
                 <MenuItem style={{ placeContent: 'space-between' }} key={'A'} value={0}>{I18n.t('Any')}</MenuItem>

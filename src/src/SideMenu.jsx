@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import withStyles from '@mui/styles/withStyles';
+
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
@@ -39,20 +39,21 @@ import { MdUnfoldMore as IconExpandAll } from 'react-icons/md';
 import { MdUnfoldLess as IconCollapseAll } from 'react-icons/md';
 import { MdBugReport as IconDebug } from 'react-icons/md';
 
+import { red, green, yellow } from '@mui/material/colors';
+
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
 import ImgRules from './assets/rules.png';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
+
 import DialogRename from './Dialogs/Rename';
 import DialogDelete from './Dialogs/Delete';
 import DialogAddNewScript from './Dialogs/AddNewScript';
 import DialogNew from './Dialogs/New';
 import DialogError from './Dialogs/Error';
 import DialogAdapterDebug from './Dialogs/AdapterDebug';
-
-import { red, green, yellow } from '@mui/material/colors';
 
 const MENU_ITEM_HEIGHT = 48;
 const COLOR_RUN = green[400];
@@ -383,7 +384,7 @@ export const Droppable = (props) => {
         }),
     });
 
-    return <div ref={drop} className={clsx(isOver && 'js-folder-dragover', isOverAny && 'js-folder-dragging')}>
+    return <div ref={drop} className={Utils.clsx(isOver && 'js-folder-dragover', isOverAny && 'js-folder-dragging')}>
         {props.children}
     </div>;
 };
@@ -751,7 +752,7 @@ class SideDrawer extends React.Component {
 
             return [
                 <IconButton
-                    className={clsx(this.props.classes.iconButtons, this.props.debugMode && this.props.classes.iconButtonsDisabled)}
+                    className={Utils.clsx(this.props.classes.iconButtons, this.props.debugMode && this.props.classes.iconButtonsDisabled)}
                     onClick={e => {
                         e.stopPropagation();
                         this.props.onEnableDisable && this.props.onEnableDisable(item.id, !item.enabled)
@@ -766,7 +767,7 @@ class SideDrawer extends React.Component {
                 </IconButton>,
                 this.state.width > NARROW_WIDTH ? <IconButton
                     key="delete"
-                    className={clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
+                    className={Utils.clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
                     title={I18n.t('Delete script')}
                     disabled={item.id === GLOBAL_ID || item.id === COMMON_ID || this.props.debugMode}
                     onClick={e => this.onDelete(item, e)}
@@ -775,7 +776,7 @@ class SideDrawer extends React.Component {
                     <IconDelete/>
                 </IconButton> : null,
                 <IconButton
-                    className={clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
+                    className={Utils.clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
                     disabled={this.props.debugMode}
                     key="openInEdit"
                     title={I18n.t('Edit script or just double click')}
@@ -788,7 +789,7 @@ class SideDrawer extends React.Component {
             if (item.id !== ROOT_ID && item.id !== COMMON_ID && item.id !== GLOBAL_ID && (!children || !children.length)) {
                 return (
                     <IconButton
-                        className={clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
+                        className={Utils.clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
                         key="delete"
                         title={I18n.t('Delete folder')}
                         disabled={item.id === GLOBAL_ID || item.id === COMMON_ID || this.props.debugMode}
@@ -935,9 +936,9 @@ class SideDrawer extends React.Component {
         }
         let iconClass;
         if (item.type === 'folder') {
-            iconClass = clsx(this.props.classes.folderIcon, reorder ? this.props.classes.folderIconReorder : this.props.classes.folderIconNoReorder);
+            iconClass = Utils.clsx(this.props.classes.folderIcon, reorder ? this.props.classes.folderIconReorder : this.props.classes.folderIconNoReorder);
         } else {
-            iconClass = clsx(this.props.classes.scriptIcon, reorder ? this.props.classes.scriptIconReorder : this.props.classes.scriptIconNoReorder);
+            iconClass = Utils.clsx(this.props.classes.scriptIcon, reorder ? this.props.classes.scriptIconReorder : this.props.classes.scriptIconNoReorder);
         }
 
         let childrenCount = null;
@@ -948,7 +949,7 @@ class SideDrawer extends React.Component {
         return <ListItem
             key={item.id}
             style={style}
-            className={clsx(
+            className={Utils.clsx(
                 item.type === 'folder' ? this.props.classes.folder : this.props.classes.script,
                 reorder && item.type === 'folder' && 'folder-reorder',
                 reorder && item.type !== 'folder' && 'script-reorder',
@@ -980,7 +981,7 @@ class SideDrawer extends React.Component {
         if (newId !== source) {
             // If target yet exists => add Copy to
             if (this.state.listItems.find(item => item.id === newId)) {
-                newId += '_' + I18n.t('copy');
+                newId += `_${I18n.t('copy')}`;
             }
 
             this.props.onRename && this.props.onRename(source, newId);
@@ -1316,7 +1317,7 @@ class SideDrawer extends React.Component {
                     disabled={this.props.debugMode}
                     key="new-script"
                     title={I18n.t('Create new script')}
-                    className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
+                    className={Utils.clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
                     style={{ color: reorder ? 'red' : 'inherit' }}
                     onClick={e => this.onAddNew(e)}
                     size="medium"><IconAdd/></IconButton>);
@@ -1326,7 +1327,7 @@ class SideDrawer extends React.Component {
                     disabled={this.props.debugMode}
                     key="new-folder"
                     title={I18n.t('Create new folder')}
-                    className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
+                    className={Utils.clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
                     style={{ color: reorder ? 'red' : 'inherit' }}
                     onClick={() => this.onAddNewFolder()}
                     size="medium"><IconAddFolder/></IconButton>);
@@ -1336,7 +1337,7 @@ class SideDrawer extends React.Component {
             result.push(<IconButton
                 key="search"
                 disabled={reorder || this.props.debugMode}
-                className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
+                className={Utils.clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
                 title={I18n.t('Search in scripts')}
                 style={{ float: 'right', opacity: this.props.debugMode ? 0.5 : (reorder ? 0 : 1) }}
                 onClick={e => {
@@ -1350,7 +1351,7 @@ class SideDrawer extends React.Component {
                 disabled={this.props.debugMode}
                 key="reorder"
                 title={I18n.t('Reorder scripts in folders')}
-                className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
+                className={Utils.clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
                 style={{ color: reorder ? 'red' : 'inherit', float: 'right' }}
                 onClick={e => {
                     e.stopPropagation();
@@ -1361,7 +1362,7 @@ class SideDrawer extends React.Component {
             if (!reorder && this.state.selected && this.state.selected !== GLOBAL_ID && this.state.selected !== COMMON_ID) {
                 // Rename
                 result.push(<IconButton
-                    className={clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
+                    className={Utils.clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
                     disabled={this.props.debugMode}
                     title={I18n.t('Rename')}
                     key="rename"

@@ -1,10 +1,10 @@
 import { Button } from '@mui/material';
 import React from 'react';
-// import I18n from '@iobroker/adapter-react-v5/i18n';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
+
+import { Utils, Icon as CustomIcon } from '@iobroker/adapter-react-v5';
+
 import cls from './style.module.scss';
-import CustomIcon from '@iobroker/adapter-react-v5/Components/Icon';
 
 const CustomButton = ({ fullWidth, size, onClick, style, className, value, square, icon }) => {
     return <Button
@@ -13,7 +13,7 @@ const CustomButton = ({ fullWidth, size, onClick, style, className, value, squar
         onClick={onClick}
         fullWidth={fullWidth}
         style={style}
-        className={clsx(cls.root, className, square ? cls.square : '')}
+        className={Utils.clsx(cls.root, className, square ? cls.square : '')}
         margin="normal"
         size={size}
     >{icon ? <CustomIcon className={cls.icon} src={icon} /> : value}</Button>;

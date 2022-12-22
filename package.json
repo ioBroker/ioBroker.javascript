@@ -30,10 +30,10 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.7",
-    "@types/node": "^18.11.10",
+    "@types/node": "^18.11.17",
     "@types/request": "^2.48.8",
     "coffeescript": "^1.12.7",
-    "jsonata": "^1.8.6",
+    "jsonata": "^2.0.0",
     "jszip": "^3.10.1",
     "node-inspect": "^2.0.0",
     "node-schedule": "2.1.0",
@@ -53,11 +53,11 @@
     "alcalzone-shared": "^4.0.8",
     "chai": "^4.3.7",
     "del": "^6.1.1",
-    "eslint": "^8.28.0",
+    "eslint": "^8.30.0",
     "gulp": "^4.0.2",
     "gulp-rename": "^2.0.0",
-    "gulp-replace": "^1.1.3",
-    "mocha": "^10.1.0",
+    "gulp-replace": "^1.1.4",
+    "mocha": "^10.2.0",
     "timekeeper": "^2.2.0"
   },
   "bugs": {

@@ -156,7 +156,7 @@ class DialogAdapterDebug extends React.Component {
         return <Dialog
             maxWidth="md"
             fullWidth={false}
-            open={true}
+            open={!0}
             onClose={(event, reason) => false}
             aria-labelledby="confirmation-dialog-title"
         >

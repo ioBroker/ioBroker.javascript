@@ -71,8 +71,8 @@ class DialogNew extends React.Component {
         return <Dialog
             onClose={(event, reason) => false}
             maxWidth="md"
-            fullWidth={true}
-            open={true}
+            fullWidth
+            open={!0}
             aria-labelledby="confirmation-dialog-title"
         >
             <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('Create new')}</DialogTitle>
@@ -133,7 +133,7 @@ class DialogNew extends React.Component {
                         style={{width: '100%'}}
                         label={I18n.t('ID')}
                         value={this.getId()}
-                        disabled={true}
+                        disabled
                         margin="normal"
                     />
                     {

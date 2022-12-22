@@ -1,9 +1,10 @@
 import { Checkbox } from '@mui/material';
 import React, { memo, useState } from 'react';
-import cls from './style.module.scss';
-// import I18n from '@iobroker/adapter-react-v5/i18n';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
+
+import { Utils } from '@iobroker/adapter-react-v5';
+
+import cls from './style.module.scss';
 
 const CustomCheckbox = ({ size, value, style, title, onChange, className, customValue, disabled }) => {
     const [switchChecked, setSwitchChecked] = useState(false);
@@ -13,7 +14,7 @@ const CustomCheckbox = ({ size, value, style, title, onChange, className, custom
             disabled={disabled}
             checked={Boolean(customValue ? value : switchChecked)}
             // style={Object.assign(type ? color[type] : null, style)}
-            className={clsx(cls.root, className)}
+            className={Utils.clsx(cls.root, className)}
             onChange={e => {
                 customValue && setSwitchChecked(e.target.checked);
                 onChange(e.target.checked);

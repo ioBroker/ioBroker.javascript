@@ -72,9 +72,9 @@ class DialogCron extends React.Component {
         return <Dialog
             onClose={(event, reason) => false}
             maxWidth="md"
-            fullWidth={true}
-            classes={{paper: this.props.classes.dialogPaper}}
-            open={true}
+            fullWidth
+            classes={{ paper: this.props.classes.dialogPaper }}
+            open={!0}
             aria-labelledby="cron-dialog-title"
         >
             <DialogTitle id="cron-dialog-title">{this.props.title || I18n.t('Define schedule...')}</DialogTitle>

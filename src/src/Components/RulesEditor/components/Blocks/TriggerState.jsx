@@ -120,7 +120,7 @@ class TriggerState extends GenericBlock {
                             variant="standard"
                             inputRef={this.inputRef}
                             label={I18n.t('Value')}
-                            fullWidth={true}
+                            fullWidth
                             onKeyUp={e => e.keyCode === 13 && this.onWriteValue()}
                             value={this.state.simulateValue}
                             onChange={e => this.setState({simulateValue: e.target.value})}

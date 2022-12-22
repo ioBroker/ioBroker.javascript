@@ -1,18 +1,19 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
+
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
+
 import cls from './style.module.scss';
 
 import { CustomDragLayer } from './components/CustomDragLayer';
 import ContentBlockItems from './components/ContentBlockItems';
 import { ContextWrapperCreate } from './components/ContextWrapper';
 import Compile from './helpers/Compile';
-import PropTypes from 'prop-types';
 import Menu from './components/Menu';
-import I18n from '@iobroker/adapter-react-v5/i18n';
 import './helpers/stylesVariables.scss';
 
 import DialogExport from '../../Dialogs/Export';
 import DialogImport from '../../Dialogs/Import';
-import clsx from 'clsx';
 
 const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourOpen, command, scriptId, changed, running }) => {
     // eslint-disable-next-line no-unused-vars
@@ -147,7 +148,7 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
                         onChangeBlocks(JSON.parse(text));
                     }
                 }} />}
-        {<div className={clsx(cls.rootWrapper, addClass[835] && cls.addClass)}>
+        {<div className={Utils.clsx(cls.rootWrapper, addClass[835] && cls.addClass)}>
             <Menu
                 setAllBlocks={setAllBlocks}
                 allBlocks={allBlocks}

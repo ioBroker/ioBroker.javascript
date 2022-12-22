@@ -1,20 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@mui/styles/withStyles';
+
 import IconButton from '@mui/material/IconButton';
+
 import {
     MdContentCopy as IconCopy,
     MdDeleteForever as IconDelete,
     MdVerticalAlignBottom as IconBottom,
 } from 'react-icons/md';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 const TOOLBOX_WIDTH = 34;
 
 const styles = theme => ({
     consoleLine: {
         fontSize: 14,
-        color: theme.palette.mode === 'dark' ? '#EEE' : '#222'
+        color: theme.palette.mode === 'dark' ? '#EEE' : '#222',
     },
     console_log: {
 
@@ -37,23 +40,19 @@ const styles = theme => ({
         whiteSpace: 'nowrap',
         verticalAlign: 'top',
         width: 170,
-
     },
     consoleText: {
         fontFamily: 'Lucida Console, Courier, monospace',
         paddingTop: 4,
         '&>pre': {
-            margin: 0
-        }
+            margin: 0,
+        },
     },
-
-
-
     logBox: {
         width: '100%',
         height: '100%',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     logBoxInner: {
         display: 'inline-block',
@@ -67,25 +66,25 @@ const styles = theme => ({
     },
     info: {
         background: theme.palette.mode === 'dark' ? 'darkgrey' : 'lightgrey',
-        color: theme.palette.mode === 'dark' ?  'black' : 'black'
+        color: theme.palette.mode === 'dark' ?  'black' : 'black',
     },
     error: {
         background: '#FF0000',
-        color: theme.palette.mode === 'dark' ?  'black' : 'white'
+        color: theme.palette.mode === 'dark' ?  'black' : 'white',
     },
     warn: {
         background: '#FF8000',
-        color: theme.palette.mode === 'dark' ?  'black' : 'white'
+        color: theme.palette.mode === 'dark' ?  'black' : 'white',
     },
     debug: {
         background: 'gray',
         opacity: 0.8,
-        color: theme.palette.mode === 'dark' ?  'black' : 'white'
+        color: theme.palette.mode === 'dark' ?  'black' : 'white',
     },
     silly: {
         background: 'gray',
         opacity: 0.6,
-        color: theme.palette.mode === 'dark' ? 'black' : 'white'
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     },
     table: {
         fontFamily: 'monospace',
@@ -104,39 +103,36 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     trTime: {
-        width: 90
+        width: 90,
     },
     trSeverity: {
         width: 40,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     iconButtons: {
         width: 32,
         height: 32,
-        padding: 4
+        padding: 4,
     },
 });
-
-function copyToClipboard(str) {
-    const el = window.document.createElement('textarea');
-    el.value = str;
-    window.document.body.appendChild(el);
-    el.select();
-    window.document.execCommand('copy');
-    window.document.body.removeChild(el);
-}
 
 function getTimeString(d) {
     let text;
     let i = d.getHours();
-    if (i < 10) i = '0' + i.toString();
+    if (i < 10) {
+        i = '0' + i.toString();
+    }
     text = i + ':';
 
     i = d.getMinutes();
-    if (i < 10) i = '0' + i.toString();
+    if (i < 10) {
+        i = '0' + i.toString();
+    }
     text += i + ':';
     i = d.getSeconds();
-    if (i < 10) i = '0' + i.toString();
+    if (i < 10) {
+        i = '0' + i.toString();
+    }
     text += i + '.';
     i = d.getMilliseconds();
     if (i < 10) {
@@ -158,7 +154,7 @@ class Console extends React.Component {
         this.messagesEnd = React.createRef();
     }
     generateLine(message) {
-        return <tr key={'tr_' + message.ts + '_' + message.text.substr(-10)} className={this.props.classes[message.severity]}>
+        return <tr key={`tr_${message.ts}_${message.text.substr(-10)}`} className={this.props.classes[message.severity]}>
             <td key="tdTime" className={this.props.classes.trTime}>{getTimeString(new Date(message.ts))}</td>
             <td key="tdSeverity" className={this.props.classes.trSeverity}>{message.severity}</td>
             <td key="tdMessage">{message.text}</td>
@@ -177,7 +173,7 @@ class Console extends React.Component {
     }
 
     onCopy() {
-        copyToClipboard((this.props.console).join('\n'));
+        Utils.copyToClipboard(this.props.console.join('\n'));
     }
 
     scrollToBottom() {

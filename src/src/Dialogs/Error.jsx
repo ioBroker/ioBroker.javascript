@@ -35,15 +35,15 @@ class DialogError extends React.Component {
 
     render() {
         return <Dialog
-            open={true}
+            open={!0}
             maxWidth="sm"
-            fullWidth={true}
+            fullWidth
             onClose={() => this.handleOk()}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle className={this.props.classes.titleBackground}
-                         classes={{root: this.props.classes.titleColor}}
+                         classes={{ root: this.props.classes.titleColor }}
                          id="alert-dialog-title">{this.props.title || I18n.t('Error')}</DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">

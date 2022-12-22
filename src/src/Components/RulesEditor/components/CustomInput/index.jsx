@@ -1,11 +1,12 @@
-import { TextField } from '@mui/material';
 import React, { useState } from 'react';
-import InputAdornment from '@mui/material/InputAdornment';
-import cls from './style.module.scss';
-// import I18n from '@iobroker/adapter-react-v5/i18n';
+import { TextField } from '@mui/material';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import CustomIcon from '@iobroker/adapter-react-v5/Components/Icon';
+
+import InputAdornment from '@mui/material/InputAdornment';
+
+import { Utils, Icon as CustomIcon } from '@iobroker/adapter-react-v5';
+
+import cls from './style.module.scss';
 
 const CustomInput = ({ autoFocus, fullWidth, disabled, multiline, rows, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue, icon }) => {
     const [inputText, setInputText] = useState('');
@@ -22,7 +23,7 @@ const CustomInput = ({ autoFocus, fullWidth, disabled, multiline, rows, autoComp
         type={type}
         helperText={error}
         style={style}
-        className={clsx(cls.root, className)}
+        className={Utils.clsx(cls.root, className)}
         autoComplete={autoComplete}
         onChange={e => {
             !customValue && setInputText(e.target.value);

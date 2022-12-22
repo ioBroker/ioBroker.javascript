@@ -1,8 +1,11 @@
-import { TextField } from '@mui/material';
 import React from 'react';
-import cls from './style.module.scss';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
+
+import { TextField } from '@mui/material';
+
+import { Utils } from '@iobroker/adapter-react-v5';
+
+import cls from './style.module.scss';
 
 const CustomTime = ({ value, style, onChange, className }) => {
     return <TextField
@@ -11,7 +14,7 @@ const CustomTime = ({ value, style, onChange, className }) => {
         type="time"
         onChange={(e) => onChange(e.currentTarget.value)}
         value={value}
-        className={clsx(cls.root, className)}
+        className={Utils.clsx(cls.root, className)}
         fullWidth
         style={style}
         InputLabelProps={{

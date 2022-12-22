@@ -34,7 +34,7 @@ gulp.task('clean', () => {
 function npmInstall() {
     return new Promise((resolve, reject) => {
         // Install node modules
-        const cwd = __dirname.replace(/\\/g, '/') + '/src/';
+        const cwd = `${__dirname.replace(/\\/g, '/')}/src/`;
 
         const cmd = `npm install`;
         console.log(`"${cmd} in ${cwd}`);
@@ -50,7 +50,7 @@ function npmInstall() {
         child.on('exit', (code /* , signal */) => {
             // code 1 is strange error that cannot be explained. Everything is installed but error :(
             if (code && code !== 1) {
-                reject('Cannot install: ' + code);
+                reject(`Cannot install: ${code}`);
             } else {
                 console.log(`"${cmd} in ${cwd} finished.`);
                 // command succeeded
@@ -61,7 +61,7 @@ function npmInstall() {
 }
 
 gulp.task('2-npm', () => {
-    if (fs.existsSync(__dirname + '/src/node_modules')) {
+    if (fs.existsSync(`${__dirname}/src/node_modules`)) {
         return Promise.resolve();
     } else {
         return npmInstall();
@@ -77,27 +77,27 @@ function build() {
             cwd:   __dirname + '/src/'
         };
 
-        const version = JSON.parse(fs.readFileSync(__dirname + '/package.json').toString('utf8')).version;
-        const data = JSON.parse(fs.readFileSync(__dirname + '/src/package.json').toString('utf8'));
+        const version = JSON.parse(fs.readFileSync(`${__dirname}/package.json`).toString('utf8')).version;
+        const data = JSON.parse(fs.readFileSync(`${__dirname}/src/package.json`).toString('utf8'));
         data.version = version;
-        fs.writeFileSync(__dirname + '/src/package.json', JSON.stringify(data, null, 4));
+        fs.writeFileSync(`${__dirname}/src/package.json`, JSON.stringify(data, null, 4));
 
         console.log(options.cwd);
 
-        let script =  __dirname + '/src/node_modules/@craco/craco/bin/craco.js';
+        let script =  `${__dirname}/src/node_modules/@craco/craco/dist/bin/craco.js`;
         if (!fs.existsSync(script)) {
-            script = __dirname + '/node_modules/@craco/craco/bin/craco.js';
+            script = `${__dirname}/node_modules/@craco/craco/dist/bin/craco.js`;
         }
         if (!fs.existsSync(script)) {
-            console.error('Cannot find execution file: ' + script);
-            reject('Cannot find execution file: ' + script);
+            console.error(`Cannot find execution file: ${script}`);
+            reject(`Cannot find execution file: ${script}`);
         } else {
             const child = cp.fork(script, ['build'], options);
             child.stdout.on('data', data => console.log(data.toString()));
             child.stderr.on('data', data => console.log(data.toString()));
             child.on('close', code => {
                 console.log(`child process exited with code ${code}`);
-                code ? reject('Exit code: ' + code) : resolve();
+                code ? reject(`Exit code: ${code}`) : resolve();
             });
         }
     });
@@ -143,8 +143,8 @@ gulp.task('5-copy', () => copyFiles());
 gulp.task('5-copy-dep', gulp.series('3-build-dep', '5-copy'));
 
 gulp.task('6-patch', () => new Promise(resolve => {
-    if (fs.existsSync(__dirname + '/admin/tab.html')) {
-        let code = fs.readFileSync(__dirname + '/admin/tab.html').toString('utf8');
+    if (fs.existsSync(`${__dirname}/admin/tab.html`)) {
+        let code = fs.readFileSync(`${__dirname}/admin/tab.html`).toString('utf8');
         code = code.replace(/<script>var head=document\.getElementsByTagName\("head"\)\[0][^<]+<\/script>/,
             `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./../../lib/js/socket.io.js"></script>`);
         // add monaco script at the end
@@ -152,10 +152,10 @@ gulp.task('6-patch', () => new Promise(resolve => {
             code = code.replace('</body></html>', `<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script></body></html>`);
         }
 
-        fs.writeFileSync(__dirname + '/admin/tab.html', code);
+        fs.writeFileSync(`${__dirname}/admin/tab.html`, code);
     }
-    if (fs.existsSync(__dirname + '/src/build/index.html')) {
-        let code = fs.readFileSync(__dirname + '/src/build/index.html').toString('utf8');
+    if (fs.existsSync(`${__dirname}/src/build/index.html`)) {
+        let code = fs.readFileSync(`${__dirname}/src/build/index.html`).toString('utf8');
         code = code.replace(/<script>var head=document\.getElementsByTagName\("head"\)\[0][^<]+<\/script>/,
             `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./../../lib/js/socket.io.js"></script>`);
         // add monaco script at the end
@@ -163,24 +163,24 @@ gulp.task('6-patch', () => new Promise(resolve => {
             code = code.replace('</body></html>', `<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script></body></html>`);
         }
 
-        fs.writeFileSync(__dirname + '/src/build/index.html', code);
+        fs.writeFileSync(`${__dirname}/src/build/index.html`, code);
     }
 
-    const buffer = Buffer.from(JSON.parse(fs.readFileSync(__dirname + '/admin-config/vsFont/codicon.json')));
+    const buffer = Buffer.from(JSON.parse(fs.readFileSync(`${__dirname}/admin-config/vsFont/codicon.json`)));
 
     // this is workaround for TTF file. somehow it will always corrupt, so we pack it into ZIP
     JSZip.loadAsync(buffer)
         .then(zip => {
             zip.file('codicon.ttf').async('arraybuffer')
                 .then(data => {
-                    if (!fs.existsSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/')) {
-                        fs.mkdirSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/', {recursive: true});
+                    if (!fs.existsSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/`)) {
+                        fs.mkdirSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/`, {recursive: true});
                     }
 
                     if (data.byteLength !== 62324) {
                         throw new Error('invalid font file!');
                     }
-                    fs.writeFileSync(__dirname + '/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf', Buffer.from(data));
+                    fs.writeFileSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`, Buffer.from(data));
                     resolve();
                 });
         });
@@ -231,8 +231,8 @@ function lang2data(lang, isFlat) {
 function readWordJs(src) {
     try {
         let words;
-        if (fs.existsSync(src + 'js/' + fileName)) {
-            words = fs.readFileSync(src + 'js/' + fileName).toString();
+        if (fs.existsSync(`${src}js/${fileName}`)) {
+            words = fs.readFileSync(`${src}js/${fileName}`).toString();
         } else {
             words = fs.readFileSync(src + fileName).toString();
         }
@@ -256,7 +256,7 @@ function readWordJs(src) {
         lines[0] = lines[0].replace('systemDictionary = ', '').replace('const jQueryCronWords = ', '');
         lines[lines.length - 1] = lines[lines.length - 1].trim().replace(/};$/, '}');
         words = lines.join('\n');
-        const resultFunc = new Function('return ' + words + ';');
+        const resultFunc = new Function(`return ${words};`);
 
         return resultFunc();
     } catch (e) {
