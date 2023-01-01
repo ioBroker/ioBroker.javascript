@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.7",
-    "@types/node": "^18.11.17",
+    "@types/node": "^18.11.18",
     "@types/request": "^2.48.8",
     "coffeescript": "^1.12.7",
     "jsonata": "^2.0.0",
