@@ -56,6 +56,7 @@
     - [readFile](#readfile)
     - [writeFile](#writefile)
     - [delFile](#delFile)
+    - [renameFile](#renameFile)
     - [onFile](#onFile)
     - [offFile](#offFile)
     - [onStop](#onstop)
@@ -1316,7 +1317,16 @@ delFile(adapter, fileName, function (error) {});
 
 Delete file or directory. fileName is the name of file or directory in DB.
 
-This function is alias for *unlink*.
+Alternative name of this method is *unlink*
+
+### renameFile
+```js
+rename(adapter, oldName, newName, function (error) {});
+```
+
+Renames file or directory. oldName is the name of file or directory in DB and is renamed to newName.
+
+Alternative name of this method is *rename*
 
 ### onFile
 ```js
