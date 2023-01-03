@@ -52,6 +52,11 @@ And then call `npm run build`.
 <!--
 	### **WORK IN PROGRESS**
 -->
+
+### __WORK IN PROGRESS__
+* (Apollon77) Prevented duplicate schedule triggering with inaccurate RTC clocks
+* (Apollon77) Fix sendToAsync and sendToHostAsync
+
 ### 6.1.4 (2022-11-14)
 * (bluefox) Corrected small error in rules
 * (bluefox) Tried to fix debug mode
@@ -76,6 +81,6 @@ And then call `npm run build`.
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2014-2022 bluefox <dogafox@gmail.com>,
+Copyright (c) 2014-2023 bluefox <dogafox@gmail.com>,
 
 Copyright (c) 2014      hobbyquaker
