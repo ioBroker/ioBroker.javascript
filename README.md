@@ -55,8 +55,9 @@ And then call `npm run build`.
 
 ### __WORK IN PROGRESS__
 * (Apollon77) Prevented duplicate schedule triggering with inaccurate RTC clocks
-* (Apollon77) Fix sendToAsync and sendToHostAsync
-* (Apollon77) Add rename/renameFile(Async) methods
+* (Apollon77) Fixed sendToAsync and sendToHostAsync
+* (Apollon77) Added rename/renameFile(Async) methods
+* (Apollon77) Deprecated get/setBinaryState(Async) methods and log a message on usage. Use Files instead
 
 ### 6.1.4 (2022-11-14)
 * (bluefox) Corrected small error in rules

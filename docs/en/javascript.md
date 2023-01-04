@@ -715,6 +715,8 @@ Short:
 - `ack` = true  : Command was successfully executed and state is updated as positive result
 
 ### setBinaryState
+**Attention: This method is deprecated!**
+
 ```js
 setBinaryState(id, state, callback);
 ```
@@ -822,6 +824,7 @@ If state does not exist, a warning will be printed in the logs and the object: `
 To suppress the warning check if the state exists before calling getState (see [existsState](#existsState)).
 
 ### getBinaryState
+**Attention: This method is deprecated!**
 ```js
 getBinaryState(id, function (err, data) {});
 ```
