@@ -56,6 +56,7 @@
     - [readFile](#readfile)
     - [writeFile](#writefile)
     - [delFile](#delFile)
+    - [renameFile](#renameFile)
     - [onFile](#onFile)
     - [offFile](#offFile)
     - [onStop](#onstop)
@@ -714,6 +715,8 @@ Short:
 - `ack` = true  : Command was successfully executed and state is updated as positive result
 
 ### setBinaryState
+**Attention: This method is deprecated!**
+
 ```js
 setBinaryState(id, state, callback);
 ```
@@ -821,6 +824,7 @@ If state does not exist, a warning will be printed in the logs and the object: `
 To suppress the warning check if the state exists before calling getState (see [existsState](#existsState)).
 
 ### getBinaryState
+**Attention: This method is deprecated!**
 ```js
 getBinaryState(id, function (err, data) {});
 ```
@@ -1316,7 +1320,16 @@ delFile(adapter, fileName, function (error) {});
 
 Delete file or directory. fileName is the name of file or directory in DB.
 
-This function is alias for *unlink*.
+Alternative name of this method is *unlink*
+
+### renameFile
+```js
+rename(adapter, oldName, newName, function (error) {});
+```
+
+Renames file or directory. oldName is the name of file or directory in DB and is renamed to newName.
+
+Alternative name of this method is *rename*
 
 ### onFile
 ```js
