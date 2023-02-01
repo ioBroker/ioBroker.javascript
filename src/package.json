@@ -3,7 +3,7 @@
     "version": "6.1.4",
     "private": true,
     "dependencies": {
-        "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+        "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
         "@iobroker/adapter-react-v5": "^4.0.8",
         "@mui/icons-material": "^5.11.0",
         "@mui/material": "^5.11.7",
