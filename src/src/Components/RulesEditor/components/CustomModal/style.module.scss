@@ -12,7 +12,7 @@
     border-top: 1px solid var(--lineColorActive);
     border-color: var(--lineColorActive);
     background: var(--backgroundColorHumburger);
-    border-radius: 3;
+    border-radius: 3px;
     & button {
         color: var(--lineColorActive) !important;
         flex: 1;
@@ -28,7 +28,7 @@
     }
 }
 .modalWrapper {
-    position: relative;
+    /*position: relative;*/
     [class*="MuiPaper-root MuiDialog-paper MuiPaper-elevation24 MuiDialog-paperScrollPaper MuiDialog-paperWidthXl MuiPaper-elevation24 MuiPaper-rounded"] {
         background-color: #f6f6f6;
     }

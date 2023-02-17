@@ -343,5 +343,10 @@
   "with": "з",
   "with date": "з датою",
   "with offset": "зі зміщенням",
-  "wizard": "майстер"
+  "wizard": "майстер",
+  "easy": "легко",
+  "for programmers": "для програмістів",
+  "for professionals": "для професіоналів",
+  "Duplicate name": "Повторюване ім'я",
+  "Empty name is not allowed": "Порожнє ім'я не допускається"
 }

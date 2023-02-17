@@ -343,5 +343,10 @@
   "debug_label": "调试",
   "debug_help": "这是一种特殊模式，其中状态和对象不会改变。但只有有关每个计划更改的信息才会显示在协议中。",
   "verbose_label": "详细日志输出",
-  "verbose_help": "将调试输出添加到许多系统命令的日志中"
+  "verbose_help": "将调试输出添加到许多系统命令的日志中",
+  "easy": "简单的",
+  "for programmers": "对于程序员",
+  "for professionals": "对于专业人士",
+  "Duplicate name": "重名",
+  "Empty name is not allowed": "不允许使用空名称"
 }

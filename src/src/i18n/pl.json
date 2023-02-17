@@ -343,5 +343,10 @@
   "debug_label": "Odpluskwić",
   "debug_help": "Jest to specjalny tryb, w którym stany i obiekty się nie zmieniają. Jednak w protokole będą wyświetlane tylko informacje o każdej planowanej zmianie.",
   "verbose_label": "Pełne dane wyjściowe dziennika",
-  "verbose_help": "Dodaje wyniki debugowania do dziennika dla wielu poleceń systemowych"
+  "verbose_help": "Dodaje wyniki debugowania do dziennika dla wielu poleceń systemowych",
+  "easy": "łatwy",
+  "for programmers": "dla programistów",
+  "for professionals": "dla profesjonalistów",
+  "Duplicate name": "Duplikat nazwy",
+  "Empty name is not allowed": "Pusta nazwa jest niedozwolona"
 }

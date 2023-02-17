@@ -343,5 +343,10 @@
   "debug_label": "Déboguer",
   "debug_help": "Il s'agit d'un mode spécial dans lequel les états et les objets ne changeront pas. Mais seules les informations sur chaque changement prévu seront affichées dans le protocole.",
   "verbose_label": "Sorties de journal détaillées",
-  "verbose_help": "Ajoute une sortie de débogage au journal pour de nombreuses commandes système"
+  "verbose_help": "Ajoute une sortie de débogage au journal pour de nombreuses commandes système",
+  "easy": "facile",
+  "for programmers": "pour les programmeurs",
+  "for professionals": "pour les professionnels",
+  "Duplicate name": "Nom en double",
+  "Empty name is not allowed": "Le nom vide n'est pas autorisé"
 }

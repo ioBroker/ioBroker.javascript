@@ -343,5 +343,10 @@
   "debug_label": "Debuggen",
   "debug_help": "Dit is een speciale modus waarin toestanden en objecten niet veranderen. Maar alleen informatie over elke geplande wijziging wordt in het protocol weergegeven.",
   "verbose_label": "Uitgebreide log-uitgangen",
-  "verbose_help": "Voegt foutopsporingsuitvoer toe aan het logboek voor veel systeemopdrachten"
+  "verbose_help": "Voegt foutopsporingsuitvoer toe aan het logboek voor veel systeemopdrachten",
+  "easy": "eenvoudig",
+  "for programmers": "voor programmeurs",
+  "for professionals": "voor professionals",
+  "Duplicate name": "Dubbele naam",
+  "Empty name is not allowed": "Lege naam is niet toegestaan"
 }

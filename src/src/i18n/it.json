@@ -343,5 +343,10 @@
   "debug_label": "Debug",
   "debug_help": "Questa è una modalità speciale in cui gli stati e gli oggetti non cambieranno. Ma nel protocollo verranno visualizzate solo le informazioni su ogni modifica pianificata.",
   "verbose_label": "Output di log dettagliati",
-  "verbose_help": "Aggiunge l'output di debug al registro per molti comandi di sistema"
+  "verbose_help": "Aggiunge l'output di debug al registro per molti comandi di sistema",
+  "easy": "facile",
+  "for programmers": "per i programmatori",
+  "for professionals": "per i professionisti",
+  "Duplicate name": "Nome duplicato",
+  "Empty name is not allowed": "Il nome vuoto non è consentito"
 }

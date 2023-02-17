@@ -343,5 +343,10 @@
   "debug_label": "Depurar",
   "debug_help": "Este es un modo especial en el que los estados y los objetos no cambiarán. Pero solo se mostrará información sobre cada cambio planificado en el protocolo.",
   "verbose_label": "Salidas de registro detalladas",
-  "verbose_help": "Agrega salida de depuración al registro para muchos comandos del sistema"
+  "verbose_help": "Agrega salida de depuración al registro para muchos comandos del sistema",
+  "easy": "fácil",
+  "for programmers": "para programadores",
+  "for professionals": "para profesionales",
+  "Duplicate name": "Nombre duplicado",
+  "Empty name is not allowed": "No se permite el nombre vacío"
 }
