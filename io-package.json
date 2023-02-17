@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "6.1.4",
+    "version": "6.2.0",
     "news": {
+      "6.2.0": {
+        "en": "Prevented duplicate schedule triggering with inaccurate RTC clocks\nFixed sendToAsync and sendToHostAsync\nAdded rename/renameFile(Async) methods\nDeprecated get/setBinaryState(Async) methods and log a message on usage. Use Files instead!\nDeprecated usage of own states in javascript.X.scriptEnabled/Problem and log a message on usage. Use own states in 0_userdata.0 instead!\nadded axios to pre-installed modules. `request` will be removed in the future",
+        "de": "Verhinderte doppelte Zeitplanauslösung mit ungenauen RTC-Uhren\nFester Versand ToAsync und sendToHostAsync\nHinzugefügt Rename / RenameFile(Async) Methoden\nDeprecated get/setBinaryState(Async) Methoden und loggen Sie eine Nachricht bei der Nutzung. Verwenden Sie stattdessen Dateien!\nDeprecated Nutzung von eigenen Zuständen in javascript.X.scriptEnabled/Problem und loggen Sie eine Nachricht bei der Nutzung ein. Verwenden Sie stattdessen eigene Zustände in 0_userdata.0!\naxios zu vorinstallierten modulen hinzugefügt. anfrage wird in zukunft entfernt",
+        "ru": "Предотвращение дублирования графика срабатывания с неточных часов RTC\nФиксированная отправка ToAsync и отправкаToHostAsync\nДобавлены rename/renameFile(Async) методы\nПредназначенные методы get/setBinaryState(Async) и зарегистрировать сообщение об использовании. Используйте файлы вместо!\nОпределённое использование собственных государств в javascript.X.scriptEnabled/Problem и зарегистрировать сообщение об использовании. Используйте собственные штаты в 0_userdata.0 вместо!\nдобавил axios для предварительно установленных модулей. запрос будет удален в будущем",
+        "pt": "Acionador de cronograma duplicado com relógios RTC inexatos\nEnviar fixo ToAsync e sendToHostAsync\nAdicionados métodos de renome / nomeFile (Async)\nDeprecated get/setBinaryState(Async) métodos e registrar uma mensagem no uso. Use arquivos em vez disso!\nUso obsoleto de estados próprios em javascript.X.scriptAtivado/Problem e registra uma mensagem no uso. Use estados próprios em 0_userdata.0 em vez disso!\nadicionado axios para módulos pré-instalados. pedido será removido no futuro",
+        "nl": "Voorbedachte duplicaat schema activeren met onnauwkeurige RTC klokken\nVertaling: ToAsync\nVertaling:\nGedepreceerde get/setBinaryState methodes en log een bericht op het gebruik. Gebruik Files in plaats daarvan!\nVerwijderde gebruik van eigen staaten in Javascript.X. geclaimd/Problem en log een bericht op het gebruik. Gebruik eigen staat in 0userdata.0 in plaats daarvan!\naxios toegevoegd aan geïnstalleerde modules. verzoek zal worden verwijderd in de toekomst",
+        "fr": "Déclenchement préventif de l'horaire double avec des horloges RTC inexactes\nEnvoyé fixe ToAsync et envoyerToHostAsync\nAjout des méthodes de renom/renameFile(Async)\nDéprécier les méthodes get/setBinaryState(Async) et enregistrer un message sur l'utilisation. Utilisez des Fichiers à la place!\nUtilisation dépréciée de propres états dans javascript.X.scriptEnabled/Problem et connectez un message sur l'utilisation. Utilisez ses propres états dans 0_userdata.0 à la place!\naxios ajouté aux modules pré-installés. la demande sera retirée à l'avenir",
+        "it": "Prevenire doppio programma di attivazione con orologi RTC inesatti\nInviato fisso ToAsync e inviareToHostAsync\nAggiunti i metodi di rinominare/rinominareFile(Async)\nDeprecated get/setBinaryState(Async) metodi e registrare un messaggio sull'uso. Utilizzare File invece!\nUso prestabilito dei propri stati in javascript.X.scriptEnabled/Problem e registrare un messaggio sull'uso. Utilizzare i propri stati in 0_userdata.0 invece!\naxios aggiunto ai moduli preinstallati. la richiesta sarà rimossa in futuro",
+        "es": "Previsto programa de activación con relojes RTC inexactos\nEnvío fijo ToAsync y enviar aHostAsync\nMétodos de renombre/renombreFile(Async)\nDeprecated get/setBinaryState(Async) methods and log a message on usage. ¡Usa archivos en su lugar!\nUso precatado de los propios estados en javascript.X.scriptEnabled/Problem y registra un mensaje sobre el uso. Usar estados propios en 0_userdata.0 en su lugar!\naxios añadidos a módulos preinstalados. solicitud se eliminará en el futuro",
+        "pl": "Preventorowy plan wyzwalający z niedokładnych zegarów RTC\nWysłać ToAsync i wysyłają ToHostAsynchron i wysyłają ToHostAsyncAsyn i wysyłają ToHostAsyncAsynchron i ToHostAsync\nAdded rename/rename File(Async) (ang.)\nZdeprecowane metody gotowania/setBinaryState (Asynchron) oraz sklasyfikowanie wiadomości na temat użycia. Zastosuj pliki!\nZdeprecowane użycie własnych stanów w Javascript.X.scriptEnabled/Problem i słabą wiadomość o użyciu. Wykorzystuje własne stany w 0:_userdata!\ndodał axios do przedinstalowanych modułów. w przyszłości żądanie zostanie usunięte",
+        "uk": "Запобігання дублікатів графіка запуску з неточних годинників RTC\nВиправлена відправка ToAsync і відправитиToHostAsync\nДодано перейменування / перейменуванняФайл (Async) методи\nЗняти методи та записувати повідомлення про використання. Використовуйте файли!\nРозгортання використання власних станів у javascript.X.scriptEnabled/Problem та записувати повідомлення про використання. Використовуйте власні штати в 0_userdata.0 замість!\nдодано axios до попередньо встановлених модулів. запит буде видалено в майбутньому",
+        "zh-cn": "D. 防止重复安排触发不准确的区域贸易总包\n固定的发送 ToAsync和寄托诺·阿森松\n重新命名/名称File(Async)方法\n预示的有/混合Binary(Async)的方法和逻辑是关于使用的信息。 使用电影而不是!\n解释自己国家在丛瓦文中的使用。 使用自己国家0. userdata.0 而!\n增加前遗单元的轴线。 今后将取消请求"
+      },
       "6.1.4": {
         "en": "Corrected small error in rules\nTried to fix debug mode",
         "de": "Kleine Fehler in den Regeln korrigiert\nVersuchen, Debug-Modus zu beheben",
@@ -97,18 +110,6 @@
         "es": "Tiposcript de Downgrade para prevenir errores con scripts de tiposcript globales",
         "pl": "Wspomnienie typu Downgrade (ang. Downgrade Typescript), aby zapobiec błędom w tworzeniu scenariusza globalnego",
         "zh-cn": "D. 防止全球表格错误的等级说明"
-      },
-      "6.0.1": {
-        "en": "Fixed the wizard schedule\nDone small fixes on GUI",
-        "de": "Der Wizard Zeitplan wurde behoben\nFertige kleine Korrekturen auf GUI",
-        "ru": "Исправлено расписание мастера\nНебольшие исправления на GUI",
-        "pt": "Corrigido o cronograma do assistente\nFeito pequenas correções em GUI",
-        "nl": "Het tovenaarschema is klaar\nGereed met kleine fixes op GUI",
-        "fr": "Correction de l'horaire de l'assistant\nFait de petites corrections sur GUI",
-        "it": "Risolto il programma della procedura guidata\nFatto piccole correzioni su GUI",
-        "es": "Arreglado el programa del mago\nHecho pequeñas correcciones en GUI",
-        "pl": "Fixed wizard schedule (ang.)\nDo niewielkich zmian na GUI",
-        "zh-cn": "确定妻子时间表\nA. 古伊人小偷"
       }
     },
     "desc": {
