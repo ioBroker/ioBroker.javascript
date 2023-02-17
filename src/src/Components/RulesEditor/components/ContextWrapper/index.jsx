@@ -156,7 +156,7 @@ export const ContextWrapper = ({ children, socket }) => {
                     try {
                         I18n.extendTranslations(obj.common.javascriptRules.i18n);
                     } catch (error) {
-                        console.error(`Cannot import i18n: ${error}`);
+                        console.error(`Cannot import i18n for "${obj.common.javascriptRules.name}": ${error}`);
                     }
                 }
 
@@ -169,7 +169,7 @@ export const ContextWrapper = ({ children, socket }) => {
                         ADAPTERS[obj.common.name] = null;
                     }
                 } catch (e) {
-                    console.error(`Cannot load component: ${e}`);
+                    console.error(`Cannot load component "${obj.common.javascriptRules.name}": ${e}`);
                 }
             }
 
