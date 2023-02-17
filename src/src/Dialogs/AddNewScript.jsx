@@ -18,7 +18,7 @@ import ImgBlockly from '../assets/tileBlockly.png';
 import ImgRules from '../assets/tileRules.png';
 import IconCancel from '@mui/icons-material/Cancel';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     card: {

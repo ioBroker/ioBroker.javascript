@@ -4,7 +4,7 @@ import React, {
     useState,
 } from 'react';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 import ActionSayText from '../Blocks/ActionSayText';
 import ActionSendEmail from '../Blocks/ActionSendEmail';

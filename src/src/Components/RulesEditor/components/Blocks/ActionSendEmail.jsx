@@ -1,5 +1,5 @@
 import GenericBlock from '../GenericBlock';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 class ActionSendEmail extends GenericBlock {
     constructor(props) {
@@ -67,7 +67,7 @@ _sendToFrontEnd(${config._id}, {text: 'No recipients defined'});`;
             id: 'ActionSendEmail',
             adapter: 'email',
             title: 'Sends an email',
-            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID'
+            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID',
         }
     }
 

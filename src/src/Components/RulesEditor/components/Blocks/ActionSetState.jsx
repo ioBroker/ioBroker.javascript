@@ -1,13 +1,13 @@
 import GenericBlock from '../GenericBlock';
 import withStyles from '@mui/styles/withStyles';
-import I18n from "@iobroker/adapter-react-v5/i18n";
+import { I18n } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     valueAck: {
-        color: '#b02323'
+        color: '#b02323',
     },
     valueNotAck: {
-        color: '#12ac15'
+        color: '#12ac15',
     },
 });
 
@@ -98,8 +98,7 @@ class ActionSetState extends GenericBlock {
             }
 
             if (oidStates) {
-                options = Object.keys(oidStates).map(val =>
-                    ({value: val, title: oidStates[val]}));
+                options = Object.keys(oidStates).map(val => ({ value: val, title: oidStates[val] }));
                 type = 'select';
             }
         }
@@ -133,7 +132,7 @@ class ActionSetState extends GenericBlock {
                         attr: 'value'
                     }];
                     if (this.state.settings.value !== undefined && isNaN(parseFloat(this.state.settings.value))) {
-                        settings = {value: oidMax === undefined ? 0 : oidMax};
+                        settings = { value: oidMax === undefined ? 0 : oidMax };
                     }
                     break;
 
@@ -151,7 +150,7 @@ class ActionSetState extends GenericBlock {
                     if (this.state.settings.value !== undefined &&
                         (isNaN(f) || f < oidMin || f > oidMax)
                     ) {
-                        settings = {value: oidMax};
+                        settings = { value: oidMax };
                     }
                     break;
 
@@ -164,7 +163,7 @@ class ActionSetState extends GenericBlock {
                         attr: 'value'
                     }];
                     if (this.state.settings.value !== undefined && !options.find(item => item.value === this.state.settings.value)) {
-                        settings = {value: options[0].value};
+                        settings = { value: options[0].value };
                     }
                     break;
 
@@ -188,7 +187,7 @@ class ActionSetState extends GenericBlock {
                     }
 
                     if (this.state.settings.value !== undefined && this.state.settings.value !== false && this.state.settings.value !== true) {
-                        settings = {value: false};
+                        settings = { value: false };
                     }
                     break;
 
@@ -199,7 +198,7 @@ class ActionSetState extends GenericBlock {
                         attr: 'value'
                     }];
                     if (this.state.settings.value !== undefined && this.state.settings.value !== true) {
-                        settings = {value: true};
+                        settings = { value: true };
                     }
                     break;
 
@@ -216,7 +215,7 @@ class ActionSetState extends GenericBlock {
                             (typeof this.state.settings.value.startsWith('#') &&
                                 typeof this.state.settings.value.startsWith('rgb'))
                         )) {
-                        settings = {value: '#FFFFFF'};
+                        settings = { value: '#FFFFFF' };
                     }
                     break;
 
@@ -240,12 +239,12 @@ class ActionSetState extends GenericBlock {
             }
         }
 
-        return {inputs, newSettings: settings};
+        return { inputs, newSettings: settings };
     }
 
     onTagChange(tagCard, cb, ignore, toggle, useTrigger) {
         useTrigger = useTrigger === undefined ? this.state.settings.useTrigger : useTrigger;
-        const {inputs, newSettings} = this._setInputs(useTrigger, toggle);
+        const { inputs, newSettings } = this._setInputs(useTrigger, toggle);
         inputs.unshift({
             nameRender: 'renderObjectID',
             attr: 'oid',
@@ -253,14 +252,15 @@ class ActionSetState extends GenericBlock {
             checkReadOnly: true,
         });
 
-        this.setState({inputs}, () => super.onTagChange(null, () => {
-            if (newSettings) {
-                const settings = JSON.parse(JSON.stringify(this.state.settings));
-                Object.assign(settings, newSettings);
-                this.setState(settings);
-                this.props.onChange(settings);
-            }
-        }));
+        this.setState({ inputs }, () =>
+            super.onTagChange(null, () => {
+                if (newSettings) {
+                    const settings = JSON.parse(JSON.stringify(this.state.settings));
+                    Object.assign(settings, newSettings);
+                    this.setState(settings);
+                    this.props.onChange(settings);
+                }
+            }));
     }
 
     onValueChanged(value, attr, context) {
@@ -279,7 +279,7 @@ class ActionSetState extends GenericBlock {
             icon: 'PlayForWork',
             tagCardArray: ['control', 'update'],
             title: 'Control or update some state',
-            helpDialog: 'You can use %s in the value to use the current trigger value or %id to display the triggered object ID'
+            helpDialog: 'You can use %s in the value to use the current trigger value or %id to display the triggered object ID',
         }
     }
 

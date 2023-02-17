@@ -13,7 +13,7 @@ class ActionHTTPCall extends GenericBlock {
     }
 
     renderDebug(debugMessage) {
-        return 'URL: ' + debugMessage.data.url;
+        return `URL: ${debugMessage.data.url}`;
     }
 
     onTagChange(tagCard) {
@@ -23,7 +23,7 @@ class ActionHTTPCall extends GenericBlock {
                     nameRender: 'renderModalInput',
                     attr: 'url',
                     defaultValue: 'http://mydevice.com?...',
-                    nameBlock: 'URL'
+                    nameBlock: 'URL',
                 }
             ]
         }, () => super.onTagChange(tagCard));
@@ -36,7 +36,7 @@ class ActionHTTPCall extends GenericBlock {
             id: 'ActionHTTPCall',
             icon: 'Language',
             title: 'Make a HTTP get request',
-            helpDialog: 'You can use %s in the URL to use current trigger value or %id to use the triggered object ID'
+            helpDialog: 'You can use %s in the URL to use current trigger value or %id to use the triggered object ID',
         }
     }
 

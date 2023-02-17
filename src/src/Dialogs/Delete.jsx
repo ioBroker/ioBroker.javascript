@@ -10,7 +10,7 @@ import {MdDelete as IconDelete} from 'react-icons/md';
 import IconOk from '@mui/icons-material/Check';
 import IconCancel from '@mui/icons-material/Cancel';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 import withStyles from '@mui/styles/withStyles';
 
 const styles = theme => ({

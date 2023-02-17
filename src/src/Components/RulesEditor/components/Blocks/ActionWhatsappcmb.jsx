@@ -1,5 +1,5 @@
 import GenericBlock from '../GenericBlock';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 class ActionWhatsappcmb extends GenericBlock {
     constructor(props) {
@@ -46,7 +46,7 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
                     attr: 'phone',
                     defaultValue: '',
                     frontText: 'Phone:',
-                    backText: '(optional)'
+                    backText: '(optional)',
                 }
             ]
         }, () => super.onTagChange());
@@ -59,7 +59,7 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
             id: 'ActionWhatsappcmb',
             adapter: 'whatsapp-cmb',
             title: 'Sends message via whatsapp-cmb',
-            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID'
+            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID',
         }
     }
 

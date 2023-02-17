@@ -1,5 +1,5 @@
 import GenericBlock from '../GenericBlock';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 class ActionSetStateDelayed extends GenericBlock {
     constructor(props) {
@@ -66,7 +66,7 @@ class ActionSetStateDelayed extends GenericBlock {
         useTrigger = useTrigger === undefined ? this.state.settings.useTrigger : useTrigger;
         let type = '';
         let options;
-        const {oidType, oidUnit, oidStates, oidMax, oidMin, oidRole, oidWrite, oidStep} = this.state.settings;
+        const { oidType, oidUnit, oidStates, oidMax, oidMin, oidRole, oidWrite, oidStep } = this.state.settings;
         let settings;
 
         if (oidType) {
@@ -88,8 +88,7 @@ class ActionSetStateDelayed extends GenericBlock {
             }
 
             if (oidStates) {
-                options = Object.keys(oidStates).map(val =>
-                    ({value: val, title: oidStates[val]}));
+                options = Object.keys(oidStates).map(val => ({ value: val, title: oidStates[val] }));
                 type = 'select';
             }
         }
@@ -119,10 +118,10 @@ class ActionSetStateDelayed extends GenericBlock {
                         frontText: 'with',
                         nameRender: 'renderNumber',
                         defaultValue: oidMax === undefined ? 0 : oidMax,
-                        attr: 'value'
+                        attr: 'value',
                     }];
                     if (this.state.settings.value !== undefined && isNaN(parseFloat(this.state.settings.value))) {
-                        settings = {value: oidMax === undefined ? 0 : oidMax};
+                        settings = { value: oidMax === undefined ? 0 : oidMax };
                     }
                     break;
 
@@ -134,13 +133,13 @@ class ActionSetStateDelayed extends GenericBlock {
                         max: oidMax,
                         unit: oidUnit,
                         step: oidStep,
-                        attr: 'value'
+                        attr: 'value',
                     }];
                     const f = parseFloat(this.state.settings.value);
                     if (this.state.settings.value !== undefined &&
                         (isNaN(f) || f < oidMin || f > oidMax)
                     ) {
-                        settings = {value: oidMax};
+                        settings = { value: oidMax };
                     }
                     break;
 
@@ -150,10 +149,10 @@ class ActionSetStateDelayed extends GenericBlock {
                         frontText: 'with',
                         options,
                         defaultValue: options[0].value,
-                        attr: 'value'
+                        attr: 'value',
                     }];
                     if (this.state.settings.value !== undefined && !options.find(item => item.value === this.state.settings.value)) {
-                        settings = {value: options[0].value};
+                        settings = { value: options[0].value };
                     }
                     break;
 
@@ -172,12 +171,12 @@ class ActionSetStateDelayed extends GenericBlock {
                             frontText: 'false',
                             nameRender: 'renderSwitch',
                             defaultValue: false,
-                            attr: 'value'
+                            attr: 'value',
                         });
                     }
 
                     if (this.state.settings.value !== undefined && this.state.settings.value !== false && this.state.settings.value !== true) {
-                        settings = {value: false};
+                        settings = { value: false };
                     }
                     break;
 
@@ -185,10 +184,10 @@ class ActionSetStateDelayed extends GenericBlock {
                     inputs = [{
                         nameRender: 'renderButton',
                         defaultValue: true,
-                        attr: 'value'
+                        attr: 'value',
                     }];
                     if (this.state.settings.value !== undefined && this.state.settings.value !== true) {
-                        settings = {value: true};
+                        settings = { value: true };
                     }
                     break;
 
@@ -197,7 +196,7 @@ class ActionSetStateDelayed extends GenericBlock {
                         nameRender: 'renderColor',
                         frontText: 'with',
                         defaultValue: '#FFFFFF',
-                        attr: 'value'
+                        attr: 'value',
                     }];
                     if (this.state.settings.value !== undefined &&
                         (
@@ -205,7 +204,7 @@ class ActionSetStateDelayed extends GenericBlock {
                             (typeof this.state.settings.value.startsWith('#') &&
                                 typeof this.state.settings.value.startsWith('rgb'))
                         )) {
-                        settings = {value: '#FFFFFF'};
+                        settings = { value: '#FFFFFF' };
                     }
                     break;
 
@@ -215,7 +214,7 @@ class ActionSetStateDelayed extends GenericBlock {
                         frontText: 'with',
                         nameRender: 'renderText',
                         defaultValue: '',
-                        attr: 'value'
+                        attr: 'value',
                     }];
                     break;
             }
@@ -234,16 +233,16 @@ class ActionSetStateDelayed extends GenericBlock {
             nameRender: 'renderNumber',
             defaultValue: '1000',
             noHelperText: true,
-            attr: 'delay'
+            attr: 'delay',
         });
         inputs.push({
             backText: 'clear running',
             nameRender: 'renderCheckbox',
             defaultValue: true,
-            attr: 'clearRunning'
+            attr: 'clearRunning',
         })
 
-        return {inputs, newSettings: settings};
+        return { inputs, newSettings: settings };
     }
 
     onTagChange(tagCard, cb, ignore, toggle, useTrigger) {
@@ -256,14 +255,15 @@ class ActionSetStateDelayed extends GenericBlock {
             checkReadOnly: true,
         });
 
-        this.setState({inputs}, () => super.onTagChange(null, () => {
-            if (newSettings) {
-                const settings = JSON.parse(JSON.stringify(this.state.settings));
-                Object.assign(settings, newSettings);
-                this.setState(settings);
-                this.props.onChange(settings);
-            }
-        }));
+        this.setState({inputs}, () =>
+            super.onTagChange(null, () => {
+                if (newSettings) {
+                    const settings = JSON.parse(JSON.stringify(this.state.settings));
+                    Object.assign(settings, newSettings);
+                    this.setState(settings);
+                    this.props.onChange(settings);
+                }
+            }));
     }
 
     onValueChanged(value, attr, context) {
@@ -282,7 +282,7 @@ class ActionSetStateDelayed extends GenericBlock {
             icon: 'PlayForWork',
             tagCardArray: ['control', 'update'],
             title: 'Control or update some state with delay',
-            helpDialog: 'You can use %s in the value to use the current trigger value or %id to display the triggered object ID'
+            helpDialog: 'You can use %s in the value to use the current trigger value or %id to display the triggered object ID',
         }
     }
 

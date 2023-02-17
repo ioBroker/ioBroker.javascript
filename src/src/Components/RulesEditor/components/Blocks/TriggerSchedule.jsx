@@ -10,7 +10,7 @@ import CustomModal from '../CustomModal';
 import ComplexCron from '@iobroker/adapter-react-v5/Components/ComplexCron';
 import Schedule from '@iobroker/adapter-react-v5/Components/Schedule';
 import convertCronToText from '@iobroker/adapter-react-v5/Components/SimpleCron/cronText';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 const DEFAULT_WIZARD = '{"time":{"start":"00:00","end":"24:00","mode":"hours","interval":1},"period":{"days":1}}';
 
@@ -135,7 +135,7 @@ class TriggerScheduleBlock extends GenericBlock {
                     attr: 'astro',
                     nameRender: 'renderSelect',
                     options,
-                    defaultValue: 'solarNoon'
+                    defaultValue: 'solarNoon',
                 },
                 {
                     backText: 'with offset',
@@ -163,7 +163,7 @@ class TriggerScheduleBlock extends GenericBlock {
                     attr: 'astro',
                     nameRender: 'renderSelect',
                     options,
-                    defaultValue: 'solarNoon'
+                    defaultValue: 'solarNoon',
                 },
                 {
                     backText: 'with offset', // translate
@@ -188,13 +188,13 @@ class TriggerScheduleBlock extends GenericBlock {
             options = [
                 { value: 's', title: 'second' },
                 { value: 'm', title: 'minute' },
-                { value: 'h', title: 'hour' }
+                { value: 'h', title: 'hour' },
             ];
         } else {
             options = [
                 { value: 's', title: 'seconds' },
                 { value: 'm', title: 'minutes' },
-                { value: 'h', title: 'hours' }
+                { value: 'h', title: 'hours' },
             ];
         }
 
@@ -203,18 +203,18 @@ class TriggerScheduleBlock extends GenericBlock {
                 {
                     nameRender: 'renderNumber',
                     prefix: {
-                        en: 'every'
+                        en: 'every',
                     },
                     attr: 'interval',
                     frontText: 'every',
                     defaultValue: 30,
-                    className: 'block-input-interval'
+                    className: 'block-input-interval',
                 },
                 {
                     nameRender: 'renderSelect',
                     attr: 'unit',
                     defaultValue: 's',
-                    options
+                    options,
                 }
             ]
         }, () => super.onTagChange());
@@ -276,7 +276,7 @@ class TriggerScheduleBlock extends GenericBlock {
             {this.renderNameText({
                 defaultValue: 'every hour at 0 minutes',
                 attr: 'addText',
-                signature: true
+                signature: true,
             }, !!settings['addText'] ? settings['addText'] : 'every hour at 0 minutes', onChange)}
         </div>;
     }
@@ -286,6 +286,7 @@ class TriggerScheduleBlock extends GenericBlock {
         const { attr } = input;
         let wizardText = '';
         let wizard = null;
+
         return <div key={attr}>
             <div style={{ display: 'flex', alignItems: 'center', marginTop: 7 }}>
                 <CustomInput
@@ -297,7 +298,7 @@ class TriggerScheduleBlock extends GenericBlock {
                     size="small"
                     multiline
                     rows={2}
-                    value={this.state.settings[attr + 'Text']}
+                    value={this.state.settings[`${attr}Text`]}
                     onChange={(el) => onChange(el)}
                     customValue
                 />
@@ -314,7 +315,7 @@ class TriggerScheduleBlock extends GenericBlock {
                 onApply={() =>
                     this.setState({ openDialog: false }, () =>
                         onChange({
-                            [attr + 'Text']: wizardText,
+                            [`${attr}Text`]: wizardText,
                             [attr]: wizard,
                         }))}
                 onClose={() => this.setState({ openDialog: false })}>
@@ -359,8 +360,8 @@ class TriggerScheduleBlock extends GenericBlock {
                             nameRender: 'renderWizard',
                             attr: 'wizard',
                             defaultValue: JSON.stringify(wizard),
-                        }
-                    ]
+                        },
+                    ],
                 }, () => super.onTagChange(null, () => {
                     const wizardText = Schedule.state2text(this.state.settings.wizard || wizard);
                     if (this.state.settings.wizardText !== wizardText) {
@@ -418,7 +419,7 @@ class TriggerScheduleBlock extends GenericBlock {
             id: 'TriggerScheduleBlock',
             icon: 'AccessTime',
             tagCardArray: ['cron', 'wizard', 'interval', 'at', 'astro'],
-            title: 'Triggers the rule periodically or on some specific time'
+            title: 'Triggers the rule periodically or on some specific time',
         }
     }
 

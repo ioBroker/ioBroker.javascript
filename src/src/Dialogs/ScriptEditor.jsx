@@ -11,7 +11,7 @@ import Dialog from '@mui/material/Dialog';
 import IconSave from '@mui/icons-material/Save';
 import IconCancel from '@mui/icons-material/Cancel';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 import ScriptEditorComponent from '../Components/ScriptEditorVanilaMonaco';
 

@@ -5,7 +5,7 @@ class ActionEmpty extends GenericBlock {
         super(props, ActionEmpty.getStaticData());
     }
 
-    static compile(config, context) {
+    static compile(/* config, context */) {
         return ``;
     }
 

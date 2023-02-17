@@ -1,6 +1,6 @@
 import GenericBlock from '../GenericBlock';
 import SunCalc from 'suncalc2';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 class ConditionAstrological extends GenericBlock {
     constructor(props) {
@@ -52,7 +52,7 @@ class ConditionAstrological extends GenericBlock {
                                 if (obj && (obj.common.latitude || obj.common.longitude)) {
                                     this.coordinates = {
                                         latitude: obj.common.latitude,
-                                        longitude: obj.common.longitude
+                                        longitude: obj.common.longitude,
                                     }
                                 } else {
                                     this.coordinates = null;
@@ -61,8 +61,8 @@ class ConditionAstrological extends GenericBlock {
                     } else {
                         this.coordinates = {
                             latitude,
-                            longitude
-                        }
+                            longitude,
+                        };
                     }
                 });
         }
@@ -71,7 +71,7 @@ class ConditionAstrological extends GenericBlock {
             value: name,
             title: name,
             title2: `[${ConditionAstrological._time2String(sunValue[name])}]`,
-            order: ConditionAstrological._time2String(sunValue[name])
+            order: ConditionAstrological._time2String(sunValue[name]),
         })) : [];
         options.sort((a, b) => a.order > b.order ? 1 : (a.order < b.order ? -1 : 0));
 
@@ -93,7 +93,7 @@ class ConditionAstrological extends GenericBlock {
                 {
                     nameRender: 'renderNameText',
                     defaultValue: 'Actual time of day',
-                    attr: 'text'
+                    attr: 'text',
                 },
                 {
                     frontText: tag.text,
@@ -101,7 +101,7 @@ class ConditionAstrological extends GenericBlock {
                     nameRender: 'renderSelect',
                     options,
                     doNotTranslate2: true,
-                    defaultValue: 'solarNoon'
+                    defaultValue: 'solarNoon',
                 },
                 {
                     backText: 'with offset',
@@ -121,14 +121,14 @@ class ConditionAstrological extends GenericBlock {
                     attr: 'textTime',
                     doNotTranslate: true,
                     defaultValue: time,
-                }
+                },
             ];
         } else {
             inputs = [
                 {
                     nameRender: 'renderNameText',
                     defaultValue: 'Actual time of day',
-                    attr: 'text'
+                    attr: 'text',
                 },
                 {
                     frontText: tag.text,
@@ -136,7 +136,7 @@ class ConditionAstrological extends GenericBlock {
                     nameRender: 'renderSelect',
                     options,
                     doNotTranslate2: true,
-                    defaultValue: 'solarNoon'
+                    defaultValue: 'solarNoon',
                 },
                 {
                     backText: 'with offset',
@@ -148,7 +148,7 @@ class ConditionAstrological extends GenericBlock {
                     attr: 'textTime',
                     doNotTranslate: true,
                     defaultValue: time,
-                }
+                },
             ];
         }
 
@@ -169,35 +169,35 @@ class ConditionAstrological extends GenericBlock {
                 {
                     title: '=',
                     title2: '[equal]',
-                    text: 'equal to'
+                    text: 'equal to',
                 },
                 {
                     title: '>=',
                     title2: '[greater or equal]',
-                    text: 'greater or equal to'
+                    text: 'greater or equal to',
                 },
                 {
                     title: '>',
                     title2: '[greater]',
-                    text: 'greater than'
+                    text: 'greater than',
                 },
                 {
                     title: '<=',
                     title2: '[less or equal]',
-                    text: 'less or equal to'
+                    text: 'less or equal to',
                 },
                 {
                     title: '<',
                     title2: '[less]',
-                    text: 'less than'
+                    text: 'less than',
                 },
                 {
                     title: '<>',
                     title2: '[not equal]',
-                    text: 'not equal to'
-                }
+                    text: 'not equal to',
+                },
             ],
-            title: 'Compares current time with astrological event'
+            title: 'Compares current time with astrological event',
         }
     }
 

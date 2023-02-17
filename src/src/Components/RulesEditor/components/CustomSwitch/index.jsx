@@ -1,6 +1,6 @@
 import { FormControlLabel, Switch } from '@mui/material';
 import React, { memo, useState } from 'react';
-// import I18n from '@iobroker/adapter-react-v5/i18n';
+// import { I18n } from '@iobroker/adapter-react-v5';
 import PropTypes from 'prop-types';
 import cls from './style.module.scss';
 

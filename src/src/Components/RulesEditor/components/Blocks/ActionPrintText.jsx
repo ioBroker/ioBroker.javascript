@@ -1,5 +1,5 @@
 import GenericBlock from '../GenericBlock';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 class ActionPrintText extends GenericBlock {
     constructor(props) {
@@ -24,7 +24,7 @@ class ActionPrintText extends GenericBlock {
                     nameRender: 'renderModalInput',
                     attr: 'text',
                     defaultValue: 'My device triggered',
-                    nameBlock: 'Log text'
+                    nameBlock: 'Log text',
                 }
             ]
         }, () => super.onTagChange(tagCard));
@@ -37,7 +37,7 @@ class ActionPrintText extends GenericBlock {
             id: 'ActionPrintText',
             icon: 'Subject',
             title: 'Print some text in log',
-            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID'
+            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID',
         }
     }
 

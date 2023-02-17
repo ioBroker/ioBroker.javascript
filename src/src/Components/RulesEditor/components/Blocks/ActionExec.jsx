@@ -13,7 +13,7 @@ class ActionExec extends GenericBlock {
     }
 
     renderDebug(debugMessage) {
-        return 'Exec: ' + debugMessage.data.exec;
+        return `Exec: ${debugMessage.data.exec}`;
     }
 
     onTagChange(tagCard) {
@@ -23,7 +23,7 @@ class ActionExec extends GenericBlock {
                     nameRender: 'renderModalInput',
                     attr: 'exec',
                     defaultValue: 'ls /opt/iobroker',
-                    nameBlock: 'Shell command'
+                    nameBlock: 'Shell command',
                 }
             ]
         }, () => super.onTagChange(tagCard));
@@ -36,7 +36,7 @@ class ActionExec extends GenericBlock {
             id: 'ActionExec',
             icon: 'Apps',
             title: 'Executes some shell command',
-            helpDialog: 'You can use %s in the command to use current trigger value or %id to use the triggered object ID'
+            helpDialog: 'You can use %s in the command to use current trigger value or %id to use the triggered object ID',
         }
     }
 

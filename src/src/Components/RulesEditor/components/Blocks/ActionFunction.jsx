@@ -1,5 +1,5 @@
 import GenericBlock from '../GenericBlock';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 class ActionFunction extends GenericBlock {
     constructor(props) {
@@ -9,7 +9,7 @@ class ActionFunction extends GenericBlock {
     static compile(config, context) {
         const lines = (config.func || '')
             .split('\n')
-            .map((line, i) => '        ' + line);
+            .map((line, i) => `        ${line}`);
 
         lines.unshift(`\t\t_sendToFrontEnd(${config._id}, {func: 'executed'});`);
         lines.unshift(`// user function`);
@@ -29,7 +29,7 @@ class ActionFunction extends GenericBlock {
                     attr: 'func',
                     noTextEdit: true,
                     defaultValue: 'console.log("Test")',
-                    nameBlock: 'Function'
+                    nameBlock: 'Function',
                 }
             ]
         }, () => super.onTagChange(tagCard));
@@ -42,7 +42,7 @@ class ActionFunction extends GenericBlock {
             id: 'ActionFunction',
             icon: 'Functions',
             title: 'Write your own code',
-            helpDialog: 'This is advances option. You can write your own code here and it will be executed on trigger'
+            helpDialog: 'This is advances option. You can write your own code here and it will be executed on trigger',
         }
     }
 

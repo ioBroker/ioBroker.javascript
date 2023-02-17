@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Fab from '@mui/material/Fab';
 
 import {MdGTranslate as IconNoCheck} from 'react-icons/md';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 function isIdOfGlobalScript(id) {
     return /^script\.js\.global\./.test(id);

@@ -1,5 +1,5 @@
 import GenericBlock from '../GenericBlock';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 class ActionTelegram extends GenericBlock {
     constructor(props) {
@@ -32,7 +32,7 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
 
     _setUsers(instance) {
         instance = instance || this.state.settings.instance || 'telegram.0';
-        this.cachePromises[instance] = this.cachePromises[instance] || this.props.socket.getState(instance + '.communicate.users');
+        this.cachePromises[instance] = this.cachePromises[instance] || this.props.socket.getState(`${instance}.communicate.users`);
         if (!this.state.settings._id) {
             return this.setState({
                 inputs: [
@@ -67,9 +67,9 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
                     users = users?.val ? JSON.parse(users.val) : null;
                     users = users && Object.keys(users).map(user => ({title: users[user].userName || users[user].firstName, value: user}));
                     users = users || [];
-                    users.unshift({title: 'all', value: ''});
+                    users.unshift({ title: 'all', value: '' });
                 } catch (e) {
-                    users = [{title: 'all', value: ''}];
+                    users = [{ title: 'all', value: '' }];
                 }
 
                 this.setState({
@@ -94,7 +94,7 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
                             defaultValue: 'Hallo',
                             nameBlock: '',
                             frontText: 'Text:',
-                        }
+                        },
                     ]
                 }, () => super.onTagChange());
             });
@@ -111,7 +111,7 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
             id: 'ActionTelegram',
             adapter: 'telegram',
             title: 'Sends message via telegram',
-            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID'
+            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID',
         }
     }
 

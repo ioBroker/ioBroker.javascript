@@ -6,8 +6,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 
+import { I18n } from '@iobroker/adapter-react-v5';
+
 import GenericBlock from '../GenericBlock';
-import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import HysteresisImage from '../../../assets/hysteresis.png';
 
@@ -174,109 +175,107 @@ class ConditionState extends GenericBlock {
                 {
                     title: '=',
                     title2: '[equal]',
-                    text: 'equal to'
+                    text: 'equal to',
                 },
                 {
                     title: '>=',
                     title2: '[greater or equal]',
-                    text: 'greater or equal'
+                    text: 'greater or equal',
                 },
                 {
                     title: '>',
                     title2: '[greater]',
-                    text: 'greater than'
+                    text: 'greater than',
                 },
                 {
                     title: '<=',
                     title2: '[less or equal]',
-                    text: 'less or equal'
+                    text: 'less or equal',
                 },
                 {
                     title: '<',
                     title2: '[less]',
-                    text: 'less than'
+                    text: 'less than',
                 },
                 {
                     title: '<>',
                     title2: '[not equal]',
-                    text: 'not equal to'
+                    text: 'not equal to',
                 },
                 {
                     title: '()',
                     title2: '[hysteresis]',
-                    text: 'hysteresis'
-                }
+                    text: 'hysteresis',
+                },
             ];
 
             if (oidStates) {
-                options = Object.keys(oidStates).map(val =>
-                    ({value: val, title: oidStates[val]}));
+                options = Object.keys(oidStates).map(val => ({ value: val, title: oidStates[val] }));
             }
         } else if (oidType === 'boolean') {
             tagCardArray = [
                 {
                     title: '=',
                     title2: '[equal]',
-                    text: 'equal to'
+                    text: 'equal to',
                 },
                 {
                     title: '<>',
                     title2: '[not equal]',
-                    text: 'not equal to'
+                    text: 'not equal to',
                 }
             ];
             options = [
-                {title: 'false', value: false},
-                {title: 'true', value: true},
+                { title: 'false', value: false },
+                { title: 'true', value: true },
             ];
         } else {
             tagCardArray = [
                 {
                     title: '=',
                     title2: '[equal]',
-                    text: 'equal to'
+                    text: 'equal to',
                 },
                 {
                     title: '>=',
                     title2: '[greater or equal]',
-                    text: 'greater or equal'
+                    text: 'greater or equal',
                 },
                 {
                     title: '>',
                     title2: '[greater]',
-                    text: 'greater than'
+                    text: 'greater than',
                 },
                 {
                     title: '<=',
                     title2: '[less or equal]',
-                    text: 'less or equal'
+                    text: 'less or equal',
                 },
                 {
                     title: '<',
                     title2: '[less]',
-                    text: 'less than'
+                    text: 'less than',
                 },
                 {
                     title: '<>',
                     title2: '[not equal]',
-                    text: 'not equal to'
+                    text: 'not equal to',
                 },
                 {
                     title: '.',
                     title2: '[includes]',
-                    text: 'includes'
+                    text: 'includes',
                 }
             ];
             if (oidStates) {
-                options = Object.keys(oidStates).map(val =>
-                    ({value: val, title: oidStates[val]}));
+                options = Object.keys(oidStates).map(val => ({ value: val, title: oidStates[val] }));
             }
         }
 
         let settings = null;
         if (!tagCardArray.find(item => item.title === tagCard)) {
             tagCard = tagCardArray[0].title;
-            settings = settings || {...this.state.settings};
+            settings = settings || { ...this.state.settings };
             settings.tagCard = tagCard;
         }
 
@@ -287,7 +286,7 @@ class ConditionState extends GenericBlock {
             attr: 'value',
             frontText: tagCard === '()' ? 'Limit' : (tag?.text || 'compare with'),
             doNotTranslateBack: true,
-            backText: oidUnit
+            backText: oidUnit,
         };
 
         if (options) {
@@ -298,10 +297,10 @@ class ConditionState extends GenericBlock {
                 attr: 'value',
                 frontText: tag?.text || 'compare with',
                 doNotTranslateBack: true,
-                backText: oidUnit
+                backText: oidUnit,
             };
             if (!options.find(item => item.value === this.state.settings.value)) {
-                settings = settings || {...this.state.settings};
+                settings = settings || { ...this.state.settings };
                 settings.value = options[0].value;
             }
             if (options.length <= 2) {
@@ -309,12 +308,12 @@ class ConditionState extends GenericBlock {
                     {
                         title: '=',
                         title2: '[equal]',
-                        text: 'equal to'
+                        text: 'equal to',
                     },
                     {
                         title: '<>',
                         title2: '[not equal]',
-                        text: 'not equal to'
+                        text: 'not equal to',
                     }
                 ];
             }
@@ -369,12 +368,12 @@ class ConditionState extends GenericBlock {
                 frontText: 'Condition',
                 doNotTranslate: true,
                 options: [
-                    {title: '>',  value: '>'},
-                    {title: '>=', value: '>='},
-                    {title: '<',  value: '<'},
-                    {title: '<=', value: '<='},
-                    {title: '=',  value: '='},
-                    {title: '<>', value: '<>'},
+                    { title: '>',  value: '>' },
+                    { title: '>=', value: '>=' },
+                    { title: '<',  value: '<' },
+                    { title: '<=', value: '<=' },
+                    { title: '=',  value: '=' },
+                    { title: '<>', value: '<>' },
                 ]
             });
             inputs.push({
@@ -385,14 +384,14 @@ class ConditionState extends GenericBlock {
                 attr: 'hist',
                 defaultValue: 1,
                 doNotTranslateBack: true,
-                backText: oidUnit
+                backText: oidUnit,
             });
         }
 
         const state = {
             iconTag: true,
             tagCardArray,
-            inputs
+            inputs,
         };
 
         this.setState(state,() =>
@@ -438,45 +437,45 @@ class ConditionState extends GenericBlock {
                 {
                     title: '=',
                     title2: '[equal]',
-                    text: 'equal to'
+                    text: 'equal to',
                 },
                 {
                     title: '>=',
                     title2: '[greater or equal]',
-                    text: 'greater or equal'
+                    text: 'greater or equal',
                 },
                 {
                     title: '>',
                     title2: '[greater]',
-                    text: 'greater than'
+                    text: 'greater than',
                 },
                 {
                     title: '<=',
                     title2: '[less or equal]',
-                    text: 'less or equal'
+                    text: 'less or equal',
                 },
                 {
                     title: '<',
                     title2: '[less]',
-                    text: 'less than'
+                    text: 'less than',
                 },
                 {
                     title: '<>',
                     title2: '[not equal]',
-                    text: 'not equal to'
+                    text: 'not equal to',
                 },
                 {
                     title: '.',
                     title2: '[includes]',
-                    text: 'includes'
+                    text: 'includes',
                 },
                 {
                     title: '()',
                     title2: '[hysteresis]',
-                    text: 'hysteresis'
+                    text: 'hysteresis',
                 }
             ],
-            title: 'Compares the state value with user defined value'
+            title: 'Compares the state value with user defined value',
         }
     }
 
@@ -489,7 +488,7 @@ class ConditionState extends GenericBlock {
             return <Dialog
                 open={!0}
                 maxWidth="md"
-                onClose={() => this.setState({showHysteresisHelp: false})}
+                onClose={() => this.setState({ showHysteresisHelp: false })}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
@@ -499,7 +498,7 @@ class ConditionState extends GenericBlock {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.setState({showHysteresisHelp: false})} color="primary" autoFocus>
+                    <Button onClick={() => this.setState({ showHysteresisHelp: false })} color="primary" autoFocus>
                         {I18n.t('OK')}
                     </Button>
                 </DialogActions>

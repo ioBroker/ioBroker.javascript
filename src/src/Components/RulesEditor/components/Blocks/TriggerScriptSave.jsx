@@ -7,11 +7,11 @@ class TriggerScriptSave extends GenericBlock {
         super(props, TriggerScriptSave.getStaticData());
     }
 
-    static compile(config, context) {
+    static compile(config /* , context */) {
         return Compile.NO_FUNCTION.replace('"__%%DEBUG_TRIGGER%%__"', `_sendToFrontEnd(${config._id}, {trigger: true})`);
     }
 
-    renderDebug(debugMessage) {
+    renderDebug(/* debugMessage */) {
         return I18n.t('Triggered');
     }
 
@@ -21,9 +21,9 @@ class TriggerScriptSave extends GenericBlock {
                 {
                     nameRender: 'renderNameText',
                     defaultValue: 'On script save or adapter start',
-                    attr: 'script'
+                    attr: 'script',
                 },
-            ]
+            ],
         }, () => super.onTagChange());
     }
 
@@ -33,7 +33,7 @@ class TriggerScriptSave extends GenericBlock {
             name: 'Start script',
             id: 'TriggerScriptSave',
             icon: 'PlayArrow',
-            title: 'Triggers the on script saving or the javascript instance restart'
+            title: 'Triggers the on script saving or the javascript instance restart',
         }
     }
 

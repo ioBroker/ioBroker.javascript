@@ -16,7 +16,7 @@ import MenuItem from '@mui/material/MenuItem';
 import IconOk from '@mui/icons-material/Check';
 import IconCancel from '@mui/icons-material/Cancel';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
 

@@ -25,7 +25,7 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
     }
 
     renderDebug(debugMessage) {
-        return 'Sent: ' + debugMessage.data.text;
+        return `Sent: ${debugMessage.data.text}`;
     }
 
     onTagChange(tagCard) {
@@ -58,28 +58,28 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
                     frontText: 'Sound:',
                     doNotTranslate: true,
                     options: [
-                        {value: "pushover", title: "pushover"},
-                        {value: "bike", title: "bike"},
-                        {value: "bugle", title: "bugle"},
-                        {value: "cashregister", title: "cashregister"},
-                        {value: "classical", title: "classical"},
-                        {value: "cosmic", title: "cosmic"},
-                        {value: "falling", title: "falling"},
-                        {value: "gamelan", title: "gamelan"},
-                        {value: "incoming", title: "incoming"},
-                        {value: "intermission", title: "intermission"},
-                        {value: "magic", title: "magic"},
-                        {value: "mechanical", title: "mechanical"},
-                        {value: "pianobar", title: "pianobar"},
-                        {value: "siren", title: "siren"},
-                        {value: "spacealarm", title: "spacealarm"},
-                        {value: "tugboat", title: "tugboat"},
-                        {value: "alien", title: "alien"},
-                        {value: "climb", title: "climb"},
-                        {value: "persistent", title: "persistent"},
-                        {value: "echo", title: "echo"},
-                        {value: "updown", title: "updown"},
-                        {value: "none", title: "none"},
+                        { value: 'pushover', title: 'pushover' },
+                        { value: 'bike', title: 'bike' },
+                        { value: 'bugle', title: 'bugle' },
+                        { value: 'cashregister', title: 'cashregister' },
+                        { value: 'classical', title: 'classical' },
+                        { value: 'cosmic', title: 'cosmic' },
+                        { value: 'falling', title: 'falling' },
+                        { value: 'gamelan', title: 'gamelan' },
+                        { value: 'incoming', title: 'incoming' },
+                        { value: 'intermission', title: 'intermission' },
+                        { value: 'magic', title: 'magic' },
+                        { value: 'mechanical', title: 'mechanical' },
+                        { value: 'pianobar', title: 'pianobar' },
+                        { value: 'siren', title: 'siren' },
+                        { value: 'spacealarm', title: 'spacealarm' },
+                        { value: 'tugboat', title: 'tugboat' },
+                        { value: 'alien', title: 'alien' },
+                        { value: 'climb', title: 'climb' },
+                        { value: 'persistent', title: 'persistent' },
+                        { value: 'echo', title: 'echo' },
+                        { value: 'updown', title: 'updown' },
+                        { value: 'none', title: 'none' },
                     ]
                 },
                 {
@@ -88,10 +88,10 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
                     defaultValue: -1,
                     frontText: 'Priority:',
                     options: [
-                        {value: -1, title: "quiet"},
-                        {value: 0, title: "normal"},
-                        {value: 1, title: "high-priority"},
-                        {value: 2, title: "acknowledgment"},
+                        { value: -1, title: 'quiet' },
+                        { value: 0, title: 'normal' },
+                        { value: 1, title: 'high-priority' },
+                        { value: 2, title: 'acknowledgment' },
                     ]
                 }
             ]
@@ -105,7 +105,7 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
             id: 'ActionPushover',
             adapter: 'pushover',
             title: 'Sends message via pushover',
-            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID'
+            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID',
         }
     }
 

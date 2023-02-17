@@ -106,7 +106,7 @@ const ContentBlockItems = ({ size, typeBlock, name, nameAdditionally, additional
                 if (idx > 0) {
                     newArray.push({
                         _id: Date.now(),
-                        open: true
+                        open: true,
                     });
                 }
             });
@@ -224,7 +224,7 @@ ContentBlockItems.defaultProps = {
     nameAdditionally: '',
     additionally: false,
     border: false,
-    typeBlock: ''
+    typeBlock: '',
 };
 
 ContentBlockItems.propTypes = {

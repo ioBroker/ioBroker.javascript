@@ -12,7 +12,7 @@ const DAYS = [
     30, // 9
     31, // 10
     30, // 11
-    31  // 12
+    31, // 12
 ];
 
 class ConditionTime extends GenericBlock {
@@ -53,7 +53,7 @@ class ConditionTime extends GenericBlock {
         }
         context.conditionsVars.push(`const subCond${config._id} = ${cond};`);
         context.conditionsDebug.push(`_sendToFrontEnd(${config._id}, {result: subCond${config._id}});`);
-        return 'subCond' + config._id;
+        return `subCond${config._id}`;
     }
 
     _setInputs(tagCard, withDate, ) {
@@ -113,35 +113,35 @@ class ConditionTime extends GenericBlock {
                 {
                     title: '=',
                     title2: '[equal]',
-                    text: 'equal to'
+                    text: 'equal to',
                 },
                 {
                     title: '>=',
                     title2: '[greater or equal]',
-                    text: 'greater or equal'
+                    text: 'greater or equal',
                 },
                 {
                     title: '>',
                     title2: '[greater]',
-                    text: 'greater than'
+                    text: 'greater than',
                 },
                 {
                     title: '<=',
                     title2: '[less or equal]',
-                    text: 'less or equal'
+                    text: 'less or equal',
                 },
                 {
                     title: '<',
                     title2: '[less]',
-                    text: 'less than'
+                    text: 'less than',
                 },
                 {
                     title: '<>',
                     title2: '[not equal]',
-                    text: 'not equal to'
+                    text: 'not equal to',
                 }
             ],
-            title: 'Compares current time with the user specific time'
+            title: 'Compares current time with the user specific time',
         }
     }
 

@@ -26,14 +26,14 @@ class ActionPause extends GenericBlock {
                 { value: 'ms', title: 'millisecond' },
                 { value: 's', title: 'second' },
                 { value: 'm', title: 'minute' },
-                { value: 'h', title: 'hour' }
+                { value: 'h', title: 'hour' },
             ];
         } else {
             return [
                 { value: 'ms', title: 'milliseconds' },
                 { value: 's', title: 'seconds' },
                 { value: 'm', title: 'minutes' },
-                { value: 'h', title: 'hours' }
+                { value: 'h', title: 'hours' },
             ];
         }
     }
@@ -51,7 +51,7 @@ class ActionPause extends GenericBlock {
                     nameRender: 'renderSelect',
                     attr: 'unit',
                     defaultValue: 'ms',
-                    options: this._getOptions(pause)
+                    options: this._getOptions(pause),
                 },
             ]
         }, () => super.onTagChange());
@@ -73,7 +73,7 @@ class ActionPause extends GenericBlock {
             name: 'Pause',
             id: 'ActionPause',
             icon: 'Pause',
-            title: 'Make a pause between actions'
+            title: 'Make a pause between actions',
         }
     }
 

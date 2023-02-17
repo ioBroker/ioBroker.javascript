@@ -8,7 +8,7 @@ import DialogContent from '@mui/material/DialogContent';
 
 import IconOk from '@mui/icons-material/Check';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 const DialogHelp = ({ onClose, open }) => <Dialog
     open={open}

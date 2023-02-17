@@ -14,7 +14,7 @@ import {MdPlusOne as IconPlus} from 'react-icons/md';
 
 import IconCancel from '@mui/icons-material/Cancel';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     dialog: {

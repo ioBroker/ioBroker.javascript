@@ -17,14 +17,14 @@ import Checkbox from '@mui/material/Checkbox';
 import { MdCancel as IconCancel } from 'react-icons/md';
 import { MdCheck as IconCheck } from 'react-icons/md';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     valueAck: {
-        color: '#b02323'
+        color: '#b02323',
     },
     valueNotAck: {
-        color: '#12ac15'
+        color: '#12ac15',
     },
 });
 
@@ -112,7 +112,7 @@ class TriggerState extends GenericBlock {
                                 inputRef={this.inputRef}
                                 onKeyUp={e => e.keyCode === 13 && this.onWriteValue()}
                                 value={!!this.state.simulateValue}
-                                onChange={e => this.setState({simulateValue: e.target.checked})}
+                                onChange={e => this.setState({ simulateValue: e.target.checked })}
                             />}
                             label={I18n.t('Value')}
                         />
@@ -123,7 +123,7 @@ class TriggerState extends GenericBlock {
                             fullWidth
                             onKeyUp={e => e.keyCode === 13 && this.onWriteValue()}
                             value={this.state.simulateValue}
-                            onChange={e => this.setState({simulateValue: e.target.value})}
+                            onChange={e => this.setState({ simulateValue: e.target.value })}
                         />
                     }
                     <br/>
@@ -131,7 +131,7 @@ class TriggerState extends GenericBlock {
                         control={
                             <Checkbox
                                 checked={!!this.state.simulateAck}
-                                onChange={e => this.setState({simulateAck: e.target.checked})}
+                                onChange={e => this.setState({ simulateAck: e.target.checked })}
                                 color="primary"
                             />
                         }
@@ -143,13 +143,13 @@ class TriggerState extends GenericBlock {
                         variant="contained"
                         onClick={() => this.onWriteValue()}
                         color="primary">
-                        <IconCheck/>{I18n.t('Write')}
+                        <IconCheck />{I18n.t('Write')}
                     </Button>
                     <Button color="grey"
                         variant="contained"
                         onClick={() => this.setState({openSimulate: false})}
                     >
-                        <IconCancel/>{I18n.t('Close')}
+                        <IconCancel />{I18n.t('Close')}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -162,11 +162,11 @@ class TriggerState extends GenericBlock {
                 {
                     nameRender: 'renderObjectID',
                     attr: 'oid',
-                    defaultValue: ''
+                    defaultValue: '',
                 },
                 {
                     nameRender: 'renderWriteState',
-                }
+                },
             ]
         }, () => {
             super.onTagChange();
@@ -180,7 +180,7 @@ class TriggerState extends GenericBlock {
             id: 'TriggerState',
             icon: 'FlashOn',
             tagCardArray: ['on change', 'on update'],
-            title: 'Triggers the rule on update or change of some state' // translate
+            title: 'Triggers the rule on update or change of some state', // translate
         }
     }
 

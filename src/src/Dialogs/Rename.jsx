@@ -15,7 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 import IconCancel from '@mui/icons-material/Cancel';
 import IconOk from '@mui/icons-material/Check';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 class DialogRename extends React.Component {
     constructor(props) {
