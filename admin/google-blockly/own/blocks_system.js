@@ -650,12 +650,22 @@ Blockly.Blocks['get_value'] = {
 
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('get_value_val'),    'val'],
-                [Blockly.Translate('get_value_ack'),    'ack'],
-                [Blockly.Translate('get_value_ts'),     'ts'],
-                [Blockly.Translate('get_value_lc'),     'lc'],
-                [Blockly.Translate('get_value_q') ,     'q'],
-                [Blockly.Translate('get_value_from'),   'from']
+                [Blockly.Translate('get_value_val'),      'val'],
+                [Blockly.Translate('get_value_ack'),      'ack'],
+                [Blockly.Translate('get_value_ts'),       'ts'],
+                [Blockly.Translate('get_value_lc'),       'lc'],
+                [Blockly.Translate('get_value_q') ,       'q'],
+                [Blockly.Translate('get_value_comment') , 'c'],
+                [Blockly.Translate('get_value_from'),     'from'],
+
+                [Blockly.Translate('get_attribute_name'),   'common.name'],
+                [Blockly.Translate('get_attribute_desc'),   'common.desc'],
+                [Blockly.Translate('get_attribute_unit'),   'common.unit'],
+                [Blockly.Translate('get_attribute_role'),   'common.role'],
+                [Blockly.Translate('get_attribute_state_type'), 'type'],
+                [Blockly.Translate('get_attribute_object_type'), 'common.type'],
+                [Blockly.Translate('get_attribute_read'),    'common.read'],
+                [Blockly.Translate('get_attribute_write'),   'common.write'],
             ]), 'ATTR');
 
         this.appendDummyInput()
@@ -700,8 +710,18 @@ Blockly.Blocks['get_value_var'] = {
                 [Blockly.Translate('get_value_ack'),    'ack'],
                 [Blockly.Translate('get_value_ts'),     'ts'],
                 [Blockly.Translate('get_value_lc'),     'lc'],
-                [Blockly.Translate('get_value_q') ,     'q'],
-                [Blockly.Translate('get_value_from'),   'from']
+                [Blockly.Translate('get_value_q') ,       'q'],
+                [Blockly.Translate('get_value_comment') , 'c'],
+                [Blockly.Translate('get_value_from'),     'from'],
+
+                [Blockly.Translate('get_attribute_name'),   'common.name'],
+                [Blockly.Translate('get_attribute_desc'),   'common.desc'],
+                [Blockly.Translate('get_attribute_unit'),   'common.unit'],
+                [Blockly.Translate('get_attribute_role'),   'common.role'],
+                [Blockly.Translate('get_attribute_state_type'), 'type'],
+                [Blockly.Translate('get_attribute_object_type'), 'common.type'],
+                [Blockly.Translate('get_attribute_read'),    'common.read'],
+                [Blockly.Translate('get_attribute_write'),   'common.write'],
             ]), 'ATTR');
 
         this.appendDummyInput()
@@ -745,8 +765,18 @@ Blockly.Blocks['get_value_async'] = {
                 [Blockly.Translate('get_value_ack'),    'ack'],
                 [Blockly.Translate('get_value_ts'),     'ts'],
                 [Blockly.Translate('get_value_lc'),     'lc'],
-                [Blockly.Translate('get_value_q') ,     'q'],
-                [Blockly.Translate('get_value_from'),   'from']
+                [Blockly.Translate('get_value_q') ,       'q'],
+                [Blockly.Translate('get_value_comment') , 'c'],
+                [Blockly.Translate('get_value_from'),     'from'],
+
+                [Blockly.Translate('get_attribute_name'),   'common.name'],
+                [Blockly.Translate('get_attribute_desc'),   'common.desc'],
+                [Blockly.Translate('get_attribute_unit'),   'common.unit'],
+                [Blockly.Translate('get_attribute_role'),   'common.role'],
+                [Blockly.Translate('get_attribute_state_type'), 'type'],
+                [Blockly.Translate('get_attribute_object_type'), 'common.type'],
+                [Blockly.Translate('get_attribute_read'),    'common.read'],
+                [Blockly.Translate('get_attribute_write'),   'common.write'],
             ]), 'ATTR');
 
         this.appendDummyInput()

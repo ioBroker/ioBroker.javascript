@@ -118,7 +118,16 @@ Riconoscere
 timestamp
 Ultima modifica
 Qualità
+Commento di valore
 fonte
+Nome oggetto
+Descrizione dell'oggetto
+Unità statale
+Ruolo dell'oggetto
+Tipo di stato
+Tipo di oggetto
+È leggibile dallo stato
+È stato scrivibile
 Ottieni valore statale
 Seleziona OID
 ID oggetto

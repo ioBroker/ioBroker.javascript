@@ -118,7 +118,16 @@ Erkennen
 tijdstempel
 Laatste wijziging
 Kwaliteit
+Waarde opmerking
 Bron
+Object naam
+Objectbeschrijving
+Staatseenheid
+Object rol
+Type staat
+Object type
+Staat leesbaar
+Staat beschrijfbaar
 Krijg statuswaarde
 Selecteer OID
 Object ID

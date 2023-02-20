@@ -118,7 +118,16 @@ confirmado
 Timestamp
 Última mudança
 Qualidade
+Comentário de valor
 Fonte
+Nome do objeto
+Descrição do objeto
+unidade estadual
+função do objeto
+tipo de estado
+Tipo de objeto
+O estado é legível
+É estado gravável
 Tome o valor do estado
 Selecionar ponto de dados
 ID do objeto

@@ -118,7 +118,16 @@ get_value_ack
 get_value_ts
 get_value_lc
 get_value_q
+get_value_comment
 get_value_from
+get_common_name
+get_common_desc
+get_common_unit
+get_common_role
+get_common_state_type
+get_common_object_type
+get_common_read
+get_common_write
 get_value_async
 field_oid
 field_oid_OID

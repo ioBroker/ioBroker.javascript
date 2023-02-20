@@ -118,7 +118,16 @@ Reconocer
 Marca de tiempo
 Ultimo cambio
 Calidad
+Comentario de valor
 Fuente
+Nombre del objeto
+Descripción del objeto
+unidad estatal
+Rol de objeto
+tipo de estado
+Tipo de objeto
+Es estado legible
+Es el estado escribible
 Obtener valor de estado
 Seleccionar OID
 ID del objeto

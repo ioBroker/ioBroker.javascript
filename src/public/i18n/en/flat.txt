@@ -118,7 +118,16 @@ Acknowledge
 Timestamp
 Last change 
 Quality
+Value comment
 Source
+Object name
+Object description
+State unit
+Object role
+State type
+Object type
+Is state readable
+Is state writable
 Get state value
 Select OID
 Object ID

@@ -13,6 +13,7 @@ const rename  = require('gulp-rename');
 const replace = require('gulp-replace');
 const cp      = require('child_process');
 const JSZip   = require('jszip');
+const {Words: data, aWords} = require('./src/public/google-blockly/own/blocks_words');
 
 function deleteFoldersRecursive(path, exceptions) {
     if (fs.existsSync(path)) {
@@ -226,7 +227,9 @@ function lang2data(lang, isFlat) {
             }
         }
     }
-    if (!count) return isFlat ? '' : '{\n}';
+    if (!count) {
+        return isFlat ? '' : '{\n}';
+    }
     if (isFlat) {
         return str;
     } else {
@@ -419,6 +422,8 @@ function languages2words(src) {
 }
 
 gulp.task('blockly2languagesFlat', done => {
+    console.log('_______DEPRECATED_____: use blocklyWords2json instead');
+
     const src = './src/public/';
     const data = require('./src/public/google-blockly/own/blocks_words.js').Words;
     const langs = Object.assign({}, languages);
@@ -460,7 +465,7 @@ gulp.task('blockly2languagesFlat', done => {
 
             fs.writeFileSync(`${src}i18n/${ll}/flat.txt`, lang2data(langs[ll], langs.en));
         }
-        fs.writeFileSync(src + 'i18n/flat.txt', keys.join('\n'));
+        fs.writeFileSync(`${src}i18n/flat.txt`, keys.join('\n'));
     } else {
         console.error('Cannot read or parse blocks_words.js');
     }
@@ -468,6 +473,7 @@ gulp.task('blockly2languagesFlat', done => {
     done();
 });
 gulp.task('blocklyLanguagesFlat2words', done => {
+    console.log('_______DEPRECATED_____: use blocklyJson2words instead');
     const src = './src/public/';
     const dirs = fs.readdirSync(`${src}i18n/`);
     const langs = {};
@@ -561,6 +567,181 @@ gulp.task('blocklyLanguagesFlat2words', done => {
             for (const lang_ in data[word_]) {
                 if (data[word_].hasOwnProperty(lang_)) {
                     if (data[word_].en.indexOf('--') !== -1) {
+                        line += `'${lang_}': '${padRight(`${data[word_].en.replace(/'/g, "\\'")}',`, 50)} `;
+                    } else {
+                        line += `'${lang_}': '${padRight(`${data[word_][lang_].replace(/'/g, "\\'")}',`, 50)} `;
+                    }
+                }
+            }
+            if (line) {
+                line = line.trim();
+                line = line.substring(0, line.length - 1);
+            }
+            text += line + '};\n';
+        }
+    }
+
+    text += '\nBlockly.Translate = function (word, lang) {\n' +
+        '    lang = lang || systemLang;\n' +
+        '    if (Blockly.Words && Blockly.Words[word]) {\n' +
+        '        return Blockly.Words[word][lang] || Blockly.Words[word].en;\n' +
+        '    } else {\n' +
+        '        return word;\n' +
+        '    }\n' +
+        '};\n';
+
+    text += '\nif (typeof module !== \'undefined\' && typeof module.parent !== \'undefined\') {\n' +
+        '    module.exports = Blockly;\n' +
+        '}';
+    fs.writeFileSync('./src/public/google-blockly/own/blocks_words.js', text);
+
+    done();
+});
+
+gulp.task('blocklyWords2json', done => {
+    const src = './src/public/';
+    const data = require('./src/public/google-blockly/own/blocks_words.js').Words;
+    const langs = Object.assign({}, languages);
+    if (data) {
+        for (const word in data) {
+            if (data.hasOwnProperty(word)) {
+                for (const lang in data[word]) {
+                    if (data[word].hasOwnProperty(lang)) {
+                        langs[lang] = langs[lang] || {};
+                        langs[lang][word] = data[word][lang];
+                        //  pre-fill all other languages
+                        for (const j in langs) {
+                            if (langs.hasOwnProperty(j)) {
+                                langs[j][word] = langs[j][word] || EMPTY;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        const keys = Object.keys(langs.en);
+        // keys.sort();
+        for (const l in langs) {
+            if (!langs.hasOwnProperty(l)) continue;
+            const obj = {};
+            for (let k = 0; k < keys.length; k++) {
+                obj[keys[k]] = langs[l][keys[k]];
+            }
+            langs[l] = obj;
+        }
+        if (!fs.existsSync(`${src}i18n/`)) {
+            fs.mkdirSync(`${src}i18n/`);
+        }
+        for (const ll in langs) {
+            if (!langs.hasOwnProperty(ll)) continue;
+            if (!fs.existsSync(`${src}i18n/${ll}`)) {
+                fs.mkdirSync(`${src}i18n/${ll}`);
+            }
+
+            fs.writeFileSync(`${src}i18n/${ll}/translations.json`, lang2data(langs[ll]));
+        }
+    } else {
+        console.error('Cannot read or parse blocks_words.js');
+    }
+
+    done();
+});
+gulp.task('blocklyJson2words', done => {
+    const src = './src/public/';
+    const dirs = fs.readdirSync(`${src}i18n/`);
+    const langs = {};
+    const bigOne = {};
+    const order = Object.keys(languages);
+    dirs.sort((a, b) => {
+        const posA = order.indexOf(a);
+        const posB = order.indexOf(b);
+        if (posA === -1 && posB === -1) {
+            if (a > b) return 1;
+            if (a < b) return -1;
+            return 0;
+        } else if (posA === -1) {
+            return -1;
+        } else if (posB === -1) {
+            return 1;
+        } else {
+            if (posA > posB) return 1;
+            if (posA < posB) return -1;
+            return 0;
+        }
+    });
+
+    for (let l = 0; l < dirs.length; l++) {
+        if (dirs[l] === 'flat.txt') {
+            continue;
+        }
+        const lang = dirs[l];
+        const values = JSON.parse(fs.readFileSync(`${src}i18n/${lang}/translations.json`).toString());
+        langs[lang] = {};
+        Object.keys(values).forEach(word => {
+            langs[lang][word] = langs[lang][word] || {};
+            langs[lang][word] = values[word];
+        });
+
+        const words = langs[lang];
+        for (const word in words) {
+            if (words.hasOwnProperty(word)) {
+                bigOne[word] = bigOne[word] || {};
+                if (words[word] !== EMPTY) {
+                    bigOne[word][lang] = words[word];
+                }
+            }
+        }
+    }
+    // read actual words.js
+    const aWords = require('./src/public/google-blockly/own/blocks_words.js').Words;
+
+    const temporaryIgnore = ['pt', 'fr', 'nl', 'es', 'flat.txt'];
+    if (aWords) {
+        // Merge words together
+        for (const w in aWords) {
+            if (aWords.hasOwnProperty(w)) {
+                if (!bigOne[w]) {
+                    console.warn(`Take from actual words.js: ${w}`);
+                    bigOne[w] = aWords[w];
+                }
+                dirs.forEach(lang => {
+                    if (temporaryIgnore.includes(lang)) {
+                        return;
+                    }
+                    if (!bigOne[w][lang]) {
+                        console.warn(`Missing "${lang}": ${w}`);
+                    }
+                });
+            }
+        }
+    }
+
+    let text = 'if (typeof Blockly === \'undefined\') {\n';
+    text += '    var Blockly = {};\n';
+    text += '}\n';
+    text += '// translations\n';
+    text += 'Blockly.Words = {};\n';
+    const data = bigOne;
+    let group = '';
+    let block = '';
+    for (const word_ in data) {
+        if (data.hasOwnProperty(word_)) {
+            if (word_[0] >= 'A' && word_[0] <= 'Z') {
+                text += `\n// --- ${word_.toUpperCase()} --------------------------------------------------\n`;
+                group = word_.toLowerCase();
+            } else {
+                const parts = word_.split('_');
+                if (parts[0] !== block) {
+                    block = parts[0];
+                    text += `\n// --- ${group} ${block} --------------------------------------------------\n`;
+                }
+            }
+
+            text += `Blockly.Words['${padRight(`${word_.replace(/'/g, "\\'")}']`, 40)}= {`;
+            let line = '';
+            for (const lang_ in data[word_]) {
+                if (data[word_].hasOwnProperty(lang_)) {
+                    if (data[word_].en.includes('--')) {
                         line += `'${lang_}': '${padRight(`${data[word_].en.replace(/'/g, "\\'")}',`, 50)} `;
                     } else {
                         line += `'${lang_}': '${padRight(`${data[word_][lang_].replace(/'/g, "\\'")}',`, 50)} `;

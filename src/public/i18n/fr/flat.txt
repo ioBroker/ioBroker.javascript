@@ -118,7 +118,16 @@ Reconnaître
 Horodatage
 Dernier changement
 Qualité
+Commentaire sur la valeur
 La source
+Nom de l'objet
+Descriptif de l'objet
+Unité d'état
+Rôle d'objet
+Type d'état
+Type d'objet
+L'état est-il lisible
+L'état est-il accessible en écriture
 Obtenir la valeur de l'état
 Sélectionnez OID
 ID de l'objet

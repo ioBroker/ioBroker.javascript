@@ -118,7 +118,16 @@ Acknowledge
 Timestamp
 Last change 
 Quality
+Wartość komentarza
 Source
+Nazwa obiektu
+Opis obiektu
+Jednostka państwowa
+Rola obiektu
+Typ stanu
+Rodzaj obiektu
+Czy stan jest czytelny
+Czy stan jest zapisywalny
 Get state value
 Select OID
 Object ID

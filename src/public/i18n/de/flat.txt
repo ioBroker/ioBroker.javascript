@@ -118,7 +118,16 @@ bestätigt
 Zeitstempel
 Letze Änderung
 Qualität
+Wertkommentar
 Quelle
+Objektname
+Objektbeschreibung
+Zustands-Einheit
+Objektrolle
+Zustandstyp
+Objekttyp
+Zustand lesbar ist
+Zustand beschreibbar ist
 Zustandswert nehmen
 Datenpunkt auswählen
 Objekt ID
