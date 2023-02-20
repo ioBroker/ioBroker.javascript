@@ -685,7 +685,11 @@ Blockly.Blocks['get_value'] = {
 Blockly.JavaScript['get_value'] = function(block) {
     var oid  = block.getFieldValue('OID');
     var attr = block.getFieldValue('ATTR');
-    return ['getState("' + oid + '").' + attr, Blockly.JavaScript.ORDER_ATOMIC];
+    if (attr === 'type' || attr.indexOf('.') !== -1) {
+        return ['(await getObjectAsync("' + oid + '")).' + attr, Blockly.JavaScript.ORDER_ATOMIC];
+    } else {
+        return ['getState("' + oid + '").' + attr, Blockly.JavaScript.ORDER_ATOMIC];
+    }
 };
 
 // --- get value var --------------------------------------------------
@@ -741,7 +745,11 @@ Blockly.Blocks['get_value_var'] = {
 Blockly.JavaScript['get_value_var'] = function(block) {
     var oid  = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     var attr = block.getFieldValue('ATTR');
-    return ['getState(' + oid + ').' + attr, Blockly.JavaScript.ORDER_ATOMIC];
+    if (attr === 'type' || attr.indexOf('.') !== -1) {
+        return ['(await getObjectAsync("' + oid + '")).' + attr, Blockly.JavaScript.ORDER_ATOMIC];
+    } else {
+        return ['getState(' + oid + ').' + attr, Blockly.JavaScript.ORDER_ATOMIC];
+    }
 };
 
 // --- get value async--------------------------------------------------
@@ -802,7 +810,11 @@ Blockly.JavaScript['get_value_async'] = function(block) {
     var oid  = block.getFieldValue('OID');
     var attr = block.getFieldValue('ATTR');
     var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    return 'getState("' + oid + '", async function (err, state) {\n   var value = state.' + attr + ';\n' + statement + '});\n';
+    if (attr === 'type' || attr.indexOf('.') !== -1) {
+        return 'getObjectAsync("' + oid + '", async function (err, obj) {\n   var value = obj.' + attr + ';\n' + statement + '});\n';
+    } else {
+        return 'getState("' + oid + '", async function (err, state) {\n   var value = state.' + attr + ';\n' + statement + '});\n';
+    }
 };
 
 // --- select OID --------------------------------------------------
