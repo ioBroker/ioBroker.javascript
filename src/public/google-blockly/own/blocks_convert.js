@@ -367,5 +367,5 @@ Blockly.Blocks.convert_jsonata = {
     }
 };
 Blockly.JavaScript.convert_jsonata = function (block) {
-    return ['jsonataExpression(' + Blockly.JavaScript.valueToCode(block, 'TARGET', Blockly.JavaScript.ORDER_ATOMIC) + ',' + Blockly.JavaScript.valueToCode(block, 'EXPRESSION', Blockly.JavaScript.ORDER_ATOMIC) + ')', Blockly.JavaScript.ORDER_ATOMIC];
+    return ['(await jsonataExpression(' + Blockly.JavaScript.valueToCode(block, 'TARGET', Blockly.JavaScript.ORDER_ATOMIC) + ',' + Blockly.JavaScript.valueToCode(block, 'EXPRESSION', Blockly.JavaScript.ORDER_ATOMIC) + '))', Blockly.JavaScript.ORDER_ATOMIC];
 };
