@@ -90,8 +90,8 @@ class TriggerState extends GenericBlock {
                     this.setState({
                         openSimulate: true,
                         simulateValue: this.state.settings.oidType === 'boolean' ?
-                            window.localStorage.getItem('javascript.app.' + this.state.settings.oid) === 'true' :
-                            (window.localStorage.getItem('javascript.app.' + this.state.settings.oid) || ''),
+                            window.localStorage.getItem(`javascript.app.${this.state.settings.oid}`) === 'true' :
+                            (window.localStorage.getItem(`javascript.app.${this.state.settings.oid}`) || ''),
                         simulateAck: window.localStorage.getItem(`javascript.app.${this.state.settings.oid}_ack`) === 'true'
                     });
                     setTimeout(() => this.inputRef.current?.focus(), 200);
@@ -100,7 +100,7 @@ class TriggerState extends GenericBlock {
                 open={!!this.state.openSimulate}
                 TransitionComponent={Transition}
                 keepMounted
-                onClose={() => this.setState({openSimulate: false})}
+                onClose={() => this.setState({ openSimulate: false })}
                 aria-labelledby="simulate-dialog-slide-title"
                 aria-describedby="simulate-dialog-slide-description"
             >
@@ -147,7 +147,7 @@ class TriggerState extends GenericBlock {
                     </Button>
                     <Button color="grey"
                         variant="contained"
-                        onClick={() => this.setState({openSimulate: false})}
+                        onClick={() => this.setState({ openSimulate: false })}
                     >
                         <IconCancel />{I18n.t('Close')}
                     </Button>

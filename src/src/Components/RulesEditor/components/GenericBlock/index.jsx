@@ -32,8 +32,8 @@ class GenericBlock extends PureComponent {
         super(props);
         item = item || {};
         let settings = props.settings || {
-            tagCard: item.tagCardArray ? typeof item.tagCardArray[0] !== 'string' ? item.tagCardArray[0].title : item.tagCardArray[0] : ''
-        }
+            tagCard: item.tagCardArray ? typeof item.tagCardArray[0] !== 'string' ? item.tagCardArray[0].title : item.tagCardArray[0] : '',
+        };
 
         if (!settings.tagCard && item.tagCardArray) {
             settings.tagCard = typeof item.tagCardArray[0] !== 'string' ? item.tagCardArray[0].title : item.tagCardArray[0];
@@ -193,7 +193,7 @@ class GenericBlock extends PureComponent {
         const { attr, backText, frontText, openCheckbox, doNotTranslate, doNotTranslateBack } = input;
         let visibility = true;
         if (openCheckbox) {
-            visibility = typeof settings['offset'] === 'boolean' ? settings['offset'] : true
+            visibility = typeof settings['offset'] === 'boolean' ? settings['offset'] : true;
         }
         return visibility ? <div key={attr} className={Utils.clsx(cls.displayFlex, cls.blockMarginTop)}>
             {frontText && <div className={cls.frontText}>{doNotTranslate ? frontText : I18n.t(frontText)}</div>}
@@ -270,7 +270,7 @@ class GenericBlock extends PureComponent {
                     value={value}
                     onChange={val => {
                         console.log(val);
-                        onChange(val)
+                        onChange(val);
                     }}
                 />
                 {backText && <div style={{ marginLeft: 20 }} className={cls.backText}>{doNotTranslateBack ? backText : I18n.t(backText)}</div>}
@@ -314,11 +314,11 @@ class GenericBlock extends PureComponent {
     renderObjectID = (input, value, onChange) => {
         const { attr, openCheckbox, checkReadOnly } = input;
         const { settings } = this.state;
-        const showSelectId = this.state['showSelectId' + attr];
+        const showSelectId = this.state[`showSelectId${attr}`];
         const { className, socket } = this.props;
         let visibility = true;
         if (openCheckbox) {
-            visibility = typeof settings['offset'] === 'boolean' ? settings['offset'] : true
+            visibility = typeof settings['offset'] === 'boolean' ? settings['offset'] : true;
         }
 
         if (settings[attr] && !this.state[settings[attr]]) {
@@ -328,8 +328,9 @@ class GenericBlock extends PureComponent {
                         this.findIcon(obj)
                             .then(icon => this.setState({
                                 [settings[attr]]: obj,
-                                [settings[attr] + '___icon']: icon,
-                                error: checkReadOnly && this.lastObjectIdChange && Date.now() - this.lastObjectIdChange < 1000 && obj?.common?.write === false ? I18n.t('Read only ID selected: %s', settings[attr]) : ''
+                                [`${settings[attr]}___icon`]: icon,
+                                error: checkReadOnly && this.lastObjectIdChange && Date.now() - this.lastObjectIdChange < 1000 && obj?.common?.write === false ?
+                                    I18n.t('Read only ID selected: %s', settings[attr]) : '',
                             }))
                     });
             }, 0);
@@ -350,14 +351,14 @@ class GenericBlock extends PureComponent {
                     customValue
                 />
                 <CustomButton
-                    icon={this.state[this.state.settings[input.attr] + '___icon']}
+                    icon={this.state[`${this.state.settings[input.attr]}___icon`]}
                     square
                     style={{ marginLeft: 7 }}
                     value='...'
                     className={className}
                     onClick={() => {
                         const settings = {};
-                        settings['showSelectId' + attr] = true;
+                        settings[`showSelectId${attr}`] = true;
                         this.setState(settings);
                     }}
                 />
@@ -365,7 +366,7 @@ class GenericBlock extends PureComponent {
             {this.state[this.state.settings[input.attr]] && <div className={Utils.clsx(cls.nameBlock, cls.displayItalic)}>{Utils.getObjectNameFromObj(this.state[settings[attr]], I18n.getLanguage())}</div>}
             {showSelectId ? <DialogSelectID
                 imagePrefix="../.."
-                dialogName={'javascript'}
+                dialogName="javascript"
                 themeType={Utils.getThemeName()}
                 socket={socket}
                 statesOnly
@@ -385,16 +386,16 @@ class GenericBlock extends PureComponent {
                                 this.lastObjectIdChange = Date.now();
                                 onChange({
                                     [attr]: selected,
-                                    [attr + 'Role']: obj.common.role,
-                                    [attr + 'Type']: obj.common.type,
-                                    [attr + 'Unit']: obj.common.unit,
-                                    [attr + 'States']: obj.common.states,
-                                    [attr + 'Min']: obj.common.min,
-                                    [attr + 'Max']: obj.common.max,
-                                    [attr + 'Step']: obj.common.step,
-                                    [attr + 'Def']: obj.common.def,
-                                    [attr + 'Write']: obj.common.write,
-                                    [attr + 'Read']: obj.common.read,
+                                    [`${attr}Role`]: obj.common.role,
+                                    [`${attr}Type`]: obj.common.type,
+                                    [`${attr}Unit`]: obj.common.unit,
+                                    [`${attr}States`]: obj.common.states,
+                                    [`${attr}Min`]: obj.common.min,
+                                    [`${attr}Max`]: obj.common.max,
+                                    [`${attr}Step`]: obj.common.step,
+                                    [`${attr}Def`]: obj.common.def,
+                                    [`${attr}Write`]: obj.common.write,
+                                    [`${attr}Read`]: obj.common.read,
                                 }, null, () =>
                                     this.props.setOnUpdate && this.props.setOnUpdate(true))
                             }))}
@@ -546,6 +547,8 @@ class GenericBlock extends PureComponent {
         let value = '';
         if (context.trigger?.oidType) {
             value = '.replace(/%s/g, obj.state.val).replace(/%id/g, obj.id).replace(/%name/g, obj.common && obj.common.name).replace(/%old/g, obj.oldState.val)';
+        } else if (context.conditionsStates.length) {
+            value = `.replace(/%s/g, ${context.conditionsStates[0].name}).replace(/%id/g, "${context.conditionsStates[0].id}")`;
         }
         return value;
     }

@@ -102,6 +102,7 @@ function compileTriggers(json, context, blocks) {
                 justCheck: hist ? false : (json.justCheck || (!json.conditions.length || !json.conditions[0].length)),
                 conditionsDebug: [],
                 conditionsVars: [],
+                conditionsStates: [],
             };
             const text = found.compile(trigger, _context);
             const conditions = compileConditions(json.conditions, _context, blocks);
@@ -109,15 +110,15 @@ function compileTriggers(json, context, blocks) {
             const _else = compileActions(json.actions.else, _context, blocks);
 
             // find indent
-            vars.push('cond' + i);
+            vars.push(`cond${i}`);
 
             if (_context.prelines && _context.prelines.length) {
                 _context.prelines.forEach(line => prelines.push(line));
             }
 
             if (text.includes('    __%%CONDITIONS_VARS%%__')) {
-                _context.conditionsVars = _context.conditionsVars.map((v, i) => i ? '    ' + v : v);
-                _context.conditionsDebug = _context.conditionsDebug.map((v, i) => i ? '    ' + v : v);
+                _context.conditionsVars = _context.conditionsVars.map((v, i) => i ? `    ${v}` : v);
+                _context.conditionsDebug = _context.conditionsDebug.map((v, i) => i ? `    ${v}` : v);
             }
 
             triggers.push(
@@ -135,10 +136,10 @@ function compileTriggers(json, context, blocks) {
     let text = triggers.join('\n\n');
 
     if (!json.justCheck || hist) {
-        text = vars.map(v => `let ${v} = false;`).join('\n') + '\n\n' + text;
+        text = `${vars.map(v => `let ${v} = false;`).join('\n')}\n\n${text}`;
     }
     if (prelines) {
-        text = prelines.join('\n') + '\n\n' + text;
+        text = `${prelines.join('\n')}\n\n${text}`;
     }
 
     return text;
@@ -172,7 +173,7 @@ function compileConditions(conditions, context, blocks) {
                     _ors.push(found.compile(block, context));
                 }
             });
-            result.push('(' + _ors.join(') &&\n                  (') + ')');
+            result.push(`(${_ors.join(') &&\n                  (')})`);
         } else {
             const found = findBlock(ors.id, blocks);
             if (found) {
@@ -188,7 +189,7 @@ function compileConditions(conditions, context, blocks) {
     if (result.length === 1) {
         return result[0] || 'true';
     } else {
-        return '(' + result.join(') || (') + ')';
+        return `(${result.join(') || (')})`;
     }
 }
 
@@ -224,7 +225,7 @@ function json2code(json, blocks) {
 
     code += `\n/*const demo = ${JSON.stringify(json, null, 2)};*/\n`;
 
-    return code + '\n//' + JSON.stringify(json);
+    return `${code}\n//${JSON.stringify(json)}`;
 }
 
 const Compile = {
