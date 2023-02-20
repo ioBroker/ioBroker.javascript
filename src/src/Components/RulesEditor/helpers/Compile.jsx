@@ -223,7 +223,8 @@ function json2code(json, blocks) {
     const compiled = compile(json, blocks);
     code += compiled;
 
-    code += `\n/*const demo = ${JSON.stringify(json, null, 2)};*/\n`;
+    code += `\n/*\nconst demo = ${JSON.stringify(json, null, 2)
+        .replace(/\*\//g, '* /')};\n*/\n`;
 
     return `${code}\n//${JSON.stringify(json)}`;
 }

@@ -184,7 +184,7 @@ class GenericBlock extends PureComponent {
     renderNameText = ({ attr, signature, doNotTranslate, defaultValue }, value) => <div
         className={Utils.clsx(!!signature ? cls.displayItalic : cls.displayFlex, cls.blockMarginTop)}
         key={attr}>
-        {doNotTranslate ? defaultValue : I18n.t(defaultValue)}
+        {value ? (doNotTranslate ? value : I18n.t(value)) : (doNotTranslate ? defaultValue : I18n.t(defaultValue))}
     </div>;
 
     renderNumber = (input, value, onChange) => {

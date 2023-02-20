@@ -114,7 +114,7 @@ class TriggerScheduleBlock extends GenericBlock {
             value: name,
             title: name,
             title2: `[${TriggerScheduleBlock._time2String(sunValue[name])}]`,
-            order: sunValue ? TriggerScheduleBlock._time2String(sunValue[name]) : '??:??'
+            order: sunValue ? TriggerScheduleBlock._time2String(sunValue[name]) : '??:??',
         })) : [];
         options.sort((a, b) => a.order > b.order ? 1 : (a.order < b.order ? -1 : 0));
 
@@ -123,7 +123,7 @@ class TriggerScheduleBlock extends GenericBlock {
         if (astro && sunValue && sunValue[astro]) {
             const astroTime = new Date(sunValue[astro]);
             offset && astroTime.setMinutes(astroTime.getMinutes() + parseInt(offsetValue, 10));
-            time = `(at ${TriggerScheduleBlock._time2String(astroTime)})`;// translate
+            time = `(at ${TriggerScheduleBlock._time2String(astroTime)})`; // translate
         }
 
         let inputs;
@@ -249,9 +249,9 @@ class TriggerScheduleBlock extends GenericBlock {
             <div style={{ display: 'flex', alignItems: 'baseline' }}>
                 <div style={{ width: '100%' }}>
                     {this.renderText({
-                        attr: 'text',
+                        attr: attr,
                         defaultValue: value
-                    }, !!settings['text'] ? settings['text'] : value, onChange)}
+                    }, !!settings[attr] ? settings[attr] : value, onChange)}
                 </div>
                 <CustomButton
                     square
@@ -264,20 +264,23 @@ class TriggerScheduleBlock extends GenericBlock {
             <CustomModal
                 open={this.state.openDialog}
                 onApply={async () => {
-                    await onChange(textCron, 'text');
+                    await onChange(textCron, attr);
                     await onChange(convertCronToText(textCron, I18n.getLanguage()), 'addText');
                     this.setState({ openDialog: false });
                 }}
                 onClose={() => this.setState({ openDialog: false })}>
                 <ComplexCron
-                    cronExpression={!!settings[input.attr] ? '' : settings[attr]}
-                    onChange={el => {textCron = el}} />
+                    cronExpression={!!settings[attr] ? settings[attr] : ''}
+                    onChange={el => textCron = el}
+                    language={I18n.getLanguage()}
+                />
             </CustomModal>
             {this.renderNameText({
-                defaultValue: 'every hour at 0 minutes',
+                defaultValue: I18n.t('every hour at 0 minutes'),
                 attr: 'addText',
                 signature: true,
-            }, !!settings['addText'] ? settings['addText'] : 'every hour at 0 minutes', onChange)}
+                doNotTranslate: true,
+            }, !!settings['addText'] ? settings['addText'] : I18n.t('every hour at 0 minutes'), onChange)}
         </div>;
     }
 
@@ -367,7 +370,7 @@ class TriggerScheduleBlock extends GenericBlock {
                     if (this.state.settings.wizardText !== wizardText) {
                         const settings = JSON.parse(JSON.stringify(this.state.settings));
                         settings.wizardText = wizardText;
-                        this.setState({settings});
+                        this.setState({ settings });
                         this.props.onChange(settings);
                     }
                 }));
