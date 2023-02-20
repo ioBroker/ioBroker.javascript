@@ -27,7 +27,7 @@ const styles = theme => ({
         flexGrow: 1,
         display: 'flex',
         width: '100%',
-        height: '100%'
+        height: '100%',
     },
     menuDiv: {
         overflow: 'hidden',
@@ -39,42 +39,44 @@ const styles = theme => ({
             height: '100%',
         },
         '& .layout-splitter': {
-            background: theme.palette.mode === 'dark' ? '#595858' : '#ccc;'
-        }
+            background: theme.palette.mode === 'dark' ? '#595858' : '#ccc;',
+        },
     },
     mainDiv: {
         width: '100%',
         height: '100%',
         overflow: 'hidden',
     },
-    /*appBarWithMenu: {
+    /*
+    appBarWithMenu: {
         width: `calc(100% - ${Theme.menu.width}px)`,
         marginLeft: Theme.menu.width,
     },
     appBarWithoutMenu: {
         width: `100%`,
         marginLeft: 0,
-    },*/
+    },
+    */
     content: {
         width: '100%',
         height: '100%',
         backgroundColor: theme.palette.background && theme.palette.background.default,
-        position: 'relative'
+        position: 'relative',
     },
     splitterDivWithMenu: {
         width: `calc(100% - 300px)`,
-        height: '100%'
+        height: '100%',
     },
     menuDivWithoutMenu: {
         '&>div:first-child': {
-            display: 'none'
+            display: 'none',
         },
         '&>.layout-splitter': {
-            display: 'none'
+            display: 'none',
         },
     },
     progress: {
-        margin: 100
+        margin: 100,
     },
     menuOpenCloseButton: {
         position: 'absolute',
@@ -90,8 +92,8 @@ const styles = theme => ({
         color: theme.palette.primary.main,
         paddingLeft: 3,
         '&:hover': {
-            color: 'white'
-        }
+            color: 'white',
+        },
     },
     showLogButton: {
         position: 'absolute',
@@ -107,9 +109,9 @@ const styles = theme => ({
         color: theme.palette.primary.main,
         paddingLeft: 8,
         '&:hover': {
-            color: 'white'
-        }
-    }
+            color: 'white',
+        },
+    },
 });
 
 class App extends GenericApp {
@@ -189,10 +191,10 @@ class App extends GenericApp {
                         newState.instances.sort();
                         changed = true;
                         // request alive
-                        this.socket.subscribeState(obj._id + '.alive', this.onInstanceAliveChange);
+                        this.socket.subscribeState(`${obj._id}.alive`, this.onInstanceAliveChange);
                     }
                 } else if (!obj && this.state.instances.includes(id)) {
-                    this.socket.unsubscribeState(id + '.alive', this.onInstanceAliveChange);
+                    this.socket.unsubscribeState(`${id}.alive`, this.onInstanceAliveChange);
                     newState.instances = [...this.state.instances];
                     const pos = newState.instances.indexOf(id);
                     newState.instances.splice(pos, 1);
@@ -403,7 +405,7 @@ class App extends GenericApp {
             const common = JSON.parse(JSON.stringify(this.scripts[oldId].common));
             common.name = newName || common.name;
             if (newInstance !== undefined) {
-                common.engine = 'system.adapter.javascript.' + newInstance;
+                common.engine = `system.adapter.javascript.${newInstance}`;
             }
             // Check if the script is not a children of other script
             const parts = newId.split('.');
@@ -412,7 +414,7 @@ class App extends GenericApp {
 
             if (this.scripts[parentID] && this.scripts[parentID].type === 'script') {
                 parts.pop();
-                newId = parts.join('.') + '.' + newId.split('.').pop();
+                newId = `${parts.join('.')}.${newId.split('.').pop()}`;
             }
 
             promise = this.updateScript(oldId, newId, common);
@@ -431,7 +433,7 @@ class App extends GenericApp {
 
             // collect all elements to rename
             // find all elements
-            _list = Object.keys(this.scripts).filter(_id => _id.startsWith(id + '.'));
+            _list = Object.keys(this.scripts).filter(_id => _id.startsWith(`${id}.`));
 
             return this.socket.getObject(id)
                 .then(obj => {
@@ -443,9 +445,7 @@ class App extends GenericApp {
                         .catch(() => { })
                         .then(() => this.socket.setObject(newId, obj))
                         .then(() => this.renameGroup(id, newId, newName, _list))
-                        .catch(e => {
-                            console.log(e);
-                        });
+                        .catch(e => console.log(e));
                 })
                 .catch(e => {
                     console.log(e);
@@ -454,9 +454,9 @@ class App extends GenericApp {
                         type: 'channel',
                         common: {
                             name: newName || id.split('.').pop(),
-                            expert: true
+                            expert: true,
                         },
-                        native: {}
+                        native: {},
                     };
                     // may be it is virtual folder
                     return this.socket.setObject(newId, obj)
@@ -537,9 +537,9 @@ class App extends GenericApp {
             this.socket.setObject(id, {
                 common: {
                     name,
-                    expert: true
+                    expert: true,
                 },
-                type: 'channel'
+                type: 'channel',
             })
                 .then(() =>
                     setTimeout(() => this.setState({ menuSelectId: id }, () =>
@@ -554,9 +554,9 @@ class App extends GenericApp {
                     engine: 'system.adapter.javascript.' + (instance || 0),
                     source: source || '',
                     debug: false,
-                    verbose: false
+                    verbose: false,
                 },
-                type: 'script'
+                type: 'script',
             })
                 .then(() => setTimeout(() => this.onSelect(id), 1000))
                 .catch(err => this.showError(err));
@@ -645,7 +645,7 @@ class App extends GenericApp {
 
         if (_list.length) {
             const id = _list.shift();
-            this.socket.getState(id + '.alive')
+            this.socket.getState(`${id}.alive`)
                 .then(state => {
                     if (state && state.val) {
                         cb(id);
@@ -668,26 +668,26 @@ class App extends GenericApp {
             let date = d.getFullYear();
             let m = d.getMonth() + 1;
             if (m < 10) {
-                m = '0' + m;
+                m = `0${m}`;
             }
-            date += '-' + m;
+            date += `-${m}`;
             m = d.getDate();
             if (m < 10) {
-                m = '0' + m;
+                m = `0${m}`;
             }
-            date += '-' + m + '-';
+            date += `-${m}-`;
 
             this.socket.getRawSocket().emit('sendToHost', host, 'readObjectsAsZip', {
                 adapter: 'javascript',
                 id: 'script.js',
-                link: date + 'scripts.zip' // request link to file and not the data itself
+                link: `${date}scripts.zip`, // request link to file and not the data itself
             }, data => {
                 if (typeof data === 'string') {
                     // it is a link to created file
                     const a = document.createElement('a');
                     // the data is "system.host.HOST.zip.2020-01-26-scripts.zip"
                     const parts = data.split('.zip.');
-                    a.href = '/zip/' + parts[0] + '/' + parts[1];
+                    a.href = `/zip/${parts[0]}/${parts[1]}`;
                     document.body.appendChild(a);
                     a.click();
                     a.remove();
@@ -695,8 +695,8 @@ class App extends GenericApp {
                     data.error && this.showError(data.error);
                     if (data.data) {
                         const a = document.createElement('a');
-                        a.href = 'data: application/zip;base64,' + data.data;
-                        a.download = date + 'scripts.zip';
+                        a.href = `data: application/zip;base64,${data.data}`;
+                        a.download = `${date}scripts.zip`;
                         document.body.appendChild(a);
                         a.click();
                         a.remove();
@@ -848,7 +848,7 @@ class App extends GenericApp {
                     vertical={!this.state.logHorzLayout}
                     primaryMinSize={100}
                     secondaryInitialSize={this.state.hideLog ? 0 : this.logSize}
-                    //customClassName={classes.menuDiv + ' ' + classes.splitterDivWithoutMenu}
+                    // customClassName={classes.menuDiv + ' ' + classes.splitterDivWithoutMenu}
                     onDragStart={() => this.setState({ resizing: true })}
                     onSecondaryPaneSizeChange={size => this.state.hideLog ? 0 : this.logSize = parseFloat(size)}
                     onDragEnd={() => {
@@ -895,7 +895,7 @@ class App extends GenericApp {
                     primaryIndex={1}
                     secondaryMinSize={300}
                     secondaryInitialSize={this.menuSize}
-                    customClassName={classes.splitterDivs + ' ' + (!this.state.menuOpened ? classes.menuDivWithoutMenu : '')}
+                    customClassName={`${classes.splitterDivs} ${!this.state.menuOpened ? classes.menuDivWithoutMenu : ''}`}
                     onDragStart={() => this.setState({ resizing: true })}
                     onSecondaryPaneSizeChange={size => this.menuSize = parseFloat(size)}
                     onDragEnd={() => {
@@ -907,8 +907,7 @@ class App extends GenericApp {
                         <SideMenu
                             debugMode={this.state.debugMode}
                             onDebugInstance={data => {
-
-                                this.setState({debugInstance: data, debugMode: !!data});
+                                this.setState({ debugInstance: data, debugMode: !!data });
                             }}
                             key="sidemenu"
                             scripts={this.scripts}

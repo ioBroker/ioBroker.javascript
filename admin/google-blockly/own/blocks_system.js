@@ -658,14 +658,14 @@ Blockly.Blocks['get_value'] = {
                 [Blockly.Translate('get_value_comment') , 'c'],
                 [Blockly.Translate('get_value_from'),     'from'],
 
-                [Blockly.Translate('get_attribute_name'),   'common.name'],
-                [Blockly.Translate('get_attribute_desc'),   'common.desc'],
-                [Blockly.Translate('get_attribute_unit'),   'common.unit'],
-                [Blockly.Translate('get_attribute_role'),   'common.role'],
-                [Blockly.Translate('get_attribute_state_type'), 'type'],
-                [Blockly.Translate('get_attribute_object_type'), 'common.type'],
-                [Blockly.Translate('get_attribute_read'),    'common.read'],
-                [Blockly.Translate('get_attribute_write'),   'common.write'],
+                [Blockly.Translate('get_common_name'),   'common.name'],
+                [Blockly.Translate('get_common_desc'),   'common.desc'],
+                [Blockly.Translate('get_common_unit'),   'common.unit'],
+                [Blockly.Translate('get_common_role'),   'common.role'],
+                [Blockly.Translate('get_common_state_type'), 'type'],
+                [Blockly.Translate('get_common_object_type'), 'common.type'],
+                [Blockly.Translate('get_common_read'),    'common.read'],
+                [Blockly.Translate('get_common_write'),   'common.write'],
             ]), 'ATTR');
 
         this.appendDummyInput()
@@ -685,7 +685,11 @@ Blockly.Blocks['get_value'] = {
 Blockly.JavaScript['get_value'] = function(block) {
     var oid  = block.getFieldValue('OID');
     var attr = block.getFieldValue('ATTR');
-    return ['getState("' + oid + '").' + attr, Blockly.JavaScript.ORDER_ATOMIC];
+    if (attr === 'type' || attr.indexOf('.') !== -1) {
+        return ['(await getObjectAsync("' + oid + '")).' + attr, Blockly.JavaScript.ORDER_ATOMIC];
+    } else {
+        return ['getState("' + oid + '").' + attr, Blockly.JavaScript.ORDER_ATOMIC];
+    }
 };
 
 // --- get value var --------------------------------------------------
@@ -714,14 +718,14 @@ Blockly.Blocks['get_value_var'] = {
                 [Blockly.Translate('get_value_comment') , 'c'],
                 [Blockly.Translate('get_value_from'),     'from'],
 
-                [Blockly.Translate('get_attribute_name'),   'common.name'],
-                [Blockly.Translate('get_attribute_desc'),   'common.desc'],
-                [Blockly.Translate('get_attribute_unit'),   'common.unit'],
-                [Blockly.Translate('get_attribute_role'),   'common.role'],
-                [Blockly.Translate('get_attribute_state_type'), 'type'],
-                [Blockly.Translate('get_attribute_object_type'), 'common.type'],
-                [Blockly.Translate('get_attribute_read'),    'common.read'],
-                [Blockly.Translate('get_attribute_write'),   'common.write'],
+                [Blockly.Translate('get_common_name'),   'common.name'],
+                [Blockly.Translate('get_common_desc'),   'common.desc'],
+                [Blockly.Translate('get_common_unit'),   'common.unit'],
+                [Blockly.Translate('get_common_role'),   'common.role'],
+                [Blockly.Translate('get_common_state_type'), 'type'],
+                [Blockly.Translate('get_common_object_type'), 'common.type'],
+                [Blockly.Translate('get_common_read'),    'common.read'],
+                [Blockly.Translate('get_common_write'),   'common.write'],
             ]), 'ATTR');
 
         this.appendDummyInput()
@@ -741,7 +745,11 @@ Blockly.Blocks['get_value_var'] = {
 Blockly.JavaScript['get_value_var'] = function(block) {
     var oid  = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     var attr = block.getFieldValue('ATTR');
-    return ['getState(' + oid + ').' + attr, Blockly.JavaScript.ORDER_ATOMIC];
+    if (attr === 'type' || attr.indexOf('.') !== -1) {
+        return ['(await getObjectAsync("' + oid + '")).' + attr, Blockly.JavaScript.ORDER_ATOMIC];
+    } else {
+        return ['getState(' + oid + ').' + attr, Blockly.JavaScript.ORDER_ATOMIC];
+    }
 };
 
 // --- get value async--------------------------------------------------
@@ -769,14 +777,14 @@ Blockly.Blocks['get_value_async'] = {
                 [Blockly.Translate('get_value_comment') , 'c'],
                 [Blockly.Translate('get_value_from'),     'from'],
 
-                [Blockly.Translate('get_attribute_name'),   'common.name'],
-                [Blockly.Translate('get_attribute_desc'),   'common.desc'],
-                [Blockly.Translate('get_attribute_unit'),   'common.unit'],
-                [Blockly.Translate('get_attribute_role'),   'common.role'],
-                [Blockly.Translate('get_attribute_state_type'), 'type'],
-                [Blockly.Translate('get_attribute_object_type'), 'common.type'],
-                [Blockly.Translate('get_attribute_read'),    'common.read'],
-                [Blockly.Translate('get_attribute_write'),   'common.write'],
+                [Blockly.Translate('get_common_name'),   'common.name'],
+                [Blockly.Translate('get_common_desc'),   'common.desc'],
+                [Blockly.Translate('get_common_unit'),   'common.unit'],
+                [Blockly.Translate('get_common_role'),   'common.role'],
+                [Blockly.Translate('get_common_state_type'), 'type'],
+                [Blockly.Translate('get_common_object_type'), 'common.type'],
+                [Blockly.Translate('get_common_read'),    'common.read'],
+                [Blockly.Translate('get_common_write'),   'common.write'],
             ]), 'ATTR');
 
         this.appendDummyInput()
@@ -802,7 +810,11 @@ Blockly.JavaScript['get_value_async'] = function(block) {
     var oid  = block.getFieldValue('OID');
     var attr = block.getFieldValue('ATTR');
     var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    return 'getState("' + oid + '", async function (err, state) {\n   var value = state.' + attr + ';\n' + statement + '});\n';
+    if (attr === 'type' || attr.indexOf('.') !== -1) {
+        return 'getObjectAsync("' + oid + '", async function (err, obj) {\n   var value = obj.' + attr + ';\n' + statement + '});\n';
+    } else {
+        return 'getState("' + oid + '", async function (err, state) {\n   var value = state.' + attr + ';\n' + statement + '});\n';
+    }
 };
 
 // --- select OID --------------------------------------------------

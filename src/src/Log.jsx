@@ -18,20 +18,26 @@ const IconHorizontalSplit = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAA
 function getTimeString(d) {
     let text;
     let i = d.getHours();
-    if (i < 10) i = '0' + i.toString();
-    text = i + ':';
+    if (i < 10) {
+        i = `0${i.toString()}`;
+    }
+    text = `${i}:`;
 
     i = d.getMinutes();
-    if (i < 10) i = '0' + i.toString();
-    text += i + ':';
+    if (i < 10) {
+        i = `0${i.toString()}`;
+    }
+    text += `${i}:`;
     i = d.getSeconds();
-    if (i < 10) i = '0' + i.toString();
-    text += i + '.';
+    if (i < 10) {
+        i = `0${i.toString()}`;
+    }
+    text += `${i}.`;
     i = d.getMilliseconds();
     if (i < 10) {
-        i = '00' + i.toString();
+        i = `00${i.toString()}`;
     } else if (i < 100) {
-        i = '0' + i.toString();
+        i = `0${i.toString()}`;
     }
     text += i;
     return text;
@@ -43,7 +49,7 @@ const styles = theme => ({
         width: '100%',
         height: '100%',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     logBoxInner: {
         display: 'inline-block',
@@ -57,25 +63,25 @@ const styles = theme => ({
     },
     info: {
         background: theme.palette.mode === 'dark' ? 'darkgrey' : 'lightgrey',
-        color: theme.palette.mode === 'dark' ?  'black' : 'black'
+        color: theme.palette.mode === 'dark' ?  'black' : 'black',
     },
     error: {
         background: '#FF0000',
-        color: theme.palette.mode === 'dark' ?  'black' : 'white'
+        color: theme.palette.mode === 'dark' ?  'black' : 'white',
     },
     warn: {
         background: '#FF8000',
-        color: theme.palette.mode === 'dark' ?  'black' : 'white'
+        color: theme.palette.mode === 'dark' ?  'black' : 'white',
     },
     debug: {
         background: 'gray',
         opacity: 0.8,
-        color: theme.palette.mode === 'dark' ?  'black' : 'white'
+        color: theme.palette.mode === 'dark' ?  'black' : 'white',
     },
     silly: {
         background: 'gray',
         opacity: 0.6,
-        color: theme.palette.mode === 'dark' ? 'black' : 'white'
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     },
     table: {
         fontFamily: 'monospace',
@@ -91,16 +97,16 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     trTime: {
-        width: 90
+        width: 90,
     },
     trSeverity: {
         width: 40,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     iconButtons: {
         width: 32,
         height: 32,
-        padding: 4
+        padding: 4,
     },
     layoutIcon: {
         width: 24,
@@ -112,10 +118,10 @@ const styles = theme => ({
 
 function paddingMs(ms) {
     if (ms < 10) {
-        return '00' + ms;
+        return `00${ms}`;
     }
     if (ms < 100) {
-        return '0' + ms;
+        return `0${ms}`;
     }
     return ms;
 }
@@ -129,14 +135,14 @@ class Log extends React.Component {
             lines: {},
             goBottom: true,
             selected: null,
-            editing: this.props.editing || []
+            editing: this.props.editing || [],
         };
         this.lastIndex = null;
         this.messagesEnd = React.createRef();
     }
 
     generateLine(message) {
-        return <tr key={'tr_' + message.ts + '_' + message.message.substr(-10)} className={this.props.classes[message.severity]}>
+        return <tr key={`tr_${message.ts}_${message.message.substr(-10)}`} className={this.props.classes[message.severity]}>
             <td key="tdTime" className={this.props.classes.trTime}>{getTimeString(new Date(message.ts))}</td>
             <td key="tdSeverity" className={this.props.classes.trSeverity}>{message.severity}</td>
             <td key="tdMessage">{message.message}</td>
@@ -144,13 +150,21 @@ class Log extends React.Component {
     }
 
     scrollToBottom() {
-        this.messagesEnd && this.messagesEnd.current && this.messagesEnd.current.scrollIntoView({behavior: 'smooth'});
+        this.messagesEnd && this.messagesEnd.current && this.messagesEnd.current.scrollIntoView({ behavior: 'smooth' });
     }
+
     logHandler = message => {
         let allLines = this.state.lines;
-        const selected = this.state.editing.find(id => message.message.indexOf(id) !== -1);
-        if (!selected) {
+        const scripts = this.state.editing.filter(id => message.message.includes(id));
+        let selected;
+        if (!scripts.length) {
             return;
+        } else if (scripts.length === 1) {
+            selected = scripts[0];
+        } else {
+            // try to get the script with the longest common substring
+            scripts.sort();
+            selected = scripts[scripts.length - 1];
         }
 
         let lines = allLines[selected] || [];
@@ -170,7 +184,7 @@ class Log extends React.Component {
         gText[selected] = text;
         allLines[selected] = lines;
 
-        this.setState({lines: allLines});
+        this.setState({ lines: allLines });
     }
 
     componentDidMount() {
@@ -229,52 +243,50 @@ class Log extends React.Component {
         if (gText[this.state.selected]) {
             gText[this.state.selected] = [];
         }
-        this.setState({lines: allLines});
+        this.setState({ lines: allLines });
     }
 
     renderLogList(lines) {
         if (this.state.selected && lines && lines.length) {
             return <div className={this.props.classes.logBoxInner} key="logList">
                 <table key="logTable" className={this.props.classes.table}><tbody>{lines}</tbody></table>
-                <div key="logScrollPoint" ref={this.messagesEnd} style={{float: 'left', clear: 'both'}}/>
+                <div key="logScrollPoint" ref={this.messagesEnd} style={{ float: 'left', clear: 'both' }}/>
             </div>;
         } else {
-            return <div key="logList" className={this.props.classes.logBoxInner} style={{paddingLeft: 10}}>{I18n.t('Log outputs')}</div>;
+            return <div key="logList" className={this.props.classes.logBoxInner} style={{ paddingLeft: 10 }}>{I18n.t('Log outputs')}</div>;
         }
     }
 
     render() {
         const lines = this.state.selected && this.state.lines[this.state.selected];
-        return (
-            <div className={this.props.classes.logBox}>
-                <div className={this.props.classes.toolbox} key="toolbox">
-                    <IconButton
-                        className={this.props.classes.iconButtons}
-                        onClick={() => this.setState({goBottom: !this.state.goBottom})}
-                        color={this.state.goBottom ? 'secondary' : ''}
-                        size="medium"><IconBottom/></IconButton>
-                    {lines && lines.length ? <IconButton
-                        className={this.props.classes.iconButtons}
-                        onClick={() => this.clearLog()}
-                        size="medium"><IconDelete/></IconButton> : null}
-                    {lines && lines.length ? <IconButton
-                        className={this.props.classes.iconButtons}
-                        onClick={() => this.onCopy()}
-                        size="medium"><IconCopy/></IconButton> : null}
-                    {this.props.onLayoutChange ? <IconButton
-                        className={this.props.classes.iconButtons}
-                        onClick={() => this.props.onLayoutChange()}
-                        title={I18n.t('Change layout')}
-                        size="medium"><img className={this.props.classes.layoutIcon} alt="split" src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit} /></IconButton> : null}
-                    <IconButton
-                        className={this.props.classes.iconButtons}
-                        onClick={() => this.props.onHideLog()}
-                        title={I18n.t('Hide logs')}
-                        size="medium"><IconHide /></IconButton>
-                </div>
-                {this.renderLogList(lines)}
+        return <div className={this.props.classes.logBox}>
+            <div className={this.props.classes.toolbox} key="toolbox">
+                <IconButton
+                    className={this.props.classes.iconButtons}
+                    onClick={() => this.setState({ goBottom: !this.state.goBottom })}
+                    color={this.state.goBottom ? 'secondary' : ''}
+                    size="medium"><IconBottom /></IconButton>
+                {lines && lines.length ? <IconButton
+                    className={this.props.classes.iconButtons}
+                    onClick={() => this.clearLog()}
+                    size="medium"><IconDelete /></IconButton> : null}
+                {lines && lines.length ? <IconButton
+                    className={this.props.classes.iconButtons}
+                    onClick={() => this.onCopy()}
+                    size="medium"><IconCopy /></IconButton> : null}
+                {this.props.onLayoutChange ? <IconButton
+                    className={this.props.classes.iconButtons}
+                    onClick={() => this.props.onLayoutChange()}
+                    title={I18n.t('Change layout')}
+                    size="medium"><img className={this.props.classes.layoutIcon} alt="split" src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit} /></IconButton> : null}
+                <IconButton
+                    className={this.props.classes.iconButtons}
+                    onClick={() => this.props.onHideLog()}
+                    title={I18n.t('Hide logs')}
+                    size="medium"><IconHide /></IconButton>
             </div>
-        );
+            {this.renderLogList(lines)}
+        </div>;
     }
 }
 
@@ -282,7 +294,7 @@ Log.propTypes = {
     selected: PropTypes.string,
     socket: PropTypes.object,
     onLayoutChange: PropTypes.func,
-    verticalLayout: PropTypes.bool
+    verticalLayout: PropTypes.bool,
 };
 
 export default withStyles(styles)(Log);
