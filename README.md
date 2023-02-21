@@ -59,6 +59,7 @@ And then call `npm run build`.
 * (bluefox) Corrected CRON card in rules 
 * (bluefox) Added additional options to show the attributes of object in blockly
 * (bluefox) Corrected `existsStateAsync` function
+* (bluefox) Added `isDaylightSaving` state to indicate day saving time
 
 ### 6.2.0 (2023-02-17)
 * (Apollon77) Prevented duplicate schedule triggering with inaccurate RTC clocks

@@ -315,6 +315,18 @@
       "native": {}
     },
     {
+      "_id": "variables.isDaylightSaving",
+      "common": {
+        "name": "Is daylight saving time active",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "role": "indicator"
+      },
+      "type": "state",
+      "native": {}
+    },
+    {
       "_id": "variables.dayTime",
       "common": {
         "name": "Actual day time",
