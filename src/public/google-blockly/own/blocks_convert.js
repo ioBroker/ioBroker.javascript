@@ -56,7 +56,7 @@ Blockly.Blocks.convert_toboolean = {
 };
 
 Blockly.JavaScript.convert_toboolean = function (a) {
-    return ["(function (){var val = " + Blockly.JavaScript.valueToCode(a, "VALUE", Blockly.JavaScript.ORDER_ATOMIC) + "; if (val === 'true') return true; if (val === 'false') return false; return !!val;})()", Blockly.JavaScript.ORDER_ATOMIC];
+    return ["(function (){const val = " + Blockly.JavaScript.valueToCode(a, "VALUE", Blockly.JavaScript.ORDER_ATOMIC) + "; if (val === 'true') return true; if (val === 'false') return false; return !!val;})()", Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- to String --------------------------------------------------
@@ -253,11 +253,11 @@ Blockly.JavaScript.convert_from_date = function (block) {
     } else if (option === 's') {
         code = 'getDateObject(' + value + ').getSeconds()';
     } else if (option === 'sid') {
-        code = '(function () {var v = getDateObject(' + value + '); return v.getHours() * 3600 + v.getMinutes() * 60 + v.getSeconds();})()';
+        code = '(function () {const v = getDateObject(' + value + '); return v.getHours() * 3600 + v.getMinutes() * 60 + v.getSeconds();})()';
     } else if (option === 'm') {
         code = '(getDateObject(' + value + ').getMinutes())';
     } else if (option === 'mid') {
-        code = '(function () {var v = getDateObject(' + value + '); return v.getHours() * 60 + v.getMinutes();})()';
+        code = '(function () {const v = getDateObject(' + value + '); return v.getHours() * 60 + v.getMinutes();})()';
     } else if (option === 'h') {
         code = 'getDateObject(' + value + ').getHours()';
     } else if (option === 'd') {
