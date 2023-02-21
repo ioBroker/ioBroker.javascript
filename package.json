@@ -23,14 +23,15 @@
     "url": "https://github.com/ioBroker/ioBroker.javascript"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=14.0.0"
   },
   "depsComment": {
-    "coffee-script": "is required only for node 14. As coffee-compiler requires coffeescript for nodes>14 and coffee-script for nodes<=14"
+    "coffee-script": "is required only for node 14. As coffee-compiler requires coffeescript for nodes>14 and coffee-script for nodes<=14",
+    "@types/node": "should match the lowest MAJOR version of Node.js we support."
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.7",
-    "@types/node": "^16.18.12",
+    "@types/node": "^14.18.36",
     "@types/request": "^2.48.8",
     "axios": "^1.3.3",
     "coffeescript": "^1.12.7",
@@ -79,7 +80,7 @@
     "test:declarations": "tsc -p test/lib/TS/tsconfig.json && tsc -p test/lib/JS/tsconfig.json",
     "test:javascript": "node node_modules/mocha/bin/mocha --exit",
     "test": "npm run test:declarations && npm run test:javascript",
-    "postinstall": "node ./install/installTypings.js",
+    "//postinstall": "node ./install/installTypings.js",
     "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
     "build": "node node_modules/gulp/bin/gulp.js",
     "release": "release-script",
