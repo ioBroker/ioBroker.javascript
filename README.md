@@ -53,8 +53,8 @@ And then call `npm run build`.
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-* (bluefox) Small breaking change: all usages of jsonata must be rewritten to use promises.
-* (bluefox) Small breaking change: all blockly scripts with jsonata blocks must de changed (just move some blocks) and saved anew.
+* (bluefox) Breaking change: all usages of `jsonata` must be rewritten to use promises.
+* (bluefox) Breaking change: all blockly scripts with `jsonata` blocks must de changed (just move some blocks) and saved anew.
 * (bluefox) Extended `createState` command with possibility to create aliases. 
 * (bluefox) Corrected CRON card in rules 
 * (bluefox) Added additional options to show the attributes of object in blockly

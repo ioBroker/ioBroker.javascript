@@ -232,6 +232,44 @@
           "agree",
           "cancel"
         ]
+      },
+      {
+        "condition": {
+          "operand": "and",
+          "rules": [
+            "oldVersion<7.0.0",
+            "newVersion>=7.0.0"
+          ]
+        },
+        "title": {
+          "en": "Small breaking change by usage of jsonata",
+          "de": "Kleine Breaking-Änderung durch Verwendung von jsonata",
+          "ru": "Небольшое изменение, вызванное использованием jsonata",
+          "pt": "Pequena alteração de quebra por uso de jsonata",
+          "nl": "Kleine breaking change door gebruik van jsonata",
+          "fr": "Petite modification de rupture en utilisant jsonata",
+          "it": "Piccola modifica di breaking utilizzando jsonata",
+          "es": "Pequeño cambio de ruptura por uso de jsonata",
+          "pl": "Mała zmiana w użyciu jsonata",
+          "zh-cn": "使用 jsonata 的小破坏性变化"
+        },
+        "text": {
+          "en": "All usages of jsonata must be rewritten to use promises. All blockly scripts with jsonata blocks must de changed (just move some blocks) and saved anew.",
+          "de": "Alle Verwendungen von jsonata müssen umgeschrieben werden, um Promises zu verwenden. Alle Blockly-Skripte mit jsonata-Blöcken müssen geändert werden (nur einige Blöcke verschieben) und neu gespeichert.",
+          "ru": "Все использования jsonata должны быть переписаны c использованием promises. Все скрипты с блоками jsonata в Blockly должны быть изменены (просто переместите некоторые блоки) и сохранены заново.",
+          "pt": "Todas as utilizações de jsonata devem ser reescritas para usar promessas. Todos os scripts do bloco de blocos com blocos jsonata devem ser alterados (basta mover alguns blocos) e salvos novamente.",
+          "nl": "Alle gebruiken van jsonata moeten worden herschreven om beloften te gebruiken. Alle blokly-schripten met jsonata-blokken moeten worden gewijzigd (verplaats gewoon enkele blokken) en opnieuw worden opgeslagen.",
+          "fr": "Toutes les utilisations de jsonata doivent être réécrites pour utiliser des promesses. Tous les scripts Blockly avec des blocs jsonata doivent être modifiés (déplacez simplement certains blocs) et enregistrés à nouveau.",
+          "it": "Tutti gli utilizzi di jsonata devono essere riscritti per utilizzare le promesse. Tutti gli script Blockly con blocchi jsonata devono essere modificati (spostare solo alcuni blocchi) e salvati di nuovo.",
+          "es": "Todos los usos de jsonata deben reescribirse para usar promesas. Todos los scripts de bloques de bloques con bloques jsonata deben cambiarse (solo mueve algunos bloques) y guardarse de nuevo.",
+          "pl": "Wszystkie użycia jsonata muszą zostać przepisane, aby korzystać z obietnic. Wszystkie skrypty blokowe z blokami jsonata muszą zostać zmienione (przeciągnij kilka bloków) i zapisane ponownie.",
+          "zh-cn": "所有 jsonata 的用法都必须重写以使用承诺。所有具有 jsonata 块的 Blockly 脚本都必须更改（只需移动一些块）并重新保存。"
+        },
+        "level": "warn",
+        "buttons": [
+          "agree",
+          "cancel"
+        ]
       }
     ]
   },
