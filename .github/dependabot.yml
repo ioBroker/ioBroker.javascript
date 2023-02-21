@@ -20,6 +20,10 @@ updates:
       # it does not follow semver and minor updates are usually breaking
       - dependency-name: "typescript"
         update-types: ["version-update:semver-minor", "version-update:semver-major"]
+      # @types/node should always match the minimum major version we support,
+      # so only apply patch and minor updates automatically
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: npm
     directory: "/src"
