@@ -1,4 +1,4 @@
-**Hinweis: Momentan beinhaltet die Englishe Version viel mehr Information und wir empfehlen die zu lesen**
+**Hinweis: Momentan beinhaltet die englische Version viel mehr Information und wir empfehlen die zu lesen**
 
 Der javascript-Adapter dient dazu komfortabel Skripte zu erstellen, editieren und zu verwalten.
 

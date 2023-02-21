@@ -2332,7 +2332,7 @@ function patchFont() {
         // ignore
     }
     if (!stat || stat.size !== 62324) {
-        const buffer = Buffer.from(JSON.parse(nodeFS.readFileSync(__dirname + '/admin-config/vsFont/codicon.json')));
+        const buffer = Buffer.from(JSON.parse(nodeFS.readFileSync(`${__dirname}/admin-config/vsFont/codicon.json`)));
 
         return require('jszip').loadAsync(buffer)
             .then(zip => {

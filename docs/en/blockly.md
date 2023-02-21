@@ -853,15 +853,15 @@ Additionally, if the log level is not "none", the same message will be sent to l
 ### Send to SayIt
 ![Send to SayIt](img/sendto_sayit_en.png)
 
-This block is used to send text to sayit instance to pronounce this text.
+This block is used to send text to `sayit` instance to pronounce this text.
 
-Of course the sayit adapter must be installed and configured.
+Of course the `sayit` adapter must be installed and configured.
 
 To send message to some specific instance, you should select the installed adapter instance (Normally `sayit.0`), elsewise message will be sent to all existing instances.
 
 Property *message* is mandatory and exactly this text will be pronounced. 
 
-You must check the language property. This will be used for text2speech engine. 
+You must check the language property. This will be used for `text2speech` engine. 
 
 Volume is optional (normally from 0 to 100).
 

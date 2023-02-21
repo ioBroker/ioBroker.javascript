@@ -967,6 +967,31 @@ Create state and object in javascript space if it does not exist, e.g. `javascri
 - `native`: native description of object. Any specific information.
 - `callback`: called after state is created and initialized.
 
+If you set in `common` the flag `alias` to `true`, then alias will be created with the same name (but in `alias.0` namespace) as the state. 
+Alias is created only if it does not exist yet. 
+
+Following settings for aliases are valid too: 
+```
+common => {
+    alias: {
+        id: 'alias.0.myOtherState', // will be created automatically if not already exists
+        write: 'val * 1000', // convert function for write to created state
+        read: 'val / 1000'   // convert function to read from created state
+    }
+}
+```
+
+or
+
+```
+common => {
+    alias: {
+        id: 'alias.0.myOtherState', // will be created automatically if not already exists
+    }
+}
+```
+
+
 It is possible short type of createState:
 
 - `createState('myDatapoint')` - simply create datapoint if it does not exist
@@ -1009,7 +1034,7 @@ The common definition is taken from the read alias id object, but a provided com
 #### Parameters:
 
 - `name`: name of the alias state with or without alias namespace, e.g. `mystate` (namespace "alias.0." will be added)
-- `alias`: can be either an existing state id as string or a object with full alias definition including read/write ids and read/write functions. Not: Alias definitions can not be set as part of the common parameter!
+- `alias`: can be either an existing state id as string or an object with full alias definition including read/write ids and read/write functions. Not: Alias definitions can not be set as part of the common parameter!
 - `forceCreation`: create/overwrite alias independent of if state yet exists or not.
 - `common`: common description of alias object see description [here](https://github.com/ioBroker/ioBroker/blob/master/doc/SCHEMA.md#state). Values provided here will take precedence over the common definition of the read alias id object. Not: Alias definitions can not be set as part of this common parameter, see alias parameter!
 - `native`: native description of object. Any specific information.
@@ -1018,9 +1043,9 @@ The common definition is taken from the read alias id object, but a provided com
 It is possible short type of createAlias:
 
 - `createAlias('myAlias', 'myDatapoint')` - simply create alias.0.myAlias that refernces to javascript.X.myDatapoint if it does not exist
-- `createAlias('myAlias', {id: {read: 'myReadDatapoint', write: 'myWriteDatapoint'}})` - create alias and refence to different read/write states
+- `createAlias('myAlias', {id: {read: 'myReadDatapoint', write: 'myWriteDatapoint'}})` - create alias and reference to different read/write states
 
-For other details see createState, it is simmilar.
+For other details see createState, it is similar.
 
 ### createAliasAsync
 ```js
