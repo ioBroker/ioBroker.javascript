@@ -52,7 +52,7 @@ And then call `npm run build`.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.0.0 (2023-02-21)
 * (bluefox) Breaking change: all usages of `jsonata` must be rewritten to use promises.
 * (bluefox) Breaking change: all blockly scripts with `jsonata` blocks must de changed (just move some blocks) and saved anew.
 * (bluefox) Extended `createState` command with possibility to create aliases. 
@@ -78,14 +78,6 @@ And then call `npm run build`.
 
 ### 6.1.2 (2022-11-03)
 * (bluefox) Added ukrainian translation
-
-### 6.1.0 (2022-11-03)
-* (Apollon77) Add a configurable check for number of setStates per Minute to prevent scripts from taking down ioBroker. Default are 1000 setState per minute. Only stops if the number is reached 2 minutes in a row!
-* (Apollon77) Add createAlias method to create aliases for states
-* (Apollon77) Add setStateDelayed to selector
-* (Apollon77) Add options to exec command
-* (Apollon77) Fix issues with cancelling schedules when stopping scripts
-* (bluefox) Corrected debug mode
 
 ## License
 The MIT License (MIT)

@@ -811,9 +811,9 @@ Blockly.JavaScript['get_value_async'] = function(block) {
     var attr = block.getFieldValue('ATTR');
     var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     if (attr === 'type' || attr.indexOf('.') !== -1) {
-        return 'getObjectAsync("' + oid + '", async function (err, obj) {\n   var value = obj.' + attr + ';\n' + statement + '});\n';
+        return 'getObjectAsync("' + oid + '", async function (err, obj) {\n   let value = obj.' + attr + ';\n' + statement + '});\n';
     } else {
-        return 'getState("' + oid + '", async function (err, state) {\n   var value = state.' + attr + ';\n' + statement + '});\n';
+        return 'getState("' + oid + '", async function (err, state) {\n   let value = state.' + attr + ';\n' + statement + '});\n';
     }
 };
 

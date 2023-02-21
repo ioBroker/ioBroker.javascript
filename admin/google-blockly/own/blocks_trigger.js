@@ -274,7 +274,7 @@ Blockly.JavaScript['on_ext'] = function(block) {
     var oid = '[].concat(' + oids.join(').concat(') + ')';
 
     var code = 'on({id: ' + oid + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + '}, async function (obj) {\n  ' +
-        (oids.length === 1 ? 'var value = obj.state.val;\n  var oldValue = obj.oldState.val;\n' : '') +
+        (oids.length === 1 ? 'let value = obj.state.val;\n  let oldValue = obj.oldState.val;\n' : '') +
         statements_name + '});\n';
     return code;
 };
@@ -347,7 +347,7 @@ Blockly.JavaScript['on'] = function(block) {
         val = 'change: "' + dropdown_condition + '"';
     }
 
-    var code = 'on({id: "' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + '}, async function (obj) {\n  var value = obj.state.val;\n  var oldValue = obj.oldState.val;\n' + statements_name + '});\n';
+    var code = 'on({id: "' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + '}, async function (obj) {\n  let value = obj.state.val;\n  let oldValue = obj.oldState.val;\n' + statements_name + '});\n';
     return code;
 };
 

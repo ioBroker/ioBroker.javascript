@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "6.2.0",
+    "version": "7.0.0",
     "news": {
+      "7.0.0": {
+        "en": "Breaking change: all usages of `jsonata` must be rewritten to use promises.\nBreaking change: all blockly scripts with `jsonata` blocks must de changed (just move some blocks) and saved anew.\nExtended `createState` command with possibility to create aliases. \nCorrected CRON card in rules \nAdded additional options to show the attributes of object in blockly\nCorrected `existsStateAsync` function\nAdded `isDaylightSaving` state to indicate day saving time",
+        "de": "Breaking change: Alle Verwendungen von jsonata müssen neu geschrieben werden, um Versprechen zu verwenden.\nWechseln: Alle blockweise Skripte mit jsonata Blöcken müssen sich ändern (nur einige Blöcke verschieben) und neu gespeichert.\nErweiterte createState-Befehl mit der Möglichkeit, Aliases zu erstellen.\nKorrigierte CRON-Karte in Regeln\nZusätzliche Optionen hinzugefügt, um die Attribute des Objekts blockweise anzuzeigen\nKorrigiert existiert StateAsync Funktion\nHinzugefügt istDaylight Sparen Sie Zustand, um die Zeit zu deuten",
+        "ru": "Перерыв изменения: все использования jsonata должны быть переписаны для использования обещаний.\nПерерыв изменения: все блокно скрипты с блоками jsonata должны быть изменены (просто переместить некоторые блоки) и сохранены anew.\nРасширенная команда CreateState с возможностью создания псевдонимов.\nИсправлена карта CRON в правилах\nДобавлены дополнительные опции, чтобы показать атрибуты объекта в блокно\nИсправлено существует Функция StateAsync\nДобавлено isDaylight Экономия состояния для обозначения дневного экономия времени",
+        "pt": "Mudança de quebra: todos os usos de jsonata devem ser reescritos para usar promessas.\nMudança de quebra: todos os scripts bloqueados com blocos jsonata devem de mudar (apenas mover alguns blocos) e salvo de novo.\nComando createState estendido com possibilidade de criar aliases.\nCartão CRON corrigido em regras\nAdicionado opções adicionais para mostrar os atributos de objeto em blockly\nExiste uma existência correta Função StateAsync\nAdicionado éDaylight Salvar estado para indicar o tempo de economia de dia",
+        "nl": "Verandering, alle gebruiken van Jsonata moeten herschreven zijn om beloftes te gebruiken.\nVerandering: alle scripts met Jsonata blokken moeten veranderd zijn en een nieuw leven hebben gered.\nVerlengd creëerde het commando met mogelijkheid om aliassen te creëren.\nVertaling:\nToegevoegd extra opties om de bijdragen van objecten te laten zien in blokken\nGecorrigeerd bestaan Staatszaken\nToegevoegd is Daylight Het redden van de staat wijzen op dag redden",
+        "fr": "Changement de rupture : tous les usages de jsonata doivent être réécrits pour utiliser les promesses.\nChangement de rupture : tous les scripts bloqués avec des blocs de jsonata doivent changer (juste déplacer quelques blocs) et sauvegarder à nouveau.\nExtended createState command with possibility to create aliases.\nCarte CRON corrigée dans les règles\nAjout d'options supplémentaires pour afficher les attributs de l'objet en bloc\nCorrection Fonction StateAsync\nAjouté isDaylight État d ' épargne pour indiquer le temps d ' épargne",
+        "it": "Cambiamento di rottura: tutti gli usi di jsonata devono essere riscritti per usare le promesse.\nCambiamento di rottura: tutti gli script bloccati con blocchi jsonata devono essere cambiati (solo spostare alcuni blocchi) e salvati di nuovo.\nComando createState esteso con possibilità di creare alias.\nScheda CRON corretta nelle regole\nAggiunte opzioni aggiuntive per mostrare gli attributi di oggetto in blocco\nEsiste corretto Funzione StateAsync\nAggiunto il giorno Stato di risparmio per indicare il tempo di risparmio giornaliero",
+        "es": "Cambio de ruptura: todos los usos de jsonata deben ser reescritos para usar promesas.\nCambio de ruptura: todos los scripts bloqueados con bloques jsonata deben de cambiar (sólo mover algunos bloques) y guardar de nuevo.\nExtended createState command with possibility to create aliases.\nTarjeta CRON corregida en reglas\nAñadido opciones adicionales para mostrar los atributos del objeto en bloque\nExiste corregido StateAsync function\nAñadido esDaylight Estado salvador para indicar tiempo de ahorro diario",
+        "pl": "Zmiana kroju: wszystkie użycie jsonaty musi być przepisane do obietnic.\nZmienione zmiany: wszystkie blokowane skrypty z blokami jsonata muszą zmienić się (zwłaszcza niektóre bloki) i ocalić na nowo.\nDłuższy tworzy pole dowodzenia możliwością tworzenia aliaz.\nKary CRON w przepisach\nDodano dodatkowe opcje pokazania atrybutów obiektu w blokadę\nPrawda istnieje. Funkcja państwowa\nAdded Państwo oszczędnościowe wskazują na czas oszczędnościowy",
+        "uk": "Зміна перерву: всі використання jsonata повинні переписатися на використання обіцянок.\nЗміна перерву: всі блокнотні скрипти з блоками jsonata повинні бути змінені (просто перемістити деякі блоки) і збережені нові.\nРозширений конструкторДержавна команда з можливістю створення псевдонімів.\nВиправлена карта CRON в правилах\nДодано додаткові параметри для відображення атрибутів об'єкта в блоклі\nВиправлено існує Функція \"Асинхрон\"\nДодана Економія стану для визначення часу збереження дня",
+        "zh-cn": "断裂变化:必须重新写信,以兑现承诺。.\n断然变化:所有有违禁文字的文字必须改变(某些障碍),并挽救新的文字。.\n往往导致国家指挥,有可能产生其他威胁。.\n在规则中更正了CRON卡\n增加显示目标特征的备选办法\n存在更正 国家分摊职能\n增 编 拯救日"
+      },
       "6.2.0": {
         "en": "Prevented duplicate schedule triggering with inaccurate RTC clocks\nFixed sendToAsync and sendToHostAsync\nAdded rename/renameFile(Async) methods\nDeprecated get/setBinaryState(Async) methods and log a message on usage. Use Files instead!\nDeprecated usage of own states in javascript.X.scriptEnabled/Problem and log a message on usage. Use own states in 0_userdata.0 instead!\nadded axios to pre-installed modules. `request` will be removed in the future",
         "de": "Verhinderte doppelte Zeitplanauslösung mit ungenauen RTC-Uhren\nFester Versand ToAsync und sendToHostAsync\nHinzugefügt Rename / RenameFile(Async) Methoden\nDeprecated get/setBinaryState(Async) Methoden und loggen Sie eine Nachricht bei der Nutzung. Verwenden Sie stattdessen Dateien!\nDeprecated Nutzung von eigenen Zuständen in javascript.X.scriptEnabled/Problem und loggen Sie eine Nachricht bei der Nutzung ein. Verwenden Sie stattdessen eigene Zustände in 0_userdata.0!\naxios zu vorinstallierten modulen hinzugefügt. anfrage wird in zukunft entfernt",
@@ -88,18 +101,6 @@
         "zh-cn": "增加一分钟的固定国家数量的易燃检查,以防止言词不致降。 被告每分钟一分钟。 只有停止数以2分钟计的加元!\n增加创设别语的方法\n增 编\n增加特区指挥的选择\n冻结时间表的固定问题\n改编"
       },
       "6.0.3": {
-        "en": "Downgrade Typescript to prevent errors with global typescript scripts",
-        "de": "Herunterfahren Typescript, um Fehler mit globalen Typscript-Skripten zu verhindern",
-        "ru": "Downgrade Typescript для предотвращения ошибок с помощью глобальных сценариев typescript",
-        "pt": "Downgrade Typescript para evitar erros com scripts de tipo global",
-        "nl": "Downgrade Typescript om fouten te voorkomen met globale scripts",
-        "fr": "Typescript de mise à niveau pour éviter les erreurs avec les scripts de typescript mondiaux",
-        "it": "Downgrade Typescript per evitare errori con script di tipografia globali",
-        "es": "Tiposcript de Downgrade para prevenir errores con scripts de tiposcript globales",
-        "pl": "Wspomnienie typu Downgrade (ang. Downgrade Typescript), aby zapobiec błędom w tworzeniu scenariusza globalnego",
-        "zh-cn": "D. 防止全球表格错误的等级说明"
-      },
-      "6.0.2": {
         "en": "Downgrade Typescript to prevent errors with global typescript scripts",
         "de": "Herunterfahren Typescript, um Fehler mit globalen Typscript-Skripten zu verhindern",
         "ru": "Downgrade Typescript для предотвращения ошибок с помощью глобальных сценариев typescript",
