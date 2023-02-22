@@ -1,7 +1,5 @@
 name: "Code scanning CodeQL config"
 
-queries: +security-and-quality
-
 paths:
   - src
   - lib
