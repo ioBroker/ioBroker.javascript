@@ -1,0 +1,20 @@
+name: "Code scanning CodeQL config"
+
+paths:
+  - src
+  - lib
+  - main.js
+
+paths-ignore:
+  - src/node_modules
+  - src/build
+  - admin
+  - admin-config
+  - old-admin
+  - test
+  - detection
+  - docs
+
+#query-filters:
+#  - exclude:
+#      id: js/html-constructed-from-input
