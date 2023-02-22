@@ -52,7 +52,7 @@ And then call `npm run build`.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.0.1 (2023-02-21)
+### **WORK IN PROGRESS**
 * (bluefox) Breaking change: all usages of `jsonata` must be rewritten to use promises.
 * (bluefox) Breaking change: all blockly scripts with `jsonata` blocks must de changed (just move some blocks) and saved anew.
 * (bluefox) Extended `createState` command with possibility to create aliases. 
@@ -60,6 +60,7 @@ And then call `npm run build`.
 * (bluefox) Added additional options to show the attributes of object in blockly
 * (bluefox) Corrected `existsStateAsync` function
 * (bluefox) Added `isDaylightSaving` state to indicate day saving time
+* (AlCalzone) Pinned `@types/node` to v14
 
 ### 6.2.0 (2023-02-17)
 * (Apollon77) Prevented duplicate schedule triggering with inaccurate RTC clocks
