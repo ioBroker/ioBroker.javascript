@@ -367,7 +367,6 @@ function prepareStateObject(id, state, isAck) {
     return state;
 }
 
-
 function fileMatching(sub, id, fileName) {
     if (sub.idRegEx) {
         if (!sub.idRegEx.test(id)) {
@@ -390,6 +389,7 @@ function fileMatching(sub, id, fileName) {
 
     return true;
 }
+
 /**
  * @type {Set<string>}
  * Stores the IDs of script objects whose change should be ignored because
@@ -1710,14 +1710,13 @@ function installLibraries(callback) {
                     libName = libName.slice(0, versionChunkPos);
                 }
                 if (!nodeFS.existsSync(`${__dirname}/node_modules/${libName}/package.json`)) {
-
                     if (!attempts[libraries[lib]]) {
                         attempts[libraries[lib]] = 1;
                     } else {
                         attempts[libraries[lib]]++;
                     }
                     if (attempts[libraries[lib]] > 3) {
-                        adapter.log.error('Cannot install npm packet: ' + libraries[lib]);
+                        adapter.log.error(`Cannot install npm packet: ${libraries[lib]}`);
                         continue;
                     }
 
@@ -1730,7 +1729,7 @@ function installLibraries(callback) {
             }
         }
     }
-    if (allInstalled) callback();
+    allInstalled && callback();
 }
 
 function createVM(source, name) {
