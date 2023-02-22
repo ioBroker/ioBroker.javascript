@@ -15,13 +15,13 @@
 /* jshint shadow: true */
 'use strict';
 
-const vm             = require('vm');
-const nodeFS         = require('fs');
-const nodePath       = require('path');
-const CoffeeScript   = require('coffeescript');
-const tsc            = require('virtual-tsc');
-const Mirror         = require('./lib/mirror');
-const fork           = require('child_process').fork;
+const vm           = require('vm');
+const nodeFS       = require('fs');
+const nodePath     = require('path');
+const CoffeeScript = require('coffeescript');
+const tsc          = require('virtual-tsc');
+const Mirror       = require('./lib/mirror');
+const fork         = require('child_process').fork;
 
 const mods = {
     fs:               {},
@@ -1777,7 +1777,7 @@ function execute(script, name, verbose, debug) {
     script.subscribesFile = {};
     script.setStatePerMinuteCounter = 0;
     script.setStatePerMinuteProblemCounter = 0;
-    adapter.setState('scriptProblem.' + name.substring('script.js.'.length), { val: false, ack: true, expire: 1000 });
+    adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, { val: false, ack: true, expire: 1000 });
 
     const sandbox = sandBox(script, name, verbose, debug, context);
 
@@ -1785,10 +1785,10 @@ function execute(script, name, verbose, debug) {
         script.script.runInNewContext(sandbox, {
             filename: name,
             displayErrors: true
-            //lineOffset: globalScriptLines
+            // lineOffset: globalScriptLines
         });
     } catch (e) {
-        adapter.setState('scriptProblem.' + name.substring('script.js.'.length), true, true);
+        adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, true, true);
         context.logError(name, e);
     }
 }
