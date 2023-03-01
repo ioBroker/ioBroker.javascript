@@ -5,7 +5,7 @@
     "dependencies": {
         "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
         "@iobroker/adapter-react-v5": "^4.0.13",
-        "@mui/icons-material": "^5.11.9",
+        "@mui/icons-material": "^5.11.11",
         "@mui/material": "^5.11.10",
         "@mui/styles": "^5.11.9",
         "@sentry/browser": "^7.38.0",
