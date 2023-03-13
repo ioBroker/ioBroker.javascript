@@ -348,5 +348,11 @@
   "for programmers": "для программистов",
   "for professionals": "для профессионалов",
   "Duplicate name": "Повторяющееся имя",
-  "Empty name is not allowed": "Пустое имя не допускается"
+  "Empty name is not allowed": "Пустое имя не допускается",
+  "Astrological events today": "Астрологические события сегодня",
+  "Show astrological events": "Показать астрологические события",
+  "Time": "Время",
+  "Description": "Описание",
+  "nextSunrise": "Следующий восход",
+  "nextSunset": "Следующий закат"
 }

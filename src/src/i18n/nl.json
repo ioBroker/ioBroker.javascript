@@ -348,5 +348,11 @@
   "for programmers": "voor programmeurs",
   "for professionals": "voor professionals",
   "Duplicate name": "Dubbele naam",
-  "Empty name is not allowed": "Lege naam is niet toegestaan"
+  "Empty name is not allowed": "Lege naam is niet toegestaan",
+  "Astrological events today": "Astrologische gebeurtenissen vandaag",
+  "Show astrological events": "Laat astrologische gebeurtenissen zien",
+  "Time": "Tijd",
+  "Description": "Beschrijving",
+  "nextSunrise": "Volgende zonsopgang",
+  "nextSunset": "Volgende zonsondergang"
 }

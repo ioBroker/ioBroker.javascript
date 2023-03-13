@@ -174,27 +174,27 @@ class Debugger extends React.Component {
             }
         })
             .then(instance =>
-                this.setState({instance: instance}, () => {
+                this.setState({ instance }, () => {
                     if (this.state.instance) {
-                        this.props.socket.setState(this.state.instance + '.debug.from', { val: '{"cmd": "subscribed"}', ack: true });
+                        this.props.socket.setState(`${this.state.instance}.debug.from`, { val: '{"cmd": "subscribed"}', ack: true });
                         //.then(() => );
                         setTimeout(() =>
-                            this.props.socket.subscribeState(this.state.instance + '.debug.from', this.fromInstance), 200);
+                            this.props.socket.subscribeState(`${this.state.instance}.debug.from`, this.fromInstance), 200);
                     } else {
-                        this.setState({error: 'Unknown instance'});
+                        this.setState({ error: 'Unknown instance' });
                     }
                 }));
     }
 
     componentWillUnmount() {
         if (this.state.instance) {
-            this.props.socket.unsubscribeState(this.state.instance + '.debug.from', this.fromInstance);
+            this.props.socket.unsubscribeState(`${this.state.instance}.debug.from`, this.fromInstance);
             this.props.socket.sendTo(this.state.instance, 'debugStop');
         }
     }
 
     sendToInstance(cmd) {
-        this.props.socket.setState(this.state.instance + '.debug.to', { val: JSON.stringify(cmd), ack: false });
+        this.props.socket.setState(`${this.state.instance}.debug.to`, { val: JSON.stringify(cmd), ack: false });
     }
 
     reinitBreakpoints(cb) {

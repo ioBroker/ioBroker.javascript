@@ -348,5 +348,11 @@
   "for programmers": "for programmers",
   "for professionals": "for professionals",
   "Duplicate name": "Duplicate name",
-  "Empty name is not allowed": "Empty name is not allowed"
+  "Empty name is not allowed": "Empty name is not allowed",
+  "Astrological events today": "Astrological events today",
+  "Show astrological events": "Show astrological events",
+  "Time": "Time",
+  "Description": "Description",
+  "nextSunrise": "Next Sunrise",
+  "nextSunset": "Next sunset"
 }

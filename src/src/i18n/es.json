@@ -348,5 +348,11 @@
   "for programmers": "para programadores",
   "for professionals": "para profesionales",
   "Duplicate name": "Nombre duplicado",
-  "Empty name is not allowed": "No se permite el nombre vacío"
+  "Empty name is not allowed": "No se permite el nombre vacío",
+  "Astrological events today": "Eventos astrológicos hoy",
+  "Show astrological events": "Mostrar eventos astrológicos",
+  "Time": "Tiempo",
+  "Description": "Descripción",
+  "nextSunrise": "próximo amanecer",
+  "nextSunset": "Próxima puesta de sol"
 }

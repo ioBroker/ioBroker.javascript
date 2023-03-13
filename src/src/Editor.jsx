@@ -13,6 +13,18 @@ import Snackbar from '@mui/material/Snackbar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import LinearProgress from '@mui/material/LinearProgress';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 
 import { red, green } from '@mui/material/colors';
 
@@ -34,6 +46,7 @@ import { MdPlaylistAddCheck as IconVerbose } from 'react-icons/md';
 import { MdBugReport as IconDebugMode } from 'react-icons/md';
 import { MdPlayArrow as IconPlay } from 'react-icons/md';
 import { MdPause as IconPause } from 'react-icons/md';
+import { MdAutoAwesome as IconAstro } from 'react-icons/md';
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
@@ -179,15 +192,15 @@ class Editor extends React.Component {
         } catch (e) {
             editing = [];
         }
-        if (selected && editing.indexOf(selected) === -1) {
+        if (selected && !editing.includes(selected)) {
             editing.push(selected);
         }
 
         this.tabsRef = React.createRef();
 
         this.state = {
-            selected: selected,
-            editing: editing, // array of opened scripts
+            selected,
+            editing, // array of opened scripts
             changed: {}, // for every script
             blockly: null,
             rules: null,
@@ -197,6 +210,8 @@ class Editor extends React.Component {
             showSelectId: false,
             showCron: false,
             showScript: false,
+            showAstro: false,
+            astroEvents: null,
             insert: '',
             searchText: '',
             themeType: this.props.themeType,
@@ -221,17 +236,17 @@ class Editor extends React.Component {
         // required by selectIdDialog in Blockly
         this.selectId = {
             initValue: null,
-            callback: null
+            callback: null,
         };
         this.cron = {
             initValue: null,
-            callback: null
+            callback: null,
         };
         this.scriptDialog = {
             initValue: null,
             callback: null,
             args: null,
-            isReturn: false
+            isReturn: false,
         };
 
         window.systemLang = I18n.getLanguage();
@@ -1051,6 +1066,23 @@ class Editor extends React.Component {
                         <IconCron />
                     </IconButton>}
 
+                    <IconButton
+                        key="show-astro"
+                        aria-label="Show astrological events"
+                        title={I18n.t('Show astrological events')}
+                        className={this.props.classes.toolbarButtons}
+                        disabled={!isInstanceRunning}
+                        onClick={() => {
+                            this.setState({ showAstro: true, astroEvents: null });
+
+                            this.props.socket.sendTo(this.scripts[this.state.selected].engine.replace('system.adapter.', ''), 'calcAstroAll', {})
+                                .then(astroEvents => this.setState({ astroEvents }));
+                        }}
+                        size="medium"
+                    >
+                        <IconAstro />
+                    </IconButton>
+
                     {!this.props.debugMode && !this.state.blockly && !this.state.rules && !this.state.showCompiledCode && <IconButton
                         key="select-id"
                         aria-label="select ID"
@@ -1335,6 +1367,51 @@ class Editor extends React.Component {
         }
     }
 
+    getAstroDialog() {
+        if (this.state.showAstro) {
+            return <Dialog
+                open={!0}
+                onClose={() => this.setState({ showAstro: false })}
+                key="dialogAstro"
+            >
+                <DialogTitle>{I18n.t('Astrological events today')}</DialogTitle>
+                <DialogContent>
+                    {!this.state.astroEvents ? <LinearProgress /> : <TableContainer component={Paper}>
+                        <Table size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>{I18n.t('Name')}</TableCell>
+                                    <TableCell>{I18n.t('Time')}</TableCell>
+                                    <TableCell>{I18n.t('Description')}</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {Object.keys(this.state.astroEvents).map(id =>
+                                    <TableRow key={id}>
+                                        <TableCell component="th" scope="row">{id.startsWith('next') ? '' : id}</TableCell>
+                                        <TableCell align="right">{new Date(this.state.astroEvents[id]).toLocaleTimeString()}</TableCell>
+                                        <TableCell>{I18n.t(id)}</TableCell>
+                                    </TableRow>)}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>}
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.setState({ showAstro: false })}
+                        color="primary"
+                        startIcon={<IconClose />}
+                    >
+                        {I18n.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>;
+        } else {
+            return null;
+        }
+    }
+
     getEditorDialog() {
         if (this.state.showScript) {
             return <DialogScriptEditor
@@ -1465,6 +1542,7 @@ class Editor extends React.Component {
             this.getSelectIdDialog(),
             this.getCronDialog(),
             this.getEditorDialog(),
+            this.getAstroDialog(),
             this.getDebugMenu(),
             this.getToast(),
             this.getTour(),

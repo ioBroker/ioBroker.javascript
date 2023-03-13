@@ -348,5 +348,11 @@
   "for programmers": "для програмістів",
   "for professionals": "для професіоналів",
   "Duplicate name": "Повторюване ім'я",
-  "Empty name is not allowed": "Порожнє ім'я не допускається"
+  "Empty name is not allowed": "Порожнє ім'я не допускається",
+  "Astrological events today": "Астрологічні події сьогодні",
+  "Show astrological events": "Показати астрологічні події",
+  "Time": "час",
+  "Description": "опис",
+  "nextSunrise": "Наступний схід сонця",
+  "nextSunset": "Наступний захід сонця"
 }

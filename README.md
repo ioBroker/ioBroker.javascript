@@ -61,6 +61,7 @@ And then call `npm run build`.
 * (bluefox) Corrected `existsStateAsync` function
 * (bluefox) Added `isDaylightSaving` state to indicate day saving time
 * (AlCalzone) Pinned `@types/node` to v14
+* (bluefox) Added list of astrological events in GUI
 
 ### 6.2.0 (2023-02-17)
 * (Apollon77) Prevented duplicate schedule triggering with inaccurate RTC clocks

@@ -15,13 +15,14 @@
 /* jshint shadow: true */
 'use strict';
 
-const vm           = require('vm');
-const nodeFS       = require('fs');
-const nodePath     = require('path');
-const CoffeeScript = require('coffeescript');
-const tsc          = require('virtual-tsc');
-const Mirror       = require('./lib/mirror');
-const fork         = require('child_process').fork;
+const vm            = require('vm');
+const nodeFS        = require('fs');
+const nodePath      = require('path');
+const CoffeeScript  = require('coffeescript');
+const tsc           = require('virtual-tsc');
+const Mirror        = require('./lib/mirror');
+const fork          = require('child_process').fork;
+const { astroList } = require('./lib/consts');
 
 const mods = {
     fs:               {},
@@ -769,6 +770,46 @@ function startAdapter(options) {
 
                         if (obj.callback) {
                             adapter.sendTo(obj.from, obj.command, {typings}, obj.callback);
+                        }
+                        break;
+                    }
+
+                    case 'calcAstroAll': {
+                        if (obj.message) {
+                            const sunriseOffset = parseInt(obj.message.sunriseOffset  === undefined ? adapter.config.sunriseOffset : obj.message.sunriseOffset, 10) || 0;
+                            const sunsetOffset  = parseInt(obj.message.sunsetOffset   === undefined ? adapter.config.sunsetOffset  : obj.message.sunsetOffset, 10)  || 0;
+                            const longitude     = parseFloat(obj.message.longitude === undefined ? adapter.config.longitude    : obj.message.longitude) || 0;
+                            const latitude      = parseFloat(obj.message.latitude  === undefined ? adapter.config.latitude     : obj.message.latitude)  || 0;
+                            const now = new Date();
+                            const astroEvents = mods.suncalc.getTimes(now, latitude, longitude);
+                            astroEvents.nextSunrise = getAstroEvent(
+                                now,
+                                obj.message.sunriseEvent || adapter.config.sunriseEvent,
+                                obj.message.sunriseLimitStart || adapter.config.sunriseLimitStart,
+                                obj.message.sunriseLimitEnd   || adapter.config.sunriseLimitEnd,
+                                sunriseOffset,
+                                false,
+                                latitude,
+                                longitude,
+                                true
+                            );
+                            astroEvents.nextSunset = getAstroEvent(
+                                now,
+                                obj.message.sunsetEvent  || adapter.config.sunsetEvent,
+                                obj.message.sunsetLimitStart  || adapter.config.sunsetLimitStart,
+                                obj.message.sunsetLimitEnd    || adapter.config.sunsetLimitEnd,
+                                sunsetOffset,
+                                true,
+                                latitude,
+                                longitude,
+                                true
+                            );
+
+                            const result = {};
+                            const keys = Object.keys(astroEvents).sort((a, b) => astroEvents[a] - astroEvents[b]);
+                            keys.forEach(key => result[key] = astroEvents[key].toISOString());
+
+                            obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
                         }
                         break;
                     }
