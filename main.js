@@ -765,7 +765,7 @@ function startAdapter(options) {
 
                         // also provide the known global declarations for each global script
                         for (const globalScriptPaths of Object.keys(knownGlobalDeclarationsByScript)) {
-                            typings[globalScriptPaths + '.d.ts'] = knownGlobalDeclarationsByScript[globalScriptPaths];
+                            typings[`${globalScriptPaths}.d.ts`] = knownGlobalDeclarationsByScript[globalScriptPaths];
                         }
 
                         if (obj.callback) {
