@@ -45,13 +45,16 @@ And then call `npm run build`.
 
 ## Todo
 - Goto current line in debugger
-- heating profile (future releases)
 - ...
 
 ## Changelog
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) made the editor visible in full height
+* (paul53) small fixes on blockly and translations are made
+
 ### 7.0.2 (2023-03-13)
 * (bluefox) Breaking change: all usages of `jsonata` must be rewritten to use promises.
 * (bluefox) Breaking change: all blockly scripts with `jsonata` blocks must de changed (just move some blocks) and saved anew.

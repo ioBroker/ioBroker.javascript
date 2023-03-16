@@ -46,11 +46,11 @@ function npmInstall() {
         // Install node modules
         const cwd = `${__dirname.replace(/\\/g, '/')}/src/`;
 
-        const cmd = `npm install`;
+        const cmd = `npm install -f`;
         console.log(`"${cmd} in ${cwd}`);
 
         // System call used for update of js-controller itself,
-        // because during installation npm packet will be deleted too, but some files must be loaded even during the install process.
+        // because during installation npm packet will be deleted too, but some files must be loaded even during the installation process.
         const exec = require('child_process').exec;
         const child = exec(cmd, {cwd});
 

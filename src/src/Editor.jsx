@@ -82,30 +82,30 @@ const COLOR_PAUSE = red[400];
 const styles = theme => ({
 
     toolbar: {
-        minHeight: 38,//Theme.toolbar.height,
-        boxShadow: '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)'
+        minHeight: 38, // Theme.toolbar.height,
+        boxShadow: '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)',
     },
     toolbarButtons: {
         padding: 4,
-        marginLeft: 4
+        marginLeft: 4,
     },
     toolbarButtonsDisabled: {
         filter: 'grayscale(100%)',
         opacity: 0.5,
     },
     editorDiv: {
-        height: `calc(100% - ${theme.toolbar.height + 38/*Theme.toolbar.height */ + 5}px)`,
+        height: `calc(100% - ${theme.toolbar.height + 38/*Theme.toolbar.height */ + 10}px)`,
         width: '100%',
         overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
     },
     textButton: {
         marginRight: 10,
         minHeight: 24,
-        padding: '6px 16px'
+        padding: '6px 16px',
     },
     saveButton: {
-        background: '#ff9900'
+        background: '#ff9900',
     },
     textIcon: {
         marginLeft: theme.spacing(1),
@@ -116,18 +116,18 @@ const styles = theme => ({
         verticalAlign: 'middle',
         marginBottom: 2,
         marginRight: 2,
-        borderRadius: 3
+        borderRadius: 3,
     },
     hintIcon: {
-        //fontSize: 32,
-        padding: '0 8px 0 8px'
+        // fontSize: 32,
+        padding: '0 8px 0 8px',
     },
     hintText: {
-        //fontSize: 18
+        // fontSize: 18
     },
     hintButton: {
         marginTop: 8,
-        marginLeft: 20
+        marginLeft: 20,
     },
     tabMenuButton: {
         position: 'absolute',
@@ -135,7 +135,7 @@ const styles = theme => ({
         right: 0,
     },
     tabChanged: {
-        color: theme.palette.secondary.main
+        color: theme.palette.secondary.main,
     },
     tabText: {
         maxWidth: 130,
@@ -147,7 +147,7 @@ const styles = theme => ({
     },
     tabChangedIcon: {
         color: '#FF0000',
-        fontSize: 16
+        fontSize: 16,
     },
     closeButton: {
         position: 'absolute',
@@ -155,7 +155,7 @@ const styles = theme => ({
         right: -5,
         zIndex: 10,
         padding: 8,
-        cursor: 'pointer'
+        cursor: 'pointer',
     },
     closeButtonIcon: {
         background: theme.palette.mode === 'dark' ? '#000' : '#FFF',
@@ -177,7 +177,7 @@ const styles = theme => ({
         width: 18,
         height: 18,
         borderRadius: 2,
-        marginRight: 5
+        marginRight: 5,
     },
 });
 
@@ -787,7 +787,7 @@ class Editor extends React.Component {
         const result = [];
         let _id = 'script.js';
         for (let i = 0; i < parts.length; i++) {
-            _id += '.' + parts[i];
+            _id += `.${parts[i]}`;
             if (this.props.objects[_id] && this.props.objects[_id].common) {
                 result.push(Editor.getText(this.props.objects[_id].common.name));
             } else {
@@ -830,7 +830,7 @@ class Editor extends React.Component {
                         let text = Editor.getText(this.props.objects[id].common.name) || '';
                         let title = this.getScriptFullName(id);
                         if (text.length > 18) {
-                            text = text.substring(0, 15) + '...';
+                            text = `${text.substring(0, 15)}...`;
                         }
                         const changed = this.props.objects[id].common && this.scripts[id] && this.props.objects[id].common.source !== this.scripts[id].source;
                         const label = [
@@ -845,10 +845,10 @@ class Editor extends React.Component {
                         return <Tab
                             disabled={this.props.debugInstance || (this.state.selected !== id && this.props.debugMode)}
                             wrapped
-                            component={'div'}
+                            component="div"
                             iconPosition="start"
                             icon={<img key="icon" alt="" src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon} />}
-                            href={'#' + id}
+                            href={`#${id}`}
                             key={id}
                             label={label}
                             className={this.props.classes.tabButton}
@@ -861,8 +861,8 @@ class Editor extends React.Component {
                 {this.props.debugInstance ? <Tab
                     disabled={false}
                     wrapped
-                    component={'div'}
-                    href={'#' + this.props.debugInstance.adapter}
+                    component="div"
+                    href={`#${this.props.debugInstance.adapter}`}
                     key={this.props.debugInstance.adapter}
                     label={this.props.debugInstance.adapter}
                     className={this.props.classes.tabButton}
