@@ -2347,7 +2347,7 @@ function debugStart(data) {
 
             debugState.promiseOnEnd = new Promise(resolve => {
                 const options = {
-                    stdio: ['ignore', 'inherit', 'inherit', 'ipc']
+                    stdio: ['ignore', 'inherit', 'inherit', 'ipc'],
                     //stdio: ['pipe', 'pipe', 'pipe', 'ipc']
                 };
                 const args = [];
@@ -2424,35 +2424,38 @@ function debugStart(data) {
         });
 }
 
-function patchFont() {
+async function patchFont() {
     let stat;
+    let dbFile;
     try {
         stat = nodeFS.statSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`);
+        dbFile = await adapter.readFileAsync('javascript.admin', `vs/base/browser/ui/codicons/codicon/codicon.ttf`);
     } catch (error) {
         // ignore
     }
-    if (!stat || stat.size !== 62324) {
-        const buffer = Buffer.from(JSON.parse(nodeFS.readFileSync(`${__dirname}/admin-config/vsFont/codicon.json`)));
+    if (dbFile && dbFile.file) {
+        dbFile = dbFile.file;
+    }
 
-        return require('jszip').loadAsync(buffer)
-            .then(zip => {
-                zip.file('codicon.ttf').async('arraybuffer')
-                    .then(data => {
-                        if (data.byteLength !== 62324) {
-                            throw new Error('invalid font file!');
-                        }
-                        nodeFS.writeFileSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`, Buffer.from(data));
-                        // upload this file
-                        return adapter.writeFileAsync('javascript.admin', 'vs/base/browser/ui/codicons/codicon/codicon.ttf', data);
-                    })
-                    .then(() => true)
-                    .catch(error => {
-                        adapter.log.error(`Cannot patch font: ${error}`);
-                        return false;
-                    });
-            });
+    if (!stat || stat.size !== 62324 || !dbFile || dbFile.byteLength !== 62324) {
+        try {
+            const buffer = Buffer.from(JSON.parse(nodeFS.readFileSync(`${__dirname}/admin-config/vsFont/codicon.json`)));
+
+            const zip = await require('jszip').loadAsync(buffer);
+            const data = await zip.file('codicon.ttf').async('arraybuffer');
+            if (data.byteLength !== 62324) {
+                throw new Error('invalid font file!');
+            }
+            nodeFS.writeFileSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`, Buffer.from(data));
+            // upload this file
+            await adapter.writeFileAsync('javascript.admin', 'vs/base/browser/ui/codicons/codicon/codicon.ttf', data);
+            return true;
+        } catch (error) {
+            adapter.log.error(`Cannot patch font: ${error}`);
+            return false;
+        }
     } else {
-        return Promise.resolve(false);
+        return false;
     }
 }
 
