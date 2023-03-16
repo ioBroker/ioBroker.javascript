@@ -51,7 +51,7 @@ And then call `npm run build`.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.0.3 (2023-03-16)
 * (bluefox) made the editor visible in full height
 * (paul53) small fixes on blockly and translations are made
 
@@ -80,9 +80,6 @@ And then call `npm run build`.
 
 ### 6.1.3 (2022-11-03)
 * (Apollon77) Prevent adapter crash when script could not be compiled
-
-### 6.1.2 (2022-11-03)
-* (bluefox) Added ukrainian translation
 
 ## License
 The MIT License (MIT)

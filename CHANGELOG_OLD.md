@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 6.1.2 (2022-11-03)
+* (bluefox) Added ukrainian translation
+
 ## 6.1.0 (2022-11-03)
 * (Apollon77) Add a configurable check for number of setStates per Minute to prevent scripts from taking down ioBroker. Default are 1000 setState per minute. Only stops if the number is reached 2 minutes in a row!
 * (Apollon77) Add createAlias method to create aliases for states
