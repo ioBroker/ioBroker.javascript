@@ -9,7 +9,7 @@
         "@mui/material": "^5.11.13",
         "@mui/styles": "^5.11.13",
         "@sentry/browser": "^7.43.0",
-        "@sentry/integrations": "^7.43.0",
+        "@sentry/integrations": "^7.46.0",
         "lodash": "^4.17.21",
         "monaco-editor": "~0.36.1",
         "react": "^18.2.0",
