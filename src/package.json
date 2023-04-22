@@ -6,7 +6,7 @@
         "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
         "@iobroker/adapter-react-v5": "^4.0.18",
         "@mui/icons-material": "^5.11.11",
-        "@mui/material": "^5.11.13",
+        "@mui/material": "^5.11.15",
         "@mui/styles": "^5.11.13",
         "@sentry/browser": "^7.43.0",
         "@sentry/integrations": "^7.43.0",
