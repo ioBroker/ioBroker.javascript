@@ -51,6 +51,9 @@ And then call `npm run build`.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) packages updated
+
 ### 7.0.3 (2023-03-16)
 * (bluefox) made the editor visible in full height
 * (paul53) small fixes on blockly and translations are made
