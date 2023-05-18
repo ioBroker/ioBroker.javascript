@@ -18,14 +18,14 @@ Executes Javascript, Typescript Scripts.
 * [Benutzung](docs/de/usage.md)
 
 * Blockly
-  * Here you can find description of [blockly](docs/en/blockly.md). 
+  * Here you can find the description of [blockly](docs/en/blockly.md). 
   * Hier kann man die Beschreibung von [Blockly](docs/de/blockly.md) finden. 
   * Описание по [blockly](docs/ru/blockly.md) можно найти [здесь](docs/ru/blockly.md).
 
 ## Forbidden directories for Script Filesystem Mirroring
 The Script Filesystem Mirroring will store all Source Files of the Scripts in your Filesystem to allow you to edit the Files in your favourite Script editor beside the Web-Editor. All changes are synced in both directions.
 
-When enabling the Script Filesystem mirroring please make sure to create a **dedicated new directory** and **do not** use an existing directory with other content. Please also make sure that no other script or process changes files in the provided directory to prevent access issues.
+When enabling the Script Filesystem mirroring, please make sure to create a **dedicated new directory** and **do not** use an existing directory with other content. Please also make sure that no other script or process changes files in the provided directory to prevent access issues.
 Any location needs to be writable by the "iobroker" user!
 
 Since v5.5.0 of the JavaScript adapter the following locations (relative to the ioBroker Base directory, usually `/opt/iobroker`) are not allowed to be used:
