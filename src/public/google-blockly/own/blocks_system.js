@@ -477,7 +477,7 @@ Blockly.Blocks['direct'] = {
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setColour(Blockly.System.HUE);
+        this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Translate('direct_tooltip'));
         this.setHelpUrl(getHelp('direct_help'));
     }
