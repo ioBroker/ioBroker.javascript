@@ -304,21 +304,20 @@ Blockly.JavaScript['toggle'] = function(block) {
         if (main.objects[valueObjectID].common.min !== undefined) {
             min = parseFloat(main.objects[valueObjectID].common.min);
         }
-        setCommand = '    setState("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? (state.val == ' + min + ' ?  ' + max + ' : '  + min + ') : ' + max + ');\n';
+        setCommand = 'setState("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? (state.val == ' + min + ' ?  ' + max + ' : '  + min + ') : ' + max + ');';
     } else {
-        setCommand = '    setState("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? !state.val : true);\n';
+        setCommand = 'setState("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? !state.val : true);';
     }
+
     var withDelay = block.getFieldValue('WITH_DELAY');
 
     if (withDelay === 'TRUE' || withDelay === 'true' || withDelay === true) {
-        code =
-            'getState("' + valueObjectID + '", function (err, state) {\n' +
-            '    setStateDelayed("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? !state.val : true, ' + valueDelay + ', ' + clearRunning + ');\n' +
+        code = 'getState("' + valueObjectID + '", (err, state) => {\n' +
+            Blockly.JavaScript.prefixLines('setStateDelayed("' + valueObjectID + '"' + (objectName ? '/*' + objectName + '*/' : '') + ', state ? !state.val : true, ' + valueDelay + ', ' + clearRunning + ');', Blockly.JavaScript.INDENT) + '\n' +
             '});\n';
     } else {
-        code =
-            'getState("' + valueObjectID + '", function (err, state) {\n' +
-            setCommand +
+        code = 'getState("' + valueObjectID + '", (err, state) => {\n' +
+            Blockly.JavaScript.prefixLines(setCommand, Blockly.JavaScript.INDENT) + '\n' +
             '});\n';
     }
 
@@ -350,7 +349,6 @@ Blockly.Blocks['update'] = {
 
         this.appendDummyInput('OID')
             .appendField(new Blockly.FieldOID('Object ID'), 'OID');
-
 
         this.appendValueInput('VALUE')
             .setCheck(null)
@@ -490,7 +488,9 @@ Blockly.JavaScript['direct'] = function(block) {
     var onlyChanges = block.getFieldValue('ONLY_CHANGES');
     var oidDest = Blockly.JavaScript.valueToCode(block, 'OID_DST', Blockly.JavaScript.ORDER_ATOMIC);
     onlyChanges = onlyChanges === true || onlyChanges === 'true' || onlyChanges === 'TRUE';
-    return 'on({id: ' + oidSrc + ', change: "' + (onlyChanges ? 'ne' : 'any') + '"}, function (obj) {\n  setState(' + oidDest + ', obj.state.val);\n});';
+    return 'on({ id: ' + oidSrc + ', change: "' + (onlyChanges ? 'ne' : 'any') + '" }, (obj) => {\n' +
+        Blockly.JavaScript.prefixLines('setState(' + oidDest + ', obj.state.val);', Blockly.JavaScript.INDENT) + '\n' +
+        '});\n';
 };
 
 // --- control ex -----------------------------------------------------------
@@ -632,7 +632,9 @@ Blockly.JavaScript['create'] = function(block) {
         }
     }
 
-    return 'createState("' + name + '"' + paraV + paraC + ', async function () {\n' + statement + '});\n';
+    return 'createState("' + name + '"' + paraV + paraC + ', async () => {\n' +
+        Blockly.JavaScript.prefixLines(statement, Blockly.JavaScript.INDENT) + '\n' +
+        '});\n';
 };
 
 // --- get value --------------------------------------------------
@@ -710,10 +712,10 @@ Blockly.Blocks['get_value_var'] = {
 
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('get_value_val'),    'val'],
-                [Blockly.Translate('get_value_ack'),    'ack'],
-                [Blockly.Translate('get_value_ts'),     'ts'],
-                [Blockly.Translate('get_value_lc'),     'lc'],
+                [Blockly.Translate('get_value_val'),      'val'],
+                [Blockly.Translate('get_value_ack'),      'ack'],
+                [Blockly.Translate('get_value_ts'),       'ts'],
+                [Blockly.Translate('get_value_lc'),       'lc'],
                 [Blockly.Translate('get_value_q') ,       'q'],
                 [Blockly.Translate('get_value_comment') , 'c'],
                 [Blockly.Translate('get_value_from'),     'from'],
@@ -745,7 +747,7 @@ Blockly.Blocks['get_value_var'] = {
 Blockly.JavaScript['get_value_var'] = function(block) {
     var oid  = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     var attr = block.getFieldValue('ATTR');
-    if (attr === 'type' || attr.indexOf('.') !== -1) {
+    if (attr === 'type' || attr.startsWith('common.') !== -1) {
         return ['(await getObjectAsync("' + oid + '")).' + attr, Blockly.JavaScript.ORDER_ATOMIC];
     } else {
         return ['getState(' + oid + ').' + attr, Blockly.JavaScript.ORDER_ATOMIC];
@@ -811,9 +813,15 @@ Blockly.JavaScript['get_value_async'] = function(block) {
     var attr = block.getFieldValue('ATTR');
     var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     if (attr === 'type' || attr.indexOf('.') !== -1) {
-        return 'getObjectAsync("' + oid + '", async function (err, obj) {\n   let value = obj.' + attr + ';\n' + statement + '});\n';
+        return 'getObjectAsync("' + oid + '", async (err, obj) => {\n' +
+            Blockly.JavaScript.prefixLines('let value = obj.' + attr + ';', Blockly.JavaScript.INDENT) + '\n' +
+            statement + '\n' +
+            '});\n';
     } else {
-        return 'getState("' + oid + '", async function (err, state) {\n   let value = state.' + attr + ';\n' + statement + '});\n';
+        return 'getState("' + oid + '", async (err, state) => {\n' +
+            Blockly.JavaScript.prefixLines('let value = state.' + attr + ';', Blockly.JavaScript.INDENT) + '\n' +
+            statement + '\n' +
+            '});\n';
     }
 };
 
@@ -962,7 +970,7 @@ Blockly.Blocks['regex'] = {
 
 Blockly.JavaScript['regex'] = function(block) {
     var oid = block.getFieldValue('TEXT');
-    return ['new RegExp("' + oid + '")', Blockly.JavaScript.ORDER_ATOMIC]
+    return ['new RegExp("' + oid + '")', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- selector --------------------------------------------------
@@ -994,7 +1002,7 @@ Blockly.Blocks['selector'] = {
 
 Blockly.JavaScript['selector'] = function(block) {
     var oid = block.getFieldValue('TEXT');
-    return ['Array.prototype.slice.apply($("' + oid + '"))', Blockly.JavaScript.ORDER_ATOMIC]
+    return ['Array.prototype.slice.apply($("' + oid + '"))', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- Text new line --------------------------------------------------
@@ -1015,7 +1023,7 @@ Blockly.Blocks['text_newline'] = {
 
 Blockly.JavaScript['text_newline'] = function(block) {
     var dropdown_type = block.getFieldValue('Type');
-    return ['\'' + dropdown_type + '\'', Blockly.JavaScript.ORDER_ATOMIC]
+    return ['\'' + dropdown_type + '\'', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- Round Number to n decimal places -------------------------------

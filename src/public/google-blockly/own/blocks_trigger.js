@@ -273,8 +273,8 @@ Blockly.JavaScript['on_ext'] = function(block) {
     }
     var oid = '[].concat(' + oids.join(').concat(') + ')';
 
-    var code = 'on({id: ' + oid + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + '}, async function (obj) {\n  ' +
-        (oids.length === 1 ? 'let value = obj.state.val;\n  let oldValue = obj.oldState.val;\n' : '') +
+    var code = 'on({ id: ' + oid + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + ' }, async (obj) => {\n' +
+        (oids.length === 1 ? Blockly.JavaScript.prefixLines('let value = obj.state.val;\nlet oldValue = obj.oldState.val;', Blockly.JavaScript.INDENT) + '\n' : '') +
         statements_name + '});\n';
     return code;
 };
@@ -347,8 +347,11 @@ Blockly.JavaScript['on'] = function(block) {
         val = 'change: "' + dropdown_condition + '"';
     }
 
-    var code = 'on({id: "' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + '}, async function (obj) {\n  let value = obj.state.val;\n  let oldValue = obj.oldState.val;\n' + statements_name + '});\n';
-    return code;
+    return 'on({ id: "' + value_objectid + '"' + (objectname ? '/*' + objectname + '*/' : '') + ', '  + val + (ack_condition ? ', ack: ' + ack_condition : '') + ' }, async (obj) => {\n' +
+        Blockly.JavaScript.prefixLines('let value = obj.state.val;\n', Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines('let oldValue = obj.oldState.val;', Blockly.JavaScript.INDENT) + '\n' +
+        + statements_name +
+        '});\n';
 };
 
 // --- get info about event -----------------------------------------------------------
@@ -483,7 +486,9 @@ Blockly.JavaScript['schedule'] = function(block) {
     } else {
         schedule = '"' + schedule + '"';
     }
-    return 'schedule(' + schedule + ', async function () {\n' + statements_name + '});\n';
+    return 'schedule(' + schedule + ', async () => {\n' +
+        statements_name +
+        '});\n';
 };
 
 // --- ASTRO -----------------------------------------------------------
@@ -548,7 +553,9 @@ Blockly.JavaScript['astro'] = function(block) {
     var offset    = parseInt(block.getFieldValue('OFFSET'), 10);
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    return 'schedule({astro: "' + astrotype + '", shift: ' + offset + '}, async function () {\n' + statements_name + '});\n';
+    return 'schedule({ astro: "' + astrotype + '", shift: ' + offset + ' }, async () => {\n' +
+        statements_name +
+        '});\n';
 };
 
 // --- set named schedule -----------------------------------------------------------
@@ -669,7 +676,9 @@ Blockly.JavaScript['schedule_create'] = function (block) {
     var schedule = Blockly.JavaScript.valueToCode(block, 'SCHEDULE', Blockly.JavaScript.ORDER_ATOMIC);
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    return name + ' = schedule(' + schedule + ', async function () {\n' + statements_name + '});\n';
+    return name + ' = schedule(' + schedule + ', async () => {\n' +
+        statements_name +
+        '});\n';
 };
 
 // --- clearSchedule -----------------------------------------------------------
@@ -723,7 +732,7 @@ Blockly.Blocks['schedule_clear'] = {
 
 Blockly.JavaScript['schedule_clear'] = function(block) {
     var name = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
-    return '(function () {if (' + name + ') {clearSchedule(' + name + '); ' + name + ' = null;}})();\n';
+    return '(function () { if (' + name + ') { clearSchedule(' + name + '); ' + name + ' = null; }})();\n';
 };
 
 // --- CRON dialog --------------------------------------------------
@@ -966,7 +975,9 @@ Blockly.JavaScript['onMessage'] = function (block) {
     var message = block.getFieldValue('MESSAGE');
     var statements_name = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    return 'onMessage("' + message + '", async function (data) {\n  ' + statements_name + '});\n';
+    return 'onMessage("' + message + '", async (data) => {\n' +
+        statements_name +
+        '});\n';
 };
 
 // --- onFile -----------------------------------------------------------
@@ -1022,7 +1033,7 @@ Blockly.JavaScript['onFile'] = function (block) {
 
     return 'onFile(' + value_objectid + (objectname ? '/*' + objectname + '*/' : '') + ', ' +
         file + ', ' + (withFile === 'TRUE' ? 'true' : 'false') +
-        ', async function (id, fileName, size, data, mimeType) {\n  ' + statements_name + '});\n';
+        ', async (id, fileName, size, data, mimeType) => {\n' + statements_name + '});\n';
 };
 
 // --- onFile -----------------------------------------------------------

@@ -306,7 +306,7 @@ Blockly.Blocks.convert_json2object = {
     }
 };
 Blockly.JavaScript.convert_json2object = function (a) {
-    return ['(function () { try {return JSON.parse(' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + ');} catch(e) {return {};}})()', Blockly.JavaScript.ORDER_ATOMIC];
+    return ['(function () { try { return JSON.parse(' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + '); } catch(e) { return {}; }})()', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- object2json --------------------------------------------------

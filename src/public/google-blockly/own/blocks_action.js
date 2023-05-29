@@ -101,7 +101,7 @@ Blockly.JavaScript['exec'] = function(block) {
     if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
         var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
         if (statement) {
-            return 'exec(' + value_command + ', async function (error, result, stderr) {\n  ' + statement + '});\n' +
+            return 'exec(' + value_command + ', async (error, result, stderr) => {\n' + statement + '});\n' +
                 logText;
         } else {
             return 'exec(' + value_command + ');\n' +
