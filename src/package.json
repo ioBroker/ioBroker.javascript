@@ -32,7 +32,7 @@
         "react-treeview-mui": "^0.1.2",
         "reactour": "^1.19.0",
         "sass": "^1.62.1",
-        "styled-components": "^5.3.10",
+        "styled-components": "^5.3.11",
         "suncalc2": "^1.8.1",
         "@craco/craco": "^7.1.0",
         "craco-esbuild": "^0.5.2",
