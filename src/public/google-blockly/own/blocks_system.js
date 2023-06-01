@@ -862,7 +862,7 @@ Blockly.System.blocks['field_oid_meta'] =
 Blockly.Blocks['field_oid_meta'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Translate('field_oid_OID'));
+            .appendField(Blockly.Translate('field_oid_OID_meta'));
 
         this.appendDummyInput()
             .appendField(new Blockly.FieldOID('default', 'meta'), 'oid');
@@ -889,7 +889,7 @@ Blockly.System.blocks['field_oid_script'] =
 Blockly.Blocks['field_oid_script'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(Blockly.Translate('field_oid_OID'));
+            .appendField(Blockly.Translate('field_oid_OID_script'));
 
         this.appendDummyInput()
             .appendField(new Blockly.FieldOID('default', 'script'), 'oid');

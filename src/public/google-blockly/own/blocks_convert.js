@@ -28,15 +28,16 @@ Blockly.Blocks.convert_tonumber = {
     init: function () {
         this.setColour(Blockly.Convert.HUE);
 
-        this.appendValueInput("VALUE")
+        this.appendValueInput('VALUE')
             .appendField(Blockly.Translate('convert_tonumber'));
 
-        this.setOutput(true, "Number");
+        this.setOutput(true, 'Number');
         this.setTooltip(Blockly.Translate('convert_tonumber_tooltip'));
     }
 };
+
 Blockly.JavaScript.convert_tonumber = function (a) {
-    return ["parseFloat(" + Blockly.JavaScript.valueToCode(a, "VALUE", Blockly.JavaScript.ORDER_ATOMIC) + ")", Blockly.JavaScript.ORDER_ATOMIC];
+    return ['parseFloat(' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + ')', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- to Boolean --------------------------------------------------
@@ -49,14 +50,21 @@ Blockly.Convert.blocks['convert_toboolean'] =
 Blockly.Blocks.convert_toboolean = {
     init: function () {
         this.setColour(Blockly.Convert.HUE);
-        this.appendValueInput("VALUE").appendField(Blockly.Translate('convert_toboolean'));
-        this.setOutput(true, "Boolean");
+        this.appendValueInput('VALUE')
+            .appendField(Blockly.Translate('convert_toboolean'));
+
+        this.setOutput(true, 'Boolean');
         this.setTooltip(Blockly.Translate('convert_toboolean_tooltip'))
     }
 };
 
 Blockly.JavaScript.convert_toboolean = function (a) {
-    return ["(function (){const val = " + Blockly.JavaScript.valueToCode(a, "VALUE", Blockly.JavaScript.ORDER_ATOMIC) + "; if (val === 'true') return true; if (val === 'false') return false; return !!val;})()", Blockly.JavaScript.ORDER_ATOMIC];
+    return ['(() => {\n' +
+        '  const val = ' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + ';\n' +
+        '  if (val === "true" || val === "TRUE") return true;\n' +
+        '  if (val === "false" || val === "FALSE") return false;\n' +
+        '  return !!val;\n' +
+        '})()', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- to String --------------------------------------------------
@@ -69,14 +77,14 @@ Blockly.Convert.blocks['convert_tostring'] =
 Blockly.Blocks.convert_tostring = {
     init: function () {
         this.setColour(Blockly.Convert.HUE);
-        this.appendValueInput("VALUE").appendField(Blockly.Translate('convert_tostring'));
-        this.setOutput(true, "String");
+        this.appendValueInput('VALUE').appendField(Blockly.Translate('convert_tostring'));
+        this.setOutput(true, 'String');
         this.setTooltip(Blockly.Translate('convert_tostring_tooltip'))
     }
 };
 
 Blockly.JavaScript.convert_tostring = function (a) {
-    return ["('' + " + Blockly.JavaScript.valueToCode(a, "VALUE", Blockly.JavaScript.ORDER_ATOMIC) + ")", Blockly.JavaScript.ORDER_ATOMIC];
+    return ["('' + " + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + ")", Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- get type --------------------------------------------------
@@ -97,6 +105,7 @@ Blockly.Blocks.convert_type = {
         this.setTooltip(Blockly.Translate('convert_type_tooltip'))
     }
 };
+
 Blockly.JavaScript.convert_type = function (a) {
     return ['typeof ' + Blockly.JavaScript.valueToCode(a, 'ITEM', Blockly.JavaScript.ORDER_ATOMIC), Blockly.JavaScript.ORDER_ATOMIC];
 };
@@ -119,6 +128,7 @@ Blockly.Blocks.convert_to_date = {
         this.setTooltip(Blockly.Translate('convert_to_date_tooltip'))
     }
 };
+
 Blockly.JavaScript.convert_to_date = function (a) {
     return ['getDateObject(' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + ').getTime()', Blockly.JavaScript.ORDER_ATOMIC];
 };
@@ -184,27 +194,28 @@ Blockly.Blocks.convert_from_date = {
                 this.sourceBlock_.updateShape_(option === 'custom', option === 'wdts' || option === 'wdt' || option === 'Mt' || option === 'Mts');
             }), 'OPTION');
 
-
         this.setInputsInline(true);
         this.setOutput(true);
         this.setTooltip(Blockly.Translate('convert_from_date_tooltip'))
     },
     mutationToDom: function() {
-        var container = document.createElement('mutation');
-        var option = this.getFieldValue('OPTION');
+        const container = document.createElement('mutation');
+        const option = this.getFieldValue('OPTION');
+
         container.setAttribute('format', option === 'custom' ? 'true' : 'false');
         container.setAttribute('language', option === 'wdt' || option === 'wdts' || option === 'Mt' || option === 'Mts' ? 'true' : 'false');
+
         return container;
     },
     domToMutation: function(xmlElement) {
-        var format = xmlElement.getAttribute('format');
-        var language = xmlElement.getAttribute('language');
+        const format = xmlElement.getAttribute('format');
+        const language = xmlElement.getAttribute('language');
 
         this.updateShape_(format === true || format === 'true' || format === 'TRUE', language === true || language === 'true' || language === 'TRUE');
     },
     updateShape_: function(isFormat, isLanguage) {
         // Add or remove a delay Input.
-        var inputExists = this.getInput('FORMAT');
+        let inputExists = this.getInput('FORMAT');
 
         if (isFormat) {
             if (!inputExists) {
@@ -220,7 +231,7 @@ Blockly.Blocks.convert_from_date = {
 
         if (isLanguage) {
             if (!inputExists) {
-                var languages;
+                let languages;
                 if (systemLang === 'en') {
                     languages = [['in english', 'en'], ['auf deutsch', 'de'], ['на русском', 'ru']];
                 } else if (systemLang === 'de') {
@@ -238,14 +249,15 @@ Blockly.Blocks.convert_from_date = {
         }
     }
 };
+
 Blockly.JavaScript.convert_from_date = function (block) {
-    var option = block.getFieldValue('OPTION');
-    var format = block.getFieldValue('FORMAT');
-    var lang   = block.getFieldValue('LANGUAGE');
+    const option = block.getFieldValue('OPTION');
+    const format = block.getFieldValue('FORMAT');
+    const lang   = block.getFieldValue('LANGUAGE');
 
-    var value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
 
-    var code;
+    let code;
     if (option === 'object') {
         code = 'getDateObject(' + value + ').getTime()';
     } else if (option === 'ms') {
@@ -253,11 +265,11 @@ Blockly.JavaScript.convert_from_date = function (block) {
     } else if (option === 's') {
         code = 'getDateObject(' + value + ').getSeconds()';
     } else if (option === 'sid') {
-        code = '(function () {const v = getDateObject(' + value + '); return v.getHours() * 3600 + v.getMinutes() * 60 + v.getSeconds();})()';
+        code = '(function () { const v = getDateObject(' + value + '); return v.getHours() * 3600 + v.getMinutes() * 60 + v.getSeconds(); })()';
     } else if (option === 'm') {
         code = '(getDateObject(' + value + ').getMinutes())';
     } else if (option === 'mid') {
-        code = '(function () {const v = getDateObject(' + value + '); return v.getHours() * 60 + v.getMinutes();})()';
+        code = '(function () { const v = getDateObject(' + value + '); return v.getHours() * 60 + v.getMinutes(); })()';
     } else if (option === 'h') {
         code = 'getDateObject(' + value + ').getHours()';
     } else if (option === 'd') {
@@ -296,7 +308,6 @@ Blockly.Convert.blocks['convert_json2object'] =
 
 Blockly.Blocks.convert_json2object = {
     init: function () {
-
         this.appendValueInput('VALUE')
             .appendField(Blockly.Translate('convert_json2object'));
 
@@ -305,8 +316,9 @@ Blockly.Blocks.convert_json2object = {
         this.setTooltip(Blockly.Translate('convert_json2object_tooltip'))
     }
 };
+
 Blockly.JavaScript.convert_json2object = function (a) {
-    return ['(function () { try { return JSON.parse(' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + '); } catch(e) { return {}; }})()', Blockly.JavaScript.ORDER_ATOMIC];
+    return ['(function () { try { return JSON.parse(' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + '); } catch (e) { return {}; }})()', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- object2json --------------------------------------------------
@@ -320,7 +332,6 @@ Blockly.Convert.blocks['convert_object2json'] =
 
 Blockly.Blocks.convert_object2json = {
     init: function () {
-
         this.appendValueInput('VALUE')
             .appendField(Blockly.Translate('convert_object2json'));
 
@@ -333,9 +344,12 @@ Blockly.Blocks.convert_object2json = {
         this.setTooltip(Blockly.Translate('convert_object2json_tooltip'))
     }
 };
+
 Blockly.JavaScript.convert_object2json = function (block) {
-    var prettify = block.getFieldValue('PRETTIFY');
+    let prettify = block.getFieldValue('PRETTIFY');
+
     prettify = prettify === 'TRUE' || prettify === 'true' || prettify === true;
+
     return ['JSON.stringify(' + Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + (prettify ? ', null, 2' : '') + ')', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
@@ -366,6 +380,7 @@ Blockly.Blocks.convert_jsonata = {
         this.setTooltip(Blockly.Translate('convert_jsonata_tooltip'))
     }
 };
+
 Blockly.JavaScript.convert_jsonata = function (block) {
     return ['(await jsonataExpression(' + Blockly.JavaScript.valueToCode(block, 'TARGET', Blockly.JavaScript.ORDER_ATOMIC) + ',' + Blockly.JavaScript.valueToCode(block, 'EXPRESSION', Blockly.JavaScript.ORDER_ATOMIC) + '))', Blockly.JavaScript.ORDER_ATOMIC];
 };
