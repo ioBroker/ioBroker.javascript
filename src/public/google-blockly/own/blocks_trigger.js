@@ -436,13 +436,15 @@ Blockly.Blocks['on_source'] = {
     FUNCTION_TYPES: ['on', 'on_ext']
 };
 Blockly.JavaScript['on_source'] = function(block) {
-    var attr = block.getFieldValue('ATTR');
-    var parts = attr.split('.');
+    let attr = block.getFieldValue('ATTR');
+    const parts = attr.split('.');
+
     if (parts.length > 1) {
         attr = '(obj.' + parts[0] + ' ? obj.' + attr + ' : "")';
     } else {
         attr = 'obj.' + attr;
     }
+
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
@@ -450,9 +452,6 @@ Blockly.JavaScript['on_source'] = function(block) {
 Blockly.Trigger.blocks['schedule'] =
     '<block type="schedule">'
     + '     <value name="SCHEDULE">'
-    //+ '         <shadow type="text">'
-    //+ '             <field name="TEXT">test</field>'
-    //+ '         </shadow>'
     + '     </value>'
     + '     <value name="STATEMENT">'
     + '     </value>'

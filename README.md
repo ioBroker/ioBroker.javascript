@@ -54,6 +54,7 @@ And then call `npm run build`.
 ### **WORK IN PROGRESS**
 * (bluefox) packages updated
 * (klein0r) reset timeouts in blockly
+* (klein0r) added additional blockly blocks
 
 ### 7.0.3 (2023-03-16)
 * (bluefox) made the editor visible in full height
