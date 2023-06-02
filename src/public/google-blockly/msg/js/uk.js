@@ -1,6 +1,21 @@
+/* eslint-disable */
+;(function(root, factory) {
+  if (typeof define === 'function' && define.amd) { // AMD
+    define([], factory);
+  } else if (typeof exports === 'object') { // Node.js
+    module.exports = factory();
+  } else { // Browser
+    var messages = factory();
+    for (var key in messages) {
+      root.Blockly.Msg[key] = messages[key];
+    }
+  }
+}(this, function() {
 // This file was automatically generated.  Do not modify.
 
 'use strict';
+
+var Blockly = Blockly || { Msg: Object.create(null) };
 
 Blockly.Msg["ADD_COMMENT"] = "Додати коментар";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Неможливо видалити змінну '%1', тому що це частина визначення функції '%2'";
@@ -74,19 +89,6 @@ Blockly.Msg["EXPAND_BLOCK"] = "Розгорнути блок";
 Blockly.Msg["EXTERNAL_INPUTS"] = "Зовнішні входи";
 Blockly.Msg["HELP"] = "Довідка";
 Blockly.Msg["INLINE_INPUTS"] = "Вбудовані входи";
-Blockly.Msg["IOS_CANCEL"] = "Скасувати";
-Blockly.Msg["IOS_ERROR"] = "Помилка";
-Blockly.Msg["IOS_OK"] = "ОК";
-Blockly.Msg["IOS_PROCEDURES_ADD_INPUT"] = "+ Додати вхідну змінну";
-Blockly.Msg["IOS_PROCEDURES_ALLOW_STATEMENTS"] = "Дозволити оператори";
-Blockly.Msg["IOS_PROCEDURES_DUPLICATE_INPUTS_ERROR"] = "Ця функція має дублюючі вхідні змінні.";
-Blockly.Msg["IOS_PROCEDURES_INPUTS"] = "ВХІД";
-Blockly.Msg["IOS_VARIABLES_ADD_BUTTON"] = "Додати";
-Blockly.Msg["IOS_VARIABLES_ADD_VARIABLE"] = "+ Додати змінну";
-Blockly.Msg["IOS_VARIABLES_DELETE_BUTTON"] = "Видалити";
-Blockly.Msg["IOS_VARIABLES_EMPTY_NAME_ERROR"] = "Ви не можете використовувати порожнє ім'я змінної.";
-Blockly.Msg["IOS_VARIABLES_RENAME_BUTTON"] = "Перейменувати";
-Blockly.Msg["IOS_VARIABLES_VARIABLE_NAME"] = "Ім'я змінної";
 Blockly.Msg["LISTS_CREATE_EMPTY_HELPURL"] = "https://github.com/google/blockly/wiki/Lists#create-empty-list";  // untranslated
 Blockly.Msg["LISTS_CREATE_EMPTY_TITLE"] = "створити порожній список";
 Blockly.Msg["LISTS_CREATE_EMPTY_TOOLTIP"] = "Повертає список, довжиною 0, що не містить записів даних";
@@ -434,3 +436,5 @@ Blockly.Msg["TEXTS_HUE"] = "160";
 Blockly.Msg["PROCEDURES_HUE"] = "290";
 Blockly.Msg["COLOUR_HUE"] = "20";
 Blockly.Msg["VARIABLES_DYNAMIC_HUE"] = "310";
+return Blockly.Msg;
+}));
