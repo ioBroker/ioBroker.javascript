@@ -499,7 +499,7 @@ Blockly.JavaScript['direct'] = function(block) {
 
     return `on({ id: ${oidSrc}, change: '${onlyChanges ? 'ne' : 'any'}' }, (obj) => {\n` +
         Blockly.JavaScript.prefixLines(`setState(${oidDest}, obj.state.val);`, Blockly.JavaScript.INDENT) + '\n' +
-        `});\n`;
+        '});\n';
 };
 
 // --- control ex -----------------------------------------------------------
@@ -641,7 +641,7 @@ Blockly.JavaScript['create'] = function(block) {
     }
 
     return `createState('${name}'${paraV}${paraC}, async () => {\n` +
-        Blockly.JavaScript.prefixLines(statement, Blockly.JavaScript.INDENT) + '\n' +
+        statement +
         '});\n';
 };
 
@@ -731,7 +731,7 @@ Blockly.JavaScript['create_ex'] = function(block) {
     writeable = writeable === 'TRUE' || writeable === 'true' || writeable === true;
 
     return `createState('${name}'${paraV}, { type: "${type}", read: ${readable}, write: ${writeable} }, async () => {\n` +
-        Blockly.JavaScript.prefixLines(statement, Blockly.JavaScript.INDENT) + '\n' +
+        statement +
         '});\n';
 };
 
