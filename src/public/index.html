@@ -62,6 +62,11 @@
     <script type="text/javascript" src="google-blockly/blocks_compressed.js"></script>
     <script type="text/javascript" src="google-blockly/javascript_compressed.js"></script>
     <script type="text/javascript" src="google-blockly/own/blocks_words.js"></script>
+    <!-- Extending core categories -->
+    <script type="text/javascript" src="google-blockly/own/blocks_logic.js"></script>
+    <script type="text/javascript" src="google-blockly/own/blocks_text.js"></script>
+    <script type="text/javascript" src="google-blockly/own/blocks_number.js"></script>
+    <!-- Own categories-->
     <script type="text/javascript" src="google-blockly/own/field_oid.js"></script>
     <script type="text/javascript" src="google-blockly/own/field_cron.js"></script>
     <script type="text/javascript" src="google-blockly/own/field_script.js"></script>
@@ -74,7 +79,6 @@
     <script type="text/javascript" src="google-blockly/own/blocks_procedures.js"></script>
     <script type="text/javascript" src="google-blockly/own/blocks_timeout.js"></script>
     <script type="text/javascript" src="google-blockly/own/blocks_switch.js"></script>
-    <script type="text/javascript" src="google-blockly/own/blocks_other.js"></script>
   </head>
   <body>
     <noscript>
@@ -102,7 +106,40 @@
         <block type="logic_boolean"></block>
         <block type="logic_null"></block>
         <block type="logic_ternary"></block>
-        <block type="logic_switch_case"></block>
+        <block type="logic_switch_case">
+          <value name="CONDITION">
+          </value>
+          <value name="CASECONDITION0">
+          </value>
+          <value name="CASE0">
+          </value>
+          <mutation with_statement="false" items="parameter1"></mutation>
+        </block>
+        <block type="logic_between">
+          <value name="MIN">
+            <block type="math_number">
+              <field name="NUM">0</field>
+            </block>
+          </value>
+          <field name="MIN_OPERATOR">LE</field>
+          <value name="VALUE">
+            <shadow type="math_number">
+              <field name="NUM">42</field>
+            </shadow>
+          </value>
+          <field name="MAX_OPERATOR">LE</field>
+          <value name="MAX">
+            <block type="math_number">
+              <field name="NUM">100</field>
+            </block>
+          </value>
+        </block>
+        <block type="logic_ifempty">
+          <value name="VALUE">
+          </value>
+          <value name="DEFLT">
+          </value>
+        </block>
       </category>
       <category name="{catLoops}" colour="120">
         <block type="controls_repeat_ext">

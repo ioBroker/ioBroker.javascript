@@ -9,10 +9,6 @@ if (typeof goog !== 'undefined') {
 Blockly.CustomBlocks = Blockly.CustomBlocks || [];
 Blockly.CustomBlocks.push('System');
 
-function getHelp(word) {
-    return 'https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#' + Blockly.Words[word][systemLang];
-}
-
 Blockly.System = {
     HUE: 210,
     blocks: {}
@@ -1003,48 +999,4 @@ Blockly.Blocks['selector'] = {
 Blockly.JavaScript['selector'] = function(block) {
     var oid = block.getFieldValue('TEXT');
     return ['Array.prototype.slice.apply($("' + oid + '"))', Blockly.JavaScript.ORDER_ATOMIC];
-};
-
-// --- Text new line --------------------------------------------------
-Blockly.Blocks['text_newline'] = {
-    // Checkbox.
-    init: function() {
-        this.appendDummyInput()
-            .appendField(Blockly.Translate('text_newline'));
-
-        this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([['\\n', '\\n'], ['\\r\\n', '\\r\\n'], ['\\r', '\\r']]), 'Type');
-        this.setInputsInline(true);
-        this.setColour(Blockly.Msg['TEXTS_HUE']);
-        this.setOutput(true, 'String');
-        this.setTooltip(Blockly.Translate('text_newline_tooltip'));
-    }
-};
-
-Blockly.JavaScript['text_newline'] = function(block) {
-    var dropdown_type = block.getFieldValue('Type');
-    return ['\'' + dropdown_type + '\'', Blockly.JavaScript.ORDER_ATOMIC];
-};
-
-// --- Round Number to n decimal places -------------------------------
-Blockly.Blocks['math_rndfixed'] = {
-    init: function() {
-        this.appendValueInput('x')
-            .setCheck('Number')
-            .appendField(Blockly.Translate('math_rndfixed_round'));
-        this.appendDummyInput()
-            .appendField(Blockly.Translate('math_rndfixed_to'))
-            .appendField(new Blockly.FieldNumber(0, 1, 25), 'n')
-            .appendField(Blockly.Translate('math_rndfixed_decplcs'));
-        this.setInputsInline(true);
-        this.setColour(Blockly.Msg['MATH_HUE']);
-        this.setOutput(true, 'Number');
-        this.setTooltip(Blockly.Translate('math_rndfixed_tooltip'));
-    }
-};
-
-Blockly.JavaScript['math_rndfixed'] = function(block) {
-    var x = Blockly.JavaScript.valueToCode(block, 'x', Blockly.JavaScript.ORDER_ATOMIC);
-    var exp = Math.pow(10, block.getFieldValue('n'));
-    return ['Math.round(' + x + '*' + exp + ')/' + exp, Blockly.JavaScript.ORDER_ATOMIC];
 };
