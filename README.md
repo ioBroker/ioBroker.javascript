@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.0.5 (2023-06-06)
 * (klein0r) reset timeouts in blockly
 * (klein0r) added additional blockly blocks
 
@@ -76,10 +76,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 * (Apollon77) Deprecated get/setBinaryState(Async) methods and log a message on usage. Use Files instead!
 * (Apollon77) Deprecated usage of own states in javascript.X.scriptEnabled/Problem and log a message on usage. Use own states in 0_userdata.0 instead!
 * (bluefox) added axios to pre-installed modules. `request` will be removed in the future
-
-### 6.1.4 (2022-11-14)
-* (bluefox) Corrected small error in rules
-* (bluefox) Tried to fix debug mode
 
 ## License
 The MIT License (MIT)

@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "7.0.4",
+    "version": "7.0.5",
     "news": {
+      "7.0.5": {
+        "en": "reset timeouts in blockly\nadded additional blockly blocks",
+        "de": "timeouts blockweise zurücksetzen\nzusätzliche blockblöcke hinzugefügt",
+        "ru": "сбросить тайм-аут в блоклы\nдобавлены дополнительные блокноты",
+        "pt": "redefinir timeouts em blockly\nadicionado blocos adicionais",
+        "nl": "reset time-outs in blok\nvertaling:",
+        "fr": "reset timeouts in blockly\nblocs supplémentaires",
+        "it": "resettare i timeout in blocco\naggiunto blocchi aggiuntivi",
+        "es": "tiempos de reajuste en bloque\nañadido bloques bloqueados adicionales",
+        "pl": "reset timeout\ndodanie dodatkowych bloków",
+        "uk": "час скидання в блоклі\nдодано додаткові блокноти",
+        "zh-cn": "停滞时间\n新增的又一个阻碍因素"
+      },
       "7.0.4": {
         "en": "packages updated\nFiles are used for export of scripts",
         "de": "pakete aktualisiert\nDateien werden zum Export von Skripten verwendet",
@@ -99,19 +112,6 @@
         "pl": "Wykwalifikowanie małego błędu w zasadach\nPoprawić tryb debugowania",
         "uk": "Виправлена невелика помилка в правилах\nПереглянуто для фіксації режима відключення",
         "zh-cn": "规则中的小错误\n九. 模棱两可的模式"
-      },
-      "6.1.3": {
-        "en": "Prevent adapter crash when script could not be compiled",
-        "de": "Verhindern von Adapterabsturz, wenn Skript nicht kompiliert werden konnte",
-        "ru": "Предотвратить сбой адаптера, когда сценарий нельзя компилировать",
-        "pt": "Impedir a falha do adaptador quando o script não pôde ser compilado",
-        "nl": "Vertaling:",
-        "fr": "Prévenir le crash de l'adaptateur lorsque le script ne peut pas être compilé",
-        "it": "Evitare l'arresto dell'adattatore quando lo script non potrebbe essere compilato",
-        "es": "Evitar el bloqueo del adaptador cuando el script no se pudo compilar",
-        "pl": "Zastosowanie przepustowości, gdy skrypt nie może być skompilowany",
-        "uk": "Запобігання аварійної ситуації адаптера, коли скрипт не може бути складений",
-        "zh-cn": "在无法编制说明时,预防性改编"
       }
     },
     "desc": {
