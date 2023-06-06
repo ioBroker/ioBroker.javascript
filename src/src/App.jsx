@@ -551,7 +551,7 @@ class App extends GenericApp {
                     name,
                     expert: true,
                     engineType: type,
-                    engine: 'system.adapter.javascript.' + (instance || 0),
+                    engine: `system.adapter.javascript.${instance || 0}`,
                     source: source || '',
                     debug: false,
                     verbose: false,
@@ -681,13 +681,19 @@ class App extends GenericApp {
                 adapter: 'javascript',
                 id: 'script.js',
                 link: `${date}scripts.zip`, // request link to file and not the data itself
+                storeToFile: `admin.${this.instance}`, // new controller 5.x understands this and saves ZIP in the file store
             }, data => {
                 if (typeof data === 'string') {
                     // it is a link to the created file
                     const a = document.createElement('a');
-                    // the data is "system.host.HOST.zip.2020-01-26-scripts.zip"
-                    const parts = data.split('.zip.');
-                    a.href = `/zip/${parts[0]}/${parts[1]}`;
+                    if (data.startsWith('admin.')) {
+                        // new controller
+                        a.href = `./files/${data}`;
+                    } else {
+                        // the data is "system.host.HOST.zip.2020-01-26-scripts.zip"
+                        const parts = data.split('.zip.');
+                        a.href = `./zip/${parts[0]}/${parts[1]}`;
+                    }
                     document.body.appendChild(a);
                     a.click();
                     a.remove();

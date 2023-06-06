@@ -48,6 +48,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 -->
 ### **WORK IN PROGRESS**
 * (bluefox) packages updated
+* (bluefox) Files are used for export of scripts
 
 ### 7.0.3 (2023-03-16)
 * (bluefox) made the editor visible in full height
@@ -55,7 +56,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 
 ### 7.0.2 (2023-03-13)
 * (bluefox) Breaking change: all usages of `jsonata` must be rewritten to use promises.
-* (bluefox) Breaking change: all blockly scripts with `jsonata` blocks must de changed (just move some blocks) and saved anew.
+* (bluefox) Breaking change: all blockly scripts with `jsonata` blocks must be changed (just move some blocks) and saved anew.
 * (bluefox) Extended `createState` command with possibility to create aliases. 
 * (bluefox) Corrected CRON card in rules 
 * (bluefox) Added additional options to show the attributes of object in blockly
@@ -77,7 +78,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 * (bluefox) Tried to fix debug mode
 
 ### 6.1.3 (2022-11-03)
-* (Apollon77) Prevent adapter crash when script could not be compiled
+* (Apollon77) Prevent the adapter crash when some script could not be compiled
 
 ## License
 The MIT License (MIT)
