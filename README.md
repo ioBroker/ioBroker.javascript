@@ -38,11 +38,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 * `./node_modules` or anything below
 * `./log` or anything below
 
-## How to build (only for developers)
-Just run `npm i` in the root and in the src folders.
-
-And then call `npm run build`.
-
 ## Todo
 - Goto current line in debugger
 - ...

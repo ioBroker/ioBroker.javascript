@@ -1,10 +1,10 @@
-const CracoEsbuildPlugin = require('craco-esbuild');
+// const CracoEsbuildPlugin = require('craco-esbuild');
 const { ProvidePlugin } = require('webpack');
 const cracoModuleFederation = require('@iobroker/adapter-react-v5/craco-module-federation');
 
 module.exports = {
     plugins: [
-        { plugin: CracoEsbuildPlugin },
+        // { plugin: CracoEsbuildPlugin },
         { plugin: cracoModuleFederation }
     ],
     devServer: {

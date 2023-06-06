@@ -683,7 +683,7 @@ class App extends GenericApp {
                 link: `${date}scripts.zip`, // request link to file and not the data itself
             }, data => {
                 if (typeof data === 'string') {
-                    // it is a link to created file
+                    // it is a link to the created file
                     const a = document.createElement('a');
                     // the data is "system.host.HOST.zip.2020-01-26-scripts.zip"
                     const parts = data.split('.zip.');
