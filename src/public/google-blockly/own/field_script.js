@@ -63,7 +63,7 @@ Blockly.b64DecodeUnicode = function(text) {
  * @constructor
  */
 Blockly.FieldScript = function(text) {
-    Blockly.FieldScript.superClass_.constructor.call(this, text);
+    //Blockly.FieldScript.superClass_.constructor.call(this, text);
 };
 if (typeof goog !== 'undefined') {
     goog.inherits(Blockly.FieldScript, Blockly.Field);

@@ -412,7 +412,7 @@ class BlocklyEditor extends React.Component {
                 }
                 xml = xml.replace(/[\n\r]/g, '').replace(/<variables>.*<\/variables>/g, '');
                 window.scripts.loading = true;
-                let xmlBlocks = this.Blockly.Xml.textToDom(xml);
+                let xmlBlocks = this.Blockly.utils.xml.textToDom(xml);
                 if (xmlBlocks.nodeName === 'xml') {
                     for (let b = 0; b < xmlBlocks.children.length; b++) {
                         this.blocklyWorkspace.paste(xmlBlocks.children[b]);
@@ -442,7 +442,7 @@ class BlocklyEditor extends React.Component {
         try {
             const xml = this.jsCode2Blockly(this.originalCode) || '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>';
             window.scripts.loading = true;
-            const dom = this.Blockly.Xml.textToDom(xml);
+            const dom = this.Blockly.utils.xml.textToDom(xml);
             this.Blockly.Xml.domToWorkspace(dom, this.blocklyWorkspace);
             window.scripts.loading = false;
         } catch (e) {
@@ -473,7 +473,7 @@ class BlocklyEditor extends React.Component {
 
         window.addEventListener('resize', this.onResizeBind, false);
         toolboxText = toolboxText || (await this.getToolbox());
-        toolboxXml  = toolboxXml  || this.Blockly.Xml.textToDom(toolboxText);
+        toolboxXml  = toolboxXml  || this.Blockly.utils.xml.textToDom(toolboxText);
 
         this.blocklyWorkspace = this.Blockly.inject(
             this.blockly,

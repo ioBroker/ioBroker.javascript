@@ -46,6 +46,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (klein0r) reset timeouts in blockly
+* (klein0r) added additional blockly blocks
+
 ### 7.0.4 (2023-06-06)
 * (bluefox) packages updated
 * (bluefox) Files are used for export of scripts
