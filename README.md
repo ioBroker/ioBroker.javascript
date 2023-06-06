@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.0.4 (2023-06-06)
 * (bluefox) packages updated
 * (bluefox) Files are used for export of scripts
 
@@ -76,9 +76,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### 6.1.4 (2022-11-14)
 * (bluefox) Corrected small error in rules
 * (bluefox) Tried to fix debug mode
-
-### 6.1.3 (2022-11-03)
-* (Apollon77) Prevent the adapter crash when some script could not be compiled
 
 ## License
 The MIT License (MIT)

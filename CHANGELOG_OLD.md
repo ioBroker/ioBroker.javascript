@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 6.1.3 (2022-11-03)
+* (Apollon77) Prevent the adapter crash when some script could not be compiled
+
 ## 6.1.2 (2022-11-03)
 * (bluefox) Added ukrainian translation
 
