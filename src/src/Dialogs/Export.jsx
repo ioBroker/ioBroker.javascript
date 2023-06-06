@@ -20,20 +20,20 @@ const styles = theme => ({
     textArea: {
         width: '100%',
         height: '100%',
-        overflow: 'auto'
+        overflow: 'auto',
     },
     textAreaLight: {
-        background: 'lightgray'
+        background: 'lightgray',
     },
     dialog: {
-        height: '95%'
+        height: '95%',
     },
     typography: {
         padding: theme.spacing(2),
     },
     overflowY: {
-        overflowY: 'hidden'
-    }
+        overflowY: 'hidden',
+    },
 });
 
 class DialogExport extends React.Component {

@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "7.0.3",
+    "version": "7.0.4",
     "news": {
+      "7.0.4": {
+        "en": "packages updated\nFiles are used for export of scripts",
+        "de": "pakete aktualisiert\nDateien werden zum Export von Skripten verwendet",
+        "ru": "пакеты обновлены\nФайлы используются для экспорта скриптов",
+        "pt": "pacotes atualizados\nArquivos são usados para exportação de scripts",
+        "nl": "vertaling:\nBestanden worden gebruikt voor export van scripts",
+        "fr": "paquets mis à jour\nLes fichiers sont utilisés pour l'exportation de scripts",
+        "it": "pacchetti aggiornati\nI file vengono utilizzati per l'esportazione di script",
+        "es": "paquetes actualizados\nLos archivos se utilizan para la exportación de scripts",
+        "pl": "uaktualniać\nArchiwum jest wykorzystywane do eksportowania skryptów",
+        "uk": "пакети оновлені\nФайли використовуються для експорту сценаріїв",
+        "zh-cn": "更新的一揽子方案\n用于出口纺织品"
+      },
       "7.0.3": {
         "en": "made the editor visible in full height\nsmall fixes on blockly and translations are made",
         "de": "den editor in voller höhe sichtbar gemacht\nkleine fixe auf blockweise und übersetzungen werden gemacht",
@@ -99,19 +112,6 @@
         "pl": "Zastosowanie przepustowości, gdy skrypt nie może być skompilowany",
         "uk": "Запобігання аварійної ситуації адаптера, коли скрипт не може бути складений",
         "zh-cn": "在无法编制说明时,预防性改编"
-      },
-      "6.1.2": {
-        "en": "Added ukrainian translation",
-        "de": "Hinzugefügt ukrainische Übersetzung",
-        "ru": "Добавлен украинский перевод",
-        "pt": "Adicionado tradução ukrainian",
-        "nl": "Vertaling:",
-        "fr": "Ajout de la traduction ukrainienne",
-        "it": "Aggiunto ukrainian traduzione",
-        "es": "Traducción ucraniana",
-        "pl": "Addedukrainian translation",
-        "uk": "Додано переклад українською мовою",
-        "zh-cn": "增加培训员"
       }
     },
     "desc": {

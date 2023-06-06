@@ -1,9 +1,12 @@
 The newest change log is in README.md
+## 6.1.3 (2022-11-03)
+* (Apollon77) Prevent the adapter crash when some script could not be compiled
+
 ## 6.1.2 (2022-11-03)
 * (bluefox) Added ukrainian translation
 
 ## 6.1.0 (2022-11-03)
-* (Apollon77) Add a configurable check for number of setStates per Minute to prevent scripts from taking down ioBroker. Default are 1000 setState per minute. Only stops if the number is reached 2 minutes in a row!
+* (Apollon77) Add a configurable check for the number of setStates per Minute to prevent scripts from taking down ioBroker. Default is 1000 setState per minute. Only stops if the number is reached 2 minutes in a row!
 * (Apollon77) Add createAlias method to create aliases for states
 * (Apollon77) Add setStateDelayed to selector
 * (Apollon77) Add options to exec command
@@ -45,25 +48,25 @@ The newest change log is in README.md
 * (bluefox) Made it work with ioBroker cloud
 
 ## 5.8.1 (2022-06-09)
-* (bluefox) Allowed to use javascript behind reverse proxy
+* (bluefox) Allowed using javascript behind reverse proxy
 * (bluefox) If adapter parameter set to null in `writeFile/readFile`, it will be used `0_userdata.0`
 
 ## 5.8.0 (2022-06-01)
 * (bluefox) Implemented onFile and offFile functions (available with js-controller 4.1+)
 * (Apollon77) Add sendToAsync und sendToHostAsync methods
-* (bluefox) Added support of custom rule plugins (actually only telegram)
+* (bluefox) Added support of the custom rule plugins (actually only telegram)
 
 ## 5.7.0 (2022-05-08)
-* (Apollon77) Allow sending of messages to the scripts also from adapters and CLI by sending "toScript" message (see [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#onmessage))
+* (Apollon77) Allows sending of messages to the scripts also from adapters and CLI by sending "toScript" message (see [onMessage Documentation](https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#onmessage))
 * (Apollon77) Lists returned by $-selector are now unified and do not contain double entries 
 * (Apollon77) Fix subscribe multiple object ID lists in blockly
 
 ## 5.6.1 (2022-05-03)
-* (Apollon77) Allow to subscribe multiple object ID lists in blockly
+* (Apollon77) Allow subscribing multiple object ID lists in blockly
 * (Apollon77) Make sure lists returned by $-selector do not contain duplicates
 
 ## 5.5.4 (2022-04-03)
-* (bluefox) Tried to solve problem with the font
+* (bluefox) Tried to solve the problem with the font
 
 ## 5.5.3 (2022-03-25)
 * (bluefox) Fixed getObjectAsync function if object does not exist

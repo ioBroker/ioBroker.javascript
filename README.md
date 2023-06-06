@@ -38,11 +38,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 * `./node_modules` or anything below
 * `./log` or anything below
 
-## How to build (only for developers)
-Just run `npm i` in the root and in the src folders.
-
-And then call `npm run build`.
-
 ## Todo
 - Goto current line in debugger
 - ...
@@ -52,9 +47,12 @@ And then call `npm run build`.
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-* (bluefox) packages updated
 * (klein0r) reset timeouts in blockly
 * (klein0r) added additional blockly blocks
+
+### 7.0.4 (2023-06-06)
+* (bluefox) packages updated
+* (bluefox) Files are used for export of scripts
 
 ### 7.0.3 (2023-03-16)
 * (bluefox) made the editor visible in full height
@@ -62,7 +60,7 @@ And then call `npm run build`.
 
 ### 7.0.2 (2023-03-13)
 * (bluefox) Breaking change: all usages of `jsonata` must be rewritten to use promises.
-* (bluefox) Breaking change: all blockly scripts with `jsonata` blocks must de changed (just move some blocks) and saved anew.
+* (bluefox) Breaking change: all blockly scripts with `jsonata` blocks must be changed (just move some blocks) and saved anew.
 * (bluefox) Extended `createState` command with possibility to create aliases. 
 * (bluefox) Corrected CRON card in rules 
 * (bluefox) Added additional options to show the attributes of object in blockly
@@ -82,9 +80,6 @@ And then call `npm run build`.
 ### 6.1.4 (2022-11-14)
 * (bluefox) Corrected small error in rules
 * (bluefox) Tried to fix debug mode
-
-### 6.1.3 (2022-11-03)
-* (Apollon77) Prevent adapter crash when script could not be compiled
 
 ## License
 The MIT License (MIT)
