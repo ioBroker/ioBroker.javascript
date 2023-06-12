@@ -2,9 +2,20 @@
 // I really tried to get the license conditions from authors, but no luck :(
 // Many thanks to Florian Pechwitz <florian.Pechwitz@itizzimo.com> for the code
 
+Blockly.System.blocks['logic_switch_case'] =
+    '<block type="logic_switch_case">'
+    + '     <value name="CONDITION">'
+    + '     </value>'
+    + '     <value name="CASECONDITION0">'
+    + '     </value>'
+    + '     <value name="CASE0">'
+    + '     </value>'
+    + '     <mutation with_statement="false" items="parameter1"></mutation>'
+    + '</block>';
+
 Blockly.Blocks['logic_switch_case'] = {
     init: function() {
-        this.setColour("%{BKY_LOGIC_HUE}");
+        this.setColour(Blockly.Constants.Logic.HUE);
         this.setPreviousStatement(true);
         this.setNextStatement(true);
         this.appendValueInput('CONDITION')
@@ -156,7 +167,7 @@ Blockly.Blocks['logic_switch_case'] = {
 
 Blockly.Blocks['control_case'] = {
     init: function() {
-        this.setColour("%{BKY_LOGIC_HUE}");
+        this.setColour(180);
         this.appendDummyInput()
             .appendField(Blockly.Translate('logic_switch_case_is'));
         this.appendStatementInput('STACK');
@@ -167,7 +178,7 @@ Blockly.Blocks['control_case'] = {
 
 Blockly.Blocks['case_incaseof'] = {
     init: function() {
-        this.setColour("%{BKY_LOGIC_HUE}");
+        this.setColour(180);
         this.appendDummyInput()
             .appendField(Blockly.Translate('logic_switch_case_of'));
         this.setPreviousStatement(true);
@@ -179,7 +190,7 @@ Blockly.Blocks['case_incaseof'] = {
 
 Blockly.Blocks['case_default'] = {
     init: function() {
-        this.setColour("%{BKY_LOGIC_HUE}");
+        this.setColour(180);
         this.appendDummyInput()
             .appendField('default');
         this.setPreviousStatement(true);

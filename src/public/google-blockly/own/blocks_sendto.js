@@ -111,7 +111,7 @@ Blockly.Blocks['sendto_custom'] = {
         this.appendDummyInput('WITH_STATEMENT')
             .appendField(Blockly.Translate('request_statement'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
-                const withStatement = option === true || option === 'true' || option === 'TRUE';
+                var withStatement = option === true || option === 'true' || option === 'TRUE';
                 this.sourceBlock_.updateShape_(this.sourceBlock_.getArgNames_(), withStatement);
             }), 'WITH_STATEMENT');
 

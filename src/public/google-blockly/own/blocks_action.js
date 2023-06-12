@@ -63,21 +63,18 @@ Blockly.Blocks['exec'] = {
         this.setHelpUrl(getHelp('exec_help'));
     },
     mutationToDom: function() {
-        const container = document.createElement('mutation');
-        const option = this.getFieldValue('WITH_STATEMENT');
-
+        var container = document.createElement('mutation');
+        var option = this.getFieldValue('WITH_STATEMENT');
         container.setAttribute('with_statement', option === true || option === 'true' || option === 'TRUE');
-
         return container;
     },
     domToMutation: function(xmlElement) {
-        const option = xmlElement.getAttribute('with_statement');
-
+        var option = xmlElement.getAttribute('with_statement');
         this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
     updateShape_: function(withStatement) {
         // Add or remove a statement Input.
-        const inputExists = this.getInput('STATEMENT');
+        var inputExists = this.getInput('STATEMENT');
 
         if (withStatement) {
             if (!inputExists) {
@@ -90,11 +87,11 @@ Blockly.Blocks['exec'] = {
 };
 
 Blockly.JavaScript['exec'] = function(block) {
-    const logLevel = block.getFieldValue('LOG');
-    const value_command = Blockly.JavaScript.valueToCode(block, 'COMMAND', Blockly.JavaScript.ORDER_ATOMIC);
-    const withStatement = block.getFieldValue('WITH_STATEMENT');
+    var logLevel = block.getFieldValue('LOG');
+    var value_command = Blockly.JavaScript.valueToCode(block, 'COMMAND', Blockly.JavaScript.ORDER_ATOMIC);
+    var withStatement = block.getFieldValue('WITH_STATEMENT');
 
-    let logText;
+    var logText;
     if (logLevel) {
         logText = 'console.' + logLevel + '("exec: " + ' + value_command + ');\n'
     } else {
@@ -102,9 +99,9 @@ Blockly.JavaScript['exec'] = function(block) {
     }
 
     if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
-        const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+        var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
         if (statement) {
-            return 'exec(' + value_command + ', async (error, result, stderr) => {\n' + statement + '});\n' +
+            return 'exec(' + value_command + ', async function (error, result, stderr) {\n  ' + statement + '});\n' +
                 logText;
         } else {
             return 'exec(' + value_command + ');\n' +
@@ -121,7 +118,7 @@ Blockly.Action.blocks['request'] =
     '<block type="request">'
     + '     <value name="URL">'
     + '         <shadow type="text">'
-    + '             <field name="TEXT">http://</field>'
+    + '             <field name="TEXT">text</field>'
     + '         </shadow>'
     + '     </value>'
     + '     <value name="LOG">'
@@ -164,21 +161,18 @@ Blockly.Blocks['request'] = {
         this.setHelpUrl(Blockly.Translate('request_help'));
     },
     mutationToDom: function() {
-        const container = document.createElement('mutation');
-        const withStatement = this.getFieldValue('WITH_STATEMENT');
-
+        var container = document.createElement('mutation');
+        var withStatement = this.getFieldValue('WITH_STATEMENT') ;
         container.setAttribute('with_statement', withStatement === true || withStatement === 'true' || withStatement === 'TRUE');
-
         return container;
     },
     domToMutation: function(xmlElement) {
-        const option = xmlElement.getAttribute('with_statement');
-
+        var option = xmlElement.getAttribute('with_statement');
         this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
     updateShape_: function(withStatement) {
         // Add or remove a statement Input.
-        const inputExists = this.getInput('STATEMENT');
+        var inputExists = this.getInput('STATEMENT');
 
         if (withStatement) {
             if (!inputExists) {
@@ -191,25 +185,28 @@ Blockly.Blocks['request'] = {
 };
 
 Blockly.JavaScript['request'] = function(block) {
-    const logLevel = block.getFieldValue('LOG');
-    const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
-    const withStatement = block.getFieldValue('WITH_STATEMENT');
+    var logLevel = block.getFieldValue('LOG');
+    var URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
+    var withStatement = block.getFieldValue('WITH_STATEMENT');
 
-    let logText;
+    var logText;
     if (logLevel) {
-        logText = `console.` + logLevel + `('request: ' + ` + URL + `);\n`;
+        logText = 'console.' + logLevel + '("request: " + ' + URL + ');\n'
     } else {
         logText = '';
     }
 
     if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
-        const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+        var statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
         if (statement) {
-            return 'try {\n  require("request")(' + URL + ', async (error, response, result) => {\n  ' + statement + '  }).on("error", (e) => { console.error(e); });\n} catch (e) { console.error(e); }\n' + logText;
+            return 'try {\n  require("request")(' + URL + ', async function (error, response, result) {\n  ' + statement + '  }).on("error", function (e) {console.error(e);});\n} catch (e) { console.error(e); }\n' +
+                logText;
         } else {
-            return 'try {\n  require("request")(' + URL + ').on("error", (e) => { console.error(e); });\n} catch (e) { console.error(e); }\n' + logText;
+            return 'try {\n  require("request")(' + URL + ').on("error", function (e) {console.error(e);});\n} catch (e) { console.error(e); }\n' +
+                logText;
         }
     } else {
-        return 'try {\n  require("request")(' + URL + ').on("error", (e) => { console.error(e); });\n} catch (e) { console.error(e); }\n' + logText;
+        return 'try {\n  require("request")(' + URL + ').on("error", function (e) {console.error(e);});\n} catch (e) { console.error(e); }\n' +
+            logText;
     }
 };
