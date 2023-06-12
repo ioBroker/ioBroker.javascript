@@ -154,7 +154,7 @@ gulp.task('6-patch', () => new Promise(resolve => {
         let code = fs.readFileSync(`${__dirname}/admin/tab.html`).toString('utf8');
         code = code.replace(/<script>var head=document\.getElementsByTagName\("head"\)\[0][^<]+<\/script>/,
             `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./../../lib/js/socket.io.js"></script>`);
-        // add monaco script at the end
+        // add the monaco script at the end
         if (!code.includes(`<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script>`)) {
             code = code.replace('</body></html>', `<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script></body></html>`);
         }
@@ -165,7 +165,7 @@ gulp.task('6-patch', () => new Promise(resolve => {
         let code = fs.readFileSync(`${__dirname}/src/build/index.html`).toString('utf8');
         code = code.replace(/<script>var head=document\.getElementsByTagName\("head"\)\[0][^<]+<\/script>/,
             `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./../../lib/js/socket.io.js"></script>`);
-        // add monaco script at the end
+        // add the monaco script at the end
         if (!code.includes(`<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script>`)) {
             code = code.replace('</body></html>', `<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script></body></html>`);
         }
@@ -173,9 +173,9 @@ gulp.task('6-patch', () => new Promise(resolve => {
         fs.writeFileSync(`${__dirname}/src/build/index.html`, code);
     }
 
-    const buffer = Buffer.from(JSON.parse(fs.readFileSync(`${__dirname}/admin-config/vsFont/codicon.json`)));
+    const buffer = Buffer.from(JSON.parse(fs.readFileSync(`${__dirname}/admin-config/vsFont/codicon.json`)), 'base64');
 
-    // this is workaround for TTF file. somehow it will always corrupt, so we pack it into ZIP
+    // this is a workaround for TTF file. somehow it will always corrupt, so we pack it into ZIP
     JSZip.loadAsync(buffer)
         .then(zip => {
             zip.file('codicon.ttf').async('arraybuffer')
@@ -184,7 +184,7 @@ gulp.task('6-patch', () => new Promise(resolve => {
                         fs.mkdirSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/`, {recursive: true});
                     }
 
-                    if (data.byteLength !== 62324) {
+                    if (data.byteLength !== 73452) {
                         throw new Error('invalid font file!');
                     }
                     fs.writeFileSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`, Buffer.from(data));

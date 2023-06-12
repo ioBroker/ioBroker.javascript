@@ -46,6 +46,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) typescript and coffescript were degraded to previous versions
+* (bluefox) tried to correct vscode font
+
 ### 7.0.5 (2023-06-06)
 * (klein0r) reset timeouts in blockly
 * (klein0r) added additional blockly blocks
