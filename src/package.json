@@ -1,6 +1,6 @@
 {
     "name": "js",
-    "version": "7.0.7",
+    "version": "7.0.8",
     "private": true,
     "dependencies": {
         "@craco/craco": "^7.1.0",
