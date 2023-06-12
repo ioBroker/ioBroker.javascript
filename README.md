@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.0.6 (2023-06-12)
 * (bluefox) typescript and coffescript were degraded to previous versions
 * (bluefox) tried to correct vscode font
 
@@ -72,14 +72,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 * (bluefox) Added `isDaylightSaving` state to indicate day saving time
 * (AlCalzone) Pinned `@types/node` to v14
 * (bluefox) Added list of astrological events in GUI
-
-### 6.2.0 (2023-02-17)
-* (Apollon77) Prevented duplicate schedule triggering with inaccurate RTC clocks
-* (Apollon77) Fixed sendToAsync and sendToHostAsync
-* (Apollon77) Added rename/renameFile(Async) methods
-* (Apollon77) Deprecated get/setBinaryState(Async) methods and log a message on usage. Use Files instead!
-* (Apollon77) Deprecated usage of own states in javascript.X.scriptEnabled/Problem and log a message on usage. Use own states in 0_userdata.0 instead!
-* (bluefox) added axios to pre-installed modules. `request` will be removed in the future
 
 ## License
 The MIT License (MIT)

@@ -1,4 +1,12 @@
 The newest change log is in README.md
+## 6.2.0 (2023-02-17)
+* (Apollon77) Prevented duplicate schedule triggering with inaccurate RTC clocks
+* (Apollon77) Fixed sendToAsync and sendToHostAsync
+* (Apollon77) Added rename/renameFile(Async) methods
+* (Apollon77) Deprecated get/setBinaryState(Async) methods and log a message on usage. Use Files instead!
+* (Apollon77) Deprecated usage of own states in javascript.X.scriptEnabled/Problem and log a message on usage. Use own states in 0_userdata.0 instead!
+* (bluefox) added axios to pre-installed modules. `request` will be removed in the future
+
 ## 6.1.4 (2022-11-14)
 * (bluefox) Corrected small error in rules
 * (bluefox) Tried to fix debug mode

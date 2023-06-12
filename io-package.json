@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "7.0.5",
+    "version": "7.0.6",
     "news": {
+      "7.0.6": {
+        "en": "typescript and coffescript were degraded to previous versions\ntried to correct vscode font",
+        "de": "typescript und coffescript wurden auf frühere versionen abgebaut\nversucht, vscode schrift zu korrigieren",
+        "ru": "typescript и coffescript были деградированы до предыдущих версий\nпытался исправить vscode шрифт",
+        "pt": "typescript e coffescript foram degradados para versões anteriores\ntentou corrigir a fonte vscode",
+        "nl": "typisch en doodskistisch beschreven aan vorige versies\nprobeerde vscode font te corrigeren",
+        "fr": "typescript and coffescript were degraded to previous versions\nessayé de corriger la police vscode",
+        "it": "typescript e coffescript sono stati degradati alle versioni precedenti\nprovato a correggere vscode font",
+        "es": "tiposcript y coffescript fueron degradados a versiones anteriores\ntrató de corregir la fuente vscode",
+        "pl": "klasyfikowano i skrypt zdegradowano do poprzednich wersji\npróbował poprawić fonty vcode",
+        "uk": "попередню версію були деградовані за замовчуванням\nспробував виправити шрифт проти коду",
+        "zh-cn": "前几版的文字和写法已降到原版本。\n试图纠正 vscode font"
+      },
       "7.0.5": {
         "en": "reset timeouts in blockly\nadded additional blockly blocks",
         "de": "timeouts blockweise zurücksetzen\nzusätzliche blockblöcke hinzugefügt",
@@ -99,19 +112,6 @@
         "pl": "Preventorowy plan wyzwalający z niedokładnych zegarów RTC\nWysłać ToAsync i wysyłają ToHostAsynchron i wysyłają ToHostAsyncAsyn i wysyłają ToHostAsyncAsynchron i ToHostAsync\nAdded rename/rename File(Async) (ang.)\nZdeprecowane metody gotowania/setBinaryState (Asynchron) oraz sklasyfikowanie wiadomości na temat użycia. Zastosuj pliki!\nZdeprecowane użycie własnych stanów w Javascript.X.scriptEnabled/Problem i słabą wiadomość o użyciu. Wykorzystuje własne stany w 0:_userdata!\ndodał axios do przedinstalowanych modułów. w przyszłości żądanie zostanie usunięte",
         "uk": "Запобігання дублікатів графіка запуску з неточних годинників RTC\nВиправлена відправка ToAsync і відправитиToHostAsync\nДодано перейменування / перейменуванняФайл (Async) методи\nЗняти методи та записувати повідомлення про використання. Використовуйте файли!\nРозгортання використання власних станів у javascript.X.scriptEnabled/Problem та записувати повідомлення про використання. Використовуйте власні штати в 0_userdata.0 замість!\nдодано axios до попередньо встановлених модулів. запит буде видалено в майбутньому",
         "zh-cn": "D. 防止重复安排触发不准确的区域贸易总包\n固定的发送 ToAsync和寄托诺·阿森松\n重新命名/名称File(Async)方法\n预示的有/混合Binary(Async)的方法和逻辑是关于使用的信息。 使用电影而不是!\n解释自己国家在丛瓦文中的使用。 使用自己国家0. userdata.0 而!\n增加前遗单元的轴线。 今后将取消请求"
-      },
-      "6.1.4": {
-        "en": "Corrected small error in rules\nTried to fix debug mode",
-        "de": "Kleine Fehler in den Regeln korrigiert\nVersuchen, Debug-Modus zu beheben",
-        "ru": "Исправлена небольшая ошибка в правилах\nПопробовал исправить режим debug",
-        "pt": "Erro pequeno corrigido em regras\nTentei corrigir o modo de depuração",
-        "nl": "Een kleine fout in de regels\nProbeerde debug mode te repareren",
-        "fr": "Petite erreur corrigée dans les règles\nTrié pour fixer le mode de débogage",
-        "it": "Corretto piccolo errore nelle regole\nProvato a correggere la modalità debug",
-        "es": "Corregido pequeño error en las reglas\nTrató de arreglar el modo de depuración",
-        "pl": "Wykwalifikowanie małego błędu w zasadach\nPoprawić tryb debugowania",
-        "uk": "Виправлена невелика помилка в правилах\nПереглянуто для фіксації режима відключення",
-        "zh-cn": "规则中的小错误\n九. 模棱两可的模式"
       }
     },
     "desc": {
