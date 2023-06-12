@@ -104,7 +104,7 @@ Blockly.JavaScript['exec'] = function(block) {
     if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
         const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
         if (statement) {
-            return 'exec(' + value_command + ', async (error, result, stderr) => {\n' + statement + '});\n' +
+            return 'exec(' + value_command + ', async (error, result, stderr) => {\n  ' + statement + '});\n' +
                 logText;
         } else {
             return 'exec(' + value_command + ');\n' +
@@ -205,11 +205,11 @@ Blockly.JavaScript['request'] = function(block) {
     if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
         const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
         if (statement) {
-            return 'try {\n  require("request")(' + URL + ', async (error, response, result) => {\n  ' + statement + '  }).on("error", (e) => { console.error(e); });\n} catch (e) { console.error(e); }\n' + logText;
+            return 'try {\n  require("request")(' + URL + ', async (error, response, result) => {\n  ' + statement + '  }).on("error", (e) => {console.error(e);});\n} catch (e) { console.error(e); }\n' + logText;
         } else {
-            return 'try {\n  require("request")(' + URL + ').on("error", (e) => { console.error(e); });\n} catch (e) { console.error(e); }\n' + logText;
+            return 'try {\n  require("request")(' + URL + ').on("error", (e) => {console.error(e);});\n} catch (e) { console.error(e); }\n' + logText;
         }
     } else {
-        return 'try {\n  require("request")(' + URL + ').on("error", (e) => { console.error(e); });\n} catch (e) { console.error(e); }\n' + logText;
+        return 'try {\n  require("request")(' + URL + ').on("error", (e) => {console.error(e);});\n} catch (e) { console.error(e); }\n' + logText;
     }
 };

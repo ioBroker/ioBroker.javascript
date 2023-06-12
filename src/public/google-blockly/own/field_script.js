@@ -115,15 +115,15 @@ Blockly.FieldScript.prototype.setValue = function (text) {
  */
 Blockly.FieldScript.prototype.showEditor_ = function(opt_quietInput) {
     this.workspace_ = this.sourceBlock_.workspace;
-    var that   = this;
-    var base64 = that.getValue();
-    var args = null;
-    var isReturn = false;
+    const that   = this;
+    const base64 = that.getValue();
+    let args = null;
+    let isReturn = false;
     if (this.sourceBlock_ && this.sourceBlock_.arguments_) {
         args = this.sourceBlock_.arguments_;
     }
     if (this.sourceBlock_.getProcedureDef) {
-        var options = this.sourceBlock_.getProcedureDef();
+        const options = this.sourceBlock_.getProcedureDef();
         isReturn = options[2];
     }
 
@@ -139,10 +139,10 @@ Blockly.FieldScript.prototype.showEditor_ = function(opt_quietInput) {
  */
 Blockly.FieldScript.prototype.render_ = function() {
     // the implementation is taken from field.js => Blockly.Field.prototype.updateSize_
-    var constants = this.getConstants();
-    var xOffset = this.borderRect_ ? this.getConstants().FIELD_BORDER_RECT_X_PADDING : 0;
-    var totalWidth = xOffset * 2 + 12;
-    var totalHeight = constants.FIELD_TEXT_HEIGHT;
+    const constants = this.getConstants();
+    const xOffset = this.borderRect_ ? this.getConstants().FIELD_BORDER_RECT_X_PADDING : 0;
+    const totalWidth = xOffset * 2 + 12;
+    let totalHeight = constants.FIELD_TEXT_HEIGHT;
 
     if (this.borderRect_) {
         totalHeight = Math.max(totalHeight, constants.FIELD_BORDER_RECT_HEIGHT);
@@ -161,7 +161,7 @@ Blockly.FieldScript.prototype.render_ = function() {
  * @private
  */
 Blockly.FieldScript.prototype.updateTextNode_ = function() {
-    var width = (Blockly.BlockSvg.SEP_SPACE_X || 5) * 3;
+    const width = (Blockly.BlockSvg.SEP_SPACE_X || 5) * 3;
     if (!this.textElement_) {
         // Not rendered yet.
         return;
@@ -169,7 +169,7 @@ Blockly.FieldScript.prototype.updateTextNode_ = function() {
     // Empty the text element.
     goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));
 
-    var textNode = document.createTextNode('...');
+    const textNode = document.createTextNode('...');
     this.textElement_.appendChild(textNode);
 
     // Cached width is obsolete.  Clear it.
@@ -183,12 +183,12 @@ Blockly.FieldScript.prototype.updateTextNode_ = function() {
  * @private
  */
 /*Blockly.FieldScript.prototype.widgetDispose_ = function() {
-    var thisField = this;
+    const thisField = this;
     return function() {
-        var htmlInput = Blockly.FieldScript.htmlInput_;
+        const htmlInput = Blockly.FieldScript.htmlInput_;
 
         // Save the edit (if it validates).
-        var text = htmlInput.value;
+        const text = htmlInput.value;
         thisField.setValue(text);
         thisField.sourceBlock_.rendered && thisField.sourceBlock_.render();
         Blockly.unbindEvent_(htmlInput.onKeyDownWrapper_);
@@ -201,7 +201,7 @@ Blockly.FieldScript.prototype.updateTextNode_ = function() {
         Blockly.FieldScript.htmlInput_ = null;
 
         // Delete style properties.
-        var style = Blockly.WidgetDiv.DIV.style;
+        const style = Blockly.WidgetDiv.DIV.style;
         style.width = 'auto';
         style.height = 'auto';
         style.fontSize = '';

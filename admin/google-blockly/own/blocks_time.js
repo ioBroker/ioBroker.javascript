@@ -83,16 +83,16 @@ Blockly.Blocks['time_compare_ex'] = {
         this.setHelpUrl(Blockly.Translate('time_compare_ex_help'));
     },
     mutationToDom: function() {
-        var container = document.createElement('mutation');
-        var option = this.getFieldValue('OPTION');
-        var use_actual_time = this.getFieldValue('USE_ACTUAL_TIME');
+        const container = document.createElement('mutation');
+        const option = this.getFieldValue('OPTION');
+        const use_actual_time = this.getFieldValue('USE_ACTUAL_TIME');
         container.setAttribute('end_time', option === 'between' || option === 'not between' ? 'true' : 'false');
         container.setAttribute('actual_time', use_actual_time === 'TRUE' || use_actual_time === 'true' || use_actual_time === true ? 'true' : 'false');
         return container;
     },
     domToMutation: function(xmlElement) {
-        var end_time = xmlElement.getAttribute('end_time');
-        var actual_time = xmlElement.getAttribute('actual_time');
+        const end_time = xmlElement.getAttribute('end_time');
+        const actual_time = xmlElement.getAttribute('actual_time');
         this.updateShape_(end_time === true || end_time === 'true' || end_time === 'TRUE', actual_time === true || actual_time === 'true' || actual_time === 'TRUE');
     },
     updateShape_: function(isBetween, useActualTime) {
@@ -100,7 +100,7 @@ Blockly.Blocks['time_compare_ex'] = {
             isBetween = this.getFieldValue('OPTION') === 'between' || this.getFieldValue('OPTION') === 'not between';
         }
         // Add or remove a delay Input.
-        var inputExists = this.getInput('END_TIME');
+        let inputExists = this.getInput('END_TIME');
 
         if (isBetween) {
             if (!inputExists) {
@@ -114,14 +114,14 @@ Blockly.Blocks['time_compare_ex'] = {
                 this.appendDummyInput('AND')
                     .appendField(Blockly.Translate('time_compare_and'));
 
-                var input = this.appendValueInput('END_TIME');
+                const input = this.appendValueInput('END_TIME');
 
                 if (!window.scripts.loading) {
-                    var wp = this.workspace;
+                    const wp = this.workspace;
 
                     setTimeout(function () {
                         if (!input.connection.isConnected()) {
-                            var shadow = wp.newBlock('text');
+                            const shadow = wp.newBlock('text');
                             shadow.setShadow(true);
                             shadow.setFieldValue('18:00', 'TEXT');
 
@@ -163,12 +163,12 @@ Blockly.Blocks['time_compare_ex'] = {
 };
 
 Blockly.JavaScript['time_compare_ex'] = function(block) {
-    var option     = block.getFieldValue('OPTION');
-    var start_time = Blockly.JavaScript.valueToCode(block, 'START_TIME', Blockly.JavaScript.ORDER_ATOMIC);
-    var end_time   = Blockly.JavaScript.valueToCode(block, 'END_TIME', Blockly.JavaScript.ORDER_ATOMIC);
-    var time       = Blockly.JavaScript.valueToCode(block, 'CUSTOM_TIME', Blockly.JavaScript.ORDER_ATOMIC);
-    if (!end_time) end_time = null;
-    if (!time) time = null;
+    const option     = block.getFieldValue('OPTION');
+    const start_time = Blockly.JavaScript.valueToCode(block, 'START_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+    let end_time   = Blockly.JavaScript.valueToCode(block, 'END_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+    let time       = Blockly.JavaScript.valueToCode(block, 'CUSTOM_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+    end_time = end_time || null;
+    time = time || null;
     return ['compareTime(' + start_time + ', ' + end_time + ', "' + option + '", ' + time + ')', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
@@ -221,18 +221,18 @@ Blockly.Blocks['time_compare'] = {
     },
 
     mutationToDom: function() {
-        var container = document.createElement('mutation');
-        var option = this.getFieldValue('OPTION');
+        const container = document.createElement('mutation');
+        const option = this.getFieldValue('OPTION');
         container.setAttribute('end_time', (option === 'between' || option === 'not between') ? 'true' : 'false');
         return container;
     },
     domToMutation: function(xmlElement) {
-        var option = xmlElement.getAttribute('end_time');
+        const option = xmlElement.getAttribute('end_time');
         this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
     updateShape_: function(isBetween) {
         // Add or remove a delay Input.
-        var inputExists = this.getInput('END_TIME');
+        const inputExists = this.getInput('END_TIME');
 
         if (isBetween) {
             if (!inputExists) {
@@ -250,10 +250,10 @@ Blockly.Blocks['time_compare'] = {
 };
 
 Blockly.JavaScript['time_compare'] = function(block) {
-    var option     = block.getFieldValue('OPTION');
-    var start_time = block.getFieldValue('START_TIME');
-    var end_time   = block.getFieldValue('END_TIME');
-    if (!end_time) end_time = null;
+    const option     = block.getFieldValue('OPTION');
+    const start_time = block.getFieldValue('START_TIME');
+    let end_time   = block.getFieldValue('END_TIME');
+    end_time = end_time || null;
 
     return ['compareTime("' + start_time + '", "' + end_time + '", "' + option + '")', Blockly.JavaScript.ORDER_ATOMIC];
 };
@@ -342,20 +342,20 @@ Blockly.Blocks['time_get'] = {
         this.setHelpUrl(Blockly.Translate('time_get_help'));
     },
     mutationToDom: function() {
-        var container = document.createElement('mutation');
-        var option = this.getFieldValue('OPTION');
+        const container = document.createElement('mutation');
+        const option = this.getFieldValue('OPTION');
         container.setAttribute('format', option === 'custom' ? 'true' : 'false');
         container.setAttribute('language', option === 'wdt' || option === 'wdts' || option === 'Mt' || option === 'Mts' ? 'true' : 'false');
         return container;
     },
     domToMutation: function(xmlElement) {
-        var format = xmlElement.getAttribute('format');
-        var language = xmlElement.getAttribute('language');
+        const format = xmlElement.getAttribute('format');
+        const language = xmlElement.getAttribute('language');
         this.updateShape_(format === true || format === 'true' || format === 'TRUE', language === true || language === 'true' || language === 'TRUE');
     },
     updateShape_: function(isFormat, isLanguage) {
         // Add or remove a delay Input.
-        var inputExists = this.getInput('FORMAT');
+        let inputExists = this.getInput('FORMAT');
 
         if (isFormat) {
             if (!inputExists) {
@@ -371,7 +371,7 @@ Blockly.Blocks['time_get'] = {
 
         if (isLanguage) {
             if (!inputExists) {
-                var languages;
+                let languages;
                 if (systemLang === 'en') {
                     languages = [['in english', 'en'], ['auf deutsch', 'de'], ['на русском', 'ru']];
                 } else if (systemLang === 'de') {
@@ -391,11 +391,11 @@ Blockly.Blocks['time_get'] = {
 };
 
 Blockly.JavaScript['time_get'] = function(block) {
-    var option = block.getFieldValue('OPTION');
-    var format = block.getFieldValue('FORMAT');
-    var lang   = block.getFieldValue('LANGUAGE');
+    const option = block.getFieldValue('OPTION');
+    const format = block.getFieldValue('FORMAT');
+    const lang   = block.getFieldValue('LANGUAGE');
 
-    var code;
+    let code;
     if (option === 'object') {
         code = '(new Date().getTime())';
     } else if (option === 'ms') {
@@ -484,7 +484,7 @@ Blockly.Blocks['time_astro'] = {
 };
 
 Blockly.JavaScript['time_astro'] = function(block) {
-    var type    = block.getFieldValue('TYPE');
-    var offset  = parseFloat(block.getFieldValue('OFFSET'));
+    const type    = block.getFieldValue('TYPE');
+    const offset  = parseFloat(block.getFieldValue('OFFSET'));
     return ['getAstroDate("' + type + '", undefined, ' + offset + ')', Blockly.JavaScript.ORDER_ATOMIC];
 };

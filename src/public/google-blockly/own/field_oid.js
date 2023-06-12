@@ -86,15 +86,15 @@ Blockly.FieldOID.prototype.setValue = function(id) {
         return;  // No change if null.
     }
 
-    var objects = window.main.objects;
+    const objects = window.main.objects;
 
     if (objects && !objects[id] && typeof window.main.getObject === 'function') {
         this._idName = id || Blockly.Field.NBSP;
-        var that = this;
+        const that = this;
         window.main.getObject(id, function (err, obj) {
             if (obj) {
                 objects[obj._id] = objects[obj._id] || obj;
-                var text = objects[obj._id].common && objects[obj._id].common.name && objects[obj._id].common.name;
+                let text = objects[obj._id].common && objects[obj._id].common.name && objects[obj._id].common.name;
                 if (text) {
                     if (typeof text === 'object') {
                         text = text[systemLang] || text.en;
@@ -115,7 +115,7 @@ Blockly.FieldOID.prototype.setValue = function(id) {
             }
         });
     } else {
-        var text = objects && objects[id] && objects[id].common && objects[id].common.name ? objects[id].common.name : id;
+        let text = objects && objects[id] && objects[id].common && objects[id].common.name ? objects[id].common.name : id;
         if (typeof text === 'object') {
             text = text[systemLang] || text.en;
         }
@@ -143,7 +143,7 @@ Blockly.FieldOID.prototype.setValue = function(id) {
  * @protected
  */
 Blockly.FieldOID.prototype.getDisplayText_ = function() {
-    var text = this._idName || this.text_;
+    let text = this._idName || this.text_;
     if (!text) {
         // Prevent the field from disappearing if empty.
         return Blockly.Field.NBSP;
@@ -169,7 +169,7 @@ Blockly.FieldOID.prototype.getDisplayText_ = function() {
  */
 Blockly.FieldOID.prototype.showEditor_ = function(opt_quietInput) {
     this.workspace_ = this.sourceBlock_.workspace;
-    var that = this;
+    const that = this;
     window.main && window.main.selectIdDialog && window.main.selectIdDialog(this.getValue(), this._type, function (newId) { newId !== null && that.setValue(newId);});
 };
 
@@ -179,8 +179,8 @@ Blockly.FieldOID.prototype.showEditor_ = function(opt_quietInput) {
  * @private
  */
 /*Blockly.FieldOID.prototype.onHtmlInputKeyDown_ = function(e) {
-    var htmlInput = Blockly.FieldOID.htmlInput_;
-    var tabKey = 9, enterKey = 13, escKey = 27;
+    const htmlInput = Blockly.FieldOID.htmlInput_;
+    const tabKey = 9, enterKey = 13, escKey = 27;
     if (e.keyCode == enterKey) {
         Blockly.WidgetDiv.hide();
     } else if (e.keyCode == escKey) {
@@ -199,9 +199,9 @@ Blockly.FieldOID.prototype.showEditor_ = function(opt_quietInput) {
  * @private
  */
 Blockly.FieldOID.prototype.onHtmlInputChange_ = function(e) {
-    var htmlInput = Blockly.FieldOID.htmlInput_;
+    const htmlInput = Blockly.FieldOID.htmlInput_;
     // Update source block.
-    var text = htmlInput.value;
+    const text = htmlInput.value;
     if (text !== htmlInput.oldValue_) {
         htmlInput.oldValue_ = text;
         this.setValue(text);
@@ -220,11 +220,9 @@ Blockly.FieldOID.prototype.onHtmlInputChange_ = function(e) {
  * @private
  */
 Blockly.FieldOID.prototype.validate_ = function() {
-    var valid = true;
-
     goog.asserts.assertObject(Blockly.FieldOID.htmlInput_);
 
-    var htmlInput = Blockly.FieldOID.htmlInput_;
+    const htmlInput = Blockly.FieldOID.htmlInput_;
 
     if (htmlInput.value) {
         Blockly.addClass_(htmlInput, 'blocklyInvalidInput');
@@ -238,15 +236,15 @@ Blockly.FieldOID.prototype.validate_ = function() {
  * @private
  */
 Blockly.FieldOID.prototype.resizeEditor_ = function() {
-    var div = Blockly.WidgetDiv.DIV;
-    var bBox = this.fieldGroup_.getBBox();
+    const div = Blockly.WidgetDiv.DIV;
+    const bBox = this.fieldGroup_.getBBox();
     div.style.width = bBox.width * this.workspace_.scale + 'px';
     div.style.height = bBox.height * this.workspace_.scale + 'px';
-    var xy = this.getAbsoluteXY_();
+    const xy = this.getAbsoluteXY_();
     // In RTL mode block fields and LTR input fields the left edge moves,
     // whereas the right edge is fixed.  Reposition the editor.
     if (this.sourceBlock_.RTL) {
-        var borderBBox = this.getScaledBBox_();
+        const borderBBox = this.getScaledBBox_();
         xy.x += borderBBox.width;
         xy.x -= div.offsetWidth;
     }
@@ -272,11 +270,11 @@ Blockly.FieldOID.prototype.resizeEditor_ = function() {
  * @private
  */
 Blockly.FieldOID.prototype.widgetDispose_ = function() {
-    var thisField = this;
+    const thisField = this;
     return function() {
-        var htmlInput = Blockly.FieldOID.htmlInput_;
+        const htmlInput = Blockly.FieldOID.htmlInput_;
         // Save the edit (if it validates).
-        var text = htmlInput.value;
+        const text = htmlInput.value;
         thisField.setValue(text);
         thisField.sourceBlock_.rendered && thisField.sourceBlock_.render();
         Blockly.unbindEvent_(htmlInput.onKeyDownWrapper_);
@@ -289,7 +287,7 @@ Blockly.FieldOID.prototype.widgetDispose_ = function() {
         Blockly.FieldOID.htmlInput_ = null;
 
         // Delete style properties.
-        var style = Blockly.WidgetDiv.DIV.style;
+        const style = Blockly.WidgetDiv.DIV.style;
         style.width = 'auto';
         style.height = 'auto';
         style.fontSize = '';

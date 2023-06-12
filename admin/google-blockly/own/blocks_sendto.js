@@ -69,18 +69,18 @@ Blockly.Blocks['sendto_custom'] = {
      * @this Blockly.Block
      */
     init: function () {
-        var options = [];
+        const options = [];
         if (typeof main !== 'undefined' && main.instances) {
-            for (var i = 0; i < main.instances.length; i++) {
+            for (let i = 0; i < main.instances.length; i++) {
                 if (main.objects[main.instances[i]].common.messagebox) {
-                    var id = main.instances[i].substring('system.adapter.'.length);
+                    const id = main.instances[i].substring('system.adapter.'.length);
                     options.push([id, id]);
                 }
             }
             if (!options.length) {
                 options.push([Blockly.Translate('sendto_no_instances'), '']);
             }
-            /*for (var h = 0; h < scripts.hosts.length; h++) {
+            /*for (let h = 0; h < scripts.hosts.length; h++) {
                 options.push([scripts.hosts[h], scripts.hosts[h]]);
             }*/
             this.appendDummyInput('INSTANCE')
@@ -130,15 +130,15 @@ Blockly.Blocks['sendto_custom'] = {
      * @this Blockly.Block
      */
     mutationToDom: function () {
-        var container = document.createElement('mutation');
-        var names = [];
-        for (var i = 0; i < this.itemCount_; i++) {
-            var input = this.getInput('ARG' + i);
+        const container = document.createElement('mutation');
+        const names = [];
+        for (let i = 0; i < this.itemCount_; i++) {
+            const input = this.getInput('ARG' + i);
             names[i] = input.fieldRow[0].getValue();
         }
 
         container.setAttribute('items', names.join(','));
-        var withStatement = this.getFieldValue('WITH_STATEMENT');
+        const withStatement = this.getFieldValue('WITH_STATEMENT');
         container.setAttribute('with_statement', withStatement === 'TRUE' || withStatement === 'true' || withStatement === true);
         return container;
     },
@@ -148,9 +148,9 @@ Blockly.Blocks['sendto_custom'] = {
      * @this Blockly.Block
      */
     domToMutation: function (xmlElement) {
-        var names = xmlElement.getAttribute('items').split(',');
+        const names = xmlElement.getAttribute('items').split(',');
         this.itemCount_ = names.length;
-        var withStatement = xmlElement.getAttribute('with_statement');
+        const withStatement = xmlElement.getAttribute('with_statement');
         this.updateShape_(names, withStatement === true || withStatement === 'true' || withStatement === 'TRUE');
     },
     /**
@@ -160,11 +160,11 @@ Blockly.Blocks['sendto_custom'] = {
      * @this Blockly.Block
      */
     decompose: function (workspace) {
-        var containerBlock = workspace.newBlock('sendto_custom_container');
+        const containerBlock = workspace.newBlock('sendto_custom_container');
         containerBlock.initSvg();
-        var connection = containerBlock.getInput('STACK').connection;
-        for (var i = 0; i < this.itemCount_; i++) {
-            var itemBlock = workspace.newBlock('sendto_custom_item');
+        let connection = containerBlock.getInput('STACK').connection;
+        for (let i = 0; i < this.itemCount_; i++) {
+            const itemBlock = workspace.newBlock('sendto_custom_item');
             itemBlock.initSvg();
             connection.connect(itemBlock.previousConnection);
             connection = itemBlock.nextConnection;
@@ -177,37 +177,39 @@ Blockly.Blocks['sendto_custom'] = {
      * @this Blockly.Block
      */
     compose: function (containerBlock) {
-        var itemBlock = containerBlock.getInputTargetBlock('STACK');
+        let itemBlock = containerBlock.getInputTargetBlock('STACK');
         // Count number of inputs.
-        var connections = [];
-        var names = [];
+        const connections = [];
+        const names = [];
         while (itemBlock) {
             connections.push(itemBlock.valueConnection_);
             itemBlock = itemBlock.nextConnection &&
                 itemBlock.nextConnection.targetBlock();
         }
         // Disconnect any children that don't belong.
-        for (var i = 0; i < this.itemCount_; i++) {
-            var input = this.getInput('ARG' + i);
-            var connection = input.connection.targetConnection;
+        for (let i = 0; i < this.itemCount_; i++) {
+            const input = this.getInput('ARG' + i);
+            const connection = input.connection.targetConnection;
             names[i] = input.fieldRow[0].getValue();
-            if (connection && connections.indexOf(connection) === -1) {
+            if (connection && !connections.includes(connection)) {
                 connection.disconnect();
             }
         }
         this.itemCount_ = connections.length;
-        if (this.itemCount_ < 1) this.itemCount_ = 1;
+        if (this.itemCount_ < 1) {
+            this.itemCount_ = 1;
+        }
         this.updateShape_(names);
         // Reconnect any child blocks.
-        for (var j = 0; j < this.itemCount_; j++) {
+        for (let j = 0; j < this.itemCount_; j++) {
             Blockly.Mutator.reconnect(connections[j], this, 'ARG' + j);
 
         }
     },
     getArgNames_: function () {
-        var names = [];
-        for (var n = 0; n < this.itemCount_; n++) {
-            var input = this.getInput('ARG' + n);
+        const names = [];
+        for (let n = 0; n < this.itemCount_; n++) {
+            const input = this.getInput('ARG' + n);
             names.push(input.fieldRow[0].getValue());
         }
         return names;
@@ -218,10 +220,10 @@ Blockly.Blocks['sendto_custom'] = {
      * @this Blockly.Block
      */
     saveConnections: function (containerBlock) {
-        var itemBlock = containerBlock.getInputTargetBlock('STACK');
-        var i = 0;
+        let itemBlock = containerBlock.getInputTargetBlock('STACK');
+        let i = 0;
         while (itemBlock) {
-            var input = this.getInput('ARG' + i);
+            const input = this.getInput('ARG' + i);
             itemBlock.valueConnection_ = input && input.connection.targetConnection;
             itemBlock = itemBlock.nextConnection && itemBlock.nextConnection.targetBlock();
             i++;
@@ -234,8 +236,8 @@ Blockly.Blocks['sendto_custom'] = {
      */
     updateShape_: function (names, withStatement) {
         names = names || [];
-        var _input;
-        var wp = this.workspace;
+        let _input;
+        const wp = this.workspace;
         if (withStatement === undefined) {
             withStatement = this.getFieldValue('WITH_STATEMENT');
             withStatement = withStatement === true || withStatement === 'true' || withStatement === 'TRUE';
@@ -244,7 +246,7 @@ Blockly.Blocks['sendto_custom'] = {
         this.getInput('STATEMENT') && this.removeInput('STATEMENT');
 
         // Add new inputs.
-        var i;
+        let i;
         for (i = 0; i < this.itemCount_; i++) {
             _input = this.getInput('ARG' + i);
 
@@ -256,7 +258,7 @@ Blockly.Blocks['sendto_custom'] = {
                 _input.appendField(new Blockly.FieldTextInput(names[i]));
                 setTimeout(function (_input) {
                     if (!_input.connection.isConnected()) {
-                        var _shadow = wp.newBlock('text');
+                        const _shadow = wp.newBlock('text');
                         _shadow.setShadow(true);
                         _shadow.initSvg();
                         _shadow.render();
@@ -270,7 +272,7 @@ Blockly.Blocks['sendto_custom'] = {
                 setTimeout(function (_input, name) {
                     if (!_input.connection.isConnected()) {
                         console.log('Create ' + name);
-                        var shadow = wp.newBlock('text');
+                        const shadow = wp.newBlock('text');
                         shadow.setShadow(true);
                         shadow.initSvg();
                         shadow.render();
@@ -281,9 +283,9 @@ Blockly.Blocks['sendto_custom'] = {
         }
 
         // Remove deleted inputs.
-        var blocks = [];
+        const blocks = [];
         while (_input = this.getInput('ARG' + i)) {
-            var b = _input.connection.targetBlock();
+            const b = _input.connection.targetBlock();
             if (b && b.isShadow()) {
                 blocks.push(b);
             }
@@ -292,9 +294,9 @@ Blockly.Blocks['sendto_custom'] = {
         }
 
         if (blocks.length) {
-            var ws = this.workspace;
+            const ws = this.workspace;
             setTimeout(function () {
-                for(var b = 0; b < blocks.length; b++) {
+                for(let b = 0; b < blocks.length; b++) {
                     ws.removeTopBlock(blocks[b]);
                 }
             }, 100);
@@ -308,25 +310,25 @@ Blockly.Blocks['sendto_custom'] = {
 };
 
 Blockly.JavaScript['sendto_custom'] = function (block) {
-    var instance      = block.getFieldValue('INSTANCE');
-    var logLevel      = block.getFieldValue('LOG');
-    var command       = block.getFieldValue('COMMAND');
-    var withStatement = block.getFieldValue('WITH_STATEMENT');
-    var args = [];
-    var logText;
+    const instance      = block.getFieldValue('INSTANCE');
+    const logLevel      = block.getFieldValue('LOG');
+    const command       = block.getFieldValue('COMMAND');
+    const withStatement = block.getFieldValue('WITH_STATEMENT');
+    const args = [];
+    let logText;
     if (logLevel) {
         logText = 'console.' + logLevel + '("' + instance + ': " + "' + (args.length ? args.join(',') + '\n' : '') + '");\n'
     } else {
         logText = '';
     }
-    var statement;
+    let statement;
     if (withStatement === true || withStatement === 'true' || withStatement === 'TRUE') {
         statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     }
 
-    for (var n = 0; n < block.itemCount_; n++) {
-        var input = this.getInput('ARG' + n);
-        var val = Blockly.JavaScript.valueToCode(block, 'ARG' + n, Blockly.JavaScript.ORDER_COMMA);
+    for (let n = 0; n < block.itemCount_; n++) {
+        const input = this.getInput('ARG' + n);
+        let val = Blockly.JavaScript.valueToCode(block, 'ARG' + n, Blockly.JavaScript.ORDER_COMMA);
         // if JSON
         if (val && val[0] === "'" && val[1] === '{') {
             val = val.substring(1, val.length - 1);
@@ -372,19 +374,19 @@ Blockly.Sendto.blocks['sendto_otherscript'] =
 
 Blockly.Blocks['sendto_otherscript'] = {
     init: function() {
-        var options = [[Blockly.Translate('sendto_otherscript_anyInstance'), '']];
+        const options = [[Blockly.Translate('sendto_otherscript_anyInstance'), '']];
         if (typeof main !== 'undefined' && main.instances) {
-            for (var i = 0; i < main.instances.length; i++) {
-                var m = main.instances[i].match(/^system.adapter.javascript.(\d+)$/);
+            for (let i = 0; i < main.instances.length; i++) {
+                const m = main.instances[i].match(/^system.adapter.javascript.(\d+)$/);
                 if (m) {
-                    var n = parseInt(m[1], 10);
+                    const n = parseInt(m[1], 10);
                     options.push(['javascript.' + n, '.' + n]);
                 }
             }
         }
 
         if (!options.length) {
-            for (var u = 0; u <= 4; u++) {
+            for (let u = 0; u <= 4; u++) {
                 options.push(['javascript.' + u, '.' + u]);
             }
         }
@@ -418,18 +420,18 @@ Blockly.Blocks['sendto_otherscript'] = {
 };
 
 Blockly.JavaScript['sendto_otherscript'] = function(block) {
-    var dropdown_instance = block.getFieldValue('INSTANCE');
-    var value_objectid  = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
-    var message = block.getFieldValue('MESSAGE');
-    var data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
+    const dropdown_instance = block.getFieldValue('INSTANCE');
+    const value_objectid  = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    const message = block.getFieldValue('MESSAGE');
+    let data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
 
-    var objectname = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+    const objectname = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
 
     if (!data) {
         data = 'true';
     }
 
-    var text = '{\n';
+    let text = '{\n';
     text += '    script: ' + value_objectid + ',' + (objectname ? '/*' + objectname + '*/' : '') + '\n';
     text += '    message: "' + message + '",\n';
     text += '    data: ' + data + '\n';

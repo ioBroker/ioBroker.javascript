@@ -444,17 +444,16 @@ Blockly.Words['onMessage_message']                    = {'en': 'message',       
 Blockly.Words['onMessage_tooltip']                    = {'en': 'message',                                         'de': 'Meldung',                                         'ru': 'сообщение',                                       'pt': 'mensagem',                                        'nl': 'bericht',                                         'fr': 'message',                                         'it': 'messaggio',                                       'es': 'mensaje',                                         'pl': 'komunikat',                                       'zh-cn': '消息',                                              'uk': 'повідомлення'};
 Blockly.Words['onMessage_help']                       = {'en': 'onMessage',                                       'de': 'onMessage',                                       'ru': 'onMessage',                                       'pt': 'onMessage',                                       'nl': 'onMessage',                                       'fr': 'onMessage',                                       'it': 'onMessage',                                       'es': 'onMessage',                                       'pl': 'onMessage',                                       'zh-cn': 'onMessage',                                       'uk': 'onMessage'};
 
-// --- logic between --------------------------------------------------
-Blockly.Words['logic_between_min'] = { "en": "Min",     "de": "Min",     "ru": "Мин",     "pt": "Min",     "nl": "Min",     "fr": "Min",     "it": "Min",     "es": "Min",     "pl": "Min",     "uk": "Мінуси",     "zh-cn": "明 明" };
-Blockly.Words['logic_between_max'] = { "en": "Max",     "de": "Max",     "ru": "Макс",     "pt": "Max",     "nl": "Max",     "fr": "Max",     "it": "Max",     "es": "Max",     "pl": "Max",     "uk": "Макс",     "zh-cn": "Max" };
+// --- OTHER --------------------------------------------------
+Blockly.Words['Other']                                = {'en': 'Other',                                           'de': 'Sonstige',                                        'ru': 'Другое',                                          'pt': 'Outros',                                          'nl': 'Andere',                                          'fr': 'Autres',                                          'it': 'Altri',                                           'es': 'Otros',                                           'pl': 'Inny',                                            'zh-cn': '其他',                                            'uk': 'Інше'};
 
-// --- logic ifempty --------------------------------------------------
-Blockly.Words['logic_ifempty'] = { "en": "if empty",     "de": "wenn leer",     "ru": "если пусто",     "pt": "se vazio",     "nl": "_",     "fr": "si vide",     "it": "se vuoto",     "es": "si está vacío",     "pl": "jeśli chodzi o puste",     "uk": "якщо порожній",     "zh-cn": "空" };
-Blockly.Words['logic_ifempty_then'] = { "en": "then",     "de": "dann",     "ru": "затем",     "pt": "então",     "nl": "dan",     "fr": "puis",     "it": "allora",     "es": "entonces",     "pl": "potem",     "uk": "потім",     "zh-cn": "然后" };
+// --- other between --------------------------------------------------
+Blockly.Words['other_between_min'] = { "en": "Min",     "de": "Min",     "ru": "Мин",     "pt": "Min",     "nl": "Min",     "fr": "Min",     "it": "Min",     "es": "Min",     "pl": "Min",     "uk": "Мінуси",     "zh-cn": "明 明" };
+Blockly.Words['other_between_max'] = { "en": "Max",     "de": "Max",     "ru": "Макс",     "pt": "Max",     "nl": "Max",     "fr": "Max",     "it": "Max",     "es": "Max",     "pl": "Max",     "uk": "Макс",     "zh-cn": "Max" };
 
-function getHelp(word) {
-    return 'https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#' + Blockly.Words[word][systemLang];
-}
+// --- other_ifempty --------------------------------------------------
+Blockly.Words['other_ifempty'] = { "en": "if empty",     "de": "wenn leer",     "ru": "если пусто",     "pt": "se vazio",     "nl": "_",     "fr": "si vide",     "it": "se vuoto",     "es": "si está vacío",     "pl": "jeśli chodzi o puste",     "uk": "якщо порожній",     "zh-cn": "空" };
+Blockly.Words['other_ifempty_then'] = { "en": "then",     "de": "dann",     "ru": "затем",     "pt": "então",     "nl": "dan",     "fr": "puis",     "it": "allora",     "es": "entonces",     "pl": "potem",     "uk": "потім",     "zh-cn": "然后" };
 
 Blockly.Translate = function (word, lang) {
     lang = lang || systemLang;
