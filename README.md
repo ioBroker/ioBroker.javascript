@@ -46,8 +46,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.0.6 (2023-06-12)
-* (bluefox) typescript and coffescript were degraded to previous versions
+### **WORK IN PROGRESS**
+* (klein0r) Corrected trigger block
+* (klein0r) Corrected typescript V5
+* (bluefox) coffescript was degraded to the previous version
 * (bluefox) tried to correct vscode font
 
 ### 7.0.5 (2023-06-06)
