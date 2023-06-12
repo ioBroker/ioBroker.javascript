@@ -57,9 +57,9 @@ class FieldCRON extends Blockly.Field {
      * @private
      */
     onHtmlInputChange_(e) {
-        var htmlInput = this.htmlInput_;
+        const htmlInput = this.htmlInput_;
         // Update source block.
-        var text = htmlInput.value;
+        const text = htmlInput.value;
         if (text !== htmlInput.oldValue_) {
             htmlInput.oldValue_ = text;
             this.setValue(text);
@@ -81,7 +81,7 @@ class FieldCRON extends Blockly.Field {
     validate_() {
         goog.asserts.assertObject(Blockly.FieldCRON.htmlInput_);
 
-        var htmlInput = Blockly.FieldCRON.htmlInput_;
+        const htmlInput = Blockly.FieldCRON.htmlInput_;
 
         if (htmlInput.value) {
             Blockly.addClass_(htmlInput, 'blocklyInvalidInput');
@@ -95,15 +95,15 @@ class FieldCRON extends Blockly.Field {
      * @private
      */
     resizeEditor_() {
-        var div = Blockly.WidgetDiv.DIV;
-        var bBox = this.fieldGroup_.getBBox();
+        const div = Blockly.WidgetDiv.DIV;
+        const bBox = this.fieldGroup_.getBBox();
         div.style.width = bBox.width * this.workspace_.scale + 'px';
         div.style.height = bBox.height * this.workspace_.scale + 'px';
-        var xy = this.getAbsoluteXY_();
+        const xy = this.getAbsoluteXY_();
         // In RTL mode block fields and LTR input fields the left edge moves,
         // whereas the right edge is fixed.  Reposition the editor.
         if (this.sourceBlock_.RTL) {
-            var borderBBox = this.getScaledBBox_();
+            const borderBBox = this.getScaledBBox_();
             xy.x += borderBBox.width;
             xy.x -= div.offsetWidth;
         }
@@ -129,11 +129,11 @@ class FieldCRON extends Blockly.Field {
      * @private
      */
     widgetDispose_() {
-        var thisField = this;
+        const thisField = this;
         return function() {
-            var htmlInput = Blockly.FieldCRON.htmlInput_;
+            const htmlInput = Blockly.FieldCRON.htmlInput_;
             // Save the edit (if it validates).
-            var text = htmlInput.value;
+            const text = htmlInput.value;
             thisField.setValue(text);
             thisField.sourceBlock_.rendered && thisField.sourceBlock_.render();
             Blockly.unbindEvent_(htmlInput.onKeyDownWrapper_);
@@ -146,7 +146,7 @@ class FieldCRON extends Blockly.Field {
             Blockly.FieldCRON.htmlInput_ = null;
 
             // Delete style properties.
-            var style = Blockly.WidgetDiv.DIV.style;
+            const style = Blockly.WidgetDiv.DIV.style;
             style.width = 'auto';
             style.height = 'auto';
             style.fontSize = '';

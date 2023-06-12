@@ -31,15 +31,15 @@ class FieldOID extends Blockly.Field {
         if (id === null) {
             return;  // No change if null.
         }
-    
-        var objects = window.main.objects;
+
+        const objects = window.main.objects;
     
         if (objects && !objects[id] && typeof window.main.getObject === 'function') {
             this._idName = id || Blockly.Field.NBSP;
             window.main.getObject(id, (err, obj) => {
                 if (obj) {
                     objects[obj._id] = objects[obj._id] || obj;
-                    var text = objects[obj._id].common && objects[obj._id].common.name && objects[obj._id].common.name;
+                    let text = objects[obj._id].common && objects[obj._id].common.name && objects[obj._id].common.name;
                     if (text) {
                         if (typeof text === 'object') {
                             text = text[systemLang] || text.en;
@@ -60,12 +60,12 @@ class FieldOID extends Blockly.Field {
                 }
             });
         } else {
-            var text = objects && objects[id] && objects[id].common && objects[id].common.name ? objects[id].common.name : id;
+            let text = objects && objects[id] && objects[id].common && objects[id].common.name ? objects[id].common.name : id;
             if (typeof text === 'object') {
                 text = text[systemLang] || text.en;
             }
             if (text.length > this.maxDisplayLength) {
-                // Truncate displayed string and add an ellipsis ('...').
+                // Truncate the displayed string and add an ellipsis ('...').
                 text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
             }
             // Replace whitespace with non-breaking spaces so the text doesn't collapse.
@@ -82,7 +82,7 @@ class FieldOID extends Blockly.Field {
     }
 
     getDisplayText_() {
-        var text = this._idName || this.text_;
+        let text = this._idName || this.text_;
         if (!text) {
             // Prevent the field from disappearing if empty.
             return Blockly.Field.NBSP;
@@ -111,9 +111,9 @@ class FieldOID extends Blockly.Field {
      * @private
      */
     onHtmlInputChange_(e) {
-        var htmlInput = Blockly.FieldOID.htmlInput_;
+        const htmlInput = Blockly.FieldOID.htmlInput_;
         // Update source block.
-        var text = htmlInput.value;
+        const text = htmlInput.value;
         if (text !== htmlInput.oldValue_) {
             htmlInput.oldValue_ = text;
             this.setValue(text);
@@ -134,11 +134,9 @@ class FieldOID extends Blockly.Field {
     * @private
     */
     validate_() {
-        var valid = true;
-
         goog.asserts.assertObject(Blockly.FieldOID.htmlInput_);
 
-        var htmlInput = Blockly.FieldOID.htmlInput_;
+        const htmlInput = Blockly.FieldOID.htmlInput_;
 
         if (htmlInput.value) {
             Blockly.addClass_(htmlInput, 'blocklyInvalidInput');
@@ -152,15 +150,15 @@ class FieldOID extends Blockly.Field {
      * @private
      */
     resizeEditor_() {
-        var div = Blockly.WidgetDiv.DIV;
-        var bBox = this.fieldGroup_.getBBox();
+        const div = Blockly.WidgetDiv.DIV;
+        const bBox = this.fieldGroup_.getBBox();
         div.style.width = bBox.width * this.workspace_.scale + 'px';
         div.style.height = bBox.height * this.workspace_.scale + 'px';
-        var xy = this.getAbsoluteXY_();
+        const xy = this.getAbsoluteXY_();
         // In RTL mode block fields and LTR input fields the left edge moves,
         // whereas the right edge is fixed.  Reposition the editor.
         if (this.sourceBlock_.RTL) {
-            var borderBBox = this.getScaledBBox_();
+            const borderBBox = this.getScaledBBox_();
             xy.x += borderBBox.width;
             xy.x -= div.offsetWidth;
         }
@@ -187,9 +185,9 @@ class FieldOID extends Blockly.Field {
      */
     widgetDispose_() {
         return () => {
-            var htmlInput = this.htmlInput_;
+            const htmlInput = this.htmlInput_;
             // Save the edit (if it validates).
-            var text = htmlInput.value;
+            const text = htmlInput.value;
             this.setValue(text);
             this.sourceBlock_.rendered && this.sourceBlock_.render();
 
@@ -202,7 +200,7 @@ class FieldOID extends Blockly.Field {
             this.htmlInput_ = null;
 
             // Delete style properties.
-            let style = Blockly.WidgetDiv.DIV.style;
+            const style = Blockly.WidgetDiv.DIV.style;
             style.width = 'auto';
             style.height = 'auto';
             style.fontSize = '';
