@@ -681,7 +681,7 @@ class App extends GenericApp {
                 adapter: 'javascript',
                 id: 'script.js',
                 link: `${date}scripts.zip`, // request link to file and not the data itself
-                storeToFile: `admin.${this.instance}`, // new controller 5.x understands this and saves ZIP in the file store
+                fileStorageNamespace: `admin.${this.instance}`, // new controller 5.x understands this and saves ZIP in the file store
             }, data => {
                 if (typeof data === 'string') {
                     // it is a link to the created file

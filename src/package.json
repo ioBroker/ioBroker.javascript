@@ -36,7 +36,7 @@
         "react-text-mask": "^5.5.0",
         "react-treeview-mui": "^0.1.2",
         "reactour": "^1.19.0",
-        "sass": "^1.62.1",
+        "sass": "^1.63.3",
         "styled-components": "^5.3.11",
         "suncalc2": "^1.8.1"
     },
