@@ -10,8 +10,8 @@
       homescreen on Android. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
     <link rel="manifest" href="./manifest.json" crossorigin="use-credentials" />
-    <!-- BF: 2020.11.04 - activate it later to let monaco be in systemLang and not in browser language -->
-    <!--script type="text/javascript" src="_socket/info.js"></script-->
+    <!-- let the monaco be in systemLang and not in browser language -->
+    <script type="text/javascript" src="_socket/info.js"></script>
 
     <script>
       var head = document.getElementsByTagName('head')[0];
@@ -31,7 +31,7 @@
           }
         };
 
-        // try to reload if server is offline
+        // try to reload if the server is offline
         if (src.indexOf('socket.io.js') !== -1) {
           script.onerror = function () {
             console.error('Cannot load socket.io. Retry in 5 seconds');
