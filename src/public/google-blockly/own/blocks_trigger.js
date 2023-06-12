@@ -805,10 +805,11 @@ Blockly.Blocks['cron_builder'] = {
                 this.sourceBlock_.setInputsInline(option === true || option === 'true' || option === 'TRUE');
             }), 'LINE');
 
-        const _input = this.appendValueInput('DOW')
+        let _input = this.appendValueInput('DOW')
             .appendField(Blockly.Translate('cron_builder_dow'));
 
-            const wp = this.workspace;
+        const wp = this.workspace;
+
         setTimeout(function (_input) {
             if (!_input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
@@ -818,9 +819,9 @@ Blockly.Blocks['cron_builder'] = {
             }
         }, 100, _input);
 
-
         _input = this.appendValueInput('MONTHS')
             .appendField(Blockly.Translate('cron_builder_month'));
+
         setTimeout(function (_input) {
             if (!_input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
@@ -832,6 +833,7 @@ Blockly.Blocks['cron_builder'] = {
 
         _input = this.appendValueInput('DAYS')
             .appendField(Blockly.Translate('cron_builder_day'));
+
         setTimeout(function (_input) {
             if (!_input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
@@ -840,10 +842,10 @@ Blockly.Blocks['cron_builder'] = {
                 _shadow.outputConnection.connect(_input.connection);
             }
         }, 100, _input);
-
 
         _input = this.appendValueInput('HOURS')
             .appendField(Blockly.Translate('cron_builder_hour'));
+
         setTimeout(function (_input) {
             if (!_input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
@@ -853,9 +855,9 @@ Blockly.Blocks['cron_builder'] = {
             }
         }, 100, _input);
 
-
         _input = this.appendValueInput('MINUTES')
             .appendField(Blockly.Translate('cron_builder_minutes'));
+
         setTimeout(function (_input) {
             if (!_input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
@@ -941,11 +943,11 @@ Blockly.JavaScript['cron_builder'] = function(block) {
     const code =
         (withSeconds === 'TRUE' || withSeconds === 'true' || withSeconds === true ?
             seconds + '.toString().trim() + \' \' + ' : '') +
-        minutes + '.toString().trim() + \' \' + ' +
-        hours   + '.toString().trim() + \' \' + ' +
-        days    + '.toString().trim() + \' \' + ' +
-        months  + '.toString().trim() + \' \' + ' +
-        dow     + '.toString().trim()';
+            minutes + '.toString().trim() + \' \' + ' +
+            hours   + '.toString().trim() + \' \' + ' +
+            days    + '.toString().trim() + \' \' + ' +
+            months  + '.toString().trim() + \' \' + ' +
+            dow     + '.toString().trim()';
 
     return [code, Blockly.JavaScript.ORDER_ATOMIC]
 };
