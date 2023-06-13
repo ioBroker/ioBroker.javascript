@@ -15,7 +15,7 @@ Blockly.System.blocks['logic_switch_case'] =
 
 Blockly.Blocks['logic_switch_case'] = {
     init: function() {
-        this.setColour(Blockly.Constants.Logic.HUE);
+        this.setColour('%{BKY_LOGIC_HUE}');
         this.setPreviousStatement(true);
         this.setNextStatement(true);
         this.appendValueInput('CONDITION')
@@ -167,7 +167,7 @@ Blockly.Blocks['logic_switch_case'] = {
 
 Blockly.Blocks['control_case'] = {
     init: function() {
-        this.setColour(180);
+        this.setColour('%{BKY_LOGIC_HUE}');
         this.appendDummyInput()
             .appendField(Blockly.Translate('logic_switch_case_is'));
         this.appendStatementInput('STACK');
@@ -178,7 +178,7 @@ Blockly.Blocks['control_case'] = {
 
 Blockly.Blocks['case_incaseof'] = {
     init: function() {
-        this.setColour(180);
+        this.setColour('%{BKY_LOGIC_HUE}');
         this.appendDummyInput()
             .appendField(Blockly.Translate('logic_switch_case_of'));
         this.setPreviousStatement(true);

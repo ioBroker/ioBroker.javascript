@@ -807,7 +807,6 @@ Blockly.System.blocks['get_value_var'] =
 
 Blockly.Blocks['get_value_var'] = {
     init: function() {
-
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('get_value_val'),      'val'],
@@ -866,7 +865,6 @@ Blockly.System.blocks['get_value_async'] =
 
 Blockly.Blocks['get_value_async'] = {
     init: function() {
-
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('get_value_val'),    'val'],
@@ -1081,7 +1079,6 @@ Blockly.System.blocks['selector'] =
 
 Blockly.Blocks['selector'] = {
     init: function() {
-
         this.appendDummyInput()
             .appendField(Blockly.Translate('selector') + ' $(');
 

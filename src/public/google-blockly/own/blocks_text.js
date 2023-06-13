@@ -19,6 +19,5 @@ Blockly.Blocks['text_newline'] = {
 
 Blockly.JavaScript['text_newline'] = function(block) {
     const dropdown_type = block.getFieldValue('Type');
-
     return ['\'' + dropdown_type + '\'', Blockly.JavaScript.ORDER_ATOMIC];
 };
