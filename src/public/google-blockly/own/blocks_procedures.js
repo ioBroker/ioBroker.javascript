@@ -16,7 +16,39 @@ if (Blockly.Blocks['procedures_ifreturn'].FUNCTION_TYPES.indexOf('procedures_def
 Blockly.Procedures.allProceduresNew = function(root) {
     const result = Blockly.Procedures.allProcedures(root);
 
-    return result;
+    const proceduresCustomNoReturn = root
+        .getProcedureMap()
+        .getProcedures()
+        .filter((p) => !!p.getReturnTypes())
+        .map((p) => [
+            p.getName(),
+            p.getParameters().map((pa) => pa.getName()),
+            true,
+        ]);
+
+    root.getBlocksByType('procedures_defcustomnoreturn', false).forEach((b) => {
+        if (!Blockly.Procedures.isProcedureBlock(b)) {
+            proceduresCustomNoReturn.push(b.getProcedureDef());
+        }
+    });
+
+    const proceduresCustomReturn = root
+        .getProcedureMap()
+        .getProcedures()
+        .filter((p) => !!p.getReturnTypes())
+        .map((p) => [
+            p.getName(),
+            p.getParameters().map((pa) => pa.getName()),
+            true,
+        ]);
+
+    root.getBlocksByType('procedures_defcustomreturn', false).forEach((b) => {
+        if (!Blockly.Procedures.isProcedureBlock(b)) {
+            proceduresCustomReturn.push(b.getProcedureDef());
+        }
+    });
+
+    return result.concat([proceduresCustomNoReturn, proceduresCustomReturn]);
 };
 
 /**
@@ -133,7 +165,7 @@ Blockly.Procedures.flyoutCategoryNew = function(workspace) {
     populateProcedures(tuple[1], 'procedures_callreturn');
     populateProcedures(tuple[2], 'procedures_callcustomnoreturn');
     populateProcedures(tuple[3], 'procedures_callcustomreturn');
-    
+
     return xmlList;
 };
 
