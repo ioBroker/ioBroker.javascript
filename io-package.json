@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "7.0.10",
+    "version": "7.1.0",
     "news": {
+      "7.1.0": {
+        "en": "Added new blocks: new line, random number, value between min and max, if empty\nUpdated blockly core to v9.3.3\ncorrected blockly",
+        "de": "Neue Blöcke hinzugefügt: neue Zeile, Zufallszahl, Wert zwischen min und max, wenn leer\nAktualisierter Block-Kern auf v9.3.3\nblockweise korrigiert",
+        "ru": "Добавлены новые блоки: новая строка, случайный номер, значение между мином и макс, если пусто\nОбновлен блокно ядро для v9.3.3\nисправлено блокно",
+        "pt": "Adicionado novos blocos: nova linha, número aleatório, valor entre min e max, se vazio\nNúcleo bloqueado atualizado para v9.3.3\ncorrigido em bloco",
+        "nl": "Nieuwe blokken toegevoegd: nieuwe lijn, willekeurig nummer, waarde tussen min en max, als leeg\nQuality over Quantity (QoQ) Releases Vertaling:\nvertaling:",
+        "fr": "Ajout de nouveaux blocs: nouvelle ligne, nombre aléatoire, valeur entre min et max, si vide\nMise à jour du noyau bloqué vers v9.3.3\ncorrigée",
+        "it": "Aggiunto nuovi blocchi: nuova linea, numero casuale, valore tra min e max, se vuoto\nAggiornato core blockly a v9.3.3\ncorretto blocco",
+        "es": "Nuevos bloques añadidos: nueva línea, número aleatorio, valor entre min y max, si vacío\nActualizado núcleo de bloque a v9.3.3\ncorregido bloqueado",
+        "pl": "Dodać nowe bloki: nowa linia, liczba losowa, wartość pomiędzy minem a maxą, jeśli pusta linia\nZmniejszenie bloku do v9.3\npoprawiony blok",
+        "uk": "Додано нові блоки: новий рядок, випадковий номер, значення між хв і макс, якщо порожні\nОновлено блочно ядро v9.3.3\nвиправлений блокнот",
+        "zh-cn": "增加新的阻碍因素:如空洞,新线、随机编号、矿金和玉米之间价值。\n第9.3.3号核心内容\n更正"
+      },
       "7.0.8": {
         "en": "Corrected trigger block\nCorrected typescript V5\ncoffescript was degraded to the previous version\ntried to correct vscode font\nreverted blockly to the previous version",
         "de": "Korrigierter Triggerblock\nKorrigierte Schrift V5\ncoffescript wurde auf die vorherige version degradiert\nversucht, vscode schrift zu korrigieren\nblockweise auf die vorherige version umgestellt",
