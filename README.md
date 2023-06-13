@@ -46,6 +46,9 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) corrected blockly
+
 ### 7.0.8 (2023-06-12)
 * (klein0r) Corrected trigger block
 * (klein0r) Corrected typescript V5

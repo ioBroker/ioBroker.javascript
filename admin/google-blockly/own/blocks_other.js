@@ -6,18 +6,10 @@ if (typeof goog !== 'undefined') {
     goog.require('Blockly.JavaScript');
 }
 
-Blockly.CustomBlocks = Blockly.CustomBlocks || [];
-Blockly.CustomBlocks.push('Other');
+// --- logic between --------------------------------------------------
 
-Blockly.Other = {
-    HUE: 210,
-    blocks: {}
-};
-
-// --- other between --------------------------------------------------
-
-Blockly.Other.blocks['other_between'] =
-    '<block type="other_between">'
+Blockly.System.blocks['logic_between'] =
+    '<block type="logic_between">'
     +'    <value name="MIN">'
     +'        <block type="math_number">'
     +'            <field name="NUM">0</field>'
@@ -37,7 +29,7 @@ Blockly.Other.blocks['other_between'] =
     +'    </value>'
     +'</block>';
 
-Blockly.Blocks['other_between'] = {
+Blockly.Blocks['logic_between'] = {
     init: function() {
         this.appendValueInput('MIN')
             .setCheck('Number');
@@ -51,12 +43,12 @@ Blockly.Blocks['other_between'] = {
         this.setInputsInline(true);
         this.setOutput(true, 'Boolean');
         this.setColour(Blockly.Constants.Logic.HUE);
-        this.setTooltip(Blockly.Translate('other_between_tooltip'));
-        this.setHelpUrl(Blockly.Translate('other_between_helpurl'));
+        this.setTooltip(Blockly.Translate('logic_between_tooltip'));
+        this.setHelpUrl(Blockly.Translate('logic_between_helpurl'));
     }
 }
 
-Blockly.JavaScript['other_between'] = function(block) {
+Blockly.JavaScript['logic_between'] = function(block) {
     const min = Blockly.JavaScript.valueToCode(block, 'MIN', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
     const max = Blockly.JavaScript.valueToCode(block, 'MAX', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
@@ -67,35 +59,35 @@ Blockly.JavaScript['other_between'] = function(block) {
     return [code, Blockly.JavaScript.ORDER_LOGICAL_AND];
 }
 
-// --- other_ifempty --------------------------------------------------
-Blockly.Other.blocks['other_ifempty'] =
-    '<block type="other_ifempty">'
+// --- logic_ifempty --------------------------------------------------
+Blockly.System.blocks['logic_ifempty'] =
+    '<block type="logic_ifempty">'
     +'    <value name="VALUE">'
     +'    </value>'
     +'    <value name="DEFLT">'
     +'    </value>'
     +'</block>';
 
-Blockly.Blocks['other_ifempty'] = {
+Blockly.Blocks['logic_ifempty'] = {
   init: function() {
     this.appendValueInput('VALUE')
         .setCheck(null)
         .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField(Blockly.Translate('other_ifempty'));
+        .appendField(Blockly.Translate('logic_ifempty'));
     this.appendValueInput('DEFLT')
         .setCheck(null)
         .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField(Blockly.Translate('other_ifempty_then'));
+        .appendField(Blockly.Translate('logic_ifempty_then'));
 
     this.setOutput(true, null);
     this.setInputsInline(true);
     this.setColour(Blockly.Constants.Logic.HUE);
-    this.setTooltip(Blockly.Translate('other_ifempty_tooltip'));
-    this.setHelpUrl(Blockly.Translate('other_ifempty_helpurl'));
+    this.setTooltip(Blockly.Translate('logic_ifempty_tooltip'));
+    this.setHelpUrl(Blockly.Translate('logic_ifempty_helpurl'));
   }
 }
 
-Blockly.JavaScript['other_ifempty'] = function(block) {
+Blockly.JavaScript['logic_ifempty'] = function(block) {
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
     const deflt = Blockly.JavaScript.valueToCode(block, 'DEFLT', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
 
