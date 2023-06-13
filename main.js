@@ -1367,11 +1367,11 @@ function timeSchedule(adapter, context) {
             hours -= 12;
         }
     }
-    if (context.timeSettings.leadingZeros && hours < 10) {
-        hours = `0${hours}`;
+    if (context.timeSettings.leadingZeros) {
+        hours = hours.toString().padStart(2, '0');
     }
     if (minutes < 10) {
-        minutes = `0${minutes}`;
+        minutes = minutes.toString().padStart(2, '0');
     }
     adapter.setState('variables.dayTime', `${hours}:${minutes}`, true);
     now.setMinutes(now.getMinutes() + 1);
@@ -1477,8 +1477,8 @@ function tsLog(msg, sev) {
         console.log(`[${sev.toUpperCase()}] ${msg}`);
     }
 }
-// Due to an npm bug, virtual-tsc may be hoisted to the top level node_modules but
-// typescript may still be in the adapter level (https://npm.community/t/packages-with-peerdependencies-are-incorrectly-hoisted/4794)
+// Due to a npm bug, virtual-tsc may be hoisted to the top level node_modules but
+// typescript may still be in the adapter level (https://npm.community/t/packages-with-peerdependencies-are-incorrectly-hoisted/4794),
 // so we need to tell virtual-tsc where typescript is
 tsc.setTypeScriptResolveOptions({
     paths: [require.resolve('typescript')],
@@ -2184,6 +2184,8 @@ async function getData(callback) {
 
     if (!adapter.config.subscribe) {
         await adapter.subscribeForeignStatesAsync('*');
+    } else {
+        await adapter.subscribeStatesAsync('debug.to');
     }
 
     adapter.log.info('requesting all states');
@@ -2331,7 +2333,7 @@ function debugStart(data) {
     }
 
     debugState.started = Date.now();
-    // stop script if it's running
+    // stop the script if it's running
     debugDisableScript(data.scriptName)
         .then(() => debugStop())
         .then(() => {
