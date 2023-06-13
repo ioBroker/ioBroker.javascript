@@ -132,6 +132,8 @@
   "get_value_async": "Ottieni valore statale",
   "field_oid": "Seleziona OID",
   "field_oid_OID": "ID oggetto",
+  "field_oid_OID_meta": "ID oggetto (meta)",
+  "field_oid_OID_script": "ID oggetto (script)",
   "field_oid_tooltip": "Seleziona ID oggetto con finestra di dialogo",
   "get_attr": "Ottieni attributo",
   "get_attr_path": "Attributo",
@@ -358,5 +360,11 @@
   "onMessage": "Evento: messaggio ricevuto",
   "onMessage_message": "messaggio",
   "onMessage_tooltip": "messaggio",
-  "onMessage_help": "onMessage"
+  "onMessage_help": "onMessage",
+  "logic_between_min": "Min",
+  "logic_between_max": "Max",
+  "logic_between_tooltip": "se un numero compreso tra min e max",
+  "logic_ifempty": "se vuoto",
+  "logic_ifempty_then": "allora",
+  "logic_ifempty_tooltip": "controlla se vuoto"
 }

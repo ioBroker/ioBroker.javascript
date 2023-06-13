@@ -1,33 +1,10 @@
 'use strict';
 
 if (typeof goog !== 'undefined') {
-    goog.provide('Blockly.JavaScript.Other');
-
     goog.require('Blockly.JavaScript');
 }
 
 // --- logic between --------------------------------------------------
-
-Blockly.System.blocks['logic_between'] =
-    '<block type="logic_between">'
-    +'    <value name="MIN">'
-    +'        <block type="math_number">'
-    +'            <field name="NUM">0</field>'
-    +'        </block>'
-    +'    </value>'
-    +'    <field name="MIN_OPERATOR">LE</field>'
-    +'    <value name="VALUE">'
-    +'        <shadow type="math_number">'
-    +'            <field name="NUM">42</field>'
-    +'        </shadow>'
-    +'    </value>'
-    +'    <field name="MAX_OPERATOR">LE</field>'
-    +'    <value name="MAX">'
-    +'        <block type="math_number">'
-    +'            <field name="NUM">100</field>'
-    +'        </block>'
-    +'    </value>'
-    +'</block>';
 
 Blockly.Blocks['logic_between'] = {
     init: function() {
@@ -39,12 +16,12 @@ Blockly.Blocks['logic_between'] = {
         this.appendValueInput('MAX')
             .setCheck('Number')
             .appendField(new Blockly.FieldDropdown([['<', 'LT'], ['≤', 'LE']]), 'MAX_OPERATOR');
-    
+
         this.setInputsInline(true);
         this.setOutput(true, 'Boolean');
-        this.setColour(Blockly.Constants.Logic.HUE);
+        this.setColour("%{BKY_LOGIC_HUE}");
         this.setTooltip(Blockly.Translate('logic_between_tooltip'));
-        this.setHelpUrl(Blockly.Translate('logic_between_helpurl'));
+        // this.setHelpUrl(Blockly.Translate('logic_between_helpurl'));
     }
 }
 
@@ -55,18 +32,10 @@ Blockly.JavaScript['logic_between'] = function(block) {
     const minOperator = block.getFieldValue('MIN_OPERATOR') === 'LT' ? '<' : '<=';
     const maxOperator = block.getFieldValue('MAX_OPERATOR') === 'LT' ? '<' : '<=';
 
-    const code = `${min} ${minOperator} ${value} && ${value} ${maxOperator} ${max}`;
-    return [code, Blockly.JavaScript.ORDER_LOGICAL_AND];
+    return [`${min} ${minOperator} ${value} && ${value} ${maxOperator} ${max}`, Blockly.JavaScript.ORDER_LOGICAL_AND];
 }
 
-// --- logic_ifempty --------------------------------------------------
-Blockly.System.blocks['logic_ifempty'] =
-    '<block type="logic_ifempty">'
-    +'    <value name="VALUE">'
-    +'    </value>'
-    +'    <value name="DEFLT">'
-    +'    </value>'
-    +'</block>';
+// --- logic ifempty --------------------------------------------------
 
 Blockly.Blocks['logic_ifempty'] = {
   init: function() {
@@ -81,9 +50,9 @@ Blockly.Blocks['logic_ifempty'] = {
 
     this.setOutput(true, null);
     this.setInputsInline(true);
-    this.setColour(Blockly.Constants.Logic.HUE);
+    this.setColour("%{BKY_LOGIC_HUE}");
     this.setTooltip(Blockly.Translate('logic_ifempty_tooltip'));
-    this.setHelpUrl(Blockly.Translate('logic_ifempty_helpurl'));
+    // this.setHelpUrl(Blockly.Translate('logic_ifempty_helpurl'));
   }
 }
 

@@ -132,6 +132,8 @@
   "get_value_async": "获取状态的值",
   "field_oid": "选择对象ID",
   "field_oid_OID": "获取对象ID",
+  "field_oid_OID_meta": "获取对象ID (meta)",
+  "field_oid_OID_script": "获取对象ID (script)",
   "field_oid_tooltip": "使用对话框选择对象ID",
   "get_attr": "获取属性",
   "get_attr_path": "获取",
@@ -358,5 +360,11 @@
   "onMessage": "活动:收到信息",
   "onMessage_message": "消息",
   "onMessage_tooltip": "消息",
-  "onMessage_help": "onMessage"
+  "onMessage_help": "onMessage",
+  "logic_between_min": "明 明",
+  "logic_between_max": "Max",
+  "logic_between_tooltip": "如果最小值和最大值之间的数字",
+  "logic_ifempty": "空",
+  "logic_ifempty_then": "然后",
+  "logic_ifempty_tooltip": "检查是否为空"
 }

@@ -716,11 +716,13 @@ gulp.task('blocklyJson2words', done => {
         }
     }
 
-    let text = 'if (typeof Blockly === \'undefined\') {\n';
-    text += '    var Blockly = {};\n';
-    text += '}\n';
-    text += '// translations\n';
-    text += 'Blockly.Words = {};\n';
+    let text = `if (typeof Blockly === 'undefined') {
+    var Blockly = {};
+}
+// translations
+Blockly.Words = {};
+`;
+
     const data = bigOne;
     let group = '';
     let block = '';
@@ -752,22 +754,32 @@ gulp.task('blocklyJson2words', done => {
                 line = line.trim();
                 line = line.substring(0, line.length - 1);
             }
-            text += line + '};\n';
+            text += `${line}};\n`;
         }
     }
 
-    text += '\nBlockly.Translate = function (word, lang) {\n' +
-        '    lang = lang || systemLang;\n' +
-        '    if (Blockly.Words && Blockly.Words[word]) {\n' +
-        '        return Blockly.Words[word][lang] || Blockly.Words[word].en;\n' +
-        '    } else {\n' +
-        '        return word;\n' +
-        '    }\n' +
-        '};\n';
+    text += `
+function getHelp(word) {
+    return 'https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#' + Blockly.Words[word][systemLang];
+}
+`;
 
-    text += '\nif (typeof module !== \'undefined\' && typeof module.parent !== \'undefined\') {\n' +
-        '    module.exports = Blockly;\n' +
-        '}';
+    text += `
+Blockly.Translate = function (word, lang) {
+    lang = lang || systemLang;
+    if (Blockly.Words && Blockly.Words[word]) {
+        return Blockly.Words[word][lang] || Blockly.Words[word].en;
+    } else {
+        return word;
+    }
+};
+`;
+
+    text += `
+if (typeof module !== 'undefined' && typeof module.parent !== 'undefined') {
+    module.exports = Blockly;
+}
+`;
     fs.writeFileSync('./src/public/google-blockly/own/blocks_words.js', text);
 
     done();

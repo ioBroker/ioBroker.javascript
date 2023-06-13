@@ -22,19 +22,6 @@
     ],
     "version": "7.0.9",
     "news": {
-      "7.0.9": {
-        "en": "corrected blockly",
-        "de": "blockweise korrigiert",
-        "ru": "исправлено блокно",
-        "pt": "corrigido em bloco",
-        "nl": "vertaling:",
-        "fr": "corrigée",
-        "it": "corretto blocco",
-        "es": "corregido bloqueado",
-        "pl": "poprawiony blok",
-        "uk": "виправлений блокнот",
-        "zh-cn": "更正"
-      },
       "7.0.8": {
         "en": "Corrected trigger block\nCorrected typescript V5\ncoffescript was degraded to the previous version\ntried to correct vscode font\nreverted blockly to the previous version",
         "de": "Korrigierter Triggerblock\nKorrigierte Schrift V5\ncoffescript wurde auf die vorherige version degradiert\nversucht, vscode schrift zu korrigieren\nblockweise auf die vorherige version umgestellt",

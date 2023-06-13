@@ -9,10 +9,6 @@ if (typeof goog !== 'undefined') {
 Blockly.CustomBlocks = Blockly.CustomBlocks || [];
 Blockly.CustomBlocks.push('System');
 
-function getHelp(word) {
-    return 'https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#' + Blockly.Words[word][systemLang];
-}
-
 Blockly.System = {
     HUE: 210,
     blocks: {}

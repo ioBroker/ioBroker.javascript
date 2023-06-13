@@ -132,6 +132,8 @@
   "get_value_async": "Отримати державне значення",
   "field_oid": "Виберіть OID",
   "field_oid_OID": "ID об'єкта",
+  "field_oid_OID_meta": "ID об'єкта (meta)",
+  "field_oid_OID_script": "ID об'єкта (script)",
   "field_oid_tooltip": "Виберіть ідентифікатор об’єкта за допомогою діалогового вікна",
   "get_attr": "Отримати атрибут",
   "get_attr_path": "Атрибут",
@@ -358,5 +360,11 @@
   "onMessage": "Подія: Отримано повідомлення",
   "onMessage_message": "повідомлення",
   "onMessage_tooltip": "повідомлення",
-  "onMessage_help": "onMessage"
+  "onMessage_help": "onMessage",
+  "logic_between_min": "Мінуси",
+  "logic_between_max": "Макс",
+  "logic_between_tooltip": "якщо число між min і max",
+  "logic_ifempty": "якщо порожній",
+  "logic_ifempty_then": "потім",
+  "logic_ifempty_tooltip": "перевірити, чи порожній"
 }
