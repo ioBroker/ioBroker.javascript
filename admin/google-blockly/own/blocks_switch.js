@@ -2,17 +2,6 @@
 // I really tried to get the license conditions from authors, but no luck :(
 // Many thanks to Florian Pechwitz <florian.Pechwitz@itizzimo.com> for the code
 
-Blockly.System.blocks['logic_switch_case'] =
-    '<block type="logic_switch_case">'
-    + '     <value name="CONDITION">'
-    + '     </value>'
-    + '     <value name="CASECONDITION0">'
-    + '     </value>'
-    + '     <value name="CASE0">'
-    + '     </value>'
-    + '     <mutation with_statement="false" items="parameter1"></mutation>'
-    + '</block>';
-
 Blockly.Blocks['logic_switch_case'] = {
     init: function() {
         this.setColour('%{BKY_LOGIC_HUE}');
@@ -190,7 +179,7 @@ Blockly.Blocks['case_incaseof'] = {
 
 Blockly.Blocks['case_default'] = {
     init: function() {
-        this.setColour(180);
+        this.setColour('%{BKY_LOGIC_HUE}');
         this.appendDummyInput()
             .appendField('default');
         this.setPreviousStatement(true);

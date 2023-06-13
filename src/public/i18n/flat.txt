@@ -335,9 +335,9 @@ logic_switch_case
 logic_switch_case_is
 logic_switch_case_of
 logic_switch_do
-logic_switch_tootltip
-logic_switch_default_tootltip
-logic_switch_control_case_tootltip
+logic_switch_tooltip
+logic_switch_default_tooltip
+logic_switch_control_case_tooltip
 onFile
 onFile_file
 onFile_withFile
