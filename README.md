@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.0.9 (2023-06-13)
 * (bluefox) corrected blockly
 
 ### 7.0.8 (2023-06-12)
@@ -67,17 +67,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### 7.0.3 (2023-03-16)
 * (bluefox) made the editor visible in full height
 * (paul53) small fixes on blockly and translations are made
-
-### 7.0.2 (2023-03-13)
-* (bluefox) Breaking change: all usages of `jsonata` must be rewritten to use promises.
-* (bluefox) Breaking change: all blockly scripts with `jsonata` blocks must be changed (just move some blocks) and saved anew.
-* (bluefox) Extended `createState` command with possibility to create aliases. 
-* (bluefox) Corrected CRON card in rules 
-* (bluefox) Added additional options to show the attributes of object in blockly
-* (bluefox) Corrected `existsStateAsync` function
-* (bluefox) Added `isDaylightSaving` state to indicate day saving time
-* (AlCalzone) Pinned `@types/node` to v14
-* (bluefox) Added list of astrological events in GUI
 
 ## License
 The MIT License (MIT)

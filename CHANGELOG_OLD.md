@@ -1,4 +1,15 @@
 The newest change log is in README.md
+## 7.0.2 (2023-03-13)
+* (bluefox) Breaking change: all usages of `jsonata` must be rewritten to use promises.
+* (bluefox) Breaking change: all blockly scripts with `jsonata` blocks must be changed (just move some blocks) and saved anew.
+* (bluefox) Extended `createState` command with possibility to create aliases. 
+* (bluefox) Corrected CRON card in rules 
+* (bluefox) Added additional options to show the attributes of object in blockly
+* (bluefox) Corrected `existsStateAsync` function
+* (bluefox) Added `isDaylightSaving` state to indicate day saving time
+* (AlCalzone) Pinned `@types/node` to v14
+* (bluefox) Added list of astrological events in GUI
+
 ## 6.2.0 (2023-02-17)
 * (Apollon77) Prevented duplicate schedule triggering with inaccurate RTC clocks
 * (Apollon77) Fixed sendToAsync and sendToHostAsync
