@@ -438,5 +438,5 @@ Blockly.JavaScript['sendto_otherscript'] = function(block) {
 
     text += '}';
 
-    return 'sendTo("javascript' + dropdown_instance + '", "toScript", ' + text + ');\n';
+    return `sendTo('javascript${dropdown_instance}', 'toScript', ${text});\n`;
 };
