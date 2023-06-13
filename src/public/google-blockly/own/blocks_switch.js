@@ -190,7 +190,7 @@ Blockly.Blocks['case_incaseof'] = {
 
 Blockly.Blocks['case_default'] = {
     init: function() {
-        this.setColour(180);
+        this.setColour('%{BKY_LOGIC_HUE}');
         this.appendDummyInput()
             .appendField('default');
         this.setPreviousStatement(true);
