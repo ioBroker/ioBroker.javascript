@@ -379,7 +379,6 @@ Blockly.Blocks['on_source'] = {
      * @this Blockly.Block
      */
     init: function() {
-
         this.appendDummyInput()
             .appendField('↪');
 
