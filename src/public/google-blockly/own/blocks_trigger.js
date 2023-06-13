@@ -678,7 +678,7 @@ Blockly.Blocks['schedule_create'] = {
     },
     getVarModels: function () {
         const name = this.getFieldValue('NAME');
-        return [{getId: function () {return name;}, name: name, type: 'cron'}];
+        return [{ getId: () => { return name; }, name: name, type: 'cron' }];
     }
 };
 

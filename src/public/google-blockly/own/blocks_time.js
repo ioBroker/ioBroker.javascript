@@ -486,5 +486,6 @@ Blockly.Blocks['time_astro'] = {
 Blockly.JavaScript['time_astro'] = function(block) {
     const type    = block.getFieldValue('TYPE');
     const offset  = parseFloat(block.getFieldValue('OFFSET'));
-    return ['getAstroDate("' + type + '", undefined, ' + offset + ')', Blockly.JavaScript.ORDER_ATOMIC];
+
+    return [`getAstroDate('${type}', undefined, ${offset})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
