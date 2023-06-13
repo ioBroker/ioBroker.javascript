@@ -131,13 +131,15 @@ class ScriptEditor extends React.Component {
         this.editor.focus();
         this.editor.setValue(this.originalCode);
         if (this.props.onToggleBreakpoint) {
+            // add onMouseDown listener to toggle breakpoints
             this.editor.onMouseDown(e => {
                 if (e.target.detail && e.target.detail.glyphMarginLeft !== undefined) {
                     this.props.onToggleBreakpoint(e.target.position.lineNumber - 1);
                 }
             });
         } else {
-            this.editor.onMouseDown(null);
+            // remove onMouseDown listener
+            this.editor.onMouseDown(() => { /* nop */ });
         }
     }
 

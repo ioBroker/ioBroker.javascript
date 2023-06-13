@@ -508,6 +508,9 @@ class BlocklyEditor extends React.Component {
             blocklyWorkspace: this.blocklyWorkspace
         };
 
+        // Workaround: Replace procedure category flyout
+        this.blocklyWorkspace.registerToolboxCategoryCallback('PROCEDURE', this.Blockly.Procedures.flyoutCategoryNew);
+
         // Listen to events on master workspace.
         this.blocklyWorkspace.addChangeListener(masterEvent => {
             if (this.someSelected && Date.now() - this.someSelectedTime > 500) {
