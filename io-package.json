@@ -22,19 +22,6 @@
     ],
     "version": "7.0.10",
     "news": {
-      "7.0.10": {
-        "en": "Added new blocks: new line, random number, value between min and max, if empty\ncorrected blockly",
-        "de": "Neue Blöcke hinzugefügt: neue Zeile, Zufallszahl, Wert zwischen min und max, wenn leer\nblockweise korrigiert",
-        "ru": "Добавлены новые блоки: новая строка, случайный номер, значение между мином и макс, если пусто\nисправлено блокно",
-        "pt": "Adicionado novos blocos: nova linha, número aleatório, valor entre min e max, se vazio\ncorrigido em bloco",
-        "nl": "Nieuwe blokken toegevoegd: nieuwe lijn, willekeurig nummer, waarde tussen min en max, als leeg\nvertaling:",
-        "fr": "Ajout de nouveaux blocs: nouvelle ligne, nombre aléatoire, valeur entre min et max, si vide\ncorrigée",
-        "it": "Aggiunto nuovi blocchi: nuova linea, numero casuale, valore tra min e max, se vuoto\ncorretto blocco",
-        "es": "Nuevos bloques añadidos: nueva línea, número aleatorio, valor entre min y max, si vacío\ncorregido bloqueado",
-        "pl": "Dodać nowe bloki: nowa linia, liczba losowa, wartość pomiędzy minem a maxą, jeśli pusta linia\npoprawiony blok",
-        "uk": "Додано нові блоки: новий рядок, випадковий номер, значення між хв і макс, якщо порожні\nвиправлений блокнот",
-        "zh-cn": "增加新的阻碍因素:如空洞,新线、随机编号、矿金和玉米之间价值。\n更正"
-      },
       "7.0.8": {
         "en": "Corrected trigger block\nCorrected typescript V5\ncoffescript was degraded to the previous version\ntried to correct vscode font\nreverted blockly to the previous version",
         "de": "Korrigierter Triggerblock\nKorrigierte Schrift V5\ncoffescript wurde auf die vorherige version degradiert\nversucht, vscode schrift zu korrigieren\nblockweise auf die vorherige version umgestellt",

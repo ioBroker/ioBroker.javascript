@@ -46,8 +46,9 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.0.10 (2023-06-13)
+### **WORK IN PROGRESS**
 * (klein0r) Added new blocks: new line, random number, value between min and max, if empty
+* (klein0r) Updated blockly core to v9.3.3
 * (bluefox) corrected blockly
 
 ### 7.0.8 (2023-06-12)
