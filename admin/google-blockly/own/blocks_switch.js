@@ -14,7 +14,7 @@ Blockly.Blocks['logic_switch_case'] = {
         this.appendStatementInput('CASE0')
             .appendField(Blockly.Translate('logic_switch_do'));
         this.setMutator(new Blockly.Mutator(['case_incaseof', 'case_default']));
-        this.setTooltip(Blockly.Translate('logic_switch_tootltip'));
+        this.setTooltip(Blockly.Translate('logic_switch_tooltip'));
         this.caseCount_ = 0;
         this.defaultCount_ = 0;
     },
@@ -160,7 +160,7 @@ Blockly.Blocks['control_case'] = {
         this.appendDummyInput()
             .appendField(Blockly.Translate('logic_switch_case_is'));
         this.appendStatementInput('STACK');
-        this.setTooltip(Blockly.Translate('logic_switch_control_case_tootltip'));
+        this.setTooltip(Blockly.Translate('logic_switch_control_case_tooltip'));
         this.contextMenu = false;
     }
 };
@@ -172,7 +172,7 @@ Blockly.Blocks['case_incaseof'] = {
             .appendField(Blockly.Translate('logic_switch_case_of'));
         this.setPreviousStatement(true);
         this.setNextStatement(true);
-        this.setTooltip(Blockly.Translate('logic_switch_case_incaseof_tootltip'));
+        this.setTooltip(Blockly.Translate('logic_switch_case_incaseof_tooltip'));
         this.contextMenu = false;
     }
 };
@@ -184,7 +184,7 @@ Blockly.Blocks['case_default'] = {
             .appendField('default');
         this.setPreviousStatement(true);
         this.setNextStatement(false);
-        this.setTooltip(Blockly.Translate('logic_switch_default_tootltip'));
+        this.setTooltip(Blockly.Translate('logic_switch_default_tooltip'));
         this.contextMenu = false;
     }
 };
