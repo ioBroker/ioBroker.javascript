@@ -132,6 +132,8 @@
   "get_value_async": "Krijg statuswaarde",
   "field_oid": "Selecteer OID",
   "field_oid_OID": "Object ID",
+  "field_oid_OID_meta": "Object ID (meta)",
+  "field_oid_OID_script": "Object ID (script)",
   "field_oid_tooltip": "Selecteer object-ID met dialoogvenster",
   "get_attr": "Attribuut ophalen",
   "get_attr_path": "Attribuut",
@@ -358,5 +360,11 @@
   "onMessage": "Gebeurtenis: bericht ontvangen",
   "onMessage_message": "bericht",
   "onMessage_tooltip": "bericht",
-  "onMessage_help": "onMessage"
+  "onMessage_help": "onMessage",
+  "logic_between_min": "Min",
+  "logic_between_max": "Max",
+  "logic_between_tooltip": "als een getal tussen min en max",
+  "logic_ifempty": "_",
+  "logic_ifempty_then": "dan",
+  "logic_ifempty_tooltip": "controleer of leeg"
 }

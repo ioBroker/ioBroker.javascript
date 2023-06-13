@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "7.0.8",
+    "version": "7.0.10",
     "news": {
+      "7.0.10": {
+        "en": "Added new blocks: new line, random number, value between min and max, if empty\ncorrected blockly",
+        "de": "Neue Blöcke hinzugefügt: neue Zeile, Zufallszahl, Wert zwischen min und max, wenn leer\nblockweise korrigiert",
+        "ru": "Добавлены новые блоки: новая строка, случайный номер, значение между мином и макс, если пусто\nисправлено блокно",
+        "pt": "Adicionado novos blocos: nova linha, número aleatório, valor entre min e max, se vazio\ncorrigido em bloco",
+        "nl": "Nieuwe blokken toegevoegd: nieuwe lijn, willekeurig nummer, waarde tussen min en max, als leeg\nvertaling:",
+        "fr": "Ajout de nouveaux blocs: nouvelle ligne, nombre aléatoire, valeur entre min et max, si vide\ncorrigée",
+        "it": "Aggiunto nuovi blocchi: nuova linea, numero casuale, valore tra min e max, se vuoto\ncorretto blocco",
+        "es": "Nuevos bloques añadidos: nueva línea, número aleatorio, valor entre min y max, si vacío\ncorregido bloqueado",
+        "pl": "Dodać nowe bloki: nowa linia, liczba losowa, wartość pomiędzy minem a maxą, jeśli pusta linia\npoprawiony blok",
+        "uk": "Додано нові блоки: новий рядок, випадковий номер, значення між хв і макс, якщо порожні\nвиправлений блокнот",
+        "zh-cn": "增加新的阻碍因素:如空洞,新线、随机编号、矿金和玉米之间价值。\n更正"
+      },
       "7.0.8": {
         "en": "Corrected trigger block\nCorrected typescript V5\ncoffescript was degraded to the previous version\ntried to correct vscode font\nreverted blockly to the previous version",
         "de": "Korrigierter Triggerblock\nKorrigierte Schrift V5\ncoffescript wurde auf die vorherige version degradiert\nversucht, vscode schrift zu korrigieren\nblockweise auf die vorherige version umgestellt",
@@ -99,19 +112,6 @@
         "pl": "wydawca widoczny jest w pełnym wysokości\nwykonane są małe rozwiązania na temat bloku i tłumaczenia",
         "uk": "зробив редактор видимим у повній висоті\nневеликі застібки на блокнотах і перекладах",
         "zh-cn": "编辑的高度可见\n零星和翻译的小配件"
-      },
-      "7.0.2": {
-        "en": "Breaking change: all usages of `jsonata` must be rewritten to use promises.\nBreaking change: all blockly scripts with `jsonata` blocks must de changed (just move some blocks) and saved anew.\nExtended `createState` command with possibility to create aliases. \nCorrected CRON card in rules \nAdded additional options to show the attributes of object in blockly\nCorrected `existsStateAsync` function\nAdded `isDaylightSaving` state to indicate day saving time\nPinned `@types/node` to v14\nAdded list of astrological events in GUI",
-        "de": "Breaking change: Alle Verwendungen von jsonata müssen neu geschrieben werden, um Versprechen zu verwenden.\nWechseln: Alle blockweise Skripte mit jsonata Blöcken müssen sich ändern (nur einige Blöcke verschieben) und neu gespeichert.\nErweiterte createState-Befehl mit der Möglichkeit, Aliases zu erstellen.\nKorrigierte CRON-Karte in Regeln\nZusätzliche Optionen hinzugefügt, um die Attribute des Objekts blockweise anzuzeigen\nKorrigiert existiert StateAsync Funktion\nHinzugefügt istDaylight Sparen Sie Zustand, um die Zeit zu deuten\nPinned @types/node to v14\nListe der astrologischen Ereignisse in GUI hinzugefügt",
-        "ru": "Перерыв изменения: все использования jsonata должны быть переписаны для использования обещаний.\nПерерыв изменения: все блокно скрипты с блоками jsonata должны быть изменены (просто переместить некоторые блоки) и сохранены anew.\nРасширенная команда CreateState с возможностью создания псевдонимов.\nИсправлена карта CRON в правилах\nДобавлены дополнительные опции, чтобы показать атрибуты объекта в блокно\nИсправлено существует Функция StateAsync\nДобавлено isDaylight Экономия состояния для обозначения дневного экономия времени\nПинованные @types/node в v14\nДобавлен список астрологических событий в GUI",
-        "pt": "Mudança de quebra: todos os usos de jsonata devem ser reescritos para usar promessas.\nMudança de quebra: todos os scripts bloqueados com blocos jsonata devem de mudar (apenas mover alguns blocos) e salvo de novo.\nComando createState estendido com possibilidade de criar aliases.\nCartão CRON corrigido em regras\nAdicionado opções adicionais para mostrar os atributos de objeto em blockly\nExiste uma existência correta Função StateAsync\nAdicionado éDaylight Salvar estado para indicar o tempo de economia de dia\nPinned @types/node to v14\nLista adicionada de eventos astrológicos em GUI",
-        "nl": "Verandering, alle gebruiken van Jsonata moeten herschreven zijn om beloftes te gebruiken.\nVerandering: alle scripts met Jsonata blokken moeten veranderd zijn en een nieuw leven hebben gered.\nVerlengd creëerde het commando met mogelijkheid om aliassen te creëren.\nVertaling:\nToegevoegd extra opties om de bijdragen van objecten te laten zien in blokken\nGecorrigeerd bestaan Staatszaken\nToegevoegd is Daylight Het redden van de staat wijzen op dag redden\nVertaling:\nVertaling:",
-        "fr": "Changement de rupture : tous les usages de jsonata doivent être réécrits pour utiliser les promesses.\nChangement de rupture : tous les scripts bloqués avec des blocs de jsonata doivent changer (juste déplacer quelques blocs) et sauvegarder à nouveau.\nExtended createState command with possibility to create aliases.\nCarte CRON corrigée dans les règles\nAjout d'options supplémentaires pour afficher les attributs de l'objet en bloc\nCorrection Fonction StateAsync\nAjouté isDaylight État d ' épargne pour indiquer le temps d ' épargne\nPinned @types/node to v14\nAjout de la liste des événements astrologiques dans GUI",
-        "it": "Cambiamento di rottura: tutti gli usi di jsonata devono essere riscritti per usare le promesse.\nCambiamento di rottura: tutti gli script bloccati con blocchi jsonata devono essere cambiati (solo spostare alcuni blocchi) e salvati di nuovo.\nComando createState esteso con possibilità di creare alias.\nScheda CRON corretta nelle regole\nAggiunte opzioni aggiuntive per mostrare gli attributi di oggetto in blocco\nEsiste corretto Funzione StateAsync\nAggiunto il giorno Stato di risparmio per indicare il tempo di risparmio giornaliero\nPinned @types/nodo a v14\nLista aggiuntiva di eventi astrologici in GUI",
-        "es": "Cambio de ruptura: todos los usos de jsonata deben ser reescritos para usar promesas.\nCambio de ruptura: todos los scripts bloqueados con bloques jsonata deben de cambiar (sólo mover algunos bloques) y guardar de nuevo.\nExtended createState command with possibility to create aliases.\nTarjeta CRON corregida en reglas\nAñadido opciones adicionales para mostrar los atributos del objeto en bloque\nExiste corregido StateAsync function\nAñadido esDaylight Estado salvador para indicar tiempo de ahorro diario\nPinned @types/node to v14\nLista agregada de eventos astrológicos en GUI",
-        "pl": "Zmiana kroju: wszystkie użycie jsonaty musi być przepisane do obietnic.\nZmienione zmiany: wszystkie blokowane skrypty z blokami jsonata muszą zmienić się (zwłaszcza niektóre bloki) i ocalić na nowo.\nDłuższy tworzy pole dowodzenia możliwością tworzenia aliaz.\nKary CRON w przepisach\nDodano dodatkowe opcje pokazania atrybutów obiektu w blokadę\nPrawda istnieje. Funkcja państwowa\nAdded Państwo oszczędnościowe wskazują na czas oszczędnościowy\nPinned @types/node to v14\nLista zdarzeń astrologicznych w GUI",
-        "uk": "Зміна перерву: всі використання jsonata повинні переписатися на використання обіцянок.\nЗміна перерву: всі блокнотні скрипти з блоками jsonata повинні бути змінені (просто перемістити деякі блоки) і збережені нові.\nРозширений конструкторДержавна команда з можливістю створення псевдонімів.\nВиправлена карта CRON в правилах\nДодано додаткові параметри для відображення атрибутів об'єкта в блоклі\nВиправлено існує Функція \"Асинхрон\"\nДодана Економія стану для визначення часу збереження дня\nПрикріплений @types/node до v14\nДодано список астрологічних подій в GUI",
-        "zh-cn": "断裂变化:必须重新写信,以兑现承诺。.\n断然变化:所有有违禁文字的文字必须改变(某些障碍),并挽救新的文字。.\n往往导致国家指挥,有可能产生其他威胁。.\n在规则中更正了CRON卡\n增加显示目标特征的备选办法\n存在更正 国家分摊职能\n增 编 拯救日\nPined@型/node v14\n添加古伊人事件清单"
       }
     },
     "desc": {

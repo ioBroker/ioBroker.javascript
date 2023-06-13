@@ -132,6 +132,8 @@
   "get_value_async": "Get state value",
   "field_oid": "Select OID",
   "field_oid_OID": "Object ID",
+  "field_oid_OID_meta": "Object ID (meta)",
+  "field_oid_OID_script": "Object ID (script)",
   "field_oid_tooltip": "Select object ID with dialog",
   "get_attr": "Get attribute",
   "get_attr_path": "Attribute",
@@ -358,5 +360,11 @@
   "onMessage": "Zdarzenie: odebrano wiadomość",
   "onMessage_message": "komunikat",
   "onMessage_tooltip": "komunikat",
-  "onMessage_help": "onMessage"
+  "onMessage_help": "onMessage",
+  "logic_between_min": "Min",
+  "logic_between_max": "Max",
+  "logic_between_tooltip": "jeśli liczba między min a max",
+  "logic_ifempty": "jeśli chodzi o puste",
+  "logic_ifempty_then": "potem",
+  "logic_ifempty_tooltip": "sprawdź, czy jest pusty"
 }

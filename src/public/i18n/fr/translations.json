@@ -132,6 +132,8 @@
   "get_value_async": "Obtenir la valeur de l'état",
   "field_oid": "Sélectionnez OID",
   "field_oid_OID": "ID de l'objet",
+  "field_oid_OID_meta": "ID de l'objet (meta)",
+  "field_oid_OID_script": "ID de l'objet (script)",
   "field_oid_tooltip": "Sélectionnez l'ID d'objet avec la boîte de dialogue",
   "get_attr": "Obtenir l'attribut",
   "get_attr_path": "Attribut",
@@ -358,5 +360,11 @@
   "onMessage": "Événement : Message reçu",
   "onMessage_message": "message",
   "onMessage_tooltip": "message",
-  "onMessage_help": "onMessage"
+  "onMessage_help": "onMessage",
+  "logic_between_min": "Min",
+  "logic_between_max": "Max",
+  "logic_between_tooltip": "si un nombre entre min et max",
+  "logic_ifempty": "si vide",
+  "logic_ifempty_then": "puis",
+  "logic_ifempty_tooltip": "vérifier si vide"
 }
