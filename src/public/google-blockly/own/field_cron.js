@@ -11,7 +11,6 @@ if (typeof goog !== 'undefined') {
 }
 
 class FieldCRON extends Blockly.Field {
-
     constructor(value, type) {
         super(value);
 

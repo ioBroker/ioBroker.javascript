@@ -11,7 +11,7 @@ if (typeof goog !== 'undefined') {
 }
 
 Blockly.b64EncodeUnicode = function(text) {
-    return btoa(encodeURIComponent(text).replace(/%([0-9A-F]{2})/g, function(match, p) {
+    return btoa(encodeURIComponent(text).replace(/%([0-9A-F]{2})/g, function (match, p) {
         return String.fromCharCode(parseInt(p, 16));
     }));
 };
@@ -19,7 +19,7 @@ Blockly.b64EncodeUnicode = function(text) {
 // Decoding base64 ⇢ UTF8
 Blockly.b64DecodeUnicode = function(text) {
     try {
-        return decodeURIComponent(Array.prototype.map.call(atob(text), function(s) {
+        return decodeURIComponent(Array.prototype.map.call(atob(text), function (s) {
             return '%' + ('00' + s.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
     } catch (e) {
@@ -51,7 +51,7 @@ class FieldScript extends Blockly.Field {
         if (text === null) {
             return;  // No change if null.
         }
-        
+
         super.setValue(text);
     }
 
