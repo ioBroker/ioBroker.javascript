@@ -1361,7 +1361,7 @@ function getAstroEvent(now, astroEvent, start, end, offsetMinutes, isDayEnd, lat
 function timeSchedule(adapter, context) {
     const now = new Date();
     let hours = now.getHours();
-    let minutes = now.getMinutes();
+    const minutes = now.getMinutes();
     if (context.timeSettings.format12) {
         if (hours > 12) {
             hours -= 12;
@@ -1370,10 +1370,7 @@ function timeSchedule(adapter, context) {
     if (context.timeSettings.leadingZeros) {
         hours = hours.toString().padStart(2, '0');
     }
-    if (minutes < 10) {
-        minutes = minutes.toString().padStart(2, '0');
-    }
-    adapter.setState('variables.dayTime', `${hours}:${minutes}`, true);
+    adapter.setState('variables.dayTime', `${hours}:${minutes.toString().padStart(2, '0')}`, true);
     now.setMinutes(now.getMinutes() + 1);
     now.setSeconds(0);
     now.setMilliseconds(0);
