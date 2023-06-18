@@ -41,6 +41,7 @@
     - [deleteState](#deletestate)
     - [deleteStateAsync](#deletestateasync)
     - [sendTo](#sendto)
+    - [sendToAsync](#sendtoasync)
     - [sendToHost](#sendtohost)
     - [setInterval](#setinterval)
     - [clearInterval](#clearinterval)
@@ -1078,6 +1079,16 @@ Example with response:
 sendTo('telegram.0', {user: 'UserName', text: 'Test message'}, function (res) {
     console.log('Sent to ' + res + ' users');
 });
+```
+
+### sendToAsync
+Same as sendTo, but with `promise`.
+
+Example:
+
+```js
+const res = await sendToAsync('sql.0', 'getEnabledDPs', {});
+console.log(JSON.stringify(res));
 ```
 
 ### sendToHost
