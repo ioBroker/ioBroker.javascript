@@ -286,7 +286,7 @@ Blockly.JavaScript['on_ext'] = function(block) {
 
     const oid = '[].concat(' + oids.join(').concat(') + ')';
 
-    return `on({ id: ${oid}, ${val} ${ack_condition ? ', ack: ' + ack_condition : ''} }, async (obj) => {\n` +
+    return `on({ id: ${oid}, ${val}${ack_condition ? `, ack: ${ack_condition}` : ''} }, async (obj) => {\n` +
         (oids.length === 1 ? Blockly.JavaScript.prefixLines('let value = obj.state.val;\nlet oldValue = obj.oldState.val;', Blockly.JavaScript.INDENT) + '\n' : '') +
         statement + '});\n';
 };
@@ -359,7 +359,7 @@ Blockly.JavaScript['on'] = function(block) {
         val = `change: '${dropdown_condition}'`;
     }
 
-    return `on({ id: '${value_objectid}'${objectName ? ` /* ${objectName} */` : ''}, ${val} ${ack_condition ? ', ack: ' + ack_condition : ''} }, async (obj) => {\n` +
+    return `on({ id: '${value_objectid}'${objectName ? ` /* ${objectName} */` : ''}, ${val}${ack_condition ? `, ack: ${ack_condition}` : ''} }, async (obj) => {\n` +
         Blockly.JavaScript.prefixLines('let value = obj.state.val;', Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines('let oldValue = obj.oldState.val;', Blockly.JavaScript.INDENT) + '\n' +
         statement +
@@ -1044,7 +1044,14 @@ Blockly.JavaScript['onFile'] = function (block) {
     const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
     const withFile = block.getFieldValue('WITH_FILE');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    const objectName = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+
+    let objectName = '';
+    try {
+        const objId = eval(value_objectid); // Code to string
+        objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
+    } catch (error) {
+        
+    }
 
     return `onFile(${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, ${file}, ${withFile === 'TRUE' ? 'true' : 'false'}, ` +
         'async (id, fileName, size, data, mimeType) => {\n' +
@@ -1088,7 +1095,14 @@ Blockly.Blocks['offFile'] = {
 Blockly.JavaScript['offFile'] = function (block) {
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
-    const objectName = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+
+    let objectName = '';
+    try {
+        const objId = eval(value_objectid); // Code to string
+        objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
+    } catch (error) {
+        
+    }
 
     return `offFile(${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, ${file});\n`;
 };

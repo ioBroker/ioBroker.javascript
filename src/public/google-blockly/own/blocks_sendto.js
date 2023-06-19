@@ -333,21 +333,25 @@ Blockly.JavaScript['sendto_custom'] = function (block) {
         if (val && val[0] === "'" && val[1] === '{') {
             val = val.substring(1, val.length - 1);
         }
-        args.push('\n   "' + input.fieldRow[0].getValue() + '": ' + val);
+        args.push(`'${input.fieldRow[0].getValue()}': ${val}`);
 
         if (block.itemCount_ === 1 && !input.fieldRow[0].getValue()) {
             if (statement) {
-                return 'sendTo("' + instance + '", "' + command + '", ' + val + ', async function (result) {\n  ' + statement + '  });\n' + logText;
+                return `sendTo('${instance}', '${command}', ${val}, async (result) => {\n` +
+                    statement +
+                    '});\n' + logText;
             } else {
-                return 'sendTo("' + instance + '", "' + command + '", ' + val + ');\n' + logText;
+                return `sendTo('${instance}', '${command}', ${val});\n` + logText;
             }
         }
     }
 
     if (statement) {
-        return 'sendTo("' + instance + '", "' + command + '", {' + (args.length ? args.join(',') + '\n' : '') + '}, async function (result) {\n  ' + statement + '  });\n' + logText;
+        return `sendTo('${instance}', '${command}', { ${args.length ? args.join(', ') : ''} }, async (result) => {\n` +
+            statement +
+            '});\n' + logText;
     } else {
-        return 'sendTo("' + instance + '", "' + command + '", {' + (args.length ? args.join(',') + '\n' : '') + '});\n' + logText;
+        return `sendTo('${instance}', '${command}', { ${args.length ? args.join(', ') : ''} });\n` + logText;
     }
 };
 
@@ -421,21 +425,26 @@ Blockly.Blocks['sendto_otherscript'] = {
 
 Blockly.JavaScript['sendto_otherscript'] = function(block) {
     const dropdown_instance = block.getFieldValue('INSTANCE');
-    const value_objectid  = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const message = block.getFieldValue('MESSAGE');
     let data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
 
-    const objectname = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+    let objectName = '';
+    try {
+        const objId = eval(value_objectid); // Code to string
+        objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
+    } catch (error) {
+        
+    }
 
     if (!data) {
         data = 'true';
     }
 
     let text = '{\n';
-    text += '    script: ' + value_objectid + ',' + (objectname ? '/*' + objectname + '*/' : '') + '\n';
-    text += '    message: "' + message + '",\n';
-    text += '    data: ' + data + '\n';
-
+    text += Blockly.JavaScript.prefixLines(`script: ${value_objectid},${objectName ? ` /* ${objectName} */` : ''}`, Blockly.JavaScript.INDENT) + '\n';
+    text += Blockly.JavaScript.prefixLines(`message: '${message}',`, Blockly.JavaScript.INDENT) + '\n';
+    text += Blockly.JavaScript.prefixLines(`data: ${data},`, Blockly.JavaScript.INDENT) + '\n';
     text += '}';
 
     return `sendTo('javascript${dropdown_instance}', 'toScript', ${text});\n`;

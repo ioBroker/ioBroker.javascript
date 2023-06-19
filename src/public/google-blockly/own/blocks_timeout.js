@@ -122,7 +122,7 @@ Blockly.JavaScript['timeouts_wait'] = function(block) {
         delay *= 1000;
     }
 
-    return 'await wait(' + delay + ');\n';
+    return `await wait(${delay});\n`;
 };
 
 // --- setTimeout -----------------------------------------------------------
@@ -189,11 +189,11 @@ Blockly.JavaScript['timeouts_settimeout'] = function(block) {
         delay *= 1000;
     }
 
-    const statements = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    return name + ' = setTimeout(async () => {\n' +
-        Blockly.JavaScript.prefixLines(name + ' = null;', Blockly.JavaScript.INDENT) + '\n' +
-        statements +
-        '}, ' + delay + ');\n';
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    return `${name} = setTimeout(async () => {\n` +
+        Blockly.JavaScript.prefixLines(`${name} = null;`, Blockly.JavaScript.INDENT) + '\n' +
+        statement +
+        `}, ${delay});\n`;
 };
 
 // --- setTimeout variable -----------------------------------------------------------
@@ -250,12 +250,12 @@ Blockly.Blocks['timeouts_settimeout_variable'] = {
 Blockly.JavaScript['timeouts_settimeout_variable'] = function(block) {
     const delay = Blockly.JavaScript.valueToCode(block, 'DELAY_MS', Blockly.JavaScript.ORDER_ATOMIC);
     const name = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
-    const statements = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    return name + ' = setTimeout(async () => {\n' +
-        Blockly.JavaScript.prefixLines(name + ' = null;', Blockly.JavaScript.INDENT) + '\n' +
-        statements +
-        '}, parseInt(' + delay + '));\n';
+    return `${name} = setTimeout(async () => {\n` +
+        Blockly.JavaScript.prefixLines(`${name} = null;`, Blockly.JavaScript.INDENT) + '\n' +
+        statement +
+        `}, parseInt(${delay}));\n`;
 };
 
 // --- clearTimeout -----------------------------------------------------------
@@ -309,7 +309,7 @@ Blockly.Blocks['timeouts_cleartimeout'] = {
 
 Blockly.JavaScript['timeouts_cleartimeout'] = function(block) {
     const name = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
-    return '(() => { if (' + name + ') { clearTimeout(' + name + '); ' + name + ' = null; }})();\n';
+    return `(() => { if (${name}) { clearTimeout(${name}); ${name} = null; }})();\n`;
 };
 
 // --- getTimeout -----------------------------------------------------------
@@ -405,10 +405,10 @@ Blockly.JavaScript['timeouts_setinterval'] = function(block) {
         delay *= 1000;
     }
 
-    const statements = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    return name + ' = setInterval(async () => {\n' +
-        statements +
-        '}, ' + delay + ');\n';
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    return `${name} = setInterval(async () => {\n` +
+        statement +
+        `}, ${delay});\n`;
 };
 
 // --- setInterval variable -----------------------------------------------------------
@@ -465,11 +465,11 @@ Blockly.Blocks['timeouts_setinterval_variable'] = {
 Blockly.JavaScript['timeouts_setinterval_variable'] = function(block) {
     const delay = Blockly.JavaScript.valueToCode(block, 'INTERVAL_MS', Blockly.JavaScript.ORDER_ATOMIC);
     const name = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
-    const statements = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    return name + ' = setInterval(async () => {\n' +
-        statements +
-        '}, parseInt(' + delay + '));\n';
+    return `${name} = setInterval(async () => {\n` +
+        statement +
+        `}, parseInt(${delay}));\n`;
 };
 
 // --- clearInterval -----------------------------------------------------------
@@ -524,7 +524,7 @@ Blockly.Blocks['timeouts_clearinterval'] = {
 Blockly.JavaScript['timeouts_clearinterval'] = function(block) {
     const name = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
 
-    return '(() => { if (' + name + ') { clearInterval(' + name + '); ' + name + ' = null; }})();\n';
+    return `(() => { if (${name}) { clearInterval(${name}); ${name} = null; }})();\n`;
 };
 
 // --- getInterval -----------------------------------------------------------
