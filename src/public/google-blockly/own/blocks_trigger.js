@@ -348,7 +348,10 @@ Blockly.JavaScript['on'] = function(block) {
     const dropdown_condition = block.getFieldValue('CONDITION');
     const ack_condition = block.getFieldValue('ACK_CONDITION');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    const objectName = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+    let objectName = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+    if (typeof objectName === 'object') {
+        objectName = objectName[systemLang] || objectName.en;
+    }
 
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
 
@@ -1049,6 +1052,9 @@ Blockly.JavaScript['onFile'] = function (block) {
     try {
         const objId = eval(value_objectid); // Code to string
         objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
+        if (typeof objectName === 'object') {
+            objectName = objectName[systemLang] || objectName.en;
+        }
     } catch (error) {
         
     }
@@ -1100,6 +1106,9 @@ Blockly.JavaScript['offFile'] = function (block) {
     try {
         const objId = eval(value_objectid); // Code to string
         objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
+        if (typeof objectName === 'object') {
+            objectName = objectName[systemLang] || objectName.en;
+        }
     } catch (error) {
         
     }

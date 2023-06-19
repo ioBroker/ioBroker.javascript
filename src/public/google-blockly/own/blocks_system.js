@@ -180,8 +180,12 @@ Blockly.JavaScript['control'] = function(block) {
     clearRunning = clearRunning === 'TRUE' || clearRunning === 'true' || clearRunning === true;
 
     const valueValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-    const objectName = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
     const withDelay = this.getFieldValue('WITH_DELAY');
+
+    let objectName = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
+    if (typeof objectName === 'object') {
+        objectName = objectName[systemLang] || objectName.en;
+    }
 
     let code;
     if (withDelay === 'true' || withDelay === true || withDelay === 'TRUE') {
@@ -289,8 +293,11 @@ Blockly.JavaScript['toggle'] = function(block) {
         valueDelay *= 1000;
     }
 
-    const objectName = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
     const objectType = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.type ? main.objects[valueObjectID].common.type : 'boolean';
+    let objectName = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
+    if (typeof objectName === 'object') {
+        objectName = objectName[systemLang] || objectName.en;
+    }
 
     let clearRunning = block.getFieldValue('CLEAR_RUNNING');
     clearRunning = clearRunning === 'TRUE' || clearRunning === 'true' || clearRunning === true;
@@ -435,8 +442,12 @@ Blockly.JavaScript['update'] = function(block) {
     let clearRunning = block.getFieldValue('CLEAR_RUNNING');
     clearRunning = clearRunning === 'TRUE' || clearRunning === 'true' || clearRunning === true;
 
-    const objectName = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
     const withDelay = this.getFieldValue('WITH_DELAY');
+
+    let objectName = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+    if (typeof objectName === 'object') {
+        objectName = objectName[systemLang] || objectName.en;
+    }
 
     let code;
     if (withDelay === true || withDelay === 'true' || withDelay === 'TRUE') {

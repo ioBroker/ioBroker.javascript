@@ -433,6 +433,9 @@ Blockly.JavaScript['sendto_otherscript'] = function(block) {
     try {
         const objId = eval(value_objectid); // Code to string
         objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
+        if (typeof objectName === 'object') {
+            objectName = objectName[systemLang] || objectName.en;
+        }
     } catch (error) {
         
     }
