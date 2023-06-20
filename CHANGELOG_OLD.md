@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 7.0.3 (2023-03-16)
+* (bluefox) made the editor visible in full height
+* (paul53) small fixes on blockly and translations are made
+
 ## 7.0.2 (2023-03-13)
 * (bluefox) Breaking change: all usages of `jsonata` must be rewritten to use promises.
 * (bluefox) Breaking change: all blockly scripts with `jsonata` blocks must be changed (just move some blocks) and saved anew.

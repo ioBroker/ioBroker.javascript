@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "7.1.0",
+    "version": "7.1.1",
     "news": {
+      "7.1.1": {
+        "en": "corrected the script export",
+        "de": "korrigierte das skript export",
+        "ru": "исправлен экспорт сценария",
+        "pt": "corrigido a exportação de script",
+        "nl": "vertaling:",
+        "fr": "corrigé l'exportation de script",
+        "it": "corretto l'esportazione di script",
+        "es": "corregido el script export",
+        "pl": "zrekomendowano eksport skryptu",
+        "uk": "виправлено експорт сценаріїв",
+        "zh-cn": "修订的出口说明"
+      },
       "7.1.0": {
         "en": "Added new blocks: new line, random number, value between min and max, if empty\nUpdated blockly core to v9.3.3\ncorrected blockly",
         "de": "Neue Blöcke hinzugefügt: neue Zeile, Zufallszahl, Wert zwischen min und max, wenn leer\nAktualisierter Block-Kern auf v9.3.3\nblockweise korrigiert",
@@ -99,19 +112,6 @@
         "pl": "uaktualniać\nArchiwum jest wykorzystywane do eksportowania skryptów",
         "uk": "пакети оновлені\nФайли використовуються для експорту сценаріїв",
         "zh-cn": "更新的一揽子方案\n用于出口纺织品"
-      },
-      "7.0.3": {
-        "en": "made the editor visible in full height\nsmall fixes on blockly and translations are made",
-        "de": "den editor in voller höhe sichtbar gemacht\nkleine fixe auf blockweise und übersetzungen werden gemacht",
-        "ru": "сделал редактор видимым в полной высоте\nмелкие исправления на блоклы и переводы сделаны",
-        "pt": "tornou o editor visível em altura total\npequenas correções em blockly e traduções são feitas",
-        "nl": "maakte de redacteur zichtbaar in volledige hoogte\nkleine fixaties op blokken en vertalingen zijn gemaakt",
-        "fr": "rendu l'éditeur visible en pleine hauteur\npetites corrections sur le bloc et les traductions sont faites",
-        "it": "reso l'editor visibile in piena altezza\npiccole correzioni su blocco e le traduzioni sono fatte",
-        "es": "hizo visible el editor a toda altura\npequeñas correcciones en bloque y las traducciones se hacen",
-        "pl": "wydawca widoczny jest w pełnym wysokości\nwykonane są małe rozwiązania na temat bloku i tłumaczenia",
-        "uk": "зробив редактор видимим у повній висоті\nневеликі застібки на блокнотах і перекладах",
-        "zh-cn": "编辑的高度可见\n零星和翻译的小配件"
       }
     },
     "desc": {
