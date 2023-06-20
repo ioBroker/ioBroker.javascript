@@ -1693,6 +1693,7 @@ declare global {
 	 * @return ID of the subscription. It could be used for un-subscribe.
 	 */
 	function messageTo(target: iobJS.MessageTarget | string, data: any, options?: any, callback?: SimpleCallback<any>): iobJS.MessageSubscribeID;
+	function messageToAsync(target: iobJS.MessageTarget | string, data: any, options?: any): Promise<iobJS.MessageCallback | iobJS.MessageCallbackInfo>;
 
 	/**
 	 * Process message from other script.

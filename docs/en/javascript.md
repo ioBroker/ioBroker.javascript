@@ -71,6 +71,7 @@
     - [name](#name)
     - [instance](#instance)
     - [messageTo](#messageto)
+    - [messageToAsync](#messagetoasync)
     - [onMessage](#onmessage)
     - [onMessageUnregister](#onmessageunregister)
     - [onLog](#onlog)
@@ -1560,7 +1561,7 @@ It is not a function. It is a variable with javascript instance, that is visible
 ### wait
 Just pause the execution of the script.
 Warning this function is `promise` and must be called as follows:
-```
+```js
 await wait(1000);
 ```
 
@@ -1568,7 +1569,7 @@ await wait(1000);
 Same as [wait](#wait)
 
 ### messageTo
-```
+```js
 messageTo({instance: 'instance', script: 'script.js.common.scriptName', message: 'messageName'}, data, {timeout: 1000}, result =>
     console.log(JSON.stringify(result)));
 ```
@@ -1579,20 +1580,48 @@ Timeout for callback is 5 seconds by default.
 
 The target could be shorted to:
 
-```
-messageTo('messageName', data, result =>
-    console.log(JSON.stringify(result)));
+```js
+messageTo('messageName', data, result => {
+    console.log(JSON.stringify(result));
+});
 ```
 
 Callback and options are optional and timeout is by default 5000 milliseconds (if callback provided).
 
-```
+```js
 messageTo('messageName', dataWithNoResponse);
 ```
 
-### onMessage
+### messageToAsync
+```js
+onMessage('myTopic', async (data, callback) => {
+    console.log(data);
+
+    if (!data.myPayload) {
+        // return error (promise reject)
+        callback({ error: 'something went wrong!!' });
+    } else {
+        // return result (promise resolve)
+        callback({ result: 'ok' });
+    }
+});
+
+(async () => {
+    try {
+        const msg = await messageToAsync({ instance: 0, script: 'script.js.test2', message: 'myTopic' }, { myPayload: true }, { timeout: 1000 });
+        console.log(`Done with: ${JSON.stringify(msg)}`);
+    } catch (error) {
+        // contents of result.error
+        console.error(error);
+    }
+})();
 ```
-onMessage('messageName', (data, callback) => {console.log('Received data: ' + data); callback({result: Date.now()})});
+
+### onMessage
+```js
+onMessage('messageName', (data, callback) => {
+    console.log(`Received data: ${data}`); callback({ result: Date.now() });
+});
 ```
 
 Subscribes on javascript adapter message bus and delivers response via callback.
@@ -1602,20 +1631,20 @@ To send a message to an JavaScript script which is then received by this handler
 
 To send a message from any other adapter use
 
-```
-    adapter.sendTo('javascript.0', 'toScript', {
-        script: 'script.js.messagetest', 
-        message: 'messageName', 
-        data: {
-            flag: true
-        }
-    });
+```js
+adapter.sendTo('javascript.0', 'toScript', {
+    script: 'script.js.messagetest', 
+    message: 'messageName', 
+    data: {
+        flag: true
+    }
+});
 ```
 
 to send a message from CLI use
 
 ```
-iob message javascript.0 toScript '{"script": "script.js.messagetest", "message": "messageName", "data": {"flag": true}}'
+iob message javascript.0 toScript '{"script": "script.js.messagetest", "message": "messageName", "data": { "flag": true }}'
 ```
 
 ### onMessageUnregister

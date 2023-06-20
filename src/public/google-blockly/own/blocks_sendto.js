@@ -367,6 +367,10 @@ Blockly.Sendto.blocks['sendto_otherscript'] =
     + '             <field name="oid">Script Object ID</field>'
     + '         </shadow>'
     + '     </value>'
+    + '     <value name="TIMEOUT">'
+    + '     </value>'
+    + '     <value name="UNIT">'
+    + '     </value>'
     + '     <value name="MESSAGE">'
     + '     </value>'
     + '     <value name="DATA">'
@@ -406,6 +410,15 @@ Blockly.Blocks['sendto_otherscript'] = {
             .appendField(Blockly.Translate('sendto_otherscript_script'))
             .setCheck(null);
 
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('timeouts_wait'))
+            .appendField(new Blockly.FieldTextInput(1000), 'TIMEOUT')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('timeouts_settimeout_ms'), 'ms'],
+                [Blockly.Translate('timeouts_settimeout_sec'), 'sec'],
+                [Blockly.Translate('timeouts_settimeout_min'), 'min']
+            ]), 'UNIT');
+
         this.appendDummyInput('MESSAGE')
             .appendField(Blockly.Translate('sendto_otherscript_message'))
             .appendField(new Blockly.FieldTextInput('customMessage'), 'MESSAGE');
@@ -429,6 +442,14 @@ Blockly.JavaScript['sendto_otherscript'] = function(block) {
     const message = block.getFieldValue('MESSAGE');
     let data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
 
+    const unit = block.getFieldValue('UNIT');
+    let timeout = block.getFieldValue('TIMEOUT');
+    if (unit === 'min') {
+        timeout *= 60000;
+    } else if (unit === 'sec') {
+        timeout *= 1000;
+    }
+
     let objectName = '';
     try {
         const objId = eval(value_objectid); // Code to string
@@ -444,5 +465,5 @@ Blockly.JavaScript['sendto_otherscript'] = function(block) {
         data = 'true';
     }
 
-    return `messageTo({ instance: ${dropdown_instance}, script: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, message: '${message}' }, ${data}, { timeout: 1000 });\n`;
+    return `messageTo({ instance: ${dropdown_instance}, script: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, message: '${message}' }, ${data}, { timeout: ${timeout} });\n`;
 };
