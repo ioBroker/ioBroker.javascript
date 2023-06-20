@@ -378,20 +378,20 @@ Blockly.Sendto.blocks['sendto_otherscript'] =
 
 Blockly.Blocks['sendto_otherscript'] = {
     init: function() {
-        const options = [[Blockly.Translate('sendto_otherscript_anyInstance'), '']];
+        const options = [];
         if (typeof main !== 'undefined' && main.instances) {
             for (let i = 0; i < main.instances.length; i++) {
                 const m = main.instances[i].match(/^system.adapter.javascript.(\d+)$/);
                 if (m) {
                     const n = parseInt(m[1], 10);
-                    options.push(['javascript.' + n, '.' + n]);
+                    options.push(['javascript.' + n, String(n)]);
                 }
             }
         }
 
         if (!options.length) {
             for (let u = 0; u <= 4; u++) {
-                options.push(['javascript.' + u, '.' + u]);
+                options.push(['javascript.' + u, String(u)]);
             }
         }
 
@@ -444,11 +444,5 @@ Blockly.JavaScript['sendto_otherscript'] = function(block) {
         data = 'true';
     }
 
-    let text = '{\n';
-    text += Blockly.JavaScript.prefixLines(`script: ${value_objectid},${objectName ? ` /* ${objectName} */` : ''}`, Blockly.JavaScript.INDENT) + '\n';
-    text += Blockly.JavaScript.prefixLines(`message: '${message}',`, Blockly.JavaScript.INDENT) + '\n';
-    text += Blockly.JavaScript.prefixLines(`data: ${data},`, Blockly.JavaScript.INDENT) + '\n';
-    text += '}';
-
-    return `sendTo('javascript${dropdown_instance}', 'toScript', ${text});\n`;
+    return `messageTo({ instance: ${dropdown_instance}, script: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, message: '${message}' }, ${data}, { timeout: 1000 });\n`;
 };
