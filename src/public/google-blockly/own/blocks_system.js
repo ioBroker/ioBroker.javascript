@@ -741,7 +741,7 @@ Blockly.JavaScript['create_ex'] = function(block) {
     let writeable = block.getFieldValue('WRITEABLE');
     writeable = writeable === 'TRUE' || writeable === 'true' || writeable === true;
 
-    return `createState('${name}'${paraV}, { type: "${type}", read: ${readable}, write: ${writeable} }, async () => {\n` +
+    return `createState('${name}'${paraV}, { type: '${type}', read: ${readable}, write: ${writeable} }, async () => {\n` +
         statement +
         '});\n';
 };
@@ -922,15 +922,84 @@ Blockly.JavaScript['get_value_async'] = function(block) {
 
     if (attr === 'type' || attr.startsWith('common.')) {
         return `getObjectAsync('${oid}', async (err, obj) => {\n` +
-            Blockly.JavaScript.prefixLines('let value = obj.' + attr + ';', Blockly.JavaScript.INDENT) + '\n' +
-            statement + '\n' +
+            Blockly.JavaScript.prefixLines(`let value = obj.${attr};`, Blockly.JavaScript.INDENT) + '\n' +
+            statement +
             '});\n';
     } else {
-        return 'getState("' + oid + '", async (err, state) => {\n' +
-            Blockly.JavaScript.prefixLines('let value = state.' + attr + ';', Blockly.JavaScript.INDENT) + '\n' +
-            statement + '\n' +
+        return `getState('${oid}', async (err, state) => {\n` +
+            Blockly.JavaScript.prefixLines(`let value = state.${attr};`, Blockly.JavaScript.INDENT) + '\n' +
+            statement +
             '});\n';
     }
+};
+
+// --- get object --------------------------------------------------
+Blockly.System.blocks['get_object'] =
+    '<block type="get_object">'
+    + '     <value name="OID">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['get_object'] = {
+    // Checkbox.
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('get_object'));
+
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldOID(Blockly.Translate('get_object_default')), 'OID');
+
+        this.setInputsInline(true);
+        this.setOutput(true);
+        this.setColour(Blockly.System.HUE);
+        this.setTooltip(Blockly.Translate('get_object_tooltip'));
+        this.setHelpUrl(getHelp('get_object_help'));
+    }
+};
+
+Blockly.JavaScript['get_object'] = function(block) {
+    const oid  = block.getFieldValue('OID');
+
+    return [`getObject('${oid}')`, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+// --- get object async--------------------------------------------------
+Blockly.System.blocks['get_object_async'] =
+    '<block type="get_object_async">'
+    + '     <value name="OID">'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['get_object_async'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('get_object'));
+
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldOID(Blockly.Translate('get_object_default')), 'OID');
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setInputsInline(true);
+        this.setColour(Blockly.System.HUE);
+        this.setTooltip(Blockly.Translate('get_object_tooltip'));
+        this.setHelpUrl(getHelp('get_object_help'));
+    }
+};
+
+Blockly.JavaScript['get_object_async'] = function(block) {
+    const oid  = block.getFieldValue('OID');
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    return `getObjectAsync('${oid}').then(async (obj) => {\n` +
+        statement +
+        '});\n';
 };
 
 // --- select OID --------------------------------------------------
@@ -1050,7 +1119,7 @@ Blockly.JavaScript['get_attr'] = function(block) {
     const path = Blockly.JavaScript.valueToCode(block, 'PATH', Blockly.JavaScript.ORDER_ATOMIC);
     const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
 
-    return ['getAttr(' + obj + ', ' + path + ')', Blockly.JavaScript.ORDER_ATOMIC];
+    return [`getAttr(${obj}, ${path})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- regex --------------------------------------------------
