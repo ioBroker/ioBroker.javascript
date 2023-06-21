@@ -23,11 +23,13 @@
     - [isAstroDay](#isastroday)
     - [compareTime](#comparetime)
     - [setState](#setstate)
+    - [setStateAsync](#setstateasync)
     - [setBinaryState](#setbinarystate)
     - [setStateDelayed](#setstatedelayed)
     - [clearStateDelayed](#clearstatedelayed)
     - [getStateDelayed](#getstatedelayed)
     - [getState](#getstate)
+    - [getStateAsync](#getstateasync)
     - [existsState](#existsState)
     - [getObject](#getobject)
     - [setObject](#setobject)
@@ -41,7 +43,9 @@
     - [deleteState](#deletestate)
     - [deleteStateAsync](#deletestateasync)
     - [sendTo](#sendto)
+    - [sendToAsync](#sendtoasync)
     - [sendToHost](#sendtohost)
+    - [sendToHostAsync](#sendtohostasync)
     - [setInterval](#setinterval)
     - [clearInterval](#clearinterval)
     - [setTimeout](#settimeout)
@@ -717,6 +721,12 @@ Short:
 - `ack` = false : Script wants to send a command to be executed by the target device/adapter
 - `ack` = true  : Command was successfully executed and state is updated as positive result
 
+### setStateAsync
+```js
+await setStateAsync(id, state, ack);
+```
+Same as setState, but with `promise`.
+
 ### setBinaryState
 **Attention: This method is deprecated!**
 
@@ -826,6 +836,12 @@ Returns state with the given id in the following form:
 
 If state does not exist, a warning will be printed in the logs and the object: `{val: null, notExist: true}` will be returned.
 To suppress the warning check if the state exists before calling getState (see [existsState](#existsState)).
+
+### getStateAsync
+```js
+const stateObject = await getStateAsync(id);
+```
+Same as getState, but with `promise`.
 
 ### getBinaryState
 **Attention: This method is deprecated!**
@@ -1085,6 +1101,19 @@ sendTo('telegram.0', {user: 'UserName', text: 'Test message'}, function (res) {
 });
 ```
 
+### sendToAsync
+```js
+await sendToAsync(adapter, command, message);
+```
+Same as sendTo, but with `promise`.
+
+Example:
+
+```js
+const res = await sendToAsync('sql.0', 'getEnabledDPs', {});
+console.log(JSON.stringify(res));
+```
+
 ### sendToHost
 ```js
 sendToHost(hostName, command, message, callback);
@@ -1114,6 +1143,12 @@ sendToHost('myComputer', 'cmdExec', {data: 'ls /'}, function (res) {
 ```
 
 **Notice:** you must enable *Enable command "setObject"* option to call it.
+
+### sendToHostAsync
+```js
+await sendToHostAsync(hostName, command, message);
+```
+Same as sendToHost, but with `promise`.
 
 ### setInterval
 ```js

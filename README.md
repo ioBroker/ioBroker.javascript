@@ -46,6 +46,9 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### 7.1.1 (2023-06-20)
+* (bluefox) corrected the script export
+
 ### 7.1.0 (2023-06-13)
 * (klein0r) Added new blocks: new line, random number, value between min and max, if empty
 * (klein0r) Updated blockly core to v9.3.3
@@ -65,10 +68,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### 7.0.4 (2023-06-06)
 * (bluefox) packages updated
 * (bluefox) Files are used for export of scripts
-
-### 7.0.3 (2023-03-16)
-* (bluefox) made the editor visible in full height
-* (paul53) small fixes on blockly and translations are made
 
 ## License
 The MIT License (MIT)
