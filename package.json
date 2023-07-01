@@ -42,7 +42,7 @@
     "request": "^2.88.2",
     "semver": "^7.5.3",
     "suncalc2": "^1.8.1",
-    "typescript": "~5.1.3",
+    "typescript": "~5.1.6",
     "virtual-tsc": "^0.6.2",
     "wake_on_lan": "^1.0.0"
   },
