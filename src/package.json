@@ -37,7 +37,7 @@
         "react-treeview-mui": "^0.1.2",
         "reactour": "^1.19.0",
         "sass": "^1.63.4",
-        "styled-components": "^5.3.11",
+        "styled-components": "^6.0.1",
         "suncalc2": "^1.8.1"
     },
     "scripts": {
