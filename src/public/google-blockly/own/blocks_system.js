@@ -810,8 +810,8 @@ Blockly.System.blocks['get_value_var'] =
     + '     <value name="ATTR">'
     + '     </value>'
     + '     <value name="OID">'
-    + '         <shadow type="text">'
-    + '             <field name="OID">zigbee.0.1234</field>'
+    + '         <shadow type="field_oid">'
+    + '             <field name="oid">Object ID</field>'
     + '         </shadow>'
     + '     </value>'
     + '</block>';
@@ -1018,7 +1018,7 @@ Blockly.Blocks['field_oid'] = {
             .appendField(new Blockly.FieldOID('default'), 'oid');
 
         this.setInputsInline(true);
-        this.setColour(Blockly.System.HUE);
+        this.setColour("%{BKY_TEXTS_HUE}");
         this.setOutput(true, 'String');
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     }
@@ -1046,7 +1046,7 @@ Blockly.Blocks['field_oid_meta'] = {
             .appendField(new Blockly.FieldOID('default', 'meta'), 'oid');
 
         this.setInputsInline(true);
-        this.setColour(Blockly.System.HUE);
+        this.setColour("%{BKY_TEXTS_HUE}");
         this.setOutput(true, 'String');
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     }
@@ -1074,7 +1074,7 @@ Blockly.Blocks['field_oid_script'] = {
             .appendField(new Blockly.FieldOID('default', 'script'), 'oid');
 
         this.setInputsInline(true);
-        this.setColour(Blockly.System.HUE);
+        this.setColour("%{BKY_TEXTS_HUE}");
         this.setOutput(true, 'String');
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     }
