@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.8",
-    "@types/node": "^20.3.3",
+    "@types/node": "^20.4.0",
     "@types/request": "^2.48.8",
     "axios": "^1.4.0",
     "coffeescript": "^1.12.7",
@@ -47,8 +47,8 @@
     "wake_on_lan": "^1.0.0"
   },
   "devDependencies": {
-    "@alcalzone/release-script": "^3.5.9",
-    "@alcalzone/release-script-plugin-iobroker": "^3.5.9",
+    "@alcalzone/release-script": "^3.6.0",
+    "@alcalzone/release-script-plugin-iobroker": "^3.6.0",
     "@alcalzone/release-script-plugin-license": "^3.5.9",
     "@iobroker/dev-server": "^0.6.0",
     "@types/iobroker": "^4.0.5",
@@ -87,6 +87,7 @@
     "release-patch": "release-script patch --yes",
     "release-minor": "release-script minor --yes",
     "release-major": "release-script major --yes",
-    "update-packages": "ncu --upgrade && cd src && ncu --upgrade && cd .."
+    "update-packages": "ncu --upgrade && cd src && ncu --upgrade && cd ..",
+    "npm": "npm i && cd src && npm i -f && cd .."
   }
 }
