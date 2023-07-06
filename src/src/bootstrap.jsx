@@ -37,10 +37,13 @@ function build() {
         <StyledEngineProvider injectFirst>
             <ThemeProvider theme={theme(themeName)}>
                 <DndProvider backend={isMobile ? TouchBackend : HTML5Backend}>
-                    <App onThemeChange={_theme => {
-                        themeName = _theme;
-                        build();
-                    }} />
+                    <App
+                        version={pgk.version}
+                        onThemeChange={_theme => {
+                            themeName = _theme;
+                            build();
+                        }}
+                    />
                 </DndProvider>
             </ThemeProvider>
         </StyledEngineProvider>

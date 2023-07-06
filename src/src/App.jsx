@@ -1,5 +1,5 @@
 import React from 'react';
-// import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 import withStyles from '@mui/styles/withStyles';
 import SplitterLayout from 'react-splitter-layout';
 
@@ -944,6 +944,7 @@ class App extends GenericApp {
                             width={this.menuSize}
                             onImport={() => this.setState({ importFile: true })}
                             onSearch={searchText => this.setState({ searchText })}
+                            version={this.props.version}
                         />
                     </div>
                     {this.renderMain()}
@@ -952,5 +953,10 @@ class App extends GenericApp {
         </div>;
     }
 }
+
+App.propTypes = {
+    version: PropTypes.string,
+    onThemeChange: PropTypes.func,
+};
 
 export default withStyles(styles)(App);

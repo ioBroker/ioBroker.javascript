@@ -46,6 +46,9 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Added version to the side menu
+
 ### 7.1.1 (2023-06-20)
 * (bluefox) corrected the script export
 
