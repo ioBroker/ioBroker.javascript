@@ -15,9 +15,9 @@
 /* jshint shadow: true */
 'use strict';
 
-const vm            = require('vm');
-const nodeFS        = require('fs');
-const nodePath      = require('path');
+const vm            = require('node:vm');
+const nodeFS        = require('node:fs');
+const nodePath      = require('node:path');
 const CoffeeScript  = require('coffeescript');
 const tsc           = require('virtual-tsc');
 const Mirror        = require('./lib/mirror');
@@ -26,21 +26,21 @@ const { astroList } = require('./lib/consts');
 
 const mods = {
     fs:               {},
-    dgram:            require('dgram'),
-    crypto:           require('crypto'),
-    dns:              require('dns'),
-    events:           require('events'),
-    http:             require('http'),
-    https:            require('https'),
-    http2:            require('http2'),
-    net:              require('net'),
-    os:               require('os'),
-    path:             require('path'),
-    util:             require('util'),
-    child_process:    require('child_process'),
-    stream:           require('stream'),
-    url:              require('url'),
-    zlib:             require('zlib'),
+    dgram:            require('node:dgram'),
+    crypto:           require('node:crypto'),
+    dns:              require('node:dns'),
+    events:           require('node:events'),
+    http:             require('node:http'),
+    https:            require('node:https'),
+    http2:            require('node:http2'),
+    net:              require('node:net'),
+    os:               require('node:os'),
+    path:             require('node:path'),
+    util:             require('node:util'),
+    child_process:    require('node:child_process'),
+    stream:           require('node:stream'),
+    url:              require('node:url'),
+    zlib:             require('node:zlib'),
     suncalc:          require('suncalc2'),
     request:          require('./lib/request'),
     wake_on_lan:      require('wake_on_lan'),
@@ -2183,6 +2183,7 @@ async function getData(callback) {
         await adapter.subscribeForeignStatesAsync('*');
     } else {
         await adapter.subscribeStatesAsync('debug.to');
+        await adapter.subscribeStatesAsync('scriptEnabled.*');
     }
 
     adapter.log.info('requesting all states');
