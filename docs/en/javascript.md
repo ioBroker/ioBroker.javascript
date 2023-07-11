@@ -979,6 +979,8 @@ createState(name, initialValue, forceCreation, common, native, callback);
 ```
 Create state and object in javascript space if it does not exist, e.g. `javascript.0.mystate`.
 
+!! Prefer to create own data points with the full ID '0_userdata.0.mystate' !!!
+
 #### Parameters:
 
 - `name`: name of the state without namespace, e.g. `mystate`
