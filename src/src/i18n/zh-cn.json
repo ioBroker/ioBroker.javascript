@@ -192,7 +192,6 @@
   "State": "状态",
   "State condition": "状态条件",
   "Time condition": "时间条件",
-  "Astrological": "天文",
   "Set state action": "设定状态动作",
   "Exec": "执行力",
   "HTTP Call": "HTTP呼叫",
@@ -228,7 +227,6 @@
   "Triggers the rule on update or change of some state": "在某些状态的更新或更改时触发规则",
   "Compares the state value with user defined value": "比较状态值和用户定义的值",
   "Compares current time with the user specific time": "将当前时间与用户特定时间进行比较",
-  "Compares current time with astrological event": "将当前时间与天文事件进行比较",
   "Control or update some state": "控制或更新某些状态",
   "Executes some shell command": "执行一些shell命令",
   "Make a HTTP get request": "发出HTTP获取请求",
@@ -349,10 +347,12 @@
   "for professionals": "对于专业人士",
   "Duplicate name": "重名",
   "Empty name is not allowed": "不允许使用空名称",
-  "Astrological events today": "今天的占星事件",
-  "Show astrological events": "显示占星事件",
   "Time": "时间",
   "Description": "描述",
   "nextSunrise": "下一个日出",
-  "nextSunset": "下一个日落"
+  "nextSunset": "下一个日落",
+  "Astronomical events today": "今天的天文事件",
+  "Compares current time with astronomical event": "将当前时间与天文事件进行比较",
+  "Show astronomical events": "显示天文事件",
+  "Astronomical": "天文"
 }

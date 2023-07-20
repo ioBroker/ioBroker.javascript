@@ -1068,8 +1068,8 @@ class Editor extends React.Component {
 
                     <IconButton
                         key="show-astro"
-                        aria-label="Show astrological events"
-                        title={I18n.t('Show astrological events')}
+                        aria-label="Show astronomical events"
+                        title={I18n.t('Show astronomical events')}
                         className={this.props.classes.toolbarButtons}
                         disabled={!isInstanceRunning}
                         onClick={() => {
@@ -1374,7 +1374,7 @@ class Editor extends React.Component {
                 onClose={() => this.setState({ showAstro: false })}
                 key="dialogAstro"
             >
-                <DialogTitle>{I18n.t('Astrological events today')}</DialogTitle>
+                <DialogTitle>{I18n.t('Astronomical events today')}</DialogTitle>
                 <DialogContent>
                     {!this.state.astroEvents ? <LinearProgress /> : <TableContainer component={Paper}>
                         <Table size="small">
