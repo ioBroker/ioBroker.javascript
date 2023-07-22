@@ -81,7 +81,7 @@ const detectDevice = async socket => {
                     if (!deviceObject.deviceType) {
                         // deviceObject.deviceType = control.type;
                     }
-                    deviceObject = {...deviceObject, ...control};
+                    deviceObject = { ...deviceObject, ...control };
                     // if (control.states) {
                     //     control.states.forEach(state => {
                     //         if (state.id) {
@@ -100,7 +100,5 @@ const detectDevice = async socket => {
     return result;
 };
 
-const systemPrompt = async () => {
-    return (await fetch(docs)).text();
-}
-export {systemPrompt, detectDevice};
+const systemPrompt = async () => (await fetch(docs)).text();
+export { systemPrompt, detectDevice };
