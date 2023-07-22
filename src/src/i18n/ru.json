@@ -192,7 +192,6 @@
   "State": "Состояние",
   "State condition": "Сравнение состояния",
   "Time condition": "Условие времени",
-  "Astrological": "Aстрономический",
   "Set state action": "Установить состояние",
   "Exec": "Исполнить shell",
   "HTTP Call": "HTTP-вызов",
@@ -228,7 +227,6 @@
   "Triggers the rule on update or change of some state": "Запускает правило при обновлении или изменении какого-либо состояния",
   "Compares the state value with user defined value": "Сравнивает значение состояния с пользовательским значением",
   "Compares current time with the user specific time": "Сравнивает текущее время с конкретным временем пользователя",
-  "Compares current time with astrological event": "Сравнивает текущее время с астрономическим событием",
   "Control or update some state": "Контролировать или обновлять какое-то состояние",
   "Executes some shell command": "Выполняет некоторую команду оболочки",
   "Make a HTTP get request": "Сделайте HTTP-запрос на получение",
@@ -349,10 +347,12 @@
   "for professionals": "для профессионалов",
   "Duplicate name": "Повторяющееся имя",
   "Empty name is not allowed": "Пустое имя не допускается",
-  "Astrological events today": "Астрологические события сегодня",
-  "Show astrological events": "Показать астрологические события",
   "Time": "Время",
   "Description": "Описание",
   "nextSunrise": "Следующий восход",
-  "nextSunset": "Следующий закат"
+  "nextSunset": "Следующий закат",
+  "Astronomical events today": "Астрономические события сегодня",
+  "Compares current time with astronomical event": "Сравнивает текущее время с астрономическим событием",
+  "Show astronomical events": "Показать астрономические события",
+  "Astronomical": "Aстрономический"
 }

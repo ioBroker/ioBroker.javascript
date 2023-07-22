@@ -3,7 +3,7 @@ import TriggerSchedule from '../Blocks/TriggerSchedule';
 import TriggerState from '../Blocks/TriggerState';
 import ConditionState from '../Blocks/ConditionState';
 import ConditionTime from '../Blocks/ConditionTime';
-import ConditionAstrological from '../Blocks/ConditionAstrological';
+import ConditionAstronomical from '../Blocks/ConditionAstronomical';
 import ActionSetState from '../Blocks/ActionSetState';
 import ActionExec from '../Blocks/ActionExec';
 import ActionHTTPCall from '../Blocks/ActionHTTPCall';
@@ -19,7 +19,7 @@ const StandardBlocks = [
     TriggerState,
     ConditionState,
     ConditionTime,
-    ConditionAstrological,
+    ConditionAstronomical,
     ActionSetState,
     ActionExec,
     ActionHTTPCall,
