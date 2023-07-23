@@ -81,15 +81,10 @@ const detectDevice = async socket => {
                     if (!deviceObject.deviceType) {
                         // deviceObject.deviceType = control.type;
                     }
+                    if (control.states) {
+                        control.states = control.states.filter(state => state.id);
+                    }
                     deviceObject = { ...deviceObject, ...control };
-                    // if (control.states) {
-                    //     control.states.forEach(state => {
-                    //         if (state.id) {
-                    //             // console.log(state);
-                    //             deviceObject.states.push(state);
-                    //         }
-                    //     });
-                    // }
                 });
             }
             roomObject.devices.push(deviceObject);
