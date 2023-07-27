@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Tour from 'reactour';
 
+import { Configuration, OpenAIApi } from 'openai';
+
 import Toolbar from '@mui/material/Toolbar';
 import withStyles from '@mui/styles/withStyles';
 import Button from '@mui/material/Button';
@@ -64,6 +66,9 @@ import DialogScriptEditor from './Dialogs/ScriptEditor';
 import RulesEditor from './Components/RulesEditor';
 import Debugger from './Components/Debugger';
 import steps, { STEPS } from './Components/RulesEditor/helpers/Tour';
+import { AutoFixNormal } from '@mui/icons-material';
+import { detectDevice, systemPrompt } from './OpenAi/OpenAiPrompt';
+import OpenAiDialog from './OpenAi/OpenAiDialog';
 
 const images = {
     'Blockly': ImgBlockly,
@@ -1065,11 +1070,11 @@ class Editor extends React.Component {
                     >
                         <IconCron />
                     </IconButton>}
-
+                    <OpenAiDialog socket={this.props.socket} classes={this.props.classes} />
                     <IconButton
                         key="show-astro"
-                        aria-label="Show astrological events"
-                        title={I18n.t('Show astrological events')}
+                        aria-label="Show astronomical events"
+                        title={I18n.t('Show astronomical events')}
                         className={this.props.classes.toolbarButtons}
                         disabled={!isInstanceRunning}
                         onClick={() => {
@@ -1374,7 +1379,7 @@ class Editor extends React.Component {
                 onClose={() => this.setState({ showAstro: false })}
                 key="dialogAstro"
             >
-                <DialogTitle>{I18n.t('Astrological events today')}</DialogTitle>
+                <DialogTitle>{I18n.t('Astronomical events today')}</DialogTitle>
                 <DialogContent>
                     {!this.state.astroEvents ? <LinearProgress /> : <TableContainer component={Paper}>
                         <Table size="small">

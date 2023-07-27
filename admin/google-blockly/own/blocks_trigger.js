@@ -286,7 +286,7 @@ Blockly.JavaScript['on_ext'] = function(block) {
 
     const oid = '[].concat(' + oids.join(').concat(') + ')';
 
-    return `on({ id: ${oid}, ${val} ${ack_condition ? ', ack: ' + ack_condition : ''} }, async (obj) => {\n` +
+    return `on({ id: ${oid}, ${val}${ack_condition ? `, ack: ${ack_condition}` : ''} }, async (obj) => {\n` +
         (oids.length === 1 ? Blockly.JavaScript.prefixLines('let value = obj.state.val;\nlet oldValue = obj.oldState.val;', Blockly.JavaScript.INDENT) + '\n' : '') +
         statement + '});\n';
 };
@@ -348,7 +348,10 @@ Blockly.JavaScript['on'] = function(block) {
     const dropdown_condition = block.getFieldValue('CONDITION');
     const ack_condition = block.getFieldValue('ACK_CONDITION');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    const objectName = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+    let objectName = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+    if (typeof objectName === 'object') {
+        objectName = objectName[systemLang] || objectName.en;
+    }
 
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
 
@@ -359,7 +362,7 @@ Blockly.JavaScript['on'] = function(block) {
         val = `change: '${dropdown_condition}'`;
     }
 
-    return `on({ id: '${value_objectid}'${objectName ? ` /* ${objectName} */` : ''}, ${val} ${ack_condition ? ', ack: ' + ack_condition : ''} }, async (obj) => {\n` +
+    return `on({ id: '${value_objectid}'${objectName ? ` /* ${objectName} */` : ''}, ${val}${ack_condition ? `, ack: ${ack_condition}` : ''} }, async (obj) => {\n` +
         Blockly.JavaScript.prefixLines('let value = obj.state.val;', Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines('let oldValue = obj.oldState.val;', Blockly.JavaScript.INDENT) + '\n' +
         statement +
@@ -989,8 +992,9 @@ Blockly.JavaScript['onMessage'] = function (block) {
     const message = block.getFieldValue('MESSAGE');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    return `onMessage('${message}', async (data) => {\n` +
+    return `onMessage('${message}', async (data, callback) => {\n` +
         statement +
+        Blockly.JavaScript.prefixLines(`callback({ result: true });`, Blockly.JavaScript.INDENT) + '\n' +
         '});\n';
 };
 
@@ -1044,7 +1048,17 @@ Blockly.JavaScript['onFile'] = function (block) {
     const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
     const withFile = block.getFieldValue('WITH_FILE');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    const objectName = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+
+    let objectName = '';
+    try {
+        const objId = eval(value_objectid); // Code to string
+        objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
+        if (typeof objectName === 'object') {
+            objectName = objectName[systemLang] || objectName.en;
+        }
+    } catch (error) {
+        
+    }
 
     return `onFile(${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, ${file}, ${withFile === 'TRUE' ? 'true' : 'false'}, ` +
         'async (id, fileName, size, data, mimeType) => {\n' +
@@ -1088,7 +1102,17 @@ Blockly.Blocks['offFile'] = {
 Blockly.JavaScript['offFile'] = function (block) {
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
-    const objectName = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+
+    let objectName = '';
+    try {
+        const objId = eval(value_objectid); // Code to string
+        objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
+        if (typeof objectName === 'object') {
+            objectName = objectName[systemLang] || objectName.en;
+        }
+    } catch (error) {
+        
+    }
 
     return `offFile(${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, ${file});\n`;
 };

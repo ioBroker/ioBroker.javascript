@@ -192,7 +192,6 @@
   "State": "Stato",
   "State condition": "Condizione dello stato",
   "Time condition": "Condizione temporale",
-  "Astrological": "Astronomico",
   "Set state action": "Imposta l'azione dello stato",
   "Exec": "Execshell",
   "HTTP Call": "Chiamata HTTP",
@@ -228,7 +227,6 @@
   "Triggers the rule on update or change of some state": "Attiva la regola in caso di aggiornamento o modifica di uno stato",
   "Compares the state value with user defined value": "Confronta il valore dello stato con il valore definito dall'utente",
   "Compares current time with the user specific time": "Confronta l'ora corrente con l'ora specifica dell'utente",
-  "Compares current time with astrological event": "Confronta l'ora corrente con l'evento astronomico",
   "Control or update some state": "Controlla o aggiorna uno stato",
   "Executes some shell command": "Esegue alcuni comandi della shell",
   "Make a HTTP get request": "Effettua una richiesta get HTTP",
@@ -349,10 +347,12 @@
   "for professionals": "per i professionisti",
   "Duplicate name": "Nome duplicato",
   "Empty name is not allowed": "Il nome vuoto non è consentito",
-  "Astrological events today": "Eventi astrologici oggi",
-  "Show astrological events": "Mostra eventi astrologici",
   "Time": "Tempo",
   "Description": "Descrizione",
   "nextSunrise": "Prossima alba",
-  "nextSunset": "Prossimo tramonto"
+  "nextSunset": "Prossimo tramonto",
+  "Astronomical events today": "Eventi astronomici oggi",
+  "Compares current time with astronomical event": "Confronta l'ora corrente con l'evento astronomico",
+  "Show astronomical events": "Mostra eventi astronomici",
+  "Astronomical": "Astronomico"
 }

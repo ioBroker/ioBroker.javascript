@@ -192,7 +192,6 @@
   "State": "Staat",
   "State condition": "Staat staat",
   "Time condition": "Tijdsvoorwaarde",
-  "Astrological": "Astronomisch",
   "Set state action": "Stel statusactie in",
   "Exec": "Exec shell",
   "HTTP Call": "HTTP-oproep",
@@ -228,7 +227,6 @@
   "Triggers the rule on update or change of some state": "Activeert de regel voor het bijwerken of wijzigen van een bepaalde staat",
   "Compares the state value with user defined value": "Vergelijkt de statuswaarde met de door de gebruiker gedefinieerde waarde",
   "Compares current time with the user specific time": "Vergelijkt de huidige tijd met de gebruikerspecifieke tijd",
-  "Compares current time with astrological event": "Vergelijkt de huidige tijd met een astronomische gebeurtenis",
   "Control or update some state": "Beheer of update een bepaalde staat",
   "Executes some shell command": "Voert een shell-commando uit",
   "Make a HTTP get request": "Maak een HTTP-ophaalverzoek",
@@ -349,10 +347,12 @@
   "for professionals": "voor professionals",
   "Duplicate name": "Dubbele naam",
   "Empty name is not allowed": "Lege naam is niet toegestaan",
-  "Astrological events today": "Astrologische gebeurtenissen vandaag",
-  "Show astrological events": "Laat astrologische gebeurtenissen zien",
   "Time": "Tijd",
   "Description": "Beschrijving",
   "nextSunrise": "Volgende zonsopgang",
-  "nextSunset": "Volgende zonsondergang"
+  "nextSunset": "Volgende zonsondergang",
+  "Astronomical events today": "Astronomische gebeurtenissen vandaag",
+  "Compares current time with astronomical event": "Vergelijkt huidige tijd met astronomische gebeurtenis",
+  "Show astronomical events": "Laat astronomische gebeurtenissen zien",
+  "Astronomical": "Astronomisch"
 }

@@ -333,21 +333,25 @@ Blockly.JavaScript['sendto_custom'] = function (block) {
         if (val && val[0] === "'" && val[1] === '{') {
             val = val.substring(1, val.length - 1);
         }
-        args.push('\n   "' + input.fieldRow[0].getValue() + '": ' + val);
+        args.push(`'${input.fieldRow[0].getValue()}': ${val}`);
 
         if (block.itemCount_ === 1 && !input.fieldRow[0].getValue()) {
             if (statement) {
-                return 'sendTo("' + instance + '", "' + command + '", ' + val + ', async function (result) {\n  ' + statement + '  });\n' + logText;
+                return `sendTo('${instance}', '${command}', ${val}, async (result) => {\n` +
+                    statement +
+                    '});\n' + logText;
             } else {
-                return 'sendTo("' + instance + '", "' + command + '", ' + val + ');\n' + logText;
+                return `sendTo('${instance}', '${command}', ${val});\n` + logText;
             }
         }
     }
 
     if (statement) {
-        return 'sendTo("' + instance + '", "' + command + '", {' + (args.length ? args.join(',') + '\n' : '') + '}, async function (result) {\n  ' + statement + '  });\n' + logText;
+        return `sendTo('${instance}', '${command}', { ${args.length ? args.join(', ') : ''} }, async (result) => {\n` +
+            statement +
+            '});\n' + logText;
     } else {
-        return 'sendTo("' + instance + '", "' + command + '", {' + (args.length ? args.join(',') + '\n' : '') + '});\n' + logText;
+        return `sendTo('${instance}', '${command}', { ${args.length ? args.join(', ') : ''} });\n` + logText;
     }
 };
 
@@ -363,6 +367,10 @@ Blockly.Sendto.blocks['sendto_otherscript'] =
     + '             <field name="oid">Script Object ID</field>'
     + '         </shadow>'
     + '     </value>'
+    + '     <value name="TIMEOUT">'
+    + '     </value>'
+    + '     <value name="UNIT">'
+    + '     </value>'
     + '     <value name="MESSAGE">'
     + '     </value>'
     + '     <value name="DATA">'
@@ -374,20 +382,20 @@ Blockly.Sendto.blocks['sendto_otherscript'] =
 
 Blockly.Blocks['sendto_otherscript'] = {
     init: function() {
-        const options = [[Blockly.Translate('sendto_otherscript_anyInstance'), '']];
+        const options = [];
         if (typeof main !== 'undefined' && main.instances) {
             for (let i = 0; i < main.instances.length; i++) {
                 const m = main.instances[i].match(/^system.adapter.javascript.(\d+)$/);
                 if (m) {
                     const n = parseInt(m[1], 10);
-                    options.push(['javascript.' + n, '.' + n]);
+                    options.push(['javascript.' + n, String(n)]);
                 }
             }
         }
 
         if (!options.length) {
             for (let u = 0; u <= 4; u++) {
-                options.push(['javascript.' + u, '.' + u]);
+                options.push(['javascript.' + u, String(u)]);
             }
         }
 
@@ -401,6 +409,15 @@ Blockly.Blocks['sendto_otherscript'] = {
         this.appendValueInput('OID')
             .appendField(Blockly.Translate('sendto_otherscript_script'))
             .setCheck(null);
+
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('timeouts_wait'))
+            .appendField(new Blockly.FieldTextInput(1000), 'TIMEOUT')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('timeouts_settimeout_ms'), 'ms'],
+                [Blockly.Translate('timeouts_settimeout_sec'), 'sec'],
+                [Blockly.Translate('timeouts_settimeout_min'), 'min']
+            ]), 'UNIT');
 
         this.appendDummyInput('MESSAGE')
             .appendField(Blockly.Translate('sendto_otherscript_message'))
@@ -421,22 +438,32 @@ Blockly.Blocks['sendto_otherscript'] = {
 
 Blockly.JavaScript['sendto_otherscript'] = function(block) {
     const dropdown_instance = block.getFieldValue('INSTANCE');
-    const value_objectid  = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const message = block.getFieldValue('MESSAGE');
     let data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
 
-    const objectname = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+    const unit = block.getFieldValue('UNIT');
+    let timeout = block.getFieldValue('TIMEOUT');
+    if (unit === 'min') {
+        timeout *= 60000;
+    } else if (unit === 'sec') {
+        timeout *= 1000;
+    }
+
+    let objectName = '';
+    try {
+        const objId = eval(value_objectid); // Code to string
+        objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
+        if (typeof objectName === 'object') {
+            objectName = objectName[systemLang] || objectName.en;
+        }
+    } catch (error) {
+        
+    }
 
     if (!data) {
         data = 'true';
     }
 
-    let text = '{\n';
-    text += '    script: ' + value_objectid + ',' + (objectname ? '/*' + objectname + '*/' : '') + '\n';
-    text += '    message: "' + message + '",\n';
-    text += '    data: ' + data + '\n';
-
-    text += '}';
-
-    return `sendTo('javascript${dropdown_instance}', 'toScript', ${text});\n`;
+    return `messageTo({ instance: ${dropdown_instance}, script: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, message: '${message}' }, ${data}, { timeout: ${timeout} });\n`;
 };
