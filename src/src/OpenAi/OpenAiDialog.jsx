@@ -1,10 +1,11 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import { AutoFixNormal } from '@mui/icons-material';
+import { Close, SmartToy } from '@mui/icons-material';
 import {
     Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField,
 } from '@mui/material';
 import { useState } from 'react';
 import { Configuration, OpenAIApi } from 'openai';
+import MonacoEditor from 'react-monaco-editor';
 import { detectDevice, systemPrompt } from './OpenAiPrompt';
 
 const OpenAiDialog = props => {
@@ -15,16 +16,16 @@ const OpenAiDialog = props => {
         <IconButton
             key="ai"
             aria-label="AI"
-            title={I18n.t('AI')}
+            title={I18n.t('AI code generator')}
             className={props.classes.toolbarButtons}
             size="medium"
             onClick={() => setOpen(true)}
         >
-            <AutoFixNormal />
+            <SmartToy />
         </IconButton>
-        <Dialog open={open} onClose={() => setOpen(false)}>
-            <DialogTitle>{I18n.t('AI assistant')}</DialogTitle>
-            <DialogContent style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <Dialog open={open} onClose={() => setOpen(false)} fullWidth>
+            <DialogTitle>{I18n.t('AI code generator')}</DialogTitle>
+            <DialogContent style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <div>
                     <TextField
                         variant="standard"
@@ -51,7 +52,7 @@ const OpenAiDialog = props => {
                                 model: 'gpt-3.5-turbo-16k',
                                 messages: [
                                     { role: 'system', content: `You are programmer. Here is a documentation:\n\n${docs}` },
-                                    { role: 'system', content: `Here is list of devices:\n\n${JSON.stringify(devices, null, 2)}` },
+                                    // { role: 'system', content: `Here is list of devices:\n\n${JSON.stringify(devices, null, 2)}` },
                                     { role: 'user', content: `Write code that do:\n\n${question}\n\nReturn only code.` }],
                             });
                             console.log(chatCompletionPhase1.data.choices[0].message);
@@ -68,17 +69,29 @@ const OpenAiDialog = props => {
                     </Button>
                 </div>
                 <div>
-                    <TextField
-                        variant="standard"
-                        multiline
-                        fullWidth
-                        label={I18n.t('Answer')}
+                    {I18n.t('Result')}
+                    :
+                </div>
+                <div>
+                    <MonacoEditor
+                        width="100%"
+                        height="400"
+                        languages={['javascript', 'typescript', 'coffeescript']}
+                        // language={this.state.language}
+                        // theme={this.state.isDark ? 'vs-dark' : ''}
                         value={answer}
-                        onChange={e => setAnswer(e.target.value)}
+                        options={{ readOnly: true }}
                     />
                 </div>
             </DialogContent>
             <DialogActions>
+                <Button
+                    variant="contained"
+                    startIcon={<Close />}
+                    onClick={() => setOpen(false)}
+                >
+                    {I18n.t('Close')}
+                </Button>
             </DialogActions>
         </Dialog>
     </>;
