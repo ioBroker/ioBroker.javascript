@@ -354,5 +354,10 @@
   "Astronomical events today": "Eventos astronómicos hoy",
   "Compares current time with astronomical event": "Compara la hora actual con un evento astronómico",
   "Show astronomical events": "Mostrar eventos astronómicos",
-  "Astronomical": "Astronómico"
+  "Astronomical": "Astronómico",
+  "Enter your question": "Ingrese su solicitud",
+  "Press Ctrl+Enter to get the answer": "Presiona Ctrl+Enter para obtener la respuesta",
+  "Ask": "Preguntar",
+  "Result": "Resultado",
+  "Use generated code": "Usar código generado"
 }

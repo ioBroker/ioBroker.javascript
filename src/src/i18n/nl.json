@@ -354,5 +354,10 @@
   "Astronomical events today": "Astronomische gebeurtenissen vandaag",
   "Compares current time with astronomical event": "Vergelijkt huidige tijd met astronomische gebeurtenis",
   "Show astronomical events": "Laat astronomische gebeurtenissen zien",
-  "Astronomical": "Astronomisch"
+  "Astronomical": "Astronomisch",
+  "Enter your question": "Voer uw verzoek in",
+  "Press Ctrl+Enter to get the answer": "Druk op Ctrl+Enter om het antwoord te krijgen",
+  "Ask": "Vragen",
+  "Result": "Resultaat",
+  "Use generated code": "Gebruik gegenereerde code"
 }

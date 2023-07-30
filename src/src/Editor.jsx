@@ -1070,7 +1070,14 @@ class Editor extends React.Component {
                     >
                         <IconCron />
                     </IconButton>}
-                    <OpenAiDialog socket={this.props.socket} classes={this.props.classes} />
+                    {this.scripts[this.state.selected].engineType !== 'Blockly' && this.scripts[this.state.selected].engineType !== 'Rules' ?
+                        <OpenAiDialog
+                            socket={this.props.socket}
+                            classes={this.props.classes}
+                            isDark={this.state.themeType === 'dark'}
+                            language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
+                            onAddCode={code => this.setState({ insert: code })}
+                        /> : null}
                     <IconButton
                         key="show-astro"
                         aria-label="Show astronomical events"
@@ -1157,8 +1164,10 @@ class Editor extends React.Component {
                             this.setState({ showCompiledCode: !this.state.showCompiledCode });
                             this.state.isTourOpen && this.state.tourStep === STEPS.showJavascript && this.setState({ tourStep: STEPS.switchBackToRules });
                             this.state.isTourOpen && this.state.tourStep === STEPS.switchBackToRules && this.setState({ tourStep: STEPS.saveTheScript });
-                        }}>
-                        <img alt={this.state.blockly ? "blockly2js" : "rules2js"} src={this.state.blockly ? ImgBlockly2Js : ImgRules2Js} /></Button>}
+                        }}
+                    >
+                        <img alt={this.state.blockly ? "blockly2js" : "rules2js"} src={this.state.blockly ? ImgBlockly2Js : ImgRules2Js} />
+                    </Button>}
                     <IconButton
                         key="debug"
                         disabled={this.props.debugMode}
@@ -1342,7 +1351,7 @@ class Editor extends React.Component {
                         this.selectId.callback(selected);
                         this.selectId.callback = null;
                     } else {
-                        this.setState({ insert: `'${selected}'/*${name}*/` })
+                        this.setState({ insert: `'${selected}'/*${name}*/` });
                     }
                 }}
             />;

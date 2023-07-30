@@ -30,11 +30,11 @@
     "@types/node": "should match the lowest MAJOR version of Node.js we support."
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^2.6.8",
+    "@iobroker/adapter-core": "^3.0.3",
     "@types/node": "^20.4.5",
     "@types/request": "^2.48.8",
     "axios": "^1.4.0",
-    "coffeescript": "^2.7.0",
+    "coffeescript": "^1.12.7",
     "jsonata": "^2.0.3",
     "jszip": "^3.10.1",
     "node-inspect": "^2.0.0",

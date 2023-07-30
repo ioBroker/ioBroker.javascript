@@ -354,5 +354,10 @@
   "Astronomical events today": "Astronomical events today",
   "Compares current time with astronomical event": "Compares current time with astronomical event",
   "Show astronomical events": "Show astronomical events",
-  "Astronomical": "Astronomical"
+  "Astronomical": "Astronomical",
+  "Enter your question": "Enter your request",
+  "Press Ctrl+Enter to get the answer": "Press Ctrl+Enter to get the answer",
+  "Ask": "Ask",
+  "Result": "Result",
+  "Use generated code": "Use generated code"
 }

@@ -354,5 +354,10 @@
   "Astronomical events today": "今天的天文事件",
   "Compares current time with astronomical event": "将当前时间与天文事件进行比较",
   "Show astronomical events": "显示天文事件",
-  "Astronomical": "天文"
+  "Astronomical": "天文",
+  "Enter your question": "输入您的要求",
+  "Press Ctrl+Enter to get the answer": "按 Ctrl+Enter 即可得到答案",
+  "Ask": "问",
+  "Result": "结果",
+  "Use generated code": "使用生成的代码"
 }
