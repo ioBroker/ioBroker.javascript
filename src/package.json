@@ -11,7 +11,7 @@
         "@mui/material": "^5.14.2",
         "@mui/styles": "^5.14.1",
         "@sentry/browser": "^7.60.1",
-        "@sentry/integrations": "^7.60.1",
+        "@sentry/integrations": "^7.61.0",
         "craco-module-federation": "^1.1.0",
         "eslint": "^8.46.0",
         "eslint-config-airbnb": "^19.0.4",
