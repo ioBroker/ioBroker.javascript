@@ -169,7 +169,8 @@ Blockly.JavaScript['time_compare_ex'] = function(block) {
     let time       = Blockly.JavaScript.valueToCode(block, 'CUSTOM_TIME', Blockly.JavaScript.ORDER_ATOMIC);
     end_time = end_time || null;
     time = time || null;
-    return ['compareTime(' + start_time + ', ' + end_time + ', "' + option + '", ' + time + ')', Blockly.JavaScript.ORDER_ATOMIC];
+
+    return [`compareTime(${start_time}, ${end_time}, '${option}', ${time})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // if time greater, less, between
@@ -192,13 +193,13 @@ Blockly.Blocks['time_compare'] = {
 
         this.appendDummyInput('OPTION')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('time_compare_lt'), "<"],
-                [Blockly.Translate('time_compare_le'), "<="],
-                [Blockly.Translate('time_compare_gt'), ">"],
-                [Blockly.Translate('time_compare_ge'), ">="],
-                [Blockly.Translate('time_compare_eq'), "=="],
-                [Blockly.Translate('time_compare_bw'), "between"],
-                [Blockly.Translate('time_compare_nb'), "not between"]
+                [Blockly.Translate('time_compare_lt'), '<'],
+                [Blockly.Translate('time_compare_le'), '<='],
+                [Blockly.Translate('time_compare_gt'), '>'],
+                [Blockly.Translate('time_compare_ge'), '>='],
+                [Blockly.Translate('time_compare_eq'), '=='],
+                [Blockly.Translate('time_compare_bw'), 'between'],
+                [Blockly.Translate('time_compare_nb'), 'not between']
             ], function (option) {
                 this.sourceBlock_.updateShape_((option === 'between' || option === 'not between'));
             }), 'OPTION');
@@ -255,7 +256,7 @@ Blockly.JavaScript['time_compare'] = function(block) {
     let end_time   = block.getFieldValue('END_TIME');
     end_time = end_time || null;
 
-    return ['compareTime("' + start_time + '", "' + end_time + '", "' + option + '")', Blockly.JavaScript.ORDER_ATOMIC];
+    return [`compareTime('${start_time}', '${end_time}', '${option}')`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- get time --------------------------------------------------
@@ -407,7 +408,7 @@ Blockly.JavaScript['time_get'] = function(block) {
     } else if (option === 'm') {
         code = '(new Date().getMinutes())';
     } else if (option === 'mid') {
-        code = '(function () {const v = new Date(); return v.getHours() * 60 + v.getMinutes();})()';
+        code = '(() => { const v = new Date(); return v.getHours() * 60 + v.getMinutes(); })()';
     } else if (option === 'h') {
         code = '(new Date().getHours())';
     } else if (option === 'd') {
@@ -415,23 +416,23 @@ Blockly.JavaScript['time_get'] = function(block) {
     } else if (option === 'M') {
         code = '(new Date().getMonth() + 1)';
     } else if (option === 'Mt') {
-        code = 'formatDate(new Date(), "OO", "' + lang + '")';
+        code = `formatDate(new Date(), 'OO', '${lang}')`;
     } else if (option === 'Mts') {
-        code = 'formatDate(new Date(), "O", "' + lang + '")';
+        code = `formatDate(new Date(), 'O', '${lang}')`;
     } else if (option === 'y') {
         code = '(new Date().getYear())';
     } else if (option === 'fy') {
         code = '(new Date().getFullYear())';
     } else if (option === 'wdt') {
-        code = 'formatDate(new Date(), "WW", "' + lang + '")';
+        code = `formatDate(new Date(), 'WW', '${lang}')`;
     } else if (option === 'wdts') {
-        code = 'formatDate(new Date(), "W", "' + lang + '")';
+        code = `formatDate(new Date(), 'W', '${lang}')`;
     } else if (option === 'wd') {
         code = '(new Date().getDay() === 0 ? 7 : new Date().getDay())';
     } else if (option === 'custom') {
-        code = 'formatDate(new Date(), "' + format + '")';
+        code = `formatDate(new Date(), '${format}')`;
     } else {
-        code = 'formatDate(new Date(), "' + option + '")';
+        code = `formatDate(new Date(), '${option}')`;
     }
 
     return [code, Blockly.JavaScript.ORDER_ATOMIC];
