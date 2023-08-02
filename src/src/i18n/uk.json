@@ -354,5 +354,10 @@
   "Astronomical events today": "Астрономічні події сьогодні",
   "Compares current time with astronomical event": "Порівнює поточний час з астрономічною подією",
   "Show astronomical events": "Показати астрономічні події",
-  "Astronomical": "Астрономічний"
+  "Astronomical": "Астрономічний",
+  "Enter your question": "Введи своє прохання",
+  "Press Ctrl+Enter to get the answer": "Натисніть Ctrl+Enter, щоб отримати відповідь",
+  "Ask": "Запитуйте",
+  "Result": "Результат",
+  "Use generated code": "Використовуйте згенерований код"
 }

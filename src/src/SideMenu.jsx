@@ -1408,7 +1408,7 @@ class SideDrawer extends React.Component {
                 //     ><IconRestart/></IconButton>));
                 // }
             }
-            result.push(<span style={{ opacity: 0.5, fontSize: 10 }}>v{this.props.version}</span>);
+            result.push(<span key="version" style={{ opacity: 0.5, fontSize: 10 }}>v{this.props.version}</span>);
         }
         return result;
     }
@@ -1540,6 +1540,7 @@ class SideDrawer extends React.Component {
     getAdapterDebugDialog() {
         if (this.state.showAdapterDebug) {
             return <DialogAdapterDebug
+                key="debug"
                 socket={this.props.socket}
                 onClose={() => this.setState({ showAdapterDebug: false })}
                 onDebug={(instance, adapter) => this.setState({ showAdapterDebug: false }, () => this.props.onDebugInstance({instance, adapter}))}
@@ -1657,7 +1658,7 @@ class SideDrawer extends React.Component {
                 onAdd={(id, name) => this.props.onAddNew && this.props.onAddNew(id, name, true)}
             /> : null,
 
-            this.state.errorText ? <DialogError onClose={() => this.setState({ errorText: '' })} text={this.state.errorText} /> : null,
+            this.state.errorText ? <DialogError key="error" onClose={() => this.setState({ errorText: '' })} text={this.state.errorText} /> : null,
 
             this.getAdapterDebugDialog(),
         ];

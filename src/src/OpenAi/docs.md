@@ -1,82 +1,4 @@
-## Note
-If in the script some modules or functions are used with callbacks or cyclic calls, except setTimeout/setInterval,
-so they will be called again and again even if the new version of script exists or script is deleted. For example the following script:
-
-```js
-const http = require('http');
-// Read www.google.com page
-http.request('www.google.com', function (res) {
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-        log('BODY: ' + chunk);
-        });
-}).on('error', function (e) {
-        log('problem with request: ' + e.message, 'error');
-});
-```
-
-was deleted by user before callback returns. The callback will be executed anyway. To fix this feature **restart** the javascript adapter.
-
-You can use `cb` function to wrap you callback, like this
-
-```js
-http.request('www.google.com', cb(function (res) {
-    res.setEncoding('utf8');
-    res.on('data', function (chunk) {
-      log('BODY: ' + chunk);
-    });
-})).on('error', cb(function (e) {
-    log('problem with request: ' + e.message, 'error');
-}));
-```
-to be sure, that no callback will be called if script is deleted or modified.
-
-## Global functions
-You can define the global scripts in the "global" folder.
-All global scripts are available on all instances. If global script is disabled, it will not be used.
-Global script will be just prepended to the normal script and compiled, so you cannot share data between scripts via global scripts. Use states for it.
-
-To use global functions in TypeScript, you have to `declare` them first, so the compiler knows about the global functions. Example:
-```typescript
-// global script:
-// ==============
-function globalFn(arg: string): void {
-    // actual implementation
-}
-
-// normal script:
-// ==============
-declare function globalFn(arg: string): void;
-// use as normal:
-globalFn("test");
-```
-
-#### Best practice:
-Create two instances of javascript adapter: one "test" and one "production".
-After the script is tested in the "test" instance, it can be moved to "production". By that you can restart the "test" instance as you want.
-
-## Following functions can be used in scripts:
-
-### require - load some module
-```js
-const mod = require('module_name');
-```
-Following modules are pre-loaded: `fs`, `crypto`, `wake_on_lan`, `request`, `suncalc2`, `util`, `path`, `os`, `net`, `events`, `dns`.
-
-To use other modules, enter the name of the module in the configuration dialog. ioBroker will install the module, after which you can require and use it in your scripts.
-
-**Notice** - module *request* is available via variable *request*. There is no need to write `const request = require('request');`.
-
-### Buffer
-Buffer - Node.js Buffer, read here [http://nodejs.org/api/buffer.html](http://nodejs.org/api/buffer.html)
-
-### log - Gives out the message into log
-```js
-log(msg, sev);
-```
-Message is a string and sev is one of the following: 'debug', 'info', 'warn', 'error'.
-Default severity is ***'info'***
-
+You can use the following function additionally to all Node.js functions:
 ### exec - execute some OS command, like "cp file1 file2"
 ```js
 exec(cmd, [options], callback);
@@ -85,26 +7,21 @@ exec(cmd, [options], callback);
 Execute system command and get the outputs.
 
 ```js
-// reboot linux system :)
-exec('reboot');
-
 // Get the list of files and directories in /var/log
 exec('ls /var/log', function (error, stdout, stderr) {
     console.log('stdout: ' + stdout);
 });
 ```
 
-Node.js uses /bin/sh to execute commands. If you want to use another shell you can use the options object as described in the [Node.js documentation](https://nodejs.org/api/child_process.html#child_processexeccommand-options-callback) for child_process.exec.
-It is best practice to always use fill path names to commands to make sure the right command is executed.
-
-**Notice:** you must enable *Enable command "setObject"* option to call it.
+Node.js uses `/bin/sh` to execute commands.
+It is the best practice to always use fill path names to commands to make sure the right command is executed.
 
 ### on - Subscribe on changes or updates of some state
 ```js
 on(pattern, callbackOrId, value);
 ```
 
-The callback function will return the object as parameter with following content:
+The callback function will return the object as parameter with the following content:
 ```js
 {
     'id': 'javascript.0.myplayer',
@@ -124,7 +41,6 @@ The callback function will return the object as parameter with following content
     }
 }
 ```
-**Note:** `state` was previously called `newState`. That is still working.
 
 Example:
 ```js
@@ -150,7 +66,7 @@ on('adapter.0.device.channel.sensor', function (data) {
 });
 ```
 
-You can use following parameters to specify the trigger:
+You can use the following parameters to specify the trigger:
 
 | parameter   | type/value | description                                                                                                                                         |
 |-----------  |-------     |-----------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -295,17 +211,15 @@ setState('stateId1', 'new value');
 // stateId2 will be set to 'triggered'.
 ```
 
-Function "on" returns handler back. This handler can be used by unsubscribe.
+Function `on` returns handler back. This handler can be used by unsubscribe.
 
 *Notice:* By default only states with quality 0x00 will be passed to callback function. If you want to get all events, add {q: '*'} to pattern structure.
 
-*Notice:* Please note, that by default "change" is equal to "any", except when only id as string is set (like `on("id", function (){});`). In last case change will be set to "ne".
+*Notice:* Please note, that by default "change" is equal to "any", except when only id as string is set (like `on("id", function (){});`). In last case change will be set to `ne`.
 
-*Notice:* If you want to also get state deletions/expires as trigger you need to use change with "ne" or "any" AND q with "*" as filter!
+*Notice:* If you want to also get state deletions/expires as trigger, you need to use change with "ne" or "any" AND q with "*" as filter!
 
 *Notice:* from 4.3.2 it is possible to write type of trigger as second parameter: `on('my.id.0', 'any', obj => console.log(obj.state.val));`
-
-### subscribe - same as **[on](#on---subscribe-on-changes-or-updates-of-some-state)**
 
 ### unsubscribe
 ```js
@@ -338,40 +252,6 @@ on({ id: 'javascript.0.myState1', change: 'any' }, function (data) {
 });
 ```
 
-### getSubscriptions
-Get the list of subscriptions.
-
-Example of result:
-```js
-{
-	"megad.0.dataPointName": [
-		{
-			"name" : "script.js.NameOfScript",
-			"pattern" : {
-				"id" : "megad.0.dataPointName",
-				"change" : "ne"
-			}
-		}
-	]
-}
-```
-
-### getFileSubscriptions
-Get the list of file subscriptions.
-
-Example of result:
-```js
-{
-	"vis.0$%$main/*": [
-		{
-			"name" : "script.js.NameOfScript",
-			"id" : "vis.0",
-            "fileNamePattern": "main/*"
-		}
-	]
-}
-```
-
 ### schedule
 ```js
 schedule(pattern, callback);
@@ -380,7 +260,7 @@ schedule(pattern, callback);
 Time scheduler with astro-function.
 
 #### Time schedule
-Pattern can be a string with [Cron-Syntax](http://en.wikipedia.org/wiki/Cron), which consists of 5 (without seconds) or 6 (with seconds) digits:
+Pattern can be a string with CRON-Syntax, which consists of 5 (without seconds) or 6 (with seconds) digits:
 ```
 * * * * * *
 │ │ │ │ │ │
@@ -431,8 +311,8 @@ If start or end times for a schedule are needed this could also be implemented w
 - `start`
 - `end`
 - `rule`
-start and end defines a Date object a DateString or a number of milliseconds since 01 January 1970 00:00:00 UTC.
-Rule is a schedule string with [Cron-Syntax](http://en.wikipedia.org/wiki/Cron) or an object:
+  start and end defines a Date object a DateString or a number of milliseconds since 01 January 1970 00:00:00 UTC.
+  Rule is a schedule string with [Cron-Syntax](http://en.wikipedia.org/wiki/Cron) or an object:
 ```js
 let startTime = new Date(Date.now() + 5000);
 let endTime = new Date(startTime.getTime() + 5000);
@@ -467,13 +347,13 @@ schedule({ astro: 'sunset', shift: 10 }, function () {
 });
 ```
 
-The attribute "shift" is the offset in minutes. It can be negative too, to define time before astro event.
+The attribute "shift" is the offset in minutes. It can be negative, too, to define time before astro event.
 
-Following values can be used as attribute in astro-function:
+The following values can be used as attribute in astro-function:
 
 - `"sunrise"`: sunrise (top edge of the sun appears on the horizon)
 - `"sunriseEnd"`: sunrise ends (bottom edge of the sun touches the horizon)
-- `"goldenHourEnd"`: morning golden hour (soft light, best time for photography) ends
+- `"goldenHourEnd"`: morning golden hour (soft light, the best time for photography) ends
 - `"solarNoon"`: solar noon (sun is in the highest position)
 - `"goldenHour"`: evening golden hour starts
 - `"sunsetStart"`: sunset starts (bottom edge of the sun touches the horizon)
@@ -488,7 +368,7 @@ Following values can be used as attribute in astro-function:
 
 **Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
 
-**Note:** On some places sometimes it could be so, that no night/nightEnd exists. Please read [here](https://github.com/mourner/suncalc/issues/70) about it.
+**Note:** in some places sometimes it could be so, that no night/nightEnd exists.
 
 **Note:** you can use "on" function for schedule with small modification:
 ```js
@@ -505,29 +385,8 @@ on({ astro: 'sunset', shift: 10 }, function () {
 });
 ```
 
-### getSchedules
-```js
-const list = getSchedules(true);
-```
-Returns the list of all CRON jobs and schedules (except astro).
-Argument must be true if you want to get the list for every running script. Else only schedules in this script will be returned.
-
-```js
-const list = getSchedules(true);
-list.forEach(schedule => console.log(JSON.stringify(schedule)));
-
-// clear all schedules in all scripts!
-list.forEach(schedule => clearSchedule(schedule));
-```
-
-Example output:
-```
-2020-11-01 20:15:19.929  - {"type":"cron","pattern":"0 * * * *","scriptName":"script.js.Heizung","id":"cron_1604258108384_74924"}
-2020-11-01 20:15:19.931  - {"type":"schedule","schedule":"{"period":{}}","scriptName":"script.js.Heizung","id":"schedule_19576"}
-```
-
 ### clearSchedule
-If **no** "astro" function used you can cancel the schedule later. To allow this the schedule object must be saved:
+If **no** "astro" function used, you can cancel the schedule later. To allow this, the schedule object must be saved:
 
 ```js
 let sch = schedule('*/2 * * * *', function () { /* ... */ });
@@ -535,14 +394,6 @@ let sch = schedule('*/2 * * * *', function () { /* ... */ });
 // later:
 clearSchedule(sch);
 ```
-
-### getAttr
-```js
-getAttr({ attr1: { attr2: 5 } }, 'attr1.attr2');
-```
-Returns an attribute of the object. Path to attribute can be nested, like in the example.
-
-If the first attribute is string, the function will try to parse the string as JSON string.
 
 ### getAstroDate
 ```js
@@ -561,8 +412,7 @@ let tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() +
 let tomorrowNight = getAstroDate("night", tomorrow);
 ```
 
-**Nore: Depending on your geographical location there can be cases where e.g. 'night'/'nightEnd' do not exist on certain timepoints (e.g. locations north in may/June each year!**
-You can use webpages like [suncalc.net](http://suncalc.net) to check if the timepoints are correct.
+**Note: Depending on your geographical location, there can be cases where e.g. 'night'/'nightEnd' do not exist on certain time points (e.g. locations north in May/June each year!**
 
 ### isAstroDay
 ```js
@@ -574,7 +424,7 @@ Returns `true` if the current time is between the astro sunrise and sunset.
 ```js
 compareTime(startTime, endTime, operation, timeToCompare);
 ```
-Compares given time with limits.
+Compare given time with limits.
 
 If `timeToCompare` is not given, so the actual time will be used.
 
@@ -593,7 +443,6 @@ Time can be Date object or Date with time or just time.
 
 You can use astro-names for the time definition. All 3 parameters can be set as astro time.
 Following values are possible: `sunrise`, `sunset`, `sunriseEnd`, `sunsetStart`, `dawn`, `dusk`, `nauticalDawn`, `nauticalDusk`, `nightEnd`, `night`, `goldenHourEnd`, `goldenHour`.
-See [Astro](#astro--function) for detail.
 
 ```js
 console.log(compareTime('sunsetStart', 'sunsetEnd', 'between') ? 'Now is sunrise' : 'Now is no sunrise');
@@ -605,7 +454,7 @@ It is possible to define the time with offset too:
 console.log(compareTime({astro: 'sunsetStart', offset: 30}, {astro: 'sunrise', offset: -30}, '>') ? 'Now is at least 30 minutes after sunset' : 'No idea');
 ```
 
-Structure of astro object.
+Structure of an astro object.
 
 ```js
 {
@@ -615,46 +464,28 @@ Structure of astro object.
 }
 ```
 
-### setState
-```js
-setState(id, state, ack, callback);
-```
-
-**Note**: The following commands are identical
-
-```
-setState('myState', 1, false);
-setState('myState', {val: 1, ack: false});
-setState('myState', 1);
-```
-
-Please refer to https://github.com/ioBroker/ioBroker/wiki/Adapter-Development-Documentation#commands-and-statuses for usage of "ack".
-Short:
-- `ack` = false : Script wants to send a command to be executed by the target device/adapter
-- `ack` = true  : Command was successfully executed and state is updated as positive result
-
 ### setStateAsync
 ```js
 await setStateAsync(id, state, ack);
 ```
-Same as setState, but with `promise`.
+**Note**: The following commands are identical
 
-### setBinaryState
-**Attention: This method is deprecated!**
-
-```js
-setBinaryState(id, state, callback);
 ```
-Same as setState, but for the binary states, like files, images, buffers.
-The difference is that such a state has no ack, ts, lc, quality and so on flags und should be used only for binary things.
-The object's `common.type` must be equal to 'file'.
+await setStateAsync('myState', 1, false);
+await setStateAsync('myState', {val: 1, ack: false});
+await setStateAsync('myState', 1);
+```
+
+Explanation of an acknowledgement flag:
+- `ack` = `false` - Script wants to send a command to be executed by the target device/adapter
+- `ack` = `true`  - Command was successfully executed and state is updated as a positive result
 
 ### setStateDelayed
 ```js
 setStateDelayed(id, state, isAck, delay, clearRunning, callback);
 ```
 
-Same as setState but with delay in milliseconds. You can clear all running delay for this ID (by default). E.g.
+Same as setState but with delay in milliseconds. You can clear all running delays for this ID (by default). E.g.
 
 ```js
 // Switch ON the light in the kitchen in one second
@@ -662,10 +493,10 @@ setStateDelayed('Kitchen.Light.Lamp', true,  1000);
 
 // Switch OFF the light in the kitchen in 5 seconds and let first timeout run.
 setStateDelayed('Kitchen.Light.Lamp', false, 5000, false, function () {
-    log('Lamp is OFF');
+    console.log('Lamp is OFF');
 });
 ```
-This function returns handler of the timer and this timer can be individually stopped by clearStateDelayed
+This function returns the handler of the timer, and this timer can be individually stopped by clearStateDelayed
 
 ### clearStateDelayed
 ```js
@@ -681,61 +512,11 @@ clearStateDelayed('Kitchen.Light.Lamp', timer); // Nothing will be switched on
 clearStateDelayed('Kitchen.Light.Lamp'); // Clear all running delayed tasks for this ID
 ```
 
-### getStateDelayed
+### getStateAsync
 ```js
-getStateDelayed(id);
+const stateObject = await getStateAsync(id);
 ```
-
-This is synchronous call, and you will get the list of all running timers (setStateDelayed) for this id.
-You can call this function without id and get timers for all IDs.
-In case you call this function for some specific object ID you will get following answer:
-
-```js
-getStateDelayed('hm-rpc.0.LQE91119.1.STATE');
-
-// returns an array like
-[
-	{timerId: 1, left: 1123,   delay: 5000,  val: true,  ack: false},
-	{timerId: 2, left: 12555,  delay: 15000, val: false, ack: false},
-]
-```
-
-If you ask for all IDS the answer will look like:
-
-```js
-getStateDelayed();
-
-// returns an object like
-{
-	"hm-rpc.0.LQE91119.1.STATE": [
-		{timerId: 1, left: 1123,   delay: 5000,   val: true,  ack: false},
-		{timerId: 2, left: 12555,  delay: 15000,  val: false, ack: false},
-	],
-	"hm-rpc.0.LQE91119.2.LEVEL": [
-		{timerId: 3, left: 5679, delay: 10000,   val: 100,  ack: false}
-	]
-}
-```
-
-- `left` is the time left in milliseconds
-- `delay` is the initial delay value in milliseconds
-
-You can ask by timerId directly. In this case the answer will be:
-
-```js
-getStateDelayed(3);
-
-// returns an object like
-{"id": "hm-rpc.0.LQE91119.2.LEVEL", "left": 5679, "delay": 10000, "val": 100,  "ack": false}
-```
-
-### getState
-```js
-getState(id);
-```
-
 Returns state with the given id in the following form:
-
 ```js
 {
     val: value,
@@ -747,119 +528,87 @@ Returns state with the given id in the following form:
 ```
 
 If state does not exist, a warning will be printed in the logs and the object: `{val: null, notExist: true}` will be returned.
-To suppress the warning check if the state exists before calling getState (see [existsState](#existsState)).
+To suppress the warning, check if the state exists before calling getState (see [existsState](#existsState)).
 
-### getStateAsync
+### existsStateAsync
 ```js
-const stateObject = await getStateAsync(id);
-```
-Same as getState, but with `promise`.
-
-### getBinaryState
-**Attention: This method is deprecated!**
-```js
-getBinaryState(id, function (err, data) {});
+const exists = await existsStateAsync(id);
 ```
 
-Same as getState, but for the binary states, like files, images, buffers.
-The difference is that such a state has no ack, ts, lc, quality and so on flags und should be used only for binary "things".
-The object's `common.type` must be equal to 'file'.
-This function must be always used with callback. "data" is a buffer.
+Check if a state exists.
 
-### existsState
+### getObjectAsync
 ```js
-existsState(id, function (err, isExists) {});
+await getObjectAsync(id, enumName);
 ```
-
-If option "Do not subscribe all states on start" is deactivated, you can use simpler call:
-
-```js
-existsState(id)
-```
-the function returns in this case true or false.
-
-Checks if a state exists.
-
-### getObject
-```js
-getObject(id, enumName);
-```
-Get description of object id as stored in system.
+Get description of object id as stored in a system.
 You can specify the enumeration name. If this is defined, two additional attributes will be added to result: enumIds and enumNames.
-These arrays have all enumerations, where ID is member of. E.g:
+These arrays have all enumerations, where ID is a member of. E.g:
 
 ```js
-getObject('adapter.N.objectName', 'rooms');
+await getObjectAsync('adapter.N.objectName', 'rooms');
 ```
-
 gives back in enumIds all rooms, where the requested object is a member. You can define "true" as enumName to get back *all* enumerations.
 
-### setObject
+### setObjectAsync
 ```js
-setObject(id, obj, callback);
+await setObjectAsync(id, obj, callback);
 ```
-Write object into DB. This command can be disabled in adapter's settings. Use this function carefully, while the global settings can be damaged.
+Write an object into DB. This command can be disabled in adapter's settings. Use this function carefully, while the global settings can be damaged.
 
-You should use it to **modify** an existing object you read beforehand, e.g.:
+You should use it to modify an existing object you read beforehand, e.g.:
 ```js
-const obj = getObject('adapter.N.objectName');
+const obj = await getObjectAsync('adapter.N.objectName');
 obj.native.settings = 1;
-setObject('adapter.N.objectName', obj, function (err) {
-    if (err) log('Cannot write object: ' + err);
-});
+try {
+    await setObjectAsync('adapter.N.objectName', obj);
+} catch (e) {
+    console.log('Cannot write object: ' + e);
+}
 ```
 
-### existsObject
+### existsObjectAsync
 ```js
-existsObject(id, function (err, isExists) {});
+const objextExists = await existsObjectAsync(id);
 ```
 
-If option "Do not subscribe all states on start" is deactivated, you can use simpler call:
+Check if an object exists.
 
+### extendObjectAsync
 ```js
-existsObject(id)
-```
-the function returns in this case true or false.
-
-Checks if an object exists.
-
-
-### extendObject
-```js
-extendObject(id, obj, callback);
+await extendObjectAsync(id, obj);
 ```
 
-It is almost the same as `setObject`, but first it reads the object and tries to merge all settings together.
+It is almost the same as `setObjectAsync`, but first it reads the object and tries to merge all settings together.
 
 Use it like this:
 ```js
 // Stop instance
-extendObject('system.adapter.sayit.0', {common: {enabled: false}});
+await extendObjectAsync('system.adapter.sayit.0', {common: {enabled: false}});
 ```
 
-### deleteObject
+### deleteObjectAsync
 ```js
-deleteObject(id, isRecursive, callback);
+await deleteObjectAsync(id, isRecursive);
 ```
 
-Deletes object from DB by ID. If the object has type `state`, the state value will be deleted too. 
+Delete an object from DB by ID. If the object has type `state`, the state value will be deleted too.
 
-Additional parameter `isRecursive` could be provided, so all children of given ID will be deleted. Very dangerous! 
+Additional parameter `isRecursive` could be provided, so all children of given ID will be deleted. Very dangerous!
 
 Use it like this:
 ```js
 // Delete state
-deleteObject('javascript.0.createdState');
+await deleteObjectAsync('javascript.0.createdState');
 ```
-
-*Notice: `isRecursive` option is available only with js-controller >= 2.2.x* 
 
 ### getIdByName
 ```js
 getIdByName(name, alwaysArray);
 ```
 
-returns id of the object with given name. If there are more than one object with this name the result will be an array. If _alwaysArray_ flag is set, the result will be always an array if some ID found.
+returns id of the object with given name. If there is more than one object with this name, the result will be an array.
+If `alwaysArray` flag is set, the result will always be an array if some ID found.
 ### getEnums
 ```js
 getEnums(enumName);
@@ -885,33 +634,32 @@ getEnums('rooms');
 ]
 ```
 
-### createState
+### createStateAsync
 ```js
-createState(name, initialValue, forceCreation, common, native, callback);
+await createStateAsync(name, initialValue, forceCreation, common, native);
 ```
 Create state and object in javascript space if it does not exist, e.g. `javascript.0.mystate`.
 
 !! Prefer to create own data points with the full ID '0_userdata.0.mystate' !!!
 
 #### Parameters:
-
 - `name`: name of the state without namespace, e.g. `mystate`
 - `initialValue`: variable can be initialized after created. Value "undefined" means do not initialize value.
 - `forceCreation`: create/overwrite state independent of if state yet exists or not.
-- `common`: common description of object see description [here](https://github.com/ioBroker/ioBroker/blob/master/doc/SCHEMA.md#state)
-- `native`: native description of object. Any specific information.
+- `common`: common description of object.
+- `native`: native description of an object. Any specific information.
 - `callback`: called after state is created and initialized.
 
-If you set in `common` the flag `alias` to `true`, then alias will be created with the same name (but in `alias.0` namespace) as the state. 
-Alias is created only if it does not exist yet. 
+If you set in `common` the flag `alias` to `true`, then alias will be created with the same name (but in `alias.0` namespace) as the state.
+Alias is created only if it does not exist yet.
 
-Following settings for aliases are valid too: 
+The following settings for aliases are valid too:
 ```js
 common => {
-    alias: {
-        id: 'alias.0.myOtherState', // will be created automatically if not already exists
-        write: 'val * 1000', // convert function for write to created state
-        read: 'val / 1000'   // convert function to read from created state
+    "alias": {
+        "id": "alias.0.myOtherState", // will be created automatically if not already exists
+        "write": 'val * 1000', // convert function for write to created state
+        "read": 'val / 1000'   // convert function to read from created state
     }
 }
 ```
@@ -920,50 +668,36 @@ or
 
 ```js
 common => {
-    alias: {
-        id: 'alias.0.myOtherState', // will be created automatically if not already exists
+    "alias": {
+        "id": "alias.0.myOtherState", // will be created automatically if not already exists
     }
 }
 ```
 
 It is possible short type of createState:
 
-- `createState('myDatapoint')` - simply create datapoint if it does not exist
-- `createState('myDatapoint', 1)` - create datapoint if it does not exist and initialize it with value 1
-- `createState('myDatapoint', {name: 'My own datapoint', unit: '°C'}, function () {log('created');});`
-- `createState('myDatapoint', 1, {name: 'My own datapoint', unit: '°C'})` - create datapoint if it does not exist with specific name and units
+- `await createStateAsync('myDatapoint')` - simply create datapoint if it does not exist
+- `await createStateAsync('myDatapoint', 1)` - create datapoint if it does not exist and initialize it with value 1
+- `await createStateAsync('myDatapoint', {name: 'My own datapoint', unit: '°C'}, function () {log('created');});`
+- `await createStateAsync('myDatapoint', 1, {name: 'My own datapoint', unit: '°C'})` - create datapoint if it does not exist with specific name and units
 
-### createStateAsync
+### deleteStateAsync
 ```js
-await createStateAsync(name, initialValue, forceCreation, common, native);
-```
-
-Same as `createState`, but the promise will be returned.
-
-### deleteState
-```js
-deleteState(name, callback);
+await deleteStateAsync(name, callback);
 ```
 Delete state and object in javascript space, e.g. `javascript.0.mystate`. States from other adapters cannot be deleted.
 
 ```js
-deleteState('myDatapoint')
+deleteStateAsync('myDatapoint')
 ```
 simply delete datapoint if exists.
 
-### deleteStateAsync
+### createAliasAsync
 ```js
-await deleteStateAsync(name);
+await createAliasAsync(name, alias, forceCreation, common, native, callback);
 ```
 
-Same as `deleteState`, but the promise will be returned.
-
-### createAlias
-```js
-createAlias(name, alias, forceCreation, common, native, callback);
-```
-
-Create alias in alias.0 space if it does not exist, e.g. `javascript.0.myalias` and reference to a state or read/write states.
+Create alias in `alias.0` space if it does not exist, e.g. `javascript.0.myalias` and reference to a state or read/write states.
 The common definition is taken from the read alias id object, but a provided common takes precedence.
 
 #### Parameters:
@@ -971,16 +705,16 @@ The common definition is taken from the read alias id object, but a provided com
 - `name`: name of the alias state with or without alias namespace, e.g. `mystate` (namespace "alias.0." will be added)
 - `alias`: can be either an existing state id as string or an object with full alias definition including read/write ids and read/write functions. Not: Alias definitions can not be set as part of the common parameter!
 - `forceCreation`: create/overwrite alias independent of if state yet exists or not.
-- `common`: common description of alias object see description [here](https://github.com/ioBroker/ioBroker/blob/master/doc/SCHEMA.md#state). Values provided here will take precedence over the common definition of the read alias id object. Not: Alias definitions can not be set as part of this common parameter, see alias parameter!
-- `native`: native description of object. Any specific information.
+- `common`: common description of an alias object. Values provided here will take precedence over the common definition of the read alias id object. Not: Alias definitions can not be set as part of this common parameter, see alias parameter!
+- `native`: native description of an object. Any specific information.
 - `callback`: called after state is created and initialized.
 
-It is possible short type of createAlias:
+It is possible a short type of createAlias:
 
 - `createAlias('myAlias', 'myDatapoint')` - simply create alias.0.myAlias that refernces to javascript.X.myDatapoint if it does not exist
 - `createAlias('myAlias', {id: {read: 'myReadDatapoint', write: 'myWriteDatapoint'}})` - create alias and reference to different read/write states
 
-For other details see createState, it is similar.
+For other details, see createState, it is similar.
 
 ### createAliasAsync
 ```js
@@ -989,19 +723,19 @@ await createAliasAsync(name, alias, forceCreation, common, native);
 
 Same as `createAlias`, but the promise will be returned.
 
-### sendTo
+### sendToAsync
 ```js
-sendTo(adapter, command, message, callback);
+await sendToAsync(adapter, command, message, callback);
 ```
 
-Send message to a specific or all adapter instances. When using the adapter name the message is sent to all instances.
+Send a message to a specific or all adapter instances. When using the adapter name, the message is sent to all instances.
 
-To get specific information about messages you must read the documentation for particular adapter.
+To get specific information about messages, you must read the documentation for a particular adapter.
 
 Example:
 
 ```js
-sendTo('telegram', {user: 'UserName', text: 'Test message'});
+await sendToAsync('telegram', {user: 'UserName', text: 'Test message'});
 ```
 
 Some adapters also support responses to the sent messages. (e.g. history, sql, telegram)
@@ -1010,32 +744,18 @@ The response is only returned to the callback if the message is sent to a specif
 Example with response:
 
 ```js
-sendTo('telegram.0', {user: 'UserName', text: 'Test message'}, function (res) {
-    console.log('Sent to ' + res + ' users');
-});
+const result = await sendToAsync('telegram.0', {user: 'UserName', text: 'Test message'});
+console.log('Sent to ' + result + ' users');
 ```
 
-### sendToAsync
+### sendToHostAsync
 ```js
-await sendToAsync(adapter, command, message);
-```
-Same as sendTo, but with `promise`.
-
-Example:
-
-```js
-const res = await sendToAsync('sql.0', 'getEnabledDPs', {});
-console.log(JSON.stringify(res));
+await sendToHostAsync(hostName, command, message, callback);
 ```
 
-### sendToHost
-```js
-sendToHost(hostName, command, message, callback);
-```
+Send a message to controller instance.
 
-Send message to controller instance.
-
-Following commands are supported:
+The following commands are supported:
 - `"cmdExec"`
 - `"getRepository"`
 - `"getInstalled"`
@@ -1051,52 +771,9 @@ It is rather specific commands and are not required often.
 Example:
 
 ```js
-sendToHost('myComputer', 'cmdExec', {data: 'ls /'}, function (res) {
-    console.log('List of files: ' + res.data);
-});
+const result = await sendToHostAsync('myComputer', 'cmdExec', {data: 'ls /'});
+console.log('List of files: ' + result.data);
 ```
-
-**Notice:** you must enable *Enable command "setObject"* option to call it.
-
-### sendToHostAsync
-```js
-await sendToHostAsync(hostName, command, message);
-```
-Same as sendToHost, but with `promise`.
-
-### setInterval
-```js
-setInterval(callback, ms, arg1, arg2, arg3, arg4);
-```
-
-Same as javascript `setInterval`.
-
-### clearInterval
-```js
-clearInterval(id);
-```
-
-Same as javascript `clearInterval`.
-
-### setTimeout
-```js
-setTimeout(callback, ms, arg1, arg2, arg3, arg4);
-```
-Same as javascript `setTimeout`.
-
-### clearTimeout
-```js
-clearTimeout(id);
-```
-
-Same as javascript `clearTimeout`.
-
-### setImmediate
-```js
-setImmediate(callback, arg1, arg2, arg3, arg4);
-```
-
-Same as javascript `setImmediate` and almost the same as `setTimeout(callback, 0, arg1, arg2, arg3, arg4)` but with higher priority.
 
 ### formatDate
 ```js
@@ -1140,11 +817,11 @@ formatDate(millisecondsOrDate, format);
 
 ### getDateObject
 ```js
-getDateObject (stringOrNumber);
+getDateObject(stringOrNumber);
 ```
 
-Converts string or number to Date object.
-If only hours are given it will add current date to it and will try to convert.
+Converts string or number to a Date object.
+If only hours are given, it will add current date to it and will try to convert.
 
 ```js
 getDateObject("20:00") // => "Tue Aug 09 2016 20:00:00 GMT+0200"
@@ -1156,26 +833,11 @@ formatValue(value, decimals, format);
 ```
 
 Formats any value (strings too) to number. Replaces point with comma if configured in system.
-Decimals specify digits after comma. Default value is 2.
+Decimals specify digits after comma. The Default value is 2.
 Format is optional:
- - '.,': 1234.567 => 1.234,56
- - ',.': 1234.567 => 1,234.56
- - ' .': 1234.567 => 1 234.56
-
-
-### adapterSubscribe
-```js
-adapterSubscribe(id);
-```
-
-Sends to adapter message "subscribe" to inform adapter. If adapter has common flag "subscribable" in case of function "subscribe" this function will be called automatically.
-
-### adapterUnsubscribe
-```js
-adapterUnsubscribe(id);
-```
-
-Sends to adapter message "unsubscribe" to inform adapter to not poll the values.
+- '.,': 1234.567 => 1.234,56
+- ',.': 1234.567 => 1,234.56
+- ' .': 1234.567 => 1 234.56
 
 ### $ - Selector
 ```js
@@ -1222,7 +884,7 @@ $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').on(function (obj) 
 This code searches in channels.
 Find all channels with `common.role="switch"` and belongs to `enum.rooms.Wohnzimmer`.
 Take all their states, where id ends with `".STATE"` and make subscription on all these states.
-If some of these states changes the callback will be called like for "on" function.
+If some of these states change, the callback will be called like for "on" function.
 
 Following functions are possible, setState, getState (only from first), on, each
 
@@ -1242,37 +904,31 @@ $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').each(function (id,
 });
 ```
 
-### readFile
+### readFileAsync
 ```js
-readFile(adapter, fileName, function (error, bytes) {});
+const bytes = await readFileAsync(adapter, fileName);
 ```
 
 The result will be given in callback.
-Read file from DB from folder "javascript".
+Read file from DB from folder "javascript.0".
 
 Argument *adapter* can be omitted.
 
 ```js
 // read vis views
-readFile('vis.0', '/main/vis-views.json', function (error, data) {
-    console.log(data.substring(0, 50));
-});
-
-// The same as
-//readFile('/../vis.0/main/vis-views.json', function (error) {
-//     console.log(data.substring(0, 50));
-//});
+const data = await readFileAsync('vis.0', '/main/vis-views.json');
+console.log(data.substring(0, 50));
 ```
 
 By default, working directory/adapter is `javascript.0`.
 
-### writeFile
+### writeFileAsync
 ```js
-writeFile(adapter, fileName, bytes, function (error) { });
+await writeFileAsync(adapter, fileName, bytes);
 ```
 
 The optional error code will be given in callback. Argument *adapter* can be omitted.
-fileName is the name of file in DB. All files are stored in folder "javascript". if you want to write to other folders, e.g. to "/vis.0/" use setFile for that.
+fileName is the name of file in DB. All files are stored in the folder "javascript". if you want to write to other folders, e.g. to "/vis.0/" use setFile for that.
 
 The file that looks like `'/subfolder/file.txt'` will be stored under `"/javascript/subfolder/file.txt"` and can be accessed over web server with `"http://ip:8082/javascript/subfolder/file.txt"`
 
@@ -1280,42 +936,34 @@ The file that looks like `'/subfolder/file.txt'` will be stored under `"/javascr
 // store screenshot in DB
 const fs = require('fs');
 let data = fs.readFileSync('/tmp/screenshot.png');
-writeFile(null, '/screenshots/1.png', data, function (error) {
+try {
+    await writeFileAsync(null, '/screenshots/1.png', data);
     console.log('file written');
-});
-
-// The same as
-//writeFile('/screenshots/1.png', data, function (error) {
-//    console.log('file written');
-//});
+} catch (e) {
+    console.error('Cannot write file: ' + e);
+}
 ```
 
 ```js
 // store file in '/vis.0' in DB
 const fs = require('fs');
 let data = fs.readFileSync('/tmp/screenshot.png');
-writeFile('vis.0', '/screenshots/1.png', data, function (error) {
-    console.log('file written');
-});
+await writeFileAsync('vis.0', '/screenshots/1.png', data);
 ```
 
-### delFile
+### delFileAsync
 ```js
-delFile(adapter, fileName, function (error) {});
+await delFileAsync(adapter, fileName);
 ```
 
 Delete file or directory. fileName is the name of file or directory in DB.
 
-Alternative name of this method is *unlink*
-
-### renameFile
+### renameAsync
 ```js
-rename(adapter, oldName, newName, function (error) {});
+await renameAsync(adapter, oldName, newName);
 ```
 
-Renames file or directory. oldName is the name of file or directory in DB and is renamed to newName.
-
-Alternative name of this method is *rename*
+Rename file or directory. `oldName` is the name of file or directory in DB and is renamed to newName.
 
 ### onFile
 ```js
@@ -1324,19 +972,17 @@ onFile(id, fileName, withFile, function (id, fileName, size, fileData, mimeType)
 onFile(id, fileName, function (id, fileName, size) {});
 ```
 
-Subscribe on file changes:
-- `id` is ID of object of type `meta`, like `vis.0` 
+Subscribe to file changes:
+- `id` is ID of an object of type `meta`, like `vis.0`
 - `fileName` is file name or pattern, like `main/*` or `main/vis-view.json`
 - `withFile` if the content of file should be delivered in callback or not. the delivery of file content costs memory and time, so if you want to be just informed about changes, set `withFile`to false.
 
-Arguments in callback: 
+Arguments in callback:
 - `id` - ID of `meta` object;
 - `fileName` - file name (not pattern);
 - `size` - new file size;
 - `fileData` - file content of type `Buffer` if file is binary (detected by extension) or `string`. Delivered only if `withFile`;
 - `mimeType` - mime type of file, like `image/jpeg`. Delivered only if `withFile`;
-
-**Important**: this functionality is only available with js-controller@4.1.x or newer.
 
 ### offFile
 ```js
@@ -1345,16 +991,14 @@ offFile(id, fileName);
 onFile(id, fileName);
 ```
 Unsubscribe from file changes:
-- `id` is ID of object of type `meta`, like `vis.0`
+- `id` is ID of an object of type `meta`, like `vis.0`
 - `fileName` is file name or pattern, like `main/*` or `main/vis-view.json`
-
-**Important**: this functionality is only available with js-controller@4.1.x or newer.
 
 ### onStop
 ```js
 onStop (function(){ /* do something when script is stopped */ }, timeout);
 ```
-Install callback, that will be called if script stopped. Used e.g. to stop communication or to close connections.
+Install callback, that will be called if a script stopped. Used, e.g., to stop communication or to close connections.
 
 ```js
 // establish connection
@@ -1372,136 +1016,39 @@ onStop(function (callback) {
 ```
 `timeout` is 1000ms by default.
 
-### getHistory
+### runScriptAsync
 ```js
-getHistory(instance, options, function (error, result, options, instance) {});
-```
-
-Read history from specified instance. if no instance specified the system default history instance will be taken.
-```js
-// Read history of 'system.adapter.admin.0.memRss' from sql driver
-const end = new Date().getTime();
-getHistory('sql.0', {
-        id:         'system.adapter.admin.0.memRss',
-        start:      end - 3600000,
-        end:        end,
-        aggregate:  'm4',
-        timeout:    2000
-    }, function (err, result) {
-        if (err) console.error(err);
-        if (result) {
-            for (let i = 0; i < result.length; i++) {
-                console.log(result[i].id + ' ' + new Date(result[i].ts).toISOString());
-            }
-        }
-    });
-```
-Possible options you can find [here](https://github.com/ioBroker/ioBroker.history#access-values-from-javascript-adapter).
-
-Additionally, to these parameters you must specify "id" and you may specify timeout (default: 20000ms).
-
-One more example:
-```js
-// Get last 50 entries from default history instance with no aggregation:
-getHistory({
-        id:         'system.adapter.admin.0.alive',
-        aggregate:  'none',
-        count:      50
-    }, function (err, result) {
-        if (err) console.error(err);
-        if (result) {
-            for (let i = 0; i < result.length; i++) {
-                console.log(result[i].id + ' ' + new Date(result[i].ts).toISOString());
-            }
-        }
-    });
-```
-
-**Note: ** of course history must be first enabled for selected ID in admin.
-
-### runScript
-```js
-runScript('scriptName', function () {
-    // Callback is optional
-    console.log('Srcipt started, but not yet executed');
-});
+await runScriptAsync('scriptName');
+console.log('Srcipt started, but not yet executed');
 ```
 
 Starts or restarts other scripts (and itself too) by name.
 
 ```js
 // restart script
-runScript('groupName.scriptName1');
-```
-
-### runScriptAsync
-Same as runScript, but with `promise`.
-```js
-runScriptAsync('scriptName')
-    .then(() => console.log('Script started, but not yet executed'));
-
-// or
-
-await runScriptAsync('scriptName');
-console.log(`Script was restarted`);
-```
-
-### startScript
-```js
-startScript('scriptName', ignoreIfStarted, callback);
-```
-
-Starts the script. If ignoreIfStarted set to true, nothing will be done if script yet running, elsewise the script will be restarted.
-
-```js
-startScript('scriptName', true); // start script if not started
+await runScriptAsync('groupName.scriptName1');
 ```
 
 ### startScriptAsync
-Same as runScript, but with `promise`.
-
 ```js
-startScriptAsync('scriptName', ignoreIfStarted)
-    .then(started => console.log(`Script was ${started ? 'started' : 'already started'}`));
-
-// or
-
-const started = await startScriptAsync('scriptName', ignoreIfStarted);
-console.log(`Script was ${started ? 'started' : 'already started'}`);
+await startScriptAsync('scriptName', ignoreIfStarted);
 ```
 
-Starts the script. If ignoreIfStarted set to true, nothing will be done if script yet running, elsewise the script will be restarted.
+Start the script. If ignoreIfStarted set to true, nothing will be done if a script yet running, otherwise the script will be restarted.
 
 ```js
-startScript('scriptName', true); // start script if not started
-```
-
-### stopScript
-```js
-stopScript('scriptName', callback);
-```
-
-If stopScript is called without arguments, it will stop itself:
-
-```js
-stopScript();
+await startScriptAsync('scriptName', true); // start script if not started
 ```
 
 ### stopScriptAsync
-Same as stopScript, but with `promise`:
 ```js
-stopScriptAsync('scriptName')
-    .then(stopped => console.log(`Script was ${stopped ? 'stopped' : 'already stopped'}`));
-
-//or
-const stopped = await stopScriptAsync('scriptName');
-console.log(`Script was ${stopped ? 'stopped' : 'already stopped'}`);
+await stopScriptAsync('scriptName');
 ```
 
 If stopScript is called without arguments, it will stop itself:
 
 ```js
-stopScript();
+await stopScriptAsync();
 ```
 
 ### isScriptActive
@@ -1509,14 +1056,9 @@ stopScript();
 isScriptActive('scriptName');
 ```
 
-Returns if script enabled or disabled. Please note, that that does not give back if the script now running or not. Script can be finished, but still activated.
-
-It is not a function. It is a variable with javascript instance, that is visible in script's scope.
-
-### toInt
-### toFloat
-### toBoolean
-### jsonataExpression
+Returns if a script enabled or disabled.
+Please note that that does not give back if the script now running or not.
+The Script can be finished, but still activated.
 
 ### wait
 Just pause the execution of the script.
@@ -1524,183 +1066,3 @@ Warning this function is `promise` and must be called as follows:
 ```js
 await wait(1000);
 ```
-
-### sleep
-Same as [wait](#wait)
-
-### messageTo
-```js
-messageTo({ instance: 'instance', script: 'script.js.common.scriptName', message: 'messageName' }, data, {timeout: 1000}, result =>
-    console.log(JSON.stringify(result)));
-```
-
-Sends via the "message bus" the message to some other script. Or even to some handler in the same script.
-
-Timeout for callback is 5 seconds by default.
-
-The target could be shorted to:
-
-```js
-messageTo('messageName', data, result => {
-    console.log(JSON.stringify(result));
-});
-```
-
-Callback and options are optional and timeout is by default 5000 milliseconds (if callback provided).
-
-```js
-messageTo('messageName', dataWithNoResponse);
-```
-
-### messageToAsync
-```js
-onMessage('myTopic', async (data, callback) => {
-    console.log(data);
-
-    if (!data.myPayload) {
-        // return error (promise reject)
-        callback({ error: 'something went wrong!!' });
-    } else {
-        // return result (promise resolve)
-        callback({ result: 'ok' });
-    }
-});
-
-(async () => {
-    try {
-        const msg = await messageToAsync({ instance: 0, script: 'script.js.test2', message: 'myTopic' }, { myPayload: true }, { timeout: 1000 });
-        console.log(`Done with: ${JSON.stringify(msg)}`);
-    } catch (error) {
-        // contents of result.error
-        console.error(error);
-    }
-})();
-```
-
-### onMessage
-```js
-onMessage('messageName', (data, callback) => {
-    console.log(`Received data: ${data}`); callback({ result: Date.now() });
-});
-```
-
-Subscribes on javascript adapter message bus and delivers response via callback.
-The response from script which sends response as first will be accepted as answer, all other answers will be ignored.
-
-To send a message to an JavaScript script which is then received by this handler use [messageTo](#messageTo).
-
-To send a message from any other adapter use
-
-```js
-adapter.sendTo('javascript.0', 'toScript', {
-    script: 'script.js.messagetest', 
-    message: 'messageName', 
-    data: {
-        flag: true
-    }
-});
-```
-
-to send a message from CLI use
-
-```bash
-iob message javascript.0 toScript '{"script": "script.js.messagetest", "message": "messageName", "data": { "flag": true }}'
-```
-
-### onMessageUnregister
-```js
-const id = onMessage('messageName', (data, callback) => {console.log(data); callback(Date.now())});
-
-// unsubscribe specific handler
-onMessageUnregister(id);
-// or unsubscribe by name
-onMessageUnregister('messageName');
-```
-
-Unsubscribes from this message.
-
-### onLog
-```js
-onLog('error', data => {
-    sendTo('telegram.0', {user: 'UserName', text: data.message});
-    console.log('Following was sent to telegram: ' + data.message);
-});
-```
-
-Subscribes on logs with specified severity.
-
-*Important:* you cannot output logs in handler with the same severity to avoid infinite loops.
-
-E.g. this will produce no logs:
-```js
-onLog('error', data => {
-    console.error('Error: ' + data.message);
-});
-```
-
-To receive all logs the `*` could be used. In this case the log output in handler will be disabled at all.
-
-```js
-onLog('*', data => {
-    console.error('Error: ' + data.message); // will produce no logs
-});
-```
-
-### onLogUnregister
-```js
-function logHandler(data) {
-    console.error('Error: ' + data.message);
-}
-const id = onLog('warn', logHandler);
-
-// unsubscribe by ID
-onLogUnregister(id);
-// or unsubscribe by function handler
-onLogUnregister(logHandler);
-// or unsubscribe all handlers with specific severity
-onLogUnregister('warn');
-```
-
-Unsubscribes from these logs.
-
-## Global script variables
-### scriptName
-scriptName - The name of the script.
-
-```js
-log('Script ' + scriptName + ' started!');
-```
-
-It is not a function. 
-It is a variable with script name, that is visible in script's scope.
-
-### instance
-The javascript instance where script is executed.
-
-```js
-log('Script ' + name + ' started by ' + instance + '!');
-```
-
-## Option - "Do not subscribe all states on start"
-There are two modes of subscribe on states:
-- Adapter subscribes on all changes at start and receives all changes of all states (it is easy to use getStates(id), but required more CPU and RAM):
-
-```js
-console.log(getState('someID').val);
-```
-
-- Adapter subscribes every time on specified ID if "on/subscribe" called. In this mode the adapter receives only updates for desired states.
-It is very perform and RAM efficiency, but you cannot access states directly in getState. You must use callback to get the result of state:
-
-```js
-getState('someID', function (error, state) {
-    console.log(state.val);
-});
-```
-
-It is because the adapter does not have the value of state in RAM and must ask central DB for the value.
-
-## Scripts activity
-
-There is a possibility to enabled and disable scripts via states. For every script the state will be created with name **javascript.INSTANCE.scriptEnabled.SCRIPT_NAME**.
-Scripts can be activated and deactivated by controlling of this state with ack=false.

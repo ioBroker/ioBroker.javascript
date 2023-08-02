@@ -30,8 +30,8 @@
     "@types/node": "should match the lowest MAJOR version of Node.js we support."
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^2.6.8",
-    "@types/node": "^20.4.2",
+    "@iobroker/adapter-core": "^3.0.3",
+    "@types/node": "^20.4.5",
     "@types/request": "^2.48.8",
     "axios": "^1.4.0",
     "coffeescript": "^1.12.7",
@@ -54,12 +54,12 @@
     "@types/iobroker": "^4.0.5",
     "alcalzone-shared": "^4.0.8",
     "chai": "^4.3.7",
-    "eslint": "^8.45.0",
+    "eslint": "^8.46.0",
     "gulp": "^4.0.2",
     "gulp-rename": "^2.0.0",
     "gulp-replace": "^1.1.4",
     "mocha": "^10.2.0",
-    "timekeeper": "^2.2.0"
+    "timekeeper": "^2.3.1"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.javascript/issues"
