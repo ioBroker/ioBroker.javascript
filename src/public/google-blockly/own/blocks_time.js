@@ -437,6 +437,61 @@ Blockly.JavaScript['time_get'] = function(block) {
     return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
+// --- get time special --------------------------------------------------
+Blockly.Time.blocks['time_get_special'] =
+    '<block type="time_get_special">'
+    + '     <value name="TYPE">'
+    + '     </value>'
+    + '     <value name="OFFSET">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['time_get_special'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('time_get_special'));
+
+        this.appendDummyInput('TYPE')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('time_get_special_day_start'), 'dayStart'],
+                [Blockly.Translate('time_get_special_day_end'), 'dayEnd'],
+                [Blockly.Translate('time_get_special_week_start'), 'weekStart'],
+                [Blockly.Translate('time_get_special_week_end'), 'weekEnd'],
+                [Blockly.Translate('time_get_special_month_start'), 'monthStart'],
+                [Blockly.Translate('time_get_special_month_end'), 'monthEnd'],
+            ]), 'TYPE');
+
+        this.setInputsInline(true);
+
+        this.setOutput(true);
+
+        this.setColour(Blockly.Time.HUE);
+        this.setTooltip(Blockly.Translate('time_get_special_tooltip'));
+        this.setHelpUrl(Blockly.Translate('time_get_special_help'));
+    },
+};
+
+Blockly.JavaScript['time_get_special'] = function(block) {
+    const type = block.getFieldValue('TYPE');
+
+    let code;
+    if (type === 'dayStart') {
+        code = '/* start of day */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); })()';
+    } else if (type === 'dayEnd') {
+        code = '/* end of day */ (() => { const d = new Date(); d.setHours(23, 59, 59, 999); return d.getTime(); })()';
+    } else if (type === 'weekStart') {
+        code = '/* start of week */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay() + (d.getDay() == 0 ? -6 : 1)).getTime(); })()';
+    } else if (type === 'weekEnd') {
+        code = '/* end of week */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return new Date(d.getFullYear(), d.getMonth(), d.getDate() + (8 - d.getDay())).getTime() - 1; })()';
+    } else if (type === 'monthStart') {
+        code = '/* start of month */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(1); return d.getTime(); })()';
+    } else if (type === 'monthEnd') {
+        code = '/* end of month */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime() - 1; })()';
+    }
+
+    return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
 // --- get astro time --------------------------------------------------
 Blockly.Time.blocks['time_astro'] =
     '<block type="time_astro">'

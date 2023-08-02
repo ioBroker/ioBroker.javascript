@@ -480,6 +480,22 @@ Blockly.Sendto.blocks['sendto_gethistory'] =
     + '             <field name="oid">Object ID</field>'
     + '         </shadow>'
     + '     </value>'
+    + '     <value name="START">'
+    + '         <shadow type="time_get_special">'
+    + '             <field name="TYPE">dayStart</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="END">'
+    + '         <shadow type="time_get_special">'
+    + '             <field name="TYPE">dayEnd</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="AGGREGATE">'
+    + '     </value>'
+    + '     <value name="STEP">'
+    + '     </value>'
+    + '     <value name="UNIT">'
+    + '     </value>'
     + '     <value name="STATEMENT">'
     + '     </value>'
     + '</block>';
@@ -509,12 +525,41 @@ Blockly.Blocks['sendto_gethistory'] = {
             .appendField(Blockly.Translate('sendto_gethistory_name'));
 
         this.appendDummyInput('INSTANCE')
-            .appendField(Blockly.Translate('sendto_otherscript_instance'))
+            .appendField(Blockly.Translate('sendto_gethistory_instance'))
             .appendField(new Blockly.FieldDropdown(options), 'INSTANCE');
 
         this.appendValueInput('OID')
             .appendField(Blockly.Translate('sendto_gethistory_oid'))
             .setCheck(null);
+
+        this.appendValueInput('START')
+            .appendField(Blockly.Translate('sendto_gethistory_start'))
+            .setCheck(null);
+
+        this.appendValueInput('END')
+            .appendField(Blockly.Translate('sendto_gethistory_end'))
+            .setCheck(null);
+
+        this.appendDummyInput('AGGREGATE')
+            .appendField(Blockly.Translate('sendto_gethistory_aggregate'))
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('sendto_gethistory_none'), 'none'],
+                [Blockly.Translate('sendto_gethistory_minimum'), 'min'],
+                [Blockly.Translate('sendto_gethistory_maximum'), 'max'],
+                [Blockly.Translate('sendto_gethistory_avg'), 'average'],
+                [Blockly.Translate('sendto_gethistory_cnt'), 'count'],
+            ]), 'AGGREGATE');
+
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('sendto_gethistory_step'))
+            .appendField(new Blockly.FieldTextInput(0), 'STEP')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('sendto_gethistory_ms'), 'ms'],
+                [Blockly.Translate('sendto_gethistory_sec'), 'sec'],
+                [Blockly.Translate('sendto_gethistory_min'), 'min'],
+                [Blockly.Translate('sendto_gethistory_hour'), 'hour'],
+                [Blockly.Translate('sendto_gethistory_day'), 'day'],
+            ]), 'UNIT');
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -524,14 +569,30 @@ Blockly.Blocks['sendto_gethistory'] = {
 
         this.setInputsInline(false);
         this.setColour(Blockly.Sendto.HUE);
-        this.setTooltip(Blockly.Translate('sendto_otherscript_tooltip'));
-        this.setHelpUrl(Blockly.Translate('sendto_otherscript_help'));
+        this.setTooltip(Blockly.Translate('sendto_gethistory_tooltip'));
+        this.setHelpUrl(Blockly.Translate('sendto_gethistory_help'));
     }
 };
 
 Blockly.JavaScript['sendto_gethistory'] = function(block) {
     const dropdown_instance = block.getFieldValue('INSTANCE');
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    const start = Blockly.JavaScript.valueToCode(block, 'START', Blockly.JavaScript.ORDER_ATOMIC);
+    const end = Blockly.JavaScript.valueToCode(block, 'END', Blockly.JavaScript.ORDER_ATOMIC);
+    const aggregate = block.getFieldValue('AGGREGATE');
+    const unit = block.getFieldValue('UNIT');
+
+    let step = block.getFieldValue('STEP');
+    if (unit === 'day') {
+        step *= 24 * 60 * 60 * 1000;
+    } else if (unit === 'hour') {
+        step *= 60 * 60 * 1000;
+    } else if (unit === 'min') {
+        step *= 60 * 1000;
+    } else if (unit === 'sec') {
+        step *= 1000;
+    }
+
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
     let objectName = '';
@@ -545,11 +606,17 @@ Blockly.JavaScript['sendto_gethistory'] = function(block) {
         
     }
 
-    return `const ts = Date.now();\n` +
-        `getHistory(${dropdown_instance !== 'default' ? `'${dropdown_instance}', ` : ''}{ id: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, start: ts - 3600000, end: ts, step: 3600000, aggregate: 'min', removeBorderValues: true }, (err, result) => {\n` +
+    return `getHistory(${dropdown_instance !== 'default' ? `'${dropdown_instance}', ` : ''}{\n` +
+        Blockly.JavaScript.prefixLines(`id: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''},`, Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`start: ${start},`, Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`end: ${end},`, Blockly.JavaScript.INDENT) + '\n' +
+        (step > 0 && aggregate !== 'none' ? Blockly.JavaScript.prefixLines(`step: ${step},`, Blockly.JavaScript.INDENT) + '\n' : '') +
+        Blockly.JavaScript.prefixLines(`aggregate: '${aggregate}',`, Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`removeBorderValues: true`, Blockly.JavaScript.INDENT) + '\n' +
+    `}, (err, result) => {\n` +
         Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
-        Blockly.JavaScript.prefixLines(`} else {`, Blockly.JavaScript.INDENT) + '\n' +
+        (statement ? Blockly.JavaScript.prefixLines(`} else {`, Blockly.JavaScript.INDENT) + '\n' : '') +
         (statement ? Blockly.JavaScript.prefixLines(statement, Blockly.JavaScript.INDENT) : '') +
         Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
         '});\n'
