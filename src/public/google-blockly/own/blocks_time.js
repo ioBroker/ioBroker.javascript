@@ -96,7 +96,6 @@ Blockly.Blocks['time_compare_ex'] = {
         this.updateShape_(end_time === true || end_time === 'true' || end_time === 'TRUE', actual_time === true || actual_time === 'true' || actual_time === 'TRUE');
     },
     updateShape_: function(isBetween, useActualTime) {
-        console.error(`isBetween: ${isBetween}, useActualTime: ${useActualTime}`);
         if (isBetween === undefined) {
             isBetween = this.getFieldValue('OPTION') === 'between' || this.getFieldValue('OPTION') === 'not between';
         }
