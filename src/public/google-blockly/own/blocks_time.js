@@ -465,7 +465,7 @@ Blockly.Blocks['time_get_special'] = {
 
         this.setInputsInline(true);
 
-        this.setOutput(true);
+        this.setOutput(true, 'Number');
 
         this.setColour(Blockly.Time.HUE);
         this.setTooltip(Blockly.Translate('time_get_special_tooltip'));
@@ -545,4 +545,82 @@ Blockly.JavaScript['time_astro'] = function(block) {
     const offset  = parseFloat(block.getFieldValue('OFFSET'));
 
     return [`getAstroDate('${type}', undefined, ${offset})`, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+// --- time calculation --------------------------------------------------
+Blockly.Time.blocks['time_calculation'] =
+    '<block type="time_calculation">'
+    + '     <value name="DATE_TIME">'
+    + '         <shadow type="time_get">'
+    + '             <field name="OPTION">object</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="OPERATION">'
+    + '     </value>'
+    + '     <value name="VALUE">'
+    + '         <shadow type="math_number">'
+    + '             <field name="NUM">1</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="UNIT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['time_calculation'] = {
+    init: function() {
+        this.appendDummyInput('NAME')
+            .appendField(Blockly.Translate('time_calculation'));
+
+        this.appendValueInput('DATE_TIME')
+            .appendField(Blockly.Translate('time_calculation_on'))
+            .setCheck(null);
+
+        this.appendDummyInput('OPERATION')
+            .appendField(new Blockly.FieldDropdown([
+                ['+', '+'],
+                ['-', '-'],
+            ]), 'OPERATION');
+
+        this.appendValueInput('VALUE');
+
+        this.appendDummyInput('UNIT')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('time_calculation_ms'), 'ms'],
+                [Blockly.Translate('time_calculation_sec'), 'sec'],
+                [Blockly.Translate('time_calculation_min'), 'min'],
+                [Blockly.Translate('time_calculation_hour'), 'hour'],
+                [Blockly.Translate('time_calculation_day'), 'day'],
+                [Blockly.Translate('time_calculation_week'), 'week'],
+            ]), 'UNIT');
+
+        this.setInputsInline(true);
+
+        this.setOutput(true, 'Number');
+
+        this.setColour(Blockly.Time.HUE);
+        this.setTooltip(Blockly.Translate('time_calculation_tooltip'));
+        this.setHelpUrl(Blockly.Translate('time_calculation_help'));
+    },
+};
+
+Blockly.JavaScript['time_calculation'] = function(block) {
+    const dateTime = Blockly.JavaScript.valueToCode(block, 'DATE_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+    const operation = block.getFieldValue('OPERATION');
+    const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    const unit = block.getFieldValue('UNIT');
+
+    let step = 1;
+    if (unit === 'sec') {
+        step = 1000;
+    } else if (unit === 'min') {
+        step = 60 * 1000;
+    } else if (unit === 'hour') {
+        step = 60 * 60 * 1000;
+    } else if (unit === 'day') {
+        step = 24 * 60 * 60 * 1000;
+    } else if (unit === 'week') {
+        step = 7 * 24 * 60 * 60 * 1000;
+    }
+
+    return [`/* time calculation */ ((dateTime) => { const ts = (typeof dateTime === 'object' ? dateTime.getTime() : dateTime); return ts ${operation} ((${value}) * ${step}); })(${dateTime})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
