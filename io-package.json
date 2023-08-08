@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "7.1.1",
+    "version": "7.1.2",
     "news": {
+      "7.1.2": {
+        "en": "Added version to the side menu\nAdded blockly blocks for `getHistory` and calculated times",
+        "de": "Version zum Seitenmenü hinzugefügt\nBlockaden für getHistory und berechnete Zeiten hinzugefügt",
+        "ru": "Добавлена версия к боковому меню\nДобавлены блокноты для getHistory и рассчитанные времена",
+        "pt": "Versão adicionada ao menu lateral\nAdicionado bloqueio blocos para getHistory e tempos calculados",
+        "nl": "Vertaling:\nVertaling:",
+        "fr": "Ajout de la version au menu\nAjout de blocs bloqués pour getHistory et les temps calculés",
+        "it": "Versione aggiunta al menu laterale\nAggiunto blocchi per ottenereHistory e tempi calcolati",
+        "es": "Versión agregada al menú lateral\nBloques bloqueados para conseguirHistoria y tiempos calculados",
+        "pl": "Dodana wersja do bocznego menu\nZamknięte bloki do gotHistory i obliczane czasy",
+        "uk": "Додано версію в бічне меню\nДодано блокнотні блоки для getHistory і обчислених разів",
+        "zh-cn": "增加一侧的男子版本\n增加准时和计算时间的障碍"
+      },
       "7.1.1": {
         "en": "corrected the script export",
         "de": "korrigierte das skript export",
@@ -99,19 +112,6 @@
         "pl": "reset timeout\ndodanie dodatkowych bloków",
         "uk": "час скидання в блоклі\nдодано додаткові блокноти",
         "zh-cn": "停滞时间\n新增的又一个阻碍因素"
-      },
-      "7.0.4": {
-        "en": "packages updated\nFiles are used for export of scripts",
-        "de": "pakete aktualisiert\nDateien werden zum Export von Skripten verwendet",
-        "ru": "пакеты обновлены\nФайлы используются для экспорта скриптов",
-        "pt": "pacotes atualizados\nArquivos são usados para exportação de scripts",
-        "nl": "vertaling:\nBestanden worden gebruikt voor export van scripts",
-        "fr": "paquets mis à jour\nLes fichiers sont utilisés pour l'exportation de scripts",
-        "it": "pacchetti aggiornati\nI file vengono utilizzati per l'esportazione di script",
-        "es": "paquetes actualizados\nLos archivos se utilizan para la exportación de scripts",
-        "pl": "uaktualniać\nArchiwum jest wykorzystywane do eksportowania skryptów",
-        "uk": "пакети оновлені\nФайли використовуються для експорту сценаріїв",
-        "zh-cn": "更新的一揽子方案\n用于出口纺织品"
       }
     },
     "desc": {

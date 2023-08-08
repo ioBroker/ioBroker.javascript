@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 7.0.4 (2023-06-06)
+* (bluefox) packages updated
+* (bluefox) Files are used for export of scripts
+
 ## 7.0.3 (2023-03-16)
 * (bluefox) made the editor visible in full height
 * (paul53) small fixes on blockly and translations are made
