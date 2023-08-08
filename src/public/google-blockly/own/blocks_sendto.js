@@ -467,3 +467,157 @@ Blockly.JavaScript['sendto_otherscript'] = function(block) {
 
     return `messageTo({ instance: ${dropdown_instance}, script: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, message: '${message}' }, ${data}, { timeout: ${timeout} });\n`;
 };
+
+// --- sendTo gethistory --------------------------------------------------
+Blockly.Sendto.blocks['sendto_gethistory'] =
+    '<block type="sendto_gethistory">'
+    + '     <value name="NAME">'
+    + '     </value>'
+    + '     <value name="INSTANCE">'
+    + '     </value>'
+    + '     <value name="OID">'
+    + '         <shadow type="field_oid">'
+    + '             <field name="oid">Object ID</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="START">'
+    + '         <shadow type="time_get_special">'
+    + '             <field name="TYPE">dayStart</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="END">'
+    + '         <shadow type="time_get_special">'
+    + '             <field name="TYPE">dayEnd</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="AGGREGATE">'
+    + '     </value>'
+    + '     <value name="STEP">'
+    + '     </value>'
+    + '     <value name="UNIT">'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['sendto_gethistory'] = {
+    init: function() {
+        const options = [
+            ['default', 'default']
+        ];
+        if (typeof main !== 'undefined' && main.instances) {
+            for (let i = 0; i < main.instances.length; i++) {
+                const m = main.instances[i].match(/^system.adapter.(history|influxdb|sql).(\d+)$/);
+                if (m) {
+                    const instance = `${m[1]}.${m[2]}`;
+                    options.push([instance, instance]);
+                }
+            }
+        }
+
+        if (!options.length) {
+            options.push(['history.0', 'history.0']);
+            options.push(['influxdb.0', 'influxdb.0']);
+            options.push(['sql.0', 'sql.0']);
+        }
+
+        this.appendDummyInput('NAME')
+            .appendField(Blockly.Translate('sendto_gethistory_name'));
+
+        this.appendDummyInput('INSTANCE')
+            .appendField(Blockly.Translate('sendto_gethistory_instance'))
+            .appendField(new Blockly.FieldDropdown(options), 'INSTANCE');
+
+        this.appendValueInput('OID')
+            .appendField(Blockly.Translate('sendto_gethistory_oid'))
+            .setCheck(null);
+
+        this.appendValueInput('START')
+            .appendField(Blockly.Translate('sendto_gethistory_start'))
+            .setCheck(null);
+
+        this.appendValueInput('END')
+            .appendField(Blockly.Translate('sendto_gethistory_end'))
+            .setCheck(null);
+
+        this.appendDummyInput('AGGREGATE')
+            .appendField(Blockly.Translate('sendto_gethistory_aggregate'))
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('sendto_gethistory_none'), 'none'],
+                [Blockly.Translate('sendto_gethistory_minimum'), 'min'],
+                [Blockly.Translate('sendto_gethistory_maximum'), 'max'],
+                [Blockly.Translate('sendto_gethistory_avg'), 'average'],
+                [Blockly.Translate('sendto_gethistory_cnt'), 'count'],
+            ]), 'AGGREGATE');
+
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('sendto_gethistory_step'))
+            .appendField(new Blockly.FieldTextInput(0), 'STEP')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('sendto_gethistory_ms'), 'ms'],
+                [Blockly.Translate('sendto_gethistory_sec'), 'sec'],
+                [Blockly.Translate('sendto_gethistory_min'), 'min'],
+                [Blockly.Translate('sendto_gethistory_hour'), 'hour'],
+                [Blockly.Translate('sendto_gethistory_day'), 'day'],
+            ]), 'UNIT');
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setInputsInline(false);
+        this.setColour(Blockly.Sendto.HUE);
+        this.setTooltip(Blockly.Translate('sendto_gethistory_tooltip'));
+        this.setHelpUrl(Blockly.Translate('sendto_gethistory_help'));
+    }
+};
+
+Blockly.JavaScript['sendto_gethistory'] = function(block) {
+    const dropdown_instance = block.getFieldValue('INSTANCE');
+    const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    const start = Blockly.JavaScript.valueToCode(block, 'START', Blockly.JavaScript.ORDER_ATOMIC);
+    const end = Blockly.JavaScript.valueToCode(block, 'END', Blockly.JavaScript.ORDER_ATOMIC);
+    const aggregate = block.getFieldValue('AGGREGATE');
+    const unit = block.getFieldValue('UNIT');
+
+    let step = block.getFieldValue('STEP');
+    if (unit === 'day') {
+        step *= 24 * 60 * 60 * 1000;
+    } else if (unit === 'hour') {
+        step *= 60 * 60 * 1000;
+    } else if (unit === 'min') {
+        step *= 60 * 1000;
+    } else if (unit === 'sec') {
+        step *= 1000;
+    }
+
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    let objectName = '';
+    try {
+        const objId = eval(value_objectid); // Code to string
+        objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
+        if (typeof objectName === 'object') {
+            objectName = objectName[systemLang] || objectName.en;
+        }
+    } catch (error) {
+        
+    }
+
+    return `getHistory(${dropdown_instance !== 'default' ? `'${dropdown_instance}', ` : ''}{\n` +
+        Blockly.JavaScript.prefixLines(`id: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''},`, Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`start: ${start},`, Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`end: ${end},`, Blockly.JavaScript.INDENT) + '\n' +
+        (step > 0 && aggregate !== 'none' ? Blockly.JavaScript.prefixLines(`step: ${step},`, Blockly.JavaScript.INDENT) + '\n' : '') +
+        Blockly.JavaScript.prefixLines(`aggregate: '${aggregate}',`, Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`removeBorderValues: true`, Blockly.JavaScript.INDENT) + '\n' +
+    `}, (err, result) => {\n` +
+        Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
+        (statement ? Blockly.JavaScript.prefixLines(`} else {`, Blockly.JavaScript.INDENT) + '\n' : '') +
+        (statement ? Blockly.JavaScript.prefixLines(statement, Blockly.JavaScript.INDENT) : '') +
+        Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
+        '});\n'
+};

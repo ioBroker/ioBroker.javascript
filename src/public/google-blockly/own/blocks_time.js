@@ -141,8 +141,9 @@ Blockly.Blocks['time_compare_ex'] = {
 
         if (useActualTime === undefined) {
             useActualTime = this.getFieldValue('USE_ACTUAL_TIME');
-            useActualTime = useActualTime === 'true' || useActualTime === 'TRUE' || useActualTime === true;
         }
+
+        useActualTime = useActualTime === 'true' || useActualTime === 'TRUE' || useActualTime === true;
         inputExists = this.getInput('CUSTOM_TIME');
 
         if (!useActualTime) {
@@ -169,7 +170,8 @@ Blockly.JavaScript['time_compare_ex'] = function(block) {
     let time       = Blockly.JavaScript.valueToCode(block, 'CUSTOM_TIME', Blockly.JavaScript.ORDER_ATOMIC);
     end_time = end_time || null;
     time = time || null;
-    return ['compareTime(' + start_time + ', ' + end_time + ', "' + option + '", ' + time + ')', Blockly.JavaScript.ORDER_ATOMIC];
+
+    return [`compareTime(${start_time}, ${end_time}, '${option}', ${time})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // if time greater, less, between
@@ -192,13 +194,13 @@ Blockly.Blocks['time_compare'] = {
 
         this.appendDummyInput('OPTION')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('time_compare_lt'), "<"],
-                [Blockly.Translate('time_compare_le'), "<="],
-                [Blockly.Translate('time_compare_gt'), ">"],
-                [Blockly.Translate('time_compare_ge'), ">="],
-                [Blockly.Translate('time_compare_eq'), "=="],
-                [Blockly.Translate('time_compare_bw'), "between"],
-                [Blockly.Translate('time_compare_nb'), "not between"]
+                [Blockly.Translate('time_compare_lt'), '<'],
+                [Blockly.Translate('time_compare_le'), '<='],
+                [Blockly.Translate('time_compare_gt'), '>'],
+                [Blockly.Translate('time_compare_ge'), '>='],
+                [Blockly.Translate('time_compare_eq'), '=='],
+                [Blockly.Translate('time_compare_bw'), 'between'],
+                [Blockly.Translate('time_compare_nb'), 'not between']
             ], function (option) {
                 this.sourceBlock_.updateShape_((option === 'between' || option === 'not between'));
             }), 'OPTION');
@@ -255,7 +257,7 @@ Blockly.JavaScript['time_compare'] = function(block) {
     let end_time   = block.getFieldValue('END_TIME');
     end_time = end_time || null;
 
-    return ['compareTime("' + start_time + '", "' + end_time + '", "' + option + '")', Blockly.JavaScript.ORDER_ATOMIC];
+    return [`compareTime('${start_time}', '${end_time}', '${option}')`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- get time --------------------------------------------------
@@ -407,7 +409,7 @@ Blockly.JavaScript['time_get'] = function(block) {
     } else if (option === 'm') {
         code = '(new Date().getMinutes())';
     } else if (option === 'mid') {
-        code = '(function () {const v = new Date(); return v.getHours() * 60 + v.getMinutes();})()';
+        code = '(() => { const v = new Date(); return v.getHours() * 60 + v.getMinutes(); })()';
     } else if (option === 'h') {
         code = '(new Date().getHours())';
     } else if (option === 'd') {
@@ -415,23 +417,78 @@ Blockly.JavaScript['time_get'] = function(block) {
     } else if (option === 'M') {
         code = '(new Date().getMonth() + 1)';
     } else if (option === 'Mt') {
-        code = 'formatDate(new Date(), "OO", "' + lang + '")';
+        code = `formatDate(new Date(), 'OO', '${lang}')`;
     } else if (option === 'Mts') {
-        code = 'formatDate(new Date(), "O", "' + lang + '")';
+        code = `formatDate(new Date(), 'O', '${lang}')`;
     } else if (option === 'y') {
         code = '(new Date().getYear())';
     } else if (option === 'fy') {
         code = '(new Date().getFullYear())';
     } else if (option === 'wdt') {
-        code = 'formatDate(new Date(), "WW", "' + lang + '")';
+        code = `formatDate(new Date(), 'WW', '${lang}')`;
     } else if (option === 'wdts') {
-        code = 'formatDate(new Date(), "W", "' + lang + '")';
+        code = `formatDate(new Date(), 'W', '${lang}')`;
     } else if (option === 'wd') {
         code = '(new Date().getDay() === 0 ? 7 : new Date().getDay())';
     } else if (option === 'custom') {
-        code = 'formatDate(new Date(), "' + format + '")';
+        code = `formatDate(new Date(), '${format}')`;
     } else {
-        code = 'formatDate(new Date(), "' + option + '")';
+        code = `formatDate(new Date(), '${option}')`;
+    }
+
+    return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+// --- get time special --------------------------------------------------
+Blockly.Time.blocks['time_get_special'] =
+    '<block type="time_get_special">'
+    + '     <value name="TYPE">'
+    + '     </value>'
+    + '     <value name="OFFSET">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['time_get_special'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('time_get_special'));
+
+        this.appendDummyInput('TYPE')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('time_get_special_day_start'), 'dayStart'],
+                [Blockly.Translate('time_get_special_day_end'), 'dayEnd'],
+                [Blockly.Translate('time_get_special_week_start'), 'weekStart'],
+                [Blockly.Translate('time_get_special_week_end'), 'weekEnd'],
+                [Blockly.Translate('time_get_special_month_start'), 'monthStart'],
+                [Blockly.Translate('time_get_special_month_end'), 'monthEnd'],
+            ]), 'TYPE');
+
+        this.setInputsInline(true);
+
+        this.setOutput(true, 'Number');
+
+        this.setColour(Blockly.Time.HUE);
+        this.setTooltip(Blockly.Translate('time_get_special_tooltip'));
+        this.setHelpUrl(Blockly.Translate('time_get_special_help'));
+    },
+};
+
+Blockly.JavaScript['time_get_special'] = function(block) {
+    const type = block.getFieldValue('TYPE');
+
+    let code;
+    if (type === 'dayStart') {
+        code = '/* start of day */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); })()';
+    } else if (type === 'dayEnd') {
+        code = '/* end of day */ (() => { const d = new Date(); d.setHours(23, 59, 59, 999); return d.getTime(); })()';
+    } else if (type === 'weekStart') {
+        code = '/* start of week */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay() + (d.getDay() == 0 ? -6 : 1)).getTime(); })()';
+    } else if (type === 'weekEnd') {
+        code = '/* end of week */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return new Date(d.getFullYear(), d.getMonth(), d.getDate() + (8 - d.getDay())).getTime() - 1; })()';
+    } else if (type === 'monthStart') {
+        code = '/* start of month */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(1); return d.getTime(); })()';
+    } else if (type === 'monthEnd') {
+        code = '/* end of month */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime() - 1; })()';
     }
 
     return [code, Blockly.JavaScript.ORDER_ATOMIC];
@@ -488,4 +545,82 @@ Blockly.JavaScript['time_astro'] = function(block) {
     const offset  = parseFloat(block.getFieldValue('OFFSET'));
 
     return [`getAstroDate('${type}', undefined, ${offset})`, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+// --- time calculation --------------------------------------------------
+Blockly.Time.blocks['time_calculation'] =
+    '<block type="time_calculation">'
+    + '     <value name="DATE_TIME">'
+    + '         <shadow type="time_get">'
+    + '             <field name="OPTION">object</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="OPERATION">'
+    + '     </value>'
+    + '     <value name="VALUE">'
+    + '         <shadow type="math_number">'
+    + '             <field name="NUM">1</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="UNIT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['time_calculation'] = {
+    init: function() {
+        this.appendDummyInput('NAME')
+            .appendField(Blockly.Translate('time_calculation'));
+
+        this.appendValueInput('DATE_TIME')
+            .appendField(Blockly.Translate('time_calculation_on'))
+            .setCheck(null);
+
+        this.appendDummyInput('OPERATION')
+            .appendField(new Blockly.FieldDropdown([
+                ['+', '+'],
+                ['-', '-'],
+            ]), 'OPERATION');
+
+        this.appendValueInput('VALUE');
+
+        this.appendDummyInput('UNIT')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('time_calculation_ms'), 'ms'],
+                [Blockly.Translate('time_calculation_sec'), 'sec'],
+                [Blockly.Translate('time_calculation_min'), 'min'],
+                [Blockly.Translate('time_calculation_hour'), 'hour'],
+                [Blockly.Translate('time_calculation_day'), 'day'],
+                [Blockly.Translate('time_calculation_week'), 'week'],
+            ]), 'UNIT');
+
+        this.setInputsInline(true);
+
+        this.setOutput(true, 'Number');
+
+        this.setColour(Blockly.Time.HUE);
+        this.setTooltip(Blockly.Translate('time_calculation_tooltip'));
+        this.setHelpUrl(Blockly.Translate('time_calculation_help'));
+    },
+};
+
+Blockly.JavaScript['time_calculation'] = function(block) {
+    const dateTime = Blockly.JavaScript.valueToCode(block, 'DATE_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+    const operation = block.getFieldValue('OPERATION');
+    const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    const unit = block.getFieldValue('UNIT');
+
+    let step = 1;
+    if (unit === 'sec') {
+        step = 1000;
+    } else if (unit === 'min') {
+        step = 60 * 1000;
+    } else if (unit === 'hour') {
+        step = 60 * 60 * 1000;
+    } else if (unit === 'day') {
+        step = 24 * 60 * 60 * 1000;
+    } else if (unit === 'week') {
+        step = 7 * 24 * 60 * 60 * 1000;
+    }
+
+    return [`/* time calculation */ ((dateTime) => { const ts = (typeof dateTime === 'object' ? dateTime.getTime() : dateTime); return ts ${operation} ((${value}) * ${step}); })(${dateTime})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
