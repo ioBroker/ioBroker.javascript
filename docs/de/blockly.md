@@ -416,7 +416,7 @@ Dieser Block macht nichts, außer eine Zeile ins log zu schreiben. Man kann ihn 
 
 
 &nbsp;
-Beispiel zum importieren:
+Beispiel zum Importieren:
 
 ```xml 
 <xml xmlns="http://www.w3.org/1999/xhtml">

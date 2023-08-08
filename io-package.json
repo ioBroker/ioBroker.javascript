@@ -302,6 +302,7 @@
   "objects": [
     {
       "_id": "_design/script",
+      "type": "design",
       "language": "javascript",
       "views": {
         "javascript": {

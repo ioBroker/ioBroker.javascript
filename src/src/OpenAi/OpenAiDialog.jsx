@@ -98,7 +98,14 @@ const OpenAiDialog = props => {
                         content: `You are programmer. Here is a documentation:\n\n${docs}`,
                     },
                     { role: 'system', content: `Here is list of devices:\n\n${JSON.stringify(devices, null, 2)}` },
-                    { role: 'user', content: `Write code that do:\n\n${question}\n\nReturn only code. Write comments in ${LANGUAGES[I18n.getLanguage()] || 'English'}` }],
+                    {
+                        role: 'user',
+                        content: `Write code that do:\n\n${question}
+Return only code.
+Write comments in ${LANGUAGES[I18n.getLanguage()] || 'English'}.
+You can call async function directly in the code without encapsulate them in async function as this code will be already executed in async function.
+Do not import any libraries as all functions are already imported.`,
+                    }],
             });
             const message = chatCompletionPhase1.data.choices[0].message;
             const m = message.content.match(/```(javascript|js|typescript)\n?(.*)```(.*)/ms);
@@ -114,7 +121,12 @@ const OpenAiDialog = props => {
             } else {
                 code = m[2];
                 if (m[3]) {
-                    code = `${m[3].split('\n').map(line => `// ${line.trim()}`).join('\n')}\n${code}`;
+                    const comments = m[3].split('\n').map(line => line.trim());
+                    // skip empty lines on start and end
+                    while (comments[0] === '') {
+                        comments.shift();
+                    }
+                    code = `${comments.map(line => `// ${line}`).join('\n')}\n${code}`;
                 }
             }
             console.log(message);

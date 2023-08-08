@@ -265,7 +265,7 @@ Blockly.JavaScript['on_ext'] = function(block) {
 
     let val;
     if (dropdown_condition === 'true' || dropdown_condition === 'false') {
-        val = 'val: ' + dropdown_condition;
+        val = `val: ${dropdown_condition}`;
     } else {
         val = `change: '${dropdown_condition}'`;
     }
@@ -288,7 +288,8 @@ Blockly.JavaScript['on_ext'] = function(block) {
 
     return `on({ id: ${oid}, ${val}${ack_condition ? `, ack: ${ack_condition}` : ''} }, async (obj) => {\n` +
         (oids.length === 1 ? Blockly.JavaScript.prefixLines('let value = obj.state.val;\nlet oldValue = obj.oldState.val;', Blockly.JavaScript.INDENT) + '\n' : '') +
-        statement + '});\n';
+        statement +
+        '});\n';
 };
 
 // --- ON -----------------------------------------------------------

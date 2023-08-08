@@ -31,12 +31,12 @@ Any location needs to be writable by the "iobroker" user!
 Since v5.5.0 of the JavaScript adapter the following locations (relative to the ioBroker Base directory, usually `/opt/iobroker`) are not allowed to be used:
 * The ioBroker base directory itself and any path above!
 * `./iobroker-data` itself, custom subdirectory (choose a name that do not overlap with any adapter!)
-* `./iobroker-data/backup-objects` or anything below
-* `./iobroker-data/files` or anything below
-* `./iobroker-data/backitup` or anything below
-* `./backups` or anything below
-* `./node_modules` or anything below
-* `./log` or anything below
+* `./iobroker-data/backup-objects` or the anything below
+* `./iobroker-data/files` or the anything below
+* `./iobroker-data/backitup` or the anything below
+* `./backups` or the anything below
+* `./node_modules` or the anything below
+* `./log` or the anything below
 
 ## Todo
 - Goto current line in debugger
@@ -48,7 +48,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 -->
 ### **WORK IN PROGRESS**
 * (bluefox) Added version to the side menu
-* (klein0r) Added blockly blocks for getHistory and calculated times
+* (klein0r) Added blockly blocks for `getHistory` and calculated times
 
 ### 7.1.1 (2023-06-20)
 * (bluefox) corrected the script export
