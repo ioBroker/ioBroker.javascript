@@ -58,7 +58,7 @@ const OpenAiDialog = props => {
         if (!devicesCache.current) {
             devices = await detectDevices(props.socket);
             devicesCache.current = devices;
-            console.log('devices: ' + JSON.stringify(devices, 2, null))
+            console.log(`devices: ${JSON.stringify(devices, 2, null)}`);
         } else {
             devices = devicesCache.current;
         }

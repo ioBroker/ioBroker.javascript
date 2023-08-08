@@ -23,7 +23,7 @@ const getText = (text, lang) => {
         return text[lang] || text.en;
     }
     return text || '';
-}
+};
 const detectDevices = async socket => {
     const lang = I18n.getLanguage();
     const devicesObject = await allObjects(socket);

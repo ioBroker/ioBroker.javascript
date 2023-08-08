@@ -33,7 +33,7 @@ class ScriptEditor extends React.Component {
     }
 
     waitForMonaco(cb) {
-        if (!this.monaco || !this.props.runningInstances) {
+        if (!this.monaco?.languages?.typescript?.typescriptDefaults?.getCompilerOptions || !this.props.runningInstances) {
             this.monaco = window.monaco;
             this.monacoCounter = this.monacoCounter || 0;
             this.monacoCounter++;
@@ -70,16 +70,17 @@ class ScriptEditor extends React.Component {
     }
 
     componentDidMount() {
-        if (!this.monaco || !this.props.runningInstances) {
+        const monacoLoaded = this.monaco?.languages?.typescript?.typescriptDefaults?.getCompilerOptions;
+        if (!monacoLoaded || !this.props.runningInstances) {
             this.monaco = window.monaco;
-            if (!this.monaco) {
+            if (!monacoLoaded) {
                 console.log('wait for monaco loaded');
                 return this.waitForMonaco(() => this.componentDidMount());
             }
         }
         if (!this.editor) {
             this.props.onRegisterSelect && this.props.onRegisterSelect(() => this.editor.getModel().getValueInRange(this.editor.getSelection()));
-            // For some reason we have to get the original compiler options
+            // For some reason, we have to get the original compiler options
             // and assign new properties one by one
             const compilerOptions = this.monaco.languages.typescript.typescriptDefaults['getCompilerOptions']();
             compilerOptions.target = this.monaco.languages.typescript.ScriptTarget.ES2015;
@@ -254,9 +255,9 @@ class ScriptEditor extends React.Component {
         // TODO BF: check https://microsoft.github.io/monaco-editor/playground.html#extending-language-services-semantic-tokens-provider-example
         // to support 0.21.0
 
-        if (this.monaco && this.monaco.languages.typescript.typescriptDefaults.setExtraLibs) {
+        if (this.monaco?.languages?.typescript?.typescriptDefaults?.setExtraLibs) {
             this.monaco.languages.typescript.typescriptDefaults.setExtraLibs(wantedTypings);
-        } else if (this.monaco && this.monaco.languages.typescript.typescriptDefaults.addExtraLib) {
+        } else if (this.monaco?.languages?.typescript?.typescriptDefaults?.addExtraLib) {
             const existingLibs = this.monaco.languages.typescript.typescriptDefaults.getExtraLibs();
             wantedTypings.forEach(lib => {
                 if (!existingLibs[lib.filePath]) {
@@ -335,7 +336,7 @@ class ScriptEditor extends React.Component {
         this.editor && this.editor.setValue(code);
         this.highlightText(this.lastSearch);
         this.showDecorators();
-        //this.setEditorLanguage();
+        // this.setEditorLanguage();
         // Update the typings because global scripts need different typings than normal scripts
         // and each global script has different typings
         this.setEditorTypings(name);
