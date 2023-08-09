@@ -13,7 +13,6 @@ const rename  = require('gulp-rename');
 const replace = require('gulp-replace');
 const cp      = require('child_process');
 const JSZip   = require('jszip');
-const { Words: data } = require('./src/public/google-blockly/own/blocks_words');
 
 function deleteFoldersRecursive(path, exceptions) {
     if (fs.existsSync(path)) {

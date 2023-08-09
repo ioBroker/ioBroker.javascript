@@ -3,6 +3,7 @@
     "version": "7.1.2",
     "private": true,
     "dependencies": {
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "@craco/craco": "^7.1.0",
         "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
         "@icons/material": "^0.4.1",

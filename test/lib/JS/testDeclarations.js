@@ -3,7 +3,7 @@
 
 /*
 	This file is used to test the embedded declarations in JS.
-	It is NOT run in strict mode in order to test most users' 
+	It is NOT run in strict mode in order to test most users'
 	coding style
 */
 
@@ -28,7 +28,7 @@ test1 && test1.val.toFixed();
 const test2 = selected.getBinaryState();
 test2 && test2.readInt16BE(0);
 
-schedule({astro: 'night'}, () => { });
+schedule({ astro: 'night' }, () => { });
 
 // TODO: Add more tests
 

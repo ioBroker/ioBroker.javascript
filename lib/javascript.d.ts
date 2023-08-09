@@ -1,5 +1,5 @@
 // import all modules that are available in the sandbox
-// this has the nice side effect that we may augment the global scope
+// this has a nice side effect that we may augment the global scope
 import * as child_process from "child_process";
 import * as os from "os";
 
@@ -21,7 +21,7 @@ type NonNullCallbackReturnTypeOf<T extends (...args: any[]) => any> = Exclude<
 	SecondParameterOf<T>,
 	null | undefined
 >;
-/** Infers the return type from a callback-style API and and leaves null and undefined in */
+/** Infers the return type from a callback-style API and leaves null and undefined in */
 type CallbackReturnTypeOf<T extends (...args: any[]) => any> = SecondParameterOf<T>;
 
 /** Returns a type that requires at least one of the properties from the given type */
@@ -32,7 +32,7 @@ type AllKeys<T> = T extends any ? keyof T : never;
 /** Simplifies mapped types to their basic forms */
 type Simplify<U> = U extends infer O ? { [K in keyof O]: O[K] } : never;
 
-/** Takes an object type and adds all missing properties from the Keys union with type never */
+/** Takes an object type and adds all missing properties from the Keys union with the type `never` */
 type AddMissingNever<T, Keys extends string | number | symbol> = {
 	[K in Keys]: K extends keyof T ? T[K] : never;
 };
@@ -205,7 +205,7 @@ declare global {
 			| 'user'
 			| 'chart';
 
-		// Define the naming schemes for objects so we can provide more specific types for get/setObject
+		// Define the naming schemes for objects, so we can provide more specific types for get/setObject
 		namespace ObjectIDs {
 			// Guaranteed meta objects
 			type Meta =
@@ -285,7 +285,7 @@ declare global {
 				T extends ObjectIDs.Config ? OtherObject & { type: "config" } :
 				T extends ObjectIDs.AdapterScoped ? AdapterScopedObject :
 				iobJS.AnyObject
-				// When reading objects we should be less strict so working with the return type is less of a pain to work with
+				// When reading objects, we should be less strict, so working with the return type is less of a pain to work with
 			> = Read extends "read" ? AnyOf<O> : O;
 
 		interface ObjectCommon {
@@ -322,7 +322,7 @@ declare global {
 			min?: number;
 			/** maximum value */
 			max?: number;
-			/** allowed interval for numeric values */
+			/** the allowed interval for numeric values */
 			step?: number;
 			/** unit of the value */
 			unit?: string;
@@ -368,7 +368,7 @@ declare global {
 			custom?: Record<string, any>;
 
 			/**
-			 * Settings for IOT adapters and how the state should be named in e.g. Alexa.
+			 * Settings for IOT adapters and how the state should be named in e.g., Alexa.
 			 * The string "ignore" is a special case, causing the state to be ignored.
 			 */
 			smartName?: string | ({ [lang in Languages]?: string; } & {
@@ -400,7 +400,7 @@ declare global {
 		}
 
 		interface MetaCommon extends ObjectCommon {
-			// Meta objects have to additional CommonTypes
+			// Meta-objects have to additional CommonTypes
 			type: CommonType | "meta.user" | "meta.folder";
 
 			// Make it possible to narrow the object type using the custom property
@@ -563,7 +563,7 @@ declare global {
 			/** @deprecated Use @see localLinks */
 			localLink?: string;
 			logLevel?: LogLevel;
-			/** Whether this adapter receives logs from other hosts and adapters (e.g. to strore them somewhere) */
+			/** Whether this adapter receives logs from other hosts and adapters (e.g., to strore them somewhere) */
 			logTransporter?: boolean;
 			/** Path to the start file of the adapter. Should be the same as in `package.json` */
 			main?: string;
@@ -631,7 +631,7 @@ declare global {
 			unsafePerm?: true;
 			/** The available version in the ioBroker repo. */
 			version: string;
-			/** If `true`, the adapter will be started if any value is written into `system.adapter.<name>.<instance>.wakeup. Normally the adapter should stop after processing the event. */
+			/** If `true`, the adapter will be started if any value is written into `system.adapter.<name>.<instance>.wakeup. Normally, the adapter should stop after processing the event. */
 			wakeup?: boolean;
 			/** Include the adapter version in the URL of the web adapter, e.g. `http://ip:port/1.2.3/material` instead of `http://ip:port/material` */
 			webByVersion?: boolean;
@@ -980,7 +980,7 @@ declare global {
 			oldTs?: number;
 			/** Previous time stamp must be not equal to the given one (oldState.ts != ts) */
 			oldTsGt?: number;
-			/** Previous time stamp must be greater than given value (oldState.ts > ts) */
+			/** Previous time stamp must be greater than the given value (oldState.ts > ts) */
 			oldTsGe?: number;
 			/** Previous time stamp must be greater or equal to given one (oldState.ts >= ts) */
 			oldTsLt?: number;
@@ -990,7 +990,7 @@ declare global {
 			lc?: number;
 			/** Last change time stamp must be not equal to the given one (state.lc != lc) */
 			lcGt?: number;
-			/** Last change time stamp must be greater than given value (state.lc > lc) */
+			/** Last change time stamp must be greater than the given value (state.lc > lc) */
 			lcGe?: number;
 			/** Last change time stamp must be greater or equal to given one (state.lc >= lc) */
 			lcLt?: number;
@@ -1000,7 +1000,7 @@ declare global {
 			oldLc?: number;
 			/** Previous last change time stamp must be not equal to the given one (oldState.lc != lc) */
 			oldLcGt?: number;
-			/** Previous last change time stamp must be greater than given value (oldState.lc > lc) */
+			/** Previous last change time stamp must be greater than the given value (oldState.lc > lc) */
 			oldLcGe?: number;
 			/** Previous last change time stamp must be greater or equal to given one (oldState.lc >= lc) */
 			oldLcLt?: number;
@@ -1046,7 +1046,7 @@ declare global {
 			 * Returns the first state found by this query.
 			 * If the adapter is configured to subscribe to all states on start,
 			 * this can be called synchronously and immediately returns the state.
-			 * Otherwise you need to provide a callback.
+			 * Otherwise, you need to provide a callback.
 			 */
 			getState<T extends StateValue = any>(callback: GetStateCallback<T>): void;
 			getState<T extends StateValue = any>(): State<T> | null | undefined;
@@ -1056,7 +1056,7 @@ declare global {
 			 * Returns the first state found by this query.
 			 * If the adapter is configured to subscribe to all states on start,
 			 * this can be called synchronously and immediately returns the state.
-			 * Otherwise you need to provide a callback.
+			 * Otherwise, you need to provide a callback.
 			 */
 			getBinaryState(callback: GetBinaryStateCallback): void;
 			getBinaryState(): Buffer | null | undefined;
@@ -1222,7 +1222,7 @@ declare global {
 	// available functions in the sandbox
 	// =======================================================
 
-	// The already pre-loaded request module
+	// The already preloaded request module
 	const request: typeof import("request");
 
 	/**
@@ -1232,7 +1232,7 @@ declare global {
 	/**
 	 * The name of the current script
 	 */
-	// @ts-ignore We need this variable although it conflicts with lib.es6
+	// @ts-ignore We need this variable, although it conflicts with lib.es6
 	const name: string;
 	/**
 	 * The name of the current script
@@ -1243,6 +1243,7 @@ declare global {
 	 * Queries all states with the given selector
 	 * @param selector See @link{https://github.com/ioBroker/ioBroker.javascript#---selector} for a description
 	 */
+	// @ts-ignore We need this function, although it conflicts with vue
 	function $(selector: string): iobJS.QueryResult;
 
 	/**
@@ -1253,15 +1254,15 @@ declare global {
 	function log(message: string, severity?: iobJS.LogLevel): void;
 
 	// console functions
-	// @ts-ignore We need this variable although it conflicts with the node typings
+	// @ts-ignore We need this variable, although it conflicts with the node typings
 	namespace console {
-		/** log message with debug level */
+		/** log a message with debug level */
 		function debug(message: string): void;
-		/** log message with info level (default output level for all adapters) */
+		/** log a message with info level (default output level for all adapters) */
 		function info(message: string): void;
-		/** log message with warning severity */
+		/** log a message with warning severity */
 		function warn(message: string): void;
-		/** log message with error severity */
+		/** log a message with error severity */
 		function error(message: string): void;
 	}
 
@@ -1312,7 +1313,7 @@ declare global {
 
 	/**
 	 * Un-subscribe from the changes of the matched files.
-	 * @param id ID of meta-object, like `vis.0`. You can provide here can be a returned object from onFile. In this case no filePattern required.
+	 * @param id ID of meta-object, like `vis.0`. You can provide here can be a returned object from onFile. In this case, no filePattern required.
 	 * @param filePattern File name or file pattern, like `main/*`
 	 */
 	function offFile(id: string | any, filePattern?: string | string[]): boolean;
@@ -1384,7 +1385,7 @@ declare global {
 	 * For valid patterns, see @link{https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#astro-function}
 	 * @param pattern One of predefined patterns, like: sunrise, sunriseEnd, ...
 	 * @param date (optional) The date for which the astro time should be calculated. Default = today
-	 * @param offsetMinutes (optional) The amount of minutes to be added to the return value.
+	 * @param offsetMinutes (optional) The number of minutes to be added to the return value.
 	 */
 	function getAstroDate(pattern: string, date?: Date | number, offsetMinutes?: number): Date;
 
@@ -1557,7 +1558,7 @@ declare global {
 	 * If the ID of an instance is given (e.g. "admin.0"), only this instance will receive the message.
 	 * If the name of an adapter is given (e.g. "admin"), all instances of this adapter will receive it.
 	 * @param command (optional) Command name of the target instance. Default: "send"
-	 * @param message The message (e.g. params) to send.
+	 * @param message The message (e.g., params) to send.
 	 */
 	function sendTo(instanceName: string, command: string, message: string | object, callback?: iobJS.MessageCallback | iobJS.MessageCallbackInfo): void;
 	function sendTo(instanceName: string, message: string | object, callback?: iobJS.MessageCallback | iobJS.MessageCallbackInfo): void;
@@ -1568,7 +1569,7 @@ declare global {
 	 * Sends a message to a specific instance or all instances of some specific adapter.
 	 * @param host Host name.
 	 * @param command Command name for the target host.
-	 * @param message The message (e.g. params) to send.
+	 * @param message The message (e.g., params) to send.
 	 */
 	function sendToHost(host: string, command: string, message: string | object, callback?: iobJS.MessageCallback | iobJS.MessageCallbackInfo): void;
 	function sendToHostAsync(host: string, command: string, message: string | object): Promise<iobJS.MessageCallback | iobJS.MessageCallbackInfo>;
@@ -1696,9 +1697,9 @@ declare global {
 	function messageToAsync(target: iobJS.MessageTarget | string, data: any, options?: any): Promise<iobJS.MessageCallback | iobJS.MessageCallbackInfo>;
 
 	/**
-	 * Process message from other script.
+	 * Process message from another script.
 	 * @param message Message name
-	 * @param callback Callback to send the result to other script
+	 * @param callback Callback to send the result to another script
 	 */
 	function onMessage(message: string, callback?: SimpleCallback<any>);
 
@@ -1710,9 +1711,9 @@ declare global {
 	function onMessageUnregister(id: iobJS.MessageSubscribeID | string): boolean;
 
 	/**
-	 * Receives logs of specified severity level in script.
+	 * Receives logs of specified severity level in a script.
 	 * @param severity Severity level
-	 * @param callback Callback to send the result to other script
+	 * @param callback Callback to send the result to another script
 	 */
 	function onLog(severity: iobJS.LogLevel | "*", callback: SimpleCallback<iobJS.LogMessage>);
 

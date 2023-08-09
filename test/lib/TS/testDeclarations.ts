@@ -5,7 +5,7 @@
 
 import { Equals, AssignableTo } from "alcalzone-shared/types";
 
-// Used to tests types
+// Used to test the types
 function assertTrue<T extends true>() { return undefined!; }
 function assertFalse<T extends false>() { return undefined!; }
 
@@ -22,11 +22,17 @@ setState("id", 1, (id) => {
 });
 
 getBinaryState('id').readInt16LE(0);
-setBinaryState('id', new Buffer(0));
+setBinaryState('id', Buffer.alloc(0));
 
 const selected = $('selector');
 selected.getState<number>()!.val.toFixed();
 selected.getBinaryState()!.readInt16BE(0);
+
+// Repro from #539
+$("*").setState(1);
+
+// Repro from #636
+$("*").each(async () => { });
 
 schedule({ astro: "night" }, () => { });
 
@@ -48,12 +54,6 @@ if (state1.notExist) {
 	let test1 = state1.val! * 100;
 	test1 += 100;
 }
-
-// Repro from #539
-$("*").setState(1);
-
-// Repro from #636
-$("*").each(async () => { });
 
 onFile('vis.0', 'main/*', true, (id, fileName, size, data, mimeType) => {
 	assertTrue<Equals<typeof id, string>>();
