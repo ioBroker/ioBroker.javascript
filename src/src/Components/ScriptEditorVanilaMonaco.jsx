@@ -57,7 +57,7 @@ class ScriptEditor extends React.Component {
         if (scriptAdapterInstance) {
             this.props.socket.sendTo(scriptAdapterInstance.replace('system.adapter.', ''), 'loadTypings', null)
                 .then(result => {
-                    this.setState({alive: true, check: true, typingsLoaded: true});
+                    this.setState({ alive: true, check: true, typingsLoaded: true });
                     this.setTypeCheck(true);
                     if (result.typings) {
                         this.typings = result.typings;
@@ -102,7 +102,7 @@ class ScriptEditor extends React.Component {
                 glyphMargin: !!this.props.breakpoints,
             });
 
-            this.editor.onDidChangeModelContent(e =>
+            this.editor.onDidChangeModelContent(() =>
                 this.onChange(this.editor.getValue()));
 
             // Load typings for the JS editor
@@ -358,7 +358,7 @@ class ScriptEditor extends React.Component {
             this.initNewScript(nextProps.name, nextProps.code);
         }
 
-        // if some running instance will be found and
+        // if some running instance is found and
         if (JSON.stringify(nextProps.runningInstances) !== this.runningInstancesStr) {
             this.runningInstancesStr = JSON.stringify(nextProps.runningInstances);
             if (!this.state.typingsLoaded) {
@@ -367,7 +367,7 @@ class ScriptEditor extends React.Component {
         }
 
         // if the code not yet changed, update the new code
-        if (!nextProps.changed && (nextProps.code !== this.originalCode || nextProps.code !== this.editor.getValue())) {
+        if (this.editor && !nextProps.changed && (nextProps.code !== this.originalCode || nextProps.code !== this.editor.getValue())) {
             this.originalCode = nextProps.code;
             this.editor.setValue(this.originalCode);
             this.showDecorators();
@@ -398,13 +398,13 @@ class ScriptEditor extends React.Component {
         }
 
         if (this.state.language !== (nextProps.language || 'javascript')) {
-            this.setState({language: nextProps.language || 'javascript'});
+            this.setState({ language: nextProps.language || 'javascript' });
             options.language = nextProps.language || 'javascript';
         } else if (this.state.readOnly !== (nextProps.readOnly || false)) {
-            this.setState({readOnly: nextProps.readOnly || false});
+            this.setState({ readOnly: nextProps.readOnly || false });
             options.readOnly = nextProps.readOnly;
         } else if (this.state.isDark !== (nextProps.isDark || false)) {
-            this.setState({isDark: nextProps.isDark || false});
+            this.setState({ isDark: nextProps.isDark || false });
             options.isDark = nextProps.isDark;
         }
 

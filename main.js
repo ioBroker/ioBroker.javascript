@@ -1684,7 +1684,7 @@ function removeFromNames(id) {
 function getName(id) {
     let pos;
     for (const n in context.names) {
-        if (context.names.hasOwnProperty(n)) {
+        if (Object.prototype.hasOwnProperty.call(context, n)) {
             if (context.names[n] && Array.isArray(context.names[n])) {
                 pos = context.names[n].indexOf(id);
                 if (pos !== -1) {
@@ -2212,7 +2212,7 @@ async function getData(callback) {
 
         // remember all IDs
         for (const id in res) {
-            if (res.hasOwnProperty(id)) {
+            if (Object.prototype.hasOwnProperty.call(res, id)) {
                 context.stateIds.push(id);
             }
         }
