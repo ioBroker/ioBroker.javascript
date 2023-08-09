@@ -781,29 +781,40 @@ function startAdapter(options) {
                             const longitude     = parseFloat(obj.message.longitude === undefined ? adapter.config.longitude    : obj.message.longitude) || 0;
                             const latitude      = parseFloat(obj.message.latitude  === undefined ? adapter.config.latitude     : obj.message.latitude)  || 0;
                             const now = new Date();
-                            const astroEvents = mods.suncalc.getTimes(now, latitude, longitude);
-                            astroEvents.nextSunrise = getAstroEvent(
-                                now,
-                                obj.message.sunriseEvent || adapter.config.sunriseEvent,
-                                obj.message.sunriseLimitStart || adapter.config.sunriseLimitStart,
-                                obj.message.sunriseLimitEnd   || adapter.config.sunriseLimitEnd,
-                                sunriseOffset,
-                                false,
-                                latitude,
-                                longitude,
-                                true
-                            );
-                            astroEvents.nextSunset = getAstroEvent(
-                                now,
-                                obj.message.sunsetEvent  || adapter.config.sunsetEvent,
-                                obj.message.sunsetLimitStart  || adapter.config.sunsetLimitStart,
-                                obj.message.sunsetLimitEnd    || adapter.config.sunsetLimitEnd,
-                                sunsetOffset,
-                                true,
-                                latitude,
-                                longitude,
-                                true
-                            );
+                            let astroEvents = {};
+                            try {
+                                astroEvents = mods.suncalc.getTimes(now, latitude, longitude);
+                            } catch (e) {
+                                adapter.log.error(`Cannot calculate astro data: ${e}`);
+                            }
+                            if (astroEvents) {
+                                try {
+                                    astroEvents.nextSunrise = getAstroEvent(
+                                        now,
+                                        obj.message.sunriseEvent || adapter.config.sunriseEvent,
+                                        obj.message.sunriseLimitStart || adapter.config.sunriseLimitStart,
+                                        obj.message.sunriseLimitEnd   || adapter.config.sunriseLimitEnd,
+                                        sunriseOffset,
+                                        false,
+                                        latitude,
+                                        longitude,
+                                        true
+                                    );
+                                    astroEvents.nextSunset = getAstroEvent(
+                                        now,
+                                        obj.message.sunsetEvent  || adapter.config.sunsetEvent,
+                                        obj.message.sunsetLimitStart  || adapter.config.sunsetLimitStart,
+                                        obj.message.sunsetLimitEnd    || adapter.config.sunsetLimitEnd,
+                                        sunsetOffset,
+                                        true,
+                                        latitude,
+                                        longitude,
+                                        true
+                                    );
+                                } catch (e) {
+                                    adapter.log.error(`Cannot calculate astro data: ${e}`);
+                                }
+                            }
 
                             const result = {};
                             const keys = Object.keys(astroEvents).sort((a, b) => astroEvents[a] - astroEvents[b]);
