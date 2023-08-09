@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 7.1.2 (2023-08-08)
+### **WORK IN PROGRESS**
 * (bluefox) Added version to the side menu
 * (klein0r) Added blockly blocks for `getHistory` and calculated times
 
