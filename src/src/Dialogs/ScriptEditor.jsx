@@ -83,7 +83,7 @@ class DialogScriptEditor extends React.Component {
         return <Dialog
             onClose={(event, reason) => false}
             maxWidth="lg"
-            classes={{paper: classes.dialog}}
+            classes={{ paper: classes.dialog }}
             fullWidth
             open={!0}
             aria-labelledby="source-dialog-title"

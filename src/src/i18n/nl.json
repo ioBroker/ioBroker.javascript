@@ -359,5 +359,8 @@
   "Press Ctrl+Enter to get the answer": "Druk op Ctrl+Enter om het antwoord te krijgen",
   "Ask": "Vragen",
   "Result": "Resultaat",
-  "Use generated code": "Gebruik gegenereerde code"
+  "Use generated code": "Gebruik gegenereerde code",
+  "No Chat GPT Key found": "Geen Chat GPT-sleutel gevonden",
+  "You have to enter OpenAI API key in the configuration of javascript adapter.": "U moet de OpenAI API-sleutel invoeren in de configuratie van de javascript-adapter.",
+  "Open configuration": "Configuratie openen"
 }

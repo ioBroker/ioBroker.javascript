@@ -6,6 +6,7 @@ exec(cmd, [options], callback);
 
 Execute system command and get the outputs.
 
+Example:
 ```js
 // Get the list of files and directories in /var/log
 exec('ls /var/log', function (error, stdout, stderr) {
@@ -187,6 +188,7 @@ Trigger on all states with ID `'*.STATE'` if they are acknowledged and have new 
 
 **Note:** you can use RegExp directly:
 
+Example:
 ```js
 on(/^system\.adapter\..*\.\d+\.memRss$/, function (obj) {
 });
@@ -307,7 +309,7 @@ schedule({hour: 12, minute: 30}, function () {
 ```
 Pattern can be a Javascript Date object (some specific time point) - in this case only it will be triggered only one time.
 
-If start or end times for a schedule are needed this could also be implemented with usage of an object. In this scenario the object have the properties:
+If start or end times for a schedule are needed, this could also be implemented with usage of an object. In this scenario the object have the properties:
 - `start`
 - `end`
 - `rule`
@@ -386,7 +388,7 @@ on({ astro: 'sunset', shift: 10 }, function () {
 ```
 
 ### clearSchedule
-If **no** "astro" function used, you can cancel the schedule later. To allow this, the schedule object must be saved:
+If **no** "astro" function is used, you can cancel the schedule later. To allow this, the schedule object must be saved:
 
 ```js
 let sch = schedule('*/2 * * * *', function () { /* ... */ });
@@ -692,117 +694,33 @@ deleteStateAsync('myDatapoint')
 ```
 simply delete datapoint if exists.
 
-### createAliasAsync
-```js
-await createAliasAsync(name, alias, forceCreation, common, native, callback);
-```
-
-Create alias in `alias.0` space if it does not exist, e.g. `javascript.0.myalias` and reference to a state or read/write states.
-The common definition is taken from the read alias id object, but a provided common takes precedence.
-
-#### Parameters:
-
-- `name`: name of the alias state with or without alias namespace, e.g. `mystate` (namespace "alias.0." will be added)
-- `alias`: can be either an existing state id as string or an object with full alias definition including read/write ids and read/write functions. Not: Alias definitions can not be set as part of the common parameter!
-- `forceCreation`: create/overwrite alias independent of if state yet exists or not.
-- `common`: common description of an alias object. Values provided here will take precedence over the common definition of the read alias id object. Not: Alias definitions can not be set as part of this common parameter, see alias parameter!
-- `native`: native description of an object. Any specific information.
-- `callback`: called after state is created and initialized.
-
-It is possible a short type of createAlias:
-
-- `createAlias('myAlias', 'myDatapoint')` - simply create alias.0.myAlias that refernces to javascript.X.myDatapoint if it does not exist
-- `createAlias('myAlias', {id: {read: 'myReadDatapoint', write: 'myWriteDatapoint'}})` - create alias and reference to different read/write states
-
-For other details, see createState, it is similar.
-
-### createAliasAsync
-```js
-await createAliasAsync(name, alias, forceCreation, common, native);
-```
-
-Same as `createAlias`, but the promise will be returned.
-
-### sendToAsync
-```js
-await sendToAsync(adapter, command, message, callback);
-```
-
-Send a message to a specific or all adapter instances. When using the adapter name, the message is sent to all instances.
-
-To get specific information about messages, you must read the documentation for a particular adapter.
-
-Example:
-
-```js
-await sendToAsync('telegram', {user: 'UserName', text: 'Test message'});
-```
-
-Some adapters also support responses to the sent messages. (e.g. history, sql, telegram)
-The response is only returned to the callback if the message is sent to a specific instance!
-
-Example with response:
-
-```js
-const result = await sendToAsync('telegram.0', {user: 'UserName', text: 'Test message'});
-console.log('Sent to ' + result + ' users');
-```
-
-### sendToHostAsync
-```js
-await sendToHostAsync(hostName, command, message, callback);
-```
-
-Send a message to controller instance.
-
-The following commands are supported:
-- `"cmdExec"`
-- `"getRepository"`
-- `"getInstalled"`
-- `"getVersion"`
-- `"getDiagData"`
-- `"getLocationOnDisk"`
-- `"getDevList"`
-- `"getLogs"`
-- `"getHostInfo"`
-
-It is rather specific commands and are not required often.
-
-Example:
-
-```js
-const result = await sendToHostAsync('myComputer', 'cmdExec', {data: 'ls /'});
-console.log('List of files: ' + result.data);
-```
-
 ### formatDate
 ```js
 formatDate(millisecondsOrDate, format);
 ```
 
 #### Parameters:
-
 - `millisecondsOrDate`: number of milliseconds from state.ts or state.lc (Number milliseconds from 1970.01.01 00:00:00) or javascript *new Date()* object or number of milliseconds from *(new Date().getTime())*
 - `format`: Can be `null`, so the system time format will be used, otherwise
 
-* YYYY, JJJJ, ГГГГ - full year, e.g 2015
-* YY, JJ, ГГ - short year, e.g 15
-* MM, ММ(cyrillic) - full month, e.g. 01
-* M, М(cyrillic) - short month, e.g. 1
-* DD, TT, ДД - full day, e.g. 02
-* D, T, Д - short day, e.g. 2
-* hh, SS, чч - full hours, e.g. 03
-* h, S, ч - short hours, e.g. 3
-* mm, мм(cyrillic) - full minutes, e.g. 04
-* m, м(cyrillic) - short minutes, e.g. 4
-* ss, сс(cyrillic) - full seconds, e.g. 05
-* s, с(cyrillic) - short seconds, e.g. 5
-* sss, ссс(cyrillic) - milliseconds
-* WW, НН(cyrillic) - full week day as text
-* W, Н(cyrillic) - short week day as text
-* OO, ОО(cyrillic) - full month as text
-* OOO, ООО(cyrillic) - full month as text as genitiv
-* O, О(cyrillic) - short month as text
+* YYYY - full year, e.g 2015
+* YY - short year, e.g 15
+* MM - full month, e.g. 01
+* M - short month, e.g. 1
+* DD - full day, e.g. 02
+* D - short day, e.g. 2
+* hh - full hours, e.g. 03
+* h - short hours, e.g. 3
+* mm - full minutes, e.g. 04
+* m - short minutes, e.g. 4
+* ss - full seconds, e.g. 05
+* s - short seconds, e.g. 5
+* sss - milliseconds
+* WW - full week day as text
+* W - short week day as text
+* OO - full month as text
+* OOO - full month as text as genitiv
+* O - short month as text
 
 #### Example
 
@@ -953,14 +871,14 @@ await writeFileAsync('vis.0', '/screenshots/1.png', data);
 
 ### delFileAsync
 ```js
-await delFileAsync(adapter, fileName);
+await delFileAsync(adapterName, fileName);
 ```
 
 Delete file or directory. fileName is the name of file or directory in DB.
 
 ### renameAsync
 ```js
-await renameAsync(adapter, oldName, newName);
+await renameAsync(adapterName, oldName, newName);
 ```
 
 Rename file or directory. `oldName` is the name of file or directory in DB and is renamed to newName.
@@ -993,72 +911,6 @@ onFile(id, fileName);
 Unsubscribe from file changes:
 - `id` is ID of an object of type `meta`, like `vis.0`
 - `fileName` is file name or pattern, like `main/*` or `main/vis-view.json`
-
-### onStop
-```js
-onStop (function(){ /* do something when script is stopped */ }, timeout);
-```
-Install callback, that will be called if a script stopped. Used, e.g., to stop communication or to close connections.
-
-```js
-// establish connection
-const conn = require('net');
-// ...
-
-// close connection if script stopped
-onStop(function (callback) {
-    if (conn) {
-        // close connection
-        conn.destroy();
-    }
-    callback();
-}, 2000 /*ms*/);
-```
-`timeout` is 1000ms by default.
-
-### runScriptAsync
-```js
-await runScriptAsync('scriptName');
-console.log('Srcipt started, but not yet executed');
-```
-
-Starts or restarts other scripts (and itself too) by name.
-
-```js
-// restart script
-await runScriptAsync('groupName.scriptName1');
-```
-
-### startScriptAsync
-```js
-await startScriptAsync('scriptName', ignoreIfStarted);
-```
-
-Start the script. If ignoreIfStarted set to true, nothing will be done if a script yet running, otherwise the script will be restarted.
-
-```js
-await startScriptAsync('scriptName', true); // start script if not started
-```
-
-### stopScriptAsync
-```js
-await stopScriptAsync('scriptName');
-```
-
-If stopScript is called without arguments, it will stop itself:
-
-```js
-await stopScriptAsync();
-```
-
-### isScriptActive
-```js
-isScriptActive('scriptName');
-```
-
-Returns if a script enabled or disabled.
-Please note that that does not give back if the script now running or not.
-The Script can be finished, but still activated.
 
 ### wait
 Just pause the execution of the script.

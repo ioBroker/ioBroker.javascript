@@ -1,5 +1,5 @@
-import { useCallback, useRef, useState } from 'react';
-import MonacoEditor from 'react-monaco-editor';
+import React, { useCallback, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Configuration, OpenAIApi } from 'openai';
 
 import {
@@ -15,7 +15,9 @@ import {
 } from '@mui/icons-material';
 
 import { Utils, I18n } from '@iobroker/adapter-react-v5';
+
 import { detectDevices, systemPrompt } from './OpenAiPrompt';
+import ScriptEditorComponent from '../Components/ScriptEditorVanilaMonaco';
 
 const LANGUAGES = {
     ru: 'Russian',
@@ -64,8 +66,14 @@ const OpenAiDialog = props => {
         }
         let apiKey;
         if (!gptKeyCache.current) {
-            const config = await props.socket.getObject(`system.adapter.javascript.${props.instance || 0}`);
-            apiKey = config.native.gptKey;
+            const ids = Object.keys(props.runningInstances);
+            for (let i = 0; i < ids.length; i++) {
+                const config = await props.socket.getObject(ids[i]);
+                apiKey = config.native.gptKey;
+                if (apiKey) {
+                    break;
+                }
+            }
             gptKeyCache.current = apiKey;
         } else {
             apiKey = gptKeyCache.current;
@@ -159,14 +167,22 @@ Do not import any libraries as all functions are already imported.`,
             fullWidth
         >
             <DialogTitle>{I18n.t('No Chat GPT Key found')}</DialogTitle>
-            <DialogContent style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <DialogContent
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 8,
+                }}
+            >
                 <div>
                     {I18n.t('You have to enter OpenAI API key in the configuration of javascript adapter.')}
                 </div>
                 <Button
                     variant="contained"
                     onClick={() => {
-                        window.open(`../#tab-instances/config/system.adapter.javascript.${props.instance || 0}`, '_blank');
+                        const ids = Object.keys(props.runningInstances);
+
+                        window.open(`../../#tab-instances/config/${ids[0] || 'system.adapter.javascript.0'}`, '_blank');
                         setShowKeyWarning(false);
                     }}
                 >
@@ -185,12 +201,20 @@ Do not import any libraries as all functions are already imported.`,
         </Dialog>}
         {open && <Dialog
             maxWidth="lg"
+            classes={{ paper: props.classes.fullHeightDialog }}
             open={!0}
             onClose={() => setOpen(false)}
             fullWidth
         >
             <DialogTitle>{I18n.t('AI code generator')}</DialogTitle>
-            <DialogContent style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <DialogContent
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 8,
+                    height: '100%',
+                }}
+            >
                 <div>
                     <TextField
                         variant="standard"
@@ -225,18 +249,25 @@ Do not import any libraries as all functions are already imported.`,
                 <div>
                     {I18n.t('Result')}
                 </div>
-                <div>
+                <div style={{ height: 'calc(100% - 155px)' }}>
                     {error ?
                         <div style={{ color: '#bb0000' }}>{error}</div>
                         :
-                        <MonacoEditor
-                            width="100%"
-                            height="400"
-                            languages={['javascript', 'typescript']}
+                        <ScriptEditorComponent
+                            adapterName={props.adapterName}
+                            runningInstances={props.runningInstances}
+                            style={{
+                                height: '100%',
+                                width: '100%',
+                                resize: 'none',
+                            }}
+                            name="ai"
+                            socket={props.socket}
+                            readOnly
+                            checkJs
+                            code={answer}
+                            isDark={props.themeType === 'dark'}
                             language={props.language}
-                            theme={props.isDark ? 'vs-dark' : ''}
-                            value={answer}
-                            options={{ readOnly: true }}
                         />}
                 </div>
             </DialogContent>
@@ -269,15 +300,22 @@ Do not import any libraries as all functions are already imported.`,
                     color="grey"
                     variant="contained"
                     startIcon={<Close />}
-                    onClick={() => {
-                        setOpen(false);
-                    }}
+                    onClick={() => setOpen(false)}
                 >
                     {I18n.t('Close')}
                 </Button>
             </DialogActions>
         </Dialog>}
     </>;
+};
+
+OpenAiDialog.propTypes = {
+    adapterName: PropTypes.string.isRequired,
+    socket: PropTypes.object,
+    runningInstances: PropTypes.object,
+    themeType: PropTypes.string,
+    language: PropTypes.string,
+    onAddCode: PropTypes.func.isRequired,
 };
 
 export default OpenAiDialog;

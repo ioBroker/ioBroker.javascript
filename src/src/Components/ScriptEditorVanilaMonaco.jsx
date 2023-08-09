@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Fab from '@mui/material/Fab';
 
-import {MdGTranslate as IconNoCheck} from 'react-icons/md';
+import { Fab } from '@mui/material';
+
+import { MdGTranslate as IconNoCheck } from 'react-icons/md';
+
 import { I18n } from '@iobroker/adapter-react-v5';
 
 function isIdOfGlobalScript(id) {
@@ -33,14 +35,18 @@ class ScriptEditor extends React.Component {
     }
 
     waitForMonaco(cb) {
-        if (!this.monaco?.languages?.typescript?.typescriptDefaults?.getCompilerOptions || !this.props.runningInstances) {
+        let monacoLoaded = this.monaco?.languages?.typescript?.typescriptDefaults?.getCompilerOptions;
+        if (!monacoLoaded || !this.props.runningInstances) {
             this.monaco = window.monaco;
+            monacoLoaded = this.monaco?.languages?.typescript?.typescriptDefaults?.getCompilerOptions;
             this.monacoCounter = this.monacoCounter || 0;
             this.monacoCounter++;
-            if (!this.monaco && this.monacoCounter < 20) {
+            if (!monacoLoaded && this.monacoCounter < 20) {
                 console.log('wait for monaco loaded');
-                return setTimeout(() => this.waitForMonaco(cb), 200);
-            } else if (this.monacoCounter >= 20) {
+                setTimeout(() => this.waitForMonaco(cb), 200);
+                return;
+            }
+            if (this.monacoCounter >= 20) {
                 console.error('Cannot load monaco!');
             }
         } else {
@@ -74,11 +80,14 @@ class ScriptEditor extends React.Component {
         if (!monacoLoaded || !this.props.runningInstances) {
             this.monaco = window.monaco;
             if (!monacoLoaded) {
-                console.log('wait for monaco loaded');
-                return this.waitForMonaco(() => this.componentDidMount());
+                console.log('wait for monaco loaded...');
+                this.waitForMonaco(() => this.componentDidMount());
+
+                return;
             }
         }
-        if (!this.editor) {
+        if (!this.editor && monacoLoaded) {
+            console.log('Init editor');
             this.props.onRegisterSelect && this.props.onRegisterSelect(() => this.editor.getModel().getValueInRange(this.editor.getSelection()));
             // For some reason, we have to get the original compiler options
             // and assign new properties one by one
@@ -155,10 +164,10 @@ class ScriptEditor extends React.Component {
                 this.setEditorLanguage(options.language);
             }
             if (options.readOnly !== undefined) {
-                this.editor.updateOptions({readOnly: options.readOnly});
+                this.editor.updateOptions({ readOnly: options.readOnly });
             }
             if (options.lineWrap !== undefined) {
-                this.editor.updateOptions({wordWrap: options.lineWrap ? 'on' : 'off'});
+                this.editor.updateOptions({ wordWrap: options.lineWrap ? 'on' : 'off' });
             }
             if (options.typeCheck !== undefined) {
                 this.setTypeCheck(options.typeCheck);
@@ -429,7 +438,7 @@ class ScriptEditor extends React.Component {
     }
 
     render() {
-        if (!this.monaco || !this.props.runningInstances) {
+        if (!this.monaco?.languages?.typescript?.typescriptDefaults || !this.props.runningInstances) {
             setTimeout(() => {
                 this.monaco = window.monaco;
                 this.forceUpdate()
@@ -442,7 +451,9 @@ class ScriptEditor extends React.Component {
                 size="small"
                 title={I18n.t('Check is not active, because javascript adapter is disabled')}
                 style={{bottom: 10, right: 10, opacity: 0.5, position: 'absolute', zIndex: 1, background: 'red', color: 'white'}}
-                color="secondary"><IconNoCheck/></Fab>}
+                color="secondary">
+                <IconNoCheck/>
+            </Fab>}
         </div>;
     }
 }

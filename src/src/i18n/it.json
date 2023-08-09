@@ -359,5 +359,8 @@
   "Press Ctrl+Enter to get the answer": "Premi Ctrl+Invio per ottenere la risposta",
   "Ask": "Chiedere",
   "Result": "Risultato",
-  "Use generated code": "Usa il codice generato"
+  "Use generated code": "Usa il codice generato",
+  "No Chat GPT Key found": "Nessuna chiave GPT chat trovata",
+  "You have to enter OpenAI API key in the configuration of javascript adapter.": "Devi inserire la chiave API OpenAI nella configurazione dell'adattatore javascript.",
+  "Open configuration": "Configurazione aperta"
 }

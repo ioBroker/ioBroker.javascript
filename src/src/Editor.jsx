@@ -66,8 +66,6 @@ import DialogScriptEditor from './Dialogs/ScriptEditor';
 import RulesEditor from './Components/RulesEditor';
 import Debugger from './Components/Debugger';
 import steps, { STEPS } from './Components/RulesEditor/helpers/Tour';
-import { AutoFixNormal } from '@mui/icons-material';
-import { detectDevice, systemPrompt } from './OpenAi/OpenAiPrompt';
 import OpenAiDialog from './OpenAi/OpenAiDialog';
 
 const images = {
@@ -183,6 +181,9 @@ const styles = theme => ({
         height: 18,
         borderRadius: 2,
         marginRight: 5,
+    },
+    fullHeightDialog: {
+        height: 'calc(100% - 100px)'
     },
 });
 
@@ -460,7 +461,7 @@ class Editor extends React.Component {
                 this.scripts[id].source = source;
             });
 
-            // if script is blockly
+            // if a script is blockly
             if (this.state.selected && this.objects[this.state.selected]) {
                 this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.objects[this.state.selected].common));
                 if (this.state.blockly !== (this.scripts[this.state.selected].engineType === 'Blockly')) {
@@ -1070,11 +1071,16 @@ class Editor extends React.Component {
                     >
                         <IconCron />
                     </IconButton>}
-                    {this.scripts[this.state.selected].engineType !== 'Blockly' && this.scripts[this.state.selected].engineType !== 'Rules' ?
+                    {
+                        this.scripts[this.state.selected] &&
+                        this.scripts[this.state.selected].engineType !== 'Blockly' &&
+                        this.scripts[this.state.selected].engineType !== 'Rules' ?
                         <OpenAiDialog
+                            adapterName={this.props.adapterName}
                             socket={this.props.socket}
+                            runningInstances={this.state.runningInstances}
                             classes={this.props.classes}
-                            isDark={this.state.themeType === 'dark'}
+                            themeType={this.state.themeType}
                             language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
                             onAddCode={code => this.setState({ insert: code })}
                         /> : null}
