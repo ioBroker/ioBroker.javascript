@@ -13,7 +13,7 @@ const rename  = require('gulp-rename');
 const replace = require('gulp-replace');
 const cp      = require('child_process');
 const JSZip   = require('jszip');
-const {Words: data, aWords} = require('./src/public/google-blockly/own/blocks_words');
+const { Words: data } = require('./src/public/google-blockly/own/blocks_words');
 
 function deleteFoldersRecursive(path, exceptions) {
     if (fs.existsSync(path)) {
@@ -50,7 +50,7 @@ function npmInstall() {
         console.log(`"${cmd} in ${cwd}`);
 
         // System call used for update of js-controller itself,
-        // because during installation npm packet will be deleted too, but some files must be loaded even during the installation process.
+        // because during an installation npm packet will be deleted too, but some files must be loaded even during the installation process.
         const exec = require('child_process').exec;
         const child = exec(cmd, {cwd});
 
@@ -58,7 +58,7 @@ function npmInstall() {
         child.stdout.pipe(process.stdout);
 
         child.on('exit', (code /* , signal */) => {
-            // code 1 is strange error that cannot be explained. Everything is installed but error :(
+            // code 1 is a strange error that cannot be explained. Everything is installed but error :(
             if (code && code !== 1) {
                 reject(`Cannot install: ${code}`);
             } else {
@@ -82,17 +82,10 @@ gulp.task('2-npm-dep', gulp.series('clean', '2-npm'));
 
 function build() {
     return new Promise((resolve, reject) => {
-        const options = {
-            stdio: 'pipe',
-            cwd:   __dirname + '/src/'
-        };
-
         const version = JSON.parse(fs.readFileSync(`${__dirname}/package.json`).toString('utf8')).version;
         const data = JSON.parse(fs.readFileSync(`${__dirname}/src/package.json`).toString('utf8'));
         data.version = version;
         fs.writeFileSync(`${__dirname}/src/package.json`, JSON.stringify(data, null, 4));
-
-        console.log(options.cwd);
 
         let script =  `${__dirname}/src/node_modules/@craco/craco/dist/bin/craco.js`;
         if (!fs.existsSync(script)) {
@@ -102,12 +95,21 @@ function build() {
             console.error(`Cannot find execution file: ${script}`);
             reject(`Cannot find execution file: ${script}`);
         } else {
-            const child = cp.fork(script, ['build'], options);
-            child.stdout.on('data', data => console.log(data.toString()));
-            child.stderr.on('data', data => console.log(data.toString()));
-            child.on('close', code => {
-                console.log(`child process exited with code ${code}`);
-                code ? reject(`Exit code: ${code}`) : resolve();
+            const cmd = `node ${script} --max-old-space-size=7000 build`;
+            const child = cp.exec(cmd, { cwd: `${__dirname}/src/` });
+
+            child.stderr.pipe(process.stderr);
+            child.stdout.pipe(process.stdout);
+
+            child.on('exit', (code /* , signal */) => {
+                // code 1 is a strange error that cannot be explained. Everything is installed but error :(
+                if (code && code !== 1) {
+                    reject(`Cannot install: ${code}`);
+                } else {
+                    console.log(`"${cmd} in ${__dirname}/src/ finished.`);
+                    // command succeeded
+                    resolve();
+                }
             });
         }
     });
@@ -447,7 +449,9 @@ gulp.task('blockly2languagesFlat', done => {
         const keys = Object.keys(langs.en);
         //keys.sort();
         for (const l in langs) {
-            if (!langs.hasOwnProperty(l)) continue;
+            if (!langs.hasOwnProperty(l)) {
+                continue;
+            }
             const obj = {};
             for (let k = 0; k < keys.length; k++) {
                 obj[keys[k]] = langs[l][keys[k]];
@@ -458,7 +462,9 @@ gulp.task('blockly2languagesFlat', done => {
             fs.mkdirSync(`${src}i18n/`);
         }
         for (const ll in langs) {
-            if (!langs.hasOwnProperty(ll)) continue;
+            if (!langs.hasOwnProperty(ll)) {
+                continue;
+            }
             if (!fs.existsSync(`${src}i18n/${ll}`)) {
                 fs.mkdirSync(`${src}i18n/${ll}`);
             }
@@ -622,7 +628,9 @@ gulp.task('blocklyWords2json', done => {
         const keys = Object.keys(langs.en);
         // keys.sort();
         for (const l in langs) {
-            if (!langs.hasOwnProperty(l)) continue;
+            if (!langs.hasOwnProperty(l)) {
+                continue;
+            }
             const obj = {};
             for (let k = 0; k < keys.length; k++) {
                 obj[keys[k]] = langs[l][keys[k]];
@@ -633,7 +641,9 @@ gulp.task('blocklyWords2json', done => {
             fs.mkdirSync(`${src}i18n/`);
         }
         for (const ll in langs) {
-            if (!langs.hasOwnProperty(ll)) continue;
+            if (!langs.hasOwnProperty(ll)) {
+                continue;
+            }
             if (!fs.existsSync(`${src}i18n/${ll}`)) {
                 fs.mkdirSync(`${src}i18n/${ll}`);
             }
