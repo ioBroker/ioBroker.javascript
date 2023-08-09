@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "7.1.3",
+    "version": "7.1.4",
     "news": {
+      "7.1.4": {
+        "en": "Added version to the side menu\nAdded blockly blocks for `getHistory` and calculated times",
+        "de": "Version zum Seitenmenü hinzugefügt\nBlockaden für getHistory und berechnete Zeiten hinzugefügt",
+        "ru": "Добавлена версия к боковому меню\nДобавлены блокноты для getHistory и рассчитанные времена",
+        "pt": "Versão adicionada ao menu lateral\nAdicionado bloqueio blocos para getHistory e tempos calculados",
+        "nl": "Vertaling:\nVertaling:",
+        "fr": "Ajout de la version au menu\nAjout de blocs bloqués pour getHistory et les temps calculés",
+        "it": "Versione aggiunta al menu laterale\nAggiunto blocchi per ottenereHistory e tempi calcolati",
+        "es": "Versión agregada al menú lateral\nBloques bloqueados para conseguirHistoria y tiempos calculados",
+        "pl": "Dodana wersja do bocznego menu\nZamknięte bloki do gotHistory i obliczane czasy",
+        "uk": "Додано версію в бічне меню\nДодано блокнотні блоки для getHistory і обчислених разів",
+        "zh-cn": "增加一侧的男子版本\n增加准时和计算时间的障碍"
+      },
       "7.1.1": {
         "en": "corrected the script export",
         "de": "korrigierte das skript export",
