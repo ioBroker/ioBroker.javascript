@@ -88,6 +88,18 @@
         if ((window.localStorage && window.localStorage.getItem('App.theme')) === 'dark') {
             window.document.body.style.background = 'black';
         }
+
+        // support for older blockly extensions like blockly-plus
+        if (window.Blockly) {
+            window.Blockly.Constants = window.Blockly.Constants || {};
+            window.Blockly.Constants.Loops = window.Blockly.Constants.Loops || {};
+            window.Blockly.Constants.Variables = window.Blockly.Constants.Variables || {};
+            window.Blockly.Constants.Variables.HUE = 'rgb(165, 91, 128)';
+            window.Blockly.Constants.Logic = window.Blockly.Constants.Logic || {};
+            window.Blockly.Constants.Logic.HUE = 'rgb(91, 128, 165)';
+            window.Blockly.Constants.Math = window.Blockly.Constants.Logic || {};
+            window.Blockly.Constants.Math.HUE = 'rgb(91, 103, 165)';
+        }
     </script>
 
     <div id="root"></div>
