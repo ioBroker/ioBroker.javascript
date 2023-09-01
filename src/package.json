@@ -11,7 +11,7 @@
         "@mui/icons-material": "^5.14.3",
         "@mui/material": "^5.14.4",
         "@mui/styles": "^5.14.4",
-        "@sentry/browser": "^7.61.1",
+        "@sentry/browser": "^7.66.0",
         "@sentry/integrations": "^7.61.1",
         "craco-module-federation": "^1.1.0",
         "eslint": "^8.46.0",
