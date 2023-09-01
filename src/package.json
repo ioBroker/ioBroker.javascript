@@ -22,7 +22,7 @@
         "eslint-plugin-only-warn": "^1.1.0",
         "eslint-plugin-react": "^7.33.1",
         "eslint-plugin-react-hooks": "^4.6.0",
-        "iobroker.type-detector": "^1.1.2",
+        "iobroker.type-detector": "^2.0.1",
         "lodash": "^4.17.21",
         "monaco-editor": "~0.41.0",
         "openai": "^3.3.0",
