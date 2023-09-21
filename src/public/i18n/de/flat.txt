@@ -122,12 +122,12 @@ Wertkommentar
 Quelle
 Objektname
 Objektbeschreibung
-Zustands-Einheit
+Maßeinheit
 Objektrolle
-Zustandstyp
+Datenpunkttyp
 Objekttyp
-Zustand lesbar ist
-Zustand beschreibbar ist
+Datenpunkt lesbar ist
+Datenpunkt beschreibbar ist
 Zustandswert nehmen
 Datenpunkt auswählen
 Objekt ID
@@ -170,7 +170,7 @@ Datum-Objekt
 Millisekunden
 Sekunden
 Minuten
-Minuten seit Tagseanfang
+Minuten seit Tagesanfang
 Sekunden seit Tagesanfang
 Stunden
 Monatsdatum
