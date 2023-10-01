@@ -7,7 +7,7 @@
         "@craco/craco": "^7.1.0",
         "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
         "@icons/material": "^0.4.1",
-        "@iobroker/adapter-react-v5": "^4.4.5",
+        "@iobroker/adapter-react-v5": "^4.6.2",
         "@mui/icons-material": "^5.14.3",
         "@mui/material": "^5.14.4",
         "@mui/styles": "^5.14.4",
