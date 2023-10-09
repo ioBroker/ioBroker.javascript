@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 7.0.5 (2023-06-06)
+* (klein0r) reset timeouts in blockly
+* (klein0r) added additional blockly blocks
+
 ## 7.0.4 (2023-06-06)
 * (bluefox) packages updated
 * (bluefox) Files are used for export of scripts

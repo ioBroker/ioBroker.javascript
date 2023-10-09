@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "7.1.4",
+    "version": "7.1.5",
     "news": {
+      "7.1.5": {
+        "en": "Added play-ground for ChatGPT (API key required)",
+        "de": "Hinzugefügt Spielplatz für ChatGPT (API-Taste erforderlich)",
+        "ru": "Добавлена игровая площадка для ChatGPT (требуется ключ API)",
+        "pt": "Adicionado play-ground para ChatGPT (chave API necessária)",
+        "nl": "Toegevoegd speelplaats voor ChatGPT (API sleutel vereist)",
+        "fr": "Ajout d'une aire de jeux pour ChatGPT (clé API requise)",
+        "it": "Aggiunto parco giochi per ChatGPT (API chiave necessaria)",
+        "es": "Añadido el lugar de juego para ChatGPT (API clave requerida)",
+        "pl": "Added playground for ChatGPT (ang.)",
+        "uk": "Додано ігровий майданчик для чатGPT (API ключ потрібно)",
+        "zh-cn": "增加查特格预防队的场地(需要的关键)"
+      },
       "7.1.4": {
         "en": "Added version to the side menu\nAdded blockly blocks for `getHistory` and calculated times",
         "de": "Version zum Seitenmenü hinzugefügt\nBlockaden für getHistory und berechnete Zeiten hinzugefügt",
@@ -99,19 +112,6 @@
         "pl": "klasyfikowano i skrypt zdegradowano do poprzednich wersji\npróbował poprawić fonty vcode",
         "uk": "попередню версію були деградовані за замовчуванням\nспробував виправити шрифт проти коду",
         "zh-cn": "前几版的文字和写法已降到原版本。\n试图纠正 vscode font"
-      },
-      "7.0.5": {
-        "en": "reset timeouts in blockly\nadded additional blockly blocks",
-        "de": "timeouts blockweise zurücksetzen\nzusätzliche blockblöcke hinzugefügt",
-        "ru": "сбросить тайм-аут в блоклы\nдобавлены дополнительные блокноты",
-        "pt": "redefinir timeouts em blockly\nadicionado blocos adicionais",
-        "nl": "reset time-outs in blok\nvertaling:",
-        "fr": "reset timeouts in blockly\nblocs supplémentaires",
-        "it": "resettare i timeout in blocco\naggiunto blocchi aggiuntivi",
-        "es": "tiempos de reajuste en bloque\nañadido bloques bloqueados adicionales",
-        "pl": "reset timeout\ndodanie dodatkowych bloków",
-        "uk": "час скидання в блоклі\nдодано додаткові блокноти",
-        "zh-cn": "停滞时间\n新增的又一个阻碍因素"
       }
     },
     "desc": {
