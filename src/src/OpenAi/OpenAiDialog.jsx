@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
 
 import {
     Button, CircularProgress, Dialog,
@@ -91,14 +91,13 @@ const OpenAiDialog = props => {
             return;
         }
 
-        const configuration = new Configuration({ apiKey });
         setWorking(true);
         setError(false);
 
         try {
-            const openai = new OpenAIApi(configuration);
+            const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
 
-            const chatCompletionPhase1 = await openai.createChatCompletion({
+            const chatCompletionPhase1 = await openai.chat.completions.create({
                 model: 'gpt-3.5-turbo-16k',
                 messages: [
                     {
@@ -115,7 +114,7 @@ You can call async function directly in the code without encapsulate them in asy
 Do not import any libraries as all functions are already imported.`,
                     }],
             });
-            const message = chatCompletionPhase1.data.choices[0].message;
+            const message = chatCompletionPhase1.choices[0].message;
             const m = message.content.match(/```(javascript|js|typescript)\n?(.*)```(.*)/ms);
             let code;
             if (!m) {
@@ -143,7 +142,7 @@ Do not import any libraries as all functions are already imported.`,
             if (err.response) {
                 setError(err.response.data?.error?.message);
             }
-            console.error(`Cannot request: ${err}, ${JSON.stringify(err.response.data, null, 2)}`);
+            console.error(`Cannot request: ${err}, ${JSON.stringify(err?.response?.data || err, null, 2)}`);
         }
 
         setWorking(false);

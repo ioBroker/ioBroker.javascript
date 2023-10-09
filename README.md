@@ -46,6 +46,9 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Added play-ground for ChatGPT (API key required)
+
 ### 7.1.4 (2023-08-09)
 * (bluefox) Added version to the side menu
 * (klein0r) Added blockly blocks for `getHistory` and calculated times
