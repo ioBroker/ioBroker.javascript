@@ -362,5 +362,5 @@
   "Use generated code": "Использовать сгенерированный код",
   "No Chat GPT Key found": "Ключ GPT для чата не найден",
   "You have to enter OpenAI API key in the configuration of javascript adapter.": "Вы должны ввести ключ OpenAI API в конфигурации адаптера javascript.",
-  "Open configuration": "Открытая конфигурация"
+  "Open configuration": "Открыть настройки"
 }

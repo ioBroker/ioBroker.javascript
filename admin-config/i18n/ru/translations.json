@@ -1,5 +1,5 @@
 {
-  "Activate syntax help for these npm modules:": "Активируйте справку по синтаксису для этих модулей npm:",
+  "Activate syntax help for these npm modules:": "Активировать справку по синтаксису для этих модулей npm:",
   "Add module": "Добавить NPM модуль",
   "Additional npm modules:": "Дополнительные NPM Модули",
   "Allow self-signed certificates for URL requests": "Разрешить самоподписанные сертификаты для запросов URL",
@@ -51,9 +51,9 @@
   "tooltip_enableExec": "Разрешить вызывать exec в скриптах",
   "tooltip_enableSendToHost": "Разрешить посылать специальные сообщения в скриптах",
   "tooltip_enableSetObject": "Разрешить изменять системные объекты в скриптах",
-  "tooltip_latitude": "Широта в виде 5.435 для астро функций",
+  "tooltip_latitude": "Широта в виде 5.435 для астро-функций",
   "tooltip_libraries": "Дополнительные NPM пакеты через запятую. Их можно использовать в скриптах, как require('name').",
-  "tooltip_longitude": "Широта в виде 5.435 для астро функций",
+  "tooltip_longitude": "Широта в виде 5.435 для астро-функций",
   "tooltip_useSystemGPS": "Использовать координаты из системных настроек",
-  "Maximum setState requests per Minute per Script": "Максимальный наборГосударственные запросы в минуту на скрипт"
+  "Maximum setState requests per Minute per Script": "Максимальное количество setState запросов в минуту на скрипт"
 }
