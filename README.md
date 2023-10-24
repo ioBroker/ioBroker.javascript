@@ -46,6 +46,9 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Fixed pushover rules block
+
 ### 7.1.5 (2023-10-09)
 * (bluefox) Added play-ground for ChatGPT (API key required)
 
