@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "7.1.5",
+    "version": "7.1.6",
     "news": {
+      "7.1.6": {
+        "en": "Fixed pushover rules block",
+        "de": "Feste Pushover-Regeln block",
+        "ru": "Исправлены правила pushover блока",
+        "pt": "Bloqueio de regras de pushover fixo",
+        "nl": "Vertaling:",
+        "fr": "Réglage des règles de poussée",
+        "it": "Blocco delle regole di pushover fisso",
+        "es": "Bloque de reglas de empuje fijo",
+        "pl": "Fixed pushover rules block",
+        "uk": "Фіксований блок правил штовхача",
+        "zh-cn": "固定推销规则"
+      },
       "7.1.5": {
         "en": "Added play-ground for ChatGPT (API key required)",
         "de": "Hinzugefügt Spielplatz für ChatGPT (API-Taste erforderlich)",
@@ -99,19 +112,6 @@
         "pl": "Poprawka\nPoprawne pisownie V5\nrękopis został zdegradowany do poprzedniej wersji\npróbował poprawić fonty vcode",
         "uk": "Виправлений блок запуску\nВиправлено помилку В5\ncoffescript було вилучено до попередньої версії\nспробував виправити шрифт проти коду",
         "zh-cn": "被更正的触发事件\n更正 V5\n前一版本的文字已经退化。\n试图纠正 vscode font"
-      },
-      "7.0.6": {
-        "en": "typescript and coffescript were degraded to previous versions\ntried to correct vscode font",
-        "de": "typescript und coffescript wurden auf frühere versionen abgebaut\nversucht, vscode schrift zu korrigieren",
-        "ru": "typescript и coffescript были деградированы до предыдущих версий\nпытался исправить vscode шрифт",
-        "pt": "typescript e coffescript foram degradados para versões anteriores\ntentou corrigir a fonte vscode",
-        "nl": "typisch en doodskistisch beschreven aan vorige versies\nprobeerde vscode font te corrigeren",
-        "fr": "typescript and coffescript were degraded to previous versions\nessayé de corriger la police vscode",
-        "it": "typescript e coffescript sono stati degradati alle versioni precedenti\nprovato a correggere vscode font",
-        "es": "tiposcript y coffescript fueron degradados a versiones anteriores\ntrató de corregir la fuente vscode",
-        "pl": "klasyfikowano i skrypt zdegradowano do poprzednich wersji\npróbował poprawić fonty vcode",
-        "uk": "попередню версію були деградовані за замовчуванням\nспробував виправити шрифт проти коду",
-        "zh-cn": "前几版的文字和写法已降到原版本。\n试图纠正 vscode font"
       }
     },
     "desc": {

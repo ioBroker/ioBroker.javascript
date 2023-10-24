@@ -1,4 +1,11 @@
 The newest change log is in README.md
+## 7.0.8 (2023-06-12)
+* (klein0r) Corrected trigger block
+* (klein0r) Corrected typescript V5
+* (bluefox) coffescript was degraded to the previous version
+* (bluefox) tried to correct vscode font
+* (bluefox) reverted blockly to the previous version
+
 ## 7.0.5 (2023-06-06)
 * (klein0r) reset timeouts in blockly
 * (klein0r) added additional blockly blocks
