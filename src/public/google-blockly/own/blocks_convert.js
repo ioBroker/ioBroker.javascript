@@ -355,7 +355,7 @@ Blockly.Blocks.convert_time_difference = {
             if (!inputExists) {
                 this.appendDummyInput('FORMAT')
                     .appendField(' ')
-                    .appendField(new Blockly.FieldTextInput(Blockly.Translate('time_get_default_format')), 'FORMAT');
+                    .appendField(new Blockly.FieldTextInput(Blockly.Translate('time_difference_default_format')), 'FORMAT');
             }
         } else if (inputExists) {
             this.removeInput('FORMAT');
