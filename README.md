@@ -48,6 +48,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 -->
 ### **WORK IN PROGRESS**
 * (klein0r) Added function to format time difference `formatTimeDiff`
+* (klein0r) Added blockly blocks for `formatTimeDiff`
 
 ### 7.1.6 (2023-10-24)
 * (bluefox) Fixed pushover rules block

@@ -299,6 +299,86 @@ Blockly.JavaScript.convert_from_date = function (block) {
     return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
+// --- time difference --------------------------------------------------
+Blockly.Convert.blocks['convert_time_difference'] =
+    '<block type="convert_time_difference">'
+    + '     <value name="VALUE">'
+    + '     </value>'
+    + '     <value name="OPTION">'
+    + '     </value>'
+    + '     <mutation format="false"></mutation>'
+    + '     <value name="FORMAT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks.convert_time_difference = {
+    init: function () {
+        this.setColour(Blockly.Convert.HUE);
+        this.appendValueInput('VALUE')
+            .appendField(Blockly.Translate('convert_time_difference'));
+
+        this.appendDummyInput('OPTION')
+            .appendField(Blockly.Translate('convert_to'))
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('time_difference_hh:mm:ss') , 'hh:mm:ss'],
+                [Blockly.Translate('time_difference_h:m:s')    , 'h:m:s'],
+                [Blockly.Translate('time_difference_hh:mm')    , 'hh:mm'],
+                [Blockly.Translate('time_difference_h:m')    , 'h:m'],
+                [Blockly.Translate('time_difference_mm:ss')    , 'mm:ss'],
+                [Blockly.Translate('time_difference_m:s')    , 'm:s'],
+                [Blockly.Translate('time_difference_custom')   , 'custom'],
+            ], function (option) {
+                this.sourceBlock_.updateShape_(option === 'custom');
+            }), 'OPTION');
+
+        this.setInputsInline(true);
+        this.setOutput(true);
+        this.setTooltip(Blockly.Translate('convert_time_difference_tooltip'))
+    },
+    mutationToDom: function() {
+        const container = document.createElement('mutation');
+        const option = this.getFieldValue('OPTION');
+
+        container.setAttribute('format', option === 'custom' ? 'true' : 'false');
+
+        return container;
+    },
+    domToMutation: function(xmlElement) {
+        const format = xmlElement.getAttribute('format');
+
+        this.updateShape_(format === true || format === 'true' || format === 'TRUE');
+    },
+    updateShape_: function(isFormat, isLanguage) {
+        let inputExists = this.getInput('FORMAT');
+
+        if (isFormat) {
+            if (!inputExists) {
+                this.appendDummyInput('FORMAT')
+                    .appendField(' ')
+                    .appendField(new Blockly.FieldTextInput(Blockly.Translate('time_get_default_format')), 'FORMAT');
+            }
+        } else if (inputExists) {
+            this.removeInput('FORMAT');
+        }
+    }
+};
+
+Blockly.JavaScript.convert_time_difference = function (block) {
+    const option = block.getFieldValue('OPTION');
+    const format = block.getFieldValue('FORMAT');
+
+    const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+
+    let code;
+    if (option === 'custom') {
+        code = `formatTimeDiff(getDateObject(${value}), '${format}')`;
+    } else {
+        code = `formatTimeDiff(getDateObject(${value}), '${option}')`;
+    }
+
+    return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
 // --- json2object --------------------------------------------------
 Blockly.Convert.blocks['convert_json2object'] =
     '<block type="convert_json2object">'
