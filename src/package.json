@@ -10,7 +10,7 @@
         "@iobroker/adapter-react-v5": "^4.6.7",
         "@iobroker/type-detector": "^3.0.5",
         "@mui/icons-material": "^5.14.15",
-        "@mui/material": "^5.14.15",
+        "@mui/material": "^5.14.16",
         "@mui/styles": "^5.14.15",
         "@sentry/browser": "^7.75.0",
         "@sentry/integrations": "^7.75.0",
