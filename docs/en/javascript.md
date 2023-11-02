@@ -1057,8 +1057,8 @@ The common definition is taken from the read alias id object, but a provided com
 
 #### Parameters:
 
-- `name`: name of the alias state with or without alias namespace, e.g. `mystate` (namespace "alias.0." will be added)
-- `alias`: can be either an existing state id as string or an object with full alias definition including read/write ids and read/write functions. Not: Alias definitions can not be set as part of the common parameter!
+- `name`: id of the new alias state with (possible without alias namespace), e.g. `test.mystate` (namespace `alias.0.` will be added = `alias.0.test.mystate`)
+- `alias`: can be either an existing state id as string or an object with full alias definition including read/write ids and read/write functions. Note: Alias definitions can not be set as part of the common parameter!
 - `forceCreation`: create/overwrite alias independent of if state yet exists or not.
 - `common`: common description of alias object see description [here](https://github.com/ioBroker/ioBroker/blob/master/doc/SCHEMA.md#state). Values provided here will take precedence over the common definition of the read alias id object. Not: Alias definitions can not be set as part of this common parameter, see alias parameter!
 - `native`: native description of an object. Any specific information.
@@ -1067,7 +1067,7 @@ The common definition is taken from the read alias id object, but a provided com
 It is possible a short type of createAlias:
 
 - `createAlias('myAlias', 'myDatapoint')` - simply create alias.0.myAlias that refernces to javascript.X.myDatapoint if it does not exist
-- `createAlias('myAlias', {id: {read: 'myReadDatapoint', write: 'myWriteDatapoint'}})` - create alias and reference to different read/write states
+- `createAlias('myAlias', {id: {read: 'myReadDatapoint', write: 'myWriteDatapoint'}})` - creates alias and reference to different read/write states
 
 For other details, see createState, it is similar.
 
