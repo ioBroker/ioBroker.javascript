@@ -1081,6 +1081,7 @@ Same as `createAlias`, but the promise will be returned.
 ### sendTo
 ```js
 sendTo(adapter, command, message, callback);
+sendTo(adapter, command, message, options, callback);
 ```
 
 Send a message to a specific or all adapter instances. When using the adapter name, the message is sent to all instances.
@@ -1090,7 +1091,7 @@ To get specific information about messages, you must read the documentation for 
 Example:
 
 ```js
-sendTo('telegram', {user: 'UserName', text: 'Test message'});
+sendTo('telegram', {user: 'UserName', text: 'Test message'}, {timeout: 2000});
 ```
 
 Some adapters also support responses to the sent messages. (e.g. history, sql, telegram)
@@ -1107,6 +1108,7 @@ sendTo('telegram.0', {user: 'UserName', text: 'Test message'}, function (res) {
 ### sendToAsync
 ```js
 await sendToAsync(adapter, command, message);
+await sendToAsync(adapter, command, message, options);
 ```
 Same as sendTo, but with `promise`.
 

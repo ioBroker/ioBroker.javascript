@@ -52,6 +52,7 @@ NodeJS 16.x is required
 * (klein0r) Added function to format time difference `formatTimeDiff`
 * (klein0r) Added blockly blocks for `formatTimeDiff`
 * (klein0r) messageToAsync was not working without options
+* (klein0r) Added timeout and custom options for sendToAsync
 
 ### 7.1.6 (2023-10-24)
 * (bluefox) Fixed pushover rules block
