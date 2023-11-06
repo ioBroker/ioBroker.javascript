@@ -47,6 +47,8 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+NodeJS 16.x is required
+
 * (klein0r) Added function to format time difference `formatTimeDiff`
 * (klein0r) Added blockly blocks for `formatTimeDiff`
 

@@ -23,7 +23,7 @@
     "url": "https://github.com/ioBroker/ioBroker.javascript"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16"
   },
   "depsComment": {
     "coffee-script": "is required only for node 14. As coffee-compiler requires coffeescript for nodes>14 and coffee-script for nodes<=14",
