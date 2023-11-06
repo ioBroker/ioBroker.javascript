@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Tour from 'reactour';
 
-import { Configuration, OpenAIApi } from 'openai';
-
 import Toolbar from '@mui/material/Toolbar';
 import withStyles from '@mui/styles/withStyles';
 import Button from '@mui/material/Button';

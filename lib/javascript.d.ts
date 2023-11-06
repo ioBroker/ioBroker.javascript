@@ -1597,6 +1597,8 @@ declare global {
 	function formatValue(value: number | string, decimals: number, format?: any): string;
 	function formatDate(dateObj: string | Date | number, format: string, language?: string): string;
 	function formatDate(dateObj: string | Date | number, isDuration: boolean | string, format: string, language?: string): string;
+	function formatTimeDiff(diff: number): string;
+	function formatTimeDiff(diff: number, format: string): string;
 
 	function getDateObject(date: number | string | Date): Date;
 

@@ -1,5 +1,5 @@
 {
-  "Activate syntax help for these npm modules:": "Aktivieren Sie die Syntaxhilfe für diese npm-Module:",
+  "Activate syntax help for these npm modules:": "Die Syntaxhilfe für diese npm-Module aktivieren:",
   "Add module": "NPM-Modul hinzufügen",
   "Additional npm modules:": "Zusätzliche NPM-Module",
   "Allow self-signed certificates for URL requests": "Selbstsignierte Zertifikate für URL-Anfragen erlauben",
@@ -55,5 +55,5 @@
   "tooltip_libraries": "Zusätzliche NPM Pakete mit Komma getrennt. Man kann die Pakete mit require('name') benutzen.",
   "tooltip_longitude": "Der Längengrad im Format 5.345 für Astro-Funktion",
   "tooltip_useSystemGPS": "Die Koordinaten aus den Systemeinstellungen verwenden",
-  "Maximum setState requests per Minute per Script": "Maximale SetState-Anfragen pro Minute pro Skript"
+  "Maximum setState requests per Minute per Script": "Maximale setState-Anfragen pro Minute pro Skript"
 }

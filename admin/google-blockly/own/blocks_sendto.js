@@ -613,7 +613,7 @@ Blockly.JavaScript['sendto_gethistory'] = function(block) {
         (step > 0 && aggregate !== 'none' ? Blockly.JavaScript.prefixLines(`step: ${step},`, Blockly.JavaScript.INDENT) + '\n' : '') +
         Blockly.JavaScript.prefixLines(`aggregate: '${aggregate}',`, Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`removeBorderValues: true`, Blockly.JavaScript.INDENT) + '\n' +
-    `}, (err, result) => {\n` +
+    `}, async (err, result) => {\n` +
         Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
         (statement ? Blockly.JavaScript.prefixLines(`} else {`, Blockly.JavaScript.INDENT) + '\n' : '') +

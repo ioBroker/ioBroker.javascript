@@ -52,6 +52,7 @@
     - [clearTimeout](#cleartimeout)
     - [setImmediate](#setImmediate)
     - [formatDate](#formatdate)
+    - [formatTimeDiff](#formattimediff)
     - [getDateObject](#getDateObject)
     - [formatValue](#formatvalue)
     - [adapterSubscribe](#adaptersubscribe)
@@ -1056,8 +1057,8 @@ The common definition is taken from the read alias id object, but a provided com
 
 #### Parameters:
 
-- `name`: name of the alias state with or without alias namespace, e.g. `mystate` (namespace "alias.0." will be added)
-- `alias`: can be either an existing state id as string or an object with full alias definition including read/write ids and read/write functions. Not: Alias definitions can not be set as part of the common parameter!
+- `name`: id of the new alias state with (possible without alias namespace), e.g. `test.mystate` (namespace `alias.0.` will be added = `alias.0.test.mystate`)
+- `alias`: can be either an existing state id as string or an object with full alias definition including read/write ids and read/write functions. Note: Alias definitions can not be set as part of the common parameter!
 - `forceCreation`: create/overwrite alias independent of if state yet exists or not.
 - `common`: common description of alias object see description [here](https://github.com/ioBroker/ioBroker/blob/master/doc/SCHEMA.md#state). Values provided here will take precedence over the common definition of the read alias id object. Not: Alias definitions can not be set as part of this common parameter, see alias parameter!
 - `native`: native description of an object. Any specific information.
@@ -1066,7 +1067,7 @@ The common definition is taken from the read alias id object, but a provided com
 It is possible a short type of createAlias:
 
 - `createAlias('myAlias', 'myDatapoint')` - simply create alias.0.myAlias that refernces to javascript.X.myDatapoint if it does not exist
-- `createAlias('myAlias', {id: {read: 'myReadDatapoint', write: 'myWriteDatapoint'}})` - create alias and reference to different read/write states
+- `createAlias('myAlias', {id: {read: 'myReadDatapoint', write: 'myWriteDatapoint'}})` - creates alias and reference to different read/write states
 
 For other details, see createState, it is similar.
 
@@ -1218,12 +1219,48 @@ formatDate(millisecondsOrDate, format);
 #### Example
 
 ```js
-  formatDate(new Date(), "YYYY-MM-DD") // => Date "2015-02-24"
-  formatDate(new Date(), "hh:mm") // => Hours and minutes "17:41"
-  formatDate(state.ts) // => "24.02.2015"
-  formatDate(state.ts, "JJJJ.MM.TT SS:mm:ss.sss") // => "2015.02.15 17:41:98.123"
-  formatDate(new Date(), "WW") // => Day of week "Tuesday"
-  formatDate(new Date(), "W") // => Day of week "Tu"
+formatDate(new Date(), "YYYY-MM-DD") // => Date "2015-02-24"
+formatDate(new Date(), "hh:mm") // => Hours and minutes "17:41"
+formatDate(state.ts) // => "24.02.2015"
+formatDate(state.ts, "JJJJ.MM.TT SS:mm:ss.sss") // => "2015.02.15 17:41:98.123"
+formatDate(new Date(), "WW") // => Day of week "Tuesday"
+formatDate(new Date(), "W") // => Day of week "Tu"
+```
+
+### formatTimeDiff
+```js
+formatTimeDiff(milliseconds, format);
+```
+
+#### Parameters:
+
+- `milliseconds`: difference in milliseconds*
+- `format`: Can be `null`, so the `hh:mm:ss` format will be used, otherwise
+
+* DD, TT, ДД - full day, e.g. 02
+* D, T, Д - short day, e.g. 2
+* hh, SS, чч - full hours, e.g. 03
+* h, S, ч - short hours, e.g. 3
+* mm, мм(cyrillic) - full minutes, e.g. 04
+* m, м(cyrillic) - short minutes, e.g. 4
+* ss, сс(cyrillic) - full seconds, e.g. 05
+* s, с(cyrillic) - short seconds, e.g. 5
+
+#### Example
+
+```js
+formatTimeDiff(60000, "mm:ss") // => "01:00"
+
+const diff = 172800000 + 10800000 + 540000 + 15000; // 2 days, 3 hours, 9 minutes + 15 secoonds
+formatTimeDiff(diff); // "51:09:15"
+formatTimeDiff(diff, "DD hh:mm"); // "02 03:09"
+formatTimeDiff(diff, "D hh:mm"); // "2 03:09"
+formatTimeDiff(diff, "hh:mm:ss"); // "51:09:15"
+formatTimeDiff(diff, "h:m:s"); // "51:9:15"
+formatTimeDiff(diff, "hh:mm"); // "51:09"
+formatTimeDiff(diff, "mm:ss"); // "3069:15"
+formatTimeDiff(diff, "hh"); // "51"
+formatTimeDiff(diff, "mm"); // "3069"
 ```
 
 ### getDateObject

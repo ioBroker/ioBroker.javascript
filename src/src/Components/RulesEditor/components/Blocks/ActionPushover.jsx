@@ -14,7 +14,7 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
         } else {
             return `// Pushover ${config.text || ''}
 \t\tconst subActionVar${config._id} = "${text}"${GenericBlock.getReplacesInText(context)};
-\t\t_sendToFrontEnd(${config._id}, {text: subActionVar${config._id}});\`;            
+\t\t_sendToFrontEnd(${config._id}, {text: subActionVar${config._id}});            
 \t\tsendTo("${config.instance}", "send", {
 \t\t    message: subActionVar${config._id},
 \t\t    title: "${(config.title || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)},

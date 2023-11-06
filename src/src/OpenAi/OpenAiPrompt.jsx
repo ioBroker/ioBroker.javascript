@@ -1,21 +1,28 @@
-import { ChannelDetector } from 'iobroker.type-detector';
+import ChannelDetector from '@iobroker/type-detector';
 import { I18n } from '@iobroker/adapter-react-v5';
 import docs from './docs.md';
 
+let allObjectsCache = null;
+
 const allObjects = async socket => {
+    if (allObjectsCache) {
+        return allObjectsCache;
+    }
     const states = await socket.getObjectView('', '\u9999', 'state');
     const channels = await socket.getObjectView('', '\u9999', 'channel');
     const devices = await socket.getObjectView('', '\u9999', 'device');
     const folders = await socket.getObjectView('', '\u9999', 'folder');
     const enums = await socket.getObjectView('', '\u9999', 'enum');
 
-    return Object.values(states)
+    allObjectsCache = Object.values(states)
         .concat(Object.values(channels))
         .concat(Object.values(devices))
         .concat(Object.values(folders))
         .concat(Object.values(enums))
         // eslint-disable-next-line
         .reduce((obj, item) => (obj[item._id] = item, obj), {});
+
+    return allObjectsCache;
 };
 
 const getText = (text, lang) => {
@@ -24,6 +31,7 @@ const getText = (text, lang) => {
     }
     return text || '';
 };
+
 const detectDevices = async socket => {
     const lang = I18n.getLanguage();
     const devicesObject = await allObjects(socket);
