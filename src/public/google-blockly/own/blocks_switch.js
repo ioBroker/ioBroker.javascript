@@ -195,8 +195,8 @@ Blockly.JavaScript['logic_switch_case'] = function (block) {
     let case_n;
     const switchVariable = Blockly.JavaScript.valueToCode(block, 'CONDITION', Blockly.JavaScript.ORDER_NONE) || null;
 
-    if (switchVariable){
-        const pattern = /^\(?([._$\d\w"?: \(\)])*\)?$/g;
+    if (switchVariable) {
+        const pattern = /^\(?([._$\d\w"'?: \(\)])*\)?$/g;
 
         if (pattern.test(switchVariable)) { // Check to see if the switch is a kind of variable type
             code = '\nswitch (' + switchVariable + ') {\n';
@@ -224,5 +224,6 @@ Blockly.JavaScript['logic_switch_case'] = function (block) {
             alert('logic_switch_case: ' + switchVariable + ' is not a variable name');
         }
     }
+
     return code;
 };
