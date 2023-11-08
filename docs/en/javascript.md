@@ -1100,10 +1100,12 @@ The response is only returned to the callback if the message is sent to a specif
 Example with response:
 
 ```js
-sendTo('telegram.0', {user: 'UserName', text: 'Test message'}, function (res) {
+sendTo('telegram.0', {user: 'UserName', text: 'Test message'}, (res) => {
     console.log('Sent to ' + res + ' users');
 });
 ```
+
+*Default timeout is 20000 milliseconds (if a callback function has been defined)*
 
 ### sendToAsync
 ```js

@@ -925,6 +925,11 @@ declare global {
 		}
 		type MessageCallback = (result?: any) => void | Promise<void>;
 
+		interface SendToOptions {
+			/** Method throws or calls error cb, if callback not called in time, works for single targets only */
+			timeout?: number;
+		}
+
 		interface Subscription {
 			name: string;
 			pattern: string | RegExp | string[] | iobJS.SubscribeOptions | iobJS.SubscribeTime | iobJS.AstroSchedule;
@@ -1560,10 +1565,12 @@ declare global {
 	 * @param command (optional) Command name of the target instance. Default: "send"
 	 * @param message The message (e.g., params) to send.
 	 */
+	function sendTo(instanceName: string, command: string, message: string | object, options: iobJS.SendToOptions, callback?: iobJS.MessageCallback | iobJS.MessageCallbackInfo): void;
 	function sendTo(instanceName: string, command: string, message: string | object, callback?: iobJS.MessageCallback | iobJS.MessageCallbackInfo): void;
 	function sendTo(instanceName: string, message: string | object, callback?: iobJS.MessageCallback | iobJS.MessageCallbackInfo): void;
 	function sendToAsync(instanceName: string, message: string | object): Promise<iobJS.MessageCallback | iobJS.MessageCallbackInfo>;
 	function sendToAsync(instanceName: string, command: string, message: string | object): Promise<iobJS.MessageCallback | iobJS.MessageCallbackInfo>;
+	function sendToAsync(instanceName: string, command: string, message: string | object, options: iobJS.SendToOptions): Promise<iobJS.MessageCallback | iobJS.MessageCallbackInfo>;
 
 	/**
 	 * Sends a message to a specific instance or all instances of some specific adapter.
