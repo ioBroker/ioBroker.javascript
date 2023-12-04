@@ -16,6 +16,7 @@ class FieldCRON extends Blockly.Field {
 
         this.FONTSIZE = 11;
         this.CURSOR = 'pointer';
+        this.SERIALIZABLE = true;
         this.spellcheck_ = false;
     }
 
@@ -33,7 +34,7 @@ class FieldCRON extends Blockly.Field {
         if (text === null) {
             return;  // No change if null.
         }
-        
+
         super.setValue(text);
     }
 
@@ -155,4 +156,4 @@ class FieldCRON extends Blockly.Field {
 
 Blockly.FieldCRON = FieldCRON;
 
-// Blockly.fieldRegistry.register('field_cron', FieldCRON);
+//Blockly.Field.register('field_cron', FieldCRON);

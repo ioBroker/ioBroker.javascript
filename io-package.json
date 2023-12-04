@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "7.1.6",
+    "version": "7.2.0",
     "news": {
+      "7.2.0": {
+        "en": "NodeJS 16.x is required\n\n* Added function to format time difference `formatTimeDiff`\n* Added blockly blocks for `formatTimeDiff`\n* messageToAsync was not working without options\n* Added timeout and custom options for sendToAsync\n* Fixed valid switch statement expressions\n* Added text replacement, cound and reverse blocks\n* Added list reverse block",
+        "de": "NodeJS 16.x ist erforderlich\n\n* Hinzugefügt Funktion zu Format Zeitdifferenz FormatTimeDiff\n* Hinzugefügt Blockblöcke für FormatTimeDiff\n* Nachricht ToAsync funktionierte nicht ohne Optionen\n* Hinzugefügt Timeout und benutzerdefinierte Optionen für sendToAsync\n* Feste gültige Schaltausdrücke\n* Hinzugefügt Textersatz, Kund und umgekehrt Blöcke\n* Hinzugefügt Liste Reverse Block",
+        "ru": "NodeJS 16.x требуется\n\n* Добавлена функция в формат разницы во времени форматTimeDiff\n* Добавлены блокнолы для formatTimeDiff\n* сообщение ToAsync не работает без опций\n* Добавлены временные и пользовательские опции для sendToAsync\n* Исправлены действительные выражения выписок переключателей\n* Добавлена замена текста, кодовые и обратные блоки\n* Добавлен список обратного блока",
+        "pt": "NodeJS 16.x é necessário\n\n* função adicionada para formatar o formato de diferença de tempoTimeDiff\n* Adicionado blocos bloqueados para o formatoTimeDiff\n* mensagem ToAsync não estava funcionando sem opções\n* Adicionado timeout e opções personalizadas para sendToAsync\n* Expressões de declaração de interruptor válido fixo\n* Adicionada substituição de texto, cound e blocos reversos\n* Adicionado lista bloco reverso",
+        "nl": "NodeJS 16.x is vereist\n\nQuality over Quantity (QoQ) Releases Vertaling:\nVertaling:\n♪ boodschap ♪ ToAsync werkte niet zonder opties\nVertaling:\nVertaling:\nQuality over Quantity (QoQ) Releases Vertaling:\nQuality over Quantity (QoQ) Releases Vertaling:",
+        "fr": "NodeJS 16.x est nécessaire\n\n* Ajout de la fonction au format time difference formatTimeDiff\n* Ajout de blocs blocs pour formatTimeDiff\n* Message ToAsync ne fonctionnait pas sans options\n* Ajout du timeout et des options personnalisées pour sendToAsync\n* Expressions d'affichage valides fixes\n* Ajout de blocs de remplacement de texte, de coude et d'inversion\n* Ajout d ' un bloc inverse",
+        "it": "NodeJS 16.x è richiesto\n\n* Funzione aggiuntiva per formattare la differenza di tempo FormatoTimeDiff\n* Aggiunto blocchi di blocco per formatTimeDiff\n* messaggio ToAsync non funzionava senza opzioni\n* Aggiunto timeout e opzioni personalizzate per sendToAsync\n* Espressioni valide di switch fissi\n* Aggiunto sostituzione del testo, cound e blocchi inversa\n* Aggiunto elenco blocco inverso",
+        "es": "NodeJS 16.x es necesario\n\n* Función agregada al formato de diferencia de tiempo\n* Añadido bloques bloqueados para formatoTimeDiff\n* Mensaje ToAsync no estaba trabajando sin opciones\n* Añadido tiempo de salida y opciones personalizadas para sendToAsync\n* Expresiones de conmutación válidas fijadas\n* Sustitución de texto, sonido y bloques inversos\n* Lista agregada bloque reverso",
+        "pl": "NodeJS 16 (ang.)\n\n* Funkcja dodania do formatu formatowania formatu czasu różnicowego\n* Added blockly for format TimeDiff (ang.)\n* wiadomości ToAsyn nie pracował bez opcji\n* Added timeout and customowe opcje wysyłania ToAsync\n* Fixed valid switch statement\n* Zastępowanie tekstu, kound i odwrotne bloki\n* Added list",
+        "uk": "NodeJS 16.x обов'язковий\n\n* Додана функція для форматування форматування часу\n* Додано блокноти для форматTimeDiff\n* повідомлення ToAsync не працює без опцій\n* Додано розклад і налаштування для відправкиToAsync\n* Виправлено правильні вирази виписки вимикача\n* Додано зміни тексту, кодування та зворотні блоки\n* Додано зворотний блок списку",
+        "zh-cn": "不需要16.JS16x。\n\n* 增加格式上的时间差异\n* 增加格式硬墙\n* 文 件 业绩评估没有选择办法\n* 增加分发阿森松的时间和习俗选择\n* 固定有效转换报表\n* 增加案文,取代、补充和扭转了各障碍\n* 增加名单,以扭转违禁状态"
+      },
       "7.1.6": {
         "en": "Fixed pushover rules block",
         "de": "Feste Pushover-Regeln block",
@@ -99,19 +112,6 @@
         "pl": "Poprawka\nPoprawne pisownie V5\nrękopis został zdegradowany do poprzedniej wersji\npróbował poprawić fonty vcode\nwrócił do poprzedniej wersji",
         "uk": "Виправлений блок запуску\nВиправлено помилку В5\ncoffescript було вилучено до попередньої версії\nспробував виправити шрифт проти коду\nперевернуті блокноти до попередньої версії",
         "zh-cn": "被更正的触发事件\n更正 V5\n前一版本的文字已经退化。\n试图纠正 vscode font\n对前一版本的强烈反应"
-      },
-      "7.0.7": {
-        "en": "Corrected trigger block\nCorrected typescript V5\ncoffescript was degraded to the previous version\ntried to correct vscode font",
-        "de": "Korrigierter Triggerblock\nKorrigierte Schrift V5\ncoffescript wurde auf die vorherige version degradiert\nversucht, vscode schrift zu korrigieren",
-        "ru": "Исправлен блок триггера\nИсправлена typescript В5\ncoffescript был деградирован до предыдущей версии\nпытался исправить vscode шрифт",
-        "pt": "Bloco de gatilho correto\nTypescript corrigido V5\ncoffescript foi degradado para a versão anterior\ntentou corrigir a fonte vscode",
-        "nl": "Quality over Quantity (QoQ) Releases Vertaling:\nVertaling: V5\nde vorige versie is gedegradeerd\nprobeerde vscode font te corrigeren",
-        "fr": "Bloc de déclenchement corrigé\nTypescriptif corrigé V5\ncoffescript was degraded to the previous version\nessayé de corriger la police vscode",
-        "it": "Blocco di attivazione corretto\nNome corretto V\ncoffescript è stato degradato alla versione precedente\nprovato a correggere vscode font",
-        "es": "Bloque de activación corregido\nTiposcrito corregido V5\ncoffescript fue degradado a la versión anterior\ntrató de corregir la fuente vscode",
-        "pl": "Poprawka\nPoprawne pisownie V5\nrękopis został zdegradowany do poprzedniej wersji\npróbował poprawić fonty vcode",
-        "uk": "Виправлений блок запуску\nВиправлено помилку В5\ncoffescript було вилучено до попередньої версії\nспробував виправити шрифт проти коду",
-        "zh-cn": "被更正的触发事件\n更正 V5\n前一版本的文字已经退化。\n试图纠正 vscode font"
       }
     },
     "desc": {

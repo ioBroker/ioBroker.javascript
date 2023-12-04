@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 7.1.0 (2023-06-13)
+* (klein0r) Added new blocks: new line, random number, value between min and max, if empty
+* (klein0r) Updated blockly core to v9.3.3
+* (bluefox) corrected blockly
+
 ## 7.0.8 (2023-06-12)
 * (klein0r) Corrected trigger block
 * (klein0r) Corrected typescript V5

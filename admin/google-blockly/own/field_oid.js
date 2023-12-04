@@ -11,7 +11,6 @@ if (typeof goog !== 'undefined') {
 }
 
 class FieldOID extends Blockly.Field {
-
     constructor(value, type) {
         super(value);
 
@@ -19,6 +18,7 @@ class FieldOID extends Blockly.Field {
 
         this.FONTSIZE = 11;
         this.CURSOR = 'pointer';
+        this.SERIALIZABLE = true;
         this.spellcheck_ = false;
     }
 
@@ -33,7 +33,7 @@ class FieldOID extends Blockly.Field {
         }
 
         const objects = window.main.objects;
-    
+
         if (objects && !objects[id] && typeof window.main.getObject === 'function') {
             this._idName = id || Blockly.Field.NBSP;
             window.main.getObject(id, (err, obj) => {
@@ -51,7 +51,7 @@ class FieldOID extends Blockly.Field {
                         text.trim();
                         // Replace whitespace with non-breaking spaces so the text doesn't collapse.
                         text = text.replace(/\s/g, Blockly.Field.NBSP);
-    
+
                         if (text) {
                             this._idName = text;
                             this.forceRerender();
@@ -70,14 +70,14 @@ class FieldOID extends Blockly.Field {
             }
             // Replace whitespace with non-breaking spaces so the text doesn't collapse.
             text = text.replace(/\s/g, Blockly.Field.NBSP);
-    
+
             if (!text) {
                 // Prevent the field from disappearing if empty.
                 text = Blockly.Field.NBSP;
             }
             this._idName = text;
         }
-    
+
         super.setValue(id);
     }
 
@@ -210,4 +210,4 @@ class FieldOID extends Blockly.Field {
 
 Blockly.FieldOID = FieldOID;
 
-// Blockly.fieldRegistry.register('field_oid', FieldOID);
+//Blockly.Field.register('field_oid', FieldOID);
