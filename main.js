@@ -22,7 +22,6 @@ const CoffeeScript  = require('coffeescript');
 const tsc           = require('virtual-tsc');
 const Mirror        = require('./lib/mirror');
 const fork          = require('child_process').fork;
-const { astroList } = require('./lib/consts');
 
 const mods = {
     fs:               {},
@@ -67,6 +66,9 @@ const words     = require('./lib/words');
 const sandBox   = require('./lib/sandbox');
 const eventObj  = require('./lib/eventObj');
 const Scheduler = require('./lib/scheduler');
+const { targetTsLib, tsCompilerOptions, jsDeclarationCompilerOptions } = require('./lib/typescriptSettings');
+const { hashSource, isObject } = require('./lib/tools');
+const { isDeepStrictEqual } = require('node:util');
 const {
     resolveTypescriptLibs,
     resolveTypings,
@@ -74,14 +76,10 @@ const {
     transformScriptBeforeCompilation,
     transformGlobalDeclarations
 } = require('./lib/typescriptTools');
-const { targetTsLib, tsCompilerOptions, jsDeclarationCompilerOptions } = require('./lib/typescriptSettings');
-const { hashSource, isObject } = require('./lib/tools');
 
 const packageJson = require('./package.json');
-const { EXIT_CODES } = require('@iobroker/adapter-core');
-const { isDeepStrictEqual } = require('util');
-const adapterName = packageJson.name.split('.').pop();
-const scriptCodeMarker = 'script.js.';
+const SCRIPT_CODE_MARKER = 'script.js.';
+
 const stopCounters =  {};
 let setStateCountCheckInterval = null;
 
@@ -407,9 +405,7 @@ let adapter;
 function startAdapter(options) {
     options = options || {};
     Object.assign(options, {
-
-        name: adapterName,
-
+        name: 'javascript',
         useFormatDate: true, // load float formatting
 
         /**
@@ -515,12 +511,12 @@ function startAdapter(options) {
                     stop(id);
 
                     // delete scriptEnabled.blabla variable
-                    const idActive = 'scriptEnabled.' + id.substring('script.js.'.length);
+                    const idActive = 'scriptEnabled.' + id.substring(SCRIPT_CODE_MARKER.length);
                     adapter.delObject(idActive);
                     adapter.delState(idActive);
 
                     // delete scriptProblem.blabla variable
-                    const idProblem = 'scriptProblem.' + id.substring('script.js.'.length);
+                    const idProblem = 'scriptProblem.' + id.substring(SCRIPT_CODE_MARKER.length);
                     adapter.delObject(idProblem);
                     adapter.delState(idProblem);
                 }
@@ -688,7 +684,7 @@ function startAdapter(options) {
                                     const eventData = event.exception.values[0];
                                     if (eventData.stacktrace && eventData.stacktrace.frames && Array.isArray(eventData.stacktrace.frames) && eventData.stacktrace.frames.length) {
                                         // Exclude event if script Marker is included
-                                        if (eventData.stacktrace.frames.find(frame => frame.filename && frame.filename.includes(scriptCodeMarker))) {
+                                        if (eventData.stacktrace.frames.find(frame => frame.filename && frame.filename.includes(SCRIPT_CODE_MARKER))) {
                                             return null;
                                         }
                                         //Exclude event if own directory is included but not inside own node_modules
@@ -741,7 +737,7 @@ function startAdapter(options) {
                                                 handler.cb.call(handler.sandbox, obj.message.data, result => {/* nop */ });
                                             }
                                         } catch (e) {
-                                            adapter.setState('scriptProblem.' + name.substring('script.js.'.length), true, true);
+                                            adapter.setState('scriptProblem.' + name.substring(SCRIPT_CODE_MARKER.length), true, true);
                                             context.logError('Error in callback', e);
                                         }
                                     });
@@ -907,7 +903,7 @@ function startAdapter(options) {
             // Identify unhandled errors originating from callbacks in scripts
             // These are not caught by wrapping the execution code in try-catch
             if (err && typeof err.stack === 'string') {
-                const scriptCodeMarkerIndex = err.stack.indexOf(scriptCodeMarker);
+                const scriptCodeMarkerIndex = err.stack.indexOf(SCRIPT_CODE_MARKER);
                 if (scriptCodeMarkerIndex > -1) {
                     // This is a script error
                     let scriptName = err.stack.substr(scriptCodeMarkerIndex);
@@ -1592,13 +1588,13 @@ context.logError = function (msg, e, offs) {
 };
 
 function createActiveObject(id, enabled, cb) {
-    const idActive = `${adapter.namespace}.scriptEnabled.${id.substring('script.js.'.length)}`;
+    const idActive = `${adapter.namespace}.scriptEnabled.${id.substring(SCRIPT_CODE_MARKER.length)}`;
 
     if (!context.objects[idActive]) {
         context.objects[idActive] = {
             _id: idActive,
             common: {
-                name: `scriptEnabled.${id.substring('script.js.'.length)}`,
+                name: `scriptEnabled.${id.substring(SCRIPT_CODE_MARKER.length)}`,
                 desc: 'controls script activity',
                 type: 'boolean',
                 write: true,
@@ -1641,13 +1637,13 @@ function createActiveObject(id, enabled, cb) {
 }
 
 function createProblemObject(id, cb) {
-    const idProblem = adapter.namespace + '.scriptProblem.' + id.substring('script.js.'.length);
+    const idProblem = adapter.namespace + '.scriptProblem.' + id.substring(SCRIPT_CODE_MARKER.length);
 
     if (!context.objects[idProblem]) {
         context.objects[idProblem] = {
             _id: idProblem,
             common: {
-                name: 'scriptProblem.' + id.substring('script.js.'.length),
+                name: 'scriptProblem.' + id.substring(SCRIPT_CODE_MARKER.length),
                 desc: 'is the script has a problem',
                 type: 'boolean',
                 expert: true,
@@ -1865,7 +1861,7 @@ function execute(script, name, verbose, debug) {
     script.subscribesFile = {};
     script.setStatePerMinuteCounter = 0;
     script.setStatePerMinuteProblemCounter = 0;
-    adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, { val: false, ack: true, expire: 1000 });
+    adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, { val: false, ack: true, expire: 1000 });
 
     const sandbox = sandBox(script, name, verbose, debug, context);
 
@@ -1876,7 +1872,7 @@ function execute(script, name, verbose, debug) {
             // lineOffset: globalScriptLines
         });
     } catch (e) {
-        adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, true, true);
+        adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, true, true);
         context.logError(name, e);
     }
 }
@@ -1936,7 +1932,7 @@ function updateLogSubscriptions() {
 function stop(name, callback) {
     adapter.log.info('Stop script ' + name);
 
-    adapter.setState('scriptEnabled.' + name.substring('script.js.'.length), false, true);
+    adapter.setState('scriptEnabled.' + name.substring(SCRIPT_CODE_MARKER.length), false, true);
 
     if (context.messageBusHandlers[name]) {
         delete context.messageBusHandlers[name];
@@ -2077,7 +2073,7 @@ function prepareScript(obj, callback) {
     ) {
         const name = obj._id;
 
-        const nameId = name.substring('script.js.'.length);
+        const nameId = name.substring(SCRIPT_CODE_MARKER.length);
         if (!nameId.length || nameId.endsWith('.')) {
             adapter.log.error(`Script name ${name} is invalid!`);
             typeof callback === 'function' && callback(false, name);
@@ -2178,7 +2174,7 @@ function prepareScript(obj, callback) {
         let _name;
         if (obj && obj._id) {
             _name = obj._id;
-            const scriptIdName = _name.substring('script.js.'.length);
+            const scriptIdName = _name.substring(SCRIPT_CODE_MARKER.length);
 
             if (!scriptIdName.length || scriptIdName.endsWith('.')) {
                 adapter.log.error(`Script name ${_name} is invalid!`);
@@ -2241,7 +2237,7 @@ async function getData(callback) {
         if (!adapter.config.subscribe) {
             if (err || !res) {
                 adapter.log.error(`Could not initialize states: ${err ? err.message : 'no result'}`);
-                adapter.terminate(EXIT_CODES.START_IMMEDIATELY_AFTER_STOP);
+                adapter.terminate(utils.EXIT_CODES.START_IMMEDIATELY_AFTER_STOP);
                 return;
             }
             context.states = Object.assign(res, context.states);
@@ -2265,7 +2261,7 @@ async function getData(callback) {
     adapter.getObjectList({ include_docs: true }, (err, res) => {
         if (err || !res || !res.rows) {
             adapter.log.error(`Could not initialize objects: ${err ? err.message : 'no result'}`);
-            adapter.terminate(EXIT_CODES.START_IMMEDIATELY_AFTER_STOP);
+            adapter.terminate(utils.EXIT_CODES.START_IMMEDIATELY_AFTER_STOP);
             return;
         }
         context.objects = {};
