@@ -54,7 +54,7 @@ NodeJS 16.x is required
 * (klein0r) messageToAsync was not working without options
 * (klein0r) Added timeout and custom options for sendToAsync
 * (klein0r) Fixed valid switch statement expressions
-* (klein0r) Added text replacement block
+* (klein0r) Added text replacement, cound and reverse blocks
 
 ### 7.1.6 (2023-10-24)
 * (bluefox) Fixed pushover rules block

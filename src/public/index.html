@@ -291,23 +291,6 @@
       <category name="{catText}" colour="160">
         <block type="text"></block>
         <block type="text_newline"></block>
-        <block type="text_replace">
-          <value name="FROM">
-            <shadow type="text">
-              <field name="TEXT">x</field>
-            </shadow>
-          </value>
-          <value name="TO">
-            <shadow type="text">
-              <field name="TEXT">y</field>
-            </shadow>
-          </value>
-          <value name="TEXT">
-            <shadow type="text">
-              <field name="TEXT">text</field>
-            </shadow>
-          </value>
-        </block>
         <block type="text_multiline"></block>
         <block type="text_join"></block>
         <block type="text_append">
@@ -367,6 +350,36 @@
             <shadow type="text">
               <field name="TEXT">abc</field>
             </shadow>
+          </value>
+        </block>
+        <block type="text_count">
+          <value name="SUB">
+            <shadow type="text"></shadow>
+          </value>
+          <value name="TEXT">
+            <shadow type="text"></shadow>
+          </value>
+        </block>
+        <block type="text_replace">
+          <value name="FROM">
+            <shadow type="text">
+              <field name="TEXT">x</field>
+            </shadow>
+          </value>
+          <value name="TO">
+            <shadow type="text">
+              <field name="TEXT">y</field>
+            </shadow>
+          </value>
+          <value name="TEXT">
+            <shadow type="text">
+              <field name="TEXT">text</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="text_reverse">
+          <value name="TEXT">
+            <shadow type="text">text</shadow>
           </value>
         </block>
       </category>
