@@ -312,73 +312,156 @@
     },
     {
       "_id": "script.js",
-      "common": {
-        "name": "js"
-      },
       "type": "device",
+      "common": {
+        "name": {
+          "en": "JavaScript",
+          "de": "JavaScript",
+          "ru": "JavaScript",
+          "pt": "JavaScript",
+          "nl": "JavaScrift",
+          "fr": "JavaScript",
+          "it": "JavaScript",
+          "es": "JavaScript",
+          "pl": "JavaScript",
+          "uk": "Про нас",
+          "zh-cn": "瓦 兰"
+        }
+      },
       "native": {}
     },
     {
       "_id": "script.js.common",
-      "common": {
-        "name": "common"
-      },
       "type": "channel",
+      "common": {
+        "name": {
+          "en": "Common scripts",
+          "de": "Allgemeine Skripte",
+          "ru": "Общие скрипты",
+          "pt": "Scripts comuns",
+          "nl": "Common scripts",
+          "fr": "Scénarios communs",
+          "it": "Scrittori comuni",
+          "es": "Scripts comunes",
+          "pl": "Common script",
+          "uk": "Загальні сценарії",
+          "zh-cn": "共同说明"
+        }
+      },
       "native": {}
     },
     {
       "_id": "script.js.global",
-      "common": {
-        "name": "global"
-      },
       "type": "channel",
+      "common": {
+        "name": {
+          "en": "Global scripts",
+          "de": "Globale Skripte",
+          "ru": "Глобальные скрипты",
+          "pt": "Scripts globais",
+          "nl": "Global scripts",
+          "fr": "Scénarios mondiaux",
+          "it": "Scrittori globali",
+          "es": "Guiones globales",
+          "pl": "Globalny scenariusz",
+          "uk": "Глобальні сценарії",
+          "zh-cn": "全球说明"
+        }
+      },
       "native": {}
     }
   ],
   "instanceObjects": [
     {
       "_id": "variables",
-      "common": {
-        "name": "Useful variables"
-      },
       "type": "channel",
+      "common": {
+        "name": {
+          "en": "Useful variables",
+          "de": "Nützliche Variablen",
+          "ru": "Полезные переменные",
+          "pt": "Variáveis úteis",
+          "nl": "Gebruikelijke variabelen",
+          "fr": "Variables utiles",
+          "it": "Variazioni utili",
+          "es": "Variables útiles",
+          "pl": "Zmienny",
+          "uk": "Корисні зміни",
+          "zh-cn": "使用变量"
+        }
+      },
       "native": {}
     },
     {
       "_id": "variables.isDayTime",
+      "type": "state",
       "common": {
-        "name": "Is day time",
+        "name": {
+          "en": "Is day time",
+          "de": "Ist Tageszeit",
+          "ru": "Дневное время",
+          "pt": "É hora do dia",
+          "nl": "Is de dag",
+          "fr": "Le jour",
+          "it": "È l'ora del giorno",
+          "es": "Es hora del día",
+          "pl": "Czasem",
+          "uk": "В день",
+          "zh-cn": "日 日"
+        },
         "type": "boolean",
         "read": true,
         "write": false,
         "role": "indicator"
       },
-      "type": "state",
       "native": {}
     },
     {
       "_id": "variables.isDaylightSaving",
+      "type": "state",
       "common": {
-        "name": "Is daylight saving time active",
+        "name": {
+          "en": "Is daylight saving time active",
+          "de": "Ist Sommerzeit aktiv",
+          "ru": "Является дневным светом экономия время активным",
+          "pt": "É hora de salvar a luz do dia ativo",
+          "nl": "Is daglichtbesparing",
+          "fr": "Temps d'été actif",
+          "it": "È tempo di risparmio di luce del giorno attivo",
+          "es": "Es tiempo de ahorro de la luz del día activo",
+          "pl": "Czas wolny",
+          "uk": "Чи активна економія денного світла",
+          "zh-cn": "导 言"
+        },
         "type": "boolean",
         "read": true,
         "write": false,
         "role": "indicator"
       },
-      "type": "state",
       "native": {}
     },
     {
       "_id": "variables.dayTime",
+      "type": "state",
       "common": {
-        "name": "Actual day time",
-        "desc": "Like 13:34, you can set native.format12 to true to have 1:32",
+        "name": {
+          "en": "Current time",
+          "de": "Aktuelle Zeit",
+          "ru": "Текущее время",
+          "pt": "Tempo atual",
+          "nl": "Tijd om",
+          "fr": "Heure actuelle",
+          "it": "Ora attuale",
+          "es": "Hora actual",
+          "pl": "Czas bieżący",
+          "uk": "Поточний час",
+          "zh-cn": "目前时间"
+        },
         "type": "string",
         "read": true,
         "write": false,
         "role": "state"
       },
-      "type": "state",
       "native": {
         "format12": false,
         "leadingZeros": true
@@ -386,58 +469,118 @@
     },
     {
       "_id": "variables.rulesTour",
+      "type": "state",
       "common": {
-        "name": "Is tour done",
+        "name": {
+          "en": "Tour completed",
+          "de": "Tour abgeschlossen",
+          "ru": "Тур завершен",
+          "pt": "Excursão concluída",
+          "nl": "Tour voltooid",
+          "fr": "Tour terminé",
+          "it": "Tour completato",
+          "es": "Tour completado",
+          "pl": "Tour",
+          "uk": "Тур завершено",
+          "zh-cn": "完成的工作"
+        },
         "type": "boolean",
         "read": true,
         "write": false,
         "role": "state"
       },
-      "type": "state",
       "native": {}
     },
     {
       "_id": "debug",
-      "common": {
-        "name": "Debug variables"
-      },
       "type": "channel",
+      "common": {
+        "name": {
+          "en": "Debug variables",
+          "de": "Debug-Variablen",
+          "ru": "Переменные Debug",
+          "pt": "Variáveis de depuração",
+          "nl": "Debug variabelen",
+          "fr": "Débug variables",
+          "it": "Variabili del debito",
+          "es": "Variables de depuración",
+          "pl": "Zmienna debugowa",
+          "uk": "Debug змінні",
+          "zh-cn": "变量"
+        }
+      },
       "native": {}
     },
     {
       "_id": "debug.to",
+      "type": "state",
       "common": {
-        "name": "Send data to debugger",
+        "name": {
+          "en": "Send data to debugger",
+          "de": "Daten an debugger senden",
+          "ru": "Отправить данные для отладки",
+          "pt": "Enviar dados para depurador",
+          "nl": "Stuur gegevens naar debugger",
+          "fr": "Envoyer des données à debugger",
+          "it": "Invia i dati a debugger",
+          "es": "Enviar datos a depurador",
+          "pl": "Dane dotyczące debuggera",
+          "uk": "Надсилання даних на дебугер",
+          "zh-cn": "黑暗数据"
+        },
         "type": "string",
         "read": false,
         "write": true,
         "role": "json"
       },
-      "type": "state",
       "native": {}
     },
     {
       "_id": "debug.from",
+      "type": "state",
       "common": {
-        "name": "Data from debugger",
+        "name": {
+          "en": "Data from debugger",
+          "de": "Daten von debugger",
+          "ru": "Данные от debugger",
+          "pt": "Dados do depurador",
+          "nl": "Data van debugger",
+          "fr": "Data from debugger",
+          "it": "Dati dal debugger",
+          "es": "Datos del depurador",
+          "pl": "Dane z debuggera",
+          "uk": "Дані з debugger",
+          "zh-cn": "A. 黑暗取的数据"
+        },
         "type": "string",
         "read": true,
         "write": false,
         "role": "json"
       },
-      "type": "state",
       "native": {}
     },
     {
       "_id": "debug.rules",
+      "type": "state",
       "common": {
-        "name": "Data from engine to rules",
+        "name": {
+          "en": "Data from rules logic",
+          "de": "Daten aus der Regellogik",
+          "ru": "Данные из логики правил",
+          "pt": "Dados da lógica de regras",
+          "nl": "Data van regels logica",
+          "fr": "Données de la logique des règles",
+          "it": "Dati dalla logica delle regole",
+          "es": "Datos de la lógica de las reglas",
+          "pl": "Dane z zakresu logiki",
+          "uk": "Дані з логіки правил",
+          "zh-cn": "从规则逻辑数据"
+        },
         "type": "string",
         "read": true,
         "write": false,
         "role": "json"
       },
-      "type": "state",
       "native": {}
     }
   ]
