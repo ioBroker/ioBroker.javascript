@@ -34,6 +34,7 @@ class FieldScript extends Blockly.Field {
 
         this.FONTSIZE = 11;
         this.CURSOR = 'pointer';
+        this.SERIALIZABLE = true;
         this.spellcheck_ = false;
     }
 
@@ -160,4 +161,4 @@ class FieldScript extends Blockly.Field {
 
 Blockly.FieldScript = FieldScript;
 
-// Blockly.fieldRegistry.register('field_script', FieldScript);
+Blockly.Field.register('field_script', FieldScript);
