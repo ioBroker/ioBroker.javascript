@@ -393,6 +393,26 @@
       "native": {}
     },
     {
+      "_id": "variables.astro",
+      "type": "folder",
+      "common": {
+        "name": {
+          "en": "Sun movement",
+          "de": "Sonnenbewegung",
+          "ru": "Солнце движение",
+          "pt": "Movimento do sol",
+          "nl": "Sun beweging",
+          "fr": "Mouvement solaire",
+          "it": "Movimento solare",
+          "es": "Movimiento solar",
+          "pl": "Słońce",
+          "uk": "Сонячний рух",
+          "zh-cn": "A. 太阳运动"
+        }
+      },
+      "native": {}
+    },
+    {
       "_id": "variables.isDayTime",
       "type": "state",
       "common": {

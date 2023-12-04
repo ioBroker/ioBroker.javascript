@@ -1091,6 +1091,7 @@ function main() {
         getData(() => {
             context.scheduler = new Scheduler(adapter.log, Date, mods.suncalc, adapter.config.latitude, adapter.config.longitude);
             dayTimeSchedules(adapter, context);
+            sunTimeSchedules(adapter, context);
             timeSchedule(adapter, context);
 
             // Warning. It could have a side-effect in compact mode, so all adapters will accept self signed certificates
@@ -1319,7 +1320,8 @@ let knownGlobalDeclarationsByScript = {};
 let globalScriptLines  = 0;
 // let activeRegEx     = null;
 let activeStr          = ''; // enabled state prefix
-let daySchedule        = null; // schedule for astrological day
+let dayScheduleTimer   = null; // schedule for astrological day
+let sunScheduleTimer   = null; // schedule for sun moment times
 let timeScheduleTimer  = null; // schedule for astrological day
 
 function getNextTimeEvent(time, useNextDay) {
@@ -1458,11 +1460,46 @@ function dayTimeSchedules(adapter, context) {
         nextTimeout = 3000;
     }
 
-    daySchedule = setTimeout(dayTimeSchedules, nextTimeout, adapter, context);
+    dayScheduleTimer = setTimeout(dayTimeSchedules, nextTimeout, adapter, context);
+}
+
+async function sunTimeSchedules(adapter, context) {
+    const todayDate = new Date();
+    todayDate.setHours(0);
+    todayDate.setMinutes(0);
+    todayDate.setSeconds(1);
+    todayDate.setDate(todayDate.getDate() + 1);
+
+    const times = mods.suncalc.getTimes(new Date(), adapter.config.latitude, adapter.config.longitude);
+
+    for (const t in times) {
+        const h = times[t].getHours();
+        const m = times[t].getMinutes();
+
+        const timeFormatted = `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}`;
+        const objId = `variables.astro.${t}`;
+
+        await adapter.setObjectNotExistsAsync(objId, {
+            type: 'state',
+            common: {
+                name: `Astro ${t}`,
+                type: 'string',
+                role: 'value',
+                read: true,
+                write: false,
+            },
+            native: {},
+        });
+        await adapter.setStateAsync(objId, { val: timeFormatted, ack: true });
+    }
+
+    adapter.log.debug(`[sunTimeSchedules] Next: ${todayDate.toISOString()}`);
+    sunScheduleTimer = setTimeout(sunTimeSchedules, todayDate.getTime() - Date.now(), adapter, context);
 }
 
 function stopTimeSchedules() {
-    daySchedule && clearTimeout(daySchedule);
+    dayScheduleTimer && clearTimeout(dayScheduleTimer);
+    sunScheduleTimer && clearTimeout(sunScheduleTimer);
     timeScheduleTimer && clearTimeout(timeScheduleTimer);
 }
 
