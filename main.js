@@ -1379,9 +1379,11 @@ function timeSchedule(adapter, context) {
         }
     }
     if (context.timeSettings.leadingZeros) {
-        hours = hours.toString().padStart(2, '0');
+        hours = parseInt(hours.toString().padStart(2, '0'));
     }
-    adapter.setState('variables.dayTime', `${hours}:${minutes.toString().padStart(2, '0')}`, true);
+
+    adapter.setState('variables.dayTime', {val: `${hours}:${minutes.toString().padStart(2, '0')}`, ack: true});
+
     now.setMinutes(now.getMinutes() + 1);
     now.setSeconds(0);
     now.setMilliseconds(0);
@@ -1433,17 +1435,17 @@ function dayTimeSchedules(adapter, context) {
         }
 
         const val = state ? !!state.val : false;
-        if (val !== isDay) {
-            adapter.setState('variables.isDayTime', isDay, true);
+        if (val !== isDay || state === null) {
+            adapter.setState('variables.isDayTime', {val: isDay, ack: true});
         }
     });
 
     adapter.getState('variables.isDaylightSaving', (err, state) => {
         const isDayLightSaving = dstOffsetAtDate(nowDate) !== 0;
-
         const val = state ? !!state.val : false;
-        if (val !== isDayLightSaving) {
-            adapter.setState('variables.isDaylightSaving', isDayLightSaving, true);
+
+        if (val !== isDayLightSaving || state === null) {
+            adapter.setState('variables.isDaylightSaving', {val: isDayLightSaving, ack: true});
         }
     });
 
