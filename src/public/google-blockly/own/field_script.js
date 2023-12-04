@@ -161,4 +161,4 @@ class FieldScript extends Blockly.Field {
 
 Blockly.FieldScript = FieldScript;
 
-Blockly.Field.register('field_script', FieldScript);
+//Blockly.Field.register('field_script', FieldScript);

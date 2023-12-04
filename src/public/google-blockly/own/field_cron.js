@@ -156,4 +156,4 @@ class FieldCRON extends Blockly.Field {
 
 Blockly.FieldCRON = FieldCRON;
 
-Blockly.Field.register('field_cron', FieldCRON);
+//Blockly.Field.register('field_cron', FieldCRON);

@@ -210,4 +210,4 @@ class FieldOID extends Blockly.Field {
 
 Blockly.FieldOID = FieldOID;
 
-Blockly.Field.register('field_oid', FieldOID);
+//Blockly.Field.register('field_oid', FieldOID);
