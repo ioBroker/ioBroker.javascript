@@ -24,19 +24,20 @@ const styles = theme => ({
     card: {
         maxWidth: 345,
         display: 'inline-block',
-        margin: '0 10px 0 10px'
+        margin: '0 10px 0 10px',
     },
     media: {
-        height: 100,
+        height: 122,
     },
     text: {
-        maxWidth: 200,
+        maxWidth: 218,
+        minHeight: 30,
     },
     complexity: {
         fontWeight: 'bold',
         fontStyle: 'italic',
         marginBottom: theme.spacing(1),
-    }
+    },
 });
 
 class DialogAddNew extends React.Component {
@@ -59,8 +60,7 @@ class DialogAddNew extends React.Component {
 
     getJSCard() {
         return <Card className={this.props.classes.card}>
-            <CardActionArea
-                onClick={() => this.props.onClose && this.props.onClose('Javascript/js')}>
+            <CardActionArea onClick={() => this.props.onClose && this.props.onClose('Javascript/js')}>
                 <CardMedia
                     className={this.props.classes.media}
                     image={ImgJS}
@@ -81,8 +81,7 @@ class DialogAddNew extends React.Component {
 
     getTSCard() {
         return <Card className={this.props.classes.card}>
-            <CardActionArea
-                onClick={() => this.props.onClose && this.props.onClose('TypeScript/ts')}>
+            <CardActionArea onClick={() => this.props.onClose && this.props.onClose('TypeScript/ts')}>
                 <CardMedia
                     className={this.props.classes.media}
                     image={ImgTS}
