@@ -1789,7 +1789,8 @@ function installLibraries(callback) {
             if (libraries[lib] && libraries[lib].trim()) {
                 libraries[lib] = libraries[lib].trim();
                 let libName = libraries[lib];
-                let versionChunkPos = libName.indexOf('@', 1);
+
+                const versionChunkPos = libName.indexOf('@', 1);
                 if (versionChunkPos > -1) {
                     libName = libName.slice(0, versionChunkPos);
                 }
@@ -1872,7 +1873,7 @@ function execute(script, name, verbose, debug) {
             // lineOffset: globalScriptLines
         });
     } catch (e) {
-        adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, true, true);
+        adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, { val: true, ack: true, c: 'execute' });
         context.logError(name, e);
     }
 }
