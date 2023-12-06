@@ -48,6 +48,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 -->
 ### **WORK IN PROGRESS**
 
+* (klein0r) Updated blockly logo
 * (klein0r) Always set variables like isDaylightSaving
 * (klein0r) Added astro times as states
 
