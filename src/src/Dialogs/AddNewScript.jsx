@@ -64,10 +64,10 @@ class DialogAddNew extends React.Component {
                 <CardMedia
                     className={this.props.classes.media}
                     image={ImgJS}
-                    title="Javascript"
+                    title="JavaScript"
                 />
                 <CardContent>
-                    <h2>Javascript</h2>
+                    <h2>JavaScript</h2>
                     <div className={this.props.classes.complexity}>{I18n.t('for programmers')}</div>
                     <div className={this.props.classes.text}>{I18n.t('JS description')}</div>
                 </CardContent>
@@ -85,10 +85,10 @@ class DialogAddNew extends React.Component {
                 <CardMedia
                     className={this.props.classes.media}
                     image={ImgTS}
-                    title="Typescript"
+                    title="TypeScript"
                 />
                 <CardContent>
-                    <h2>Typescript</h2>
+                    <h2>TypeScript</h2>
                     <div className={this.props.classes.complexity}>{I18n.t('for professionals')}</div>
                     <div className={this.props.classes.text}>{I18n.t('TS description')}</div>
                 </CardContent>
