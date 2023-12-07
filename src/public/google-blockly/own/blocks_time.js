@@ -114,19 +114,20 @@ Blockly.Blocks['time_compare_ex'] = {
                 this.appendDummyInput('AND')
                     .appendField(Blockly.Translate('time_compare_and'));
 
-                const input = this.appendValueInput('END_TIME');
+                this.appendValueInput('END_TIME');
 
                 if (!window.scripts.loading) {
                     const wp = this.workspace;
 
-                    setTimeout(function () {
-                        if (!input.connection.isConnected()) {
+                    setTimeout(() => {
+                        const existingInput = this.getInput('END_TIME');
+                        if (!existingInput.connection.isConnected()) {
                             const shadow = wp.newBlock('text');
                             shadow.setShadow(true);
                             shadow.setFieldValue('18:00', 'TEXT');
 
-                            shadow.outputConnection.connect(input.connection);
-                            // input.connection.connect(shadow.outputConnection);
+                            shadow.outputConnection.connect(existingInput.connection);
+                            // existingInput.connection.connect(shadow.outputConnection);
 
                             shadow.initSvg();
                             shadow.render();
