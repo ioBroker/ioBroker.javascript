@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.3.0 (2023-12-07)
 
 * (klein0r) Updated blockly logo
 * (klein0r) Always set variables like isDaylightSaving
@@ -73,9 +73,6 @@ NodeJS 16.x is required
 ### 7.1.4 (2023-08-09)
 * (bluefox) Added version to the side menu
 * (klein0r) Added blockly blocks for `getHistory` and calculated times
-
-### 7.1.1 (2023-06-20)
-* (bluefox) corrected the script export
 
 ## License
 The MIT License (MIT)

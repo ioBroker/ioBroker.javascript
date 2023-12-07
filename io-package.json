@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "7.2.0",
+    "version": "7.3.0",
     "news": {
+      "7.3.0": {
+        "en": "Updated blockly logo\nAlways set variables like isDaylightSaving\nAdded astro times as states\nFixed copied time blocks",
+        "de": "Aktualisiertes Block-Logo\nImmer eingestellte Variablen wie isDaylightSaving\nAstro Zeiten als Staaten hinzugefügt\nFeste kopierte Zeitblöcke",
+        "ru": "Обновленный заблокированный логотип\nВсегда устанавливайте переменные, такие как isDaylightSaving\nДобавлены астро времена как государства\nИсправлены скопированные блоки времени",
+        "pt": "Logotipo bloqueado atualizado\nSempre definir variáveis como isDaylightSaving\nAdicionados tempos astro como estados\nBloqueios de tempo copiados fixos",
+        "nl": "Quality over Quantity (QoQ) Releases Vertaling:\nZe zetten altijd variabelen zoals isDaylightSaving\nAstro-tijden toegevoegd als staten\nQuality over Quantity (QoQ) Releases Vertaling:",
+        "fr": "Logo bloqué mis à jour\nToujours définir des variables comme estDaylightSaving\nAjout de astro times as states\nTemps corrigé copié blocs",
+        "it": "Logo blockly aggiornato\nImpostare sempre variabili come èDaylightSaving\nAggiunto tempi di astro come stati\nBlocchi di tempo copiati fissi",
+        "es": "Logo Actualizado bloqueado\nSiempre establecer variables como esDaylightSaving\nTiempos de astro agregados como estados\nBloques de tiempo fijos copiados",
+        "pl": "Logo blokady\nZawsze ułożone zmienne, jak np. DaylightSaving\nAdded astrotime jako stan\nFixed copied time block",
+        "uk": "Оновлений логотип\nЗавжди встановити змінні, такі як DaylightSaving\nДодані астро разів як стани\nФіксовані часові блоки",
+        "zh-cn": "A. 最新断体逻辑\nA. 铺设的变量\n增加国时\n固定配件的时间限制"
+      },
       "7.2.0": {
         "en": "NodeJS 16.x is required\n\n* Added function to format time difference `formatTimeDiff`\n* Added blockly blocks for `formatTimeDiff`\n* messageToAsync was not working without options\n* Added timeout and custom options for sendToAsync\n* Fixed valid switch statement expressions\n* Added text replacement, cound and reverse blocks\n* Added list reverse block",
         "de": "NodeJS 16.x ist erforderlich\n\n* Hinzugefügt Funktion zu Format Zeitdifferenz FormatTimeDiff\n* Hinzugefügt Blockblöcke für FormatTimeDiff\n* Nachricht ToAsync funktionierte nicht ohne Optionen\n* Hinzugefügt Timeout und benutzerdefinierte Optionen für sendToAsync\n* Feste gültige Schaltausdrücke\n* Hinzugefügt Textersatz, Kund und umgekehrt Blöcke\n* Hinzugefügt Liste Reverse Block",
@@ -99,19 +112,6 @@
         "pl": "Dodać nowe bloki: nowa linia, liczba losowa, wartość pomiędzy minem a maxą, jeśli pusta linia\nZmniejszenie bloku do v9.3\npoprawiony blok",
         "uk": "Додано нові блоки: новий рядок, випадковий номер, значення між хв і макс, якщо порожні\nОновлено блочно ядро v9.3.3\nвиправлений блокнот",
         "zh-cn": "增加新的阻碍因素:如空洞,新线、随机编号、矿金和玉米之间价值。\n第9.3.3号核心内容\n更正"
-      },
-      "7.0.8": {
-        "en": "Corrected trigger block\nCorrected typescript V5\ncoffescript was degraded to the previous version\ntried to correct vscode font\nreverted blockly to the previous version",
-        "de": "Korrigierter Triggerblock\nKorrigierte Schrift V5\ncoffescript wurde auf die vorherige version degradiert\nversucht, vscode schrift zu korrigieren\nblockweise auf die vorherige version umgestellt",
-        "ru": "Исправлен блок триггера\nИсправлена typescript В5\ncoffescript был деградирован до предыдущей версии\nпытался исправить vscode шрифт\nперевернутый блокно в предыдущую версию",
-        "pt": "Bloco de gatilho correto\nTypescript corrigido V5\ncoffescript foi degradado para a versão anterior\ntentou corrigir a fonte vscode\nrevertida em bloco para a versão anterior",
-        "nl": "Quality over Quantity (QoQ) Releases Vertaling:\nVertaling: V5\nde vorige versie is gedegradeerd\nprobeerde vscode font te corrigeren\nquality over quantity (qoq) releases vertaling:",
-        "fr": "Bloc de déclenchement corrigé\nTypescriptif corrigé V5\ncoffescript was degraded to the previous version\nessayé de corriger la police vscode\nreversé de façon bloquée à la version précédente",
-        "it": "Blocco di attivazione corretto\nNome corretto V\ncoffescript è stato degradato alla versione precedente\nprovato a correggere vscode font\nreindirizzato in blocco alla versione precedente",
-        "es": "Bloque de activación corregido\nTiposcrito corregido V5\ncoffescript fue degradado a la versión anterior\ntrató de corregir la fuente vscode\nrevertido bloque a la versión anterior",
-        "pl": "Poprawka\nPoprawne pisownie V5\nrękopis został zdegradowany do poprzedniej wersji\npróbował poprawić fonty vcode\nwrócił do poprzedniej wersji",
-        "uk": "Виправлений блок запуску\nВиправлено помилку В5\ncoffescript було вилучено до попередньої версії\nспробував виправити шрифт проти коду\nперевернуті блокноти до попередньої версії",
-        "zh-cn": "被更正的触发事件\n更正 V5\n前一版本的文字已经退化。\n试图纠正 vscode font\n对前一版本的强烈反应"
       }
     },
     "desc": {
