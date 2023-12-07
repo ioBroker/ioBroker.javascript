@@ -149,19 +149,10 @@ const styles = theme => ({
     tabChangedIcon: {
         color: '#FF0000',
         fontSize: 16,
+        marginLeft: 5,
     },
     closeButton: {
-        position: 'absolute',
-        top: 0,
-        right: -5,
-        zIndex: 10,
-        padding: 8,
-        cursor: 'pointer',
-    },
-    closeButtonIcon: {
-        background: theme.palette.mode === 'dark' ? '#000' : '#FFF',
-        borderRadius: '50%',
-        opacity: 0.7,
+        marginLeft: 5,
     },
     notRunning: {
         color: '#ffbc00',
@@ -181,7 +172,7 @@ const styles = theme => ({
         marginRight: 5,
     },
     fullHeightDialog: {
-        height: 'calc(100% - 100px)'
+        height: 'calc(100% - 100px)',
     },
 });
 
@@ -818,9 +809,9 @@ class Editor extends React.Component {
                     if (!this.props.objects[id]) {
                         const label = [
                             <div key="text" className={Utils.clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{id.split('.').pop()}</div>,
-                            <span key="icon" className={this.props.classes.closeButton}>
-                                <IconClose className={this.props.classes.closeButtonIcon} onClick={e => this.onTabClose(id, e)} fontSize="small" />
-                            </span>];
+                            <IconButton onClick={e => this.onTabClose(id, e)} className={this.props.classes.closeButton} key="icon" size="small" component="span">
+                                <IconClose />
+                            </IconButton>];
                         return <Tab
                             wrapped
                             component={'div'}
@@ -841,9 +832,9 @@ class Editor extends React.Component {
                             <div key="text" className={Utils.clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{text}</div>,
                             changed ? <span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span> : null,
                             (!this.props.debugInstance && (!this.props.debugMode || this.state.selected !== id)) &&
-                                <span key="close" className={this.props.classes.closeButton}>
-                                    <IconClose className={this.props.classes.closeButtonIcon} onClick={e => this.onTabClose(id, e)} fontSize="small" />
-                                </span>,
+                            <IconButton onClick={e => this.onTabClose(id, e)} className={this.props.classes.closeButton} key="icon" size="small" component="span">
+                                <IconClose />
+                            </IconButton>,
                         ];
 
                         return <Tab
