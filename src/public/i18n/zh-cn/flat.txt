@@ -44,6 +44,16 @@ https://github.com/request/request
 JSONata表达式
 适用于
 通过JSONata表达式转换
+时间差异
+hh:mm:ss
+h:m:s
+hh:mm
+h:m
+m:s
+mm:ss
+自定义格式
+hh:mm:ss
+溶剂
 发消息
 消息
 发消息给
@@ -60,6 +70,25 @@ JSONata表达式
 调试信息
 警告信息
 错误信息
+getHistory
+实例
+获取对象ID
+(时)
+在此之前(时间)
+同意"
+不输出
+最低限度
+最高限额
+目 录
+平均值
+步骤
+毫秒
+秒
+分
+小时
+日 日
+A. 要求数据库资料
+gethistory
 系统
 调试输出
 输出调试信息
@@ -106,8 +135,15 @@ Object
 获取对象ID
 初始值
 Common
+状态类型
+串
+数
+布尔
+json
+状态是否可读
+状态是否可写
 创建全局可见的状态变量
-创建全局可见的状态变量
+createstate
 获取状态的值
 来自于
 使用对话框选择对象ID
@@ -129,8 +165,14 @@ Common
 状态是否可读
 状态是否可写
 获取状态的值
+Object
+对象ID
+目的和宗旨
+getobject
 选择对象ID
 获取对象ID
+获取对象ID (meta)
+获取对象ID (script)
 使用对话框选择对象ID
 获取属性
 获取
@@ -204,6 +246,25 @@ hh:mm:ss.sss
 延时（分钟）
 YYYY.MM.DD hh:mm:ss.sss
 获取当前时间或当前时间加延时
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+计算时间
+日 开 幕
+日 本
+每周开始
+周末
+月起
+月底
+定时邮票
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+时间
+基础
+毫秒
+秒
+分
+小时
+日 日
+星期
+增加或说明时间
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 定时器
 暂停
@@ -358,3 +419,9 @@ offFile
 消息
 消息
 onMessage
+明 明
+Max
+如果最小值和最大值之间的数字
+空
+然后
+检查是否为空

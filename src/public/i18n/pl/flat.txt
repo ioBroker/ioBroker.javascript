@@ -44,6 +44,16 @@ prettify
 Wyrażenie JSONata
 ubiegać się o
 Konwertuj przez wyrażenie JSONata
+Różnica czasowa
+h:mm:ss
+h:m:s
+h:mm
+h:m
+h:mm
+h:mm
+custom format
+h:mm:ss
+Konwertuje milisekundy do gotowego formatu
 Sendto
 message
 sendTo
@@ -60,6 +70,25 @@ info
 debug
 warning
 error
+getHistory
+Instancja
+Object ID
+Od czasu (pol.)
+Do czasu (pol.)
+Aggregate (ang.)
+none
+minimum
+maksymalny
+hrabia
+średnia
+Step
+ms
+sec
+min
+hours
+dni
+Informacja z bazy danych
+gethistory
 System
 debug output
 Debug
@@ -106,6 +135,13 @@ jsState
 Object ID
 Init value
 Common
+Typ stanu
+string
+numer
+boolean
+json
+Czy stan jest czytelny
+Czy stan jest zapisywalny
 create state
 createstate
 Get state value
@@ -129,8 +165,14 @@ Rodzaj obiektu
 Czy stan jest czytelny
 Czy stan jest zapisywalny
 Get state value
+Object
+select ID
+Definicja obiektu
+getobject
 Select OID
 Object ID
+Object ID (meta)
+Object ID (script)
 Select object ID with dialog
 Get attribute
 Attribute
@@ -204,6 +246,25 @@ Actual time of
 Offset (minutes)
 YYYY.MM.DD hh:mm:ss.sss
 Get actual time or 
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Kalkulacja czasu
+Początek dnia
+Koniec dnia
+Początek tygodnia
+Koniec tygodnia
+Początek miesiąca
+Koniec miesiąca
+Kalkulacja
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Czas kalendarzowy
+na podstawie
+ms
+sec
+min
+godzin
+dni
+tydzień
+Addd lub Substract time
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Timeouts
 Pauza
@@ -346,7 +407,7 @@ onFile
 Anuluj zdarzenie pliku
 Anuluj subskrypcję po zmianie pliku
 offFile
-inny scenariusz
+Posłanie do innych scenariuszy
 Instancja
 all instances
 scenariusz
@@ -358,3 +419,9 @@ Zdarzenie: odebrano wiadomość
 komunikat
 komunikat
 onMessage
+Min
+Max
+jeśli liczba między min a max
+jeśli chodzi o puste
+potem
+sprawdź, czy jest pusty

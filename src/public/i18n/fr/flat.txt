@@ -44,6 +44,16 @@ enjoliver
 Expression JSONata
 postuler à
 Conversion par expression JSONata
+Formater une différence de temps
+hh:mm:ss
+h:m:s
+hh:mm
+h:m
+m:s
+mm:ss
+format personnalisé
+hh:mm:ss
+Convertir des millisecondes en format lisible
 Envoyer à
 message
 envoyer à
@@ -60,6 +70,25 @@ Info
 déboguer
 Attention
 Erreur
+getHistory
+Exemple
+ID de l'objet
+À partir de (temps)
+Jusqu'à (heure)
+Aggregate by
+aucun
+minimum
+maximum
+compte
+moyenne
+Étape
+Mme
+seconde
+min
+heures
+jours
+Demande d' information de la base de données
+gethistory
 Système
 sortie de débogage
 Déboguer
@@ -106,8 +135,15 @@ jsState
 ID de l'objet
 Valeur init
 Common
+Type d'état
+chaîne
+nombre
+booléen
+json
+L'état est-il lisible
+L'état est-il accessible en écriture
 créer un état
-créature
+createstate
 Obtenir la valeur de l'état
 d'identifiant d'objet
 Sélectionnez l'ID d'objet avec la boîte de dialogue
@@ -129,8 +165,14 @@ Type d'objet
 L'état est-il lisible
 L'état est-il accessible en écriture
 Obtenir la valeur de l'état
+d'objet
+sélectionnez ID
+Défition d'objets
+getobject
 Sélectionnez OID
 ID de l'objet
+ID de l'objet (meta)
+ID de l'objet (script)
 Sélectionnez l'ID d'objet avec la boîte de dialogue
 Obtenir l'attribut
 Attribut
@@ -204,6 +246,25 @@ Heure réelle de
 Décalage (minutes)
 YYYY.MM.DD hh:mm:ss.sss
 Obtenez le temps réel ou
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Temps calculé
+Début de la journée
+Fin de la journée
+Début de la semaine
+Fin de semaine
+Début du mois
+Fin du mois
+Calculer les timbres horaires
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Temps de calcul
+basée sur
+Mme
+seconde
+min
+heures
+jours
+semaines
+Temps d'ajout ou de sous-traitance
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Délais
 Pause
@@ -346,7 +407,7 @@ onFile
 Annuler l'événement de fichier
 Annuler l'abonnement en cas de changement de fichier
 offFile
-autre script
+Message à un autre script
 Exemple
 toutes les instances
 scénario
@@ -358,3 +419,9 @@ autre script
 message
 message
 onMessage
+Min
+Max
+si un nombre entre min et max
+si vide
+puis
+vérifier si vide

@@ -44,6 +44,16 @@ prettify
 JSONata expression
 apply to
 Convert by JSONata Expression
+Format time difference
+hh:mm:ss
+h:m:s
+hh:mm
+h:m
+m:s
+mm:ss
+custom format
+hh:mm:ss
+Converts milliseconds to a readable format
 Sendto
 message
 sendTo
@@ -60,6 +70,25 @@ info
 debug
 warning
 error
+getHistory
+Instance
+Object ID
+From (time)
+Until (time)
+Aggregate by
+none
+minimum
+maximum
+count
+average
+Step size
+ms
+sec
+min
+hours
+days
+Request information from database
+gethistory
 System
 debug output
 Debug
@@ -106,6 +135,13 @@ jsState
 Object ID
 Init value
 Common
+State type
+string
+number
+boolean
+json
+Is readable
+Is writable
 create state
 createstate
 Get state value
@@ -129,8 +165,14 @@ Object type
 Is state readable
 Is state writable
 Get state value
+Object
+select ID
+Get object defition
+getobject
 Select OID
 Object ID
+Object ID (meta)
+Object ID (script)
 Select object ID with dialog
 Get attribute
 Attribute
@@ -204,6 +246,25 @@ Actual time of
 Offset (minutes)
 YYYY.MM.DD hh:mm:ss.sss
 Get actual time or 
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Calculated time
+Start of day
+End of day
+Start of week
+End of week
+Start of month
+End of month
+Calculate time stamps
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Calculate time
+based on
+ms
+sec
+min
+hours
+days
+weeks
+Add or substract time
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Timeouts
 Pause
@@ -346,8 +407,8 @@ onFile
 Cancel file event
 Cancel subscription on file change
 offFile
-other script
-instance
+message to other script
+Instance
 all instances
 script
 message
@@ -358,3 +419,9 @@ Event: Received message
 message
 message
 onMessage
+Min
+Max
+if a number between min and max
+if empty
+then
+check if empty

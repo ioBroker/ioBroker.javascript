@@ -44,6 +44,16 @@ leuk maken
 JSONata-expressie
 van toepassing op
 Converteer door JSONata-expressie
+Vernietig een tijdsverschil
+hh:mm:ss
+h:m:s
+hh:mm
+h:m
+m:s
+mm:ss
+aangepast formaat
+hh:mm:ss
+Converteert milliseconden aan een leesbaar formaat
 Verzenden naar
 bericht
 verzenden naar
@@ -60,6 +70,25 @@ info
 debug
 waarschuwing
 fout
+getHistory
+Voorbeeld
+Object ID
+Van..
+Totdat
+Aggregate
+geen
+minimum
+maximale
+telt
+avery
+Stap in
+Mevrouw
+sec
+min
+uur
+dagen
+Verzoek informatie uit de database
+gethistory
 Systeem
 debug output
 debug
@@ -106,6 +135,13 @@ jsState
 Object ID
 Init waarde
 Common
+Staatstype
+Tekenreeks
+getal
+boolean
+json
+Staat leesbaar
+Staat beschrijfbaar
 creëer staat
 createstate
 Krijg statuswaarde
@@ -129,8 +165,14 @@ Object type
 Staat leesbaar
 Staat beschrijfbaar
 Krijg statuswaarde
+Object
+selecteer ID
+Haal object defectie
+getobject
 Selecteer OID
 Object ID
+Object ID (meta)
+Object ID (script)
 Selecteer object-ID met dialoogvenster
 Attribuut ophalen
 Attribuut
@@ -204,6 +246,25 @@ Huidige tijd van
 Offset (minuten)
 JJJJ.MM.DD uu:mm:ss.sss
 Krijg actuele tijd of
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Berekende tijd
+Begin van de dag
+Einde dag
+Begin van de week
+Einde week
+Begin van maand
+Einde maand
+Vertaling:
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Bereken de tijd
+gebaseerd op
+Mevrouw
+sec
+min
+uren
+dagen
+weken
+Advies of substracte tijd
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Time-outs
 Pauze
@@ -346,7 +407,7 @@ onFile
 Bestandsgebeurtenis annuleren
 Abonnement opzeggen bij bestandswijziging
 offFile
-andere script
+Bericht naar ander script
 Voorbeeld
 alle instanties
 Script
@@ -358,3 +419,9 @@ Gebeurtenis: bericht ontvangen
 bericht
 bericht
 onMessage
+Min
+Max
+als een getal tussen min en max
+_
+dan
+controleer of leeg

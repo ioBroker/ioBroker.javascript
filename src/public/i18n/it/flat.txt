@@ -44,6 +44,16 @@ abbellire
 Espressione JSONata
 applica a
 Convertire da JSONata Expression
+Formattare una differenza di tempo
+hh:mm:ss
+h:m:s
+hh:mm
+h:m
+m:s
+mm:ss
+formato personalizzato
+hh:mm:ss
+Converte i millisecondi in un formato leggibile
 Inviare a
 Messaggio
 inviare a
@@ -60,6 +70,25 @@ Informazioni
 mettere a punto
 avvertimento
 errore
+getHistory
+Esempio
+ID oggetto
+Da (tempo)
+Fino a (tempo)
+Aggregato da
+nessuna
+minimo
+massimo
+conteggio
+media media
+Passo
+Signorina
+secondo
+min
+ore
+giorni
+Richiedi informazioni dal database
+gethistory
 Sistema
 uscita di debug
 mettere a punto
@@ -106,6 +135,13 @@ jsState
 ID oggetto
 Valore init
 Common
+Tipo di stato
+Stringa
+Numero
+Booleano
+json
+È leggibile dallo stato
+È stato scrivibile
 creare stato
 createstate
 Ottieni valore statale
@@ -129,8 +165,14 @@ Tipo di oggetto
 È leggibile dallo stato
 È stato scrivibile
 Ottieni valore statale
+oggetto
+seleziona ID
+Ottenere defition oggetto
+getobject
 Seleziona OID
 ID oggetto
+ID oggetto (meta)
+ID oggetto (script)
 Seleziona ID oggetto con finestra di dialogo
 Ottieni attributo
 Attributo
@@ -204,6 +246,25 @@ Tempo reale di
 Offset (minuti)
 YYYY.MM.DD hh:mm:ss.sss
 Ottieni tempo reale o
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Tempo calcolato
+Inizio giornata
+Fine del giorno
+Inizio settimana
+Fine settimana
+Inizio del mese
+Fine del mese
+Calcola i timestamp
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Calcola il tempo
+sulla base
+Signorina
+secondo
+min
+ore
+giorni
+settimane
+Aggiungere o substrarsi il tempo
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Timeout
 Pausa
@@ -346,7 +407,7 @@ onFile
 Annulla evento file
 Annulla l'abbonamento in caso di modifica del file
 offFile
-altri script
+Messaggio ad altri script
 Esempio
 tutte le istanze
 copione
@@ -358,3 +419,9 @@ Evento: messaggio ricevuto
 messaggio
 messaggio
 onMessage
+Min
+Max
+se un numero compreso tra min e max
+se vuoto
+allora
+controlla se vuoto

@@ -44,6 +44,16 @@ formatar
 Expressão JSONata
 aplicar a
 Converter por expressão JSONata
+Formatar uma diferença de tempo
+hh:mm:ss
+h:m:s
+hh:mm
+h:m
+m:s
+mm:ss
+formato personalizado
+hh:mm:ss
+Converte milissegundos em um formato legível
 Enviar para
 mensagem
 enviar para
@@ -60,6 +70,25 @@ informação
 depurar
 atenção
 erro
+getHistory
+instância
+ID do objeto
+De (hora)
+Até (hora)
+Agregado por
+nenhum
+mínimo
+máximo
+contagem
+média
+Passo
+ms
+seg
+min
+horas
+dias
+Solicitar informações de banco de dados
+gethistory
 Sistema
 saída de depuração
 Depurar
@@ -106,6 +135,13 @@ jsState
 ID do objeto
 valor inicial
 Common
+Tipo de estado
+string
+número
+valor lógico
+json
+O estado é legível
+É estado gravável
 Gerar ponto de dados
 createstate
 Tome o valor do estado
@@ -129,8 +165,14 @@ Tipo de objeto
 O estado é legível
 É estado gravável
 Tome o valor do estado
+objeto
+selecione ID
+Obter desafio de objetos
+getobject
 Selecionar ponto de dados
 ID do objeto
+ID do objeto (meta)
+ID do objeto (script)
 Selecione ID do objeto com diálogo
 Obter atributo
 Atributo
@@ -204,6 +246,25 @@ Horário atual de
 Offset (minutos)
 AAAA.MM.DD hh:mm:ss.sss
 Receba o horário atual ou
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Tempo calculado
+Início do dia
+Fim do dia
+Início da semana
+Fim da semana
+Início do mês
+Fim do mês
+Calcular selos de tempo
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Calcular o tempo
+baseado em
+ms
+seg
+min
+horas
+dias
+semanas
+Adicionar ou subtrair tempo
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Timeouts
 Pausa
@@ -346,7 +407,7 @@ onFile
 Cancelar evento de arquivo
 Cancelar assinatura na alteração do arquivo
 offFile
-outros scripts
+Mensagem para outro script
 instância
 todas as instâncias
 script
@@ -358,3 +419,9 @@ Evento: Mensagem recebida
 mensagem
 mensagem
 onMessage
+Min
+Max
+se um número entre min e max
+se vazio
+então
+verifique se está vazio

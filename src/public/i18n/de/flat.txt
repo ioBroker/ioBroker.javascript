@@ -44,6 +44,16 @@ formatieren
 JSONata Ausdruck
 anwenden auf
 Mit JSONata konvertieren
+Zeitdifferenz formatieren
+hh:mm:ss
+h:m:s
+hh:mm
+h:m
+m:s
+mm:ss
+anwenderformatiert
+hh:mm:ss
+Millisekunden in ein lesbares Format umwandeln
 Sendto
 Meldung
 sendTo
@@ -60,6 +70,25 @@ info
 debug
 warning
 error
+getHistory
+Instanz
+Objekt ID
+Von (Zeit)
+Bis (Zeit)
+Aggregieren nach
+nichts
+Minimum
+Maximum
+Anzahl
+Durchschnitt
+Schrittgröße
+ms
+Sek
+Min
+Stunden
+Tage
+Informationen aus der Datenbank anfordern
+gethistory
 System
 debug output
 Debug
@@ -106,6 +135,13 @@ jsState
 Objekt ID
 Init-Wert
 Common
+Zustandstyp
+Zeichenkette
+Zahl
+Logikwert
+json
+ist lesbar
+ist beschreibbar
 Datenpunkt erzeugen
 createstate
 Zustandswert nehmen
@@ -122,15 +158,21 @@ Wertkommentar
 Quelle
 Objektname
 Objektbeschreibung
-Zustands-Einheit
+Maßeinheit
 Objektrolle
 Zustandstyp
 Objekttyp
-Zustand lesbar ist
-Zustand beschreibbar ist
+Zustand ist lesbar
+Zustand ist beschreibbar
 Zustandswert nehmen
+Object
+ID auswählen
+Objektdefition laden
+getobject
 Datenpunkt auswählen
 Objekt ID
+Objekt ID (meta)
+Objekt ID (script)
 Objekt ID mit Dialog selektieren
 Attribut erhalten
 Attribut
@@ -170,7 +212,7 @@ Datum-Objekt
 Millisekunden
 Sekunden
 Minuten
-Minuten seit Tagseanfang
+Minuten seit Tagesanfang
 Sekunden seit Tagesanfang
 Stunden
 Monatsdatum
@@ -204,6 +246,25 @@ Aktuelle Zeit von
 Offset (Minuten)
 JJJJ.MM.TT SS:mm:ss.sss
 Sende eine Meldung über Telegram
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Berechnete Zeit
+Beginn des Tages
+Ende des Tages
+Beginn der Woche
+Ende der Woche
+Beginn des Monats
+Ende des Monats
+Zeitstempel berechnen
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Zeit berechnen
+basierend auf
+ms
+Sek
+Min
+Stunden
+Tage
+Wochen
+Zeit hinzufügen oder subtrahieren
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Timeouts
 Pause
@@ -346,8 +407,8 @@ onFile
 Dateiereignis abbrechen
 Abonnement bei Dateiänderung kündigen
 offFile
-anderes script
-instanz
+Nachricht an andere Skript
+Instanz
 Alle Instanzen
 skript
 Meldung
@@ -358,3 +419,9 @@ Ereignis: Nachricht empfangen
 Meldung
 Meldung
 onMessage
+Min
+Max
+wenn eine Zahl zwischen min und max
+wenn leer
+dann
+Überprüfen, ob es leer ist
