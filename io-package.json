@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "7.3.0",
+    "version": "7.4.0",
     "news": {
+      "7.4.0": {
+        "en": "Download script as xml file (export)\nImport script as file (upload)\nHide global folder if expert mode is disabled",
+        "de": "Skript als xml Datei herunterladen (Export)\nImportieren von Skript als Datei (Upload)\nVerstecken globaler Ordner, wenn der Expertenmodus deaktiviert ist",
+        "ru": "Скачать скрипт как xml файл (экспорт)\nИмпорт скрипт как файл (загрузка)\nСкрыть глобальную папку, если режим эксперта отключен",
+        "pt": "Baixar script como arquivo xml (export)\nImportar script como arquivo (upload)\nOcultar pasta global se o modo de especialista estiver desativado",
+        "nl": "Download script as xml file (export)\nImport script als bestand (upload)\nVerberg de wereldwijde map als deskundige modus is uitgeschakeld",
+        "fr": "Télécharger script en fichier xml (export)\nImporter script comme fichier (upload)\nMasquer le dossier mondial si le mode expert est désactivé",
+        "it": "Scarica lo script come file xml (esportare)\nImporta lo script come file (upload)\nNascondi cartella globale se la modalità esperta è disattivata",
+        "es": "Descargar script como archivo xml (exportación)\nImportar script como archivo (upload)\nOcultar carpeta global si el modo experto está deshabilitado",
+        "pl": "Download script jako plik xml (export)\nImport script jako plik (upload)\nOprogramowanie globalne, jeśli tryb ekspertów jest niepełnosprawny",
+        "uk": "Завантажити скрипт як файл xml (export)\nІмпортний скрипт як файл (завантажити)\nПриховати глобальну папку, якщо експертний режим вимкнено",
+        "zh-cn": "附录\n进口说明(续)\n如果专家模式残疾,那么全球舞台"
+      },
       "7.3.0": {
         "en": "Updated blockly logo\nAlways set variables like isDaylightSaving\nAdded astro times as states\nFixed copied time blocks",
         "de": "Aktualisiertes Block-Logo\nImmer eingestellte Variablen wie isDaylightSaving\nAstro Zeiten als Staaten hinzugefügt\nFeste kopierte Zeitblöcke",
@@ -99,19 +112,6 @@
         "pl": "zrekomendowano eksport skryptu",
         "uk": "виправлено експорт сценаріїв",
         "zh-cn": "修订的出口说明"
-      },
-      "7.1.0": {
-        "en": "Added new blocks: new line, random number, value between min and max, if empty\nUpdated blockly core to v9.3.3\ncorrected blockly",
-        "de": "Neue Blöcke hinzugefügt: neue Zeile, Zufallszahl, Wert zwischen min und max, wenn leer\nAktualisierter Block-Kern auf v9.3.3\nblockweise korrigiert",
-        "ru": "Добавлены новые блоки: новая строка, случайный номер, значение между мином и макс, если пусто\nОбновлен блокно ядро для v9.3.3\nисправлено блокно",
-        "pt": "Adicionado novos blocos: nova linha, número aleatório, valor entre min e max, se vazio\nNúcleo bloqueado atualizado para v9.3.3\ncorrigido em bloco",
-        "nl": "Nieuwe blokken toegevoegd: nieuwe lijn, willekeurig nummer, waarde tussen min en max, als leeg\nQuality over Quantity (QoQ) Releases Vertaling:\nvertaling:",
-        "fr": "Ajout de nouveaux blocs: nouvelle ligne, nombre aléatoire, valeur entre min et max, si vide\nMise à jour du noyau bloqué vers v9.3.3\ncorrigée",
-        "it": "Aggiunto nuovi blocchi: nuova linea, numero casuale, valore tra min e max, se vuoto\nAggiornato core blockly a v9.3.3\ncorretto blocco",
-        "es": "Nuevos bloques añadidos: nueva línea, número aleatorio, valor entre min y max, si vacío\nActualizado núcleo de bloque a v9.3.3\ncorregido bloqueado",
-        "pl": "Dodać nowe bloki: nowa linia, liczba losowa, wartość pomiędzy minem a maxą, jeśli pusta linia\nZmniejszenie bloku do v9.3\npoprawiony blok",
-        "uk": "Додано нові блоки: новий рядок, випадковий номер, значення між хв і макс, якщо порожні\nОновлено блочно ядро v9.3.3\nвиправлений блокнот",
-        "zh-cn": "增加新的阻碍因素:如空洞,新线、随机编号、矿金和玉米之间价值。\n第9.3.3号核心内容\n更正"
       }
     },
     "desc": {

@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 7.1.4 (2023-08-09)
+* (bluefox) Added version to the side menu
+* (klein0r) Added blockly blocks for `getHistory` and calculated times
+
 ## 7.1.1 (2023-06-20)
 * (bluefox) corrected the script export
 

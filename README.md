@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.4.0 (2023-12-08)
 
 * (klein0r) Download script as xml file (export)
 * (klein0r) Import script as file (upload)
@@ -75,10 +75,6 @@ NodeJS 16.x is required
 
 ### 7.1.5 (2023-10-09)
 * (bluefox) Added play-ground for ChatGPT (API key required)
-
-### 7.1.4 (2023-08-09)
-* (bluefox) Added version to the side menu
-* (klein0r) Added blockly blocks for `getHistory` and calculated times
 
 ## License
 The MIT License (MIT)
