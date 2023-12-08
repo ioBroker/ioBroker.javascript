@@ -1415,8 +1415,11 @@ class SideDrawer extends React.Component {
 
     getFolders() {
         const folders = [{ id: ROOT_ID, name: I18n.t('Root folder') }];
-        this.state.listItems.forEach(item =>
-            item.type === 'folder' && item.id !== ROOT_ID && folders.push({ id: item.id, name: item.title }));
+        this.state.listItems.forEach(item => {
+            if (!item.id.startsWith(GLOBAL_ID) || this.state.expertMode) {
+                item.type === 'folder' && item.id !== ROOT_ID && folders.push({ id: item.id, name: item.title });
+            }
+        });
         return folders;
     }
 
