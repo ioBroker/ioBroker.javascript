@@ -49,6 +49,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### **WORK IN PROGRESS**
 
 * (klein0r) Download script as xml file (export)
+* (klein0r) Import script as file (upload)
 
 ### 7.3.0 (2023-12-07)
 

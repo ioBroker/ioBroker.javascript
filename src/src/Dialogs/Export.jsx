@@ -61,8 +61,8 @@ class DialogExport extends React.Component {
 
     render() {
         const classes = this.props.classes;
-        const file = new Blob([this.props.text], {type: 'text/plain'});
-        const fileName = this.props.scriptId.substring('scripts.js.'.length) + '.xml';
+        const file = new Blob([this.props.text], {type: 'application/xml'});
+        const fileName = this.props.scriptId.substring('scripts.js'.length) + '.xml';
 
         return <Dialog
             key="export-dialog"

@@ -18,11 +18,11 @@ import { I18n } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     dialog: {
-        height: '95%'
+        height: '95%',
     },
     fullHeight: {
         height: '100%',
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     dropzone: {
         marginTop: 20,
@@ -34,11 +34,11 @@ const styles = theme => ({
         boxSizing: 'border-box',
         paddingTop: 45,
         borderRadius: 10,
-        height: 'calc(100% - 10px)'
+        height: 'calc(100% - 10px)',
     },
     dropzoneDiv: {
         width: '100%',
-        height: '100%'
+        height: '100%',
     },
     dropzoneRejected: {
         borderColor: '#970000',
@@ -69,7 +69,7 @@ const styles = theme => ({
         color: '#868686',
         position: 'absolute',
         zIndex: 1,
-    }
+    },
 });
 
 class DialogImportFile extends React.Component {
@@ -114,7 +114,7 @@ class DialogImportFile extends React.Component {
             cb(I18n.t('file reading has failed: %s', e));
         };
 
-        reader.readAsDataURL(file)
+        reader.readAsDataURL(file);
     }
 
     handleDropFile(files) {
@@ -133,7 +133,7 @@ class DialogImportFile extends React.Component {
         }
         DialogImportFile.readFileDataUrl(file, (err, result) => {
             if (err) {
-                this.setState({error: err})
+                this.setState({error: err});
             } else {
                 this.props.onClose(result && result.data);
             }
@@ -147,7 +147,7 @@ class DialogImportFile extends React.Component {
         return <Dialog
             onClose={(event, reason) => false}
             maxWidth="lg"
-            classes={{paper: classes.dialog}}
+            classes={{ paper: classes.dialog }}
             fullWidth
             open={!0}
             aria-labelledby="import-dialog-title"
