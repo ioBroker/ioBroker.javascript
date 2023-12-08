@@ -97,14 +97,14 @@ class DialogNew extends React.Component {
                         onChange={e => this.handleChange(e.target.value)}
                         margin="normal"
                     />
-                    <FormControl variant="standard" style={{minWidth: 100}}>
+                    <FormControl variant="standard" style={{width: '100%'}}>
                         <InputLabel htmlFor="parent">{I18n.t('Folder')}</InputLabel>
                         <Select
                             variant="standard"
                             style={{width: '100%'}}
                             value={this.state.parent}
                             onChange={e => this.setState({parent: e.target.value})}
-                            inputProps={{name: 'parent', id: 'parent',}}
+                            inputProps={{name: 'parent', id: 'parent'}}
                         >
                             {this.props.parents.map(parent => {
                                 const parts = parent.id.split('.');
@@ -123,7 +123,7 @@ class DialogNew extends React.Component {
                                 if (!names.length) {
                                     names.push(parent.name);
                                 }
-                                return (<MenuItem key={parent.id} value={parent.id}>{names.join(' / ')}</MenuItem>)
+                                return (<MenuItem key={parent.id} value={parent.id}>{names.join(' / ')}</MenuItem>);
                             })}
                         </Select>
                     </FormControl>
@@ -144,7 +144,7 @@ class DialogNew extends React.Component {
                                 variant="standard"
                                 value={this.state.instance}
                                 onChange={e => this.setState({instance: parseInt(e.target.value, 10)})}
-                                inputProps={{name: 'instance', id: 'instance',}}
+                                inputProps={{name: 'instance', id: 'instance'}}
                             >
                                 {this.props.instances.map(instance => (<MenuItem key={'instance' + instance} value={instance}>{instance || '0'}</MenuItem>))}
                             </Select>
