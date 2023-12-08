@@ -335,17 +335,17 @@
       "type": "channel",
       "common": {
         "name": {
-          "en": "Common scripts",
-          "de": "Allgemeine Skripte",
-          "ru": "Общие скрипты",
-          "pt": "Scripts comuns",
-          "nl": "Common scripts",
-          "fr": "Scénarios communs",
-          "it": "Scrittori comuni",
-          "es": "Scripts comunes",
-          "pl": "Common script",
-          "uk": "Загальні сценарії",
-          "zh-cn": "共同说明"
+          "en": "Common scripts (common)",
+          "de": "Allgemeine Skripte (common)",
+          "ru": "Общие скрипты (common)",
+          "pt": "Scripts comuns (common)",
+          "nl": "Common scripts (common)",
+          "fr": "Scénarios communs (common)",
+          "it": "Scrittori comuni (common)",
+          "es": "Scripts comunes (common)",
+          "pl": "Common script (common)",
+          "uk": "Загальні сценарії (common)",
+          "zh-cn": "共同说明 (common)"
         }
       },
       "native": {}
@@ -355,17 +355,17 @@
       "type": "channel",
       "common": {
         "name": {
-          "en": "Global scripts",
-          "de": "Globale Skripte",
-          "ru": "Глобальные скрипты",
-          "pt": "Scripts globais",
-          "nl": "Global scripts",
-          "fr": "Scénarios mondiaux",
-          "it": "Scrittori globali",
-          "es": "Guiones globales",
-          "pl": "Globalny scenariusz",
-          "uk": "Глобальні сценарії",
-          "zh-cn": "全球说明"
+          "en": "Global scripts (global)",
+          "de": "Globale Skripte (global)",
+          "ru": "Глобальные скрипты (global)",
+          "pt": "Scripts globais (global)",
+          "nl": "Global scripts (global)",
+          "fr": "Scénarios mondiaux (global)",
+          "it": "Scrittori globali (global)",
+          "es": "Guiones globales (global)",
+          "pl": "Globalny scenariusz (global)",
+          "uk": "Глобальні сценарії (global)",
+          "zh-cn": "全球说明 (global)"
         }
       },
       "native": {}
