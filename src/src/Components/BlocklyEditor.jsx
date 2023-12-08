@@ -638,7 +638,7 @@ class BlocklyEditor extends React.Component {
     }
 
     renderExportDialog() {
-        return this.state.exportText ? <DialogExport key="dialogExport" theme={this.state.themeType} onClose={() => this.setState({exportText: ''})} text={this.state.exportText}/> : null;
+        return this.state.exportText ? <DialogExport key="dialogExport" theme={this.state.themeType} onClose={() => this.setState({exportText: ''})} text={this.state.exportText} scriptId={this.props.scriptId}/> : null;
     }
 
     renderImportDialog() {
@@ -678,7 +678,8 @@ BlocklyEditor.propTypes = {
     command: PropTypes.string,
     onChange: PropTypes.func,
     searchText: PropTypes.string,
-    themeType: PropTypes.string
+    scriptId: PropTypes.string,
+    themeType: PropTypes.string,
 };
 
 export default BlocklyEditor;

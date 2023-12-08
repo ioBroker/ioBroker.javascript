@@ -154,15 +154,14 @@ class DialogImportFile extends React.Component {
         >
             <DialogTitle id="import-dialog-title">{I18n.t('Import scripts')}</DialogTitle>
             <DialogContent className={classes.fullHeight}>
-                <Dropzone   key='image-drop'
-
-                            maxSize={50000000}
-                            acceptClassName={classes.dropzoneAccepted}
-                            rejectClassName={classes.dropzoneRejected}
-                            onDrop={files => this.handleDropFile(files)}
-                            multiple={false}
-                            accept='application/zip,application/x-zip-compressed'
-                            className={className}>
+                <Dropzone key='image-drop'
+                    maxSize={50000000}
+                    acceptClassName={classes.dropzoneAccepted}
+                    rejectClassName={classes.dropzoneRejected}
+                    onDrop={files => this.handleDropFile(files)}
+                    multiple={false}
+                    accept='application/zip,application/x-zip-compressed'
+                    className={className}>
                     {
                         ({ getRootProps, getInputProps, isDragActive, isDragReject}) => {
                             if (isDragReject) {

@@ -12,8 +12,8 @@ import Fade from '@mui/material/Fade';
 import Paper from '@mui/material/Paper';
 
 import IconCopy from '@mui/icons-material/FileCopy';
+import { FaFileExport as IconExport } from 'react-icons/fa';
 import IconCancel from '@mui/icons-material/Cancel';
-
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
@@ -44,9 +44,10 @@ class DialogExport extends React.Component {
             popper: '',
         };
     }
-    handleCancel = () => {
+
+    handleCancel() {
         this.props.onClose();
-    };
+    }
 
     onCopy(event) {
         Utils.copyToClipboard(this.props.text);
@@ -60,6 +61,8 @@ class DialogExport extends React.Component {
 
     render() {
         const classes = this.props.classes;
+        const file = new Blob([this.props.text], {type: 'text/plain'});
+        const fileName = this.props.scriptId.substring('scripts.js.'.length) + '.xml';
 
         return <Dialog
             key="export-dialog"
@@ -79,6 +82,12 @@ class DialogExport extends React.Component {
                 >{this.props.text}</pre>
             </DialogContent>
             <DialogActions>
+                <Button variant="contained" color="secondary" startIcon={<IconExport/>}>
+                    <a download={fileName} target="_blank" rel="noreferrer" href={URL.createObjectURL(file)} style={{
+                        textDecoration: "inherit",
+                        color: "inherit",
+                    }}>{I18n.t('Download as file')}</a>
+                </Button>
                 <Button variant="contained" onClick={event => this.onCopy(event)} color="secondary" startIcon={<IconCopy/>}>{I18n.t('Copy to clipboard')}</Button>
                 <Button variant="contained" onClick={() => this.handleCancel()} color="primary" startIcon={<IconCancel/>}>{I18n.t('Close')}</Button>
 
@@ -104,12 +113,13 @@ class DialogExport extends React.Component {
 
 DialogExport.defaultProps = {
     open: true
-}
+};
 
 DialogExport.propTypes = {
     classes: PropTypes.object.isRequired,
     onClose: PropTypes.func,
     text: PropTypes.string,
+    scriptId: PropTypes.string,
     themeType: PropTypes.string,
 };
 

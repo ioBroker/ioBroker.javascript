@@ -1237,6 +1237,7 @@ class Editor extends React.Component {
                     searchText={this.state.searchText}
                     resizing={this.props.resizing}
                     code={this.scripts[this.state.selected].source || ''}
+                    scriptId={this.state.selected}
                     onChange={newValue => this.onChange({ script: newValue })}
                 />
             </div>;
