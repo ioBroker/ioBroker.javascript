@@ -49,6 +49,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### **WORK IN PROGRESS**
 
 * (klein0r) Day of week as number always returns 1 (monday) to 7 (sunday)
+* (klein0r) Fixed layout of script type selection
 
 ### 7.4.0 (2023-12-08)
 
