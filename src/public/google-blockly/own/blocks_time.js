@@ -406,7 +406,7 @@ Blockly.JavaScript['time_get'] = function(block) {
     } else if (option === 's') {
         code = '(new Date().getSeconds())';
     } else if (option === 'sid') {
-        code = '(new Date().getHours() * 3600 + new Date().getMinutes() * 60 + new Date().getSeconds())';
+        code = '(() => { const v = new Date(); return v.getHours() * 3600 + v.getMinutes() * 60 + v.getSeconds(); })()';
     } else if (option === 'm') {
         code = '(new Date().getMinutes())';
     } else if (option === 'mid') {
@@ -430,7 +430,7 @@ Blockly.JavaScript['time_get'] = function(block) {
     } else if (option === 'wdts') {
         code = `formatDate(new Date(), 'W', '${lang}')`;
     } else if (option === 'wd') {
-        code = '(new Date().getDay() === 0 ? 7 : new Date().getDay())';
+        code = '(() => { const d = new Date().getDay(); return d === 0 ? 7 : d; })()';
     } else if (option === 'custom') {
         code = `formatDate(new Date(), '${format}')`;
     } else {

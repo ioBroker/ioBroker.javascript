@@ -259,41 +259,41 @@ Blockly.JavaScript.convert_from_date = function (block) {
 
     let code;
     if (option === 'object') {
-        code = 'getDateObject(' + value + ').getTime()';
+        code = `getDateObject(${value}).getTime()`;
     } else if (option === 'ms') {
-        code = 'getDateObject(' + value + ').getMilliseconds()';
+        code = `getDateObject(${value}).getMilliseconds()`;
     } else if (option === 's') {
-        code = 'getDateObject(' + value + ').getSeconds()';
+        code = `getDateObject(${value}).getSeconds()`;
     } else if (option === 'sid') {
-        code = '(function () { const v = getDateObject(' + value + '); return v.getHours() * 3600 + v.getMinutes() * 60 + v.getSeconds(); })()';
+        code = `(() => { const v = getDateObject(${value}); return v.getHours() * 3600 + v.getMinutes() * 60 + v.getSeconds(); })()`;
     } else if (option === 'm') {
-        code = '(getDateObject(' + value + ').getMinutes())';
+        code = `getDateObject(${value}).getMinutes())`;
     } else if (option === 'mid') {
-        code = '(function () { const v = getDateObject(' + value + '); return v.getHours() * 60 + v.getMinutes(); })()';
+        code = `(() => { const v = getDateObject(${value}); return v.getHours() * 60 + v.getMinutes(); })()`;
     } else if (option === 'h') {
-        code = 'getDateObject(' + value + ').getHours()';
+        code = `getDateObject(${value}).getHours()`;
     } else if (option === 'd') {
-        code = 'getDateObject(' + value + ').getDate()';
+        code = `getDateObject(${value}).getDate()`;
     } else if (option === 'M') {
-        code = '(getDateObject(' + value + ').getMonth() + 1)';
+        code = `(getDateObject(${value}).getMonth() + 1)`;
     } else if (option === 'Mt') {
-        code = 'formatDate(getDateObject(' + value + '), "OO", "' + lang + '")';
+        code = `formatDate(getDateObject(${value}), 'OO', '${lang}')`;
     } else if (option === 'Mts') {
-        code = 'formatDate(getDateObject(' + value + '), "O", "' + lang + '")';
+        code = `formatDate(getDateObject(${value}), 'O', '${lang}')`;
     } else if (option === 'y') {
-        code = 'getDateObject(' + value + ').getYear()';
+        code = `getDateObject(${value}).getYear()`;
     } else if (option === 'fy') {
-        code = 'getDateObject(' + value + ').getFullYear()';
+        code = `getDateObject(${value}).getFullYear()`;
     } else if (option === 'wdt') {
-        code = 'formatDate(getDateObject(' + value + '), "WW", "' + lang + '")';
+        code = `formatDate(getDateObject(${value}), 'WW', '${lang}')`;
     } else if (option === 'wdts') {
-        code = 'formatDate(getDateObject(' + value + '), "W", "' + lang + '")';
+        code = `formatDate(getDateObject(${value}), 'W', '${lang}')`;
     } else if (option === 'wd') {
-        code = 'getDateObject(' + value + ').getDay()';
+        code = `(() => { const d = getDateObject(${value}).getDay(); return d === 0 ? 7 : d; })()`;
     } else if (option === 'custom') {
-        code = 'formatDate(getDateObject(' + value + '), "' + format + '")';
+        code = `formatDate(getDateObject(${value}), '${format}')`;
     } else {
-        code = 'formatDate(getDateObject(' + value + '), "' + option + '")';
+        code = `formatDate(getDateObject(${value}), '${option}')`;
     }
 
     return [code, Blockly.JavaScript.ORDER_ATOMIC];
