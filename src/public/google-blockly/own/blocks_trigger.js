@@ -388,13 +388,6 @@ Blockly.Blocks['on_source'] = {
 
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('on_source_id'),             'id'],
-                [Blockly.Translate('on_source_name'),           'common.name'],
-                [Blockly.Translate('on_source_desc'),           'common.desc'],
-                [Blockly.Translate('on_source_channel_id'),     'channelId'],
-                [Blockly.Translate('on_source_channel_name'),   'channelName'],
-                [Blockly.Translate('on_source_device_id'),      'deviceId'],
-                [Blockly.Translate('on_source_device_name'),    'deviceName'],
                 [Blockly.Translate('on_source_state_val'),      'state.val'],
                 [Blockly.Translate('on_source_state_ts'),       'state.ts'],
                 [Blockly.Translate('on_source_state_q'),        'state.q'],
@@ -403,6 +396,13 @@ Blockly.Blocks['on_source'] = {
                 [Blockly.Translate('on_source_state_lc'),       'state.lc'],
                 [Blockly.Translate('on_source_state_c'),        'state.c'],
                 [Blockly.Translate('on_source_state_user'),     'state.user'],
+                [Blockly.Translate('on_source_id'),             'id'],
+                [Blockly.Translate('on_source_name'),           'common.name'],
+                [Blockly.Translate('on_source_desc'),           'common.desc'],
+                [Blockly.Translate('on_source_channel_id'),     'channelId'],
+                [Blockly.Translate('on_source_channel_name'),   'channelName'],
+                [Blockly.Translate('on_source_device_id'),      'deviceId'],
+                [Blockly.Translate('on_source_device_name'),    'deviceName'],
                 [Blockly.Translate('on_source_oldstate_val'),   'oldState.val'],
                 [Blockly.Translate('on_source_oldstate_ts'),    'oldState.ts'],
                 [Blockly.Translate('on_source_oldstate_q'),     'oldState.q'],
@@ -455,9 +455,9 @@ Blockly.JavaScript['on_source'] = function(block) {
     const parts = attr.split('.');
 
     if (parts.length > 1) {
-        attr = '(obj.' + parts[0] + ' ? obj.' + attr + ' : "")';
+        attr = `(obj.${parts[0]} ? obj.${attr} : '')`;
     } else {
-        attr = 'obj.' + attr;
+        attr = `obj.${attr}`;
     }
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
@@ -747,7 +747,7 @@ Blockly.Blocks['schedule_clear'] = {
 
 Blockly.JavaScript['schedule_clear'] = function(block) {
     const name = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
-    return `(function () { if (${name}) { clearSchedule(${name}); ${name} = null; }})();\n`;
+    return `(() => { if (${name}) { clearSchedule(${name}); ${name} = null; }})();\n`;
 };
 
 // --- CRON dialog --------------------------------------------------
