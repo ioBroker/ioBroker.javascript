@@ -20,8 +20,21 @@
       "Apollon77 <iobroker@fischer-ka.de>",
       "AlCalzone"
     ],
-    "version": "7.4.0",
+    "version": "7.5.0",
     "news": {
+      "7.5.0": {
+        "en": "Day of week as number always returns 1 (monday) to 7 (sunday)\nFixed layout of script type selection\nFixed sendto with multiple instances (for callback / timeout handling)",
+        "de": "Tag der Woche als Zahl immer zurück 1 (Tag) zu 7 (Sonntag)\nFixed Layout der Skripttypauswahl\nFixed sendto mit mehreren Instanzen (für Callback / Timeout-Handling)",
+        "ru": "День недели, как число всегда возвращается 1 (понедельник) до 7 (воскресенье)\nФиксированная планировка выбора типа скрипта\nФиксированная отправка с несколькими экземплярами (для обратного звонка / обработка таймов)",
+        "pt": "Dia da semana como número sempre retorna 1 (dia) para 7 (domingo)\nLayout fixo da seleção do tipo de script\nEnvio fixo com múltiplas instâncias (para retorno de chamada / manipulação de tempo limite)",
+        "nl": "De dag van de week dat nummer altijd terugkeert naar 1 tot 7\nVertaling:\nVerzonden met meerdere instanties voor belemmering/ time-out",
+        "fr": "Jour de la semaine comme nombre revient toujours 1 (jour) à 7 (jour)\nConfiguration fixe de la sélection de type script\nSendto fixe avec plusieurs instances (pour callback / timeout handling)",
+        "it": "Giorno di settimana come numero sempre restituisce 1 (giorno) a 7 (domenica)\nLayout fisso della selezione del tipo di script\nRisolto sendto con più istanze (per il callback / gestione timeout)",
+        "es": "Día de semana como número siempre regresa 1 (día) a 7 (domingo)\nDiseño fijo de selección de tipo script\nEnvío fijo con múltiples instancias (para el manejo de callback / timeout)",
+        "pl": "Dzień tygodnia jako numer jeden (dzisiejszy) wraca do 7 (dzisiejszy)\nRozwiązanie skryptów\nFixed sendto wraz z wieloma instancjami (zawołując się na żądanie lub obsługę czasową)",
+        "uk": "День тижня як номер завжди повертає 1 (понеділок) до 7 (неділя)\nВиправлено макет вибору типу скрипта\nВиправлена відправка з декількома екземплярами (для зворотного зв'язку / часу обробки)",
+        "zh-cn": "每周一日(日)至7天(日)\n固定的文字选择\n固定发送多件事(呼吁/时间处理)"
+      },
       "7.4.0": {
         "en": "Download script as xml file (export)\nImport script as file (upload)\nHide global folder if expert mode is disabled",
         "de": "Skript als xml Datei herunterladen (Export)\nImportieren von Skript als Datei (Upload)\nVerstecken globaler Ordner, wenn der Expertenmodus deaktiviert ist",
@@ -99,19 +112,6 @@
         "pl": "Dodana wersja do bocznego menu\nZamknięte bloki do gotHistory i obliczane czasy",
         "uk": "Додано версію в бічне меню\nДодано блокнотні блоки для getHistory і обчислених разів",
         "zh-cn": "增加一侧的男子版本\n增加准时和计算时间的障碍"
-      },
-      "7.1.1": {
-        "en": "corrected the script export",
-        "de": "korrigierte das skript export",
-        "ru": "исправлен экспорт сценария",
-        "pt": "corrigido a exportação de script",
-        "nl": "vertaling:",
-        "fr": "corrigé l'exportation de script",
-        "it": "corretto l'esportazione di script",
-        "es": "corregido el script export",
-        "pl": "zrekomendowano eksport skryptu",
-        "uk": "виправлено експорт сценаріїв",
-        "zh-cn": "修订的出口说明"
       }
     },
     "desc": {
