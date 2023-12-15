@@ -272,6 +272,46 @@
           "agree",
           "cancel"
         ]
+      },
+      {
+        "condition": {
+          "operand": "and",
+          "rules": [
+            "oldVersion<7.5.0",
+            "newVersion>=7.5.0"
+          ]
+        },
+        "title": {
+          "en": "Check your Blockly scripts",
+          "de": "Überprüfen Sie Ihre Blockly-Skripte",
+          "ru": "Проверьте свой Блочные скрипты",
+          "pt": "Verifique o seu scripts em bloco",
+          "nl": "Controleer het. Blockly scripts",
+          "fr": "Vérifiez scripts en bloc",
+          "it": "Controlla il tuo Scrittori bloccati",
+          "es": "Revisa tu scripts bloqueados",
+          "pl": "Czujesz! skrypt Blockly",
+          "uk": "Перевірити Блокнотні скрипти",
+          "zh-cn": "检查 法定说明"
+        },
+        "text": {
+          "en": "Some Blockly blocks have returned 0 instead of 7 for Sunday (when determining the day of the week). Please check all Blockly scripts that use the current day of the week as a numerical value. The week ranges from 1 (Monday) to 7 (Sunday), as described in the documentation.",
+          "de": "Einige Blockly-Bausteine haben 0 statt 7 für Sonntag (bei der Bestimmung des Tages der Woche) zurückgegeben. Bitte überprüfen Sie alle Blockly-Skripte, welche den aktuellen Tag der Woche als Zahlenwert verwenden. Die Woche beginnt bei 1 (Montag) bis 7 (Sonntag), wie in der Dokumentation beschrieben.",
+          "ru": "Некоторые блоки Blockly вернули 0 вместо 7 в воскресенье при определении дня недели. Пожалуйста, проверьте все Blockly скрипты, которые используют текущий день недели как числовое значение. Неделя колеблется от 1 (понедельник) до 7 (воскресенье), как описано в документации.",
+          "pt": "Alguns blocos Blockly retornaram 0 em vez de 7 para domingo ao determinar o dia da semana. Verifique todos os scripts Blockly que usam o dia atual da semana como um valor numérico. A semana varia de 1 (segunda-feira) a 7 (domingo), conforme descrito na documentação.",
+          "nl": "Sommige Blockly blokken hebben 0 teruggebracht in plaats van 7 voor zondag wanneer ze de dag van de week bepalen. Controleer alle Blockly scripts die de huidige dag van de week gebruiken als een numerische waarde. De wekelijkse bereik van 1 tot 7, zoals beschreven in de documentatie.",
+          "fr": "Certains blocs Blockly ont retourné 0 au lieu de 7 pour le dimanche lors de la détermination du jour de la semaine. Veuillez vérifier tous les scripts Blockly qui utilisent le jour actuel de la semaine comme valeur numérique. La semaine varie de 1 (le lundi) à 7 (le dimanche) comme décrit dans la documentation.",
+          "it": "Alcuni blocchi Blockly hanno restituito 0 invece di 7 per Domenica quando determina il giorno della settimana. Si prega di controllare tutti gli script Blockly che utilizzano il giorno corrente della settimana come valore numerico. La settimana varia da 1 (lunedì) a 7 (domenica) come descritto nella documentazione.",
+          "es": "Algunos bloques Blockly han devuelto 0 en lugar de 7 para el domingo al determinar el día de la semana. Por favor, compruebe todos los scripts Blockly que utilizan el día actual de la semana como un valor numérico. La semana va de 1 (lunes) a 7 (domingo), como se describe en la documentación.",
+          "pl": "Niektóre bloki Blockly wróciły zamiast 7 na niedzielę, gdy ustalono dzień tygodnia. Proszę sprawdzać wszystkie scenariusze Blockly, które wykorzystują bieżący dzień tygodnia jako wartość numeryczną. Tydzień to od 1 (poniedziałek) do 7 (dzisiejszy), co opisuje w dokumencie.",
+          "uk": "Деякі блоки блокнотів повернулися 0 замість 7 на неділю при визначенні дня тижня. Будь ласка, перевірте всі сценарії Blockly, які використовують поточний день тижня як чисельне значення. Щотижневий діапазон від 1 (понеділок) до 7 (неділя,) як описано в документації.",
+          "zh-cn": "在确定一周日时,一些锁定区已恢复了0而不是7天星期。 请检查使用本星期日作为微妙价值的所有固定文字。 如文件所述,该星期有1个(星期一)至7个(日)。."
+        },
+        "level": "warn",
+        "buttons": [
+          "agree",
+          "cancel"
+        ]
       }
     ]
   },
