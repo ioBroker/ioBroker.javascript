@@ -48,7 +48,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 -->
 ### 7.5.0 (2023-12-15)
 
-* (klein0r) Day of week as number always returns 1 (monday) to 7 (sunday)
+* (klein0r) Blockly: Day of week as number always returns 1 (monday) to 7 (sunday)
 * (klein0r) Fixed layout of script type selection
 * (klein0r) Fixed sendto with multiple instances (for callback / timeout handling)
 
