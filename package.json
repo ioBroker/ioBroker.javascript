@@ -4,10 +4,22 @@
   "description": "Rules Engine for ioBroker",
   "author": "bluefox <dogafox@gmail.com>",
   "contributors": [
-    "bluefox <dogafox@gmail.com>",
-    "hobbyquaker <hq@ccu.io>",
-    "ingo@fischer-ka.de",
-    "AlCalzone"
+    {
+      "name": "hobbyquaker",
+      "email": "hq@ccu.io"
+    },
+    {
+      "name": "Apollon77",
+      "email": "ingo@fischer-ka.de"
+    },
+    {
+      "name": "AlCalzone",
+      "email": "d.griesel@gmx.net"
+    },
+    {
+      "name": "Matthias Kleine",
+      "email": "info@haus-automatisierung.com"
+    }
   ],
   "homepage": "https://github.com/ioBroker/ioBroker.javascript",
   "license": "MIT",
