@@ -267,7 +267,7 @@ Blockly.JavaScript.convert_from_date = function (block) {
     } else if (option === 'sid') {
         code = `(() => { const v = getDateObject(${value}); return v.getHours() * 3600 + v.getMinutes() * 60 + v.getSeconds(); })()`;
     } else if (option === 'm') {
-        code = `getDateObject(${value}).getMinutes())`;
+        code = `getDateObject(${value}).getMinutes()`;
     } else if (option === 'mid') {
         code = `(() => { const v = getDateObject(${value}); return v.getHours() * 60 + v.getMinutes(); })()`;
     } else if (option === 'h') {
