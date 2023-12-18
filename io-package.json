@@ -21,8 +21,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "7.5.0",
+    "version": "7.5.1",
     "news": {
+      "7.5.1": {
+        "en": "Added option for calendar week to Blockly\nFixed inpaired round brackets of getMinutes (Blockly)",
+        "de": "Option für Kalenderwoche zu Blockly hinzugefügt\nBefestigte runde Klammern von getMinutes (Blockly)",
+        "ru": "Добавлена опция для календарной недели на Blockly\nФиксированные инпарированные круглые скобки getMinutes (Blockly)",
+        "pt": "Adicionado opção para semana de calendário para Blockly\nSuportes redondos emparelhados fixos de getMinutes (Blockly)",
+        "nl": "Optie voor kalenderweek\nGereserveerd ronde tackets van getMinutes (Blockly)",
+        "fr": "Option ajoutée pour la semaine civile à Blockly\nFixed inpaired round brackets of getMinutes (Blockly)",
+        "it": "Aggiunta opzione per settimana di calendario a Blockly\nStaffe fisse rotonde di getMinutes (Blockly)",
+        "es": "Opción adicional para la semana calendario a Bloqueo\nSoportes fijos de redondeo de getMinutes (Blockly)",
+        "pl": "Poniższa opcja w tygodniu kalendarzowym\nFixed inpaired roundbrackets of getMinutes (Blockly) (ang.)",
+        "uk": "Додано варіант для календарного тижня до Blockly\nФіксовані круглі кронштейни getMinutes (Блокально)",
+        "zh-cn": "增加会议日历\n固定在粉碎的圆桌(锁定)"
+      },
       "7.5.0": {
         "en": "Blockly: Day of week as number always returns 1 (monday) to 7 (sunday)\nFixed layout of script type selection\nFixed sendto with multiple instances (for callback / timeout handling)",
         "de": "Blockly: Tag der Woche als Zahl immer zurück 1 (Tag) zu 7 (Sonntag)\nFixed Layout der Skripttypauswahl\nFixed sendto mit mehreren Instanzen (für Callback / Timeout-Handling)",
@@ -100,19 +113,6 @@
         "pl": "Added playground for ChatGPT (ang.)",
         "uk": "Додано ігровий майданчик для чатGPT (API ключ потрібно)",
         "zh-cn": "增加查特格预防队的场地(需要的关键)"
-      },
-      "7.1.4": {
-        "en": "Added version to the side menu\nAdded blockly blocks for `getHistory` and calculated times",
-        "de": "Version zum Seitenmenü hinzugefügt\nBlockaden für getHistory und berechnete Zeiten hinzugefügt",
-        "ru": "Добавлена версия к боковому меню\nДобавлены блокноты для getHistory и рассчитанные времена",
-        "pt": "Versão adicionada ao menu lateral\nAdicionado bloqueio blocos para getHistory e tempos calculados",
-        "nl": "Vertaling:\nVertaling:",
-        "fr": "Ajout de la version au menu\nAjout de blocs bloqués pour getHistory et les temps calculés",
-        "it": "Versione aggiunta al menu laterale\nAggiunto blocchi per ottenereHistory e tempi calcolati",
-        "es": "Versión agregada al menú lateral\nBloques bloqueados para conseguirHistoria y tiempos calculados",
-        "pl": "Dodana wersja do bocznego menu\nZamknięte bloki do gotHistory i obliczane czasy",
-        "uk": "Додано версію в бічне меню\nДодано блокнотні блоки для getHistory і обчислених разів",
-        "zh-cn": "增加一侧的男子版本\n增加准时和计算时间的障碍"
       }
     },
     "desc": {

@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 7.1.6 (2023-10-24)
+* (bluefox) Fixed pushover rules block
+
 ## 7.1.5 (2023-10-09)
 * (bluefox) Added play-ground for ChatGPT (API key required)
 
