@@ -48,6 +48,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 -->
 ### **WORK IN PROGRESS**
 
+* (klein0r) Added option for calendar week to Blockly
 * (klein0r) Fixed inpaired round brackets of getMinutes (Blockly)
 
 ### 7.5.0 (2023-12-15)

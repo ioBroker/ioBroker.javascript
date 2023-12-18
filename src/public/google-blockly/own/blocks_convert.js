@@ -172,6 +172,7 @@ Blockly.Blocks.convert_from_date = {
                 [Blockly.Translate('time_get_wdt')           , 'wdt'],
                 [Blockly.Translate('time_get_wdts')          , 'wdts'],
                 [Blockly.Translate('time_get_wd')            , 'wd'],
+                [Blockly.Translate('time_get_cw')            , 'cw'],
                 [Blockly.Translate('time_get_custom')        , 'custom'],
                 [Blockly.Translate('time_get_yyyy.mm.dd')    , Blockly.Words['time_get_yyyy.mm.dd']  .format],
                 [Blockly.Translate('time_get_yyyy/mm/dd')    , Blockly.Words['time_get_yyyy/mm/dd']  .format],
@@ -290,6 +291,8 @@ Blockly.JavaScript.convert_from_date = function (block) {
         code = `formatDate(getDateObject(${value}), 'W', '${lang}')`;
     } else if (option === 'wd') {
         code = `(() => { const d = getDateObject(${value}).getDay(); return d === 0 ? 7 : d; })()`;
+    } else if (option === 'cw') {
+        code = `((date) => { const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())); const dayNum = d.getUTCDay() || 7; d.setUTCDate(d.getUTCDate() + 4 - dayNum); const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1)); return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7); })(getDateObject(${value}))`;
     } else if (option === 'custom') {
         code = `formatDate(getDateObject(${value}), '${format}')`;
     } else {
