@@ -1279,12 +1279,16 @@ declare global {
 	/**
 	 * Sends an email using the email adapter.
 	 * See the adapter documentation for a description of the msg parameter.
+	 * 
+	 * @deprecated Use @see sendTo
 	 */
 	function email(msg: any): void;
 
 	/**
 	 * Sends a pushover message using the pushover adapter.
 	 * See the adapter documentation for a description of the msg parameter.
+	 * 
+	 * @deprecated Use @see sendTo
 	 */
 	function pushover(msg: any): void;
 
