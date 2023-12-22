@@ -602,8 +602,8 @@ Allows to create a schedule based on a state value. If the state value changes, 
 
 Supported formats:
 
-- `hh:mm:ss` (e.g. `12:42:15`)
-- `hh:mm` (e.g. `13:37`)
+- `[h]h:[m]m:ss` (e.g. `12:42:15`, `15:3:12`, `3:10:25`)
+- `[h]h:[m]m` (e.g. `13:37`, `9:40`)
 
 ```js
 scheduleById('0_userdata.0.configurableTimeFormat', () => {
