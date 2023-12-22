@@ -9,6 +9,7 @@
     - [log - Gives out the message into log](#log---gives-out-the-message-into-log)
     - [exec - execute some OS command, like "cp file1 file2"](#exec---execute-some-os-command-like-cp-file1-file2)
     - [on - Subscribe on changes or updates of some state](#on---subscribe-on-changes-or-updates-of-some-state)
+    - [once](#once)
     - [subscribe - same as on](#subscribe---same-as-on)
     - [unsubscribe](#unsubscribe)
     - [getSubscriptions](#getsubscriptions)
@@ -220,10 +221,10 @@ let timer;
 createState('counter', 0);
 
 // On change
-on('adapter.0.device.channel.sensor', function (data) {
+on('adapter.0.device.channel.sensor', (data) => {
     // But not ofter than 30 seconds
     if (!timer) {
-        timer = setTimeout(function () {
+        timer = setTimeout(() => {
             timer = null;
         }, 30000);
 
@@ -390,6 +391,13 @@ Function `on` returns handler back. This handler can be used by unsubscribe.
 *Notice:* If you want to also get state deletions/expires as trigger, you need to use change with `ne` or `any` AND q with `*` as filter!
 
 *Notice:* from 4.3.2 it is possible to write a type of trigger as second parameter: `on('my.id.0', 'any', obj => console.log(obj.state.val));`
+
+### once
+Registers a one-time subscription which automatically unsubscribes after the first invocation. Same as [on](#on---subscribe-on-changes-or-updates-of-some-state), but just executed once.
+
+```js
+once(pattern, callback);
+```
 
 ### subscribe - same as **[on](#on---subscribe-on-changes-or-updates-of-some-state)**
 
