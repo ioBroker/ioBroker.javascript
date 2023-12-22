@@ -16,6 +16,7 @@
     - [schedule](#schedule)
         - [Time schedule](#time-schedule)
         - [Astro-function](#astro-function)
+    - [scheduleById](#scheduleById)
     - [getSchedules](#getschedules)
     - [clearSchedule](#clearschedule)
     - [getAttr](#getattr)
@@ -589,6 +590,43 @@ on({ time: { hour: 12, minute: 30 }}, () => {
 on({ astro: 'sunset', shift: 10 }, () => {
     log((new Date()).toString() + " - 10 minutes after sunset!");
 });
+```
+
+## scheduleById
+```js
+scheduleById(id, callback);
+```
+
+Allows to create a schedule based on a state value. If the state value changes, the old schedule will be deleted and a new schedule is created automatically.
+
+Supported formats:
+
+- `hh:mm:ss` (e.g. `12:42:15`)
+- `hh:mm` (e.g. `13:37`)
+
+```js
+scheduleById('0_userdata.0.configurableTimeFormat', () => {
+    log('Executed!');
+});
+```
+
+Example: Create state and register schedule on changes:
+
+```js
+createState(
+    '0_userdata.0.myTime',
+    '00:00:00', // default value
+    {
+        type: 'string',
+        read: true,
+        write: true
+    },
+    () => {
+        scheduleById('0_userdata.0.myTime', () => {
+            log('Executed!');
+        });
+    }
+);
 ```
 
 ### getSchedules

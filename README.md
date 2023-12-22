@@ -46,6 +46,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Added schedules by state value (scheduleById)
+
 ### 7.5.1 (2023-12-18)
 
 * (klein0r) Added option for calendar week to Blockly
