@@ -506,6 +506,54 @@ Blockly.JavaScript['schedule'] = function(block) {
         '});\n';
 };
 
+// --- SCHEDULE BY ID -----------------------------------------------------
+Blockly.Trigger.blocks['schedule_by_id'] =
+    '<block type="schedule_by_id">'
+    + '     <value name="OID">'
+    + '     </value>'
+    + '     <value name="ACK_CONDITION">'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['schedule_by_id'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('schedule_by_id'));
+
+        this.appendDummyInput('OID')
+            .appendField(new Blockly.FieldOID('Object ID'), 'OID');
+
+        this.appendDummyInput('ACK_CONDITION')
+            .appendField(Blockly.Translate('on_ack'))
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('on_ack_any'), ''],
+                [Blockly.Translate('on_ack_true'), 'true'],
+                [Blockly.Translate('on_ack_false'), 'false']
+            ]), 'ACK_CONDITION');
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setInputsInline(false);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setTooltip(Blockly.Translate('schedule_by_id_tooltip'));
+        this.setHelpUrl(getHelp('schedule_by_id_help'));
+    }
+};
+Blockly.JavaScript['schedule_by_id'] = function(block) {
+    const value_objectid = block.getFieldValue('OID');
+    const ack_condition = block.getFieldValue('ACK_CONDITION');
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    return `scheduleById('${value_objectid}'${ack_condition ? `, ${ack_condition}` : ''}, async () => {\n` +
+        statement +
+        '});\n';
+};
+
 // --- ASTRO -----------------------------------------------------------
 Blockly.Trigger.blocks['astro'] =
     '<block type="astro">'
