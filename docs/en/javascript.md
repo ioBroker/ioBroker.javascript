@@ -595,6 +595,7 @@ on({ astro: 'sunset', shift: 10 }, () => {
 ## scheduleById
 ```js
 scheduleById(id, callback);
+scheduleById(id, ack, callback);
 ```
 
 Allows to create a schedule based on a state value. If the state value changes, the old schedule will be deleted and a new schedule is created automatically.

@@ -1380,6 +1380,14 @@ declare global {
 	function schedule(pattern: string | iobJS.SchedulePattern, callback: EmptyCallback): any;
 	function schedule(date: Date, callback: EmptyCallback): any;
 	function schedule(astro: iobJS.AstroSchedule, callback: EmptyCallback): any;
+
+	/**
+	 * Creates a schedule based on the state value (e.g. 12:53:09)
+	 * Schedule will be updated if the state value changes
+	 */
+	function scheduleById(id: string, callback: EmptyCallback): any;
+	function scheduleById(id: string, ack: boolean, callback: EmptyCallback): any;
+
 	/**
 	 * Clears a schedule. Returns true if it was successful.
 	 */
