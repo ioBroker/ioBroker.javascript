@@ -21,8 +21,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "7.5.1",
+    "version": "7.6.0",
     "news": {
+      "7.6.0": {
+        "en": "Added schedules by state value (scheduleById)",
+        "de": "Termine nach Zustandswert (scheduleById) hinzugefügt",
+        "ru": "Добавлены графики по государственным значениям (scheduleById)",
+        "pt": "Adicionados horários por valor estatal (scheduleById)",
+        "nl": "Vermeld schema's door staatswaarde (scheduleById)",
+        "fr": "Ajout des horaires par valeur d'état (scheduleById)",
+        "it": "Programmi aggiunti per valore di stato (scheduleById)",
+        "es": "Añadidos por valor estatal (scheduleById)",
+        "pl": "Dodany harmonogram (planById)",
+        "uk": "Додано графіки державного значення (scheduleById)",
+        "zh-cn": "按国家价值开列的增加时间表(附表ById)"
+      },
       "7.5.1": {
         "en": "Added option for calendar week to Blockly\nFixed inpaired round brackets of getMinutes (Blockly)",
         "de": "Option für Kalenderwoche zu Blockly hinzugefügt\nBefestigte runde Klammern von getMinutes (Blockly)",
@@ -100,19 +113,6 @@
         "pl": "Fixed pushover rules block",
         "uk": "Фіксований блок правил штовхача",
         "zh-cn": "固定推销规则"
-      },
-      "7.1.5": {
-        "en": "Added play-ground for ChatGPT (API key required)",
-        "de": "Hinzugefügt Spielplatz für ChatGPT (API-Taste erforderlich)",
-        "ru": "Добавлена игровая площадка для ChatGPT (требуется ключ API)",
-        "pt": "Adicionado play-ground para ChatGPT (chave API necessária)",
-        "nl": "Toegevoegd speelplaats voor ChatGPT (API sleutel vereist)",
-        "fr": "Ajout d'une aire de jeux pour ChatGPT (clé API requise)",
-        "it": "Aggiunto parco giochi per ChatGPT (API chiave necessaria)",
-        "es": "Añadido el lugar de juego para ChatGPT (API clave requerida)",
-        "pl": "Added playground for ChatGPT (ang.)",
-        "uk": "Додано ігровий майданчик для чатGPT (API ключ потрібно)",
-        "zh-cn": "增加查特格预防队的场地(需要的关键)"
       }
     },
     "desc": {

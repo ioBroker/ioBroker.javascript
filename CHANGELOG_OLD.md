@@ -1,4 +1,15 @@
 The newest change log is in README.md
+## 7.2.0 (2023-12-04)
+NodeJS 16.x is required
+
+* (klein0r) Added function to format time difference `formatTimeDiff`
+* (klein0r) Added blockly blocks for `formatTimeDiff`
+* (klein0r) messageToAsync was not working without options
+* (klein0r) Added timeout and custom options for sendToAsync
+* (klein0r) Fixed valid switch statement expressions
+* (klein0r) Added text replacement, cound and reverse blocks
+* (klein0r) Added list reverse block
+
 ## 7.1.6 (2023-10-24)
 * (bluefox) Fixed pushover rules block
 

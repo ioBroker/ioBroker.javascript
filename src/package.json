@@ -1,6 +1,6 @@
 {
     "name": "js",
-    "version": "7.5.1",
+    "version": "7.6.0",
     "private": true,
     "dependencies": {
         "@babel/plugin-proposal-private-property-in-object": "^7.21.11",

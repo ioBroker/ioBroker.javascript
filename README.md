@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.6.0 (2023-12-26)
 
 * (klein0r) Added schedules by state value (scheduleById)
 
@@ -73,17 +73,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 * (klein0r) Always set variables like isDaylightSaving
 * (klein0r) Added astro times as states
 * (klein0r) Fixed copied time blocks
-
-### 7.2.0 (2023-12-04)
-NodeJS 16.x is required
-
-* (klein0r) Added function to format time difference `formatTimeDiff`
-* (klein0r) Added blockly blocks for `formatTimeDiff`
-* (klein0r) messageToAsync was not working without options
-* (klein0r) Added timeout and custom options for sendToAsync
-* (klein0r) Fixed valid switch statement expressions
-* (klein0r) Added text replacement, cound and reverse blocks
-* (klein0r) Added list reverse block
 
 ## License
 The MIT License (MIT)
