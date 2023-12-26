@@ -1377,7 +1377,7 @@ function timeSchedule(adapter, context) {
         }
     }
     if (context.timeSettings.leadingZeros) {
-        hours = parseInt(hours.toString().padStart(2, '0'));
+        hours = hours.toString().padStart(2, '0');
     }
 
     adapter.setState('variables.dayTime', {val: `${hours}:${minutes.toString().padStart(2, '0')}`, ack: true});
