@@ -49,7 +49,7 @@ const mods = {
 /**
  * List of forbidden Locations for a mirror directory
  * relative to the default data directory
- * ATTENTION: Same list is also located in index_m.html!!
+ * ATTENTION: the same list is also located in index_m.html!!
  * @type {*[]}
  */
 const forbiddenMirrorLocations = [
@@ -108,7 +108,7 @@ const isCI = !!process.env.CI;
 let tsAmbient;
 
 // TypeScript's scripts are only recompiled if their source hash changes. If an adapter update fixes compilation bugs,
-// a user won't notice until he changes and re-saves the script. In order to avoid that, we also include the
+// a user won't notice until he changes and re-saves the script. To avoid that, we also include the
 // adapter version and TypeScript version in the hash
 const tsSourceHashBase = `versions:adapter=${packageJson.version},typescript=${packageJson.dependencies.typescript}`;
 
@@ -122,7 +122,7 @@ let logSubscribed;
  * @param {string} declarations
  */
 function provideDeclarationsForGlobalScript(scriptID, declarations) {
-    // Remember which declarations this global script had access to
+    // Remember which declarations this global script had access to,
     // we need this so the editor doesn't show a duplicate identifier error
     if (globalDeclarations != null && globalDeclarations !== '') {
         knownGlobalDeclarationsByScript[scriptID] = globalDeclarations;
@@ -1361,7 +1361,7 @@ function getAstroEvent(now, astroEvent, start, end, offsetMinutes, isDayEnd, lat
 
     // if event in the past
     if (now > ts && useNextDay) {
-        // take next day
+        // take the next day
         ts.setDate(ts.getDate() + 1);
     }
     return ts;
