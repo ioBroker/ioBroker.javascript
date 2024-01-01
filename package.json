@@ -45,7 +45,7 @@
     "@iobroker/adapter-core": "^3.0.4",
     "@types/node": "^20.10.4",
     "@types/request": "^2.48.12",
-    "axios": "^1.6.2",
+    "axios": "^1.6.3",
     "coffeescript": "^2.7.0",
     "jsonata": "^2.0.3",
     "jszip": "^3.10.1",
