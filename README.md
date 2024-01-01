@@ -77,6 +77,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2014-2023 bluefox <dogafox@gmail.com>,
+Copyright (c) 2014-2024 bluefox <dogafox@gmail.com>,
 
 Copyright (c) 2014      hobbyquaker
