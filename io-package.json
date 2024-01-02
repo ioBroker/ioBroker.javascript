@@ -37,19 +37,6 @@
         "uk": "Додано відсутній консолі.info()\nДодані нотки типу відсутні\nСтворення астро-станцій тепер необов'язково\nФіксований облік об'єктів/сетів",
         "zh-cn": "增加缺失的遗漏(info)()\n增加失踪的原状\n设立州现在是任择性的。\n物品/装置的固定标志"
       },
-      "7.6.1": {
-        "en": "Added missing console.info()\nAdded missing type hints\nCreation of astro states is now optional\nFixed logging of objects/sets",
-        "de": "Hinzugefügt fehlende Konsole.info)(\nHinzufügen fehlender Typenhinweise\nDie Schaffung von Astrostaaten ist jetzt optional\nFeste Protokollierung von Objekten/Sets",
-        "ru": "Добавлен отсутствует консоли.info)(\nДобавлены недостающие подсказки типа\nСоздание астро-государств теперь необязательно\nФиксированный вход объектов/сетов",
-        "pt": "Adicionado falta console.info)(\nAdicionado falta de tipo dicas\nCriação de estados astro agora é opcional\nRegistro fixo de objetos / conjuntos",
-        "nl": "Vermiste console toegevoegd\nVertaling:\nCreatie of astrostaat is nu optioneel\nVertaling:",
-        "fr": "Ajout de console.info)(\nAjout des indices de type manquants\nLa création d'états astro est maintenant facultative\nLogage fixe des objets / des ensembles",
-        "it": "Aggiunto mancante console.info)(\nAggiunto suggerimenti di tipo mancante\nLa creazione di stati astro è ora facoltativa\nRegistrazione fissa di oggetti/set",
-        "es": "Añadido desaparecida consola.info)(\nAñadidas pistas de tipo desaparecido\nLa creación de estados astronómicos es ahora opcional\nRegistro fijo de objetos/sets",
-        "pl": "Addd Identification (ang.)\nZapomniany brak typów\nObecnie opcjonalizacja stanów astronaukowych\nFixed log of objects/sets (ang.)",
-        "uk": "Додано відсутній консолі.info()\nДодані нотки типу відсутні\nСтворення астро-станцій тепер необов'язково\nФіксований облік об'єктів/сетів",
-        "zh-cn": "增加缺失的遗漏(info)()\n增加失踪的原状\n设立州现在是任择性的。\n物品/装置的固定标志"
-      },
       "7.6.0": {
         "en": "Added schedules by state value (scheduleById)",
         "de": "Termine nach Zustandswert (scheduleById) hinzugefügt",
