@@ -1,4 +1,11 @@
 The newest change log is in README.md
+## 7.3.0 (2023-12-07)
+
+* (klein0r) Updated blockly logo
+* (klein0r) Always set variables like isDaylightSaving
+* (klein0r) Added astro times as states
+* (klein0r) Fixed copied time blocks
+
 ## 7.2.0 (2023-12-04)
 NodeJS 16.x is required
 

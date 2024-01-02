@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.6.1 (2024-01-02)
 
 * (klein0r) Added missing console.info()
 * (klein0r) Added missing type hints
@@ -73,13 +73,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 * (klein0r) Download script as xml file (export)
 * (klein0r) Import script as file (upload)
 * (klein0r) Hide global folder if expert mode is disabled
-
-### 7.3.0 (2023-12-07)
-
-* (klein0r) Updated blockly logo
-* (klein0r) Always set variables like isDaylightSaving
-* (klein0r) Added astro times as states
-* (klein0r) Fixed copied time blocks
 
 ## License
 The MIT License (MIT)
