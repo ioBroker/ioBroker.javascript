@@ -1265,21 +1265,21 @@ declare global {
 	 * @param message The message to print
 	 * @param severity (optional) severity of the message. default = "info"
 	 */
-	function log(message: string, severity?: iobJS.LogLevel): void;
+	function log(message: any, severity?: iobJS.LogLevel): void;
 
 	// console functions
 	// @ts-ignore We need this variable, although it conflicts with the node typings
 	namespace console {
 		/** log a message with info level */
-		function log(message: string): void;
+		function log(message: any): void;
 		/** log a message with debug level */
-		function debug(message: string): void;
+		function debug(message: any): void;
 		/** log a message with info level (default output level for all adapters) */
-		function info(message: string): void;
+		function info(message: any): void;
 		/** log a message with warning severity */
-		function warn(message: string): void;
+		function warn(message: any): void;
 		/** log a message with error severity */
-		function error(message: string): void;
+		function error(message: any): void;
 	}
 
 	/**
