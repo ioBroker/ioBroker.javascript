@@ -1261,6 +1261,8 @@ declare global {
 	// console functions
 	// @ts-ignore We need this variable, although it conflicts with the node typings
 	namespace console {
+		/** log a message with info level */
+		function log(message: string): void;
 		/** log a message with debug level */
 		function debug(message: string): void;
 		/** log a message with info level (default output level for all adapters) */
