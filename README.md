@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.6.2 (2024-01-02)
 
 * (klein0r) Added missing console.info()
 * (klein0r) Added missing type hints

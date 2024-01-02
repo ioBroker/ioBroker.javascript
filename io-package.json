@@ -22,8 +22,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "7.6.1",
+    "version": "7.6.2",
     "news": {
+      "7.6.2": {
+        "en": "Added missing console.info()\nAdded missing type hints\nCreation of astro states is now optional\nFixed logging of objects/sets",
+        "de": "Hinzugefügt fehlende Konsole.info)(\nHinzufügen fehlender Typenhinweise\nDie Schaffung von Astrostaaten ist jetzt optional\nFeste Protokollierung von Objekten/Sets",
+        "ru": "Добавлен отсутствует консоли.info)(\nДобавлены недостающие подсказки типа\nСоздание астро-государств теперь необязательно\nФиксированный вход объектов/сетов",
+        "pt": "Adicionado falta console.info)(\nAdicionado falta de tipo dicas\nCriação de estados astro agora é opcional\nRegistro fixo de objetos / conjuntos",
+        "nl": "Vermiste console toegevoegd\nVertaling:\nCreatie of astrostaat is nu optioneel\nVertaling:",
+        "fr": "Ajout de console.info)(\nAjout des indices de type manquants\nLa création d'états astro est maintenant facultative\nLogage fixe des objets / des ensembles",
+        "it": "Aggiunto mancante console.info)(\nAggiunto suggerimenti di tipo mancante\nLa creazione di stati astro è ora facoltativa\nRegistrazione fissa di oggetti/set",
+        "es": "Añadido desaparecida consola.info)(\nAñadidas pistas de tipo desaparecido\nLa creación de estados astronómicos es ahora opcional\nRegistro fijo de objetos/sets",
+        "pl": "Addd Identification (ang.)\nZapomniany brak typów\nObecnie opcjonalizacja stanów astronaukowych\nFixed log of objects/sets (ang.)",
+        "uk": "Додано відсутній консолі.info()\nДодані нотки типу відсутні\nСтворення астро-станцій тепер необов'язково\nФіксований облік об'єктів/сетів",
+        "zh-cn": "增加缺失的遗漏(info)()\n增加失踪的原状\n设立州现在是任择性的。\n物品/装置的固定标志"
+      },
       "7.6.1": {
         "en": "Added missing console.info()\nAdded missing type hints\nCreation of astro states is now optional\nFixed logging of objects/sets",
         "de": "Hinzugefügt fehlende Konsole.info)(\nHinzufügen fehlender Typenhinweise\nDie Schaffung von Astrostaaten ist jetzt optional\nFeste Protokollierung von Objekten/Sets",
@@ -101,19 +114,6 @@
         "pl": "Logo blokady\nZawsze ułożone zmienne, jak np. DaylightSaving\nAdded astrotime jako stan\nFixed copied time block",
         "uk": "Оновлений логотип\nЗавжди встановити змінні, такі як DaylightSaving\nДодані астро разів як стани\nФіксовані часові блоки",
         "zh-cn": "A. 最新断体逻辑\nA. 铺设的变量\n增加国时\n固定配件的时间限制"
-      },
-      "7.2.0": {
-        "en": "NodeJS 16.x is required\n\n* Added function to format time difference `formatTimeDiff`\n* Added blockly blocks for `formatTimeDiff`\n* messageToAsync was not working without options\n* Added timeout and custom options for sendToAsync\n* Fixed valid switch statement expressions\n* Added text replacement, cound and reverse blocks\n* Added list reverse block",
-        "de": "NodeJS 16.x ist erforderlich\n\n* Hinzugefügt Funktion zu Format Zeitdifferenz FormatTimeDiff\n* Hinzugefügt Blockblöcke für FormatTimeDiff\n* Nachricht ToAsync funktionierte nicht ohne Optionen\n* Hinzugefügt Timeout und benutzerdefinierte Optionen für sendToAsync\n* Feste gültige Schaltausdrücke\n* Hinzugefügt Textersatz, Kund und umgekehrt Blöcke\n* Hinzugefügt Liste Reverse Block",
-        "ru": "NodeJS 16.x требуется\n\n* Добавлена функция в формат разницы во времени форматTimeDiff\n* Добавлены блокнолы для formatTimeDiff\n* сообщение ToAsync не работает без опций\n* Добавлены временные и пользовательские опции для sendToAsync\n* Исправлены действительные выражения выписок переключателей\n* Добавлена замена текста, кодовые и обратные блоки\n* Добавлен список обратного блока",
-        "pt": "NodeJS 16.x é necessário\n\n* função adicionada para formatar o formato de diferença de tempoTimeDiff\n* Adicionado blocos bloqueados para o formatoTimeDiff\n* mensagem ToAsync não estava funcionando sem opções\n* Adicionado timeout e opções personalizadas para sendToAsync\n* Expressões de declaração de interruptor válido fixo\n* Adicionada substituição de texto, cound e blocos reversos\n* Adicionado lista bloco reverso",
-        "nl": "NodeJS 16.x is vereist\n\nQuality over Quantity (QoQ) Releases Vertaling:\nVertaling:\n♪ boodschap ♪ ToAsync werkte niet zonder opties\nVertaling:\nVertaling:\nQuality over Quantity (QoQ) Releases Vertaling:\nQuality over Quantity (QoQ) Releases Vertaling:",
-        "fr": "NodeJS 16.x est nécessaire\n\n* Ajout de la fonction au format time difference formatTimeDiff\n* Ajout de blocs blocs pour formatTimeDiff\n* Message ToAsync ne fonctionnait pas sans options\n* Ajout du timeout et des options personnalisées pour sendToAsync\n* Expressions d'affichage valides fixes\n* Ajout de blocs de remplacement de texte, de coude et d'inversion\n* Ajout d ' un bloc inverse",
-        "it": "NodeJS 16.x è richiesto\n\n* Funzione aggiuntiva per formattare la differenza di tempo FormatoTimeDiff\n* Aggiunto blocchi di blocco per formatTimeDiff\n* messaggio ToAsync non funzionava senza opzioni\n* Aggiunto timeout e opzioni personalizzate per sendToAsync\n* Espressioni valide di switch fissi\n* Aggiunto sostituzione del testo, cound e blocchi inversa\n* Aggiunto elenco blocco inverso",
-        "es": "NodeJS 16.x es necesario\n\n* Función agregada al formato de diferencia de tiempo\n* Añadido bloques bloqueados para formatoTimeDiff\n* Mensaje ToAsync no estaba trabajando sin opciones\n* Añadido tiempo de salida y opciones personalizadas para sendToAsync\n* Expresiones de conmutación válidas fijadas\n* Sustitución de texto, sonido y bloques inversos\n* Lista agregada bloque reverso",
-        "pl": "NodeJS 16 (ang.)\n\n* Funkcja dodania do formatu formatowania formatu czasu różnicowego\n* Added blockly for format TimeDiff (ang.)\n* wiadomości ToAsyn nie pracował bez opcji\n* Added timeout and customowe opcje wysyłania ToAsync\n* Fixed valid switch statement\n* Zastępowanie tekstu, kound i odwrotne bloki\n* Added list",
-        "uk": "NodeJS 16.x обов'язковий\n\n* Додана функція для форматування форматування часу\n* Додано блокноти для форматTimeDiff\n* повідомлення ToAsync не працює без опцій\n* Додано розклад і налаштування для відправкиToAsync\n* Виправлено правильні вирази виписки вимикача\n* Додано зміни тексту, кодування та зворотні блоки\n* Додано зворотний блок списку",
-        "zh-cn": "不需要16.JS16x。\n\n* 增加格式上的时间差异\n* 增加格式硬墙\n* 文 件 业绩评估没有选择办法\n* 增加分发阿森松的时间和习俗选择\n* 固定有效转换报表\n* 增加案文,取代、补充和扭转了各障碍\n* 增加名单,以扭转违禁状态"
       }
     },
     "desc": {
