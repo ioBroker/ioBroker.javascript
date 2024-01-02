@@ -1460,37 +1460,42 @@ function dayTimeSchedules(adapter, context) {
 }
 
 async function sunTimeSchedules(adapter, context) {
-    const todayDate = new Date();
-    todayDate.setHours(0);
-    todayDate.setMinutes(0);
-    todayDate.setSeconds(1);
-    todayDate.setDate(todayDate.getDate() + 1);
+    if (adapter.config.createAstroStates) {
+        const todayDate = new Date();
+        todayDate.setHours(0);
+        todayDate.setMinutes(0);
+        todayDate.setSeconds(1);
+        todayDate.setDate(todayDate.getDate() + 1);
 
-    const times = mods.suncalc.getTimes(new Date(), adapter.config.latitude, adapter.config.longitude);
+        const times = mods.suncalc.getTimes(new Date(), adapter.config.latitude, adapter.config.longitude);
 
-    for (const t in times) {
-        const h = times[t].getHours();
-        const m = times[t].getMinutes();
+        for (const t in times) {
+            const h = times[t].getHours();
+            const m = times[t].getMinutes();
 
-        const timeFormatted = `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}`;
-        const objId = `variables.astro.${t}`;
+            const timeFormatted = `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}`;
+            const objId = `variables.astro.${t}`;
 
-        await adapter.setObjectNotExistsAsync(objId, {
-            type: 'state',
-            common: {
-                name: `Astro ${t}`,
-                type: 'string',
-                role: 'value',
-                read: true,
-                write: false,
-            },
-            native: {},
-        });
-        await adapter.setStateAsync(objId, { val: timeFormatted, ack: true });
+            await adapter.setObjectNotExistsAsync(objId, {
+                type: 'state',
+                common: {
+                    name: `Astro ${t}`,
+                    type: 'string',
+                    role: 'value',
+                    read: true,
+                    write: false,
+                },
+                native: {},
+            });
+            await adapter.setStateAsync(objId, { val: timeFormatted, ack: true });
+        }
+
+        adapter.log.debug(`[sunTimeSchedules] Next: ${todayDate.toISOString()}`);
+        sunScheduleTimer = setTimeout(sunTimeSchedules, todayDate.getTime() - Date.now(), adapter, context);
+    } else {
+        // remove astro states if disabled
+        adapter.delObject('variables.astro', { recursive: true });
     }
-
-    adapter.log.debug(`[sunTimeSchedules] Next: ${todayDate.toISOString()}`);
-    sunScheduleTimer = setTimeout(sunTimeSchedules, todayDate.getTime() - Date.now(), adapter, context);
 }
 
 function stopTimeSchedules() {

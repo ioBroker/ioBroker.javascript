@@ -337,6 +337,7 @@
     "sunsetOffset": 0,
     "sunsetLimitStart": "18:00",
     "sunsetLimitEnd": "23:00",
+    "createAstroStates": true,
     "maxSetStatePerMinute": 1000,
     "gptKey": ""
   },
