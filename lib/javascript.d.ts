@@ -892,6 +892,7 @@ declare global {
 		type SetStatePromise = Promise<NonNullCallbackReturnTypeOf<SetStateCallback>>;
 
 		type StateChangeHandler<TOld extends StateValue = any, TNew extends TOld = any> = (obj: ChangedStateObject<TOld, TNew>) => void | Promise<void>;
+		type ObjectChangeHandler = (id: string, obj: iobJS.Object) => void | Promise<void>;
 
 		type FileChangeHandler<WithFile extends boolean> =
 			// Variant 1: WithFile is false, data/mimeType is definitely not there
@@ -1191,6 +1192,13 @@ declare global {
 			rule: ScheduleRule | Date | string | number;
 		}
 
+		interface ScheduleStatus {
+			type: string;
+			pattern?: string;
+			scriptName: string;
+			id: string;
+		}
+
 		interface LogMessage {
 			severity: LogLevel; // severity
 			ts: number; 		// timestamp as Date.now()
@@ -1366,9 +1374,14 @@ declare global {
 	function subscribe(id1: string, id2: string, value2: any): any;
 
 	/**
-	 * Returns the list of all currently active subscriptions
+	 * Returns the list of all active subscriptions
 	 */
 	function getSubscriptions(): { [id: string]: iobJS.Subscription[] };
+
+	/**
+	 * Returns the list of all active file subscriptions
+	 */
+	function getFileSubscriptions(): { [id: string]: iobJS.Subscription[] };
 
 	/**
 	 * Unsubscribe from changes of the given object ID(s) or handler(s)
@@ -1386,6 +1399,13 @@ declare global {
 	function schedule(pattern: string | iobJS.SchedulePattern, callback: EmptyCallback): any;
 	function schedule(date: Date, callback: EmptyCallback): any;
 	function schedule(astro: iobJS.AstroSchedule, callback: EmptyCallback): any;
+
+	/**
+	 * [{"type":"cron","pattern":"0 15 13 * * *","scriptName":"script.js.scheduleById","id":"cron_1704187467197_22756"}]
+	 * 
+	 * @param allScripts Return all registered schedules of all running scripts
+	 */
+	function getSchedules(allScripts?: boolean): Array<iobJS.ScheduleStatus>;
 
 	/**
 	 * Creates a schedule based on the state value (e.g. 12:53:09)
@@ -1460,6 +1480,8 @@ declare global {
 	 * @param id The ID of the state to be set
 	 * @param state binary data as buffer
 	 * @param callback called when the operation finished
+	 * 
+	 * @deprecated Use @see writeFile
 	 */
 	function setBinaryState(id: string, state: Buffer, callback?: iobJS.SetStateCallback): void;
 	function setBinaryStateAsync(id: string, state: Buffer): iobJS.SetStatePromise;
@@ -1479,6 +1501,8 @@ declare global {
 	 * If the adapter is configured to subscribe to all states on start,
 	 * this can be called synchronously and immediately returns the state.
 	 * Otherwise, you need to provide a callback.
+	 * 
+	 * @deprecated Use @see readFile
 	 */
 	function getBinaryState(id: string, callback: iobJS.GetStateCallback): void;
 	function getBinaryState(id: string): Buffer;
@@ -1595,6 +1619,12 @@ declare global {
 	function sendToHost(host: string, command: string, message: string | object, callback?: iobJS.MessageCallback | iobJS.MessageCallbackInfo): void;
 	function sendToHostAsync(host: string, command: string, message: string | object): Promise<iobJS.MessageCallback | iobJS.MessageCallbackInfo>;
 
+	function setTimeout(callback: (args: void) => void, ms?: number): NodeJS.Timeout;
+	function clearTimeout(timeoutId: NodeJS.Timeout | string | number | undefined): void;
+	function setInterval(callback: (args: void) => void, ms?: number): NodeJS.Timeout;
+	function clearInterval(intervalId: NodeJS.Timeout | string | number | undefined): void;
+	function setImmediate(callback: (args: void) => void): NodeJS.Immediate;
+
 	type CompareTimeOperations =
 		"between" | "not between" |
 		">" | ">=" | "<" | "<=" | "==" | "<>"
@@ -1659,6 +1689,26 @@ declare global {
 	 */
 	function delFile(id: string, name: string, callback: ErrorCallback): void;
 	function delFileAsync(id: string, name: string): Promise<void>;
+
+	/**
+	 * Renames a file.
+	 * @param id Name of the root directory. This should be the adapter instance, e.g. "admin.0"
+	 * @param oldName Current file name
+	 * @param newName New file name
+	 * @param callback Is called when the operation has finished (successfully or not)
+	 */
+	function rename(id: string, oldName: string, newName: string, callback: ErrorCallback);
+	function renameAsync(id: string, oldName: string, newName: string);
+
+	/**
+	 * Renames a file.
+	 * @param id Name of the root directory. This should be the adapter instance, e.g. "admin.0"
+	 * @param oldName Current file name
+	 * @param newName New file name
+	 * @param callback Is called when the operation has finished (successfully or not)
+	 */
+	function renameFile(id: string, oldName: string, newName: string, callback: ErrorCallback);
+	function renameFileAsync(id: string, oldName: string, newName: string);
 
 	function getHistory(instance: any, options: any, callback: any): any;
 	function getHistoryAsync(instance: any, options: any): Promise<any>;
@@ -1732,6 +1782,13 @@ declare global {
 	 * @return true if subscription exists and was deleted.
 	 */
 	function onMessageUnregister(id: iobJS.MessageSubscribeID | string): boolean;
+
+	function jsonataExpression(data: any, expression: string): Promise<any>;
+
+	function onObject(pattern: string, callback: iobJS.ObjectChangeHandler);
+	function subscribeObject(pattern: string, callback: iobJS.ObjectChangeHandler);
+
+	function unsubscribeObject(id: string);
 
 	/**
 	 * Receives logs of specified severity level in a script.

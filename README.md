@@ -49,6 +49,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### **WORK IN PROGRESS**
 
 * (klein0r) Added missing console.info()
+* (klein0r) Added missing type hints
 
 ### 7.6.0 (2023-12-26)
 

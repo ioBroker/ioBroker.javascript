@@ -643,7 +643,7 @@ createState(
 const list = getSchedules(true);
 ```
 Returns the list of all CRON jobs and schedules (except astro).
-Argument must be `true` if you want to get the list for **every running script**. Else only schedules in the current script will be returned.
+Argument must be `true` if you want to get the list for **every running script**. Otherwise only schedules in the current script will be returned.
 
 ```js
 const list = getSchedules(true);
@@ -939,7 +939,7 @@ You should use it to **modify** an existing object you read beforehand, e.g.:
 ```js
 const obj = getObject('adapter.N.objectName');
 obj.native.settings = 1;
-setObject('adapter.N.objectName', obj, function (err) {
+setObject('adapter.N.objectName', obj, (err) => {
     if (err) log('Cannot write object: ' + err);
 });
 ```
