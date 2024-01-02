@@ -7,6 +7,7 @@ type EmptyCallback = () => void | Promise<void>;
 type ErrorCallback = (err?: string) => void | Promise<void>;
 type GenericCallback<T> = (err?: string | null, result?: T) => void | Promise<void>;
 type SimpleCallback<T> = (result?: T) => void | Promise<void>;
+type MessageCallback<T> = (data: T, callback: iobJS.MessageCallback) => void | Promise<void>;
 type LogCallback = (msg: any) => void | Promise<void>;
 
 type SecondParameterOf<T extends (...args: any[]) => any> = T extends (
@@ -1774,7 +1775,7 @@ declare global {
 	 * @param message Message name
 	 * @param callback Callback to send the result to another script
 	 */
-	function onMessage(message: string, callback?: SimpleCallback<any>);
+	function onMessage(message: string, callback?: MessageCallback<any>);
 
 	/**
 	 * Unregister onmessage handler
