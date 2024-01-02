@@ -177,7 +177,7 @@ exec('reboot');
 
 // Get the list of files and directories in /var/log
 exec('ls /var/log', function (error, stdout, stderr) {
-    console.log('stdout: ' + stdout);
+    log('stdout: ' + stdout);
 });
 ```
 
@@ -390,7 +390,7 @@ Function `on` returns handler back. This handler can be used by unsubscribe.
 
 *Notice:* If you want to also get state deletions/expires as trigger, you need to use change with `ne` or `any` AND q with `*` as filter!
 
-*Notice:* from 4.3.2 it is possible to write a type of trigger as second parameter: `on('my.id.0', 'any', obj => console.log(obj.state.val));`
+*Notice:* from 4.3.2 it is possible to write a type of trigger as second parameter: `on('my.id.0', 'any', obj => log(obj.state.val));`
 
 ### once
 Registers a one-time subscription which automatically unsubscribes after the first invocation. Same as [on](#on---subscribe-on-changes-or-updates-of-some-state), but just executed once.
@@ -647,7 +647,7 @@ Argument must be `true` if you want to get the list for **every running script**
 
 ```js
 const list = getSchedules(true);
-list.forEach(schedule => console.log(JSON.stringify(schedule)));
+list.forEach(schedule => log(JSON.stringify(schedule)));
 
 // clear all schedules in all scripts!
 list.forEach(schedule => clearSchedule(schedule));
@@ -730,13 +730,13 @@ Following values are possible: `sunrise`, `sunset`, `sunriseEnd`, `sunsetStart`,
 See [Astro](#astro--function) for detail.
 
 ```js
-console.log(compareTime('sunsetStart', 'sunsetEnd', 'between') ? 'Now is sunrise' : 'Now is no sunrise');
+log(compareTime('sunsetStart', 'sunsetEnd', 'between') ? 'Now is sunrise' : 'Now is no sunrise');
 ```
 
 It is possible to define the time with offset too:
 
 ```js
-console.log(compareTime({ astro: 'sunsetStart', offset: 30 }, { astro: 'sunrise', offset: -30 }, '>') ? 'Now is at least 30 minutes after sunset' : 'No idea');
+log(compareTime({ astro: 'sunsetStart', offset: 30 }, { astro: 'sunrise', offset: -30 }, '>') ? 'Now is at least 30 minutes after sunset' : 'No idea');
 ```
 
 Structure of an astro object.
@@ -1149,7 +1149,7 @@ Example (with callback):
 
 ```js
 sendTo('telegram.0', { user: 'UserName', text: 'Test message' }, (res) => {
-    console.log('Sent to ' + res + ' users');
+    log(`Sent to ${res} users`);
 });
 ```
 
@@ -1157,7 +1157,7 @@ sendTo('telegram.0', { user: 'UserName', text: 'Test message' }, (res) => {
 
 ```js
 sendTo('telegram.0', { user: 'UserName', text: 'Test message' }, { timeout: 2000 }, (res) => {
-    console.log('Sent to ' + res + ' users');
+    log(`Sent to ${res} users`);
 });
 ```
 
@@ -1172,7 +1172,7 @@ Example:
 
 ```js
 const res = await sendToAsync('sql.0', 'getEnabledDPs', {});
-console.log(JSON.stringify(res));
+log(JSON.stringify(res));
 ```
 
 ### sendToHost
@@ -1199,7 +1199,7 @@ Example:
 
 ```js
 sendToHost('myComputer', 'cmdExec', { data: 'ls /' }, (res) => {
-    console.log('List of files: ' + res.data);
+    log('List of files: ' + res.data);
 });
 ```
 
@@ -1418,7 +1418,7 @@ You can interrupt the "each" loop by returning the false value, like:
 ```js
 // print two first IDs of on all switches in "Wohnzimmer"
 $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').each((id, i) => {
-    console.log(id);
+    log(id);
     if (i == 1) {
         return false;
     }
@@ -1438,12 +1438,12 @@ Argument *adapter* can be omitted.
 ```js
 // read vis views
 readFile('vis.0', '/main/vis-views.json', (error, data) => {
-    console.log(data.substring(0, 50));
+    log(data.substring(0, 50));
 });
 
 // The same as
-//readFile('/../vis.0/main/vis-views.json', function (error) {
-//     console.log(data.substring(0, 50));
+//readFile('/../vis.0/main/vis-views.json', (error, data) => {
+//     log(data.substring(0, 50));
 //});
 ```
 
@@ -1465,12 +1465,12 @@ The file that looks like `'/subfolder/file.txt'` will be stored under `"/javascr
 const fs = require('fs');
 let data = fs.readFileSync('/tmp/screenshot.png');
 writeFile(null, '/screenshots/1.png', data, (error) => {
-    console.log('file written');
+    log('file written');
 });
 
 // The same as
 //writeFile('/screenshots/1.png', data, function (error) {
-//    console.log('file written');
+//    log('file written');
 //});
 ```
 
@@ -1479,7 +1479,7 @@ writeFile(null, '/screenshots/1.png', data, (error) => {
 const fs = require('fs');
 let data = fs.readFileSync('/tmp/screenshot.png');
 writeFile('vis.0', '/screenshots/1.png', data, (error) => {
-    console.log('file written');
+    log('file written');
 });
 ```
 
@@ -1578,7 +1578,7 @@ getHistory(
         if (err) console.error(err);
         if (result) {
             for (let i = 0; i < result.length; i++) {
-                console.log(result[i].id + ' ' + new Date(result[i].ts).toISOString());
+                log(result[i].id + ' ' + new Date(result[i].ts).toISOString());
             }
         }
     }
@@ -1600,7 +1600,7 @@ getHistory({
         if (err) console.error(err);
         if (result) {
             for (let i = 0; i < result.length; i++) {
-                console.log(result[i].id + ' ' + new Date(result[i].ts).toISOString());
+                log(result[i].id + ' ' + new Date(result[i].ts).toISOString());
             }
         }
     });
@@ -1612,7 +1612,7 @@ getHistory({
 ```js
 runScript('scriptName', () => {
     // Callback is optional
-    console.log('Srcipt started, but not yet executed');
+    log('Srcipt started, but not yet executed');
 });
 ```
 
@@ -1627,12 +1627,12 @@ runScript('groupName.scriptName1');
 Same as runScript, but with `promise`.
 ```js
 runScriptAsync('scriptName')
-    .then(() => console.log('Script started, but not yet executed'));
+    .then(() => log('Script started, but not yet executed'));
 
 // or
 
 await runScriptAsync('scriptName');
-console.log(`Script was restarted`);
+log(`Script was restarted`);
 ```
 
 ### startScript
@@ -1651,12 +1651,12 @@ Same as runScript, but with `promise`.
 
 ```js
 startScriptAsync('scriptName', ignoreIfStarted)
-    .then(started => console.log(`Script was ${started ? 'started' : 'already started'}`));
+    .then(started => log(`Script was ${started ? 'started' : 'already started'}`));
 
 // or
 
 const started = await startScriptAsync('scriptName', ignoreIfStarted);
-console.log(`Script was ${started ? 'started' : 'already started'}`);
+log(`Script was ${started ? 'started' : 'already started'}`);
 ```
 
 Starts the script. If ignoreIfStarted set to true, nothing will be done if a script yet running, otherwise the script will be restarted.
@@ -1680,11 +1680,11 @@ stopScript();
 Same as stopScript, but with `promise`:
 ```js
 stopScriptAsync('scriptName')
-    .then(stopped => console.log(`Script was ${stopped ? 'stopped' : 'already stopped'}`));
+    .then(stopped => log(`Script was ${stopped ? 'stopped' : 'already stopped'}`));
 
 //or
 const stopped = await stopScriptAsync('scriptName');
-console.log(`Script was ${stopped ? 'stopped' : 'already stopped'}`);
+log(`Script was ${stopped ? 'stopped' : 'already stopped'}`);
 ```
 
 If stopScript is called without arguments, it will stop itself:
@@ -1721,7 +1721,7 @@ Same as [wait](#wait)
 ### messageTo
 ```js
 messageTo({ instance: 'instance', script: 'script.js.common.scriptName', message: 'messageName' }, data, {timeout: 1000}, result =>
-    console.log(JSON.stringify(result)));
+    log(JSON.stringify(result)));
 ```
 
 Send via the "message bus" the message to some other script. Or even to some handler in the same script.
@@ -1732,7 +1732,7 @@ The target could be shorted to:
 
 ```js
 messageTo('messageName', data, result => {
-    console.log(JSON.stringify(result));
+    log(JSON.stringify(result));
 });
 ```
 
@@ -1745,7 +1745,7 @@ messageTo('messageName', dataWithNoResponse);
 ### messageToAsync
 ```js
 onMessage('myTopic', async (data, callback) => {
-    console.log(data);
+    log(data);
 
     if (!data.myPayload) {
         // return error (promise reject)
@@ -1759,7 +1759,7 @@ onMessage('myTopic', async (data, callback) => {
 (async () => {
     try {
         const msg = await messageToAsync({ instance: 0, script: 'script.js.test2', message: 'myTopic' }, { myPayload: true }, { timeout: 1000 });
-        console.log(`Done with: ${JSON.stringify(msg)}`);
+        log(`Done with: ${JSON.stringify(msg)}`);
     } catch (error) {
         // contents of result.error
         console.error(error);
@@ -1770,7 +1770,7 @@ onMessage('myTopic', async (data, callback) => {
 ### onMessage
 ```js
 onMessage('messageName', (data, callback) => {
-    console.log(`Received data: ${data}`); callback({ result: Date.now() });
+    log(`Received data: ${data}`); callback({ result: Date.now() });
 });
 ```
 
@@ -1799,7 +1799,10 @@ iob message javascript.0 toScript '{"script": "script.js.messagetest", "message"
 
 ### onMessageUnregister
 ```js
-const id = onMessage('messageName', (data, callback) => {console.log(data); callback(Date.now())});
+const id = onMessage('messageName', (data, callback) => {
+    log(data);
+    callback(Date.now());
+});
 
 // unsubscribe specific handler
 onMessageUnregister(id);
@@ -1812,8 +1815,8 @@ Unsubscribes from this message.
 ### onLog
 ```js
 onLog('error', data => {
-    sendTo('telegram.0', {user: 'UserName', text: data.message});
-    console.log('Following was sent to telegram: ' + data.message);
+    sendTo('telegram.0', { user: 'UserName', text: data.message });
+    log('Following was sent to telegram: ' + data.message);
 });
 ```
 
@@ -1876,15 +1879,15 @@ There are two modes of subscribe to states:
 - Adapter subscribes to all changes at start and receives all changes of all states (it is easy to use getStates(id), but requires more CPU and RAM):
 
 ```js
-console.log(getState('someID').val);
+log(getState('someID').val);
 ```
 
 - Adapter subscribes every time on specified ID if "on/subscribe" called. In this mode, the adapter receives only updates for desired states.
 It is very performed and RAM efficiency, but you cannot access states directly in getState. You must use callback to get the result of state:
 
 ```js
-getState('someID', function (error, state) {
-    console.log(state.val);
+getState('someID', (error, state) => {
+    log(state.val);
 });
 ```
 
