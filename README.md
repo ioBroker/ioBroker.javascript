@@ -46,6 +46,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Added missing console.info()
+
 ### 7.6.0 (2023-12-26)
 
 * (klein0r) Added schedules by state value (scheduleById)
