@@ -794,6 +794,7 @@ if (typeof module !== 'undefined' && typeof module.parent !== 'undefined') {
     done();
 });
 
+/*
 gulp.task('adminWords2languages', done => {
     words2languages('./admin-config/');
     done();
@@ -802,6 +803,7 @@ gulp.task('adminLanguages2words', done => {
     languages2words('./admin-config/');
     done();
 });
+*/
 
 gulp.task('monaco-typescript', done => {
     // This script downloads a version of monaco that is built with the specified TypeScript version.
