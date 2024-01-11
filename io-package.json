@@ -22,8 +22,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "7.6.2",
+    "version": "7.6.3",
     "news": {
+      "7.6.3": {
+        "en": "Fixed bug in formatTimeDiff Blockly",
+        "de": "Fehler im Format behoben TimeDiff Blockiert",
+        "ru": "Исправлена ошибка в формате TimeDiff Blockly",
+        "pt": "Corrigido o erro no formato TimeDiff Blockly",
+        "nl": "Fixed bug in formaat TimeDiff Blockly",
+        "fr": "Correction du bogue au format TimeDiff Blockly",
+        "it": "Corretto bug in formato TimeDiff Blockly",
+        "es": "Error fijo en formato TimeDiff Blockly",
+        "pl": "Naprawiono błąd w formacie Blokada TimeDiff",
+        "uk": "Виправлена помилка у форматі часДифу блокнот",
+        "zh-cn": "格式化的固定错误 时间diff Blockly"
+      },
       "7.6.2": {
         "en": "Added missing console.info()\nAdded missing type hints\nCreation of astro states is now optional\nFixed logging of objects/sets",
         "de": "Hinzugefügt fehlende Konsole.info)(\nHinzufügen fehlender Typenhinweise\nDie Schaffung von Astrostaaten ist jetzt optional\nFeste Protokollierung von Objekten/Sets",

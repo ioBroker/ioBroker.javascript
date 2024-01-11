@@ -1,4 +1,10 @@
 The newest change log is in README.md
+## 7.4.0 (2023-12-08)
+
+* (klein0r) Download script as xml file (export)
+* (klein0r) Import script as file (upload)
+* (klein0r) Hide global folder if expert mode is disabled
+
 ## 7.3.0 (2023-12-07)
 
 * (klein0r) Updated blockly logo

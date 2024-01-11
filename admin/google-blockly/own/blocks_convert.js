@@ -369,17 +369,9 @@ Blockly.Blocks.convert_time_difference = {
 Blockly.JavaScript.convert_time_difference = function (block) {
     const option = block.getFieldValue('OPTION');
     const format = block.getFieldValue('FORMAT');
-
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
 
-    let code;
-    if (option === 'custom') {
-        code = `formatTimeDiff(getDateObject(${value}), '${format}')`;
-    } else {
-        code = `formatTimeDiff(getDateObject(${value}), '${option}')`;
-    }
-
-    return [code, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`formatTimeDiff(${value}, '${option === 'custom' ? format : option}')`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- json2object --------------------------------------------------
