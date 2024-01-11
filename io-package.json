@@ -314,6 +314,46 @@
           "agree",
           "cancel"
         ]
+      },
+      {
+        "condition": {
+          "operand": "and",
+          "rules": [
+            "oldVersion<7.7.0",
+            "newVersion>=7.7.0"
+          ]
+        },
+        "title": {
+          "en": "Package 'request' has been removed",
+          "de": "Paket 'request' wurde entfernt",
+          "ru": "Удалено 'request' пакета",
+          "pt": "Pacote 'request' foi removido",
+          "nl": "Pakket 'request' is verwijderd",
+          "fr": "Le paquet 'request' a été supprimé",
+          "it": "Il pacchetto 'request' è stato rimosso",
+          "es": "El paquete 'request' ha sido eliminado",
+          "pl": "Pakiet 'request' został usunięty",
+          "uk": "Видалено пакет 'request'",
+          "zh-cn": "软件包 'request' 已被删除"
+        },
+        "text": {
+          "en": "The default package for HTTP-Request has beed removed and replaces with another library (axios). Please check your JavaScript-Code. Blockly users have to open and save all scripts with request-Blocks.",
+          "de": "Das Standardpaket für HTTP-Abfragen wurde entfernt und durch eine andere Bibliothek ersetzt (axios). Bitte überprüfe sämtlichen JavaScript-Code. Blockly-Benutzer müssen alle Skripte mit Request-Blocks öffnen und speichern.",
+          "ru": "Пакет по умолчанию для HTTP-Request был удален и заменен другой библиотекой (axios). Пожалуйста, проверьте JavaScript-код. Заблокированные пользователи должны открывать и сохранять все скрипты с запрос-блоками.",
+          "pt": "O pacote padrão para HTTP-Request foi removido e substituído por outra biblioteca (axios). Por favor, verifique o seu código JavaScript. Usuários bloqueados têm que abrir e salvar todos os scripts com request-Blocks.",
+          "nl": "Het standaardpakket voor HTTP-Request is verwijderd en vervangen door een andere bibliotheek (axios). Controleer uw JavaScript-Code. Blockly gebruikers moeten alle scripts openen en opslaan met request-Blocks.",
+          "fr": "Le paquet par défaut pour HTTP-Request a été supprimé et remplacé par une autre bibliothèque (axios). Veuillez vérifier votre code JavaScript. Les utilisateurs doivent ouvrir et enregistrer tous les scripts avec request-Blocks.",
+          "it": "Il pacchetto predefinito per HTTP-Request è stato rimosso e sostituito con un'altra libreria (assios). Controlla il codice JavaScript. Gli utenti Blockly devono aprire e salvare tutti gli script con request-Blocks.",
+          "es": "El paquete predeterminado para HTTP-Request ha sido eliminado y reemplazado por otra biblioteca (axios). Por favor, compruebe su código JavaScript. Los usuarios tienen que abrir y guardar todos los scripts con request-Blocks.",
+          "pl": "Domyślny pakiet HTTP- Request został usunięty i zastąpiony inną biblioteką (axios). Proszę sprawdzić kod JavaScript-. Blockly użytkownicy muszą otworzyć i zapisać wszystkie skrypty z request- Blocks.",
+          "uk": "Пакет за замовчуванням для HTTP-запиту видалено та замінює з іншою бібліотекою (axios). Будь ласка, перевірте свій JavaScript-Code. Заблокувати користувачів потрібно відкрити і зберегти всі скрипти з запитом-блоками.",
+          "zh-cn": "HTTP- Request 的默认包已删除, 并替换为另一个库( xios) 。 请检查access-date=中的日期值 (帮助) JavaScript-Code. Blockly用户必须打开并保存所有带有请求-Block的脚本."
+        },
+        "level": "warn",
+        "buttons": [
+          "agree",
+          "cancel"
+        ]
       }
     ]
   },

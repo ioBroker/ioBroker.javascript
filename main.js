@@ -41,7 +41,6 @@ const mods = {
     url:              require('node:url'),
     zlib:             require('node:zlib'),
     suncalc:          require('suncalc2'),
-    request:          require('./lib/request'),
     wake_on_lan:      require('wake_on_lan'),
     nodeSchedule:     require('node-schedule')
 };
@@ -197,7 +196,6 @@ function loadTypeScriptDeclarations() {
     // try to load the typings on disk for all 3rd party modules
     const packages = [
         'node', // this provides auto-completion for most builtins
-        'request', // preloaded by the adapter
     ];
     // Also include user-selected libraries (but only those that are also installed)
     if (
@@ -670,8 +668,6 @@ function startAdapter(options) {
         },
 
         ready: () => {
-            mods.request.setLogger(adapter.log);
-
             adapter.config.maxSetStatePerMinute = parseInt(adapter.config.maxSetStatePerMinute, 10) || 1000;
             if (adapter.supportsFeature && adapter.supportsFeature('PLUGINS')) {
                 const sentryInstance = adapter.getPluginInstance('sentry');
