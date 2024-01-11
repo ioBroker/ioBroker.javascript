@@ -64,7 +64,7 @@
     "@alcalzone/release-script-plugin-license": "^3.7.0",
     "@iobroker/adapter-dev": "^1.2.0",
     "@iobroker/dev-server": "^0.7.1",
-    "@types/iobroker": "^4.0.5",
+    "@types/iobroker": "^5.0.6",
     "alcalzone-shared": "^4.0.8",
     "chai": "^4.3.10",
     "eslint": "^8.56.0",
