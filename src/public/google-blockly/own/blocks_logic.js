@@ -23,7 +23,7 @@ Blockly.Blocks['logic_between'] = {
         this.setTooltip(Blockly.Translate('logic_between_tooltip'));
         // this.setHelpUrl(Blockly.Translate('logic_between_helpurl'));
     }
-}
+};
 
 Blockly.JavaScript['logic_between'] = function(block) {
     const min = Blockly.JavaScript.valueToCode(block, 'MIN', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
@@ -33,28 +33,28 @@ Blockly.JavaScript['logic_between'] = function(block) {
     const maxOperator = block.getFieldValue('MAX_OPERATOR') === 'LT' ? '<' : '<=';
 
     return [`${min} ${minOperator} ${value} && ${value} ${maxOperator} ${max}`, Blockly.JavaScript.ORDER_LOGICAL_AND];
-}
+};
 
 // --- logic ifempty --------------------------------------------------
 
 Blockly.Blocks['logic_ifempty'] = {
-  init: function() {
-    this.appendValueInput('VALUE')
-        .setCheck(null)
-        .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField(Blockly.Translate('logic_ifempty'));
-    this.appendValueInput('DEFLT')
-        .setCheck(null)
-        .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField(Blockly.Translate('logic_ifempty_then'));
+    init: function() {
+        this.appendValueInput('VALUE')
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField(Blockly.Translate('logic_ifempty'));
+        this.appendValueInput('DEFLT')
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField(Blockly.Translate('logic_ifempty_then'));
 
-    this.setOutput(true, null);
-    this.setInputsInline(true);
-    this.setColour("%{BKY_LOGIC_HUE}");
-    this.setTooltip(Blockly.Translate('logic_ifempty_tooltip'));
-    // this.setHelpUrl(Blockly.Translate('logic_ifempty_helpurl'));
-  }
-}
+        this.setOutput(true, null);
+        this.setInputsInline(true);
+        this.setColour("%{BKY_LOGIC_HUE}");
+        this.setTooltip(Blockly.Translate('logic_ifempty_tooltip'));
+        // this.setHelpUrl(Blockly.Translate('logic_ifempty_helpurl'));
+    }
+};
 
 Blockly.JavaScript['logic_ifempty'] = function(block) {
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
