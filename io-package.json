@@ -22,8 +22,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "7.6.3",
+    "version": "7.7.0",
     "news": {
+      "7.7.0": {
+        "en": "Added block for multiple and conditions",
+        "de": "Hinzugefügt Block für mehrere und Bedingungen",
+        "ru": "Добавленный блок для нескольких и условий",
+        "pt": "Adicionado bloco para múltiplos e condições",
+        "nl": "Toegevoegd blok voor meerdere en voorwaarden",
+        "fr": "Ajout de bloc pour plusieurs et conditions",
+        "it": "Aggiunto blocco per più e condizioni",
+        "es": "Bloque añadido para múltiples y condiciones",
+        "pl": "Dodano blok dla wielu i warunków",
+        "uk": "Додано блок для декількох і умов",
+        "zh-cn": "为多个条件添加块"
+      },
       "7.6.3": {
         "en": "Fixed bug in formatTimeDiff Blockly",
         "de": "Fehler im Format behoben TimeDiff Blockiert",
@@ -101,19 +114,6 @@
         "pl": "Download script jako plik xml (export)\nImport script jako plik (upload)\nOprogramowanie globalne, jeśli tryb ekspertów jest niepełnosprawny",
         "uk": "Завантажити скрипт як файл xml (export)\nІмпортний скрипт як файл (завантажити)\nПриховати глобальну папку, якщо експертний режим вимкнено",
         "zh-cn": "附录\n进口说明(续)\n如果专家模式残疾,那么全球舞台"
-      },
-      "7.3.0": {
-        "en": "Updated blockly logo\nAlways set variables like isDaylightSaving\nAdded astro times as states\nFixed copied time blocks",
-        "de": "Aktualisiertes Block-Logo\nImmer eingestellte Variablen wie isDaylightSaving\nAstro Zeiten als Staaten hinzugefügt\nFeste kopierte Zeitblöcke",
-        "ru": "Обновленный заблокированный логотип\nВсегда устанавливайте переменные, такие как isDaylightSaving\nДобавлены астро времена как государства\nИсправлены скопированные блоки времени",
-        "pt": "Logotipo bloqueado atualizado\nSempre definir variáveis como isDaylightSaving\nAdicionados tempos astro como estados\nBloqueios de tempo copiados fixos",
-        "nl": "Quality over Quantity (QoQ) Releases Vertaling:\nZe zetten altijd variabelen zoals isDaylightSaving\nAstro-tijden toegevoegd als staten\nQuality over Quantity (QoQ) Releases Vertaling:",
-        "fr": "Logo bloqué mis à jour\nToujours définir des variables comme estDaylightSaving\nAjout de astro times as states\nTemps corrigé copié blocs",
-        "it": "Logo blockly aggiornato\nImpostare sempre variabili come èDaylightSaving\nAggiunto tempi di astro come stati\nBlocchi di tempo copiati fissi",
-        "es": "Logo Actualizado bloqueado\nSiempre establecer variables como esDaylightSaving\nTiempos de astro agregados como estados\nBloques de tiempo fijos copiados",
-        "pl": "Logo blokady\nZawsze ułożone zmienne, jak np. DaylightSaving\nAdded astrotime jako stan\nFixed copied time block",
-        "uk": "Оновлений логотип\nЗавжди встановити змінні, такі як DaylightSaving\nДодані астро разів як стани\nФіксовані часові блоки",
-        "zh-cn": "A. 最新断体逻辑\nA. 铺设的变量\n增加国时\n固定配件的时间限制"
       }
     },
     "desc": {

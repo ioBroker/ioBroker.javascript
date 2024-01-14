@@ -1,4 +1,10 @@
 The newest change log is in README.md
+## 7.5.0 (2023-12-15)
+
+* (klein0r) Blockly: Day of week as number always returns 1 (monday) to 7 (sunday)
+* (klein0r) Fixed layout of script type selection
+* (klein0r) Fixed sendto with multiple instances (for callback / timeout handling)
+
 ## 7.4.0 (2023-12-08)
 
 * (klein0r) Download script as xml file (export)
