@@ -46,6 +46,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Added block for multiple and conditions
+
 ### 7.6.3 (2024-01-11)
 
 * (klein0r) Fixed bug in formatTimeDiff Blockly
