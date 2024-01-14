@@ -33,7 +33,7 @@ Blockly.Blocks['logic_multi_and_mutator'] = {
         this.setColour("%{BKY_LOGIC_HUE}");
 
         this.appendDummyInput('AND')
-            .appendField(Blockly.Msg['LOGIC_OPERATION_AND']);
+            .appendField(Blockly.Translate('logic_multi_and_and'));
 
         this.setPreviousStatement(true);
         this.setNextStatement(true);
@@ -49,9 +49,9 @@ Blockly.Blocks['logic_multi_and'] = {
         this.itemCount_ = 2;
         this.setMutator(new Blockly.Mutator(['logic_multi_and_mutator']));
 
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
         this.setInputsInline(false);
+        this.setOutput(true, 'Boolean');
+
         this.setColour("%{BKY_LOGIC_HUE}");
         this.setTooltip(Blockly.Translate('logic_multi_and_tooltip'));
         // this.setHelpUrl(getHelp('logic_multi_and_help'));
@@ -164,7 +164,9 @@ Blockly.Blocks['logic_multi_and'] = {
         for (let i = 0; i < this.itemCount_; i++) {
             if (!this.getInput('AND' + i)) {
                 const input = this.appendValueInput('AND' + i).setAlign(Blockly.ALIGN_RIGHT);
-                input.appendField(Blockly.Msg['LOGIC_OPERATION_AND']);
+                if (i > 0) {
+                    input.appendField(Blockly.Translate('logic_multi_and_and'));
+                }
             }
         }
         // Remove deleted inputs.
@@ -177,13 +179,13 @@ Blockly.Blocks['logic_multi_and'] = {
 Blockly.JavaScript['logic_multi_and'] = function(block) {
     const ands = [];
     for (let n = 0; n < block.itemCount_; n++) {
-        let condition = Blockly.JavaScript.valueToCode(block, 'AND' + n, Blockly.JavaScript.ORDER_COMMA);
+        const condition = Blockly.JavaScript.valueToCode(block, 'AND' + n, Blockly.JavaScript.ORDER_COMMA);
         if (condition) {
             ands.push(condition);
         }
     }
 
-    return `(${ands.join(' && ')})`;
+    return [`(${ands.length > 0 ? ands.join(' && ') : 'false'})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- logic between --------------------------------------------------
