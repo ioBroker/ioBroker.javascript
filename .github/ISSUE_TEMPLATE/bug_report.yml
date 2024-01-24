@@ -1,0 +1,75 @@
+# v0.1
+name: Bug report
+title: "[Bug]: "
+description: "Create a bug report to help improve this ioBroker adapter"
+body:
+  # general information
+  - type: markdown
+    attributes:
+      value: >
+        **Thank you for wanting to report a bug in this adapter!**
+
+        If this is the first time you are doing this, please take a few moments to read
+        through the [README](https://github.com/ioBroker/ioBroker.javascript/blob/master/README.md).
+
+        You are about to report a bug in **JavaScript Adapter**. Do not proceed if your issue
+        occurs with ioBroker core, any other adapters, unofficial or outdated
+        adapter or NodeJS versions.
+
+        Do also not seek support here ("I need help with ...", "I have a
+        question ...", "Can someone walk me through ..."), that belongs into the
+        [ioBroker forum at forum.iobroker.net](https://forum.iobroker.net/).
+
+        Thank you for your collaboration!
+  - type: checkboxes
+    attributes:
+      label: I'm sure that
+      options:
+        - label: This issue is still present in the **current beta version** of this adapter
+          required: true
+        - label: There is no other (open) issue with the same topic (use the search!)
+          required: true
+        - label: This issue is not described in the adapter documentation / FAQ (read the docs!)
+          required: true
+  # adapter specific input fields
+  - type: input
+    attributes:
+      label: Script type
+      description: Blockly, Rules, JavaScript, TypeScript, ...
+    validations:
+      required: true
+  # general questions
+  - type: textarea
+    attributes:
+      label: The problem
+      description: >-
+        Describe the issue you are experiencing here. Tell us what you were trying to do
+        step by step, and what happened that you did not expect.
+
+        Provide a clear and concise description of what the problem is and include as many
+        details as possible.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: iobroker.current.log (in debug mode!)
+      description: >-
+        Share the log file of this adapter in debug mode
+  - type: input
+    attributes:
+      label: Version of nodejs
+      description: Can be found in the host section of ioBroker admin
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Version of ioBroker js-controller
+      description: Can be found in the host section of ioBroker admin
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Version of adapter
+      description: Can be found in the adapters tab of ioBroker admin
+    validations:
+      required: true
