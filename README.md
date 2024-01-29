@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.8.0 (2024-01-29)
 
 * (klein0r) Added block for multiple or conditions
 * (klein0r) Raised supported ecmaVersion from es2018 to es2021
@@ -70,11 +70,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### 7.6.0 (2023-12-26)
 
 * (klein0r) Added schedules by state value (scheduleById)
-
-### 7.5.1 (2023-12-18)
-
-* (klein0r) Added option for calendar week to Blockly
-* (klein0r) Fixed inpaired round brackets of getMinutes (Blockly)
 
 ## License
 The MIT License (MIT)

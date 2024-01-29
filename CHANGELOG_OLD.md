@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 7.5.1 (2023-12-18)
+
+* (klein0r) Added option for calendar week to Blockly
+* (klein0r) Fixed inpaired round brackets of getMinutes (Blockly)
+
 ## 7.5.0 (2023-12-15)
 
 * (klein0r) Blockly: Day of week as number always returns 1 (monday) to 7 (sunday)
