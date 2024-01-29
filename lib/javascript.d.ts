@@ -680,7 +680,7 @@ declare global {
 			common: StateCommon;
 			acl?: StateACL;
 			/** The IDs of enums this state is assigned to. For example ["enum.functions.Licht","enum.rooms.Garten"] */
-			enumIds?: Array<iobJS.StringOrTranslated>;
+			enumIds?: string[];
 			/** The names of enums this state is assigned to. For example ["Licht","Garten"] */
 			enumNames?: Array<iobJS.StringOrTranslated>;
 		}
@@ -867,7 +867,7 @@ declare global {
 			deviceId?: string;
 			deviceName?: string;
 			/** The IDs of enums this state is assigned to. For example ["enum.functions.Licht","enum.rooms.Garten"] */
-			enumIds?: Array<iobJS.StringOrTranslated>;
+			enumIds?: string[];
 			/** The names of enums this state is assigned to. For example ["Licht","Garten"] */
 			enumNames?: Array<iobJS.StringOrTranslated>;
 			/** new state */
