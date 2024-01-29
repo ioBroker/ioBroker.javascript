@@ -49,6 +49,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### **WORK IN PROGRESS**
 
 * (klein0r) Added block for multiple or conditions
+* (klein0r) Raised supported ecmaVersion from es2018 to es2021
 
 ### 7.7.0 (2024-01-14)
 

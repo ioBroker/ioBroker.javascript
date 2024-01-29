@@ -23,7 +23,7 @@
 		// "noUnusedLocals": true,
 		// "noUnusedParameters": true,
 
-		"target": "es2020",
+		"target": "es2021",
 	},
 	"include": [
 		"lib/**/*.js",
