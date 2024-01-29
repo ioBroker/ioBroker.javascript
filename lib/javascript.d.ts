@@ -132,7 +132,7 @@ declare global {
 			c: undefined;
 		}
 
-		type Languages = 'en' | 'de' | 'ru' | 'pt' | 'nl' | 'fr' | 'it' | 'es' | 'pl' | 'zh-cn';
+		type Languages = 'en' | 'de' | 'ru' | 'pt' | 'nl' | 'fr' | 'it' | 'es' | 'pl' | 'uk' | 'zh-cn';
 		type StringOrTranslated = string | { [lang in Languages]?: string; };
 		type CommonType = "number" | "string" | "boolean" | "array" | "object" | "mixed" | "file";
 
@@ -284,8 +284,7 @@ declare global {
 				T extends ObjectIDs.User ? UserObject :
 				T extends ObjectIDs.Host ? HostObject :
 				T extends ObjectIDs.Config ? OtherObject & { type: "config" } :
-				T extends ObjectIDs.AdapterScoped ? AdapterScopedObject :
-				iobJS.AnyObject
+				T extends ObjectIDs.AdapterScoped ? AdapterScopedObject : iobJS.AnyObject
 				// When reading objects, we should be less strict, so working with the return type is less of a pain to work with
 			> = Read extends "read" ? AnyOf<O> : O;
 
@@ -680,6 +679,10 @@ declare global {
 			type: 'state';
 			common: StateCommon;
 			acl?: StateACL;
+			/** The IDs of enums this state is assigned to. For example ["enum.functions.Licht","enum.rooms.Garten"] */
+			enumIds?: Array<iobJS.StringOrTranslated>;
+			/** The names of enums this state is assigned to. For example ["Licht","Garten"] */
+			enumNames?: Array<iobJS.StringOrTranslated>;
 		}
 		interface PartialStateObject extends Partial<Omit<StateObject, 'common' | 'acl'>> {
 			common?: Partial<StateCommon>;
@@ -864,9 +867,9 @@ declare global {
 			deviceId?: string;
 			deviceName?: string;
 			/** The IDs of enums this state is assigned to. For example ["enum.functions.Licht","enum.rooms.Garten"] */
-			enumIds?: string[];
+			enumIds?: Array<iobJS.StringOrTranslated>;
 			/** The names of enums this state is assigned to. For example ["Licht","Garten"] */
-			enumNames?: string[];
+			enumNames?: Array<iobJS.StringOrTranslated>;
 			/** new state */
 			state: State<TNew>;
 			/** @deprecated Use state instead **/
