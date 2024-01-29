@@ -62,6 +62,7 @@
     "@alcalzone/release-script": "^3.7.0",
     "@alcalzone/release-script-plugin-iobroker": "^3.7.0",
     "@alcalzone/release-script-plugin-license": "^3.7.0",
+    "@alcalzone/release-script-plugin-manual-review": "^3.7.0",
     "@iobroker/adapter-dev": "^1.2.0",
     "@iobroker/dev-server": "^0.7.1",
     "@types/iobroker": "^4.0.5",
