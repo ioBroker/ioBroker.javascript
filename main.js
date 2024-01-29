@@ -1694,9 +1694,11 @@ function addToNames(obj) {
         if (!context.names[name]) {
             context.names[name] = id;
         } else {
+            // convert to array
             if (!Array.isArray(context.names[name])) {
                 context.names[name] = [context.names[name]];
             }
+
             context.names[name].push(id);
         }
     }
@@ -1706,12 +1708,12 @@ function removeFromNames(id) {
     const n = getName(id);
 
     if (n) {
-        let pos;
         if (Array.isArray(context.names[n])) {
-            pos = context.names[n].indexOf(id);
-            if (pos !== -1) {
+            const pos = context.names[n].indexOf(id);
+            if (pos > -1) {
                 context.names[n].splice(pos, 1);
-                if (context.names[n].length) {
+
+                if (context.names[n].length === 1) {
                     context.names[n] = context.names[n][0];
                 }
             }
@@ -1722,19 +1724,16 @@ function removeFromNames(id) {
 }
 
 function getName(id) {
-    let pos;
     for (const n in context.names) {
-        if (Object.prototype.hasOwnProperty.call(context, n)) {
-            if (context.names[n] && Array.isArray(context.names[n])) {
-                pos = context.names[n].indexOf(id);
-                if (pos !== -1) {
-                    return n;
-                }
-            } else if (context.names[n] === id) {
+        if (context.names[n] && Array.isArray(context.names[n])) {
+            if (context.names[n].includes(id)) {
                 return n;
             }
+        } else if (context.names[n] === id) {
+            return n;
         }
     }
+
     return null;
 }
 

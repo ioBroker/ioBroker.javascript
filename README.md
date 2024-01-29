@@ -50,6 +50,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 
 * (klein0r) Added block for multiple or conditions
 * (klein0r) Raised supported ecmaVersion from es2018 to es2021
+* (klein0r) Fixed getIdByName (returned the same id as array)
 
 ### 7.7.0 (2024-01-14)
 
