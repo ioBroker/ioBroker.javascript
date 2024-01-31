@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2022 bluefox <dogafox@gmail.com>,
+ * Copyright (c) 2014-2024 bluefox <dogafox@gmail.com>,
  *
  * Copyright (c) 2014      hobbyquaker
 */
@@ -18,7 +18,6 @@
 const vm            = require('node:vm');
 const nodeFS        = require('node:fs');
 const nodePath      = require('node:path');
-const CoffeeScript  = require('coffeescript');
 const tsc           = require('virtual-tsc');
 const Mirror        = require('./lib/mirror');
 const fork          = require('child_process').fork;
@@ -1106,20 +1105,6 @@ function main() {
                         if (checkIsGlobal(obj)) {
                             if (obj && obj.common) {
                                 const engineType = (obj.common.engineType || '').toLowerCase();
-                                // TODO: BF - 2022.07.18 - Remove it completely in next release
-                                if (engineType.startsWith('coffee')) {
-                                    try {
-                                        obj.common.source = CoffeeScript.compile(obj.common.source, { bare: true });
-                                        obj.common.engineType = 'Javascript/js';
-                                        adapter.setForeignObject(obj._id, obj);
-                                        adapter.log.info(`Converted global coffescript "${obj._id}" to js permanently: \n ${obj.common.source}`);
-                                    } catch (err) {
-                                        obj.common.enabled = false;
-                                        adapter.setForeignObject(obj._id, obj); // try to write scrips as fast as possible to avoid multiple restarts
-                                        adapter.log.error(`coffee compile ${err}`);
-                                    }
-                                    continue; // it will be used after adapter restart
-                                }
 
                                 if (obj.common.enabled) {
                                     if (engineType.startsWith('typescript')) {
@@ -1216,21 +1201,6 @@ function main() {
                                         }
                                     }
 
-                                }
-                            }
-                        } else if (obj && obj.common) {
-                            const engineType = (obj.common.engineType || '').toLowerCase();
-                            // TODO: BF - 2022.07.18 - Remove it completely in next release
-                            if (engineType.startsWith('coffee')) {
-                                try {
-                                    obj.common.source = CoffeeScript.compile(obj.common.source, { bare: true });
-                                    obj.common.engineType = 'Javascript/js';
-                                    await adapter.setForeignObjectAsync(obj._id, obj);
-                                    adapter.log.info(`Converted coffescript "${obj._id}" to js permanently: \n ${obj.common.source}`);
-                                } catch (err) {
-                                    obj.common.enabled = false;
-                                    adapter.setForeignObject(obj._id, obj);
-                                    adapter.log.error(`coffee compile ${err}`);
                                 }
                             }
                         }

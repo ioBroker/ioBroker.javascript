@@ -48,6 +48,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 -->
 ### **WORK IN PROGRESS**
 
+* (klein0r) Droped support of coffeescript (deprecated since version 6.0.0)
 * (klein0r) Raise warning if more than 100 triggers have been registered
 
 ### 7.8.0 (2024-01-29)

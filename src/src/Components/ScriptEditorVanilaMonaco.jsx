@@ -186,7 +186,7 @@ class ScriptEditor extends React.Component {
         }
     }
 
-    /** @typedef {"javascript" | "typescript" | "coffeescript"} EditorLanguage */
+    /** @typedef {"javascript" | "typescript"} EditorLanguage */
 
     /**
      * Sets the language of the code editor

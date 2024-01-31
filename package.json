@@ -38,7 +38,6 @@
     "node": ">=16"
   },
   "depsComment": {
-    "coffee-script": "is required only for node 14. As coffee-compiler requires coffeescript for nodes>14 and coffee-script for nodes<=14",
     "@types/node": "should match the lowest MAJOR version of Node.js we support."
   },
   "dependencies": {
@@ -46,7 +45,6 @@
     "@types/node": "^20.11.5",
     "@types/request": "^2.48.12",
     "axios": "^1.6.5",
-    "coffeescript": "^2.7.0",
     "jsonata": "^2.0.3",
     "jszip": "^3.10.1",
     "node-inspect": "^2.0.0",

@@ -71,7 +71,7 @@ class ScriptEditor extends React.Component {
         return <MonacoEditor
             width="100%"
             height="100%"
-            languages={['javascript', 'typescript', 'coffeescript']}
+            languages={['javascript', 'typescript']}
             language={this.state.language}
             theme={this.state.isDark ? 'vs-dark': ''}
             value={this.originalCode}
