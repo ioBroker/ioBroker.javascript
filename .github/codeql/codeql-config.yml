@@ -13,7 +13,6 @@ paths-ignore:
   - src/build
   - admin
   - admin-config
-  - old-admin
   - test
   - detection
   - docs
