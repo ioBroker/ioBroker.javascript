@@ -11,7 +11,7 @@
         "@iobroker/type-detector": "^3.0.5",
         "@mui/icons-material": "^5.15.3",
         "@mui/material": "^5.15.5",
-        "@mui/styles": "^5.15.5",
+        "@mui/styles": "^5.15.7",
         "@mui/x-date-pickers": "^6.19.0",
         "@sentry/browser": "^7.93.0",
         "@sentry/integrations": "^7.93.0",
