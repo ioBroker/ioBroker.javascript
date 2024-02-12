@@ -411,7 +411,7 @@ Blockly.Blocks['sendto_otherscript'] = {
             .setCheck(null);
 
         this.appendDummyInput()
-            .appendField(Blockly.Translate('timeouts_wait'))
+            .appendField(Blockly.Translate('sendto_otherscript_timeout'))
             .appendField(new Blockly.FieldTextInput(1000), 'TIMEOUT')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('timeouts_settimeout_ms'), 'ms'],
