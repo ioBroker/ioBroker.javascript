@@ -1,7 +1,6 @@
 {
   "common": {
     "name": "javascript",
-    "title": "Script Engine",
     "titleLang": {
       "en": "Script Engine",
       "de": "Skriptausführung",
