@@ -17,9 +17,7 @@ Blockly.Object = {
 // --- object new --------------------------------------------------
 Blockly.Object.blocks['object_new'] =
     '<block type="object_new">'
-    + '     <value name="NAME">'
-    + '     </value>'
-    + '     <mutation with_statement="false" items="attribute1"></mutation>'
+    + '    <mutation items=""></mutation>'
     + '</block>';
 
 Blockly.Blocks['object_new_container'] = {
@@ -70,7 +68,7 @@ Blockly.Blocks['object_new'] = {
 
         this.setColour(Blockly.Object.HUE);
 
-        this.itemCount_ = 1;
+        this.itemCount_ = 0;
         this.updateShape_();
         this.setInputsInline(false);
         this.setOutput(true);
@@ -90,13 +88,12 @@ Blockly.Blocks['object_new'] = {
         const container = document.createElement('mutation');
         const names = [];
         for (let i = 0; i < this.itemCount_; i++) {
-            const input = this.getInput('ARG' + i);
+            const input = this.getInput('attribute' + i);
             names[i] = input.fieldRow[0].getValue();
         }
 
         container.setAttribute('items', names.join(','));
-        const withStatement = this.getFieldValue('WITH_STATEMENT');
-        container.setAttribute('with_statement', withStatement === 'TRUE' || withStatement === 'true' || withStatement === true);
+
         return container;
     },
     /**
@@ -105,10 +102,13 @@ Blockly.Blocks['object_new'] = {
      * @this Blockly.Block
      */
     domToMutation: function (xmlElement) {
-        const names = xmlElement.getAttribute('items').split(',');
-        this.itemCount_ = names.length;
-        const withStatement = xmlElement.getAttribute('with_statement');
-        this.updateShape_(names, withStatement === true || withStatement === 'true' || withStatement === 'TRUE');
+        const items = xmlElement.getAttribute('items');
+        if (items !== '') {
+            const names = items.split(',');
+            this.itemCount_ = names.length;
+
+            this.updateShape_(names);
+        }
     },
     /**
      * Populate the mutator's dialog with this block's components.
@@ -145,7 +145,7 @@ Blockly.Blocks['object_new'] = {
         }
         // Disconnect any children that don't belong.
         for (let i = 0; i < this.itemCount_; i++) {
-            const input = this.getInput('ARG' + i);
+            const input = this.getInput('attribute' + i);
             const connection = input.connection.targetConnection;
             names[i] = input.fieldRow[0].getValue();
             if (connection && !connections.includes(connection)) {
@@ -153,20 +153,19 @@ Blockly.Blocks['object_new'] = {
             }
         }
         this.itemCount_ = connections.length;
-        if (this.itemCount_ < 1) {
-            this.itemCount_ = 1;
+        if (this.itemCount_ < 0) {
+            this.itemCount_ = 0;
         }
         this.updateShape_(names);
         // Reconnect any child blocks.
         for (let j = 0; j < this.itemCount_; j++) {
-            Blockly.Mutator.reconnect(connections[j], this, 'ARG' + j);
-
+            Blockly.Mutator.reconnect(connections[j], this, 'attribute' + j);
         }
     },
     getArgNames_: function () {
         const names = [];
         for (let n = 0; n < this.itemCount_; n++) {
-            const input = this.getInput('ARG' + n);
+            const input = this.getInput('attribute' + n);
             names.push(input.fieldRow[0].getValue());
         }
         return names;
@@ -180,7 +179,7 @@ Blockly.Blocks['object_new'] = {
         let itemBlock = containerBlock.getInputTargetBlock('STACK');
         let i = 0;
         while (itemBlock) {
-            const input = this.getInput('ARG' + i);
+            const input = this.getInput('attribute' + i);
             itemBlock.valueConnection_ = input && input.connection.targetConnection;
             itemBlock = itemBlock.nextConnection && itemBlock.nextConnection.targetBlock();
             i++;
@@ -191,24 +190,21 @@ Blockly.Blocks['object_new'] = {
      * @private
      * @this Blockly.Block
      */
-    updateShape_: function (names, withStatement) {
+    updateShape_: function (names) {
         names = names || [];
         let _input;
         const wp = this.workspace;
-        if (withStatement === undefined) {
-            withStatement = this.getFieldValue('WITH_STATEMENT');
-            withStatement = withStatement === true || withStatement === 'true' || withStatement === 'TRUE';
-        }
-
-        this.getInput('STATEMENT') && this.removeInput('STATEMENT');
 
         // Add new inputs.
         let i;
         for (i = 0; i < this.itemCount_; i++) {
-            _input = this.getInput('ARG' + i);
+            _input = this.getInput('attribute' + i);
 
-            if (!_input) {
-                _input = this.appendValueInput('ARG' + i);
+            console.log('created input ' + i + ' --- ' + this.itemCount_);
+
+            if (!_input) {;
+                _input = this.appendValueInput('attribute' + i);
+
                 if (!names[i]) {
                     names[i] = 'attribute' + (i + 1);
                 }
@@ -241,12 +237,12 @@ Blockly.Blocks['object_new'] = {
 
         // Remove deleted inputs.
         const blocks = [];
-        while (_input = this.getInput('ARG' + i)) {
+        while (_input = this.getInput('attribute' + i)) {
             const b = _input.connection.targetBlock();
             if (b && b.isShadow()) {
                 blocks.push(b);
             }
-            this.removeInput('ARG' + i);
+            this.removeInput('attribute' + i);
             i++;
         }
 
@@ -258,11 +254,6 @@ Blockly.Blocks['object_new'] = {
                 }
             }, 100);
         }
-
-        // Add or remove a statement Input.
-        if (withStatement) {
-            this.appendStatementInput('STATEMENT');
-        }
     }
 };
 
@@ -270,8 +261,8 @@ Blockly.JavaScript['object_new'] = function (block) {
     const args = [];
 
     for (let n = 0; n < block.itemCount_; n++) {
-        const input = this.getInput('ARG' + n);
-        let val = Blockly.JavaScript.valueToCode(block, 'ARG' + n, Blockly.JavaScript.ORDER_COMMA);
+        const input = this.getInput('attribute' + n);
+        let val = Blockly.JavaScript.valueToCode(block, 'attribute' + n, Blockly.JavaScript.ORDER_COMMA);
         // if JSON
         if (val && val[0] === "'" && val[1] === '{') {
             val = val.substring(1, val.length - 1);
