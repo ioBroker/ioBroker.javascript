@@ -281,3 +281,43 @@ Blockly.JavaScript['object_new'] = function (block) {
 
     return [`{ ${args.length ? args.join(', ') : ''} }`, Blockly.JavaScript.ORDER_ATOMIC];
 };
+
+// --- get attribute --------------------------------------------------
+Blockly.Object.blocks['object_has_attr'] =
+    '<block type="object_has_attr">'
+    + '     <value name="OBJECT">'
+    + '         <shadow type="get_object">'
+    + '             <field name="OID">Object ID</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="ATTR">'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">attribute1</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['object_has_attr'] = {
+    init: function() {
+        this.appendValueInput('OBJECT')
+            .appendField(Blockly.Translate('object_has_attr'));
+
+        this.appendValueInput('ATTR')
+            .setCheck(null)
+            .appendField(Blockly.Translate('object_has_attr_attr'));
+
+        this.setInputsInline(true);
+        this.setOutput(true, 'Boolean');
+
+        this.setColour(Blockly.Object.HUE);
+        this.setTooltip(Blockly.Translate('get_attr_tooltip'));
+        //this.setHelpUrl(getHelp('get_attr_help'));
+    }
+};
+
+Blockly.JavaScript['object_has_attr'] = function(block) {
+    const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
+    const attr = Blockly.JavaScript.valueToCode(block, 'ATTR', Blockly.JavaScript.ORDER_ATOMIC);
+
+    return [`Object.prototype.hasOwnProperty.call(${obj}, ${attr})`, Blockly.JavaScript.ORDER_ATOMIC];
+};
