@@ -336,9 +336,6 @@ Blockly.Object.blocks['object_has_attr'] =
     + '         </shadow>'
     + '     </value>'
     + '     <value name="ATTR">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">attribute1</field>'
-    + '         </shadow>'
     + '     </value>'
     + '</block>';
 
@@ -347,9 +344,9 @@ Blockly.Blocks['object_has_attr'] = {
         this.appendValueInput('OBJECT')
             .appendField(Blockly.Translate('object_has_attr'));
 
-        this.appendValueInput('ATTR')
-            .setCheck(null)
-            .appendField(Blockly.Translate('object_has_attr_attr'));
+        this.appendDummyInput('ATTR')
+            .appendField(Blockly.Translate('object_has_attr_attr'))
+            .appendField(new Blockly.FieldTextInput('attribute1'), 'ATTR');
 
         this.setInputsInline(true);
         this.setOutput(true, 'Boolean');
