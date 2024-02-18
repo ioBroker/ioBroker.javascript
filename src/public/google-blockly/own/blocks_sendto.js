@@ -271,7 +271,7 @@ Blockly.Blocks['sendto_custom'] = {
                 //console.log('Exist ' + names[i]);
                 setTimeout(function (_input, name) {
                     if (!_input.connection.isConnected()) {
-                        console.log('Create ' + name);
+                        //console.log('Create ' + name);
                         const shadow = wp.newBlock('text');
                         shadow.setShadow(true);
                         shadow.initSvg();

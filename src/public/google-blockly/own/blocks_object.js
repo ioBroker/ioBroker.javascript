@@ -200,8 +200,6 @@ Blockly.Blocks['object_new'] = {
         for (i = 0; i < this.itemCount_; i++) {
             _input = this.getInput('attribute' + i);
 
-            console.log('created input ' + i + ' --- ' + this.itemCount_);
-
             if (!_input) {;
                 _input = this.appendValueInput('attribute' + i);
 
@@ -224,7 +222,7 @@ Blockly.Blocks['object_new'] = {
                 //console.log('Exist ' + names[i]);
                 setTimeout(function (_input, name) {
                     if (!_input.connection.isConnected()) {
-                        console.log('Create ' + name);
+                        //console.log('Create ' + name);
                         const shadow = wp.newBlock('text');
                         shadow.setShadow(true);
                         shadow.initSvg();
