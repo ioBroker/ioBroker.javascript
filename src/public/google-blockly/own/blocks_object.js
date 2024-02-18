@@ -282,7 +282,52 @@ Blockly.JavaScript['object_new'] = function (block) {
     return [`{ ${args.length ? args.join(', ') : ''} }`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
-// --- get attribute --------------------------------------------------
+// --- set attribute --------------------------------------------------
+Blockly.Object.blocks['object_set_attr'] =
+    '<block type="object_set_attr">'
+    + '     <value name="ATTR">'
+    + '     </value>'
+    + '     <value name="OBJECT">'
+    + '     </value>'
+    + '     <value name="VALUE">'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">value</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['object_set_attr'] = {
+    init: function() {
+        this.appendDummyInput('ATTR')
+            .appendField(Blockly.Translate('object_set_attr'))
+            .appendField(new Blockly.FieldTextInput('attribute1'), 'ATTR');
+
+        this.appendValueInput('OBJECT')
+            .appendField(Blockly.Translate('object_set_attr_object'));
+
+        this.appendValueInput('VALUE')
+            .setCheck(null)
+            .appendField(Blockly.Translate('object_set_attr_value'));
+
+        this.setInputsInline(false);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setColour(Blockly.Object.HUE);
+        this.setTooltip(Blockly.Translate('object_set_attr_tooltip'));
+        //this.setHelpUrl(getHelp('object_set_attr_help'));
+    }
+};
+
+Blockly.JavaScript['object_set_attr'] = function(block) {
+    const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
+    const attr = block.getFieldValue('ATTR');
+    const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+
+    return `(() => { const obj = ${obj}; if (typeof obj === 'object') { obj['${attr}'] = ${value}; } })();\n`;
+};
+
+// --- has attribute --------------------------------------------------
 Blockly.Object.blocks['object_has_attr'] =
     '<block type="object_has_attr">'
     + '     <value name="OBJECT">'
@@ -310,8 +355,8 @@ Blockly.Blocks['object_has_attr'] = {
         this.setOutput(true, 'Boolean');
 
         this.setColour(Blockly.Object.HUE);
-        this.setTooltip(Blockly.Translate('get_attr_tooltip'));
-        //this.setHelpUrl(getHelp('get_attr_help'));
+        this.setTooltip(Blockly.Translate('object_has_attr_tooltip'));
+        //this.setHelpUrl(getHelp('object_has_attr_help'));
     }
 };
 
