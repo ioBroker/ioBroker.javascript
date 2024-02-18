@@ -320,11 +320,54 @@ Blockly.Blocks['object_set_attr'] = {
 };
 
 Blockly.JavaScript['object_set_attr'] = function(block) {
-    const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
+    let obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
 
+    if (!obj) {
+        obj = '{}';
+    }
+
     return `(() => { const obj = ${obj}; if (typeof obj === 'object') { obj['${attr}'] = ${value}; } })();\n`;
+};
+
+// --- delete attribute --------------------------------------------------
+Blockly.Object.blocks['object_del_attr'] =
+    '<block type="object_del_attr">'
+    + '     <value name="ATTR">'
+    + '     </value>'
+    + '     <value name="OBJECT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['object_del_attr'] = {
+    init: function() {
+        this.appendDummyInput('ATTR')
+            .appendField(Blockly.Translate('object_del_attr'))
+            .appendField(new Blockly.FieldTextInput('attribute1'), 'ATTR');
+
+        this.appendValueInput('OBJECT')
+            .appendField(Blockly.Translate('object_del_attr_object'));
+
+        this.setInputsInline(false);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setColour(Blockly.Object.HUE);
+        this.setTooltip(Blockly.Translate('object_del_attr_tooltip'));
+        //this.setHelpUrl(getHelp('object_del_attr_help'));
+    }
+};
+
+Blockly.JavaScript['object_del_attr'] = function(block) {
+    let obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
+    const attr = block.getFieldValue('ATTR');
+
+    if (!obj) {
+        obj = '{}';
+    }
+
+    return `(() => { const obj = ${obj}; if (typeof obj === 'object') { delete obj['${attr}']; } })();\n`;
 };
 
 // --- has attribute --------------------------------------------------
