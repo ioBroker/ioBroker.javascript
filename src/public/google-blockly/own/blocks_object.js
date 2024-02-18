@@ -10,7 +10,7 @@ Blockly.CustomBlocks = Blockly.CustomBlocks || [];
 Blockly.CustomBlocks.push('Object');
 
 Blockly.Object = {
-    HUE: 185,
+    HUE: 40,
     blocks: {},
 };
 
@@ -48,7 +48,7 @@ Blockly.Blocks['object_new_item'] = {
         this.setColour(Blockly.Object.HUE);
 
         this.appendDummyInput('NAME')
-            .appendField(Blockly.Translate('object_new'));
+            .appendField(Blockly.Translate('object_new_attribute'));
 
         this.setPreviousStatement(true);
         this.setNextStatement(true);
@@ -65,6 +65,9 @@ Blockly.Blocks['object_new'] = {
     init: function () {
         const options = [];
 
+        this.appendDummyInput('NAME')
+            .appendField(Blockly.Translate('object_new'));
+
         this.setColour(Blockly.Object.HUE);
 
         this.itemCount_ = 1;
@@ -76,7 +79,7 @@ Blockly.Blocks['object_new'] = {
         this.setNextStatement(null, null);
         this.setMutator(new Blockly.Mutator(['object_new_item']));
         this.setTooltip(Blockly.Translate('object_new_tooltip'));
-        this.setHelpUrl(getHelp('object_new_help'));
+        //this.setHelpUrl(getHelp('object_new_help'));
    },
     /**
      * Create XML to represent number of text inputs.
@@ -207,7 +210,7 @@ Blockly.Blocks['object_new'] = {
             if (!_input) {
                 _input = this.appendValueInput('ARG' + i);
                 if (!names[i]) {
-                    names[i] = Blockly.Translate('object_new_attribute') + (i + 1);
+                    names[i] = 'attribute' + (i + 1);
                 }
                 _input.appendField(new Blockly.FieldTextInput(names[i]));
                 setTimeout(function (_input) {

@@ -5,6 +5,14 @@ if (typeof Blockly === 'undefined') {
 Blockly.Words = {};
 
 // --- ACTION --------------------------------------------------
+Blockly.Words['Object']                               = {'en': 'Object',                                          'de': 'Objekt',                                          'ru': 'Объект',                                          'pt': 'Objeto',                                          'nl': 'Doel',                                            'fr': 'Objet',                                           'it': 'Oggetto',                                         'es': 'Objeto',                                          'pl': 'Obiekt',                                          'zh-cn': '对象',                                               'uk': 'Об\'єкт'};
+
+Blockly.Words['object_new']                           = {'en': 'New object',                                      'de': 'Neues Objekt',                                    'ru': 'Новый объект',                                    'pt': 'Novo objeto',                                     'nl': 'Nieuw object',                                    'fr': 'Nouvel objet',                                    'it': 'Nuovo oggetto',                                   'es': 'Nuevo objeto',                                    'pl': 'Nowy obiekt',                                     'zh-cn': '新对象',                                             'uk': 'Новий об\'єкт'};
+Blockly.Words['object_new_attributes']                = {'en': 'Attributes',                                      'de': 'Attribute',                                       'ru': 'Атрибуты',                                        'pt': 'Atributos',                                       'nl': 'Attributen',                                      'fr': 'Attributs',                                       'it': 'Attributi',                                       'es': 'Atributos',                                       'pl': 'Atrybuty',                                        'zh-cn': '属性',                                               'uk': 'Атрибути'};
+Blockly.Words['object_new_attribute']                 = {'en': 'Attribute',                                       'de': 'Attribut',                                        'ru': 'Attribute',                                       'pt': 'Atributo',                                        'nl': 'Attribuut',                                       'fr': 'Attribut',                                        'it': 'Attribuzione',                                    'es': 'Attribute',                                       'pl': 'Atrybut',                                         'zh-cn': '属性',                                               'uk': 'Атрибут'};
+Blockly.Words['object_new_tooltip']                   = {'en': 'New object',                                      'de': 'Neues Objekt',                                    'ru': 'Новый объект',                                    'pt': 'Novo objeto',                                     'nl': 'Nieuw object',                                    'fr': 'Nouvel objet',                                    'it': 'Nuovo oggetto',                                   'es': 'Nuevo objeto',                                    'pl': 'Nowy obiekt',                                     'zh-cn': '新对象',                                             'uk': 'Новий об\'єкт'};
+
+// --- ACTION --------------------------------------------------
 Blockly.Words['Action']                               = {'en': 'Actions',                                         'de': 'Aktionen',                                        'ru': 'Действия',                                        'pt': 'Ações',                                           'nl': 'Acties',                                          'fr': 'Actes',                                           'it': 'Azioni',                                          'es': 'Comportamiento',                                  'pl': 'Actions',                                         'zh-cn': '系统指令',                                            'uk': 'Дії'};
 
 // --- action selector --------------------------------------------------
@@ -538,13 +546,13 @@ Blockly.Words['logic_ifempty_then']                   = {'en': 'then',          
 Blockly.Words['logic_ifempty_tooltip']                = {'en': 'check if empty',                                  'de': 'Überprüfen, ob es leer ist',                      'ru': 'проверить, если пусто',                           'pt': 'verifique se está vazio',                         'nl': 'controleer of leeg',                              'fr': 'vérifier si vide',                                'it': 'controlla se vuoto',                              'es': 'comprobar si está vacío',                         'pl': 'sprawdź, czy jest pusty',                         'zh-cn': '检查是否为空',                                          'uk': 'перевірити, чи порожній'};
 
 function getHelp(word) {
-    return 'https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#' + Blockly.Words[word][systemLang];
+    return `https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#${Blockly.Words?.[word]?.[systemLang] || Blockly.Words[word]?.en || word}`;
 }
 
 Blockly.Translate = function (word, lang) {
     lang = lang || systemLang;
     if (Blockly.Words && Blockly.Words[word]) {
-        return Blockly.Words[word][lang] || Blockly.Words[word].en;
+        return Blockly.Words[word]?.[lang] || Blockly.Words[word]?.en || word;
     } else {
         return word;
     }
