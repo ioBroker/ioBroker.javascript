@@ -17,7 +17,7 @@ Blockly.Object = {
 // --- object new --------------------------------------------------
 Blockly.Object.blocks['object_new'] =
     '<block type="object_new">'
-    + '    <mutation attributes=""></mutation>'
+    + '    <mutation></mutation>'
     + '</block>';
 
 Blockly.Blocks['object_new_container'] = {
@@ -82,7 +82,6 @@ Blockly.Blocks['object_new'] = {
      */
     mutationToDom: function () {
         const container = document.createElement('mutation');
-        container.setAttribute('attributes', this.attributes_.join(','));
 
         for (let i = 0; i < this.attributes_.length; i++) {
             const parameter = document.createElement('attribute');
@@ -99,17 +98,13 @@ Blockly.Blocks['object_new'] = {
      * @this Blockly.Block
      */
     domToMutation: function (xmlElement) {
+        this.attributes_ = [];
+
         for (let i = 0, childNode; (childNode = xmlElement.childNodes[i]); i++) {
             if (childNode.nodeName.toLowerCase() === 'attribute') {
-                console.log('xxxx -> ' + childNode.getAttribute('id') + ' -> ' + childNode.getAttribute('name'));
+                // console.log('attribute -> ' + childNode.getAttribute('id') + ' -> ' + childNode.getAttribute('name'));
+                this.attributes_.push(childNode.getAttribute('name'));
             }
-        }
-
-        const attributes = xmlElement.getAttribute('attributes');
-        if (attributes !== '') {
-            this.attributes_ = attributes.split(',');
-        } else {
-            this.attributes_ = [];
         }
 
         this.itemCount_ = this.attributes_.length;
@@ -142,14 +137,14 @@ Blockly.Blocks['object_new'] = {
      * @this Blockly.Block
      */
     compose: function (containerBlock) {
-        this.newAttributes_ = [];
+        this.attributes_ = [];
 
         let itemBlock = containerBlock.getInputTargetBlock('STACK');
         // Count number of inputs.
         const connections = [];
         while (itemBlock) {
             const attrName = itemBlock.getFieldValue('ATTR');
-            this.newAttributes_.push(attrName);
+            this.attributes_.push(attrName);
 
             connections.push(itemBlock.valueConnection_);
             itemBlock = itemBlock.nextConnection &&
@@ -164,7 +159,6 @@ Blockly.Blocks['object_new'] = {
             }
         }
 
-        this.attributes_ = this.newAttributes_;
         this.itemCount_ = connections.length;
         if (this.itemCount_ < 0) {
             this.itemCount_ = 0;
@@ -208,22 +202,20 @@ Blockly.Blocks['object_new'] = {
             if (!input) {
                 input = this.appendValueInput('ATTR_' + i).setAlign(Blockly.ALIGN_RIGHT);
                 input.appendField(this.attributes_[i]);
-
-                /*
-                setTimeout(function (_input) {
-                    if (!_input.connection.isConnected()) {
-                        const _shadow = workspace.newBlock('text');
-                        _shadow.setShadow(true);
-                        _shadow.initSvg();
-                        _shadow.render();
-                        _shadow.outputConnection.connect(_input.connection);
-                        //console.log('New ' + this.attributes_[i]);
-                    }
-                }, 100, input);
-                */
             } else {
                 input.fieldRow[0].setValue(this.attributes_[i]);
             }
+
+            setTimeout((_input) => {
+                if (!_input.connection.isConnected()) {
+                    const _shadow = workspace.newBlock('text');
+                    _shadow.setShadow(true);
+                    _shadow.initSvg();
+                    _shadow.render();
+                    _shadow.outputConnection.connect(_input.connection);
+                    //console.log('New ' + this.attributes_[i]);
+                }
+            }, 100, input);
         }
         // Remove deleted inputs.
         for (let i = this.itemCount_; this.getInput('ATTR_' + i); i++) {
