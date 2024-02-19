@@ -17,7 +17,7 @@ Blockly.Object = {
 // --- object new --------------------------------------------------
 Blockly.Object.blocks['object_new'] =
     '<block type="object_new">'
-    + '    <mutation items=""></mutation>'
+    + '    <mutation attributes=""></mutation>'
     + '</block>';
 
 Blockly.Blocks['object_new_container'] = {
@@ -25,60 +25,56 @@ Blockly.Blocks['object_new_container'] = {
      * Mutator block for container.
      * @this Blockly.Block
      */
-    init: function () {
+    init: function() {
         this.setColour(Blockly.Object.HUE);
 
         this.appendDummyInput()
             .appendField(Blockly.Translate('object_new_attributes'));
 
         this.appendStatementInput('STACK');
-        this.setTooltip(Blockly.Translate('object_new_arg_tooltip'));
+        this.setTooltip(Blockly.Translate('object_new_tooltip'));
+
         this.contextMenu = false;
     }
 };
 
-Blockly.Blocks['object_new_item'] = {
+Blockly.Blocks['object_new_mutator'] = {
     /**
      * Mutator block for add items.
      * @this Blockly.Block
      */
-    init: function () {
+    init: function() {
         this.setColour(Blockly.Object.HUE);
 
-        this.appendDummyInput('NAME')
-            .appendField(Blockly.Translate('object_new_attribute'));
+        this.appendDummyInput('ATTR')
+            .appendField(Blockly.Translate('object_new_attribute'))
+            .appendField(new Blockly.FieldTextInput('attribute1'), 'ATTR');
 
         this.setPreviousStatement(true);
         this.setNextStatement(true);
-        this.setTooltip(Blockly.Translate('object_new_arg_tooltip'));
+
+        this.setTooltip(Blockly.Translate('object_new_tooltip'));
+
         this.contextMenu = false;
     }
 };
 
 Blockly.Blocks['object_new'] = {
-    /**
-     * Block for creating a string made up of any number of elements of any type.
-     * @this Blockly.Block
-     */
-    init: function () {
-        const options = [];
-
+    init: function() {
         this.appendDummyInput('NAME')
             .appendField(Blockly.Translate('object_new'));
 
-        this.setColour(Blockly.Object.HUE);
-
+        this.attributes_ = [];
         this.itemCount_ = 0;
-        this.updateShape_();
+        this.setMutator(new Blockly.Mutator(['object_new_mutator']));
+
         this.setInputsInline(false);
         this.setOutput(true);
 
-        this.setPreviousStatement(null, null);
-        this.setNextStatement(null, null);
-        this.setMutator(new Blockly.Mutator(['object_new_item']));
+        this.setColour(Blockly.Object.HUE);
         this.setTooltip(Blockly.Translate('object_new_tooltip'));
         //this.setHelpUrl(getHelp('object_new_help'));
-   },
+    },
     /**
      * Create XML to represent number of text inputs.
      * @return {!Element} XML storage element.
@@ -86,13 +82,14 @@ Blockly.Blocks['object_new'] = {
      */
     mutationToDom: function () {
         const container = document.createElement('mutation');
-        const names = [];
-        for (let i = 0; i < this.itemCount_; i++) {
-            const input = this.getInput('attribute' + i);
-            names[i] = input.fieldRow[0].getValue();
-        }
+        container.setAttribute('attributes', this.attributes_.join(','));
 
-        container.setAttribute('items', names.join(','));
+        for (let i = 0; i < this.attributes_.length; i++) {
+            const parameter = document.createElement('attribute');
+            parameter.setAttribute('id', 'ATTR_' + i);
+            parameter.setAttribute('name', this.attributes_[i]);
+            container.appendChild(parameter);
+        }
 
         return container;
     },
@@ -102,13 +99,21 @@ Blockly.Blocks['object_new'] = {
      * @this Blockly.Block
      */
     domToMutation: function (xmlElement) {
-        const items = xmlElement.getAttribute('items');
-        if (items !== '') {
-            const names = items.split(',');
-            this.itemCount_ = names.length;
-
-            this.updateShape_(names);
+        for (let i = 0, childNode; (childNode = xmlElement.childNodes[i]); i++) {
+            if (childNode.nodeName.toLowerCase() === 'attribute') {
+                console.log('xxxx -> ' + childNode.getAttribute('id') + ' -> ' + childNode.getAttribute('name'));
+            }
         }
+
+        const attributes = xmlElement.getAttribute('attributes');
+        if (attributes !== '') {
+            this.attributes_ = attributes.split(',');
+        } else {
+            this.attributes_ = [];
+        }
+
+        this.itemCount_ = this.attributes_.length;
+        this.updateShape_();
     },
     /**
      * Populate the mutator's dialog with this block's components.
@@ -119,13 +124,16 @@ Blockly.Blocks['object_new'] = {
     decompose: function (workspace) {
         const containerBlock = workspace.newBlock('object_new_container');
         containerBlock.initSvg();
+
         let connection = containerBlock.getInput('STACK').connection;
         for (let i = 0; i < this.itemCount_; i++) {
-            const itemBlock = workspace.newBlock('object_new_item');
+            const itemBlock = workspace.newBlock('object_new_mutator');
+            itemBlock.setFieldValue(this.attributes_[i], 'ATTR');
             itemBlock.initSvg();
             connection.connect(itemBlock.previousConnection);
             connection = itemBlock.nextConnection;
         }
+
         return containerBlock;
     },
     /**
@@ -134,55 +142,55 @@ Blockly.Blocks['object_new'] = {
      * @this Blockly.Block
      */
     compose: function (containerBlock) {
+        this.newAttributes_ = [];
+
         let itemBlock = containerBlock.getInputTargetBlock('STACK');
         // Count number of inputs.
         const connections = [];
-        const names = [];
         while (itemBlock) {
+            const attrName = itemBlock.getFieldValue('ATTR');
+            this.newAttributes_.push(attrName);
+
             connections.push(itemBlock.valueConnection_);
             itemBlock = itemBlock.nextConnection &&
                 itemBlock.nextConnection.targetBlock();
         }
+
         // Disconnect any children that don't belong.
-        for (let i = 0; i < this.itemCount_; i++) {
-            const input = this.getInput('attribute' + i);
-            const connection = input.connection.targetConnection;
-            names[i] = input.fieldRow[0].getValue();
+        for (let k = 0; k < this.itemCount_; k++) {
+            const connection = this.getInput('ATTR_' + k).connection.targetConnection;
             if (connection && !connections.includes(connection)) {
                 connection.disconnect();
             }
         }
+
+        this.attributes_ = this.newAttributes_;
         this.itemCount_ = connections.length;
         if (this.itemCount_ < 0) {
             this.itemCount_ = 0;
         }
-        this.updateShape_(names);
+        this.updateShape_();
+
         // Reconnect any child blocks.
-        for (let j = 0; j < this.itemCount_; j++) {
-            Blockly.Mutator.reconnect(connections[j], this, 'attribute' + j);
+        for (let i = 0; i < this.itemCount_; i++) {
+            Blockly.Mutator.reconnect(connections[i], this, 'ATTR_' + i);
         }
-    },
-    getArgNames_: function () {
-        const names = [];
-        for (let n = 0; n < this.itemCount_; n++) {
-            const input = this.getInput('attribute' + n);
-            names.push(input.fieldRow[0].getValue());
-        }
-        return names;
     },
     /**
      * Store pointers to any connected child blocks.
      * @param {!Blockly.Block} containerBlock Root block in mutator.
      * @this Blockly.Block
      */
-    saveConnections: function (containerBlock) {
+    saveConnections: function(containerBlock) {
         let itemBlock = containerBlock.getInputTargetBlock('STACK');
         let i = 0;
+
         while (itemBlock) {
-            const input = this.getInput('attribute' + i);
+            const input = this.getInput('ATTR_' + i);
             itemBlock.valueConnection_ = input && input.connection.targetConnection;
-            itemBlock = itemBlock.nextConnection && itemBlock.nextConnection.targetBlock();
             i++;
+            itemBlock = itemBlock.nextConnection &&
+                itemBlock.nextConnection.targetBlock();
         }
     },
     /**
@@ -190,85 +198,50 @@ Blockly.Blocks['object_new'] = {
      * @private
      * @this Blockly.Block
      */
-    updateShape_: function (names) {
-        names = names || [];
-        let _input;
-        const wp = this.workspace;
+    updateShape_: function() {
+        const workspace = this.workspace;
 
         // Add new inputs.
-        let i;
-        for (i = 0; i < this.itemCount_; i++) {
-            _input = this.getInput('attribute' + i);
+        for (let i = 0; i < this.itemCount_; i++) {
+            let input = this.getInput('ATTR_' + i);
 
-            if (!_input) {;
-                _input = this.appendValueInput('attribute' + i);
+            if (!input) {
+                input = this.appendValueInput('ATTR_' + i).setAlign(Blockly.ALIGN_RIGHT);
+                input.appendField(this.attributes_[i]);
 
-                if (!names[i]) {
-                    names[i] = 'attribute' + (i + 1);
-                }
-                _input.appendField(new Blockly.FieldTextInput(names[i]));
+                /*
                 setTimeout(function (_input) {
                     if (!_input.connection.isConnected()) {
-                        const _shadow = wp.newBlock('text');
+                        const _shadow = workspace.newBlock('text');
                         _shadow.setShadow(true);
                         _shadow.initSvg();
                         _shadow.render();
                         _shadow.outputConnection.connect(_input.connection);
-                        //console.log('New ' + names[i]);
+                        //console.log('New ' + this.attributes_[i]);
                     }
-                }, 100, _input);
+                }, 100, input);
+                */
             } else {
-                _input.fieldRow[0].setValue(names[i]);
-                //console.log('Exist ' + names[i]);
-                setTimeout(function (_input, name) {
-                    if (!_input.connection.isConnected()) {
-                        //console.log('Create ' + name);
-                        const shadow = wp.newBlock('text');
-                        shadow.setShadow(true);
-                        shadow.initSvg();
-                        shadow.render();
-                        shadow.outputConnection.connect(_input.connection);
-                    }
-                }, 100, _input, names[i]);
+                input.fieldRow[0].setValue(this.attributes_[i]);
             }
         }
-
         // Remove deleted inputs.
-        const blocks = [];
-        while (_input = this.getInput('attribute' + i)) {
-            const b = _input.connection.targetBlock();
-            if (b && b.isShadow()) {
-                blocks.push(b);
-            }
-            this.removeInput('attribute' + i);
-            i++;
-        }
-
-        if (blocks.length) {
-            const ws = this.workspace;
-            setTimeout(function () {
-                for(let b = 0; b < blocks.length; b++) {
-                    ws.removeTopBlock(blocks[b]);
-                }
-            }, 100);
+        for (let i = this.itemCount_; this.getInput('ATTR_' + i); i++) {
+            this.removeInput('ATTR_' + i);
         }
     }
 };
 
-Blockly.JavaScript['object_new'] = function (block) {
-    const args = [];
-
+Blockly.JavaScript['object_new'] = function(block) {
+    const attributes = [];
     for (let n = 0; n < block.itemCount_; n++) {
-        const input = this.getInput('attribute' + n);
-        let val = Blockly.JavaScript.valueToCode(block, 'attribute' + n, Blockly.JavaScript.ORDER_COMMA);
-        // if JSON
-        if (val && val[0] === "'" && val[1] === '{') {
-            val = val.substring(1, val.length - 1);
+        const val = Blockly.JavaScript.valueToCode(block, 'ATTR_' + n, Blockly.JavaScript.ORDER_COMMA);
+        if (val) {
+            attributes.push(`'${block.attributes_[n]}': ${val}`);
         }
-        args.push(`'${input.fieldRow[0].getValue()}': ${val}`);
     }
 
-    return [`{ ${args.length ? args.join(', ') : ''} }`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`{ ${attributes.length ? attributes.join(', ') : ''} }`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- set attribute --------------------------------------------------
