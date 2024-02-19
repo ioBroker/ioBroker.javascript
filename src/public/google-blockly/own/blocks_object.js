@@ -360,3 +360,37 @@ Blockly.JavaScript['object_has_attr'] = function(block) {
 
     return [`Object.prototype.hasOwnProperty.call(${obj}, ${attr})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
+
+// --- object keys --------------------------------------------------
+Blockly.Object.blocks['object_keys'] =
+    '<block type="object_keys">'
+    + '     <value name="OBJECT">'
+    + '         <shadow type="get_object">'
+    + '             <field name="OID">Object ID</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['object_keys'] = {
+    init: function() {
+        this.appendValueInput('OBJECT')
+            .appendField(Blockly.Translate('object_keys'));
+
+        this.setInputsInline(true);
+        this.setOutput(true, 'Array');
+
+        this.setColour(Blockly.Object.HUE);
+        this.setTooltip(Blockly.Translate('object_keys_tooltip'));
+        //this.setHelpUrl(getHelp('object_keys_help'));
+    }
+};
+
+Blockly.JavaScript['object_keys'] = function(block) {
+    let obj = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
+
+    if (!obj) {
+        obj = '{}';
+    }
+
+    return [`Object.keys(${obj})`, Blockly.JavaScript.ORDER_ATOMIC];
+};
