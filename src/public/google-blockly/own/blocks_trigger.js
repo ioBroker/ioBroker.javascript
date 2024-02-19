@@ -12,7 +12,7 @@ Blockly.CustomBlocks.push('Trigger');
 
 Blockly.Trigger = {
     HUE: 330,
-    blocks: {}
+    blocks: {},
 };
 
 // --- ON Extended-----------------------------------------------------------
@@ -174,10 +174,15 @@ Blockly.Blocks['on_ext'] = {
      * @this Blockly.Block
      */
     updateShape_: function() {
+        let conditionValue = undefined;
         if (this.getInput('CONDITION')) {
+            conditionValue = this.getFieldValue('CONDITION');
             this.removeInput('CONDITION');
         }
+
+        let conditionAckValue = undefined;
         if (this.getInput('ACK_CONDITION')) {
+            conditionAckValue = this.getFieldValue('ACK_CONDITION');
             this.removeInput('ACK_CONDITION');
         }
 
@@ -202,7 +207,7 @@ Blockly.Blocks['on_ext'] = {
                 if (i === 0) {
                     _input.appendField(Blockly.Translate('on_ext'));
                 }
-                setTimeout(function (_input) {
+                setTimeout((_input) => {
                     if (!_input.connection.isConnected()) {
                         const shadow = wp.newBlock('field_oid');
                         shadow.setShadow(true);
@@ -212,7 +217,7 @@ Blockly.Blocks['on_ext'] = {
                     }
                 }, 100, _input);
             } else {
-                setTimeout(function (_input) {
+                setTimeout((_input) => {
                     if (!_input.connection.isConnected()) {
                         const shadow = wp.newBlock('field_oid');
                         shadow.setShadow(true);
@@ -241,6 +246,9 @@ Blockly.Blocks['on_ext'] = {
                 [Blockly.Translate('on_true'), 'true'],
                 [Blockly.Translate('on_false'), 'false']
             ]), 'CONDITION');
+        if (conditionValue) {
+            this.setFieldValue(conditionValue, 'CONDITION'); // restore previous value
+        }
 
         this.appendDummyInput('ACK_CONDITION')
             .appendField(Blockly.Translate('on_ack'))
@@ -249,6 +257,9 @@ Blockly.Blocks['on_ext'] = {
                 [Blockly.Translate('on_ack_true'), 'true'],
                 [Blockly.Translate('on_ack_false'), 'false']
             ]), 'ACK_CONDITION');
+        if (conditionAckValue) {
+            this.setFieldValue(conditionAckValue, 'ACK_CONDITION'); // restore previous value
+        }
 
         if (input) {
             this.inputList.push(input);
@@ -276,7 +287,7 @@ Blockly.JavaScript['on_ext'] = function(block) {
         if (id) {
             id = id.toString();
             if (id.startsWith('\'') && id.endsWith('\'')) {
-                id = '[' + id + ']';
+                id = `[${id}]`;
             }
             if (oids.indexOf(id) === -1) {
                 oids.push(id);
@@ -284,7 +295,7 @@ Blockly.JavaScript['on_ext'] = function(block) {
         }
     }
 
-    const oid = '[].concat(' + oids.join(').concat(') + ')';
+    const oid = `[].concat(${oids.join(').concat(')})`;
 
     return `on({ id: ${oid}, ${val}${ack_condition ? `, ack: ${ack_condition}` : ''} }, async (obj) => {\n` +
         (oids.length === 1 ? Blockly.JavaScript.prefixLines('let value = obj.state.val;\nlet oldValue = obj.oldState.val;', Blockly.JavaScript.INDENT) + '\n' : '') +
@@ -863,7 +874,7 @@ Blockly.Blocks['cron_builder'] = {
 
         const wp = this.workspace;
 
-        setTimeout(function (_input) {
+        setTimeout((_input) => {
             if (!_input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
                 _shadow.setShadow(true);
@@ -875,7 +886,7 @@ Blockly.Blocks['cron_builder'] = {
         _input = this.appendValueInput('MONTHS')
             .appendField(Blockly.Translate('cron_builder_month'));
 
-        setTimeout(function (_input) {
+        setTimeout((_input) => {
             if (!_input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
                 _shadow.setShadow(true);
@@ -887,7 +898,7 @@ Blockly.Blocks['cron_builder'] = {
         _input = this.appendValueInput('DAYS')
             .appendField(Blockly.Translate('cron_builder_day'));
 
-        setTimeout(function (_input) {
+        setTimeout((_input) => {
             if (!_input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
                 _shadow.setShadow(true);
@@ -899,7 +910,7 @@ Blockly.Blocks['cron_builder'] = {
         _input = this.appendValueInput('HOURS')
             .appendField(Blockly.Translate('cron_builder_hour'));
 
-        setTimeout(function (_input) {
+        setTimeout((_input) => {
             if (!_input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
                 _shadow.setShadow(true);
@@ -911,7 +922,7 @@ Blockly.Blocks['cron_builder'] = {
         _input = this.appendValueInput('MINUTES')
             .appendField(Blockly.Translate('cron_builder_minutes'));
 
-        setTimeout(function (_input) {
+        setTimeout((_input) => {
             if (!_input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
                 _shadow.setShadow(true);
@@ -967,7 +978,7 @@ Blockly.Blocks['cron_builder'] = {
                 const _input = this.appendValueInput('SECONDS');
                 _input.appendField(Blockly.Translate('cron_builder_seconds'));
                 const wp = this.workspace;
-                setTimeout(function (_input) {
+                setTimeout((_input) => {
                     if (!_input.connection.isConnected()) {
                         const _shadow = wp.newBlock('text');
                         _shadow.setShadow(true);
@@ -995,14 +1006,14 @@ Blockly.JavaScript['cron_builder'] = function(block) {
 
     const code =
         (withSeconds === 'TRUE' || withSeconds === 'true' || withSeconds === true ?
-            seconds + '.toString().trim() + \' \' + ' : '') +
-            minutes + '.toString().trim() + \' \' + ' +
-            hours   + '.toString().trim() + \' \' + ' +
-            days    + '.toString().trim() + \' \' + ' +
-            months  + '.toString().trim() + \' \' + ' +
+            seconds + `.toString().trim() + ' ' + ` : '') +
+            minutes + `.toString().trim() + ' ' + ` +
+            hours   + `.toString().trim() + ' ' + ` +
+            days    + `.toString().trim() + ' ' + ` +
+            months  + `.toString().trim() + ' ' + ` +
             dow     + '.toString().trim()';
 
-    return [code, Blockly.JavaScript.ORDER_ATOMIC]
+    return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- onMessage -----------------------------------------------------------
