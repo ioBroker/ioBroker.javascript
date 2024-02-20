@@ -146,7 +146,11 @@
     "materialize": true,
     "readme": "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
     "enabled": true,
-    "license": "MIT",
+    "licenseInformation": {
+      "license": "MIT",
+      "type": "free"
+    },
+    "automaticUpgrade": "patch",
     "compact": true,
     "eraseOnUpload": true,
     "adminTab": {
