@@ -40,7 +40,8 @@ const mods = {
     url:              require('node:url'),
     zlib:             require('node:zlib'),
     suncalc:          require('suncalc2'),
-    request:          require('./lib/request'),
+    axios:            require('axios'),
+    request:          require('./lib/request'), // deprecated
     wake_on_lan:      require('wake_on_lan'),
     nodeSchedule:     require('node-schedule')
 };

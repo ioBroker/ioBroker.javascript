@@ -85,6 +85,8 @@
     - [onLogUnregister](#onlogunregister)
     - [wait](#wait)
     - [sleep](#sleep)
+    - [httpGet](#httpget)
+    - [httpPost](#httppost)
 
 - [Scripts activity](#scripts-activity)
 - [Changelog](#changelog)
@@ -1855,6 +1857,32 @@ onLogUnregister('warn');
 ```
 
 Unsubscribes from these logs.
+
+### httpGet
+
+```js
+httpGet('http://jsonplaceholder.typicode.com/posts', { timeout: 1000 }, (response) => {
+    if (!response.err) {
+        console.log(response.responseCode);
+        console.log(response.data);
+    } else {
+        console.error(response.err);
+    }
+});
+```
+
+### httpPost
+
+```js
+httpPost('http://jsonplaceholder.typicode.com/posts', { title: 'foo', body: 'bar', userId: 1 }, { timeout: 1000 }, (response) => {
+    if (!response.err) {
+        console.log(response.responseCode);
+        console.log(response.data);
+    } else {
+        console.error(response.err);
+    }
+});
+```
 
 ## Global script variables
 ### scriptName

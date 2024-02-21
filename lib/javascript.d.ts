@@ -1233,6 +1233,21 @@ declare global {
 			/** Message name */
 			message: string;
 		}
+
+		interface HttpRequestOptions {
+			timeout?: number;
+			basicAuth?: {
+				user: string;
+				password: string;
+			}
+		}
+
+		type HttpResponseHandler = (response: iobJS.httpResponse) => void | Promise<void>;
+		interface httpResponse {
+			err?: string;
+			responseCode: number;
+			data: string;
+		}
 	} // end namespace iobJS
 
 	// =======================================================
@@ -1305,6 +1320,12 @@ declare global {
 	 * @deprecated Use @see sendTo
 	 */
 	function pushover(msg: any): void;
+
+	function httpGet(url: string, handler: iobJS.HttpResponseHandler): void;
+	function httpGet(url: string, options: iobJS.HttpRequestOptions, handler: iobJS.HttpResponseHandler): void;
+
+	function httpPost(url: string, data: object | string, handler: iobJS.HttpResponseHandler): void;
+	function httpPost(url: string, data: object | string, options: iobJS.HttpRequestOptions, handler: iobJS.HttpResponseHandler): void;
 
 	/**
 	 * Subscribe to the changes of the matched states.
