@@ -150,7 +150,6 @@
       "license": "MIT",
       "type": "free"
     },
-    "automaticUpgrade": "patch",
     "compact": true,
     "eraseOnUpload": true,
     "adminTab": {
