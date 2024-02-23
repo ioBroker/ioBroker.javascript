@@ -349,6 +349,8 @@
   "Duplicate name": "Повторяющееся имя",
   "Empty name is not allowed": "Пустое имя не допускается",
   "Time": "Время",
+  "Server time": "Время сервера",
+  "Local time": "Местное время",
   "Description": "Описание",
   "nextSunrise": "Следующий восход",
   "nextSunset": "Следующий закат",

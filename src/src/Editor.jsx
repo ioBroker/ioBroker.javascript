@@ -24,6 +24,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
 import Paper from '@mui/material/Paper';
 
 import { red, green } from '@mui/material/colors';
@@ -1391,7 +1392,7 @@ class Editor extends React.Component {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>{I18n.t('Name')}</TableCell>
-                                    <TableCell>{I18n.t('Time')}</TableCell>
+                                    <TableCell>{I18n.t('Server time')}</TableCell>
                                     <TableCell>{I18n.t('Description')}</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -1399,7 +1400,7 @@ class Editor extends React.Component {
                                 {Object.keys(this.state.astroEvents).map(id =>
                                     <TableRow key={id}>
                                         <TableCell component="th" scope="row">{id.startsWith('next') ? '' : id}</TableCell>
-                                        <TableCell align="right">{new Date(this.state.astroEvents[id]).toLocaleTimeString()}</TableCell>
+                                        <Tooltip title={I18n.t('Local time') + ': ' + new Date(this.state.astroEvents[id].date).toLocaleTimeString()}><TableCell align="right">{this.state.astroEvents[id].serverTime}</TableCell></Tooltip>
                                         <TableCell>{I18n.t(id)}</TableCell>
                                     </TableRow>)}
                             </TableBody>

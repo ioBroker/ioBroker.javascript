@@ -349,6 +349,8 @@
   "Duplicate name": "Dubbele naam",
   "Empty name is not allowed": "Lege naam is niet toegestaan",
   "Time": "Tijd",
+  "Server time": "Servertijd",
+  "Local time": "Lokale tijd",
   "Description": "Beschrijving",
   "nextSunrise": "Volgende zonsopgang",
   "nextSunset": "Volgende zonsondergang",

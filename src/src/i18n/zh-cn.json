@@ -349,6 +349,8 @@
   "Duplicate name": "重名",
   "Empty name is not allowed": "不允许使用空名称",
   "Time": "时间",
+  "Server time": "服务器时间",
+  "Local time": "当地时间",
   "Description": "描述",
   "nextSunrise": "下一个日出",
   "nextSunset": "下一个日落",

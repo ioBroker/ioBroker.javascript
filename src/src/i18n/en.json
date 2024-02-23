@@ -349,6 +349,8 @@
   "Duplicate name": "Duplicate name",
   "Empty name is not allowed": "Empty name is not allowed",
   "Time": "Time",
+  "Server time": "Server time",
+  "Local time": "Local time",
   "Description": "Description",
   "nextSunrise": "Next Sunrise",
   "nextSunset": "Next sunset",

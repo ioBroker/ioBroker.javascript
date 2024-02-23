@@ -776,17 +776,17 @@ function startAdapter(options) {
                             const sunsetOffset  = parseInt(obj.message.sunsetOffset   === undefined ? adapter.config.sunsetOffset  : obj.message.sunsetOffset, 10)  || 0;
                             const longitude     = parseFloat(obj.message.longitude === undefined ? adapter.config.longitude    : obj.message.longitude) || 0;
                             const latitude      = parseFloat(obj.message.latitude  === undefined ? adapter.config.latitude     : obj.message.latitude)  || 0;
-                            const now = new Date();
+                            const today         = getAstroStartOfDay();
                             let astroEvents = {};
                             try {
-                                astroEvents = mods.suncalc.getTimes(now, latitude, longitude);
+                                astroEvents = mods.suncalc.getTimes(today, latitude, longitude);
                             } catch (e) {
                                 adapter.log.error(`Cannot calculate astro data: ${e}`);
                             }
                             if (astroEvents) {
                                 try {
                                     astroEvents.nextSunrise = getAstroEvent(
-                                        now,
+                                        today,
                                         obj.message.sunriseEvent || adapter.config.sunriseEvent,
                                         obj.message.sunriseLimitStart || adapter.config.sunriseLimitStart,
                                         obj.message.sunriseLimitEnd   || adapter.config.sunriseLimitEnd,
@@ -797,7 +797,7 @@ function startAdapter(options) {
                                         true
                                     );
                                     astroEvents.nextSunset = getAstroEvent(
-                                        now,
+                                        today,
                                         obj.message.sunsetEvent  || adapter.config.sunsetEvent,
                                         obj.message.sunsetLimitStart  || adapter.config.sunsetLimitStart,
                                         obj.message.sunsetLimitEnd    || adapter.config.sunsetLimitEnd,
@@ -814,7 +814,7 @@ function startAdapter(options) {
 
                             const result = {};
                             const keys = Object.keys(astroEvents).sort((a, b) => astroEvents[a] - astroEvents[b]);
-                            keys.forEach(key => result[key] = astroEvents[key].toISOString());
+                            keys.forEach(key => result[key] = { serverTime: formatHoursMinutesSeconds(astroEvents[key]), date: astroEvents[key].toISOString() });
 
                             obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
                         }
@@ -1430,21 +1430,32 @@ function dayTimeSchedules(adapter, context) {
     dayScheduleTimer = setTimeout(dayTimeSchedules, nextTimeout, adapter, context);
 }
 
+function getAstroStartOfDay() {
+    const d = new Date();
+    d.setMinutes(0);
+    d.setSeconds(0);
+    d.setTime(d.getTime() - (d.getTimezoneOffset() * 60 * 1000));
+    d.setUTCHours(0);
+
+    return d;
+}
+
+function formatHoursMinutesSeconds(date) {
+    const h = String(date.getHours());
+    const m = String(date.getMinutes());
+    const s = String(date.getSeconds());
+
+    return `${h.padStart(2, '0')}:${m.padStart(2, '0')}:${s.padStart(2, '0')}`;
+}
+
 async function sunTimeSchedules(adapter, context) {
     if (adapter.config.createAstroStates) {
-        const todayDate = new Date();
-        todayDate.setHours(0);
-        todayDate.setMinutes(0);
-        todayDate.setSeconds(1);
-        todayDate.setDate(todayDate.getDate() + 1);
+        const calcDate = getAstroStartOfDay();
 
-        const times = mods.suncalc.getTimes(new Date(), adapter.config.latitude, adapter.config.longitude);
+        const times = mods.suncalc.getTimes(calcDate, adapter.config.latitude, adapter.config.longitude);
 
         for (const t in times) {
-            const h = times[t].getHours();
-            const m = times[t].getMinutes();
-
-            const timeFormatted = `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}`;
+            const timeFormatted = formatHoursMinutesSeconds(times[t]);
             const objId = `variables.astro.${t}`;
 
             await adapter.setObjectNotExistsAsync(objId, {
@@ -1458,8 +1469,14 @@ async function sunTimeSchedules(adapter, context) {
                 },
                 native: {},
             });
-            await adapter.setStateAsync(objId, { val: timeFormatted, ack: true });
+            await adapter.setStateAsync(objId, { val: timeFormatted + ' ' + calcDate.toISOString(), c: calcDate.toISOString(), ack: true });
         }
+
+        const todayDate = new Date();
+        todayDate.setHours(0);
+        todayDate.setMinutes(0);
+        todayDate.setSeconds(1);
+        todayDate.setDate(todayDate.getDate() + 1);
 
         adapter.log.debug(`[sunTimeSchedules] Next: ${todayDate.toISOString()}`);
         sunScheduleTimer = setTimeout(sunTimeSchedules, todayDate.getTime() - Date.now(), adapter, context);

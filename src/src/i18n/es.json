@@ -349,6 +349,8 @@
   "Duplicate name": "Nombre duplicado",
   "Empty name is not allowed": "No se permite el nombre vacío",
   "Time": "Tiempo",
+  "Server time": "Tiempo del servidor",
+  "Local time": "Hora local",
   "Description": "Descripción",
   "nextSunrise": "próximo amanecer",
   "nextSunset": "Próxima puesta de sol",
