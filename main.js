@@ -1474,13 +1474,14 @@ async function sunTimeSchedules(adapter, context) {
                 },
                 native: {},
             });
-            await adapter.setStateAsync(objId, { val: timeFormatted, c: calcDate.toISOString(), ack: true });
+            await adapter.setStateAsync(objId, { val: timeFormatted, c: times[t].toISOString(), ack: true });
         }
 
         const todayDate = new Date();
         todayDate.setHours(0);
         todayDate.setMinutes(0);
         todayDate.setSeconds(1);
+        todayDate.setMilliseconds(0);
         todayDate.setDate(todayDate.getDate() + 1);
 
         adapter.log.debug(`[sunTimeSchedules] Next: ${todayDate.toISOString()}`);
