@@ -827,9 +827,9 @@ function startAdapter(options) {
                             const sunsetOffset  = parseInt(obj.message.sunsetOffset   === undefined ? adapter.config.sunsetOffset  : obj.message.sunsetOffset, 10)  || 0;
                             const longitude     = parseFloat(obj.message.longitude === undefined ? adapter.config.longitude    : obj.message.longitude) || 0;
                             const latitude      = parseFloat(obj.message.latitude  === undefined ? adapter.config.latitude     : obj.message.latitude)  || 0;
-                            const now = new Date();
-                            const nextSunrise = getAstroEvent(
-                                now,
+                            const today         = getAstroStartOfDay();
+                            const nextSunrise   = getAstroEvent(
+                                today,
                                 obj.message.sunriseEvent || adapter.config.sunriseEvent,
                                 obj.message.sunriseLimitStart || adapter.config.sunriseLimitStart,
                                 obj.message.sunriseLimitEnd   || adapter.config.sunriseLimitEnd,
@@ -840,7 +840,7 @@ function startAdapter(options) {
                                 true
                             );
                             const nextSunset = getAstroEvent(
-                                now,
+                                today,
                                 obj.message.sunsetEvent  || adapter.config.sunsetEvent,
                                 obj.message.sunsetLimitStart  || adapter.config.sunsetLimitStart,
                                 obj.message.sunsetLimitEnd    || adapter.config.sunsetLimitEnd,
@@ -852,8 +852,14 @@ function startAdapter(options) {
                             );
 
                             obj.callback && adapter.sendTo(obj.from, obj.command, {
-                                nextSunrise,
-                                nextSunset
+                                nextSunrise: {
+                                    serverTime: formatHoursMinutesSeconds(nextSunrise),
+                                    date: nextSunrise
+                                },
+                                nextSunset: {
+                                    serverTime: formatHoursMinutesSeconds(nextSunset),
+                                    date: nextSunset
+                                }
                             }, obj.callback);
                         }
                         break;
@@ -1292,7 +1298,7 @@ let sunScheduleTimer   = null; // schedule for sun moment times
 let timeScheduleTimer  = null; // schedule for astrological day
 
 function getNextTimeEvent(time, useNextDay) {
-    const now = new Date();
+    const now = getAstroStartOfDay();
     let [timeHours, timeMinutes] = time.split(':');
     timeHours = parseInt(timeHours, 10);
     timeMinutes = parseInt(timeMinutes, 10);
@@ -1302,15 +1308,15 @@ function getNextTimeEvent(time, useNextDay) {
 
     now.setHours(timeHours);
     now.setMinutes(timeMinutes);
+
     return now;
 }
 
-function getAstroEvent(now, astroEvent, start, end, offsetMinutes, isDayEnd, latitude, longitude, useNextDay) {
-    let ts = mods.suncalc.getTimes(now, latitude, longitude)[astroEvent];
+function getAstroEvent(date, astroEvent, start, end, offsetMinutes, isDayEnd, latitude, longitude, useNextDay) {
+    let ts = mods.suncalc.getTimes(date, latitude, longitude)[astroEvent];
     if (!ts || ts.getTime().toString() === 'NaN') {
         ts = isDayEnd ? getNextTimeEvent(end, useNextDay) : getNextTimeEvent(start, useNextDay);
     }
-    ts.setSeconds(0);
     ts.setMilliseconds(0);
     ts.setMinutes(ts.getMinutes() + (parseInt(offsetMinutes, 10) || 0));
 
@@ -1320,6 +1326,7 @@ function getAstroEvent(now, astroEvent, start, end, offsetMinutes, isDayEnd, lat
 
     if (ts.getHours() < timeHoursStart || (ts.getHours() === timeHoursStart && ts.getMinutes() < timeMinutesStart)) {
         ts = getNextTimeEvent(start, useNextDay);
+        ts.setSeconds(0);
     }
 
     let [timeHoursEnd, timeMinutesEnd] = end.split(':');
@@ -1328,10 +1335,11 @@ function getAstroEvent(now, astroEvent, start, end, offsetMinutes, isDayEnd, lat
 
     if (ts.getHours() > timeHoursEnd || (ts.getHours() === timeHoursEnd && ts.getMinutes() > timeMinutesEnd)) {
         ts = getNextTimeEvent(end, useNextDay);
+        ts.setSeconds(0);
     }
 
     // if event in the past
-    if (now > ts && useNextDay) {
+    if (date > ts && useNextDay) {
         // take the next day
         ts.setDate(ts.getDate() + 1);
     }
@@ -1370,12 +1378,8 @@ function dayTimeSchedules(adapter, context) {
     }
 
     // Calculate next event today
-    const todayDate = new Date();
+    const todayDate = getAstroStartOfDay();
     const nowDate   = new Date();
-    todayDate.setHours(12);
-    todayDate.setMinutes(0);
-    todayDate.setSeconds(0);
-    todayDate.setMilliseconds(0);
 
     const todaySunrise = getAstroEvent(todayDate, adapter.config.sunriseEvent, adapter.config.sunriseLimitStart, adapter.config.sunriseLimitEnd, adapter.config.sunriseOffset, false, adapter.config.latitude, adapter.config.longitude);
     const todaySunset  = getAstroEvent(todayDate, adapter.config.sunsetEvent,  adapter.config.sunsetLimitStart,  adapter.config.sunsetLimitEnd,  adapter.config.sunsetOffset,  true,  adapter.config.latitude, adapter.config.longitude);
@@ -1434,6 +1438,7 @@ function getAstroStartOfDay() {
     const d = new Date();
     d.setMinutes(0);
     d.setSeconds(0);
+    d.setMilliseconds(0);
     d.setTime(d.getTime() - (d.getTimezoneOffset() * 60 * 1000));
     d.setUTCHours(0);
 
@@ -1469,7 +1474,7 @@ async function sunTimeSchedules(adapter, context) {
                 },
                 native: {},
             });
-            await adapter.setStateAsync(objId, { val: timeFormatted + ' ' + calcDate.toISOString(), c: calcDate.toISOString(), ack: true });
+            await adapter.setStateAsync(objId, { val: timeFormatted, c: calcDate.toISOString(), ack: true });
         }
 
         const todayDate = new Date();
