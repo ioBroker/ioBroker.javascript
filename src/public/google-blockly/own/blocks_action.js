@@ -11,7 +11,7 @@ Blockly.CustomBlocks.push('Action');
 
 Blockly.Action = {
     HUE: 330,
-    blocks: {}
+    blocks: {},
 };
 
 // --- action exec --------------------------------------------------
@@ -116,6 +116,48 @@ Blockly.JavaScript['exec'] = function(block) {
     }
 };
 
+// --- action http_get --------------------------------------------------
+Blockly.Action.blocks['http_get'] =
+    '<block type="http_get">'
+    + '     <value name="URL">'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">http://</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['http_get'] = {
+    init: function() {
+        this.appendValueInput('URL')
+            .appendField(Blockly.Translate('http_get'));
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setInputsInline(false);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setColour(Blockly.Action.HUE);
+        this.setTooltip(Blockly.Translate('http_get_tooltip'));
+        this.setHelpUrl(getHelp('http_get_help'));
+    }
+};
+
+Blockly.JavaScript['http_get'] = function(block) {
+    const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    return `httpGet(${URL}, { timeout: 2000 }, async (response) => {\n` +
+        Blockly.JavaScript.prefixLines(`if (response && response.err) {`, Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`console.error(response.err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
+        statement +
+        '});\n';
+};
+
 // --- action request --------------------------------------------------
 Blockly.Action.blocks['request'] =
     '<block type="request">'
@@ -201,6 +243,8 @@ Blockly.JavaScript['request'] = function(block) {
     } else {
         logText = '';
     }
+
+    logText += `console.warn('request blockly block is deprecated - please use "http get" instead');\n`;
 
     if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
         const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
