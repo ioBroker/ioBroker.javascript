@@ -158,6 +158,60 @@ Blockly.JavaScript['http_get'] = function(block) {
         '});\n';
 };
 
+// --- action http_post --------------------------------------------------
+Blockly.Action.blocks['http_post'] =
+    '<block type="http_post">'
+    + '     <value name="URL">'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">http://</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="DATA">'
+    + '         <shadow type="object_new">'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['http_post'] = {
+    init: function() {
+        this.appendValueInput('URL')
+            .appendField(Blockly.Translate('http_post'));
+
+        this.appendValueInput('DATA')
+            .appendField(Blockly.Translate('http_post_data'));
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setInputsInline(false);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setColour(Blockly.Action.HUE);
+        this.setTooltip(Blockly.Translate('http_post_tooltip'));
+        this.setHelpUrl(getHelp('http_post_help'));
+    }
+};
+
+Blockly.JavaScript['http_post'] = function(block) {
+    const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
+    const data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    if (!data) {
+        data = '{}';
+    }
+
+    return `httpPost(${URL}, ${data}, { timeout: 2000 }, async (response) => {\n` +
+        Blockly.JavaScript.prefixLines(`if (response && response.err) {`, Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`console.error(response.err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
+        statement +
+        '});\n';
+};
+
 // --- action request --------------------------------------------------
 Blockly.Action.blocks['request'] =
     '<block type="request">'
