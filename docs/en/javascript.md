@@ -1861,12 +1861,12 @@ Unsubscribes from these logs.
 ### httpGet
 
 ```js
-httpGet('http://jsonplaceholder.typicode.com/posts', { timeout: 1000 }, (response) => {
-    if (!response.err) {
+httpGet('http://jsonplaceholder.typicode.com/posts', { timeout: 1000 }, (error, response) => {
+    if (!error) {
         console.log(response.responseCode);
         console.log(response.data);
     } else {
-        console.error(response.err);
+        console.error(error);
     }
 });
 ```
@@ -1874,14 +1874,47 @@ httpGet('http://jsonplaceholder.typicode.com/posts', { timeout: 1000 }, (respons
 ### httpPost
 
 ```js
-httpPost('http://jsonplaceholder.typicode.com/posts', { title: 'foo', body: 'bar', userId: 1 }, { timeout: 1000 }, (response) => {
-    if (!response.err) {
+httpPost('http://jsonplaceholder.typicode.com/posts', { title: 'foo', body: 'bar', userId: 1 }, { timeout: 1000 }, (error, response) => {
+    if (!error) {
         console.log(response.responseCode);
         console.log(response.data);
+        console.log(response.headers);
     } else {
-        console.error(response.err);
+        console.error(error);
     }
 });
+```
+
+With custom headers and authentication
+
+```js
+httpPost(
+    'http://jsonplaceholder.typicode.com/posts',
+    {
+        title: 'foo',
+        body: 'bar',
+        userId: 1
+    },
+    {
+        timeout: 2000,
+        basicAuth: {
+            user: 'admin',
+            password: 'dg2LdALNznHFNo'
+        },
+        headers: {
+            'Cookie': 'PHPSESSID=298zf09hf012fh2; csrftoken=u32t4o3tb3gg43; _gat=1'
+        }
+    },
+    (error, response) => {
+        if (!error) {
+            console.log(response.responseCode);
+            console.log(response.data);
+            console.log(response.headers);
+        } else {
+            console.error(error);
+        }
+    }
+);
 ```
 
 ## Global script variables

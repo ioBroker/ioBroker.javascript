@@ -1239,14 +1239,16 @@ declare global {
 			basicAuth?: {
 				user: string;
 				password: string;
-			}
+			},
+			bearerAuth?: string;
+			headers?: Record<string, string>;
 		}
 
-		type HttpResponseHandler = (response: iobJS.httpResponse) => void | Promise<void>;
+		type HttpResponseCallback = (err?: string | null, response?: iobJS.httpResponse) => void | Promise<void>;
 		interface httpResponse {
-			err?: string;
 			responseCode: number;
 			data: string;
+			headers: Record<string, string>;
 		}
 	} // end namespace iobJS
 
@@ -1321,11 +1323,17 @@ declare global {
 	 */
 	function pushover(msg: any): void;
 
-	function httpGet(url: string, handler: iobJS.HttpResponseHandler): void;
-	function httpGet(url: string, options: iobJS.HttpRequestOptions, handler: iobJS.HttpResponseHandler): void;
+	function httpGet(url: string, callback: iobJS.HttpResponseCallback): void;
+	function httpGet(url: string, options: iobJS.HttpRequestOptions, callback: iobJS.HttpResponseCallback): void;
 
-	function httpPost(url: string, data: object | string, handler: iobJS.HttpResponseHandler): void;
-	function httpPost(url: string, data: object | string, options: iobJS.HttpRequestOptions, handler: iobJS.HttpResponseHandler): void;
+	function httpGetAsync(url: string): Promise<iobJS.httpResponse>;
+	function httpGetAsync(url: string, options: iobJS.HttpRequestOptions): Promise<iobJS.httpResponse>;
+
+	function httpPost(url: string, data: object | string, callback: iobJS.HttpResponseCallback): void;
+	function httpPost(url: string, data: object | string, options: iobJS.HttpRequestOptions, callback: iobJS.HttpResponseCallback): void;
+
+	function httpPostAsync(url: string, data: object | string): Promise<iobJS.httpResponse>;
+	function httpPostAsync(url: string, data: object | string, options: iobJS.HttpRequestOptions): Promise<iobJS.httpResponse>;
 
 	/**
 	 * Subscribe to the changes of the matched states.

@@ -150,9 +150,9 @@ Blockly.JavaScript['http_get'] = function(block) {
     const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    return `httpGet(${URL}, { timeout: 2000 }, async (response) => {\n` +
-        Blockly.JavaScript.prefixLines(`if (response && response.err) {`, Blockly.JavaScript.INDENT) + '\n' +
-        Blockly.JavaScript.prefixLines(`console.error(response.err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
+    return `httpGet(${URL}, { timeout: 2000 }, async (err, response) => {\n` +
+        Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
         statement +
         '});\n';
@@ -204,9 +204,9 @@ Blockly.JavaScript['http_post'] = function(block) {
         data = '{}';
     }
 
-    return `httpPost(${URL}, ${data}, { timeout: 2000 }, async (response) => {\n` +
-        Blockly.JavaScript.prefixLines(`if (response && response.err) {`, Blockly.JavaScript.INDENT) + '\n' +
-        Blockly.JavaScript.prefixLines(`console.error(response.err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
+    return `httpPost(${URL}, ${data}, { timeout: 2000 }, async (err, response) => {\n` +
+        Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
         statement +
         '});\n';
