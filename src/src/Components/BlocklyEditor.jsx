@@ -396,7 +396,7 @@ class BlocklyEditor extends React.Component {
         if (xml) {
             try {
                 if (!xml.startsWith('<xml')) {
-                    xml = '<xml xmlns="http://www.w3.org/1999/xhtml">' + xml + '</xml>';
+                    xml = '<xml xmlns="https://developers.google.com/blockly/xml">' + xml + '</xml>';
                 }
                 let variables = xml.replace(/[\n\r]/g, '').match(/<variables>(.*)<\/variables>/);
                 if (variables) {
@@ -440,7 +440,7 @@ class BlocklyEditor extends React.Component {
         this.blocklyWorkspace.clear();
 
         try {
-            const xml = this.jsCode2Blockly(this.originalCode) || '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>';
+            const xml = this.jsCode2Blockly(this.originalCode) || '<xml xmlns="https://developers.google.com/blockly/xml"></xml>';
             window.scripts.loading = true;
             const dom = this.Blockly.utils.xml.textToDom(xml);
             this.Blockly.Xml.domToWorkspace(dom, this.blocklyWorkspace);
