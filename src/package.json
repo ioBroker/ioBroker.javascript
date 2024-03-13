@@ -14,7 +14,7 @@
         "@mui/styles": "^5.15.12",
         "@mui/x-date-pickers": "^6.19.6",
         "@sentry/browser": "^7.106.0",
-        "@sentry/integrations": "^7.106.0",
+        "@sentry/integrations": "^7.106.1",
         "craco-module-federation": "^1.1.0",
         "eslint": "^8.57.0",
         "eslint-config-airbnb": "^19.0.4",
