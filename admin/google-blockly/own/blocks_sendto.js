@@ -271,7 +271,7 @@ Blockly.Blocks['sendto_custom'] = {
                 //console.log('Exist ' + names[i]);
                 setTimeout(function (_input, name) {
                     if (!_input.connection.isConnected()) {
-                        console.log('Create ' + name);
+                        //console.log('Create ' + name);
                         const shadow = wp.newBlock('text');
                         shadow.setShadow(true);
                         shadow.initSvg();
@@ -411,7 +411,7 @@ Blockly.Blocks['sendto_otherscript'] = {
             .setCheck(null);
 
         this.appendDummyInput()
-            .appendField(Blockly.Translate('timeouts_wait'))
+            .appendField(Blockly.Translate('sendto_otherscript_timeout'))
             .appendField(new Blockly.FieldTextInput(1000), 'TIMEOUT')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('timeouts_settimeout_ms'), 'ms'],

@@ -114,7 +114,7 @@ Blockly.Blocks['logic_multi_and'] = {
         // Disconnect any children that don't belong.
         for (let k = 0; k < this.itemCount_; k++) {
             const connection = this.getInput('AND' + k).connection.targetConnection;
-            if (connection && connections.indexOf(connection) === -1) {
+            if (connection && !connections.includes(connection)) {
                 connection.disconnect();
             }
         }
@@ -153,13 +153,6 @@ Blockly.Blocks['logic_multi_and'] = {
      * @this Blockly.Block
      */
     updateShape_: function() {
-        if (this.itemCount_ && this.getInput('EMPTY')) {
-            this.removeInput('EMPTY');
-        } else if (!this.itemCount_ && !this.getInput('EMPTY')) {
-            this.appendDummyInput('EMPTY')
-                .appendField(this.newQuote_(true))
-                .appendField(this.newQuote_(false));
-        }
         // Add new inputs.
         for (let i = 0; i < this.itemCount_; i++) {
             if (!this.getInput('AND' + i)) {
@@ -298,7 +291,7 @@ Blockly.Blocks['logic_multi_or'] = {
         // Disconnect any children that don't belong.
         for (let k = 0; k < this.itemCount_; k++) {
             const connection = this.getInput('OR' + k).connection.targetConnection;
-            if (connection && connections.indexOf(connection) === -1) {
+            if (connection && !connections.includes(connection)) {
                 connection.disconnect();
             }
         }
@@ -337,13 +330,6 @@ Blockly.Blocks['logic_multi_or'] = {
      * @this Blockly.Block
      */
     updateShape_: function() {
-        if (this.itemCount_ && this.getInput('EMPTY')) {
-            this.removeInput('EMPTY');
-        } else if (!this.itemCount_ && !this.getInput('EMPTY')) {
-            this.appendDummyInput('EMPTY')
-                .appendField(this.newQuote_(true))
-                .appendField(this.newQuote_(false));
-        }
         // Add new inputs.
         for (let i = 0; i < this.itemCount_; i++) {
             if (!this.getInput('OR' + i)) {

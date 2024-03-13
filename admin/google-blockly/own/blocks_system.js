@@ -951,7 +951,7 @@ Blockly.Blocks['get_object'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
-        this.setColour(Blockly.System.HUE);
+        this.setColour(Blockly.Object.HUE);
         this.setTooltip(Blockly.Translate('get_object_tooltip'));
         this.setHelpUrl(getHelp('get_object_help'));
     }
@@ -987,7 +987,7 @@ Blockly.Blocks['get_object_async'] = {
         this.setNextStatement(true, null);
 
         this.setInputsInline(true);
-        this.setColour(Blockly.System.HUE);
+        this.setColour(Blockly.Object.HUE);
         this.setTooltip(Blockly.Translate('get_object_tooltip'));
         this.setHelpUrl(getHelp('get_object_help'));
     }
@@ -1091,10 +1091,13 @@ Blockly.System.blocks['get_attr'] =
     '<block type="get_attr">'
     + '     <value name="PATH">'
     + '         <shadow type="text">'
-    + '             <field name="PATH">attr1.attr2</field>'
+    + '             <field name="TEXT">attribute1</field>'
     + '         </shadow>'
     + '     </value>'
     + '     <value name="OBJECT">'
+    + '         <shadow type="get_object">'
+    + '             <field name="OID">Object ID</field>'
+    + '         </shadow>'
     + '     </value>'
     + '</block>';
 

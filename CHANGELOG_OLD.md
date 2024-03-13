@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 7.6.0 (2023-12-26)
+
+* (klein0r) Added schedules by state value (scheduleById)
+
 ## 7.5.1 (2023-12-18)
 
 * (klein0r) Added option for calendar week to Blockly

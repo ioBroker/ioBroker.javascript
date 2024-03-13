@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.9.0 (2024-03-13)
 
 * (klein0r) Added block to create new objects
 * (klein0r) Added HTTP get and post function
@@ -74,10 +74,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 * (klein0r) Added missing type hints
 * (klein0r) Creation of astro states is now optional
 * (klein0r) Fixed logging of objects/sets
-
-### 7.6.0 (2023-12-26)
-
-* (klein0r) Added schedules by state value (scheduleById)
 
 ## License
 The MIT License (MIT)

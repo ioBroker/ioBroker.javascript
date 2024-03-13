@@ -373,15 +373,11 @@
     }
 
     function formatTime(date) {
-        var hours = date.getHours();
-        if (hours < 10) {
-            hours = '0' + hours;
-        }
-        var minutes = date.getMinutes();
-        if (minutes < 10) {
-            minutes = '0' + minutes;
-        }
-        return hours + ':' + minutes;
+        const h = String(date.getHours());
+        const m = String(date.getMinutes());
+        const s = String(date.getSeconds());
+
+        return `${h.padStart(2, '0')}:${m.padStart(2, '0')}:${s.padStart(2, '0')}`;
     }
 
     function updateAstroTimes() {
@@ -395,11 +391,20 @@
             }
         });
         sendTo(null, 'calcAstro', obj, function (times) {
-            var nextSunset = new Date(times.nextSunset);
-            var nextSunrise = new Date(times.nextSunrise);
+            const nextSunrise = formatTime(new Date(times.nextSunrise.date));
+            const nextSunset = formatTime(new Date(times.nextSunset.date));
 
-            $('#nextSunset').html(formatTime(nextSunset));
-            $('#nextSunrise').html(formatTime(nextSunrise));
+            if (nextSunrise !== times.nextSunrise.serverTime) {
+                $('#nextSunrise').html(`${times.nextSunrise.serverTime} (Local time: ${nextSunrise})`);
+            } else {
+                $('#nextSunrise').html(times.nextSunrise.serverTime);
+            }
+
+            if (nextSunset !== times.nextSunset.serverTime) {
+                $('#nextSunset').html(`${times.nextSunset.serverTime} (Local time: ${nextSunset})`);
+            } else {
+                $('#nextSunset').html(times.nextSunset.serverTime);
+            }
         });
     }
 
