@@ -673,6 +673,8 @@ function startAdapter(options) {
             mods.request.setLogger(adapter.log);
 
             adapter.config.maxSetStatePerMinute = parseInt(adapter.config.maxSetStatePerMinute, 10) || 1000;
+            adapter.config.maxTriggersPerScript = parseInt(adapter.config.maxTriggersPerScript, 10) || 100;
+
             if (adapter.supportsFeature && adapter.supportsFeature('PLUGINS')) {
                 const sentryInstance = adapter.getPluginInstance('sentry');
                 if (sentryInstance) {

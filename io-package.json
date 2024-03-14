@@ -354,6 +354,7 @@
     "sunsetLimitEnd": "23:00",
     "createAstroStates": true,
     "maxSetStatePerMinute": 1000,
+    "maxTriggersPerScript": 100,
     "gptKey": ""
   },
   "objects": [

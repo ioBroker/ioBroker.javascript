@@ -46,12 +46,16 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Configurable trigger warning limit (default: 100 per script)
+
 ### 7.9.0 (2024-03-13)
 
 * (klein0r) Added block to create new objects
 * (klein0r) Added HTTP get and post function
 * (klein0r) Droped support of coffeescript (deprecated since version 6.0.0)
-* (klein0r) Raise warning if more than 100 triggers have been registered
+* (klein0r) Raise warning if more than 100 triggers have been registered (per script)
 * (klein0r) Fixed astro state calculation (and display server time in dialog)
 
 ### 7.8.0 (2024-01-29)
