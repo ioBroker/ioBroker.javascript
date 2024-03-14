@@ -56,5 +56,6 @@
     "tooltip_longitude": "Der Längengrad im Format 5.345 für Astro-Funktion",
     "tooltip_useSystemGPS": "Die Koordinaten aus den Systemeinstellungen verwenden",
     "Maximum setState requests per Minute per Script": "Maximale setState-Anfragen pro Minute pro Skript",
-    "Create states for all astro times": "Erstelle Zustände für alle Astrozeiten"
+    "Create states for all astro times": "Erstelle Zustände für alle Astrozeiten",
+    "Maximum triggers per Script (until warning)": "Maximale Auslöser/Trigger pro Skript (bis zur Warnung)"
 }

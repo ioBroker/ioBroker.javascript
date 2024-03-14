@@ -56,5 +56,6 @@
     "tooltip_longitude": "Широта в виде 5.435 для астро-функций",
     "tooltip_useSystemGPS": "Использовать координаты из системных настроек",
     "Maximum setState requests per Minute per Script": "Максимальное количество setState запросов в минуту на скрипт",
-    "Create states for all astro times": "Создавайте штаты на все астрономические времена"
+    "Create states for all astro times": "Создавайте штаты на все астрономические времена",
+    "Maximum triggers per Script (until warning)": "Максимальное количество триггеров на скрипт (до предупреждения)"
 }

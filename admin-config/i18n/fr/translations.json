@@ -56,5 +56,6 @@
     "tooltip_longitude": "Longitude comme 5.345 pour utiliser les fonctions astro",
     "tooltip_useSystemGPS": "Utiliser les coordonnées des paramètres du système",
     "Maximum setState requests per Minute per Script": "Demandes d'état maximale par minute par Script",
-    "Create states for all astro times": "Créez des états pour toutes les périodes astronomiques"
+    "Create states for all astro times": "Créez des états pour toutes les périodes astronomiques",
+    "Maximum triggers per Script (until warning)": "Nombre maximum de déclencheurs par script (jusqu'à avertissement)"
 }

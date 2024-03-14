@@ -56,5 +56,6 @@
     "tooltip_libraries": "Додаткові бібліотеки NPM, розділені комою. Ви можете отримати до них доступ за допомогою require('name') у скриптах.",
     "tooltip_longitude": "Довгота як 5,345 для використання астрофункцій",
     "tooltip_useSystemGPS": "Використовуйте координати з налаштувань системи",
-    "Create states for all astro times": "Створіть стани для всіх астрономічних часів"
+    "Create states for all astro times": "Створіть стани для всіх астрономічних часів",
+    "Maximum triggers per Script (until warning)": "Максимальна кількість тригерів на сценарій (до попередження)"
 }

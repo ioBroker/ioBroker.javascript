@@ -56,5 +56,6 @@
     "tooltip_longitude": "Lengtegraad als 5.345 om astro-functies te gebruiken",
     "tooltip_useSystemGPS": "Gebruik coördinaten van systeeminstellingen",
     "Maximum setState requests per Minute per Script": "Maximum stelt verzoeken per Minute per Script",
-    "Create states for all astro times": "Creëer toestanden voor alle astrotijden"
+    "Create states for all astro times": "Creëer toestanden voor alle astrotijden",
+    "Maximum triggers per Script (until warning)": "Maximale triggers per script (tot waarschuwing)"
 }

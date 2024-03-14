@@ -56,5 +56,6 @@
     "tooltip_longitude": "经度为5.345使用astro函数",
     "tooltip_useSystemGPS": "使用系统设置中的坐标",
     "Maximum setState requests per Minute per Script": "Maximum国家请求每分钟",
-    "Create states for all astro times": "为所有天文时间创建状态"
+    "Create states for all astro times": "为所有天文时间创建状态",
+    "Maximum triggers per Script (until warning)": "每个脚本的最大触发器数（直到警告）"
 }
