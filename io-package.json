@@ -21,8 +21,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "7.9.0",
+    "version": "7.9.1",
     "news": {
+      "7.9.1": {
+        "en": "Configurable trigger warning limit (default: 100 per script)\nAllow to use objects in create state blocks for common\nAdded warning if latitude or longitude is not configured correctly",
+        "de": "Konfigurierbare Triggerwarngrenze (Standard: 100 pro Skript)\nErlauben Sie, Objekte in erstellen Zustand Blöcke für gemeinsame\nWarnung hinzugefügt, wenn Breite oder Länge nicht korrekt konfiguriert ist",
+        "ru": "Настраиваемый предел триггерного предупреждения (по умолчанию: 100 за сценарий)\nПозволить использовать объекты в создании государственных блоков для общего\nДобавить предупреждение, если широта или долгота не настроены правильно",
+        "pt": "Limite de aviso de gatilho configurável (padrão: 100 por script)\nPermitir usar objetos em criar blocos de estado para comum\nAdicionado aviso se a latitude ou longitude não estiver configurada corretamente",
+        "nl": "Configureerbare waarschuwingslimiet voor triggers (standaard: 100 per script)\nObjecten in aanmaken van statusblokken toestaan voor gewone\nToegevoegde waarschuwing als breedte- of lengtegraad niet correct is ingesteld",
+        "fr": "Limite d'avertissement de déclenchement configurable (par défaut : 100 par script)\nPermettre d'utiliser des objets dans créer des blocs d'état pour commun\nAjout d'un avertissement si la latitude ou la longitude n'est pas configurée correctement",
+        "it": "Limite di avviso di trigger configurabile (default: 100 per script)\nConsentire di utilizzare oggetti in creare blocchi di stato per i comuni\nAvvertenza aggiunta se latitudine o longitudine non è configurata correttamente",
+        "es": "Límite de advertencia de disparador configurable (por defecto: 100 por script)\nPermitir utilizar objetos en crear bloques estatales para uso común\nAdvertencia agregada si la latitud o longitud no está configurada correctamente",
+        "pl": "Konfigurowalny limit ostrzegawczy (domyślnie: 100 na skrypt)\nPozwól używać obiektów w tworzeniu bloków stanu dla wspólnych\nDodano ostrzeżenie, jeśli szerokość lub długość geograficzna nie jest poprawnie skonfigurowana",
+        "uk": "Конфігураційне обмеження попередження пропуску (default: 100 за скрипт)\nДозволяє використовувати об'єкти у створенні державних блоків для загального користування\nДодано попередження, якщо широта або довгота не налаштована правильно",
+        "zh-cn": "可配置触发警告限制( 默认: 每个脚本100)\n允许在常见的创建状态块中使用对象\n如果未正确配置纬度或经度,则添加警告"
+      },
       "7.9.0": {
         "en": "Added block to create new objects\nAdded HTTP get and post function\nDroped support of coffeescript (deprecated since version 6.0.0)\nRaise warning if more than 100 triggers have been registered\nFixed astro state calculation (and display server time in dialog)",
         "de": "Block hinzugefügt, um neue Objekte zu erstellen\nHTTP get und Post Funktion hinzugefügt\nDroped-Unterstützung von Coffeescript (abgeschrieben seit Version 6.0.0)\nRegelwarnung, wenn mehr als 100 Auslöser registriert wurden\nFeste Astro-Zustandsberechnung (und die Serverzeit im Dialog anzeigen)",
@@ -100,19 +113,6 @@
         "pl": "Dodany harmonogram (planById)",
         "uk": "Додано графіки державного значення (scheduleById)",
         "zh-cn": "按国家价值开列的增加时间表(附表ById)"
-      },
-      "7.5.1": {
-        "en": "Added option for calendar week to Blockly\nFixed inpaired round brackets of getMinutes (Blockly)",
-        "de": "Option für Kalenderwoche zu Blockly hinzugefügt\nBefestigte runde Klammern von getMinutes (Blockly)",
-        "ru": "Добавлена опция для календарной недели на Blockly\nФиксированные инпарированные круглые скобки getMinutes (Blockly)",
-        "pt": "Adicionado opção para semana de calendário para Blockly\nSuportes redondos emparelhados fixos de getMinutes (Blockly)",
-        "nl": "Optie voor kalenderweek\nGereserveerd ronde tackets van getMinutes (Blockly)",
-        "fr": "Option ajoutée pour la semaine civile à Blockly\nFixed inpaired round brackets of getMinutes (Blockly)",
-        "it": "Aggiunta opzione per settimana di calendario a Blockly\nStaffe fisse rotonde di getMinutes (Blockly)",
-        "es": "Opción adicional para la semana calendario a Bloqueo\nSoportes fijos de redondeo de getMinutes (Blockly)",
-        "pl": "Poniższa opcja w tygodniu kalendarzowym\nFixed inpaired roundbrackets of getMinutes (Blockly) (ang.)",
-        "uk": "Додано варіант для календарного тижня до Blockly\nФіксовані круглі кронштейни getMinutes (Блокально)",
-        "zh-cn": "增加会议日历\n固定在粉碎的圆桌(锁定)"
       }
     },
     "desc": {

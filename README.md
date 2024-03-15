@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.9.1 (2024-03-15)
 
 * (klein0r) Configurable trigger warning limit (default: 100 per script)
 * (klein0r) Allow to use objects in create state blocks for common
@@ -73,13 +73,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### 7.6.3 (2024-01-11)
 
 * (klein0r) Fixed bug in formatTimeDiff Blockly
-
-### 7.6.2 (2024-01-02)
-
-* (klein0r) Added missing console.info()
-* (klein0r) Added missing type hints
-* (klein0r) Creation of astro states is now optional
-* (klein0r) Fixed logging of objects/sets
 
 ## License
 The MIT License (MIT)

@@ -1,4 +1,11 @@
 The newest change log is in README.md
+## 7.6.2 (2024-01-02)
+
+* (klein0r) Added missing console.info()
+* (klein0r) Added missing type hints
+* (klein0r) Creation of astro states is now optional
+* (klein0r) Fixed logging of objects/sets
+
 ## 7.6.0 (2023-12-26)
 
 * (klein0r) Added schedules by state value (scheduleById)

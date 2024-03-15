@@ -640,15 +640,11 @@ Blockly.JavaScript['create'] = function(block) {
     let paraC = '';
 
     if (value !== null && value !== '') {
-        paraV = ', ' + value;
+        paraV = `, ${value}`;
     }
 
     if (common !== null && common !== '') {
-        if (typeof common === 'object') {
-            paraC = `, JSON.parse(${JSON.stringify(common)})`;
-        } else {
-            paraC = `, JSON.parse(${common})`;
-        }
+        paraC = `, ((common) => typeof common !== 'object' ? JSON.parse(common) : common)(${common})`;
     }
 
     return `createState('${name}'${paraV}${paraC}, async () => {\n` +
