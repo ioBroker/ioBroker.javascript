@@ -1457,37 +1457,43 @@ function formatHoursMinutesSeconds(date) {
 
 async function sunTimeSchedules(adapter, context) {
     if (adapter.config.createAstroStates) {
-        const calcDate = getAstroStartOfDay();
+        if (!isNaN(adapter.config.longitude) && !isNaN(adapter.config.longitude)) {
+            const calcDate = getAstroStartOfDay();
 
-        const times = mods.suncalc.getTimes(calcDate, adapter.config.latitude, adapter.config.longitude);
+            const times = mods.suncalc.getTimes(calcDate, adapter.config.latitude, adapter.config.longitude);
 
-        for (const t in times) {
-            const timeFormatted = formatHoursMinutesSeconds(times[t]);
-            const objId = `variables.astro.${t}`;
+            for (const t in times) {
+                try {
+                    const timeFormatted = formatHoursMinutesSeconds(times[t]);
+                    const objId = `variables.astro.${t}`;
 
-            await adapter.setObjectNotExistsAsync(objId, {
-                type: 'state',
-                common: {
-                    name: `Astro ${t}`,
-                    type: 'string',
-                    role: 'value',
-                    read: true,
-                    write: false,
-                },
-                native: {},
-            });
-            await adapter.setStateAsync(objId, { val: timeFormatted, c: times[t].toISOString(), ack: true });
+                    await adapter.setObjectNotExistsAsync(objId, {
+                        type: 'state',
+                        common: {
+                            name: `Astro ${t}`,
+                            type: 'string',
+                            role: 'value',
+                            read: true,
+                            write: false,
+                        },
+                        native: {},
+                    });
+                    await adapter.setStateAsync(objId, { val: timeFormatted, c: times[t].toISOString(), ack: true });
+                } catch (err) {
+                    adapter.log.error(`[sunTimeSchedules] Unable to set state for astro time "${t}"`);
+                }
+            }
+
+            const todayDate = new Date();
+            todayDate.setHours(0);
+            todayDate.setMinutes(0);
+            todayDate.setSeconds(1);
+            todayDate.setMilliseconds(0);
+            todayDate.setDate(todayDate.getDate() + 1);
+
+            adapter.log.debug(`[sunTimeSchedules] Next: ${todayDate.toISOString()}`);
+            sunScheduleTimer = setTimeout(sunTimeSchedules, todayDate.getTime() - Date.now(), adapter, context);
         }
-
-        const todayDate = new Date();
-        todayDate.setHours(0);
-        todayDate.setMinutes(0);
-        todayDate.setSeconds(1);
-        todayDate.setMilliseconds(0);
-        todayDate.setDate(todayDate.getDate() + 1);
-
-        adapter.log.debug(`[sunTimeSchedules] Next: ${todayDate.toISOString()}`);
-        sunScheduleTimer = setTimeout(sunTimeSchedules, todayDate.getTime() - Date.now(), adapter, context);
     } else {
         // remove astro states if disabled
         adapter.delObject('variables.astro', { recursive: true });
@@ -2302,6 +2308,18 @@ async function getData(callback) {
         }
         adapter.config.latitude = parseFloat(adapter.config.latitude);
         adapter.config.longitude = parseFloat(adapter.config.longitude);
+
+        if (isNaN(adapter.config.latitude)) {
+            adapter.log.warn(`Configured latitude is not a number - check (instance/system) configuration`);
+        } else if (adapter.config.latitude < -90 || adapter.config.latitude > 90) {
+            adapter.log.warn(`Configured latitude "${adapter.config.latitude}" is invalid - check (instance/system) configuration`);
+        }
+
+        if (isNaN(adapter.config.longitude)) {
+            adapter.log.warn(`Configured longitude is not a number - check (instance/system) configuration`);
+        } else if (adapter.config.longitude < -180 || adapter.config.longitude > 180) {
+            adapter.log.warn(`Configured longitude "${adapter.config.longitude}" is invalid - check (instance/system) configuration`);
+        }
 
         adapter.config.sunriseEvent = adapter.config.sunriseEvent || 'nightEnd';
         adapter.config.sunriseOffset = adapter.config.sunriseOffset || 0;

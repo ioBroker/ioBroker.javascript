@@ -50,6 +50,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 
 * (klein0r) Configurable trigger warning limit (default: 100 per script)
 * (klein0r) Allow to use objects in create state blocks for common
+* (klein0r) Added warning if latitude or longitude is not configured correctly
 
 ### 7.9.0 (2024-03-13)
 
