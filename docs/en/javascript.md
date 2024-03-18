@@ -1863,7 +1863,7 @@ Unsubscribes from these logs.
 ```js
 httpGet('http://jsonplaceholder.typicode.com/posts', { timeout: 1000 }, (error, response) => {
     if (!error) {
-        console.log(response.responseCode);
+        console.log(response.statusCode);
         console.log(response.data);
     } else {
         console.error(error);
@@ -1876,7 +1876,7 @@ httpGet('http://jsonplaceholder.typicode.com/posts', { timeout: 1000 }, (error, 
 ```js
 httpPost('http://jsonplaceholder.typicode.com/posts', { title: 'foo', body: 'bar', userId: 1 }, { timeout: 1000 }, (error, response) => {
     if (!error) {
-        console.log(response.responseCode);
+        console.log(response.statusCode);
         console.log(response.data);
         console.log(response.headers);
     } else {
@@ -1907,7 +1907,7 @@ httpPost(
     },
     (error, response) => {
         if (!error) {
-            console.log(response.responseCode);
+            console.log(response.statusCode);
             console.log(response.data);
             console.log(response.headers);
         } else {

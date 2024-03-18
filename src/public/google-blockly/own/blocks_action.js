@@ -231,6 +231,7 @@ Blockly.Blocks['http_response'] = {
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('http_response_data'), 'response.data'],
+                [Blockly.Translate('http_response_statuscode'), 'response.statusCode'],
             ]), 'ATTR');
 
         this.setInputsInline(true);
