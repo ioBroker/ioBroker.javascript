@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 7.6.3 (2024-01-11)
+
+* (klein0r) Fixed bug in formatTimeDiff Blockly
+
 ## 7.6.2 (2024-01-02)
 
 * (klein0r) Added missing console.info()

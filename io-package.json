@@ -21,8 +21,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "7.9.1",
+    "version": "7.9.2",
     "news": {
+      "7.9.2": {
+        "en": "Added new block for http response",
+        "de": "Neuer Block für http-Antwort hinzugefügt",
+        "ru": "Добавлен новый блок для ответа http",
+        "pt": "Adicionado novo bloco para resposta http",
+        "nl": "Nieuw blok toegevoegd voor http-antwoord",
+        "fr": "Ajout d'un nouveau bloc pour la réponse http",
+        "it": "Aggiunto nuovo blocco per risposta http",
+        "es": "Añadido nuevo bloque para respuesta http",
+        "pl": "Dodano nowy blok odpowiedzi http",
+        "uk": "Додано новий блок для відповіді",
+        "zh-cn": "添加了 http 响应的新块"
+      },
       "7.9.1": {
         "en": "Configurable trigger warning limit (default: 100 per script)\nAllow to use objects in create state blocks for common\nAdded warning if latitude or longitude is not configured correctly",
         "de": "Konfigurierbare Triggerwarngrenze (Standard: 100 pro Skript)\nErlauben Sie, Objekte in erstellen Zustand Blöcke für gemeinsame\nWarnung hinzugefügt, wenn Breite oder Länge nicht korrekt konfiguriert ist",
@@ -100,19 +113,6 @@
         "pl": "Addd Identification (ang.)\nZapomniany brak typów\nObecnie opcjonalizacja stanów astronaukowych\nFixed log of objects/sets (ang.)",
         "uk": "Додано відсутній консолі.info()\nДодані нотки типу відсутні\nСтворення астро-станцій тепер необов'язково\nФіксований облік об'єктів/сетів",
         "zh-cn": "增加缺失的遗漏(info)()\n增加失踪的原状\n设立州现在是任择性的。\n物品/装置的固定标志"
-      },
-      "7.6.0": {
-        "en": "Added schedules by state value (scheduleById)",
-        "de": "Termine nach Zustandswert (scheduleById) hinzugefügt",
-        "ru": "Добавлены графики по государственным значениям (scheduleById)",
-        "pt": "Adicionados horários por valor estatal (scheduleById)",
-        "nl": "Vermeld schema's door staatswaarde (scheduleById)",
-        "fr": "Ajout des horaires par valeur d'état (scheduleById)",
-        "it": "Programmi aggiunti per valore di stato (scheduleById)",
-        "es": "Añadidos por valor estatal (scheduleById)",
-        "pl": "Dodany harmonogram (planById)",
-        "uk": "Додано графіки державного значення (scheduleById)",
-        "zh-cn": "按国家价值开列的增加时间表(附表ById)"
       }
     },
     "desc": {

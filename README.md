@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.9.2 (2024-03-18)
 
 * (klein0r) Added new block for http response
 
@@ -73,10 +73,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### 7.7.0 (2024-01-14)
 
 * (klein0r) Added block for multiple and conditions
-
-### 7.6.3 (2024-01-11)
-
-* (klein0r) Fixed bug in formatTimeDiff Blockly
 
 ## License
 The MIT License (MIT)
