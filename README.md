@@ -46,6 +46,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Added new block for http response
+
 ### 7.9.1 (2024-03-15)
 
 * (klein0r) Configurable trigger warning limit (default: 100 per script)

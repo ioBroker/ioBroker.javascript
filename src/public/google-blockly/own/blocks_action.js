@@ -212,6 +212,70 @@ Blockly.JavaScript['http_post'] = function(block) {
         '});\n';
 };
 
+// --- get info about event -----------------------------------------------------------
+Blockly.Action.blocks['http_response'] =
+    '<block type="http_response">'
+    + '     <value name="ATTR">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['http_response'] = {
+    /**
+     * Block for conditionally returning a value from a procedure.
+     * @this Blockly.Block
+     */
+    init: function() {
+        this.appendDummyInput()
+            .appendField('🌐');
+
+        this.appendDummyInput('ATTR')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('http_response_data'), 'response.data'],
+            ]), 'ATTR');
+
+        this.setInputsInline(true);
+        this.setOutput(true);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setTooltip(Blockly.Translate('http_response_tooltip'));
+        //this.setHelpUrl(getHelp('http_response'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        let legal = false;
+        // Is the block nested in a trigger?
+        let block = this;
+        do {
+            if (this.FUNCTION_TYPES.includes(block.type)) {
+                legal = true;
+                break;
+            }
+            block = block.getSurroundParent();
+        } while (block);
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('http_response_warning'), this.id);
+        }
+    },
+    /**
+     * List of block types that are functions and thus do not need warnings.
+     * To add a new function type add this to your code:
+     * Blockly.Blocks['procedures_ifreturn'].FUNCTION_TYPES.push('custom_func');
+     */
+    FUNCTION_TYPES: ['http_get', 'http_post'],
+};
+Blockly.JavaScript['http_response'] = function(block) {
+    const attr = block.getFieldValue('ATTR');
+
+    return [attr, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
 // --- action request --------------------------------------------------
 Blockly.Action.blocks['request'] =
     '<block type="request">'
