@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 7.7.0 (2024-01-14)
+
+* (klein0r) Added block for multiple and conditions
+
 ## 7.6.3 (2024-01-11)
 
 * (klein0r) Fixed bug in formatTimeDiff Blockly

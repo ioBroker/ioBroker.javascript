@@ -685,8 +685,8 @@ Blockly.Blocks['create_ex'] = {
                 [Blockly.Translate('create_type_number'), 'number'],
                 [Blockly.Translate('create_type_boolean'), 'boolean'],
                 [Blockly.Translate('create_type_json'), 'json'],
-                //[Blockly.Translate('create_type_object'), 'object'],
-                //[Blockly.Translate('create_type_array'), 'array'],
+                [Blockly.Translate('create_type_object'), 'object'],
+                [Blockly.Translate('create_type_array'), 'array'],
                 //[Blockly.Translate('create_type_file'), 'file'],
             ]), 'TYPE');
 
@@ -726,6 +726,8 @@ Blockly.JavaScript['create_ex'] = function(block) {
     if (value !== null && value !== '') {
         if (type === 'number') {
             paraV = `, parseFloat(${value})`;
+        } else if (type === 'boolean') {
+            paraV = `, !!${value}`;
         } else {
             paraV = ', ' + value;
         }
