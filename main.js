@@ -40,7 +40,6 @@ const mods = {
     zlib:             require('node:zlib'),
     suncalc:          require('suncalc2'),
     axios:            require('axios'),
-    request:          require('./lib/request'), // deprecated
     wake_on_lan:      require('wake_on_lan'),
     nodeSchedule:     require('node-schedule')
 };
@@ -669,8 +668,6 @@ function startAdapter(options) {
         },
 
         ready: () => {
-            mods.request.setLogger(adapter.log);
-
             adapter.config.maxSetStatePerMinute = parseInt(adapter.config.maxSetStatePerMinute, 10) || 1000;
             adapter.config.maxTriggersPerScript = parseInt(adapter.config.maxTriggersPerScript, 10) || 100;
 
