@@ -37,7 +37,6 @@ const mods = {
     util:             require('node:util'),
     child_process:    require('node:child_process'),
     stream:           require('node:stream'),
-    url:              require('node:url'),
     zlib:             require('node:zlib'),
     suncalc:          require('suncalc2'),
     axios:            require('axios'),
