@@ -124,6 +124,10 @@ Blockly.Action.blocks['http_get'] =
     + '             <field name="TEXT">http://</field>'
     + '         </shadow>'
     + '     </value>'
+    + '     <value name="TIMEOUT">'
+    + '     </value>'
+    + '     <value name="UNIT">'
+    + '     </value>'
     + '     <value name="STATEMENT">'
     + '     </value>'
     + '</block>';
@@ -132,6 +136,14 @@ Blockly.Blocks['http_get'] = {
     init: function() {
         this.appendValueInput('URL')
             .appendField(Blockly.Translate('http_get'));
+
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('http_get_timeout'))
+            .appendField(new Blockly.FieldTextInput(2000), 'TIMEOUT')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('http_get_settimeout_ms'), 'ms'],
+                [Blockly.Translate('http_get_settimeout_sec'), 'sec']
+            ]), 'UNIT');
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -149,8 +161,16 @@ Blockly.Blocks['http_get'] = {
 Blockly.JavaScript['http_get'] = function(block) {
     const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    const unit = block.getFieldValue('UNIT');
+    let timeout = block.getFieldValue('TIMEOUT');
+    if (!timeout) {
+        timeout = 2000;
+    }
+    if (unit === 'sec') {
+        timeout *= 1000;
+    }
 
-    return `httpGet(${URL}, { timeout: 2000 }, async (err, response) => {\n` +
+    return `httpGet(${URL}, { timeout: ${timeout} }, async (err, response) => {\n` +
         Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
@@ -170,6 +190,10 @@ Blockly.Action.blocks['http_post'] =
     + '         <shadow type="object_new">'
     + '         </shadow>'
     + '     </value>'
+    + '     <value name="TIMEOUT">'
+    + '     </value>'
+    + '     <value name="UNIT">'
+    + '     </value>'
     + '     <value name="STATEMENT">'
     + '     </value>'
     + '</block>';
@@ -181,6 +205,14 @@ Blockly.Blocks['http_post'] = {
 
         this.appendValueInput('DATA')
             .appendField(Blockly.Translate('http_post_data'));
+
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('http_post_timeout'))
+            .appendField(new Blockly.FieldTextInput(2000), 'TIMEOUT')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('http_post_settimeout_ms'), 'ms'],
+                [Blockly.Translate('http_post_settimeout_sec'), 'sec']
+            ]), 'UNIT');
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -199,12 +231,20 @@ Blockly.JavaScript['http_post'] = function(block) {
     const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
     const data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    const unit = block.getFieldValue('UNIT');
+    let timeout = block.getFieldValue('TIMEOUT');
+    if (!timeout) {
+        timeout = 2000;
+    }
+    if (unit === 'sec') {
+        timeout *= 1000;
+    }
 
     if (!data) {
         data = '{}';
     }
 
-    return `httpPost(${URL}, ${data}, { timeout: 2000 }, async (err, response) => {\n` +
+    return `httpPost(${URL}, ${data}, { timeout: ${timeout} }, async (err, response) => {\n` +
         Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
