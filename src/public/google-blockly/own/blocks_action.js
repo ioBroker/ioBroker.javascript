@@ -186,13 +186,13 @@ Blockly.Action.blocks['http_post'] =
     + '             <field name="TEXT">http://</field>'
     + '         </shadow>'
     + '     </value>'
-    + '     <value name="DATA">'
-    + '         <shadow type="object_new">'
-    + '         </shadow>'
-    + '     </value>'
     + '     <value name="TIMEOUT">'
     + '     </value>'
     + '     <value name="UNIT">'
+    + '     </value>'
+    + '     <value name="DATA">'
+    + '         <shadow type="object_new">'
+    + '         </shadow>'
     + '     </value>'
     + '     <value name="STATEMENT">'
     + '     </value>'
@@ -203,9 +203,6 @@ Blockly.Blocks['http_post'] = {
         this.appendValueInput('URL')
             .appendField(Blockly.Translate('http_post'));
 
-        this.appendValueInput('DATA')
-            .appendField(Blockly.Translate('http_post_data'));
-
         this.appendDummyInput()
             .appendField(Blockly.Translate('http_post_timeout'))
             .appendField(new Blockly.FieldTextInput(2000), 'TIMEOUT')
@@ -213,6 +210,9 @@ Blockly.Blocks['http_post'] = {
                 [Blockly.Translate('http_post_settimeout_ms'), 'ms'],
                 [Blockly.Translate('http_post_settimeout_sec'), 'sec']
             ]), 'UNIT');
+
+        this.appendValueInput('DATA')
+            .appendField(Blockly.Translate('http_post_data'));
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
