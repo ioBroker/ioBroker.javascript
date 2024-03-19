@@ -20,13 +20,12 @@ class ScriptEditor extends React.Component {
         if (this.originalCode !== nextProps.code) {
             this.forceUpdate();
             this.originalCode = nextProps.code || '';
-        } else
-        if (this.state.language !== (nextProps.language || 'javascript')) {
-            this.setState({language: nextProps.language || 'javascript'});
+        } else if (this.state.language !== (nextProps.language || 'javascript')) {
+            this.setState({ language: nextProps.language || 'javascript' });
         } else if (this.state.readOnly !== (nextProps.readOnly || false)) {
-            this.setState({readOnly: nextProps.readOnly || false});
+            this.setState({ readOnly: nextProps.readOnly || false });
         } else if (this.state.isDark !== (nextProps.isDark || false)) {
-            this.setState({isDark: nextProps.isDark || false});
+            this.setState({ isDark: nextProps.isDark || false });
         }
 
         if (this.insert !== nextProps.insert) {
@@ -45,16 +44,19 @@ class ScriptEditor extends React.Component {
     insertTextIntoEditor(text) {
         const selection = this.editor.getSelection();
         const range = new this.monaco.Range(
-            selection.startLineNumber, selection.startColumn,
-            selection.endLineNumber, selection.endColumn
+            selection.startLineNumber,
+            selection.startColumn,
+            selection.endLineNumber,
+            selection.endColumn,
         );
-        this.editor.executeEdits('', [{range: range, text: text, forceMoveMarkers: true}]);
+
+        this.editor.executeEdits('', [{ range, text, forceMoveMarkers: true }]);
     }
 
     editorDidMount(editor, monaco) {
         this.monaco = monaco;
         this.editor = editor;
-        editor.focus();
+        //editor.focus();
     }
 
     onChange(newValue, e) {
@@ -66,14 +68,14 @@ class ScriptEditor extends React.Component {
             selectOnLineNumbers: true,
             scrollBeyondLastLine: false,
             automaticLayout: true,
-            readOnly: this.state.readOnly
+            readOnly: this.state.readOnly,
         };
         return <MonacoEditor
             width="100%"
             height="100%"
             languages={['javascript', 'typescript']}
             language={this.state.language}
-            theme={this.state.isDark ? 'vs-dark': ''}
+            theme={this.state.isDark ? 'vs-dark' : ''}
             value={this.originalCode}
             searchText={this.props.searchText}
             options={options}

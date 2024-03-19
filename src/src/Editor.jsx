@@ -672,7 +672,6 @@ class Editor extends React.Component {
             changed[this.state.selected] = _changed;
             this.objects[this.state.selected].from = 'system.adapter.admin.0';
             this.setState({ changed }, () => this.setChangedInAdmin());
-
         }
     }
 

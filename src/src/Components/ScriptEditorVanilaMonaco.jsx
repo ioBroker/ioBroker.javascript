@@ -59,7 +59,8 @@ class ScriptEditor extends React.Component {
             return;
         }
         runningInstances = runningInstances || this.props.runningInstances;
-        let scriptAdapterInstance = runningInstances && Object.keys(runningInstances).find(id => runningInstances[id]);
+
+        const scriptAdapterInstance = runningInstances && Object.keys(runningInstances).find(id => runningInstances[id]);
         if (scriptAdapterInstance) {
             this.props.socket.sendTo(scriptAdapterInstance.replace('system.adapter.', ''), 'loadTypings', null)
                 .then(result => {
@@ -140,6 +141,7 @@ class ScriptEditor extends React.Component {
         this.setEditorOptions(options);
         this.editor.focus();
         this.editor.setValue(this.originalCode);
+
         if (this.props.onToggleBreakpoint) {
             // add onMouseDown listener to toggle breakpoints
             this.editor.onMouseDown(e => {
@@ -218,7 +220,7 @@ class ScriptEditor extends React.Component {
         const newModel = this.monaco.editor.createModel(
             code,
             newLanguage,
-            this.monaco.Uri.from({path: `${filenameWithoutExtension}${index++}.${extension}`})
+            this.monaco.Uri.from({ path: `${filenameWithoutExtension}${index++}.${extension}` }),
         );
 
         this.editor.setModel(newModel);
@@ -288,12 +290,12 @@ class ScriptEditor extends React.Component {
             selection.endLineNumber,
             selection.endColumn,
         );
-        this.editor.executeEdits('', [{ range: range, text: text, forceMoveMarkers: true }]);
+        this.editor.executeEdits('', [{ range, text, forceMoveMarkers: true }]);
         this.editor.focus();
     }
 
     highlightText(text) {
-        let range = text && this.editor.getModel().findMatches(text);
+        const range = text && this.editor.getModel().findMatches(text);
         if (range && range.length) {
             range.forEach(r => this.editor.setSelection(r.range));
             this.editor.revealLine(range[0].range.startLineNumber);
@@ -313,14 +315,14 @@ class ScriptEditor extends React.Component {
                 options: {
                     isWholeLine: false,
                     className: this.props.isDark ? 'monacoCurrentLineDark' : 'monacoCurrentLine',
-                }
+                },
             });
             decorations.push({
                 range: new this.monaco.Range(this.location.lineNumber + 1, 0, this.location.lineNumber + 1, 0),
                 options: {
                     isWholeLine: true,
                     className: this.props.isDark ? 'monacoCurrentFullLineDark' : 'monacoCurrentFullLine',
-                }
+                },
             });
         }
 
@@ -331,7 +333,7 @@ class ScriptEditor extends React.Component {
                     options: {
                         isWholeLine: true,
                         glyphMarginClassName: this.props.isDark ? 'monacoBreakPointDark' : 'monacoBreakPoint',
-                    }
+                    },
                 });
             });
         }
@@ -340,7 +342,7 @@ class ScriptEditor extends React.Component {
     }
 
     initNewScript(name, code) {
-        this.setState({name});
+        this.setState({ name });
         this.originalCode = code || '';
         this.editor && this.editor.setValue(code);
         this.highlightText(this.lastSearch);
@@ -395,7 +397,7 @@ class ScriptEditor extends React.Component {
             this.breakpoints = nextProps.breakpoints;
             this.showDecorators();
             this.editor && this.location && this.scrollToLineIfNeeded(this.location.lineNumber + 1);
-            //this.editor && this.location && this.editor.setPosition(this.location.lineNumber + 1, this.location.columnNumber + 1);
+            // this.editor && this.location && this.editor.setPosition(this.location.lineNumber + 1, this.location.columnNumber + 1);
         } else if (JSON.stringify(nextProps.breakpoints) !== JSON.stringify(this.breakpoints)) {
             this.breakpoints = nextProps.breakpoints;
             this.showDecorators();
@@ -403,7 +405,7 @@ class ScriptEditor extends React.Component {
             this.location = nextProps.location;
             this.showDecorators();
             this.editor && this.location && this.scrollToLineIfNeeded(this.location.lineNumber + 1);
-            //this.editor && this.location && this.editor.setPosition(this.location.lineNumber + 1, this.location.columnNumber + 1);
+            // this.editor && this.location && this.editor.setPosition(this.location.lineNumber + 1, this.location.columnNumber + 1);
         }
 
         if (this.state.language !== (nextProps.language || 'javascript')) {
@@ -422,7 +424,7 @@ class ScriptEditor extends React.Component {
         if (this.insert !== nextProps.insert) {
             this.insert = nextProps.insert;
             if (this.insert) {
-                console.log('Insert text' + this.insert);
+                console.log(`Insert text: ${this.insert}`);
                 setTimeout(insert => {
                     this.insertTextIntoEditor(insert);
                     setTimeout(() => this.props.onInserted && this.props.onInserted(), 100);
@@ -441,7 +443,7 @@ class ScriptEditor extends React.Component {
         if (!this.monaco?.languages?.typescript?.typescriptDefaults || !this.props.runningInstances) {
             setTimeout(() => {
                 this.monaco = window.monaco;
-                this.forceUpdate()
+                this.forceUpdate();
             }, 200);
             return null;
         }
@@ -450,9 +452,10 @@ class ScriptEditor extends React.Component {
             {!this.state.check && <Fab
                 size="small"
                 title={I18n.t('Check is not active, because javascript adapter is disabled')}
-                style={{bottom: 10, right: 10, opacity: 0.5, position: 'absolute', zIndex: 1, background: 'red', color: 'white'}}
-                color="secondary">
-                <IconNoCheck/>
+                style={{ bottom: 10, right: 10, opacity: 0.5, position: 'absolute', zIndex: 1, background: 'red', color: 'white' }}
+                color="secondary"
+            >
+                <IconNoCheck />
             </Fab>}
         </div>;
     }
