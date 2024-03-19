@@ -49,6 +49,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### **WORK IN PROGRESS**
 
 * (klein0r) Added timeout option for http blocks
+* (klein0r) Added option for basic auth in url (user:pass)
 
 ### 7.9.2 (2024-03-18)
 
