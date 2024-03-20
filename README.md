@@ -38,10 +38,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 * `./node_modules` or the anything below
 * `./log` or the anything below
 
-## Todo
-- Goto current line in debugger
-- ...
-
 ## Changelog
 <!--
 	### **WORK IN PROGRESS**
