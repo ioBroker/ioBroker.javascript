@@ -46,7 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.9.4 (2024-03-20)
 
 * (klein0r) Fixed urlencoding for basic auth in url (user:pass)
 * (klein0r) Add warning icon if trigger is positioned inside of another trigger or loop
@@ -73,12 +73,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 * (klein0r) Droped support of coffeescript (deprecated since version 6.0.0)
 * (klein0r) Raise warning if more than 100 triggers have been registered (per script)
 * (klein0r) Fixed astro state calculation (and display server time in dialog)
-
-### 7.8.0 (2024-01-29)
-
-* (klein0r) Added block for multiple or conditions
-* (klein0r) Raised supported ecmaVersion from es2018 to es2021
-* (klein0r) Fixed getIdByName (returned the same id as array)
 
 ## License
 The MIT License (MIT)

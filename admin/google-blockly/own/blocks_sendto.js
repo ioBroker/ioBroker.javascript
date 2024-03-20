@@ -256,27 +256,27 @@ Blockly.Blocks['sendto_custom'] = {
                     names[i] = Blockly.Translate('sendto_custom_argument') + (i + 1);
                 }
                 _input.appendField(new Blockly.FieldTextInput(names[i]));
-                setTimeout(function (_input) {
-                    if (!_input.connection.isConnected()) {
+                setTimeout(function (input) {
+                    if (!input.connection.isConnected()) {
                         const _shadow = wp.newBlock('text');
                         _shadow.setShadow(true);
                         _shadow.initSvg();
                         _shadow.render();
-                        _shadow.outputConnection.connect(_input.connection);
+                        _shadow.outputConnection.connect(input.connection);
                         //console.log('New ' + names[i]);
                     }
                 }, 100, _input);
             } else {
                 _input.fieldRow[0].setValue(names[i]);
                 //console.log('Exist ' + names[i]);
-                setTimeout(function (_input, name) {
-                    if (!_input.connection.isConnected()) {
+                setTimeout(function (input, name) {
+                    if (!input.connection.isConnected()) {
                         //console.log('Create ' + name);
                         const shadow = wp.newBlock('text');
                         shadow.setShadow(true);
                         shadow.initSvg();
                         shadow.render();
-                        shadow.outputConnection.connect(_input.connection);
+                        shadow.outputConnection.connect(input.connection);
                     }
                 }, 100, _input, names[i]);
             }

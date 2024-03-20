@@ -21,8 +21,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "7.9.3",
+    "version": "7.9.4",
     "news": {
+      "7.9.4": {
+        "en": "Fixed urlencoding for basic auth in url (user:pass)\nAdd warning icon if trigger is positioned inside of another trigger or loop",
+        "de": "Feste Urlenkodierung für Grundauth in url (user:pass)\nWarnsymbol hinzufügen, wenn der Auslöser innerhalb eines anderen Auslösers oder einer Schleife positioniert ist",
+        "ru": "Фиксированный урлендкодирование для основной ауты в URL (пользователь:пасс)\nДобавить значок предупреждения, если триггер расположен внутри другого триггера или петли",
+        "pt": "Urlencoding fixo para auth básico em url (usuário:pass)\nAdicionar ícone de aviso se o gatilho estiver posicionado dentro de outro gatilho ou loop",
+        "nl": "Vaste urlencodering voor basis auth in url (gebruiker:pass)\nWaarschuwingspictogram toevoegen als de trigger binnen een andere trigger of lus is geplaatst",
+        "fr": "Urlencoding fixe pour l'auth de base en url (utilisateur:pass)\nAjouter une icône d'avertissement si le déclencheur est placé à l'intérieur d'un autre déclencheur ou d'une autre boucle",
+        "it": "Urlencoding fisso per auth di base in url (utente:pass)\nAggiungere l'icona di avviso se il trigger è posizionato all'interno di un altro trigger o loop",
+        "es": "Urlencoding fijo para la austeridad básica en url (usuario:pass)\nAgregue el icono de advertencia si el gatillo se coloca dentro de otro gatillo o bucle",
+        "pl": "Stałe kodowanie urlencoding dla podstawowej auth w url (użytkownik: pass)\nDodaj ikonę ostrzegawczą, jeśli przycisk jest umieszczony wewnątrz innego przycisku lub pętli",
+        "uk": "Фіксована вилляна обробка для базової аути в виворітному (користувач:pass)\nДодайте значок попередження, якщо вінгер знаходиться всередині іншого тригера або петлі",
+        "zh-cn": "Url (用户: pass) 中基本认证的固定urlen编码\n如果触发器位于另一个触发器或循环内, 则添加警告图标"
+      },
       "7.9.3": {
         "en": "Added timeout option for http blocks\nAdded option for basic auth in url (user:pass)",
         "de": "Zusätzliche Timeout-Option für http-Blöcke\nOption für Grundauth in url (Benutzer:pass)",
@@ -100,19 +113,6 @@
         "pl": "Dodano blok dla wielu i warunków",
         "uk": "Додано блок для декількох і умов",
         "zh-cn": "为多个条件添加块"
-      },
-      "7.6.3": {
-        "en": "Fixed bug in formatTimeDiff Blockly",
-        "de": "Fehler im Format behoben TimeDiff Blockiert",
-        "ru": "Исправлена ошибка в формате TimeDiff Blockly",
-        "pt": "Corrigido o erro no formato TimeDiff Blockly",
-        "nl": "Fixed bug in formaat TimeDiff Blockly",
-        "fr": "Correction du bogue au format TimeDiff Blockly",
-        "it": "Corretto bug in formato TimeDiff Blockly",
-        "es": "Error fijo en formato TimeDiff Blockly",
-        "pl": "Naprawiono błąd w formacie Blokada TimeDiff",
-        "uk": "Виправлена помилка у форматі часДифу блокнот",
-        "zh-cn": "格式化的固定错误 时间diff Blockly"
       }
     },
     "desc": {
