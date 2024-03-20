@@ -9,10 +9,14 @@ if (typeof goog !== 'undefined') {
 Blockly.CustomBlocks = Blockly.CustomBlocks || [];
 Blockly.CustomBlocks.push('Trigger');
 
-
 Blockly.Trigger = {
     HUE: 330,
     blocks: {},
+    WARNING_PARENTS: [
+        'on', 'on_ext', 'schedule', 'schedule_by_id', 'schedule_create', 'astro', 'onMessage', 'onFile', // trigger blocks
+        'timeouts_setinterval', 'timeouts_setinterval_variable', // timeouts
+        'controls_repeat_ext', 'controls_repeat_ext', 'controls_for', 'controls_forEach', // loops
+    ],
 };
 
 // --- ON Extended-----------------------------------------------------------
@@ -267,6 +271,30 @@ Blockly.Blocks['on_ext'] = {
             this.appendStatementInput('STATEMENT')
                 .setCheck(null)
         }
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        let legal = true;
+
+        // Is the block nested in a trigger?
+        let block = this;
+        while (block = block.getSurroundParent()) {
+            if (block && Blockly.Trigger.WARNING_PARENTS.includes(block.type)) {
+                legal = false;
+                break;
+            }
+        }
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
+        }
     }
 };
 Blockly.JavaScript['on_ext'] = function(block) {
@@ -353,6 +381,30 @@ Blockly.Blocks['on'] = {
         this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Translate('on_tooltip'));
         this.setHelpUrl(getHelp('on_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        let legal = true;
+
+        // Is the block nested in a trigger?
+        let block = this;
+        while (block = block.getSurroundParent()) {
+            if (block && Blockly.Trigger.WARNING_PARENTS.includes(block.type)) {
+                legal = false;
+                break;
+            }
+        }
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
+        }
     }
 };
 Blockly.JavaScript['on'] = function(block) {
@@ -500,6 +552,30 @@ Blockly.Blocks['schedule'] = {
         this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Translate('schedule_tooltip'));
         this.setHelpUrl(getHelp('schedule_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        let legal = true;
+
+        // Is the block nested in a trigger?
+        let block = this;
+        while (block = block.getSurroundParent()) {
+            if (block && Blockly.Trigger.WARNING_PARENTS.includes(block.type)) {
+                legal = false;
+                break;
+            }
+        }
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
+        }
     }
 };
 Blockly.JavaScript['schedule'] = function(block) {
@@ -620,6 +696,30 @@ Blockly.Blocks['astro'] = {
         this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Translate('astro_tooltip'));
         this.setHelpUrl(getHelp('astro_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        let legal = true;
+
+        // Is the block nested in a trigger?
+        let block = this;
+        while (block = block.getSurroundParent()) {
+            if (block && Blockly.Trigger.WARNING_PARENTS.includes(block.type)) {
+                legal = false;
+                break;
+            }
+        }
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
+        }
     }
 };
 Blockly.JavaScript['astro'] = function(block) {
@@ -734,14 +834,6 @@ Blockly.Blocks['schedule_create'] = {
         this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Translate('schedule_create_tooltip'));
         this.setHelpUrl(getHelp('schedule_create_help'));
-    },
-    isSchedule_: true,
-    getVars: function () {
-        return [this.getFieldValue('NAME')];
-    },
-    getVarModels: function () {
-        const name = this.getFieldValue('NAME');
-        return [{ getId: () => { return name; }, name: name, type: 'cron' }];
     }
 };
 
@@ -783,8 +875,8 @@ Blockly.Trigger.getAllSchedules = function (workspace) {
 
 Blockly.Trigger.blocks['schedule_clear'] =
     '<block type="schedule_clear">'
-    + '     <value name="NAME">'
-    + '     </value>'
+    + '    <value name="NAME">'
+    + '    </value>'
     + '</block>';
 
 Blockly.Blocks['schedule_clear'] = {
@@ -834,7 +926,7 @@ Blockly.Blocks['field_cron'] = {
 
 Blockly.JavaScript['field_cron'] = function(block) {
     const cron = block.getFieldValue('CRON');
-    return [`'${cron}'`, Blockly.JavaScript.ORDER_ATOMIC]
+    return [`'${cron}'`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- CRON builder --------------------------------------------------
@@ -1045,6 +1137,30 @@ Blockly.Blocks['onMessage'] = {
         this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Translate('onMessage_tooltip'));
         this.setHelpUrl(getHelp('onMessage_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        let legal = true;
+
+        // Is the block nested in a trigger?
+        let block = this;
+        while (block = block.getSurroundParent()) {
+            if (block && Blockly.Trigger.WARNING_PARENTS.includes(block.type)) {
+                legal = false;
+                break;
+            }
+        }
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
+        }
     }
 };
 
@@ -1100,6 +1216,30 @@ Blockly.Blocks['onFile'] = {
         this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Translate('onFile_tooltip'));
         this.setHelpUrl(getHelp('onFile_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        let legal = true;
+
+        // Is the block nested in a trigger?
+        let block = this;
+        while (block = block.getSurroundParent()) {
+            if (block && Blockly.Trigger.WARNING_PARENTS.includes(block.type)) {
+                legal = false;
+                break;
+            }
+        }
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
+        }
     }
 };
 
