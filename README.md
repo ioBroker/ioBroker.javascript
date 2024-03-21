@@ -46,6 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 
 * (klein0r) Added warning icon if state value is connected to trigger block (instead of object id)
 * (klein0r) Copy date object in getAstroDate
+* (klein0r) Added object id as tooltip
 
 ### 7.9.4 (2024-03-20)
 

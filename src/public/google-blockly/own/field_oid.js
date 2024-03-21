@@ -79,6 +79,7 @@ class FieldOID extends Blockly.Field {
         }
 
         super.setValue(id);
+        super.setTooltip(id);
     }
 
     getDisplayText_() {
