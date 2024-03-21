@@ -11,7 +11,10 @@ Blockly.CustomBlocks.push('System');
 
 Blockly.System = {
     HUE: 210,
-    blocks: {}
+    blocks: {},
+    WARNING_PARENTS: [
+        'on_ext',
+    ],
 };
 
 // --- Debug output --------------------------------------------------
@@ -788,6 +791,21 @@ Blockly.Blocks['get_value'] = {
         this.setColour(Blockly.System.HUE);
         this.setTooltip(Blockly.Translate('get_value_tooltip'));
         this.setHelpUrl(getHelp('get_value_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        // Is the block connected to a trigger?
+        const block = this.getParent();
+        if (block && Blockly.System.WARNING_PARENTS.includes(block.type)) {
+            this.setWarningText(Blockly.Translate('false_connection_to_trigger_warning'), this.id);
+        } else {
+            this.setWarningText(null, this.id);
+        }
     }
 };
 
@@ -847,6 +865,21 @@ Blockly.Blocks['get_value_var'] = {
         this.setColour(Blockly.System.HUE);
         this.setTooltip(Blockly.Translate('get_value_tooltip'));
         this.setHelpUrl(getHelp('get_value_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        // Is the block connected to a trigger?
+        const block = this.getParent();
+        if (block && Blockly.System.WARNING_PARENTS.includes(block.type)) {
+            this.setWarningText(Blockly.Translate('false_connection_to_trigger_warning'), this.id);
+        } else {
+            this.setWarningText(null, this.id);
+        }
     }
 };
 
@@ -952,6 +985,21 @@ Blockly.Blocks['get_object'] = {
         this.setColour(Blockly.Object.HUE);
         this.setTooltip(Blockly.Translate('get_object_tooltip'));
         this.setHelpUrl(getHelp('get_object_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        // Is the block connected to a trigger?
+        const block = this.getParent();
+        if (block && Blockly.System.WARNING_PARENTS.includes(block.type)) {
+            this.setWarningText(Blockly.Translate('false_connection_to_trigger_warning'), this.id);
+        } else {
+            this.setWarningText(null, this.id);
+        }
     }
 };
 

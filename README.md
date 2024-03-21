@@ -44,12 +44,13 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 -->
 ### **WORK IN PROGRESS**
 
+* (klein0r) Added warning icon if state value is connected to trigger block (instead of object id)
 * (klein0r) Copy date object in getAstroDate
 
 ### 7.9.4 (2024-03-20)
 
 * (klein0r) Fixed urlencoding for basic auth in url (user:pass)
-* (klein0r) Add warning icon if trigger is positioned inside of another trigger or loop
+* (klein0r) Added warning icon if trigger is positioned inside of another trigger or loop
 
 ### 7.9.3 (2024-03-19)
 
