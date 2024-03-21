@@ -241,7 +241,7 @@ Blockly.JavaScript['http_post'] = function(block) {
     }
 
     if (!data) {
-        data = '{}';
+        data = 'null';
     }
 
     return `httpPost(${URL}, ${data}, { timeout: ${timeout} }, async (err, response) => {\n` +
