@@ -21,8 +21,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "7.9.4",
+    "version": "7.10.0",
     "news": {
+      "7.10.0": {
+        "en": "Added warning icon if state value is connected to trigger block (instead of object id)\nCopy date object in getAstroDate\nAdded object id as tooltip",
+        "de": "Warnsymbol hinzugefügt, wenn der Zustandswert mit Triggerblock verbunden ist (anstatt Objekt id)\nKopieren von Datumsobjekt in getAstro Datum\nObjekt-ID als Tooltip hinzugefügt",
+        "ru": "Добавлена предупреждающая иконка, если значение состояния подключено к триггерному блоку (вместо объекта id)\nКопировать дата объект в getAstro Дата\nДобавленный объект id как tooltip",
+        "pt": "Adicionado ícone de aviso se o valor do estado está conectado ao bloco de gatilho (em vez de objeto id)\nObjeto de data de cópia em getAstro Data\nAdicionado objeto id como tooltip",
+        "nl": "Waarschuwingspictogram toegevoegd als staat waarde is verbonden met trigger blok (in plaats van object id)\nDatum-object kopiëren in getAstro Datum\nObject-id toegevoegd als tooltip",
+        "fr": "Ajout de l'icône d'avertissement si la valeur de l'état est connectée au bloc déclencheur (au lieu de l'identifiant de l'objet)\nCopier l'objet date dans getAstro Date\nAjout de l'identifiant d'objet comme infobulle",
+        "it": "Aggiunta icona di avviso se il valore di stato è collegato al blocco di trigger (invece di oggetto id)\nCopia oggetto data in getAstro Data\nAggiunto oggetto id come tooltip",
+        "es": "Ícono de advertencia adicional si el valor del estado está conectado al bloque de disparador (en lugar de objeto id)\nCopia objeto de la fecha en getAstro Fecha\nObjeto añadido id como punta de herramienta",
+        "pl": "Dodano ikonę ostrzeżenia, jeśli wartość stanu jest podłączona do bloku wyzwalającego (zamiast id obiektu)\nKopiuj obiekt daty w getAstro Data\nDodano identyfikator obiektu jako podpowiedź",
+        "uk": "Додано значок попередження, якщо значення стану підключено до пускового блоку (замість ідентифікатора об'єкта)\nСтатус на сервери Дата\nДодано ідентифікатор об'єкта як інструмент",
+        "zh-cn": "如果状态值连接到触发块( 而不是对象 ID) , 则添加警告图标\n在 getAstro 中复制日期对象 日期\n添加对象 ID 作为工具提示"
+      },
       "7.9.4": {
         "en": "Fixed urlencoding for basic auth in url (user:pass)\nAdd warning icon if trigger is positioned inside of another trigger or loop",
         "de": "Feste Urlenkodierung für Grundauth in url (user:pass)\nWarnsymbol hinzufügen, wenn der Auslöser innerhalb eines anderen Auslösers oder einer Schleife positioniert ist",
@@ -100,19 +113,6 @@
         "pl": "Dodany blok dla wielu lub warunków\nZwiększona wspierana ekowersja od es2018 do es2021\nNaprawiono getIdByName (zwracał ten sam id co tablica)",
         "uk": "Додано блок для декількох або умов\nПідтримувана екскавація від es2018 до es2021\nВиправлено getIdByName (перевернуто той же ідентифікатор як масив)",
         "zh-cn": "为多个或条件添加块\n从 es2018 升至 es2021 年支持的 ecmaVersion\n固定获取IdByName (返回的编号与数组相同)"
-      },
-      "7.7.0": {
-        "en": "Added block for multiple and conditions",
-        "de": "Hinzugefügt Block für mehrere und Bedingungen",
-        "ru": "Добавленный блок для нескольких и условий",
-        "pt": "Adicionado bloco para múltiplos e condições",
-        "nl": "Toegevoegd blok voor meerdere en voorwaarden",
-        "fr": "Ajout de bloc pour plusieurs et conditions",
-        "it": "Aggiunto blocco per più e condizioni",
-        "es": "Bloque añadido para múltiples y condiciones",
-        "pl": "Dodano blok dla wielu i warunków",
-        "uk": "Додано блок для декількох і умов",
-        "zh-cn": "为多个条件添加块"
       }
     },
     "desc": {

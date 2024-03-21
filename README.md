@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.10.0 (2024-03-21)
 
 * (klein0r) Added warning icon if state value is connected to trigger block (instead of object id)
 * (klein0r) Copy date object in getAstroDate
@@ -67,14 +67,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 * (klein0r) Configurable trigger warning limit (default: 100 per script)
 * (klein0r) Allow to use objects in create state blocks for common
 * (klein0r) Added warning if latitude or longitude is not configured correctly
-
-### 7.9.0 (2024-03-13)
-
-* (klein0r) Added block to create new objects
-* (klein0r) Added HTTP get and post function
-* (klein0r) Droped support of coffeescript (deprecated since version 6.0.0)
-* (klein0r) Raise warning if more than 100 triggers have been registered (per script)
-* (klein0r) Fixed astro state calculation (and display server time in dialog)
 
 ## License
 The MIT License (MIT)
