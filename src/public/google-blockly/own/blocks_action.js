@@ -163,7 +163,7 @@ Blockly.JavaScript['http_get'] = function(block) {
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     const unit = block.getFieldValue('UNIT');
     let timeout = block.getFieldValue('TIMEOUT');
-    if (!timeout) {
+    if (isNaN(timeout)) {
         timeout = 2000;
     }
     if (unit === 'sec') {
@@ -233,7 +233,7 @@ Blockly.JavaScript['http_post'] = function(block) {
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     const unit = block.getFieldValue('UNIT');
     let timeout = block.getFieldValue('TIMEOUT');
-    if (!timeout) {
+    if (isNaN(timeout)) {
         timeout = 2000;
     }
     if (unit === 'sec') {

@@ -834,6 +834,14 @@ Blockly.Blocks['schedule_create'] = {
         this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Translate('schedule_create_tooltip'));
         this.setHelpUrl(getHelp('schedule_create_help'));
+    },
+    isSchedule_: true,
+    getVars: function () {
+        return [this.getFieldValue('NAME')];
+    },
+    getVarModels: function () {
+        const name = this.getFieldValue('NAME');
+        return [{ getId: () => { return name; }, name: name, type: 'cron' }];
     }
 };
 
