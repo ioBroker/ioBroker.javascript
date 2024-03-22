@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.10.1 (2024-03-22)
 
 * (klein0r) Fixed cron trigger
 
@@ -65,12 +65,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### 7.9.2 (2024-03-18)
 
 * (klein0r) Added new block for http response
-
-### 7.9.1 (2024-03-15)
-
-* (klein0r) Configurable trigger warning limit (default: 100 per script)
-* (klein0r) Allow to use objects in create state blocks for common
-* (klein0r) Added warning if latitude or longitude is not configured correctly
 
 ## License
 The MIT License (MIT)

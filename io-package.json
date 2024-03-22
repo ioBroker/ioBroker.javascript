@@ -21,8 +21,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "7.10.0",
+    "version": "7.10.1",
     "news": {
+      "7.10.1": {
+        "en": "Fixed cron trigger",
+        "de": "Fixed Cron Trigger",
+        "ru": "Фиксированный крон триггер",
+        "pt": "Gatilho cron fixo",
+        "nl": "Vaste cron trigger",
+        "fr": "Déclencheur cron fixe",
+        "it": "Attivazione del cron fisso",
+        "es": "Activador de cron fijo",
+        "pl": "Naprawiono wyzwalacz cron",
+        "uk": "Фіксований кроновий тригер",
+        "zh-cn": "固定线圈触发器"
+      },
       "7.10.0": {
         "en": "Added warning icon if state value is connected to trigger block (instead of object id)\nCopy date object in getAstroDate\nAdded object id as tooltip",
         "de": "Warnsymbol hinzugefügt, wenn der Zustandswert mit Triggerblock verbunden ist (anstatt Objekt id)\nKopieren von Datumsobjekt in getAstro Datum\nObjekt-ID als Tooltip hinzugefügt",
@@ -100,19 +113,6 @@
         "pl": "Dodano blok do tworzenia nowych obiektów\nDodano funkcję pobierania i wysyłania HTTP\nUpadłe wsparcie dla kawy (depregated od wersji 6.0.0)\nPodnieść ostrzeżenie, jeśli zarejestrowano więcej niż 100 wyzwalaczy\nStała kalkulacja stanu astro (i czas wyświetlania serwera w oknie dialogowym)",
         "uk": "Додано блок для створення нових об'єктів\nДодано функцію HTTP get і post\nПодрібнена підтримка кав'ярні (з версії 6.0.0)\nРаїзне попередження, якщо було зареєстровано більше 100 тригерів\nВиправлено розрахунок стану астро (і відображення часу сервера в діалоговому вікні)",
         "zh-cn": "添加块以创建新对象\n添加了 HTTP 获取和员额功能\n已放弃对咖啡标语的支持(自6.0.0版本起预告)\n如果超过100个触发器已登记,则发出警告\n固定的天体状态计算( 在对话框中显示服务器时间)"
-      },
-      "7.8.0": {
-        "en": "Added block for multiple or conditions\nRaised supported ecmaVersion from es2018 to es2021\nFixed getIdByName (returned the same id as array)",
-        "de": "Block für mehrere oder Bedingungen hinzugefügt\nRaised support ecmaVersion von es2018 bis es2021\nBehoben getIdByName (wie Array die gleiche ID zurückgegeben)",
-        "ru": "Добавление блока для нескольких или условий\nПовышение поддержки ecmaVersion с es2018 по es2021\nFixed getIdByName",
-        "pt": "Bloco adicionado para múltiplos ou condições\nEcmaVersion com suporte aumentado de es2018 para es2021\nFixed getIdByName (returned the same id as array)",
-        "nl": "Blok toegevoegd voor meerdere of voorwaarden\nVerhoogd ondersteund ecmaVersion van es2018 naar es2021\nFixed getIdByName (returned the same id as array)",
-        "fr": "Ajout de bloc pour plusieurs ou conditions\nEcmaVersion supportée depuis es2018 jusqu'à es2021\nCorrection de getIdByName (retourné le même id que le tableau)",
-        "it": "Aggiunto blocco per più o condizioni\nEcmaVersione supportata aumentata da es2018 a es2021\nGetIdByName fisso (ritornato lo stesso id come array)",
-        "es": "Bloque añadido para múltiples o condiciones\nEcmaVersión apoyada ampliada de es2018 a es2021\nReparado getIdByName (retornado el mismo id que array)",
-        "pl": "Dodany blok dla wielu lub warunków\nZwiększona wspierana ekowersja od es2018 do es2021\nNaprawiono getIdByName (zwracał ten sam id co tablica)",
-        "uk": "Додано блок для декількох або умов\nПідтримувана екскавація від es2018 до es2021\nВиправлено getIdByName (перевернуто той же ідентифікатор як масив)",
-        "zh-cn": "为多个或条件添加块\n从 es2018 升至 es2021 年支持的 ecmaVersion\n固定获取IdByName (返回的编号与数组相同)"
       }
     },
     "desc": {

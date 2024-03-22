@@ -1,4 +1,10 @@
 The newest change log is in README.md
+## 7.9.1 (2024-03-15)
+
+* (klein0r) Configurable trigger warning limit (default: 100 per script)
+* (klein0r) Allow to use objects in create state blocks for common
+* (klein0r) Added warning if latitude or longitude is not configured correctly
+
 ## 7.9.0 (2024-03-13)
 
 * (klein0r) Added block to create new objects
