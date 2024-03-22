@@ -42,6 +42,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Fixed cron trigger
+
 ### 7.10.0 (2024-03-21)
 
 * (klein0r) Added warning icon if state value is connected to trigger block (instead of object id)
