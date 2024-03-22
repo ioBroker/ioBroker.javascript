@@ -158,8 +158,6 @@ The following modules are preloaded: `fs`, `crypto`, `wake_on_lan`, `request`, `
 
 To use other modules, enter the name of the module in the instance configuration. ioBroker will install the module. You can require and use it in your scripts afterwards.
 
-**Notice** - module *request* is available via variable *request*. There is no need to write `const request = require('request');`.
-
 ### Buffer
 Buffer - Node.js Buffer, read here [http://nodejs.org/api/buffer.html](http://nodejs.org/api/buffer.html)
 
