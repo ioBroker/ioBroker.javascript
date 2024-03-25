@@ -105,29 +105,37 @@ describe.only('Test JS', function () {
                     states  = _states;
                     states.subscribe('*');
                     let script = {
+                        _id:                'script.js.global.TestGlobalNew.Script',
+                        type:               'script',
                         common: {
-                            name:           'new script global',
-                            engineType:     'Javascript/js',
-                            source:         "function setTestState(val) {\ncreateState('testGlobal', val, function () {\nsetState('testGlobal', val);\n});\n}",
+                            name:           'New script global',
                             enabled:        true,
                             engine:         'system.adapter.javascript.0',
+                            engineType:     'Javascript/js',
+                            source:         `function setTestState(val) {\n` +
+                                            `    createState('testGlobal', val, () => {\n` +
+                                            `        setState('testGlobal', val);\n` +
+                                            `    });\n` +
+                                            `}`,
                         },
-                        type:               'script',
-                        _id:                'script.js.global.TestGlobalNew.Script',
                         native: {}
                     };
                     objects.setObject(script._id, script, err => {
                         expect(err).to.be.not.ok;
                         script = {
+                            _id: 'script.js.global.TestGlobalOld.Script',
+                            type: 'script',
                             common: {
-                                'name': 'Old script global',
-                                'engineType': 'Javascript/js',
-                                'source': "function setTestStateOld(val) {\ncreateState('testGlobalOld', val, function () {\nsetState('testGlobalOld', val);\n});\n}",
-                                'enabled': true,
-                                'engine': 'system.adapter.javascript.0'
+                                name:       'Old script global',
+                                enabled:    true,
+                                engine:     'system.adapter.javascript.0',
+                                engineType: 'Javascript/js',
+                                source:     `function setTestStateOld(val) {\n` +
+                                            `    createState('testGlobalOld', val, () => {\n` +
+                                            `        setState('testGlobalOld', val);\n` +
+                                            `    });\n` +
+                                            `}`,
                             },
-                            'type': 'script',
-                            '_id': 'script.js.global.TestGlobalOld.Script',
                             native: {}
                         };
                         objects.setObject(script._id, script, err => {
@@ -1499,6 +1507,37 @@ createState('file', false, () => {
             });
         });
     }).timeout(15000);
+
+    it('Test JS: Format time diff', function (done) {
+        this.timeout(10000);
+        // add script
+        const script = {
+            _id:                'script.js.format_time_diff',
+            type:               'script',
+            common: {
+                name:           'Format time diff',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('format_time_diff', () => {\n` +
+                                `    const diff = 172800000 + 10800000 + 540000 + 15000;\n` +
+                                `    setState('format_time_diff', formatTimeDiff(diff, 'hh:mm:ss'), true);\n` +
+                                `});`,
+            },
+            native: {},
+        };
+        const onStateChanged = function (id, state) {
+            if (id === 'javascript.0.format_time_diff' && state.val === '51:09:15') {
+                removeStateChangedHandler(onStateChanged);
+                done();
+            }
+        };
+        addStateChangedHandler(onStateChanged);
+
+        objects.setObject(script._id, script, err => {
+            expect(err).to.be.not.ok;
+        });
+    });
 
     after('Test JS: Stop js-controller', function (done) {
         this.timeout(6000);
