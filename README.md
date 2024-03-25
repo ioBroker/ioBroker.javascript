@@ -46,6 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 
 * (klein0r) Fixed httpGet/httpPost issue when using without options
 * (klein0r) Updated integration testing
+* (klein0r) Protect jsonl file access
 
 ### 7.10.1 (2024-03-22)
 

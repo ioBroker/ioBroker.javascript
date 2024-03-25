@@ -401,7 +401,6 @@ describe.only('Test JS', function () {
         });
     });
 
-    /*
     it('Test JS: open objects.json file must not work', function (done) {
         this.timeout(20000);
         // add script
@@ -457,7 +456,6 @@ describe.only('Test JS', function () {
             expect(err).to.be.not.ok;
         });
     });
-    */
 
     it('Test JS: write objects.json not in data directory must work', function (done) {
         this.timeout(3000);
