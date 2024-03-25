@@ -1,9 +1,9 @@
 /* jshint -W097 */// jshint strict:false
 /*jslint node: true */
 // check if tmp directory exists
-const fs            = require('fs');
-const path          = require('path');
-const child_process = require('child_process');
+const fs            = require('node:fs');
+const path          = require('node:path');
+const child_process = require('node:child_process');
 const rootDir       = path.normalize(__dirname + '/../../');
 const pkg           = require(rootDir + 'package.json');
 const debug         = typeof v8debug === 'object';
@@ -447,13 +447,12 @@ function installJsController(cb) {
                 if (!fs.existsSync(rootDir + 'tmp/node_modules/' + appName + '.js-controller')) {
                     console.log('installJsController: no js-controller => install dev build from npm');
 
-                    child_process.execSync('npm install ' + appName + '.js-controller@dev --prefix ./ --production', {
+                    child_process.execSync('npm install ' + appName + '.js-controller@latest --prefix ./ --omit=dev', {
                         cwd:   rootDir + 'tmp/',
                         stdio: [0, 1, 2]
                     });
                 } else {
                     console.log('Setup js-controller...');
-                    let __pid;
                     if (debug) {
                         // start controller
                         child_process.exec('node ' + appName + '.js setup first', {
@@ -660,8 +659,8 @@ async function getSecret() {
 }
 
 function encrypt (key, value) {
-    var result = '';
-    for (var i = 0; i < value.length; ++i) {
+    let result = '';
+    for (let i = 0; i < value.length; ++i) {
         result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
@@ -920,7 +919,7 @@ async function setAdapterConfig(common, native, instance) {
         const db = new JSONLDB(rootDir + 'tmp/' + appName + '-data/objects.jsonl');
         await db.open();
 
-        let obj = db.get(id);
+        const obj = db.get(id);
         if (common) obj.common = common;
         if (native) obj.native = native;
         db.set(id, obj);

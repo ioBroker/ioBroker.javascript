@@ -71,8 +71,7 @@ function checkValueOfState(id, value, cb, counter) {
         if (err) console.error(err);
         if (value === null && !state) {
             cb && cb();
-        } else
-        if (state && (value === undefined || state.val === value)) {
+        } else if (state && (value === undefined || state.val === value)) {
             cb && cb();
         } else {
             setTimeout(function () {
@@ -413,7 +412,7 @@ describe.only('Test JS', function () {
                 enabled:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         "var fs=require('fs'); try{fs.readFileSync('" + __dirname + '/../tmp/' + setup.appName + "-data/objects.json');}catch(err){createState('error', err.toString());}",
+                source:         `const fs = require('node:fs'); try{ fs.readFileSync('${__dirname + '/../tmp/' + setup.appName}-data/objects.json'); } catch(err) { createState('error', err.toString()); }`,
             },
             native: {}
         };
@@ -442,7 +441,7 @@ describe.only('Test JS', function () {
                 enabled:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         "var fs=require('fs'); try{fs.writeFileSync('" + __dirname + '/../tmp/' + setup.appName + "-data/objects.json', '');}catch(err){createState('error1', err.toString());}",
+                source:         `const fs = require('node:fs'); try{ fs.writeFileSync('${__dirname + '/../tmp/' + setup.appName}-data/objects.json', ''); } catch(err) { createState('error1', err.toString()); }`,
             },
             native: {}
         };
@@ -474,7 +473,7 @@ describe.only('Test JS', function () {
                 enabled:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         "var fs=require('fs'); try{fs.writeFileSync('" + __dirname.replace(/\\/g, '/') + "/../tmp/objects.json', '" + time + "');}catch(err){createState('error3', err.toString());}",
+                source:         `const fs = require('node:fs'); try{ fs.writeFileSync('${__dirname.replace(/\\/g, '/')}/../tmp/objects.json', '${time}'); } catch(err) { createState('error3', err.toString()); }`,
             },
             native: {}
         };

@@ -3,7 +3,7 @@ const Scheduler = require('../lib/scheduler');
 const tk = require('timekeeper');
 const suncalc = require('suncalc2');
 
-describe('Test Scheduler', function() {
+describe('Test Scheduler', function () {
 
     it('Test Scheduler: Should trigger on 23:59 every year', function (done) {
         const time = new Date(2030, 11, 31, 23, 58, 57);
@@ -35,9 +35,9 @@ describe('Test Scheduler', function() {
         const kcLat = 49.0068705;
         const kcLon = 8.4034195;
         const dat = new Date('2030-6-21 12:00:00');
-        const evtName='dusk'
+        const evtName='dusk';
         const time = suncalc.getTimes(dat, kcLat, kcLon)[evtName];
-        time.setSeconds(-3)
+        time.setSeconds(-3);
         console.log('Wait ...');
         tk.travel(time);
 
@@ -55,7 +55,7 @@ describe('Test Scheduler', function() {
         const dat = new Date('2030-6-21 12:00:00');
         const evtName = 'dusk';
         const time = suncalc.getTimes(dat, kcLat, kcLon)[evtName];
-        time.setSeconds(-3)
+        time.setSeconds(-3);
         console.log('Wait ...');
         tk.travel(time);
 
