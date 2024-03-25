@@ -21,8 +21,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "7.10.1",
+    "version": "7.10.2",
     "news": {
+      "7.10.2": {
+        "en": "Fixed httpGet/httpPost issue when using without options\nUpdated integration testing\nProtect jsonl file access",
+        "de": "Problem behoben httpGet/httpPost bei Verwendung ohne Optionen\nAktualisierung der Integrationstests\nSchützen Sie jsonl Dateizugriff",
+        "ru": "Исправленный вопрос httpGet/httpPost при использовании без опций\nОбновленное интеграционное тестирование\nЗащитить доступ к файлам jsonl",
+        "pt": "Corrigido httpGet/httpPost questão ao usar sem opções\nTeste de integração atualizado\nProteger o acesso ao arquivo jsonl",
+        "nl": "Fixed httpGet/httpPost probleem bij gebruik zonder opties\nBijgewerkte integratietest\nJsonl-bestandstoegang beschermen",
+        "fr": "Correction du problème httpGet/httpPost lors de l'utilisation sans options\nMise à jour des tests d'intégration\nProtéger l'accès au fichier jsonl",
+        "it": "Risolto problema httpGet/httpPost quando si utilizza senza opzioni\nTest di integrazione aggiornato\nProteggere l'accesso ai file jsonl",
+        "es": "Edición httpGet/httpPost fija al utilizar sin opciones\nPruebas de integración actualizadas\nProteger el acceso a los archivos jsonl",
+        "pl": "Naprawiono wydanie httpGet / httpPost przy użyciu bez opcji\nAktualizacja testów integracji\nOchrona dostępu do plików jsonl",
+        "uk": "Виправлено проблему httpGet/httpPost при використанні без опцій\nОновлено тестування інтеграції\nЗахист доступу до файлів jsonl",
+        "zh-cn": "无选项使用时的固定 httpGet/ httpPost 发行\n更新整合测试\n保护jsonl 文件访问"
+      },
       "7.10.1": {
         "en": "Fixed cron trigger",
         "de": "Fixed Cron Trigger",
@@ -100,19 +113,6 @@
         "pl": "Konfigurowalny limit ostrzegawczy (domyślnie: 100 na skrypt)\nPozwól używać obiektów w tworzeniu bloków stanu dla wspólnych\nDodano ostrzeżenie, jeśli szerokość lub długość geograficzna nie jest poprawnie skonfigurowana",
         "uk": "Конфігураційне обмеження попередження пропуску (default: 100 за скрипт)\nДозволяє використовувати об'єкти у створенні державних блоків для загального користування\nДодано попередження, якщо широта або довгота не налаштована правильно",
         "zh-cn": "可配置触发警告限制( 默认: 每个脚本100)\n允许在常见的创建状态块中使用对象\n如果未正确配置纬度或经度,则添加警告"
-      },
-      "7.9.0": {
-        "en": "Added block to create new objects\nAdded HTTP get and post function\nDroped support of coffeescript (deprecated since version 6.0.0)\nRaise warning if more than 100 triggers have been registered\nFixed astro state calculation (and display server time in dialog)",
-        "de": "Block hinzugefügt, um neue Objekte zu erstellen\nHTTP get und Post Funktion hinzugefügt\nDroped-Unterstützung von Coffeescript (abgeschrieben seit Version 6.0.0)\nRegelwarnung, wenn mehr als 100 Auslöser registriert wurden\nFeste Astro-Zustandsberechnung (und die Serverzeit im Dialog anzeigen)",
-        "ru": "Добавленный блок для создания новых объектов\nДобавить функцию HTTP get and post\nСброшенная поддержка кофермента (умеренная с версии 6.0.0)\nПоднимите предупреждение, если зарегистрировано более 100 триггеров\nРасчет состояния астро (и время отображения сервера в диалоге)",
-        "pt": "Adicionado bloco para criar novos objetos\nAdicionado HTTP get and post function\nSuporte droped do coffeescript (deprecated desde a versão 6.0.0)\nLevantar aviso se mais de 100 gatilhos foram registrados\nCálculo do estado do astro fixo (e tempo do servidor de exibição na caixa de diálogo)",
-        "nl": "Blok toegevoegd om nieuwe objecten aan te maken\nToegevoegd HTTP krijgen en post functie\nVervallen ondersteuning van coffeescript (achterhaald sinds versie 6.0.0)\nWaarschuwing verhogen indien meer dan 100 triggers zijn geregistreerd\nBerekening van vaste astrotoestand (en weergave van de servertijd in het dialoogvenster)",
-        "fr": "Ajout de bloc pour créer de nouveaux objets\nAjout de la fonction HTTP get et post\nPrise en charge du coffeescript (dépréciée depuis la version 6.0.0)\nÉlever l'avertissement si plus de 100 déclencheurs ont été enregistrés\nCorrection du calcul de l'état astro (et affichage de l'heure du serveur dans la boîte de dialogue)",
-        "it": "Aggiunto blocco per creare nuovi oggetti\nAggiunto HTTP ottenere e post funzione\nSupporto a goccia di coffeescript (deprecato dalla versione 6.0.0)\nSe sono stati registrati più di 100 trigger\nCalcolo fisso dello stato dell'astro (e visualizzazione dell'ora del server nella finestra di dialogo)",
-        "es": "Bloque añadido para crear nuevos objetos\nAñadido HTTP conseguir y función post\nApoyo retirado de los coffeescript (deprecido desde la versión 6.0.0)\nRaise warning if more than 100 triggers have been registered\nCálculo de estado de astro fijo (y tiempo de servidor de visualización en diálogo)",
-        "pl": "Dodano blok do tworzenia nowych obiektów\nDodano funkcję pobierania i wysyłania HTTP\nUpadłe wsparcie dla kawy (depregated od wersji 6.0.0)\nPodnieść ostrzeżenie, jeśli zarejestrowano więcej niż 100 wyzwalaczy\nStała kalkulacja stanu astro (i czas wyświetlania serwera w oknie dialogowym)",
-        "uk": "Додано блок для створення нових об'єктів\nДодано функцію HTTP get і post\nПодрібнена підтримка кав'ярні (з версії 6.0.0)\nРаїзне попередження, якщо було зареєстровано більше 100 тригерів\nВиправлено розрахунок стану астро (і відображення часу сервера в діалоговому вікні)",
-        "zh-cn": "添加块以创建新对象\n添加了 HTTP 获取和员额功能\n已放弃对咖啡标语的支持(自6.0.0版本起预告)\n如果超过100个触发器已登记,则发出警告\n固定的天体状态计算( 在对话框中显示服务器时间)"
       }
     },
     "desc": {

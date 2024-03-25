@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 7.9.2 (2024-03-18)
+
+* (klein0r) Added new block for http response
+
 ## 7.9.1 (2024-03-15)
 
 * (klein0r) Configurable trigger warning limit (default: 100 per script)
