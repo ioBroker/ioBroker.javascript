@@ -106,21 +106,21 @@ describe.only('Test JS', function () {
                     states  = _states;
                     states.subscribe('*');
                     let script = {
-                        'common': {
-                            'name':         'new script global',
-                            'engineType':   'Javascript/js',
-                            'source':       "function setTestState(val) {\ncreateState('testGlobal', val, function () {\nsetState('testGlobal', val);\n});\n}",
-                            'enabled':      true,
-                            'engine':       'system.adapter.javascript.0'
+                        common: {
+                            name:           'new script global',
+                            engineType:     'Javascript/js',
+                            source:         "function setTestState(val) {\ncreateState('testGlobal', val, function () {\nsetState('testGlobal', val);\n});\n}",
+                            enabled:        true,
+                            engine:         'system.adapter.javascript.0',
                         },
-                        'type':             'script',
-                        '_id':              'script.js.global.TestGlobalNew.Script',
-                        'native': {}
+                        type:               'script',
+                        _id:                'script.js.global.TestGlobalNew.Script',
+                        native: {}
                     };
                     objects.setObject(script._id, script, err => {
                         expect(err).to.be.not.ok;
                         script = {
-                            'common': {
+                            common: {
                                 'name': 'Old script global',
                                 'engineType': 'Javascript/js',
                                 'source': "function setTestStateOld(val) {\ncreateState('testGlobalOld', val, function () {\nsetState('testGlobalOld', val);\n});\n}",
@@ -129,7 +129,7 @@ describe.only('Test JS', function () {
                             },
                             'type': 'script',
                             '_id': 'script.js.global.TestGlobalOld.Script',
-                            'native': {}
+                            native: {}
                         };
                         objects.setObject(script._id, script, err => {
                             expect(err).to.be.not.ok;
@@ -150,20 +150,11 @@ describe.only('Test JS', function () {
         this.timeout(10000);
         // add script
         const script = {
-            'common': {
-                'name':         'check compareTime',
-                'engineType':   'Javascript/js',
-                'source':       "createState('test10', 0, function () {\n" +
+            common: {
+                name:           'check compareTime',
+                engineType:     'Javascript/js',
+                source:         "createState('test10', 0, function () {\n" +
                 '   var count = 0;\n' +
-                /*                "   var date1 = new Date();\n" +
-                "   date1.setHours(23);\n" +
-                "   date1.setMinutes(30);\n" +
-                "   var date2 = new Date();\n" +
-                "   date2.setHours(0);\n" +
-                "   date2.setMinutes(30);\n" +
-                "   count += compareTime('23:00', '01:00', 'between', date1) ? 1 : 0;\n" +
-                "   count += compareTime('23:00', '01:00', 'between', date2) ? 1 : 0;\n" +
-*/
                 "   count += compareTime('23:00', '01:00', 'between', '22:30') ? 0 : 1;\n" +
                 "   count += compareTime('23:00', '01:00', 'between', '02:30') ? 0 : 1;\n" +
                 "   count += compareTime('10:00', '20:00', 'between', '15:00') ? 1 : 0;\n" +
@@ -181,12 +172,12 @@ describe.only('Test JS', function () {
                 "   count += compareTime('23:00', '01:00', 'between', date2) ? 0 : 1;\n" +
                 "   setState('test10', count);\n" +
                 '});',
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
             },
-            'type':             'script',
-            '_id':              'script.js.check_compareTime',
-            'native': {}
+            type:               'script',
+            _id:                'script.js.check_compareTime',
+            native: {}
         };
         const onStateChanged = function (id, state) {
             if (id === 'javascript.0.test10') {
@@ -210,29 +201,30 @@ describe.only('Test JS', function () {
         });
     });
 
-    it('Test JS: Catch request error', function (done) {
+    it('Test JS: Catch httpGet error', function (done) {
         this.timeout(10000);
         // add script
         const script = {
-            'common': {
-                'name':         'Catch request error',
-                'engineType':   'Javascript/js',
-                'source':       "var request = require('request');" +
-                                "createState('check_request_error', function () {" +
-                                "   request('http://google1456.com').on('error', function (error) { " +
-                                "       console.error(error);" +
-                                "       setState('check_request_error', true, true);" +
-                                '   });' +
-                                '});',
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.check_httpget_error',
+            type:               'script',
+            common: {
+                name:           'Catch httpGet error',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('check_httpget_error', () => {\n` +
+                                `    httpGet('http://google1456.com', (error, response) => {\n` +
+                                `        if (error) {\n` +
+                                `            console.error(error);\n` +
+                                `            setState('check_httpget_error', true, true);\n` +
+                                `        }\n` +
+                                `   });\n` +
+                                `});`,
             },
-            'type':             'script',
-            '_id':              'script.js.check_request_error',
-            'native': {}
+            native: {},
         };
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.check_request_error' && state.val === true) {
+            if (id === 'javascript.0.check_httpget_error' && state.val === true) {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
@@ -248,16 +240,16 @@ describe.only('Test JS', function () {
         this.timeout(3000);
         // add script
         const script = {
-            'common': {
-                'name':         'check creation of state',
-                'engineType':   'Javascript/js',
-                'source':       "createState('test1', 5);",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.check_creation_of_state',
+            type:               'script',
+            common: {
+                name:           'check creation of state',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('test1', 5);`,
             },
-            'type':             'script',
-            '_id':              'script.js.check_creation_of_state',
-            'native': {}
+            native: {},
         };
         const onStateChanged = function (id, state) {
             if (id === 'javascript.0.test1' && state.val === 5) {
@@ -284,16 +276,16 @@ describe.only('Test JS', function () {
         this.timeout(3000);
         // add script
         const script = {
-            'common': {
-                'name':         'check creation of state',
-                'engineType':   'Javascript/js',
-                'source':       "createState('javascript.1.test1', 6);",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.check_creation_of_foreign_state',
+            type:               'script',
+            common: {
+                name:           'check creation of state',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('javascript.1.test1', 6);`,
             },
-            'type':             'script',
-            '_id':              'script.js.check_creation_of_foreign_state',
-            'native': {}
+            native: {},
         };
         const onStateChanged = function (id, state) {
             if (id === 'javascript.1.test1' && state.val === 6) {
@@ -320,16 +312,16 @@ describe.only('Test JS', function () {
         this.timeout(3000);
         // add script
         const script = {
-            'common': {
-                'name':         'check deletion of state',
-                'engineType':   'Javascript/js',
-                'source':       "deleteState('test1');",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.check_deletion_of_state',
+            type:               'script',
+            common: {
+                name:           'check deletion of state',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `deleteState('test1');`,
             },
-            'type':             'script',
-            '_id':              'script.js.check_deletion_of_state',
-            'native': {}
+            native: {}
         };
 
         objects.getObject('javascript.0.test1', (err, obj) => {
@@ -369,16 +361,16 @@ describe.only('Test JS', function () {
         this.timeout(3000);
         // add script
         const script = {
-            'common': {
-                'name':         'check deletion of state',
-                'engineType':   'Javascript/js',
-                'source':       "deleteState('javascript.1.test1');",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.check_deletion_of_foreign_state',
+            type:               'script',
+            common: {
+                name:           'check deletion of state',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         "deleteState('javascript.1.test1');",
             },
-            'type':             'script',
-            '_id':              'script.js.check_deletion_of_foreign_state',
-            'native': {}
+            native: {}
         };
 
         objects.getObject('javascript.1.test1', (err, obj) => {
@@ -414,16 +406,16 @@ describe.only('Test JS', function () {
         this.timeout(20000);
         // add script
         const script = {
-            'common': {
-                'name':         'open objects',
-                'engineType':   'Javascript/js',
-                'source':       "var fs=require('fs'); try{fs.readFileSync('" + __dirname + '/../tmp/' + setup.appName + "-data/objects.json');}catch(err){createState('error', err.toString());}",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.open_objects',
+            type:               'script',
+            common: {
+                name:           'open objects',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         "var fs=require('fs'); try{fs.readFileSync('" + __dirname + '/../tmp/' + setup.appName + "-data/objects.json');}catch(err){createState('error', err.toString());}",
             },
-            'type':             'script',
-            '_id':              'script.js.open_objects',
-            'native': {}
+            native: {}
         };
 
         const onStateChanged = function (id, state) {
@@ -443,16 +435,16 @@ describe.only('Test JS', function () {
         this.timeout(3000);
         // add script
         const script = {
-            'common': {
-                'name':         'open objects',
-                'engineType':   'Javascript/js',
-                'source':       "var fs=require('fs'); try{fs.writeFileSync('" + __dirname + '/../tmp/' + setup.appName + "-data/objects.json', '');}catch(err){createState('error1', err.toString());}",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.open_objects',
+            type:               'script',
+            common: {
+                name:           'open objects',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         "var fs=require('fs'); try{fs.writeFileSync('" + __dirname + '/../tmp/' + setup.appName + "-data/objects.json', '');}catch(err){createState('error1', err.toString());}",
             },
-            'type':             'script',
-            '_id':              'script.js.open_objects',
-            'native': {}
+            native: {}
         };
         const onStateChanged = function (id, state) {
             if (id === 'javascript.0.error1' && state.val === 'Error: Permission denied') {
@@ -475,16 +467,16 @@ describe.only('Test JS', function () {
 
         // add script
         const script = {
-            'common': {
-                'name':         'open objects',
-                'engineType':   'Javascript/js',
-                'source':       "var fs=require('fs'); try{fs.writeFileSync('" + __dirname.replace(/\\/g, '/') + "/../tmp/objects.json', '" + time + "');}catch(err){createState('error3', err.toString());}",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.open_objects',
+            type:               'script',
+            common: {
+                name:           'open objects',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         "var fs=require('fs'); try{fs.writeFileSync('" + __dirname.replace(/\\/g, '/') + "/../tmp/objects.json', '" + time + "');}catch(err){createState('error3', err.toString());}",
             },
-            'type':             'script',
-            '_id':              'script.js.open_objects',
-            'native': {}
+            native: {}
         };
 
         objects.setObject(script._id, script, err => {
@@ -525,16 +517,16 @@ describe.only('Test JS', function () {
         ];
         // add script
         const script = {
-            'common': {
-                'name':         'getAstroDate',
-                'engineType':   'Javascript/js',
-                'source':       '',
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.getAstroDate',
+            type:               'script',
+            common: {
+                name:           'getAstroDate',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         '',
             },
-            'type':             'script',
-            '_id':              'script.js.getAstroDate',
-            'native': {}
+            native: {}
         };
         for (let t = 0; t < types.length; t++) {
             script.common.source += "createState('" + types[t] + "', getAstroDate('" + types[t] + "') ? getAstroDate('" + types[t] + "').toString() : '');";
@@ -573,16 +565,16 @@ describe.only('Test JS', function () {
         this.timeout(5000);
         // add script
         const script = {
-            'common': {
-                'name':         'setStateDelayed',
-                'engineType':   'Javascript/js',
-                'source':       "createState('delayed', 4, function () {setStateDelayed('delayed', 5, 1000);});",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.setStateDelayed',
+            type:               'script',
+            common: {
+                name:           'setStateDelayed',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('delayed', 4, () => { setStateDelayed('delayed', 5, 1000); });`,
             },
-            'type':             'script',
-            '_id':              'script.js.setStateDelayed',
-            'native': {}
+            native: {}
         };
 
         let start = 0;
@@ -605,16 +597,16 @@ describe.only('Test JS', function () {
         this.timeout(5000);
         // add script
         const script = {
-            'common': {
-                'name':         'setStateDelayed',
-                'engineType':   'Javascript/js',
-                'source':       "setStateDelayed('delayed', 6, 500); setStateDelayed('delayed', 7, 1500, false);",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.setStateDelayed',
+            type:               'script',
+            common: {
+                name:           'setStateDelayed',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `setStateDelayed('delayed', 6, 500); setStateDelayed('delayed', 7, 1500, false);`,
             },
-            'type':             'script',
-            '_id':              'script.js.setStateDelayed',
-            'native': {}
+            native: {}
         };
 
         let start = 0;
@@ -637,16 +629,16 @@ describe.only('Test JS', function () {
         this.timeout(5000);
         // add script
         const script = {
-            'common': {
-                'name':         'setStateDelayed',
-                'engineType':   'Javascript/js',
-                'source':       "setStateDelayed('delayed', 8, 500); setStateDelayed('delayed', 9, 1500);",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.setStateDelayed',
+            type:               'script',
+            common: {
+                name:           'setStateDelayed',
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                enabled:        true,
+                source:         `setStateDelayed('delayed', 8, 500); setStateDelayed('delayed', 9, 1500);`,
             },
-            'type':             'script',
-            '_id':              'script.js.setStateDelayed',
-            'native': {}
+            native: {}
         };
 
         objects.setObject(script._id, script, err => {
@@ -674,16 +666,16 @@ describe.only('Test JS', function () {
         this.timeout(5000);
         // add script
         const script = {
-            'common': {
-                'name':         'setStateDelayed',
-                'engineType':   'Javascript/js',
-                'source':       "setStateDelayed('delayed', 10, 500); clearStateDelayed('delayed');",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.setStateDelayed',
+            type:               'script',
+            common: {
+                name:           'setStateDelayed',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `setStateDelayed('delayed', 10, 500); clearStateDelayed('delayed');`,
             },
-            'type':             'script',
-            '_id':              'script.js.setStateDelayed',
-            'native': {}
+            native: {}
         };
 
         objects.setObject(script._id, script, err => {
@@ -705,16 +697,16 @@ describe.only('Test JS', function () {
         this.timeout(5000);
         // add script
         const script = {
-            'common': {
-                'name':         'setStateDelayed',
-                'engineType':   'Javascript/js',
-                'source':       "createState('delayedResult', '', function () {setStateDelayed('delayed', 10, 1500); setState('delayedResult', JSON.stringify(getStateDelayed('delayed')));});",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.setStateDelayed',
+            type:               'script',
+            common: {
+                name:           'setStateDelayed',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('delayedResult', '', () => { setStateDelayed('delayed', 10, 1500); setState('delayedResult', JSON.stringify(getStateDelayed('delayed'))); });`,
             },
-            'type':             'script',
-            '_id':              'script.js.setStateDelayed',
-            'native': {}
+            native: {}
         };
 
         objects.setObject(script._id, script, err => {
@@ -739,16 +731,16 @@ describe.only('Test JS', function () {
         this.timeout(5000);
         // add script
         const script = {
-            'common': {
-                'name':         'setStateDelayed',
-                'engineType':   'Javascript/js',
-                'source':       "createState('delayedResult', '', function () {setStateDelayed('delayed', 11, 2500); setState('delayedResult', JSON.stringify(getStateDelayed()));});",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.setStateDelayed',
+            type:               'script',
+            common: {
+                name:           'setStateDelayed',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('delayedResult', '', () => { setStateDelayed('delayed', 11, 2500); setState('delayedResult', JSON.stringify(getStateDelayed())); });`,
             },
-            'type':             'script',
-            '_id':              'script.js.setStateDelayed',
-            'native': {}
+            native: {}
         };
 
         objects.setObject(script._id, script, err => {
@@ -773,16 +765,16 @@ describe.only('Test JS', function () {
         this.timeout(5000);
         // add script
         const script = {
-            'common': {
-                'name':         'stopScript',
-                'engineType':   'Javascript/js',
-                'source':       "stopScript('stopScript');",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.stopScript',
+            type:               'script',
+            common: {
+                name:           'stopScript',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `stopScript('stopScript');`,
             },
-            'type':             'script',
-            '_id':              'script.js.stopScript',
-            'native': {}
+            native: {}
         };
 
         objects.setObject(script._id, script, err => {
@@ -800,28 +792,28 @@ describe.only('Test JS', function () {
     it('Test JS: test startScript', function (done) {
         // add script
         const script = {
-            'common': {
-                'name':         'startScript',
-                'engineType':   'Javascript/js',
-                'source':       "startScript('stopScript');",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.startScript',
+            type:               'script',
+            common: {
+                name:           'startScript',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `startScript('stopScript');`,
             },
-            'type':             'script',
-            '_id':              'script.js.startScript',
-            'native': {}
+            native: {}
         };
         const stopScript = {
-            'common': {
-                'name':         'stopScript',
-                'engineType':   'Javascript/js',
-                'source':       "console.log('aaa');",
-                'enabled':      false,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.stopScript',
+            type:               'script',
+            common: {
+                name:           'stopScript',
+                enabled:        false,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `console.log('started script');`,
             },
-            'type':             'script',
-            '_id':              'script.js.stopScript',
-            'native': {}
+            native: {}
         };
 
         objects.setObject(stopScript._id, stopScript, err => {
@@ -849,16 +841,16 @@ describe.only('Test JS', function () {
     it('Test JS: test global scripts New', done => {
         // add script
         const script = {
-            'common': {
-                'name':         'new script non global',
-                'engineType':   'Javascript/js',
-                'source':       'setTestState(16);',
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.TestGlobalNew.Script',
+            type:               'script',
+            common: {
+                name:           'new script non global',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `setTestState(16);`,
             },
-            'type':             'script',
-            '_id':              'script.js.TestGlobalNew.Script',
-            'native': {}
+            native: {}
         };
         objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
@@ -878,16 +870,16 @@ describe.only('Test JS', function () {
     it('Test JS: test global scripts Old', function (done) {
         // add script
         const script = {
-            'common': {
-                'name':         'Old script non global',
-                'engineType':   'Javascript/js',
-                'source':       'setTestStateOld(17);',
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.TestGlobalOld.Script',
+            type:               'script',
+            common: {
+                name:           'Old script non global',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `setTestStateOld(17);`,
             },
-            'type':             'script',
-            '_id':              'script.js.TestGlobalOld.Script',
-            'native': {}
+            native: {}
         };
         objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
@@ -907,16 +899,16 @@ describe.only('Test JS', function () {
     it('Test JS: test ON default', function (done) {
         // add script
         const script = {
-            'common': {
-                'name':         'test ON default',
-                'engineType':   'Javascript/js',
-                'source':       "createState('testResponse', false);createState('testVar', 0, function () {on('testVar', function (obj) {setState('testResponse', obj.state.val, true);});});",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.test_ON_default',
+            type:               'script',
+            common: {
+                name:           'test ON default',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('testResponse', false); createState('testVar', 0, () => { on('testVar', (obj) => { setState('testResponse', obj.state.val, true); }); });`,
             },
-            'type':             'script',
-            '_id':              'script.js.test_ON_default',
-            'native': {}
+            native: {}
         };
 
         const onStateChanged = function (id, state) {
@@ -942,16 +934,16 @@ describe.only('Test JS', function () {
     it('Test JS: test ON any', function (done) {
         // add script
         const script = {
-            'common': {
-                'name':         'test ON any',
-                'engineType':   'Javascript/js',
-                'source':       "createState('testResponse1', false);createState('testVar1', 1, function () {on({id:'testVar1', change:'any'}, function (obj) {setState('testResponse1', obj.state.val, true);});});",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.test_ON_any',
+            type:               'script',
+            common: {
+                name:           'test ON any',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('testResponse1', false); createState('testVar1', 1, () => { on({ id:'testVar1', change:'any' }, (obj) => { setState('testResponse1', obj.state.val, true); }); });`,
             },
-            'type':             'script',
-            '_id':              'script.js.test_ON_any',
-            'native': {}
+            native: {}
         };
 
         const onStateChanged = function (id, state) {
@@ -1169,16 +1161,16 @@ describe.only('Test JS', function () {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         const script = {
-            'common': {
-                'name':         'test ON any',
-                'engineType':   'Javascript/js',
+            common: {
+                name:           'test ON any',
+                engineType:     'Javascript/js',
                 'source':       scriptFunction.toString() + '\r\nscriptFunction();\r\n',
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
             },
-            'type':             'script',
-            '_id':              'script.js.test_ON',
-            'native': {}
+            type:               'script',
+            _id:                'script.js.test_ON',
+            native: {}
         };
 
 
@@ -1233,16 +1225,16 @@ describe.only('Test JS', function () {
         console.log('Must wait 2 seconds[' + ((d.getSeconds() + 2) % 60) + ' * * * * *]' + d.toISOString());
         // add script
         const script = {
-            'common': {
-                'name':         'test ON any',
-                'engineType':   'Javascript/js',
-                'source':       "createState('testScheduleResponse', false);schedule('" + ((d.getSeconds() + 2) % 60) + " * * * * *', function (obj) {setState('testScheduleResponse', true, true);});",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.test_ON_any',
+            type:               'script',
+            common: {
+                name:           'test ON any',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('testScheduleResponse', false); schedule('${(d.getSeconds() + 2) % 60} * * * * *', (obj) => { setState('testScheduleResponse', true, true); });`,
             },
-            'type':             'script',
-            '_id':              'script.js.test_ON_any',
-            'native': {}
+            native: {}
         };
 
         const onStateChanged = function (id, state) {
@@ -1265,16 +1257,16 @@ describe.only('Test JS', function () {
 
         // add script
         const script = {
-            'common': {
-                'name':         'test ON any',
-                'engineType':   'Javascript/js',
-                'source':       "createState('testScheduleResponse1', false);schedule('" + ((d.getMinutes() + 1) % 60) + " * * * *', function (obj) {setState('testScheduleResponse1', true, true);});",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.test_ON_any',
+            type:               'script',
+            common: {
+                name:           'test ON any',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('testScheduleResponse1', false);schedule('${(d.getMinutes() + 1) % 60} * * * *', (obj) => { setState('testScheduleResponse1', true, true); });`,
             },
-            'type':             'script',
-            '_id':              'script.js.test_ON_any',
-            'native': {}
+            native: {}
         };
 
         const onStateChanged = function (id, state) {
@@ -1293,16 +1285,16 @@ describe.only('Test JS', function () {
     it('Test JS: test write file to "0_userdata.0"', function (done) {
         // add script
         const script = {
-            'common': {
-                'name':         'test ON any',
-                'engineType':   'Javascript/js',
-                'source':       "createState('testScheduleResponse2', false, function () {writeFile('0_userdata.0', '/test.txt', 'test', function () {setState('testScheduleResponse2', true, true);});});",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.test_write',
+            type:               'script',
+            common: {
+                name:           'test ON any',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('testScheduleResponse2', false, () => { writeFile('0_userdata.0', '/test.txt', 'test', () => { setState('testScheduleResponse2', true, true); }); });`,
             },
-            'type':             'script',
-            '_id':              'script.js.test_write',
-            'native': {}
+            native: {}
         };
 
         const onStateChanged = function (id, state) {
@@ -1321,16 +1313,16 @@ describe.only('Test JS', function () {
     it('Test JS: test read file from "javascript"', function (done) {
         // add script
         const script = {
-            'common': {
-                'name':         'test ON any',
-                'engineType':   'Javascript/js',
-                'source':       "readFile('0_userdata.0', '/test.txt', function (err, data) {setState('testScheduleResponse2', data, true);});",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.test_read',
+            type:               'script',
+            common: {
+                name:           'test ON any',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `readFile('0_userdata.0', '/test.txt', (err, data) => { setState('testScheduleResponse2', data, true); });`,
             },
-            'type':             'script',
-            '_id':              'script.js.test_read',
-            'native': {}
+            native: {}
         };
 
         const onStateChanged = function (id, state) {
@@ -1351,16 +1343,16 @@ describe.only('Test JS', function () {
     it('Test JS: test write file  to "vis.0"', function (done) {
         // add script
         const script = {
-            'common': {
-                'name':         'test ON any',
-                'engineType':   'Javascript/js',
-                'source':       "createState('testScheduleResponse2', false, function () {writeFile('vis.0', '/test1.txt', 'test', function () {setState('testScheduleResponse2', true, true);});});",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.test_write1',
+            type:               'script',
+            common: {
+                name:           'test ON any',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('testScheduleResponse2', false, () => { writeFile('vis.0', '/test1.txt', 'test', () => { setState('testScheduleResponse2', true, true); }); });`,
             },
-            'type':             'script',
-            '_id':              'script.js.test_write1',
-            'native': {}
+            native: {}
         };
 
         const onStateChanged = function (id, state) {
@@ -1379,16 +1371,16 @@ describe.only('Test JS', function () {
     it('Test JS: test read file from "vis.0"',  done => {
         // add script
         const script = {
-            'common': {
-                'name':         'test ON any',
-                'engineType':   'Javascript/js',
-                'source':       "readFile('vis.0', '/test1.txt', function (err, data) {setState('testScheduleResponse2', data, true);});",
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
+            _id:                'script.js.test_read1',
+            type:               'script',
+            common: {
+                name:           'test ON any',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `readFile('vis.0', '/test1.txt', (err, data) => { setState('testScheduleResponse2', data, true); });`,
             },
-            'type':             'script',
-            '_id':              'script.js.test_read1',
-            'native': {}
+            native: {}
         };
 
         const onStateChanged = function (id, state) {
@@ -1407,10 +1399,14 @@ describe.only('Test JS', function () {
     it('Test JS: messaging between scripts', done => {
         // add script
         const script = {
-            'common': {
-                'name':         'test messaging',
-                'engineType':   'Javascript/js',
-                'source':       `
+            _id:                'script.js.test_read1',
+            type:               'script',
+            common: {
+                name:           'test messaging',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `
 createState('onMessage', false, () => {
     createState('messageTo', false, () => {
         createState('messageDeleted', false, () => {
@@ -1425,12 +1421,8 @@ createState('onMessage', false, () => {
         });
     });
 });`,
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
             },
-            'type':             'script',
-            '_id':              'script.js.test_read1',
-            'native': {}
+            native: {}
         };
 
         let count = 3;
@@ -1456,22 +1448,22 @@ createState('onMessage', false, () => {
     it('Test JS: subscribe on file', done => {
         // add script
         const script = {
-            'common': {
-                'name':         'test onFile',
-                'engineType':   'Javascript/js',
-                'source':       `
+            _id:                'script.js.test_read1',
+            type:               'script',
+            common: {
+                name:           'test onFile',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `
 createState('file', false, () => {
     onFile('vis.0', 'main/*', true, (id, fileName, size, fileData, mimeType) => {
         setState('javascript.0.file', fileData.toString(), true);
         offFile('vis.0', 'main/*');
     });
 });`,
-                'enabled':      true,
-                'engine':       'system.adapter.javascript.0'
             },
-            'type':             'script',
-            '_id':              'script.js.test_read1',
-            'native': {}
+            native: {}
         };
 
         let fileReceived = false;
