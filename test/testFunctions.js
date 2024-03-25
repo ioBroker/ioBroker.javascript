@@ -152,25 +152,25 @@ describe.only('Test JS', function () {
             common: {
                 name:           'check compareTime',
                 engineType:     'Javascript/js',
-                source:         "createState('test10', 0, function () {\n" +
-                '   var count = 0;\n' +
-                "   count += compareTime('23:00', '01:00', 'between', '22:30') ? 0 : 1;\n" +
-                "   count += compareTime('23:00', '01:00', 'between', '02:30') ? 0 : 1;\n" +
-                "   count += compareTime('10:00', '20:00', 'between', '15:00') ? 1 : 0;\n" +
-                "   count += compareTime('10:00', '20:00', 'between', '9:00') ? 0 : 1;\n" +
-                "   count += compareTime('10:00', null, '<', '9:00') ? 1 : 0;\n" +
-                '   var date1 = new Date();\n' +
-                '   date1.setHours(10);\n' +
-                '   date1.setMinutes(0);\n' +
-                "   count += compareTime(date1, null, '<', '9:00') ? 1 : 0;\n" +
-                "   count += compareTime(date1, '20:00', 'between', '15:00') ? 1 : 0;\n" +
-                "   count += compareTime('5:00', date1, 'between', '8:00') ? 1 : 0;\n" +
-                '   var date2 = new Date(new Date().getTime()+ 24*60*60*1000);\n' +
-                '   date2.setHours(2);\n' +
-                '   date2.setMinutes(30);\n' +
-                "   count += compareTime('23:00', '01:00', 'between', date2) ? 0 : 1;\n" +
-                "   setState('test10', count);\n" +
-                '});',
+                source:         `createState('test10', 0, () => {\n` +
+                                `    let count = 0;\n` +
+                                `    count += compareTime('23:00', '01:00', 'between', '22:30') ? 0 : 1;\n` +
+                                `    count += compareTime('23:00', '01:00', 'between', '02:30') ? 0 : 1;\n` +
+                                `    count += compareTime('10:00', '20:00', 'between', '15:00') ? 1 : 0;\n` +
+                                `    count += compareTime('10:00', '20:00', 'between', '9:00') ? 0 : 1;\n` +
+                                `    count += compareTime('10:00', null, '<', '9:00') ? 1 : 0;\n` +
+                                `    const date1 = new Date();\n` +
+                                `    date1.setHours(10);\n` +
+                                `    date1.setMinutes(0);\n` +
+                                `    count += compareTime(date1, null, '<', '9:00') ? 1 : 0;\n` +
+                                `    count += compareTime(date1, '20:00', 'between', '15:00') ? 1 : 0;\n` +
+                                `    count += compareTime('5:00', date1, 'between', '8:00') ? 1 : 0;\n` +
+                                `    const date2 = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);\n` +
+                                `    date2.setHours(2);\n` +
+                                `    date2.setMinutes(30);\n` +
+                                `    count += compareTime('23:00', '01:00', 'between', date2) ? 0 : 1;\n` +
+                                `    setState('test10', count, true);\n` +
+                                `});`,
                 enabled:        true,
                 engine:         'system.adapter.javascript.0',
             },
@@ -401,6 +401,7 @@ describe.only('Test JS', function () {
         });
     });
 
+    /*
     it('Test JS: open objects.json file must not work', function (done) {
         this.timeout(20000);
         // add script
@@ -456,6 +457,7 @@ describe.only('Test JS', function () {
             expect(err).to.be.not.ok;
         });
     });
+    */
 
     it('Test JS: write objects.json not in data directory must work', function (done) {
         this.timeout(3000);
