@@ -350,7 +350,7 @@ Blockly.Blocks['on'] = {
             .appendField(Blockly.Translate('on'));
 
         this.appendDummyInput('OID')
-            .appendField(new Blockly.FieldOID('Object ID'), 'OID');
+            .appendField(new Blockly.FieldOID('Object ID', 'state'), 'OID');
 
         this.appendDummyInput('CONDITION')
             .appendField(new Blockly.FieldDropdown([
@@ -610,7 +610,7 @@ Blockly.Blocks['schedule_by_id'] = {
             .appendField(Blockly.Translate('schedule_by_id'));
 
         this.appendDummyInput('OID')
-            .appendField(new Blockly.FieldOID('Object ID'), 'OID');
+            .appendField(new Blockly.FieldOID('Object ID', 'state'), 'OID');
 
         this.appendDummyInput('ACK_CONDITION')
             .appendField(Blockly.Translate('on_ack'))

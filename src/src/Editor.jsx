@@ -1303,6 +1303,25 @@ class Editor extends React.Component {
 
     getSelectIdDialog() {
         if (this.state.showSelectId) {
+            const allObjektTypes = [
+                'state',
+                'channel',
+                'device',
+                'adapter',
+                'instance',
+                'enum',
+                'host',
+                //'meta',
+                'config',
+                'script',
+                'user',
+                'group',
+                //'chart',
+                //'folder',
+                //'schedule',
+                //'design',
+            ];
+
             let selectedId = this.selectId.callback ? this.selectId.initValue || '' : this.getSelect ? this.getSelect() : '';
             // it could be:
             // - 'id.xx'/* aksjdhsdf*/
@@ -1334,7 +1353,7 @@ class Editor extends React.Component {
                 selected={selectedId}
                 expertMode={this.selectId.type === 'script' ? true : undefined}
                 // statesOnly={!this.selectId.type || this.selectId.type === 'state'}
-                types={[this.selectId.type || 'state']}
+                types={this.selectId?.type === 'all' ? allObjektTypes : [this.selectId.type || 'state']}
                 onClose={() => {
                     this.setState({ showSelectId: false });
                     if (this.selectId.callback) {

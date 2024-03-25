@@ -102,7 +102,7 @@ Blockly.Blocks['control'] = {
             .appendField(Blockly.Translate('control'));
 
         this.appendDummyInput('OID')
-            .appendField(new Blockly.FieldOID('Object ID'), 'OID');
+            .appendField(new Blockly.FieldOID('Object ID', 'state'), 'OID');
 
         this.appendValueInput('VALUE')
             .setCheck(null)
@@ -222,7 +222,7 @@ Blockly.Blocks['toggle'] = {
             .appendField(Blockly.Translate('toggle'));
 
         this.appendDummyInput('OID')
-            .appendField(new Blockly.FieldOID('Object ID'), 'OID');
+            .appendField(new Blockly.FieldOID('Object ID', 'state'), 'OID');
 
         this.appendDummyInput('WITH_DELAY')
             .appendField(Blockly.Translate('toggle_delay'))
@@ -362,7 +362,7 @@ Blockly.Blocks['update'] = {
             .appendField(Blockly.Translate('update'));
 
         this.appendDummyInput('OID')
-            .appendField(new Blockly.FieldOID('Object ID'), 'OID');
+            .appendField(new Blockly.FieldOID('Object ID', 'state'), 'OID');
 
         this.appendValueInput('VALUE')
             .setCheck(null)
@@ -784,7 +784,7 @@ Blockly.Blocks['get_value'] = {
             .appendField(Blockly.Translate('get_value_OID'));
 
         this.appendDummyInput()
-            .appendField(new Blockly.FieldOID(Blockly.Translate('get_value_default')), 'OID');
+            .appendField(new Blockly.FieldOID(Blockly.Translate('get_value_default'), 'state'), 'OID');
 
         this.setInputsInline(true);
         this.setOutput(true);
@@ -931,7 +931,7 @@ Blockly.Blocks['get_value_async'] = {
             .appendField(Blockly.Translate('get_value_OID'));
 
         this.appendDummyInput()
-            .appendField(new Blockly.FieldOID(Blockly.Translate('get_value_default')), 'OID');
+            .appendField(new Blockly.FieldOID(Blockly.Translate('get_value_default'), 'state'), 'OID');
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -978,7 +978,7 @@ Blockly.Blocks['get_object'] = {
             .appendField(Blockly.Translate('get_object'));
 
         this.appendDummyInput()
-            .appendField(new Blockly.FieldOID(Blockly.Translate('get_object_default')), 'OID');
+            .appendField(new Blockly.FieldOID(Blockly.Translate('get_object_default'), 'all'), 'OID');
 
         this.setInputsInline(true);
         this.setOutput(true);
@@ -1024,7 +1024,7 @@ Blockly.Blocks['get_object_async'] = {
             .appendField(Blockly.Translate('get_object'));
 
         this.appendDummyInput()
-            .appendField(new Blockly.FieldOID(Blockly.Translate('get_object_default')), 'OID');
+            .appendField(new Blockly.FieldOID(Blockly.Translate('get_object_default'), 'all'), 'OID');
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -1061,7 +1061,7 @@ Blockly.Blocks['field_oid'] = {
             .appendField(Blockly.Translate('field_oid_OID'));
 
         this.appendDummyInput()
-            .appendField(new Blockly.FieldOID('default'), 'oid');
+            .appendField(new Blockly.FieldOID('default', 'state'), 'oid');
 
         this.setInputsInline(true);
         this.setColour("%{BKY_TEXTS_HUE}");

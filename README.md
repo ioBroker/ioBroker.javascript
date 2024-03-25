@@ -42,6 +42,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Allow to select other object types than state in some blocks
+
 ### 7.10.2 (2024-03-25)
 
 * (klein0r) Fixed httpGet/httpPost issue when using without options
