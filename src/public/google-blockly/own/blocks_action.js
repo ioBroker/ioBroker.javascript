@@ -140,18 +140,19 @@ Blockly.Blocks['http_get'] = {
             .appendField(Blockly.Translate('http_get'));
 
         this.appendDummyInput()
-            .appendField(Blockly.Translate('http_get_timeout'))
+            .appendField(Blockly.Translate('http_timeout'))
             .appendField(new Blockly.FieldTextInput(2000), 'TIMEOUT')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('http_get_settimeout_ms'), 'ms'],
-                [Blockly.Translate('http_get_settimeout_sec'), 'sec']
+                [Blockly.Translate('http_timeout_ms'), 'ms'],
+                [Blockly.Translate('http_timeout_sec'), 'sec']
             ]), 'UNIT');
 
+
         this.appendDummyInput('TYPE')
-            .appendField(Blockly.Translate('http_get_type'))
+            .appendField(Blockly.Translate('http_type'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('http_get_type_text'),  'text'],
-                [Blockly.Translate('http_get_type_raw'), 'arraybuffer'],
+                [Blockly.Translate('http_type_text'),  'text'],
+                [Blockly.Translate('http_type_arraybuffer'), 'arraybuffer'],
             ]), 'TYPE');
 
         this.appendStatementInput('STATEMENT')
@@ -220,18 +221,18 @@ Blockly.Blocks['http_post'] = {
             .appendField(Blockly.Translate('http_post'));
 
         this.appendDummyInput()
-            .appendField(Blockly.Translate('http_post_timeout'))
+            .appendField(Blockly.Translate('http_timeout'))
             .appendField(new Blockly.FieldTextInput(2000), 'TIMEOUT')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('http_post_settimeout_ms'), 'ms'],
-                [Blockly.Translate('http_post_settimeout_sec'), 'sec']
+                [Blockly.Translate('http_timeout_ms'), 'ms'],
+                [Blockly.Translate('http_timeout_sec'), 'sec']
             ]), 'UNIT');
 
         this.appendDummyInput('TYPE')
-            .appendField(Blockly.Translate('http_post_type'))
+            .appendField(Blockly.Translate('http_type'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('http_post_type_text'),  'text'],
-                [Blockly.Translate('http_post_type_raw'), 'arraybuffer'],
+                [Blockly.Translate('http_type_text'),  'text'],
+                [Blockly.Translate('http_type_arraybuffer'), 'arraybuffer'],
             ]), 'TYPE');
 
         this.appendValueInput('DATA')
