@@ -775,7 +775,6 @@ Blockly.Blocks['get_value'] = {
                 [Blockly.Translate('get_common_unit'),   'common.unit'],
                 [Blockly.Translate('get_common_role'),   'common.role'],
                 [Blockly.Translate('get_common_state_type'), 'common.type'],
-                [Blockly.Translate('get_common_object_type'), 'type'],
                 [Blockly.Translate('get_common_read'),    'common.read'],
                 [Blockly.Translate('get_common_write'),   'common.write'],
             ]), 'ATTR');
@@ -849,7 +848,6 @@ Blockly.Blocks['get_value_var'] = {
                 [Blockly.Translate('get_common_unit'),   'common.unit'],
                 [Blockly.Translate('get_common_role'),   'common.role'],
                 [Blockly.Translate('get_common_state_type'), 'common.type'],
-                [Blockly.Translate('get_common_object_type'), 'type'],
                 [Blockly.Translate('get_common_read'),    'common.read'],
                 [Blockly.Translate('get_common_write'),   'common.write'],
             ]), 'ATTR');
@@ -922,7 +920,6 @@ Blockly.Blocks['get_value_async'] = {
                 [Blockly.Translate('get_common_unit'),   'common.unit'],
                 [Blockly.Translate('get_common_role'),   'common.role'],
                 [Blockly.Translate('get_common_state_type'), 'common.type'],
-                [Blockly.Translate('get_common_object_type'), 'type'],
                 [Blockly.Translate('get_common_read'),    'common.read'],
                 [Blockly.Translate('get_common_write'),   'common.write'],
             ]), 'ATTR');

@@ -46,6 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 
 * (klein0r) Allow to select other object types than state in some blocks
 * (klein0r) Improved translations
+* (klein0r) Removed 'type' from dropdown (is always 'state')
 
 ### 7.10.2 (2024-03-25)
 
