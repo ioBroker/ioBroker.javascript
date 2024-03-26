@@ -278,7 +278,7 @@ class BlocklyEditor extends React.Component {
 
     blocklyRemoveOrphanedShadows() {
         if (this.blocklyWorkspace) {
-            let blocks = this.blocklyWorkspace.getAllBlocks();
+            const blocks = this.blocklyWorkspace.getAllBlocks();
             let block;
             for (let i = 0; (block = blocks[i]); i++) {
                 if (block.isShadow()) {
@@ -368,14 +368,15 @@ class BlocklyEditor extends React.Component {
 
     exportBlocks() {
         let exportText;
-        if (this.Blockly.selected) {
-            const xmlBlock = this.Blockly.Xml.blockToDom(this.Blockly.selected);
+        const selectedBlocks = this.Blockly.getSelected();
+        if (selectedBlocks) {
+            const xmlBlock = this.Blockly.Xml.blockToDom(selectedBlocks);
             if (this.Blockly.dragMode_ !== this.Blockly.DRAG_FREE) {
                 this.Blockly.Xml.deleteNext(xmlBlock);
             }
             // Encode start position in XML.
-            const xy = this.Blockly.selected.getRelativeToSurfaceXY();
-            xmlBlock.setAttribute('x', this.Blockly.selected.RTL ? -xy.x : xy.x);
+            const xy = selectedBlocks.getRelativeToSurfaceXY();
+            xmlBlock.setAttribute('x', selectedBlocks.RTL ? -xy.x : xy.x);
             xmlBlock.setAttribute('y', xy.y);
 
             exportText = this.Blockly.Xml.domToPrettyText(xmlBlock);
@@ -518,12 +519,13 @@ class BlocklyEditor extends React.Component {
                 allBlocks.forEach(b => b.removeSelect());
             }
 
-            if (masterEvent.type === this.Blockly.Events.UI || masterEvent.type === this.Blockly.Events.CREATE) {
+            if ([this.Blockly.Events.UI, this.Blockly.Events.CREATE, this.Blockly.Events.VIEWPORT_CHANGE].includes(masterEvent.type)) {
                 return;  // Don't mirror UI events.
             }
             if (this.ignoreChanges) {
                 return;
             }
+
             this.changeTimer && clearTimeout(this.changeTimer);
             this.changeTimer = setTimeout(() => {
                 this.changeTimer = null;
