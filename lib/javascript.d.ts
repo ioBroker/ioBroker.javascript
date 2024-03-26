@@ -1236,6 +1236,7 @@ declare global {
 
 		interface HttpRequestOptions {
 			timeout?: number;
+			responseType?: "text" | "arraybuffer";
 			basicAuth?: {
 				user: string;
 				password: string;
@@ -1255,9 +1256,6 @@ declare global {
 	// =======================================================
 	// available functions in the sandbox
 	// =======================================================
-
-	// The already preloaded request module
-	const request: typeof import("request");
 
 	/**
 	 * The instance number of the JavaScript adapter this script runs in

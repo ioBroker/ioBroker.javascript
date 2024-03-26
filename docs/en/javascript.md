@@ -1869,6 +1869,22 @@ httpGet('http://jsonplaceholder.typicode.com/posts', { timeout: 1000 }, (error, 
 });
 ```
 
+Download file to ioBroker file system:
+
+```js
+httpGet('http://1.2.3.4/image.jpg', { responseType: 'arraybuffer' }, async (err, response) => {
+    if (err) {
+        console.error(err);
+    } else {
+        writeFile('0_userdata.0', 'test.jpg', response.data, (err) => {
+            if (err) {
+                console.error(err);
+            }
+        });
+    }
+});
+```
+
 ### httpPost
 
 ```js
