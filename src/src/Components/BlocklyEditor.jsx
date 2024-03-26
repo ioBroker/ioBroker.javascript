@@ -35,12 +35,11 @@ function searchXml(root, text, _id, _result) {
     return _result;
 }
 
-
 class BlocklyEditor extends React.Component {
     constructor(props) {
         super(props);
 
-        this.blockly = null; //ref
+        this.blockly = null;
         this.blocklyWorkspace = null;
         this.toolbox = null;
         this.Blockly = window.Blockly;
@@ -80,19 +79,19 @@ class BlocklyEditor extends React.Component {
 
             (location || window.document.body).appendChild(scriptTag);
         } catch (e) {
-            console.error('Cannot load ' + url + ': ' + e);
+            console.error(`Cannot load ${url}: ${e}`);
             callback && callback();
         }
-    };
+    }
 
     static loadScripts(scripts, callback) {
         if (!scripts || !scripts.length) {
             return callback && callback();
         }
         const adapter = scripts.pop();
-        if (scriptsLoaded.indexOf(adapter) === -1) {
+        if (!scriptsLoaded.includes(adapter)) {
             scriptsLoaded.push(adapter);
-            BlocklyEditor.loadJS('../../adapter/' + adapter + '/blockly.js', (/*data, textStatus, jqxhr*/) =>
+            BlocklyEditor.loadJS(`../../adapter/${adapter}/blockly.js`, (/*data, textStatus, jqxhr*/) =>
                 setTimeout(() => BlocklyEditor.loadScripts(scripts, callback), 0));
         } else {
             setTimeout(() => BlocklyEditor.loadScripts(scripts, callback), 0);
@@ -112,7 +111,7 @@ class BlocklyEditor extends React.Component {
             }
 
             if (adapters[id].common && adapters[id].common.blockly) {
-                console.log('Detected custom blockly: ' + adapters[id].common.name);
+                console.log(`Detected custom blockly: ${adapters[id].common.name}`);
                 toLoad.push(adapters[id].common.name);
             }
         }
@@ -123,13 +122,11 @@ class BlocklyEditor extends React.Component {
     static loadXMLDoc(text) {
         let parseXml;
         if (window.DOMParser) {
-            parseXml = function(xmlStr) {
-                return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
-            };
-        } else if (typeof window.ActiveXObject != "undefined" && new window.ActiveXObject("Microsoft.XMLDOM")) {
-            parseXml = function(xmlStr) {
-                var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
-                xmlDoc.async = "false";
+            parseXml = xmlStr => (new window.DOMParser()).parseFromString(xmlStr, 'text/xml');
+        } else if (typeof window.ActiveXObject !== 'undefined' && new window.ActiveXObject('Microsoft.XMLDOM')) {
+            parseXml = xmlStr => {
+                const xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
+                xmlDoc.async = 'false';
                 xmlDoc.loadXML(xmlStr);
                 return xmlDoc;
             };
@@ -160,6 +157,8 @@ class BlocklyEditor extends React.Component {
             // remove selection
             this.someSelected.forEach(b => b.removeSelect());
             this.someSelected = null;
+
+            console.log(`Removed search selection: ${this.lastSearch}`);
         }
     }
 
@@ -170,10 +169,10 @@ class BlocklyEditor extends React.Component {
             if (this.lastCommand === 'check') {
                 this.blocklyCheckBlocks((err, badBlock) => {
                     if (!err) {
-                        this.setState({message: I18n.t('Ok')});
+                        this.setState({ message: I18n.t('Ok') });
                     } else {
                         badBlock && this.blocklyBlinkBlock(badBlock);
-                        this.setState({error: {text: I18n.t(err), title: I18n.t('Error was found')}});
+                        this.setState({ error: { text: I18n.t(err), title: I18n.t('Error was found') } });
                         this.blinkBlock = badBlock;
                     }
                 });
@@ -190,7 +189,7 @@ class BlocklyEditor extends React.Component {
         }
 
         if (this.state.themeType !== nextProps.themeType) {
-            this.setState({themeType: nextProps.themeType}, () => this.updateBackground());
+            this.setState({ themeType: nextProps.themeType }, () => this.updateBackground());
         }
 
         if (this.originalCode !== nextProps.code) {
@@ -205,7 +204,7 @@ class BlocklyEditor extends React.Component {
         if (!languageBlocklyLoaded) {
             const fileLang = window.document.createElement('script');
             fileLang.setAttribute('type', 'text/javascript');
-            fileLang.setAttribute('src', 'google-blockly/msg/js/' + I18n.getLanguage() + '.js');
+            fileLang.setAttribute('src', `google-blockly/msg/js/${I18n.getLanguage()}.js`);
 
             // most browsers
             fileLang.onload = () => {
@@ -216,7 +215,7 @@ class BlocklyEditor extends React.Component {
             fileLang.onreadystatechange = () => {
                 if (this.readyState === 'complete') {
                     languageBlocklyLoaded = true;
-                    this.setState({languageBlocklyLoaded});
+                    this.setState({ languageBlocklyLoaded });
                 }
             };
             window.document.getElementsByTagName('head')[0].appendChild(fileLang);
@@ -224,7 +223,7 @@ class BlocklyEditor extends React.Component {
         if (!languageOwnLoaded) {
             const fileCustom = window.document.createElement('script');
             fileCustom.setAttribute('type', 'text/javascript');
-            fileCustom.setAttribute('src', 'google-blockly/own/msg/' + I18n.getLanguage() + '.js');
+            fileCustom.setAttribute('src', `google-blockly/own/msg/${I18n.getLanguage()}.js`);
             // most browsers
             fileCustom.onload = () => {
                 languageOwnLoaded = true;
@@ -234,7 +233,7 @@ class BlocklyEditor extends React.Component {
             fileCustom.onreadystatechange = () => {
                 if (this.readyState === 'complete') {
                     languageOwnLoaded = true;
-                    this.setState({languageOwnLoaded});
+                    this.setState({ languageOwnLoaded });
                 }
             };
             window.document.getElementsByTagName('head')[0].appendChild(fileCustom);
@@ -257,21 +256,21 @@ class BlocklyEditor extends React.Component {
         }
         if (xml.substring(0, 4) === '<xml') {
             return xml;
-        } else {
-            let code;
-            try {
-                code = window.decodeURIComponent(window.atob(xml));
-            } catch (e) {
-                code = null;
-                console.error('cannot decode: ' + xml);
-                console.error(e);
-            }
-            return code;
         }
+
+        let code;
+        try {
+            code = window.decodeURIComponent(window.atob(xml));
+        } catch (e) {
+            code = null;
+            console.error(`cannot decode: ${xml}`);
+            console.error(e);
+        }
+        return code;
     }
 
     blocklyBlinkBlock(block) {
-        for (let i = 300; i < 3000; i = i + 300) {
+        for (let i = 300; i < 3000; i += 300) {
             setTimeout(() => block.select(), i);
             setTimeout(() => block.unselect(), i + 150);
         }
@@ -328,7 +327,7 @@ class BlocklyEditor extends React.Component {
     }
 
     // get unconnected block
-    blocklyGetUnconnectedBlock () {
+    blocklyGetUnconnectedBlock() {
         const blocks = this.blocklyWorkspace.getAllBlocks();
         let block;
         for (let i = 0; (block = blocks[i]); i++) {
@@ -361,7 +360,7 @@ class BlocklyEditor extends React.Component {
             code += '\n';
             const dom = this.Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
             const text = this.Blockly.Xml.domToText(dom);
-            code += '//' + btoa(encodeURIComponent(text));
+            code += `//${btoa(encodeURIComponent(text))}`;
         }
 
         return code;
@@ -384,11 +383,11 @@ class BlocklyEditor extends React.Component {
             const dom = this.Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
             exportText = this.Blockly.Xml.domToPrettyText(dom);
         }
-        this.setState({exportText});
+        this.setState({ exportText });
     }
 
     importBlocks() {
-        this.setState({importText: true});
+        this.setState({ importText: true });
     }
 
     onImportBlocks(xml) {
@@ -398,11 +397,11 @@ class BlocklyEditor extends React.Component {
                 if (!xml.startsWith('<xml')) {
                     xml = '<xml xmlns="https://developers.google.com/blockly/xml">' + xml + '</xml>';
                 }
-                let variables = xml.replace(/[\n\r]/g, '').match(/<variables>(.*)<\/variables>/);
+                const variables = xml.replace(/[\n\r]/g, '').match(/<variables>(.*)<\/variables>/);
                 if (variables) {
-                    let vars = this.Blockly.utils.xml.textToDomDocument('<variables>' + variables[1] + '</variables>');
+                    const vars = this.Blockly.utils.xml.textToDomDocument('<variables>' + variables[1] + '</variables>');
                     if (vars) {
-                        let nodes = vars.childNodes && vars.childNodes[0] && vars.childNodes[0].childNodes;
+                        const nodes = vars.childNodes && vars.childNodes[0] && vars.childNodes[0].childNodes;
                         if (nodes) {
                             for (let i = 0; i < nodes.length; i++) {
                                 nodes[i].id && this.blocklyWorkspace.createVariable(nodes[i].id);
@@ -412,7 +411,8 @@ class BlocklyEditor extends React.Component {
                 }
                 xml = xml.replace(/[\n\r]/g, '').replace(/<variables>.*<\/variables>/g, '');
                 window.scripts.loading = true;
-                let xmlBlocks = this.Blockly.utils.xml.textToDom(xml);
+
+                const xmlBlocks = this.Blockly.utils.xml.textToDom(xml);
                 if (xmlBlocks.nodeName === 'xml') {
                     for (let b = 0; b < xmlBlocks.children.length; b++) {
                         this.blocklyWorkspace.paste(xmlBlocks.children[b]);
@@ -423,10 +423,9 @@ class BlocklyEditor extends React.Component {
 
                 window.scripts.loading = false;
 
-
                 this.onBlocklyChanged();
             } catch (e) {
-                this.setState({error: {text: e, title: I18n.t('Import error')}});
+                this.setState({ error: { text: e, title: I18n.t('Import error') } });
             }
         }
     }
@@ -447,14 +446,14 @@ class BlocklyEditor extends React.Component {
             window.scripts.loading = false;
         } catch (e) {
             console.error(e);
-            setTimeout(() => this.setState({error: I18n.t('Cannot extract Blockly code!')}));
+            setTimeout(() => this.setState({ error: I18n.t('Cannot extract Blockly code!') }));
         }
         setTimeout(() => this.ignoreChanges = false, 100);
     }
 
     onBlocklyChanged() {
         this.blocklyRemoveOrphanedShadows();
-        this.setState({changed: true});
+        this.setState({ changed: true });
         this.onChange();
     }
 
@@ -486,26 +485,26 @@ class BlocklyEditor extends React.Component {
                     startScale: 1.0,
                     maxScale:   3,
                     minScale:   0.3,
-                    scaleSpeed: 1.2
+                    scaleSpeed: 1.2,
                 },
                 move: {
                     scrollbars: true,
                     drag: true,
-                    wheel: true
+                    wheel: true,
                 },
                 trashcan: true,
                 grid: {
                     spacing:    25,
                     length:     3,
                     colour:     '#ccc',
-                    snap:       true
+                    snap:       true,
                 },
                 sounds: false, // disable sounds
-            }
+            },
         );
         // for blockly itself
         window.scripts = {
-            blocklyWorkspace: this.blocklyWorkspace
+            blocklyWorkspace: this.blocklyWorkspace,
         };
 
         // Workaround: Replace procedure category flyout
@@ -547,7 +546,7 @@ class BlocklyEditor extends React.Component {
             if (!background._originalStyle) {
                 background._originalStyle = {
                     stroke: background.style.stroke,
-                    fill: background.style.fill
+                    fill: background.style.fill,
                 };
             }
             // add class
@@ -581,12 +580,11 @@ class BlocklyEditor extends React.Component {
         let toolboxText = el && el.outerHTML;
         if (!toolboxText) {
             if (!retry) {
-                return new Promise(resolve =>
-                    setTimeout(() => resolve(this.getToolbox(true)), 500));
-            } else {
-                console.error('Cannot load blocks!');
-                return '';
+                return new Promise(resolve => { setTimeout(() => resolve(this.getToolbox(true)), 500); });
             }
+
+            console.error('Cannot load blocks!');
+            return '';
         }
         toolboxText = toolboxText.replace(/{(\w+)}/g, (m, p1) => window.MSG[p1]);
 
@@ -596,9 +594,9 @@ class BlocklyEditor extends React.Component {
             for (let cb = 0; cb < this.Blockly.CustomBlocks.length; cb++) {
                 const name = this.Blockly.CustomBlocks[cb];
                 // add blocks
-                blocks += '<category name="' + this.Blockly.Words[name][lang] + '" colour="' + this.Blockly[name].HUE + '">';
+                blocks += `<category name="${this.Blockly.Words[name][lang]}" colour="${this.Blockly[name].HUE}">`;
                 for (const _b in this.Blockly[name].blocks) {
-                    if (this.Blockly[name].blocks.hasOwnProperty(_b)) {
+                    if (Object.prototype.hasOwnProperty.call(this.Blockly[name].blocks, _b)) {
                         blocks += this.Blockly[name].blocks[_b];
                     }
                 }
@@ -616,7 +614,7 @@ class BlocklyEditor extends React.Component {
                 key="dialogMessage"
                 text={typeof this.state.message === 'object' ? this.state.message.text : this.state.message}
                 title={typeof this.state.message === 'object' ? this.state.message.title : ''}
-                onClose={() => this.setState({message: ''})}
+                onClose={() => this.setState({ message: '' })}
             /> :
             null;
     }
@@ -632,20 +630,23 @@ class BlocklyEditor extends React.Component {
                         this.blocklyBlinkBlock(this.blinkBlock);
                         this.blinkBlock = null;
                     }
-                    this.setState({error: ''});
+                    this.setState({ error: '' });
                 }}/> :
             null;
     }
 
     renderExportDialog() {
-        return this.state.exportText ? <DialogExport key="dialogExport" theme={this.state.themeType} onClose={() => this.setState({exportText: ''})} text={this.state.exportText} scriptId={this.props.scriptId}/> : null;
+        return this.state.exportText ? <DialogExport key="dialogExport" theme={this.state.themeType} onClose={() => this.setState({ exportText: '' })} text={this.state.exportText} scriptId={this.props.scriptId} /> : null;
     }
 
     renderImportDialog() {
-        return this.state.importText ? <DialogImport key="dialogImport"  onClose={text => {
-            this.setState({importText: false});
-            this.onImportBlocks(text);
-        }}/> : null;
+        return this.state.importText ? <DialogImport
+            key="dialogImport"
+            onClose={text => {
+                this.setState({ importText: false });
+                this.onImportBlocks(text);
+            }}
+        /> : null;
     }
 
     render() {
@@ -656,21 +657,26 @@ class BlocklyEditor extends React.Component {
             }, 100);
 
             return [
-                <div key="blocklyDOM" ref={el => this.blockly = el} style={{
-                    //marginLeft: 180,
-                    width: '100%',//'calc(100% - 180px)',
-                    height: '100%',
-                    //overflow: 'hidden',
-                    position: 'relative'}}/>,
+                <div
+                    key="blocklyDOM"
+                    ref={el => this.blockly = el}
+                    style={{
+                        // marginLeft: 180,
+                        width: '100%', // 'calc(100% - 180px)',
+                        height: '100%',
+                        // overflow: 'hidden',
+                        position: 'relative',
+                    }}
+                />,
 
                 this.renderMessageDialog(),
                 this.renderErrorDialog(),
                 this.renderExportDialog(),
                 this.renderImportDialog(),
             ];
-        } else {
-            return null;
         }
+
+        return null;
     }
 }
 
