@@ -280,7 +280,7 @@ Blockly.JavaScript['http_post'] = function(block) {
         '});\n';
 };
 
-// --- get info about event -----------------------------------------------------------
+// --- http_response -----------------------------------------------------------
 Blockly.Action.blocks['http_response'] =
     '<block type="http_response">'
     + '     <value name="ATTR">'
@@ -462,12 +462,77 @@ Blockly.JavaScript['file_read'] = function(block) {
         
     }
 
-    return `readFile(${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, String(${file}), (err, data) => {\n` +
+    return `readFile(${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, String(${file}), (err, data, mimeType) => {\n` +
         Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
         statement +
         '});\n';
+};
+
+// --- file_data -----------------------------------------------------------
+Blockly.Action.blocks['file_data'] =
+    '<block type="file_data">'
+    + '     <value name="ATTR">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['file_data'] = {
+    /**
+     * Block for conditionally returning a value from a procedure.
+     * @this Blockly.Block
+     */
+    init: function() {
+        this.appendDummyInput()
+            .appendField('📁');
+
+        this.appendDummyInput('ATTR')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('file_data_data'), 'data'],
+                [Blockly.Translate('file_data_mimeType'), 'mimeType'],
+            ]), 'ATTR');
+
+        this.setInputsInline(true);
+        this.setOutput(true);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setTooltip(Blockly.Translate('file_data_tooltip'));
+        //this.setHelpUrl(getHelp('file_data'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        let legal = false;
+        // Is the block nested in a trigger?
+        let block = this;
+        do {
+            if (this.FUNCTION_TYPES.includes(block.type)) {
+                legal = true;
+                break;
+            }
+            block = block.getSurroundParent();
+        } while (block);
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('http_response_warning'), this.id);
+        }
+    },
+    /**
+     * List of block types that are functions and thus do not need warnings.
+     * To add a new function type add this to your code:
+     * Blockly.Blocks['procedures_ifreturn'].FUNCTION_TYPES.push('custom_func');
+     */
+    FUNCTION_TYPES: ['file_read'],
+};
+Blockly.JavaScript['file_data'] = function(block) {
+    const attr = block.getFieldValue('ATTR');
+
+    return [attr, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- action request --------------------------------------------------
