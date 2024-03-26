@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 7.9.3 (2024-03-19)
+
+* (klein0r) Added timeout option for http blocks
+* (klein0r) Added option for basic auth in url (user:pass)
+
 ## 7.9.2 (2024-03-18)
 
 * (klein0r) Added new block for http response

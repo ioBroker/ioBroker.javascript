@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.11.0 (2024-03-26)
 
 * (klein0r) Added blockly block for read and write file
 * (klein0r) Allow to select other object types than state in some blocks
@@ -71,11 +71,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 
 * (klein0r) Fixed urlencoding for basic auth in url (user:pass)
 * (klein0r) Added warning icon if trigger is positioned inside of another trigger or loop
-
-### 7.9.3 (2024-03-19)
-
-* (klein0r) Added timeout option for http blocks
-* (klein0r) Added option for basic auth in url (user:pass)
 
 ## License
 The MIT License (MIT)

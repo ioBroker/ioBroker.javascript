@@ -21,8 +21,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "7.10.2",
+    "version": "7.11.0",
     "news": {
+      "7.11.0": {
+        "en": "Added blockly block for read and write file\nAllow to select other object types than state in some blocks\nImproved translations\nRemoved 'type' from dropdown (is always 'state')\nUse highlight in search (instead of select)\nAdded option for httpGet to receive arraybuffer (download files)",
+        "de": "Blockaden für Lese- und Schreibdatei hinzugefügt\nLassen Sie andere Objekttypen als Zustand in einigen Blöcken auswählen\nVerbesserte Übersetzungen\n'Typ' von dropdown entfernt (ist immer 'state')\nVerwenden Sie Highlight in der Suche (anstatt auszuwählen)\nOption für httpGet zum Empfang von Arraybuffer (Download-Dateien)",
+        "ru": "Добавлено блокирование для чтения и записи файла\nПозволить выбрать другие типы объектов, чем состояние в некоторых блоках\nСовершенствование переводов\nУдалено «тип» от выпадения (всегда «государство»)\nИспользовать выделения в поиске (вместо выбора)\nДобавлена опция для httpGet для получения решетки (файлы загрузки)",
+        "pt": "Adicionado bloco blockly para ler e escrever arquivo\nPermitir selecionar outros tipos de objetos do que o estado em alguns blocos\nTraduções melhoradas\nRemovido 'tipo' de dropdown (é sempre 'estado')\nUse destaque na pesquisa (em vez de selecionar)\nAdicionado opção para httpGet para receber arraybuffer (arquivos de download)",
+        "nl": "Blokblok toegevoegd voor lezen en schrijven\nAndere objecttypes dan status in sommige blokken laten selecteren\nVerbeterde vertalingen\nVerwijderd 'type' uit dropdown (is altijd 'state')\nMarkering gebruiken bij zoeken (in plaats van selecteren)\nToegevoegde optie voor httpGet to receive arraybuffer (download bestanden)",
+        "fr": "Ajouté bloc bloc pour lire et écrire le fichier\nPermet de sélectionner d'autres types d'objets que l'état dans certains blocs\nAmélioration des traductions\nSupprimé 'type' du menu déroulant (est toujours 'état')\nUtiliser le point fort dans la recherche (au lieu de sélectionner)\nAjout de l'option pour httpGet to receive arraybuffer (télécharger les fichiers)",
+        "it": "Aggiunto blocco blocco per leggere e scrivere file\nConsentire di selezionare altri tipi di oggetti rispetto allo stato in alcuni blocchi\nTraduzioni migliorate\nRimuoveto \"tipo\" dal menu a tendina (è sempre 'stato')\nUtilizzare l'evidenziatore nella ricerca (invece di selezionare)\nAggiunta opzione per httpGet per ricevere arraybuffer (download file)",
+        "es": "Añadido bloque bloque bloque para leer y escribir archivo\nPermitir seleccionar otros tipos de objetos que el estado en algunos bloques\nMejora de las traducciones\nEliminado 'tipo' de la caída (siempre es 'estado')\nUse resaltar en la búsqueda (en lugar de seleccionar)\nOpción adicional para httpGet para recibir arraybuffer (archivos de descarga)",
+        "pl": "Dodano blokowy blok do odczytu i zapisu pliku\nPozwala wybrać inne typy obiektów niż stan w niektórych blokach\nUlepszone tłumaczenia\nUsunięty 'type' z upustu (zawsze jest 'state')\nUżyj podświetlenia w wyszukiwaniu (zamiast wybierz)\nDodano opcję httpGet do otrzymywania arraybufor (pliki do pobrania)",
+        "uk": "Додано блокнот для читання та запису файлу\nДозволяє вибрати інші типи об'єктів, ніж держава в деяких блоках\nПокращені переклади\nВилучено \"тип\" з випадаючою (це завжди 'держава')\nВикористовуйте родзинку в пошуку (замість вибору)\nДодано варіант для HTTPГет для отримання масивубуфер (завантажити файли)",
+        "zh-cn": "为读写文件添加块块\n允许在某些块中选择非状态的其他对象类型\n改进翻译\n从下拉中删除“ 类型 ” (总是“ 状态 ” )\n在搜索中使用突出显示( 而不是选择)\n添加了 httpGet 接收阵列缓冲器的选项( 下载文件)"
+      },
       "7.10.2": {
         "en": "Fixed httpGet/httpPost issue when using without options\nUpdated integration testing\nProtect jsonl file access",
         "de": "Problem behoben httpGet/httpPost bei Verwendung ohne Optionen\nAktualisierung der Integrationstests\nSchützen Sie jsonl Dateizugriff",
@@ -100,19 +113,6 @@
         "pl": "Dodano nowy blok odpowiedzi http",
         "uk": "Додано новий блок для відповіді",
         "zh-cn": "添加了 http 响应的新块"
-      },
-      "7.9.1": {
-        "en": "Configurable trigger warning limit (default: 100 per script)\nAllow to use objects in create state blocks for common\nAdded warning if latitude or longitude is not configured correctly",
-        "de": "Konfigurierbare Triggerwarngrenze (Standard: 100 pro Skript)\nErlauben Sie, Objekte in erstellen Zustand Blöcke für gemeinsame\nWarnung hinzugefügt, wenn Breite oder Länge nicht korrekt konfiguriert ist",
-        "ru": "Настраиваемый предел триггерного предупреждения (по умолчанию: 100 за сценарий)\nПозволить использовать объекты в создании государственных блоков для общего\nДобавить предупреждение, если широта или долгота не настроены правильно",
-        "pt": "Limite de aviso de gatilho configurável (padrão: 100 por script)\nPermitir usar objetos em criar blocos de estado para comum\nAdicionado aviso se a latitude ou longitude não estiver configurada corretamente",
-        "nl": "Configureerbare waarschuwingslimiet voor triggers (standaard: 100 per script)\nObjecten in aanmaken van statusblokken toestaan voor gewone\nToegevoegde waarschuwing als breedte- of lengtegraad niet correct is ingesteld",
-        "fr": "Limite d'avertissement de déclenchement configurable (par défaut : 100 par script)\nPermettre d'utiliser des objets dans créer des blocs d'état pour commun\nAjout d'un avertissement si la latitude ou la longitude n'est pas configurée correctement",
-        "it": "Limite di avviso di trigger configurabile (default: 100 per script)\nConsentire di utilizzare oggetti in creare blocchi di stato per i comuni\nAvvertenza aggiunta se latitudine o longitudine non è configurata correttamente",
-        "es": "Límite de advertencia de disparador configurable (por defecto: 100 por script)\nPermitir utilizar objetos en crear bloques estatales para uso común\nAdvertencia agregada si la latitud o longitud no está configurada correctamente",
-        "pl": "Konfigurowalny limit ostrzegawczy (domyślnie: 100 na skrypt)\nPozwól używać obiektów w tworzeniu bloków stanu dla wspólnych\nDodano ostrzeżenie, jeśli szerokość lub długość geograficzna nie jest poprawnie skonfigurowana",
-        "uk": "Конфігураційне обмеження попередження пропуску (default: 100 за скрипт)\nДозволяє використовувати об'єкти у створенні державних блоків для загального користування\nДодано попередження, якщо широта або довгота не налаштована правильно",
-        "zh-cn": "可配置触发警告限制( 默认: 每个脚本100)\n允许在常见的创建状态块中使用对象\n如果未正确配置纬度或经度,则添加警告"
       }
     },
     "desc": {

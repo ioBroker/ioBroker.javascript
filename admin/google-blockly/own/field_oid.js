@@ -48,7 +48,9 @@ class FieldOID extends Blockly.Field {
                             // Truncate displayed string and add an ellipsis ('...').
                             text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
                         }
-                        text.trim();
+                        if (objects && objects[id] && objects[id]?.type && !['state', 'meta', 'script'].includes(objects[id].type)) {
+                            text += ` (${objects[id].type})`;
+                        }
                         // Replace whitespace with non-breaking spaces so the text doesn't collapse.
                         text = text.replace(/\s/g, Blockly.Field.NBSP);
 
@@ -67,6 +69,9 @@ class FieldOID extends Blockly.Field {
             if (text.length > this.maxDisplayLength) {
                 // Truncate the displayed string and add an ellipsis ('...').
                 text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
+            }
+            if (objects && objects[id] && objects[id]?.type && !['state', 'meta', 'script'].includes(objects[id].type)) {
+                text += ` (${objects[id].type})`;
             }
             // Replace whitespace with non-breaking spaces so the text doesn't collapse.
             text = text.replace(/\s/g, Blockly.Field.NBSP);
@@ -94,6 +99,7 @@ class FieldOID extends Blockly.Field {
         }
         // Replace whitespace with non-breaking spaces so the text doesn't collapse.
         text = text.replace(/\s/g, Blockly.Field.NBSP);
+
         if (this.sourceBlock_.RTL) {
             // The SVG is LTR, force text to be RTL.
             text += '\u200F';

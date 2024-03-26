@@ -350,7 +350,7 @@ Blockly.Blocks['on'] = {
             .appendField(Blockly.Translate('on'));
 
         this.appendDummyInput('OID')
-            .appendField(new Blockly.FieldOID('Object ID'), 'OID');
+            .appendField(new Blockly.FieldOID(Blockly.Translate('select_id'), 'state'), 'OID');
 
         this.appendDummyInput('CONDITION')
             .appendField(new Blockly.FieldDropdown([
@@ -610,7 +610,7 @@ Blockly.Blocks['schedule_by_id'] = {
             .appendField(Blockly.Translate('schedule_by_id'));
 
         this.appendDummyInput('OID')
-            .appendField(new Blockly.FieldOID('Object ID'), 'OID');
+            .appendField(new Blockly.FieldOID(Blockly.Translate('select_id'), 'state'), 'OID');
 
         this.appendDummyInput('ACK_CONDITION')
             .appendField(Blockly.Translate('on_ack'))
@@ -1192,7 +1192,7 @@ Blockly.Trigger.blocks['onFile'] =
     + '     </value>'
     + '     <value name="FILE">'
     + '         <shadow type="text">'
-    + '             <field name="FILE_NAME">*</field>'
+    + '             <field name="TEXT">*</field>'
     + '         </shadow>'
     + '     </value>'
     + '     <value name="WITH_FILE">'
@@ -1204,7 +1204,7 @@ Blockly.Trigger.blocks['onFile'] =
 Blockly.Blocks['onFile'] = {
     init: function() {
         this.appendValueInput('OID')
-            .appendField(Blockly.Translate('onFile'))
+            .appendField('📁 ' + Blockly.Translate('onFile'))
             .setCheck(null);
 
         this.appendValueInput('FILE')
@@ -1274,6 +1274,74 @@ Blockly.JavaScript['onFile'] = function (block) {
         '});\n';
 };
 
+// --- onFile_data -----------------------------------------------------------
+Blockly.Trigger.blocks['onFile_data'] =
+    '<block type="onFile_data">'
+    + '     <value name="ATTR">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['onFile_data'] = {
+    /**
+     * Block for conditionally returning a value from a procedure.
+     * @this Blockly.Block
+     */
+    init: function() {
+        this.appendDummyInput()
+            .appendField('📁');
+
+        this.appendDummyInput('ATTR')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('onFile_data_data'), 'data'],
+                [Blockly.Translate('onFile_data_filename'), 'fileName'],
+                [Blockly.Translate('onFile_data_size'), 'size'],
+                [Blockly.Translate('onFile_data_mimeType'), 'mimeType'],
+                [Blockly.Translate('onFile_data_id'), 'id'],
+            ]), 'ATTR');
+
+        this.setInputsInline(true);
+        this.setOutput(true);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setTooltip(Blockly.Translate('onFile_datatooltip'));
+        //this.setHelpUrl(getHelp('onFile_data'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        let legal = false;
+        // Is the block nested in a trigger?
+        let block = this;
+        do {
+            if (this.FUNCTION_TYPES.includes(block.type)) {
+                legal = true;
+                break;
+            }
+            block = block.getSurroundParent();
+        } while (block);
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('onFile_data_warning'), this.id);
+        }
+    },
+    /**
+     * List of block types that are functions and thus do not need warnings.
+     * To add a new function type add this to your code:
+     * Blockly.Blocks['procedures_ifreturn'].FUNCTION_TYPES.push('custom_func');
+     */
+    FUNCTION_TYPES: ['onFile'],
+};
+Blockly.JavaScript['onFile_data'] = function(block) {
+    const attr = block.getFieldValue('ATTR');
+
+    return [attr, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
 // --- onFile -----------------------------------------------------------
 Blockly.Trigger.blocks['offFile'] =
     '<block type="offFile">'
@@ -1284,7 +1352,7 @@ Blockly.Trigger.blocks['offFile'] =
     + '     </value>'
     + '     <value name="FILE">'
     + '         <shadow type="text">'
-    + '             <field name="FILE_NAME">*</field>'
+    + '             <field name="TEXT">*</field>'
     + '         </shadow>'
     + '     </value>'
     + '</block>';
@@ -1292,7 +1360,7 @@ Blockly.Trigger.blocks['offFile'] =
 Blockly.Blocks['offFile'] = {
     init: function() {
         this.appendValueInput('OID')
-            .appendField(Blockly.Translate('offFile'))
+            .appendField('📁 ' + Blockly.Translate('offFile'))
             .setCheck(null);
 
         this.appendValueInput('FILE')
