@@ -48,7 +48,7 @@ class FieldOID extends Blockly.Field {
                             // Truncate displayed string and add an ellipsis ('...').
                             text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
                         }
-                        if (objects && objects[id] && objects[id]?.type && objects[id].type !== 'state') {
+                        if (objects && objects[id] && objects[id]?.type && !['state', 'meta', 'script'].includes(objects[id].type)) {
                             text += ` (${objects[id].type})`;
                         }
                         // Replace whitespace with non-breaking spaces so the text doesn't collapse.
@@ -70,7 +70,7 @@ class FieldOID extends Blockly.Field {
                 // Truncate the displayed string and add an ellipsis ('...').
                 text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
             }
-            if (objects && objects[id] && objects[id]?.type && objects[id].type !== 'state') {
+            if (objects && objects[id] && objects[id]?.type && !['state', 'meta', 'script'].includes(objects[id].type)) {
                 text += ` (${objects[id].type})`;
             }
             // Replace whitespace with non-breaking spaces so the text doesn't collapse.
