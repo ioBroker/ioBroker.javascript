@@ -41,7 +41,7 @@
     "@types/node": "should match the lowest MAJOR version of Node.js we support."
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^3.0.4",
+    "@iobroker/adapter-core": "^3.0.6",
     "@types/node": "^20.11.30",
     "@types/request": "^2.48.12",
     "axios": "^1.6.8",
