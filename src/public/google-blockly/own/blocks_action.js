@@ -368,7 +368,7 @@ Blockly.Blocks['write_file'] = {
             .appendField(Blockly.Translate('write_file'));
 
         this.appendValueInput('FILE')
-            .appendField(Blockly.Translate('write_file_file'))
+            .appendField(Blockly.Translate('write_file_filename'))
             .setCheck(null);
 
         this.appendValueInput('DATA')
