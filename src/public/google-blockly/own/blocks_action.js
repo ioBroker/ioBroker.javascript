@@ -400,10 +400,73 @@ Blockly.JavaScript['file_write'] = function(block) {
         
     }
 
-    return `writeFile(${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, String(${file}), ${data}, (err) => {\n` +
+    return `writeFile(${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, String(${file}), ${data ? data : 'null'}, (err) => {\n` +
         Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
+        '});\n';
+};
+
+// --- action file_read --------------------------------------------------
+Blockly.Action.blocks['file_read'] =
+    '<block type="file_read">'
+    + '     <value name="OID">'
+    + '         <shadow type="field_oid_meta">'
+    + '             <field name="oid">0_userdata.0</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="FILE">'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">demo.json</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['file_read'] = {
+    init: function() {
+        this.appendValueInput('OID')
+            .appendField('📁 ' + Blockly.Translate('file_read'));
+
+        this.appendValueInput('FILE')
+            .appendField(Blockly.Translate('file_read_filename'))
+            .setCheck(null);
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setInputsInline(false);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setColour(Blockly.Action.HUE);
+        this.setTooltip(Blockly.Translate('file_read_tooltip'));
+        this.setHelpUrl(getHelp('file_read_help'));
+    }
+};
+
+Blockly.JavaScript['file_read'] = function(block) {
+    const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    let objectName = '';
+    try {
+        const objId = eval(value_objectid); // Code to string
+        objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
+        if (typeof objectName === 'object') {
+            objectName = objectName[systemLang] || objectName.en;
+        }
+    } catch (error) {
+        
+    }
+
+    return `readFile(${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, String(${file}), (err, data) => {\n` +
+        Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
+        statement +
         '});\n';
 };
 
