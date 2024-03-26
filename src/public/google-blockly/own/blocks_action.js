@@ -519,7 +519,7 @@ Blockly.Blocks['file_data'] = {
         if (legal) {
             this.setWarningText(null, this.id);
         } else {
-            this.setWarningText(Blockly.Translate('http_response_warning'), this.id);
+            this.setWarningText(Blockly.Translate('file_data_warning'), this.id);
         }
     },
     /**
