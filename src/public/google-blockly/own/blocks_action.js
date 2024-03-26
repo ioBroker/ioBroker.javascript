@@ -345,9 +345,9 @@ Blockly.JavaScript['http_response'] = function(block) {
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
-// --- action write_file --------------------------------------------------
-Blockly.Action.blocks['write_file'] =
-    '<block type="write_file">'
+// --- action file_write --------------------------------------------------
+Blockly.Action.blocks['file_write'] =
+    '<block type="file_write">'
     + '     <value name="OID">'
     + '         <shadow type="field_oid_meta">'
     + '             <field name="oid">0_userdata.0</field>'
@@ -362,29 +362,29 @@ Blockly.Action.blocks['write_file'] =
     + '     </value>'
     + '</block>';
 
-Blockly.Blocks['write_file'] = {
+Blockly.Blocks['file_write'] = {
     init: function() {
         this.appendValueInput('OID')
-            .appendField(Blockly.Translate('write_file'));
+            .appendField('📁 ' + Blockly.Translate('file_write'));
 
         this.appendValueInput('FILE')
-            .appendField(Blockly.Translate('write_file_filename'))
+            .appendField(Blockly.Translate('file_write_filename'))
             .setCheck(null);
 
         this.appendValueInput('DATA')
-            .appendField(Blockly.Translate('write_file_data'));
+            .appendField(Blockly.Translate('file_write_data'));
 
         this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
 
         this.setColour(Blockly.Action.HUE);
-        this.setTooltip(Blockly.Translate('write_file_tooltip'));
-        this.setHelpUrl(getHelp('write_file_help'));
+        this.setTooltip(Blockly.Translate('file_write_tooltip'));
+        this.setHelpUrl(getHelp('file_write_help'));
     }
 };
 
-Blockly.JavaScript['write_file'] = function(block) {
+Blockly.JavaScript['file_write'] = function(block) {
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
     const data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);

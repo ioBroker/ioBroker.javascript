@@ -1204,7 +1204,7 @@ Blockly.Trigger.blocks['onFile'] =
 Blockly.Blocks['onFile'] = {
     init: function() {
         this.appendValueInput('OID')
-            .appendField(Blockly.Translate('onFile'))
+            .appendField('📁 ' + Blockly.Translate('onFile'))
             .setCheck(null);
 
         this.appendValueInput('FILE')
@@ -1292,7 +1292,7 @@ Blockly.Trigger.blocks['offFile'] =
 Blockly.Blocks['offFile'] = {
     init: function() {
         this.appendValueInput('OID')
-            .appendField(Blockly.Translate('offFile'))
+            .appendField('📁 ' + Blockly.Translate('offFile'))
             .setCheck(null);
 
         this.appendValueInput('FILE')
