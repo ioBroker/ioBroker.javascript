@@ -128,6 +128,8 @@ Blockly.Action.blocks['http_get'] =
     + '     </value>'
     + '     <value name="UNIT">'
     + '     </value>'
+    + '     <value name="TYPE">'
+    + '     </value>'
     + '     <value name="STATEMENT">'
     + '     </value>'
     + '</block>';
@@ -144,6 +146,13 @@ Blockly.Blocks['http_get'] = {
                 [Blockly.Translate('http_get_settimeout_ms'), 'ms'],
                 [Blockly.Translate('http_get_settimeout_sec'), 'sec']
             ]), 'UNIT');
+
+        this.appendDummyInput('TYPE')
+            .appendField(Blockly.Translate('http_get_type'))
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('http_get_type_text'),  'text'],
+                [Blockly.Translate('http_get_type_raw'), 'arraybuffer'],
+            ]), 'TYPE');
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -170,7 +179,12 @@ Blockly.JavaScript['http_get'] = function(block) {
         timeout *= 1000;
     }
 
-    return `httpGet(${URL}, { timeout: ${timeout} }, async (err, response) => {\n` +
+    let responseType = block.getFieldValue('TYPE');
+    if (!responseType) {
+        responseType = 'text';
+    }
+
+    return `httpGet(${URL}, { timeout: ${timeout}, responseType: '${responseType}' }, async (err, response) => {\n` +
         Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
@@ -189,6 +203,8 @@ Blockly.Action.blocks['http_post'] =
     + '     <value name="TIMEOUT">'
     + '     </value>'
     + '     <value name="UNIT">'
+    + '     </value>'
+    + '     <value name="TYPE">'
     + '     </value>'
     + '     <value name="DATA">'
     + '         <shadow type="object_new">'
@@ -210,6 +226,13 @@ Blockly.Blocks['http_post'] = {
                 [Blockly.Translate('http_post_settimeout_ms'), 'ms'],
                 [Blockly.Translate('http_post_settimeout_sec'), 'sec']
             ]), 'UNIT');
+
+        this.appendDummyInput('TYPE')
+            .appendField(Blockly.Translate('http_post_type'))
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('http_post_type_text'),  'text'],
+                [Blockly.Translate('http_post_type_raw'), 'arraybuffer'],
+            ]), 'TYPE');
 
         this.appendValueInput('DATA')
             .appendField(Blockly.Translate('http_post_data'));
@@ -240,11 +263,16 @@ Blockly.JavaScript['http_post'] = function(block) {
         timeout *= 1000;
     }
 
+    let responseType = block.getFieldValue('TYPE');
+    if (!responseType) {
+        responseType = 'text';
+    }
+
     if (!data) {
         data = 'null';
     }
 
-    return `httpPost(${URL}, ${data}, { timeout: ${timeout} }, async (err, response) => {\n` +
+    return `httpPost(${URL}, ${data}, { timeout: ${timeout}, responseType: '${responseType}' }, async (err, response) => {\n` +
         Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
@@ -403,7 +431,7 @@ Blockly.JavaScript['request'] = function(block) {
         logText = '';
     }
 
-    logText += `console.warn('request blockly block is deprecated - please use "http get" instead');\n`;
+    logText += `console.warn('request blockly block is deprecated - please use "http (GET)" instead');\n`;
 
     if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
         const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
