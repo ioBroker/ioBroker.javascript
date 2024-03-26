@@ -304,7 +304,7 @@ Blockly.Blocks['http_response'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
-        this.setColour(Blockly.Trigger.HUE);
+        this.setColour(Blockly.Action.HUE);
         this.setTooltip(Blockly.Translate('http_response_tooltip'));
         //this.setHelpUrl(getHelp('http_response'));
     },
@@ -494,7 +494,7 @@ Blockly.Blocks['file_data'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
-        this.setColour(Blockly.Trigger.HUE);
+        this.setColour(Blockly.Action.HUE);
         this.setTooltip(Blockly.Translate('file_data_tooltip'));
         //this.setHelpUrl(getHelp('file_data'));
     },
