@@ -22,7 +22,7 @@ function searchXml(root, text, _id, _result) {
     if (root.tagName === 'FIELD' || root.tagName === 'field') {
         for (let a = 0; a < root.attributes.length; a++) {
             const val = (root.attributes[a].value || '').toLowerCase();
-            if (root.attributes[a].nodeName === 'name' && (val === 'oid' || val === 'text')) {
+            if (root.attributes[a].nodeName === 'name' && (val === 'oid' || val === 'text' || val === 'var')) {
                 if ((root.innerHTML || root.innerText || '').toLowerCase().includes(text)) {
                     _result.push(_id);
                 }
@@ -131,7 +131,7 @@ class BlocklyEditor extends React.Component {
                 return xmlDoc;
             };
         } else {
-            parseXml = function() { return null; }
+            parseXml = () => null;
         }
         return parseXml(text);
     }
@@ -140,25 +140,25 @@ class BlocklyEditor extends React.Component {
         if (this.blocklyWorkspace) {
             const dom = this.Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
             const ids = searchXml(dom, text.toLowerCase());
-            const allBlocks = this.blocklyWorkspace.getAllBlocks();
-            const result = [];
-            allBlocks.filter(b => ids.includes(b.id)).forEach(b => result.push(b));
-            return result;
+
+            console.log(`Search "${text}" found blocks: ${ids.length ? JSON.stringify(ids) : 'none'}`);
+
+            return ids;
         }
+
+        return [];
     }
 
     searchId() {
-        const blocks = this.lastSearch && this.searchBlocks(this.lastSearch);
-        if (blocks && blocks.length) {
-            this.someSelected = blocks;
-            this.someSelected.forEach(b => b.addSelect());
+        const ids = this.lastSearch && this.searchBlocks(this.lastSearch);
+        if (ids && ids.length) {
+            this.someSelected = ids;
+            this.someSelected.forEach(id => this.blocklyWorkspace.highlightBlock(id, true));
             this.someSelectedTime = Date.now();
         } else if (this.someSelected) {
             // remove selection
-            this.someSelected.forEach(b => b.removeSelect());
+            this.someSelected.forEach(id => this.blocklyWorkspace.highlightBlock(id, false));
             this.someSelected = null;
-
-            console.log(`Removed search selection: ${this.lastSearch}`);
         }
     }
 
