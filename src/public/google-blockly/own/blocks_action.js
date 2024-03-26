@@ -137,7 +137,7 @@ Blockly.Action.blocks['http_get'] =
 Blockly.Blocks['http_get'] = {
     init: function() {
         this.appendValueInput('URL')
-            .appendField(Blockly.Translate('http_get'));
+            .appendField('🌐 ' + Blockly.Translate('http_get'));
 
         this.appendDummyInput()
             .appendField(Blockly.Translate('http_timeout'))
@@ -146,7 +146,6 @@ Blockly.Blocks['http_get'] = {
                 [Blockly.Translate('http_timeout_ms'), 'ms'],
                 [Blockly.Translate('http_timeout_sec'), 'sec']
             ]), 'UNIT');
-
 
         this.appendDummyInput('TYPE')
             .appendField(Blockly.Translate('http_type'))
@@ -218,7 +217,7 @@ Blockly.Action.blocks['http_post'] =
 Blockly.Blocks['http_post'] = {
     init: function() {
         this.appendValueInput('URL')
-            .appendField(Blockly.Translate('http_post'));
+            .appendField('🌐 ' + Blockly.Translate('http_post'));
 
         this.appendDummyInput()
             .appendField(Blockly.Translate('http_timeout'))
@@ -344,6 +343,68 @@ Blockly.JavaScript['http_response'] = function(block) {
     const attr = block.getFieldValue('ATTR');
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+// --- action write_file --------------------------------------------------
+Blockly.Action.blocks['write_file'] =
+    '<block type="write_file">'
+    + '     <value name="OID">'
+    + '         <shadow type="field_oid_meta">'
+    + '             <field name="oid">0_userdata.0</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="FILE">'
+    + '         <shadow type="text">'
+    + '             <field name="TEXT">demo.json</field>'
+    + '         </shadow>'
+    + '     </value>'
+    + '     <value name="DATA">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['write_file'] = {
+    init: function() {
+        this.appendValueInput('OID')
+            .appendField(Blockly.Translate('write_file'));
+
+        this.appendValueInput('FILE')
+            .appendField(Blockly.Translate('write_file_file'))
+            .setCheck(null);
+
+        this.appendValueInput('DATA')
+            .appendField(Blockly.Translate('write_file_data'));
+
+        this.setInputsInline(false);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setColour(Blockly.Action.HUE);
+        this.setTooltip(Blockly.Translate('write_file_tooltip'));
+        this.setHelpUrl(getHelp('write_file_help'));
+    }
+};
+
+Blockly.JavaScript['write_file'] = function(block) {
+    const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
+    const data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
+
+    let objectName = '';
+    try {
+        const objId = eval(value_objectid); // Code to string
+        objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
+        if (typeof objectName === 'object') {
+            objectName = objectName[systemLang] || objectName.en;
+        }
+    } catch (error) {
+        
+    }
+
+    return `writeFile(${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, String(${file}), ${data}, (err) => {\n` +
+        Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
+        '});\n';
 };
 
 // --- action request --------------------------------------------------

@@ -1192,7 +1192,7 @@ Blockly.Trigger.blocks['onFile'] =
     + '     </value>'
     + '     <value name="FILE">'
     + '         <shadow type="text">'
-    + '             <field name="FILE_NAME">*</field>'
+    + '             <field name="TEXT">*</field>'
     + '         </shadow>'
     + '     </value>'
     + '     <value name="WITH_FILE">'
@@ -1284,7 +1284,7 @@ Blockly.Trigger.blocks['offFile'] =
     + '     </value>'
     + '     <value name="FILE">'
     + '         <shadow type="text">'
-    + '             <field name="FILE_NAME">*</field>'
+    + '             <field name="TEXT">*</field>'
     + '         </shadow>'
     + '     </value>'
     + '</block>';
