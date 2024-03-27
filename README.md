@@ -42,6 +42,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Escape single quotes in blockly obj attributes
+
 ### 7.11.0 (2024-03-26)
 
 * (klein0r) Added blockly block for read and write file

@@ -229,7 +229,7 @@ Blockly.JavaScript['object_new'] = function(block) {
     for (let n = 0; n < block.itemCount_; n++) {
         const val = Blockly.JavaScript.valueToCode(block, 'ATTR_' + n, Blockly.JavaScript.ORDER_COMMA);
         if (val) {
-            attributes.push(`'${block.attributes_[n]}': ${val}`);
+            attributes.push(`'${String(block.attributes_[n]).replaceAll(`'`, `\\'`)}': ${val}`);
         }
     }
 
@@ -282,7 +282,7 @@ Blockly.JavaScript['object_set_attr'] = function(block) {
         obj = '{}';
     }
 
-    return `(() => { const obj = ${obj}; if (typeof obj === 'object') { obj['${attr}'] = ${value}; } })();\n`;
+    return `((obj) => { if (typeof obj === 'object') { obj['${attr}'] = ${value}; } })(${obj});\n`;
 };
 
 // --- delete attribute --------------------------------------------------
@@ -321,7 +321,7 @@ Blockly.JavaScript['object_del_attr'] = function(block) {
         obj = '{}';
     }
 
-    return `(() => { const obj = ${obj}; if (typeof obj === 'object') { delete obj['${attr}']; } })();\n`;
+    return `((obj) => { if (typeof obj === 'object') { delete obj['${attr}']; } })(${obj});\n`;
 };
 
 // --- has attribute --------------------------------------------------
