@@ -488,7 +488,9 @@ describe.only('Test JS', function () {
                 engineType:     'Javascript/js',
                 source:         `const fs = require('node:fs');\n` +
                                 `try{\n` +
-                                `    fs.appendFile(defaultDataDir + '/files/0_userdata.0/test.txt', 'some example text');\n` +
+                                `    const forbiddenPath = defaultDataDir + '/files/0_userdata.0/test.txt';\n` +
+                                `    log('Writing file to path: ' + forbiddenPath);\n` +
+                                `    fs.appendFile(forbiddenPath, 'some example text');\n` +
                                 `} catch (err) {\n` +
                                 `    createState('error2', err.toString());\n` +
                                 `}`,
