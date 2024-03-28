@@ -527,7 +527,7 @@ describe.only('Test JS', function () {
                 engineType:     'Javascript/js',
                 source:         `const fs = require('node:fs');\n` +
                                 `try{\n` +
-                                `    fs.writeFileSync('${__dirname}/../tmp/objects.json', '${time}');\n` +
+                                `    fs.writeFileSync('${__dirname.replace(/\\/g, '/')}/../tmp/objects.json', '${time}');\n` +
                                 `} catch (err) {\n` +
                                 `    createState('error3', err.toString());\n` +
                                 `}`,
