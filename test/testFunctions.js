@@ -1344,17 +1344,23 @@ describe.only('Test JS', function () {
             _id:                'script.js.test_write',
             type:               'script',
             common: {
-                name:           'test ON any',
+                name:           'test file write',
                 enabled:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('testScheduleResponse2', false, () => { writeFile('0_userdata.0', '/test.txt', 'test', () => { setState('testScheduleResponse2', true, true); }); });`,
+                source:         `createState('testFileWrite', false, () => {\n` +
+                                `    writeFile('0_userdata.0', '/test.txt', 'it works', (err) => {\n` +
+                                `        if (!err) {\n` +
+                                `            setState('testFileWrite', true, true);\n` +
+                                `        });\n` +
+                                `    });\n` +
+                                `});`,
             },
             native: {}
         };
 
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.testScheduleResponse2' && state.val === true) {
+            if (id === 'javascript.0.testFileWrite' && state.val === true) {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
@@ -1366,23 +1372,27 @@ describe.only('Test JS', function () {
         });
     }).timeout(5000);
 
-    it('Test JS: test read file from "javascript"', function (done) {
+    it('Test JS: test read file from "0_userdata.0"', function (done) {
         // add script
         const script = {
             _id:                'script.js.test_read',
             type:               'script',
             common: {
-                name:           'test ON any',
+                name:           'test file read',
                 enabled:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `readFile('0_userdata.0', '/test.txt', (err, data) => { setState('testScheduleResponse2', data, true); });`,
+                source:         `createState('testReadWrite', '', () => {\n` +
+                                `    readFile('0_userdata.0', '/test.txt', (err, data) => {\n` +
+                                `        setState('testReadWrite', data, true);\n` +
+                                `    });\n` +
+                                `});`,
             },
             native: {}
         };
 
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.testScheduleResponse2' && state.val === 'test') {
+            if (id === 'javascript.0.testReadWrite' && state.val === 'it works') {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }

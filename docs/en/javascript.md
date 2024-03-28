@@ -96,7 +96,7 @@ If in the script, some modules or functions are used with callbacks or cyclic ca
 so they will be called again and again even if the new version of a script exists or a script is deleted. For example, the following script:
 
 ```js
-const http = require('http');
+const http = require('node:http');
 // Read www.google.com page
 http.request('www.google.com', function (res) {
     res.setEncoding('utf8');
@@ -1462,7 +1462,7 @@ The file that looks like `'/subfolder/file.txt'` will be stored under `"/javascr
 
 ```js
 // store screenshot in DB
-const fs = require('fs');
+const fs = require('node:fs');
 let data = fs.readFileSync('/tmp/screenshot.png');
 writeFile(null, '/screenshots/1.png', data, (error) => {
     log('file written');
@@ -1476,7 +1476,7 @@ writeFile(null, '/screenshots/1.png', data, (error) => {
 
 ```js
 // store file in '/vis.0' in DB
-const fs = require('fs');
+const fs = require('node:fs');
 let data = fs.readFileSync('/tmp/screenshot.png');
 writeFile('vis.0', '/screenshots/1.png', data, (error) => {
     log('file written');
