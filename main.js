@@ -1038,6 +1038,7 @@ function main() {
     activeStr = `${adapter.namespace}.scriptEnabled.`;
 
     mods.fs = new require('./lib/protectFs')(adapter.log, utils.getAbsoluteDefaultDataDir());
+    mods['fs/promises'] = mods.fs.promises; // to avoid require('fs/promises');
 
     // try to read TS declarations
     try {
