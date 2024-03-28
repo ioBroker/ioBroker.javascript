@@ -20,7 +20,7 @@ Blockly.Action.blocks['exec'] =
     '<block type="exec">'
     + '     <value name="COMMAND">'
     + '         <shadow type="text">'
-    + '             <field name="TEXT">text</field>'
+    + '             <field name="TEXT">pwd</field>'
     + '         </shadow>'
     + '     </value>'
     + '     <value name="LOG">'
@@ -33,7 +33,7 @@ Blockly.Action.blocks['exec'] =
 Blockly.Blocks['exec'] = {
     init: function() {
         this.appendDummyInput('TEXT')
-            .appendField(Blockly.Translate('exec'));
+            .appendField('» ' + Blockly.Translate('exec'));
 
         this.appendValueInput('COMMAND')
             .appendField(Blockly.Translate('exec_command'));
@@ -96,7 +96,7 @@ Blockly.JavaScript['exec'] = function(block) {
 
     let logText;
     if (logLevel) {
-        logText = 'console.' + logLevel + '("exec: " + ' + value_command + ');\n'
+        logText = `console.${logLevel}('exec: ' + ${value_command});\n`;
     } else {
         logText = '';
     }
@@ -104,16 +104,81 @@ Blockly.JavaScript['exec'] = function(block) {
     if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
         const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
         if (statement) {
-            return 'exec(' + value_command + ', async (error, result, stderr) => {\n' + statement + '});\n' +
-                logText;
+            return `exec(${value_command}, async (error, result, stderr) => {\n` +
+                statement +
+                `});\n${logText}`;
         } else {
-            return 'exec(' + value_command + ');\n' +
-                logText;
+            return `exec(${value_command});\n${logText}`;
         }
     } else {
-        return 'exec(' + value_command + ');\n' +
-            logText;
+        return `exec(${value_command});\n${logText}`;
     }
+};
+
+// --- exec_result -----------------------------------------------------------
+Blockly.Action.blocks['exec_result'] =
+    '<block type="exec_result">'
+    + '     <value name="ATTR">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['exec_result'] = {
+    /**
+     * Block for conditionally returning a value from a procedure.
+     * @this Blockly.Block
+     */
+    init: function() {
+        this.appendDummyInput()
+            .appendField('»');
+
+        this.appendDummyInput('ATTR')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('exec_result_result'), 'result'],
+                [Blockly.Translate('exec_result_stderr'), 'stderr'],
+                [Blockly.Translate('exec_result_error'), 'error'],
+            ]), 'ATTR');
+
+        this.setInputsInline(true);
+        this.setOutput(true);
+        this.setColour(Blockly.Action.HUE);
+        this.setTooltip(Blockly.Translate('exec_result_tooltip'));
+        //this.setHelpUrl(getHelp('exec'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        let legal = false;
+        // Is the block nested in an exec?
+        let block = this;
+        do {
+            if (this.FUNCTION_TYPES.includes(block.type)) {
+                legal = true;
+                break;
+            }
+            block = block.getSurroundParent();
+        } while (block);
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('exec_result_warning'), this.id);
+        }
+    },
+    /**
+     * List of block types that are functions and thus do not need warnings.
+     * To add a new function type add this to your code:
+     * Blockly.Blocks['procedures_ifreturn'].FUNCTION_TYPES.push('custom_func');
+     */
+    FUNCTION_TYPES: ['exec'],
+};
+Blockly.JavaScript['exec_result'] = function(block) {
+    const attr = block.getFieldValue('ATTR');
+
+    return [attr, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- action http_get --------------------------------------------------

@@ -21,8 +21,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "7.11.0",
+    "version": "7.11.1",
     "news": {
+      "7.11.1": {
+        "en": "Added exec result blockly block\nProtect iobroker-data/files to avoid direct writes with node:fs\nEscape single quotes in blockly obj attributes",
+        "de": "Exec ergebnis block\nSchützen Sie iobroker-data/files, um direkte Schreiben mit node:fs zu vermeiden\nEscape einzelne Zitate in blockly obj Attribute",
+        "ru": "Добавленный результат exec блокирует\nЗащитить iobroker-data/files, чтобы избежать прямой записи с node:fs\nОдинокие цитаты в скрытых атрибутах",
+        "pt": "Adicionado bloco de resultado exec\nProteja iobroker-data/files para evitar gravações diretas com node:fs\nEscape de citações únicas em atributos obj blockly",
+        "nl": "Toegevoegd exec resultaat blokje\nBescherm iobroker-data/bestanden om direct schrijven met node:fs te vermijden\nAanhalingstekens ontsnappen in blokjes obj-attributen",
+        "fr": "Ajout du bloc de résultat exec\nProtégez iobroker-data/files pour éviter les écritures directes avec noeud:fs\nÉchapper aux guillemets uniques dans les attributs obj",
+        "it": "Aggiunto exec risultato blocco\nProteggere i dati/file ibroker per evitare scritture dirette con nodo:fs\nEscape singole citazioni in attributi obj bloccati",
+        "es": "Resultado del ejecutivo bloqueado bloqueado\nProtege los archivos iobroker-data/para evitar las escrituras directas con nodo:fs\nEscapar citas individuales en atributos obj bloque",
+        "pl": "Dodano blokowy wynik exec\nChroń iobroker- dane / pliki, aby uniknąć bezpośredniego zapisu z węzłem: fs\nEscape pojedyncze cytaty w blockly atrybuty obj",
+        "uk": "Додано exec результат блокнот\nЗахист iobroker-data/files, щоб уникнути прямих записів з вершиною:fs\nВтеча одиночних лапок в блочних атрибутах",
+        "zh-cn": "添加执行结果块块\n保护 iobroster- data/ files 以避免直接写作节点: fs\n以块形obj属性表示的逃逸单引号"
+      },
       "7.11.0": {
         "en": "Added blockly block for read and write file\nAllow to select other object types than state in some blocks\nImproved translations\nRemoved 'type' from dropdown (is always 'state')\nUse highlight in search (instead of select)\nAdded option for httpGet to receive arraybuffer (download files)",
         "de": "Blockaden für Lese- und Schreibdatei hinzugefügt\nLassen Sie andere Objekttypen als Zustand in einigen Blöcken auswählen\nVerbesserte Übersetzungen\n'Typ' von dropdown entfernt (ist immer 'state')\nVerwenden Sie Highlight in der Suche (anstatt auszuwählen)\nOption für httpGet zum Empfang von Arraybuffer (Download-Dateien)",
@@ -100,19 +113,6 @@
         "pl": "Dodano opcję timeout dla bloków http\nDodano opcję dla podstawowej auth w url (użytkownik: pass)",
         "uk": "Додано опцію таймера для блоків HTTP\nДодано варіант для базової auth в url (user:pass)",
         "zh-cn": "为 http 块添加了超时选项\n在 URL( 用户: pass) 中添加了基本认证选项"
-      },
-      "7.9.2": {
-        "en": "Added new block for http response",
-        "de": "Neuer Block für http-Antwort hinzugefügt",
-        "ru": "Добавлен новый блок для ответа http",
-        "pt": "Adicionado novo bloco para resposta http",
-        "nl": "Nieuw blok toegevoegd voor http-antwoord",
-        "fr": "Ajout d'un nouveau bloc pour la réponse http",
-        "it": "Aggiunto nuovo blocco per risposta http",
-        "es": "Añadido nuevo bloque para respuesta http",
-        "pl": "Dodano nowy blok odpowiedzi http",
-        "uk": "Додано новий блок для відповіді",
-        "zh-cn": "添加了 http 响应的新块"
       }
     },
     "desc": {

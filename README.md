@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.11.1 (2024-03-28)
 
 * (klein0r) Added exec result blockly block
 * (klein0r) Protect iobroker-data/files to avoid direct writes with node:fs
@@ -72,11 +72,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 * (klein0r) Added warning icon if state value is connected to trigger block (instead of object id)
 * (klein0r) Copy date object in getAstroDate
 * (klein0r) Added object id as tooltip
-
-### 7.9.4 (2024-03-20)
-
-* (klein0r) Fixed urlencoding for basic auth in url (user:pass)
-* (klein0r) Added warning icon if trigger is positioned inside of another trigger or loop
 
 ## License
 The MIT License (MIT)

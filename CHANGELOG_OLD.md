@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 7.9.4 (2024-03-20)
+
+* (klein0r) Fixed urlencoding for basic auth in url (user:pass)
+* (klein0r) Added warning icon if trigger is positioned inside of another trigger or loop
+
 ## 7.9.3 (2024-03-19)
 
 * (klein0r) Added timeout option for http blocks
