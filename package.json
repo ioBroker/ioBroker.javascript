@@ -35,7 +35,7 @@
     "url": "https://github.com/ioBroker/ioBroker.javascript"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "depsComment": {
     "@types/node": "should match the lowest MAJOR version of Node.js we support."
