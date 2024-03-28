@@ -1272,6 +1272,11 @@ declare global {
 	const scriptName: string;
 
 	/**
+	 * Absolute path to iobroker-data directory in file system
+	 */
+	const defaultDataDir: string;
+
+	/**
 	 * Queries all states with the given selector
 	 * @param selector See @link{https://github.com/ioBroker/ioBroker.javascript#---selector} for a description
 	 */

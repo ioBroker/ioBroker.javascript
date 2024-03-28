@@ -59,7 +59,7 @@ const forbiddenMirrorLocations = [
     '../log'
 ];
 
-const utils     = require('@iobroker/adapter-core'); // Get common adapter utils
+const utils     = require('@iobroker/adapter-core');
 const words     = require('./lib/words');
 const sandBox   = require('./lib/sandbox');
 const eventObj  = require('./lib/eventObj');
@@ -288,6 +288,7 @@ const context = {
         leadingZeros:    true
     },
     rulesOpened:         null, //opened rules
+    getAbsoluteDefaultDataDir: utils.getAbsoluteDefaultDataDir,
 };
 
 const regExGlobalOld = /_global$/;
@@ -1036,7 +1037,7 @@ function main() {
     context.errorLogFunction = webstormDebug ? console : adapter.log;
     activeStr = `${adapter.namespace}.scriptEnabled.`;
 
-    mods.fs = new require('./lib/protectFs')(adapter.log);
+    mods.fs = new require('./lib/protectFs')(adapter.log, utils.getAbsoluteDefaultDataDir());
 
     // try to read TS declarations
     try {

@@ -375,7 +375,7 @@ describe.only('Test JS', function () {
                 enabled:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         "deleteState('javascript.1.test1');",
+                source:         `deleteState('javascript.1.test1');`,
             },
             native: {}
         };
@@ -409,7 +409,7 @@ describe.only('Test JS', function () {
         });
     });
 
-    it('Test JS: open objects.json file must not work', function (done) {
+    it('Test JS: read objects.json file must not work', function (done) {
         this.timeout(20000);
         // add script
         const script = {
@@ -420,7 +420,12 @@ describe.only('Test JS', function () {
                 enabled:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `const fs = require('node:fs'); try{ fs.readFileSync('${__dirname + '/../tmp/' + setup.appName}-data/objects.json'); } catch(err) { createState('error', err.toString()); }`,
+                source:         `const fs = require('node:fs');\n` +
+                                `try{\n` +
+                                `    fs.readFileSync('${__dirname}/../tmp/${setup.appName}-data/objects.json');\n` +
+                                `} catch (err) {\n` +
+                                `    createState('error', err.toString());\n` +
+                                `}`,
             },
             native: {}
         };
@@ -449,7 +454,12 @@ describe.only('Test JS', function () {
                 enabled:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `const fs = require('node:fs'); try{ fs.writeFileSync('${__dirname + '/../tmp/' + setup.appName}-data/objects.json', ''); } catch(err) { createState('error1', err.toString()); }`,
+                source:         `const fs = require('node:fs');\n` +
+                                `try{\n` +
+                                `    fs.writeFileSync('${__dirname}/../tmp/${setup.appName}-data/objects.json');\n` +
+                                `} catch (err) {\n` +
+                                `    createState('error1', err.toString());\n` +
+                                `}`,
             },
             native: {}
         };
@@ -465,10 +475,42 @@ describe.only('Test JS', function () {
         });
     });
 
+    it('Test JS: write directly into iobroker-data/files must not work', function (done) {
+        this.timeout(3000);
+        // add script
+        const script = {
+            _id:                'script.js.open_objects',
+            type:               'script',
+            common: {
+                name:           'open objects',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `const fs = require('node:fs');\n` +
+                                `try{\n` +
+                                `    fs.appendFile(defaultDataDir + '/files/0_userdata.0/test.txt', 'some example text');\n` +
+                                `} catch (err) {\n` +
+                                `    createState('error2', err.toString());\n` +
+                                `}`,
+            },
+            native: {}
+        };
+        const onStateChanged = function (id, state) {
+            if (id === 'javascript.0.error2' && state.val === 'Error: Permission denied') {
+                removeStateChangedHandler(onStateChanged);
+                done();
+            }
+        };
+        addStateChangedHandler(onStateChanged);
+        objects.setObject(script._id, script, err => {
+            expect(err).to.be.not.ok;
+        });
+    });
+
     it('Test JS: write objects.json not in data directory must work', function (done) {
         this.timeout(3000);
         const time = new Date().toString();
-        const fs = require('fs');
+        const fs = require('node:fs');
 
         if (fs.existsSync(__dirname + '/../tmp/objects.json')) fs.unlinkSync(__dirname + '/../tmp/objects.json');
 
@@ -481,7 +523,12 @@ describe.only('Test JS', function () {
                 enabled:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `const fs = require('node:fs'); try{ fs.writeFileSync('${__dirname.replace(/\\/g, '/')}/../tmp/objects.json', '${time}'); } catch(err) { createState('error3', err.toString()); }`,
+                source:         `const fs = require('node:fs');\n` +
+                                `try{\n` +
+                                `    fs.writeFileSync('${__dirname.replace(/\\/g, '/')}/../tmp/objects.json', '${time}');\n` +
+                                `} catch (err) {\n` +
+                                `    createState('error3', err.toString());\n` +
+                                `}`,
             },
             native: {}
         };
