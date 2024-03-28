@@ -106,15 +106,12 @@ Blockly.JavaScript['exec'] = function(block) {
         if (statement) {
             return `exec(${value_command}, async (error, result, stderr) => {\n` +
                 statement +
-                '});\n' +
-                logText;
+                `});\n${logText}`;
         } else {
-            return `exec(${value_command});\n` +
-                logText;
+            return `exec(${value_command});\n${logText}`;
         }
     } else {
-        return `exec(${value_command});\n` +
-            logText;
+        return `exec(${value_command});\n${logText}`;
     }
 };
 
@@ -144,8 +141,8 @@ Blockly.Blocks['exec_result'] = {
         this.setInputsInline(true);
         this.setOutput(true);
         this.setColour(Blockly.Action.HUE);
-        this.setTooltip(Blockly.Translate('http_response_tooltip'));
-        //this.setHelpUrl(getHelp('http_response'));
+        this.setTooltip(Blockly.Translate('exec_result_tooltip'));
+        //this.setHelpUrl(getHelp('exec'));
     },
     /**
      * Called whenever anything on the workspace changes.
