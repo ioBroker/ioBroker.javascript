@@ -488,7 +488,7 @@ describe.only('Test JS', function () {
                 engineType:     'Javascript/js',
                 source:         `const fs = require('node:fs');\n` +
                                 `try{\n` +
-                                `    const forbiddenPath = defaultDataDir + '/files/0_userdata.0/test.txt';\n` +
+                                `    const forbiddenPath = defaultDataDir + '/files/0_userdata.0/forbidden.txt';\n` +
                                 `    log('Writing file to path: ' + forbiddenPath);\n` +
                                 `    fs.appendFile(forbiddenPath, 'some example text');\n` +
                                 `} catch (err) {\n` +
@@ -1338,7 +1338,7 @@ describe.only('Test JS', function () {
         });
     });
 
-    it('Test JS: test write file to "0_userdata.0"', function (done) {
+    it('Test JS: test writeFile to "0_userdata.0"', function (done) {
         // add script
         const script = {
             _id:                'script.js.test_write',
@@ -1349,10 +1349,10 @@ describe.only('Test JS', function () {
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('testFileWrite', false, () => {\n` +
-                                `    writeFile('0_userdata.0', '/test.txt', 'it works', (err) => {\n` +
+                                `    writeFile('0_userdata.0', 'test.txt', 'it works', (err) => {\n` +
                                 `        if (!err) {\n` +
                                 `            setState('testFileWrite', true, true);\n` +
-                                `        });\n` +
+                                `        }\n` +
                                 `    });\n` +
                                 `});`,
             },
@@ -1372,7 +1372,7 @@ describe.only('Test JS', function () {
         });
     }).timeout(5000);
 
-    it('Test JS: test read file from "0_userdata.0"', function (done) {
+    it('Test JS: test readFile from "0_userdata.0"', function (done) {
         // add script
         const script = {
             _id:                'script.js.test_read',
@@ -1383,8 +1383,10 @@ describe.only('Test JS', function () {
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('testReadWrite', '', () => {\n` +
-                                `    readFile('0_userdata.0', '/test.txt', (err, data) => {\n` +
-                                `        setState('testReadWrite', data, true);\n` +
+                                `    readFile('0_userdata.0', 'test.txt', (err, data) => {\n` +
+                                `        if (!err) {\n` +
+                                `            setState('testReadWrite', { val: data, ack: true });\n` +
+                                `        }\n` +
                                 `    });\n` +
                                 `});`,
             },
