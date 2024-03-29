@@ -488,7 +488,7 @@ describe.only('Test JS', function () {
                 engineType:     'Javascript/js',
                 source:         `const fs = require('node:fs');\n` +
                                 `try{\n` +
-                                `    const filesPath = defaultDataDir + '/files/0_userdata.0/forbidden.txt';\n` +
+                                `    const filesPath = defaultDataDir + '/files/0_userdata.0/nodejswrite.txt';\n` +
                                 `    log('Writing file to path: ' + filesPath);\n` +
                                 `    fs.appendFile(filesPath, 'this is not allowed!');\n` +
                                 `} catch (err) {\n` +
@@ -527,7 +527,7 @@ describe.only('Test JS', function () {
                                 `            const filesPath = defaultDataDir + '/files/0_userdata.0/nodejsread.txt';\n` +
                                 `            log('Read file from path: ' + filesPath);\n` +
                                 `            const data = fs.readFileSync(filesPath);\n` +
-                                `            setState('testReadFileNodeJs', { val: data, ack: true });\n` +
+                                `            setState('testReadFileNodeJs', { val: data.toString(), ack: true });\n` +
                                 `        }\n` +
                                 `    });\n` +
                                 `});`,
