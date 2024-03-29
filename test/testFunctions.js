@@ -479,18 +479,18 @@ describe.only('Test JS', function () {
         this.timeout(3000);
         // add script
         const script = {
-            _id:                'script.js.open_objects',
+            _id:                'script.js.test_nodefs_write',
             type:               'script',
             common: {
-                name:           'open objects',
+                name:           'test write to files via node:fs',
                 enabled:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `const fs = require('node:fs');\n` +
                                 `try{\n` +
-                                `    const forbiddenPath = defaultDataDir + '/files/0_userdata.0/forbidden.txt';\n` +
-                                `    log('Writing file to path: ' + forbiddenPath);\n` +
-                                `    fs.appendFile(forbiddenPath, 'some example text');\n` +
+                                `    const filesPath = defaultDataDir + '/files/0_userdata.0/forbidden.txt';\n` +
+                                `    log('Writing file to path: ' + filesPath);\n` +
+                                `    fs.appendFile(filesPath, 'this is not allowed!');\n` +
                                 `} catch (err) {\n` +
                                 `    createState('error2', err.toString());\n` +
                                 `}`,
@@ -499,6 +499,43 @@ describe.only('Test JS', function () {
         };
         const onStateChanged = function (id, state) {
             if (id === 'javascript.0.error2' && state.val === 'Error: Permission denied') {
+                removeStateChangedHandler(onStateChanged);
+                done();
+            }
+        };
+        addStateChangedHandler(onStateChanged);
+        objects.setObject(script._id, script, err => {
+            expect(err).to.be.not.ok;
+        });
+    });
+
+    it('Test JS: read directly from iobroker-data/files must work', function (done) {
+        this.timeout(3000);
+        // add script
+        const script = {
+            _id:                'script.js.test_nodefs_read',
+            type:               'script',
+            common: {
+                name:           'test read from files via node:fs',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `const fs = require('node:fs');\n` +
+                                `createState('testReadFileNodeJs', 'no', () => {\n` +
+                                `    writeFile('0_userdata.0', 'nodejsread.txt', 'is allowed', (err) => {\n` +
+                                `        if (!err) {\n` +
+                                `            const filesPath = defaultDataDir + '/files/0_userdata.0/nodejsread.txt';\n` +
+                                `            log('Read file from path: ' + filesPath);\n` +
+                                `            const data = fs.readFileSync(filesPath);\n` +
+                                `            setState('testReadFileNodeJs', { val: data, ack: true });\n` +
+                                `        }\n` +
+                                `    });\n` +
+                                `});`,
+            },
+            native: {}
+        };
+        const onStateChanged = function (id, state) {
+            if (id === 'javascript.0.testReadFileNodeJs' && state.val === 'is allowed') {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
