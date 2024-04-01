@@ -12,7 +12,7 @@
         "@mui/icons-material": "^5.15.14",
         "@mui/material": "^5.15.12",
         "@mui/styles": "^5.15.12",
-        "@mui/x-date-pickers": "^6.19.6",
+        "@mui/x-date-pickers": "^7.1.0",
         "@sentry/browser": "^7.106.0",
         "@sentry/integrations": "^7.106.1",
         "craco-module-federation": "^1.1.0",
