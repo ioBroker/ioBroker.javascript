@@ -9,7 +9,7 @@
         "@icons/material": "^0.4.1",
         "@iobroker/adapter-react-v5": "^4.10.1",
         "@iobroker/type-detector": "^3.0.5",
-        "@mui/icons-material": "^5.15.12",
+        "@mui/icons-material": "^5.15.14",
         "@mui/material": "^5.15.12",
         "@mui/styles": "^5.15.12",
         "@mui/x-date-pickers": "^6.19.6",
