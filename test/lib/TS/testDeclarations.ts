@@ -21,12 +21,8 @@ setState("id", 1, (id) => {
 	id!.toLowerCase();
 });
 
-getBinaryState('id').readInt16LE(0);
-setBinaryState('id', Buffer.alloc(0));
-
 const selected = $('selector');
 selected.getState<number>()!.val.toFixed();
-selected.getBinaryState()!.readInt16BE(0);
 
 // Repro from #539
 $("*").setState(1);

@@ -22,8 +22,6 @@ setState('id', 1, (id) => {
 const selected = $('selector');
 const test1 = selected.getState();
 test1 && test1.val.toFixed();
-const test2 = selected.getBinaryState();
-test2 && test2.readInt16BE(0);
 
 schedule({ astro: 'night' }, () => { });
 
