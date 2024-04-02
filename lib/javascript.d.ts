@@ -889,9 +889,6 @@ declare global {
 		type GetStateCallback<T extends StateValue = any> = (err?: string | null, state?: State<T> | AbsentState) => void | Promise<void>;
 		type ExistsStateCallback = (err?: string | null, exists?: Boolean) => void | Promise<void>;
 
-		type GetBinaryStateCallback = (err?: string | null, state?: Buffer) => void | Promise<void>;
-		type GetBinaryStatePromise = Promise<NonNullCallbackReturnTypeOf<GetBinaryStateCallback>>;
-
 		type SetStateCallback = (err?: string | null, id?: string) => void | Promise<void>;
 		type SetStatePromise = Promise<NonNullCallbackReturnTypeOf<SetStateCallback>>;
 
@@ -1063,27 +1060,11 @@ declare global {
 			getStateAsync<T extends StateValue = any>(): Promise<State<T> | null | undefined>;
 
 			/**
-			 * Returns the first state found by this query.
-			 * If the adapter is configured to subscribe to all states on start,
-			 * this can be called synchronously and immediately returns the state.
-			 * Otherwise, you need to provide a callback.
-			 */
-			getBinaryState(callback: GetBinaryStateCallback): void;
-			getBinaryState(): Buffer | null | undefined;
-			getBinaryStateAsync(): Promise<Buffer | null | undefined>;
-
-			/**
 			 * Sets all queried states to the given value.
 			 */
 			setState(state: State | StateValue | SettableState, ack?: boolean, callback?: SetStateCallback): this;
 			setStateAsync(state: State | StateValue | SettableState, ack?: boolean): Promise<void>;
 			setStateDelayed(state: any, isAck?: boolean, delay?: number, clearRunning?: boolean, callback?: SetStateCallback): this;
-
-			/**
-			 * Sets all queried binary states to the given value.
-			 */
-			setBinaryState(state: Buffer, ack?: boolean, callback?: SetStateCallback): this;
-			setBinaryStateAsync(state: Buffer, ack?: boolean): Promise<void>;
 
 			/**
 			 * Subscribes the given callback to changes of the matched states.
@@ -1512,17 +1493,6 @@ declare global {
 	function getStateDelayed(id?: string): iobJS.StateTimer[];
 
 	/**
-	 * Sets a binary state to the given value
-	 * @param id The ID of the state to be set
-	 * @param state binary data as buffer
-	 * @param callback called when the operation finished
-	 * 
-	 * @deprecated Use @see writeFile
-	 */
-	function setBinaryState(id: string, state: Buffer, callback?: iobJS.SetStateCallback): void;
-	function setBinaryStateAsync(id: string, state: Buffer): iobJS.SetStatePromise;
-
-	/**
 	 * Returns the state with the given ID.
 	 * If the adapter is configured to subscribe to all states on start,
 	 * this can be called synchronously and immediately returns the state.
@@ -1531,18 +1501,6 @@ declare global {
 	function getState<T extends iobJS.StateValue = any>(id: string, callback: iobJS.GetStateCallback<T>): void;
 	function getState<T extends iobJS.StateValue = any>(id: string): iobJS.State<T> | iobJS.AbsentState;
 	function getStateAsync<T extends iobJS.StateValue = any>(id: string): Promise<iobJS.State<T>>;
-
-	/**
-	 * Returns the binary state with the given ID.
-	 * If the adapter is configured to subscribe to all states on start,
-	 * this can be called synchronously and immediately returns the state.
-	 * Otherwise, you need to provide a callback.
-	 * 
-	 * @deprecated Use @see readFile
-	 */
-	function getBinaryState(id: string, callback: iobJS.GetStateCallback): void;
-	function getBinaryState(id: string): Buffer;
-	function getBinaryStateAsync(id: string): iobJS.GetBinaryStatePromise;
 
 	/**
 	 * Checks if the state with the given ID exists

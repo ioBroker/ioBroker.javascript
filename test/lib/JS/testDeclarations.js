@@ -19,9 +19,6 @@ setState('id', 1, (id) => {
     id && id.toLowerCase();
 });
 
-getBinaryState('id').readInt16LE(0);
-setBinaryState('id', new Buffer(0));
-
 const selected = $('selector');
 const test1 = selected.getState();
 test1 && test1.val.toFixed();
