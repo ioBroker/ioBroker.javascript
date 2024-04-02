@@ -1067,6 +1067,12 @@ declare global {
 			setStateDelayed(state: any, isAck?: boolean, delay?: number, clearRunning?: boolean, callback?: SetStateCallback): this;
 
 			/**
+			 * Sets all queried states to the given value only if the value really changed.
+			 */
+			setStateChanged(state: State | StateValue | SettableState, ack?: boolean, callback?: SetStateCallback): this;
+			setStateChangedAsync(state: State | StateValue | SettableState, ack?: boolean): Promise<void>;
+
+			/**
 			 * Subscribes the given callback to changes of the matched states.
 			 */
 			on(callback: StateChangeHandler): this;
@@ -1294,7 +1300,7 @@ declare global {
 	/**
 	 * Sends an email using the email adapter.
 	 * See the adapter documentation for a description of the msg parameter.
-	 * 
+	 *
 	 * @deprecated Use @see sendTo
 	 */
 	function email(msg: any): void;
@@ -1302,7 +1308,7 @@ declare global {
 	/**
 	 * Sends a pushover message using the pushover adapter.
 	 * See the adapter documentation for a description of the msg parameter.
-	 * 
+	 *
 	 * @deprecated Use @see sendTo
 	 */
 	function pushover(msg: any): void;
@@ -1419,7 +1425,7 @@ declare global {
 
 	/**
 	 * [{"type":"cron","pattern":"0 15 13 * * *","scriptName":"script.js.scheduleById","id":"cron_1704187467197_22756"}]
-	 * 
+	 *
 	 * @param allScripts Return all registered schedules of all running scripts
 	 */
 	function getSchedules(allScripts?: boolean): Array<iobJS.ScheduleStatus>;
@@ -1458,6 +1464,16 @@ declare global {
 	function setState(id: string, state: iobJS.State | iobJS.StateValue | iobJS.SettableState, ack: boolean, callback?: iobJS.SetStateCallback): void;
 
 	function setStateAsync(id: string, state: iobJS.State | iobJS.StateValue | iobJS.SettableState, ack?: boolean): iobJS.SetStatePromise;
+
+	/**
+	 * Sets a state to the given value only if the value really changed.
+	 * @param id The ID of the state to be set
+	 */
+	function setStateChanged(id: string, state: iobJS.State | iobJS.StateValue | iobJS.SettableState, callback?: iobJS.SetStateCallback): void;
+	function setStateChanged(id: string, state: iobJS.State | iobJS.StateValue | iobJS.SettableState, ack: boolean, callback?: iobJS.SetStateCallback): void;
+
+	function setStateChangedAsync(id: string, state: iobJS.State | iobJS.StateValue | iobJS.SettableState, ack?: boolean): iobJS.SetStatePromise;
+
 
 	/**
 	 * Sets a state to the given value after a timeout has passed.

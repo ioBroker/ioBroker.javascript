@@ -790,6 +790,18 @@ setStateDelayed('Kitchen.Light.Lamp', false, 5000, false, () => {
 ```
 This function returns the handler of the timer, and this timer can be individually stopped by clearStateDelayed
 
+### setStateChanged
+```js
+await setStateChanged(id, state, ack);
+```
+Same as setState, but set value only if the value is really changed.
+
+### setStateChangedAsync
+```js
+await setStateChangedAsync(id, state, ack);
+```
+Same as setStateChanged, but with `promise`.
+
 ### clearStateDelayed
 ```js
 clearStateDelayed(id);
@@ -954,9 +966,9 @@ extendObject('system.adapter.sayit.0', {common: {enabled: false}});
 deleteObject(id, isRecursive, callback);
 ```
 
-Delete an object from DB by ID. If the object has type `state`, the state value will be deleted too. 
+Delete an object from DB by ID. If the object has type `state`, the state value will be deleted too.
 
-Additional parameter `isRecursive` could be provided, so all children of given ID will be deleted. Very dangerous! 
+Additional parameter `isRecursive` could be provided, so all children of given ID will be deleted. Very dangerous!
 
 Use it like this:
 ```js
@@ -964,7 +976,7 @@ Use it like this:
 deleteObject('javascript.0.createdState');
 ```
 
-*Notice: `isRecursive` option is available only with js-controller >= 2.2.x* 
+*Notice: `isRecursive` option is available only with js-controller >= 2.2.x*
 
 ### getIdByName
 ```js
@@ -1016,10 +1028,10 @@ Create state and object in javascript space if it does not exist, e.g. `javascri
 - `native`: native description of an object. Any specific information.
 - `callback`: called after state is created and initialized.
 
-If you set in `common` the flag `alias` to `true`, then alias will be created with the same name (but in `alias.0` namespace) as the state. 
-Alias is created only if it does not exist yet. 
+If you set in `common` the flag `alias` to `true`, then alias will be created with the same name (but in `alias.0` namespace) as the state.
+Alias is created only if it does not exist yet.
 
-The following settings for aliases are valid too: 
+The following settings for aliases are valid too:
 ```js
 common => {
     alias: {
@@ -1481,16 +1493,16 @@ The alternative name of this method is `rename`
 ### onFile
 ```js
 onFile(id, fileName, withFile, (id, fileName, size, fileData, mimeType) => {});
-// or 
+// or
 onFile(id, fileName, (id, fileName, size) => {});
 ```
 
 Subscribe to file changes:
-- `id` is ID of an object of type `meta`, like `vis.0` 
+- `id` is ID of an object of type `meta`, like `vis.0`
 - `fileName` is file name or pattern, like `main/*` or `main/vis-view.json`
 - `withFile` if the content of file should be delivered in callback or not. the delivery of file content costs memory and time, so if you want to be just informed about changes, set `withFile`to false.
 
-Arguments in callback: 
+Arguments in callback:
 - `id` - ID of `meta` object;
 - `fileName` - file name (not pattern);
 - `size` - new file size;
@@ -1502,7 +1514,7 @@ Arguments in callback:
 ### offFile
 ```js
 offFile(id, fileName);
-// or 
+// or
 onFile(id, fileName);
 ```
 Unsubscribe from file changes:
@@ -1760,8 +1772,8 @@ To send a message from any other adapter use
 
 ```js
 adapter.sendTo('javascript.0', 'toScript', {
-    script: 'script.js.messagetest', 
-    message: 'messageName', 
+    script: 'script.js.messagetest',
+    message: 'messageName',
     data: {
         flag: true
     }
@@ -1916,7 +1928,7 @@ httpPost(
 log('Script ' + scriptName + ' started!');
 ```
 
-It is not a function. 
+It is not a function.
 It is a variable with script name, that is visible in script's scope.
 
 ### instance
