@@ -26,7 +26,6 @@
     - [compareTime](#comparetime)
     - [setState](#setstate)
     - [setStateAsync](#setstateasync)
-    - [setBinaryState](#setbinarystate)
     - [setStateDelayed](#setstatedelayed)
     - [clearStateDelayed](#clearstatedelayed)
     - [getStateDelayed](#getstatedelayed)
@@ -773,17 +772,6 @@ await setStateAsync(id, state, ack);
 ```
 Same as setState, but with `promise`.
 
-### setBinaryState
-
-**Attention: This method is deprecated!**
-
-```js
-setBinaryState(id, state, callback);
-```
-Same as setState, but for the binary states, like files, images, buffers.
-The difference is that such a state has no ack, ts, lc, quality and so on flags und should be used only for binary things.
-The object's `common.type` must be equal to `file`.
-
 ### setStateDelayed
 ```js
 setStateDelayed(id, state, isAck, delay, clearRunning, callback);
@@ -889,17 +877,6 @@ To suppress the warning check if the state exists before calling getState (see [
 const stateObject = await getStateAsync(id);
 ```
 Same as getState, but with `promise`.
-
-### getBinaryState
-**Attention: This method is deprecated!**
-```js
-getBinaryState(id, (err, data) => {});
-```
-
-Same as getState, but for the binary states, like files, images, buffers.
-The difference is that such a state has no ack, ts, lc, quality and so on flags und should be used only for binary "things".
-The object's `common.type` must be equal to `file`.
-This function must always be used with callback. "data" is a buffer.
 
 ### existsState
 ```js
