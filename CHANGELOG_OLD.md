@@ -6,6 +6,8 @@ The newest change log is in README.md
 
 ## 7.9.3 (2024-03-19)
 
+Removed request (deprecated since 4+ years from sandbox defaults)
+
 * (klein0r) Added timeout option for http blocks
 * (klein0r) Added option for basic auth in url (user:pass)
 
