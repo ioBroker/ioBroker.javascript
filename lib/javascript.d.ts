@@ -1258,6 +1258,11 @@ declare global {
 	const defaultDataDir: string;
 
 	/**
+	 * Status of verbose mode
+	 */
+	const verbose: boolean;
+
+	/**
 	 * Queries all states with the given selector
 	 * @param selector See @link{https://github.com/ioBroker/ioBroker.javascript#---selector} for a description
 	 */

@@ -1913,17 +1913,33 @@ httpPost(
 `scriptName` - The name of the script.
 
 ```js
-log('Script ' + scriptName + ' started!');
+log(`Script ${scriptName} started!`);
 ```
 
-It is not a function. 
-It is a variable with script name, that is visible in script's scope.
-
 ### instance
-The javascript instance where script is executed.
+`instance` - The javascript instance where script is executed (e.g. `0`).
 
 ```js
-log('Script ' + name + ' started by ' + instance + '!');
+log(`Script ${scriptName} started started by ${instance}`);
+```
+
+### defaultDataDir
+`defaultDataDir` - Absolute path to iobroker-data.
+
+```js
+log(`Data dir: ${defaultDataDir}`);
+```
+
+### verbose
+`verbose` - Verbose mode enabled?
+
+```js
+log(`Verbose mode: ${verbose ? 'enabled' : 'disabled'}`);
+
+// Example
+if (verbose) {
+    log('...');
+}
 ```
 
 ## Option - "Do not subscribe all states on start"
