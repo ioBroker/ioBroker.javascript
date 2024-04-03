@@ -47,6 +47,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 NodeJS >= 18.x and js-controller >= 5 is required
 
 * (klein0r) Breaking change: Removed support for binary states (deprecated since v6.2.0)
+* (klein0r) Breaking change: Protected filesystem (iobroker-data/files) to prevent direct file writes
 * (klein0r) Added missing functions to protectFS
 * (klein0r) Fixed httpPost (missing data)
 * (klein0r) Fixed hasAttribute blockly block
