@@ -854,6 +854,58 @@ describe.only('Test JS', function () {
         });
     });
 
+    it('Test JS: test setStateChanged', function (done) {
+        this.timeout(5000);
+        // add script
+        const script = {
+            _id:                'script.js.setStateChanged',
+            type:               'script',
+            common: {
+                name:           'setStateChanged',
+                enabled:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('changed', 4, () => {\n` +
+                                `   setTimeout(() => {setStateChanged('changed', 4, true)}, 500);\n` +
+                                `   setTimeout(() => {setStateChanged('changed', 5, true)}, 1000);\n` +
+                                `   setTimeout(() => {setState('changed', 5, true)}, 1500);\n` +
+                                `});`,
+            },
+            native: {}
+        };
+
+        let start = 0,
+            count = 0;
+        const onStateChanged = function (id, state){
+            if (id !== 'javascript.0.changed') return;
+            if (state.val === 4) { // has to be called once - on state creation
+                if (start !== 0) {// on state change by setStateChanged('changed', 4, true) - should not be run, as it not change the state, including `state.ts`
+                    count++;
+                }
+                expect(start).to.be.equal(0);
+                if (start === 0) { // on state creation
+                    start = state.ts;
+                }
+            } else if (state.val === 5) { // has to be called twice - on state change by setStateChanged('changed', 5, true) and setState('changed', 5, true)
+                if (count === 0) { // on state change by setStateChanged('changed', 5, true)
+                    count++;
+                    expect(state.ts - start).to.be.least(950);
+                    expect(state.ts - start).to.be.below(1450);
+                } else if (count === 1) { // on state change by setState('changed', 5, true)
+                    count++;
+                    expect(state.ts - start).to.be.least(1450);
+                    removeStateChangedHandler(onStateChanged);
+                    setTimeout(done, 100);
+                }
+                if (count === 2) { // exit in any case
+                    removeStateChangedHandler(onStateChanged);
+                }
+            }
+        };
+        addStateChangedHandler(onStateChanged);
+        objects.setObject(script._id, script);
+    });
+
     it('Test JS: test stopScript', function (done) {
         this.timeout(5000);
         // add script
