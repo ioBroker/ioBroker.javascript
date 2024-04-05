@@ -432,7 +432,7 @@ Blockly.Blocks['sendto_otherscript'] = {
 
         this.setColour(Blockly.Sendto.HUE);
         this.setTooltip(Blockly.Translate('sendto_otherscript_tooltip'));
-        this.setHelpUrl(Blockly.Translate('sendto_otherscript_help'));
+        this.setHelpUrl(getHelp('sendto_otherscript_help'));
     }
 };
 
@@ -570,7 +570,7 @@ Blockly.Blocks['sendto_gethistory'] = {
         this.setInputsInline(false);
         this.setColour(Blockly.Sendto.HUE);
         this.setTooltip(Blockly.Translate('sendto_gethistory_tooltip'));
-        this.setHelpUrl(Blockly.Translate('sendto_gethistory_help'));
+        this.setHelpUrl(getHelp('sendto_gethistory_help'));
     }
 };
 

@@ -356,9 +356,9 @@ Blockly.Blocks['object_has_attr'] = {
 
 Blockly.JavaScript['object_has_attr'] = function(block) {
     const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
-    const attr = Blockly.JavaScript.valueToCode(block, 'ATTR', Blockly.JavaScript.ORDER_ATOMIC);
+    const attr = block.getFieldValue('ATTR');
 
-    return [`Object.prototype.hasOwnProperty.call(${obj}, ${attr})`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`Object.prototype.hasOwnProperty.call(${obj}, '${attr}')`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- object keys --------------------------------------------------

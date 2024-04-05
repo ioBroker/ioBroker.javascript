@@ -172,13 +172,13 @@ Blockly.Blocks['logic_multi_and'] = {
 Blockly.JavaScript['logic_multi_and'] = function(block) {
     const ands = [];
     for (let n = 0; n < block.itemCount_; n++) {
-        const condition = Blockly.JavaScript.valueToCode(block, 'AND' + n, Blockly.JavaScript.ORDER_COMMA);
+        const condition = Blockly.JavaScript.valueToCode(block, 'AND' + n, Blockly.JavaScript.ORDER_ATOMIC);
         if (condition) {
             ands.push(condition);
         }
     }
 
-    return [`(${ands.length > 0 ? ands.join(' && ') : 'false'})`, Blockly.JavaScript.ORDER_LOGICAL_AND];
+    return [`${ands.length > 0 ? ands.join(' && ') : 'false'}`, Blockly.JavaScript.ORDER_LOGICAL_AND];
 };
 
 // --- logic multi or --------------------------------------------------
@@ -349,13 +349,13 @@ Blockly.Blocks['logic_multi_or'] = {
 Blockly.JavaScript['logic_multi_or'] = function(block) {
     const ors = [];
     for (let n = 0; n < block.itemCount_; n++) {
-        const condition = Blockly.JavaScript.valueToCode(block, 'OR' + n, Blockly.JavaScript.ORDER_COMMA);
+        const condition = Blockly.JavaScript.valueToCode(block, 'OR' + n, Blockly.JavaScript.ORDER_ATOMIC);
         if (condition) {
             ors.push(condition);
         }
     }
 
-    return [`(${ors.length > 0 ? ors.join(' || ') : 'false'})`, Blockly.JavaScript.ORDER_LOGICAL_OR];
+    return [`${ors.length > 0 ? ors.join(' || ') : 'false'}`, Blockly.JavaScript.ORDER_LOGICAL_OR];
 };
 
 // --- logic between --------------------------------------------------

@@ -1,4 +1,10 @@
 The newest change log is in README.md
+## 7.10.0 (2024-03-21)
+
+* (klein0r) Added warning icon if state value is connected to trigger block (instead of object id)
+* (klein0r) Copy date object in getAstroDate
+* (klein0r) Added object id as tooltip
+
 ## 7.9.4 (2024-03-20)
 
 * (klein0r) Fixed urlencoding for basic auth in url (user:pass)

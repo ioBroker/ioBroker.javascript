@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.0 (2024-04-05)
 
 NodeJS >= 18.x and js-controller >= 5 is required
 
@@ -80,12 +80,6 @@ NodeJS >= 18.x and js-controller >= 5 is required
 ### 7.10.1 (2024-03-22)
 
 * (klein0r) Fixed cron trigger
-
-### 7.10.0 (2024-03-21)
-
-* (klein0r) Added warning icon if state value is connected to trigger block (instead of object id)
-* (klein0r) Copy date object in getAstroDate
-* (klein0r) Added object id as tooltip
 
 ## License
 The MIT License (MIT)
