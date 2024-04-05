@@ -17,6 +17,39 @@ Blockly.System = {
     ],
 };
 
+// --- global_var -----------------------------------------------------------
+Blockly.System.blocks['global_var'] =
+    '<block type="global_var">'
+    + '     <value name="VAR">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['global_var'] = {
+    /**
+     * Block for conditionally returning a value from a procedure.
+     * @this Blockly.Block
+     */
+    init: function() {
+        this.appendDummyInput('VAR')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('global_var_scriptname'), 'scriptName'],
+                [Blockly.Translate('global_var_defaultdatadir'), 'defaultDataDir'],
+                [Blockly.Translate('global_var_verbose'), 'verbose'],
+            ]), 'VAR');
+
+        this.setInputsInline(true);
+        this.setOutput(true);
+        this.setColour(Blockly.System.HUE);
+        this.setTooltip(Blockly.Translate('global_var_tooltip'));
+        this.setHelpUrl(getHelp('global_var'));
+    }
+};
+Blockly.JavaScript['global_var'] = function(block) {
+    const variable = block.getFieldValue('VAR');
+
+    return [variable, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
 // --- Debug output --------------------------------------------------
 Blockly.System.blocks['debug'] =
     '<block type="debug">'
