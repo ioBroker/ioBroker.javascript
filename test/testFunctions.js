@@ -110,6 +110,7 @@ describe.only('Test JS', function () {
                         common: {
                             name:           'New script global',
                             enabled:        true,
+                            verbose:        true,
                             engine:         'system.adapter.javascript.0',
                             engineType:     'Javascript/js',
                             source:         `function setTestState(val) {\n` +
@@ -128,6 +129,7 @@ describe.only('Test JS', function () {
                             common: {
                                 name:       'Old script global',
                                 enabled:    true,
+                                verbose:        true,
                                 engine:     'system.adapter.javascript.0',
                                 engineType: 'Javascript/js',
                                 source:     `function setTestStateOld(val) {\n` +
@@ -157,8 +159,13 @@ describe.only('Test JS', function () {
         this.timeout(10000);
         // add script
         const script = {
+            _id:                'script.js.check_compareTime',
+            type:               'script',
             common: {
                 name:           'check compareTime',
+                enabled:        true,
+                verbose:        true,
+                engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('test10', 0, () => {\n` +
                                 `    let count = 0;\n` +
@@ -179,11 +186,7 @@ describe.only('Test JS', function () {
                                 `    count += compareTime('23:00', '01:00', 'between', date2) ? 0 : 1;\n` +
                                 `    setState('test10', count, true);\n` +
                                 `});`,
-                enabled:        true,
-                engine:         'system.adapter.javascript.0',
             },
-            type:               'script',
-            _id:                'script.js.check_compareTime',
             native: {}
         };
         const onStateChanged = function (id, state) {
@@ -217,6 +220,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'Catch httpGet error',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('check_httpget_error', () => {\n` +
@@ -252,6 +256,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'check creation of state',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('test1', 5);`,
@@ -288,6 +293,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'check creation of state',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('javascript.1.test1', 6);`,
@@ -324,6 +330,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'check deletion of state',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `deleteState('test1');`,
@@ -373,6 +380,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'check deletion of state',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `deleteState('javascript.1.test1');`,
@@ -418,6 +426,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'open objects',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `const fs = require('node:fs');\n` +
@@ -452,6 +461,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'open objects',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `const fs = require('node:fs');\n` +
@@ -484,6 +494,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'test write to files via node:fs',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `const fs = require('node:fs');\n` +
@@ -518,6 +529,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'test read from files via node:fs',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `const fs = require('node:fs');\n` +
@@ -560,6 +572,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'open objects',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `const fs = require('node:fs');\n` +
@@ -615,6 +628,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'getAstroDate',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         '',
@@ -663,6 +677,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'setStateDelayed',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('delayed', 4, () => { setStateDelayed('delayed', 5, 1000); });`,
@@ -695,6 +710,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'setStateDelayed',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `setStateDelayed('delayed', 6, 500); setStateDelayed('delayed', 7, 1500, false);`,
@@ -726,9 +742,10 @@ describe.only('Test JS', function () {
             type:               'script',
             common: {
                 name:           'setStateDelayed',
+                enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                enabled:        true,
                 source:         `setStateDelayed('delayed', 8, 500); setStateDelayed('delayed', 9, 1500);`,
             },
             native: {}
@@ -764,6 +781,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'setStateDelayed',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `setStateDelayed('delayed', 10, 500); clearStateDelayed('delayed');`,
@@ -795,6 +813,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'setStateDelayed',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('delayedResult', '', () => { setStateDelayed('delayed', 10, 1500); setState('delayedResult', JSON.stringify(getStateDelayed('delayed'))); });`,
@@ -829,6 +848,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'setStateDelayed',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('delayedResult', '', () => { setStateDelayed('delayed', 11, 2500); setState('delayedResult', JSON.stringify(getStateDelayed())); });`,
@@ -863,12 +883,13 @@ describe.only('Test JS', function () {
             common: {
                 name:           'setStateChanged',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('changed', 4, () => {\n` +
-                                `   setTimeout(() => {setStateChanged('changed', 4, true)}, 500);\n` +
-                                `   setTimeout(() => {setStateChanged('changed', 5, true)}, 1000);\n` +
-                                `   setTimeout(() => {setState('changed', 5, true)}, 1500);\n` +
+                                `    setTimeout(() => {setStateChanged('changed', 4, true)}, 500);\n` +
+                                `    setTimeout(() => {setStateChanged('changed', 5, true)}, 1000);\n` +
+                                `    setTimeout(() => {setState('changed', 5, true)}, 1500);\n` +
                                 `});`,
             },
             native: {}
@@ -915,6 +936,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'stopScript',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `stopScript('stopScript');`,
@@ -942,6 +964,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'startScript',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `startScript('stopScript');`,
@@ -954,6 +977,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'stopScript',
                 enabled:        false,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `console.log('started script');`,
@@ -991,6 +1015,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'new script non global',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `setTestState(16);`,
@@ -1020,6 +1045,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'Old script non global',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `setTestStateOld(17);`,
@@ -1049,6 +1075,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'test ON default',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('testResponse', false); createState('testVar', 0, () => { on('testVar', (obj) => { setState('testResponse', obj.state.val, true); }); });`,
@@ -1084,6 +1111,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'test ON any',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('testResponse1', false); createState('testVar1', 1, () => { on({ id:'testVar1', change:'any' }, (obj) => { setState('testResponse1', obj.state.val, true); }); });`,
@@ -1306,18 +1334,18 @@ describe.only('Test JS', function () {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         const script = {
+            _id:                'script.js.test_ON',
+            type:               'script',
             common: {
                 name:           'test ON any',
-                engineType:     'Javascript/js',
-                'source':       scriptFunction.toString() + '\r\nscriptFunction();\r\n',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `${scriptFunction.toString()}\nscriptFunction();\n`,
             },
-            type:               'script',
-            _id:                'script.js.test_ON',
             native: {}
         };
-
 
         const recs = scriptFunction('recs');
         const TEST_VAR = scriptFunction('TEST_VAR');
@@ -1375,6 +1403,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'test ON any',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('testScheduleResponse', false); schedule('${(d.getSeconds() + 2) % 60} * * * * *', (obj) => { setState('testScheduleResponse', true, true); });`,
@@ -1407,6 +1436,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'test ON any',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('testScheduleResponse1', false);schedule('${(d.getMinutes() + 1) % 60} * * * *', (obj) => { setState('testScheduleResponse1', true, true); });`,
@@ -1435,6 +1465,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'test file write',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('testFileWrite', false, () => {\n` +
@@ -1469,6 +1500,7 @@ describe.only('Test JS', function () {
             common: {
                 name:           'test file read',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('testReadWrite', '', () => {\n` +
@@ -1503,8 +1535,9 @@ describe.only('Test JS', function () {
             _id:                'script.js.test_write1',
             type:               'script',
             common: {
-                name:           'test ON any',
+                name:           'test write',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('testScheduleResponse2', false, () => { writeFile('vis.0', '/test1.txt', 'test', () => { setState('testScheduleResponse2', true, true); }); });`,
@@ -1531,8 +1564,9 @@ describe.only('Test JS', function () {
             _id:                'script.js.test_read1',
             type:               'script',
             common: {
-                name:           'test ON any',
+                name:           'test read',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `readFile('vis.0', '/test1.txt', (err, data) => { setState('testScheduleResponse2', data, true); });`,
@@ -1556,28 +1590,28 @@ describe.only('Test JS', function () {
     it('Test JS: messaging between scripts', done => {
         // add script
         const script = {
-            _id:                'script.js.test_read1',
+            _id:                'script.js.test_messaging',
             type:               'script',
             common: {
                 name:           'test messaging',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `
-createState('onMessage', false, () => {
-    createState('messageTo', false, () => {
-        createState('messageDeleted', false, () => {
-            let id = onMessage('messageName', (data, callback) => {
-                setState('javascript.0.onMessage', data, true);
-                callback(5);
-            });
-            messageTo('messageName', 6, result => {
-                setState('javascript.0.messageTo', result, true);
-                setState('javascript.0.messageDeleted', onMessageUnregister(id), true);
-            });
-        });
-    });
-});`,
+                source:         `createState('onMessage', false, () => {\n` +
+                                `    createState('messageTo', false, () => {\n` +
+                                `        createState('messageDeleted', false, () => {\n` +
+                                `            let id = onMessage('messageName', (data, callback) => {\n` +
+                                `                setState('javascript.0.onMessage', data, true);\n` +
+                                `                callback(5);\n` +
+                                `            });\n` +
+                                `            messageTo('messageName', 6, result => {\n` +
+                                `                setState('javascript.0.messageTo', result, true);\n` +
+                                `                setState('javascript.0.messageDeleted', onMessageUnregister(id), true);\n` +
+                                `            });\n` +
+                                `        });\n` +
+                                `    });\n` +
+                                `});`,
             },
             native: {}
         };
@@ -1610,15 +1644,15 @@ createState('onMessage', false, () => {
             common: {
                 name:           'test onFile',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `
-createState('file', false, () => {
-    onFile('vis.0', 'main/*', true, (id, fileName, size, fileData, mimeType) => {
-        setState('javascript.0.file', fileData.toString(), true);
-        offFile('vis.0', 'main/*');
-    });
-});`,
+                source:         `createState('file', false, () => {\n` +
+                                `    onFile('vis.0', 'main/*', true, (id, fileName, size, fileData, mimeType) => {\n` +
+                                `        setState('javascript.0.file', fileData.toString(), true);\n` +
+                                `        offFile('vis.0', 'main/*');\n` +
+                                `    });\n` +
+                                `});`,
             },
             native: {}
         };
@@ -1667,6 +1701,7 @@ createState('file', false, () => {
             common: {
                 name:           'Format time diff',
                 enabled:        true,
+                verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `createState('format_time_diff', () => {\n` +
