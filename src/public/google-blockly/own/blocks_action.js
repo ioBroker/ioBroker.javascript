@@ -142,7 +142,7 @@ Blockly.Blocks['exec_result'] = {
         this.setOutput(true);
         this.setColour(Blockly.Action.HUE);
         this.setTooltip(Blockly.Translate('exec_result_tooltip'));
-        //this.setHelpUrl(getHelp('exec'));
+        this.setHelpUrl(getHelp('exec_help'));
     },
     /**
      * Called whenever anything on the workspace changes.
@@ -371,7 +371,7 @@ Blockly.Blocks['http_response'] = {
         this.setOutput(true);
         this.setColour(Blockly.Action.HUE);
         this.setTooltip(Blockly.Translate('http_response_tooltip'));
-        //this.setHelpUrl(getHelp('http_response'));
+        //this.setHelpUrl(getHelp('http_response_help'));
     },
     /**
      * Called whenever anything on the workspace changes.

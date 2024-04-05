@@ -80,7 +80,7 @@ Blockly.Blocks['time_compare_ex'] = {
 
         this.setColour(Blockly.Time.HUE);
         this.setTooltip(Blockly.Translate('time_compare_ex_tooltip'));
-        this.setHelpUrl(Blockly.Translate('time_compare_ex_help'));
+        this.setHelpUrl(getHelp('time_compare_ex_help'));
     },
     mutationToDom: function() {
         const container = document.createElement('mutation');
@@ -220,7 +220,7 @@ Blockly.Blocks['time_compare'] = {
 
         this.setColour(Blockly.Time.HUE);
         this.setTooltip(Blockly.Translate('time_compare_tooltip'));
-        this.setHelpUrl(Blockly.Translate('time_compare_help'));
+        this.setHelpUrl(getHelp('time_compare_help'));
     },
 
     mutationToDom: function() {
@@ -343,7 +343,7 @@ Blockly.Blocks['time_get'] = {
 
         this.setColour(Blockly.Time.HUE);
         this.setTooltip(Blockly.Translate('time_get_tooltip'));
-        this.setHelpUrl(Blockly.Translate('time_get_help'));
+        //this.setHelpUrl(getHelp('time_get_help'));
     },
     mutationToDom: function() {
         const container = document.createElement('mutation');
@@ -473,7 +473,7 @@ Blockly.Blocks['time_get_special'] = {
 
         this.setColour(Blockly.Time.HUE);
         this.setTooltip(Blockly.Translate('time_get_special_tooltip'));
-        this.setHelpUrl(Blockly.Translate('time_get_special_help'));
+        //this.setHelpUrl(getHelp('time_get_special_help'));
     },
 };
 
@@ -540,7 +540,7 @@ Blockly.Blocks['time_astro'] = {
 
         this.setColour(Blockly.Time.HUE);
         this.setTooltip(Blockly.Translate('time_astro_tooltip'));
-        this.setHelpUrl(Blockly.Translate('time_astro_help'));
+        this.setHelpUrl(getHelp('time_astro_help'));
     }
 };
 
@@ -603,7 +603,7 @@ Blockly.Blocks['time_calculation'] = {
 
         this.setColour(Blockly.Time.HUE);
         this.setTooltip(Blockly.Translate('time_calculation_tooltip'));
-        this.setHelpUrl(Blockly.Translate('time_calculation_help'));
+        //this.setHelpUrl(getHelp('time_calculation_help'));
     },
 };
 
