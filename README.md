@@ -42,6 +42,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Fixed some missing translations (uk)
+
 ### 8.0.0 (2024-04-05)
 
 NodeJS >= 18.x and js-controller >= 5 is required
