@@ -129,7 +129,7 @@ describe.only('Test JS', function () {
                             common: {
                                 name:       'Old script global',
                                 enabled:    true,
-                                verbose:        true,
+                                verbose:    true,
                                 engine:     'system.adapter.javascript.0',
                                 engineType: 'Javascript/js',
                                 source:     `function setTestStateOld(val) {\n` +
@@ -162,12 +162,12 @@ describe.only('Test JS', function () {
             _id:                'script.js.check_compareTime',
             type:               'script',
             common: {
-                name:           'check compareTime',
+                name:           'Check compareTime',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('test10', 0, () => {\n` +
+                source:         `createState('testCompareTime', -1, () => {\n` +
                                 `    let count = 0;\n` +
                                 `    count += compareTime('23:00', '01:00', 'between', '22:30') ? 0 : 1;\n` +
                                 `    count += compareTime('23:00', '01:00', 'between', '02:30') ? 0 : 1;\n` +
@@ -184,23 +184,23 @@ describe.only('Test JS', function () {
                                 `    date2.setHours(2);\n` +
                                 `    date2.setMinutes(30);\n` +
                                 `    count += compareTime('23:00', '01:00', 'between', date2) ? 0 : 1;\n` +
-                                `    setState('test10', count, true);\n` +
+                                `    setState('testCompareTime', count, true);\n` +
                                 `});`,
             },
             native: {}
         };
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.test10') {
+            if (id === 'javascript.0.testCompareTime') {
                 if (state.val === 9) {
                     removeStateChangedHandler(onStateChanged);
-                    states.getState('javascript.0.test10', (err, state) => {
+                    states.getState('javascript.0.testCompareTime', (err, state) => {
                         expect(err).to.be.not.ok;
                         expect(state.val).to.be.equal(9);
                         done();
                     });
                 }
                 else {
-                    console.log('GOT State.val =' + state.val);
+                    console.log(`State testCompareTime.val = ${state.val}`);
                 }
             }
         };
@@ -291,7 +291,7 @@ describe.only('Test JS', function () {
             _id:                'script.js.check_creation_of_foreign_state',
             type:               'script',
             common: {
-                name:           'check creation of state',
+                name:           'Check creation of foreign state',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
@@ -636,7 +636,7 @@ describe.only('Test JS', function () {
             native: {}
         };
         for (let t = 0; t < types.length; t++) {
-            script.common.source += `createState('${types[t]}', getAstroDate('${types[t]}') ? getAstroDate('${types[t]}').toString() : '');`;
+            script.common.source += `createState('${types[t]}', getAstroDate('${types[t]}') ? getAstroDate('${types[t]}').toString() : '');\n`;
         }
 
         const typesChanged = {};
