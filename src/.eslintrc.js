@@ -73,5 +73,9 @@ module.exports = {
         radix: 'off',
         indent: ['error', 4, { SwitchCase: 1 }],
         'no-alert': 'off',
+        'dot-notation': 'off',
+        'object-curly-newline': 'off',
+        'object-shorthand': 'off',
+        'block-scoped-var': 'off',
     },
 };
