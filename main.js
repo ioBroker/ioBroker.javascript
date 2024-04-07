@@ -1649,7 +1649,7 @@ function createProblemObject(id, cb) {
             _id: idProblem,
             common: {
                 name: 'scriptProblem.' + id.substring(SCRIPT_CODE_MARKER.length),
-                desc: 'is the script has a problem',
+                desc: 'Script has a problem',
                 type: 'boolean',
                 expert: true,
                 write: false,
@@ -1747,8 +1747,7 @@ function installNpm(npmLib, callback) {
     // Also, set the working directory (cwd) of the process instead of using --prefix
     // because that has ugly bugs on Windows
     const cmd = `npm install ${npmLib} --omit=dev`;
-    adapter.log.info(`${cmd} (System call)`);
-    // Install node modules as system call
+    adapter.log.info(`Installing ${npmLib} into ${__dirname} - cmd: ${cmd}`);
 
     // System call used for update of js-controller itself,
     // because during installation npm packet will be deleted too, but some files must be loaded even during the installation process.
@@ -1798,6 +1797,9 @@ function installLibraries(callback) {
                 if (versionChunkPos > -1) {
                     libName = libName.slice(0, versionChunkPos);
                 }
+
+                adapter.log.debug(`Found custom dependency in config: "${libraries[lib]}" (${libName})`);
+
                 if (!nodeFS.existsSync(`${__dirname}/node_modules/${libName}/package.json`)) {
                     if (!attempts[libraries[lib]]) {
                         attempts[libraries[lib]] = 1;
