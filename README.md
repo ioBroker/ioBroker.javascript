@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.2 (2024-04-08)
 
 * (klein0r) Forced downgrade of socket-client (object change issues)
 
@@ -79,12 +79,6 @@ NodeJS >= 18.x and js-controller >= 5 is required
 * (klein0r) Removed 'type' from dropdown (is always 'state')
 * (klein0r) Use highlight in search (instead of select)
 * (klein0r) Added option for httpGet to receive arraybuffer (download files)
-
-### 7.10.2 (2024-03-25)
-
-* (klein0r) Fixed httpGet/httpPost issue when using without options
-* (klein0r) Updated integration testing
-* (klein0r) Protect jsonl file access
 
 ## License
 The MIT License (MIT)

@@ -1,4 +1,10 @@
 The newest change log is in README.md
+## 7.10.2 (2024-03-25)
+
+* (klein0r) Fixed httpGet/httpPost issue when using without options
+* (klein0r) Updated integration testing
+* (klein0r) Protect jsonl file access
+
 ## 7.10.1 (2024-03-22)
 
 * (klein0r) Fixed cron trigger

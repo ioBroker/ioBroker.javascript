@@ -21,8 +21,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "8.0.1",
+    "version": "8.0.2",
     "news": {
+      "8.0.2": {
+        "en": "Forced downgrade of socket-client (object change issues)",
+        "de": "Erzwungene Downgrade von Steckdosen-Klient (Objektwechselprobleme)",
+        "ru": "Принудительный понижение сокет-клиента (проблемы изменения объекта)",
+        "pt": "Downgrade forçado de soquete-cliente (questões de alteração de objeto)",
+        "nl": "Gedwongen downgrade van socket-client (object verandering problemen)",
+        "fr": "Dégradation forcée de la prise-client (problèmes de changement d'objet)",
+        "it": "Abbassamento forzato del socket-client (problemi di cambiamento oggetti)",
+        "es": "Actualización forzada de socket-client (problemas de cambio de objeto)",
+        "pl": "Wymuszony spadek wartości socket- client (problemy ze zmianą obiektu)",
+        "uk": "Примушене зниження розетки-клієнта (об'єкти зміни)",
+        "zh-cn": "强制降低套接字客户级别(对象变更问题)"
+      },
       "8.0.1": {
         "en": "Fixed some missing translations (uk)\nRaised supported ecmaVersion from es2021 to es2022 (node18)",
         "de": "Einige fehlende Übersetzungen behoben (uk)\nRaised support ecmaVersion von es2021 bis es2022 (node18)",
@@ -100,19 +113,6 @@
         "pl": "Naprawiono wyzwalacz cron",
         "uk": "Фіксований кроновий тригер",
         "zh-cn": "固定线圈触发器"
-      },
-      "7.10.0": {
-        "en": "Added warning icon if state value is connected to trigger block (instead of object id)\nCopy date object in getAstroDate\nAdded object id as tooltip",
-        "de": "Warnsymbol hinzugefügt, wenn der Zustandswert mit Triggerblock verbunden ist (anstatt Objekt id)\nKopieren von Datumsobjekt in getAstro Datum\nObjekt-ID als Tooltip hinzugefügt",
-        "ru": "Добавлена предупреждающая иконка, если значение состояния подключено к триггерному блоку (вместо объекта id)\nКопировать дата объект в getAstro Дата\nДобавленный объект id как tooltip",
-        "pt": "Adicionado ícone de aviso se o valor do estado está conectado ao bloco de gatilho (em vez de objeto id)\nObjeto de data de cópia em getAstro Data\nAdicionado objeto id como tooltip",
-        "nl": "Waarschuwingspictogram toegevoegd als staat waarde is verbonden met trigger blok (in plaats van object id)\nDatum-object kopiëren in getAstro Datum\nObject-id toegevoegd als tooltip",
-        "fr": "Ajout de l'icône d'avertissement si la valeur de l'état est connectée au bloc déclencheur (au lieu de l'identifiant de l'objet)\nCopier l'objet date dans getAstro Date\nAjout de l'identifiant d'objet comme infobulle",
-        "it": "Aggiunta icona di avviso se il valore di stato è collegato al blocco di trigger (invece di oggetto id)\nCopia oggetto data in getAstro Data\nAggiunto oggetto id come tooltip",
-        "es": "Ícono de advertencia adicional si el valor del estado está conectado al bloque de disparador (en lugar de objeto id)\nCopia objeto de la fecha en getAstro Fecha\nObjeto añadido id como punta de herramienta",
-        "pl": "Dodano ikonę ostrzeżenia, jeśli wartość stanu jest podłączona do bloku wyzwalającego (zamiast id obiektu)\nKopiuj obiekt daty w getAstro Data\nDodano identyfikator obiektu jako podpowiedź",
-        "uk": "Додано значок попередження, якщо значення стану підключено до пускового блоку (замість ідентифікатора об'єкта)\nСтатус на сервери Дата\nДодано ідентифікатор об'єкта як інструмент",
-        "zh-cn": "如果状态值连接到触发块( 而不是对象 ID) , 则添加警告图标\n在 getAstro 中复制日期对象 日期\n添加对象 ID 作为工具提示"
       }
     },
     "desc": {
