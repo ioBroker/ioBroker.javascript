@@ -50,6 +50,11 @@
         "styled-components": "^6.1.8",
         "suncalc2": "^1.8.1"
     },
+    "overrides": {
+        "@iobroker/adapter-react-v5": {
+            "@iobroker/socket-client": "~2.3.16"
+        }
+    },
     "scripts": {
         "start": "craco start",
         "old-start": "react-scripts start",
