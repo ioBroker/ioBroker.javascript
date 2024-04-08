@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 7.10.1 (2024-03-22)
+
+* (klein0r) Fixed cron trigger
+
 ## 7.10.0 (2024-03-21)
 
 * (klein0r) Added warning icon if state value is connected to trigger block (instead of object id)

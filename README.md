@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.1 (2024-04-08)
 
 * (klein0r) Fixed some missing translations (uk)
 * (klein0r) Raised supported ecmaVersion from es2021 to es2022 (node18)
@@ -81,10 +81,6 @@ NodeJS >= 18.x and js-controller >= 5 is required
 * (klein0r) Fixed httpGet/httpPost issue when using without options
 * (klein0r) Updated integration testing
 * (klein0r) Protect jsonl file access
-
-### 7.10.1 (2024-03-22)
-
-* (klein0r) Fixed cron trigger
 
 ## License
 The MIT License (MIT)

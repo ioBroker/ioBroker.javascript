@@ -21,8 +21,21 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "8.0.0",
+    "version": "8.0.1",
     "news": {
+      "8.0.1": {
+        "en": "Fixed some missing translations (uk)\nRaised supported ecmaVersion from es2021 to es2022 (node18)",
+        "de": "Einige fehlende Übersetzungen behoben (uk)\nRaised support ecmaVersion von es2021 bis es2022 (node18)",
+        "ru": "Исправлены некоторые недостающие переводы (ук)\nВоспитанная поддержка ecmaVersion с es2021 по es2022 (node18)",
+        "pt": "Corrigido algumas traduções em falta (uk)\nEcmaVersion com suporte aumentado de es2021 para es2022 (node18)",
+        "nl": "Enkele ontbrekende vertalingen gerepareerd (uk)\nVerhoogd ondersteund ecmaVersion van es2021 naar es2022 (node18)",
+        "fr": "Correction de certaines traductions manquantes (uk)\nEcmaVersion supportée relevée de l'es2021 à l'es2022 (node18)",
+        "it": "Risolto alcune traduzioni mancanti (uk)\nEcmaVersione sostenuta aumentata da es2021 a es2022 (nodo18)",
+        "es": "Arreglado algunas traducciones desaparecidas (uk)\nEcmaVersión apoyada de es2021 a es2022 (nodo18)",
+        "pl": "Naprawiono kilka brakujących tłumaczeń (uk)\nPodwyższone wsparcie ecmaVersion od es2021 do es2022 (node18)",
+        "uk": "Виправлено деякі відсутні переклади (uk)\nПідтримувана екскавація з ES2021 до es2022 (node18)",
+        "zh-cn": "修复一些缺失的翻译( uk)\n从 es2021 升至 es2022 (node18)"
+      },
       "8.0.0": {
         "en": "NodeJS >= 18.x and js-controller >= 5 is required\n\n* Breaking change: Removed support for binary states (deprecated since v6.2.0)\n* Breaking change: Protected filesystem (iobroker-data/files) to prevent direct file writes\n* Breaking change: request property has been removed of the sandbox (require the module if still needed)\n* Added blockly block for global variables (e.g. script name)\n* Added missing functions to protectFS\n* Fixed httpPost (missing data)\n* Fixed hasAttribute blockly block\n* Fixed parenthesis insertion in blockly for multi and/or\n* Added setStateChanged / setStateChangedAsync",
         "de": "NodeJS >= 18.x und js-Controller >= 5 ist erforderlich\n\n* Bruchänderung: Entfernte Unterstützung für binäre Zustände (abgeschrieben seit v6.2.0)\n* Bruchänderung: Geschütztes Dateisystem (iobroker-data/files) um direkte Dateien zu verhindern\n* Bruchänderung: Anforderungseigenschaft wurde von der Sandbox entfernt (erfordere das Modul, falls noch benötigt)\n* Blockiert für globale Variablen hinzugefügt (z.B. Skriptname)\n* Hinzugefügt fehlende Funktionen zu schützenFS\n* Fixed httpPost (missing data)\n* Fixed hasAttribute blockly block\n* Fixed parenthesis Insertion in blockweise für Multi und/oder\n* Hinzugefügt setStateChanged / setStateChangedAsync",
@@ -100,19 +113,6 @@
         "pl": "Dodano ikonę ostrzeżenia, jeśli wartość stanu jest podłączona do bloku wyzwalającego (zamiast id obiektu)\nKopiuj obiekt daty w getAstro Data\nDodano identyfikator obiektu jako podpowiedź",
         "uk": "Додано значок попередження, якщо значення стану підключено до пускового блоку (замість ідентифікатора об'єкта)\nСтатус на сервери Дата\nДодано ідентифікатор об'єкта як інструмент",
         "zh-cn": "如果状态值连接到触发块( 而不是对象 ID) , 则添加警告图标\n在 getAstro 中复制日期对象 日期\n添加对象 ID 作为工具提示"
-      },
-      "7.9.4": {
-        "en": "Fixed urlencoding for basic auth in url (user:pass)\nAdd warning icon if trigger is positioned inside of another trigger or loop",
-        "de": "Feste Urlenkodierung für Grundauth in url (user:pass)\nWarnsymbol hinzufügen, wenn der Auslöser innerhalb eines anderen Auslösers oder einer Schleife positioniert ist",
-        "ru": "Фиксированный урлендкодирование для основной ауты в URL (пользователь:пасс)\nДобавить значок предупреждения, если триггер расположен внутри другого триггера или петли",
-        "pt": "Urlencoding fixo para auth básico em url (usuário:pass)\nAdicionar ícone de aviso se o gatilho estiver posicionado dentro de outro gatilho ou loop",
-        "nl": "Vaste urlencodering voor basis auth in url (gebruiker:pass)\nWaarschuwingspictogram toevoegen als de trigger binnen een andere trigger of lus is geplaatst",
-        "fr": "Urlencoding fixe pour l'auth de base en url (utilisateur:pass)\nAjouter une icône d'avertissement si le déclencheur est placé à l'intérieur d'un autre déclencheur ou d'une autre boucle",
-        "it": "Urlencoding fisso per auth di base in url (utente:pass)\nAggiungere l'icona di avviso se il trigger è posizionato all'interno di un altro trigger o loop",
-        "es": "Urlencoding fijo para la austeridad básica en url (usuario:pass)\nAgregue el icono de advertencia si el gatillo se coloca dentro de otro gatillo o bucle",
-        "pl": "Stałe kodowanie urlencoding dla podstawowej auth w url (użytkownik: pass)\nDodaj ikonę ostrzegawczą, jeśli przycisk jest umieszczony wewnątrz innego przycisku lub pętli",
-        "uk": "Фіксована вилляна обробка для базової аути в виворітному (користувач:pass)\nДодайте значок попередження, якщо вінгер знаходиться всередині іншого тригера або петлі",
-        "zh-cn": "Url (用户: pass) 中基本认证的固定urlen编码\n如果触发器位于另一个触发器或循环内, 则添加警告图标"
       }
     },
     "desc": {
