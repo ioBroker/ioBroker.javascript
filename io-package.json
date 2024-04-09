@@ -1,6 +1,11 @@
 {
   "common": {
     "name": "javascript",
+    "version": "8.0.2",
+    "blockedVersions": [
+      "8.0.0",
+      "8.0.1"
+    ],
     "titleLang": {
       "en": "Script Engine",
       "de": "Skriptausführung",
@@ -14,6 +19,19 @@
       "zh-cn": "脚本引擎",
       "uk": "Механізм сценаріїв"
     },
+    "desc": {
+      "en": "Javascript/Blockly Script Engine for ioBroker",
+      "de": "Javascript/Blockly Skriptausführung für ioBroker",
+      "ru": "Выполнение Javascript/Blockly скриптов для ioBroker",
+      "pt": "Mecanismo Javascript/Blockly Script para ioBroker",
+      "nl": "Javascript/Blockly Script-engine voor ioBroker",
+      "fr": "Moteur de script Javascript/Blockly pour ioBroker",
+      "it": "Motore di script Javascript/Blockly per ioBroker",
+      "es": "Motor de secuencias de comandos Javascript/Blockly para ioBroker",
+      "pl": "Silnik skryptów JavaScript/Blockly dla ioBroker",
+      "uk": "Javascript/Blockly Script Engine для ioBroker",
+      "zh-cn": "ioBroker 的 Javascript/Blockly 脚本引擎"
+    },
     "authors": [
       "bluefox <dogafox@gmail.com>",
       "hobbyquaker <hq@ccu.io>",
@@ -21,7 +39,6 @@
       "AlCalzone <d.griesel@gmx.net>",
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
-    "version": "8.0.2",
     "news": {
       "8.0.2": {
         "en": "Forced downgrade of socket-client (object change issues)",
@@ -114,19 +131,6 @@
         "uk": "Фіксований кроновий тригер",
         "zh-cn": "固定线圈触发器"
       }
-    },
-    "desc": {
-      "en": "Javascript/Blockly Script Engine for ioBroker",
-      "de": "Javascript/Blockly Skriptausführung für ioBroker",
-      "ru": "Выполнение Javascript/Blockly скриптов для ioBroker",
-      "pt": "Mecanismo Javascript/Blockly Script para ioBroker",
-      "nl": "Javascript/Blockly Script-engine voor ioBroker",
-      "fr": "Moteur de script Javascript/Blockly pour ioBroker",
-      "it": "Motore di script Javascript/Blockly per ioBroker",
-      "es": "Motor de secuencias de comandos Javascript/Blockly para ioBroker",
-      "pl": "Silnik skryptów JavaScript/Blockly dla ioBroker",
-      "uk": "Javascript/Blockly Script Engine для ioBroker",
-      "zh-cn": "ioBroker 的 Javascript/Blockly 脚本引擎"
     },
     "platform": "Javascript/Node.js",
     "mode": "daemon",
