@@ -834,7 +834,7 @@ Blockly.Blocks['get_value'] = {
         // Is the block connected to a trigger?
         const block = this.getParent();
         if (block && Blockly.System.WARNING_PARENTS.includes(block.type)) {
-            this.setWarningText(Blockly.Translate('false_connection_to_trigger_warning'), this.id);
+            this.setWarningText(Blockly.Translate('false_connection_trigger_warning'), this.id);
         } else {
             this.setWarningText(null, this.id);
         }
@@ -907,7 +907,7 @@ Blockly.Blocks['get_value_var'] = {
         // Is the block connected to a trigger?
         const block = this.getParent();
         if (block && Blockly.System.WARNING_PARENTS.includes(block.type)) {
-            this.setWarningText(Blockly.Translate('false_connection_to_trigger_warning'), this.id);
+            this.setWarningText(Blockly.Translate('false_connection_trigger_warning'), this.id);
         } else {
             this.setWarningText(null, this.id);
         }
@@ -1026,7 +1026,7 @@ Blockly.Blocks['get_object'] = {
         // Is the block connected to a trigger?
         const block = this.getParent();
         if (block && Blockly.System.WARNING_PARENTS.includes(block.type)) {
-            this.setWarningText(Blockly.Translate('false_connection_to_trigger_warning'), this.id);
+            this.setWarningText(Blockly.Translate('false_connection_trigger_warning'), this.id);
         } else {
             this.setWarningText(null, this.id);
         }
