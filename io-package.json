@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.0.2",
+    "version": "8.0.3",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.0.3": {
+        "en": "Updates dependencies (latest adapter-react-v5 framework)",
+        "de": "Updates Abhängigkeiten (letzter Adapter-React-v5-Framework)",
+        "ru": "Зависимости обновлений (последние рамки адаптер-реакт-v5)",
+        "pt": "Atualiza dependências (quadro mais recente do adaptador-react-v5)",
+        "nl": "Updates afhankelijkheden (laatste adapter-react-v5 kader)",
+        "fr": "Mise à jour des dépendances (cadre adaptateur-réact-v5 le plus récent)",
+        "it": "Aggiornamenti dipendenze (ultima struttura adattatore-react-v5)",
+        "es": "Actualización de las dependencias (la última adaptación-react-v5 framework)",
+        "pl": "Aktualizacja zależności (najnowsze ramy adaptacji- react- v5)",
+        "uk": "Оновлення залежностей (найшвидший перехід-реакт-v5)",
+        "zh-cn": "更新依赖性(最新适配器-反应-v5框架)"
+      },
       "8.0.2": {
         "en": "Forced downgrade of socket-client (object change issues)",
         "de": "Erzwungene Downgrade von Steckdosen-Klient (Objektwechselprobleme)",
@@ -117,19 +130,6 @@
         "pl": "Naprawiono wydanie httpGet / httpPost przy użyciu bez opcji\nAktualizacja testów integracji\nOchrona dostępu do plików jsonl",
         "uk": "Виправлено проблему httpGet/httpPost при використанні без опцій\nОновлено тестування інтеграції\nЗахист доступу до файлів jsonl",
         "zh-cn": "无选项使用时的固定 httpGet/ httpPost 发行\n更新整合测试\n保护jsonl 文件访问"
-      },
-      "7.10.1": {
-        "en": "Fixed cron trigger",
-        "de": "Fixed Cron Trigger",
-        "ru": "Фиксированный крон триггер",
-        "pt": "Gatilho cron fixo",
-        "nl": "Vaste cron trigger",
-        "fr": "Déclencheur cron fixe",
-        "it": "Attivazione del cron fisso",
-        "es": "Activador de cron fijo",
-        "pl": "Naprawiono wyzwalacz cron",
-        "uk": "Фіксований кроновий тригер",
-        "zh-cn": "固定线圈触发器"
       }
     },
     "platform": "Javascript/Node.js",

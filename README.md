@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.3 (2024-04-11)
 
 * (klein0r) Updates dependencies (latest adapter-react-v5 framework)
 
@@ -74,15 +74,6 @@ NodeJS >= 18.x and js-controller >= 5 is required
 * (klein0r) Added exec result blockly block
 * (klein0r) Protect iobroker-data/files to avoid direct writes with node:fs
 * (klein0r) Escape single quotes in blockly obj attributes
-
-### 7.11.0 (2024-03-26)
-
-* (klein0r) Added blockly block for read and write file
-* (klein0r) Allow to select other object types than state in some blocks
-* (klein0r) Improved translations
-* (klein0r) Removed 'type' from dropdown (is always 'state')
-* (klein0r) Use highlight in search (instead of select)
-* (klein0r) Added option for httpGet to receive arraybuffer (download files)
 
 ## License
 The MIT License (MIT)
