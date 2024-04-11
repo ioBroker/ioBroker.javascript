@@ -42,6 +42,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Updates dependencies (latest adapter-react-v5 framework)
+
 ### 8.0.2 (2024-04-08)
 
 * (klein0r) Forced downgrade of socket-client (object change issues)
