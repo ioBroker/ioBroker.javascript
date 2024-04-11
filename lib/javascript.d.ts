@@ -1044,6 +1044,11 @@ declare global {
 			error?: string;
 
 			/**
+			 * Return the result as an array of state ids
+			 */
+			toArray(): Array<string>;
+
+			/**
 			 * Executes a function for each state id in the result array
 			 * The execution is canceled if a callback returns false
 			 */
