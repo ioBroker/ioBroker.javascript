@@ -1034,7 +1034,7 @@ function main() {
         .then(patched => patched && adapter.log.debug('Font patched'));
 
     // correct jsonConfig for admin
-    adapter.getForeignObject('system.adapter.' + adapter.namespace, (err, obj) => {
+    adapter.getForeignObject(`system.adapter.${adapter.namespace}`, (err, obj) => {
         if (obj && obj.common) {
             if (obj.common.adminUI?.config !== 'json') {
                 obj.common.adminUI = obj.common.adminUI || {};
