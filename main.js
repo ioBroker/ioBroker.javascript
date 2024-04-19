@@ -1033,6 +1033,17 @@ function main() {
     !debugMode && patchFont()
         .then(patched => patched && adapter.log.debug('Font patched'));
 
+    // correct jsonConfig for admin
+    adapter.getForeignObject('system.adapter.' + adapter.namespace, (err, obj) => {
+        if (obj && obj.common) {
+            if (obj.common.adminUI?.config !== 'json') {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'json';
+                adapter.setForeignObject(obj._id, obj);
+            }
+        }
+    });
+
     // todo
     context.errorLogFunction = webstormDebug ? console : adapter.log;
     activeStr = `${adapter.namespace}.scriptEnabled.`;
