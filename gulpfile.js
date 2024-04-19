@@ -60,6 +60,7 @@ gulp.task('admin-3-copy', () => Promise.all([
     gulp.src(['src-admin/build/customComponents.js']).pipe(gulp.dest('admin/custom')),
     gulp.src(['src-admin/build/customComponents.js.map']).pipe(gulp.dest('admin/custom')),
     gulp.src(['src-admin/src/i18n/*.json']).pipe(gulp.dest('admin/custom/i18n')),
+    gulp.src(['admin-config/i18n/**/*.json']).pipe(gulp.dest('admin/i18n')),
 ]));
 
 gulp.task('admin-build', gulp.series(['admin-0-clean', 'admin-1-npm', 'admin-2-compile', 'admin-3-copy']));

@@ -43,7 +43,9 @@ class App extends GenericApp {
                 sunsetLimitStart: '18:00',
                 sunsetLimitEnd: '23:00',
             },
-            theme: this.createTheme(),
+            theme: this.createTheme('dark'),
+            themeName: 'dark',
+            themeType: 'dark',
         };
         const translations = {
             en: require('./i18n/en'),
@@ -74,14 +76,14 @@ class App extends GenericApp {
 
         return <StyledEngineProvider injectFirst>
             <ThemeProvider theme={this.state.theme}>
-                <div style={{ width: '100%', backgroundColor: '#000', color: '#FFF' }}>
+                <div style={{ width: '100%', backgroundColor: this.state.themeType ? '#000' : '#FFF', color: this.state.themeType ? '#FFF' : '#000' }}>
                     <div style={{ width: '100%' }}>
                         <Astro
                             alive
                             socket={this.socket}
                             theme={this.state.theme}
-                            themeType={this.state.themeType}
-                            themeName={this.state.themeName}
+                            themeType={this.state.themeType || 'light'}
+                            themeName={this.state.themeName || this.state.themeType || 'light'}
                             attr="myCustomAttribute"
                             systemConfig={{ dateFormat: 'DD/MM/YYYY', longitude: 10, latitude: 20 }}
                             data={this.state.data}
