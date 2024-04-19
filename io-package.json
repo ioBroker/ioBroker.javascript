@@ -147,7 +147,10 @@
       "blockly",
       "blokly"
     ],
-    "materialize": true,
+    "adminUI": {
+      "config": "json",
+      "tab": "html"
+    },
     "readme": "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
     "enabled": true,
     "licenseInformation": {

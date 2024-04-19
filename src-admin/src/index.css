@@ -1,0 +1,36 @@
+/* hide link on maps */
+.leaflet-control-attribution.leaflet-control {
+    display: none
+}
+.astroToolbarTime {
+    width: 120px;
+    margin-top: 9px !important;
+}
+.astroToolbarTime.dark {
+    color: #fff;
+}
+.astroToolbarTime.light {
+    color: #000;
+}
+.astroToolbarTime fieldset {
+    display: none;
+}
+.astroToolbarTime input {
+    padding: 8px 0 0 0;
+}
+.astroToolbarTime.dark input {
+    color: #fff;
+}
+.astroToolbarTime.light input {
+    color: #000;
+}
+.astroToolbarTime.dark .MuiButtonBase-root {
+    color: #fff;
+}
+.astroToolbarTime.light .MuiButtonBase-root {
+    color: #000;
+}
+.astroToolbarTime .MuiInputAdornment-root {
+    margin-left: 0;
+    margin-top: 7px;
+}

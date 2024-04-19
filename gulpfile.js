@@ -6,20 +6,21 @@
  **/
 'use strict';
 
-const gulp    = require('gulp');
-const fs      = require('fs');
-const path    = require('path');
-const rename  = require('gulp-rename');
+const gulp = require('gulp');
+const fs = require('fs');
+const path = require('path');
+const rename = require('gulp-rename');
 const replace = require('gulp-replace');
-const cp      = require('child_process');
-const JSZip   = require('jszip');
+const cp = require('child_process');
+const JSZip = require('jszip');
+const gulpHelper = require('@iobroker/vis-2-widgets-react-dev/gulpHelper');
 
 function deleteFoldersRecursive(path, exceptions) {
     if (fs.existsSync(path)) {
         const files = fs.readdirSync(path);
         for (const file of files) {
             const curPath = `${path}/${file}`;
-            if (exceptions && exceptions.find(e => curPath.endsWith(e))) {
+            if (exceptions?.find(e => curPath.endsWith(e))) {
                 continue;
             }
 
@@ -34,8 +35,37 @@ function deleteFoldersRecursive(path, exceptions) {
     }
 }
 
+// TASKS
+gulp.task('admin-0-clean', done => {
+    deleteFoldersRecursive(`${__dirname}/admin/custom`);
+    deleteFoldersRecursive(`${__dirname}/src-admin/build`);
+    done();
+});
+function buildAdmin() {
+    return gulpHelper.buildWidgets(__dirname, `${__dirname}/src-admin/`);
+}
+gulp.task('admin-1-npm', async () => gulpHelper.npmInstall(`${__dirname}/src-admin/`));
+
+gulp.task('admin-2-compile', async () => buildAdmin());
+
+gulp.task('admin-3-copy', () => Promise.all([
+    gulp.src(['src-admin/build/static/js/*.js', '!src-admin/build/static/js/vendors*.js']).pipe(gulp.dest('admin/custom/static/js')),
+    gulp.src(['src-admin/build/static/js/*.map', '!src-admin/build/static/js/vendors*.map']).pipe(gulp.dest('admin/custom/static/js')),
+    gulp.src(['src-admin/build/static/js/vendors-node_modules_mui_material_Button_Button_js-node_modules_mui_material_Chip_Chip*.js']).pipe(gulp.dest('admin/custom/static/js')),
+    gulp.src(['src-admin/build/static/js/vendors-node_modules_mui_material_utils_createSvgIcon*.js']).pipe(gulp.dest('admin/custom/static/js')),
+    gulp.src(['src-admin/build/static/js/vendors-node_modules_mui_x-date-pickers_TimePicker*.js']).pipe(gulp.dest('admin/custom/static/js')),
+    gulp.src(['src-admin/build/static/js/vendors-node_modules_leaflet_dist_leaflet_css-node_modules_mui_x-date-pickers*.js']).pipe(gulp.dest('admin/custom/static/js')),
+    gulp.src(['src-admin/build/static/css/src_Components_jsx-node_modules_leaflet_dist_leaflet*.css']).pipe(gulp.dest('admin/custom/static/css')),
+    gulp.src(['src-admin/build/static/js/vendors-node_modules_react-icons_*.*']).pipe(gulp.dest('admin/custom/static/js')),
+    gulp.src(['src-admin/build/customComponents.js']).pipe(gulp.dest('admin/custom')),
+    gulp.src(['src-admin/build/customComponents.js.map']).pipe(gulp.dest('admin/custom')),
+    gulp.src(['src-admin/src/i18n/*.json']).pipe(gulp.dest('admin/custom/i18n')),
+]));
+
+gulp.task('admin-build', gulp.series(['admin-0-clean', 'admin-1-npm', 'admin-2-compile', 'admin-3-copy']));
+
 gulp.task('clean', done => {
-    deleteFoldersRecursive(`${__dirname}/admin`);
+    deleteFoldersRecursive(`${__dirname}/admin`, ['jsonConfig.json', 'javascript.png']);
     deleteFoldersRecursive(`${__dirname}/src/build`);
     done();
 });
@@ -119,7 +149,7 @@ gulp.task('3-build', () => build());
 gulp.task('3-build-dep', gulp.series('2-npm', '3-build'));
 
 function copyFiles() {
-    deleteFoldersRecursive(`${__dirname}/admin`);
+    // deleteFoldersRecursive(`${__dirname}/admin`, ['jsonConfig.json', 'javascript.png']);
     return Promise.all([
         gulp.src([
             'src/build/**/*',
@@ -198,8 +228,6 @@ gulp.task('6-patch-dep',  gulp.series('5-copy-dep', '6-patch'));
 
 gulp.task('default', gulp.series('6-patch-dep'));
 
-// you can write here: words.js, jquery.cron.words.js or adminWords.js
-const fileName = 'adminWords.js';
 const languages =  {
     en: {},
     de: {},
@@ -218,7 +246,7 @@ function lang2data(lang, isFlat) {
     let str = isFlat ? '' : '{\n';
     let count = 0;
     for (const w in lang) {
-        if (lang.hasOwnProperty(w)) {
+        if (Object.prototype.hasOwnProperty.call(lang, w)) {
             count++;
             if (isFlat) {
                 str += (lang[w] === '' ? (isFlat[w] || w) : lang[w]) + '\n';
@@ -238,370 +266,11 @@ function lang2data(lang, isFlat) {
     }
 }
 
-function readWordJs(src) {
-    try {
-        let words;
-        if (fs.existsSync(`${src}js/${fileName}`)) {
-            words = fs.readFileSync(`${src}js/${fileName}`).toString();
-        } else {
-            words = fs.readFileSync(src + fileName).toString();
-        }
-
-        const lines = words.split(/\r\n|\r|\n/g);
-        let i = 0;
-        while (!lines[i].match(/^systemDictionary = {/) && !lines[i].match(/^const jQueryCronWords = {/)) {
-            i++;
-        }
-        lines.splice(0, i);
-
-        // remove last empty lines
-        i = lines.length - 1;
-        while (!lines[i]) {
-            i--;
-        }
-        if (i < lines.length - 1) {
-            lines.splice(i + 1);
-        }
-
-        lines[0] = lines[0].replace('systemDictionary = ', '').replace('const jQueryCronWords = ', '');
-        lines[lines.length - 1] = lines[lines.length - 1].trim().replace(/};$/, '}');
-        words = lines.join('\n');
-        const resultFunc = new Function(`return ${words};`);
-
-        return resultFunc();
-    } catch (e) {
-        return null;
-    }
-}
-
 function padRight(text, totalLength) {
     return text + (text.length < totalLength ? new Array(totalLength - text.length).join(' ') : '');
 }
 
-function writeWordJs(data, src) {
-    let text = '// DO NOT EDIT THIS FILE!!! IT WILL BE AUTOMATICALLY GENERATED FROM src/i18n\n';
-    if (fileName.indexOf('jquery.cron.words.js') !== -1) {
-        text += '/*global jQueryCronWords:true */\n';
-        text += '\'use strict\';\n\n';
-        text += 'const jQueryCronWords = {\n';
-    } else {
-        text += '/*global systemDictionary:true */\n';
-        text += '\'use strict\';\n\n';
-        text += 'systemDictionary = {\n';
-    }
-    for (const word in data) {
-        if (data.hasOwnProperty(word)) {
-            text += `    ${padRight('"' + word.replace(/"/g, '\\"') + '": {', 50)}`;
-            let line = '';
-            for (const lang in data[word]) {
-                if (data[word].hasOwnProperty(lang)) {
-                    if (data[word][lang] === null || data[word][lang] === undefined) {
-                        console.log('Error');
-                    }
-
-                    line += `"${lang}": "${padRight(data[word][lang].replace(/"/g, '\\"') + '",', 50)} `;
-                }
-            }
-            if (line) {
-                line = line.trim();
-                line = line.substring(0, line.length - 1);
-            }
-            text += line + '},\n';
-        }
-    }
-    text += '};';
-    if (fs.existsSync(`${src}js/${fileName}`)) {
-        fs.writeFileSync(`${src}js/${fileName}`, text);
-    } else {
-        fs.writeFileSync(`${src}${fileName}`, text);
-    }
-}
-
 const EMPTY = '';
-
-function words2languages(src) {
-    const langs = Object.assign({}, languages);
-    const data = readWordJs(src);
-    if (data) {
-        for (const word in data) {
-            if (data.hasOwnProperty(word)) {
-                for (const lang in data[word]) {
-                    if (data[word].hasOwnProperty(lang)) {
-                        langs[lang][word] = data[word][lang];
-                        //  pre-fill all other languages
-                        for (const j in langs) {
-                            if (langs.hasOwnProperty(j)) {
-                                langs[j][word] = langs[j][word] || EMPTY;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (!fs.existsSync(`${src}i18n/`)) {
-            fs.mkdirSync(`${src}i18n/`);
-        }
-        for (const l in langs) {
-            if (!langs.hasOwnProperty(l)) {
-                continue;
-            }
-            const keys = Object.keys(langs[l]);
-            keys.sort();
-            const obj = {};
-            for (let k = 0; k < keys.length; k++) {
-                obj[keys[k]] = langs[l][keys[k]];
-            }
-            if (!fs.existsSync(`${src}i18n/${l}`)) {
-                fs.mkdirSync(`${src}i18n/${l}`);
-            }
-
-            fs.writeFileSync(`${src}i18n/${l}/translations.json`, lang2data(obj));
-        }
-    } else {
-        console.error(`Cannot read or parse ${fileName}`);
-    }
-}
-function languages2words(src) {
-    const dirs = fs.readdirSync(`${src}i18n/`);
-    const langs = {};
-    const bigOne = {};
-    const order = Object.keys(languages);
-    dirs.sort((a, b) => {
-        const posA = order.indexOf(a);
-        const posB = order.indexOf(b);
-        if (posA === -1 && posB === -1) {
-            if (a > b) return 1;
-            if (a < b) return -1;
-            return 0;
-        } else if (posA === -1) {
-            return -1;
-        } else if (posB === -1) {
-            return 1;
-        } else {
-            if (posA > posB) return 1;
-            if (posA < posB) return -1;
-            return 0;
-        }
-    });
-    for (let l = 0; l < dirs.length; l++) {
-        if (dirs[l] === 'flat.txt') continue;
-        const lang = dirs[l];
-        langs[lang] = fs.readFileSync(`${src}i18n/${lang}/translations.json`).toString();
-        langs[lang] = JSON.parse(langs[lang]);
-        const words = langs[lang];
-        for (const word in words) {
-            if (words.hasOwnProperty(word)) {
-                bigOne[word] = bigOne[word] || {};
-                if (words[word] !== EMPTY) {
-                    bigOne[word][lang] = words[word];
-                }
-            }
-        }
-    }
-    // read actual words.js
-    const aWords = readWordJs();
-
-    if (aWords) {
-        // Merge words together
-        for (const w in aWords) {
-            if (aWords.hasOwnProperty(w)) {
-                if (!bigOne[w]) {
-                    console.warn(`Take from actual words.js: ${w}`);
-                    bigOne[w] = aWords[w];
-                }
-                dirs.forEach(lang => {
-                    if (!bigOne[w][lang]) {
-                        console.warn(`Missing "${lang}": ${w}`);
-                    }
-                });
-            }
-        }
-
-    }
-
-    writeWordJs(bigOne, src);
-}
-
-gulp.task('blockly2languagesFlat', done => {
-    console.log('_______DEPRECATED_____: use blocklyWords2json instead');
-
-    const src = './src/public/';
-    const data = require('./src/public/google-blockly/own/blocks_words.js').Words;
-    const langs = Object.assign({}, languages);
-    if (data) {
-        for (const word in data) {
-            if (data.hasOwnProperty(word)) {
-                for (const lang in data[word]) {
-                    if (data[word].hasOwnProperty(lang)) {
-                        langs[lang] = langs[lang] || {};
-                        langs[lang][word] = data[word][lang];
-                        //  pre-fill all other languages
-                        for (const j in langs) {
-                            if (langs.hasOwnProperty(j)) {
-                                langs[j][word] = langs[j][word] || EMPTY;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        const keys = Object.keys(langs.en);
-        //keys.sort();
-        for (const l in langs) {
-            if (!langs.hasOwnProperty(l)) {
-                continue;
-            }
-            const obj = {};
-            for (let k = 0; k < keys.length; k++) {
-                obj[keys[k]] = langs[l][keys[k]];
-            }
-            langs[l] = obj;
-        }
-        if (!fs.existsSync(`${src}i18n/`)) {
-            fs.mkdirSync(`${src}i18n/`);
-        }
-        for (const ll in langs) {
-            if (!langs.hasOwnProperty(ll)) {
-                continue;
-            }
-            if (!fs.existsSync(`${src}i18n/${ll}`)) {
-                fs.mkdirSync(`${src}i18n/${ll}`);
-            }
-
-            fs.writeFileSync(`${src}i18n/${ll}/flat.txt`, lang2data(langs[ll], langs.en));
-        }
-        fs.writeFileSync(`${src}i18n/flat.txt`, keys.join('\n'));
-    } else {
-        console.error('Cannot read or parse blocks_words.js');
-    }
-
-    done();
-});
-gulp.task('blocklyLanguagesFlat2words', done => {
-    console.log('_______DEPRECATED_____: use blocklyJson2words instead');
-    const src = './src/public/';
-    const dirs = fs.readdirSync(`${src}i18n/`);
-    const langs = {};
-    const bigOne = {};
-    const order = Object.keys(languages);
-    dirs.sort((a, b) => {
-        const posA = order.indexOf(a);
-        const posB = order.indexOf(b);
-        if (posA === -1 && posB === -1) {
-            if (a > b) return 1;
-            if (a < b) return -1;
-            return 0;
-        } else if (posA === -1) {
-            return -1;
-        } else if (posB === -1) {
-            return 1;
-        } else {
-            if (posA > posB) return 1;
-            if (posA < posB) return -1;
-            return 0;
-        }
-    });
-    const keys = fs.readFileSync(`${src}i18n/flat.txt`).toString().split('\n');
-
-    for (let l = 0; l < dirs.length; l++) {
-        if (dirs[l] === 'flat.txt') {
-            continue;
-        }
-        const lang = dirs[l];
-        const values = fs.readFileSync(`${src}i18n/${lang}/flat.txt`).toString().split('\n');
-        langs[lang] = {};
-        keys.forEach((word, i) => langs[lang][word] = values[i]);
-
-        const words = langs[lang];
-        for (const word in words) {
-            if (words.hasOwnProperty(word)) {
-                bigOne[word] = bigOne[word] || {};
-                if (words[word] !== EMPTY) {
-                    bigOne[word][lang] = words[word];
-                }
-            }
-        }
-    }
-    // read actual words.js
-    const aWords = require('./src/public/google-blockly/own/blocks_words.js').Words;
-
-    const temporaryIgnore = ['pt', 'fr', 'nl', 'es', 'flat.txt'];
-    if (aWords) {
-        // Merge words together
-        for (const w in aWords) {
-            if (aWords.hasOwnProperty(w)) {
-                if (!bigOne[w]) {
-                    console.warn(`Take from actual words.js: ${w}`);
-                    bigOne[w] = aWords[w];
-                }
-                dirs.forEach(lang => {
-                    if (temporaryIgnore.includes(lang)) {
-                        return;
-                    }
-                    if (!bigOne[w][lang]) {
-                        console.warn(`Missing "${lang}": ${w}`);
-                    }
-                });
-            }
-        }
-    }
-
-    let text = 'if (typeof Blockly === \'undefined\') {\n';
-    text += '    var Blockly = {};\n';
-    text += '}\n';
-    text += '// translations\n';
-    text += 'Blockly.Words = {};\n';
-    const data = bigOne;
-    let group = '';
-    let block = '';
-    for (const word_ in data) {
-        if (data.hasOwnProperty(word_)) {
-            if (word_[0] >= 'A' && word_[0] <= 'Z') {
-                text += `\n// --- ${word_.toUpperCase()} --------------------------------------------------\n`;
-                group = word_.toLowerCase();
-            } else {
-                const parts = word_.split('_');
-                if (parts[0] !== block) {
-                    block = parts[0];
-                    text += `\n// --- ${group} ${block} --------------------------------------------------\n`;
-                }
-            }
-
-            text += `Blockly.Words['${padRight(`${word_.replace(/'/g, "\\'")}']`, 40)}= {`;
-            let line = '';
-            for (const lang_ in data[word_]) {
-                if (data[word_].hasOwnProperty(lang_)) {
-                    if (data[word_].en.indexOf('--') !== -1) {
-                        line += `'${lang_}': '${padRight(`${data[word_].en.replace(/'/g, "\\'")}',`, 50)} `;
-                    } else {
-                        line += `'${lang_}': '${padRight(`${data[word_][lang_].replace(/'/g, "\\'")}',`, 50)} `;
-                    }
-                }
-            }
-            if (line) {
-                line = line.trim();
-                line = line.substring(0, line.length - 1);
-            }
-            text += line + '};\n';
-        }
-    }
-
-    text += '\nBlockly.Translate = function (word, lang) {\n' +
-        '    lang = lang || systemLang;\n' +
-        '    if (Blockly.Words && Blockly.Words[word]) {\n' +
-        '        return Blockly.Words[word][lang] || Blockly.Words[word].en;\n' +
-        '    } else {\n' +
-        '        return word;\n' +
-        '    }\n' +
-        '};\n';
-
-    text += '\nif (typeof module !== \'undefined\' && typeof module.parent !== \'undefined\') {\n' +
-        '    module.exports = Blockly;\n' +
-        '}';
-    fs.writeFileSync('./src/public/google-blockly/own/blocks_words.js', text);
-
-    done();
-});
 
 gulp.task('blocklyWords2json', done => {
     const src = './src/public/';
@@ -609,14 +278,14 @@ gulp.task('blocklyWords2json', done => {
     const langs = Object.assign({}, languages);
     if (data) {
         for (const word in data) {
-            if (data.hasOwnProperty(word)) {
+            if (Object.prototype.hasOwnProperty.call(data, word)) {
                 for (const lang in data[word]) {
-                    if (data[word].hasOwnProperty(lang)) {
+                    if (Object.prototype.hasOwnProperty.call(data[word], lang)) {
                         langs[lang] = langs[lang] || {};
                         langs[lang][word] = data[word][lang];
                         //  pre-fill all other languages
                         for (const j in langs) {
-                            if (langs.hasOwnProperty(j)) {
+                            if (Object.prototype.hasOwnProperty.call(langs, j)) {
                                 langs[j][word] = langs[j][word] || EMPTY;
                             }
                         }
@@ -627,7 +296,7 @@ gulp.task('blocklyWords2json', done => {
         const keys = Object.keys(langs.en);
         // keys.sort();
         for (const l in langs) {
-            if (!langs.hasOwnProperty(l)) {
+            if (!Object.prototype.hasOwnProperty.call(langs, l)) {
                 continue;
             }
             const obj = {};
@@ -640,7 +309,7 @@ gulp.task('blocklyWords2json', done => {
             fs.mkdirSync(`${src}i18n/`);
         }
         for (const ll in langs) {
-            if (!langs.hasOwnProperty(ll)) {
+            if (!Object.prototype.hasOwnProperty.call(langs, ll)) {
                 continue;
             }
             if (!fs.existsSync(`${src}i18n/${ll}`)) {
@@ -693,7 +362,7 @@ gulp.task('blocklyJson2words', done => {
 
         const words = langs[lang];
         for (const word in words) {
-            if (words.hasOwnProperty(word)) {
+            if (Object.prototype.hasOwnProperty.call(words, word)) {
                 bigOne[word] = bigOne[word] || {};
                 if (words[word] !== EMPTY) {
                     bigOne[word][lang] = words[word];
@@ -708,7 +377,7 @@ gulp.task('blocklyJson2words', done => {
     if (aWords) {
         // Merge words together
         for (const w in aWords) {
-            if (aWords.hasOwnProperty(w)) {
+            if (Object.prototype.hasOwnProperty.call(aWords, w)) {
                 if (!bigOne[w]) {
                     console.warn(`Take from actual words.js: ${w}`);
                     bigOne[w] = aWords[w];
@@ -736,7 +405,7 @@ Blockly.Words = {};
     let group = '';
     let block = '';
     for (const word_ in data) {
-        if (data.hasOwnProperty(word_)) {
+        if (Object.prototype.hasOwnProperty.call(data, word_)) {
             if (word_[0] >= 'A' && word_[0] <= 'Z') {
                 text += `\n// --- ${word_.toUpperCase()} --------------------------------------------------\n`;
                 group = word_.toLowerCase();
@@ -751,7 +420,7 @@ Blockly.Words = {};
             text += `Blockly.Words['${padRight(`${word_.replace(/'/g, "\\'")}']`, 40)}= {`;
             let line = '';
             for (const lang_ in data[word_]) {
-                if (data[word_].hasOwnProperty(lang_)) {
+                if (Object.prototype.hasOwnProperty.call(data[word_], lang_)) {
                     if (data[word_].en.includes('--')) {
                         line += `'${lang_}': '${padRight(`${data[word_].en.replace(/'/g, "\\'")}',`, 50)} `;
                     } else {
@@ -793,17 +462,6 @@ if (typeof module !== 'undefined' && typeof module.parent !== 'undefined') {
 
     done();
 });
-
-/*
-gulp.task('adminWords2languages', done => {
-    words2languages('./admin-config/');
-    done();
-});
-gulp.task('adminLanguages2words', done => {
-    languages2words('./admin-config/');
-    done();
-});
-*/
 
 gulp.task('monaco-typescript', done => {
     // This script downloads a version of monaco that is built with the specified TypeScript version.
@@ -887,4 +545,4 @@ gulp.task('monaco-update', done => {
     done();
 });
 
-gulp.task('default', gulp.series('6-patch-dep'));
+gulp.task('default', gulp.series('6-patch-dep', 'admin-build'));

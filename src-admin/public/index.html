@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin App</title>
+    <script>
+      var script = document.createElement('script');
+      window.registerSocketOnLoad = function (cb) {
+        window.socketLoadedHandler = cb;
+      };
+      script.onload = function () { typeof window.socketLoadedHandler === 'function' && window.socketLoadedHandler(); };
+      setTimeout(() => {
+        script.src = window.location.port.startsWith('300') ? window.location.protocol + '//' + window.location.hostname + ':8081/lib/js/socket.io.js' : '%PUBLIC_URL%/../../lib/js/socket.io.js';
+      }, 1000);
+
+      document.head.appendChild(script);
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/index.jsx"></script>
+  </body>
+</html>

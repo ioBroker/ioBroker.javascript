@@ -71,7 +71,7 @@ debug
 warning
 error
 getHistory
-Instance
+Astro
 Object ID
 From (time)
 Until (time)
@@ -152,7 +152,7 @@ select ID
 Value
 Acknowledge
 Timestamp
-Last change 
+Last change
 Quality
 Value comment
 Source
@@ -245,7 +245,7 @@ hh:mm:ss.sss
 Actual time of
 Offset (minutes)
 YYYY.MM.DD hh:mm:ss.sss
-Get actual time or 
+Get actual time or
 https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
 Calculated time
 Start of day
@@ -408,7 +408,7 @@ Cancel file event
 Cancel subscription on file change
 offFile
 message to other script
-Instance
+Astro
 all instances
 script
 message

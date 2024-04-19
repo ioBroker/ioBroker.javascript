@@ -1,0 +1,107 @@
+{
+  "type": "tabs",
+  "i18n": true,
+  "items": {
+    "_main": {
+      "type": "panel",
+      "label": "Main settings",
+      "items": {
+        "libraries": {
+          "type": "chips",
+          "label": "Additional npm modules",
+          "delimiter": ",",
+          "sm": 12
+        },
+        "mirrorPath": {
+          "newLine": true,
+          "type": "text",
+          "label": "Activate syntax help for these npm modules",
+          "sm": 8
+        },
+        "mirrorInstance": {
+          "hidden": "!data.mirrorPath",
+          "type": "instance",
+          "adapter": "javascript",
+          "label": "Instance, that do mirroring",
+          "sm": 4
+        },
+        "enableSetObject": {
+          "newLine": true,
+          "type": "checkbox",
+          "label": "Enable command \"setObject\"",
+          "sm": 12,
+          "md": 6
+        },
+        "enableSendToHost": {
+          "type": "checkbox",
+          "label": "Enable command \"sendToHost\"",
+          "sm": 12,
+          "md": 6
+        },
+        "enableExec": {
+          "newLine": true,
+          "type": "checkbox",
+          "label": "Enable command \"exec\"",
+          "sm": 12,
+          "md": 6
+        },
+        "subscribe": {
+          "type": "checkbox",
+          "label": "Do not subscribe all states on start",
+          "sm": 12,
+          "md": 6
+        },
+        "maxSetStatePerMinute": {
+          "newLine": true,
+          "type": "number",
+          "label": "Maximum setState requests per Minute per Script",
+          "help": "default 1000",
+          "min": 20,
+          "max": 100000,
+          "sm": 12,
+          "md": 6
+        },
+        "maxTriggersPerScript": {
+          "type": "number",
+          "label": "Maximum triggers per Script (until warning)",
+          "help": "default 100",
+          "min": 20,
+          "max": 100000,
+          "sm": 12,
+          "md": 6
+        },
+        "allowSelfSignedCerts": {
+          "newLine": true,
+          "type": "checkbox",
+          "label": "Allow self-signed certificates for URL requests",
+          "sm": 12
+        },
+        "gptKey": {
+          "newLine": true,
+          "type": "text",
+          "label": "ChatGPT API key",
+          "sm": 12
+        }
+      }
+    },
+    "_astro": {
+      "type": "panel",
+      "label": "Astro settings",
+      "items": {
+        "_astroConfig": {
+          "type": "custom",
+          "i18n": true,
+          "sm": 12,
+          "url": "custom/customComponents.js",
+          "name": "ConfigCustomJavascriptSet/Components/Astro"
+        },
+        "createAstroStates": {
+          "newLine": true,
+          "type": "checkbox",
+          "label": "Create states for all astro times",
+          "sm": 12
+        }
+      }
+    }
+  }
+}
