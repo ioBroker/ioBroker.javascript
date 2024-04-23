@@ -41,8 +41,8 @@
     "@types/node": "should match the lowest MAJOR version of Node.js we support."
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^3.0.6",
-    "@types/node": "^20.12.5",
+    "@iobroker/adapter-core": "^3.1.4",
+    "@types/node": "^20.12.7",
     "@types/request": "^2.48.12",
     "axios": "^1.6.8",
     "jsonata": "^2.0.4",
@@ -52,7 +52,7 @@
     "request": "^2.88.2",
     "semver": "^7.6.0",
     "suncalc2": "^1.8.1",
-    "typescript": "~5.4.4",
+    "typescript": "~5.4.5",
     "virtual-tsc": "^0.6.2",
     "wake_on_lan": "^1.0.0"
   },
