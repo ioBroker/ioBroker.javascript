@@ -26,7 +26,7 @@
         "eslint-plugin-react-hooks": "^4.6.0",
         "lodash": "^4.17.21",
         "monaco-editor": "~0.47.0",
-        "openai": "^4.38.3",
+        "openai": "^4.39.1",
         "react": "^18.2.0",
         "react-ace": "^11.0.1",
         "react-bem-helper": "^1.4.1",
