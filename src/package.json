@@ -33,7 +33,7 @@
         "react-dnd": "^16.0.1",
         "react-dnd-html5-backend": "^16.0.1",
         "react-dnd-touch-backend": "^16.0.1",
-        "react-dom": "^18.2.0",
+        "react-dom": "^18.3.1",
         "react-dropzone": "^14.2.3",
         "react-fullscreen": "^0.1.0",
         "react-i18next": "^14.1.1",
