@@ -42,6 +42,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (bluefox) Updated admin config to jsonConfig (dropped materialize)
+
 ### 8.0.3 (2024-04-11)
 
 * (klein0r) Updates dependencies (latest adapter-react-v5 framework)
