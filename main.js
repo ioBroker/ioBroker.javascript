@@ -1096,7 +1096,7 @@ function main() {
     context.logWithLineInfo.error = context.logWithLineInfo.bind(1, 'error');
     context.logWithLineInfo.info = context.logWithLineInfo.bind(1, 'info');
 
-    installLibraries(() => {
+    installLibraries().then(() => {
 
         // Load the TS declarations for Node.js and all 3rd party modules
         loadTypeScriptDeclarations();
@@ -1294,7 +1294,6 @@ function stopAllScripts(cb) {
     setTimeout(() => cb(), 0);
 }
 
-const attempts         = {};
 let globalScript       = '';
 /** Generated declarations for global TypeScripts */
 let globalDeclarations = '';
@@ -1748,90 +1747,76 @@ function getName(id) {
     return null;
 }
 
-function installNpm(npmLib, callback) {
-    const path = __dirname;
-    if (typeof npmLib === 'function') {
-        callback = npmLib;
-        npmLib = undefined;
-    }
+async function installNpm(npmLib) {
+    return new Promise((resolve, reject) => {
+        const path = __dirname;
 
-    // Also, set the working directory (cwd) of the process instead of using --prefix
-    // because that has ugly bugs on Windows
-    const cmd = `npm install ${npmLib} --omit=dev`;
-    adapter.log.info(`Installing ${npmLib} into ${__dirname} - cmd: ${cmd}`);
+        // Also, set the working directory (cwd) of the process instead of using --prefix
+        // because that has ugly bugs on Windows
+        const cmd = `npm install ${npmLib} --omit=dev`;
+        adapter.log.info(`Installing ${npmLib} into ${__dirname} - cmd: ${cmd}`);
 
-    // System call used for update of js-controller itself,
-    // because during installation npm packet will be deleted too, but some files must be loaded even during the installation process.
-    const child = mods['child_process'].exec(cmd, {
-        windowsHide: true,
-        cwd: path,
-    });
+        // System call used for update of js-controller itself,
+        // because during installation npm packet will be deleted too, but some files must be loaded even during the installation process.
+        const child = mods['child_process'].exec(cmd, {
+            windowsHide: true,
+            cwd: path,
+        });
 
-    child.stdout && child.stdout.on('data', buf =>
-        adapter.log.info(buf.toString('utf8')));
+        child.stdout && child.stdout.on('data', buf =>
+            adapter.log.info(buf.toString('utf8')));
 
-    child.stderr && child.stderr.on('data', buf =>
-        adapter.log.error(buf.toString('utf8')));
+        child.stderr && child.stderr.on('data', buf =>
+            adapter.log.error(buf.toString('utf8')));
 
-    child.on('err', err => {
-        adapter.log.error(`Cannot install ${npmLib}: ${err}`);
-        typeof callback === 'function' && callback(npmLib);
-        callback = null;
-    });
-    child.on('error', err => {
-        adapter.log.error(`Cannot install ${npmLib}: ${err}`);
-        typeof callback === 'function' && callback(npmLib);
-        callback = null;
-    });
+        child.on('err', err => {
+            adapter.log.error(`Cannot install ${npmLib}: ${err}`);
+            reject(npmLib);
+        });
+        child.on('error', err => {
+            adapter.log.error(`Cannot install ${npmLib}: ${err}`);
+            reject(npmLib);
+        });
 
-    child.on('exit', (code /* , signal */) => {
-        if (code) {
-            adapter.log.error(`Cannot install ${npmLib}: ${code}`);
-        }
-        // command succeeded
-        if (typeof callback === 'function') callback(npmLib);
-        callback = null;
+        child.on('exit', (code /* , signal */) => {
+            if (code) {
+                adapter.log.error(`Cannot install ${npmLib}: ${code}`);
+                reject(code);
+            }
+            // command succeeded
+            resolve(code);
+        });
     });
 }
 
-function installLibraries(callback) {
-    let allInstalled = true;
+async function installLibraries() {
     if (adapter.config && adapter.config.libraries) {
         const libraries = adapter.config.libraries.split(/[,;\s]+/);
 
         for (let lib = 0; lib < libraries.length; lib++) {
             if (libraries[lib] && libraries[lib].trim()) {
                 libraries[lib] = libraries[lib].trim();
-                let libName = libraries[lib];
+                let depName = libraries[lib];
+                let version = 'latest';
 
-                const versionChunkPos = libName.indexOf('@', 1);
-                if (versionChunkPos > -1) {
-                    libName = libName.slice(0, versionChunkPos);
+                if (depName.includes('@')) {
+                    [ depName, version ] = depName.split('@', 2);
                 }
 
-                adapter.log.debug(`Found custom dependency in config: "${libraries[lib]}" (${libName})`);
+                adapter.log.debug(`Found custom dependency in config: "${libraries[lib]}" (${depName}@${version})`);
 
-                if (!nodeFS.existsSync(`${__dirname}/node_modules/${libName}/package.json`)) {
-                    if (!attempts[libraries[lib]]) {
-                        attempts[libraries[lib]] = 1;
-                    } else {
-                        attempts[libraries[lib]]++;
+                if (!nodeFS.existsSync(`${__dirname}/node_modules/${depName}/package.json`)) {
+                    adapter.log.info(`Installing custom dependency: "${libraries[lib]}" (${depName}@${version})`);
+
+                    try {
+                        await installNpm(libraries[lib]);
+                    } catch (err) {
+                        adapter.log.warn(`Cannot install npm package ${libraries[lib]}: ${err}`);
                     }
-                    if (attempts[libraries[lib]] > 3) {
-                        adapter.log.error(`Cannot install npm packet: ${libraries[lib]}`);
-                        continue;
-                    }
-
-                    installNpm(libraries[lib], () =>
-                        installLibraries(callback));
-
-                    allInstalled = false;
-                    break;
                 }
             }
         }
     }
-    allInstalled && callback();
 }
 
 function createVM(source, name) {
