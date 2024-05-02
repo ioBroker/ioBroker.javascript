@@ -1803,10 +1803,18 @@ async function installLibraries() {
                     [ depName, version ] = depName.split('@', 2);
                 }
 
-                adapter.log.debug(`Found custom dependency in config: "${libraries[lib]}" (${depName}@${version})`);
+                adapter.log.debug(`Found custom dependency in config: "${depName}@${version}"`);
 
-                if (!nodeFS.existsSync(`${__dirname}/node_modules/${depName}/package.json`)) {
-                    adapter.log.info(`Installing custom dependency: "${libraries[lib]}" (${depName}@${version})`);
+                if (typeof adapter.installNodeModule === 'function') {
+                    const result = await adapter.installNodeModule(depName, { version });
+                    if (result.success) {
+                        adapter.log.debug(`Installed custom dependency: "${depName}@${version}"`);
+
+                        context.mods[depName] = adapter.importNodeModule(depName);
+                    }
+                } else if (!nodeFS.existsSync(`${__dirname}/node_modules/${depName}/package.json`)) {
+                    // js-controller <= 6.x
+                    adapter.log.info(`Installing custom dependency: "${depName}@${version}"`);
 
                     try {
                         await installNpm(libraries[lib]);
