@@ -1868,12 +1868,13 @@ function createVM(source, name) {
     }
 }
 
-function execute(script, name, verbose, debug) {
+function execute(script, name, engineType, verbose, debug) {
     script.intervals = [];
     script.timeouts = [];
     script.schedules = [];
     script.wizards = [];
     script.name = name;
+    script.engineType = engineType;
     script._id = Math.floor(Math.random() * 0xFFFFFFFF);
     script.subscribes = {};
     script.subscribesFile = {};
@@ -1948,7 +1949,7 @@ function updateLogSubscriptions() {
 }
 
 function stop(name, callback) {
-    adapter.log.info('Stop script ' + name);
+    adapter.log.info(`Stopping script ${name}`);
 
     adapter.setState('scriptEnabled.' + name.substring(SCRIPT_CODE_MARKER.length), false, true);
 
@@ -2106,7 +2107,7 @@ function prepareScript(obj, callback) {
 
         if ((obj.common.engineType.toLowerCase().startsWith('javascript') || obj.common.engineType === 'Blockly' || obj.common.engineType === 'Rules')) {
             // Javascript
-            adapter.log.info('Start javascript ' + name);
+            adapter.log.info(`Start JavaScript ${name} (${obj.common.engineType})`);
 
             let sourceFn = name;
             if (webstormDebug) {
@@ -2119,11 +2120,11 @@ function prepareScript(obj, callback) {
                 typeof callback === 'function' && callback(false, name);
                 return;
             }
-            execute(context.scripts[name], sourceFn, obj.common.verbose, obj.common.debug);
+            execute(context.scripts[name], sourceFn, obj.common.engineType, obj.common.verbose, obj.common.debug);
             typeof callback === 'function' && callback(true, name);
         } else if (obj.common.engineType.toLowerCase().startsWith('typescript')) {
             // TypeScript
-            adapter.log.info(`${name}: compiling TypeScript source...`);
+            adapter.log.info(`Compiling TypeScript source ${name}`);
             // The source code must be transformed in order to support top level await
             // and to force TypeScript to compile the code as a module
             const transformedSource = transformScriptBeforeCompilation(obj.common.source, false);
@@ -2185,7 +2186,7 @@ function prepareScript(obj, callback) {
                 typeof callback === 'function' && callback(false, name);
                 return;
             }
-            execute(context.scripts[name], name, obj.common.verbose, obj.common.debug);
+            execute(context.scripts[name], name, obj.common.engineType, obj.common.verbose, obj.common.debug);
             typeof callback === 'function' && callback(true, name);
         }
     } else {
