@@ -7,11 +7,11 @@
 'use strict';
 
 const gulp = require('gulp');
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const rename = require('gulp-rename');
 const replace = require('gulp-replace');
-const cp = require('child_process');
+const cp = require('node:child_process');
 const JSZip = require('jszip');
 const gulpHelper = require('@iobroker/vis-2-widgets-react-dev/gulpHelper');
 
@@ -60,7 +60,6 @@ gulp.task('admin-3-copy', () => Promise.all([
     gulp.src(['src-admin/build/customComponents.js']).pipe(gulp.dest('admin/custom')),
     gulp.src(['src-admin/build/customComponents.js.map']).pipe(gulp.dest('admin/custom')),
     gulp.src(['src-admin/src/i18n/*.json']).pipe(gulp.dest('admin/custom/i18n')),
-    gulp.src(['admin-config/i18n/**/*.json']).pipe(gulp.dest('admin/i18n')),
 ]));
 
 gulp.task('admin-build', gulp.series(['admin-0-clean', 'admin-1-npm', 'admin-2-compile', 'admin-3-copy']));
@@ -157,8 +156,7 @@ function copyFiles() {
             '!src/build/index.html',
             '!src/build/static/js/main.*.chunk.js',
             '!src/build/i18n/**/*',
-            '!src/build/i18n',
-            'admin-config/*'
+            '!src/build/i18n'
         ])
             .pipe(gulp.dest('admin/')),
 
@@ -205,7 +203,7 @@ gulp.task('6-patch', () => new Promise(resolve => {
         fs.writeFileSync(`${__dirname}/src/build/index.html`, code);
     }
 
-    const buffer = Buffer.from(JSON.parse(fs.readFileSync(`${__dirname}/admin-config/vsFont/codicon.json`)), 'base64');
+    const buffer = Buffer.from(JSON.parse(fs.readFileSync(`${__dirname}/admin/vsFont/codicon.json`)), 'base64');
 
     // this is a workaround for TTF file. somehow it will always corrupt, so we pack it into ZIP
     JSZip.loadAsync(buffer)

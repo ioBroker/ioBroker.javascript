@@ -12,7 +12,6 @@ paths-ignore:
   - src/public/plugins
   - src/build
   - admin
-  - admin-config
   - test
   - detection
   - docs

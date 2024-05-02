@@ -1,8 +1,6 @@
 node_modules
 .idea
 tmp
-admin-config/i18n/*/flat.txt
-admin-config/i18n/flat.txt
 _admin
 iob_npm.dode
 /nbproject

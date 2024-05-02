@@ -2515,7 +2515,7 @@ async function patchFont() {
 
     if (!stat || stat.size !== 73452 || !dbFile || dbFile.byteLength !== 73452) {
         try {
-            const buffer = Buffer.from(JSON.parse(nodeFS.readFileSync(`${__dirname}/admin-config/vsFont/codicon.json`)), 'base64');
+            const buffer = Buffer.from(JSON.parse(nodeFS.readFileSync(`${__dirname}/admin/vsFont/codicon.json`)), 'base64');
 
             const zip = await require('jszip').loadAsync(buffer);
             const data = await zip.file('codicon.ttf').async('arraybuffer');

@@ -136,7 +136,7 @@
     "mode": "daemon",
     "loglevel": "info",
     "icon": "javascript.png",
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin-config/javascript.png",
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin/javascript.png",
     "keywords": [
       "js",
       "javascript",

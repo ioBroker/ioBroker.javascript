@@ -86,13 +86,13 @@
     "io-package.json",
     "LICENSE",
     "main.js",
-    "admin-config/vsFont/codicon.json"
+    "admin/vsFont/codicon.json"
   ],
   "scripts": {
     "test:declarations": "tsc -p test/lib/TS/tsconfig.json && tsc -p test/lib/JS/tsconfig.json",
     "test:javascript": "node node_modules/mocha/bin/mocha --exit",
     "test": "npm run test:declarations && npm run test:javascript",
-    "translate": "translate-adapter --admin ./admin-config --words ./admin-config/adminWords.js",
+    "translate": "translate-adapter",
     "//postinstall": "node ./install/installTypings.js",
     "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
     "build": "node node_modules/gulp/bin/gulp.js",
