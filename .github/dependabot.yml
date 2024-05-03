@@ -33,3 +33,12 @@ updates:
       timezone: Europe/Berlin
     open-pull-requests-limit: 5
     versioning-strategy: increase
+
+  - package-ecosystem: npm
+    directory: "/src-admin"
+    schedule:
+      interval: monthly
+      time: "04:00"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 5
+    versioning-strategy: increase
