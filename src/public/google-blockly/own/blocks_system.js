@@ -70,10 +70,10 @@ Blockly.Blocks['debug'] = {
 
         this.appendDummyInput('Severity')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('loglevel_debug'), 'debug'],
                 [Blockly.Translate('loglevel_info'),  'info'],
                 [Blockly.Translate('loglevel_warn'),  'warn'],
                 [Blockly.Translate('loglevel_error'), 'error'],
+                [Blockly.Translate('loglevel_debug'), 'debug'],
             ]), 'Severity');
 
         this.setPreviousStatement(true, null);
