@@ -58,6 +58,8 @@ Blockly.System.blocks['debug'] =
     + '             <field name="TEXT">test</field>'
     + '         </shadow>'
     + '     </value>'
+    + '     <value name="LOG_LEVEL">'
+    + '     </value>'
     + '</block>';
 
 Blockly.Blocks['debug'] = {
@@ -66,8 +68,13 @@ Blockly.Blocks['debug'] = {
             .setCheck(null)
             .appendField(Blockly.Translate('debug'));
 
-        this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([['info', 'log'], ['debug', 'debug'], ['warning', 'warn'], ['error', 'error']]), 'Severity');
+        this.appendDummyInput('LOG_LEVEL')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('loglevel_debug'), 'debug'],
+                [Blockly.Translate('loglevel_info'),  'info'],
+                [Blockly.Translate('loglevel_warn'),  'warn'],
+                [Blockly.Translate('loglevel_error'), 'error'],
+            ]), 'LOG_LEVEL');
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -80,9 +87,9 @@ Blockly.Blocks['debug'] = {
 
 Blockly.JavaScript['debug'] = function(block) {
     const value_text = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_ATOMIC);
-    const dropdown_severity = block.getFieldValue('Severity');
+    const logLevel = block.getFieldValue('LOG_LEVEL');
 
-    return `console.${dropdown_severity}(${value_text});\n`;
+    return `console.${logLevel}(${value_text});\n`;
 };
 
 // --- comment --------------------------------------------------
