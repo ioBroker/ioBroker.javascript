@@ -58,7 +58,7 @@ Blockly.System.blocks['debug'] =
     + '             <field name="TEXT">test</field>'
     + '         </shadow>'
     + '     </value>'
-    + '     <value name="LOG_LEVEL">'
+    + '     <value name="Severity">'
     + '     </value>'
     + '</block>';
 
@@ -68,13 +68,13 @@ Blockly.Blocks['debug'] = {
             .setCheck(null)
             .appendField(Blockly.Translate('debug'));
 
-        this.appendDummyInput('LOG_LEVEL')
+        this.appendDummyInput('Severity')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('loglevel_debug'), 'debug'],
                 [Blockly.Translate('loglevel_info'),  'info'],
                 [Blockly.Translate('loglevel_warn'),  'warn'],
                 [Blockly.Translate('loglevel_error'), 'error'],
-            ]), 'LOG_LEVEL');
+            ]), 'Severity');
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -87,7 +87,7 @@ Blockly.Blocks['debug'] = {
 
 Blockly.JavaScript['debug'] = function(block) {
     const value_text = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_ATOMIC);
-    const logLevel = block.getFieldValue('LOG_LEVEL');
+    const logLevel = block.getFieldValue('Severity');
 
     return `console.${logLevel}(${value_text});\n`;
 };
