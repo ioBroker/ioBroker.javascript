@@ -42,6 +42,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (PeterVoronov) Added toArray to result object of $-selector
+
 ### 8.1.1 (2024-05-03)
 
 * (klein0r) Updated Blockly/JS and Rules/JS image (as svg)
