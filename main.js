@@ -1810,7 +1810,7 @@ async function installLibraries() {
                     if (result.success) {
                         adapter.log.debug(`Installed custom dependency: "${depName}@${version}"`);
 
-                        context.mods[depName] = adapter.importNodeModule(depName);
+                        context.mods[depName] = await adapter.importNodeModule(depName);
                     }
                 } else if (!nodeFS.existsSync(`${__dirname}/node_modules/${depName}/package.json`)) {
                     // js-controller <= 6.x
