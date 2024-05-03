@@ -33,7 +33,7 @@
         "eslint-plugin-jsx-a11y": "^6.8.0",
         "eslint-plugin-only-warn": "^1.1.0",
         "eslint-plugin-react": "^7.34.1",
-        "eslint-plugin-react-hooks": "^4.6.0",
+        "eslint-plugin-react-hooks": "^4.6.2",
         "leaflet": "^1.9.4",
         "prop-types": "^15.8.1",
         "react": "^18.2.0",
