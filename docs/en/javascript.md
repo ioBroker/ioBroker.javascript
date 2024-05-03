@@ -1352,6 +1352,7 @@ Sends to an adapter the message `unsubscribe` to inform adapter to not poll the 
 ### $ - Selector
 ```js
 $(selector).on(function(obj) {});
+$(selector).toArray();
 $(selector).each(function(id, i) {});
 $(selector).setState(value, ack);
 $(selector).getState();
@@ -1396,7 +1397,7 @@ Find all channels with `common.role="switch"` and belongs to `enum.rooms.Wohnzim
 Take all their states, where id ends with `".STATE"` and make subscription on all these states.
 If some of these states change, the callback will be called like for "on" function.
 
-Following functions are possible, setState, getState (only from first), on, each
+Following functions are possible, setState, getState (only from first), on, each, toArray
 
 ```js
 // Switch on all switches in "Wohnzimmer"
@@ -1412,6 +1413,11 @@ $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').each((id, i) => {
         return false;
     }
 });
+```
+Or you can get a an usual array of ids and process it your own way:
+```js
+// get some state and filter only which has an `true` value
+const enabled = $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').toArray().filter((id) => getState(id)?.val === true);
 ```
 
 ### readFile

@@ -1,4 +1,5 @@
 const expect = require('chai').expect;
+const { log } = require('node:console');
 const setup  = require('./lib/setup');
 
 let objects  = null;
@@ -926,6 +927,46 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script);
     });
+
+    it('Test JS: test $().toArray()', function (done) {
+        this.timeout(1000);
+        // add script
+        const script = {
+            _id:                'script.js.selectorToArray',
+            type:               'script',
+            common: {
+                name:           'selectorToArray',
+                enabled:        true,
+                verbose:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('selector.test_1.state', true, () => {\n` +
+                                `    createState('selector.test_2.state', false, () => {\n` +
+                                `        createState('selector.test_3.state', true, () => {\n` +
+                                `            $(createState('selector.test_4.id', true, () => {\n` +
+                                `                const states = $('state[id=javascript.0.selector.test_*.state]')` +
+                                `                   .toArray().filter((id) => getState(id)?.val === true);\n` +
+                                `                if (Array.isArray(states)) {\n` +
+                                `                    createState('selector.result', states.length, true);\n` +
+                                `                }\n` +
+                                `            }));\n` +
+                                `        });\n` +
+                                `    });\n` +
+                                `});`,
+            },
+            native: {}
+        };
+
+        const onStateChanged = function (id, state){
+            if (id !== 'javascript.0.selector.result') return;
+            removeStateChangedHandler(onStateChanged);
+            expect(state.val).to.be.equal(2);
+            done();
+        };
+        addStateChangedHandler(onStateChanged);
+        objects.setObject(script._id, script);
+    });
+
 
     it('Test JS: test stopScript', function (done) {
         this.timeout(5000);
