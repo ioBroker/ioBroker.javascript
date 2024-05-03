@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.0.3",
+    "version": "8.1.0",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.1.0": {
+        "en": "Updated admin config to jsonConfig (dropped materialize)",
+        "de": "Updated admin config to jsonConfig (dropped materialize)",
+        "ru": "Обновленная настройка администратора на jsonConfig (скачивается материализуется)",
+        "pt": "Configuração de administrador atualizada para jsonConfig (materialize drpped)",
+        "nl": "Bijgewerkte admin config naar jsonConfig (gedropt materialiseren)",
+        "fr": "Mise à jour de la configuration d'administration à jsonConfig",
+        "it": "Modificato da admin config a jsonConfig (dropped materialize)",
+        "es": "Configuración de administración actualizada a jsonConfig (materializarse)",
+        "pl": "Aktualizacja pliku konfiguracyjnego admin do jsonConfig (upuszczony materialize)",
+        "uk": "Оновлено адмін конфігурацію в jsonConfig (видалений матеріалізування)",
+        "zh-cn": "更新管理员配置到jsonConfig( 已实现)"
+      },
       "8.0.3": {
         "en": "Updates dependencies (latest adapter-react-v5 framework)",
         "de": "Updates Abhängigkeiten (letzter Adapter-React-v5-Framework)",
@@ -117,19 +130,6 @@
         "pl": "Dodano blokowy blok do odczytu i zapisu pliku\nPozwala wybrać inne typy obiektów niż stan w niektórych blokach\nUlepszone tłumaczenia\nUsunięty 'type' z upustu (zawsze jest 'state')\nUżyj podświetlenia w wyszukiwaniu (zamiast wybierz)\nDodano opcję httpGet do otrzymywania arraybufor (pliki do pobrania)",
         "uk": "Додано блокнот для читання та запису файлу\nДозволяє вибрати інші типи об'єктів, ніж держава в деяких блоках\nПокращені переклади\nВилучено \"тип\" з випадаючою (це завжди 'держава')\nВикористовуйте родзинку в пошуку (замість вибору)\nДодано варіант для HTTPГет для отримання масивубуфер (завантажити файли)",
         "zh-cn": "为读写文件添加块块\n允许在某些块中选择非状态的其他对象类型\n改进翻译\n从下拉中删除“ 类型 ” (总是“ 状态 ” )\n在搜索中使用突出显示( 而不是选择)\n添加了 httpGet 接收阵列缓冲器的选项( 下载文件)"
-      },
-      "7.10.2": {
-        "en": "Fixed httpGet/httpPost issue when using without options\nUpdated integration testing\nProtect jsonl file access",
-        "de": "Problem behoben httpGet/httpPost bei Verwendung ohne Optionen\nAktualisierung der Integrationstests\nSchützen Sie jsonl Dateizugriff",
-        "ru": "Исправленный вопрос httpGet/httpPost при использовании без опций\nОбновленное интеграционное тестирование\nЗащитить доступ к файлам jsonl",
-        "pt": "Corrigido httpGet/httpPost questão ao usar sem opções\nTeste de integração atualizado\nProteger o acesso ao arquivo jsonl",
-        "nl": "Fixed httpGet/httpPost probleem bij gebruik zonder opties\nBijgewerkte integratietest\nJsonl-bestandstoegang beschermen",
-        "fr": "Correction du problème httpGet/httpPost lors de l'utilisation sans options\nMise à jour des tests d'intégration\nProtéger l'accès au fichier jsonl",
-        "it": "Risolto problema httpGet/httpPost quando si utilizza senza opzioni\nTest di integrazione aggiornato\nProteggere l'accesso ai file jsonl",
-        "es": "Edición httpGet/httpPost fija al utilizar sin opciones\nPruebas de integración actualizadas\nProteger el acceso a los archivos jsonl",
-        "pl": "Naprawiono wydanie httpGet / httpPost przy użyciu bez opcji\nAktualizacja testów integracji\nOchrona dostępu do plików jsonl",
-        "uk": "Виправлено проблему httpGet/httpPost при використанні без опцій\nОновлено тестування інтеграції\nЗахист доступу до файлів jsonl",
-        "zh-cn": "无选项使用时的固定 httpGet/ httpPost 发行\n更新整合测试\n保护jsonl 文件访问"
       }
     },
     "platform": "Javascript/Node.js",

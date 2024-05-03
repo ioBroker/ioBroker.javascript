@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.1.0 (2024-05-03)
 
 * (bluefox) Updated admin config to jsonConfig (dropped materialize)
 
@@ -72,12 +72,6 @@ NodeJS >= 18.x and js-controller >= 5 is required
 * (klein0r) Fixed hasAttribute blockly block
 * (klein0r) Fixed parenthesis insertion in blockly for multi and/or
 * (PeterVoronov) Added setStateChanged / setStateChangedAsync
-
-### 7.11.1 (2024-03-28)
-
-* (klein0r) Added exec result blockly block
-* (klein0r) Protect iobroker-data/files to avoid direct writes with node:fs
-* (klein0r) Escape single quotes in blockly obj attributes
 
 ## License
 The MIT License (MIT)

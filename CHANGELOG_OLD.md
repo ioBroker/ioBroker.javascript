@@ -1,4 +1,10 @@
 The newest change log is in README.md
+## 7.11.1 (2024-03-28)
+
+* (klein0r) Added exec result blockly block
+* (klein0r) Protect iobroker-data/files to avoid direct writes with node:fs
+* (klein0r) Escape single quotes in blockly obj attributes
+
 ## 7.11.0 (2024-03-26)
 
 * (klein0r) Added blockly block for read and write file

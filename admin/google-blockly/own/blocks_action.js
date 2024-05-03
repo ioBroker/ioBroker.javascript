@@ -23,7 +23,7 @@ Blockly.Action.blocks['exec'] =
     + '             <field name="TEXT">pwd</field>'
     + '         </shadow>'
     + '     </value>'
-    + '     <value name="LOG">'
+    + '     <value name="LOG_LEVEL">'
     + '     </value>'
     + '     <value name="WITH_STATEMENT">'
     + '     </value>'
@@ -44,15 +44,15 @@ Blockly.Blocks['exec'] = {
                 this.sourceBlock_.updateShape_(option === true || option === 'true' || option === 'TRUE');
             }), 'WITH_STATEMENT');
 
-        this.appendDummyInput('LOG')
-            .appendField(Blockly.Translate('exec_log'))
+        this.appendDummyInput('LOG_LEVEL')
+            .appendField(Blockly.Translate('loglevel'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('exec_log_none'),  ''],
-                [Blockly.Translate('exec_log_info'),  'log'],
-                [Blockly.Translate('exec_log_debug'), 'debug'],
-                [Blockly.Translate('exec_log_warn'),  'warn'],
-                [Blockly.Translate('exec_log_error'), 'error']
-            ]), 'LOG');
+                [Blockly.Translate('loglevel_none'),  ''],
+                [Blockly.Translate('loglevel_debug'), 'debug'],
+                [Blockly.Translate('loglevel_info'),  'info'],
+                [Blockly.Translate('loglevel_warn'),  'warn'],
+                [Blockly.Translate('loglevel_error'), 'error'],
+            ]), 'LOG_LEVEL');
 
         this.setInputsInline(false);
         this.setPreviousStatement(true, null);
@@ -90,8 +90,8 @@ Blockly.Blocks['exec'] = {
 };
 
 Blockly.JavaScript['exec'] = function(block) {
-    const logLevel = block.getFieldValue('LOG');
     const value_command = Blockly.JavaScript.valueToCode(block, 'COMMAND', Blockly.JavaScript.ORDER_ATOMIC);
+    const logLevel = block.getFieldValue('LOG_LEVEL');
     const withStatement = block.getFieldValue('WITH_STATEMENT');
 
     let logText;
