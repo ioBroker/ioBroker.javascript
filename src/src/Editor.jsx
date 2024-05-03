@@ -51,8 +51,8 @@ import { MdAutoAwesome as IconAstro } from 'react-icons/md';
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
-import ImgBlockly2Js from './assets/blockly2js.png';
-import ImgRules2Js from './assets/rules2js.png';
+import ImgBlockly2Js from './assets/blockly2js.svg';
+import ImgRules2Js from './assets/rules2js.svg';
 import ImgRules from './assets/rules.png';
 
 import {
