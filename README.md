@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.1.1 (2024-05-03)
 
 * (klein0r) Updated Blockly/JS and Rules/JS image (as svg)
 
@@ -62,20 +62,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 
 * (klein0r) Fixed some missing translations (uk)
 * (klein0r) Raised supported ecmaVersion from es2021 to es2022 (node18)
-
-### 8.0.0 (2024-04-05)
-
-NodeJS >= 18.x and js-controller >= 5 is required
-
-* (klein0r) Breaking change: Removed support for binary states (deprecated since v6.2.0)
-* (klein0r) Breaking change: Protected filesystem (iobroker-data/files) to prevent direct file writes
-* (klein0r) Breaking change: request property has been removed of the sandbox (require the module if still needed)
-* (klein0r) Added blockly block for global variables (e.g. script name)
-* (klein0r) Added missing functions to protectFS
-* (klein0r) Fixed httpPost (missing data)
-* (klein0r) Fixed hasAttribute blockly block
-* (klein0r) Fixed parenthesis insertion in blockly for multi and/or
-* (PeterVoronov) Added setStateChanged / setStateChangedAsync
 
 ## License
 The MIT License (MIT)

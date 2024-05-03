@@ -23,7 +23,7 @@ Blockly.Action.blocks['exec'] =
     + '             <field name="TEXT">pwd</field>'
     + '         </shadow>'
     + '     </value>'
-    + '     <value name="LOG_LEVEL">'
+    + '     <value name="LOG">'
     + '     </value>'
     + '     <value name="WITH_STATEMENT">'
     + '     </value>'
@@ -44,7 +44,7 @@ Blockly.Blocks['exec'] = {
                 this.sourceBlock_.updateShape_(option === true || option === 'true' || option === 'TRUE');
             }), 'WITH_STATEMENT');
 
-        this.appendDummyInput('LOG_LEVEL')
+        this.appendDummyInput('LOG')
             .appendField(Blockly.Translate('loglevel'))
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('loglevel_none'),  ''],
@@ -52,7 +52,7 @@ Blockly.Blocks['exec'] = {
                 [Blockly.Translate('loglevel_info'),  'info'],
                 [Blockly.Translate('loglevel_warn'),  'warn'],
                 [Blockly.Translate('loglevel_error'), 'error'],
-            ]), 'LOG_LEVEL');
+            ]), 'LOG');
 
         this.setInputsInline(false);
         this.setPreviousStatement(true, null);
@@ -91,7 +91,7 @@ Blockly.Blocks['exec'] = {
 
 Blockly.JavaScript['exec'] = function(block) {
     const value_command = Blockly.JavaScript.valueToCode(block, 'COMMAND', Blockly.JavaScript.ORDER_ATOMIC);
-    const logLevel = block.getFieldValue('LOG_LEVEL');
+    const logLevel = block.getFieldValue('LOG');
     const withStatement = block.getFieldValue('WITH_STATEMENT');
 
     let logText;
@@ -630,13 +630,13 @@ Blockly.Blocks['request'] = {
             }), 'WITH_STATEMENT');
 
         this.appendDummyInput('LOG')
-            .appendField(Blockly.Translate('request_log'))
+            .appendField(Blockly.Translate('loglevel'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('request_log_none'),  ''],
-                [Blockly.Translate('request_log_info'),  'log'],
-                [Blockly.Translate('request_log_debug'), 'debug'],
-                [Blockly.Translate('request_log_warn'),  'warn'],
-                [Blockly.Translate('request_log_error'), 'error']
+                [Blockly.Translate('loglevel_none'),  ''],
+                [Blockly.Translate('loglevel_debug'), 'debug'],
+                [Blockly.Translate('loglevel_info'),  'info'],
+                [Blockly.Translate('loglevel_warn'),  'warn'],
+                [Blockly.Translate('loglevel_error'), 'error'],
             ]), 'LOG');
 
         this.setInputsInline(false);

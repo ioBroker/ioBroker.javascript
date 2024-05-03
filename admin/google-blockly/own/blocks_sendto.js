@@ -99,13 +99,13 @@ Blockly.Blocks['sendto_custom'] = {
         this.setColour(Blockly.Sendto.HUE);
 
         this.appendDummyInput('LOG')
-            .appendField(Blockly.Translate('sendto_log'))
+            .appendField(Blockly.Translate('loglevel'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('sendto_log_none'),  ''],
-                [Blockly.Translate('sendto_log_info'),  'log'],
-                [Blockly.Translate('sendto_log_debug'), 'debug'],
-                [Blockly.Translate('sendto_log_warn'),  'warn'],
-                [Blockly.Translate('sendto_log_error'), 'error']
+                [Blockly.Translate('loglevel_none'),  ''],
+                [Blockly.Translate('loglevel_debug'), 'debug'],
+                [Blockly.Translate('loglevel_info'),  'info'],
+                [Blockly.Translate('loglevel_warn'),  'warn'],
+                [Blockly.Translate('loglevel_error'), 'error'],
             ]), 'LOG');
 
         this.appendDummyInput('WITH_STATEMENT')

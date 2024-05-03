@@ -1,4 +1,18 @@
 The newest change log is in README.md
+## 8.0.0 (2024-04-05)
+
+NodeJS >= 18.x and js-controller >= 5 is required
+
+* (klein0r) Breaking change: Removed support for binary states (deprecated since v6.2.0)
+* (klein0r) Breaking change: Protected filesystem (iobroker-data/files) to prevent direct file writes
+* (klein0r) Breaking change: request property has been removed of the sandbox (require the module if still needed)
+* (klein0r) Added blockly block for global variables (e.g. script name)
+* (klein0r) Added missing functions to protectFS
+* (klein0r) Fixed httpPost (missing data)
+* (klein0r) Fixed hasAttribute blockly block
+* (klein0r) Fixed parenthesis insertion in blockly for multi and/or
+* (PeterVoronov) Added setStateChanged / setStateChangedAsync
+
 ## 7.11.1 (2024-03-28)
 
 * (klein0r) Added exec result blockly block
