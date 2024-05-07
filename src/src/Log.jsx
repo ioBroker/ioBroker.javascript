@@ -96,6 +96,9 @@ const styles = theme => ({
         verticalAlign: 'top',
         overflow: 'hidden',
     },
+    trFrom: {
+        width: 90,
+    },
     trTime: {
         width: 90,
     },
@@ -141,11 +144,25 @@ class Log extends React.Component {
         this.messagesEnd = React.createRef();
     }
 
-    generateLine(message) {
-        return <tr key={`tr_${message.ts}_${message.message.substr(-10)}`} className={this.props.classes[message.severity]}>
-            <td key="tdTime" className={this.props.classes.trTime}>{getTimeString(new Date(message.ts))}</td>
-            <td key="tdSeverity" className={this.props.classes.trSeverity}>{message.severity}</td>
-            <td key="tdMessage">{message.message}</td>
+    generateLine(row) {
+        let message = row.message || '';
+
+        if (typeof message !== 'object') {
+            const regExp = new RegExp(`${row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(')} \\(\\d+\\) `, 'g');
+            const matches = message.match(regExp);
+
+            if (matches) {
+                message = message.replace(matches[0], '');
+            } else {
+                message = message.replace(`${row.from} `, '');
+            }
+        }
+
+        return <tr key={`tr_${row.ts}_${row.message.substr(-10)}`} className={this.props.classes[row.severity]}>
+            <td key="tdFrom" className={this.props.classes.trFrom}>{row.from}</td>
+            <td key="tdTime" className={this.props.classes.trTime}>{getTimeString(new Date(row.ts))}</td>
+            <td key="tdSeverity" className={this.props.classes.trSeverity}>{row.severity}</td>
+            <td key="tdMessage">{message}</td>
         </tr>;
     }
 
@@ -185,7 +202,7 @@ class Log extends React.Component {
         allLines[selected] = lines;
 
         this.setState({ lines: allLines });
-    }
+    };
 
     componentDidMount() {
         this.props.socket.registerLogHandler(this.logHandler);
