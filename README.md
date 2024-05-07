@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.2.0 (2024-05-07)
 
 * (PeterVoronov) Added toArray to result object of $-selector
 * (klein0r) Added Blockly block for onLog
@@ -62,11 +62,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### 8.0.2 (2024-04-08)
 
 * (klein0r) Forced downgrade of socket-client (object change issues)
-
-### 8.0.1 (2024-04-08)
-
-* (klein0r) Fixed some missing translations (uk)
-* (klein0r) Raised supported ecmaVersion from es2021 to es2022 (node18)
 
 ## License
 The MIT License (MIT)

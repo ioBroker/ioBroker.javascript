@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 8.0.1 (2024-04-08)
+
+* (klein0r) Fixed some missing translations (uk)
+* (klein0r) Raised supported ecmaVersion from es2021 to es2022 (node18)
+
 ## 8.0.0 (2024-04-05)
 
 NodeJS >= 18.x and js-controller >= 5 is required
