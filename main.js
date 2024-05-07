@@ -1828,20 +1828,26 @@ async function installLibraries() {
     }
 }
 
-function createVM(source, name) {
+function createVM(source, name, wrapAsync) {
     if (debugMode && name !== debugMode) {
         return false;
     }
 
     if (!debugMode) {
-        source += "\n;\nlog('registered ' + __engine.__subscriptions + ' subscription' + (__engine.__subscriptions === 1 ? '' : 's' ) + '," +
-            " ' + __engine.__schedules + ' schedule' + (__engine.__schedules === 1 ? '' : 's' ) + '," +
-            " ' + __engine.__subscriptionsMessage + ' message' + (__engine.__subscriptionsMessage === 1 ? '' : 's' ) + '," +
-            " ' + __engine.__subscriptionsLog + ' log' + (__engine.__subscriptionsLog === 1 ? '' : 's' ) + " +
-            "' and ' + __engine.__subscriptionsFile + ' file subscription' + (__engine.__subscriptionsFile === 1 ? '' : 's' ));\n";
+        const logSubscriptionsText = "\n;\nlog(`registered ${__engine.__subscriptions} subscription${__engine.__subscriptions === 1 ? '' : 's'}," +
+            " ${__engine.__schedules} schedule${__engine.__schedules === 1 ? '' : 's'}," +
+            " ${__engine.__subscriptionsMessage} message${__engine.__subscriptionsMessage === 1 ? '' : 's'}," +
+            " ${__engine.__subscriptionsLog} log${__engine.__subscriptionsLog === 1 ? '' : 's'}" +
+            " and ${__engine.__subscriptionsFile} file subscription${__engine.__subscriptionsFile === 1 ? '' : 's'}`);\n";
+
+        if (wrapAsync) {
+            source = `(async () => {\n${source}\n${logSubscriptionsText}\n})();`;
+        } else {
+            source = `${source}\n${logSubscriptionsText}`;
+        }
     } else {
-        if (source.startsWith('(async () => {\n')) {
-            source = `(async () => {debugger;\n${source.substring('(async () => {\n'.length)}`;
+        if (wrapAsync) {
+            source = `(async () => {debugger;\n${source}\n})();`;
         } else {
             source = `debugger;${source}`;
         }
@@ -2108,7 +2114,7 @@ function prepareScript(obj, callback) {
                 const fn = name.replace(/^script.js./, '').replace(/\./g, '/');
                 sourceFn = mods.path.join(webstormDebug, fn + '.js');
             }
-            context.scripts[name] = createVM(`(async () => {\n${globalScript + obj.common.source}\n})();`, sourceFn);
+            context.scripts[name] = createVM(globalScript + '\n' + obj.common.source, sourceFn, true);
             if (!context.scripts[name]) {
                 delete context.scripts[name];
                 typeof callback === 'function' && callback(false, name);
@@ -2174,7 +2180,7 @@ function prepareScript(obj, callback) {
                     return;
                 }
             }
-            context.scripts[name] = createVM(globalScript + '\n' + compiled, name);
+            context.scripts[name] = createVM(globalScript + '\n' + compiled, name, false);
             if (!context.scripts[name]) {
                 delete context.scripts[name];
                 typeof callback === 'function' && callback(false, name);
