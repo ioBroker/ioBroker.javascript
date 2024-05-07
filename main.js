@@ -939,15 +939,14 @@ function startAdapter(options) {
 
     // handler for logs
     adapter.on('log', msg =>
-        Object.keys(context.logSubscriptions)
-            .forEach(name =>
-                context.logSubscriptions[name].forEach(handler => {
-                    if (typeof handler.cb === 'function' && (handler.severity === '*' || handler.severity === msg.severity)) {
-                        handler.sandbox.logHandler = handler.severity || '*';
-                        handler.cb.call(handler.sandbox, msg);
-                        handler.sandbox.logHandler = null;
-                    }
-                })));
+        Object.keys(context.logSubscriptions).forEach(name =>
+            context.logSubscriptions[name].forEach(handler => {
+                if (typeof handler.cb === 'function' && (handler.severity === '*' || handler.severity === msg.severity)) {
+                    handler.sandbox.logHandler = handler.severity || '*';
+                    handler.cb.call(handler.sandbox, msg);
+                    handler.sandbox.logHandler = null;
+                }
+            })));
 
     context.adapter = adapter;
 
@@ -1806,6 +1805,8 @@ async function installLibraries() {
                 adapter.log.debug(`Found custom dependency in config: "${depName}@${version}"`);
 
                 if (typeof adapter.installNodeModule === 'function') {
+                    //const installedNodeModules = await adapter.listInstalledNodeModules();
+
                     const result = await adapter.installNodeModule(depName, { version });
                     if (result.success) {
                         adapter.log.debug(`Installed custom dependency: "${depName}@${version}"`);

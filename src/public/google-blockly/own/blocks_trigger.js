@@ -13,7 +13,7 @@ Blockly.Trigger = {
     HUE: 330,
     blocks: {},
     WARNING_PARENTS: [
-        'on', 'on_ext', 'schedule', 'schedule_by_id', 'schedule_create', 'astro', 'onMessage', 'onFile', // trigger blocks
+        'on', 'on_ext', 'schedule', 'schedule_by_id', 'schedule_create', 'astro', 'onMessage', 'onFile', 'onLog', // trigger blocks
         'timeouts_setinterval', 'timeouts_setinterval_variable', // timeouts
         'controls_repeat_ext', 'controls_repeat_ext', 'controls_for', 'controls_forEach', // loops
     ],
@@ -269,7 +269,7 @@ Blockly.Blocks['on_ext'] = {
             this.inputList.push(input);
         } else {
             this.appendStatementInput('STATEMENT')
-                .setCheck(null)
+                .setCheck(null);
         }
     },
     /**
@@ -1302,7 +1302,7 @@ Blockly.Blocks['onFile_data'] = {
         this.setInputsInline(true);
         this.setOutput(true);
         this.setColour(Blockly.Trigger.HUE);
-        this.setTooltip(Blockly.Translate('onFile_datatooltip'));
+        this.setTooltip(Blockly.Translate('onFile_data_tooltip'));
         //this.setHelpUrl(getHelp('onFile_data'));
     },
     /**
@@ -1391,4 +1391,140 @@ Blockly.JavaScript['offFile'] = function (block) {
     }
 
     return `offFile(${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, ${file});\n`;
+};
+
+// --- onLog -----------------------------------------------------------
+Blockly.Trigger.blocks['onLog'] =
+    '<block type="onLog">'
+    + '     <value name="Severity">'
+    + '     </value>'
+    + '     <value name="STATEMENT">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['onLog'] = {
+    init: function() {
+        this.appendDummyInput('TEXT')
+            .appendField('💬 ' + Blockly.Translate('onLog'));
+
+        this.appendDummyInput('Severity')
+            .appendField(Blockly.Translate('loglevel'))
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('loglevel_error'), 'error'],
+                [Blockly.Translate('loglevel_warn'),  'warn'],
+                [Blockly.Translate('loglevel_info'),  'info'],
+                [Blockly.Translate('loglevel_debug'), 'debug'],
+                [Blockly.Translate('loglevel_all'), '*'],
+            ]), 'Severity');
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setInputsInline(false);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setTooltip(Blockly.Translate('onLog_tooltip'));
+        this.setHelpUrl(getHelp('onLog_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        let legal = true;
+
+        // Is the block nested in a trigger?
+        let block = this;
+        while (block = block.getSurroundParent()) {
+            if (block && Blockly.Trigger.WARNING_PARENTS.includes(block.type)) {
+                legal = false;
+                break;
+            }
+        }
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
+        }
+    }
+};
+
+Blockly.JavaScript['onLog'] = function (block) {
+    const logLevel = block.getFieldValue('Severity');
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    return `onLog('${logLevel}', async (data) => {\n` +
+        statement +
+        '});\n';
+};
+
+// --- onLog_data -----------------------------------------------------------
+Blockly.Trigger.blocks['onLog_data'] =
+    '<block type="onLog_data">'
+    + '     <value name="ATTR">'
+    + '     </value>'
+    + '</block>';
+
+Blockly.Blocks['onLog_data'] = {
+    /**
+     * Block for conditionally returning a value from a procedure.
+     * @this Blockly.Block
+     */
+    init: function() {
+        this.appendDummyInput()
+            .appendField('💬 ');
+
+        this.appendDummyInput('ATTR')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('onLog_data_message'), 'data.message'],
+                [Blockly.Translate('loglevel'), 'data.severity'],
+                [Blockly.Translate('onLog_data_from'), 'data.from'],
+                [Blockly.Translate('onLog_data_ts'), 'data.ts'],
+            ]), 'ATTR');
+
+        this.setInputsInline(true);
+        this.setOutput(true);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setTooltip(Blockly.Translate('onLog_data_tooltip'));
+        //this.setHelpUrl(getHelp('onLog_data_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        let legal = false;
+        // Is the block nested in a trigger?
+        let block = this;
+        do {
+            if (this.FUNCTION_TYPES.includes(block.type)) {
+                legal = true;
+                break;
+            }
+            block = block.getSurroundParent();
+        } while (block);
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('onLog_data_warning'), this.id);
+        }
+    },
+    /**
+     * List of block types that are functions and thus do not need warnings.
+     * To add a new function type add this to your code:
+     * Blockly.Blocks['procedures_ifreturn'].FUNCTION_TYPES.push('custom_func');
+     */
+    FUNCTION_TYPES: ['onLog'],
+};
+Blockly.JavaScript['onLog_data'] = function(block) {
+    const attr = block.getFieldValue('ATTR');
+
+    return [attr, Blockly.JavaScript.ORDER_ATOMIC];
 };
