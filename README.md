@@ -42,6 +42,11 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Fixed log message on script start
+* (klein0r) Added instance/from to log window (like in admin)
+
 ### 8.2.0 (2024-05-07)
 
 * (PeterVoronov) Added toArray to result object of $-selector
