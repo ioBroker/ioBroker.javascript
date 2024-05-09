@@ -44,6 +44,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 -->
 ### **WORK IN PROGRESS**
 
+* (klein0r) Added createTempFile to sandbox
 * (klein0r) Fixed log message on script start
 * (klein0r) Added instance/from to log window (like in admin)
 

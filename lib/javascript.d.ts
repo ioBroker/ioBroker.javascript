@@ -1336,6 +1336,11 @@ declare global {
 	function httpPostAsync(url: string, data: object | string, options: iobJS.HttpRequestOptions): Promise<iobJS.httpResponse>;
 
 	/**
+	 * Creates a temp directory for the current script and saves a new file with given content
+	 */
+	function createTempFile(fileName: string, data: string | ArrayBuffer) : string;
+
+	/**
 	 * Subscribe to the changes of the matched states.
 	 */
 	function on(pattern: string | RegExp | string[], handler: iobJS.StateChangeHandler): any;

@@ -262,7 +262,7 @@ const context = {
     subscriptionsFile:   [],
     subscriptionsObject: [],
     subscribedPatterns:  {},
-    subscribedPatternsFile:  {},
+    subscribedPatternsFile: {},
     adapterSubs:         {},
     cacheObjectEnums:    {},
     isEnums:             false, // If some subscription wants enum
@@ -277,6 +277,7 @@ const context = {
     scripts:             {},
     messageBusHandlers:  {},
     logSubscriptions:    {},
+    tempDirectories:     {},
     folderCreationVerifiedObjects: {},
     updateLogSubscriptions,
     convertBackStringifiedValues,
@@ -1031,6 +1032,8 @@ function updateObjectContext(id, obj) {
 function main() {
     !debugMode && patchFont()
         .then(patched => patched && adapter.log.debug('Font patched'));
+
+    adapter.log.debug(`config.subscribe (Do not subscribe all states on start): ${adapter.config.subscribe}`);
 
     // correct jsonConfig for admin
     adapter.getForeignObject(`system.adapter.${adapter.namespace}`, (err, obj) => {
@@ -1955,6 +1958,18 @@ function stop(name, callback) {
 
     if (context.messageBusHandlers[name]) {
         delete context.messageBusHandlers[name];
+    }
+
+    if (context.tempDirectories[name]) {
+        try {
+            mods.fs.rmSync(context.tempDirectories[name], { recursive: true });
+
+            adapter.log.debug(`Removed temp directory of ${name}: ${context.tempDirectories[name]}`);
+        } catch (err) {
+            adapter.log.warn(`Unable to remove temp directory of ${name}: ${context.tempDirectories[name]}`);
+        }
+
+        delete context.tempDirectories[name];
     }
 
     if (context.logSubscriptions[name]) {

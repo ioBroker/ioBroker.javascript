@@ -604,6 +604,50 @@ describe.only('Test JS', function () {
         });
     });
 
+    it('Test JS: create a temp directory must work', function (done) {
+        this.timeout(3000);
+        const os = require('node:os');
+        const fs = require('node:fs');
+
+        // add script
+        const script = {
+            _id:                'script.js.test_createTempFile',
+            type:               'script',
+            common: {
+                name:           'test create temp file',
+                enabled:        true,
+                verbose:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('testCreateTempFile', '-', () => {\n` +
+                                `    const filePath = createTempFile('test.txt', 'CONTENT_OK');\n` +
+                                `    setState('testCreateTempFile', { val: filePath, ack: true });\n` +
+                                `});`,
+            },
+            native: {}
+        };
+        const onStateChanged = function (id, state) {
+            if (id === 'javascript.0.testCreateTempFile' && state.ack) {
+                const tempFilePath = state.val;
+
+                expect(tempFilePath).to.be.a('string');
+                expect(tempFilePath.startsWith(os.tmpdir())).to.be.true;
+                expect(fs.existsSync(tempFilePath)).to.be.true;
+
+                // Check content
+                const fileContent = fs.readFileSync(tempFilePath);
+                expect(fileContent).to.be.equal('CONTENT_OK');
+
+                removeStateChangedHandler(onStateChanged);
+                done();
+            }
+        };
+        addStateChangedHandler(onStateChanged);
+        objects.setObject(script._id, script, err => {
+            expect(err).to.be.not.ok;
+        });
+    });
+
     it('Test JS: test getAstroDate', function (done) {
         this.timeout(6000);
         const types = [

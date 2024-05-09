@@ -1926,6 +1926,21 @@ httpPost(
 );
 ```
 
+### createTempFile
+
+```js
+httpGet('https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin/javascript.png', { responseType: 'arraybuffer' }, async (err, response) => {
+    if (err) {
+        console.error(err);
+    } else {
+        const tempFilePath = createTempFile('javascript.png', response.data);
+        console.log(`Saved to ${tempFilePath}`);
+
+        // Use the new path in other scripts (e.g. sendTo)
+    }
+});
+```
+
 ## Global script variables
 ### scriptName
 `scriptName` - The name of the script.
