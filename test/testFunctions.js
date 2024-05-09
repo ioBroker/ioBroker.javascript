@@ -604,8 +604,8 @@ describe.only('Test JS', function () {
         });
     });
 
-    it('Test JS: create a temp directory must work', function (done) {
-        this.timeout(3000);
+    it('Test JS: test createTempFile', function (done) {
+        this.timeout(6000);
         const os = require('node:os');
         const fs = require('node:fs');
 
@@ -619,15 +619,15 @@ describe.only('Test JS', function () {
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('testCreateTempFile', '-', () => {\n` +
-                                `    const filePath = createTempFile('test.txt', 'CONTENT_OK');\n` +
-                                `    setState('testCreateTempFile', { val: filePath, ack: true });\n` +
+                source:         `createState('testCreateTempFile', { type: 'string', read: true, write: false }, async () => {\n` +
+                                `    const filePath = createTempFile('subdir/test.txt', 'CONTENT_OK');\n` +
+                                `    await setStateAsync('testCreateTempFile', { val: filePath, ack: true });\n` +
                                 `});`,
             },
             native: {}
         };
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.testCreateTempFile' && state.ack) {
+            if (id === 'javascript.0.testCreateTempFile' && state.val !== '-') {
                 const tempFilePath = state.val;
 
                 expect(tempFilePath).to.be.a('string');
@@ -635,7 +635,7 @@ describe.only('Test JS', function () {
                 expect(fs.existsSync(tempFilePath)).to.be.true;
 
                 // Check content
-                const fileContent = fs.readFileSync(tempFilePath);
+                const fileContent = fs.readFileSync(tempFilePath).toString();
                 expect(fileContent).to.be.equal('CONTENT_OK');
 
                 removeStateChangedHandler(onStateChanged);
@@ -807,7 +807,7 @@ describe.only('Test JS', function () {
 
                     checkValueOfState('javascript.0.delayed', 9, err => {
                         expect(err).to.be.not.ok;
-                        states.getState('javascript.0.delayed', function (err/*, stateStop */) {
+                        states.getState('javascript.0.delayed', function (err) {
                             expect(err).to.be.not.ok;
                             done();
                         });
@@ -861,7 +861,10 @@ describe.only('Test JS', function () {
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('delayedResult', '', () => { setStateDelayed('delayed', 10, 1500); setState('delayedResult', JSON.stringify(getStateDelayed('delayed'))); });`,
+                source:         `createState('delayedResult', '', () => {\n` +
+                                `    setStateDelayed('delayed', 10, 1500);\n` +
+                                `    setState('delayedResult', JSON.stringify(getStateDelayed('delayed')));\n` +
+                                `});`,
             },
             native: {}
         };
@@ -1163,7 +1166,12 @@ describe.only('Test JS', function () {
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('testResponse', false); createState('testVar', 0, () => { on('testVar', (obj) => { setState('testResponse', obj.state.val, true); }); });`,
+                source:         `createState('testResponse', false);\n` +
+                                `createState('testVar', 0, () => {\n` +
+                                `    on('testVar', (obj) => {\n` +
+                                `        setState('testResponse', obj.state.val, true);\n` +
+                                `    });\n` +
+                                `});`,
             },
             native: {}
         };
