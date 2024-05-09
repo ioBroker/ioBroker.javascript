@@ -1297,6 +1297,7 @@ Blockly.Blocks['onFile_data'] = {
                 [Blockly.Translate('onFile_data_size'), 'size'],
                 [Blockly.Translate('onFile_data_mimeType'), 'mimeType'],
                 [Blockly.Translate('onFile_data_id'), 'id'],
+                [Blockly.Translate('onFile_data_tempFile'), 'TEMP_FILE_PATH'],
             ]), 'ATTR');
 
         this.setInputsInline(true);
@@ -1339,7 +1340,11 @@ Blockly.Blocks['onFile_data'] = {
 Blockly.JavaScript['onFile_data'] = function(block) {
     const attr = block.getFieldValue('ATTR');
 
-    return [attr, Blockly.JavaScript.ORDER_ATOMIC];
+    if (attr === 'TEMP_FILE_PATH') {
+        return [`createTempFile(fileName, data)`, Blockly.JavaScript.ORDER_ATOMIC];
+    } else {
+        return [attr, Blockly.JavaScript.ORDER_ATOMIC];
+    }
 };
 
 // --- onFile -----------------------------------------------------------

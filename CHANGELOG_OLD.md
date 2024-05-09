@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 8.0.2 (2024-04-08)
+
+* (klein0r) Forced downgrade of socket-client (object change issues)
+
 ## 8.0.1 (2024-04-08)
 
 * (klein0r) Fixed some missing translations (uk)

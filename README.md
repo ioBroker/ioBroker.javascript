@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.3.0 (2024-05-09)
 
 * (klein0r) Added createTempFile to sandbox
 * (klein0r) Fixed log message on script start
@@ -64,10 +64,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### 8.0.3 (2024-04-11)
 
 * (klein0r) Updates dependencies (latest adapter-react-v5 framework)
-
-### 8.0.2 (2024-04-08)
-
-* (klein0r) Forced downgrade of socket-client (object change issues)
 
 ## License
 The MIT License (MIT)
