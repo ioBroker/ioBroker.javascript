@@ -1941,6 +1941,14 @@ httpGet('https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/a
 });
 ```
 
+```js
+onFile('0_userdata.0', 'test.jpg', true, async (id, fileName, size, data, mimeType) => {
+    const tempFilePath = createTempFile(fileName, response.data);
+
+    // Use the new path in other scripts (e.g. sendTo)
+});
+```
+
 ## Global script variables
 ### scriptName
 `scriptName` - The name of the script.
