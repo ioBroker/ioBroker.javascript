@@ -1785,11 +1785,11 @@ describe.only('Test JS', function () {
         });
     }).timeout(15000);
 
-    it('Test JS: Format time diff', function (done) {
+    it('Test JS: Check format time diff', function (done) {
         this.timeout(10000);
         // add script
         const script = {
-            _id:                'script.js.format_time_diff',
+            _id:                'script.js.check_format_time_diff',
             type:               'script',
             common: {
                 name:           'Format time diff',
@@ -1797,15 +1797,24 @@ describe.only('Test JS', function () {
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('format_time_diff', () => {\n` +
-                                `    const diff = 172800000 + 10800000 + 540000 + 15000;\n` +
-                                `    setState('format_time_diff', formatTimeDiff(diff, 'hh:mm:ss'), true);\n` +
+                source:         `createState('format_time_diff', { type: 'string', role: 'json', read: true, write: false }, () => {\n` +
+                                `    const diff1 = formatTimeDiff(172800000 + 10800000 + 540000 + 15000, 'hh:mm:ss');\n` +
+                                `    const diff2 = formatTimeDiff((172800000 + 10800000 + 540000 + 15000) * -1, 'mm:ss');\n` +
+                                `    setState('format_time_diff', { val: JSON.stringify({ diff1, diff2 }), ack: true });\n` +
                                 `});`,
             },
             native: {},
         };
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.format_time_diff' && state.val === '51:09:15') {
+            if (id === 'javascript.0.format_time_diff' && state.val) {
+                const obj = JSON.parse(state.val);
+
+                expect(obj.diff1).to.be.a('string');
+                expect(obj.diff1).to.be.equal('51:09:15');
+
+                expect(obj.diff2).to.be.a('string');
+                expect(obj.diff2).to.be.equal('-3069:15');
+
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
