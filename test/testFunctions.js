@@ -156,14 +156,14 @@ describe.only('Test JS', function () {
         checkConnectionOfAdapter(done);
     });
 
-    it('Test JS: check compareTime between', function (done) {
+    it('Test JS: test compareTime between', function (done) {
         this.timeout(10000);
         // add script
         const script = {
-            _id:                'script.js.check_compareTime',
+            _id:                'script.js.test_compareTime',
             type:               'script',
             common: {
-                name:           'Check compareTime',
+                name:           'compareTime',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
@@ -212,23 +212,23 @@ describe.only('Test JS', function () {
         });
     });
 
-    it('Test JS: Catch httpGet error', function (done) {
+    it('Test JS: test httpGet error', function (done) {
         this.timeout(10000);
         // add script
         const script = {
-            _id:                'script.js.check_httpget_error',
+            _id:                'script.js.test_httpget_error',
             type:               'script',
             common: {
-                name:           'Catch httpGet error',
+                name:           'test httpGet error',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('check_httpget_error', () => {\n` +
+                source:         `createState('test_httpget_error', () => {\n` +
                                 `    httpGet('http://google1456.com', (error, response) => {\n` +
                                 `        if (error) {\n` +
                                 `            console.error(error);\n` +
-                                `            setState('check_httpget_error', true, true);\n` +
+                                `            setState('test_httpget_error', true, true);\n` +
                                 `        }\n` +
                                 `   });\n` +
                                 `});`,
@@ -236,7 +236,7 @@ describe.only('Test JS', function () {
             native: {},
         };
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.check_httpget_error' && state.val === true) {
+            if (id === 'javascript.0.test_httpget_error' && state.val === true) {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
@@ -248,29 +248,29 @@ describe.only('Test JS', function () {
         });
     });
 
-    it('Test JS: check creation of state', function (done) {
+    it('Test JS: test creation of state', function (done) {
         this.timeout(3000);
         // add script
         const script = {
-            _id:                'script.js.check_creation_of_state',
+            _id:                'script.js.test_creation_of_state',
             type:               'script',
             common: {
-                name:           'check creation of state',
+                name:           'test creation of state',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('test1', 5);`,
+                source:         `createState('test_creation_of_state', 5);`,
             },
             native: {},
         };
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.test1' && state.val === 5) {
+            if (id === 'javascript.0.test_creation_of_state' && state.val === 5) {
                 removeStateChangedHandler(onStateChanged);
-                states.getState('javascript.0.test1', (err, state) => {
+                states.getState('javascript.0.test_creation_of_state', (err, state) => {
                     expect(err).to.be.not.ok;
                     expect(state.val).to.be.equal(5);
-                    objects.getObject('javascript.0.test1', (err, obj) => {
+                    objects.getObject('javascript.0.test_creation_of_state', (err, obj) => {
                         expect(err).to.be.not.ok;
                         expect(obj).to.be.ok;
 
@@ -285,30 +285,30 @@ describe.only('Test JS', function () {
         });
     });
 
-    it('Test JS: check creation of state for other instance', function (done) {
+    it('Test JS: test creation of state for other instance', function (done) {
         this.timeout(3000);
         // add script
         const script = {
-            _id:                'script.js.check_creation_of_foreign_state',
+            _id:                'script.js.test_creation_of_foreign_state',
             type:               'script',
             common: {
-                name:           'Check creation of foreign state',
+                name:           'test creation of foreign state',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('javascript.1.test1', 6);`,
+                source:         `createState('javascript.1.test_creation_of_foreign_state', 6);`,
             },
             native: {},
         };
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.1.test1' && state.val === 6) {
+            if (id === 'javascript.1.test_creation_of_foreign_state' && state.val === 6) {
                 removeStateChangedHandler(onStateChanged);
-                states.getState('javascript.1.test1', (err, state) => {
+                states.getState('javascript.1.test_creation_of_foreign_state', (err, state) => {
                     expect(err).to.be.not.ok;
                     expect(state).to.be.ok;
                     expect(state.val).to.be.equal(6);
-                    objects.getObject('javascript.1.test1', (err, obj) => {
+                    objects.getObject('javascript.1.test_creation_of_foreign_state', (err, obj) => {
                         expect(err).to.be.not.ok;
                         expect(obj).to.be.ok;
                         done();
@@ -322,40 +322,40 @@ describe.only('Test JS', function () {
         });
     });
 
-    it('Test JS: check deletion of state', function (done) {
+    it('Test JS: test deletion of state', function (done) {
         this.timeout(3000);
         // add script
         const script = {
-            _id:                'script.js.check_deletion_of_state',
+            _id:                'script.js.test_deletion_of_state',
             type:               'script',
             common: {
-                name:           'check deletion of state',
+                name:           'test deletion of state',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `deleteState('test1');`,
+                source:         `deleteState('test_creation_of_state');`,
             },
             native: {}
         };
 
-        objects.getObject('javascript.0.test1', (err, obj) => {
+        objects.getObject('javascript.0.test_creation_of_state', (err, obj) => {
             expect(err).to.be.not.ok;
             expect(obj).to.be.ok;
-            states.getState('javascript.0.test1', (err, state) => {
+            states.getState('javascript.0.test_creation_of_state', (err, state) => {
                 expect(err).to.be.not.ok;
                 expect(state).to.be.ok;
                 expect(state.val).to.be.equal(5);
 
                 const onStateChanged = function (id, state) {
-                    if (id === 'javascript.0.test1' && state === null) {
+                    if (id === 'javascript.0.test_creation_of_state' && state === null) {
                         removeStateChangedHandler(onStateChanged);
 
-                        states.getState('javascript.0.test1', (err, state) => {
+                        states.getState('javascript.0.test_creation_of_state', (err, state) => {
                             expect(err).to.be.not.ok;
                             expect(state).to.be.not.ok;
 
-                            objects.getObject('javascript.0.test1', (err, obj) => {
+                            objects.getObject('javascript.0.test_creation_of_state', (err, obj) => {
                                 expect(err).to.be.not.ok;
                                 expect(obj).to.be.not.ok;
                                 done();
@@ -372,37 +372,37 @@ describe.only('Test JS', function () {
         });
     });
 
-    it('Test JS: check deletion of foreign state', function (done) {
+    it('Test JS: test deletion of foreign state', function (done) {
         this.timeout(3000);
         // add script
         const script = {
-            _id:                'script.js.check_deletion_of_foreign_state',
+            _id:                'script.js.test_deletion_of_foreign_state',
             type:               'script',
             common: {
-                name:           'check deletion of state',
+                name:           'test deletion of foreign state',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `deleteState('javascript.1.test1');`,
+                source:         `deleteState('javascript.1.test_creation_of_foreign_state');`,
             },
             native: {}
         };
 
-        objects.getObject('javascript.1.test1', (err, obj) => {
+        objects.getObject('javascript.1.test_creation_of_foreign_state', (err, obj) => {
             expect(err).to.be.not.ok;
             expect(obj).to.be.ok;
-            states.getState('javascript.1.test1', (err, state) => {
+            states.getState('javascript.1.test_creation_of_foreign_state', (err, state) => {
                 expect(err).to.be.not.ok;
                 expect(state).to.be.ok;
                 expect(state.val).to.be.equal(6);
 
                 // we cannot delete foreign object, even if we created it.
                 setTimeout(function () {
-                    objects.getObject('javascript.1.test1', (err, obj) => {
+                    objects.getObject('javascript.1.test_creation_of_foreign_state', (err, obj) => {
                         expect(err).to.be.not.ok;
                         expect(obj).to.be.ok;
-                        states.getState('javascript.1.test1', (err, state) => {
+                        states.getState('javascript.1.test_creation_of_foreign_state', (err, state) => {
                             expect(err).to.be.not.ok;
                             expect(state).to.be.ok;
                             expect(state.val).to.be.equal(6);
@@ -422,10 +422,10 @@ describe.only('Test JS', function () {
         this.timeout(20000);
         // add script
         const script = {
-            _id:                'script.js.open_objects',
+            _id:                'script.js.test_read_objects_db',
             type:               'script',
             common: {
-                name:           'open objects',
+                name:           'test read objects db',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
@@ -434,14 +434,14 @@ describe.only('Test JS', function () {
                                 `try{\n` +
                                 `    fs.readFileSync('${__dirname}/../tmp/${setup.appName}-data/objects.json');\n` +
                                 `} catch (err) {\n` +
-                                `    createState('error', err.toString());\n` +
+                                `    createState('test_read_objects_db', err.toString());\n` +
                                 `}`,
             },
             native: {}
         };
 
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.error' && state.val === 'Error: Permission denied') {
+            if (id === 'javascript.0.test_read_objects_db' && state.val === 'Error: Permission denied') {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
@@ -457,10 +457,10 @@ describe.only('Test JS', function () {
         this.timeout(3000);
         // add script
         const script = {
-            _id:                'script.js.open_objects',
+            _id:                'script.js.test_write_objects_db',
             type:               'script',
             common: {
-                name:           'open objects',
+                name:           'test write objects db',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
@@ -469,13 +469,13 @@ describe.only('Test JS', function () {
                                 `try{\n` +
                                 `    fs.writeFileSync('${__dirname}/../tmp/${setup.appName}-data/objects.json');\n` +
                                 `} catch (err) {\n` +
-                                `    createState('error1', err.toString());\n` +
+                                `    createState('test_write_objects_db', err.toString());\n` +
                                 `}`,
             },
             native: {}
         };
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.error1' && state.val === 'Error: Permission denied') {
+            if (id === 'javascript.0.test_write_objects_db' && state.val === 'Error: Permission denied') {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
@@ -493,7 +493,7 @@ describe.only('Test JS', function () {
             _id:                'script.js.test_nodefs_write',
             type:               'script',
             common: {
-                name:           'test write to files via node:fs',
+                name:           'test node:fs write to files',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
@@ -504,13 +504,13 @@ describe.only('Test JS', function () {
                                 `    log('Writing file to path: ' + filesPath);\n` +
                                 `    fs.appendFile(filesPath, 'this is not allowed!');\n` +
                                 `} catch (err) {\n` +
-                                `    createState('error2', err.toString());\n` +
+                                `    createState('test_nodefs_write', err.toString());\n` +
                                 `}`,
             },
             native: {}
         };
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.error2' && state.val === 'Error: Permission denied') {
+            if (id === 'javascript.0.test_nodefs_write' && state.val === 'Error: Permission denied') {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
@@ -528,19 +528,19 @@ describe.only('Test JS', function () {
             _id:                'script.js.test_nodefs_read',
             type:               'script',
             common: {
-                name:           'test read from files via node:fs',
+                name:           'test node:fs read from files',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
                 source:         `const fs = require('node:fs');\n` +
-                                `createState('testReadFileNodeJs', 'no', () => {\n` +
+                                `createState('test_nodefs_read', 'no', () => {\n` +
                                 `    writeFile('0_userdata.0', 'nodejsread.txt', 'is allowed', (err) => {\n` +
                                 `        if (!err) {\n` +
                                 `            const filesPath = defaultDataDir + '/files/0_userdata.0/nodejsread.txt';\n` +
                                 `            log('Read file from path: ' + filesPath);\n` +
                                 `            const data = fs.readFileSync(filesPath);\n` +
-                                `            setState('testReadFileNodeJs', { val: data.toString(), ack: true });\n` +
+                                `            setState('test_nodefs_read', { val: data.toString(), ack: true });\n` +
                                 `        }\n` +
                                 `    });\n` +
                                 `});`,
@@ -548,7 +548,7 @@ describe.only('Test JS', function () {
             native: {}
         };
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.testReadFileNodeJs' && state.val === 'is allowed') {
+            if (id === 'javascript.0.test_nodefs_read' && state.val === 'is allowed') {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
@@ -568,10 +568,10 @@ describe.only('Test JS', function () {
 
         // add script
         const script = {
-            _id:                'script.js.open_objects',
+            _id:                'script.js.test_open_objects_other_path',
             type:               'script',
             common: {
-                name:           'open objects',
+                name:           'test open objects other path',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
@@ -580,7 +580,7 @@ describe.only('Test JS', function () {
                                 `try{\n` +
                                 `    fs.writeFileSync('${__dirname.replace(/\\/g, '/')}/../tmp/objects.json', '${time}');\n` +
                                 `} catch (err) {\n` +
-                                `    createState('error3', err.toString());\n` +
+                                `    createState('test_open_objects_other_path', err.toString());\n` +
                                 `}`,
             },
             native: {}
@@ -614,20 +614,20 @@ describe.only('Test JS', function () {
             _id:                'script.js.test_createTempFile',
             type:               'script',
             common: {
-                name:           'test create temp file',
+                name:           'test createTempFile',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('testCreateTempFile', { type: 'string', read: true, write: false }, async () => {\n` +
+                source:         `createState('test_createTempFile', { type: 'string', read: true, write: false }, async () => {\n` +
                                 `    const filePath = createTempFile('subdir/test.txt', 'CONTENT_OK');\n` +
-                                `    await setStateAsync('testCreateTempFile', { val: filePath, ack: true });\n` +
+                                `    await setStateAsync('test_createTempFile', { val: filePath, ack: true });\n` +
                                 `});`,
             },
             native: {}
         };
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.testCreateTempFile' && state.val !== '-') {
+            if (id === 'javascript.0.test_createTempFile' && state.val !== '-') {
                 const tempFilePath = state.val;
 
                 expect(tempFilePath).to.be.a('string');
@@ -668,10 +668,10 @@ describe.only('Test JS', function () {
         ];
         // add script
         const script = {
-            _id:                'script.js.getAstroDate',
+            _id:                'script.js.test_getAstroDate',
             type:               'script',
             common: {
-                name:           'getAstroDate',
+                name:           'test getAstroDate',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
@@ -688,7 +688,7 @@ describe.only('Test JS', function () {
         const onStateChanged = function (id, state) {
             if (types.indexOf(id.substring('javascript.0.'.length)) !== -1) {
                 typesChanged[id] = true;
-                console.log('State change '+ id + ' / ' + Object.keys(typesChanged).length + '-' + types.length + '  = ' + JSON.stringify(state));
+                console.log('State change ' + id + ' / ' + Object.keys(typesChanged).length + '-' + types.length + ' = ' + JSON.stringify(state));
                 if (Object.keys(typesChanged).length === types.length) {
                     removeStateChangedHandler(onStateChanged);
 
