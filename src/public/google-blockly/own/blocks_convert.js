@@ -323,20 +323,20 @@ Blockly.Blocks.convert_time_difference = {
         this.appendDummyInput('OPTION')
             .appendField(Blockly.Translate('convert_to'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('time_difference_hh:mm:ss') , 'hh:mm:ss'],
-                [Blockly.Translate('time_difference_h:m:s')    , 'h:m:s'],
-                [Blockly.Translate('time_difference_hh:mm')    , 'hh:mm'],
-                [Blockly.Translate('time_difference_h:m')    , 'h:m'],
-                [Blockly.Translate('time_difference_mm:ss')    , 'mm:ss'],
-                [Blockly.Translate('time_difference_m:s')    , 'm:s'],
-                [Blockly.Translate('time_difference_custom')   , 'custom'],
+                [Blockly.Translate('time_difference_hh:mm:ss'), 'hh:mm:ss'],
+                [Blockly.Translate('time_difference_h:m:s'), 'h:m:s'],
+                [Blockly.Translate('time_difference_hh:mm'), 'hh:mm'],
+                [Blockly.Translate('time_difference_h:m'), 'h:m'],
+                [Blockly.Translate('time_difference_mm:ss'), 'mm:ss'],
+                [Blockly.Translate('time_difference_m:s'), 'm:s'],
+                [Blockly.Translate('time_difference_custom'), 'custom'],
             ], function (option) {
                 this.sourceBlock_.updateShape_(option === 'custom');
             }), 'OPTION');
 
         this.setInputsInline(true);
         this.setOutput(true);
-        this.setTooltip(Blockly.Translate('convert_time_difference_tooltip'))
+        this.setTooltip(Blockly.Translate('convert_time_difference_tooltip'));
     },
     mutationToDom: function() {
         const container = document.createElement('mutation');
