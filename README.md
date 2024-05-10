@@ -42,6 +42,11 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (paul53) Allow negative values in formatTimeDiff
+* (klein0r) Updated tests and fixed Blockly translations
+
 ### 8.3.0 (2024-05-09)
 
 * (klein0r) Added createTempFile to sandbox
