@@ -1871,7 +1871,7 @@ describe.only('Test JS', function () {
                                 `    const attr2 = getAttr({ level1: { level2: { level3: 15 } } }, 'level1.level2.level3');\n` +
                                 `    const attr3 = getAttr({ obj: { 'with-hyphen': { val: true } } }, 'obj.with-hyphen.val');\n` +
                                 `    const attr4 = getAttr({ obj: { 'colon:0': { val: 'yes' } } }, 'obj.colon:0.val');\n` +
-                                `    const attr5 = getAttr({ obj: { arr: ['one', 'two', 'tree', 'four'] } }, 'obj.arr.2');\n` +
+                                `    const attr5 = getAttr({ obj: { arr: ['one', 'two', 'three', 'four'] } }, 'obj.arr.2');\n` +
                                 `    const attr6 = getAttr({ obj: { arr: [{ val: 1 }, { val: 2 }, { val: 3 }, { val: 4 }] } }, 'obj.arr.1.val');\n` +
                                 `    setState('test_getAttr', { val: JSON.stringify({ attr1, attr2, attr3, attr4, attr5, attr6 }), ack: true });\n` +
                                 `});`,
