@@ -681,12 +681,12 @@ describe.only('Test JS', function () {
             native: {}
         };
         for (let t = 0; t < types.length; t++) {
-            script.common.source += `createState('${types[t]}', getAstroDate('${types[t]}') ? getAstroDate('${types[t]}').toString() : '');\n`;
+            script.common.source += `createState('test_getAstroDate_${types[t]}', getAstroDate('${types[t]}') ? getAstroDate('${types[t]}').toString() : '');\n`;
         }
 
         const typesChanged = {};
         const onStateChanged = function (id, state) {
-            if (types.indexOf(id.substring('javascript.0.'.length)) !== -1) {
+            if (types.includes(id.substring('javascript.0.test_getAstroDate_'.length))) {
                 typesChanged[id] = true;
                 console.log('State change ' + id + ' / ' + Object.keys(typesChanged).length + '-' + types.length + ' = ' + JSON.stringify(state));
                 if (Object.keys(typesChanged).length === types.length) {
@@ -694,10 +694,11 @@ describe.only('Test JS', function () {
 
                     let count = types.length;
                     for (let t = 0; t < types.length; t++) {
-                        states.getState('javascript.0.' + types[t], (err, state) => {
+                        states.getState(`javascript.0.test_getAstroDate_${types[t]}`, (err, state) => {
                             expect(err).to.be.not.ok;
                             expect(state).to.be.ok;
                             expect(state.val).to.be.ok;
+
                             if (state) console.log(types[types.length - count] + ': ' + state.val);
                             else console.log(types[types.length - count] + ' ERROR: ' + state);
                             if (!--count) done();
