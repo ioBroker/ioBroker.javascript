@@ -1869,7 +1869,11 @@ describe.only('Test JS', function () {
                 source:         `createState('test_getAttr', { type: 'string', role: 'json', read: true, write: false }, () => {\n` +
                                 `    const attr1 = getAttr('{"level1":{"level2":"myVal"}}', 'level1.level2');\n` +
                                 `    const attr2 = getAttr({ level1: { level2: { level3: 15 } } }, 'level1.level2.level3');\n` +
-                                `    setState('test_getAttr', { val: JSON.stringify({ diff1, diff2 }), ack: true });\n` +
+                                `    const attr3 = getAttr({ obj: { 'with-hyphen': { val: true } } }, 'obj.with-hyphen.val');\n` +
+                                `    const attr4 = getAttr({ obj: { 'colon:0': { val: 'yes' } } }, 'obj.colon:0.val');\n` +
+                                `    const attr5 = getAttr({ obj: { arr: ['one', 'two', 'tree', 'four'] } }, 'obj.arr.2');\n` +
+                                `    const attr6 = getAttr({ obj: { arr: [{ val: 1 }, { val: 2 }, { val: 3 }, { val: 4 }] } }, 'obj.arr.1.val');\n` +
+                                `    setState('test_getAttr', { val: JSON.stringify({ attr1, attr2, attr3, attr4, attr5, attr6 }), ack: true });\n` +
                                 `});`,
             },
             native: {},
@@ -1883,6 +1887,18 @@ describe.only('Test JS', function () {
 
                 expect(obj.attr2).to.be.a('number');
                 expect(obj.attr2).to.be.equal(15);
+
+                expect(obj.attr3).to.be.a('boolean');
+                expect(obj.attr3).to.be.equal(true);
+
+                expect(obj.attr4).to.be.a('string');
+                expect(obj.attr4).to.be.equal('yes');
+
+                expect(obj.attr5).to.be.a('string');
+                expect(obj.attr5).to.be.equal('three');
+
+                expect(obj.attr6).to.be.a('number');
+                expect(obj.attr6).to.be.equal(2);
 
                 removeStateChangedHandler(onStateChanged);
                 done();
