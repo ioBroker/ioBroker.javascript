@@ -216,7 +216,7 @@ describe.only('Test JS', function () {
         this.timeout(10000);
         // add script
         const script = {
-            _id:                'script.js.test_httpget_error',
+            _id:                'script.js.test_httpGet_error',
             type:               'script',
             common: {
                 name:           'test httpGet error',
@@ -718,27 +718,30 @@ describe.only('Test JS', function () {
         this.timeout(5000);
         // add script
         const script = {
-            _id:                'script.js.setStateDelayed',
+            _id:                'script.js.test_setStateDelayed_simple',
             type:               'script',
             common: {
-                name:           'setStateDelayed',
+                name:           'test setStateDelayed simple',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('delayed', 4, () => { setStateDelayed('delayed', 5, 1000); });`,
+                source:         `createState('test_setStateDelayed_simple', 4, () => {\n` +
+                                `    setStateDelayed('test_setStateDelayed_simple', 5, 1000);\n` +
+                                `});`,
             },
             native: {}
         };
 
         let start = 0;
         const onStateChanged = function (id, state){
-            if (id !== 'javascript.0.delayed') return;
+            if (id !== 'javascript.0.test_setStateDelayed_simple' || !state.val) return;
             if (state.val === 4) {
                 start = state.ts;
             } else if (state.val === 5) {
                 expect(start).to.be.not.equal(0);
                 expect(state.ts - start).to.be.least(950);
+
                 removeStateChangedHandler(onStateChanged);
                 setTimeout(done, 100);
             }
@@ -751,27 +754,31 @@ describe.only('Test JS', function () {
         this.timeout(5000);
         // add script
         const script = {
-            _id:                'script.js.setStateDelayed',
+            _id:                'script.js.test_setStateDelayed_nested',
             type:               'script',
             common: {
-                name:           'setStateDelayed',
+                name:           'test setStateDelayed nested',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `setStateDelayed('delayed', 6, 500); setStateDelayed('delayed', 7, 1500, false);`,
+                source:         `createState('test_setStateDelayed_nested', { type: 'number', read: true, write: false }, () => {\n` +
+                                `    setStateDelayed('test_setStateDelayed_nested', 6, 500);\n` +
+                                `    setStateDelayed('test_setStateDelayed_nested', 7, 1500, false);` +
+                                `});`,
             },
             native: {}
         };
 
         let start = 0;
-        const onStateChanged = function (id, state){
-            if (id !== 'javascript.0.delayed') return;
+        const onStateChanged = function (id, state) {
+            if (id !== 'javascript.0.test_setStateDelayed_nested' || !state.val) return;
             if (state.val === 6) {
                 start = state.ts;
             } else if (state.val === 7) {
                 expect(start).to.be.not.equal(0);
                 expect(state.ts - start).to.be.least(900);
+
                 removeStateChangedHandler(onStateChanged);
                 setTimeout(done, 100);
             }
@@ -780,35 +787,38 @@ describe.only('Test JS', function () {
         objects.setObject(script._id, script);
     });
 
-    it('Test JS: test setStateDelayed overwritten', function (done) {
+    it('Test JS: test setStateDelayed overwrite', function (done) {
         this.timeout(5000);
         // add script
         const script = {
-            _id:                'script.js.setStateDelayed',
+            _id:                'script.js.test_setStateDelayed_overwrite',
             type:               'script',
             common: {
-                name:           'setStateDelayed',
+                name:           'test setStateDelayed overwrite',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `setStateDelayed('delayed', 8, 500); setStateDelayed('delayed', 9, 1500);`,
+                source:         `createState('test_setStateDelayed_overwrite', { type: 'number', read: true, write: false }, () => {\n` +
+                                `    setStateDelayed('test_setStateDelayed_overwrite', 8, 500);\n` +
+                                `    setStateDelayed('test_setStateDelayed_overwrite', 9, 1500);` +
+                                `});`,
             },
             native: {}
         };
 
         objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
-            checkValueOfState('javascript.0.delayed', 8, err => {
+            checkValueOfState('javascript.0.test_setStateDelayed_overwrite', 8, err => {
                 expect(err).to.be.ok;
 
-                states.getState('javascript.0.delayed', function (err, stateStart) {
+                states.getState('javascript.0.test_setStateDelayed_overwrite', (err, stateStart) => {
                     expect(err).to.be.not.ok;
                     expect(stateStart.val).to.be.not.equal(8);
 
-                    checkValueOfState('javascript.0.delayed', 9, err => {
+                    checkValueOfState('javascript.0.test_setStateDelayed_overwrite', 9, err => {
                         expect(err).to.be.not.ok;
-                        states.getState('javascript.0.delayed', function (err) {
+                        states.getState('javascript.0.test_setStateDelayed_overwrite', err => {
                             expect(err).to.be.not.ok;
                             done();
                         });
@@ -818,19 +828,22 @@ describe.only('Test JS', function () {
         });
     });
 
-    it('Test JS: test setStateDelayed canceled', function (done) {
+    it('Test JS: test clearStateDelayed', function (done) {
         this.timeout(5000);
         // add script
         const script = {
-            _id:                'script.js.setStateDelayed',
+            _id:                'script.js.test_clearStateDelayed',
             type:               'script',
             common: {
-                name:           'setStateDelayed',
+                name:           'test clearStateDelayed',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `setStateDelayed('delayed', 10, 500); clearStateDelayed('delayed');`,
+                source:         `createState('test_clearStateDelayed', { type: 'number', read: true, write: false }, () => {\n` +
+                                `    setStateDelayed('test_clearStateDelayed', 10, 500);\n` +
+                                `    clearStateDelayed('test_clearStateDelayed');` +
+                                `});`,
             },
             native: {}
         };
@@ -838,10 +851,10 @@ describe.only('Test JS', function () {
         objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
 
-            checkValueOfState('javascript.0.delayed', 10, err => {
+            checkValueOfState('javascript.0.test_clearStateDelayed', 10, err => {
                 expect(err).to.be.ok;
 
-                states.getState('javascript.0.delayed', function (err, stateStart) {
+                states.getState('javascript.0.test_clearStateDelayed', (err, stateStart) => {
                     expect(err).to.be.not.ok;
                     expect(stateStart.val).to.be.not.equal(10);
                     done();
@@ -854,17 +867,19 @@ describe.only('Test JS', function () {
         this.timeout(5000);
         // add script
         const script = {
-            _id:                'script.js.setStateDelayed',
+            _id:                'script.js.test_getStateDelayed_single',
             type:               'script',
             common: {
-                name:           'setStateDelayed',
+                name:           'test getStateDelayed single',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('delayedResult', '', () => {\n` +
-                                `    setStateDelayed('delayed', 10, 1500);\n` +
-                                `    setState('delayedResult', JSON.stringify(getStateDelayed('delayed')));\n` +
+                source:         `createState('test_getStateDelayed_single', { type: 'number', read: true, write: false }, () => {\n` +
+                                `    createState('test_getStateDelayed_single_result', '', () => {\n` +
+                                `        setStateDelayed('test_getStateDelayed_single', 10, 1500);\n` +
+                                `        setState('test_getStateDelayed_single_result', JSON.stringify(getStateDelayed('test_getStateDelayed_single')));\n` +
+                                `    });\n` +
                                 `});`,
             },
             native: {}
@@ -873,8 +888,8 @@ describe.only('Test JS', function () {
         objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
 
-            setTimeout(function () {
-                states.getState('javascript.0.delayedResult', function (err, delayedResult) {
+            setTimeout(() => {
+                states.getState('javascript.0.test_getStateDelayed_single_result', (err, delayedResult) => {
                     expect(err).to.be.not.ok;
                     console.log('delayedResult: ' + delayedResult.val);
                     const result = JSON.parse(delayedResult.val);
@@ -892,15 +907,20 @@ describe.only('Test JS', function () {
         this.timeout(5000);
         // add script
         const script = {
-            _id:                'script.js.setStateDelayed',
+            _id:                'script.js.test_getStateDelayed_all',
             type:               'script',
             common: {
-                name:           'setStateDelayed',
+                name:           'test getStateDelayed all',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('delayedResult', '', () => { setStateDelayed('delayed', 11, 2500); setState('delayedResult', JSON.stringify(getStateDelayed())); });`,
+                source:         `createState('test_getStateDelayed_all', { type: 'number', read: true, write: false }, () => {\n` +
+                                `    createState('test_getStateDelayed_all_result', '{}', () => {\n` +
+                                `        setStateDelayed('test_getStateDelayed_all', 11, 2500);\n` +
+                                `        setState('test_getStateDelayed_all_result', JSON.stringify(getStateDelayed()));\n` +
+                                `    });\n` +
+                                `});`,
             },
             native: {}
         };
@@ -908,15 +928,15 @@ describe.only('Test JS', function () {
         objects.setObject(script._id, script, err => {
             expect(err).to.be.not.ok;
 
-            setTimeout(function () {
-                states.getState('javascript.0.delayedResult', function (err, delayedResult) {
+            setTimeout(() => {
+                states.getState('javascript.0.test_getStateDelayed_all_result', (err, delayedResult) => {
                     console.log('delayedResult!: ' + delayedResult.val);
                     expect(err).to.be.not.ok;
                     const result = JSON.parse(delayedResult.val);
-                    expect(result['javascript.0.delayed'][0]).to.be.ok;
-                    expect(result['javascript.0.delayed'][0].timerId).to.be.ok;
-                    expect(result['javascript.0.delayed'][0].left).to.be.ok;
-                    expect(result['javascript.0.delayed'][0].delay).to.be.equal(2500);
+                    expect(result['javascript.0.test_getStateDelayed_all'][0]).to.be.ok;
+                    expect(result['javascript.0.test_getStateDelayed_all'][0].timerId).to.be.ok;
+                    expect(result['javascript.0.test_getStateDelayed_all'][0].left).to.be.ok;
+                    expect(result['javascript.0.test_getStateDelayed_all'][0].delay).to.be.equal(2500);
                     done();
                 });
             }, 500);
@@ -927,18 +947,18 @@ describe.only('Test JS', function () {
         this.timeout(5000);
         // add script
         const script = {
-            _id:                'script.js.setStateChanged',
+            _id:                'script.js.test_setStateChanged',
             type:               'script',
             common: {
-                name:           'setStateChanged',
+                name:           'test setStateChanged',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('changed', 4, () => {\n` +
-                                `    setTimeout(() => {setStateChanged('changed', 4, true)}, 500);\n` +
-                                `    setTimeout(() => {setStateChanged('changed', 5, true)}, 1000);\n` +
-                                `    setTimeout(() => {setState('changed', 5, true)}, 1500);\n` +
+                source:         `createState('test_setStateChanged', 4, () => {\n` +
+                                `    setTimeout(() => { setStateChanged('test_setStateChanged', 4, true); }, 500);\n` +
+                                `    setTimeout(() => { setStateChanged('test_setStateChanged', 5, true); }, 1000);\n` +
+                                `    setTimeout(() => { setState('test_setStateChanged', 5, true); }, 1500);\n` +
                                 `});`,
             },
             native: {}
@@ -946,8 +966,9 @@ describe.only('Test JS', function () {
 
         let start = 0,
             count = 0;
+
         const onStateChanged = function (id, state){
-            if (id !== 'javascript.0.changed') return;
+            if (id !== 'javascript.0.test_setStateChanged') return;
             if (state.val === 4) { // has to be called once - on state creation
                 if (start !== 0) {// on state change by setStateChanged('changed', 4, true) - should not be run, as it not change the state, including `state.ts`
                     count++;
@@ -980,10 +1001,10 @@ describe.only('Test JS', function () {
         this.timeout(1000);
         // add script
         const script = {
-            _id:                'script.js.selectorToArray',
+            _id:                'script.js.test_selector_toArray',
             type:               'script',
             common: {
-                name:           'selectorToArray',
+                name:           'test selector toArray',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
@@ -991,13 +1012,13 @@ describe.only('Test JS', function () {
                 source:         `createState('selector.test_1.state', true, () => {\n` +
                                 `    createState('selector.test_2.state', false, () => {\n` +
                                 `        createState('selector.test_3.state', true, () => {\n` +
-                                `            $(createState('selector.test_4.id', true, () => {\n` +
+                                `            createState('selector.test_4.id', true, () => {\n` +
                                 `                const states = $('state[id=javascript.0.selector.test_*.state]')` +
-                                `                   .toArray().filter((id) => getState(id)?.val === true);\n` +
+                                `                    .toArray().filter((id) => getState(id)?.val === true);\n` +
                                 `                if (Array.isArray(states)) {\n` +
-                                `                    createState('selector.result', states.length, true);\n` +
+                                `                    createState('test_selector_toArray', states.length, true);\n` +
                                 `                }\n` +
-                                `            }));\n` +
+                                `            });\n` +
                                 `        });\n` +
                                 `    });\n` +
                                 `});`,
@@ -1006,7 +1027,7 @@ describe.only('Test JS', function () {
         };
 
         const onStateChanged = function (id, state){
-            if (id !== 'javascript.0.selector.result') return;
+            if (id !== 'javascript.0.test_selector_toArray') return;
             removeStateChangedHandler(onStateChanged);
             expect(state.val).to.be.equal(2);
             done();
@@ -1486,27 +1507,30 @@ describe.only('Test JS', function () {
         });
     });
 
-    it('Test JS: test schedule for seconds', function (done) {
+    it('Test JS: test schedule seconds', function (done) {
         const d = new Date();
 
         console.log('Must wait 2 seconds[' + ((d.getSeconds() + 2) % 60) + ' * * * * *]' + d.toISOString());
         // add script
         const script = {
-            _id:                'script.js.test_ON_any',
+            _id:                'script.js.test_schedule_seconds',
             type:               'script',
             common: {
-                name:           'test ON any',
+                name:           'test schedule seconds',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('testScheduleResponse', false); schedule('${(d.getSeconds() + 2) % 60} * * * * *', (obj) => { setState('testScheduleResponse', true, true); });`,
+                source:         `createState('test_schedule_seconds', false);\n` +
+                                `schedule('${(d.getSeconds() + 2) % 60} * * * * *', () => {\n` +
+                                `    setState('test_schedule_seconds', true, true);\n` +
+                                `});`,
             },
             native: {}
         };
 
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.testScheduleResponse' && state.val === true) {
+            if (id === 'javascript.0.test_schedule_seconds' && state.val === true) {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
@@ -1518,28 +1542,31 @@ describe.only('Test JS', function () {
         });
     }).timeout(4000);
 
-    it('Test JS: test schedule for minutes', function (done) {
+    it('Test JS: test schedule minutes', function (done) {
         const d = new Date();
         console.log('Must wait ' + (60 - d.getSeconds()) + ' seconds[' + ((d.getMinutes() + 1) % 60) + ' * * * *] ' + d.toISOString());
         this.timeout((64 - d.getSeconds()) * 1000);
 
         // add script
         const script = {
-            _id:                'script.js.test_ON_any',
+            _id:                'script.js.test_schedule_minutes',
             type:               'script',
             common: {
-                name:           'test ON any',
+                name:           'test schedule minutes',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('testScheduleResponse1', false);schedule('${(d.getMinutes() + 1) % 60} * * * *', (obj) => { setState('testScheduleResponse1', true, true); });`,
+                source:         `createState('test_schedule_minutes', false);\n` +
+                                `schedule('${(d.getMinutes() + 1) % 60} * * * *', () => {\n` +
+                                `    setState('test_schedule_minutes', true, true);\n` +
+                                `});`,
             },
             native: {}
         };
 
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.testScheduleResponse1' && state.val === true) {
+            if (id === 'javascript.0.test_schedule_minutes' && state.val === true) {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
@@ -1554,7 +1581,7 @@ describe.only('Test JS', function () {
     it('Test JS: test writeFile to "0_userdata.0"', function (done) {
         // add script
         const script = {
-            _id:                'script.js.test_write',
+            _id:                'script.js.test_write_userdata',
             type:               'script',
             common: {
                 name:           'test file write',
@@ -1562,10 +1589,10 @@ describe.only('Test JS', function () {
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('testFileWrite', false, () => {\n` +
+                source:         `createState('test_write_userdata', false, () => {\n` +
                                 `    writeFile('0_userdata.0', 'test.txt', 'it works', (err) => {\n` +
                                 `        if (!err) {\n` +
-                                `            setState('testFileWrite', true, true);\n` +
+                                `            setState('test_write_userdata', true, true);\n` +
                                 `        }\n` +
                                 `    });\n` +
                                 `});`,
@@ -1574,7 +1601,7 @@ describe.only('Test JS', function () {
         };
 
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.testFileWrite' && state.val === true) {
+            if (id === 'javascript.0.test_write_userdata' && state.val === true) {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
@@ -1589,7 +1616,7 @@ describe.only('Test JS', function () {
     it('Test JS: test readFile from "0_userdata.0"', function (done) {
         // add script
         const script = {
-            _id:                'script.js.test_read',
+            _id:                'script.js.test_read_userdata',
             type:               'script',
             common: {
                 name:           'test file read',
@@ -1597,10 +1624,10 @@ describe.only('Test JS', function () {
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('testReadWrite', '', () => {\n` +
+                source:         `createState('test_read_userdata', '', () => {\n` +
                                 `    readFile('0_userdata.0', 'test.txt', (err, data) => {\n` +
                                 `        if (!err) {\n` +
-                                `            setState('testReadWrite', { val: data, ack: true });\n` +
+                                `            setState('test_read_userdata', { val: data, ack: true });\n` +
                                 `        }\n` +
                                 `    });\n` +
                                 `});`,
@@ -1609,7 +1636,7 @@ describe.only('Test JS', function () {
         };
 
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.testReadWrite' && state.val === 'it works') {
+            if (id === 'javascript.0.test_read_userdata' && state.val === 'it works') {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
@@ -1773,7 +1800,7 @@ describe.only('Test JS', function () {
 
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject('vis.0', {type: 'meta', common: {}}, () => {
+        objects.setObject('vis.0', { type: 'meta', common: {} }, () => {
             objects.setObject(script._id, script, err => {
                 expect(err).to.be.not.ok;
 
@@ -1786,28 +1813,28 @@ describe.only('Test JS', function () {
         });
     }).timeout(15000);
 
-    it('Test JS: Check format time diff', function (done) {
+    it('Test JS: test formatTimeDiff', function (done) {
         this.timeout(10000);
         // add script
         const script = {
-            _id:                'script.js.check_format_time_diff',
+            _id:                'script.js.test_formatTimeDiff',
             type:               'script',
             common: {
-                name:           'Format time diff',
+                name:           'test formatTimeDiff',
                 enabled:        true,
                 verbose:        true,
                 engine:         'system.adapter.javascript.0',
                 engineType:     'Javascript/js',
-                source:         `createState('format_time_diff', { type: 'string', role: 'json', read: true, write: false }, () => {\n` +
+                source:         `createState('test_formatTimeDiff', { type: 'string', role: 'json', read: true, write: false }, () => {\n` +
                                 `    const diff1 = formatTimeDiff(172800000 + 10800000 + 540000 + 15000, 'hh:mm:ss');\n` +
                                 `    const diff2 = formatTimeDiff((172800000 + 10800000 + 540000 + 15000) * -1, 'mm:ss');\n` +
-                                `    setState('format_time_diff', { val: JSON.stringify({ diff1, diff2 }), ack: true });\n` +
+                                `    setState('test_formatTimeDiff', { val: JSON.stringify({ diff1, diff2 }), ack: true });\n` +
                                 `});`,
             },
             native: {},
         };
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.format_time_diff' && state.val) {
+            if (id === 'javascript.0.test_formatTimeDiff' && state.val) {
                 const obj = JSON.parse(state.val);
 
                 expect(obj.diff1).to.be.a('string');
@@ -1815,6 +1842,47 @@ describe.only('Test JS', function () {
 
                 expect(obj.diff2).to.be.a('string');
                 expect(obj.diff2).to.be.equal('-3069:15');
+
+                removeStateChangedHandler(onStateChanged);
+                done();
+            }
+        };
+        addStateChangedHandler(onStateChanged);
+
+        objects.setObject(script._id, script, err => {
+            expect(err).to.be.not.ok;
+        });
+    });
+
+    it('Test JS: test getAttr', function (done) {
+        this.timeout(10000);
+        // add script
+        const script = {
+            _id:                'script.js.test_getAttr',
+            type:               'script',
+            common: {
+                name:           'test getAttr',
+                enabled:        true,
+                verbose:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('test_getAttr', { type: 'string', role: 'json', read: true, write: false }, () => {\n` +
+                                `    const attr1 = getAttr('{"level1":{"level2":"myVal"}}', 'level1.level2');\n` +
+                                `    const attr2 = getAttr({ level1: { level2: { level3: 15 } } }, 'level1.level2.level3');\n` +
+                                `    setState('test_getAttr', { val: JSON.stringify({ diff1, diff2 }), ack: true });\n` +
+                                `});`,
+            },
+            native: {},
+        };
+        const onStateChanged = function (id, state) {
+            if (id === 'javascript.0.test_getAttr' && state.val) {
+                const obj = JSON.parse(state.val);
+
+                expect(obj.attr1).to.be.a('string');
+                expect(obj.attr1).to.be.equal('myVal');
+
+                expect(obj.attr2).to.be.a('number');
+                expect(obj.attr2).to.be.equal(15);
 
                 removeStateChangedHandler(onStateChanged);
                 done();
