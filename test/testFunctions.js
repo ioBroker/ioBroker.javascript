@@ -52,7 +52,7 @@ function checkConnectionOfAdapter(cb, counter) {
     states.getState('system.adapter.javascript.0.alive', (err, state) => {
         if (err) console.error(err);
         if (state && state.val) {
-            cb && cb();
+            cb && cb(null);
         } else {
             setTimeout(function () {
                 checkConnectionOfAdapter(cb, counter + 1);
@@ -71,9 +71,9 @@ function checkValueOfState(id, value, cb, counter) {
     states.getState(id, (err, state) => {
         if (err) console.error(err);
         if (value === null && !state) {
-            cb && cb();
+            cb && cb(null);
         } else if (state && (value === undefined || state.val === value)) {
-            cb && cb();
+            cb && cb(null);
         } else {
             setTimeout(function () {
                 checkValueOfState(id, value, cb, counter + 1);
@@ -124,7 +124,7 @@ describe.only('Test JS', function () {
                         native: {}
                     };
                     objects.setObject(script._id, script, err => {
-                        expect(err).to.be.not.ok;
+                        expect(err).to.be.null;
                         setup.startAdapter(objects, states, () => _done());
                     });
                 }
@@ -134,7 +134,10 @@ describe.only('Test JS', function () {
 
     it('Test JS: Check if adapter started', function (done) {
         this.timeout(30000);
-        checkConnectionOfAdapter(done);
+        checkConnectionOfAdapter((err) => {
+            expect(err).to.be.null;
+            done();
+        });
     });
 
     it('Test JS: test compareTime between', function (done) {
@@ -176,7 +179,7 @@ describe.only('Test JS', function () {
                 if (state.val === 9) {
                     removeStateChangedHandler(onStateChanged);
                     states.getState('javascript.0.testCompareTime', (err, state) => {
-                        expect(err).to.be.not.ok;
+                        expect(err).to.be.null;
                         expect(state.val).to.be.equal(9);
                         done();
                     });
@@ -189,7 +192,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     });
 
@@ -225,7 +228,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     });
 
@@ -249,10 +252,10 @@ describe.only('Test JS', function () {
             if (id === 'javascript.0.test_creation_of_state' && state.val === 5) {
                 removeStateChangedHandler(onStateChanged);
                 states.getState('javascript.0.test_creation_of_state', (err, state) => {
-                    expect(err).to.be.not.ok;
+                    expect(err).to.be.null;
                     expect(state.val).to.be.equal(5);
                     objects.getObject('javascript.0.test_creation_of_state', (err, obj) => {
-                        expect(err).to.be.not.ok;
+                        expect(err).to.be.null;
                         expect(obj).to.be.ok;
 
                         done();
@@ -262,7 +265,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     });
 
@@ -286,11 +289,11 @@ describe.only('Test JS', function () {
             if (id === 'javascript.1.test_creation_of_foreign_state' && state.val === 6) {
                 removeStateChangedHandler(onStateChanged);
                 states.getState('javascript.1.test_creation_of_foreign_state', (err, state) => {
-                    expect(err).to.be.not.ok;
+                    expect(err).to.be.null;
                     expect(state).to.be.ok;
                     expect(state.val).to.be.equal(6);
                     objects.getObject('javascript.1.test_creation_of_foreign_state', (err, obj) => {
-                        expect(err).to.be.not.ok;
+                        expect(err).to.be.null;
                         expect(obj).to.be.ok;
                         done();
                     });
@@ -299,7 +302,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     });
 
@@ -321,10 +324,10 @@ describe.only('Test JS', function () {
         };
 
         objects.getObject('javascript.0.test_creation_of_state', (err, obj) => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
             expect(obj).to.be.ok;
             states.getState('javascript.0.test_creation_of_state', (err, state) => {
-                expect(err).to.be.not.ok;
+                expect(err).to.be.null;
                 expect(state).to.be.ok;
                 expect(state.val).to.be.equal(5);
 
@@ -333,11 +336,11 @@ describe.only('Test JS', function () {
                         removeStateChangedHandler(onStateChanged);
 
                         states.getState('javascript.0.test_creation_of_state', (err, state) => {
-                            expect(err).to.be.not.ok;
+                            expect(err).to.be.null;
                             expect(state).to.be.not.ok;
 
                             objects.getObject('javascript.0.test_creation_of_state', (err, obj) => {
-                                expect(err).to.be.not.ok;
+                                expect(err).to.be.undefined;
                                 expect(obj).to.be.not.ok;
                                 done();
                             });
@@ -347,7 +350,7 @@ describe.only('Test JS', function () {
                 addStateChangedHandler(onStateChanged);
 
                 objects.setObject(script._id, script, err => {
-                    expect(err).to.be.not.ok;
+                    expect(err).to.be.null;
                 });
             });
         });
@@ -371,20 +374,20 @@ describe.only('Test JS', function () {
         };
 
         objects.getObject('javascript.1.test_creation_of_foreign_state', (err, obj) => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
             expect(obj).to.be.ok;
             states.getState('javascript.1.test_creation_of_foreign_state', (err, state) => {
-                expect(err).to.be.not.ok;
+                expect(err).to.be.null;
                 expect(state).to.be.ok;
                 expect(state.val).to.be.equal(6);
 
                 // we cannot delete foreign object, even if we created it.
                 setTimeout(function () {
                     objects.getObject('javascript.1.test_creation_of_foreign_state', (err, obj) => {
-                        expect(err).to.be.not.ok;
+                        expect(err).to.be.null;
                         expect(obj).to.be.ok;
                         states.getState('javascript.1.test_creation_of_foreign_state', (err, state) => {
-                            expect(err).to.be.not.ok;
+                            expect(err).to.be.null;
                             expect(state).to.be.ok;
                             expect(state.val).to.be.equal(6);
                             done();
@@ -393,7 +396,7 @@ describe.only('Test JS', function () {
                 }, 400);
 
                 objects.setObject(script._id, script, err => {
-                    expect(err).to.be.not.ok;
+                    expect(err).to.be.null;
                 });
             });
         });
@@ -430,7 +433,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     });
 
@@ -463,7 +466,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     });
 
@@ -498,7 +501,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     });
 
@@ -536,7 +539,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     });
 
@@ -568,7 +571,7 @@ describe.only('Test JS', function () {
         };
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
             setTimeout(function () {
                 if (!fs.existsSync(__dirname + '/../tmp/objects.json')) {
                     setTimeout(function () {
@@ -625,7 +628,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     });
 
@@ -676,7 +679,7 @@ describe.only('Test JS', function () {
                     let count = types.length;
                     for (let t = 0; t < types.length; t++) {
                         states.getState(`javascript.0.test_getAstroDate_${types[t]}`, (err, state) => {
-                            expect(err).to.be.not.ok;
+                            expect(err).to.be.null;
                             expect(state).to.be.ok;
                             expect(state.val).to.be.ok;
 
@@ -691,7 +694,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     });
 
@@ -789,18 +792,18 @@ describe.only('Test JS', function () {
         };
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
             checkValueOfState('javascript.0.test_setStateDelayed_overwrite', 8, err => {
                 expect(err).to.be.ok;
 
                 states.getState('javascript.0.test_setStateDelayed_overwrite', (err, stateStart) => {
-                    expect(err).to.be.not.ok;
+                    expect(err).to.be.null;
                     expect(stateStart.val).to.be.not.equal(8);
 
                     checkValueOfState('javascript.0.test_setStateDelayed_overwrite', 9, err => {
-                        expect(err).to.be.not.ok;
+                        expect(err).to.be.null;
                         states.getState('javascript.0.test_setStateDelayed_overwrite', err => {
-                            expect(err).to.be.not.ok;
+                            expect(err).to.be.null;
                             done();
                         });
                     });
@@ -830,13 +833,13 @@ describe.only('Test JS', function () {
         };
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
 
             checkValueOfState('javascript.0.test_clearStateDelayed', 10, err => {
                 expect(err).to.be.ok;
 
                 states.getState('javascript.0.test_clearStateDelayed', (err, stateStart) => {
-                    expect(err).to.be.not.ok;
+                    expect(err).to.be.null;
                     expect(stateStart.val).to.be.not.equal(10);
                     done();
                 });
@@ -867,11 +870,11 @@ describe.only('Test JS', function () {
         };
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
 
             setTimeout(() => {
                 states.getState('javascript.0.test_getStateDelayed_single_result', (err, delayedResult) => {
-                    expect(err).to.be.not.ok;
+                    expect(err).to.be.null;
                     console.log('delayedResult: ' + delayedResult.val);
                     const result = JSON.parse(delayedResult.val);
                     expect(result[0]).to.be.ok;
@@ -907,12 +910,12 @@ describe.only('Test JS', function () {
         };
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
 
             setTimeout(() => {
                 states.getState('javascript.0.test_getStateDelayed_all_result', (err, delayedResult) => {
                     console.log('delayedResult!: ' + delayedResult.val);
-                    expect(err).to.be.not.ok;
+                    expect(err).to.be.null;
                     const result = JSON.parse(delayedResult.val);
                     expect(result['javascript.0.test_getStateDelayed_all'][0]).to.be.ok;
                     expect(result['javascript.0.test_getStateDelayed_all'][0].timerId).to.be.ok;
@@ -1036,10 +1039,10 @@ describe.only('Test JS', function () {
         };
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
             setTimeout(function () {
                 objects.getObject(script._id, (err, obj) => {
-                    expect(err).to.be.not.ok;
+                    expect(err).to.be.null;
                     expect(obj.common.enabled).to.be.false;
                     done();
                 });
@@ -1077,18 +1080,18 @@ describe.only('Test JS', function () {
         };
 
         objects.setObject(stopScript._id, stopScript, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
 
             objects.getObject(stopScript._id, (err, obj) => {
-                expect(err).to.be.not.ok;
+                expect(err).to.be.null;
                 expect(obj.common.enabled).to.be.false;
 
                 objects.setObject(script._id, script, err => {
-                    expect(err).to.be.not.ok;
+                    expect(err).to.be.null;
 
                     setTimeout(() => {
                         objects.getObject(stopScript._id, (err, obj) => {
-                            expect(err).to.be.not.ok;
+                            expect(err).to.be.null;
                             expect(obj.common.enabled).to.be.true;
                             done();
                         });
@@ -1114,12 +1117,12 @@ describe.only('Test JS', function () {
             native: {}
         };
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
             checkValueOfState('javascript.0.test_global_setTestState', 16, err => {
-                expect(err).to.be.not.ok;
+                expect(err).to.be.null;
 
                 states.getState('javascript.0.test_global_setTestState', (err, state) => {
-                    expect(err).to.be.not.ok;
+                    expect(err).to.be.null;
                     expect(state).to.be.ok;
                     expect(state.val).to.be.equal(16);
                     done();
@@ -1153,7 +1156,7 @@ describe.only('Test JS', function () {
             if (id === 'javascript.0.testVar' && state.val === 0) {
                 setTimeout(function () {
                     states.setState('javascript.0.testVar', 6, err => {
-                        expect(err).to.be.not.ok;
+                        expect(err).to.be.null;
                     });
                 }, 1000);
             }
@@ -1165,7 +1168,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     }).timeout(5000);
 
@@ -1189,7 +1192,7 @@ describe.only('Test JS', function () {
             if (id === 'javascript.0.testVar1' && state.val === 1) {
                 setTimeout(function () {
                     states.setState('javascript.0.testVar1', 1, err => {
-                        expect(err).to.be.not.ok;
+                        expect(err).to.be.null;
                     });
                 }, 1000);
             }
@@ -1201,7 +1204,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     }).timeout(5000);
 
@@ -1424,14 +1427,14 @@ describe.only('Test JS', function () {
 
             // create device
             objects.setObject(device, { common: { name: 'Device' }, type: 'device' }, (err, obj) => {
-                expect(err).to.be.not.ok;
+                expect(err).to.be.null;
                 // create channel
                 objects.setObject(channel, { common: { name: 'Channel' }, type: 'channel' }, callback);
             });
         }
 
         createObjects((err, _obj) => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
             // objects.getObject('system.adapter.javascript.0', function(err, obj) {
             //     obj.native.enableSetObject = true;
             //     objects.setObject('system.adapter.javascript.0', function(err, obj) {
@@ -1454,7 +1457,7 @@ describe.only('Test JS', function () {
             addStateChangedHandler(onStateChanged);
 
             // write script into Objects => start script
-            objects.setObject(script._id, script, err => expect(err).to.be.not.ok);
+            objects.setObject(script._id, script, err => expect(err).to.be.null);
         });
     });
 
@@ -1489,7 +1492,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     }).timeout(4000);
 
@@ -1525,7 +1528,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     });
 
@@ -1560,7 +1563,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     }).timeout(5000);
 
@@ -1595,7 +1598,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.not.ok;
+            expect(err).to.be.null;
         });
     }).timeout(5000);
 
@@ -1625,7 +1628,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, err => expect(err).to.be.not.ok);
+        objects.setObject(script._id, script, err => expect(err).to.be.null);
     }).timeout(5000);
 
     it('Test JS: test read file from "vis.0"',  done => {
@@ -1652,7 +1655,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, err => expect(err).to.be.not.ok);
+        objects.setObject(script._id, script, err => expect(err).to.be.null);
     }).timeout(5000);
     */
 
@@ -1701,7 +1704,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, err => expect(err).to.be.not.ok);
+        objects.setObject(script._id, script, err => expect(err).to.be.null);
     }).timeout(5000);
 
     it('Test JS: subscribe on file', done => {
@@ -1731,7 +1734,7 @@ describe.only('Test JS', function () {
             if (id === 'javascript.0.file' && state.val === 'abcdef') {
                 if (!fileReceived) {
                     fileReceived = true;
-                    objects.writeFile('vis.0', 'main/data.txt', '12345', err => expect(err).to.be.not.ok);
+                    objects.writeFile('vis.0', 'main/data.txt', '12345', err => expect(err).to.be.undefined);
 
                     setTimeout(() => {
                         removeStateChangedHandler(onStateChanged);
@@ -1748,11 +1751,11 @@ describe.only('Test JS', function () {
 
         objects.setObject('vis.0', { type: 'meta', common: {} }, () => {
             objects.setObject(script._id, script, err => {
-                expect(err).to.be.not.ok;
+                expect(err).to.be.null;
 
                 // let the script be started
                 setTimeout(() => {
-                    objects.writeFile('vis.0', 'main/data.txt', 'abcdef', err => expect(err).to.be.not.ok);
+                    objects.writeFile('vis.0', 'main/data.txt', 'abcdef', err => expect(err).to.be.undefined);
                 }, 4000);
             });
         });
@@ -1794,7 +1797,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, err => expect(err).to.be.not.ok);
+        objects.setObject(script._id, script, err => expect(err).to.be.null);
     });
 
     it('Test JS: test getAttr', function (done) {
@@ -1849,7 +1852,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, err => expect(err).to.be.not.ok);
+        objects.setObject(script._id, script, err => expect(err).to.be.null);
     });
 
     after('Test JS: Stop js-controller', function (done) {
