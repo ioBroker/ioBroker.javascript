@@ -86,6 +86,7 @@
     - [sleep](#sleep)
     - [httpGet](#httpget)
     - [httpPost](#httppost)
+    - [createTempFile](#createtempfile)
 
 - [Scripts activity](#scripts-activity)
 - [Changelog](#changelog)
@@ -1352,7 +1353,7 @@ Sends to an adapter the message `unsubscribe` to inform adapter to not poll the 
 ### $ - Selector
 ```js
 $(selector).on(function(obj) {});
-$(selector).toArray();
+$(selector).toArray(); // Requires version >= 8.2.0
 $(selector).each(function(id, i) {});
 $(selector).setState(value, ack);
 $(selector).getState();
@@ -1853,6 +1854,8 @@ Unsubscribes from these logs.
 
 ### httpGet
 
+*Requires version >= 7.9.0*
+
 ```js
 httpGet('http://jsonplaceholder.typicode.com/posts', { timeout: 1000 }, (error, response) => {
     if (!error) {
@@ -1881,6 +1884,8 @@ httpGet('http://1.2.3.4/image.jpg', { responseType: 'arraybuffer' }, async (err,
 ```
 
 ### httpPost
+
+*Requires version >= 7.9.0*
 
 ```js
 httpPost('http://jsonplaceholder.typicode.com/posts', { title: 'foo', body: 'bar', userId: 1 }, { timeout: 1000 }, (error, response) => {
@@ -1927,6 +1932,8 @@ httpPost(
 ```
 
 ### createTempFile
+
+*Requires version >= 8.3.0*
 
 ```js
 httpGet('https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin/javascript.png', { responseType: 'arraybuffer' }, async (err, response) => {
