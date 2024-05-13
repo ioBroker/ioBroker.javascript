@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.3.0",
+    "version": "8.3.1",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.3.1": {
+        "en": "Allow negative values in formatTimeDiff\nUpdated tests and fixed Blockly translations",
+        "de": "Negative Werte im Format zulassen TimeDiff\nAktualisierte Tests und feste sperrige Übersetzungen",
+        "ru": "Разрешить отрицательные значения в формате TimeDiff\nОбновленные тесты и фиксированные блокированные переводы",
+        "pt": "Permitir valores negativos no formato Ponto de vista\nTestes atualizados e traduções bloqueadas fixas",
+        "nl": "Negatieve waarden in formaat toestaan TimeDiff\nBijgewerkte tests en vaste Blockly vertalingen",
+        "fr": "Autoriser les valeurs négatives en format TimeDiff\nTests actualisés et traductions fixes",
+        "it": "Consentire valori negativi in formato Orario\nTest aggiornati e traduzioni bloccate",
+        "es": "Permitir valores negativos en formato TimeDiff\nPruebas actualizadas y traducciones fijas",
+        "pl": "Dopuść wartości ujemne w formacie TimeDiff\nZaktualizowane testy i stałe tłumaczenia Blockly",
+        "uk": "Дозволити негативні значення у форматі Час\nОновлені тести та фіксовані переклади",
+        "zh-cn": "允许格式的负值 时间\n更新测试和固定的Blockly翻译"
+      },
       "8.3.0": {
         "en": "Added createTempFile to sandbox\nFixed log message on script start\nAdded instance/from to log window (like in admin)",
         "de": "Hinzufügen Hinzugefügt TempFile to sandbox\nFeste Protokollnachricht beim Skriptstart\nHinzufügen von Instanz/von zum Log-Fenster (wie bei admin)",
@@ -117,19 +130,6 @@
         "pl": "Wymuszony spadek wartości socket- client (problemy ze zmianą obiektu)",
         "uk": "Примушене зниження розетки-клієнта (об'єкти зміни)",
         "zh-cn": "强制降低套接字客户级别(对象变更问题)"
-      },
-      "8.0.1": {
-        "en": "Fixed some missing translations (uk)\nRaised supported ecmaVersion from es2021 to es2022 (node18)",
-        "de": "Einige fehlende Übersetzungen behoben (uk)\nRaised support ecmaVersion von es2021 bis es2022 (node18)",
-        "ru": "Исправлены некоторые недостающие переводы (ук)\nВоспитанная поддержка ecmaVersion с es2021 по es2022 (node18)",
-        "pt": "Corrigido algumas traduções em falta (uk)\nEcmaVersion com suporte aumentado de es2021 para es2022 (node18)",
-        "nl": "Enkele ontbrekende vertalingen gerepareerd (uk)\nVerhoogd ondersteund ecmaVersion van es2021 naar es2022 (node18)",
-        "fr": "Correction de certaines traductions manquantes (uk)\nEcmaVersion supportée relevée de l'es2021 à l'es2022 (node18)",
-        "it": "Risolto alcune traduzioni mancanti (uk)\nEcmaVersione sostenuta aumentata da es2021 a es2022 (nodo18)",
-        "es": "Arreglado algunas traducciones desaparecidas (uk)\nEcmaVersión apoyada de es2021 a es2022 (nodo18)",
-        "pl": "Naprawiono kilka brakujących tłumaczeń (uk)\nPodwyższone wsparcie ecmaVersion od es2021 do es2022 (node18)",
-        "uk": "Виправлено деякі відсутні переклади (uk)\nПідтримувана екскавація з ES2021 до es2022 (node18)",
-        "zh-cn": "修复一些缺失的翻译( uk)\n从 es2021 升至 es2022 (node18)"
       }
     },
     "platform": "Javascript/Node.js",

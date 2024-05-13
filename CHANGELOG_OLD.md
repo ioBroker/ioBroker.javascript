@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 8.0.3 (2024-04-11)
+
+* (klein0r) Updates dependencies (latest adapter-react-v5 framework)
+
 ## 8.0.2 (2024-04-08)
 
 * (klein0r) Forced downgrade of socket-client (object change issues)

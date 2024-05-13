@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.3.1 (2024-05-13)
 
 * (paul53) Allow negative values in formatTimeDiff
 * (klein0r) Updated tests and fixed Blockly translations
@@ -65,10 +65,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### 8.1.0 (2024-05-03)
 
 * (bluefox) Updated admin config to jsonConfig (dropped materialize)
-
-### 8.0.3 (2024-04-11)
-
-* (klein0r) Updates dependencies (latest adapter-react-v5 framework)
 
 ## License
 The MIT License (MIT)
