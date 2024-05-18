@@ -1800,6 +1800,56 @@ describe.only('Test JS', function () {
         objects.setObject(script._id, script, err => expect(err).to.be.null);
     });
 
+    it('Test JS: test getDateObject', function (done) {
+        this.timeout(10000);
+        // add script
+        const script = {
+            _id:                'script.js.test_getDateObject',
+            type:               'script',
+            common: {
+                name:           'test getDateObject',
+                enabled:        true,
+                verbose:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('test_getDateObject', { type: 'string', role: 'json', read: true, write: false }, () => {\n` +
+                                `    const now = Date.now();\n` +
+                                `    const timeToday = getDateObject('20:00').toISOString();\n` +
+                                `    const byTimestamp = getDateObject(1716056595000).toISOString();\n` + // 2024-05-18T18:23:15.000Z
+                                `    setState('test_getDateObject', { val: JSON.stringify({ now, timeToday, byTimestamp }), ack: true });\n` +
+                                `});`,
+            },
+            native: {},
+        };
+        const onStateChanged = function (id, state) {
+            if (id === 'javascript.0.test_getDateObject' && state.val) {
+                const obj = JSON.parse(state.val);
+
+                expect(obj.now).to.be.a('number');
+                const d = new Date(obj.now);
+
+                expect(obj.timeToday).to.be.a('string');
+                const timeToday = new Date(obj.timeToday);
+                expect(timeToday.getHours()).to.be.equal(20);
+                expect(timeToday.getFullYear()).to.be.equal(d.getFullYear());
+                expect(timeToday.getMonth()).to.be.equal(d.getMonth());
+
+                expect(obj.byTimestamp).to.be.a('string');
+                const byTimestamp = new Date(obj.byTimestamp);
+                expect(byTimestamp.getUTCHours()).to.be.equal(18);
+                expect(byTimestamp.getUTCDate()).to.be.equal(18);
+                expect(byTimestamp.getUTCMonth() + 1).to.be.equal(5);
+                expect(byTimestamp.getUTCFullYear()).to.be.equal(2024);
+
+                removeStateChangedHandler(onStateChanged);
+                done();
+            }
+        };
+        addStateChangedHandler(onStateChanged);
+
+        objects.setObject(script._id, script, err => expect(err).to.be.null);
+    });
+
     it('Test JS: test getAttr', function (done) {
         this.timeout(10000);
         // add script

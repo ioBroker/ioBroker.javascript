@@ -1301,26 +1301,27 @@ formatTimeDiff(60000, "mm:ss") // => "01:00"
 
 const diff = 172800000 + 10800000 + 540000 + 15000; // 2 days, 3 hours, 9 minutes + 15 secoonds
 formatTimeDiff(diff); // "51:09:15"
-formatTimeDiff(diff, "DD hh:mm"); // "02 03:09"
-formatTimeDiff(diff, "D hh:mm"); // "2 03:09"
-formatTimeDiff(diff, "hh:mm:ss"); // "51:09:15"
-formatTimeDiff(diff, "h:m:s"); // "51:9:15"
-formatTimeDiff(diff, "hh:mm"); // "51:09"
-formatTimeDiff(diff, "mm:ss"); // "3069:15"
-formatTimeDiff(diff, "hh"); // "51"
-formatTimeDiff(diff, "mm"); // "3069"
+formatTimeDiff(diff, 'DD hh:mm'); // "02 03:09"
+formatTimeDiff(diff, 'D hh:mm'); // "2 03:09"
+formatTimeDiff(diff, 'hh:mm:ss'); // "51:09:15"
+formatTimeDiff(diff, 'h:m:s'); // "51:9:15"
+formatTimeDiff(diff, 'hh:mm'); // "51:09"
+formatTimeDiff(diff, 'mm:ss'); // "3069:15"
+formatTimeDiff(diff, 'hh'); // "51"
+formatTimeDiff(diff, 'mm'); // "3069"
 ```
 
 ### getDateObject
 ```js
-getDateObject (stringOrNumber);
+getDateObject(stringOrNumber);
 ```
 
 Converts string or number to a Date object.
 If only hours are given, it will add current date to it and will try to convert.
 
 ```js
-getDateObject("20:00") // => "Tue Aug 09 2016 20:00:00 GMT+0200"
+getDateObject('20:00'); // 2024-05-18T18:00:00.000Z
+getDateObject('2024-01-01'); // 2024-01-01T00:00:00.000Z
 ```
 
 ### formatValue
