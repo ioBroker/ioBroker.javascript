@@ -1814,9 +1814,10 @@ describe.only('Test JS', function () {
                 engineType:     'Javascript/js',
                 source:         `createState('test_getDateObject', { type: 'string', role: 'json', read: true, write: false }, () => {\n` +
                                 `    const now = Date.now();\n` +
-                                `    const timeToday = getDateObject('20:00').toISOString();\n` +
+                                `    const justHour = getDateObject('14').toISOString();\n` +
+                                `    const timeToday = getDateObject('20:15').toISOString();\n` +
                                 `    const byTimestamp = getDateObject(1716056595000).toISOString();\n` + // 2024-05-18T18:23:15.000Z
-                                `    setState('test_getDateObject', { val: JSON.stringify({ now, timeToday, byTimestamp }), ack: true });\n` +
+                                `    setState('test_getDateObject', { val: JSON.stringify({ now, justHour, timeToday, byTimestamp }), ack: true });\n` +
                                 `});`,
             },
             native: {},
@@ -1828,9 +1829,17 @@ describe.only('Test JS', function () {
                 expect(obj.now).to.be.a('number');
                 const d = new Date(obj.now);
 
+                expect(obj.justHour).to.be.a('string');
+                const justHour = new Date(obj.justHour);
+                expect(justHour.getHours()).to.be.equal(14);
+                expect(justHour.getMinutes()).to.be.equal(0);
+                expect(justHour.getFullYear()).to.be.equal(d.getFullYear());
+                expect(justHour.getMonth()).to.be.equal(d.getMonth());
+
                 expect(obj.timeToday).to.be.a('string');
                 const timeToday = new Date(obj.timeToday);
                 expect(timeToday.getHours()).to.be.equal(20);
+                expect(timeToday.getMinutes()).to.be.equal(15);
                 expect(timeToday.getFullYear()).to.be.equal(d.getFullYear());
                 expect(timeToday.getMonth()).to.be.equal(d.getMonth());
 

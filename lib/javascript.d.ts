@@ -1676,7 +1676,7 @@ declare global {
 	function formatTimeDiff(diff: number): string;
 	function formatTimeDiff(diff: number, format: string): string;
 
-	function getDateObject(date: number | string | Date): Date;
+	function getDateObject(date?: number | string | Date): Date;
 
 	/**
 	 * Writes a file.
