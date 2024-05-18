@@ -799,7 +799,6 @@ Blockly.System.blocks['get_value'] =
 Blockly.Blocks['get_value'] = {
     // Checkbox.
     init: function() {
-
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('get_value_val'),      'val'],
@@ -1034,10 +1033,12 @@ Blockly.Blocks['get_object'] = {
         const block = this.getParent();
         if (block && Blockly.System.WARNING_PARENTS.includes(block.type)) {
             this.setWarningText(Blockly.Translate('false_connection_trigger_warning'), this.id);
+        } else if (block && ['direct', 'control_ex', 'get_value_var'].includes(block.type)) {
+            this.setWarningText(Blockly.Translate('get_object_connection_warning'), this.id);
         } else {
             this.setWarningText(null, this.id);
         }
-    }
+    },
 };
 
 Blockly.JavaScript['get_object'] = function(block) {
