@@ -1235,11 +1235,12 @@ declare global {
 			},
 			bearerAuth?: string;
 			headers?: Record<string, string>;
+			validateCertificate?: boolean;
 		}
 
 		type HttpResponseCallback = (err?: string | null, response?: iobJS.httpResponse) => void | Promise<void>;
 		interface httpResponse {
-			responseCode: number;
+			statusCode: number;
 			data: string;
 			headers: Record<string, string>;
 		}

@@ -45,6 +45,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### **WORK IN PROGRESS**
 
 * (klein0r) Added checks/warnings for more incorrect blockly connections
+* (klein0r) Added option to disable certificate validation in httpGet
 
 ### 8.3.1 (2024-05-13)
 

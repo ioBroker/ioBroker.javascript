@@ -1858,12 +1858,12 @@ Unsubscribes from these logs.
 *Requires version >= 7.9.0*
 
 ```js
-httpGet('http://jsonplaceholder.typicode.com/posts', { timeout: 1000 }, (error, response) => {
-    if (!error) {
+httpGet('http://jsonplaceholder.typicode.com/posts', { timeout: 1000 }, (err, response) => {
+    if (!err) {
         console.log(response.statusCode);
         console.log(response.data);
     } else {
-        console.error(error);
+        console.error(err);
     }
 });
 ```
@@ -1872,14 +1872,27 @@ Download file to ioBroker file system:
 
 ```js
 httpGet('http://1.2.3.4/image.jpg', { responseType: 'arraybuffer' }, async (err, response) => {
-    if (err) {
-        console.error(err);
-    } else {
+    if (!err) {
         writeFile('0_userdata.0', 'test.jpg', response.data, (err) => {
             if (err) {
                 console.error(err);
             }
         });
+    } else {
+        console.error(err);
+    }
+});
+```
+
+Disable certificate validation - *Requires version >= 8.2.0*
+
+```js
+httpGet('http://jsonplaceholder.typicode.com/posts', { validateCertificate: false }, (err, response) => {
+    if (!err) {
+        console.log(response.statusCode);
+        console.log(response.data);
+    } else {
+        console.error(err);
     }
 });
 ```
