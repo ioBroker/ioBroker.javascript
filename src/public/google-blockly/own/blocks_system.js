@@ -576,6 +576,11 @@ Blockly.System.blocks['control_ex'] =
     + '             <field name="NUM">0</field>'
     + '         </shadow>'
     + '     </value>'
+    + '     <value name="EXPIRE">'
+    + '         <shadow type="math_number">'
+    + '             <field name="NUM">0</field>'
+    + '         </shadow>'
+    + '     </value>'
     + '     <value name="CLEAR_RUNNING">'
     + '     </value>'
     + '</block>';
@@ -592,7 +597,7 @@ Blockly.Blocks['control_ex'] = {
         this.appendDummyInput('TYPE')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('control_ex_control'),   'false'],
-                [Blockly.Translate('control_ex_update'),    'true']
+                [Blockly.Translate('control_ex_update'),    'true'],
             ]), 'TYPE');
 
         this.appendValueInput('VALUE')
@@ -602,6 +607,10 @@ Blockly.Blocks['control_ex'] = {
         this.appendValueInput('DELAY_MS')
             .setCheck('Number')
             .appendField(Blockly.Translate('control_ex_delay'));
+
+        this.appendValueInput('EXPIRE')
+            .setCheck('Number')
+            .appendField(Blockly.Translate('control_ex_expire'));
 
         this.appendDummyInput('CLEAR_RUNNING_INPUT')
             .appendField(Blockly.Translate('control_ex_clear_running'))
@@ -613,13 +622,14 @@ Blockly.Blocks['control_ex'] = {
         this.setColour(Blockly.System.HUE);
         this.setTooltip(Blockly.Translate('control_tooltip'));
         this.setHelpUrl(getHelp('control_help'));
-    }
+    },
 };
 
 Blockly.JavaScript['control_ex'] = function(block) {
     const valueObjectID = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     const valueDelay = Blockly.JavaScript.valueToCode(block, 'DELAY_MS', Blockly.JavaScript.ORDER_ATOMIC);
+    const valueExpire = Blockly.JavaScript.valueToCode(block, 'EXPIRE', Blockly.JavaScript.ORDER_ATOMIC);
 
     let clearRunning = block.getFieldValue('CLEAR_RUNNING');
     clearRunning = clearRunning === true || clearRunning === 'true' || clearRunning === 'TRUE';
@@ -627,7 +637,12 @@ Blockly.JavaScript['control_ex'] = function(block) {
     let type = block.getFieldValue('TYPE');
     type = type === true || type === 'true' || type === 'TRUE';
 
-    return `setStateDelayed(${valueObjectID}, ${value}, ${type}, parseInt(((${valueDelay}) || '').toString(), 10), ${clearRunning});\n`;
+    let expire = '';
+    if (valueExpire > 0) {
+        expire = `, expire: ${valueExpire}`;
+    }
+
+    return `setStateDelayed(${valueObjectID}, { val: ${value}, ack: ${type}${expire} }, parseInt(((${valueDelay}) || '').toString(), 10), ${clearRunning});\n`;
 };
 
 // --- create state --------------------------------------------------
