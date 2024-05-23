@@ -98,16 +98,19 @@ const OpenAiDialog = props => {
             const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
 
             const chatCompletionPhase1 = await openai.chat.completions.create({
-                model: 'gpt-3.5-turbo-16k',
+                model: 'gpt-4o',
                 messages: [
                     {
                         role: 'system',
                         content: `You are programmer. Here is a documentation:\n\n${docs}`,
                     },
-                    { role: 'system', content: `Here is list of devices:\n\n${JSON.stringify(devices, null, 2)}` },
+                    {
+                        role: 'system',
+                        content: `Here is list of devices:\n\n${JSON.stringify(devices, null, 2)}`
+                    },
                     {
                         role: 'user',
-                        content: `Write code that do:\n\n${question}
+                        content: `Write JavaScript code that does:\n\n${question}
 Return only code.
 Write comments in ${LANGUAGES[I18n.getLanguage()] || 'English'}.
 You can call async function directly in the code without encapsulate them in async function as this code will be already executed in async function.

@@ -91,39 +91,6 @@
 - [Scripts activity](#scripts-activity)
 - [Changelog](#changelog)
 
-## Note
-If in the script, some modules or functions are used with callbacks or cyclic calls, except setTimeout/setInterval,
-so they will be called again and again even if the new version of a script exists or a script is deleted. For example, the following script:
-
-```js
-const http = require('node:http');
-// Read www.google.com page
-http.request('www.google.com', function (res) {
-    res.setEncoding('utf8');
-    res.on('data', function (chunk) {
-        log('BODY: ' + chunk);
-    });
-}).on('error', function (e) {
-    log('problem with request: ' + e.message, 'error');
-});
-```
-
-was deleted by user before callback returns. The callback will be executed anyway. To fix this feature **restart** the javascript adapter.
-
-You can use `cb` function to wrap you callback, like this
-
-```js
-http.request('www.google.com', cb(function (res) {
-    res.setEncoding('utf8');
-    res.on('data', function (chunk) {
-        log('BODY: ' + chunk);
-    });
-})).on('error', cb(function (e) {
-    log('problem with request: ' + e.message, 'error');
-}));
-```
-to be sure, that no callback will be called if a script is deleted or modified.
-
 ## Global functions
 You can define the global scripts in the `global` folder.
 All global scripts are available on all instances. If a global script is disabled, it will not be used.
@@ -154,12 +121,9 @@ After the script is tested in the "test" instance, it can be moved to "productio
 ```js
 const mod = require('module_name');
 ```
-The following modules are preloaded: `fs`, `crypto`, `wake_on_lan`, `request`, `suncalc2`, `util`, `path`, `os`, `net`, `events`, `dns`.
+The following modules are preloaded: `node:dgram`, `node:crypto`, `node:dns`, `node:events`, `node:fs`, `node:http`, `node:https`, `node:http2`, `node:net`, `node:os`, `node:path`, `node:util`, `node:stream`, `node:zlib`, `suncalc2`, `axios`, `wake_on_lan`, `request` (deprecated)
 
-To use other modules, enter the name of the module in the instance configuration. ioBroker will install the module. You can require and use it in your scripts afterwards.
-
-### Buffer
-Buffer - Node.js Buffer, read here [http://nodejs.org/api/buffer.html](http://nodejs.org/api/buffer.html)
+To use other modules, enter the name (and version) of the module in the instance configuration. ioBroker will install the module. You can require and use it in your scripts afterwards.
 
 ### console - Gives out the message into log
 Usage is the same as in `javascript`
@@ -172,11 +136,8 @@ exec(cmd, [options], callback);
 Execute system command and get the outputs.
 
 ```js
-// reboot linux system :)
-exec('reboot');
-
 // Get the list of files and directories in /var/log
-exec('ls /var/log', function (error, stdout, stderr) {
+exec('ls /var/log', (error, stdout, stderr) => {
     log('stdout: ' + stdout);
 });
 ```
@@ -194,23 +155,24 @@ on(pattern, callbackOrId, value);
 The callback function will return the object as parameter with the following content:
 ```js
 {
-    'id': 'javascript.0.myplayer',
-    'state': {
-        'val':  'new state',
-        'ts':   1416149118,
-        'ack':  true,
-        'lc':   1416149118,
-        'from': 'system.adapter.sonos.0'
+    id: 'javascript.0.myplayer',
+    state: {
+        val:  'new state',
+        ts:   1416149118,
+        ack:  true,
+        lc:   1416149118,
+        from: 'system.adapter.sonos.0'
     },
-    'oldState': {
-        'val':  'old state',
-        'ts':   1416148233,
-        'ack':  true,
-        'lc':   1416145154,
-        'from': 'system.adapter.sonos.0'
+    oldState: {
+        val:  'old state',
+        ts:   1416148233,
+        ack:  true,
+        lc:   1416145154,
+        from: 'system.adapter.sonos.0'
     }
 }
 ```
+
 **Note:** `state` was previously called `newState`. That is still working.
 
 Example:
@@ -229,7 +191,7 @@ on('adapter.0.device.channel.sensor', (data) => {
         }, 30000);
 
         // Set acknowledged value
-        setState('counter', 1 + getState('counter'), true/*ack*/);
+        setState('counter', 1 + getState('counter'), true);
 
         // Or to set unacknowledged command
         setState('adapter.0.device.channel.actor', true);
