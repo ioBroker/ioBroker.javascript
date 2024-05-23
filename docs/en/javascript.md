@@ -1885,7 +1885,7 @@ httpGet('http://1.2.3.4/image.jpg', { responseType: 'arraybuffer' }, async (err,
 });
 ```
 
-Disable certificate validation - *Requires version >= 8.2.0*
+Disable certificate validation - *Requires version >= 8.4.0*
 
 ```js
 httpGet('http://jsonplaceholder.typicode.com/posts', { validateCertificate: false }, (err, response) => {
