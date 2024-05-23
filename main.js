@@ -1802,6 +1802,16 @@ async function installLibraries() {
     if (adapter.config && adapter.config.libraries) {
         const libraries = adapter.config.libraries.split(/[,;\s]+/);
 
+        let installedNodeModules = [];
+        const keepModules = [];
+
+        // js-controller >= 6.x
+        if (typeof adapter.listInstalledNodeModules === 'function') {
+            installedNodeModules = await adapter.listInstalledNodeModules();
+
+            adapter.log.debug(`Found installed libraries: ${JSON.stringify(installedNodeModules)}`);
+        }
+
         for (let lib = 0; lib < libraries.length; lib++) {
             if (libraries[lib] && libraries[lib].trim()) {
                 libraries[lib] = libraries[lib].trim();
@@ -1812,25 +1822,51 @@ async function installLibraries() {
                     [ depName, version ] = depName.split('@', 2);
                 }
 
+                keepModules.push(depName);
+
                 adapter.log.debug(`Found custom dependency in config: "${depName}@${version}"`);
 
+                // js-controller >= 6.x
                 if (typeof adapter.installNodeModule === 'function') {
                     //const installedNodeModules = await adapter.listInstalledNodeModules();
 
-                    const result = await adapter.installNodeModule(depName, { version });
-                    if (result.success) {
-                        adapter.log.debug(`Installed custom dependency: "${depName}@${version}"`);
+                    try {
+                        const result = await adapter.installNodeModule(depName, { version });
+                        if (result.success) {
+                            adapter.log.debug(`Installed custom custom dependency: "${depName}@${version}"`);
 
-                        context.mods[depName] = await adapter.importNodeModule(depName);
+                            context.mods[depName] = await adapter.importNodeModule(depName);
+                        } else {
+                            adapter.log.warn(`Cannot install custom npm package "${libraries[lib]}"`);
+                        }
+                    } catch (err) {
+                        adapter.log.warn(`Cannot install custom npm package ${libraries[lib]}: ${err}`);
                     }
                 } else if (!nodeFS.existsSync(`${__dirname}/node_modules/${depName}/package.json`)) {
-                    // js-controller <= 6.x
-                    adapter.log.info(`Installing custom dependency: "${depName}@${version}"`);
+                    // js-controller < 6.x
+                    adapter.log.info(`Installing custom dependency (legacy mode): "${depName}@${version}"`);
 
                     try {
                         await installNpm(libraries[lib]);
+
+                        adapter.log.info(`Installed custom npm package (legacy mode): "${libraries[lib]}"`);
                     } catch (err) {
-                        adapter.log.warn(`Cannot install npm package ${libraries[lib]}: ${err}`);
+                        adapter.log.warn(`Cannot install custom npm package "${libraries[lib]}" (legacy mode): ${err}`);
+                    }
+                }
+            }
+        }
+
+        // js-controller >= 6.x
+        if (typeof adapter.uninstallNodeModule === 'function') {
+            for (const installedNodeModule of installedNodeModules) {
+                if (!keepModules.includes(installedNodeModule)) {
+                    try {
+                        await adapter.uninstallNodeModule(installedNodeModule);
+
+                        adapter.log.info(`Removed custom npm package: "${installedNodeModule}"`);
+                    } catch (err) {
+                        adapter.log.warn(`Cannot remove custom npm package ${installedNodeModule}: ${err}`);
                     }
                 }
             }
