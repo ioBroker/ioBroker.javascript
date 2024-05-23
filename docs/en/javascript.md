@@ -1057,6 +1057,7 @@ It is possible short type of createState:
 
 - `createState('myDatapoint')` - simply create datapoint if it does not exist
 - `createState('myDatapoint', 1)` - create datapoint if it does not exist and initialize it with value 1
+- `createState('myDatapoint', { type: 'string', role: 'json', read: true, write: false }, () => { log('created'); });` - with common definitions like type, read, write and role
 - `createState('myDatapoint', { name: 'My own datapoint', unit: '°C' }, () => { log('created'); });`
 - `createState('myDatapoint', 1, { name: 'My own datapoint', unit: '°C' })` - create datapoint if it does not exist with specific name and units
 

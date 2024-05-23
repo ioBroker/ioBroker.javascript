@@ -1532,6 +1532,48 @@ describe.only('Test JS', function () {
         });
     });
 
+    it('Test JS: test scheduleById', function (done) {
+        const d = new Date();
+        d.setSeconds(d.getSeconds() + 5);
+        this.timeout(d.getTime() - Date.now() + 10000);
+
+        // add script
+        const script = {
+            _id:                'script.js.test_scheduleById',
+            type:               'script',
+            common: {
+                name:           'test scheduleById',
+                enabled:        true,
+                verbose:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('test_scheduleById', '00:00', { type: 'string', role: 'value.time', read: true, write: true }, () => {\n` +
+                                `    createState('test_scheduleById_result', false, () => {\n` +
+                                `        scheduleById('test_scheduleById', () => {\n` +
+                                `            setState('test_scheduleById_result', { val: true, ack: true });\n` +
+                                `        });\n` +
+                                `        setTimeout(() => {\n` +
+                                `            setState('test_scheduleById', '${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}', true);\n` +
+                                `        }, 500);\n` +
+                                `    });\n` +
+                                `});`,
+            },
+            native: {}
+        };
+
+        const onStateChanged = function (id, state) {
+            if (id === 'javascript.0.test_scheduleById_result' && state.val === true) {
+                removeStateChangedHandler(onStateChanged);
+                done();
+            }
+        };
+        addStateChangedHandler(onStateChanged);
+
+        objects.setObject(script._id, script, err => {
+            expect(err).to.be.null;
+        });
+    });
+
     it('Test JS: test writeFile to "0_userdata.0"', function (done) {
         // add script
         const script = {
