@@ -46,6 +46,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 
 * (klein0r) Added checks/warnings for more incorrect blockly connections
 * (klein0r) Added option to disable certificate validation in httpGet
+* (klein0r) Fixed variables.astro times when date is not available
 
 ### 8.3.1 (2024-05-13)
 

@@ -1472,9 +1472,10 @@ async function sunTimeSchedules(adapter, context) {
 
             const times = mods.suncalc.getTimes(calcDate, adapter.config.latitude, adapter.config.longitude);
 
+            adapter.log.debug(`[sunTimeSchedules] Times: ${JSON.stringify(times)}`);
+
             for (const t in times) {
                 try {
-                    const timeFormatted = formatHoursMinutesSeconds(times[t]);
                     const objId = `variables.astro.${t}`;
 
                     await adapter.setObjectNotExistsAsync(objId, {
@@ -1488,9 +1489,15 @@ async function sunTimeSchedules(adapter, context) {
                         },
                         native: {},
                     });
-                    await adapter.setStateAsync(objId, { val: timeFormatted, c: times[t].toISOString(), ack: true });
+
+                    if (times[t] !== null && !isNaN(times[t].getTime())) {
+                        const timeFormatted = formatHoursMinutesSeconds(times[t]);
+                        await adapter.setStateAsync(objId, { val: timeFormatted, c: times[t].toISOString(), ack: true });
+                    } else {
+                        await adapter.setStateAsync(objId, { val: null, c: 'n/a', ack: true, q: 0x01 });
+                    }
                 } catch (err) {
-                    adapter.log.error(`[sunTimeSchedules] Unable to set state for astro time "${t}"`);
+                    adapter.log.error(`[sunTimeSchedules] Unable to set state for astro time "${t}" (${times[t].getTime()}): ${err}`);
                 }
             }
 
