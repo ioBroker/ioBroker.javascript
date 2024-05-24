@@ -335,6 +335,46 @@
           "agree",
           "cancel"
         ]
+      },
+      {
+        "condition": {
+          "operand": "and",
+          "rules": [
+            "oldVersion<8.0.0",
+            "newVersion>=8.0.0"
+          ]
+        },
+        "title": {
+          "en": "Replace \"request\" functions after update",
+          "de": "\"Request\"-Funktionen nach dem Update ersetzen",
+          "ru": "Заменить \"запрос\" функции после обновления",
+          "pt": "Substitua funções \"request\" após atualização",
+          "nl": "Vervang \"verzoek\" functies na update",
+          "fr": "Remplacer les fonctions « request » après mise à jour",
+          "it": "Sostituisci le funzioni \"richiesta\" dopo l'aggiornamento",
+          "es": "Reemplazar funciones de \"Solicitud\" después de la actualización",
+          "pl": "Zastąp funkcje \"request\" po aktualizacji",
+          "uk": "Замініть функції \"request\" після оновлення",
+          "zh-cn": "更新后替换“ request” 函数"
+        },
+        "text": {
+          "en": "It is required to update all scripts which use the \"request\" package! This package will be removed in future versions. Please use the new \"Bockly\" blocks for \"httpGet\" or use another library (like axios) in your JavaScript code.",
+          "de": "Es ist erforderlich, alle Skripte zu aktualisieren, die das \"Request\"-Paket verwenden! Dieses Paket wird in zukünftigen Versionen entfernt. Bitte nutze die neuen \"Bockly\"-Blöcke für \"httpGet\" oder nutze eine andere Bibliothek (wie axios) im JavaScript-Code.",
+          "ru": "Требуется обновить все скрипты, которые используют пакет «запроса»! Этот пакет будет удален в будущих версиях. Пожалуйста, используйте новые блоки «Bockly» для «httpGet» или используйте другую библиотеку (например, axios) в вашем коде JavaScript.",
+          "pt": "É necessário atualizar todos os scripts que usam o pacote \"pedido\"! Este pacote será removido em versões futuras. Por favor, use os novos blocos \"Bockly\" para \"httpGet\" ou use outra biblioteca (como axios) em seu código JavaScript.",
+          "nl": "Het is vereist om alle scripts die het \"verzoek\" pakket gebruiken te updaten! Dit pakket zal in toekomstige versies worden verwijderd. Gebruik de nieuwe blokken \"Bockly\" voor \"httpGet\" of gebruik een andere bibliotheek (zoals axios) in uw JavaScript-code.",
+          "fr": "Il est nécessaire de mettre à jour tous les scripts qui utilisent le paquet \"request\"! Ce paquet sera supprimé dans les versions futures. Veuillez utiliser les nouveaux blocs \"Bockly\" pour \"httpGet\" ou utiliser une autre bibliothèque (comme axios) dans votre code JavaScript.",
+          "it": "È necessario aggiornare tutti gli script che utilizzano il pacchetto \"richiesta\"! Questo pacchetto verrà rimosso nelle versioni future. Si prega di utilizzare i nuovi blocchi \"Bockly\" per \"httpGet\" o utilizzare un'altra libreria (come gli assi) nel codice JavaScript.",
+          "es": "¡Se requiere actualizar todos los scripts que utilizan el paquete \"request\"! Este paquete será eliminado en futuras versiones. Utilice los nuevos bloques \"Bockly\" para \"httpGet\" o utilice otra biblioteca (como axios) en su código JavaScript.",
+          "pl": "Wymagane jest uaktualnienie wszystkich skryptów, które korzystają z pakietu \"request\"! Ten pakiet zostanie usunięty w przyszłych wersjach. Proszę użyć nowych bloków \"Bockly\" dla \"httpGet\" lub użyć innej biblioteki (jak axios) w swoim kodzie JavaScript.",
+          "uk": "Щоб оновити всі скрипти, які використовують пакет \"запит\"! Цей пакет буде видалений в наступних версіях. Будь ласка, використовуйте нові блоки для \"httpGet\" або використовуйте іншу бібліотеку (наприклад, axios) у вашому JavaScript-коді.",
+          "zh-cn": "需要更新所有使用\"请求\"包的脚本! 这个软件包在未来的版本中将被删除. 请为“ httpGet” 使用新的“ Bockly” 块, 或者在您的 JavaScript 代码中使用另一个库( 如 axios) ."
+        },
+        "level": "warn",
+        "buttons": [
+          "agree",
+          "cancel"
+        ]
       }
     ]
   },
