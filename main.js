@@ -814,7 +814,15 @@ function startAdapter(options) {
 
                             const result = {};
                             const keys = Object.keys(astroEvents).sort((a, b) => astroEvents[a] - astroEvents[b]);
-                            keys.forEach(key => result[key] = { serverTime: formatHoursMinutesSeconds(astroEvents[key]), date: astroEvents[key].toISOString() });
+                            keys.forEach(key => {
+                                const validDate = astroEvents[key] !== null && !isNaN(astroEvents[key].getTime());
+
+                                result[key] = {
+                                    isValidDate: validDate,
+                                    serverTime: validDate ? formatHoursMinutesSeconds(astroEvents[key]) : 'n/a',
+                                    date: validDate ? astroEvents[key].toISOString() : 'n/a',
+                                };
+                            });
 
                             obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
                         }
@@ -1828,8 +1836,6 @@ async function installLibraries() {
 
                 // js-controller >= 6.x
                 if (typeof adapter.installNodeModule === 'function') {
-                    //const installedNodeModules = await adapter.listInstalledNodeModules();
-
                     try {
                         const result = await adapter.installNodeModule(depName, { version });
                         if (result.success) {

@@ -1418,7 +1418,7 @@ class Editor extends React.Component {
                                 {Object.keys(this.state.astroEvents).map(id =>
                                     <TableRow key={id}>
                                         <TableCell component="th" scope="row">{id.startsWith('next') ? '' : id}</TableCell>
-                                        <Tooltip title={I18n.t('Local time') + ': ' + new Date(this.state.astroEvents[id].date).toLocaleTimeString()}><TableCell align="right">{this.state.astroEvents[id].serverTime}</TableCell></Tooltip>
+                                        <Tooltip title={I18n.t('Local time') + ': ' + (this.state.astroEvents[id].isValidDate ? new Date(this.state.astroEvents[id].date).toLocaleTimeString() : 'n/a')}><TableCell align="right">{this.state.astroEvents[id].isValidDate ? this.state.astroEvents[id].serverTime : 'n/a'}</TableCell></Tooltip>
                                         <TableCell>{I18n.t(id)}</TableCell>
                                     </TableRow>)}
                             </TableBody>
