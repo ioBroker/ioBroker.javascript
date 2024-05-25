@@ -12,10 +12,16 @@
           "delimiter": ",",
           "sm": 12
         },
+        "libraryTypings": {
+          "newLine": true,
+          "type": "chips",
+          "label": "Activate syntax help for these npm modules",
+          "sm": 12
+        },
         "mirrorPath": {
           "newLine": true,
           "type": "text",
-          "label": "Activate syntax help for these npm modules",
+          "label": "Mirror scripts to file path",
           "sm": 8
         },
         "mirrorInstance": {
@@ -80,7 +86,9 @@
           "newLine": true,
           "type": "text",
           "label": "ChatGPT API key",
-          "sm": 12
+          "sm": 12,
+          "help": "platform.openai.com",
+          "helpLink": "https://platform.openai.com/api-keys"
         }
       }
     },
