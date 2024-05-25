@@ -1826,8 +1826,10 @@ async function installLibraries() {
                 let depName = libraries[lib];
                 let version = 'latest';
 
-                if (depName.includes('@')) {
-                    [ depName, version ] = depName.split('@', 2);
+                if (depName.includes('@') && depName.lastIndexOf('@') > 0) {
+                    const parts = depName.split('@');
+                    version = parts.pop() ?? 'latest';
+                    depName = parts.join('@');
                 }
 
                 keepModules.push(depName);

@@ -48,7 +48,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 * (klein0r) Added option to disable certificate validation in httpGet
 * (klein0r) Added expire option to Blockly block
 * (klein0r) Fixed variables.astro times when date is not available
-* (klein0r) Fixed jsonConfig for library typings
+* (klein0r) Fixed jsonConfig for libraries and library typings
 * (klein0r) Implemented new js-controller 6.x functions for package handling
 * (klein0r) Updated to ChatGPT-4o
 
