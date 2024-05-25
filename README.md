@@ -42,6 +42,10 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Fixed httpPost block
+
 ### 8.4.0 (2024-05-25)
 
 * (klein0r) Added checks/warnings for more incorrect blockly connections
