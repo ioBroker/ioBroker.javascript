@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 8.1.0 (2024-05-03)
+
+* (bluefox) Updated admin config to jsonConfig (dropped materialize)
+
 ## 8.0.3 (2024-04-11)
 
 * (klein0r) Updates dependencies (latest adapter-react-v5 framework)

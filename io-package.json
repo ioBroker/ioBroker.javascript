@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.3.1",
+    "version": "8.4.0",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.4.0": {
+        "en": "Added checks/warnings for more incorrect blockly connections\nAdded option to disable certificate validation in httpGet\nAdded expire option to Blockly block\nFixed variables.astro times when date is not available\nFixed jsonConfig for libraries and library typings\nImplemented new js-controller 6.x functions for package handling\nUpdated to ChatGPT-4o",
+        "de": "Zusätzliche Überprüfungen/Warnungen für falsche Blockverbindungen\nOption hinzugefügt, um die Zertifikatsvalidierung in http zu deaktivieren Los\nOption zum Sperren hinzugefügt\nFeste Variablen. Astrozeiten, wenn Datum nicht verfügbar ist\nJsonConfig für Bibliotheken und Bibliothekstypings behoben\nErgänzte neue js-Controller 6.x Funktionen für die Pakethandling\nAktualisiert auf ChatGPT-4o",
+        "ru": "Добавлены чеки / предупреждения для более неправильных блоковых соединений\nДобавлена опция для отключения подтверждения сертификата на http Получить\nДобавлен вариант истечения срока действия блока\nИсправленные переменные. время астро, когда дата недоступна\nИсправленный jsonConfig для библиотек и библиотек\nНовые функции js-controller 6.x для обработки пакетов\nОбновлено в ChatGPT-4o",
+        "pt": "Adicionado verificações / avisos para conexões mais incorretas de bloqueio\nOpção adicionada para desativar a validação de certificados em http Vai\nAdicionado opção de validade para bloco\nVariáveis fixas. tempos astro quando a data não está disponível\nJsonConfig fixo para bibliotecas e digitações de bibliotecas\nImplementado novas funções js-controller 6.x para manipulação de pacotes\nAtualizado em ChatGPT-4o",
+        "nl": "Toegevoegde controles/waarschuwingen voor meer onjuiste blokverbindingen\nToegevoegde optie om certificaatvalidatie uit te schakelen in http Get\nVerlopen optie toegevoegd aan Blokkeren\nVaste variabelen. astro tijden wanneer datum niet beschikbaar is\nVaste jsonConfig voor bibliotheken en bibliotheektypen\nNieuwe js-controller 6.x functies geïmplementeerd voor pakketbehandeling\nBijgewerkt naar ChatGPT-4o",
+        "fr": "Ajout de contrôles/avertissements pour les connexions plus incorrectes\nAjout d'une option pour désactiver la validation du certificat dans http Obtenez\nAjout de l'option expire au bloc Blockly\nVariables fixes. astro heures où la date n'est pas disponible\nCorrection de jsonConfig pour bibliothèques et dactylographies de bibliothèques\nImplémenté de nouvelles fonctions de contrôle de js 6.x pour la manipulation des paquets\nMis à jour pour ChatGPT-4o",
+        "it": "Aggiunto assegni / avvisi per più connessioni bloccate errate\nAggiunta opzione per disabilitare la convalida del certificato in http Vai\nAggiunta l'opzione scaduta per blocco Blockly\nVariabili fissi. tempi di astro quando la data non è disponibile\nJsonConfig fisso per librerie e battiture libreria\nNuove funzioni js-controller 6.x per la gestione dei pacchetti\nAggiornato a ChatGPT-4o",
+        "es": "Agregados cheques / avisos para conexiones bloqueadas más incorrectas\nOpción adicional para desactivar la validación de certificados en http Vamos\nOpción de expiración agregada a bloque\nVariables fijas. tiempos de astro cuando la fecha no está disponible\nJsonConfig fijo para bibliotecas y tipografías de biblioteca\nFunciones implementadas nuevas js-controller 6.x para el manejo de paquetes\nActualizado en ChatGPT-4o",
+        "pl": "Dodano kontrole / ostrzeżenia dla bardziej nieprawidłowych połączeń blokujących\nDodano opcję wyłączenia walidacji certyfikatu w http Pobierz\nDodano opcję wygaśnięcia bloku Blockly\nZmienne stałe. czasy astro, kiedy data nie jest dostępna\nNaprawiono jsonConfig dla bibliotek i typów bibliotek\nZaimplementowane nowe funkcje sterownika js- 6 x do obsługi pakietów\nAktualizacja do ChatGPT- 4o",
+        "uk": "Додані перевірки / пригнічення для більш невірних з'єднань\nДодана можливість відключити перевірку сертифіката в http:// Отримати\nДодано опцію завершення блоку\nВиправлені змінні. час астро, коли дата не доступна\nВиправлено jsonConfig для бібліотечних та бібліотечних типів\nРеалізовано нові функції js-controller 6.x для обробки пакетів\nОновлено в ChatGPT-4o",
+        "zh-cn": "为更不正确的块连接添加检查/警告\n添加选项以禁用 http 中的证书验证 获取\n添加过期选项到块块\n固定变量。 日期不详时的天体时间\n用于图书馆和图书馆打字的固定jsonFig\n执行新的js控制器 6.x 处理包的功能\n更新到 ChatGPT-4o"
+      },
       "8.3.1": {
         "en": "Allow negative values in formatTimeDiff\nUpdated tests and fixed Blockly translations",
         "de": "Negative Werte im Format zulassen TimeDiff\nAktualisierte Tests und feste sperrige Übersetzungen",
@@ -117,19 +130,6 @@
         "pl": "Aktualizacja zależności (najnowsze ramy adaptacji- react- v5)",
         "uk": "Оновлення залежностей (найшвидший перехід-реакт-v5)",
         "zh-cn": "更新依赖性(最新适配器-反应-v5框架)"
-      },
-      "8.0.2": {
-        "en": "Forced downgrade of socket-client (object change issues)",
-        "de": "Erzwungene Downgrade von Steckdosen-Klient (Objektwechselprobleme)",
-        "ru": "Принудительный понижение сокет-клиента (проблемы изменения объекта)",
-        "pt": "Downgrade forçado de soquete-cliente (questões de alteração de objeto)",
-        "nl": "Gedwongen downgrade van socket-client (object verandering problemen)",
-        "fr": "Dégradation forcée de la prise-client (problèmes de changement d'objet)",
-        "it": "Abbassamento forzato del socket-client (problemi di cambiamento oggetti)",
-        "es": "Actualización forzada de socket-client (problemas de cambio de objeto)",
-        "pl": "Wymuszony spadek wartości socket- client (problemy ze zmianą obiektu)",
-        "uk": "Примушене зниження розетки-клієнта (об'єкти зміни)",
-        "zh-cn": "强制降低套接字客户级别(对象变更问题)"
       }
     },
     "platform": "Javascript/Node.js",

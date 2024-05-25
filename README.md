@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.4.0 (2024-05-25)
 
 * (klein0r) Added checks/warnings for more incorrect blockly connections
 * (klein0r) Added option to disable certificate validation in httpGet
@@ -71,10 +71,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 ### 8.1.1 (2024-05-03)
 
 * (klein0r) Updated Blockly/JS and Rules/JS image (as svg)
-
-### 8.1.0 (2024-05-03)
-
-* (bluefox) Updated admin config to jsonConfig (dropped materialize)
 
 ## License
 The MIT License (MIT)
