@@ -9,13 +9,14 @@
         "libraries": {
           "type": "chips",
           "label": "Additional npm modules",
-          "delimiter": ",",
+          "delimiter": " ",
           "sm": 12
         },
         "libraryTypings": {
           "newLine": true,
           "type": "chips",
           "label": "Activate syntax help for these npm modules",
+          "delimiter": " ",
           "sm": 12
         },
         "mirrorPath": {
