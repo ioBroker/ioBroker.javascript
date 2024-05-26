@@ -13,14 +13,14 @@
 Executes Javascript, Typescript Scripts.
 
 ## Documentation
-* [Function documentation](docs/en/javascript.md)
 
-* [Benutzung](docs/de/usage.md)
-
-* Blockly
-  * Here you can find the description of [blockly](docs/en/blockly.md). 
-  * Hier kann man die Beschreibung von [Blockly](docs/de/blockly.md) finden. 
-  * Описание по [blockly](docs/ru/blockly.md) можно найти [здесь](docs/ru/blockly.md).
+- 🇺🇸 [Function documentation](docs/en/javascript.md)
+- 🇺🇸 [Upgrade guide](docs/en/upgrade-guide.md)
+- 🇩🇪 [Benutzung](docs/de/usage.md)
+- Blockly
+  - 🇺🇸 Here you can find the description of [blockly](docs/en/blockly.md). 
+  - 🇩🇪 Hier kann man die Beschreibung von [Blockly](docs/de/blockly.md) finden. 
+  - 🇷🇺 Описание по [blockly](docs/ru/blockly.md) можно найти [здесь](docs/ru/blockly.md).
 
 ## Forbidden directories for Script Filesystem Mirroring
 The Script Filesystem Mirroring will store all Source Files of the Scripts in your Filesystem to allow you to edit the Files in your favourite Script editor beside the Web-Editor. All changes are synced in both directions.
