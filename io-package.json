@@ -170,7 +170,8 @@
     "docs": {
       "en": [
         "docs/en/javascript.md",
-        "docs/en/blockly.md"
+        "docs/en/blockly.md",
+        "docs/en/upgrade-guide.md"
       ],
       "ru": [
         "docs/ru/blockly.md"
