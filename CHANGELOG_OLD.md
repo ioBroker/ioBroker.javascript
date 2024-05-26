@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 8.1.1 (2024-05-03)
+
+* (klein0r) Updated Blockly/JS and Rules/JS image (as svg)
+
 ## 8.1.0 (2024-05-03)
 
 * (bluefox) Updated admin config to jsonConfig (dropped materialize)

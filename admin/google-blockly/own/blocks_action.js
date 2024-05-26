@@ -209,7 +209,7 @@ Blockly.Blocks['http_get'] = {
             .appendField(new Blockly.FieldTextInput(2000), 'TIMEOUT')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('http_timeout_ms'), 'ms'],
-                [Blockly.Translate('http_timeout_sec'), 'sec']
+                [Blockly.Translate('http_timeout_sec'), 'sec'],
             ]), 'UNIT');
 
         this.appendDummyInput('TYPE')
@@ -272,7 +272,7 @@ Blockly.Action.blocks['http_post'] =
     + '     <value name="TYPE">'
     + '     </value>'
     + '     <value name="DATA">'
-    + '         <shadow type="object_new">'
+    + '         <shadow type="logic_null">'
     + '         </shadow>'
     + '     </value>'
     + '     <value name="STATEMENT">'
@@ -289,7 +289,7 @@ Blockly.Blocks['http_post'] = {
             .appendField(new Blockly.FieldTextInput(2000), 'TIMEOUT')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('http_timeout_ms'), 'ms'],
-                [Blockly.Translate('http_timeout_sec'), 'sec']
+                [Blockly.Translate('http_timeout_sec'), 'sec'],
             ]), 'UNIT');
 
         this.appendDummyInput('TYPE')
@@ -317,9 +317,9 @@ Blockly.Blocks['http_post'] = {
 
 Blockly.JavaScript['http_post'] = function(block) {
     const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
-    const data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     const unit = block.getFieldValue('UNIT');
+
     let timeout = block.getFieldValue('TIMEOUT');
     if (isNaN(timeout)) {
         timeout = 2000;
@@ -333,6 +333,7 @@ Blockly.JavaScript['http_post'] = function(block) {
         responseType = 'text';
     }
 
+    let data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
     if (!data) {
         data = 'null';
     }
@@ -685,8 +686,6 @@ Blockly.JavaScript['request'] = function(block) {
     } else {
         logText = '';
     }
-
-    logText += `console.warn('request blockly block is deprecated - please use "http (GET)" instead');\n`;
 
     if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
         const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');

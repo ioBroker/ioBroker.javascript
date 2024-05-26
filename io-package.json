@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.4.0",
+    "version": "8.4.1",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.4.1": {
+        "en": "Fixed httpPost block\nJust raise deprecated warnings once per script start/usage",
+        "de": "Fixed httpPost block\nEinfach deprecated Warnungen einmal pro Skript Start/Nutzung anheben",
+        "ru": "Фиксированный блок HTTPPost\nПросто поднять обесцененные предупреждения один раз за сценарий запуска/использования",
+        "pt": "Bloqueio httpPost fixo\nBasta levantar avisos obsoletos uma vez por script start/usage",
+        "nl": "Vast httpPost-blok\nVerhoog de verouderde waarschuwingen eenmaal per scriptstart/gebruik",
+        "fr": "Bloc fixe httpPost\nIl suffit de soulever des avertissements dépréciés une fois par script de démarrage/utilisation",
+        "it": "Blocco httpPost fisso\nBasta alzare avvisi deprecati una volta per l'inizio dello script / uso",
+        "es": "Bloque httpPost fijo\nSólo levante advertencias deprecatadas una vez por script start/usage",
+        "pl": "Naprawiono blok httpPost\nWystarczy podnieść zdeprecjonowane ostrzeżenia raz na początku / użyciu skryptu",
+        "uk": "Виправлено блокування httpPost\nПросто підняти відхилені попередження один раз на скрипт старту/відміну",
+        "zh-cn": "固定的 httppost 块\n只要每个脚本启动/使用一次发出贬值的警告"
+      },
       "8.4.0": {
         "en": "Added checks/warnings for more incorrect blockly connections\nAdded option to disable certificate validation in httpGet\nAdded expire option to Blockly block\nFixed variables.astro times when date is not available\nFixed jsonConfig for libraries and library typings\nImplemented new js-controller 6.x functions for package handling\nUpdated to ChatGPT-4o",
         "de": "Zusätzliche Überprüfungen/Warnungen für falsche Blockverbindungen\nOption hinzugefügt, um die Zertifikatsvalidierung in http zu deaktivieren Los\nOption zum Sperren hinzugefügt\nFeste Variablen. Astrozeiten, wenn Datum nicht verfügbar ist\nJsonConfig für Bibliotheken und Bibliothekstypings behoben\nErgänzte neue js-Controller 6.x Funktionen für die Pakethandling\nAktualisiert auf ChatGPT-4o",
@@ -117,19 +130,6 @@
         "pl": "Aktualizacja pliku konfiguracyjnego admin do jsonConfig (upuszczony materialize)",
         "uk": "Оновлено адмін конфігурацію в jsonConfig (видалений матеріалізування)",
         "zh-cn": "更新管理员配置到jsonConfig( 已实现)"
-      },
-      "8.0.3": {
-        "en": "Updates dependencies (latest adapter-react-v5 framework)",
-        "de": "Updates Abhängigkeiten (letzter Adapter-React-v5-Framework)",
-        "ru": "Зависимости обновлений (последние рамки адаптер-реакт-v5)",
-        "pt": "Atualiza dependências (quadro mais recente do adaptador-react-v5)",
-        "nl": "Updates afhankelijkheden (laatste adapter-react-v5 kader)",
-        "fr": "Mise à jour des dépendances (cadre adaptateur-réact-v5 le plus récent)",
-        "it": "Aggiornamenti dipendenze (ultima struttura adattatore-react-v5)",
-        "es": "Actualización de las dependencias (la última adaptación-react-v5 framework)",
-        "pl": "Aktualizacja zależności (najnowsze ramy adaptacji- react- v5)",
-        "uk": "Оновлення залежностей (найшвидший перехід-реакт-v5)",
-        "zh-cn": "更新依赖性(最新适配器-反应-v5框架)"
       }
     },
     "platform": "Javascript/Node.js",

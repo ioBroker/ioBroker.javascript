@@ -42,7 +42,7 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.4.1 (2024-05-26)
 
 * (klein0r) Fixed httpPost block
 * (klein0r) Just raise deprecated warnings once per script start/usage
@@ -72,10 +72,6 @@ Since v5.5.0 of the JavaScript adapter the following locations (relative to the 
 
 * (PeterVoronov) Added toArray to result object of $-selector
 * (klein0r) Added Blockly block for onLog
-
-### 8.1.1 (2024-05-03)
-
-* (klein0r) Updated Blockly/JS and Rules/JS image (as svg)
 
 ## License
 The MIT License (MIT)
