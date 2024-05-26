@@ -169,16 +169,19 @@
     },
     "docs": {
       "en": [
-        "docs/en/javascript.md",
+        "docs/en/README.md",
         "docs/en/blockly.md",
+        "docs/en/javascript.md",
         "docs/en/upgrade-guide.md"
       ],
       "ru": [
+        "docs/ru/README.md",
         "docs/ru/blockly.md"
       ],
       "de": [
-        "docs/de/usage.md",
-        "docs/de/blockly.md"
+        "docs/de/README.md",
+        "docs/de/blockly.md",
+        "docs/de/usage.md"
       ]
     },
     "dependencies": [
