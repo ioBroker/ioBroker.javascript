@@ -1821,6 +1821,26 @@ Unsubscribes from these logs.
 *Requires version >= 7.9.0*
 
 ```js
+httpGet('http://jsonplaceholder.typicode.com/posts', (err, response) => {
+    if (!err) {
+        console.log(response.statusCode);
+        console.log(response.data);
+    } else {
+        console.error(err);
+    }
+});
+```
+
+The second parameters can be an object with further options (optional). All options are optional. Supported flags:
+
+- `timeout` (number) - Timeout in milliseconds
+- `responseType` (string) - Supported values are `text` (default) or `arraybuffer` for binary data in the response
+- `basicAuth` (object) - HTTP basic authentication credentials. e.g. `{ user: 'admin', password: 'iobroker' }`
+- `bearerAuth` (string) - Token for bearer authentication
+- `headers` (object) - Additional custom HTTP headers e.g. `{ 'Accept-Language': 'en-GB,en;q=0.9' }`
+- `validateCertificate` (boolean) - Allows self signed certificates when `false`
+
+```js
 httpGet('http://jsonplaceholder.typicode.com/posts', { timeout: 1000 }, (err, response) => {
     if (!err) {
         console.log(response.statusCode);
@@ -1865,7 +1885,7 @@ httpGet('http://jsonplaceholder.typicode.com/posts', { validateCertificate: fals
 *Requires version >= 7.9.0*
 
 ```js
-httpPost('http://jsonplaceholder.typicode.com/posts', { title: 'foo', body: 'bar', userId: 1 }, { timeout: 1000 }, (error, response) => {
+httpPost('http://jsonplaceholder.typicode.com/posts', { title: 'foo', body: 'bar', userId: 1 }, (error, response) => {
     if (!error) {
         console.log(response.statusCode);
         console.log(response.data);
