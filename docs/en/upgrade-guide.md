@@ -1,8 +1,25 @@
 # Upgrade guide
 
+## Forbidden directories for Script Filesystem Mirroring
+
+**Since v5.5.0 of the JavaScript adapter** the following locations (relative to the ioBroker Base directory, usually `/opt/iobroker`) are not allowed to be used:
+* The ioBroker base directory itself and any path above!
+* `./iobroker-data` itself, custom subdirectory (choose a name that do not overlap with any adapter!)
+* `./iobroker-data/backup-objects` or the anything below
+* `./iobroker-data/files` or the anything below
+* `./iobroker-data/backitup` or the anything below
+* `./backups` or the anything below
+* `./node_modules` or the anything below
+* `./log` or the anything below
+
+The script filesystem mirroring will store all source files of the Scripts in your file system and allows you to edit the files in your favorite script editor beside the web editor. All changes are synced in both directions.
+
+When enabling the script files ystem mirroring, please make sure to create a **dedicated new directory** and **do not** use an existing directory with other content. Please also make sure that no other script or process changes files in the provided directory to prevent access issues.
+Any location needs to be writable by the "iobroker" user!
+
 ## request to httpGet
 
-The `request` package is deprecated since Feb 11th 2020. So the JavaScript adpater needs to drop the package at some point. To make the migration as easy as possible, the sandbox provides new function to request HTTP ressources.
+**Since v8.0.0 of the JavaScript adapter** the `request` package is deprecated and the usage in your scripts will raise a warning. The JavaScript adpater needs to drop the package at some point. To make the migration as easy as possible, the sandbox provides new function to request HTTP ressources.
 
 ### JavaScript
 
