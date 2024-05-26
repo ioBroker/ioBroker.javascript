@@ -687,8 +687,6 @@ Blockly.JavaScript['request'] = function(block) {
         logText = '';
     }
 
-    logText += `console.warn('request blockly block is deprecated - please use "http (GET)" instead');\n`;
-
     if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
         const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
         if (statement) {
