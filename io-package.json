@@ -374,6 +374,7 @@
           "uk": "Щоб оновити всі скрипти, які використовують пакет \"запит\"! Цей пакет буде видалений в наступних версіях. Будь ласка, використовуйте нові блоки для \"httpGet\" або використовуйте іншу бібліотеку (наприклад, axios) у вашому JavaScript-коді.",
           "zh-cn": "需要更新所有使用\"请求\"包的脚本! 这个软件包在未来的版本中将被删除. 请为“ httpGet” 使用新的“ Bockly” 块, 或者在您的 JavaScript 代码中使用另一个库( 如 axios) ."
         },
+        "link": "https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/upgrade-guide.md",
         "level": "warn",
         "buttons": [
           "agree",
