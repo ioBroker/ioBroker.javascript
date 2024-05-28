@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.4.1",
+    "version": "8.4.2",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.4.2": {
+        "en": "Fixed createState (removed redundant native attributes)\nFixed astro custom component",
+        "de": "Fixed createState (entfernte redundante native Attribute)\nFeste astro benutzerdefinierte Komponente",
+        "ru": "Fixed createState (удаленные избыточные местные атрибуты)\nFixed astro custom component",
+        "pt": "Fixed createState (atributos nativos redundantes removed)\nComponente personalizado astro fixo",
+        "nl": "Fixed createState (verwijderde redundante native attributen)\nVaste astro aangepaste component",
+        "fr": "Correction de createState (attributs redondants supprimés)\nComposant astro personnalisé fixe",
+        "it": "CreaState fisso (attributo nativo ridondante rimosso)\nComponente personalizzato astro fisso",
+        "es": "Estado de creación fijo (atributos nativos redundantes retirados)\nComponente personalizado astro fijo",
+        "pl": "Stałe createState (usunięte nadrzędne atrybuty rodzime)\nNaprawiono komponent astro",
+        "uk": "Виправлено створенняДержавних (виданих атрибутів)\nВиправлено astro власний компонент",
+        "zh-cn": "固定创建状态( 已删除的冗余本地属性)\n固定天体自定义组件"
+      },
       "8.4.1": {
         "en": "Fixed httpPost block\nJust raise deprecated warnings once per script start/usage",
         "de": "Fixed httpPost block\nEinfach deprecated Warnungen einmal pro Skript Start/Nutzung anheben",
@@ -117,19 +130,6 @@
         "pl": "Aktualizacja obrazu Blockly / JS i Rules / JS (jako svg)",
         "uk": "Оновлено Blockly / JS і правила / JS зображення (як )",
         "zh-cn": "更新的 Blockly/JS 和 Rules/JS 图像(作为 svg)"
-      },
-      "8.1.0": {
-        "en": "Updated admin config to jsonConfig (dropped materialize)",
-        "de": "Updated admin config to jsonConfig (dropped materialize)",
-        "ru": "Обновленная настройка администратора на jsonConfig (скачивается материализуется)",
-        "pt": "Configuração de administrador atualizada para jsonConfig (materialize drpped)",
-        "nl": "Bijgewerkte admin config naar jsonConfig (gedropt materialiseren)",
-        "fr": "Mise à jour de la configuration d'administration à jsonConfig",
-        "it": "Modificato da admin config a jsonConfig (dropped materialize)",
-        "es": "Configuración de administración actualizada a jsonConfig (materializarse)",
-        "pl": "Aktualizacja pliku konfiguracyjnego admin do jsonConfig (upuszczony materialize)",
-        "uk": "Оновлено адмін конфігурацію в jsonConfig (видалений матеріалізування)",
-        "zh-cn": "更新管理员配置到jsonConfig( 已实现)"
       }
     },
     "platform": "Javascript/Node.js",

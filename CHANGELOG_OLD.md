@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 8.2.0 (2024-05-07)
+
+* (PeterVoronov) Added toArray to result object of $-selector
+* (klein0r) Added Blockly block for onLog
+
 ## 8.1.1 (2024-05-03)
 
 * (klein0r) Updated Blockly/JS and Rules/JS image (as svg)

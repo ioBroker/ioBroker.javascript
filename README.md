@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.4.2 (2024-05-28)
 
 * (klein0r) Fixed createState (removed redundant native attributes)
 * (winnyschuster) Fixed astro custom component
@@ -56,11 +56,6 @@ Executes Javascript, Typescript Scripts.
 * (klein0r) Added createTempFile to sandbox
 * (klein0r) Fixed log message on script start
 * (klein0r) Added instance/from to log window (like in admin)
-
-### 8.2.0 (2024-05-07)
-
-* (PeterVoronov) Added toArray to result object of $-selector
-* (klein0r) Added Blockly block for onLog
 
 ## License
 The MIT License (MIT)

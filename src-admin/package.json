@@ -1,7 +1,7 @@
 {
     "name": "iobroker-admin-component-backitup",
     "private": true,
-    "version": "8.4.1",
+    "version": "8.4.2",
     "scripts": {
         "start": "set PORT=4173 && craco start",
         "build": "craco build"
