@@ -64,4 +64,7 @@ schedule('*/30 * * * *', () => {
 
 ### Blockly
 
+- The `request` block just supported HTTP GET (other methods were not supported) - replace the block with `http (GET)`
+- It was required to create a custom variable named `result` to use the response. This is not required anymore. Delete the variable and use the dedicated block to work with the result parameters (like in trigger blocks).
+
 ![Blockly request to httpGet](img/upgrade-guide/request-httpGet.png)
