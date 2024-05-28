@@ -28,6 +28,7 @@ Executes Javascript, Typescript Scripts.
 -->
 ### **WORK IN PROGRESS**
 
+* (klein0r) Fixed createState (removed redundant native attributes)
 * (winnyschuster) Fixed astro custom component
 
 ### 8.4.1 (2024-05-26)
