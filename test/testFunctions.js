@@ -402,6 +402,102 @@ describe.only('Test JS', function () {
         });
     });
 
+    it('Test JS: test createState', function (done) {
+        this.timeout(5000);
+        // add script
+        const script = {
+            _id:                'script.js.test_createState',
+            type:               'script',
+            common: {
+                name:           'test createState',
+                enabled:        true,
+                verbose:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `await createStateAsync('test_createState_init', 100);\n` +
+                                `await createStateAsync('test_createState_common', { name: 'common', desc: 'test', type: 'array' });\n` +
+                                `await createStateAsync('test_createState_initCommon', 101, { name: 'initCommon', desc: 'test', type: 'number' });\n` +
+                                `await createStateAsync('test_createState_commonNative', { name: 'commonNative', desc: 'test', type: 'object' }, { customProperty: true });\n` +
+                                `await createStateAsync('test_createState_initCommonNative', 102, { name: 'initCommonNative', desc: 'test', type: 'number' }, { customProperty: true });\n` +
+                                `await createStateAsync('test_createState_initForce', true, true);\n` +
+                                `await createStateAsync('test_createState_initForceCommon', false, true, { name: 'initFoceCommon', desc: 'test', type: 'boolean' });\n` +
+                                `await createStateAsync('test_createState_initForceCommonNative', false, true, { name: 'initForceCommonNative', desc: 'test', type: 'boolean' }, { customProperty: true });\n`,
+            },
+            native: {},
+        };
+        objects.setObject(script._id, script, err => {
+            expect(err).to.be.null;
+            setTimeout(function () {
+                objects.getObject('javascript.0.test_createState_init', (err, obj) => {
+                    expect(err).to.be.null;
+                    expect(obj.common.name).to.be.equal('test_createState_init'); // = id
+                    expect(obj.common.type).to.be.equal('mixed');
+                    expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
+
+                    objects.getObject('javascript.0.test_createState_common', (err, obj) => {
+                        expect(err).to.be.null;
+                        expect(obj.common.name).to.be.equal('common');
+                        expect(obj.common.desc).to.be.equal('test');
+                        expect(obj.common.type).to.be.equal('array');
+                        expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
+
+                        objects.getObject('javascript.0.test_createState_initCommon', (err, obj) => {
+                            expect(err).to.be.null;
+                            expect(obj.common.name).to.be.equal('initCommon');
+                            expect(obj.common.desc).to.be.equal('test');
+                            expect(obj.common.type).to.be.equal('number');
+                            expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
+
+                            objects.getObject('javascript.0.test_createState_commonNative', (err, obj) => {
+                                expect(err).to.be.null;
+                                expect(obj.common.name).to.be.equal('commonNative');
+                                expect(obj.common.desc).to.be.equal('test');
+                                expect(obj.common.type).to.be.equal('object');
+                                expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
+                                expect(obj.native).to.have.all.keys('customProperty');
+
+                                objects.getObject('javascript.0.test_createState_initCommonNative', (err, obj) => {
+                                    expect(err).to.be.null;
+                                    expect(obj.common.name).to.be.equal('initCommonNative');
+                                    expect(obj.common.desc).to.be.equal('test');
+                                    expect(obj.common.type).to.be.equal('number');
+                                    expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
+                                    expect(obj.native).to.have.all.keys('customProperty');
+
+                                    objects.getObject('javascript.0.test_createState_initForce', (err, obj) => {
+                                        expect(err).to.be.null;
+                                        expect(obj.common.name).to.be.equal('test_createState_initForce'); // = id
+                                        expect(obj.common.type).to.be.equal('mixed');
+                                        expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
+
+                                        objects.getObject('javascript.0.test_createState_initForceCommon', (err, obj) => {
+                                            expect(err).to.be.null;
+                                            expect(obj.common.name).to.be.equal('initFoceCommon');
+                                            expect(obj.common.desc).to.be.equal('test');
+                                            expect(obj.common.type).to.be.equal('boolean');
+                                            expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
+
+                                            objects.getObject('javascript.0.test_createState_initForceCommonNative', (err, obj) => {
+                                                expect(err).to.be.null;
+                                                expect(obj.common.name).to.be.equal('initForceCommonNative');
+                                                expect(obj.common.desc).to.be.equal('test');
+                                                expect(obj.common.type).to.be.equal('boolean');
+                                                expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
+                                                expect(obj.native).to.have.all.keys('customProperty');
+
+                                                done();
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            }, 1000);
+        });
+    });
+
     it('Test JS: read objects.json file must not work', function (done) {
         this.timeout(20000);
         // add script
