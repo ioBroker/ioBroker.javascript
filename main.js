@@ -831,27 +831,35 @@ function startAdapter(options) {
 
                     case 'calcAstro': {
                         if (obj.message) {
-                            const sunriseOffset = parseInt(obj.message.sunriseOffset  === undefined ? adapter.config.sunriseOffset : obj.message.sunriseOffset, 10) || 0;
-                            const sunsetOffset  = parseInt(obj.message.sunsetOffset   === undefined ? adapter.config.sunsetOffset  : obj.message.sunsetOffset, 10)  || 0;
-                            const longitude     = parseFloat(obj.message.longitude === undefined ? adapter.config.longitude    : obj.message.longitude) || 0;
-                            const latitude      = parseFloat(obj.message.latitude  === undefined ? adapter.config.latitude     : obj.message.latitude)  || 0;
+                            const longitude     = parseFloat(obj.message.longitude === undefined ? adapter.config.longitude : obj.message.longitude) || 0;
+                            const latitude      = parseFloat(obj.message.latitude  === undefined ? adapter.config.latitude  : obj.message.latitude)  || 0;
                             const today         = getAstroStartOfDay();
-                            const nextSunrise   = getAstroEvent(
+
+                            const sunriseEvent = obj.message?.sunriseEvent || adapter.config.sunriseEvent;
+                            const sunriseLimitStart = obj.message?.sunriseLimitStart || adapter.config.sunriseLimitStart;
+                            const sunriseLimitEnd = obj.message?.sunriseLimitEnd || adapter.config.sunriseLimitEnd;
+                            const sunriseOffset = parseInt(obj.message.sunriseOffset === undefined ? adapter.config.sunriseOffset : obj.message.sunriseOffset, 10) || 0;
+                            const nextSunrise = getAstroEvent(
                                 today,
-                                obj.message.sunriseEvent || adapter.config.sunriseEvent,
-                                obj.message.sunriseLimitStart || adapter.config.sunriseLimitStart,
-                                obj.message.sunriseLimitEnd   || adapter.config.sunriseLimitEnd,
+                                sunriseEvent,
+                                sunriseLimitStart,
+                                sunriseLimitEnd,
                                 sunriseOffset,
                                 false,
                                 latitude,
                                 longitude,
                                 true
                             );
+
+                            const sunsetEvent = obj.message?.sunsetEvent || adapter.config.sunsetEvent;
+                            const sunsetLimitStart = obj.message?.sunsetLimitStart || adapter.config.sunsetLimitStart;
+                            const sunsetLimitEnd = obj.message?.sunsetLimitEnd || adapter.config.sunsetLimitEnd;
+                            const sunsetOffset = parseInt(obj.message.sunsetOffset === undefined ? adapter.config.sunsetOffset : obj.message.sunsetOffset, 10) || 0;
                             const nextSunset = getAstroEvent(
                                 today,
-                                obj.message.sunsetEvent  || adapter.config.sunsetEvent,
-                                obj.message.sunsetLimitStart  || adapter.config.sunsetLimitStart,
-                                obj.message.sunsetLimitEnd    || adapter.config.sunsetLimitEnd,
+                                sunsetEvent,
+                                sunsetLimitStart,
+                                sunsetLimitEnd,
                                 sunsetOffset,
                                 true,
                                 latitude,
@@ -859,14 +867,22 @@ function startAdapter(options) {
                                 true
                             );
 
+                            const validDateSunrise = nextSunrise !== null && !isNaN(nextSunrise.getTime());
+                            const validDateSunset = nextSunset !== null && !isNaN(nextSunset.getTime());
+
+                            adapter.log.debug(`calcAstro sunrise: ${sunriseEvent} -> start ${sunriseLimitStart}, end: ${sunriseLimitEnd}, offset: ${sunriseOffset} - ${validDateSunrise ? nextSunrise.toISOString() : 'n/a'}`);
+                            adapter.log.debug(`calcAstro sunset:  ${sunsetEvent} -> start ${sunsetLimitStart}, end: ${sunsetLimitEnd}, offset: ${sunsetOffset} - ${validDateSunset ? nextSunset.toISOString() : 'n/a'}`);
+
                             obj.callback && adapter.sendTo(obj.from, obj.command, {
                                 nextSunrise: {
-                                    serverTime: formatHoursMinutesSeconds(nextSunrise),
-                                    date: nextSunrise
+                                    isValidDate: validDateSunrise,
+                                    serverTime: validDateSunrise ? formatHoursMinutesSeconds(nextSunrise) : 'n/a',
+                                    date: nextSunrise.toISOString(),
                                 },
                                 nextSunset: {
-                                    serverTime: formatHoursMinutesSeconds(nextSunset),
-                                    date: nextSunset
+                                    isValidDate: validDateSunset,
+                                    serverTime: validDateSunset ? formatHoursMinutesSeconds(nextSunset) : 'n/a',
+                                    date: nextSunset.toISOString(),
                                 }
                             }, obj.callback);
                         }

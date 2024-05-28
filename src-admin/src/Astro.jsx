@@ -152,11 +152,10 @@ class Astro extends ConfigGeneric {
                     console.error(`Cannot calculate astro times: ${JSON.stringify(times.error)}`);
                     return;
                 }
-                const nextSunrise = formatTime(new Date(times.nextSunrise.date));
-                const nextSunset = formatTime(new Date(times.nextSunset.date));
+
                 this.setState({
-                    nextSunrise,
-                    nextSunset,
+                    nextSunrise: times.nextSunrise.isValidDate ? formatTime(new Date(times.nextSunrise.date)) : 'n/a',
+                    nextSunset: times.nextSunset.isValidDate ? formatTime(new Date(times.nextSunset.date)) : 'n/a',
                     nextSunriseServer: times.nextSunrise.serverTime,
                     nextSunsetServer: times.nextSunset.serverTime,
                 });
