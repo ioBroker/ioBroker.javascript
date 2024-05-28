@@ -26,6 +26,10 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (winnyschuster) Fixed astro custom component
+
 ### 8.4.1 (2024-05-26)
 
 * (klein0r) Fixed httpPost block
