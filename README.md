@@ -26,6 +26,10 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Added response time to httpGet and httpPost result
+
 ### 8.4.2 (2024-05-28)
 
 * (klein0r) Fixed createState (removed redundant native attributes)

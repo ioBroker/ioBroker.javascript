@@ -1243,6 +1243,7 @@ declare global {
 			statusCode: number;
 			data: string;
 			headers: Record<string, string>;
+			responseTime?: number;
 		}
 	} // end namespace iobJS
 
