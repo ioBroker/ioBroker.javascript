@@ -29,6 +29,7 @@ Executes Javascript, Typescript Scripts.
 ### **WORK IN PROGRESS**
 
 * (klein0r) Added response time to httpGet and httpPost result
+* (klein0r) Added trigger block to ack new values
 
 ### 8.4.2 (2024-05-28)
 
