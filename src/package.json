@@ -13,7 +13,7 @@
         "@mui/material": "5.15.18",
         "@mui/styles": "5.15.19",
         "@mui/x-date-pickers": "^7.5.1",
-        "@sentry/browser": "^7.114.0",
+        "@sentry/browser": "^8.7.0",
         "@sentry/integrations": "^7.114.0",
         "craco-module-federation": "^1.1.0",
         "eslint": "^8.57.0",
