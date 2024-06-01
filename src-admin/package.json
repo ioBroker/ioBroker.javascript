@@ -12,7 +12,7 @@
         "@emotion/react": "^11.11.4",
         "@emotion/styled": "^11.11.5",
         "@iobroker/adapter-react-v5": "^4.13.24",
-        "@mui/icons-material": "^5.15.18",
+        "@mui/icons-material": "^5.15.19",
         "@mui/material": "5.15.19",
         "@mui/styles": "5.15.19",
         "@mui/x-date-pickers": "^7.5.1",
