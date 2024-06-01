@@ -14,7 +14,7 @@
         "@iobroker/adapter-react-v5": "^4.13.24",
         "@mui/icons-material": "^5.15.18",
         "@mui/material": "5.15.19",
-        "@mui/styles": "5.15.18",
+        "@mui/styles": "5.15.19",
         "@mui/x-date-pickers": "^7.5.1",
         "@originjs/vite-plugin-federation": "^1.3.5",
         "@rollup/plugin-babel": "^6.0.4",
