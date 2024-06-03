@@ -202,7 +202,7 @@ on('adapter.0.device.channel.sensor', (data) => {
 You can use the following parameters to specify the trigger:
 
 | parameter   | type/value | description                                                                                                                                         |
-|-----------  |-------     |-----------------------------------------------------------------------------------------------------------------------------------------------------|
+|-------------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
 | logic       | string     | "and" or "or" logic to combine the conditions \(default: "and"\)                                                                                    |
 |             |            |                                                                                                                                                     |
 | id          | string     | id is equal to given one                                                                                                                            |
@@ -214,13 +214,13 @@ You can use the following parameters to specify the trigger:
 |             | Array      | name matched to a list of allowed names                                                                                                             |
 |             |            |                                                                                                                                                     |
 | change      | string     | "eq", "ne", "gt", "ge", "lt", "le", "any"                                                                                                           |
-|             |   "eq"     | (equal)            New value must be equal to old one (state.val == oldState.val)                                                                   |
-|             |   "ne"     | (not equal)        New value must be not equal to the old one (state.val != oldState.val) **If pattern is id-string this value is used by default** |
-|             |   "gt"     | (greater)          New value must be greater than old value (state.val > oldState.val)                                                              |
-|             |   "ge"     | (greater or equal) New value must be greater or equal to old one (state.val >= oldState.val)                                                        |
-|             |   "lt"     | (smaller)          New value must be smaller than old one (state.val < oldState.val)                                                                |
-|             |   "le"     | (smaller or equal) New value must be smaller or equal to old value (state.val <= oldState.val)                                                      |
-|             |  "any"     | Trigger will be raised if just the new value comes                                                                                                  |
+|             | "eq"       | (equal)            New value must be equal to old one (state.val == oldState.val)                                                                   |
+|             | "ne"       | (not equal)        New value must be not equal to the old one (state.val != oldState.val) **If pattern is id-string this value is used by default** |
+|             | "gt"       | (greater)          New value must be greater than old value (state.val > oldState.val)                                                              |
+|             | "ge"       | (greater or equal) New value must be greater or equal to old one (state.val >= oldState.val)                                                        |
+|             | "lt"       | (smaller)          New value must be smaller than old one (state.val < oldState.val)                                                                |
+|             | "le"       | (smaller or equal) New value must be smaller or equal to old value (state.val <= oldState.val)                                                      |
+|             | "any"      | Trigger will be raised if just the new value comes                                                                                                  |
 |             |            |                                                                                                                                                     |
 | val         | mixed      | New value must be equal to given one                                                                                                                |
 | valNe       | mixed      | New value must be not equal to given one                                                                                                            |
@@ -344,7 +344,7 @@ setState('stateId1', 'new value');
 // stateId2 will be set to 'triggered'.
 ```
 
-Function `on` returns handler back. This handler can be used by unsubscribe.
+Function `on` returns handler back. This handler can be used by unsubscribing.
 
 *Notice:* By default only states with quality 0x00 will be passed to callback function. If you want to get all events, add `{q: '*'}` to pattern structure.
 
@@ -483,7 +483,7 @@ schedule({ hour: 12, minute: 30 }, () => {
 ```
 Pattern can be a Javascript Date object (some specific time point) - in this case only it will be triggered only one time.
 
-If start or end times for a schedule are needed, this could also be implemented with usage of an object. In this scenario the object has the properties:
+If start or end times for a schedule are needed, this could also be implemented with usage of an object. In this scenario, the object has the properties:
 - `start`
 - `end`
 - `rule`
@@ -541,11 +541,11 @@ The following values can be used as attribute in astro-function:
 - `"nightEnd"`: night ends (morning astronomical twilight starts)
 - `"nauticalDawn"`: nautical dawn (morning nautical twilight starts)
 - `"dawn"`: dawn (morning nautical twilight ends, morning civil twilight starts)
-- `"nadir"`: nadir (darkest moment of the night, sun is in the lowest position)
+- `"nadir"`: nadir (the darkest moment of the night, sun is in the lowest position)
 
 **Note:** to use "astro"-function the "latitude" and "longitude" must be defined in javascript adapter settings.
 
-**Note:** in some places sometimes it could be so, that no night/nightEnd exists. Please read [here](https://github.com/mourner/suncalc/issues/70) about it.
+**Note:** in some places sometimes it could be so that no night/nightEnd exists. Please read [here](https://github.com/mourner/suncalc/issues/70) about it.
 
 **Note:** you can use "on" function for schedule with small modification:
 ```js
@@ -568,7 +568,7 @@ scheduleById(id, callback);
 scheduleById(id, ack, callback);
 ```
 
-Allows to create a schedule based on a state value. If the state value changes, the old schedule will be deleted and a new schedule is created automatically.
+Allows creating a schedule based on a state value. If the state value changes, the old schedule will be deleted and a new schedule is created automatically.
 
 Supported formats:
 
@@ -605,7 +605,7 @@ createState(
 const list = getSchedules(true);
 ```
 Returns the list of all CRON jobs and schedules (except astro).
-Argument must be `true` if you want to get the list for **every running script**. Otherwise only schedules in the current script will be returned.
+Argument must be `true` if you want to get the list for **every running script**. Otherwise, only schedules in the current script will be returned.
 
 ```js
 const list = getSchedules(true);
@@ -643,7 +643,7 @@ If the first attribute is string, the function will try to parse the string as J
 ```js
 getAstroDate(pattern, date, offsetMinutes);
 ```
-Returns a javascript Date object for the specified astro-name (e.g. `"sunrise"` or `"sunriseEnd"`). For valid values see the list of allowed values in the [Astro](#astro--function) section in the *schedule* function.
+Returns a javascript Date object for the specified astro-name (e.g. `"sunrise"` or `"sunriseEnd"`). For valid values, see the list of allowed values in the [Astro](#astro--function) section in the *schedule* function.
 
 The returned Date object is calculated for the passed *date*. If no date is provided, the current day is used.
 
@@ -726,8 +726,8 @@ setState('myState', 1);
 
 Please refer to https://github.com/ioBroker/ioBroker/wiki/Adapter-Development-Documentation#commands-and-statuses for usage of `ack`.
 Short:
-- `ack` = false : Script wants to send a command to be executed by the target device/adapter
-- `ack` = true  : Command was successfully executed, and state is updated as a positive result
+- `ack` = `false` : Script wants to send a command to be executed by the target device/adapter
+- `ack` = `true`  : Command was successfully executed, and state is updated as a positive result
 
 ### setStateAsync
 ```js
@@ -798,7 +798,7 @@ getStateDelayed('hm-rpc.0.LQE91119.1.STATE');
 ]
 ```
 
-If you ask for all IDs the answer will look like:
+If you ask for all IDs, the answer will look like:
 
 ```js
 getStateDelayed();
@@ -845,7 +845,7 @@ Returns state with the given id in the following form:
 ```
 
 If state does not exist, a warning will be printed in the logs and the object `{ val: null, notExist: true }` will be returned.
-To suppress the warning check if the state exists before calling getState (see [existsState](#existsState)).
+To suppress the warning, check if the state exists before calling getState (see [existsState](#existsState)).
 
 ### getStateAsync
 ```js
@@ -873,7 +873,7 @@ getObject(id, enumName);
 ```
 Get description of object id as stored in a system.
 You can specify the enumeration name. If this is defined, two additional attributes will be added to result: enumIds and enumNames.
-These arrays have all enumerations, where ID is a member of. E.g:
+These arrays have all enumerations, where ID is a member of. E.g.:
 
 ```js
 getObject('adapter.N.objectName', 'rooms');
@@ -1211,15 +1211,15 @@ formatDate(millisecondsOrDate, format);
 * YYYY, JJJJ, ГГГГ - full year, e.g 2015
 * YY, JJ, ГГ - short year, e.g 15
 * MM, ММ(cyrillic) - full month, e.g. 01
-* M, М(cyrillic) - short month, e.g. 1
+* M, М(cyrillic) - short month, e.g., 1
 * DD, TT, ДД - full day, e.g. 02
-* D, T, Д - short day, e.g. 2
+* D, T, Д - short day, e.g., 2
 * hh, SS, чч - full hours, e.g. 03
 * h, S, ч - short hours, e.g. 3
 * mm, мм(cyrillic) - full minutes, e.g. 04
-* m, м(cyrillic) - short minutes, e.g. 4
+* m, м(cyrillic) - short minutes, e.g., 4
 * ss, сс(cyrillic) - full seconds, e.g. 05
-* s, с(cyrillic) - short seconds, e.g. 5
+* s, с(cyrillic) - short seconds, e.g., 5
 * sss, ссс(cyrillic) - milliseconds
 * WW, НН(cyrillic) - full week day as text
 * W, Н(cyrillic) - short week day as text
@@ -1248,14 +1248,14 @@ formatTimeDiff(milliseconds, format);
 - `milliseconds`: difference in milliseconds*
 - `format`: Can be `null`, so the `hh:mm:ss` format will be used, otherwise
 
-* DD, TT, ДД - full day, e.g. 02
-* D, T, Д - short day, e.g. 2
-* hh, SS, чч - full hours, e.g. 03
-* h, S, ч - short hours, e.g. 3
-* mm, мм(cyrillic) - full minutes, e.g. 04
-* m, м(cyrillic) - short minutes, e.g. 4
-* ss, сс(cyrillic) - full seconds, e.g. 05
-* s, с(cyrillic) - short seconds, e.g. 5
+* DD, TT, ДД - full day, e.g. "02"
+* D, T, Д - short day, e.g., "2"
+* hh, SS, чч - full hours, e.g. "03"
+* h, S, ч - short hours, e.g. "3"
+* mm, мм(cyrillic) - full minutes, e.g. "04"
+* m, м(cyrillic) - short minutes, e.g., "4"
+* ss, сс(cyrillic) - full seconds, e.g. "05"
+* s, с(cyrillic) - short seconds, e.g., "5"
 
 #### Example
 
@@ -1831,14 +1831,14 @@ httpGet('http://jsonplaceholder.typicode.com/posts', (err, response) => {
 });
 ```
 
-The second parameters can be an object with further options (optional). All options are optional. Supported flags:
+The second parameter can be an object with further options (optional). All options are optional. Supported flags:
 
 - `timeout` (number) - Timeout in milliseconds
 - `responseType` (string) - Supported values are `text` (default) or `arraybuffer` for binary data in the response
 - `basicAuth` (object) - HTTP basic authentication credentials. e.g. `{ user: 'admin', password: 'iobroker' }`
 - `bearerAuth` (string) - Token for bearer authentication
 - `headers` (object) - Additional custom HTTP headers e.g. `{ 'Accept-Language': 'en-GB,en;q=0.9' }`
-- `validateCertificate` (boolean) - Allows self signed certificates when `false`
+- `validateCertificate` (boolean) - Allows self-signed certificates when `false`
 
 ```js
 httpGet('http://jsonplaceholder.typicode.com/posts', { timeout: 1000 }, (err, response) => {
@@ -1962,7 +1962,7 @@ log(`Script ${scriptName} started!`);
 ```
 
 ### instance
-`instance` - The javascript instance where script is executed (e.g. `0`).
+`instance` - The javascript instance where a script is executed (e.g. `0`).
 
 ```js
 log(`Script ${scriptName} started started by ${instance}`);
@@ -1988,7 +1988,7 @@ if (verbose) {
 ```
 
 ## Option - "Do not subscribe all states on start"
-There are two modes of subscribe to states:
+There are two modes of subscribing to states:
 - Adapter subscribes to all changes at start and receives all changes of all states (it is easy to use getStates(id), but requires more CPU and RAM):
 
 ```js
