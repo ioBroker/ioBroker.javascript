@@ -65,7 +65,7 @@
     "@iobroker/vis-2-widgets-react-dev": "^1.0.6",
     "@types/iobroker": "^4.0.5",
     "alcalzone-shared": "^4.0.8",
-    "chai": "^4.4.1",
+    "chai": "^5.1.1",
     "eslint": "^8.57.0",
     "gulp": "^4.0.2",
     "gulp-rename": "^2.0.0",
