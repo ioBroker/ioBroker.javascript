@@ -250,9 +250,6 @@ Blockly.JavaScript['http_get'] = function(block) {
     }
 
     return `httpGet(${URL}, { timeout: ${timeout}, responseType: '${responseType}' }, async (err, response) => {\n` +
-        Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
-        Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
-        Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
         statement +
         '});\n';
 };
@@ -339,9 +336,6 @@ Blockly.JavaScript['http_post'] = function(block) {
     }
 
     return `httpPost(${URL}, ${data}, { timeout: ${timeout}, responseType: '${responseType}' }, async (err, response) => {\n` +
-        Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
-        Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
-        Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
         statement +
         '});\n';
 };
@@ -366,6 +360,8 @@ Blockly.Blocks['http_response'] = {
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('http_response_data'), 'response.data'],
                 [Blockly.Translate('http_response_statuscode'), 'response.statusCode'],
+                [Blockly.Translate('http_response_responsetime'), 'response.responseTime'],
+                [Blockly.Translate('http_response_error'), 'err'],
             ]), 'ATTR');
 
         this.setInputsInline(true);

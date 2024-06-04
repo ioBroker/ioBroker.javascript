@@ -365,5 +365,6 @@
   "Use generated code": "Usa il codice generato",
   "No Chat GPT Key found": "Nessuna chiave GPT chat trovata",
   "You have to enter OpenAI API key in the configuration of javascript adapter.": "Devi inserire la chiave API OpenAI nella configurazione dell'adattatore javascript.",
-  "Open configuration": "Configurazione aperta"
+  "Open configuration": "Configurazione aperta",
+  "Model": "Modello"
 }

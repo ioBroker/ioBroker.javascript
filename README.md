@@ -30,6 +30,7 @@ Executes Javascript, Typescript Scripts.
 
 * (klein0r) Added response time to httpGet and httpPost result
 * (klein0r) Added trigger block to ack new values
+* (bluefox) Allowed selecting different ChatGPT models for AI code generator
 
 ### 8.4.2 (2024-05-28)
 

@@ -5,7 +5,8 @@ import OpenAI from 'openai';
 import {
     Button, CircularProgress, Dialog,
     DialogActions, DialogContent, DialogTitle,
-    IconButton, TextField,
+    IconButton, TextField, MenuItem, Select,
+    FormControl, InputLabel,
 } from '@mui/material';
 
 import {
@@ -50,6 +51,7 @@ const OpenAiDialog = props => {
     const [open, setOpen] = useState(false);
     const [working, setWorking] = useState(false);
     const [error, setError] = useState(false);
+    const [model, setModel] = useState(window.localStorage.getItem('openai-model') || 'gpt-4o');
     const [showKeyWarning, setShowKeyWarning] = useState(false);
     const devicesCache = useRef(null);
     const gptKeyCache = useRef(null);
@@ -69,7 +71,7 @@ const OpenAiDialog = props => {
             const ids = Object.keys(props.runningInstances);
             for (let i = 0; i < ids.length; i++) {
                 const config = await props.socket.getObject(ids[i]);
-                apiKey = config.native.gptKey;
+                apiKey = (config.native.gptKey || '').trim();
                 if (apiKey) {
                     break;
                 }
@@ -98,7 +100,7 @@ const OpenAiDialog = props => {
             const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
 
             const chatCompletionPhase1 = await openai.chat.completions.create({
-                model: 'gpt-4o',
+                model,
                 messages: [
                     {
                         role: 'system',
@@ -142,14 +144,15 @@ Do not import any libraries as all functions are already imported.`,
             console.log(message);
             setAnswer(code);
         } catch (err) {
-            if (err.response) {
-                setError(err.response.data?.error?.message);
+            console.log(JSON.stringify(err));
+            if (err.error) {
+                setError(err.error.message);
             }
-            console.error(`Cannot request: ${err}, ${JSON.stringify(err?.response?.data || err, null, 2)}`);
+            console.error(`Cannot request: ${err}, ${JSON.stringify(err.error || err, null, 2)}`);
         }
 
         setWorking(false);
-    }, [question]);
+    }, [question, model]);
 
     return <>
         <IconButton
@@ -238,22 +241,38 @@ Do not import any libraries as all functions are already imported.`,
                         }}
                     />
                 </div>
-                <div>
+                <div style={{ display: 'flex', alignItems: 'baseline' }}>
                     <Button
                         variant="contained"
                         disabled={working || !question}
-                        startIcon={<Question />}
+                        startIcon={<Question/>}
                         onClick={async () => ask()}
                     >
                         {working ? <CircularProgress size={24} /> : I18n.t('Ask')}
                     </Button>
+                    <FormControl style={{ width: 150, marginLeft: 20 }} variant="standard">
+                        <InputLabel>{I18n.t('Model')}</InputLabel>
+                        <Select
+                            value={model}
+                            onChange={e => {
+                                window.localStorage.setItem('openai-model', e.target.value);
+                                setModel(e.target.value);
+                            }}
+                        >
+                            <MenuItem value="gpt-4o">GPT-4o</MenuItem>
+                            <MenuItem value="gpt-4-turbo">GPT-4 Turbo</MenuItem>
+                            <MenuItem value="gpt-4-32k">GPT-4 32k</MenuItem>
+                            <MenuItem value="gpt-4">GPT-4</MenuItem>
+                            <MenuItem value="gpt-3.5-turbo-16k">GPT-3.5 Turbo</MenuItem>
+                        </Select>
+                    </FormControl>
                 </div>
                 <div>
                     {I18n.t('Result')}
                 </div>
                 <div style={{ height: 'calc(100% - 155px)' }}>
                     {error ?
-                        <div style={{ color: '#bb0000' }}>{error}</div>
+                        <div style={{ color: props.themeType === 'dark' ? '#984242' : '#bb0000' }}>{error}</div>
                         :
                         <ScriptEditorComponent
                             adapterName={props.adapterName}
@@ -278,7 +297,7 @@ Do not import any libraries as all functions are already imported.`,
                     color="grey"
                     variant="outlined"
                     disabled={!answer}
-                    startIcon={<Copy />}
+                    startIcon={<Copy/>}
                     onClick={() => {
                         Utils.copyToClipboard(answer);
                         window.alert(I18n.t('Copied'));

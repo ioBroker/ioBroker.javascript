@@ -511,7 +511,7 @@ Blockly.Blocks['on_source'] = {
      * To add a new function type add this to your code:
      * Blockly.Blocks['procedures_ifreturn'].FUNCTION_TYPES.push('custom_func');
      */
-    FUNCTION_TYPES: ['on', 'on_ext']
+    FUNCTION_TYPES: ['on', 'on_ext'],
 };
 Blockly.JavaScript['on_source'] = function(block) {
     let attr = block.getFieldValue('ATTR');
@@ -524,6 +524,64 @@ Blockly.JavaScript['on_source'] = function(block) {
     }
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+// --- acknowledge -----------------------------------------------------------
+Blockly.Trigger.blocks['on_ack_value'] =
+    '<block type="on_ack_value">'
+    + '</block>';
+
+Blockly.Blocks['on_ack_value'] = {
+    /**
+     * Block for conditionally returning a value from a procedure.
+     * @this Blockly.Block
+     */
+    init: function() {
+        this.appendDummyInput()
+            .appendField('↪ ' + Blockly.Translate('on_ack_value'));
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setInputsInline(false);
+        this.setColour(Blockly.Trigger.HUE);
+        this.setTooltip(Blockly.Translate('on_ack_value_tooltip'));
+        this.setHelpUrl(getHelp('on_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function(e) {
+        let legal = false;
+        // Is the block nested in a trigger?
+        let block = this;
+        do {
+            if (this.FUNCTION_TYPES.includes(block.type)) {
+                legal = true;
+                break;
+            }
+            block = block.getSurroundParent();
+        } while (block);
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('on_ack_value_warning'), this.id);
+        }
+    },
+    /**
+     * List of block types that are functions and thus do not need warnings.
+     * To add a new function type add this to your code:
+     * Blockly.Blocks['procedures_ifreturn'].FUNCTION_TYPES.push('custom_func');
+     */
+    FUNCTION_TYPES: ['on', 'on_ext'],
+};
+Blockly.JavaScript['on_ack_value'] = function(block) {
+    return 'if (obj.id && obj?.state && !obj.state.ack) {\n' +
+        Blockly.JavaScript.prefixLines(`await setStateAsync(obj.id, { val: obj.state.val, ack: true });`, Blockly.JavaScript.INDENT) + '\n' +
+        `}\n`;
 };
 
 // --- SCHEDULE -----------------------------------------------------------

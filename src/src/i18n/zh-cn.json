@@ -365,5 +365,6 @@
   "Use generated code": "使用生成的代码",
   "No Chat GPT Key found": "找不到聊天 GPT 密钥",
   "You have to enter OpenAI API key in the configuration of javascript adapter.": "您必须在 javascript 适配器的配置中输入 OpenAI API 密钥。",
-  "Open configuration": "开放配置"
+  "Open configuration": "开放配置",
+  "Model": "模型"
 }
