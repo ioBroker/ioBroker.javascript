@@ -256,6 +256,7 @@ Do not import any libraries as all functions are already imported.`,
                             value={model}
                             onChange={e => {
                                 window.localStorage.setItem('openai-model', e.target.value);
+                                error && setError(false);
                                 setModel(e.target.value);
                             }}
                         >
