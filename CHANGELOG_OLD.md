@@ -1,4 +1,10 @@
 The newest change log is in README.md
+## 8.3.0 (2024-05-09)
+
+* (klein0r) Added createTempFile to sandbox
+* (klein0r) Fixed log message on script start
+* (klein0r) Added instance/from to log window (like in admin)
+
 ## 8.2.0 (2024-05-07)
 
 * (PeterVoronov) Added toArray to result object of $-selector

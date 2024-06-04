@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.4.2",
+    "version": "8.4.3",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.4.3": {
+        "en": "Added response time to httpGet and httpPost result\nAdded trigger block to ack new values\nAllowed selecting different ChatGPT models for AI code generator",
+        "de": "Antwortzeit für das Ergebnis httpGet und httpPost\nTriggerblock zu ack neue Werte hinzugefügt\nErlaubt, verschiedene ChatGPT-Modelle für AI-Code-Generator auszuwählen",
+        "ru": "Добавлено время отклика на результат httpGet и httpPost\nДобавить триггерный блок, чтобы получить новые значения\nРазрешен выбор различных моделей ChatGPT для генератора кода ИИ",
+        "pt": "Adicionado tempo de resposta para httpGet e httpPost resultado\nAdicionado bloco de gatilho para ack novos valores\nPermite selecionar diferentes modelos ChatGPT para gerador de código AI",
+        "nl": "Toegevoegde responstijd aan httpGet en httpPost resultaat\nToegevoegd triggerblok aan ack nieuwe waarden\nToegestaan het selecteren van verschillende ChatGPT modellen voor AI code generator",
+        "fr": "Ajout du temps de réponse au résultat httpGet et httpPost\nAjout d'un bloc de déclenchement à de nouvelles valeurs\nPermet de sélectionner différents modèles ChatGPT pour générateur de code AI",
+        "it": "Tempo di risposta aggiunto al risultato httpGet e httpPost\nAggiunto blocco di trigger per ack nuovi valori\nConsente di selezionare diversi modelli ChatGPT per generatore di codice AI",
+        "es": "Tiempo de respuesta añadido al resultado httpGet y httpPost\nAñadido bloque de gatillo para ack nuevos valores\nPermitido seleccionar diferentes modelos de ChatGPT para generador de código AI",
+        "pl": "Dodano czas odpowiedzi do wyniku httpGet i httpPost\nDodano blokadę wyzwalacza do ack nowych wartości\nDozwolone wybieranie różnych modeli ChatGPT dla generatora kodu AI",
+        "uk": "Додано час відповіді на httpGet та HTTPPost\nДоданий тригерний блок для забезпечення нових значень\nДозволяє вибрати різні моделі чатGPT для генератора коду AI",
+        "zh-cn": "添加到 httpGet 和 httpPoost 结果的响应时间\n添加触发块到 ock 新值\n允许为 AI 代码生成器选择不同的 ChatGPT 模型"
+      },
       "8.4.2": {
         "en": "Fixed createState (removed redundant native attributes)\nFixed astro custom component",
         "de": "Fixed createState (entfernte redundante native Attribute)\nFeste astro benutzerdefinierte Komponente",
@@ -117,19 +130,6 @@
         "pl": "Dodano toArray do wyniku obiektu selektora $\nDodano Blockly block for onLog",
         "uk": "Додано доArray для результату об'єкт $-селектор\nДодано блокнот для onLog",
         "zh-cn": "添加到 $ 选择器的结果对象中\n在Log 上添加块块"
-      },
-      "8.1.1": {
-        "en": "Updated Blockly/JS and Rules/JS image (as svg)",
-        "de": "Aktualisiert Blockly/JS und Regeln/JS-Bild (als svg)",
-        "ru": "Обновленное изображение Blockly/JS и Rules/JS (как svg)",
-        "pt": "Imagem Blockly/JS e Rules/JS atualizada (como svg)",
-        "nl": "Bijgewerkt Blockly/JS en regels/JS afbeelding (als svg)",
-        "fr": "Mise à jour Blockly/JS et règles/JS image (en svg)",
-        "it": "Aggiornato Blockly/JS e Regole/JS immagine (come svg)",
-        "es": "Actualizado Bloqueo/JS y la imagen Reglas/JS (como svg)",
-        "pl": "Aktualizacja obrazu Blockly / JS i Rules / JS (jako svg)",
-        "uk": "Оновлено Blockly / JS і правила / JS зображення (як )",
-        "zh-cn": "更新的 Blockly/JS 和 Rules/JS 图像(作为 svg)"
       }
     },
     "platform": "Javascript/Node.js",

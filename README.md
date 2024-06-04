@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.4.3 (2024-06-04)
 
 * (klein0r) Added response time to httpGet and httpPost result
 * (klein0r) Added trigger block to ack new values
@@ -56,12 +56,6 @@ Executes Javascript, Typescript Scripts.
 
 * (paul53) Allow negative values in formatTimeDiff
 * (klein0r) Updated tests and fixed Blockly translations
-
-### 8.3.0 (2024-05-09)
-
-* (klein0r) Added createTempFile to sandbox
-* (klein0r) Fixed log message on script start
-* (klein0r) Added instance/from to log window (like in admin)
 
 ## License
 The MIT License (MIT)
