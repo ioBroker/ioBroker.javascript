@@ -318,14 +318,16 @@ function convertBackStringifiedValues(id, state) {
 
 function prepareStateObject(id, state, isAck) {
     if (state === null) {
-        state = {val: null};
+        state = { val: null };
     }
 
     if (isAck === true || isAck === false || isAck === 'true' || isAck === 'false') {
         if (isObject(state) && state.val !== undefined) {
             // we assume that we were given a state object if
             // state is an object that contains a `val` property
-            state.ack = isAck;
+            if (!Object.prototype.hasOwnProperty.call(state, 'ack')) {
+                state.ack = isAck;
+            }
         } else {
             // otherwise assume that the given state is the value to be set
             state = {val: state, ack: isAck};

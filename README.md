@@ -26,6 +26,10 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Ack flag on state object has priorty (in setState/setStateDelayed)
+
 ### 8.4.3 (2024-06-04)
 
 * (klein0r) Added response time to httpGet and httpPost result
