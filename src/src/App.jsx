@@ -547,6 +547,11 @@ class App extends GenericApp {
                         setTimeout(() => this.setState({ menuSelectId: '' })), 300), 1000))
                 .catch(err => this.showError(err));
         } else {
+            if (type === 'Blockly' && !source) {
+                // Default Blockly XML for new scripts
+                source = `\n//${btoa(encodeURIComponent('<xml xmlns="https://developers.google.com/blockly/xml"></xml>'))}`;
+            }
+
             this.socket.setObject(id, {
                 common: {
                     name,
