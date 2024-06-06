@@ -166,7 +166,7 @@ class DialogAddNew extends React.Component {
 }
 
 DialogAddNew.propTypes = {
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
 };
 
 export default withStyles(styles)(DialogAddNew);

@@ -29,7 +29,7 @@ class DialogNew extends React.Component {
             name: props.name || 'Script',
             instance: props.instance || 0,
             parent: props.parent,
-            error: ''
+            error: '',
         };
         this.isShowInstance = !props.folder && props.instances && (props.instance || props.instances[0] || props.instances.length > 1);
     }
@@ -42,7 +42,7 @@ class DialogNew extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.name !== this.props.name) {
-            this.setState({name: nextProps.name});
+            this.setState({ name: nextProps.name });
         }
     }
 
@@ -58,12 +58,11 @@ class DialogNew extends React.Component {
     handleChange = name => {
         const id = this.getId(name);
         if (!name) {
-            this.setState({name, id, error: I18n.t('Empty name is not allowed')});
-        } else
-        if (this.props.existingItems && this.props.existingItems.indexOf(id) !== -1) {
-            this.setState({name, id, error: I18n.t('Duplicate name')});
+            this.setState({ name, id, error: I18n.t('Empty name is not allowed') });
+        } else if (this.props.existingItems && this.props.existingItems.indexOf(id) !== -1) {
+            this.setState({ name, id, error: I18n.t('Duplicate name') });
         } else {
-            this.setState({name, id, error: ''});
+            this.setState({ name, id, error: '' });
         }
     };
 
@@ -80,14 +79,14 @@ class DialogNew extends React.Component {
                 <form noValidate autoComplete="off">
                     <TextField
                         variant="standard"
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                         id="standard-name"
                         autoFocus
                         error={!!this.state.error}
                         label={I18n.t('Name')}
                         value={this.state.name}
                         helperText={this.state.error}
-                        onKeyPress={(ev) => {
+                        onKeyPress={ev => {
                             if (ev.key === 'Enter') {
                                 // Do code here
                                 ev.preventDefault();
@@ -97,14 +96,14 @@ class DialogNew extends React.Component {
                         onChange={e => this.handleChange(e.target.value)}
                         margin="normal"
                     />
-                    <FormControl variant="standard" style={{width: '100%'}}>
+                    <FormControl variant="standard" style={{ width: '100%' }}>
                         <InputLabel htmlFor="parent">{I18n.t('Folder')}</InputLabel>
                         <Select
                             variant="standard"
-                            style={{width: '100%'}}
+                            style={{ width: '100%' }}
                             value={this.state.parent}
                             onChange={e => this.setState({parent: e.target.value})}
-                            inputProps={{name: 'parent', id: 'parent'}}
+                            inputProps={{ name: 'parent', id: 'parent' }}
                         >
                             {this.props.parents.map(parent => {
                                 const parts = parent.id.split('.');
@@ -112,7 +111,7 @@ class DialogNew extends React.Component {
                                 const names = [];
                                 let id = 'script.js';
                                 parts.forEach((n, i) => {
-                                    id += '.' + n;
+                                    id += `.${n}`;
                                     const el = this.props.parents.find(item => item.id === id);
                                     if (el) {
                                         names.push(el.name);
@@ -130,7 +129,7 @@ class DialogNew extends React.Component {
                     <TextField
                         variant="standard"
                         id="standard-name-id"
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                         label={I18n.t('ID')}
                         value={this.getId()}
                         disabled
@@ -139,16 +138,15 @@ class DialogNew extends React.Component {
                     {
                         this.isShowInstance && (
                             <FormControl variant="standard">
-                            <InputLabel htmlFor="instance">{I18n.t('Instance')}</InputLabel>
-                            <Select
-                                variant="standard"
-                                value={this.state.instance}
-                                onChange={e => this.setState({instance: parseInt(e.target.value, 10)})}
-                                inputProps={{name: 'instance', id: 'instance'}}
-                            >
-                                {this.props.instances.map(instance => (<MenuItem key={'instance' + instance} value={instance}>{instance || '0'}</MenuItem>))}
-                            </Select>
-                        </FormControl>)
+                                <InputLabel htmlFor="instance">{I18n.t('Instance')}</InputLabel>
+                                <Select
+                                    variant="standard"
+                                    value={this.state.instance}
+                                    onChange={e => this.setState({instance: parseInt(e.target.value, 10)})}
+                                    inputProps={{ name: 'instance', id: 'instance' }}>
+                                    {this.props.instances.map(instance => (<MenuItem key={`instance${instance}`} value={instance}>{instance || '0'}</MenuItem>))}
+                                </Select>
+                            </FormControl>)
                     }
                 </form>
             </DialogContent>
@@ -172,6 +170,7 @@ DialogNew.propTypes = {
     existingItems: PropTypes.array,
     folder: PropTypes.bool,
     type: PropTypes.string,
+    source: PropTypes.string,
 };
 
 export default withStyles(styles)(DialogNew);

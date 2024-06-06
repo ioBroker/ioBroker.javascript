@@ -370,8 +370,9 @@ class App extends GenericApp {
             return true;
         }
         for (let i = 0; i < oldIds.length; i++) {
-            let oldScript = this.scripts[oldIds[i]].common;
-            let newScript = newScripts[oldIds[i]].common;
+            const oldScript = this.scripts[oldIds[i]].common;
+            const newScript = newScripts[oldIds[i]].common;
+
             if (oldScript.name !== newScript.name) {
                 this.scripts = this.newScripts;
                 return true;
