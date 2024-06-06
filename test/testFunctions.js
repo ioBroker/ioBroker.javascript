@@ -830,6 +830,38 @@ describe.only('Test JS', function () {
         objects.setObject(script._id, script);
     });
 
+    it('Test JS: test setStateDelayed stateObject', function (done) {
+        this.timeout(5000);
+        // add script
+        const script = {
+            _id:                'script.js.test_setStateDelayed_stateObject',
+            type:               'script',
+            common: {
+                name:           'test setStateDelayed stateObject',
+                enabled:        true,
+                verbose:        true,
+                engine:         'system.adapter.javascript.0',
+                engineType:     'Javascript/js',
+                source:         `createState('test_setStateDelayed_stateObject', false, { type: 'boolean', read: true, write: false }, async () => {\n` +
+                                `    setStateDelayed('test_setStateDelayed_stateObject', { val: true, ack: true }, false, false);\n` +
+                                `});`,
+            },
+            native: {}
+        };
+
+        const onStateChanged = function (id, state){
+            if (id === 'javascript.0.test_setStateDelayed_stateObject') {
+                expect(state.val).to.be.true;
+                expect(state.ack).to.be.true;
+
+                removeStateChangedHandler(onStateChanged);
+                setTimeout(done, 100);
+            }
+        };
+        addStateChangedHandler(onStateChanged);
+        objects.setObject(script._id, script);
+    });
+
     it('Test JS: test setStateDelayed nested', function (done) {
         this.timeout(5000);
         // add script
