@@ -398,18 +398,23 @@ class BlocklyEditor extends React.Component {
                 if (!xml.startsWith('<xml')) {
                     xml = `<xml xmlns="https://developers.google.com/blockly/xml">${xml}</xml>`;
                 }
+                /*
+                // TODO: WHY?!
                 const variables = xml.replace(/[\n\r]/g, '').match(/<variables>(.*)<\/variables>/);
                 if (variables) {
-                    const vars = this.Blockly.utils.xml.textToDomDocument(`<variables>${variables[1]}</variables>`);
-                    if (vars) {
-                        const nodes = vars.childNodes && vars.childNodes[0] && vars.childNodes[0].childNodes;
-                        if (nodes) {
-                            for (let i = 0; i < nodes.length; i++) {
-                                nodes[i].id && this.blocklyWorkspace.createVariable(nodes[i].id);
+                    const parser = new DOMParser();
+                    const vars = parser.parseFromString(`<variables>${variables[1]}</variables>`, 'text/xml').firstChild;
+                    for (const child of vars.children) {
+                        if (child.tagName === 'variable') {
+                            // e.g. timeout or interval
+                            const varType = child.getAttribute('type');
+                            if (varType) {
+                                this.blocklyWorkspace.createVariable(child.getAttribute('id'), varType);
                             }
                         }
                     }
                 }
+                */
                 xml = xml.replace(/[\n\r]/g, '').replace(/<variables>.*<\/variables>/g, '');
                 window.scripts.loading = true;
 
