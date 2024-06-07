@@ -878,7 +878,7 @@ Blockly.Blocks['schedule_create'] = {
 };
 
 Blockly.JavaScript.forBlock['schedule_create'] = function (block) {
-    const name  = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
+    const name  = Blockly.JavaScript.nameDB_.safeName(block.getFieldValue('NAME'));
     const schedule = Blockly.JavaScript.valueToCode(block, 'SCHEDULE', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
@@ -936,7 +936,7 @@ Blockly.Blocks['schedule_clear'] = {
 };
 
 Blockly.JavaScript.forBlock['schedule_clear'] = function(block) {
-    const name = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
+    const name = Blockly.JavaScript.nameDB_.safeName(block.getFieldValue('NAME'));
     return `(() => { if (${name}) { clearSchedule(${name}); ${name} = null; }})();\n`;
 };
 
