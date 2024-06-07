@@ -43,7 +43,7 @@ Blockly.Blocks['global_var'] = {
         this.setHelpUrl(getHelp('global_var'));
     }
 };
-Blockly.JavaScript['global_var'] = function(block) {
+Blockly.JavaScript.forBlock['global_var'] = function(block) {
     const variable = block.getFieldValue('VAR');
 
     return [variable, Blockly.JavaScript.ORDER_ATOMIC];
@@ -83,7 +83,7 @@ Blockly.Blocks['debug'] = {
     },
 };
 
-Blockly.JavaScript['debug'] = function(block) {
+Blockly.JavaScript.forBlock['debug'] = function(block) {
     const value_text = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_ATOMIC);
     const logLevel = block.getFieldValue('Severity');
 
@@ -108,7 +108,7 @@ Blockly.Blocks['comment'] = {
     },
 };
 
-Blockly.JavaScript['comment'] = function(block) {
+Blockly.JavaScript.forBlock['comment'] = function(block) {
     const comment = block.getFieldValue('COMMENT');
 
     return `// ${comment}\n`;
@@ -191,7 +191,7 @@ Blockly.Blocks['control'] = {
     },
 };
 
-Blockly.JavaScript['control'] = function(block) {
+Blockly.JavaScript.forBlock['control'] = function(block) {
     const valueObjectID = block.getFieldValue('OID');
 
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
@@ -299,7 +299,7 @@ Blockly.Blocks['toggle'] = {
     },
 };
 
-Blockly.JavaScript['toggle'] = function(block) {
+Blockly.JavaScript.forBlock['toggle'] = function(block) {
     const valueObjectID = block.getFieldValue('OID');
     const unit  = block.getFieldValue('UNIT');
 
@@ -432,7 +432,7 @@ Blockly.Blocks['update'] = {
     },
 };
 
-Blockly.JavaScript['update'] = function(block) {
+Blockly.JavaScript.forBlock['update'] = function(block) {
     const value_objectid = block.getFieldValue('OID');
 
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
@@ -508,7 +508,7 @@ Blockly.Blocks['direct'] = {
     }
 };
 
-Blockly.JavaScript['direct'] = function(block) {
+Blockly.JavaScript.forBlock['direct'] = function(block) {
     const oidSrc = Blockly.JavaScript.valueToCode(block, 'OID_SRC', Blockly.JavaScript.ORDER_ATOMIC);
     const oidDest = Blockly.JavaScript.valueToCode(block, 'OID_DST', Blockly.JavaScript.ORDER_ATOMIC);
 
@@ -586,7 +586,7 @@ Blockly.Blocks['control_ex'] = {
     },
 };
 
-Blockly.JavaScript['control_ex'] = function(block) {
+Blockly.JavaScript.forBlock['control_ex'] = function(block) {
     const valueObjectID = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     const valueDelay = Blockly.JavaScript.valueToCode(block, 'DELAY_MS', Blockly.JavaScript.ORDER_ATOMIC);
@@ -642,7 +642,7 @@ Blockly.Blocks['create'] = {
     },
 };
 
-Blockly.JavaScript['create'] = function(block) {
+Blockly.JavaScript.forBlock['create'] = function(block) {
     const name = block.getFieldValue('NAME');
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     const common = Blockly.JavaScript.valueToCode(block, 'COMMON', Blockly.JavaScript.ORDER_ATOMIC);
@@ -718,7 +718,7 @@ Blockly.Blocks['create_ex'] = {
     },
 };
 
-Blockly.JavaScript['create_ex'] = function(block) {
+Blockly.JavaScript.forBlock['create_ex'] = function(block) {
     const name = block.getFieldValue('NAME');
     const type = block.getFieldValue('TYPE');
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
@@ -805,7 +805,7 @@ Blockly.Blocks['get_value'] = {
     },
 };
 
-Blockly.JavaScript['get_value'] = function(block) {
+Blockly.JavaScript.forBlock['get_value'] = function(block) {
     const oid  = block.getFieldValue('OID');
     const attr = block.getFieldValue('ATTR');
 
@@ -876,7 +876,7 @@ Blockly.Blocks['get_value_var'] = {
     },
 };
 
-Blockly.JavaScript['get_value_var'] = function(block) {
+Blockly.JavaScript.forBlock['get_value_var'] = function(block) {
     const oid  = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
 
@@ -933,7 +933,7 @@ Blockly.Blocks['get_value_async'] = {
     },
 };
 
-Blockly.JavaScript['get_value_async'] = function(block) {
+Blockly.JavaScript.forBlock['get_value_async'] = function(block) {
     const oid  = block.getFieldValue('OID');
     const attr = block.getFieldValue('ATTR');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
@@ -990,7 +990,7 @@ Blockly.Blocks['get_object'] = {
     },
 };
 
-Blockly.JavaScript['get_object'] = function(block) {
+Blockly.JavaScript.forBlock['get_object'] = function(block) {
     const oid  = block.getFieldValue('OID');
 
     return [`getObject('${oid}')`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1022,7 +1022,7 @@ Blockly.Blocks['get_object_async'] = {
     },
 };
 
-Blockly.JavaScript['get_object_async'] = function(block) {
+Blockly.JavaScript.forBlock['get_object_async'] = function(block) {
     const oid  = block.getFieldValue('OID');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
@@ -1051,7 +1051,7 @@ Blockly.Blocks['field_oid'] = {
     },
 };
 
-Blockly.JavaScript['field_oid'] = function(block) {
+Blockly.JavaScript.forBlock['field_oid'] = function(block) {
     const oid = block.getFieldValue('oid');
 
     return [`'${oid}'`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1077,7 +1077,7 @@ Blockly.Blocks['field_oid_meta'] = {
     },
 };
 
-Blockly.JavaScript['field_oid_meta'] = function(block) {
+Blockly.JavaScript.forBlock['field_oid_meta'] = function(block) {
     const oid = block.getFieldValue('oid');
 
     return [`'${oid}'`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1103,7 +1103,7 @@ Blockly.Blocks['field_oid_script'] = {
     },
 };
 
-Blockly.JavaScript['field_oid_script'] = function(block) {
+Blockly.JavaScript.forBlock['field_oid_script'] = function(block) {
     const oid = block.getFieldValue('oid');
 
     return [`'${oid}'`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1141,7 +1141,7 @@ Blockly.Blocks['get_attr'] = {
     },
 };
 
-Blockly.JavaScript['get_attr'] = function(block) {
+Blockly.JavaScript.forBlock['get_attr'] = function(block) {
     const path = Blockly.JavaScript.valueToCode(block, 'PATH', Blockly.JavaScript.ORDER_ATOMIC);
     const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
 
@@ -1169,7 +1169,7 @@ Blockly.Blocks['regex'] = {
     },
 };
 
-Blockly.JavaScript['regex'] = function(block) {
+Blockly.JavaScript.forBlock['regex'] = function(block) {
     const oid = block.getFieldValue('TEXT');
 
     return [`new RegExp('${oid}')`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1199,7 +1199,7 @@ Blockly.Blocks['selector'] = {
     },
 };
 
-Blockly.JavaScript['selector'] = function(block) {
+Blockly.JavaScript.forBlock['selector'] = function(block) {
     const oid = block.getFieldValue('TEXT');
 
     return [`Array.prototype.slice.apply($('${oid}'))`, Blockly.JavaScript.ORDER_ATOMIC];

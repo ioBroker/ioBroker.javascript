@@ -18,7 +18,7 @@ Blockly.Blocks['math_rndfixed'] = {
     },
 };
 
-Blockly.JavaScript['math_rndfixed'] = function(block) {
+Blockly.JavaScript.forBlock['math_rndfixed'] = function(block) {
     const x = Blockly.JavaScript.valueToCode(block, 'x', Blockly.JavaScript.ORDER_ATOMIC);
     const exp = Math.pow(10, block.getFieldValue('n'));
 

@@ -223,7 +223,7 @@ Blockly.Blocks['object_new'] = {
     },
 };
 
-Blockly.JavaScript['object_new'] = function(block) {
+Blockly.JavaScript.forBlock['object_new'] = function(block) {
     const attributes = [];
     for (let n = 0; n < block.itemCount_; n++) {
         const val = Blockly.JavaScript.valueToCode(block, 'ATTR_' + n, Blockly.JavaScript.ORDER_COMMA);
@@ -269,7 +269,7 @@ Blockly.Blocks['object_set_attr'] = {
     },
 };
 
-Blockly.JavaScript['object_set_attr'] = function(block) {
+Blockly.JavaScript.forBlock['object_set_attr'] = function(block) {
     let obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
@@ -306,7 +306,7 @@ Blockly.Blocks['object_del_attr'] = {
     },
 };
 
-Blockly.JavaScript['object_del_attr'] = function(block) {
+Blockly.JavaScript.forBlock['object_del_attr'] = function(block) {
     let obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
 
@@ -346,7 +346,7 @@ Blockly.Blocks['object_has_attr'] = {
     }
 };
 
-Blockly.JavaScript['object_has_attr'] = function(block) {
+Blockly.JavaScript.forBlock['object_has_attr'] = function(block) {
     const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
 
@@ -377,7 +377,7 @@ Blockly.Blocks['object_keys'] = {
     },
 };
 
-Blockly.JavaScript['object_keys'] = function(block) {
+Blockly.JavaScript.forBlock['object_keys'] = function(block) {
     let obj = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
 
     if (!obj) {

@@ -152,7 +152,7 @@ Blockly.Blocks['time_compare_ex'] = {
     },
 };
 
-Blockly.JavaScript['time_compare_ex'] = function(block) {
+Blockly.JavaScript.forBlock['time_compare_ex'] = function(block) {
     const option     = block.getFieldValue('OPTION');
     const start_time = Blockly.JavaScript.valueToCode(block, 'START_TIME', Blockly.JavaScript.ORDER_ATOMIC);
     let end_time   = Blockly.JavaScript.valueToCode(block, 'END_TIME', Blockly.JavaScript.ORDER_ATOMIC);
@@ -236,7 +236,7 @@ Blockly.Blocks['time_compare'] = {
     },
 };
 
-Blockly.JavaScript['time_compare'] = function(block) {
+Blockly.JavaScript.forBlock['time_compare'] = function(block) {
     const option     = block.getFieldValue('OPTION');
     const start_time = block.getFieldValue('START_TIME');
     let end_time   = block.getFieldValue('END_TIME');
@@ -373,7 +373,7 @@ Blockly.Blocks['time_get'] = {
     },
 };
 
-Blockly.JavaScript['time_get'] = function(block) {
+Blockly.JavaScript.forBlock['time_get'] = function(block) {
     const option = block.getFieldValue('OPTION');
     const format = block.getFieldValue('FORMAT');
     const lang   = block.getFieldValue('LANGUAGE');
@@ -453,7 +453,7 @@ Blockly.Blocks['time_get_special'] = {
     },
 };
 
-Blockly.JavaScript['time_get_special'] = function(block) {
+Blockly.JavaScript.forBlock['time_get_special'] = function(block) {
     const type = block.getFieldValue('TYPE');
 
     let code;
@@ -518,7 +518,7 @@ Blockly.Blocks['time_astro'] = {
     }
 };
 
-Blockly.JavaScript['time_astro'] = function(block) {
+Blockly.JavaScript.forBlock['time_astro'] = function(block) {
     const type    = block.getFieldValue('TYPE');
     const offset  = parseFloat(block.getFieldValue('OFFSET'));
 
@@ -580,7 +580,7 @@ Blockly.Blocks['time_calculation'] = {
     },
 };
 
-Blockly.JavaScript['time_calculation'] = function(block) {
+Blockly.JavaScript.forBlock['time_calculation'] = function(block) {
     const dateTime = Blockly.JavaScript.valueToCode(block, 'DATE_TIME', Blockly.JavaScript.ORDER_ATOMIC);
     const operation = block.getFieldValue('OPERATION');
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);

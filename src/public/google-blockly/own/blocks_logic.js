@@ -169,7 +169,7 @@ Blockly.Blocks['logic_multi_and'] = {
     },
 };
 
-Blockly.JavaScript['logic_multi_and'] = function(block) {
+Blockly.JavaScript.forBlock['logic_multi_and'] = function(block) {
     const ands = [];
     for (let n = 0; n < block.itemCount_; n++) {
         const condition = Blockly.JavaScript.valueToCode(block, 'AND' + n, Blockly.JavaScript.ORDER_ATOMIC);
@@ -346,7 +346,7 @@ Blockly.Blocks['logic_multi_or'] = {
     },
 };
 
-Blockly.JavaScript['logic_multi_or'] = function(block) {
+Blockly.JavaScript.forBlock['logic_multi_or'] = function(block) {
     const ors = [];
     for (let n = 0; n < block.itemCount_; n++) {
         const condition = Blockly.JavaScript.valueToCode(block, 'OR' + n, Blockly.JavaScript.ORDER_ATOMIC);
@@ -379,7 +379,7 @@ Blockly.Blocks['logic_between'] = {
     },
 };
 
-Blockly.JavaScript['logic_between'] = function(block) {
+Blockly.JavaScript.forBlock['logic_between'] = function(block) {
     const min = Blockly.JavaScript.valueToCode(block, 'MIN', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
     const max = Blockly.JavaScript.valueToCode(block, 'MAX', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
@@ -410,7 +410,7 @@ Blockly.Blocks['logic_ifempty'] = {
     },
 };
 
-Blockly.JavaScript['logic_ifempty'] = function(block) {
+Blockly.JavaScript.forBlock['logic_ifempty'] = function(block) {
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
     const deflt = Blockly.JavaScript.valueToCode(block, 'DEFLT', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
 

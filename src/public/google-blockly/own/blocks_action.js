@@ -87,7 +87,7 @@ Blockly.Blocks['exec'] = {
     }
 };
 
-Blockly.JavaScript['exec'] = function(block) {
+Blockly.JavaScript.forBlock['exec'] = function(block) {
     const value_command = Blockly.JavaScript.valueToCode(block, 'COMMAND', Blockly.JavaScript.ORDER_ATOMIC);
     const logLevel = block.getFieldValue('LOG');
     const withStatement = block.getFieldValue('WITH_STATEMENT');
@@ -172,7 +172,7 @@ Blockly.Blocks['exec_result'] = {
      */
     FUNCTION_TYPES: ['exec'],
 };
-Blockly.JavaScript['exec_result'] = function(block) {
+Blockly.JavaScript.forBlock['exec_result'] = function(block) {
     const attr = block.getFieldValue('ATTR');
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
@@ -224,7 +224,7 @@ Blockly.Blocks['http_get'] = {
     }
 };
 
-Blockly.JavaScript['http_get'] = function(block) {
+Blockly.JavaScript.forBlock['http_get'] = function(block) {
     const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     const unit = block.getFieldValue('UNIT');
@@ -298,7 +298,7 @@ Blockly.Blocks['http_post'] = {
     }
 };
 
-Blockly.JavaScript['http_post'] = function(block) {
+Blockly.JavaScript.forBlock['http_post'] = function(block) {
     const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     const unit = block.getFieldValue('UNIT');
@@ -386,7 +386,7 @@ Blockly.Blocks['http_response'] = {
      */
     FUNCTION_TYPES: ['http_get', 'http_post'],
 };
-Blockly.JavaScript['http_response'] = function(block) {
+Blockly.JavaScript.forBlock['http_response'] = function(block) {
     const attr = block.getFieldValue('ATTR');
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
@@ -429,7 +429,7 @@ Blockly.Blocks['file_write'] = {
     }
 };
 
-Blockly.JavaScript['file_write'] = function(block) {
+Blockly.JavaScript.forBlock['file_write'] = function(block) {
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
     const data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
@@ -489,7 +489,7 @@ Blockly.Blocks['file_read'] = {
     }
 };
 
-Blockly.JavaScript['file_read'] = function(block) {
+Blockly.JavaScript.forBlock['file_read'] = function(block) {
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
@@ -571,7 +571,7 @@ Blockly.Blocks['file_data'] = {
      */
     FUNCTION_TYPES: ['file_read'],
 };
-Blockly.JavaScript['file_data'] = function(block) {
+Blockly.JavaScript.forBlock['file_data'] = function(block) {
     const attr = block.getFieldValue('ATTR');
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
@@ -649,7 +649,7 @@ Blockly.Blocks['request'] = {
     }
 };
 
-Blockly.JavaScript['request'] = function(block) {
+Blockly.JavaScript.forBlock['request'] = function(block) {
     const logLevel = block.getFieldValue('LOG');
     const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
     const withStatement = block.getFieldValue('WITH_STATEMENT');

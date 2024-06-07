@@ -297,7 +297,7 @@ Blockly.Blocks['on_ext'] = {
         }
     },
 };
-Blockly.JavaScript['on_ext'] = function(block) {
+Blockly.JavaScript.forBlock['on_ext'] = function(block) {
     const dropdown_condition = block.getFieldValue('CONDITION');
     const ack_condition = block.getFieldValue('ACK_CONDITION');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
@@ -401,7 +401,7 @@ Blockly.Blocks['on'] = {
         }
     }
 };
-Blockly.JavaScript['on'] = function(block) {
+Blockly.JavaScript.forBlock['on'] = function(block) {
     const value_objectid = block.getFieldValue('OID');
     const dropdown_condition = block.getFieldValue('CONDITION');
     const ack_condition = block.getFieldValue('ACK_CONDITION');
@@ -506,7 +506,7 @@ Blockly.Blocks['on_source'] = {
      */
     FUNCTION_TYPES: ['on', 'on_ext'],
 };
-Blockly.JavaScript['on_source'] = function(block) {
+Blockly.JavaScript.forBlock['on_source'] = function(block) {
     let attr = block.getFieldValue('ATTR');
     const parts = attr.split('.');
 
@@ -571,7 +571,7 @@ Blockly.Blocks['on_ack_value'] = {
      */
     FUNCTION_TYPES: ['on', 'on_ext'],
 };
-Blockly.JavaScript['on_ack_value'] = function(block) {
+Blockly.JavaScript.forBlock['on_ack_value'] = function(block) {
     return 'if (obj.id && obj?.state && !obj.state.ack) {\n' +
         Blockly.JavaScript.prefixLines(`await setStateAsync(obj.id, { val: obj.state.val, ack: true });`, Blockly.JavaScript.INDENT) + '\n' +
         `}\n`;
@@ -626,7 +626,7 @@ Blockly.Blocks['schedule'] = {
         }
     },
 };
-Blockly.JavaScript['schedule'] = function(block) {
+Blockly.JavaScript.forBlock['schedule'] = function(block) {
     let schedule = block.getFieldValue('SCHEDULE');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
@@ -674,7 +674,7 @@ Blockly.Blocks['schedule_by_id'] = {
         this.setHelpUrl(getHelp('schedule_by_id_help'));
     },
 };
-Blockly.JavaScript['schedule_by_id'] = function(block) {
+Blockly.JavaScript.forBlock['schedule_by_id'] = function(block) {
     const value_objectid = block.getFieldValue('OID');
     const ack_condition = block.getFieldValue('ACK_CONDITION');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
@@ -758,7 +758,7 @@ Blockly.Blocks['astro'] = {
         }
     },
 };
-Blockly.JavaScript['astro'] = function(block) {
+Blockly.JavaScript.forBlock['astro'] = function(block) {
     const astrotype = block.getFieldValue('TYPE');
     const offset = parseInt(block.getFieldValue('OFFSET'), 10);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
@@ -877,7 +877,7 @@ Blockly.Blocks['schedule_create'] = {
     },
 };
 
-Blockly.JavaScript['schedule_create'] = function (block) {
+Blockly.JavaScript.forBlock['schedule_create'] = function (block) {
     const name  = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
     const schedule = Blockly.JavaScript.valueToCode(block, 'SCHEDULE', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
@@ -935,7 +935,7 @@ Blockly.Blocks['schedule_clear'] = {
     },
 };
 
-Blockly.JavaScript['schedule_clear'] = function(block) {
+Blockly.JavaScript.forBlock['schedule_clear'] = function(block) {
     const name = Blockly.JavaScript.variableDB_.safeName_(block.getFieldValue('NAME'));
     return `(() => { if (${name}) { clearSchedule(${name}); ${name} = null; }})();\n`;
 };
@@ -962,7 +962,7 @@ Blockly.Blocks['field_cron'] = {
     },
 };
 
-Blockly.JavaScript['field_cron'] = function(block) {
+Blockly.JavaScript.forBlock['field_cron'] = function(block) {
     const cron = block.getFieldValue('CRON');
 
     return [`'${cron}'`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1139,7 +1139,7 @@ Blockly.Blocks['cron_builder'] = {
     },
 };
 
-Blockly.JavaScript['cron_builder'] = function(block) {
+Blockly.JavaScript.forBlock['cron_builder'] = function(block) {
     const dow     = Blockly.JavaScript.valueToCode(block, 'DOW',     Blockly.JavaScript.ORDER_ATOMIC);
     const months  = Blockly.JavaScript.valueToCode(block, 'MONTHS',  Blockly.JavaScript.ORDER_ATOMIC);
     const days    = Blockly.JavaScript.valueToCode(block, 'DAYS',    Blockly.JavaScript.ORDER_ATOMIC);
@@ -1211,7 +1211,7 @@ Blockly.Blocks['onMessage'] = {
     },
 };
 
-Blockly.JavaScript['onMessage'] = function (block) {
+Blockly.JavaScript.forBlock['onMessage'] = function (block) {
     const message = block.getFieldValue('MESSAGE');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
@@ -1287,7 +1287,7 @@ Blockly.Blocks['onFile'] = {
     },
 };
 
-Blockly.JavaScript['onFile'] = function (block) {
+Blockly.JavaScript.forBlock['onFile'] = function (block) {
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
     const withFile = block.getFieldValue('WITH_FILE');
@@ -1372,7 +1372,7 @@ Blockly.Blocks['onFile_data'] = {
      */
     FUNCTION_TYPES: ['onFile'],
 };
-Blockly.JavaScript['onFile_data'] = function(block) {
+Blockly.JavaScript.forBlock['onFile_data'] = function(block) {
     const attr = block.getFieldValue('ATTR');
 
     if (attr === 'TEMP_FILE_PATH') {
@@ -1415,7 +1415,7 @@ Blockly.Blocks['offFile'] = {
     }
 };
 
-Blockly.JavaScript['offFile'] = function (block) {
+Blockly.JavaScript.forBlock['offFile'] = function (block) {
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
 
@@ -1490,7 +1490,7 @@ Blockly.Blocks['onLog'] = {
     },
 };
 
-Blockly.JavaScript['onLog'] = function (block) {
+Blockly.JavaScript.forBlock['onLog'] = function (block) {
     const logLevel = block.getFieldValue('Severity');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
@@ -1559,7 +1559,7 @@ Blockly.Blocks['onLog_data'] = {
      */
     FUNCTION_TYPES: ['onLog'],
 };
-Blockly.JavaScript['onLog_data'] = function(block) {
+Blockly.JavaScript.forBlock['onLog_data'] = function(block) {
     const attr = block.getFieldValue('ATTR');
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];

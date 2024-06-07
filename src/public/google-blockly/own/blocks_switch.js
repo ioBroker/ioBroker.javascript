@@ -189,7 +189,7 @@ Blockly.Blocks['case_default'] = {
     },
 };
 
-Blockly.JavaScript['logic_switch_case'] = function (block) {
+Blockly.JavaScript.forBlock['logic_switch_case'] = function (block) {
     let code = '';
     let do_n;
     let case_n;

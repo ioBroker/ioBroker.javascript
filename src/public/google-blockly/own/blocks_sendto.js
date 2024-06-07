@@ -309,7 +309,7 @@ Blockly.Blocks['sendto_custom'] = {
     },
 };
 
-Blockly.JavaScript['sendto_custom'] = function (block) {
+Blockly.JavaScript.forBlock['sendto_custom'] = function (block) {
     const instance      = block.getFieldValue('INSTANCE');
     const logLevel      = block.getFieldValue('LOG');
     const command       = block.getFieldValue('COMMAND');
@@ -425,7 +425,7 @@ Blockly.Blocks['sendto_otherscript'] = {
     },
 };
 
-Blockly.JavaScript['sendto_otherscript'] = function(block) {
+Blockly.JavaScript.forBlock['sendto_otherscript'] = function(block) {
     const dropdown_instance = block.getFieldValue('INSTANCE');
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const message = block.getFieldValue('MESSAGE');
@@ -554,7 +554,7 @@ Blockly.Blocks['sendto_gethistory'] = {
     },
 };
 
-Blockly.JavaScript['sendto_gethistory'] = function(block) {
+Blockly.JavaScript.forBlock['sendto_gethistory'] = function(block) {
     const dropdown_instance = block.getFieldValue('INSTANCE');
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const start = Blockly.JavaScript.valueToCode(block, 'START', Blockly.JavaScript.ORDER_ATOMIC);
