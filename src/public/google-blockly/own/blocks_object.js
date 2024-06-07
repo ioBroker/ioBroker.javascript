@@ -205,14 +205,13 @@ Blockly.Blocks['object_new'] = {
                 input.fieldRow[0].setValue(this.attributes_[i]);
             }
 
-            setTimeout((_input) => {
-                if (!_input.connection.isConnected()) {
+            setTimeout(__input => {
+                if (!__input.connection.isConnected()) {
                     const _shadow = workspace.newBlock('text');
                     _shadow.setShadow(true);
                     _shadow.initSvg();
                     _shadow.render();
-                    _shadow.outputConnection.connect(_input.connection);
-                    //console.log('New ' + this.attributes_[i]);
+                    _shadow.outputConnection.connect(__input.connection);
                 }
             }, 100, input);
         }

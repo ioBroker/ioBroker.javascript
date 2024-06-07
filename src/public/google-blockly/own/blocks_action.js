@@ -84,7 +84,7 @@ Blockly.Blocks['exec'] = {
         } else if (inputExists) {
             this.removeInput('STATEMENT');
         }
-    }
+    },
 };
 
 Blockly.JavaScript.forBlock['exec'] = function(block) {
@@ -92,25 +92,21 @@ Blockly.JavaScript.forBlock['exec'] = function(block) {
     const logLevel = block.getFieldValue('LOG');
     const withStatement = block.getFieldValue('WITH_STATEMENT');
 
-    let logText;
+    let logText = '';
     if (logLevel) {
         logText = `console.${logLevel}('exec: ' + ${value_command});\n`;
-    } else {
-        logText = '';
     }
 
     if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
         const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
         if (statement) {
-            return `exec(${value_command}, async (error, result, stderr) => {\n` +
-                statement +
-                `});\n${logText}`;
-        } else {
-            return `exec(${value_command});\n${logText}`;
+            return `exec(${value_command}, async (error, result, stderr) => {\n${statement}});\n${logText}`;
         }
-    } else {
+
         return `exec(${value_command});\n${logText}`;
     }
+
+    return `exec(${value_command});\n${logText}`;
 };
 
 // --- exec_result -----------------------------------------------------------
@@ -221,7 +217,7 @@ Blockly.Blocks['http_get'] = {
         this.setColour(Blockly.Action.HUE);
         this.setTooltip(Blockly.Translate('http_get_tooltip'));
         this.setHelpUrl(getHelp('http_get_help'));
-    }
+    },
 };
 
 Blockly.JavaScript.forBlock['http_get'] = function(block) {
@@ -229,7 +225,7 @@ Blockly.JavaScript.forBlock['http_get'] = function(block) {
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     const unit = block.getFieldValue('UNIT');
     let timeout = block.getFieldValue('TIMEOUT');
-    if (isNaN(timeout)) {
+    if (Number.isNaN(timeout)) {
         timeout = 2000;
     }
     if (unit === 'sec') {
@@ -295,7 +291,7 @@ Blockly.Blocks['http_post'] = {
         this.setColour(Blockly.Action.HUE);
         this.setTooltip(Blockly.Translate('http_post_tooltip'));
         this.setHelpUrl(getHelp('http_post_help'));
-    }
+    },
 };
 
 Blockly.JavaScript.forBlock['http_post'] = function(block) {
@@ -426,7 +422,7 @@ Blockly.Blocks['file_write'] = {
         this.setColour(Blockly.Action.HUE);
         this.setTooltip(Blockly.Translate('file_write_tooltip'));
         this.setHelpUrl(getHelp('file_write_help'));
-    }
+    },
 };
 
 Blockly.JavaScript.forBlock['file_write'] = function(block) {
@@ -486,7 +482,7 @@ Blockly.Blocks['file_read'] = {
         this.setColour(Blockly.Action.HUE);
         this.setTooltip(Blockly.Translate('file_read_tooltip'));
         this.setHelpUrl(getHelp('file_read_help'));
-    }
+    },
 };
 
 Blockly.JavaScript.forBlock['file_read'] = function(block) {
@@ -646,7 +642,7 @@ Blockly.Blocks['request'] = {
         } else if (inputExists) {
             this.removeInput('STATEMENT');
         }
-    }
+    },
 };
 
 Blockly.JavaScript.forBlock['request'] = function(block) {
@@ -654,11 +650,9 @@ Blockly.JavaScript.forBlock['request'] = function(block) {
     const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
     const withStatement = block.getFieldValue('WITH_STATEMENT');
 
-    let logText;
+    let logText = '';
     if (logLevel) {
-        logText = `console.` + logLevel + `('request: ' + ` + URL + `);\n`;
-    } else {
-        logText = '';
+        logText = `console.${logLevel}('request: ' + ${URL});\n`;
     }
 
     if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {

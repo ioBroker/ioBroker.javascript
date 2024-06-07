@@ -11,7 +11,7 @@ Blockly.CustomBlocks.push('Convert');
 
 Blockly.Convert = {
     HUE: 280,
-    blocks: {}
+    blocks: {},
 };
 
 Blockly.Blocks.Convert = {};
@@ -31,7 +31,7 @@ Blockly.Blocks.convert_tonumber = {
 
         this.setOutput(true, 'Number');
         this.setTooltip(Blockly.Translate('convert_tonumber_tooltip'));
-    }
+    },
 };
 
 Blockly.JavaScript.convert_tonumber = function (a) {
@@ -51,14 +51,14 @@ Blockly.Blocks.convert_toboolean = {
 
         this.setOutput(true, 'Boolean');
         this.setTooltip(Blockly.Translate('convert_toboolean_tooltip'));
-    }
+    },
 };
 
 Blockly.JavaScript.convert_toboolean = function (a) {
     return ['(() => {\n' +
-        '  const val = ' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + ';\n' +
-        '  if (val === "true" || val === "TRUE") return true;\n' +
-        '  if (val === "false" || val === "FALSE") return false;\n' +
+        `  const val = ${Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC)};\n` +
+        `  if (val === 'true' || val === 'TRUE') return true;\n` +
+        `  if (val === 'false' || val === 'FALSE') return false;\n` +
         '  return !!val;\n' +
         '})()', Blockly.JavaScript.ORDER_ATOMIC];
 };
@@ -364,7 +364,7 @@ Blockly.Blocks.convert_json2object = {
         this.setColour(Blockly.Convert.HUE);
         this.setOutput(true);
         this.setTooltip(Blockly.Translate('convert_json2object_tooltip'));
-    }
+    },
 };
 
 Blockly.JavaScript.convert_json2object = function (a) {
@@ -388,7 +388,7 @@ Blockly.Blocks.convert_object2json = {
 
         this.setColour(Blockly.Convert.HUE);
         this.setOutput(true, 'String');
-        this.setTooltip(Blockly.Translate('convert_object2json_tooltip'))
+        this.setTooltip(Blockly.Translate('convert_object2json_tooltip'));
     },
 };
 
@@ -421,7 +421,7 @@ Blockly.Blocks.convert_jsonata = {
         this.setInputsInline(true);
         this.setColour(Blockly.Convert.HUE);
         this.setOutput(true, 'String');
-        this.setTooltip(Blockly.Translate('convert_jsonata_tooltip'))
+        this.setTooltip(Blockly.Translate('convert_jsonata_tooltip'));
     },
 };
 

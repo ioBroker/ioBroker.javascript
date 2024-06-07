@@ -99,7 +99,6 @@ Blockly.Blocks['timeouts_wait'] = {
                 [Blockly.Translate('timeouts_settimeout_sec'), 'sec'],
                 [Blockly.Translate('timeouts_settimeout_min'), 'min'],
             ]), 'UNIT');
-            //.appendField(Blockly.Translate('timeouts_settimeout_ms'));
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);

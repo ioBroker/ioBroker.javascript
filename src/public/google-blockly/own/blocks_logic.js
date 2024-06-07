@@ -218,7 +218,7 @@ Blockly.Blocks['logic_multi_or_mutator'] = {
         this.setTooltip(Blockly.Translate('logic_multi_or_tooltip'));
 
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['logic_multi_or'] = {

@@ -211,21 +211,21 @@ Blockly.Blocks['on_ext'] = {
                 if (i === 0) {
                     _input.appendField(Blockly.Translate('on_ext'));
                 }
-                setTimeout((input) => {
-                    if (!input.connection.isConnected()) {
+                setTimeout(__input => {
+                    if (!__input.connection.isConnected()) {
                         const shadow = wp.newBlock('field_oid');
                         shadow.setShadow(true);
-                        shadow.outputConnection.connect(input.connection);
+                        shadow.outputConnection.connect(__input.connection);
                         shadow.initSvg();
                         shadow.render();
                     }
                 }, 100, _input);
             } else {
-                setTimeout((input) => {
-                    if (!input.connection.isConnected()) {
+                setTimeout(__input => {
+                    if (!__input.connection.isConnected()) {
                         const shadow = wp.newBlock('field_oid');
                         shadow.setShadow(true);
-                        shadow.outputConnection.connect(input.connection);
+                        shadow.outputConnection.connect(__input.connection);
                         shadow.initSvg();
                         shadow.render();
                     }
@@ -1018,60 +1018,60 @@ Blockly.Blocks['cron_builder'] = {
 
         const wp = this.workspace;
 
-        setTimeout((input) => {
-            if (!input.connection.isConnected()) {
+        setTimeout(__input => {
+            if (!__input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
                 _shadow.setShadow(true);
                 _shadow.setFieldValue('*', 'TEXT');
-                _shadow.outputConnection.connect(input.connection);
+                _shadow.outputConnection.connect(__input.connection);
             }
         }, 100, _input);
 
         _input = this.appendValueInput('MONTHS')
             .appendField(Blockly.Translate('cron_builder_month'));
 
-        setTimeout((input) => {
-            if (!input.connection.isConnected()) {
+        setTimeout(__input => {
+            if (!__input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
                 _shadow.setShadow(true);
                 _shadow.setFieldValue('*', 'TEXT');
-                _shadow.outputConnection.connect(input.connection);
+                _shadow.outputConnection.connect(__input.connection);
             }
         }, 100, _input);
 
         _input = this.appendValueInput('DAYS')
             .appendField(Blockly.Translate('cron_builder_day'));
 
-        setTimeout((input) => {
-            if (!input.connection.isConnected()) {
+        setTimeout(__input => {
+            if (!__input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
                 _shadow.setShadow(true);
                 _shadow.setFieldValue('*', 'TEXT');
-                _shadow.outputConnection.connect(input.connection);
+                _shadow.outputConnection.connect(__input.connection);
             }
         }, 100, _input);
 
         _input = this.appendValueInput('HOURS')
             .appendField(Blockly.Translate('cron_builder_hour'));
 
-        setTimeout((input) => {
-            if (!input.connection.isConnected()) {
+        setTimeout(__input => {
+            if (!__input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
                 _shadow.setShadow(true);
                 _shadow.setFieldValue('*', 'TEXT');
-                _shadow.outputConnection.connect(input.connection);
+                _shadow.outputConnection.connect(__input.connection);
             }
         }, 100, _input);
 
         _input = this.appendValueInput('MINUTES')
             .appendField(Blockly.Translate('cron_builder_minutes'));
 
-        setTimeout((input) => {
-            if (!input.connection.isConnected()) {
+        setTimeout(__input => {
+            if (!__input.connection.isConnected()) {
                 const _shadow = wp.newBlock('text');
                 _shadow.setShadow(true);
                 _shadow.setFieldValue('*', 'TEXT');
-                _shadow.outputConnection.connect(input.connection);
+                _shadow.outputConnection.connect(__input.connection);
             }
         }, 100, _input);
 
@@ -1122,14 +1122,14 @@ Blockly.Blocks['cron_builder'] = {
                 const _input = this.appendValueInput('SECONDS');
                 _input.appendField(Blockly.Translate('cron_builder_seconds'));
                 const wp = this.workspace;
-                setTimeout((input) => {
-                    if (!input.connection.isConnected()) {
+                setTimeout(__input => {
+                    if (!__input.connection.isConnected()) {
                         const _shadow = wp.newBlock('text');
                         _shadow.setShadow(true);
                         _shadow.setFieldValue('*', 'TEXT');
                         _shadow.initSvg();
                         _shadow.render();
-                        _shadow.outputConnection.connect(input.connection);
+                        _shadow.outputConnection.connect(__input.connection);
                     }
                 }, 100, _input);
             }
