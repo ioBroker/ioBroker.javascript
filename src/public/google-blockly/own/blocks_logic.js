@@ -47,7 +47,7 @@ Blockly.Blocks['logic_multi_and_mutator'] = {
 Blockly.Blocks['logic_multi_and'] = {
     init: function() {
         this.itemCount_ = 2;
-        this.setMutator(new Blockly.Mutator(['logic_multi_and_mutator'], this));
+        this.setMutator(new Blockly.icons.MutatorIcon(['logic_multi_and_mutator'], this));
 
         this.setInputsInline(false);
         this.setOutput(true, 'Boolean');
@@ -127,7 +127,7 @@ Blockly.Blocks['logic_multi_and'] = {
 
         // Reconnect any child blocks.
         for (let i = 0; i < this.itemCount_; i++) {
-            Blockly.Mutator.reconnect(connections[i], this, 'AND' + i);
+            Blockly.icons.MutatorIcon.reconnect(connections[i], this, 'AND' + i);
         }
     },
     /**
@@ -224,7 +224,7 @@ Blockly.Blocks['logic_multi_or_mutator'] = {
 Blockly.Blocks['logic_multi_or'] = {
     init: function() {
         this.itemCount_ = 2;
-        this.setMutator(new Blockly.Mutator(['logic_multi_or_mutator'], this));
+        this.setMutator(new Blockly.icons.MutatorIcon(['logic_multi_or_mutator'], this));
 
         this.setInputsInline(false);
         this.setOutput(true, 'Boolean');
@@ -304,7 +304,7 @@ Blockly.Blocks['logic_multi_or'] = {
 
         // Reconnect any child blocks.
         for (let i = 0; i < this.itemCount_; i++) {
-            Blockly.Mutator.reconnect(connections[i], this, 'OR' + i);
+            Blockly.icons.MutatorIcon.reconnect(connections[i], this, 'OR' + i);
         }
     },
     /**

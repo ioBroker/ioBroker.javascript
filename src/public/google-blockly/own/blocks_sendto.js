@@ -121,7 +121,7 @@ Blockly.Blocks['sendto_custom'] = {
         this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setMutator(new Blockly.Mutator(['sendto_custom_item'], this));
+        this.setMutator(new Blockly.icons.MutatorIcon(['sendto_custom_item'], this));
         this.setTooltip(Blockly.Translate('sendto_custom_tooltip'));
         this.setHelpUrl(getHelp('sendto_custom_help'));
     },
@@ -203,7 +203,7 @@ Blockly.Blocks['sendto_custom'] = {
         this.updateShape_(names);
         // Reconnect any child blocks.
         for (let j = 0; j < this.itemCount_; j++) {
-            Blockly.Mutator.reconnect(connections[j], this, 'ARG' + j);
+            Blockly.icons.MutatorIcon.reconnect(connections[j], this, 'ARG' + j);
         }
     },
     getArgNames_: function () {

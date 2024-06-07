@@ -72,7 +72,7 @@ Blockly.Blocks['on_ext_oid'] = {
 Blockly.Blocks['on_ext'] = {
     init: function() {
         this.itemCount_ = 1;
-        this.setMutator(new Blockly.Mutator(['on_ext_oid'], this));
+        this.setMutator(new Blockly.icons.MutatorIcon(['on_ext_oid'], this));
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -152,7 +152,7 @@ Blockly.Blocks['on_ext'] = {
 
         // Reconnect any child blocks.
         for (let i = 0; i < this.itemCount_; i++) {
-            Blockly.Mutator.reconnect(connections[i], this, 'OID' + i);
+            Blockly.icons.MutatorIcon.reconnect(connections[i], this, 'OID' + i);
         }
     },
     /**

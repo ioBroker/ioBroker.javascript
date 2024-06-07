@@ -13,7 +13,7 @@ Blockly.Blocks['logic_switch_case'] = {
             .appendField(Blockly.Translate('logic_switch_case_of'));
         this.appendStatementInput('CASE0')
             .appendField(Blockly.Translate('logic_switch_do'));
-        this.setMutator(new Blockly.Mutator(['case_incaseof', 'case_default'], this));
+        this.setMutator(new Blockly.icons.MutatorIcon(['case_incaseof', 'case_default'], this));
         this.setTooltip(Blockly.Translate('logic_switch_tooltip'));
         this.caseCount_ = 0;
         this.defaultCount_ = 0;

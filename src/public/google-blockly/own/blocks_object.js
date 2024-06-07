@@ -65,7 +65,7 @@ Blockly.Blocks['object_new'] = {
 
         this.attributes_ = [];
         this.itemCount_ = 0;
-        this.setMutator(new Blockly.Mutator(['object_new_mutator'], this));
+        this.setMutator(new Blockly.icons.MutatorIcon(['object_new_mutator'], this));
 
         this.setInputsInline(false);
         this.setOutput(true);
@@ -166,7 +166,7 @@ Blockly.Blocks['object_new'] = {
 
         // Reconnect any child blocks.
         for (let i = 0; i < this.itemCount_; i++) {
-            Blockly.Mutator.reconnect(connections[i], this, 'ATTR_' + i);
+            Blockly.icons.MutatorIcon.reconnect(connections[i], this, 'ATTR_' + i);
         }
     },
     /**

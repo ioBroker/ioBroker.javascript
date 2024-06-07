@@ -479,6 +479,8 @@ class BlocklyEditor extends React.Component {
         this.blocklyWorkspace = this.Blockly.inject(
             this.blockly,
             {
+                renderer: 'thrasos',
+                theme: 'classic',
                 media: 'google-blockly/media/',
                 toolbox: toolboxXml,
                 zoom: {

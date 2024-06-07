@@ -258,7 +258,7 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
         /*this.appendValueInput('RETURN')
             .setAlign(Blockly.ALIGN_RIGHT)
             .appendField(Blockly.Msg['PROCEDURES_DEFRETURN_RETURN']);*/
-        this.setMutator(new Blockly.Mutator(['procedures_mutatorarg'], this));
+        this.setMutator(new Blockly.icons.MutatorIcon(['procedures_mutatorarg'], this));
         if ((this.workspace.options.comments ||
             (this.workspace.options.parentWorkspace &&
                 this.workspace.options.parentWorkspace.options.comments)) &&
@@ -355,7 +355,7 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
                 if (hasStatements) {
                     this.setStatements_(true);
                     // Restore the stack, if one was saved.
-                    Blockly.Mutator.reconnect(this.statementConnection_, this, 'STACK');
+                    Blockly.icons.MutatorIcon.reconnect(this.statementConnection_, this, 'STACK');
                     this.statementConnection_ = null;
                 } else {
                     // Save the stack, then disconnect it.
@@ -453,7 +453,7 @@ Blockly.Blocks['procedures_defcustomnoreturn'] = {
             .appendField(nameField, 'NAME')
             .appendField('', 'PARAMS');
 
-        this.setMutator(new Blockly.Mutator(['procedures_mutatorarg'], this));
+        this.setMutator(new Blockly.icons.MutatorIcon(['procedures_mutatorarg'], this));
 
         if ((this.workspace.options.comments ||
             (this.workspace.options.parentWorkspace && this.workspace.options.parentWorkspace.options.comments)) &&
