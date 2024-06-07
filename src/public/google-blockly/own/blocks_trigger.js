@@ -22,15 +22,15 @@ Blockly.Trigger = {
 // --- ON Extended-----------------------------------------------------------
 
 Blockly.Trigger.blocks['on_ext'] =
-    '<block type="on_ext">'
-    + '     <mutation items="1"></mutation>'
-    + '     <value name="CONDITION">'
-    + '     </value>'
-    + '     <value name="ACK_CONDITION">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="on_ext">' +
+    '  <mutation xmlns="http://www.w3.org/1999/xhtml" items="1"></mutation>' +
+    '  <field name="CONDITION">ne</field>' +
+    '  <field name="ACK_CONDITION"></field>' +
+    '  <value name="OID0">' +
+    '    <shadow type="field_oid">' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['on_ext_oid_container'] = {
     /**
@@ -46,7 +46,7 @@ Blockly.Blocks['on_ext_oid_container'] = {
         this.appendStatementInput('STACK');
         this.setTooltip(Blockly.Translate('on_ext_on_tooltip'));
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['on_ext_oid'] = {
@@ -66,7 +66,7 @@ Blockly.Blocks['on_ext_oid'] = {
         this.setTooltip(Blockly.Translate('on_ext_oid_tooltip'));
 
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['on_ext'] = {
@@ -295,7 +295,7 @@ Blockly.Blocks['on_ext'] = {
         } else {
             this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
         }
-    }
+    },
 };
 Blockly.JavaScript['on_ext'] = function(block) {
     const dropdown_condition = block.getFieldValue('CONDITION');
@@ -333,16 +333,10 @@ Blockly.JavaScript['on_ext'] = function(block) {
 
 // --- ON -----------------------------------------------------------
 Blockly.Trigger.blocks['on'] =
-    '<block type="on">'
-    + '     <value name="OID">'
-    + '     </value>'
-    + '     <value name="CONDITION">'
-    + '     </value>'
-    + '     <value name="ACK_CONDITION">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="on">' +
+    '  <field name="CONDITION">ne</field>' +
+    '  <field name="ACK_CONDITION"></field>' +
+    '</block>';
 
 Blockly.Blocks['on'] = {
     init: function() {
@@ -435,10 +429,9 @@ Blockly.JavaScript['on'] = function(block) {
 
 // --- get info about event -----------------------------------------------------------
 Blockly.Trigger.blocks['on_source'] =
-    '<block type="on_source">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '</block>';
+    '<block type="on_source">' +
+    '  <field name="ATTR">state.val</field>' +
+    '</block>';
 
 Blockly.Blocks['on_source'] = {
     /**
@@ -528,8 +521,8 @@ Blockly.JavaScript['on_source'] = function(block) {
 
 // --- acknowledge -----------------------------------------------------------
 Blockly.Trigger.blocks['on_ack_value'] =
-    '<block type="on_ack_value">'
-    + '</block>';
+    '<block type="on_ack_value">' +
+    '</block>';
 
 Blockly.Blocks['on_ack_value'] = {
     /**
@@ -586,12 +579,9 @@ Blockly.JavaScript['on_ack_value'] = function(block) {
 
 // --- SCHEDULE -----------------------------------------------------------
 Blockly.Trigger.blocks['schedule'] =
-    '<block type="schedule">'
-    + '     <value name="SCHEDULE">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="schedule">' +
+    '  <field name="SCHEDULE">* * * * *</field>' +
+    '</block>';
 
 Blockly.Blocks['schedule'] = {
     init: function() {
@@ -634,7 +624,7 @@ Blockly.Blocks['schedule'] = {
         } else {
             this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
         }
-    }
+    },
 };
 Blockly.JavaScript['schedule'] = function(block) {
     let schedule = block.getFieldValue('SCHEDULE');
@@ -653,14 +643,9 @@ Blockly.JavaScript['schedule'] = function(block) {
 
 // --- SCHEDULE BY ID -----------------------------------------------------
 Blockly.Trigger.blocks['schedule_by_id'] =
-    '<block type="schedule_by_id">'
-    + '     <value name="OID">'
-    + '     </value>'
-    + '     <value name="ACK_CONDITION">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="schedule_by_id">' +
+    '  <field name="ACK_CONDITION"></field>' +
+    '</block>';
 
 Blockly.Blocks['schedule_by_id'] = {
     init: function() {
@@ -675,7 +660,7 @@ Blockly.Blocks['schedule_by_id'] = {
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('on_ack_any'), ''],
                 [Blockly.Translate('on_ack_true'), 'true'],
-                [Blockly.Translate('on_ack_false'), 'false']
+                [Blockly.Translate('on_ack_false'), 'false'],
             ]), 'ACK_CONDITION');
 
         this.appendStatementInput('STATEMENT')
@@ -687,7 +672,7 @@ Blockly.Blocks['schedule_by_id'] = {
         this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Translate('schedule_by_id_tooltip'));
         this.setHelpUrl(getHelp('schedule_by_id_help'));
-    }
+    },
 };
 Blockly.JavaScript['schedule_by_id'] = function(block) {
     const value_objectid = block.getFieldValue('OID');
@@ -701,17 +686,10 @@ Blockly.JavaScript['schedule_by_id'] = function(block) {
 
 // --- ASTRO -----------------------------------------------------------
 Blockly.Trigger.blocks['astro'] =
-    '<block type="astro">'
-    + '     <value name="TYPE">'
-    //+ '         <shadow type="text">'
-    //+ '             <field name="TEXT">test</field>'
-    //+ '         </shadow>'
-    + '     </value>'
-    + '     <value name="OFFSET">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="astro">' +
+    '  <field name="TYPE">sunrise</field>' +
+    '  <field name="OFFSET">0</field>' +
+    '</block>';
 
 Blockly.Blocks['astro'] = {
     init: function() {
@@ -720,27 +698,27 @@ Blockly.Blocks['astro'] = {
 
         this.appendDummyInput("TYPE")
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('astro_sunriseText'),         "sunrise"],
-                [Blockly.Translate('astro_sunriseEndText'),      "sunriseEnd"],
-                [Blockly.Translate('astro_goldenHourEndText'),   "goldenHourEnd"],
-                [Blockly.Translate('astro_solarNoonText'),       "solarNoon"],
-                [Blockly.Translate('astro_goldenHourText'),      "goldenHour"],
-                [Blockly.Translate('astro_sunsetStartText'),     "sunsetStart"],
-                [Blockly.Translate('astro_sunsetText'),          "sunset"],
-                [Blockly.Translate('astro_duskText'),            "dusk"],
-                [Blockly.Translate('astro_nauticalDuskText'),    "nauticalDusk"],
-                [Blockly.Translate('astro_nightText'),           "night"],
-                [Blockly.Translate('astro_nightEndText'),        "nightEnd"],
-                [Blockly.Translate('astro_nauticalDawnText'),    "nauticalDawn"],
-                [Blockly.Translate('astro_dawnText'),            "dawn"],
-                [Blockly.Translate('astro_nadirText'),           "nadir"]
+                [Blockly.Translate('astro_sunriseText'),         'sunrise'],
+                [Blockly.Translate('astro_sunriseEndText'),      'sunriseEnd'],
+                [Blockly.Translate('astro_goldenHourEndText'),   'goldenHourEnd'],
+                [Blockly.Translate('astro_solarNoonText'),       'solarNoon'],
+                [Blockly.Translate('astro_goldenHourText'),      'goldenHour'],
+                [Blockly.Translate('astro_sunsetStartText'),     'sunsetStart'],
+                [Blockly.Translate('astro_sunsetText'),          'sunset'],
+                [Blockly.Translate('astro_duskText'),            'dusk'],
+                [Blockly.Translate('astro_nauticalDuskText'),    'nauticalDusk'],
+                [Blockly.Translate('astro_nightText'),           'night'],
+                [Blockly.Translate('astro_nightEndText'),        'nightEnd'],
+                [Blockly.Translate('astro_nauticalDawnText'),    'nauticalDawn'],
+                [Blockly.Translate('astro_dawnText'),            'dawn'],
+                [Blockly.Translate('astro_nadirText'),           'nadir'],
             ]), 'TYPE');
 
         this.appendDummyInput()
             .appendField(Blockly.Translate('astro_offset'));
 
         this.appendDummyInput("OFFSET")
-            .appendField(new Blockly.FieldTextInput("0"), "OFFSET");
+            .appendField(new Blockly.FieldTextInput('0'), "OFFSET");
 
         this.appendDummyInput()
             .appendField(Blockly.Translate('astro_minutes'));
@@ -778,7 +756,7 @@ Blockly.Blocks['astro'] = {
         } else {
             this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
         }
-    }
+    },
 };
 Blockly.JavaScript['astro'] = function(block) {
     const astrotype = block.getFieldValue('TYPE');
@@ -792,17 +770,13 @@ Blockly.JavaScript['astro'] = function(block) {
 
 // --- set named schedule -----------------------------------------------------------
 Blockly.Trigger.blocks['schedule_create'] =
-    '<block type="schedule_create">'
-    + '     <value name="NAME">'
-    + '     </value>'
-    + '     <value name="SCHEDULE">'
-    + '         <shadow type="field_cron">'
-    + '             <field name="CRON">* * * * *</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="schedule_create">' +
+    '  <field name="NAME">schedule</field>' +
+    '  <value name="SCHEDULE">' +
+    '    <shadow type="field_cron">' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 /**
  * Ensure two identically-named procedures don't exist.
  * @param {string} name Proposed procedure name.
@@ -899,8 +873,8 @@ Blockly.Blocks['schedule_create'] = {
     },
     getVarModels: function () {
         const name = this.getFieldValue('NAME');
-        return [{ getId: () => { return name; }, name: name, type: 'cron' }];
-    }
+        return [{ getId: () => name, name: name, type: 'cron' }];
+    },
 };
 
 Blockly.JavaScript['schedule_create'] = function (block) {
@@ -940,10 +914,9 @@ Blockly.Trigger.getAllSchedules = function (workspace) {
 };
 
 Blockly.Trigger.blocks['schedule_clear'] =
-    '<block type="schedule_clear">'
-    + '    <value name="NAME">'
-    + '    </value>'
-    + '</block>';
+    '<block type="schedule_clear">' +
+    '  <field name="NAME"></field>' +
+    '</block>';
 
 Blockly.Blocks['schedule_clear'] = {
     init: function() {
@@ -959,7 +932,7 @@ Blockly.Blocks['schedule_clear'] = {
         this.setColour(Blockly.Trigger.HUE);
         this.setTooltip(Blockly.Translate('schedule_clear_tooltip'));
         this.setHelpUrl(getHelp('schedule_clear_help'));
-    }
+    },
 };
 
 Blockly.JavaScript['schedule_clear'] = function(block) {
@@ -969,10 +942,9 @@ Blockly.JavaScript['schedule_clear'] = function(block) {
 
 // --- CRON dialog --------------------------------------------------
 Blockly.Trigger.blocks['field_cron'] =
-    '<block type="field_cron">'
-    + '     <value name="CRON">'
-    + '     </value>'
-    + '</block>';
+    '<block type="field_cron">' +
+    '  <field name="CRON">* * * * *</field>' +
+    '</block>';
 
 Blockly.Blocks['field_cron'] = {
     // Checkbox.
@@ -987,33 +959,47 @@ Blockly.Blocks['field_cron'] = {
         this.setColour(Blockly.Trigger.HUE);
         this.setOutput(true, 'String');
         this.setTooltip(Blockly.Translate('field_cron_tooltip'));
-    }
+    },
 };
 
 Blockly.JavaScript['field_cron'] = function(block) {
     const cron = block.getFieldValue('CRON');
+
     return [`'${cron}'`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- CRON builder --------------------------------------------------
 Blockly.Trigger.blocks['cron_builder'] =
-    '<block type="cron_builder">'
-    + '     <value name="LINE">'
-    + '     </value>'
-    + '     <value name="MINUTES">'
-    + '     </value>'
-    + '     <value name="HOURS">'
-    + '     </value>'
-    + '     <value name="DAYS">'
-    + '     </value>'
-    + '     <value name="MONTHS">'
-    + '     </value>'
-    + '     <value name="WEEKDAYS">'
-    + '     </value>'
-    + '     <value name="WITH_SECONDS">'
-    + '     </value>'
-    + '     <mutation seconds="false"></mutation>'
-    + '</block>';
+    '<block type="cron_builder">' +
+    '  <mutation xmlns="http://www.w3.org/1999/xhtml" seconds="false" as_line="false"></mutation>' +
+    '  <field name="LINE">FALSE</field>' +
+    '  <field name="WITH_SECONDS">FALSE</field>' +
+    '  <value name="DOW">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">*</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="MONTHS">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">*</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="DAYS">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">*</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="HOURS">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">*</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="MINUTES">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">*</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['cron_builder'] = {
     // Checkbox.
@@ -1150,7 +1136,7 @@ Blockly.Blocks['cron_builder'] = {
         } else if (inputExists) {
             this.removeInput('SECONDS');
         }
-    }
+    },
 };
 
 Blockly.JavaScript['cron_builder'] = function(block) {
@@ -1176,14 +1162,9 @@ Blockly.JavaScript['cron_builder'] = function(block) {
 
 // --- onMessage -----------------------------------------------------------
 Blockly.Trigger.blocks['onMessage'] =
-    '<block type="onMessage">'
-    + '     <value name="NAME">'
-    + '     </value>'
-    + '     <value name="MESSAGE">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="onMessage">' +
+    '  <field name="MESSAGE">customMessage</field>' +
+    '</block>';
 
 Blockly.Blocks['onMessage'] = {
     init: function() {
@@ -1227,7 +1208,7 @@ Blockly.Blocks['onMessage'] = {
         } else {
             this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
         }
-    }
+    },
 };
 
 Blockly.JavaScript['onMessage'] = function (block) {
@@ -1242,22 +1223,19 @@ Blockly.JavaScript['onMessage'] = function (block) {
 
 // --- onFile -----------------------------------------------------------
 Blockly.Trigger.blocks['onFile'] =
-    '<block type="onFile">'
-    + '     <value name="OID">'
-    + '         <shadow type="field_oid_meta">'
-    + '             <field name="oid">0_userdata.0</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="FILE">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">*</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="WITH_FILE">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="onFile">' +
+    '  <field name="WITH_FILE">FALSE</field>' +
+    '  <value name="OID">' +
+    '    <shadow type="field_oid_meta">' +
+    '      <field name="oid">0_userdata.0</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="FILE">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">*</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['onFile'] = {
     init: function() {
@@ -1306,7 +1284,7 @@ Blockly.Blocks['onFile'] = {
         } else {
             this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
         }
-    }
+    },
 };
 
 Blockly.JavaScript['onFile'] = function (block) {
@@ -1334,10 +1312,9 @@ Blockly.JavaScript['onFile'] = function (block) {
 
 // --- onFile_data -----------------------------------------------------------
 Blockly.Trigger.blocks['onFile_data'] =
-    '<block type="onFile_data">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '</block>';
+    '<block type="onFile_data">' +
+    '  <field name="ATTR">data</field>' +
+    '</block>';
 
 Blockly.Blocks['onFile_data'] = {
     /**
@@ -1407,18 +1384,18 @@ Blockly.JavaScript['onFile_data'] = function(block) {
 
 // --- onFile -----------------------------------------------------------
 Blockly.Trigger.blocks['offFile'] =
-    '<block type="offFile">'
-    + '     <value name="OID">'
-    + '         <shadow type="field_oid_meta">'
-    + '             <field name="oid">0_userdata.0</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="FILE">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">*</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '</block>';
+    '<block type="offFile">' +
+    '  <value name="OID">' +
+    '    <shadow type="field_oid_meta">' +
+    '      <field name="oid">0_userdata.0</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="FILE">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">*</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['offFile'] = {
     init: function() {
@@ -1458,12 +1435,9 @@ Blockly.JavaScript['offFile'] = function (block) {
 
 // --- onLog -----------------------------------------------------------
 Blockly.Trigger.blocks['onLog'] =
-    '<block type="onLog">'
-    + '     <value name="Severity">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="onLog">' +
+    '  <field name="Severity">error</field>' +
+    '</block>';
 
 Blockly.Blocks['onLog'] = {
     init: function() {
@@ -1513,7 +1487,7 @@ Blockly.Blocks['onLog'] = {
         } else {
             this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
         }
-    }
+    },
 };
 
 Blockly.JavaScript['onLog'] = function (block) {
@@ -1527,10 +1501,9 @@ Blockly.JavaScript['onLog'] = function (block) {
 
 // --- onLog_data -----------------------------------------------------------
 Blockly.Trigger.blocks['onLog_data'] =
-    '<block type="onLog_data">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '</block>';
+    '<block type="onLog_data">' +
+    '  <field name="ATTR">data.message</field>' +
+    '</block>';
 
 Blockly.Blocks['onLog_data'] = {
     /**

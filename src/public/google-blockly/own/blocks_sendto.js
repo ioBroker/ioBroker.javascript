@@ -16,17 +16,18 @@ Blockly.Sendto = {
 
 // --- sendTo Custom --------------------------------------------------
 Blockly.Sendto.blocks['sendto_custom'] =
-    '<block type="sendto_custom">'
-    + '     <value name="INSTANCE">'
-    + '     </value>'
-    + '     <value name="COMMAND">'
-    + '     </value>'
-    + '     <value name="LOG">'
-    + '     </value>'
-    + '     <value name="WITH_STATEMENT">'
-    + '     </value>'
-    + '     <mutation with_statement="false" items="parameter1"></mutation>'
-    + '</block>';
+    '<block type="sendto_custom">' +
+    '  <mutation xmlns="http://www.w3.org/1999/xhtml" items="parameter1" with_statement="false"></mutation>' +
+    '  <field name="INSTANCE">admin.0</field>' +
+    '  <field name="COMMAND">send</field>' +
+    '  <field name="LOG"></field>' +
+    '  <field name="WITH_STATEMENT">FALSE</field>' +
+    '  <value name="ARG0">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT"></field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['sendto_custom_container'] = {
     /**
@@ -42,7 +43,7 @@ Blockly.Blocks['sendto_custom_container'] = {
         this.appendStatementInput('STACK');
         this.setTooltip(Blockly.Translate('sendto_custom_arg_tooltip'));
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['sendto_custom_item'] = {
@@ -60,7 +61,7 @@ Blockly.Blocks['sendto_custom_item'] = {
         this.setNextStatement(true);
         this.setTooltip(Blockly.Translate('sendto_custom_arg_tooltip'));
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['sendto_custom'] = {
@@ -123,7 +124,7 @@ Blockly.Blocks['sendto_custom'] = {
         this.setMutator(new Blockly.Mutator(['sendto_custom_item']));
         this.setTooltip(Blockly.Translate('sendto_custom_tooltip'));
         this.setHelpUrl(getHelp('sendto_custom_help'));
-   },
+    },
     /**
      * Create XML to represent number of text inputs.
      * @return {!Element} XML storage element.
@@ -203,7 +204,6 @@ Blockly.Blocks['sendto_custom'] = {
         // Reconnect any child blocks.
         for (let j = 0; j < this.itemCount_; j++) {
             Blockly.Mutator.reconnect(connections[j], this, 'ARG' + j);
-
         }
     },
     getArgNames_: function () {
@@ -306,7 +306,7 @@ Blockly.Blocks['sendto_custom'] = {
         if (withStatement) {
             this.appendStatementInput('STATEMENT');
         }
-    }
+    },
 };
 
 Blockly.JavaScript['sendto_custom'] = function (block) {
@@ -357,28 +357,17 @@ Blockly.JavaScript['sendto_custom'] = function (block) {
 
 // --- sendTo JavaScript --------------------------------------------------
 Blockly.Sendto.blocks['sendto_otherscript'] =
-    '<block type="sendto_otherscript">'
-    + '     <value name="NAME">'
-    + '     </value>'
-    + '     <value name="INSTANCE">'
-    + '     </value>'
-    + '     <value name="OID">'
-    + '         <shadow type="field_oid_script">'
-    + '             <field name="oid">Script Object ID</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="TIMEOUT">'
-    + '     </value>'
-    + '     <value name="UNIT">'
-    + '     </value>'
-    + '     <value name="MESSAGE">'
-    + '     </value>'
-    + '     <value name="DATA">'
-    + '         <shadow type="math_number">'
-    + '             <field name="NUM">1</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '</block>';
+    '<block type="sendto_otherscript">' +
+    '  <field name="INSTANCE">0</field>' +
+    '  <field name="TIMEOUT">1000</field>' +
+    '  <field name="UNIT">ms</field>' +
+    '  <field name="MESSAGE">customMessage</field>' +
+    '  <value name="OID">' +
+    '    <shadow type="field_oid_script">' +
+    '      <field name="oid">Script Object ID</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['sendto_otherscript'] = {
     init: function() {
@@ -416,7 +405,7 @@ Blockly.Blocks['sendto_otherscript'] = {
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('timeouts_settimeout_ms'), 'ms'],
                 [Blockly.Translate('timeouts_settimeout_sec'), 'sec'],
-                [Blockly.Translate('timeouts_settimeout_min'), 'min']
+                [Blockly.Translate('timeouts_settimeout_min'), 'min'],
             ]), 'UNIT');
 
         this.appendDummyInput('MESSAGE')
@@ -433,7 +422,7 @@ Blockly.Blocks['sendto_otherscript'] = {
         this.setColour(Blockly.Sendto.HUE);
         this.setTooltip(Blockly.Translate('sendto_otherscript_tooltip'));
         this.setHelpUrl(getHelp('sendto_otherscript_help'));
-    }
+    },
 };
 
 Blockly.JavaScript['sendto_otherscript'] = function(block) {
@@ -470,35 +459,26 @@ Blockly.JavaScript['sendto_otherscript'] = function(block) {
 
 // --- sendTo gethistory --------------------------------------------------
 Blockly.Sendto.blocks['sendto_gethistory'] =
-    '<block type="sendto_gethistory">'
-    + '     <value name="NAME">'
-    + '     </value>'
-    + '     <value name="INSTANCE">'
-    + '     </value>'
-    + '     <value name="OID">'
-    + '         <shadow type="field_oid">'
-    + '             <field name="oid">Object ID</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="START">'
-    + '         <shadow type="time_get_special">'
-    + '             <field name="TYPE">dayStart</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="END">'
-    + '         <shadow type="time_get_special">'
-    + '             <field name="TYPE">dayEnd</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="AGGREGATE">'
-    + '     </value>'
-    + '     <value name="STEP">'
-    + '     </value>'
-    + '     <value name="UNIT">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="sendto_gethistory">' +
+    '  <field name="INSTANCE">default</field>' +
+    '  <field name="AGGREGATE">none</field>' +
+    '  <field name="STEP">0</field>' +
+    '  <field name="UNIT">ms</field>' +
+    '  <value name="OID">' +
+    '    <shadow type="field_oid">' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="START">' +
+    '    <shadow type="time_get_special">' +
+    '      <field name="TYPE">dayStart</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="END">' +
+    '    <shadow type="time_get_special">' +
+    '      <field name="TYPE">dayEnd</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['sendto_gethistory'] = {
     init: function() {
@@ -571,7 +551,7 @@ Blockly.Blocks['sendto_gethistory'] = {
         this.setColour(Blockly.Sendto.HUE);
         this.setTooltip(Blockly.Translate('sendto_gethistory_tooltip'));
         this.setHelpUrl(getHelp('sendto_gethistory_help'));
-    }
+    },
 };
 
 Blockly.JavaScript['sendto_gethistory'] = function(block) {

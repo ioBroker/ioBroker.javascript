@@ -17,18 +17,16 @@ Blockly.Action = {
 // --- action exec --------------------------------------------------
 
 Blockly.Action.blocks['exec'] =
-    '<block type="exec">'
-    + '     <value name="COMMAND">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">pwd</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="LOG">'
-    + '     </value>'
-    + '     <value name="WITH_STATEMENT">'
-    + '     </value>'
-    + '     <mutation with_statement="false"></mutation>'
-    + '</block>';
+    '<block type="exec">' +
+    '  <mutation xmlns="http://www.w3.org/1999/xhtml" with_statement="false"></mutation>' +
+    '  <field name="WITH_STATEMENT">FALSE</field>' +
+    '  <field name="LOG"></field>' +
+    '  <value name="COMMAND">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">pwd</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['exec'] = {
     init: function() {
@@ -117,10 +115,9 @@ Blockly.JavaScript['exec'] = function(block) {
 
 // --- exec_result -----------------------------------------------------------
 Blockly.Action.blocks['exec_result'] =
-    '<block type="exec_result">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '</block>';
+    '<block type="exec_result">' +
+    '  <field name="ATTR">result</field>' +
+    '</block>';
 
 Blockly.Blocks['exec_result'] = {
     /**
@@ -183,21 +180,16 @@ Blockly.JavaScript['exec_result'] = function(block) {
 
 // --- action http_get --------------------------------------------------
 Blockly.Action.blocks['http_get'] =
-    '<block type="http_get">'
-    + '     <value name="URL">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">http://</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="TIMEOUT">'
-    + '     </value>'
-    + '     <value name="UNIT">'
-    + '     </value>'
-    + '     <value name="TYPE">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="http_get">' +
+    '  <field name="TIMEOUT">2000</field>' +
+    '  <field name="UNIT">ms</field>' +
+    '  <field name="TYPE">text</field>' +
+    '  <value name="URL">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">http://</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['http_get'] = {
     init: function() {
@@ -256,25 +248,16 @@ Blockly.JavaScript['http_get'] = function(block) {
 
 // --- action http_post --------------------------------------------------
 Blockly.Action.blocks['http_post'] =
-    '<block type="http_post">'
-    + '     <value name="URL">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">http://</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="TIMEOUT">'
-    + '     </value>'
-    + '     <value name="UNIT">'
-    + '     </value>'
-    + '     <value name="TYPE">'
-    + '     </value>'
-    + '     <value name="DATA">'
-    + '         <shadow type="logic_null">'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="http_post">' +
+    '  <field name="TIMEOUT">2000</field>' +
+    '  <field name="UNIT">ms</field>' +
+    '  <field name="TYPE">text</field>' +
+    '  <value name="URL">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">http://</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['http_post'] = {
     init: function() {
@@ -342,10 +325,9 @@ Blockly.JavaScript['http_post'] = function(block) {
 
 // --- http_response -----------------------------------------------------------
 Blockly.Action.blocks['http_response'] =
-    '<block type="http_response">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '</block>';
+    '<block type="http_response">' +
+    '  <field name="ATTR">response.data</field>' +
+    '</block>';
 
 Blockly.Blocks['http_response'] = {
     /**
@@ -409,20 +391,18 @@ Blockly.JavaScript['http_response'] = function(block) {
 
 // --- action file_write --------------------------------------------------
 Blockly.Action.blocks['file_write'] =
-    '<block type="file_write">'
-    + '     <value name="OID">'
-    + '         <shadow type="field_oid_meta">'
-    + '             <field name="oid">0_userdata.0</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="FILE">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">demo.json</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="DATA">'
-    + '     </value>'
-    + '</block>';
+    '<block type="file_write">' +
+    '  <value name="OID">' +
+    '    <shadow type="field_oid_meta">' +
+    '      <field name="oid">0_userdata.0</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="FILE">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">demo.json</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['file_write'] = {
     init: function() {
@@ -471,20 +451,18 @@ Blockly.JavaScript['file_write'] = function(block) {
 
 // --- action file_read --------------------------------------------------
 Blockly.Action.blocks['file_read'] =
-    '<block type="file_read">'
-    + '     <value name="OID">'
-    + '         <shadow type="field_oid_meta">'
-    + '             <field name="oid">0_userdata.0</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="FILE">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">demo.json</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="file_read">' +
+    '  <value name="OID">' +
+    '    <shadow type="field_oid_meta">' +
+    '      <field name="oid">0_userdata.0</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="FILE">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">demo.json</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['file_read'] = {
     init: function() {
@@ -534,10 +512,9 @@ Blockly.JavaScript['file_read'] = function(block) {
 
 // --- file_data -----------------------------------------------------------
 Blockly.Action.blocks['file_data'] =
-    '<block type="file_data">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '</block>';
+    '<block type="file_data">' +
+    '  <field name="ATTR">data</field>' +
+    '</block>';
 
 Blockly.Blocks['file_data'] = {
     /**
@@ -599,18 +576,16 @@ Blockly.JavaScript['file_data'] = function(block) {
 
 // --- action request --------------------------------------------------
 Blockly.Action.blocks['request'] =
-    '<block type="request">'
-    + '     <value name="URL">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">http://</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="LOG">'
-    + '     </value>'
-    + '     <value name="WITH_STATEMENT">'
-    + '     </value>'
-    + '     <mutation with_statement="false"></mutation>'
-    + '</block>';
+    '<block type="request">' +
+    '  <mutation xmlns="http://www.w3.org/1999/xhtml" with_statement="false"></mutation>' +
+    '  <field name="WITH_STATEMENT">FALSE</field>' +
+    '  <field name="LOG"></field>' +
+    '  <value name="URL">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">http://</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['request'] = {
     init: function() {

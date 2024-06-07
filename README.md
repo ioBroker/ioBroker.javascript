@@ -29,6 +29,7 @@ Executes Javascript, Typescript Scripts.
 ### **WORK IN PROGRESS**
 
 * (klein0r) Ack flag on state object has priorty (in setState/setStateDelayed)
+* (klein0r) Fixed all blockly declarations (to avoid warnings in logs)
 
 ### 8.4.3 (2024-06-04)
 

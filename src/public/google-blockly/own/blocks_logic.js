@@ -21,7 +21,7 @@ Blockly.Blocks['logic_multi_and_container'] = {
         this.setTooltip(Blockly.Translate('logic_multi_and_tooltip'));
 
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['logic_multi_and_mutator'] = {
@@ -41,7 +41,7 @@ Blockly.Blocks['logic_multi_and_mutator'] = {
         this.setTooltip(Blockly.Translate('logic_multi_and_tooltip'));
 
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['logic_multi_and'] = {
@@ -166,7 +166,7 @@ Blockly.Blocks['logic_multi_and'] = {
         for (let i = this.itemCount_; this.getInput('AND' + i); i++) {
             this.removeInput('AND' + i);
         }
-    }
+    },
 };
 
 Blockly.JavaScript['logic_multi_and'] = function(block) {
@@ -198,7 +198,7 @@ Blockly.Blocks['logic_multi_or_container'] = {
         this.setTooltip(Blockly.Translate('logic_multi_or_tooltip'));
 
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['logic_multi_or_mutator'] = {
@@ -343,7 +343,7 @@ Blockly.Blocks['logic_multi_or'] = {
         for (let i = this.itemCount_; this.getInput('OR' + i); i++) {
             this.removeInput('OR' + i);
         }
-    }
+    },
 };
 
 Blockly.JavaScript['logic_multi_or'] = function(block) {
@@ -376,7 +376,7 @@ Blockly.Blocks['logic_between'] = {
         this.setColour("%{BKY_LOGIC_HUE}");
         this.setTooltip(Blockly.Translate('logic_between_tooltip'));
         // this.setHelpUrl(getHelp('logic_between_help'));
-    }
+    },
 };
 
 Blockly.JavaScript['logic_between'] = function(block) {
@@ -407,12 +407,12 @@ Blockly.Blocks['logic_ifempty'] = {
         this.setColour("%{BKY_LOGIC_HUE}");
         this.setTooltip(Blockly.Translate('logic_ifempty_tooltip'));
         // this.setHelpUrl(getHelp('logic_ifempty_help'));
-    }
+    },
 };
 
 Blockly.JavaScript['logic_ifempty'] = function(block) {
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
     const deflt = Blockly.JavaScript.valueToCode(block, 'DEFLT', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
 
-    return [value + ' || ' + deflt, Blockly.JavaScript.ORDER_LOGICAL_OR];
+    return [`${value} || ${deflt}`, Blockly.JavaScript.ORDER_LOGICAL_OR];
 };

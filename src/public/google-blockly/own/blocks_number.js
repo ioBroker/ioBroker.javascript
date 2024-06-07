@@ -15,7 +15,7 @@ Blockly.Blocks['math_rndfixed'] = {
         this.setColour(Blockly.Msg['MATH_HUE']);
         this.setOutput(true, 'Number');
         this.setTooltip(Blockly.Translate('math_rndfixed_tooltip'));
-    }
+    },
 };
 
 Blockly.JavaScript['math_rndfixed'] = function(block) {
