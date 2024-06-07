@@ -16,9 +16,8 @@ Blockly.Object = {
 
 // --- object new --------------------------------------------------
 Blockly.Object.blocks['object_new'] =
-    '<block type="object_new">'
-    + '    <mutation></mutation>'
-    + '</block>';
+    '<block type="object_new">' +
+    '</block>';
 
 Blockly.Blocks['object_new_container'] = {
     /**
@@ -35,7 +34,7 @@ Blockly.Blocks['object_new_container'] = {
         this.setTooltip(Blockly.Translate('object_new_tooltip'));
 
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['object_new_mutator'] = {
@@ -56,7 +55,7 @@ Blockly.Blocks['object_new_mutator'] = {
         this.setTooltip(Blockly.Translate('object_new_tooltip'));
 
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['object_new'] = {
@@ -66,7 +65,7 @@ Blockly.Blocks['object_new'] = {
 
         this.attributes_ = [];
         this.itemCount_ = 0;
-        this.setMutator(new Blockly.Mutator(['object_new_mutator']));
+        this.setMutator(new Blockly.icons.MutatorIcon(['object_new_mutator'], this));
 
         this.setInputsInline(false);
         this.setOutput(true);
@@ -167,7 +166,7 @@ Blockly.Blocks['object_new'] = {
 
         // Reconnect any child blocks.
         for (let i = 0; i < this.itemCount_; i++) {
-            Blockly.Mutator.reconnect(connections[i], this, 'ATTR_' + i);
+            Blockly.icons.MutatorIcon.reconnect(connections[i], this, 'ATTR_' + i);
         }
     },
     /**
@@ -206,14 +205,13 @@ Blockly.Blocks['object_new'] = {
                 input.fieldRow[0].setValue(this.attributes_[i]);
             }
 
-            setTimeout((_input) => {
-                if (!_input.connection.isConnected()) {
+            setTimeout(__input => {
+                if (!__input.connection.isConnected()) {
                     const _shadow = workspace.newBlock('text');
                     _shadow.setShadow(true);
                     _shadow.initSvg();
                     _shadow.render();
-                    _shadow.outputConnection.connect(_input.connection);
-                    //console.log('New ' + this.attributes_[i]);
+                    _shadow.outputConnection.connect(__input.connection);
                 }
             }, 100, input);
         }
@@ -221,10 +219,10 @@ Blockly.Blocks['object_new'] = {
         for (let i = this.itemCount_; this.getInput('ATTR_' + i); i++) {
             this.removeInput('ATTR_' + i);
         }
-    }
+    },
 };
 
-Blockly.JavaScript['object_new'] = function(block) {
+Blockly.JavaScript.forBlock['object_new'] = function(block) {
     const attributes = [];
     for (let n = 0; n < block.itemCount_; n++) {
         const val = Blockly.JavaScript.valueToCode(block, 'ATTR_' + n, Blockly.JavaScript.ORDER_COMMA);
@@ -238,17 +236,14 @@ Blockly.JavaScript['object_new'] = function(block) {
 
 // --- set attribute --------------------------------------------------
 Blockly.Object.blocks['object_set_attr'] =
-    '<block type="object_set_attr">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '     <value name="OBJECT">'
-    + '     </value>'
-    + '     <value name="VALUE">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">value</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '</block>';
+    '<block type="object_set_attr">' +
+    '  <field name="ATTR">attribute1</field>' +
+    '  <value name="VALUE">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">value</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['object_set_attr'] = {
     init: function() {
@@ -270,10 +265,10 @@ Blockly.Blocks['object_set_attr'] = {
         this.setColour(Blockly.Object.HUE);
         this.setTooltip(Blockly.Translate('object_set_attr_tooltip'));
         //this.setHelpUrl(getHelp('object_set_attr_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['object_set_attr'] = function(block) {
+Blockly.JavaScript.forBlock['object_set_attr'] = function(block) {
     let obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
@@ -287,12 +282,9 @@ Blockly.JavaScript['object_set_attr'] = function(block) {
 
 // --- delete attribute --------------------------------------------------
 Blockly.Object.blocks['object_del_attr'] =
-    '<block type="object_del_attr">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '     <value name="OBJECT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="object_del_attr">' +
+    '  <field name="ATTR">attribute1</field>' +
+    '</block>';
 
 Blockly.Blocks['object_del_attr'] = {
     init: function() {
@@ -310,10 +302,10 @@ Blockly.Blocks['object_del_attr'] = {
         this.setColour(Blockly.Object.HUE);
         this.setTooltip(Blockly.Translate('object_del_attr_tooltip'));
         //this.setHelpUrl(getHelp('object_del_attr_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['object_del_attr'] = function(block) {
+Blockly.JavaScript.forBlock['object_del_attr'] = function(block) {
     let obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
 
@@ -326,15 +318,14 @@ Blockly.JavaScript['object_del_attr'] = function(block) {
 
 // --- has attribute --------------------------------------------------
 Blockly.Object.blocks['object_has_attr'] =
-    '<block type="object_has_attr">'
-    + '     <value name="OBJECT">'
-    + '         <shadow type="get_object">'
-    + '             <field name="OID">Object ID</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '</block>';
+    '<block type="object_has_attr">' +
+    '  <field name="ATTR">attribute1</field>' +
+    '  <value name="OBJECT">' +
+    '    <shadow type="get_object">' +
+    '      <field name="OID">Object ID</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['object_has_attr'] = {
     init: function() {
@@ -354,7 +345,7 @@ Blockly.Blocks['object_has_attr'] = {
     }
 };
 
-Blockly.JavaScript['object_has_attr'] = function(block) {
+Blockly.JavaScript.forBlock['object_has_attr'] = function(block) {
     const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
 
@@ -363,13 +354,13 @@ Blockly.JavaScript['object_has_attr'] = function(block) {
 
 // --- object keys --------------------------------------------------
 Blockly.Object.blocks['object_keys'] =
-    '<block type="object_keys">'
-    + '     <value name="OBJECT">'
-    + '         <shadow type="get_object">'
-    + '             <field name="OID">Object ID</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '</block>';
+    '<block type="object_keys">' +
+    '  <value name="OBJECT">' +
+    '    <shadow type="get_object">' +
+    '      <field name="OID">Object ID</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['object_keys'] = {
     init: function() {
@@ -382,10 +373,10 @@ Blockly.Blocks['object_keys'] = {
         this.setColour(Blockly.Object.HUE);
         this.setTooltip(Blockly.Translate('object_keys_tooltip'));
         //this.setHelpUrl(getHelp('object_keys_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['object_keys'] = function(block) {
+Blockly.JavaScript.forBlock['object_keys'] = function(block) {
     let obj = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
 
     if (!obj) {

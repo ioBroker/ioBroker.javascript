@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 8.3.1 (2024-05-13)
+
+* (paul53) Allow negative values in formatTimeDiff
+* (klein0r) Updated tests and fixed Blockly translations
+
 ## 8.3.0 (2024-05-09)
 
 * (klein0r) Added createTempFile to sandbox

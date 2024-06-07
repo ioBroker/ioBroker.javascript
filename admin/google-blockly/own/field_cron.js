@@ -95,7 +95,7 @@ class FieldCRON extends Blockly.Field {
      * @private
      */
     resizeEditor_() {
-        const div = Blockly.WidgetDiv.DIV;
+        const div = Blockly.WidgetDiv.getDiv();
         const bBox = this.fieldGroup_.getBBox();
         div.style.width = bBox.width * this.workspace_.scale + 'px';
         div.style.height = bBox.height * this.workspace_.scale + 'px';
@@ -109,7 +109,7 @@ class FieldCRON extends Blockly.Field {
         }
         // Shift by a few pixels to line up exactly.
         xy.y += 1;
-        if (goog.userAgent.GECKO && Blockly.WidgetDiv.DIV.style.top) {
+        if (goog.userAgent.GECKO && Blockly.WidgetDiv.getDiv().style.top) {
             // Firefox mis-reports the location of the border by a pixel
             // once the WidgetDiv is moved into position.
             xy.x -= 1;
@@ -146,7 +146,7 @@ class FieldCRON extends Blockly.Field {
             Blockly.FieldCRON.htmlInput_ = null;
 
             // Delete style properties.
-            const style = Blockly.WidgetDiv.DIV.style;
+            const style = Blockly.WidgetDiv.getDiv().style;
             style.width = 'auto';
             style.height = 'auto';
             style.fontSize = '';

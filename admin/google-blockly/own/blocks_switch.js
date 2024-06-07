@@ -13,7 +13,7 @@ Blockly.Blocks['logic_switch_case'] = {
             .appendField(Blockly.Translate('logic_switch_case_of'));
         this.appendStatementInput('CASE0')
             .appendField(Blockly.Translate('logic_switch_do'));
-        this.setMutator(new Blockly.Mutator(['case_incaseof', 'case_default']));
+        this.setMutator(new Blockly.icons.MutatorIcon(['case_incaseof', 'case_default'], this));
         this.setTooltip(Blockly.Translate('logic_switch_tooltip'));
         this.caseCount_ = 0;
         this.defaultCount_ = 0;
@@ -162,7 +162,7 @@ Blockly.Blocks['control_case'] = {
         this.appendStatementInput('STACK');
         this.setTooltip(Blockly.Translate('logic_switch_control_case_tooltip'));
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['case_incaseof'] = {
@@ -174,7 +174,7 @@ Blockly.Blocks['case_incaseof'] = {
         this.setNextStatement(true);
         this.setTooltip(Blockly.Translate('logic_switch_case_incaseof_tooltip'));
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['case_default'] = {
@@ -186,10 +186,10 @@ Blockly.Blocks['case_default'] = {
         this.setNextStatement(false);
         this.setTooltip(Blockly.Translate('logic_switch_default_tooltip'));
         this.contextMenu = false;
-    }
+    },
 };
 
-Blockly.JavaScript['logic_switch_case'] = function (block) {
+Blockly.JavaScript.forBlock['logic_switch_case'] = function (block) {
     let code = '';
     let do_n;
     let case_n;
@@ -205,8 +205,7 @@ Blockly.JavaScript['logic_switch_case'] = function (block) {
             code += '\tcase ' + case_0 + ':\n' + do_0 + '\n\t\tbreak;\n';
 
             for (let n = 1; n <= block.caseCount_; n++) {
-                case_n = Blockly.JavaScript.valueToCode(block, 'CASECONDITION' + n,
-                    Blockly.JavaScript.ORDER_NONE) || null;
+                case_n = Blockly.JavaScript.valueToCode(block, 'CASECONDITION' + n, Blockly.JavaScript.ORDER_NONE) || null;
 
                 if (case_n) {
                     do_n = Blockly.JavaScript.statementToCode(block, 'CASE' + n);

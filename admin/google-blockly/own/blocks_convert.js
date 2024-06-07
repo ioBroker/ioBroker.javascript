@@ -11,7 +11,7 @@ Blockly.CustomBlocks.push('Convert');
 
 Blockly.Convert = {
     HUE: 280,
-    blocks: {}
+    blocks: {},
 };
 
 Blockly.Blocks.Convert = {};
@@ -19,10 +19,8 @@ Blockly.JavaScript.Convert = {};
 
 // --- to Number --------------------------------------------------
 Blockly.Convert.blocks['convert_tonumber'] =
-    '<block type="convert_tonumber">'
-    + '     <value name="VALUE">'
-    + '     </value>'
-    + '</block>';
+    '<block type="convert_tonumber">' +
+    '</block>';
 
 Blockly.Blocks.convert_tonumber = {
     init: function () {
@@ -33,7 +31,7 @@ Blockly.Blocks.convert_tonumber = {
 
         this.setOutput(true, 'Number');
         this.setTooltip(Blockly.Translate('convert_tonumber_tooltip'));
-    }
+    },
 };
 
 Blockly.JavaScript.convert_tonumber = function (a) {
@@ -42,10 +40,8 @@ Blockly.JavaScript.convert_tonumber = function (a) {
 
 // --- to Boolean --------------------------------------------------
 Blockly.Convert.blocks['convert_toboolean'] =
-    '<block type="convert_toboolean">'
-    + '     <value name="VALUE">'
-    + '     </value>'
-    + '</block>';
+    '<block type="convert_toboolean">' +
+    '</block>';
 
 Blockly.Blocks.convert_toboolean = {
     init: function () {
@@ -54,33 +50,31 @@ Blockly.Blocks.convert_toboolean = {
             .appendField(Blockly.Translate('convert_toboolean'));
 
         this.setOutput(true, 'Boolean');
-        this.setTooltip(Blockly.Translate('convert_toboolean_tooltip'))
-    }
+        this.setTooltip(Blockly.Translate('convert_toboolean_tooltip'));
+    },
 };
 
 Blockly.JavaScript.convert_toboolean = function (a) {
     return ['(() => {\n' +
-        '  const val = ' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + ';\n' +
-        '  if (val === "true" || val === "TRUE") return true;\n' +
-        '  if (val === "false" || val === "FALSE") return false;\n' +
+        `  const val = ${Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC)};\n` +
+        `  if (val === 'true' || val === 'TRUE') return true;\n` +
+        `  if (val === 'false' || val === 'FALSE') return false;\n` +
         '  return !!val;\n' +
         '})()', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- to String --------------------------------------------------
 Blockly.Convert.blocks['convert_tostring'] =
-    '<block type="convert_tostring">'
-    + '     <value name="VALUE">'
-    + '     </value>'
-    + '</block>';
+    '<block type="convert_tostring">' +
+    '</block>';
 
 Blockly.Blocks.convert_tostring = {
     init: function () {
         this.setColour(Blockly.Convert.HUE);
         this.appendValueInput('VALUE').appendField(Blockly.Translate('convert_tostring'));
         this.setOutput(true, 'String');
-        this.setTooltip(Blockly.Translate('convert_tostring_tooltip'))
-    }
+        this.setTooltip(Blockly.Translate('convert_tostring_tooltip'));
+    },
 };
 
 Blockly.JavaScript.convert_tostring = function (a) {
@@ -89,10 +83,8 @@ Blockly.JavaScript.convert_tostring = function (a) {
 
 // --- get type --------------------------------------------------
 Blockly.Convert.blocks['convert_type'] =
-    '<block type="convert_type">'
-    + '     <value name="ITEM">'
-    + '     </value>'
-    + '</block>';
+    '<block type="convert_type">' +
+    '</block>';
 
 Blockly.Blocks.convert_type = {
     init: function () {
@@ -102,8 +94,8 @@ Blockly.Blocks.convert_type = {
             .appendField(Blockly.Translate('convert_type'));
 
         this.setOutput(true, 'String');
-        this.setTooltip(Blockly.Translate('convert_type_tooltip'))
-    }
+        this.setTooltip(Blockly.Translate('convert_type_tooltip'));
+    },
 };
 
 Blockly.JavaScript.convert_type = function (a) {
@@ -112,21 +104,18 @@ Blockly.JavaScript.convert_type = function (a) {
 
 // --- to Date --------------------------------------------------
 Blockly.Convert.blocks['convert_to_date'] =
-    '<block type="convert_to_date">'
-    + '     <value name="VALUE">'
-    + '     </value>'
-    + '</block>';
+    '<block type="convert_to_date">' +
+    '</block>';
 
 Blockly.Blocks.convert_to_date = {
     init: function () {
-
         this.appendValueInput('VALUE')
             .appendField(Blockly.Translate('convert_to_date'));
 
         this.setColour(Blockly.Convert.HUE);
         this.setOutput(true, 'Date');
-        this.setTooltip(Blockly.Translate('convert_to_date_tooltip'))
-    }
+        this.setTooltip(Blockly.Translate('convert_to_date_tooltip'));
+    },
 };
 
 Blockly.JavaScript.convert_to_date = function (a) {
@@ -135,17 +124,10 @@ Blockly.JavaScript.convert_to_date = function (a) {
 
 // --- from Date --------------------------------------------------
 Blockly.Convert.blocks['convert_from_date'] =
-    '<block type="convert_from_date">'
-    + '     <value name="VALUE">'
-    + '     </value>'
-    + '     <value name="OPTION">'
-    + '     </value>'
-    + '     <mutation format="false" language="false"></mutation>'
-    + '     <value name="FORMAT">'
-    + '     </value>'
-    + '     <value name="LANGUAGE">'
-    + '     </value>'
-    + '</block>';
+    '<block type="convert_from_date">' +
+    '  <mutation format="false" language="false"></mutation>' +
+    '  <field name="OPTION">object</field>' +
+    '</block>';
 
 Blockly.Blocks.convert_from_date = {
     init: function () {
@@ -190,14 +172,14 @@ Blockly.Blocks.convert_from_date = {
                 [Blockly.Translate('time_get_mm/dd')         , Blockly.Words['time_get_mm/dd']       .format],
                 [Blockly.Translate('time_get_hh_mm')         , Blockly.Words['time_get_hh_mm']       .format],
                 [Blockly.Translate('time_get_hh_mm_ss')      , Blockly.Words['time_get_hh_mm_ss']    .format],
-                [Blockly.Translate('time_get_hh_mm_ss.sss')  , Blockly.Words['time_get_hh_mm_ss.sss'].format]
+                [Blockly.Translate('time_get_hh_mm_ss.sss')  , Blockly.Words['time_get_hh_mm_ss.sss'].format],
             ], function (option) {
                 this.sourceBlock_.updateShape_(option === 'custom', option === 'wdts' || option === 'wdt' || option === 'Mt' || option === 'Mts');
             }), 'OPTION');
 
         this.setInputsInline(true);
         this.setOutput(true);
-        this.setTooltip(Blockly.Translate('convert_from_date_tooltip'))
+        this.setTooltip(Blockly.Translate('convert_from_date_tooltip'));
     },
     mutationToDom: function() {
         const container = document.createElement('mutation');
@@ -248,7 +230,7 @@ Blockly.Blocks.convert_from_date = {
         } else if (inputExists) {
             this.removeInput('LANGUAGE');
         }
-    }
+    },
 };
 
 Blockly.JavaScript.convert_from_date = function (block) {
@@ -304,15 +286,10 @@ Blockly.JavaScript.convert_from_date = function (block) {
 
 // --- time difference --------------------------------------------------
 Blockly.Convert.blocks['convert_time_difference'] =
-    '<block type="convert_time_difference">'
-    + '     <value name="VALUE">'
-    + '     </value>'
-    + '     <value name="OPTION">'
-    + '     </value>'
-    + '     <mutation format="false"></mutation>'
-    + '     <value name="FORMAT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="convert_time_difference">' +
+    '  <mutation format="false"></mutation> ' +
+    '  <field name="OPTION">hh:mm:ss</field> ' +
+    '</block>';
 
 Blockly.Blocks.convert_time_difference = {
     init: function () {
@@ -363,7 +340,7 @@ Blockly.Blocks.convert_time_difference = {
         } else if (inputExists) {
             this.removeInput('FORMAT');
         }
-    }
+    },
 };
 
 Blockly.JavaScript.convert_time_difference = function (block) {
@@ -376,10 +353,8 @@ Blockly.JavaScript.convert_time_difference = function (block) {
 
 // --- json2object --------------------------------------------------
 Blockly.Convert.blocks['convert_json2object'] =
-    '<block type="convert_json2object">'
-    + '     <value name="VALUE">'
-    + '     </value>'
-    + '</block>';
+    '<block type="convert_json2object">' +
+    '</block>';
 
 Blockly.Blocks.convert_json2object = {
     init: function () {
@@ -388,8 +363,8 @@ Blockly.Blocks.convert_json2object = {
 
         this.setColour(Blockly.Convert.HUE);
         this.setOutput(true);
-        this.setTooltip(Blockly.Translate('convert_json2object_tooltip'))
-    }
+        this.setTooltip(Blockly.Translate('convert_json2object_tooltip'));
+    },
 };
 
 Blockly.JavaScript.convert_json2object = function (a) {
@@ -398,12 +373,9 @@ Blockly.JavaScript.convert_json2object = function (a) {
 
 // --- object2json --------------------------------------------------
 Blockly.Convert.blocks['convert_object2json'] =
-    '<block type="convert_object2json">'
-    + '     <value name="VALUE">'
-    + '     </value>'
-    + '     <value name="PRETTIFY">'
-    + '     </value>'
-    + '</block>';
+    '<block type="convert_object2json">' +
+    '  <field name="PRETTIFY">FALSE</field>' +
+    '</block>';
 
 Blockly.Blocks.convert_object2json = {
     init: function () {
@@ -416,8 +388,8 @@ Blockly.Blocks.convert_object2json = {
 
         this.setColour(Blockly.Convert.HUE);
         this.setOutput(true, 'String');
-        this.setTooltip(Blockly.Translate('convert_object2json_tooltip'))
-    }
+        this.setTooltip(Blockly.Translate('convert_object2json_tooltip'));
+    },
 };
 
 Blockly.JavaScript.convert_object2json = function (block) {
@@ -430,19 +402,16 @@ Blockly.JavaScript.convert_object2json = function (block) {
 
 // --- to single value -------------------------------------------
 Blockly.Convert.blocks['convert_jsonata'] =
-    '<block type="convert_jsonata">'
-    + '     <value name="EXPRESSION">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">*</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="TARGET">'
-    + '     </value>'
-    + '</block>';
+    '<block type="convert_jsonata">' +
+    '  <value name="EXPRESSION">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">*</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks.convert_jsonata = {
     init: function () {
-
         this.appendValueInput('EXPRESSION')
             .appendField(Blockly.Translate('convert_jsonata'));
 
@@ -452,10 +421,17 @@ Blockly.Blocks.convert_jsonata = {
         this.setInputsInline(true);
         this.setColour(Blockly.Convert.HUE);
         this.setOutput(true, 'String');
-        this.setTooltip(Blockly.Translate('convert_jsonata_tooltip'))
-    }
+        this.setTooltip(Blockly.Translate('convert_jsonata_tooltip'));
+    },
 };
 
 Blockly.JavaScript.convert_jsonata = function (block) {
-    return ['(await jsonataExpression(' + Blockly.JavaScript.valueToCode(block, 'TARGET', Blockly.JavaScript.ORDER_ATOMIC) + ',' + Blockly.JavaScript.valueToCode(block, 'EXPRESSION', Blockly.JavaScript.ORDER_ATOMIC) + '))', Blockly.JavaScript.ORDER_ATOMIC];
+    let target = Blockly.JavaScript.valueToCode(block, 'TARGET', Blockly.JavaScript.ORDER_ATOMIC);
+    const expression = Blockly.JavaScript.valueToCode(block, 'EXPRESSION', Blockly.JavaScript.ORDER_ATOMIC);
+
+    if (!target) {
+        target = '{}';
+    }
+
+    return [`(await jsonataExpression(${target}, ${expression}))`, Blockly.JavaScript.ORDER_ATOMIC];
 };

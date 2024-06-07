@@ -21,7 +21,7 @@ Blockly.Blocks['logic_multi_and_container'] = {
         this.setTooltip(Blockly.Translate('logic_multi_and_tooltip'));
 
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['logic_multi_and_mutator'] = {
@@ -41,13 +41,13 @@ Blockly.Blocks['logic_multi_and_mutator'] = {
         this.setTooltip(Blockly.Translate('logic_multi_and_tooltip'));
 
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['logic_multi_and'] = {
     init: function() {
         this.itemCount_ = 2;
-        this.setMutator(new Blockly.Mutator(['logic_multi_and_mutator']));
+        this.setMutator(new Blockly.icons.MutatorIcon(['logic_multi_and_mutator'], this));
 
         this.setInputsInline(false);
         this.setOutput(true, 'Boolean');
@@ -127,7 +127,7 @@ Blockly.Blocks['logic_multi_and'] = {
 
         // Reconnect any child blocks.
         for (let i = 0; i < this.itemCount_; i++) {
-            Blockly.Mutator.reconnect(connections[i], this, 'AND' + i);
+            Blockly.icons.MutatorIcon.reconnect(connections[i], this, 'AND' + i);
         }
     },
     /**
@@ -166,10 +166,10 @@ Blockly.Blocks['logic_multi_and'] = {
         for (let i = this.itemCount_; this.getInput('AND' + i); i++) {
             this.removeInput('AND' + i);
         }
-    }
+    },
 };
 
-Blockly.JavaScript['logic_multi_and'] = function(block) {
+Blockly.JavaScript.forBlock['logic_multi_and'] = function(block) {
     const ands = [];
     for (let n = 0; n < block.itemCount_; n++) {
         const condition = Blockly.JavaScript.valueToCode(block, 'AND' + n, Blockly.JavaScript.ORDER_ATOMIC);
@@ -198,7 +198,7 @@ Blockly.Blocks['logic_multi_or_container'] = {
         this.setTooltip(Blockly.Translate('logic_multi_or_tooltip'));
 
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['logic_multi_or_mutator'] = {
@@ -218,13 +218,13 @@ Blockly.Blocks['logic_multi_or_mutator'] = {
         this.setTooltip(Blockly.Translate('logic_multi_or_tooltip'));
 
         this.contextMenu = false;
-    }
+    },
 };
 
 Blockly.Blocks['logic_multi_or'] = {
     init: function() {
         this.itemCount_ = 2;
-        this.setMutator(new Blockly.Mutator(['logic_multi_or_mutator']));
+        this.setMutator(new Blockly.icons.MutatorIcon(['logic_multi_or_mutator'], this));
 
         this.setInputsInline(false);
         this.setOutput(true, 'Boolean');
@@ -304,7 +304,7 @@ Blockly.Blocks['logic_multi_or'] = {
 
         // Reconnect any child blocks.
         for (let i = 0; i < this.itemCount_; i++) {
-            Blockly.Mutator.reconnect(connections[i], this, 'OR' + i);
+            Blockly.icons.MutatorIcon.reconnect(connections[i], this, 'OR' + i);
         }
     },
     /**
@@ -343,10 +343,10 @@ Blockly.Blocks['logic_multi_or'] = {
         for (let i = this.itemCount_; this.getInput('OR' + i); i++) {
             this.removeInput('OR' + i);
         }
-    }
+    },
 };
 
-Blockly.JavaScript['logic_multi_or'] = function(block) {
+Blockly.JavaScript.forBlock['logic_multi_or'] = function(block) {
     const ors = [];
     for (let n = 0; n < block.itemCount_; n++) {
         const condition = Blockly.JavaScript.valueToCode(block, 'OR' + n, Blockly.JavaScript.ORDER_ATOMIC);
@@ -376,10 +376,10 @@ Blockly.Blocks['logic_between'] = {
         this.setColour("%{BKY_LOGIC_HUE}");
         this.setTooltip(Blockly.Translate('logic_between_tooltip'));
         // this.setHelpUrl(getHelp('logic_between_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['logic_between'] = function(block) {
+Blockly.JavaScript.forBlock['logic_between'] = function(block) {
     const min = Blockly.JavaScript.valueToCode(block, 'MIN', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
     const max = Blockly.JavaScript.valueToCode(block, 'MAX', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
@@ -407,12 +407,12 @@ Blockly.Blocks['logic_ifempty'] = {
         this.setColour("%{BKY_LOGIC_HUE}");
         this.setTooltip(Blockly.Translate('logic_ifempty_tooltip'));
         // this.setHelpUrl(getHelp('logic_ifempty_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['logic_ifempty'] = function(block) {
+Blockly.JavaScript.forBlock['logic_ifempty'] = function(block) {
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
     const deflt = Blockly.JavaScript.valueToCode(block, 'DEFLT', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
 
-    return [value + ' || ' + deflt, Blockly.JavaScript.ORDER_LOGICAL_OR];
+    return [`${value} || ${deflt}`, Blockly.JavaScript.ORDER_LOGICAL_OR];
 };

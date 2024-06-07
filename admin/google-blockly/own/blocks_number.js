@@ -15,10 +15,10 @@ Blockly.Blocks['math_rndfixed'] = {
         this.setColour(Blockly.Msg['MATH_HUE']);
         this.setOutput(true, 'Number');
         this.setTooltip(Blockly.Translate('math_rndfixed_tooltip'));
-    }
+    },
 };
 
-Blockly.JavaScript['math_rndfixed'] = function(block) {
+Blockly.JavaScript.forBlock['math_rndfixed'] = function(block) {
     const x = Blockly.JavaScript.valueToCode(block, 'x', Blockly.JavaScript.ORDER_ATOMIC);
     const exp = Math.pow(10, block.getFieldValue('n'));
 

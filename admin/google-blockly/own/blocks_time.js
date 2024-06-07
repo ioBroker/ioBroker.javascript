@@ -18,28 +18,16 @@ Blockly.Time = {
 // if time greater, less, between
 // --- time compare --------------------------------------------------
 Blockly.Time.blocks['time_compare_ex'] =
-    '<block type="time_compare_ex">'
-    + '     <value name="OPTION">'
-    + '     </value>'
-    + '     <value name="USE_ACTUAL_TIME">'
-    + '     </value>'
-    + '     <value name="START_TIME">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">12:00</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <mutation end_time="false" actual_time="true"></mutation>'
-    + '     <value name="END_TIME">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">18:00</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="CUSTOM_TIME">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">14:00</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '</block>';
+    '<block type="time_compare_ex">' +
+    '  <mutation end_time="false" actual_time="true"></mutation>' +
+    '  <field name="USE_ACTUAL_TIME">TRUE</field>' +
+    '  <field name="OPTION">&lt;</field>' +
+    '  <value name="START_TIME">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">12:00</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['time_compare_ex'] = {
     init: function() {
@@ -161,10 +149,10 @@ Blockly.Blocks['time_compare_ex'] = {
             this.removeInput('CUSTOM_TIME');
             this.removeInput('CUSTOM_TEXT');
         }
-    }
+    },
 };
 
-Blockly.JavaScript['time_compare_ex'] = function(block) {
+Blockly.JavaScript.forBlock['time_compare_ex'] = function(block) {
     const option     = block.getFieldValue('OPTION');
     const start_time = Blockly.JavaScript.valueToCode(block, 'START_TIME', Blockly.JavaScript.ORDER_ATOMIC);
     let end_time   = Blockly.JavaScript.valueToCode(block, 'END_TIME', Blockly.JavaScript.ORDER_ATOMIC);
@@ -178,15 +166,11 @@ Blockly.JavaScript['time_compare_ex'] = function(block) {
 // if time greater, less, between
 // --- time compare --------------------------------------------------
 Blockly.Time.blocks['time_compare'] =
-    '<block type="time_compare">'
-    + '     <value name="OPTION">'
-    + '     </value>'
-    + '     <value name="START_TIME">'
-    + '     </value>'
-    + '     <mutation end_time="false"></mutation>'
-    + '     <value name="END_TIME">'
-    + '     </value>'
-    + '</block>';
+    '<block type="time_compare">' +
+    '  <mutation end_time="false"></mutation>' +
+    '  <field name="OPTION">&lt;</field>' +
+    '  <field name="START_TIME">12:00</field>' +
+    '</block>';
 
 Blockly.Blocks['time_compare'] = {
     init: function() {
@@ -201,7 +185,7 @@ Blockly.Blocks['time_compare'] = {
                 [Blockly.Translate('time_compare_ge'), '>='],
                 [Blockly.Translate('time_compare_eq'), '=='],
                 [Blockly.Translate('time_compare_bw'), 'between'],
-                [Blockly.Translate('time_compare_nb'), 'not between']
+                [Blockly.Translate('time_compare_nb'), 'not between'],
             ], function (option) {
                 this.sourceBlock_.updateShape_((option === 'between' || option === 'not between'));
             }), 'OPTION');
@@ -249,10 +233,10 @@ Blockly.Blocks['time_compare'] = {
             this.removeInput('END_TIME');
             this.removeInput('AND');
         }
-    }
+    },
 };
 
-Blockly.JavaScript['time_compare'] = function(block) {
+Blockly.JavaScript.forBlock['time_compare'] = function(block) {
     const option     = block.getFieldValue('OPTION');
     const start_time = block.getFieldValue('START_TIME');
     let end_time   = block.getFieldValue('END_TIME');
@@ -281,15 +265,10 @@ Blockly.Words['time_get_hh_mm_ss']    .format = 'hh:mm:ss';
 Blockly.Words['time_get_hh_mm_ss.sss'].format = 'hh:mm:ss.sss';
 
 Blockly.Time.blocks['time_get'] =
-    '<block type="time_get">'
-    + '     <value name="OPTION">'
-    + '     </value>'
-    + '     <mutation format="false" language="false"></mutation>'
-    + '     <value name="FORMAT">'
-    + '     </value>'
-    + '     <value name="LANGUAGE">'
-    + '     </value>'
-    + '</block>';
+    '<block type="time_get">' +
+    '  <mutation format="false" language="false"></mutation>' +
+    '  <field name="OPTION">object</field>' +
+    '</block>';
 
 Blockly.Blocks['time_get'] = {
     init: function() {
@@ -332,7 +311,7 @@ Blockly.Blocks['time_get'] = {
                 [Blockly.Translate('time_get_mm/dd')         , Blockly.Words['time_get_mm/dd']       .format],
                 [Blockly.Translate('time_get_hh_mm')         , Blockly.Words['time_get_hh_mm']       .format],
                 [Blockly.Translate('time_get_hh_mm_ss')      , Blockly.Words['time_get_hh_mm_ss']    .format],
-                [Blockly.Translate('time_get_hh_mm_ss.sss')  , Blockly.Words['time_get_hh_mm_ss.sss'].format]
+                [Blockly.Translate('time_get_hh_mm_ss.sss')  , Blockly.Words['time_get_hh_mm_ss.sss'].format],
             ], function (option) {
                 this.sourceBlock_.updateShape_(option === 'custom', option === 'wdt' || option === 'wdts' || option === 'Mt' || option === 'Mts');
             }), 'OPTION');
@@ -391,10 +370,10 @@ Blockly.Blocks['time_get'] = {
         } else if (inputExists) {
             this.removeInput('LANGUAGE');
         }
-    }
+    },
 };
 
-Blockly.JavaScript['time_get'] = function(block) {
+Blockly.JavaScript.forBlock['time_get'] = function(block) {
     const option = block.getFieldValue('OPTION');
     const format = block.getFieldValue('FORMAT');
     const lang   = block.getFieldValue('LANGUAGE');
@@ -445,12 +424,9 @@ Blockly.JavaScript['time_get'] = function(block) {
 
 // --- get time special --------------------------------------------------
 Blockly.Time.blocks['time_get_special'] =
-    '<block type="time_get_special">'
-    + '     <value name="TYPE">'
-    + '     </value>'
-    + '     <value name="OFFSET">'
-    + '     </value>'
-    + '</block>';
+    '<block type="time_get_special">' +
+    '  <field name="TYPE">dayStart</field>' +
+    '</block>';
 
 Blockly.Blocks['time_get_special'] = {
     init: function() {
@@ -477,7 +453,7 @@ Blockly.Blocks['time_get_special'] = {
     },
 };
 
-Blockly.JavaScript['time_get_special'] = function(block) {
+Blockly.JavaScript.forBlock['time_get_special'] = function(block) {
     const type = block.getFieldValue('TYPE');
 
     let code;
@@ -500,12 +476,10 @@ Blockly.JavaScript['time_get_special'] = function(block) {
 
 // --- get astro time --------------------------------------------------
 Blockly.Time.blocks['time_astro'] =
-    '<block type="time_astro">'
-    + '     <value name="TYPE">'
-    + '     </value>'
-    + '     <value name="OFFSET">'
-    + '     </value>'
-    + '</block>';
+    '<block type="time_astro">' +
+    '  <field name="TYPE">sunrise</field>' +
+    '  <field name="OFFSET">0</field>' +
+    '</block>';
 
 Blockly.Blocks['time_astro'] = {
     init: function() {
@@ -544,7 +518,7 @@ Blockly.Blocks['time_astro'] = {
     }
 };
 
-Blockly.JavaScript['time_astro'] = function(block) {
+Blockly.JavaScript.forBlock['time_astro'] = function(block) {
     const type    = block.getFieldValue('TYPE');
     const offset  = parseFloat(block.getFieldValue('OFFSET'));
 
@@ -553,22 +527,21 @@ Blockly.JavaScript['time_astro'] = function(block) {
 
 // --- time calculation --------------------------------------------------
 Blockly.Time.blocks['time_calculation'] =
-    '<block type="time_calculation">'
-    + '     <value name="DATE_TIME">'
-    + '         <shadow type="time_get">'
-    + '             <field name="OPTION">object</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="OPERATION">'
-    + '     </value>'
-    + '     <value name="VALUE">'
-    + '         <shadow type="math_number">'
-    + '             <field name="NUM">1</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="UNIT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="time_calculation">' +
+    '  <field name="OPERATION">+</field>' +
+    '  <field name="UNIT">ms</field>' +
+    '  <value name="DATE_TIME">' +
+    '    <shadow type="time_get">' +
+    '      <mutation format="false" language="false"></mutation>' +
+    '      <field name="OPTION">object</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="VALUE">' +
+    '    <shadow type="math_number">' +
+    '      <field name="NUM">1</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['time_calculation'] = {
     init: function() {
@@ -607,7 +580,7 @@ Blockly.Blocks['time_calculation'] = {
     },
 };
 
-Blockly.JavaScript['time_calculation'] = function(block) {
+Blockly.JavaScript.forBlock['time_calculation'] = function(block) {
     const dateTime = Blockly.JavaScript.valueToCode(block, 'DATE_TIME', Blockly.JavaScript.ORDER_ATOMIC);
     const operation = block.getFieldValue('OPERATION');
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);

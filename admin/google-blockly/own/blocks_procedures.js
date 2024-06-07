@@ -171,7 +171,7 @@ Blockly.Procedures.flyoutCategoryNew = function(workspace) {
 
 // ---------------------- patch for async functions ------------------------------
 // taken from javascript/procedures.js https://github.com/google/blockly/blob/blockly-v9.3.3/generators/javascript/procedures.js
-Blockly.JavaScript['procedures_defreturn'] = function(block) {
+Blockly.JavaScript.forBlock['procedures_defreturn'] = function(block) {
     // Define a procedure with a return value.
     const funcName = Blockly.JavaScript.nameDB_.getName(
         block.getFieldValue('NAME'), Blockly.PROCEDURE_CATEGORY_NAME);
@@ -215,9 +215,9 @@ Blockly.JavaScript['procedures_defreturn'] = function(block) {
     return null;
 };
 
-Blockly.JavaScript['procedures_defnoreturn'] = Blockly.JavaScript['procedures_defreturn'];
+Blockly.JavaScript.forBlock['procedures_defnoreturn'] = Blockly.JavaScript.forBlock['procedures_defreturn'];
 
-Blockly.JavaScript['procedures_callreturn'] = function(block) {
+Blockly.JavaScript.forBlock['procedures_callreturn'] = function(block) {
     // Call a procedure with a return value.
     const funcName = Blockly.JavaScript.nameDB_.getName(
         block.getFieldValue('NAME'), Blockly.PROCEDURE_CATEGORY_NAME);
@@ -258,7 +258,7 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
         /*this.appendValueInput('RETURN')
             .setAlign(Blockly.ALIGN_RIGHT)
             .appendField(Blockly.Msg['PROCEDURES_DEFRETURN_RETURN']);*/
-        this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
+        this.setMutator(new Blockly.icons.MutatorIcon(['procedures_mutatorarg'], this));
         if ((this.workspace.options.comments ||
             (this.workspace.options.parentWorkspace &&
                 this.workspace.options.parentWorkspace.options.comments)) &&
@@ -355,7 +355,7 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
                 if (hasStatements) {
                     this.setStatements_(true);
                     // Restore the stack, if one was saved.
-                    Blockly.Mutator.reconnect(this.statementConnection_, this, 'STACK');
+                    Blockly.icons.MutatorIcon.reconnect(this.statementConnection_, this, 'STACK');
                     this.statementConnection_ = null;
                 } else {
                     // Save the stack, then disconnect it.
@@ -392,7 +392,7 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
     callType_: 'procedures_callcustomreturn'
 };
 
-Blockly.JavaScript['procedures_defcustomreturn'] = function(block) {
+Blockly.JavaScript.forBlock['procedures_defcustomreturn'] = function(block) {
     // Define a procedure with a return value.
     const funcName = Blockly.JavaScript.nameDB_.getName(
         block.getFieldValue('NAME'), Blockly.PROCEDURE_CATEGORY_NAME);
@@ -433,7 +433,7 @@ Blockly.Blocks['procedures_callcustomreturn'] = {
     defType_: 'procedures_defcustomreturn'
 };
 
-Blockly.JavaScript['procedures_callcustomreturn'] = Blockly.JavaScript['procedures_callreturn'];
+Blockly.JavaScript.forBlock['procedures_callcustomreturn'] = Blockly.JavaScript.forBlock['procedures_callreturn'];
 
 // ---------------------- custom function with no return ------------------------------
 
@@ -453,7 +453,7 @@ Blockly.Blocks['procedures_defcustomnoreturn'] = {
             .appendField(nameField, 'NAME')
             .appendField('', 'PARAMS');
 
-        this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
+        this.setMutator(new Blockly.icons.MutatorIcon(['procedures_mutatorarg'], this));
 
         if ((this.workspace.options.comments ||
             (this.workspace.options.parentWorkspace && this.workspace.options.parentWorkspace.options.comments)) &&
@@ -496,7 +496,7 @@ Blockly.Blocks['procedures_defcustomnoreturn'] = {
     callType_: 'procedures_callcustomnoreturn'
 };
 
-Blockly.JavaScript['procedures_defcustomnoreturn'] = Blockly.JavaScript['procedures_defcustomreturn'];
+Blockly.JavaScript.forBlock['procedures_defcustomnoreturn'] = Blockly.JavaScript.forBlock['procedures_defcustomreturn'];
 
 Blockly.Blocks['procedures_callcustomnoreturn'] = {
     init: Blockly.Blocks['procedures_callnoreturn'].init,
@@ -513,10 +513,10 @@ Blockly.Blocks['procedures_callcustomnoreturn'] = {
     defType_: 'procedures_defcustomnoreturn'
 };
 
-Blockly.JavaScript['procedures_callcustomnoreturn'] = function(block) {
+Blockly.JavaScript.forBlock['procedures_callcustomnoreturn'] = function(block) {
     // Call a procedure with no return value.
     // Generated code is for a function call as a statement is the same as a
     // function call as a value, with the addition of line ending.
-    const tuple = Blockly.JavaScript['procedures_callcustomreturn'](block);
+    const tuple = Blockly.JavaScript.forBlock['procedures_callcustomreturn'](block);
     return tuple[0] + ';\n';
 };

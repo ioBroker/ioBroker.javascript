@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.5.0 (2024-06-07)
 
 * (klein0r) Ack flag on state object has priorty (in setState/setStateDelayed)
 * (klein0r) Fixed all blockly declarations (to avoid warnings in logs)
@@ -57,11 +57,6 @@ Executes Javascript, Typescript Scripts.
 * (klein0r) Fixed jsonConfig for libraries and library typings
 * (klein0r) Implemented new js-controller 6.x functions for package handling
 * (klein0r) Updated to ChatGPT-4o
-
-### 8.3.1 (2024-05-13)
-
-* (paul53) Allow negative values in formatTimeDiff
-* (klein0r) Updated tests and fixed Blockly translations
 
 ## License
 The MIT License (MIT)

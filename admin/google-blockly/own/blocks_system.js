@@ -19,10 +19,9 @@ Blockly.System = {
 
 // --- global_var -----------------------------------------------------------
 Blockly.System.blocks['global_var'] =
-    '<block type="global_var">'
-    + '     <value name="VAR">'
-    + '     </value>'
-    + '</block>';
+    '<block type="global_var">' +
+    '  <field name="VAR">scriptName</field>' +
+    '</block>';
 
 Blockly.Blocks['global_var'] = {
     /**
@@ -44,7 +43,7 @@ Blockly.Blocks['global_var'] = {
         this.setHelpUrl(getHelp('global_var'));
     }
 };
-Blockly.JavaScript['global_var'] = function(block) {
+Blockly.JavaScript.forBlock['global_var'] = function(block) {
     const variable = block.getFieldValue('VAR');
 
     return [variable, Blockly.JavaScript.ORDER_ATOMIC];
@@ -52,15 +51,14 @@ Blockly.JavaScript['global_var'] = function(block) {
 
 // --- Debug output --------------------------------------------------
 Blockly.System.blocks['debug'] =
-    '<block type="debug">'
-    + '     <value name="TEXT">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">test</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="Severity">'
-    + '     </value>'
-    + '</block>';
+    '<block type="debug">' +
+    '  <field name="Severity">info</field>' +
+    '  <value name="TEXT">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">test</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['debug'] = {
     init: function() {
@@ -70,10 +68,10 @@ Blockly.Blocks['debug'] = {
 
         this.appendDummyInput('Severity')
             .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('loglevel_debug'), 'debug'],
                 [Blockly.Translate('loglevel_info'),  'info'],
                 [Blockly.Translate('loglevel_warn'),  'warn'],
                 [Blockly.Translate('loglevel_error'), 'error'],
-                [Blockly.Translate('loglevel_debug'), 'debug'],
             ]), 'Severity');
 
         this.setPreviousStatement(true, null);
@@ -82,10 +80,10 @@ Blockly.Blocks['debug'] = {
         this.setColour(Blockly.System.HUE);
         this.setTooltip(Blockly.Translate('debug_tooltip'));
         this.setHelpUrl(getHelp('debug_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['debug'] = function(block) {
+Blockly.JavaScript.forBlock['debug'] = function(block) {
     const value_text = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_ATOMIC);
     const logLevel = block.getFieldValue('Severity');
 
@@ -94,10 +92,8 @@ Blockly.JavaScript['debug'] = function(block) {
 
 // --- comment --------------------------------------------------
 Blockly.System.blocks['comment'] =
-    '<block type="comment">'
-    + '     <value name="COMMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="comment">' +
+    '</block>';
 
 Blockly.Blocks['comment'] = {
     init: function() {
@@ -109,10 +105,10 @@ Blockly.Blocks['comment'] = {
         this.setInputsInline(false);
         this.setColour('#FFFF00');
         this.setTooltip(Blockly.Translate('comment_tooltip'));
-    }
+    },
 };
 
-Blockly.JavaScript['comment'] = function(block) {
+Blockly.JavaScript.forBlock['comment'] = function(block) {
     const comment = block.getFieldValue('COMMENT');
 
     return `// ${comment}\n`;
@@ -120,21 +116,10 @@ Blockly.JavaScript['comment'] = function(block) {
 
 // --- control -----------------------------------------------------------
 Blockly.System.blocks['control'] =
-    '<block type="control">'
-    + '     <value name="OID">'
-    + '     </value>'
-    + '     <value name="VALUE">'
-    + '     </value>'
-    + '     <value name="WITH_DELAY">'
-    + '     </value>'
-    + '     <mutation delay_input="false"></mutation>'
-    + '     <value name="DELAY_MS">'
-    + '     </value>'
-    + '     <value name="UNIT">'
-    + '     </value>'
-    + '     <value name="CLEAR_RUNNING">'
-    + '     </value>'
-    + '</block>';
+    '<block type="control">' +
+    '  <mutation delay_input="false"></mutation>' +
+    '  <field name="WITH_DELAY">FALSE</field>' +
+    '</block>';
 
 Blockly.Blocks['control'] = {
     init: function() {
@@ -203,10 +188,10 @@ Blockly.Blocks['control'] = {
         } else if (inputExists) {
             this.removeInput('CLEAR_RUNNING_INPUT');
         }
-    }
+    },
 };
 
-Blockly.JavaScript['control'] = function(block) {
+Blockly.JavaScript.forBlock['control'] = function(block) {
     const valueObjectID = block.getFieldValue('OID');
 
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
@@ -242,19 +227,10 @@ Blockly.JavaScript['control'] = function(block) {
 
 // --- toggle -----------------------------------------------------------
 Blockly.System.blocks['toggle'] =
-    '<block type="toggle">'
-    + '     <value name="OID">'
-    + '     </value>'
-    + '     <value name="WITH_DELAY">'
-    + '     </value>'
-    + '     <mutation delay_input="false"></mutation>'
-    + '     <value name="DELAY_MS">'
-    + '     </value>'
-    + '     <value name="UNIT">'
-    + '     </value>'
-    + '     <value name="CLEAR_RUNNING">'
-    + '     </value>'
-    + '</block>';
+    '<block type="toggle">' +
+    '  <mutation delay_input="false"></mutation>' +
+    '  <field name="WITH_DELAY">FALSE</field>' +
+    '</block>';
 
 Blockly.Blocks['toggle'] = {
     init: function() {
@@ -320,10 +296,10 @@ Blockly.Blocks['toggle'] = {
         } else if (inputExists) {
             this.removeInput('CLEAR_RUNNING_INPUT');
         }
-    }
+    },
 };
 
-Blockly.JavaScript['toggle'] = function(block) {
+Blockly.JavaScript.forBlock['toggle'] = function(block) {
     const valueObjectID = block.getFieldValue('OID');
     const unit  = block.getFieldValue('UNIT');
 
@@ -380,21 +356,10 @@ Blockly.JavaScript['toggle'] = function(block) {
 
 // --- update -----------------------------------------------------------
 Blockly.System.blocks['update'] =
-    '<block type="update">'
-    + '     <value name="OID">'
-    + '     </value>'
-    + '     <value name="VALUE">'
-    + '     </value>'
-    + '     <value name="WITH_DELAY">'
-    + '     </value>'
-    + '     <mutation delay_input="false"></mutation>'
-    + '     <value name="DELAY_MS">'
-    + '     </value>'
-    + '     <value name="UNIT">'
-    + '     </value>'
-    + '     <value name="CLEAR_RUNNING">'
-    + '     </value>'
-    + '</block>';
+    '<block type="update">' +
+    '  <mutation delay_input="false"></mutation>' +
+    '  <field name="WITH_DELAY">FALSE</field>' +
+    '</block>';
 
 Blockly.Blocks['update'] = {
     init: function() {
@@ -464,10 +429,10 @@ Blockly.Blocks['update'] = {
         } else if (inputExists) {
             this.removeInput('CLEAR_RUNNING_INPUT');
         }
-    }
+    },
 };
 
-Blockly.JavaScript['update'] = function(block) {
+Blockly.JavaScript.forBlock['update'] = function(block) {
     const value_objectid = block.getFieldValue('OID');
 
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
@@ -504,20 +469,19 @@ Blockly.JavaScript['update'] = function(block) {
 
 // --- direct binding -----------------------------------------------------------
 Blockly.System.blocks['direct'] =
-    '<block type="direct">'
-    + '     <value name="OID_SRC">'
-    + '         <shadow type="field_oid">'
-    + '             <field name="oid">Object ID 1</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="OID_DST">'
-    + '         <shadow type="field_oid">'
-    + '             <field name="oid">Object ID 2</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="ONLY_CHANGES">'
-    + '     </value>'
-    + '</block>';
+    '<block type="direct">' +
+    '  <field name="ONLY_CHANGES">TRUE</field>' +
+    '  <value name="OID_SRC">' +
+    '    <shadow type="field_oid">' +
+    '      <field name="oid">Object ID 1</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="OID_DST">' +
+    '    <shadow type="field_oid">' +
+    '      <field name="oid">Object ID 2</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['direct'] = {
     init: function() {
@@ -544,7 +508,7 @@ Blockly.Blocks['direct'] = {
     }
 };
 
-Blockly.JavaScript['direct'] = function(block) {
+Blockly.JavaScript.forBlock['direct'] = function(block) {
     const oidSrc = Blockly.JavaScript.valueToCode(block, 'OID_SRC', Blockly.JavaScript.ORDER_ATOMIC);
     const oidDest = Blockly.JavaScript.valueToCode(block, 'OID_DST', Blockly.JavaScript.ORDER_ATOMIC);
 
@@ -558,32 +522,29 @@ Blockly.JavaScript['direct'] = function(block) {
 
 // --- control ex -----------------------------------------------------------
 Blockly.System.blocks['control_ex'] =
-    '<block type="control_ex">'
-    + '     <value name="OID">'
-    + '         <shadow type="field_oid">'
-    + '             <field name="oid">Object ID</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="VALUE">'
-    + '         <shadow type="logic_boolean">'
-    + '             <field name="BOOL">TRUE</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="TYPE">'
-    + '     </value>'
-    + '     <value name="DELAY_MS">'
-    + '         <shadow type="math_number">'
-    + '             <field name="NUM">0</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="EXPIRE">'
-    + '         <shadow type="math_number">'
-    + '             <field name="NUM">0</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="CLEAR_RUNNING">'
-    + '     </value>'
-    + '</block>';
+    '<block type="control_ex">' +
+    '  <field name="TYPE">false</field>' +
+    '  <field name="CLEAR_RUNNING">FALSE</field>' +
+    '  <value name="OID">' +
+    '    <shadow type="field_oid">' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="VALUE">' +
+    '    <shadow type="logic_boolean">' +
+    '      <field name="BOOL">TRUE</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="DELAY_MS">' +
+    '    <shadow type="math_number">' +
+    '      <field name="NUM">0</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="EXPIRE">' +
+    '    <shadow type="math_number">' +
+    '      <field name="NUM">0</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['control_ex'] = {
     init: function() {
@@ -625,7 +586,7 @@ Blockly.Blocks['control_ex'] = {
     },
 };
 
-Blockly.JavaScript['control_ex'] = function(block) {
+Blockly.JavaScript.forBlock['control_ex'] = function(block) {
     const valueObjectID = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     const valueDelay = Blockly.JavaScript.valueToCode(block, 'DELAY_MS', Blockly.JavaScript.ORDER_ATOMIC);
@@ -647,16 +608,9 @@ Blockly.JavaScript['control_ex'] = function(block) {
 
 // --- create state --------------------------------------------------
 Blockly.System.blocks['create'] =
-    '<block type="create">'
-    + '     <value name="NAME">'
-    + '     </value>'
-    + '     <value name="VALUE">'
-    + '     </value>'
-    + '     <value name="COMMON">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="create">' +
+    '  <field name="NAME">0_userdata.0.example</field>' +
+    '</block>';
 
 Blockly.Blocks['create'] = {
     init: function() {
@@ -665,7 +619,7 @@ Blockly.Blocks['create'] = {
 
         this.appendDummyInput('NAME')
             .appendField(Blockly.Translate('create_oid'))
-            .appendField(new Blockly.FieldTextInput(Blockly.Translate('create_jsState')), 'NAME');
+            .appendField(new Blockly.FieldTextInput('0_userdata.0.example'), 'NAME');
 
         this.appendValueInput('VALUE')
             .setCheck(null)
@@ -685,10 +639,10 @@ Blockly.Blocks['create'] = {
         this.setColour(Blockly.System.HUE);
         this.setTooltip(Blockly.Translate('create_tooltip'));
         this.setHelpUrl(getHelp('create_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['create'] = function(block) {
+Blockly.JavaScript.forBlock['create'] = function(block) {
     const name = block.getFieldValue('NAME');
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     const common = Blockly.JavaScript.valueToCode(block, 'COMMON', Blockly.JavaScript.ORDER_ATOMIC);
@@ -712,20 +666,12 @@ Blockly.JavaScript['create'] = function(block) {
 
 // --- create state ex --------------------------------------------------
 Blockly.System.blocks['create_ex'] =
-    '<block type="create_ex">'
-    + '     <value name="NAME">'
-    + '     </value>'
-    + '     <value name="TYPE">'
-    + '     </value>'
-    + '     <value name="VALUE">'
-    + '     </value>'
-    + '     <value name="READABLE">'
-    + '     </value>'
-    + '     <value name="WRITEABLE">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="create_ex">' +
+    '  <field name="NAME">0_userdata.0.example</field>' +
+    '  <field name="TYPE">string</field>' +
+    '  <field name="READABLE">FALSE</field>' +
+    '  <field name="WRITEABLE">FALSE</field>' +
+    '</block>';
 
 Blockly.Blocks['create_ex'] = {
     init: function() {
@@ -734,7 +680,7 @@ Blockly.Blocks['create_ex'] = {
 
         this.appendDummyInput('NAME')
             .appendField(Blockly.Translate('create_oid'))
-            .appendField(new Blockly.FieldTextInput(Blockly.Translate('create_jsState')), 'NAME');
+            .appendField(new Blockly.FieldTextInput('0_userdata.0.example'), 'NAME');
 
         this.appendDummyInput('TYPE')
             .appendField(Blockly.Translate('create_type'))
@@ -745,7 +691,6 @@ Blockly.Blocks['create_ex'] = {
                 [Blockly.Translate('create_type_json'), 'json'],
                 [Blockly.Translate('create_type_object'), 'object'],
                 [Blockly.Translate('create_type_array'), 'array'],
-                //[Blockly.Translate('create_type_file'), 'file'],
             ]), 'TYPE');
 
         this.appendValueInput('VALUE')
@@ -770,10 +715,10 @@ Blockly.Blocks['create_ex'] = {
         this.setColour(Blockly.System.HUE);
         this.setTooltip(Blockly.Translate('create_tooltip'));
         this.setHelpUrl(getHelp('create_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['create_ex'] = function(block) {
+Blockly.JavaScript.forBlock['create_ex'] = function(block) {
     const name = block.getFieldValue('NAME');
     const type = block.getFieldValue('TYPE');
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
@@ -804,12 +749,9 @@ Blockly.JavaScript['create_ex'] = function(block) {
 
 // --- get value --------------------------------------------------
 Blockly.System.blocks['get_value'] =
-    '<block type="get_value">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '     <value name="OID">'
-    + '     </value>'
-    + '</block>';
+    '<block type="get_value">' +
+    '  <field name="ATTR">val</field>' +
+    '</block>';
 
 Blockly.Blocks['get_value'] = {
     // Checkbox.
@@ -860,31 +802,29 @@ Blockly.Blocks['get_value'] = {
         } else {
             this.setWarningText(null, this.id);
         }
-    }
+    },
 };
 
-Blockly.JavaScript['get_value'] = function(block) {
+Blockly.JavaScript.forBlock['get_value'] = function(block) {
     const oid  = block.getFieldValue('OID');
     const attr = block.getFieldValue('ATTR');
 
     if (attr === 'type' || attr.startsWith('common.')) {
         return [`(await getObjectAsync('${oid}')).${attr}`, Blockly.JavaScript.ORDER_ATOMIC];
-    } else {
-        return [`getState('${oid}').${attr}`, Blockly.JavaScript.ORDER_ATOMIC];
     }
+
+    return [`getState('${oid}').${attr}`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- get value var --------------------------------------------------
 Blockly.System.blocks['get_value_var'] =
-    '<block type="get_value_var">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '     <value name="OID">'
-    + '         <shadow type="field_oid">'
-    + '             <field name="oid">Object ID</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '</block>';
+    '<block type="get_value_var">' +
+    '  <field name="ATTR">val</field>' +
+    '  <value name="OID">' +
+    '    <shadow type="field_oid">' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['get_value_var'] = {
     init: function() {
@@ -933,42 +873,37 @@ Blockly.Blocks['get_value_var'] = {
         } else {
             this.setWarningText(null, this.id);
         }
-    }
+    },
 };
 
-Blockly.JavaScript['get_value_var'] = function(block) {
+Blockly.JavaScript.forBlock['get_value_var'] = function(block) {
     const oid  = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
 
     if (attr === 'type' || attr.startsWith('common.')) {
         return [`(await getObjectAsync(${oid})).${attr}`, Blockly.JavaScript.ORDER_ATOMIC];
-    } else {
-        return [`getState(${oid}).${attr}`, Blockly.JavaScript.ORDER_ATOMIC];
     }
+
+    return [`getState(${oid}).${attr}`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- get value async--------------------------------------------------
 Blockly.System.blocks['get_value_async'] =
-    '<block type="get_value_async">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '     <value name="OID">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="get_value_async">' +
+    '  <field name="ATTR">val</field>' +
+    '</block>';
 
 Blockly.Blocks['get_value_async'] = {
     init: function() {
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('get_value_val'),    'val'],
-                [Blockly.Translate('get_value_ack'),    'ack'],
-                [Blockly.Translate('get_value_ts'),     'ts'],
-                [Blockly.Translate('get_value_lc'),     'lc'],
-                [Blockly.Translate('get_value_q') ,       'q'],
-                [Blockly.Translate('get_value_comment') , 'c'],
-                [Blockly.Translate('get_value_from'),     'from'],
+                [Blockly.Translate('get_value_val'),     'val'],
+                [Blockly.Translate('get_value_ack'),     'ack'],
+                [Blockly.Translate('get_value_ts'),      'ts'],
+                [Blockly.Translate('get_value_lc'),      'lc'],
+                [Blockly.Translate('get_value_q'),       'q'],
+                [Blockly.Translate('get_value_comment'), 'c'],
+                [Blockly.Translate('get_value_from'),    'from'],
 
                 [Blockly.Translate('get_common_name'),   'common.name'],
                 [Blockly.Translate('get_common_desc'),   'common.desc'],
@@ -995,10 +930,10 @@ Blockly.Blocks['get_value_async'] = {
         this.setColour(Blockly.System.HUE);
         this.setTooltip(Blockly.Translate('get_value_tooltip'));
         this.setHelpUrl(getHelp('get_value_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['get_value_async'] = function(block) {
+Blockly.JavaScript.forBlock['get_value_async'] = function(block) {
     const oid  = block.getFieldValue('OID');
     const attr = block.getFieldValue('ATTR');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
@@ -1018,10 +953,8 @@ Blockly.JavaScript['get_value_async'] = function(block) {
 
 // --- get object --------------------------------------------------
 Blockly.System.blocks['get_object'] =
-    '<block type="get_object">'
-    + '     <value name="OID">'
-    + '     </value>'
-    + '</block>';
+    '<block type="get_object">' +
+    '</block>';
 
 Blockly.Blocks['get_object'] = {
     // Checkbox.
@@ -1057,7 +990,7 @@ Blockly.Blocks['get_object'] = {
     },
 };
 
-Blockly.JavaScript['get_object'] = function(block) {
+Blockly.JavaScript.forBlock['get_object'] = function(block) {
     const oid  = block.getFieldValue('OID');
 
     return [`getObject('${oid}')`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1065,12 +998,8 @@ Blockly.JavaScript['get_object'] = function(block) {
 
 // --- get object async--------------------------------------------------
 Blockly.System.blocks['get_object_async'] =
-    '<block type="get_object_async">'
-    + '     <value name="OID">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="get_object_async">' +
+    '</block>';
 
 Blockly.Blocks['get_object_async'] = {
     init: function() {
@@ -1090,10 +1019,10 @@ Blockly.Blocks['get_object_async'] = {
         this.setColour(Blockly.Object.HUE);
         this.setTooltip(Blockly.Translate('get_object_tooltip'));
         this.setHelpUrl(getHelp('get_object_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['get_object_async'] = function(block) {
+Blockly.JavaScript.forBlock['get_object_async'] = function(block) {
     const oid  = block.getFieldValue('OID');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
@@ -1104,10 +1033,8 @@ Blockly.JavaScript['get_object_async'] = function(block) {
 
 // --- select OID --------------------------------------------------
 Blockly.System.blocks['field_oid'] =
-    '<block type="field_oid">'
-    + '     <value name="TEXT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="field_oid">' +
+    '</block>';
 
 Blockly.Blocks['field_oid'] = {
     init: function() {
@@ -1121,10 +1048,10 @@ Blockly.Blocks['field_oid'] = {
         this.setColour("%{BKY_TEXTS_HUE}");
         this.setOutput(true, 'String');
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
-    }
+    },
 };
 
-Blockly.JavaScript['field_oid'] = function(block) {
+Blockly.JavaScript.forBlock['field_oid'] = function(block) {
     const oid = block.getFieldValue('oid');
 
     return [`'${oid}'`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1132,10 +1059,8 @@ Blockly.JavaScript['field_oid'] = function(block) {
 
 // --- select OID meta--------------------------------------------------
 Blockly.System.blocks['field_oid_meta'] =
-    '<block type="field_oid_meta">'
-    + '     <value name="TEXT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="field_oid_meta">' +
+    '</block>';
 
 Blockly.Blocks['field_oid_meta'] = {
     init: function() {
@@ -1149,10 +1074,10 @@ Blockly.Blocks['field_oid_meta'] = {
         this.setColour("%{BKY_TEXTS_HUE}");
         this.setOutput(true, 'String');
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
-    }
+    },
 };
 
-Blockly.JavaScript['field_oid_meta'] = function(block) {
+Blockly.JavaScript.forBlock['field_oid_meta'] = function(block) {
     const oid = block.getFieldValue('oid');
 
     return [`'${oid}'`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1160,10 +1085,8 @@ Blockly.JavaScript['field_oid_meta'] = function(block) {
 
 // --- select OID script--------------------------------------------------
 Blockly.System.blocks['field_oid_script'] =
-    '<block type="field_oid_script">'
-    + '     <value name="TEXT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="field_oid_script">' +
+    '</block>';
 
 Blockly.Blocks['field_oid_script'] = {
     init: function() {
@@ -1177,10 +1100,10 @@ Blockly.Blocks['field_oid_script'] = {
         this.setColour("%{BKY_TEXTS_HUE}");
         this.setOutput(true, 'String');
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
-    }
+    },
 };
 
-Blockly.JavaScript['field_oid_script'] = function(block) {
+Blockly.JavaScript.forBlock['field_oid_script'] = function(block) {
     const oid = block.getFieldValue('oid');
 
     return [`'${oid}'`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1188,18 +1111,18 @@ Blockly.JavaScript['field_oid_script'] = function(block) {
 
 // --- get attribute --------------------------------------------------
 Blockly.System.blocks['get_attr'] =
-    '<block type="get_attr">'
-    + '     <value name="PATH">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">attribute1</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="OBJECT">'
-    + '         <shadow type="get_object">'
-    + '             <field name="OID">Object ID</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '</block>';
+    '<block type="get_attr">' +
+    '  <value name="PATH">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">attribute1</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="OBJECT">' +
+    '    <shadow type="get_object">' +
+    '      <field name="OID">Object ID</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['get_attr'] = {
     init: function() {
@@ -1215,10 +1138,10 @@ Blockly.Blocks['get_attr'] = {
         this.setColour(Blockly.System.HUE);
         this.setTooltip(Blockly.Translate('get_attr_tooltip'));
         this.setHelpUrl(getHelp('get_attr_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['get_attr'] = function(block) {
+Blockly.JavaScript.forBlock['get_attr'] = function(block) {
     const path = Blockly.JavaScript.valueToCode(block, 'PATH', Blockly.JavaScript.ORDER_ATOMIC);
     const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
 
@@ -1227,10 +1150,9 @@ Blockly.JavaScript['get_attr'] = function(block) {
 
 // --- regex --------------------------------------------------
 Blockly.System.blocks['regex'] =
-    '<block type="regex">'
-    + '     <value name="TEXT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="regex">' +
+    '  <field name="TEXT">(.*)</field>' +
+    '</block>';
 
 Blockly.Blocks['regex'] = {
     init: function() {
@@ -1244,10 +1166,10 @@ Blockly.Blocks['regex'] = {
         this.setColour(Blockly.System.HUE);
         this.setOutput(true, 'Array');
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
-    }
+    },
 };
 
-Blockly.JavaScript['regex'] = function(block) {
+Blockly.JavaScript.forBlock['regex'] = function(block) {
     const oid = block.getFieldValue('TEXT');
 
     return [`new RegExp('${oid}')`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1255,10 +1177,9 @@ Blockly.JavaScript['regex'] = function(block) {
 
 // --- selector --------------------------------------------------
 Blockly.System.blocks['selector'] =
-    '<block type="selector">'
-    + '     <value name="TEXT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="selector">' +
+    '  <field name="TEXT">channel[state.id=*]</field>' +
+    '</block>';
 
 Blockly.Blocks['selector'] = {
     init: function() {
@@ -1275,10 +1196,10 @@ Blockly.Blocks['selector'] = {
         this.setColour(Blockly.System.HUE);
         this.setOutput(true, 'Array');
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
-    }
+    },
 };
 
-Blockly.JavaScript['selector'] = function(block) {
+Blockly.JavaScript.forBlock['selector'] = function(block) {
     const oid = block.getFieldValue('TEXT');
 
     return [`Array.prototype.slice.apply($('${oid}'))`, Blockly.JavaScript.ORDER_ATOMIC];

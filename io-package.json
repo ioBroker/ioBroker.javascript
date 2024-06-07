@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.4.3",
+    "version": "8.5.0",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.5.0": {
+        "en": "Ack flag on state object has priorty (in setState/setStateDelayed)\nFixed all blockly declarations (to avoid warnings in logs)\nUpdated Blockly Core to 10.4.3",
+        "de": "Ack-Flag auf State-Objekt hat Priorität (in setState/setStateDelayed)\nAlle sperrigen Erklärungen behoben (um Warnungen in Protokollen zu vermeiden)\nAktualisierter Blockly Core auf 10.4.3",
+        "ru": "Флаг Ack на государственном объекте имеет приоритет (в setState/setStateDelayed)\nИсправлены все блокированные заявления (чтобы избежать предупреждений в журналах)\nОбновление Blockly Core до 10.4.3",
+        "pt": "Ack flag on state object has priorty (em setState/setStateDelayed)\nCorrigido todas as declarações de bloqueio (para evitar avisos em logs)\nNúcleo bloqueado atualizado para 10.4.3",
+        "nl": "Ack flag on state object has priority (in setState/setStateDelayed)\nAlle blokverklaringen zijn vastgesteld (om waarschuwingen in logs te voorkomen)\nBijgewerkt Blockly Core naar 10.4.3",
+        "fr": "Ack flag sur l'objet de l'état a priorité (dans setState/setStateDelayed)\nCorrection de toutes les déclarations de blocage (pour éviter les avertissements dans les journaux)\nMise à jour du noyau bloc à 10.4.3",
+        "it": "La bandiera di Ack su oggetto di stato ha prioritÃ (in setState/setStateDelayed)\nRisolto tutte le dichiarazioni bloccate (per evitare avvisi nei registri)\nAggiornato Blockly Core a 10.4.3",
+        "es": "La bandera de la cubierta en el objeto estatal tiene prioridad (en el estado establecido/setStateDelayed)\nArregla todas las declaraciones bloqueadas (para evitar advertencias en registros)\nActualizado Bloqueo núcleo a 10.4.3",
+        "pl": "Flaga Ack na obiekcie państwa ma priorty (w setState / setStateDelayed)\nNaprawiono wszystkie blokowane deklaracje (aby uniknąć ostrzeżeń w dziennikach)\nAktualizacja Blockly Core do 10.4.3",
+        "uk": "Ack прапор на державному об'єкті має пріоритет (в setState/setStateDelayed)\nВиправлено всі заблоковані декларації (для уникнення попередження в журналах)\nОновлено Blockly Core до 10.4.3",
+        "zh-cn": "状态对象上的阿克旗具有前置性(在设置状态/设置状态中)\n固定所有块状声明(以避免日志中的警告)\n更新为10.4.3"
+      },
       "8.4.3": {
         "en": "Added response time to httpGet and httpPost result\nAdded trigger block to ack new values\nAllowed selecting different ChatGPT models for AI code generator",
         "de": "Antwortzeit für das Ergebnis httpGet und httpPost\nTriggerblock zu ack neue Werte hinzugefügt\nErlaubt, verschiedene ChatGPT-Modelle für AI-Code-Generator auszuwählen",
@@ -117,19 +130,6 @@
         "pl": "Dodano tworzenie TempFile do piaskownicy\nNaprawiono wiadomość dziennika przy uruchamianiu skryptu\nDodano instancja / od do okna logowania (jak w admin)",
         "uk": "Створити TempFile в пісочниці\nВиправлено лог повідомлення на скрипт старту\nДодано екземпляр / з вікна входу (наприклад, в адмінці)",
         "zh-cn": "添加创建 纸箱到沙盒\n脚本启动的固定日志消息\n添加实例/ 从日志窗口( 如管理员)"
-      },
-      "8.2.0": {
-        "en": "Added toArray to result object of $-selector\nAdded Blockly block for onLog",
-        "de": "Hinzugefügt toArray zu Ergebnis Objekt von $-selector\nBlockly Block für onLog hinzugefügt",
-        "ru": "Добавлен в Аррей для результата объекта $-селективный\nДобавлен блок-блок для onLog",
-        "pt": "Adicionado toArray para resultado objeto de $-selector\nAdicionado bloco Blockly para emLog",
-        "nl": "Toegevoegd aanArray tot resultaat object van $-selector\nBlockly blok toegevoegd voor onLog",
-        "fr": "Ajouté àArray à l'objet résultat de $-selector\nAjout du bloc Blockly pour onLog",
-        "it": "Aggiunto toArray al risultato oggetto di $-selector\nAggiunto Blockly blocco per onLog",
-        "es": "Añadido aArray para el objeto resultado de $-selector\nBloque bloque agregado para el Log",
-        "pl": "Dodano toArray do wyniku obiektu selektora $\nDodano Blockly block for onLog",
-        "uk": "Додано доArray для результату об'єкт $-селектор\nДодано блокнот для onLog",
-        "zh-cn": "添加到 $ 选择器的结果对象中\n在Log 上添加块块"
       }
     },
     "platform": "Javascript/Node.js",

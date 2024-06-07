@@ -17,18 +17,16 @@ Blockly.Action = {
 // --- action exec --------------------------------------------------
 
 Blockly.Action.blocks['exec'] =
-    '<block type="exec">'
-    + '     <value name="COMMAND">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">pwd</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="LOG">'
-    + '     </value>'
-    + '     <value name="WITH_STATEMENT">'
-    + '     </value>'
-    + '     <mutation with_statement="false"></mutation>'
-    + '</block>';
+    '<block type="exec">' +
+    '  <mutation with_statement="false"></mutation>' +
+    '  <field name="WITH_STATEMENT">FALSE</field>' +
+    '  <field name="LOG"></field>' +
+    '  <value name="COMMAND">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">pwd</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['exec'] = {
     init: function() {
@@ -86,41 +84,36 @@ Blockly.Blocks['exec'] = {
         } else if (inputExists) {
             this.removeInput('STATEMENT');
         }
-    }
+    },
 };
 
-Blockly.JavaScript['exec'] = function(block) {
+Blockly.JavaScript.forBlock['exec'] = function(block) {
     const value_command = Blockly.JavaScript.valueToCode(block, 'COMMAND', Blockly.JavaScript.ORDER_ATOMIC);
     const logLevel = block.getFieldValue('LOG');
     const withStatement = block.getFieldValue('WITH_STATEMENT');
 
-    let logText;
+    let logText = '';
     if (logLevel) {
         logText = `console.${logLevel}('exec: ' + ${value_command});\n`;
-    } else {
-        logText = '';
     }
 
     if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
         const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
         if (statement) {
-            return `exec(${value_command}, async (error, result, stderr) => {\n` +
-                statement +
-                `});\n${logText}`;
-        } else {
-            return `exec(${value_command});\n${logText}`;
+            return `exec(${value_command}, async (error, result, stderr) => {\n${statement}});\n${logText}`;
         }
-    } else {
+
         return `exec(${value_command});\n${logText}`;
     }
+
+    return `exec(${value_command});\n${logText}`;
 };
 
 // --- exec_result -----------------------------------------------------------
 Blockly.Action.blocks['exec_result'] =
-    '<block type="exec_result">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '</block>';
+    '<block type="exec_result">' +
+    '  <field name="ATTR">result</field>' +
+    '</block>';
 
 Blockly.Blocks['exec_result'] = {
     /**
@@ -175,7 +168,7 @@ Blockly.Blocks['exec_result'] = {
      */
     FUNCTION_TYPES: ['exec'],
 };
-Blockly.JavaScript['exec_result'] = function(block) {
+Blockly.JavaScript.forBlock['exec_result'] = function(block) {
     const attr = block.getFieldValue('ATTR');
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
@@ -183,21 +176,16 @@ Blockly.JavaScript['exec_result'] = function(block) {
 
 // --- action http_get --------------------------------------------------
 Blockly.Action.blocks['http_get'] =
-    '<block type="http_get">'
-    + '     <value name="URL">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">http://</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="TIMEOUT">'
-    + '     </value>'
-    + '     <value name="UNIT">'
-    + '     </value>'
-    + '     <value name="TYPE">'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="http_get">' +
+    '  <field name="TIMEOUT">2000</field>' +
+    '  <field name="UNIT">ms</field>' +
+    '  <field name="TYPE">text</field>' +
+    '  <value name="URL">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">http://</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['http_get'] = {
     init: function() {
@@ -229,15 +217,15 @@ Blockly.Blocks['http_get'] = {
         this.setColour(Blockly.Action.HUE);
         this.setTooltip(Blockly.Translate('http_get_tooltip'));
         this.setHelpUrl(getHelp('http_get_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['http_get'] = function(block) {
+Blockly.JavaScript.forBlock['http_get'] = function(block) {
     const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     const unit = block.getFieldValue('UNIT');
     let timeout = block.getFieldValue('TIMEOUT');
-    if (isNaN(timeout)) {
+    if (Number.isNaN(timeout)) {
         timeout = 2000;
     }
     if (unit === 'sec') {
@@ -256,25 +244,19 @@ Blockly.JavaScript['http_get'] = function(block) {
 
 // --- action http_post --------------------------------------------------
 Blockly.Action.blocks['http_post'] =
-    '<block type="http_post">'
-    + '     <value name="URL">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">http://</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="TIMEOUT">'
-    + '     </value>'
-    + '     <value name="UNIT">'
-    + '     </value>'
-    + '     <value name="TYPE">'
-    + '     </value>'
-    + '     <value name="DATA">'
-    + '         <shadow type="logic_null">'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="http_post">' +
+    '  <field name="TIMEOUT">2000</field>' +
+    '  <field name="UNIT">ms</field>' +
+    '  <field name="TYPE">text</field>' +
+    '  <value name="URL">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">http://</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="DATA">' +
+    '    <shadow type="logic_null"></shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['http_post'] = {
     init: function() {
@@ -309,10 +291,10 @@ Blockly.Blocks['http_post'] = {
         this.setColour(Blockly.Action.HUE);
         this.setTooltip(Blockly.Translate('http_post_tooltip'));
         this.setHelpUrl(getHelp('http_post_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['http_post'] = function(block) {
+Blockly.JavaScript.forBlock['http_post'] = function(block) {
     const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     const unit = block.getFieldValue('UNIT');
@@ -342,10 +324,9 @@ Blockly.JavaScript['http_post'] = function(block) {
 
 // --- http_response -----------------------------------------------------------
 Blockly.Action.blocks['http_response'] =
-    '<block type="http_response">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '</block>';
+    '<block type="http_response">' +
+    '  <field name="ATTR">response.data</field>' +
+    '</block>';
 
 Blockly.Blocks['http_response'] = {
     /**
@@ -401,7 +382,7 @@ Blockly.Blocks['http_response'] = {
      */
     FUNCTION_TYPES: ['http_get', 'http_post'],
 };
-Blockly.JavaScript['http_response'] = function(block) {
+Blockly.JavaScript.forBlock['http_response'] = function(block) {
     const attr = block.getFieldValue('ATTR');
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
@@ -409,20 +390,18 @@ Blockly.JavaScript['http_response'] = function(block) {
 
 // --- action file_write --------------------------------------------------
 Blockly.Action.blocks['file_write'] =
-    '<block type="file_write">'
-    + '     <value name="OID">'
-    + '         <shadow type="field_oid_meta">'
-    + '             <field name="oid">0_userdata.0</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="FILE">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">demo.json</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="DATA">'
-    + '     </value>'
-    + '</block>';
+    '<block type="file_write">' +
+    '  <value name="OID">' +
+    '    <shadow type="field_oid_meta">' +
+    '      <field name="oid">0_userdata.0</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="FILE">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">demo.json</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['file_write'] = {
     init: function() {
@@ -443,10 +422,10 @@ Blockly.Blocks['file_write'] = {
         this.setColour(Blockly.Action.HUE);
         this.setTooltip(Blockly.Translate('file_write_tooltip'));
         this.setHelpUrl(getHelp('file_write_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['file_write'] = function(block) {
+Blockly.JavaScript.forBlock['file_write'] = function(block) {
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
     const data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
@@ -471,20 +450,18 @@ Blockly.JavaScript['file_write'] = function(block) {
 
 // --- action file_read --------------------------------------------------
 Blockly.Action.blocks['file_read'] =
-    '<block type="file_read">'
-    + '     <value name="OID">'
-    + '         <shadow type="field_oid_meta">'
-    + '             <field name="oid">0_userdata.0</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="FILE">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">demo.json</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="STATEMENT">'
-    + '     </value>'
-    + '</block>';
+    '<block type="file_read">' +
+    '  <value name="OID">' +
+    '    <shadow type="field_oid_meta">' +
+    '      <field name="oid">0_userdata.0</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="FILE">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">demo.json</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['file_read'] = {
     init: function() {
@@ -505,10 +482,10 @@ Blockly.Blocks['file_read'] = {
         this.setColour(Blockly.Action.HUE);
         this.setTooltip(Blockly.Translate('file_read_tooltip'));
         this.setHelpUrl(getHelp('file_read_help'));
-    }
+    },
 };
 
-Blockly.JavaScript['file_read'] = function(block) {
+Blockly.JavaScript.forBlock['file_read'] = function(block) {
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
@@ -534,10 +511,9 @@ Blockly.JavaScript['file_read'] = function(block) {
 
 // --- file_data -----------------------------------------------------------
 Blockly.Action.blocks['file_data'] =
-    '<block type="file_data">'
-    + '     <value name="ATTR">'
-    + '     </value>'
-    + '</block>';
+    '<block type="file_data">' +
+    '  <field name="ATTR">data</field>' +
+    '</block>';
 
 Blockly.Blocks['file_data'] = {
     /**
@@ -591,7 +567,7 @@ Blockly.Blocks['file_data'] = {
      */
     FUNCTION_TYPES: ['file_read'],
 };
-Blockly.JavaScript['file_data'] = function(block) {
+Blockly.JavaScript.forBlock['file_data'] = function(block) {
     const attr = block.getFieldValue('ATTR');
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
@@ -599,18 +575,16 @@ Blockly.JavaScript['file_data'] = function(block) {
 
 // --- action request --------------------------------------------------
 Blockly.Action.blocks['request'] =
-    '<block type="request">'
-    + '     <value name="URL">'
-    + '         <shadow type="text">'
-    + '             <field name="TEXT">http://</field>'
-    + '         </shadow>'
-    + '     </value>'
-    + '     <value name="LOG">'
-    + '     </value>'
-    + '     <value name="WITH_STATEMENT">'
-    + '     </value>'
-    + '     <mutation with_statement="false"></mutation>'
-    + '</block>';
+    '<block type="request">' +
+    '  <mutation with_statement="false"></mutation>' +
+    '  <field name="WITH_STATEMENT">FALSE</field>' +
+    '  <field name="LOG"></field>' +
+    '  <value name="URL">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">http://</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
 
 Blockly.Blocks['request'] = {
     init: function() {
@@ -668,19 +642,17 @@ Blockly.Blocks['request'] = {
         } else if (inputExists) {
             this.removeInput('STATEMENT');
         }
-    }
+    },
 };
 
-Blockly.JavaScript['request'] = function(block) {
+Blockly.JavaScript.forBlock['request'] = function(block) {
     const logLevel = block.getFieldValue('LOG');
     const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
     const withStatement = block.getFieldValue('WITH_STATEMENT');
 
-    let logText;
+    let logText = '';
     if (logLevel) {
-        logText = `console.` + logLevel + `('request: ' + ` + URL + `);\n`;
-    } else {
-        logText = '';
+        logText = `console.${logLevel}('request: ' + ${URL});\n`;
     }
 
     if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {

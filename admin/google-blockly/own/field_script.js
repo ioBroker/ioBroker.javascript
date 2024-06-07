@@ -151,7 +151,7 @@ class FieldScript extends Blockly.Field {
             Blockly.FieldScript.htmlInput_ = null;
 
             // Delete style properties.
-            const style = Blockly.WidgetDiv.DIV.style;
+            const style = Blockly.WidgetDiv.getDiv().style;
             style.width = 'auto';
             style.height = 'auto';
             style.fontSize = '';
