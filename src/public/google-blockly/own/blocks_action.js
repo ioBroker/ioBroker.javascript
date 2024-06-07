@@ -257,6 +257,9 @@ Blockly.Action.blocks['http_post'] =
     '      <field name="TEXT">http://</field>' +
     '    </shadow>' +
     '  </value>' +
+    '  <value name="DATA">' +
+    '    <shadow type="logic_null"></shadow>' +
+    '  </value>' +
     '</block>';
 
 Blockly.Blocks['http_post'] = {
