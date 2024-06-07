@@ -19,7 +19,7 @@ Blockly.Time = {
 // --- time compare --------------------------------------------------
 Blockly.Time.blocks['time_compare_ex'] =
     '<block type="time_compare_ex">' +
-    '  <mutation xmlns="http://www.w3.org/1999/xhtml" end_time="false" actual_time="true"></mutation>' +
+    '  <mutation end_time="false" actual_time="true"></mutation>' +
     '  <field name="USE_ACTUAL_TIME">TRUE</field>' +
     '  <field name="OPTION">&lt;</field>' +
     '  <value name="START_TIME">' +
@@ -167,7 +167,7 @@ Blockly.JavaScript['time_compare_ex'] = function(block) {
 // --- time compare --------------------------------------------------
 Blockly.Time.blocks['time_compare'] =
     '<block type="time_compare">' +
-    '  <mutation xmlns="http://www.w3.org/1999/xhtml" end_time="false"></mutation>' +
+    '  <mutation end_time="false"></mutation>' +
     '  <field name="OPTION">&lt;</field>' +
     '  <field name="START_TIME">12:00</field>' +
     '</block>';
@@ -266,7 +266,7 @@ Blockly.Words['time_get_hh_mm_ss.sss'].format = 'hh:mm:ss.sss';
 
 Blockly.Time.blocks['time_get'] =
     '<block type="time_get">' +
-    '  <mutation xmlns="http://www.w3.org/1999/xhtml" format="false" language="false"></mutation>' +
+    '  <mutation format="false" language="false"></mutation>' +
     '  <field name="OPTION">object</field>' +
     '</block>';
 
@@ -532,7 +532,7 @@ Blockly.Time.blocks['time_calculation'] =
     '  <field name="UNIT">ms</field>' +
     '  <value name="DATE_TIME">' +
     '    <shadow type="time_get">' +
-    '      <mutation xmlns="http://www.w3.org/1999/xhtml" format="false" language="false"></mutation>' +
+    '      <mutation format="false" language="false"></mutation>' +
     '      <field name="OPTION">object</field>' +
     '    </shadow>' +
     '  </value>' +

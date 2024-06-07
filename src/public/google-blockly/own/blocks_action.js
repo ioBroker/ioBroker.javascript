@@ -18,7 +18,7 @@ Blockly.Action = {
 
 Blockly.Action.blocks['exec'] =
     '<block type="exec">' +
-    '  <mutation xmlns="http://www.w3.org/1999/xhtml" with_statement="false"></mutation>' +
+    '  <mutation with_statement="false"></mutation>' +
     '  <field name="WITH_STATEMENT">FALSE</field>' +
     '  <field name="LOG"></field>' +
     '  <value name="COMMAND">' +
@@ -577,7 +577,7 @@ Blockly.JavaScript['file_data'] = function(block) {
 // --- action request --------------------------------------------------
 Blockly.Action.blocks['request'] =
     '<block type="request">' +
-    '  <mutation xmlns="http://www.w3.org/1999/xhtml" with_statement="false"></mutation>' +
+    '  <mutation with_statement="false"></mutation>' +
     '  <field name="WITH_STATEMENT">FALSE</field>' +
     '  <field name="LOG"></field>' +
     '  <value name="URL">' +

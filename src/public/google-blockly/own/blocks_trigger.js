@@ -23,7 +23,7 @@ Blockly.Trigger = {
 
 Blockly.Trigger.blocks['on_ext'] =
     '<block type="on_ext">' +
-    '  <mutation xmlns="http://www.w3.org/1999/xhtml" items="1"></mutation>' +
+    '  <mutation items="1"></mutation>' +
     '  <field name="CONDITION">ne</field>' +
     '  <field name="ACK_CONDITION"></field>' +
     '  <value name="OID0">' +
@@ -971,7 +971,7 @@ Blockly.JavaScript['field_cron'] = function(block) {
 // --- CRON builder --------------------------------------------------
 Blockly.Trigger.blocks['cron_builder'] =
     '<block type="cron_builder">' +
-    '  <mutation xmlns="http://www.w3.org/1999/xhtml" seconds="false" as_line="false"></mutation>' +
+    '  <mutation seconds="false" as_line="false"></mutation>' +
     '  <field name="LINE">FALSE</field>' +
     '  <field name="WITH_SECONDS">FALSE</field>' +
     '  <value name="DOW">' +

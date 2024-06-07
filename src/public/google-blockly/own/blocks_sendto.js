@@ -17,7 +17,7 @@ Blockly.Sendto = {
 // --- sendTo Custom --------------------------------------------------
 Blockly.Sendto.blocks['sendto_custom'] =
     '<block type="sendto_custom">' +
-    '  <mutation xmlns="http://www.w3.org/1999/xhtml" items="parameter1" with_statement="false"></mutation>' +
+    '  <mutation items="parameter1" with_statement="false"></mutation>' +
     '  <field name="INSTANCE">admin.0</field>' +
     '  <field name="COMMAND">send</field>' +
     '  <field name="LOG"></field>' +

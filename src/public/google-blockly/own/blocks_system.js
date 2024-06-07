@@ -117,7 +117,7 @@ Blockly.JavaScript['comment'] = function(block) {
 // --- control -----------------------------------------------------------
 Blockly.System.blocks['control'] =
     '<block type="control">' +
-    '  <mutation xmlns="http://www.w3.org/1999/xhtml" delay_input="false"></mutation>' +
+    '  <mutation delay_input="false"></mutation>' +
     '  <field name="WITH_DELAY">FALSE</field>' +
     '</block>';
 
@@ -228,7 +228,7 @@ Blockly.JavaScript['control'] = function(block) {
 // --- toggle -----------------------------------------------------------
 Blockly.System.blocks['toggle'] =
     '<block type="toggle">' +
-    '  <mutation xmlns="http://www.w3.org/1999/xhtml" delay_input="false"></mutation>' +
+    '  <mutation delay_input="false"></mutation>' +
     '  <field name="WITH_DELAY">FALSE</field>' +
     '</block>';
 
@@ -357,7 +357,7 @@ Blockly.JavaScript['toggle'] = function(block) {
 // --- update -----------------------------------------------------------
 Blockly.System.blocks['update'] =
     '<block type="update">' +
-    '  <mutation xmlns="http://www.w3.org/1999/xhtml" delay_input="false"></mutation>' +
+    '  <mutation delay_input="false"></mutation>' +
     '  <field name="WITH_DELAY">FALSE</field>' +
     '</block>';
 

@@ -125,7 +125,7 @@ Blockly.JavaScript.convert_to_date = function (a) {
 // --- from Date --------------------------------------------------
 Blockly.Convert.blocks['convert_from_date'] =
     '<block type="convert_from_date">' +
-    '  <mutation xmlns="http://www.w3.org/1999/xhtml" format="false" language="false"></mutation>' +
+    '  <mutation format="false" language="false"></mutation>' +
     '  <field name="OPTION">object</field>' +
     '</block>';
 
@@ -287,7 +287,7 @@ Blockly.JavaScript.convert_from_date = function (block) {
 // --- time difference --------------------------------------------------
 Blockly.Convert.blocks['convert_time_difference'] =
     '<block type="convert_time_difference">' +
-    '  <mutation xmlns="http://www.w3.org/1999/xhtml" format="false"></mutation> ' +
+    '  <mutation format="false"></mutation> ' +
     '  <field name="OPTION">hh:mm:ss</field> ' +
     '</block>';
 
