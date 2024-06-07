@@ -65,7 +65,7 @@ Blockly.Blocks['object_new'] = {
 
         this.attributes_ = [];
         this.itemCount_ = 0;
-        this.setMutator(new Blockly.Mutator(['object_new_mutator']));
+        this.setMutator(new Blockly.Mutator(['object_new_mutator'], this));
 
         this.setInputsInline(false);
         this.setOutput(true);

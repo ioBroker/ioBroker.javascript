@@ -121,7 +121,7 @@ Blockly.Blocks['sendto_custom'] = {
         this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setMutator(new Blockly.Mutator(['sendto_custom_item']));
+        this.setMutator(new Blockly.Mutator(['sendto_custom_item'], this));
         this.setTooltip(Blockly.Translate('sendto_custom_tooltip'));
         this.setHelpUrl(getHelp('sendto_custom_help'));
     },

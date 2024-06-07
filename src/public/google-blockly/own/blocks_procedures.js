@@ -258,7 +258,7 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
         /*this.appendValueInput('RETURN')
             .setAlign(Blockly.ALIGN_RIGHT)
             .appendField(Blockly.Msg['PROCEDURES_DEFRETURN_RETURN']);*/
-        this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
+        this.setMutator(new Blockly.Mutator(['procedures_mutatorarg'], this));
         if ((this.workspace.options.comments ||
             (this.workspace.options.parentWorkspace &&
                 this.workspace.options.parentWorkspace.options.comments)) &&
@@ -453,7 +453,7 @@ Blockly.Blocks['procedures_defcustomnoreturn'] = {
             .appendField(nameField, 'NAME')
             .appendField('', 'PARAMS');
 
-        this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
+        this.setMutator(new Blockly.Mutator(['procedures_mutatorarg'], this));
 
         if ((this.workspace.options.comments ||
             (this.workspace.options.parentWorkspace && this.workspace.options.parentWorkspace.options.comments)) &&

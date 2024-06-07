@@ -72,7 +72,7 @@ Blockly.Blocks['on_ext_oid'] = {
 Blockly.Blocks['on_ext'] = {
     init: function() {
         this.itemCount_ = 1;
-        this.setMutator(new Blockly.Mutator(['on_ext_oid']));
+        this.setMutator(new Blockly.Mutator(['on_ext_oid'], this));
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);

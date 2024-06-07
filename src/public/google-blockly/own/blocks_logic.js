@@ -47,7 +47,7 @@ Blockly.Blocks['logic_multi_and_mutator'] = {
 Blockly.Blocks['logic_multi_and'] = {
     init: function() {
         this.itemCount_ = 2;
-        this.setMutator(new Blockly.Mutator(['logic_multi_and_mutator']));
+        this.setMutator(new Blockly.Mutator(['logic_multi_and_mutator'], this));
 
         this.setInputsInline(false);
         this.setOutput(true, 'Boolean');
@@ -224,7 +224,7 @@ Blockly.Blocks['logic_multi_or_mutator'] = {
 Blockly.Blocks['logic_multi_or'] = {
     init: function() {
         this.itemCount_ = 2;
-        this.setMutator(new Blockly.Mutator(['logic_multi_or_mutator']));
+        this.setMutator(new Blockly.Mutator(['logic_multi_or_mutator'], this));
 
         this.setInputsInline(false);
         this.setOutput(true, 'Boolean');

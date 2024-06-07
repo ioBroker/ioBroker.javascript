@@ -396,11 +396,11 @@ class BlocklyEditor extends React.Component {
         if (xml) {
             try {
                 if (!xml.startsWith('<xml')) {
-                    xml = '<xml xmlns="https://developers.google.com/blockly/xml">' + xml + '</xml>';
+                    xml = `<xml xmlns="https://developers.google.com/blockly/xml">${xml}</xml>`;
                 }
                 const variables = xml.replace(/[\n\r]/g, '').match(/<variables>(.*)<\/variables>/);
                 if (variables) {
-                    const vars = this.Blockly.utils.xml.textToDomDocument('<variables>' + variables[1] + '</variables>');
+                    const vars = this.Blockly.utils.xml.textToDomDocument(`<variables>${variables[1]}</variables>`);
                     if (vars) {
                         const nodes = vars.childNodes && vars.childNodes[0] && vars.childNodes[0].childNodes;
                         if (nodes) {
@@ -475,6 +475,7 @@ class BlocklyEditor extends React.Component {
         toolboxText = toolboxText || (await this.getToolbox());
         toolboxXml  = toolboxXml  || this.Blockly.utils.xml.textToDom(toolboxText);
 
+        // https://developers.google.com/blockly/reference/js/blockly.blocklyoptions_interface.md
         this.blocklyWorkspace = this.Blockly.inject(
             this.blockly,
             {
