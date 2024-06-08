@@ -24,7 +24,7 @@ Blockly.Blocks['object_new_container'] = {
      * Mutator block for container.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.setColour(Blockly.Object.HUE);
 
         this.appendDummyInput()
@@ -42,7 +42,7 @@ Blockly.Blocks['object_new_mutator'] = {
      * Mutator block for add items.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.setColour(Blockly.Object.HUE);
 
         this.appendDummyInput('ATTR')
@@ -59,7 +59,7 @@ Blockly.Blocks['object_new_mutator'] = {
 };
 
 Blockly.Blocks['object_new'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput('NAME')
             .appendField(Blockly.Translate('object_new'));
 
@@ -174,7 +174,7 @@ Blockly.Blocks['object_new'] = {
      * @param {!Blockly.Block} containerBlock Root block in mutator.
      * @this Blockly.Block
      */
-    saveConnections: function(containerBlock) {
+    saveConnections: function (containerBlock) {
         let itemBlock = containerBlock.getInputTargetBlock('STACK');
         let i = 0;
 
@@ -191,7 +191,7 @@ Blockly.Blocks['object_new'] = {
      * @private
      * @this Blockly.Block
      */
-    updateShape_: function() {
+    updateShape_: function () {
         const workspace = this.workspace;
 
         // Add new inputs.
@@ -222,7 +222,7 @@ Blockly.Blocks['object_new'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['object_new'] = function(block) {
+Blockly.JavaScript.forBlock['object_new'] = function (block) {
     const attributes = [];
     for (let n = 0; n < block.itemCount_; n++) {
         const val = Blockly.JavaScript.valueToCode(block, 'ATTR_' + n, Blockly.JavaScript.ORDER_COMMA);
@@ -246,7 +246,7 @@ Blockly.Object.blocks['object_set_attr'] =
     '</block>';
 
 Blockly.Blocks['object_set_attr'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput('ATTR')
             .appendField(Blockly.Translate('object_set_attr'))
             .appendField(new Blockly.FieldTextInput('attribute1'), 'ATTR');
@@ -268,7 +268,7 @@ Blockly.Blocks['object_set_attr'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['object_set_attr'] = function(block) {
+Blockly.JavaScript.forBlock['object_set_attr'] = function (block) {
     let obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
@@ -287,7 +287,7 @@ Blockly.Object.blocks['object_del_attr'] =
     '</block>';
 
 Blockly.Blocks['object_del_attr'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput('ATTR')
             .appendField(Blockly.Translate('object_del_attr'))
             .appendField(new Blockly.FieldTextInput('attribute1'), 'ATTR');
@@ -305,7 +305,7 @@ Blockly.Blocks['object_del_attr'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['object_del_attr'] = function(block) {
+Blockly.JavaScript.forBlock['object_del_attr'] = function (block) {
     let obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
 
@@ -328,7 +328,7 @@ Blockly.Object.blocks['object_has_attr'] =
     '</block>';
 
 Blockly.Blocks['object_has_attr'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput('OBJECT')
             .appendField(Blockly.Translate('object_has_attr'));
 
@@ -345,7 +345,7 @@ Blockly.Blocks['object_has_attr'] = {
     }
 };
 
-Blockly.JavaScript.forBlock['object_has_attr'] = function(block) {
+Blockly.JavaScript.forBlock['object_has_attr'] = function (block) {
     const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
 
@@ -363,7 +363,7 @@ Blockly.Object.blocks['object_keys'] =
     '</block>';
 
 Blockly.Blocks['object_keys'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput('OBJECT')
             .appendField(Blockly.Translate('object_keys'));
 
@@ -376,7 +376,7 @@ Blockly.Blocks['object_keys'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['object_keys'] = function(block) {
+Blockly.JavaScript.forBlock['object_keys'] = function (block) {
     let obj = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
 
     if (!obj) {

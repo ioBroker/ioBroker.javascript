@@ -10,14 +10,14 @@ if (typeof goog !== 'undefined') {
     goog.require('goog.userAgent');
 }
 
-Blockly.b64EncodeUnicode = function(text) {
+Blockly.b64EncodeUnicode = function (text) {
     return btoa(encodeURIComponent(text).replace(/%([0-9A-F]{2})/g, function (match, p) {
         return String.fromCharCode(parseInt(p, 16));
     }));
 };
 
 // Decoding base64 ⇢ UTF8
-Blockly.b64DecodeUnicode = function(text) {
+Blockly.b64DecodeUnicode = function (text) {
     try {
         return decodeURIComponent(Array.prototype.map.call(atob(text), function (s) {
             return '%' + ('00' + s.charCodeAt(0).toString(16)).slice(-2);

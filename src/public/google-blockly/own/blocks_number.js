@@ -3,7 +3,7 @@
 // --- Round Number to n decimal places -------------------------------
 
 Blockly.Blocks['math_rndfixed'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput('x')
             .setCheck('Number')
             .appendField(Blockly.Translate('math_rndfixed_round'));
@@ -18,7 +18,7 @@ Blockly.Blocks['math_rndfixed'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['math_rndfixed'] = function(block) {
+Blockly.JavaScript.forBlock['math_rndfixed'] = function (block) {
     const x = Blockly.JavaScript.valueToCode(block, 'x', Blockly.JavaScript.ORDER_ATOMIC);
     const exp = Math.pow(10, block.getFieldValue('n'));
 

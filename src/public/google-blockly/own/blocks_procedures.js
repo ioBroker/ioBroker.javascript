@@ -13,7 +13,7 @@ if (Blockly.Blocks['procedures_ifreturn'].FUNCTION_TYPES.indexOf('procedures_def
  *     Each procedure is defined by a three-element list of name, parameter
  *     list, and return value boolean.
  */
-Blockly.Procedures.allProceduresNew = function(root) {
+Blockly.Procedures.allProceduresNew = function (root) {
     const result = Blockly.Procedures.allProcedures(root);
 
     const proceduresCustomNoReturn = root
@@ -56,7 +56,7 @@ Blockly.Procedures.allProceduresNew = function(root) {
  * @param {!Blockly.Workspace} workspace The workspace containing procedures.
  * @return {!Array.<!Element>} Array of XML block elements.
  */
-Blockly.Procedures.flyoutCategoryNew = function(workspace) {
+Blockly.Procedures.flyoutCategoryNew = function (workspace) {
     const xmlList = [];
     const utils = (Blockly.Xml.utils ? Blockly.Xml.utils : Blockly.utils.xml);
     if (Blockly.Blocks['procedures_defnoreturn']) {
@@ -171,7 +171,7 @@ Blockly.Procedures.flyoutCategoryNew = function(workspace) {
 
 // ---------------------- patch for async functions ------------------------------
 // taken from javascript/procedures.js https://github.com/google/blockly/blob/blockly-v9.3.3/generators/javascript/procedures.js
-Blockly.JavaScript.forBlock['procedures_defreturn'] = function(block) {
+Blockly.JavaScript.forBlock['procedures_defreturn'] = function (block) {
     // Define a procedure with a return value.
     const funcName = Blockly.JavaScript.nameDB_.getName(
         block.getFieldValue('NAME'), Blockly.PROCEDURE_CATEGORY_NAME);
@@ -217,7 +217,7 @@ Blockly.JavaScript.forBlock['procedures_defreturn'] = function(block) {
 
 Blockly.JavaScript.forBlock['procedures_defnoreturn'] = Blockly.JavaScript.forBlock['procedures_defreturn'];
 
-Blockly.JavaScript.forBlock['procedures_callreturn'] = function(block) {
+Blockly.JavaScript.forBlock['procedures_callreturn'] = function (block) {
     // Call a procedure with a return value.
     const funcName = Blockly.JavaScript.nameDB_.getName(
         block.getFieldValue('NAME'), Blockly.PROCEDURE_CATEGORY_NAME);
@@ -245,7 +245,7 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
      * Block for defining a procedure with a return value.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         const nameField = new Blockly.FieldTextInput('',
             Blockly.Procedures.rename);
 
@@ -380,7 +380,7 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
      *     - that it DOES NOT have a return value.
      * @this Blockly.Block
      */
-    getProcedureDef: function() {
+    getProcedureDef: function () {
         return [this.getFieldValue('NAME'), this.arguments_, true, true];
     },
     getVars: Blockly.Blocks['procedures_defreturn'].getVars,
@@ -392,7 +392,7 @@ Blockly.Blocks['procedures_defcustomreturn'] = {
     callType_: 'procedures_callcustomreturn'
 };
 
-Blockly.JavaScript.forBlock['procedures_defcustomreturn'] = function(block) {
+Blockly.JavaScript.forBlock['procedures_defcustomreturn'] = function (block) {
     // Define a procedure with a return value.
     const funcName = Blockly.JavaScript.nameDB_.getName(
         block.getFieldValue('NAME'), Blockly.PROCEDURE_CATEGORY_NAME);
@@ -444,7 +444,7 @@ Blockly.Blocks['procedures_defcustomnoreturn'] = {
     isProcedureDef() {
         return true;
     },
-    init: function() {
+    init: function () {
         const nameField = new Blockly.FieldTextInput('', Blockly.Procedures.rename);
         nameField.setSpellcheck(false);
 
@@ -484,7 +484,7 @@ Blockly.Blocks['procedures_defcustomnoreturn'] = {
     domToMutation: Blockly.Blocks['procedures_defnoreturn'].domToMutation,
     decompose: Blockly.Blocks['procedures_defcustomreturn'].decompose,
     compose: Blockly.Blocks['procedures_defcustomreturn'].compose,
-    getProcedureDef: function() {
+    getProcedureDef: function () {
         return [this.getFieldValue('NAME'), this.arguments_, false, true];
     },
     getVars: Blockly.Blocks['procedures_defnoreturn'].getVars,
@@ -513,7 +513,7 @@ Blockly.Blocks['procedures_callcustomnoreturn'] = {
     defType_: 'procedures_defcustomnoreturn'
 };
 
-Blockly.JavaScript.forBlock['procedures_callcustomnoreturn'] = function(block) {
+Blockly.JavaScript.forBlock['procedures_callcustomnoreturn'] = function (block) {
     // Call a procedure with no return value.
     // Generated code is for a function call as a statement is the same as a
     // function call as a value, with the addition of line ending.

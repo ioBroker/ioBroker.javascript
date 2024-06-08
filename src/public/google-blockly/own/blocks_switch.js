@@ -3,7 +3,7 @@
 // Many thanks to Florian Pechwitz <florian.Pechwitz@itizzimo.com> for the code
 
 Blockly.Blocks['logic_switch_case'] = {
-    init: function() {
+    init: function () {
         this.setColour('%{BKY_LOGIC_HUE}');
         this.setPreviousStatement(true);
         this.setNextStatement(true);
@@ -36,7 +36,7 @@ Blockly.Blocks['logic_switch_case'] = {
         return container;
     },
 
-    domToMutation: function(xmlElement) {
+    domToMutation: function (xmlElement) {
         this.caseCount_    = parseInt(xmlElement.getAttribute('case'), 10);
         this.defaultCount_ = parseInt(xmlElement.getAttribute('default'), 10);
 
@@ -53,7 +53,7 @@ Blockly.Blocks['logic_switch_case'] = {
         }
     },
 
-    decompose: function(workspace) {
+    decompose: function (workspace) {
         const containerBlock = workspace.newBlock('control_case');//Blockly.Block.obtain(workspace, 'control_case');
         containerBlock.initSvg();
 
@@ -75,7 +75,7 @@ Blockly.Blocks['logic_switch_case'] = {
         return containerBlock;
     },
 
-    compose: function(containerBlock) {
+    compose: function (containerBlock) {
         //Disconnect all input blocks and remove all inputs.
         if (this.defaultCount_) {
             this.removeInput('ONDEFAULT');
@@ -129,7 +129,7 @@ Blockly.Blocks['logic_switch_case'] = {
         }
     },
 
-    saveConnections: function(containerBlock) {
+    saveConnections: function (containerBlock) {
         let caseBlock = containerBlock.getInputTargetBlock('STACK');
         let x = 1;
         while (caseBlock) {
@@ -155,7 +155,7 @@ Blockly.Blocks['logic_switch_case'] = {
 };
 
 Blockly.Blocks['control_case'] = {
-    init: function() {
+    init: function () {
         this.setColour('%{BKY_LOGIC_HUE}');
         this.appendDummyInput()
             .appendField(Blockly.Translate('logic_switch_case_is'));
@@ -166,7 +166,7 @@ Blockly.Blocks['control_case'] = {
 };
 
 Blockly.Blocks['case_incaseof'] = {
-    init: function() {
+    init: function () {
         this.setColour('%{BKY_LOGIC_HUE}');
         this.appendDummyInput()
             .appendField(Blockly.Translate('logic_switch_case_of'));
@@ -178,7 +178,7 @@ Blockly.Blocks['case_incaseof'] = {
 };
 
 Blockly.Blocks['case_default'] = {
-    init: function() {
+    init: function () {
         this.setColour('%{BKY_LOGIC_HUE}');
         this.appendDummyInput()
             .appendField('default');

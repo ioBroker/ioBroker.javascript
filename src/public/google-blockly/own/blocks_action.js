@@ -29,7 +29,7 @@ Blockly.Action.blocks['exec'] =
     '</block>';
 
 Blockly.Blocks['exec'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput('TEXT')
             .appendField('» ' + Blockly.Translate('exec'));
 
@@ -60,7 +60,7 @@ Blockly.Blocks['exec'] = {
         this.setTooltip(Blockly.Translate('exec_tooltip'));
         this.setHelpUrl(getHelp('exec_help'));
     },
-    mutationToDom: function() {
+    mutationToDom: function () {
         const container = document.createElement('mutation');
         const option = this.getFieldValue('WITH_STATEMENT');
 
@@ -68,12 +68,12 @@ Blockly.Blocks['exec'] = {
 
         return container;
     },
-    domToMutation: function(xmlElement) {
+    domToMutation: function (xmlElement) {
         const option = xmlElement.getAttribute('with_statement');
 
         this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
-    updateShape_: function(withStatement) {
+    updateShape_: function (withStatement) {
         // Add or remove a statement Input.
         const inputExists = this.getInput('STATEMENT');
 
@@ -87,7 +87,7 @@ Blockly.Blocks['exec'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['exec'] = function(block) {
+Blockly.JavaScript.forBlock['exec'] = function (block) {
     const value_command = Blockly.JavaScript.valueToCode(block, 'COMMAND', Blockly.JavaScript.ORDER_ATOMIC);
     const logLevel = block.getFieldValue('LOG');
     const withStatement = block.getFieldValue('WITH_STATEMENT');
@@ -120,7 +120,7 @@ Blockly.Blocks['exec_result'] = {
      * Block for conditionally returning a value from a procedure.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField('»');
 
@@ -143,7 +143,7 @@ Blockly.Blocks['exec_result'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         let legal = false;
         // Is the block nested in an exec?
         let block = this;
@@ -168,7 +168,7 @@ Blockly.Blocks['exec_result'] = {
      */
     FUNCTION_TYPES: ['exec'],
 };
-Blockly.JavaScript.forBlock['exec_result'] = function(block) {
+Blockly.JavaScript.forBlock['exec_result'] = function (block) {
     const attr = block.getFieldValue('ATTR');
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
@@ -188,7 +188,7 @@ Blockly.Action.blocks['http_get'] =
     '</block>';
 
 Blockly.Blocks['http_get'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput('URL')
             .appendField('🌐 ' + Blockly.Translate('http_get'));
 
@@ -220,7 +220,7 @@ Blockly.Blocks['http_get'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['http_get'] = function(block) {
+Blockly.JavaScript.forBlock['http_get'] = function (block) {
     const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     const unit = block.getFieldValue('UNIT');
@@ -259,7 +259,7 @@ Blockly.Action.blocks['http_post'] =
     '</block>';
 
 Blockly.Blocks['http_post'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput('URL')
             .appendField('🌐 ' + Blockly.Translate('http_post'));
 
@@ -294,7 +294,7 @@ Blockly.Blocks['http_post'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['http_post'] = function(block) {
+Blockly.JavaScript.forBlock['http_post'] = function (block) {
     const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     const unit = block.getFieldValue('UNIT');
@@ -333,7 +333,7 @@ Blockly.Blocks['http_response'] = {
      * Block for conditionally returning a value from a procedure.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField('🌐');
 
@@ -357,7 +357,7 @@ Blockly.Blocks['http_response'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         let legal = false;
         // Is the block nested in a trigger?
         let block = this;
@@ -382,7 +382,7 @@ Blockly.Blocks['http_response'] = {
      */
     FUNCTION_TYPES: ['http_get', 'http_post'],
 };
-Blockly.JavaScript.forBlock['http_response'] = function(block) {
+Blockly.JavaScript.forBlock['http_response'] = function (block) {
     const attr = block.getFieldValue('ATTR');
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
@@ -404,7 +404,7 @@ Blockly.Action.blocks['file_write'] =
     '</block>';
 
 Blockly.Blocks['file_write'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput('OID')
             .appendField('📁 ' + Blockly.Translate('file_write'));
 
@@ -425,7 +425,7 @@ Blockly.Blocks['file_write'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['file_write'] = function(block) {
+Blockly.JavaScript.forBlock['file_write'] = function (block) {
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
     const data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
@@ -464,7 +464,7 @@ Blockly.Action.blocks['file_read'] =
     '</block>';
 
 Blockly.Blocks['file_read'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput('OID')
             .appendField('📁 ' + Blockly.Translate('file_read'));
 
@@ -485,7 +485,7 @@ Blockly.Blocks['file_read'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['file_read'] = function(block) {
+Blockly.JavaScript.forBlock['file_read'] = function (block) {
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
@@ -520,7 +520,7 @@ Blockly.Blocks['file_data'] = {
      * Block for conditionally returning a value from a procedure.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField('📁');
 
@@ -542,7 +542,7 @@ Blockly.Blocks['file_data'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         let legal = false;
         // Is the block nested in a trigger?
         let block = this;
@@ -567,7 +567,7 @@ Blockly.Blocks['file_data'] = {
      */
     FUNCTION_TYPES: ['file_read'],
 };
-Blockly.JavaScript.forBlock['file_data'] = function(block) {
+Blockly.JavaScript.forBlock['file_data'] = function (block) {
     const attr = block.getFieldValue('ATTR');
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
@@ -587,7 +587,7 @@ Blockly.Action.blocks['request'] =
     '</block>';
 
 Blockly.Blocks['request'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput('TEXT')
             .appendField(Blockly.Translate('request'));
 
@@ -618,7 +618,7 @@ Blockly.Blocks['request'] = {
         this.setTooltip(Blockly.Translate('request_tooltip'));
         this.setHelpUrl(Blockly.Translate('request_help'));
     },
-    mutationToDom: function() {
+    mutationToDom: function () {
         const container = document.createElement('mutation');
         const withStatement = this.getFieldValue('WITH_STATEMENT');
 
@@ -626,12 +626,12 @@ Blockly.Blocks['request'] = {
 
         return container;
     },
-    domToMutation: function(xmlElement) {
+    domToMutation: function (xmlElement) {
         const option = xmlElement.getAttribute('with_statement');
 
         this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
-    updateShape_: function(withStatement) {
+    updateShape_: function (withStatement) {
         // Add or remove a statement Input.
         const inputExists = this.getInput('STATEMENT');
 
@@ -645,7 +645,7 @@ Blockly.Blocks['request'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['request'] = function(block) {
+Blockly.JavaScript.forBlock['request'] = function (block) {
     const logLevel = block.getFieldValue('LOG');
     const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
     const withStatement = block.getFieldValue('WITH_STATEMENT');
