@@ -513,9 +513,13 @@ class BlocklyEditor extends React.Component {
                     maxScale:   3,
                     minScale:   0.3,
                     scaleSpeed: 1.2,
+                    pinch: true,
                 },
                 move: {
-                    scrollbars: true,
+                    scrollbars: {
+                        horizontal: true,
+                        vertical: true,
+                    },
                     drag: true,
                     wheel: true,
                 },
