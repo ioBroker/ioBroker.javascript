@@ -2,7 +2,6 @@
 
 if (typeof goog !== 'undefined') {
     goog.provide('Blockly.JavaScript.Trigger');
-
     goog.require('Blockly.JavaScript');
 }
 

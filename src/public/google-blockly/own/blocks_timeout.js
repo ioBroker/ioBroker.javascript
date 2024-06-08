@@ -2,7 +2,6 @@
 
 if (typeof goog !== 'undefined') {
     goog.provide('Blockly.JavaScript.Timeouts');
-
     goog.require('Blockly.JavaScript');
 } else {
     // define this object for blockly modules from adapters
