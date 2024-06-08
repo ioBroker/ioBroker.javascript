@@ -10,7 +10,7 @@ Blockly.CustomBlocks.push('Sendto');
 
 Blockly.Sendto = {
     HUE: 310,
-    blocks: {}
+    blocks: {},
 };
 
 // --- sendTo Custom --------------------------------------------------
@@ -335,20 +335,22 @@ Blockly.JavaScript.forBlock['sendto_custom'] = function (block) {
             if (statement) {
                 return `sendTo('${instance}', '${command}', ${val}, async (result) => {\n` +
                     statement +
-                    '});\n' + logText;
-            } else {
-                return `sendTo('${instance}', '${command}', ${val});\n` + logText;
+                    `});\n${logText}`;
             }
+
+            return `sendTo('${instance}', '${command}', ${val});\n${logText}`;
         }
     }
 
+    const argStr = (args.length ? args.map(a => Blockly.JavaScript.prefixLines(`${a},`, Blockly.JavaScript.INDENT)).join('\n') : '');
+
     if (statement) {
-        return `sendTo('${instance}', '${command}', { ${args.length ? args.join(', ') : ''} }, async (result) => {\n` +
+        return `sendTo('${instance}', '${command}', {\n${argStr}\n}, async (result) => {\n` +
             statement +
-            '});\n' + logText;
-    } else {
-        return `sendTo('${instance}', '${command}', { ${args.length ? args.join(', ') : ''} });\n` + logText;
+            `});\n${logText}`;
     }
+
+    return `sendTo('${instance}', '${command}', {\n${argStr}\n});\n${logText}`;
 };
 
 // --- sendTo JavaScript --------------------------------------------------
