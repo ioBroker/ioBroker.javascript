@@ -480,6 +480,24 @@ class BlocklyEditor extends React.Component {
         toolboxText = toolboxText || (await this.getToolbox());
         toolboxXml  = toolboxXml  || this.Blockly.utils.xml.textToDom(toolboxText);
 
+        this.darkTheme = this.Blockly.Theme.defineTheme('dark', {
+            base: this.Blockly.Themes.Classic,
+            componentStyles: {
+                workspaceBackgroundColour: '#1e1e1e',
+                toolboxBackgroundColour: 'blackBackground',
+                toolboxForegroundColour: '#fff',
+                flyoutBackgroundColour: '#252526',
+                flyoutForegroundColour: '#ccc',
+                flyoutOpacity: 1,
+                scrollbarColour: '#797979',
+                insertionMarkerColour: '#fff',
+                insertionMarkerOpacity: 0.3,
+                scrollbarOpacity: 0.4,
+                cursorColour: '#d0d0d0',
+                blackBackground: '#333',
+            },
+        });
+
         // https://developers.google.com/blockly/reference/js/blockly.blocklyoptions_interface.md
         this.blocklyWorkspace = this.Blockly.inject(
             this.blockly,
@@ -504,8 +522,7 @@ class BlocklyEditor extends React.Component {
                 trashcan: true,
                 grid: {
                     spacing:    25,
-                    length:     3,
-                    colour:     '#ccc',
+                    length:     1,
                     snap:       true,
                 },
                 sounds: false, // disable sounds
@@ -551,20 +568,11 @@ class BlocklyEditor extends React.Component {
     }
 
     updateBackground() {
-        const background = document.getElementsByClassName('blocklyMainBackground')[0];
-        if (this.state.themeType === 'dark') {
-            if (!background._originalStyle) {
-                background._originalStyle = {
-                    stroke: background.style.stroke,
-                    fill: background.style.fill,
-                };
-            }
-            // add class
-            background.style.stroke = '#3a3a3a';
-            background.style.fill = '#515151';
-        } else if (background._originalStyle) {
-            background.style.stroke = background._originalStyle.stroke;
-            background.style.fill = background._originalStyle.fill;
+        if (this.state.themeType === 'dark' || this.state.themeType === 'blue') {
+            this.blocklyWorkspace.setTheme(this.darkTheme);
+        } else {
+            this.blocklyWorkspace.getThemeManager();
+            this.blocklyWorkspace.setTheme(this.Blockly.Themes.Classic);
         }
     }
 

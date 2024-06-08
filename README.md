@@ -26,6 +26,10 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (klein0r) Added Blockly dark theme
+
 ### 8.5.0 (2024-06-07)
 
 * (klein0r) Ack flag on state object has priorty (in setState/setStateDelayed)
