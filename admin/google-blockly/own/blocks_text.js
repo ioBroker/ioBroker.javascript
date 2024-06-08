@@ -4,7 +4,7 @@
 
 Blockly.Blocks['text_newline'] = {
     // Checkbox.
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('text_newline'));
 
@@ -17,7 +17,7 @@ Blockly.Blocks['text_newline'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['text_newline'] = function(block) {
+Blockly.JavaScript.forBlock['text_newline'] = function (block) {
     const dropdownType = block.getFieldValue('Type');
     return [`'${dropdownType}'`, Blockly.JavaScript.ORDER_ATOMIC];
 };

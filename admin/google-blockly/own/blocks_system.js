@@ -2,7 +2,6 @@
 
 if (typeof goog !== 'undefined') {
     goog.provide('Blockly.JavaScript.System');
-
     goog.require('Blockly.JavaScript');
 }
 
@@ -28,7 +27,7 @@ Blockly.Blocks['global_var'] = {
      * Block for conditionally returning a value from a procedure.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.appendDummyInput('VAR')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('global_var_scriptname'), 'scriptName'],
@@ -43,7 +42,7 @@ Blockly.Blocks['global_var'] = {
         this.setHelpUrl(getHelp('global_var'));
     }
 };
-Blockly.JavaScript.forBlock['global_var'] = function(block) {
+Blockly.JavaScript.forBlock['global_var'] = function (block) {
     const variable = block.getFieldValue('VAR');
 
     return [variable, Blockly.JavaScript.ORDER_ATOMIC];
@@ -61,7 +60,7 @@ Blockly.System.blocks['debug'] =
     '</block>';
 
 Blockly.Blocks['debug'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput('TEXT')
             .setCheck(null)
             .appendField(Blockly.Translate('debug'));
@@ -83,7 +82,7 @@ Blockly.Blocks['debug'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['debug'] = function(block) {
+Blockly.JavaScript.forBlock['debug'] = function (block) {
     const value_text = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_ATOMIC);
     const logLevel = block.getFieldValue('Severity');
 
@@ -96,7 +95,7 @@ Blockly.System.blocks['comment'] =
     '</block>';
 
 Blockly.Blocks['comment'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput('COMMENT')
             .appendField(new Blockly.FieldTextInput(Blockly.Translate('comment')), 'COMMENT');
 
@@ -108,7 +107,7 @@ Blockly.Blocks['comment'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['comment'] = function(block) {
+Blockly.JavaScript.forBlock['comment'] = function (block) {
     const comment = block.getFieldValue('COMMENT');
 
     return `// ${comment}\n`;
@@ -122,7 +121,7 @@ Blockly.System.blocks['control'] =
     '</block>';
 
 Blockly.Blocks['control'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('control'));
 
@@ -146,7 +145,7 @@ Blockly.Blocks['control'] = {
         this.setTooltip(Blockly.Translate('control_tooltip'));
         this.setHelpUrl(getHelp('control_help'));
     },
-    mutationToDom: function() {
+    mutationToDom: function () {
         const container = document.createElement('mutation');
         const option = this.getFieldValue('WITH_DELAY');
 
@@ -154,11 +153,11 @@ Blockly.Blocks['control'] = {
 
         return container;
     },
-    domToMutation: function(xmlElement) {
+    domToMutation: function (xmlElement) {
         const option = xmlElement.getAttribute('delay_input');
         this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
-    updateShape_: function(delayInput) {
+    updateShape_: function (delayInput) {
         // Add or remove a delay Input.
         let inputExists = this.getInput('DELAY');
 
@@ -191,7 +190,7 @@ Blockly.Blocks['control'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['control'] = function(block) {
+Blockly.JavaScript.forBlock['control'] = function (block) {
     const valueObjectID = block.getFieldValue('OID');
 
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
@@ -233,7 +232,7 @@ Blockly.System.blocks['toggle'] =
     '</block>';
 
 Blockly.Blocks['toggle'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('toggle'));
 
@@ -253,7 +252,7 @@ Blockly.Blocks['toggle'] = {
         this.setTooltip(Blockly.Translate('toggle_tooltip'));
         this.setHelpUrl(getHelp('toggle_help'));
     },
-    mutationToDom: function() {
+    mutationToDom: function () {
         const container = document.createElement('mutation');
         const option = this.getFieldValue('WITH_DELAY');
 
@@ -261,11 +260,11 @@ Blockly.Blocks['toggle'] = {
 
         return container;
     },
-    domToMutation: function(xmlElement) {
+    domToMutation: function (xmlElement) {
         const option = xmlElement.getAttribute('delay_input');
         this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
-    updateShape_: function(delayInput) {
+    updateShape_: function (delayInput) {
         // Add or remove a delay Input.
         let inputExists = this.getInput('DELAY');
 
@@ -299,7 +298,7 @@ Blockly.Blocks['toggle'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['toggle'] = function(block) {
+Blockly.JavaScript.forBlock['toggle'] = function (block) {
     const valueObjectID = block.getFieldValue('OID');
     const unit  = block.getFieldValue('UNIT');
 
@@ -362,7 +361,7 @@ Blockly.System.blocks['update'] =
     '</block>';
 
 Blockly.Blocks['update'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('update'));
 
@@ -386,7 +385,7 @@ Blockly.Blocks['update'] = {
         this.setTooltip(Blockly.Translate('update_tooltip'));
         this.setHelpUrl(getHelp('update_help'));
     },
-    mutationToDom: function() {
+    mutationToDom: function () {
         const container = document.createElement('mutation');
         const option = this.getFieldValue('WITH_DELAY');
 
@@ -394,11 +393,11 @@ Blockly.Blocks['update'] = {
 
         return container;
     },
-    domToMutation: function(xmlElement) {
+    domToMutation: function (xmlElement) {
         const option = xmlElement.getAttribute('delay_input');
         this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
-    updateShape_: function(delayInput) {
+    updateShape_: function (delayInput) {
         // Add or remove a delay Input.
         let inputExists = this.getInput('DELAY');
 
@@ -432,7 +431,7 @@ Blockly.Blocks['update'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['update'] = function(block) {
+Blockly.JavaScript.forBlock['update'] = function (block) {
     const value_objectid = block.getFieldValue('OID');
 
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
@@ -484,7 +483,7 @@ Blockly.System.blocks['direct'] =
     '</block>';
 
 Blockly.Blocks['direct'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('direct'));
 
@@ -508,7 +507,7 @@ Blockly.Blocks['direct'] = {
     }
 };
 
-Blockly.JavaScript.forBlock['direct'] = function(block) {
+Blockly.JavaScript.forBlock['direct'] = function (block) {
     const oidSrc = Blockly.JavaScript.valueToCode(block, 'OID_SRC', Blockly.JavaScript.ORDER_ATOMIC);
     const oidDest = Blockly.JavaScript.valueToCode(block, 'OID_DST', Blockly.JavaScript.ORDER_ATOMIC);
 
@@ -547,7 +546,7 @@ Blockly.System.blocks['control_ex'] =
     '</block>';
 
 Blockly.Blocks['control_ex'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('control_ex'));
 
@@ -586,7 +585,7 @@ Blockly.Blocks['control_ex'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['control_ex'] = function(block) {
+Blockly.JavaScript.forBlock['control_ex'] = function (block) {
     const valueObjectID = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     const valueDelay = Blockly.JavaScript.valueToCode(block, 'DELAY_MS', Blockly.JavaScript.ORDER_ATOMIC);
@@ -613,7 +612,7 @@ Blockly.System.blocks['create'] =
     '</block>';
 
 Blockly.Blocks['create'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('create'));
 
@@ -642,7 +641,7 @@ Blockly.Blocks['create'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['create'] = function(block) {
+Blockly.JavaScript.forBlock['create'] = function (block) {
     const name = block.getFieldValue('NAME');
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     const common = Blockly.JavaScript.valueToCode(block, 'COMMON', Blockly.JavaScript.ORDER_ATOMIC);
@@ -674,7 +673,7 @@ Blockly.System.blocks['create_ex'] =
     '</block>';
 
 Blockly.Blocks['create_ex'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('create'));
 
@@ -718,7 +717,7 @@ Blockly.Blocks['create_ex'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['create_ex'] = function(block) {
+Blockly.JavaScript.forBlock['create_ex'] = function (block) {
     const name = block.getFieldValue('NAME');
     const type = block.getFieldValue('TYPE');
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
@@ -755,7 +754,7 @@ Blockly.System.blocks['get_value'] =
 
 Blockly.Blocks['get_value'] = {
     // Checkbox.
-    init: function() {
+    init: function () {
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('get_value_val'),      'val'],
@@ -794,7 +793,7 @@ Blockly.Blocks['get_value'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         // Is the block connected to a trigger?
         const block = this.getParent();
         if (block && Blockly.System.WARNING_PARENTS.includes(block.type)) {
@@ -805,7 +804,7 @@ Blockly.Blocks['get_value'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['get_value'] = function(block) {
+Blockly.JavaScript.forBlock['get_value'] = function (block) {
     const oid  = block.getFieldValue('OID');
     const attr = block.getFieldValue('ATTR');
 
@@ -827,7 +826,7 @@ Blockly.System.blocks['get_value_var'] =
     '</block>';
 
 Blockly.Blocks['get_value_var'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('get_value_val'),      'val'],
@@ -865,7 +864,7 @@ Blockly.Blocks['get_value_var'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         // Is the block connected to a trigger?
         const block = this.getParent();
         if (block && Blockly.System.WARNING_PARENTS.includes(block.type)) {
@@ -876,7 +875,7 @@ Blockly.Blocks['get_value_var'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['get_value_var'] = function(block) {
+Blockly.JavaScript.forBlock['get_value_var'] = function (block) {
     const oid  = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
 
@@ -894,7 +893,7 @@ Blockly.System.blocks['get_value_async'] =
     '</block>';
 
 Blockly.Blocks['get_value_async'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('get_value_val'),     'val'],
@@ -933,7 +932,7 @@ Blockly.Blocks['get_value_async'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['get_value_async'] = function(block) {
+Blockly.JavaScript.forBlock['get_value_async'] = function (block) {
     const oid  = block.getFieldValue('OID');
     const attr = block.getFieldValue('ATTR');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
@@ -958,7 +957,7 @@ Blockly.System.blocks['get_object'] =
 
 Blockly.Blocks['get_object'] = {
     // Checkbox.
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('get_object'));
 
@@ -977,7 +976,7 @@ Blockly.Blocks['get_object'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         // Is the block connected to a trigger?
         const block = this.getParent();
         if (block && Blockly.System.WARNING_PARENTS.includes(block.type)) {
@@ -990,7 +989,7 @@ Blockly.Blocks['get_object'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['get_object'] = function(block) {
+Blockly.JavaScript.forBlock['get_object'] = function (block) {
     const oid  = block.getFieldValue('OID');
 
     return [`getObject('${oid}')`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1002,7 +1001,7 @@ Blockly.System.blocks['get_object_async'] =
     '</block>';
 
 Blockly.Blocks['get_object_async'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('get_object'));
 
@@ -1022,7 +1021,7 @@ Blockly.Blocks['get_object_async'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['get_object_async'] = function(block) {
+Blockly.JavaScript.forBlock['get_object_async'] = function (block) {
     const oid  = block.getFieldValue('OID');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
@@ -1037,7 +1036,7 @@ Blockly.System.blocks['field_oid'] =
     '</block>';
 
 Blockly.Blocks['field_oid'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('field_oid_OID'));
 
@@ -1051,7 +1050,7 @@ Blockly.Blocks['field_oid'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['field_oid'] = function(block) {
+Blockly.JavaScript.forBlock['field_oid'] = function (block) {
     const oid = block.getFieldValue('oid');
 
     return [`'${oid}'`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1063,7 +1062,7 @@ Blockly.System.blocks['field_oid_meta'] =
     '</block>';
 
 Blockly.Blocks['field_oid_meta'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('field_oid_OID_meta'));
 
@@ -1077,7 +1076,7 @@ Blockly.Blocks['field_oid_meta'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['field_oid_meta'] = function(block) {
+Blockly.JavaScript.forBlock['field_oid_meta'] = function (block) {
     const oid = block.getFieldValue('oid');
 
     return [`'${oid}'`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1089,7 +1088,7 @@ Blockly.System.blocks['field_oid_script'] =
     '</block>';
 
 Blockly.Blocks['field_oid_script'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('field_oid_OID_script'));
 
@@ -1103,7 +1102,7 @@ Blockly.Blocks['field_oid_script'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['field_oid_script'] = function(block) {
+Blockly.JavaScript.forBlock['field_oid_script'] = function (block) {
     const oid = block.getFieldValue('oid');
 
     return [`'${oid}'`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1125,7 +1124,7 @@ Blockly.System.blocks['get_attr'] =
     '</block>';
 
 Blockly.Blocks['get_attr'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput('PATH')
             .setCheck(null)
             .appendField(Blockly.Translate('get_attr_path'));
@@ -1141,7 +1140,7 @@ Blockly.Blocks['get_attr'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['get_attr'] = function(block) {
+Blockly.JavaScript.forBlock['get_attr'] = function (block) {
     const path = Blockly.JavaScript.valueToCode(block, 'PATH', Blockly.JavaScript.ORDER_ATOMIC);
     const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
 
@@ -1155,7 +1154,7 @@ Blockly.System.blocks['regex'] =
     '</block>';
 
 Blockly.Blocks['regex'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField('RegExp');
 
@@ -1169,7 +1168,7 @@ Blockly.Blocks['regex'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['regex'] = function(block) {
+Blockly.JavaScript.forBlock['regex'] = function (block) {
     const oid = block.getFieldValue('TEXT');
 
     return [`new RegExp('${oid}')`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1182,7 +1181,7 @@ Blockly.System.blocks['selector'] =
     '</block>';
 
 Blockly.Blocks['selector'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('selector') + ' $(');
 
@@ -1199,7 +1198,7 @@ Blockly.Blocks['selector'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['selector'] = function(block) {
+Blockly.JavaScript.forBlock['selector'] = function (block) {
     const oid = block.getFieldValue('TEXT');
 
     return [`Array.prototype.slice.apply($('${oid}'))`, Blockly.JavaScript.ORDER_ATOMIC];

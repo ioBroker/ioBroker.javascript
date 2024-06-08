@@ -2,7 +2,6 @@
 
 if (typeof goog !== 'undefined') {
     goog.provide('Blockly.JavaScript.Time');
-
     goog.require('Blockly.JavaScript');
 }
 
@@ -30,7 +29,7 @@ Blockly.Time.blocks['time_compare_ex'] =
     '</block>';
 
 Blockly.Blocks['time_compare_ex'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput('TIME_TEXT')
             .appendField(Blockly.Translate('time_compare_ex'));
 
@@ -70,7 +69,7 @@ Blockly.Blocks['time_compare_ex'] = {
         this.setTooltip(Blockly.Translate('time_compare_ex_tooltip'));
         this.setHelpUrl(getHelp('time_compare_ex_help'));
     },
-    mutationToDom: function() {
+    mutationToDom: function () {
         const container = document.createElement('mutation');
         const option = this.getFieldValue('OPTION');
         const use_actual_time = this.getFieldValue('USE_ACTUAL_TIME');
@@ -78,12 +77,12 @@ Blockly.Blocks['time_compare_ex'] = {
         container.setAttribute('actual_time', use_actual_time === 'TRUE' || use_actual_time === 'true' || use_actual_time === true ? 'true' : 'false');
         return container;
     },
-    domToMutation: function(xmlElement) {
+    domToMutation: function (xmlElement) {
         const end_time = xmlElement.getAttribute('end_time');
         const actual_time = xmlElement.getAttribute('actual_time');
         this.updateShape_(end_time === true || end_time === 'true' || end_time === 'TRUE', actual_time === true || actual_time === 'true' || actual_time === 'TRUE');
     },
-    updateShape_: function(isBetween, useActualTime) {
+    updateShape_: function (isBetween, useActualTime) {
         if (isBetween === undefined) {
             isBetween = this.getFieldValue('OPTION') === 'between' || this.getFieldValue('OPTION') === 'not between';
         }
@@ -152,7 +151,7 @@ Blockly.Blocks['time_compare_ex'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['time_compare_ex'] = function(block) {
+Blockly.JavaScript.forBlock['time_compare_ex'] = function (block) {
     const option     = block.getFieldValue('OPTION');
     const start_time = Blockly.JavaScript.valueToCode(block, 'START_TIME', Blockly.JavaScript.ORDER_ATOMIC);
     let end_time   = Blockly.JavaScript.valueToCode(block, 'END_TIME', Blockly.JavaScript.ORDER_ATOMIC);
@@ -173,7 +172,7 @@ Blockly.Time.blocks['time_compare'] =
     '</block>';
 
 Blockly.Blocks['time_compare'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('time_compare'));
 
@@ -207,17 +206,17 @@ Blockly.Blocks['time_compare'] = {
         this.setHelpUrl(getHelp('time_compare_help'));
     },
 
-    mutationToDom: function() {
+    mutationToDom: function () {
         const container = document.createElement('mutation');
         const option = this.getFieldValue('OPTION');
         container.setAttribute('end_time', (option === 'between' || option === 'not between') ? 'true' : 'false');
         return container;
     },
-    domToMutation: function(xmlElement) {
+    domToMutation: function (xmlElement) {
         const option = xmlElement.getAttribute('end_time');
         this.updateShape_(option === true || option === 'true' || option === 'TRUE');
     },
-    updateShape_: function(isBetween) {
+    updateShape_: function (isBetween) {
         // Add or remove a delay Input.
         const inputExists = this.getInput('END_TIME');
 
@@ -236,7 +235,7 @@ Blockly.Blocks['time_compare'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['time_compare'] = function(block) {
+Blockly.JavaScript.forBlock['time_compare'] = function (block) {
     const option     = block.getFieldValue('OPTION');
     const start_time = block.getFieldValue('START_TIME');
     let end_time   = block.getFieldValue('END_TIME');
@@ -271,7 +270,7 @@ Blockly.Time.blocks['time_get'] =
     '</block>';
 
 Blockly.Blocks['time_get'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('time_get'));
 
@@ -324,19 +323,19 @@ Blockly.Blocks['time_get'] = {
         this.setTooltip(Blockly.Translate('time_get_tooltip'));
         //this.setHelpUrl(getHelp('time_get_help'));
     },
-    mutationToDom: function() {
+    mutationToDom: function () {
         const container = document.createElement('mutation');
         const option = this.getFieldValue('OPTION');
         container.setAttribute('format', option === 'custom' ? 'true' : 'false');
         container.setAttribute('language', option === 'wdt' || option === 'wdts' || option === 'Mt' || option === 'Mts' ? 'true' : 'false');
         return container;
     },
-    domToMutation: function(xmlElement) {
+    domToMutation: function (xmlElement) {
         const format = xmlElement.getAttribute('format');
         const language = xmlElement.getAttribute('language');
         this.updateShape_(format === true || format === 'true' || format === 'TRUE', language === true || language === 'true' || language === 'TRUE');
     },
-    updateShape_: function(isFormat, isLanguage) {
+    updateShape_: function (isFormat, isLanguage) {
         // Add or remove a delay Input.
         let inputExists = this.getInput('FORMAT');
 
@@ -373,7 +372,7 @@ Blockly.Blocks['time_get'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['time_get'] = function(block) {
+Blockly.JavaScript.forBlock['time_get'] = function (block) {
     const option = block.getFieldValue('OPTION');
     const format = block.getFieldValue('FORMAT');
     const lang   = block.getFieldValue('LANGUAGE');
@@ -429,7 +428,7 @@ Blockly.Time.blocks['time_get_special'] =
     '</block>';
 
 Blockly.Blocks['time_get_special'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('time_get_special'));
 
@@ -453,7 +452,7 @@ Blockly.Blocks['time_get_special'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['time_get_special'] = function(block) {
+Blockly.JavaScript.forBlock['time_get_special'] = function (block) {
     const type = block.getFieldValue('TYPE');
 
     let code;
@@ -482,7 +481,7 @@ Blockly.Time.blocks['time_astro'] =
     '</block>';
 
 Blockly.Blocks['time_astro'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('time_astro'));
 
@@ -518,7 +517,7 @@ Blockly.Blocks['time_astro'] = {
     }
 };
 
-Blockly.JavaScript.forBlock['time_astro'] = function(block) {
+Blockly.JavaScript.forBlock['time_astro'] = function (block) {
     const type    = block.getFieldValue('TYPE');
     const offset  = parseFloat(block.getFieldValue('OFFSET'));
 
@@ -544,7 +543,7 @@ Blockly.Time.blocks['time_calculation'] =
     '</block>';
 
 Blockly.Blocks['time_calculation'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput('NAME')
             .appendField(Blockly.Translate('time_calculation'));
 
@@ -580,7 +579,7 @@ Blockly.Blocks['time_calculation'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['time_calculation'] = function(block) {
+Blockly.JavaScript.forBlock['time_calculation'] = function (block) {
     const dateTime = Blockly.JavaScript.valueToCode(block, 'DATE_TIME', Blockly.JavaScript.ORDER_ATOMIC);
     const operation = block.getFieldValue('OPERATION');
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);

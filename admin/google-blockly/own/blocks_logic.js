@@ -11,7 +11,7 @@ Blockly.Blocks['logic_multi_and_container'] = {
      * Mutator block for container.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.setColour("%{BKY_LOGIC_HUE}");
 
         this.appendDummyInput()
@@ -29,7 +29,7 @@ Blockly.Blocks['logic_multi_and_mutator'] = {
      * Mutator block for add items.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.setColour("%{BKY_LOGIC_HUE}");
 
         this.appendDummyInput('AND')
@@ -45,7 +45,7 @@ Blockly.Blocks['logic_multi_and_mutator'] = {
 };
 
 Blockly.Blocks['logic_multi_and'] = {
-    init: function() {
+    init: function () {
         this.itemCount_ = 2;
         this.setMutator(new Blockly.icons.MutatorIcon(['logic_multi_and_mutator'], this));
 
@@ -135,7 +135,7 @@ Blockly.Blocks['logic_multi_and'] = {
      * @param {!Blockly.Block} containerBlock Root block in mutator.
      * @this Blockly.Block
      */
-    saveConnections: function(containerBlock) {
+    saveConnections: function (containerBlock) {
         let itemBlock = containerBlock.getInputTargetBlock('STACK');
         let i = 0;
 
@@ -152,7 +152,7 @@ Blockly.Blocks['logic_multi_and'] = {
      * @private
      * @this Blockly.Block
      */
-    updateShape_: function() {
+    updateShape_: function () {
         // Add new inputs.
         for (let i = 0; i < this.itemCount_; i++) {
             if (!this.getInput('AND' + i)) {
@@ -169,7 +169,7 @@ Blockly.Blocks['logic_multi_and'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['logic_multi_and'] = function(block) {
+Blockly.JavaScript.forBlock['logic_multi_and'] = function (block) {
     const ands = [];
     for (let n = 0; n < block.itemCount_; n++) {
         const condition = Blockly.JavaScript.valueToCode(block, 'AND' + n, Blockly.JavaScript.ORDER_ATOMIC);
@@ -188,7 +188,7 @@ Blockly.Blocks['logic_multi_or_container'] = {
      * Mutator block for container.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.setColour("%{BKY_LOGIC_HUE}");
 
         this.appendDummyInput()
@@ -206,7 +206,7 @@ Blockly.Blocks['logic_multi_or_mutator'] = {
      * Mutator block for add items.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.setColour("%{BKY_LOGIC_HUE}");
 
         this.appendDummyInput('OR')
@@ -222,7 +222,7 @@ Blockly.Blocks['logic_multi_or_mutator'] = {
 };
 
 Blockly.Blocks['logic_multi_or'] = {
-    init: function() {
+    init: function () {
         this.itemCount_ = 2;
         this.setMutator(new Blockly.icons.MutatorIcon(['logic_multi_or_mutator'], this));
 
@@ -312,7 +312,7 @@ Blockly.Blocks['logic_multi_or'] = {
      * @param {!Blockly.Block} containerBlock Root block in mutator.
      * @this Blockly.Block
      */
-    saveConnections: function(containerBlock) {
+    saveConnections: function (containerBlock) {
         let itemBlock = containerBlock.getInputTargetBlock('STACK');
         let i = 0;
 
@@ -329,7 +329,7 @@ Blockly.Blocks['logic_multi_or'] = {
      * @private
      * @this Blockly.Block
      */
-    updateShape_: function() {
+    updateShape_: function () {
         // Add new inputs.
         for (let i = 0; i < this.itemCount_; i++) {
             if (!this.getInput('OR' + i)) {
@@ -346,7 +346,7 @@ Blockly.Blocks['logic_multi_or'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['logic_multi_or'] = function(block) {
+Blockly.JavaScript.forBlock['logic_multi_or'] = function (block) {
     const ors = [];
     for (let n = 0; n < block.itemCount_; n++) {
         const condition = Blockly.JavaScript.valueToCode(block, 'OR' + n, Blockly.JavaScript.ORDER_ATOMIC);
@@ -361,7 +361,7 @@ Blockly.JavaScript.forBlock['logic_multi_or'] = function(block) {
 // --- logic between --------------------------------------------------
 
 Blockly.Blocks['logic_between'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput('MIN')
             .setCheck('Number');
         this.appendValueInput('VALUE')
@@ -379,7 +379,7 @@ Blockly.Blocks['logic_between'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['logic_between'] = function(block) {
+Blockly.JavaScript.forBlock['logic_between'] = function (block) {
     const min = Blockly.JavaScript.valueToCode(block, 'MIN', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
     const max = Blockly.JavaScript.valueToCode(block, 'MAX', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
@@ -392,7 +392,7 @@ Blockly.JavaScript.forBlock['logic_between'] = function(block) {
 // --- logic ifempty --------------------------------------------------
 
 Blockly.Blocks['logic_ifempty'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput('VALUE')
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
@@ -410,7 +410,7 @@ Blockly.Blocks['logic_ifempty'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['logic_ifempty'] = function(block) {
+Blockly.JavaScript.forBlock['logic_ifempty'] = function (block) {
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
     const deflt = Blockly.JavaScript.valueToCode(block, 'DEFLT', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
 

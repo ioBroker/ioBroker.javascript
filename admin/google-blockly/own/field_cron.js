@@ -2,7 +2,6 @@
 
 if (typeof goog !== 'undefined') {
     goog.provide('Blockly.FieldCRON');
-
     goog.require('Blockly.Field');
     goog.require('Blockly.Msg');
     goog.require('goog.asserts');

@@ -2,7 +2,6 @@
 
 if (typeof goog !== 'undefined') {
     goog.provide('Blockly.JavaScript.Trigger');
-
     goog.require('Blockly.JavaScript');
 }
 
@@ -37,7 +36,7 @@ Blockly.Blocks['on_ext_oid_container'] = {
      * Mutator block for container.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.setColour(Blockly.Trigger.HUE);
 
         this.appendDummyInput()
@@ -54,7 +53,7 @@ Blockly.Blocks['on_ext_oid'] = {
      * Mutator block for add items.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.setColour(Blockly.Trigger.HUE);
 
         this.appendDummyInput('OID')
@@ -70,7 +69,7 @@ Blockly.Blocks['on_ext_oid'] = {
 };
 
 Blockly.Blocks['on_ext'] = {
-    init: function() {
+    init: function () {
         this.itemCount_ = 1;
         this.setMutator(new Blockly.icons.MutatorIcon(['on_ext_oid'], this));
 
@@ -160,7 +159,7 @@ Blockly.Blocks['on_ext'] = {
      * @param {!Blockly.Block} containerBlock Root block in mutator.
      * @this Blockly.Block
      */
-    saveConnections: function(containerBlock) {
+    saveConnections: function (containerBlock) {
         let itemBlock = containerBlock.getInputTargetBlock('STACK');
         let i = 0;
 
@@ -177,7 +176,7 @@ Blockly.Blocks['on_ext'] = {
      * @private
      * @this Blockly.Block
      */
-    updateShape_: function() {
+    updateShape_: function () {
         let conditionValue = undefined;
         if (this.getInput('CONDITION')) {
             conditionValue = this.getFieldValue('CONDITION');
@@ -278,7 +277,7 @@ Blockly.Blocks['on_ext'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         let legal = true;
 
         // Is the block nested in a trigger?
@@ -297,7 +296,7 @@ Blockly.Blocks['on_ext'] = {
         }
     },
 };
-Blockly.JavaScript.forBlock['on_ext'] = function(block) {
+Blockly.JavaScript.forBlock['on_ext'] = function (block) {
     const dropdown_condition = block.getFieldValue('CONDITION');
     const ack_condition = block.getFieldValue('ACK_CONDITION');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
@@ -339,7 +338,7 @@ Blockly.Trigger.blocks['on'] =
     '</block>';
 
 Blockly.Blocks['on'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('on'));
 
@@ -382,7 +381,7 @@ Blockly.Blocks['on'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         let legal = true;
 
         // Is the block nested in a trigger?
@@ -401,7 +400,7 @@ Blockly.Blocks['on'] = {
         }
     }
 };
-Blockly.JavaScript.forBlock['on'] = function(block) {
+Blockly.JavaScript.forBlock['on'] = function (block) {
     const value_objectid = block.getFieldValue('OID');
     const dropdown_condition = block.getFieldValue('CONDITION');
     const ack_condition = block.getFieldValue('ACK_CONDITION');
@@ -438,7 +437,7 @@ Blockly.Blocks['on_source'] = {
      * Block for conditionally returning a value from a procedure.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField('↪');
 
@@ -481,7 +480,7 @@ Blockly.Blocks['on_source'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         let legal = false;
         // Is the block nested in a trigger?
         let block = this;
@@ -506,7 +505,7 @@ Blockly.Blocks['on_source'] = {
      */
     FUNCTION_TYPES: ['on', 'on_ext'],
 };
-Blockly.JavaScript.forBlock['on_source'] = function(block) {
+Blockly.JavaScript.forBlock['on_source'] = function (block) {
     let attr = block.getFieldValue('ATTR');
     const parts = attr.split('.');
 
@@ -529,7 +528,7 @@ Blockly.Blocks['on_ack_value'] = {
      * Block for conditionally returning a value from a procedure.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField('↪ ' + Blockly.Translate('on_ack_value'));
 
@@ -546,7 +545,7 @@ Blockly.Blocks['on_ack_value'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         let legal = false;
         // Is the block nested in a trigger?
         let block = this;
@@ -571,7 +570,7 @@ Blockly.Blocks['on_ack_value'] = {
      */
     FUNCTION_TYPES: ['on', 'on_ext'],
 };
-Blockly.JavaScript.forBlock['on_ack_value'] = function(block) {
+Blockly.JavaScript.forBlock['on_ack_value'] = function (block) {
     return 'if (obj.id && obj?.state && !obj.state.ack) {\n' +
         Blockly.JavaScript.prefixLines(`await setStateAsync(obj.id, { val: obj.state.val, ack: true });`, Blockly.JavaScript.INDENT) + '\n' +
         `}\n`;
@@ -584,7 +583,7 @@ Blockly.Trigger.blocks['schedule'] =
     '</block>';
 
 Blockly.Blocks['schedule'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('schedule'));
 
@@ -607,7 +606,7 @@ Blockly.Blocks['schedule'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         let legal = true;
 
         // Is the block nested in a trigger?
@@ -626,7 +625,7 @@ Blockly.Blocks['schedule'] = {
         }
     },
 };
-Blockly.JavaScript.forBlock['schedule'] = function(block) {
+Blockly.JavaScript.forBlock['schedule'] = function (block) {
     let schedule = block.getFieldValue('SCHEDULE');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
@@ -648,7 +647,7 @@ Blockly.Trigger.blocks['schedule_by_id'] =
     '</block>';
 
 Blockly.Blocks['schedule_by_id'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('schedule_by_id'));
 
@@ -674,7 +673,7 @@ Blockly.Blocks['schedule_by_id'] = {
         this.setHelpUrl(getHelp('schedule_by_id_help'));
     },
 };
-Blockly.JavaScript.forBlock['schedule_by_id'] = function(block) {
+Blockly.JavaScript.forBlock['schedule_by_id'] = function (block) {
     const value_objectid = block.getFieldValue('OID');
     const ack_condition = block.getFieldValue('ACK_CONDITION');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
@@ -692,7 +691,7 @@ Blockly.Trigger.blocks['astro'] =
     '</block>';
 
 Blockly.Blocks['astro'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('astro'));
 
@@ -739,7 +738,7 @@ Blockly.Blocks['astro'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         let legal = true;
 
         // Is the block nested in a trigger?
@@ -758,7 +757,7 @@ Blockly.Blocks['astro'] = {
         }
     },
 };
-Blockly.JavaScript.forBlock['astro'] = function(block) {
+Blockly.JavaScript.forBlock['astro'] = function (block) {
     const astrotype = block.getFieldValue('TYPE');
     const offset = parseInt(block.getFieldValue('OFFSET'), 10);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
@@ -783,7 +782,7 @@ Blockly.Trigger.blocks['schedule_create'] =
  * @param {!Blockly.Block} block Block to disambiguate.
  * @return {string} Non-colliding name.
  */
-Blockly.Trigger.findLegalName = function(name, block) {
+Blockly.Trigger.findLegalName = function (name, block) {
     if (block.isInFlyout) {
         // Flyouts can have multiple procedures called 'do something'.
         return name;
@@ -810,7 +809,7 @@ Blockly.Trigger.findLegalName = function(name, block) {
  * @return {boolean} True if the name is legal.
  * @private
  */
-Blockly.Trigger.isLegalName_ = function(name, workspace, opt_exclude) {
+Blockly.Trigger.isLegalName_ = function (name, workspace, opt_exclude) {
     if (name === 'schedule') {
         return false;
     }
@@ -843,7 +842,7 @@ Blockly.Trigger.rename = function (name) {
 };
 
 Blockly.Blocks['schedule_create'] = {
-    init: function() {
+    init: function () {
         const nameField = new Blockly.FieldTextInput(
             Blockly.Trigger.findLegalName('schedule', this),
             Blockly.Trigger.rename);
@@ -919,7 +918,7 @@ Blockly.Trigger.blocks['schedule_clear'] =
     '</block>';
 
 Blockly.Blocks['schedule_clear'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput('NAME')
             .appendField(Blockly.Translate('schedule_clear'))
             .appendField(new Blockly.FieldDropdown(function () {
@@ -935,7 +934,7 @@ Blockly.Blocks['schedule_clear'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['schedule_clear'] = function(block) {
+Blockly.JavaScript.forBlock['schedule_clear'] = function (block) {
     const name = Blockly.JavaScript.nameDB_.safeName(block.getFieldValue('NAME'));
     return `(() => { if (${name}) { clearSchedule(${name}); ${name} = null; }})();\n`;
 };
@@ -948,7 +947,7 @@ Blockly.Trigger.blocks['field_cron'] =
 
 Blockly.Blocks['field_cron'] = {
     // Checkbox.
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('field_cron_CRON'));
 
@@ -962,7 +961,7 @@ Blockly.Blocks['field_cron'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['field_cron'] = function(block) {
+Blockly.JavaScript.forBlock['field_cron'] = function (block) {
     const cron = block.getFieldValue('CRON');
 
     return [`'${cron}'`, Blockly.JavaScript.ORDER_ATOMIC];
@@ -1003,7 +1002,7 @@ Blockly.Trigger.blocks['cron_builder'] =
 
 Blockly.Blocks['cron_builder'] = {
     // Checkbox.
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField(Blockly.Translate('cron_builder_CRON'));
 
@@ -1112,7 +1111,7 @@ Blockly.Blocks['cron_builder'] = {
         this.setInputsInline(this.as_line_);
         this.updateShape_(this.seconds_);
     },
-    updateShape_: function(withSeconds) {
+    updateShape_: function (withSeconds) {
         this.seconds_ = withSeconds;
         // Add or remove a statement Input.
         const inputExists = this.getInput('SECONDS');
@@ -1139,7 +1138,7 @@ Blockly.Blocks['cron_builder'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['cron_builder'] = function(block) {
+Blockly.JavaScript.forBlock['cron_builder'] = function (block) {
     const dow     = Blockly.JavaScript.valueToCode(block, 'DOW',     Blockly.JavaScript.ORDER_ATOMIC);
     const months  = Blockly.JavaScript.valueToCode(block, 'MONTHS',  Blockly.JavaScript.ORDER_ATOMIC);
     const days    = Blockly.JavaScript.valueToCode(block, 'DAYS',    Blockly.JavaScript.ORDER_ATOMIC);
@@ -1167,7 +1166,7 @@ Blockly.Trigger.blocks['onMessage'] =
     '</block>';
 
 Blockly.Blocks['onMessage'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput('NAME')
             .appendField(Blockly.Translate('onMessage'));
 
@@ -1191,7 +1190,7 @@ Blockly.Blocks['onMessage'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         let legal = true;
 
         // Is the block nested in a trigger?
@@ -1238,7 +1237,7 @@ Blockly.Trigger.blocks['onFile'] =
     '</block>';
 
 Blockly.Blocks['onFile'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput('OID')
             .appendField('📁 ' + Blockly.Translate('onFile'))
             .setCheck(null);
@@ -1267,7 +1266,7 @@ Blockly.Blocks['onFile'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         let legal = true;
 
         // Is the block nested in a trigger?
@@ -1321,7 +1320,7 @@ Blockly.Blocks['onFile_data'] = {
      * Block for conditionally returning a value from a procedure.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField('📁');
 
@@ -1347,7 +1346,7 @@ Blockly.Blocks['onFile_data'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         let legal = false;
         // Is the block nested in a trigger?
         let block = this;
@@ -1372,7 +1371,7 @@ Blockly.Blocks['onFile_data'] = {
      */
     FUNCTION_TYPES: ['onFile'],
 };
-Blockly.JavaScript.forBlock['onFile_data'] = function(block) {
+Blockly.JavaScript.forBlock['onFile_data'] = function (block) {
     const attr = block.getFieldValue('ATTR');
 
     if (attr === 'TEMP_FILE_PATH') {
@@ -1398,7 +1397,7 @@ Blockly.Trigger.blocks['offFile'] =
     '</block>';
 
 Blockly.Blocks['offFile'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput('OID')
             .appendField('📁 ' + Blockly.Translate('offFile'))
             .setCheck(null);
@@ -1440,7 +1439,7 @@ Blockly.Trigger.blocks['onLog'] =
     '</block>';
 
 Blockly.Blocks['onLog'] = {
-    init: function() {
+    init: function () {
         this.appendDummyInput('TEXT')
             .appendField('💬 ' + Blockly.Translate('onLog'));
 
@@ -1470,7 +1469,7 @@ Blockly.Blocks['onLog'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         let legal = true;
 
         // Is the block nested in a trigger?
@@ -1510,7 +1509,7 @@ Blockly.Blocks['onLog_data'] = {
      * Block for conditionally returning a value from a procedure.
      * @this Blockly.Block
      */
-    init: function() {
+    init: function () {
         this.appendDummyInput()
             .appendField('💬 ');
 
@@ -1534,7 +1533,7 @@ Blockly.Blocks['onLog_data'] = {
      * @param {!Blockly.Events.Abstract} e Change event.
      * @this Blockly.Block
      */
-    onchange: function(e) {
+    onchange: function (e) {
         let legal = false;
         // Is the block nested in a trigger?
         let block = this;
@@ -1559,7 +1558,7 @@ Blockly.Blocks['onLog_data'] = {
      */
     FUNCTION_TYPES: ['onLog'],
 };
-Blockly.JavaScript.forBlock['onLog_data'] = function(block) {
+Blockly.JavaScript.forBlock['onLog_data'] = function (block) {
     const attr = block.getFieldValue('ATTR');
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];

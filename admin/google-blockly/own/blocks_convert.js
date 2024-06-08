@@ -2,7 +2,6 @@
 
 if (typeof goog !== 'undefined') {
     goog.provide('Blockly.JavaScript.Convert');
-
     goog.require('Blockly.JavaScript');
 }
 
@@ -181,7 +180,7 @@ Blockly.Blocks.convert_from_date = {
         this.setOutput(true);
         this.setTooltip(Blockly.Translate('convert_from_date_tooltip'));
     },
-    mutationToDom: function() {
+    mutationToDom: function () {
         const container = document.createElement('mutation');
         const option = this.getFieldValue('OPTION');
 
@@ -190,13 +189,13 @@ Blockly.Blocks.convert_from_date = {
 
         return container;
     },
-    domToMutation: function(xmlElement) {
+    domToMutation: function (xmlElement) {
         const format = xmlElement.getAttribute('format');
         const language = xmlElement.getAttribute('language');
 
         this.updateShape_(format === true || format === 'true' || format === 'TRUE', language === true || language === 'true' || language === 'TRUE');
     },
-    updateShape_: function(isFormat, isLanguage) {
+    updateShape_: function (isFormat, isLanguage) {
         // Add or remove a delay Input.
         let inputExists = this.getInput('FORMAT');
 
@@ -315,7 +314,7 @@ Blockly.Blocks.convert_time_difference = {
         this.setOutput(true);
         this.setTooltip(Blockly.Translate('convert_time_difference_tooltip'));
     },
-    mutationToDom: function() {
+    mutationToDom: function () {
         const container = document.createElement('mutation');
         const option = this.getFieldValue('OPTION');
 
@@ -323,12 +322,12 @@ Blockly.Blocks.convert_time_difference = {
 
         return container;
     },
-    domToMutation: function(xmlElement) {
+    domToMutation: function (xmlElement) {
         const format = xmlElement.getAttribute('format');
 
         this.updateShape_(format === true || format === 'true' || format === 'TRUE');
     },
-    updateShape_: function(isFormat, isLanguage) {
+    updateShape_: function (isFormat, isLanguage) {
         let inputExists = this.getInput('FORMAT');
 
         if (isFormat) {

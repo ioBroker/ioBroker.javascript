@@ -2,7 +2,6 @@
 
 if (typeof goog !== 'undefined') {
     goog.provide('Blockly.JavaScript.Sendto');
-
     goog.require('Blockly.JavaScript');
 }
 
@@ -11,7 +10,7 @@ Blockly.CustomBlocks.push('Sendto');
 
 Blockly.Sendto = {
     HUE: 310,
-    blocks: {}
+    blocks: {},
 };
 
 // --- sendTo Custom --------------------------------------------------
@@ -336,20 +335,22 @@ Blockly.JavaScript.forBlock['sendto_custom'] = function (block) {
             if (statement) {
                 return `sendTo('${instance}', '${command}', ${val}, async (result) => {\n` +
                     statement +
-                    '});\n' + logText;
-            } else {
-                return `sendTo('${instance}', '${command}', ${val});\n` + logText;
+                    `});\n${logText}`;
             }
+
+            return `sendTo('${instance}', '${command}', ${val});\n${logText}`;
         }
     }
 
+    const argStr = (args.length ? args.map(a => Blockly.JavaScript.prefixLines(`${a},`, Blockly.JavaScript.INDENT)).join('\n') : '');
+
     if (statement) {
-        return `sendTo('${instance}', '${command}', { ${args.length ? args.join(', ') : ''} }, async (result) => {\n` +
+        return `sendTo('${instance}', '${command}', {\n${argStr}}, async (result) => {\n` +
             statement +
-            '});\n' + logText;
-    } else {
-        return `sendTo('${instance}', '${command}', { ${args.length ? args.join(', ') : ''} });\n` + logText;
+            `});\n${logText}`;
     }
+
+    return `sendTo('${instance}', '${command}', {\n${argStr}});\n${logText}`;
 };
 
 // --- sendTo JavaScript --------------------------------------------------
@@ -367,7 +368,7 @@ Blockly.Sendto.blocks['sendto_otherscript'] =
     '</block>';
 
 Blockly.Blocks['sendto_otherscript'] = {
-    init: function() {
+    init: function () {
         const options = [];
         if (typeof main !== 'undefined' && main.instances) {
             for (let i = 0; i < main.instances.length; i++) {
@@ -422,7 +423,7 @@ Blockly.Blocks['sendto_otherscript'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['sendto_otherscript'] = function(block) {
+Blockly.JavaScript.forBlock['sendto_otherscript'] = function (block) {
     const dropdown_instance = block.getFieldValue('INSTANCE');
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const message = block.getFieldValue('MESSAGE');
@@ -478,7 +479,7 @@ Blockly.Sendto.blocks['sendto_gethistory'] =
     '</block>';
 
 Blockly.Blocks['sendto_gethistory'] = {
-    init: function() {
+    init: function () {
         const options = [
             ['default', 'default']
         ];
@@ -551,7 +552,7 @@ Blockly.Blocks['sendto_gethistory'] = {
     },
 };
 
-Blockly.JavaScript.forBlock['sendto_gethistory'] = function(block) {
+Blockly.JavaScript.forBlock['sendto_gethistory'] = function (block) {
     const dropdown_instance = block.getFieldValue('INSTANCE');
     const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
     const start = Blockly.JavaScript.valueToCode(block, 'START', Blockly.JavaScript.ORDER_ATOMIC);
