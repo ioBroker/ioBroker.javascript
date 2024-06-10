@@ -16,9 +16,7 @@ Blockly.Sendto = {
 // --- sendTo Custom --------------------------------------------------
 Blockly.Sendto.blocks['sendto_custom'] =
     '<block type="sendto_custom">' +
-    '  <mutation xmlns="http://www.w3.org/1999/xhtml">' +
-    '    <attribute id="ARG0" name="parameter"></attribute>' +
-    '  </mutation>' +
+    '  <mutation xmlns="http://www.w3.org/1999/xhtml" items="parameter"></mutation>' +
     '  <field name="INSTANCE">admin.0</field>' +
     '  <field name="COMMAND">send</field>' +
     '  <field name="LOG"></field>' +
@@ -83,9 +81,7 @@ Blockly.Blocks['sendto_custom'] = {
             if (!options.length) {
                 options.push([Blockly.Translate('sendto_no_instances'), '']);
             }
-            /*for (let h = 0; h < scripts.hosts.length; h++) {
-                options.push([scripts.hosts[h], scripts.hosts[h]]);
-            }*/
+
             this.appendDummyInput('INSTANCE')
                 .appendField(Blockly.Translate('sendto_custom'))
                 .appendField(new Blockly.FieldDropdown(options), 'INSTANCE');
@@ -139,12 +135,7 @@ Blockly.Blocks['sendto_custom'] = {
     mutationToDom: function () {
         const container = document.createElement('mutation');
 
-        for (let i = 0; i < this.attributes_.length; i++) {
-            const parameter = document.createElement('attribute');
-            parameter.setAttribute('id', 'ARG' + i);
-            parameter.setAttribute('name', this.attributes_[i]);
-            container.appendChild(parameter);
-        }
+        container.setAttribute('items', this.attributes_.join(','));
 
         return container;
     },
@@ -156,18 +147,10 @@ Blockly.Blocks['sendto_custom'] = {
     domToMutation: function (xmlElement) {
         this.attributes_ = [];
 
-        // Old format -> migrate!
-        const oldNames = xmlElement.getAttribute('items');
-        if (oldNames) {
-            for (const name of oldNames.split(',')) {
+        const names = xmlElement.getAttribute('items');
+        if (names) {
+            for (const name of names.split(',')) {
                 this.attributes_.push(name);
-            }
-        } else {
-            for (let i = 0, childNode; (childNode = xmlElement.childNodes[i]); i++) {
-                if (childNode.nodeName.toLowerCase() === 'attribute') {
-                    // console.log('attribute -> ' + childNode.getAttribute('id') + ' -> ' + childNode.getAttribute('name'));
-                    this.attributes_.push(childNode.getAttribute('name'));
-                }
             }
         }
 
