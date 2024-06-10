@@ -169,7 +169,7 @@ Blockly.Blocks['control'] = {
                     .appendField(new Blockly.FieldDropdown([
                         [Blockly.Translate('control_ms'), 'ms'],
                         [Blockly.Translate('control_sec'), 'sec'],
-                        [Blockly.Translate('control_min'), 'min']
+                        [Blockly.Translate('control_min'), 'min'],
                     ]), 'UNIT');
             }
         } else if (inputExists) {
@@ -276,7 +276,7 @@ Blockly.Blocks['toggle'] = {
                     .appendField(new Blockly.FieldDropdown([
                         [Blockly.Translate('control_ms'), 'ms'],
                         [Blockly.Translate('control_sec'), 'sec'],
-                        [Blockly.Translate('control_min'), 'min']
+                        [Blockly.Translate('control_min'), 'min'],
                     ]), 'UNIT');
                 //.appendField(Blockly.Translate('toggle_ms'));
             }
@@ -409,7 +409,7 @@ Blockly.Blocks['update'] = {
                     .appendField(new Blockly.FieldDropdown([
                         [Blockly.Translate('control_ms'), 'ms'],
                         [Blockly.Translate('control_sec'), 'sec'],
-                        [Blockly.Translate('control_min'), 'min']
+                        [Blockly.Translate('control_min'), 'min'],
                     ]), 'UNIT');
                 //.appendField(Blockly.Translate('update_ms'));
             }
@@ -556,8 +556,8 @@ Blockly.Blocks['control_ex'] = {
 
         this.appendDummyInput('TYPE')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('control_ex_control'),   'false'],
-                [Blockly.Translate('control_ex_update'),    'true'],
+                [Blockly.Translate('control_ex_control'), 'false'],
+                [Blockly.Translate('control_ex_update'), 'true'],
             ]), 'TYPE');
 
         this.appendValueInput('VALUE')
@@ -829,13 +829,13 @@ Blockly.Blocks['get_value_var'] = {
     init: function () {
         this.appendDummyInput('ATTR')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('get_value_val'),      'val'],
-                [Blockly.Translate('get_value_ack'),      'ack'],
-                [Blockly.Translate('get_value_ts'),       'ts'],
-                [Blockly.Translate('get_value_lc'),       'lc'],
-                [Blockly.Translate('get_value_q') ,       'q'],
-                [Blockly.Translate('get_value_comment') , 'c'],
-                [Blockly.Translate('get_value_from'),     'from'],
+                [Blockly.Translate('get_value_val'),     'val'],
+                [Blockly.Translate('get_value_ack'),     'ack'],
+                [Blockly.Translate('get_value_ts'),      'ts'],
+                [Blockly.Translate('get_value_lc'),      'lc'],
+                [Blockly.Translate('get_value_q'),       'q'],
+                [Blockly.Translate('get_value_comment'), 'c'],
+                [Blockly.Translate('get_value_from'),    'from'],
 
                 [Blockly.Translate('get_common_name'),   'common.name'],
                 [Blockly.Translate('get_common_desc'),   'common.desc'],

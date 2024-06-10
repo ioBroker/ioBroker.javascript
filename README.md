@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.5.1 (2024-06-10)
 
 * (klein0r) Added Blockly dark theme
 * (klein0r) Fixed sendTo custom parameters with special chars
@@ -52,16 +52,6 @@ Executes Javascript, Typescript Scripts.
 
 * (klein0r) Fixed httpPost block
 * (klein0r) Just raise deprecated warnings once per script start/usage
-
-### 8.4.0 (2024-05-25)
-
-* (klein0r) Added checks/warnings for more incorrect blockly connections
-* (klein0r) Added option to disable certificate validation in httpGet
-* (klein0r) Added expire option to Blockly block
-* (klein0r) Fixed variables.astro times when date is not available
-* (klein0r) Fixed jsonConfig for libraries and library typings
-* (klein0r) Implemented new js-controller 6.x functions for package handling
-* (klein0r) Updated to ChatGPT-4o
 
 ## License
 The MIT License (MIT)

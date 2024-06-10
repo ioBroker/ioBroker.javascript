@@ -16,7 +16,7 @@ Blockly.Sendto = {
 // --- sendTo Custom --------------------------------------------------
 Blockly.Sendto.blocks['sendto_custom'] =
     '<block type="sendto_custom">' +
-    '  <mutation items="parameter1" with_statement="false"></mutation>' +
+    '  <mutation xmlns="http://www.w3.org/1999/xhtml" items="parameter"></mutation>' +
     '  <field name="INSTANCE">admin.0</field>' +
     '  <field name="COMMAND">send</field>' +
     '  <field name="LOG"></field>' +
@@ -45,7 +45,7 @@ Blockly.Blocks['sendto_custom_container'] = {
     },
 };
 
-Blockly.Blocks['sendto_custom_item'] = {
+Blockly.Blocks['sendto_custom_mutator'] = {
     /**
      * Mutator block for add items.
      * @this Blockly.Block
@@ -53,8 +53,9 @@ Blockly.Blocks['sendto_custom_item'] = {
     init: function () {
         this.setColour(Blockly.Sendto.HUE);
 
-        this.appendDummyInput('NAME')
-            .appendField(Blockly.Translate('sendto_custom_argument'));
+        this.appendDummyInput('ATTR')
+            .appendField(Blockly.Translate('sendto_custom_argument'))
+            .appendField(new Blockly.FieldTextInput('parameter'), 'ATTR');
 
         this.setPreviousStatement(true);
         this.setNextStatement(true);
@@ -80,9 +81,7 @@ Blockly.Blocks['sendto_custom'] = {
             if (!options.length) {
                 options.push([Blockly.Translate('sendto_no_instances'), '']);
             }
-            /*for (let h = 0; h < scripts.hosts.length; h++) {
-                options.push([scripts.hosts[h], scripts.hosts[h]]);
-            }*/
+
             this.appendDummyInput('INSTANCE')
                 .appendField(Blockly.Translate('sendto_custom'))
                 .appendField(new Blockly.FieldDropdown(options), 'INSTANCE');
@@ -112,15 +111,19 @@ Blockly.Blocks['sendto_custom'] = {
             .appendField(Blockly.Translate('request_statement'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
                 const withStatement = option === true || option === 'true' || option === 'TRUE';
-                this.sourceBlock_.updateShape_(this.sourceBlock_.getArgNames_(), withStatement);
+                this.sourceBlock_.updateShape_(withStatement);
             }), 'WITH_STATEMENT');
 
-        this.itemCount_ = 1;
+        this.attributes_ = [];
+        this.itemCount_ = 0;
+
+        this.setMutator(new Blockly.icons.MutatorIcon(['sendto_custom_mutator'], this));
+
         this.updateShape_();
         this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setMutator(new Blockly.icons.MutatorIcon(['sendto_custom_item'], this));
+
         this.setTooltip(Blockly.Translate('sendto_custom_tooltip'));
         this.setHelpUrl(getHelp('sendto_custom_help'));
     },
@@ -131,15 +134,9 @@ Blockly.Blocks['sendto_custom'] = {
      */
     mutationToDom: function () {
         const container = document.createElement('mutation');
-        const names = [];
-        for (let i = 0; i < this.itemCount_; i++) {
-            const input = this.getInput('ARG' + i);
-            names[i] = input.fieldRow[0].getValue();
-        }
 
-        container.setAttribute('items', names.join(','));
-        const withStatement = this.getFieldValue('WITH_STATEMENT');
-        container.setAttribute('with_statement', withStatement === 'TRUE' || withStatement === 'true' || withStatement === true);
+        container.setAttribute('items', this.attributes_.join(','));
+
         return container;
     },
     /**
@@ -148,10 +145,17 @@ Blockly.Blocks['sendto_custom'] = {
      * @this Blockly.Block
      */
     domToMutation: function (xmlElement) {
-        const names = xmlElement.getAttribute('items').split(',');
-        this.itemCount_ = names.length;
-        const withStatement = xmlElement.getAttribute('with_statement');
-        this.updateShape_(names, withStatement === true || withStatement === 'true' || withStatement === 'TRUE');
+        this.attributes_ = [];
+
+        const names = xmlElement.getAttribute('items');
+        if (names) {
+            for (const name of names.split(',')) {
+                this.attributes_.push(name);
+            }
+        }
+
+        this.itemCount_ = this.attributes_.length;
+        this.updateShape_();
     },
     /**
      * Populate the mutator's dialog with this block's components.
@@ -162,9 +166,11 @@ Blockly.Blocks['sendto_custom'] = {
     decompose: function (workspace) {
         const containerBlock = workspace.newBlock('sendto_custom_container');
         containerBlock.initSvg();
+
         let connection = containerBlock.getInput('STACK').connection;
         for (let i = 0; i < this.itemCount_; i++) {
-            const itemBlock = workspace.newBlock('sendto_custom_item');
+            const itemBlock = workspace.newBlock('sendto_custom_mutator');
+            itemBlock.setFieldValue(this.attributes_[i], 'ATTR');
             itemBlock.initSvg();
             connection.connect(itemBlock.previousConnection);
             connection = itemBlock.nextConnection;
@@ -177,41 +183,38 @@ Blockly.Blocks['sendto_custom'] = {
      * @this Blockly.Block
      */
     compose: function (containerBlock) {
+        this.attributes_ = [];
+
         let itemBlock = containerBlock.getInputTargetBlock('STACK');
         // Count number of inputs.
         const connections = [];
-        const names = [];
         while (itemBlock) {
+            const attrName = itemBlock.getFieldValue('ATTR');
+            this.attributes_.push(attrName);
+
             connections.push(itemBlock.valueConnection_);
             itemBlock = itemBlock.nextConnection &&
                 itemBlock.nextConnection.targetBlock();
         }
+
         // Disconnect any children that don't belong.
-        for (let i = 0; i < this.itemCount_; i++) {
-            const input = this.getInput('ARG' + i);
-            const connection = input.connection.targetConnection;
-            names[i] = input.fieldRow[0].getValue();
+        for (let k = 0; k < this.itemCount_; k++) {
+            const connection = this.getInput('ARG' + k).connection.targetConnection;
             if (connection && !connections.includes(connection)) {
                 connection.disconnect();
             }
         }
+
         this.itemCount_ = connections.length;
-        if (this.itemCount_ < 1) {
-            this.itemCount_ = 1;
+        if (this.itemCount_ < 0) {
+            this.itemCount_ = 0;
         }
-        this.updateShape_(names);
+        this.updateShape_();
+
         // Reconnect any child blocks.
-        for (let j = 0; j < this.itemCount_; j++) {
-            Blockly.icons.MutatorIcon.reconnect(connections[j], this, 'ARG' + j);
+        for (let i = 0; i < this.itemCount_; i++) {
+            Blockly.icons.MutatorIcon.reconnect(connections[i], this, 'ARG' + i);
         }
-    },
-    getArgNames_: function () {
-        const names = [];
-        for (let n = 0; n < this.itemCount_; n++) {
-            const input = this.getInput('ARG' + n);
-            names.push(input.fieldRow[0].getValue());
-        }
-        return names;
     },
     /**
      * Store pointers to any connected child blocks.
@@ -233,70 +236,41 @@ Blockly.Blocks['sendto_custom'] = {
      * @private
      * @this Blockly.Block
      */
-    updateShape_: function (names, withStatement) {
-        names = names || [];
-        let _input;
-        const wp = this.workspace;
+    updateShape_: function (withStatement) {
+        const workspace = this.workspace;
+
+        // Add new inputs.
+        for (let i = 0; i < this.itemCount_; i++) {
+            let input = this.getInput('ARG' + i);
+
+            if (!input) {
+                input = this.appendValueInput('ARG' + i).setAlign(Blockly.ALIGN_RIGHT);
+                input.appendField(this.attributes_[i]);
+            } else {
+                input.fieldRow[0].setValue(this.attributes_[i]);
+            }
+
+            setTimeout(__input => {
+                if (!__input.connection.isConnected()) {
+                    const _shadow = workspace.newBlock('text');
+                    _shadow.setShadow(true);
+                    _shadow.initSvg();
+                    _shadow.render();
+                    _shadow.outputConnection.connect(__input.connection);
+                }
+            }, 100, input);
+        }
+        // Remove deleted inputs.
+        for (let i = this.itemCount_; this.getInput('ARG' + i); i++) {
+            this.removeInput('ARG' + i);
+        }
+
         if (withStatement === undefined) {
             withStatement = this.getFieldValue('WITH_STATEMENT');
             withStatement = withStatement === true || withStatement === 'true' || withStatement === 'TRUE';
         }
 
         this.getInput('STATEMENT') && this.removeInput('STATEMENT');
-
-        // Add new inputs.
-        let i;
-        for (i = 0; i < this.itemCount_; i++) {
-            _input = this.getInput('ARG' + i);
-
-            if (!_input) {
-                _input = this.appendValueInput('ARG' + i);
-                if (!names[i]) {
-                    names[i] = Blockly.Translate('sendto_custom_argument') + (i + 1);
-                }
-                _input.appendField(new Blockly.FieldTextInput(names[i]));
-                setTimeout(__input => {
-                    if (!__input.connection.isConnected()) {
-                        const _shadow = wp.newBlock('text');
-                        _shadow.setShadow(true);
-                        _shadow.initSvg();
-                        _shadow.render();
-                        _shadow.outputConnection.connect(__input.connection);
-                    }
-                }, 100, _input);
-            } else {
-                _input.fieldRow[0].setValue(names[i]);
-                setTimeout(__input => {
-                    if (!__input.connection.isConnected()) {
-                        const shadow = wp.newBlock('text');
-                        shadow.setShadow(true);
-                        shadow.initSvg();
-                        shadow.render();
-                        shadow.outputConnection.connect(__input.connection);
-                    }
-                }, 100, _input);
-            }
-        }
-
-        // Remove deleted inputs.
-        const blocks = [];
-        while (_input = this.getInput('ARG' + i)) {
-            const b = _input.connection.targetBlock();
-            if (b && b.isShadow()) {
-                blocks.push(b);
-            }
-            this.removeInput('ARG' + i);
-            i++;
-        }
-
-        if (blocks.length) {
-            const ws = this.workspace;
-            setTimeout(() => {
-                for (let b = 0; b < blocks.length; b++) {
-                    ws.removeTopBlock(blocks[b]);
-                }
-            }, 100);
-        }
 
         // Add or remove a statement Input.
         if (withStatement) {
@@ -311,27 +285,28 @@ Blockly.JavaScript.forBlock['sendto_custom'] = function (block) {
     const command       = block.getFieldValue('COMMAND');
     const withStatement = block.getFieldValue('WITH_STATEMENT');
     const args = [];
-    let logText;
-    if (logLevel) {
-        logText = 'console.' + logLevel + '("' + instance + ': " + "' + (args.length ? args.join(',') + '\n' : '') + '");\n'
-    } else {
-        logText = '';
-    }
+
+    let logText = '';
+
     let statement;
     if (withStatement === true || withStatement === 'true' || withStatement === 'TRUE') {
         statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     }
 
     for (let n = 0; n < block.itemCount_; n++) {
-        const input = this.getInput('ARG' + n);
+        const name = String(block.attributes_[n]);
         let val = Blockly.JavaScript.valueToCode(block, 'ARG' + n, Blockly.JavaScript.ORDER_COMMA);
-        // if JSON
-        if (val && val[0] === "'" && val[1] === '{') {
+
+        // if JSON (or object), remove quotes '{ bla: true }' -> { bla: true }
+        if (val && val.startsWith(`'{`) && val.endsWith(`}'`)) {
             val = val.substring(1, val.length - 1);
         }
-        args.push(`'${input.fieldRow[0].getValue()}': ${val}`);
 
-        if (block.itemCount_ === 1 && !input.fieldRow[0].getValue()) {
+        if (block.itemCount_ === 1 && !name) {
+            if (logLevel) {
+                logText = `console.${logLevel}('sendTo[custom] ${instance}: ' + ${val});\n`;
+            }
+
             if (statement) {
                 return `sendTo('${instance}', '${command}', ${val}, async (result) => {\n` +
                     statement +
@@ -339,18 +314,27 @@ Blockly.JavaScript.forBlock['sendto_custom'] = function (block) {
             }
 
             return `sendTo('${instance}', '${command}', ${val});\n${logText}`;
+        } else {
+            args.push({
+                attr: name.replaceAll(`'`, `\\'`),
+                val,
+            });
         }
     }
 
-    const argStr = (args.length ? args.map(a => Blockly.JavaScript.prefixLines(`${a},`, Blockly.JavaScript.INDENT)).join('\n') : '');
+    const argStr = (args.length ? args.map(a => Blockly.JavaScript.prefixLines(`'${a.attr}': ${a.val},`, Blockly.JavaScript.INDENT)).join('\n') : '');
+
+    if (logLevel) {
+        logText = `console.${logLevel}('sendTo[custom] ${instance}: ${args.length ? args.map(a => `${a.attr}: ' + ${a.val} + '`).join(', ') : '[no args]'}');\n`;
+    }
 
     if (statement) {
-        return `sendTo('${instance}', '${command}', {\n${argStr}}, async (result) => {\n` +
+        return `sendTo('${instance}', '${command}', {\n${argStr}\n}, async (result) => {\n` +
             statement +
             `});\n${logText}`;
     }
 
-    return `sendTo('${instance}', '${command}', {\n${argStr}});\n${logText}`;
+    return `sendTo('${instance}', '${command}', {\n${argStr}\n});\n${logText}`;
 };
 
 // --- sendTo JavaScript --------------------------------------------------

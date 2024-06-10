@@ -49,7 +49,7 @@ Blockly.Blocks['time_compare_ex'] = {
                 [Blockly.Translate('time_compare_ge'), '>='],
                 [Blockly.Translate('time_compare_eq'), '=='],
                 [Blockly.Translate('time_compare_bw'), 'between'],
-                [Blockly.Translate('time_compare_nb'), 'not between']
+                [Blockly.Translate('time_compare_nb'), 'not between'],
             ], function (option) {
                 this.sourceBlock_.updateShape_((option === 'between' || option === 'not between'));
             }), 'OPTION');
@@ -487,20 +487,20 @@ Blockly.Blocks['time_astro'] = {
 
         this.appendDummyInput('TYPE')
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('astro_sunriseText'),         'sunrise'],
-                [Blockly.Translate('astro_sunriseEndText'),      'sunriseEnd'],
-                [Blockly.Translate('astro_goldenHourEndText'),   'goldenHourEnd'],
-                [Blockly.Translate('astro_solarNoonText'),       'solarNoon'],
-                [Blockly.Translate('astro_goldenHourText'),      'goldenHour'],
-                [Blockly.Translate('astro_sunsetStartText'),     'sunsetStart'],
-                [Blockly.Translate('astro_sunsetText'),          'sunset'],
-                [Blockly.Translate('astro_duskText'),            'dusk'],
-                [Blockly.Translate('astro_nauticalDuskText'),    'nauticalDusk'],
-                [Blockly.Translate('astro_nightText'),           'night'],
-                [Blockly.Translate('astro_nightEndText'),        'nightEnd'],
-                [Blockly.Translate('astro_nauticalDawnText'),    'nauticalDawn'],
-                [Blockly.Translate('astro_dawnText'),            'dawn'],
-                [Blockly.Translate('astro_nadirText'),           'nadir']
+                [Blockly.Translate('astro_sunriseText'),       'sunrise'],
+                [Blockly.Translate('astro_sunriseEndText'),    'sunriseEnd'],
+                [Blockly.Translate('astro_goldenHourEndText'), 'goldenHourEnd'],
+                [Blockly.Translate('astro_solarNoonText'),     'solarNoon'],
+                [Blockly.Translate('astro_goldenHourText'),    'goldenHour'],
+                [Blockly.Translate('astro_sunsetStartText'),   'sunsetStart'],
+                [Blockly.Translate('astro_sunsetText'),        'sunset'],
+                [Blockly.Translate('astro_duskText'),          'dusk'],
+                [Blockly.Translate('astro_nauticalDuskText'),  'nauticalDusk'],
+                [Blockly.Translate('astro_nightText'),         'night'],
+                [Blockly.Translate('astro_nightEndText'),      'nightEnd'],
+                [Blockly.Translate('astro_nauticalDawnText'),  'nauticalDawn'],
+                [Blockly.Translate('astro_dawnText'),          'dawn'],
+                [Blockly.Translate('astro_nadirText'),         'nadir'],
             ]), 'TYPE');
 
         this.appendDummyInput('OFFSET')

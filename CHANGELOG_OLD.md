@@ -1,4 +1,14 @@
 The newest change log is in README.md
+## 8.4.0 (2024-05-25)
+
+* (klein0r) Added checks/warnings for more incorrect blockly connections
+* (klein0r) Added option to disable certificate validation in httpGet
+* (klein0r) Added expire option to Blockly block
+* (klein0r) Fixed variables.astro times when date is not available
+* (klein0r) Fixed jsonConfig for libraries and library typings
+* (klein0r) Implemented new js-controller 6.x functions for package handling
+* (klein0r) Updated to ChatGPT-4o
+
 ## 8.3.1 (2024-05-13)
 
 * (paul53) Allow negative values in formatTimeDiff

@@ -247,7 +247,7 @@ Blockly.Blocks['on_ext'] = {
                 [Blockly.Translate('on_lt'), 'lt'],
                 [Blockly.Translate('on_le'), 'le'],
                 [Blockly.Translate('on_true'), 'true'],
-                [Blockly.Translate('on_false'), 'false']
+                [Blockly.Translate('on_false'), 'false'],
             ]), 'CONDITION');
         if (conditionValue) {
             this.setFieldValue(conditionValue, 'CONDITION'); // restore previous value
@@ -258,7 +258,7 @@ Blockly.Blocks['on_ext'] = {
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('on_ack_any'), ''],
                 [Blockly.Translate('on_ack_true'), 'true'],
-                [Blockly.Translate('on_ack_false'), 'false']
+                [Blockly.Translate('on_ack_false'), 'false'],
             ]), 'ACK_CONDITION');
         if (conditionAckValue) {
             this.setFieldValue(conditionAckValue, 'ACK_CONDITION'); // restore previous value
@@ -354,7 +354,7 @@ Blockly.Blocks['on'] = {
                 [Blockly.Translate('on_lt'), 'lt'],
                 [Blockly.Translate('on_le'), 'le'],
                 [Blockly.Translate('on_true'), 'true'],
-                [Blockly.Translate('on_false'), 'false']
+                [Blockly.Translate('on_false'), 'false'],
             ]), 'CONDITION');
 
         this.appendDummyInput('ACK_CONDITION')
@@ -362,7 +362,7 @@ Blockly.Blocks['on'] = {
             .appendField(new Blockly.FieldDropdown([
                 [Blockly.Translate('on_ack_any'), ''],
                 [Blockly.Translate('on_ack_true'), 'true'],
-                [Blockly.Translate('on_ack_false'), 'false']
+                [Blockly.Translate('on_ack_false'), 'false'],
             ]), 'ACK_CONDITION');
 
         this.appendStatementInput('STATEMENT')
@@ -465,7 +465,7 @@ Blockly.Blocks['on_source'] = {
                 [Blockly.Translate('on_source_oldstate_ack'),   'oldState.ack'],
                 [Blockly.Translate('on_source_oldstate_lc'),    'oldState.lc'],
                 [Blockly.Translate('on_source_oldstate_c'),     'oldState.c'],
-                [Blockly.Translate('on_source_oldstate_user'),  'oldState.user']
+                [Blockly.Translate('on_source_oldstate_user'),  'oldState.user'],
             ]), 'ATTR');
 
         this.setInputsInline(true);
@@ -697,20 +697,20 @@ Blockly.Blocks['astro'] = {
 
         this.appendDummyInput("TYPE")
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('astro_sunriseText'),         'sunrise'],
-                [Blockly.Translate('astro_sunriseEndText'),      'sunriseEnd'],
-                [Blockly.Translate('astro_goldenHourEndText'),   'goldenHourEnd'],
-                [Blockly.Translate('astro_solarNoonText'),       'solarNoon'],
-                [Blockly.Translate('astro_goldenHourText'),      'goldenHour'],
-                [Blockly.Translate('astro_sunsetStartText'),     'sunsetStart'],
-                [Blockly.Translate('astro_sunsetText'),          'sunset'],
-                [Blockly.Translate('astro_duskText'),            'dusk'],
-                [Blockly.Translate('astro_nauticalDuskText'),    'nauticalDusk'],
-                [Blockly.Translate('astro_nightText'),           'night'],
-                [Blockly.Translate('astro_nightEndText'),        'nightEnd'],
-                [Blockly.Translate('astro_nauticalDawnText'),    'nauticalDawn'],
-                [Blockly.Translate('astro_dawnText'),            'dawn'],
-                [Blockly.Translate('astro_nadirText'),           'nadir'],
+                [Blockly.Translate('astro_sunriseText'),       'sunrise'],
+                [Blockly.Translate('astro_sunriseEndText'),    'sunriseEnd'],
+                [Blockly.Translate('astro_goldenHourEndText'), 'goldenHourEnd'],
+                [Blockly.Translate('astro_solarNoonText'),     'solarNoon'],
+                [Blockly.Translate('astro_goldenHourText'),    'goldenHour'],
+                [Blockly.Translate('astro_sunsetStartText'),   'sunsetStart'],
+                [Blockly.Translate('astro_sunsetText'),        'sunset'],
+                [Blockly.Translate('astro_duskText'),          'dusk'],
+                [Blockly.Translate('astro_nauticalDuskText'),  'nauticalDusk'],
+                [Blockly.Translate('astro_nightText'),         'night'],
+                [Blockly.Translate('astro_nightEndText'),      'nightEnd'],
+                [Blockly.Translate('astro_nauticalDawnText'),  'nauticalDawn'],
+                [Blockly.Translate('astro_dawnText'),          'dawn'],
+                [Blockly.Translate('astro_nadirText'),         'nadir'],
             ]), 'TYPE');
 
         this.appendDummyInput()
@@ -1450,7 +1450,7 @@ Blockly.Blocks['onLog'] = {
                 [Blockly.Translate('loglevel_warn'),  'warn'],
                 [Blockly.Translate('loglevel_info'),  'info'],
                 [Blockly.Translate('loglevel_debug'), 'debug'],
-                [Blockly.Translate('loglevel_all'), '*'],
+                [Blockly.Translate('loglevel_all'),   '*'],
             ]), 'Severity');
 
         this.appendStatementInput('STATEMENT')
