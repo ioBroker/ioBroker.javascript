@@ -202,7 +202,7 @@ Blockly.Blocks['http_get'] = {
         this.appendDummyInput('TYPE')
             .appendField(Blockly.Translate('http_type'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('http_type_text'),  'text'],
+                [Blockly.Translate('http_type_text'), 'text'],
                 [Blockly.Translate('http_type_arraybuffer'), 'arraybuffer'],
             ]), 'TYPE');
 
@@ -273,7 +273,7 @@ Blockly.Blocks['http_post'] = {
         this.appendDummyInput('TYPE')
             .appendField(Blockly.Translate('http_type'))
             .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('http_type_text'),  'text'],
+                [Blockly.Translate('http_type_text'), 'text'],
                 [Blockly.Translate('http_type_arraybuffer'), 'arraybuffer'],
             ]), 'TYPE');
 
