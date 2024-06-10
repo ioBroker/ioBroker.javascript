@@ -311,12 +311,9 @@ Blockly.JavaScript.forBlock['sendto_custom'] = function (block) {
     const command       = block.getFieldValue('COMMAND');
     const withStatement = block.getFieldValue('WITH_STATEMENT');
     const args = [];
-    let logText;
-    if (logLevel) {
-        logText = 'console.' + logLevel + '("' + instance + ': " + "' + (args.length ? args.join(',') + '\n' : '') + '");\n'
-    } else {
-        logText = '';
-    }
+
+    let logText = '';
+
     let statement;
     if (withStatement === true || withStatement === 'true' || withStatement === 'TRUE') {
         statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
@@ -325,13 +322,17 @@ Blockly.JavaScript.forBlock['sendto_custom'] = function (block) {
     for (let n = 0; n < block.itemCount_; n++) {
         const input = this.getInput('ARG' + n);
         let val = Blockly.JavaScript.valueToCode(block, 'ARG' + n, Blockly.JavaScript.ORDER_COMMA);
-        // if JSON
-        if (val && val[0] === "'" && val[1] === '{') {
+
+        // if JSON (or object), remove quotes '{ bla: true }' -> { bla: true }
+        if (val && val.startsWith(`'{`) && val.endsWith(`}'`)) {
             val = val.substring(1, val.length - 1);
         }
-        args.push(`'${input.fieldRow[0].getValue()}': ${val}`);
 
         if (block.itemCount_ === 1 && !input.fieldRow[0].getValue()) {
+            if (logLevel) {
+                logText = `console.${logLevel}('sendTo[custom] ${instance}: ' + ${val});\n`;
+            }
+
             if (statement) {
                 return `sendTo('${instance}', '${command}', ${val}, async (result) => {\n` +
                     statement +
@@ -339,10 +340,19 @@ Blockly.JavaScript.forBlock['sendto_custom'] = function (block) {
             }
 
             return `sendTo('${instance}', '${command}', ${val});\n${logText}`;
+        } else {
+            args.push({
+                attr: input.fieldRow[0].getValue().replaceAll(`'`, `\\'`),
+                val,
+            });
         }
     }
 
-    const argStr = (args.length ? args.map(a => Blockly.JavaScript.prefixLines(`${a},`, Blockly.JavaScript.INDENT)).join('\n') : '');
+    const argStr = (args.length ? args.map(a => Blockly.JavaScript.prefixLines(`'${a.attr}': ${a.val},`, Blockly.JavaScript.INDENT)).join('\n') : '');
+
+    if (logLevel) {
+        logText = `console.${logLevel}('sendTo[custom] ${instance}: ${args.length ? args.map(a => `${a.attr}: ' + ${a.val} + '`).join(', ') : '[no args]'}');\n`;
+    }
 
     if (statement) {
         return `sendTo('${instance}', '${command}', {\n${argStr}\n}, async (result) => {\n` +

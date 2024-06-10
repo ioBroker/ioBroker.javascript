@@ -29,6 +29,7 @@ Executes Javascript, Typescript Scripts.
 ### **WORK IN PROGRESS**
 
 * (klein0r) Added Blockly dark theme
+* (klein0r) Fixed sendTo custom parameters with special chars
 
 ### 8.5.0 (2024-06-07)
 
