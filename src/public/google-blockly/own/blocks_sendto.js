@@ -177,32 +177,38 @@ Blockly.Blocks['sendto_custom'] = {
      * @this Blockly.Block
      */
     compose: function (containerBlock) {
+        const names = [];
+
         let itemBlock = containerBlock.getInputTargetBlock('STACK');
         // Count number of inputs.
         const connections = [];
-        const names = [];
         while (itemBlock) {
             connections.push(itemBlock.valueConnection_);
             itemBlock = itemBlock.nextConnection &&
                 itemBlock.nextConnection.targetBlock();
         }
+
         // Disconnect any children that don't belong.
-        for (let i = 0; i < this.itemCount_; i++) {
-            const input = this.getInput('ARG' + i);
+        for (let k = 0; k < this.itemCount_; k++) {
+            const input = this.getInput('ARG' + k);
             const connection = input.connection.targetConnection;
-            names[i] = input.fieldRow[0].getValue();
+
+            names[k] = input.fieldRow[0].getValue();
+
             if (connection && !connections.includes(connection)) {
                 connection.disconnect();
             }
         }
+
         this.itemCount_ = connections.length;
         if (this.itemCount_ < 1) {
             this.itemCount_ = 1;
         }
         this.updateShape_(names);
+
         // Reconnect any child blocks.
-        for (let j = 0; j < this.itemCount_; j++) {
-            Blockly.icons.MutatorIcon.reconnect(connections[j], this, 'ARG' + j);
+        for (let i = 0; i < this.itemCount_; i++) {
+            Blockly.icons.MutatorIcon.reconnect(connections[i], this, 'ARG' + i);
         }
     },
     getArgNames_: function () {
