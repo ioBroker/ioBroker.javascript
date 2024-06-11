@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.5.1",
+    "version": "8.5.2",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.5.2": {
+        "en": "fixed issue with additional node modules when using js-controller version 6\nAdded Blockly block to check if text includes another text\nFixed onFile error when file has been deleted",
+        "de": "festes problem mit zusätzlichen knotenmodulen bei verwendung von js-controller version 6\nBlockiert hinzugefügt, um zu überprüfen, ob Text einen anderen Text enthält\nFehler behoben, wenn die Datei gelöscht wurde",
+        "ru": "фиксированная проблема с дополнительными модулями узла при использовании js-controller версии 6\nДобавленный блок для проверки, включает ли текст другой текст\nИсправлена ошибка при удалении файла",
+        "pt": "problema fixo com módulos de nó adicionais ao usar js-controller versão 6\nAdicionado bloco Blockly para verificar se o texto inclui outro texto\nCorrigido erro noFile quando o arquivo foi excluído",
+        "nl": "vast probleem met extra knooppuntmodules bij gebruik van js-controller versie 6\nToegevoegd Blokkeren om te controleren of tekst een andere tekst bevat\nOnFile-fout hersteld wanneer bestand is verwijderd",
+        "fr": "problème corrigé avec modules de nœuds supplémentaires lors de l'utilisation de la version 6 de js-controller\nAjout d'un bloc Blockly pour vérifier si le texte inclut un autre texte\nCorrection d'une erreur surFile lorsque le fichier a été supprimé",
+        "it": "problema fisso con moduli nodi aggiuntivi quando si utilizza js-controller versione 6\nAggiunto Blocco blocco per controllare se il testo include un altro testo\nCorretto errore sulFile quando il file è stato cancellato",
+        "es": "edición fija con módulos de nodos adicionales al utilizar js-controller versión 6\nBloqueo añadido para comprobar si el texto incluye otro texto\nError fijo enFile cuando el archivo ha sido borrado",
+        "pl": "stały problem z dodatkowymi modułami węzłów przy użyciu sterownika js- version 6\nDodano Blockly block, aby sprawdzić, czy tekst zawiera inny tekst\nNaprawiono błąd onFile po usunięciu pliku",
+        "uk": "виправлено проблему з додатковими модулями вузлів при використанні js-controller версії 6\nДодано блокнот для перевірки, якщо текст містить інший текст\nВиправлено помилку при видаленні файлу",
+        "zh-cn": "使用 js 控制器 6 版本时带有额外节点模块的固定问题\n添加块块以检查文本是否包含其它文本\n删除文件时的 File 错误"
+      },
       "8.5.1": {
         "en": "Added Blockly dark theme\nFixed sendTo custom parameters with special chars",
         "de": "Hinzugefügt Blockiert dunkles Thema\nFester Versand Zu benutzerdefinierten Parametern mit speziellen Chars",
@@ -117,19 +130,6 @@
         "pl": "Dodano kontrole / ostrzeżenia dla bardziej nieprawidłowych połączeń blokujących\nDodano opcję wyłączenia walidacji certyfikatu w http Pobierz\nDodano opcję wygaśnięcia bloku Blockly\nZmienne stałe. czasy astro, kiedy data nie jest dostępna\nNaprawiono jsonConfig dla bibliotek i typów bibliotek\nZaimplementowane nowe funkcje sterownika js- 6 x do obsługi pakietów\nAktualizacja do ChatGPT- 4o",
         "uk": "Додані перевірки / пригнічення для більш невірних з'єднань\nДодана можливість відключити перевірку сертифіката в http:// Отримати\nДодано опцію завершення блоку\nВиправлені змінні. час астро, коли дата не доступна\nВиправлено jsonConfig для бібліотечних та бібліотечних типів\nРеалізовано нові функції js-controller 6.x для обробки пакетів\nОновлено в ChatGPT-4o",
         "zh-cn": "为更不正确的块连接添加检查/警告\n添加选项以禁用 http 中的证书验证 获取\n添加过期选项到块块\n固定变量。 日期不详时的天体时间\n用于图书馆和图书馆打字的固定jsonFig\n执行新的js控制器 6.x 处理包的功能\n更新到 ChatGPT-4o"
-      },
-      "8.3.1": {
-        "en": "Allow negative values in formatTimeDiff\nUpdated tests and fixed Blockly translations",
-        "de": "Negative Werte im Format zulassen TimeDiff\nAktualisierte Tests und feste sperrige Übersetzungen",
-        "ru": "Разрешить отрицательные значения в формате TimeDiff\nОбновленные тесты и фиксированные блокированные переводы",
-        "pt": "Permitir valores negativos no formato Ponto de vista\nTestes atualizados e traduções bloqueadas fixas",
-        "nl": "Negatieve waarden in formaat toestaan TimeDiff\nBijgewerkte tests en vaste Blockly vertalingen",
-        "fr": "Autoriser les valeurs négatives en format TimeDiff\nTests actualisés et traductions fixes",
-        "it": "Consentire valori negativi in formato Orario\nTest aggiornati e traduzioni bloccate",
-        "es": "Permitir valores negativos en formato TimeDiff\nPruebas actualizadas y traducciones fijas",
-        "pl": "Dopuść wartości ujemne w formacie TimeDiff\nZaktualizowane testy i stałe tłumaczenia Blockly",
-        "uk": "Дозволити негативні значення у форматі Час\nОновлені тести та фіксовані переклади",
-        "zh-cn": "允许格式的负值 时间\n更新测试和固定的Blockly翻译"
       }
     },
     "platform": "Javascript/Node.js",

@@ -620,13 +620,19 @@ Blockly.Blocks['create'] = {
             .appendField(Blockly.Translate('create_oid'))
             .appendField(new Blockly.FieldTextInput('0_userdata.0.example'), 'NAME');
 
-        this.appendValueInput('VALUE')
+        const inputValue = this.appendValueInput('VALUE')
             .setCheck(null)
             .appendField(Blockly.Translate('create_init'));
+        if (inputValue.connection) {
+            inputValue.connection._optional = true;
+        }
 
-        this.appendValueInput('COMMON')
+        const inputCommon = this.appendValueInput('COMMON')
             .setCheck(null)
             .appendField(Blockly.Translate('create_common'));
+        if (inputCommon.connection) {
+            inputCommon.connection._optional = true;
+        }
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -692,9 +698,12 @@ Blockly.Blocks['create_ex'] = {
                 [Blockly.Translate('create_type_array'), 'array'],
             ]), 'TYPE');
 
-        this.appendValueInput('VALUE')
+        const inputValue = this.appendValueInput('VALUE')
             .setCheck(null)
             .appendField(Blockly.Translate('create_init'));
+        if (inputValue.connection) {
+            inputValue.connection._optional = true;
+        }
 
         this.appendDummyInput('READABLE_INPUT')
             .appendField(Blockly.Translate('create_readable'))
@@ -730,8 +739,10 @@ Blockly.JavaScript.forBlock['create_ex'] = function (block) {
             paraV = `, parseFloat(${value})`;
         } else if (type === 'boolean') {
             paraV = `, !!${value}`;
+        } else if (type === 'string') {
+            paraV = `, String(${value})`;
         } else {
-            paraV = ', ' + value;
+            paraV = `, ${value}`;
         }
     }
 
