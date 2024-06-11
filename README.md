@@ -29,6 +29,7 @@ Executes Javascript, Typescript Scripts.
 ### **WORK IN PROGRESS**
 
 * (foxriver76) fixed issue with additional node modules when using js-controller version 6
+* (klein0r) Added Blockly block to check if text includes another text
 
 ### 8.5.1 (2024-06-10)
 
