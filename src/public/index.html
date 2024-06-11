@@ -293,8 +293,10 @@
       </category>
       <category name="{catText}" colour="160">
         <block type="text"></block>
-        <block type="text_newline"></block>
         <block type="text_multiline"></block>
+        <block type="text_newline">
+          <field name="Type">\n</field>
+        </block>
         <block type="text_join"></block>
         <block type="text_append">
           <value name="TEXT">
@@ -312,6 +314,18 @@
           <value name="VALUE">
             <shadow type="text">
               <field name="TEXT"></field>
+            </shadow>
+          </value>
+        </block>
+        <block type="text_contains">
+          <value name="VALUE">
+            <block type="variables_get">
+              <field name="VAR">text</field>
+            </block>
+          </value>
+          <value name="FIND">
+            <shadow type="text">
+              <field name="TEXT">abc</field>
             </shadow>
           </value>
         </block>
