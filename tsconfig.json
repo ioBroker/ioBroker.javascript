@@ -24,8 +24,6 @@
 		// "noUnusedParameters": true,
 
 		"target": "es2022",
-
-		"types": ["node", "@iobroker/types"]
 	},
 	"include": [
 		"lib/**/*.js",
