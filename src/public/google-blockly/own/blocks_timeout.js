@@ -99,10 +99,12 @@ Blockly.Blocks['timeouts_wait'] = {
                 [Blockly.Translate('timeouts_settimeout_min'), 'min'],
             ]), 'UNIT');
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(true);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_wait_tooltip'));
         this.setHelpUrl(getHelp('timeouts_wait_help'));
     },
@@ -150,10 +152,12 @@ Blockly.Blocks['timeouts_settimeout'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_settimeout_tooltip'));
         this.setHelpUrl(getHelp('timeouts_settimeout_help'));
     },
@@ -213,10 +217,12 @@ Blockly.Blocks['timeouts_settimeout_variable'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(true);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_settimeout_tooltip'));
         this.setHelpUrl(getHelp('timeouts_settimeout_help'));
     },
@@ -280,10 +286,12 @@ Blockly.Blocks['timeouts_cleartimeout'] = {
                 return window.scripts && window.scripts.blocklyWorkspace ? Blockly.Timeouts.getAllTimeouts(window.scripts.blocklyWorkspace) : [];
             }), 'NAME');
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(true);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_cleartimeout_tooltip'));
         this.setHelpUrl(getHelp('timeouts_cleartimeout_help'));
     },
@@ -310,7 +318,9 @@ Blockly.Blocks['timeouts_gettimeout'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_gettimeout_tooltip'));
         this.setHelpUrl(getHelp('timeouts_gettimeout_help'));
     },
@@ -350,10 +360,12 @@ Blockly.Blocks['timeouts_setinterval'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_setinterval_tooltip'));
         this.setHelpUrl(getHelp('timeouts_setinterval_help'));
     },
@@ -414,10 +426,12 @@ Blockly.Blocks['timeouts_setinterval_variable'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(true);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_setinterval_tooltip'));
         this.setHelpUrl(getHelp('timeouts_setinterval_help'));
     },
@@ -474,16 +488,18 @@ Blockly.Timeouts.getAllIntervals = function (workspace) {
 
 Blockly.Blocks['timeouts_clearinterval'] = {
     init: function () {
-        this.appendDummyInput("NAME")
+        this.appendDummyInput('NAME')
             .appendField(Blockly.Translate('timeouts_clearinterval'))
             .appendField(new Blockly.FieldDropdown(function () {
                 return window.scripts.blocklyWorkspace ? Blockly.Timeouts.getAllIntervals(window.scripts.blocklyWorkspace) : [];
-            }), "NAME");
+            }), 'NAME');
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(true);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_clearinterval_tooltip'));
         this.setHelpUrl(getHelp('timeouts_clearinterval_help'));
     },
@@ -503,15 +519,17 @@ Blockly.Timeouts.blocks['timeouts_getinterval'] =
 
 Blockly.Blocks['timeouts_getinterval'] = {
     init: function () {
-        this.appendDummyInput("NAME")
+        this.appendDummyInput('NAME')
             .appendField(Blockly.Translate('timeouts_getinterval'))
             .appendField(new Blockly.FieldDropdown(function () {
                 return window.scripts.blocklyWorkspace ? Blockly.Timeouts.getAllIntervals(window.scripts.blocklyWorkspace) : [];
-            }), "NAME");
+            }), 'NAME');
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_getinterval_tooltip'));
         this.setHelpUrl(getHelp('timeouts_getinterval_help'));
     },

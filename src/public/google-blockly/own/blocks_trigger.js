@@ -37,12 +37,13 @@ Blockly.Blocks['on_ext_oid_container'] = {
      * @this Blockly.Block
      */
     init: function () {
-        this.setColour(Blockly.Trigger.HUE);
-
         this.appendDummyInput()
             .appendField(Blockly.Translate('on_ext_on'));
 
         this.appendStatementInput('STACK');
+
+        this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('on_ext_on_tooltip'));
         this.contextMenu = false;
     },
@@ -54,13 +55,13 @@ Blockly.Blocks['on_ext_oid'] = {
      * @this Blockly.Block
      */
     init: function () {
-        this.setColour(Blockly.Trigger.HUE);
-
         this.appendDummyInput('OID')
             .appendField(Blockly.Translate('on_ext_oid'));
 
         this.setPreviousStatement(true);
         this.setNextStatement(true);
+
+        this.setColour(Blockly.Trigger.HUE);
 
         this.setTooltip(Blockly.Translate('on_ext_oid_tooltip'));
 
@@ -73,10 +74,12 @@ Blockly.Blocks['on_ext'] = {
         this.itemCount_ = 1;
         this.setMutator(new Blockly.icons.MutatorIcon(['on_ext_oid'], this));
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('on_ext_tooltip'));
         this.setHelpUrl(getHelp('on_help'));
     },
@@ -368,10 +371,12 @@ Blockly.Blocks['on'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('on_tooltip'));
         this.setHelpUrl(getHelp('on_help'));
     },
@@ -470,7 +475,9 @@ Blockly.Blocks['on_source'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('on_source_tooltip'));
         this.setHelpUrl(getHelp('on_help'));
     },
@@ -532,10 +539,12 @@ Blockly.Blocks['on_ack_value'] = {
         this.appendDummyInput()
             .appendField('↪ ' + Blockly.Translate('on_ack_value'));
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('on_ack_value_tooltip'));
         this.setHelpUrl(getHelp('on_help'));
     },
@@ -593,10 +602,12 @@ Blockly.Blocks['schedule'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('schedule_tooltip'));
         this.setHelpUrl(getHelp('schedule_help'));
     },
@@ -665,10 +676,12 @@ Blockly.Blocks['schedule_by_id'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('schedule_by_id_tooltip'));
         this.setHelpUrl(getHelp('schedule_by_id_help'));
     },
@@ -724,11 +737,13 @@ Blockly.Blocks['astro'] = {
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
-        this.setInputsInline(true);
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('astro_tooltip'));
         this.setHelpUrl(getHelp('astro_help'));
     },
@@ -859,10 +874,12 @@ Blockly.Blocks['schedule_create'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('schedule_create_tooltip'));
         this.setHelpUrl(getHelp('schedule_create_help'));
     },
@@ -925,10 +942,12 @@ Blockly.Blocks['schedule_clear'] = {
                 return scripts.blocklyWorkspace ? Blockly.Trigger.getAllSchedules(scripts.blocklyWorkspace) : [];
             }), 'NAME');
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(true);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('schedule_clear_tooltip'));
         this.setHelpUrl(getHelp('schedule_clear_help'));
     },
@@ -955,8 +974,10 @@ Blockly.Blocks['field_cron'] = {
             .appendField(new Blockly.FieldCRON('* * * * *'), 'CRON');
 
         this.setInputsInline(true);
-        this.setColour(Blockly.Trigger.HUE);
         this.setOutput(true, 'String');
+
+        this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('field_cron_tooltip'));
     },
 };
@@ -1083,9 +1104,12 @@ Blockly.Blocks['cron_builder'] = {
 
         this.seconds_ = false;
         this.as_line_ = false;
+
         this.setInputsInline(this.as_line_);
-        this.setColour(Blockly.Trigger.HUE);
         this.setOutput(true, 'String');
+
+        this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('field_cron_tooltip'));
     },
     /**
@@ -1108,6 +1132,7 @@ Blockly.Blocks['cron_builder'] = {
     domToMutation: function (xmlElement) {
         this.seconds_ = xmlElement.getAttribute('seconds') === 'true';
         this.as_line_ = xmlElement.getAttribute('as_line') === 'true';
+
         this.setInputsInline(this.as_line_);
         this.updateShape_(this.seconds_);
     },
@@ -1168,7 +1193,7 @@ Blockly.Trigger.blocks['onMessage'] =
 Blockly.Blocks['onMessage'] = {
     init: function () {
         this.appendDummyInput('NAME')
-            .appendField(Blockly.Translate('onMessage'));
+            .appendField('✉️' + Blockly.Translate('onMessage'));
 
         this.appendDummyInput('MESSAGE')
             .appendField(Blockly.Translate('onMessage_message'))
@@ -1177,10 +1202,12 @@ Blockly.Blocks['onMessage'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('onMessage_tooltip'));
         this.setHelpUrl(getHelp('onMessage_help'));
     },
@@ -1253,10 +1280,12 @@ Blockly.Blocks['onFile'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('onFile_tooltip'));
         this.setHelpUrl(getHelp('onFile_help'));
     },
@@ -1336,7 +1365,9 @@ Blockly.Blocks['onFile_data'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('onFile_data_tooltip'));
         //this.setHelpUrl(getHelp('onFile_data'));
     },
@@ -1406,12 +1437,15 @@ Blockly.Blocks['offFile'] = {
             .appendField(Blockly.Translate('onFile_file'))
             .setCheck(null);
 
-        this.setPreviousStatement(true, null);
         this.setInputsInline(false);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('offFile_tooltip'));
         this.setHelpUrl(getHelp('offFile_help'));
-    }
+    },
 };
 
 Blockly.JavaScript.forBlock['offFile'] = function (block) {
@@ -1456,10 +1490,12 @@ Blockly.Blocks['onLog'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('onLog_tooltip'));
         this.setHelpUrl(getHelp('onLog_help'));
     },
@@ -1523,7 +1559,9 @@ Blockly.Blocks['onLog_data'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('onLog_data_tooltip'));
         //this.setHelpUrl(getHelp('onLog_data_help'));
     },

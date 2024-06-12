@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 8.4.1 (2024-05-26)
+
+* (klein0r) Fixed httpPost block
+* (klein0r) Just raise deprecated warnings once per script start/usage
+
 ## 8.4.0 (2024-05-25)
 
 * (klein0r) Added checks/warnings for more incorrect blockly connections

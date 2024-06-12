@@ -60,12 +60,10 @@ Blockly.Blocks['time_compare_ex'] = {
         this.appendValueInput('START_TIME');
 
         this.setInputsInline(true);
-        //this.setPreviousStatement(true, null);
-        //this.setNextStatement(true, null);
-
         this.setOutput(true, 'Boolean');
 
         this.setColour(Blockly.Time.HUE);
+
         this.setTooltip(Blockly.Translate('time_compare_ex_tooltip'));
         this.setHelpUrl(getHelp('time_compare_ex_help'));
     },
@@ -196,12 +194,10 @@ Blockly.Blocks['time_compare'] = {
             .appendField(new Blockly.FieldTextInput('12:00'), 'START_TIME');
 
         this.setInputsInline(true);
-        //this.setPreviousStatement(true, null);
-        //this.setNextStatement(true, null);
-
         this.setOutput(true, 'Boolean');
 
         this.setColour(Blockly.Time.HUE);
+
         this.setTooltip(Blockly.Translate('time_compare_tooltip'));
         this.setHelpUrl(getHelp('time_compare_help'));
     },
@@ -316,10 +312,10 @@ Blockly.Blocks['time_get'] = {
             }), 'OPTION');
 
         this.setInputsInline(true);
-
         this.setOutput(true);
 
         this.setColour(Blockly.Time.HUE);
+
         this.setTooltip(Blockly.Translate('time_get_tooltip'));
         //this.setHelpUrl(getHelp('time_get_help'));
     },
@@ -443,10 +439,10 @@ Blockly.Blocks['time_get_special'] = {
             ]), 'TYPE');
 
         this.setInputsInline(true);
-
         this.setOutput(true, 'Number');
 
         this.setColour(Blockly.Time.HUE);
+
         this.setTooltip(Blockly.Translate('time_get_special_tooltip'));
         //this.setHelpUrl(getHelp('time_get_special_help'));
     },
@@ -508,13 +504,13 @@ Blockly.Blocks['time_astro'] = {
             .appendField(new Blockly.FieldTextInput('0'), 'OFFSET');
 
         this.setInputsInline(true);
-
         this.setOutput(true);
 
         this.setColour(Blockly.Time.HUE);
+
         this.setTooltip(Blockly.Translate('time_astro_tooltip'));
         this.setHelpUrl(getHelp('time_astro_help'));
-    }
+    },
 };
 
 Blockly.JavaScript.forBlock['time_astro'] = function (block) {
@@ -570,10 +566,10 @@ Blockly.Blocks['time_calculation'] = {
             ]), 'UNIT');
 
         this.setInputsInline(true);
-
         this.setOutput(true, 'Number');
 
         this.setColour(Blockly.Time.HUE);
+
         this.setTooltip(Blockly.Translate('time_calculation_tooltip'));
         //this.setHelpUrl(getHelp('time_calculation_help'));
     },
