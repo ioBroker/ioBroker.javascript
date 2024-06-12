@@ -62,6 +62,7 @@ const forbiddenMirrorLocations = [
 const utils     = require('@iobroker/adapter-core');
 const words     = require('./lib/words');
 const sandBox   = require('./lib/sandbox');
+const { requestModuleNameByUrl } = require('./lib/nodeModulesManagement.js');
 const eventObj  = require('./lib/eventObj');
 const Scheduler = require('./lib/scheduler');
 const { targetTsLib, tsCompilerOptions, jsDeclarationCompilerOptions } = require('./lib/typescriptSettings');
@@ -1825,75 +1826,80 @@ async function installNpm(npmLib) {
 }
 
 async function installLibraries() {
-    if (adapter.config && adapter.config.libraries) {
-        const libraries = adapter.config.libraries.split(/[,;\s]+/);
+    if (!adapter.config?.libraries) {
+        return;
+    }
 
-        let installedNodeModules = [];
-        const keepModules = [];
+    const libraries = adapter.config.libraries.split(/[,;\s]+/);
 
-        // js-controller >= 6.x
-        if (typeof adapter.listInstalledNodeModules === 'function') {
-            installedNodeModules = await adapter.listInstalledNodeModules();
+    let installedNodeModules = [];
+    const keepModules = [];
 
-            adapter.log.debug(`Found installed libraries: ${JSON.stringify(installedNodeModules)}`);
+    // js-controller >= 6.x
+    if (typeof adapter.listInstalledNodeModules === 'function') {
+        installedNodeModules = await adapter.listInstalledNodeModules();
+
+        adapter.log.debug(`Found installed libraries: ${JSON.stringify(installedNodeModules)}`);
+    }
+
+    for (const lib of libraries) {
+        let depName = lib;
+        let version = 'latest';
+
+        if (depName.includes('@') && depName.lastIndexOf('@') > 0) {
+            const parts = depName.split('@');
+            version = parts.pop() ?? 'latest';
+            depName = parts.join('@');
         }
 
-        for (let lib = 0; lib < libraries.length; lib++) {
-            if (libraries[lib] && libraries[lib].trim()) {
-                libraries[lib] = libraries[lib].trim();
-                let depName = libraries[lib];
-                let version = 'latest';
+        /** The real module name, because the dependency can be an url too */
+        let moduleName = depName;
+            
+        if (URL.canParse(depName)) {
+            moduleName = await requestModuleNameByUrl(depName);
+        }
 
-                if (depName.includes('@') && depName.lastIndexOf('@') > 0) {
-                    const parts = depName.split('@');
-                    version = parts.pop() ?? 'latest';
-                    depName = parts.join('@');
+        keepModules.push(moduleName);
+
+        adapter.log.debug(`Found custom dependency in config: "${depName}@${version}"`);
+
+        // js-controller >= 6.x
+        if (typeof adapter.installNodeModule === 'function') {
+            try {
+                const result = await adapter.installNodeModule(depName, { version });
+                if (result.success) {
+                    adapter.log.debug(`Installed custom dependency: "${depName}@${version}"`);
+
+                    context.mods[depName] = (await adapter.importNodeModule(depName)).default;
+                } else {
+                    adapter.log.warn(`Cannot install custom npm package "${lib}"`);
                 }
+            } catch (e) {
+                adapter.log.warn(`Cannot install custom npm package "${lib}": ${e.message}`);
+            }
+        } else if (!nodeFS.existsSync(`${__dirname}/node_modules/${depName}/package.json`)) {
+            // js-controller < 6.x
+            adapter.log.info(`Installing custom dependency (legacy mode): "${depName}@${version}"`);
 
-                keepModules.push(depName);
-
-                adapter.log.debug(`Found custom dependency in config: "${depName}@${version}"`);
-
-                // js-controller >= 6.x
-                if (typeof adapter.installNodeModule === 'function') {
-                    try {
-                        const result = await adapter.installNodeModule(depName, { version });
-                        if (result.success) {
-                            adapter.log.debug(`Installed custom custom dependency: "${depName}@${version}"`);
-
-                            context.mods[depName] = (await adapter.importNodeModule(depName)).default;
-                        } else {
-                            adapter.log.warn(`Cannot install custom npm package "${libraries[lib]}"`);
-                        }
-                    } catch (err) {
-                        adapter.log.warn(`Cannot install custom npm package ${libraries[lib]}: ${err}`);
-                    }
-                } else if (!nodeFS.existsSync(`${__dirname}/node_modules/${depName}/package.json`)) {
-                    // js-controller < 6.x
-                    adapter.log.info(`Installing custom dependency (legacy mode): "${depName}@${version}"`);
-
-                    try {
-                        await installNpm(libraries[lib]);
-
-                        adapter.log.info(`Installed custom npm package (legacy mode): "${libraries[lib]}"`);
-                    } catch (err) {
-                        adapter.log.warn(`Cannot install custom npm package "${libraries[lib]}" (legacy mode): ${err}`);
-                    }
-                }
+            try {
+                await installNpm(lib);
+                adapter.log.info(`Installed custom npm package (legacy mode): "${libraries[lib]}"`);
+            } catch (err) {
+                adapter.log.warn(`Cannot install custom npm package "${libraries[lib]}" (legacy mode): ${err}`);
             }
         }
+    }
 
-        // js-controller >= 6.x
-        if (typeof adapter.uninstallNodeModule === 'function') {
-            for (const installedNodeModule of installedNodeModules) {
-                if (!keepModules.includes(installedNodeModule)) {
-                    try {
-                        await adapter.uninstallNodeModule(installedNodeModule);
+    // js-controller >= 6.x
+    if (typeof adapter.uninstallNodeModule === 'function') {
+        for (const installedNodeModule of installedNodeModules) {
+            if (!keepModules.includes(installedNodeModule)) {
+                try {
+                    await adapter.uninstallNodeModule(installedNodeModule);
 
-                        adapter.log.info(`Removed custom npm package: "${installedNodeModule}"`);
-                    } catch (err) {
-                        adapter.log.warn(`Cannot remove custom npm package ${installedNodeModule}: ${err}`);
-                    }
+                    adapter.log.info(`Removed custom npm package: "${installedNodeModule}"`);
+                } catch (err) {
+                    adapter.log.warn(`Cannot remove custom npm package ${installedNodeModule}: ${err}`);
                 }
             }
         }
