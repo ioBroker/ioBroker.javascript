@@ -23,12 +23,13 @@ Blockly.Convert.blocks['convert_tonumber'] =
 
 Blockly.Blocks.convert_tonumber = {
     init: function () {
-        this.setColour(Blockly.Convert.HUE);
-
         this.appendValueInput('VALUE')
             .appendField(Blockly.Translate('convert_tonumber'));
 
         this.setOutput(true, 'Number');
+
+        this.setColour(Blockly.Convert.HUE);
+
         this.setTooltip(Blockly.Translate('convert_tonumber_tooltip'));
     },
 };
@@ -44,11 +45,13 @@ Blockly.Convert.blocks['convert_toboolean'] =
 
 Blockly.Blocks.convert_toboolean = {
     init: function () {
-        this.setColour(Blockly.Convert.HUE);
         this.appendValueInput('VALUE')
             .appendField(Blockly.Translate('convert_toboolean'));
 
         this.setOutput(true, 'Boolean');
+
+        this.setColour(Blockly.Convert.HUE);
+
         this.setTooltip(Blockly.Translate('convert_toboolean_tooltip'));
     },
 };
@@ -69,9 +72,13 @@ Blockly.Convert.blocks['convert_tostring'] =
 
 Blockly.Blocks.convert_tostring = {
     init: function () {
-        this.setColour(Blockly.Convert.HUE);
-        this.appendValueInput('VALUE').appendField(Blockly.Translate('convert_tostring'));
+        this.appendValueInput('VALUE')
+            .appendField(Blockly.Translate('convert_tostring'));
+
         this.setOutput(true, 'String');
+
+        this.setColour(Blockly.Convert.HUE);
+
         this.setTooltip(Blockly.Translate('convert_tostring_tooltip'));
     },
 };
@@ -87,12 +94,13 @@ Blockly.Convert.blocks['convert_type'] =
 
 Blockly.Blocks.convert_type = {
     init: function () {
-        this.setColour(Blockly.Convert.HUE);
-
         this.appendValueInput('ITEM')
             .appendField(Blockly.Translate('convert_type'));
 
         this.setOutput(true, 'String');
+
+        this.setColour(Blockly.Convert.HUE);
+
         this.setTooltip(Blockly.Translate('convert_type_tooltip'));
     },
 };
@@ -111,8 +119,10 @@ Blockly.Blocks.convert_to_date = {
         this.appendValueInput('VALUE')
             .appendField(Blockly.Translate('convert_to_date'));
 
-        this.setColour(Blockly.Convert.HUE);
         this.setOutput(true, 'Date');
+
+        this.setColour(Blockly.Convert.HUE);
+
         this.setTooltip(Blockly.Translate('convert_to_date_tooltip'));
     },
 };
@@ -130,7 +140,6 @@ Blockly.Convert.blocks['convert_from_date'] =
 
 Blockly.Blocks.convert_from_date = {
     init: function () {
-        this.setColour(Blockly.Convert.HUE);
         this.appendValueInput('VALUE')
             .appendField(Blockly.Translate('convert_from_date'));
 
@@ -178,6 +187,9 @@ Blockly.Blocks.convert_from_date = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
+        this.setColour(Blockly.Convert.HUE);
+
         this.setTooltip(Blockly.Translate('convert_from_date_tooltip'));
     },
     mutationToDom: function () {
@@ -292,7 +304,6 @@ Blockly.Convert.blocks['convert_time_difference'] =
 
 Blockly.Blocks.convert_time_difference = {
     init: function () {
-        this.setColour(Blockly.Convert.HUE);
         this.appendValueInput('VALUE')
             .appendField(Blockly.Translate('convert_time_difference'));
 
@@ -311,7 +322,10 @@ Blockly.Blocks.convert_time_difference = {
             }), 'OPTION');
 
         this.setInputsInline(true);
-        this.setOutput(true);
+        this.setOutput(true, 'String');
+
+        this.setColour(Blockly.Convert.HUE);
+
         this.setTooltip(Blockly.Translate('convert_time_difference_tooltip'));
     },
     mutationToDom: function () {
@@ -360,8 +374,10 @@ Blockly.Blocks.convert_json2object = {
         this.appendValueInput('VALUE')
             .appendField(Blockly.Translate('convert_json2object'));
 
-        this.setColour(Blockly.Convert.HUE);
         this.setOutput(true);
+
+        this.setColour(Blockly.Convert.HUE);
+
         this.setTooltip(Blockly.Translate('convert_json2object_tooltip'));
     },
 };
@@ -385,8 +401,10 @@ Blockly.Blocks.convert_object2json = {
             .appendField(Blockly.Translate('convert_object2json_prettify'))
             .appendField(new Blockly.FieldCheckbox('FALSE'), 'PRETTIFY');
 
-        this.setColour(Blockly.Convert.HUE);
         this.setOutput(true, 'String');
+
+        this.setColour(Blockly.Convert.HUE);
+
         this.setTooltip(Blockly.Translate('convert_object2json_tooltip'));
     },
 };
@@ -418,8 +436,10 @@ Blockly.Blocks.convert_jsonata = {
             .appendField(Blockly.Translate('convert_jsonata_target'));
 
         this.setInputsInline(true);
-        this.setColour(Blockly.Convert.HUE);
         this.setOutput(true, 'String');
+
+        this.setColour(Blockly.Convert.HUE);
+
         this.setTooltip(Blockly.Translate('convert_jsonata_tooltip'));
     },
 };

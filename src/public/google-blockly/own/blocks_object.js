@@ -262,6 +262,7 @@ Blockly.Blocks['object_set_attr'] = {
         this.setNextStatement(true, null);
 
         this.setColour(Blockly.Object.HUE);
+
         this.setTooltip(Blockly.Translate('object_set_attr_tooltip'));
         //this.setHelpUrl(getHelp('object_set_attr_help'));
     },
@@ -299,6 +300,7 @@ Blockly.Blocks['object_del_attr'] = {
         this.setNextStatement(true, null);
 
         this.setColour(Blockly.Object.HUE);
+
         this.setTooltip(Blockly.Translate('object_del_attr_tooltip'));
         //this.setHelpUrl(getHelp('object_del_attr_help'));
     },
@@ -339,9 +341,10 @@ Blockly.Blocks['object_has_attr'] = {
         this.setOutput(true, 'Boolean');
 
         this.setColour(Blockly.Object.HUE);
+
         this.setTooltip(Blockly.Translate('object_has_attr_tooltip'));
         //this.setHelpUrl(getHelp('object_has_attr_help'));
-    }
+    },
 };
 
 Blockly.JavaScript.forBlock['object_has_attr'] = function (block) {

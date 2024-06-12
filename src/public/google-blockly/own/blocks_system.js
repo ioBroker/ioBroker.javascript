@@ -37,10 +37,12 @@ Blockly.Blocks['global_var'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('global_var_tooltip'));
         this.setHelpUrl(getHelp('global_var'));
-    }
+    },
 };
 Blockly.JavaScript.forBlock['global_var'] = function (block) {
     const variable = block.getFieldValue('VAR');
@@ -73,10 +75,12 @@ Blockly.Blocks['debug'] = {
                 [Blockly.Translate('loglevel_error'), 'error'],
             ]), 'Severity');
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('debug_tooltip'));
         this.setHelpUrl(getHelp('debug_help'));
     },
@@ -99,10 +103,12 @@ Blockly.Blocks['comment'] = {
         this.appendDummyInput('COMMENT')
             .appendField(new Blockly.FieldTextInput(Blockly.Translate('comment')), 'COMMENT');
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour('#FFFF00');
+
         this.setTooltip(Blockly.Translate('comment_tooltip'));
     },
 };
@@ -141,7 +147,9 @@ Blockly.Blocks['control'] = {
         this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('control_tooltip'));
         this.setHelpUrl(getHelp('control_help'));
     },
@@ -248,7 +256,9 @@ Blockly.Blocks['toggle'] = {
         this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('toggle_tooltip'));
         this.setHelpUrl(getHelp('toggle_help'));
     },
@@ -381,7 +391,9 @@ Blockly.Blocks['update'] = {
         this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('update_tooltip'));
         this.setHelpUrl(getHelp('update_help'));
     },
@@ -501,10 +513,12 @@ Blockly.Blocks['direct'] = {
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('direct_tooltip'));
         this.setHelpUrl(getHelp('direct_help'));
-    }
+    },
 };
 
 Blockly.JavaScript.forBlock['direct'] = function (block) {
@@ -579,7 +593,9 @@ Blockly.Blocks['control_ex'] = {
         this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('control_tooltip'));
         this.setHelpUrl(getHelp('control_help'));
     },
@@ -637,11 +653,12 @@ Blockly.Blocks['create'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
 
-        this.setInputsInline(false);
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('create_tooltip'));
         this.setHelpUrl(getHelp('create_help'));
     },
@@ -716,11 +733,12 @@ Blockly.Blocks['create_ex'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
 
-        this.setInputsInline(false);
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('create_tooltip'));
         this.setHelpUrl(getHelp('create_help'));
     },
@@ -794,7 +812,9 @@ Blockly.Blocks['get_value'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('get_value_tooltip'));
         this.setHelpUrl(getHelp('get_value_help'));
     },
@@ -865,7 +885,9 @@ Blockly.Blocks['get_value_var'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('get_value_tooltip'));
         this.setHelpUrl(getHelp('get_value_help'));
     },
@@ -933,11 +955,12 @@ Blockly.Blocks['get_value_async'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
 
-        this.setInputsInline(true);
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('get_value_tooltip'));
         this.setHelpUrl(getHelp('get_value_help'));
     },
@@ -977,7 +1000,9 @@ Blockly.Blocks['get_object'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Object.HUE);
+
         this.setTooltip(Blockly.Translate('get_object_tooltip'));
         this.setHelpUrl(getHelp('get_object_help'));
     },
@@ -1024,9 +1049,10 @@ Blockly.Blocks['get_object_async'] = {
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-
         this.setInputsInline(true);
+
         this.setColour(Blockly.Object.HUE);
+
         this.setTooltip(Blockly.Translate('get_object_tooltip'));
         this.setHelpUrl(getHelp('get_object_help'));
     },
@@ -1055,8 +1081,10 @@ Blockly.Blocks['field_oid'] = {
             .appendField(new Blockly.FieldOID(Blockly.Translate('select_id'), 'state'), 'oid');
 
         this.setInputsInline(true);
-        this.setColour("%{BKY_TEXTS_HUE}");
         this.setOutput(true, 'String');
+
+        this.setColour('%{BKY_TEXTS_HUE}');
+
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     },
 };
@@ -1081,8 +1109,10 @@ Blockly.Blocks['field_oid_meta'] = {
             .appendField(new Blockly.FieldOID(Blockly.Translate('select_id'), 'meta'), 'oid');
 
         this.setInputsInline(true);
-        this.setColour("%{BKY_TEXTS_HUE}");
         this.setOutput(true, 'String');
+
+        this.setColour('%{BKY_TEXTS_HUE}');
+
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     },
 };
@@ -1107,8 +1137,10 @@ Blockly.Blocks['field_oid_script'] = {
             .appendField(new Blockly.FieldOID(Blockly.Translate('select_id'), 'script'), 'oid');
 
         this.setInputsInline(true);
-        this.setColour("%{BKY_TEXTS_HUE}");
         this.setOutput(true, 'String');
+
+        this.setColour('%{BKY_TEXTS_HUE}');
+
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     },
 };
@@ -1145,7 +1177,9 @@ Blockly.Blocks['get_attr'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('get_attr_tooltip'));
         this.setHelpUrl(getHelp('get_attr_help'));
     },
@@ -1173,8 +1207,10 @@ Blockly.Blocks['regex'] = {
             .appendField(new Blockly.FieldTextInput('(.*)'), 'TEXT');
 
         this.setInputsInline(true);
-        this.setColour(Blockly.System.HUE);
         this.setOutput(true, 'Array');
+
+        this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     },
 };
@@ -1203,8 +1239,10 @@ Blockly.Blocks['selector'] = {
             .appendField(')');
 
         this.setInputsInline(true);
-        this.setColour(Blockly.System.HUE);
         this.setOutput(true, 'Array');
+
+        this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     },
 };

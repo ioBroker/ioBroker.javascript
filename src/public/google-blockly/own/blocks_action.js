@@ -56,6 +56,7 @@ Blockly.Blocks['exec'] = {
         this.setNextStatement(true, null);
 
         this.setColour(Blockly.Action.HUE);
+
         this.setTooltip(Blockly.Translate('exec_tooltip'));
         this.setHelpUrl(getHelp('exec_help'));
     },
@@ -132,7 +133,9 @@ Blockly.Blocks['exec_result'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Action.HUE);
+
         this.setTooltip(Blockly.Translate('exec_result_tooltip'));
         this.setHelpUrl(getHelp('exec_help'));
     },
@@ -214,6 +217,7 @@ Blockly.Blocks['http_get'] = {
         this.setNextStatement(true, null);
 
         this.setColour(Blockly.Action.HUE);
+
         this.setTooltip(Blockly.Translate('http_get_tooltip'));
         this.setHelpUrl(getHelp('http_get_help'));
     },
@@ -288,6 +292,7 @@ Blockly.Blocks['http_post'] = {
         this.setNextStatement(true, null);
 
         this.setColour(Blockly.Action.HUE);
+
         this.setTooltip(Blockly.Translate('http_post_tooltip'));
         this.setHelpUrl(getHelp('http_post_help'));
     },
@@ -346,7 +351,9 @@ Blockly.Blocks['http_response'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Action.HUE);
+
         this.setTooltip(Blockly.Translate('http_response_tooltip'));
         //this.setHelpUrl(getHelp('http_response_help'));
     },
@@ -479,6 +486,7 @@ Blockly.Blocks['file_read'] = {
         this.setNextStatement(true, null);
 
         this.setColour(Blockly.Action.HUE);
+
         this.setTooltip(Blockly.Translate('file_read_tooltip'));
         this.setHelpUrl(getHelp('file_read_help'));
     },
@@ -531,7 +539,9 @@ Blockly.Blocks['file_data'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Action.HUE);
+
         this.setTooltip(Blockly.Translate('file_data_tooltip'));
         //this.setHelpUrl(getHelp('file_data'));
     },
@@ -614,6 +624,7 @@ Blockly.Blocks['request'] = {
         this.setNextStatement(true, null);
 
         this.setColour(Blockly.Action.HUE);
+
         this.setTooltip(Blockly.Translate('request_tooltip'));
         this.setHelpUrl(Blockly.Translate('request_help'));
     },

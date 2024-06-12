@@ -7,13 +7,17 @@ Blockly.Blocks['math_rndfixed'] = {
         this.appendValueInput('x')
             .setCheck('Number')
             .appendField(Blockly.Translate('math_rndfixed_round'));
+
         this.appendDummyInput()
             .appendField(Blockly.Translate('math_rndfixed_to'))
             .appendField(new Blockly.FieldNumber(0, 1, 25), 'n')
             .appendField(Blockly.Translate('math_rndfixed_decplcs'));
+
         this.setInputsInline(true);
-        this.setColour(Blockly.Msg['MATH_HUE']);
         this.setOutput(true, 'Number');
+
+        this.setColour(Blockly.Msg['MATH_HUE']);
+
         this.setTooltip(Blockly.Translate('math_rndfixed_tooltip'));
     },
 };

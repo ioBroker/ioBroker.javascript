@@ -12,12 +12,13 @@ Blockly.Blocks['logic_multi_and_container'] = {
      * @this Blockly.Block
      */
     init: function () {
-        this.setColour("%{BKY_LOGIC_HUE}");
-
         this.appendDummyInput()
             .appendField(Blockly.Translate('logic_multi_and'));
 
         this.appendStatementInput('STACK');
+
+        this.setColour('%{BKY_LOGIC_HUE}');
+
         this.setTooltip(Blockly.Translate('logic_multi_and_tooltip'));
 
         this.contextMenu = false;
@@ -30,13 +31,13 @@ Blockly.Blocks['logic_multi_and_mutator'] = {
      * @this Blockly.Block
      */
     init: function () {
-        this.setColour("%{BKY_LOGIC_HUE}");
-
         this.appendDummyInput('AND')
             .appendField(Blockly.Translate('logic_multi_and_and'));
 
         this.setPreviousStatement(true);
         this.setNextStatement(true);
+
+        this.setColour('%{BKY_LOGIC_HUE}');
 
         this.setTooltip(Blockly.Translate('logic_multi_and_tooltip'));
 
@@ -52,7 +53,8 @@ Blockly.Blocks['logic_multi_and'] = {
         this.setInputsInline(false);
         this.setOutput(true, 'Boolean');
 
-        this.setColour("%{BKY_LOGIC_HUE}");
+        this.setColour('%{BKY_LOGIC_HUE}');
+
         this.setTooltip(Blockly.Translate('logic_multi_and_tooltip'));
         // this.setHelpUrl(getHelp('logic_multi_and_help'));
     },
@@ -189,12 +191,13 @@ Blockly.Blocks['logic_multi_or_container'] = {
      * @this Blockly.Block
      */
     init: function () {
-        this.setColour("%{BKY_LOGIC_HUE}");
-
         this.appendDummyInput()
             .appendField(Blockly.Translate('logic_multi_or'));
 
         this.appendStatementInput('STACK');
+
+        this.setColour('%{BKY_LOGIC_HUE}');
+
         this.setTooltip(Blockly.Translate('logic_multi_or_tooltip'));
 
         this.contextMenu = false;
@@ -207,13 +210,13 @@ Blockly.Blocks['logic_multi_or_mutator'] = {
      * @this Blockly.Block
      */
     init: function () {
-        this.setColour("%{BKY_LOGIC_HUE}");
-
         this.appendDummyInput('OR')
             .appendField(Blockly.Translate('logic_multi_or_or'));
 
         this.setPreviousStatement(true);
         this.setNextStatement(true);
+
+        this.setColour('%{BKY_LOGIC_HUE}');
 
         this.setTooltip(Blockly.Translate('logic_multi_or_tooltip'));
 
@@ -229,7 +232,8 @@ Blockly.Blocks['logic_multi_or'] = {
         this.setInputsInline(false);
         this.setOutput(true, 'Boolean');
 
-        this.setColour("%{BKY_LOGIC_HUE}");
+        this.setColour('%{BKY_LOGIC_HUE}');
+
         this.setTooltip(Blockly.Translate('logic_multi_or_tooltip'));
         // this.setHelpUrl(getHelp('logic_multi_or_help'));
     },
@@ -373,7 +377,9 @@ Blockly.Blocks['logic_between'] = {
 
         this.setInputsInline(true);
         this.setOutput(true, 'Boolean');
-        this.setColour("%{BKY_LOGIC_HUE}");
+
+        this.setColour('%{BKY_LOGIC_HUE}');
+
         this.setTooltip(Blockly.Translate('logic_between_tooltip'));
         // this.setHelpUrl(getHelp('logic_between_help'));
     },
@@ -402,9 +408,11 @@ Blockly.Blocks['logic_ifempty'] = {
             .setAlign(Blockly.ALIGN_RIGHT)
             .appendField(Blockly.Translate('logic_ifempty_then'));
 
-        this.setOutput(true, null);
         this.setInputsInline(true);
-        this.setColour("%{BKY_LOGIC_HUE}");
+        this.setOutput(true, null);
+
+        this.setColour('%{BKY_LOGIC_HUE}');
+
         this.setTooltip(Blockly.Translate('logic_ifempty_tooltip'));
         // this.setHelpUrl(getHelp('logic_ifempty_help'));
     },
