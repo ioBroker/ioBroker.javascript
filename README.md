@@ -26,6 +26,11 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+
+* (foxriver76) fixed issue with additional node modules which are installed from GitHub (controller v6)
+
 ### 8.5.2 (2024-06-11)
 
 * (foxriver76) fixed issue with additional node modules when using js-controller version 6
