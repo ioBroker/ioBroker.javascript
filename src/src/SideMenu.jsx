@@ -209,7 +209,7 @@ const styles = theme => ({
 
     mainList: {
         '& .js-folder-dragover>div>li>.folder-reorder': {
-            background: '#40adff'
+            background: '#40adff',
         },
         '& .js-folder-dragging .folder-reorder': {
             opacity: 1,
@@ -221,10 +221,10 @@ const styles = theme => ({
 });
 
 const images = {
-    'Blockly': ImgBlockly,
+    Blockly: ImgBlockly,
     'Javascript/js': ImgJS,
     def: ImgJS,
-    'Rules':ImgRules,
+    Rules: ImgRules,
     'TypeScript/ts': ImgTypeScript,
 };
 
@@ -233,12 +233,12 @@ const getObjectName = (id, obj, lang) => {
     if (obj && obj.common && obj.common.name) {
         if (typeof obj.common.name === 'object') {
             return (obj.common.name[lang] || obj.common.name.en || id.replace(/^script\.js./, '')).toString();
-        } else {
-            return obj.common.name.toString();
         }
-    } else {
-        return id.replace(/^script\.js./, '');
+
+        return obj.common.name.toString();
     }
+
+    return id.replace(/^script\.js./, '');
 };
 
 const prepareList = data => {
@@ -1101,7 +1101,7 @@ class SideDrawer extends React.Component {
         let i = 1;
         let word = `${I18n.t('Script')} `;
         if (copyId) {
-            let name = getObjectName(copyId, this.props.scripts[copyId]);
+            const name = getObjectName(copyId, this.props.scripts[copyId]);
             const m = name.match(/\d+$/);
             if (m) {
                 word = name.replace(/\d+$/, '');
@@ -1115,7 +1115,7 @@ class SideDrawer extends React.Component {
         while (this.state.listItems.find(it => it.id === `${this.parent}.${word.replace(/\.\s/g, '_')}${i}`)) {
             i++;
         }
-        /*ignore jslint end*/
+
         return word + i;
     }
 
@@ -1169,7 +1169,9 @@ class SideDrawer extends React.Component {
 
                     this.setState({ menuOpened: false, menuAnchorEl: null }, () =>
                         this.onDelete(this.state.selected).then(() => {}));
-                }}><IconDelete className={this.props.classes.iconDropdownMenu}  style={{ color: 'red' }}/>{I18n.t('Delete')}
+                }}
+            >
+                <IconDelete className={this.props.classes.iconDropdownMenu}  style={{ color: 'red' }}/>{I18n.t('Delete')}
             </MenuItem> : null}
             <MenuItem
                 key="expertMode"
@@ -1189,7 +1191,8 @@ class SideDrawer extends React.Component {
                     event.stopPropagation();
                     event.preventDefault();
                     this.onCloseMenu(() => this.props.onExport());
-                }}>
+                }}
+            >
                 <IconExport className={this.props.classes.iconDropdownMenu} />{I18n.t('Export all scripts')}
             </MenuItem>}
             {this.props.onImport && <MenuItem

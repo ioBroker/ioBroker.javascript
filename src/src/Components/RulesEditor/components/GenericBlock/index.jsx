@@ -277,7 +277,7 @@ class GenericBlock extends PureComponent {
             </div>
             {nameBlock && <div className={cls.nameBlock}>{I18n.t(nameBlock)}</div>}
         </div>;
-    }
+    };
 
     renderButton = (input, value, onClick) => {
         const { className } = this.props;
@@ -293,23 +293,27 @@ class GenericBlock extends PureComponent {
             />
             {backText && <div className={cls.backText}>{doNotTranslateBack ? backText : I18n.t(backText)}</div>}
         </div>;
-    }
+    };
 
     findIcon = obj => {
         if (!obj) {
             return Promise.resolve(null);
-        } else
-            if (obj.common?.icon) {
-                return Promise.resolve(getSelectIdIcon(obj, '../..'));
-            } else if (obj.type === 'state' || obj.type === 'channel') {
-                const parts = obj._id.split('.');
-                parts.pop();
-                const newId = parts.join('.');
-                return this.props.socket.getObject(newId)
-                    .then(obj => this.findIcon(obj))
-                    .catch(() => null);
-            }
-    }
+        }
+
+        if (obj.common?.icon) {
+            return Promise.resolve(getSelectIdIcon(obj, '../..'));
+        }
+
+        if (obj.type === 'state' || obj.type === 'channel') {
+            const parts = obj._id.split('.');
+            parts.pop();
+            const newId = parts.join('.');
+
+            return this.props.socket.getObject(newId)
+                .then(o => this.findIcon(o))
+                .catch(() => null);
+        }
+    };
 
     renderObjectID = (input, value, onChange) => {
         const { attr, openCheckbox, checkReadOnly } = input;
@@ -354,7 +358,7 @@ class GenericBlock extends PureComponent {
                     icon={this.state[`${this.state.settings[input.attr]}___icon`]}
                     square
                     style={{ marginLeft: 7 }}
-                    value='...'
+                    value="..."
                     className={className}
                     onClick={() => {
                         const settings = {};
@@ -397,12 +401,12 @@ class GenericBlock extends PureComponent {
                                     [`${attr}Write`]: obj.common.write,
                                     [`${attr}Read`]: obj.common.read,
                                 }, null, () =>
-                                    this.props.setOnUpdate && this.props.setOnUpdate(true))
-                            }))}
-            }
+                                    this.props.setOnUpdate && this.props.setOnUpdate(true));
+                            }));
+                }}
             /> : null}
         </div> : null;
-    }
+    };
 
     renderIconTag = () => {
         return <div
@@ -418,7 +422,7 @@ class GenericBlock extends PureComponent {
             }}>
             {this.state.settings.tagCard}
         </div>;
-    }
+    };
 
     renderTime = (input, value, onChange) => {
         const { attr, backText, frontText, doNotTranslate, doNotTranslateBack } = input
@@ -475,7 +479,7 @@ class GenericBlock extends PureComponent {
             />
             {backText && <div className={cls.backText}>{doNotTranslateBack ? backText : I18n.t(backText)}</div>}
         </div>;
-    }
+    };
 
     renderDialog = (input, value, onChange) => {
         const { onShowDialog, frontText, backText, attr, icon, doNotTranslate, doNotTranslateBack } = input;
@@ -484,11 +488,11 @@ class GenericBlock extends PureComponent {
             <MaterialDynamicIcon
                 iconName={icon}
                 className={Utils.clsx(cls.iconDialog)}
-                onClick={e => onShowDialog && onShowDialog()}
+                onClick={() => onShowDialog && onShowDialog()}
             />
             {backText && <div className={cls.backText}>{doNotTranslateBack ? backText : I18n.t(backText)}</div>}
         </div>;
-    }
+    };
 
     renderModalInput = (input, value, onChange) => {
         const { openModal } = this.state;
@@ -512,7 +516,7 @@ class GenericBlock extends PureComponent {
                     square
                     // fullWidth
                     style={{ marginLeft: 5 }}
-                    value='...'
+                    value="..."
                     className={className}
                     onClick={() => this.setState({ openModal: true })}
                 />
