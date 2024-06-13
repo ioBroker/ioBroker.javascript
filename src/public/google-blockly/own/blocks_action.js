@@ -247,6 +247,7 @@ Blockly.JavaScript.forBlock['http_get'] = function (block) {
 
 // --- action http_post --------------------------------------------------
 Blockly.Action.blocks['http_post'] =
+    '<sep gap="5"></sep>' +
     '<block type="http_post">' +
     '  <field name="TIMEOUT">2000</field>' +
     '  <field name="UNIT">ms</field>' +
@@ -328,6 +329,7 @@ Blockly.JavaScript.forBlock['http_post'] = function (block) {
 
 // --- http_response -----------------------------------------------------------
 Blockly.Action.blocks['http_response'] =
+    '<sep gap="5"></sep>' +
     '<block type="http_response">' +
     '  <field name="ATTR">response.data</field>' +
     '</block>';
@@ -355,7 +357,7 @@ Blockly.Blocks['http_response'] = {
         this.setColour(Blockly.Action.HUE);
 
         this.setTooltip(Blockly.Translate('http_response_tooltip'));
-        //this.setHelpUrl(getHelp('http_response_help'));
+        this.setHelpUrl(getHelp('http_response_help'));
     },
     /**
      * Called whenever anything on the workspace changes.
@@ -392,6 +394,75 @@ Blockly.JavaScript.forBlock['http_response'] = function (block) {
     const attr = block.getFieldValue('ATTR');
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+// --- http_response_tofile -----------------------------------------------------------
+Blockly.Action.blocks['http_response_tofile'] =
+    '<sep gap="5"></sep>' +
+    '<block type="http_response_tofile">' +
+    '  <value name="FILENAME">' +
+    '    <shadow type="text">' +
+    '      <field name="TEXT">temp.jpg</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
+
+Blockly.Blocks['http_response_tofile'] = {
+    /**
+     * Block for conditionally returning a value from a procedure.
+     * @this Blockly.Block
+     */
+    init: function () {
+        this.appendDummyInput()
+            .appendField('🌐');
+
+        this.appendValueInput('FILENAME')
+            .appendField(Blockly.Translate('http_response_tofile'))
+            .setCheck(null);
+
+        this.setInputsInline(true);
+        this.setOutput(true, 'String');
+
+        this.setColour(Blockly.Action.HUE);
+
+        this.setTooltip(Blockly.Translate('http_response_tofile_tooltip'));
+        this.setHelpUrl(getHelp('http_response_tofile_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function (e) {
+        let legal = false;
+        // Is the block nested in a trigger?
+        let block = this;
+        do {
+            if (this.FUNCTION_TYPES.includes(block.type)) {
+                legal = true;
+                break;
+            }
+            block = block.getSurroundParent();
+        } while (block);
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('http_response_warning'), this.id);
+        }
+    },
+    /**
+     * List of block types that are functions and thus do not need warnings.
+     * To add a new function type add this to your code:
+     * Blockly.Blocks['procedures_ifreturn'].FUNCTION_TYPES.push('custom_func');
+     */
+    FUNCTION_TYPES: ['http_get', 'http_post'],
+};
+Blockly.JavaScript.forBlock['http_response_tofile'] = function (block) {
+    const fileName = Blockly.JavaScript.valueToCode(block, 'FILENAME', Blockly.JavaScript.ORDER_ATOMIC);
+
+    return [`createTempFile(${fileName}, response.data)`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- action file_write --------------------------------------------------
