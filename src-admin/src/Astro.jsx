@@ -25,7 +25,8 @@ import {
     nl as nlLocale,
 } from 'date-fns/locale';
 
-import { ConfigGeneric, I18n, Theme } from '@iobroker/adapter-react-v5';
+import { I18n, Theme } from '@iobroker/adapter-react-v5';
+import { ConfigGeneric } from '@iobroker/json-config';
 
 import Map from './Components/Map';
 import './index.css';
