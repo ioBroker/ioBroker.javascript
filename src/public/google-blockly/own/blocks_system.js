@@ -101,7 +101,7 @@ Blockly.System.blocks['comment'] =
 Blockly.Blocks['comment'] = {
     init: function () {
         this.appendDummyInput('COMMENT')
-            .appendField(new Blockly.FieldTextInput(Blockly.Translate('comment')), 'COMMENT');
+            .appendField(new Blockly.FieldMultilineInput(Blockly.Translate('comment')), 'COMMENT');
 
         this.setInputsInline(false);
         this.setPreviousStatement(true, null);
@@ -116,7 +116,7 @@ Blockly.Blocks['comment'] = {
 Blockly.JavaScript.forBlock['comment'] = function (block) {
     const comment = block.getFieldValue('COMMENT');
 
-    return `// ${comment}\n`;
+    return Blockly.JavaScript.prefixLines(comment, '// ') + '\n';
 };
 
 // --- control -----------------------------------------------------------

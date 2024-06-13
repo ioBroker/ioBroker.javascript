@@ -33,6 +33,7 @@ Executes Javascript, Typescript Scripts.
 * (klein0r) Added new Blockly block to save http response into temp file
 * (klein0r) Escape single quotes in all object Blockly blocks
 * (klein0r) Grouped Blockly blocks / changed order of blocks
+* (klein0r) Allow multi line comments
 
 ### 8.5.2 (2024-06-11)
 
