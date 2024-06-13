@@ -111,6 +111,7 @@ Blockly.JavaScript.forBlock['exec'] = function (block) {
 
 // --- exec_result -----------------------------------------------------------
 Blockly.Action.blocks['exec_result'] =
+    '<sep gap="5"></sep>' +
     '<block type="exec_result">' +
     '  <field name="ATTR">result</field>' +
     '</block>';
@@ -527,6 +528,7 @@ Blockly.JavaScript.forBlock['file_write'] = function (block) {
 
 // --- action file_read --------------------------------------------------
 Blockly.Action.blocks['file_read'] =
+    '<sep gap="5"></sep>' +
     '<block type="file_read">' +
     '  <value name="OID">' +
     '    <shadow type="field_oid_meta">' +
@@ -589,6 +591,7 @@ Blockly.JavaScript.forBlock['file_read'] = function (block) {
 
 // --- file_data -----------------------------------------------------------
 Blockly.Action.blocks['file_data'] =
+    '<sep gap="5"></sep>' +
     '<block type="file_data">' +
     '  <field name="ATTR">data</field>' +
     '</block>';

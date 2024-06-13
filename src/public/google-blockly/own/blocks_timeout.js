@@ -191,6 +191,7 @@ Blockly.JavaScript.forBlock['timeouts_settimeout'] = function (block) {
 
 // --- setTimeout variable -----------------------------------------------------------
 Blockly.Timeouts.blocks['timeouts_settimeout_variable'] =
+    '<sep gap="5"></sep>' +
     '<block type="timeouts_settimeout_variable">' +
     '  <value name="DELAY_MS">' +
     '    <shadow type="math_number">' +
@@ -274,6 +275,7 @@ Blockly.Timeouts.getAllTimeouts = function (workspace) {
 };
 
 Blockly.Timeouts.blocks['timeouts_cleartimeout'] =
+    '<sep gap="5"></sep>' +
     '<block type="timeouts_cleartimeout">' +
     '  <field name="NAME"></field>' +
     '</block>';
@@ -304,6 +306,7 @@ Blockly.JavaScript.forBlock['timeouts_cleartimeout'] = function (block) {
 
 // --- getTimeout -----------------------------------------------------------
 Blockly.Timeouts.blocks['timeouts_gettimeout'] =
+    '<sep gap="5"></sep>' +
     '<block type="timeouts_gettimeout">' +
     '  <field name="NAME"></field>' +
     '</block>';
@@ -398,6 +401,7 @@ Blockly.JavaScript.forBlock['timeouts_setinterval'] = function (block) {
 
 // --- setInterval variable -----------------------------------------------------------
 Blockly.Timeouts.blocks['timeouts_setinterval_variable'] =
+    '<sep gap="5"></sep>' +
     '<block type="timeouts_setinterval_variable">' +
     '  <value name="INTERVAL_MS">' +
     '    <shadow type="math_number">' +
@@ -457,6 +461,7 @@ Blockly.JavaScript.forBlock['timeouts_setinterval_variable'] = function (block) 
 
 // --- clearInterval -----------------------------------------------------------
 Blockly.Timeouts.blocks['timeouts_clearinterval'] =
+    '<sep gap="5"></sep>' +
     '<block type="timeouts_clearinterval">' +
     '  <field name="NAME"></field>' +
     '</block>';
@@ -513,6 +518,7 @@ Blockly.JavaScript.forBlock['timeouts_clearinterval'] = function (block) {
 
 // --- getInterval -----------------------------------------------------------
 Blockly.Timeouts.blocks['timeouts_getinterval'] =
+    '<sep gap="5"></sep>' +
     '<block type="timeouts_getinterval">' +
     '  <field name="NAME"></field>' +
     '</block>';

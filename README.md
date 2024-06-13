@@ -32,6 +32,7 @@ Executes Javascript, Typescript Scripts.
 * (foxriver76) fixed issue with additional node modules which are installed from GitHub (controller v6)
 * (klein0r) Added new Blockly block to save http response into temp file
 * (klein0r) Escape single quotes in all object Blockly blocks
+* (klein0r) Grouped Blockly blocks / changed order of blocks
 
 ### 8.5.2 (2024-06-11)
 

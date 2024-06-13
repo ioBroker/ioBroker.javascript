@@ -376,7 +376,7 @@ Blockly.Blocks['sendto_otherscript'] = {
         }
 
         this.appendDummyInput('NAME')
-            .appendField('✉️' + Blockly.Translate('sendto_otherscript_name'));
+            .appendField('✉️ ' + Blockly.Translate('sendto_otherscript_name'));
 
         this.appendDummyInput('INSTANCE')
             .appendField(Blockly.Translate('sendto_otherscript_instance'))
