@@ -49,6 +49,7 @@
     "jszip": "^3.10.1",
     "node-inspect": "^2.0.0",
     "node-schedule": "2.1.1",
+    "promisify-child-process": "^4.1.2",
     "request": "^2.88.2",
     "semver": "^7.6.2",
     "suncalc2": "^1.8.1",
