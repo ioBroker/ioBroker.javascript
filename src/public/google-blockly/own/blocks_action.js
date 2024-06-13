@@ -414,13 +414,13 @@ Blockly.Blocks['http_response_tofile'] = {
      */
     init: function () {
         this.appendDummyInput()
-            .appendField('🌐');
+            .appendField('🌐 ' + Blockly.Translate('http_response_tofile'));
 
         this.appendValueInput('FILENAME')
-            .appendField(Blockly.Translate('http_response_tofile'))
+            .appendField(Blockly.Translate('http_response_tofile_filename'))
             .setCheck(null);
 
-        this.setInputsInline(true);
+        this.setInputsInline(false);
         this.setOutput(true, 'String');
 
         this.setColour(Blockly.Action.HUE);
