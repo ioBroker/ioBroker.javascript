@@ -1854,13 +1854,13 @@ async function installLibraries() {
 
         /** The real module name, because the dependency can be an url too */
         let moduleName = depName;
-            
+
         if (URL.canParse(depName)) {
             moduleName = await requestModuleNameByUrl(depName);
 
             adapter.log.debug(`Found custom dependency in config: "${moduleName}@${version}" (from ${depName})`);
         } else {
-            adapter.log.debug(`Found custom dependency in config: "${depName}@${version}"`);
+            adapter.log.debug(`Found custom dependency in config: "${moduleName}@${version}"`);
         }
 
         keepModules.push(moduleName);
@@ -1870,18 +1870,18 @@ async function installLibraries() {
             try {
                 const result = await adapter.installNodeModule(depName, { version });
                 if (result.success) {
-                    adapter.log.debug(`Installed custom dependency: "${depName}@${version}"`);
+                    adapter.log.debug(`Installed custom dependency: "${moduleName}@${version}"`);
 
                     context.mods[moduleName] = (await adapter.importNodeModule(moduleName)).default;
                 } else {
-                    adapter.log.warn(`Cannot install custom npm package "${lib}"`);
+                    adapter.log.warn(`Cannot install custom npm package "${moduleName}@${version}"`);
                 }
             } catch (e) {
-                adapter.log.warn(`Cannot install custom npm package "${lib}": ${e.message}`);
+                adapter.log.warn(`Cannot install custom npm package "${moduleName}@${version}": ${e.message}`);
             }
         } else if (!nodeFS.existsSync(`${__dirname}/node_modules/${depName}/package.json`)) {
             // js-controller < 6.x
-            adapter.log.info(`Installing custom dependency (legacy mode): "${depName}@${version}"`);
+            adapter.log.info(`Installing custom dependency (legacy mode): "${lib}"`);
 
             try {
                 await installNpm(lib);
