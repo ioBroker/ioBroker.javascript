@@ -1857,11 +1857,13 @@ async function installLibraries() {
             
         if (URL.canParse(depName)) {
             moduleName = await requestModuleNameByUrl(depName);
+
+            adapter.log.debug(`Found custom dependency in config: "${moduleName}@${version}" (from ${depName})`);
+        } else {
+            adapter.log.debug(`Found custom dependency in config: "${depName}@${version}"`);
         }
 
         keepModules.push(moduleName);
-
-        adapter.log.debug(`Found custom dependency in config: "${depName}@${version}"`);
 
         // js-controller >= 6.x
         if (typeof adapter.installNodeModule === 'function') {
@@ -1870,7 +1872,7 @@ async function installLibraries() {
                 if (result.success) {
                     adapter.log.debug(`Installed custom dependency: "${depName}@${version}"`);
 
-                    context.mods[depName] = (await adapter.importNodeModule(moduleName)).default;
+                    context.mods[moduleName] = (await adapter.importNodeModule(moduleName)).default;
                 } else {
                     adapter.log.warn(`Cannot install custom npm package "${lib}"`);
                 }
