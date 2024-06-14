@@ -16,8 +16,10 @@ Blockly.Blocks['text_newline'] = {
             ]), 'Type');
 
         this.setInputsInline(true);
-        this.setColour('%{BKY_TEXTS_HUE}');
         this.setOutput(true, 'String');
+
+        this.setColour('%{BKY_TEXTS_HUE}');
+
         this.setTooltip(Blockly.Translate('text_newline_tooltip'));
     },
 };
@@ -43,8 +45,10 @@ Blockly.Blocks['text_contains'] = {
             .appendField(Blockly.Translate('text_contains_value'));
 
         this.setInputsInline(true);
-        this.setColour('%{BKY_TEXTS_HUE}');
         this.setOutput(true, 'Boolean');
+
+        this.setColour('%{BKY_TEXTS_HUE}');
+
         //this.setTooltip(Blockly.Translate('text_contains_tooltip'));
     },
 };

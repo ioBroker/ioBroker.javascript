@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 8.4.2 (2024-05-28)
+
+* (klein0r) Fixed createState (removed redundant native attributes)
+* (winnyschuster) Fixed astro custom component
+
 ## 8.4.1 (2024-05-26)
 
 * (klein0r) Fixed httpPost block

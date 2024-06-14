@@ -4,17 +4,24 @@
 
 Blockly.Blocks['logic_switch_case'] = {
     init: function () {
-        this.setColour('%{BKY_LOGIC_HUE}');
-        this.setPreviousStatement(true);
-        this.setNextStatement(true);
         this.appendValueInput('CONDITION')
             .appendField(Blockly.Translate('logic_switch_case_is'));
+
         this.appendValueInput('CASECONDITION0')
             .appendField(Blockly.Translate('logic_switch_case_of'));
+
         this.appendStatementInput('CASE0')
             .appendField(Blockly.Translate('logic_switch_do'));
+
         this.setMutator(new Blockly.icons.MutatorIcon(['case_incaseof', 'case_default'], this));
+
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+
+        this.setColour('%{BKY_LOGIC_HUE}');
+
         this.setTooltip(Blockly.Translate('logic_switch_tooltip'));
+
         this.caseCount_ = 0;
         this.defaultCount_ = 0;
     },
@@ -151,40 +158,52 @@ Blockly.Blocks['logic_switch_case'] = {
             caseBlock = caseBlock.nextConnection &&
                 caseBlock.nextConnection.targetBlock();
         }
-    }
+    },
 };
 
 Blockly.Blocks['control_case'] = {
     init: function () {
-        this.setColour('%{BKY_LOGIC_HUE}');
         this.appendDummyInput()
             .appendField(Blockly.Translate('logic_switch_case_is'));
+
         this.appendStatementInput('STACK');
+
+        this.setColour('%{BKY_LOGIC_HUE}');
+
         this.setTooltip(Blockly.Translate('logic_switch_control_case_tooltip'));
+
         this.contextMenu = false;
     },
 };
 
 Blockly.Blocks['case_incaseof'] = {
     init: function () {
-        this.setColour('%{BKY_LOGIC_HUE}');
         this.appendDummyInput()
             .appendField(Blockly.Translate('logic_switch_case_of'));
+
         this.setPreviousStatement(true);
         this.setNextStatement(true);
+
+        this.setColour('%{BKY_LOGIC_HUE}');
+
         this.setTooltip(Blockly.Translate('logic_switch_case_incaseof_tooltip'));
+
         this.contextMenu = false;
     },
 };
 
 Blockly.Blocks['case_default'] = {
     init: function () {
-        this.setColour('%{BKY_LOGIC_HUE}');
         this.appendDummyInput()
             .appendField('default');
+
         this.setPreviousStatement(true);
         this.setNextStatement(false);
+
+        this.setColour('%{BKY_LOGIC_HUE}');
+
         this.setTooltip(Blockly.Translate('logic_switch_default_tooltip'));
+
         this.contextMenu = false;
     },
 };

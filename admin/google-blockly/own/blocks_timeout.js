@@ -99,10 +99,12 @@ Blockly.Blocks['timeouts_wait'] = {
                 [Blockly.Translate('timeouts_settimeout_min'), 'min'],
             ]), 'UNIT');
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(true);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_wait_tooltip'));
         this.setHelpUrl(getHelp('timeouts_wait_help'));
     },
@@ -150,10 +152,12 @@ Blockly.Blocks['timeouts_settimeout'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_settimeout_tooltip'));
         this.setHelpUrl(getHelp('timeouts_settimeout_help'));
     },
@@ -187,6 +191,7 @@ Blockly.JavaScript.forBlock['timeouts_settimeout'] = function (block) {
 
 // --- setTimeout variable -----------------------------------------------------------
 Blockly.Timeouts.blocks['timeouts_settimeout_variable'] =
+    '<sep gap="5"></sep>' +
     '<block type="timeouts_settimeout_variable">' +
     '  <value name="DELAY_MS">' +
     '    <shadow type="math_number">' +
@@ -213,10 +218,12 @@ Blockly.Blocks['timeouts_settimeout_variable'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(true);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_settimeout_tooltip'));
         this.setHelpUrl(getHelp('timeouts_settimeout_help'));
     },
@@ -268,6 +275,7 @@ Blockly.Timeouts.getAllTimeouts = function (workspace) {
 };
 
 Blockly.Timeouts.blocks['timeouts_cleartimeout'] =
+    '<sep gap="5"></sep>' +
     '<block type="timeouts_cleartimeout">' +
     '  <field name="NAME"></field>' +
     '</block>';
@@ -280,10 +288,12 @@ Blockly.Blocks['timeouts_cleartimeout'] = {
                 return window.scripts && window.scripts.blocklyWorkspace ? Blockly.Timeouts.getAllTimeouts(window.scripts.blocklyWorkspace) : [];
             }), 'NAME');
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(true);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_cleartimeout_tooltip'));
         this.setHelpUrl(getHelp('timeouts_cleartimeout_help'));
     },
@@ -296,6 +306,7 @@ Blockly.JavaScript.forBlock['timeouts_cleartimeout'] = function (block) {
 
 // --- getTimeout -----------------------------------------------------------
 Blockly.Timeouts.blocks['timeouts_gettimeout'] =
+    '<sep gap="5"></sep>' +
     '<block type="timeouts_gettimeout">' +
     '  <field name="NAME"></field>' +
     '</block>';
@@ -310,7 +321,9 @@ Blockly.Blocks['timeouts_gettimeout'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_gettimeout_tooltip'));
         this.setHelpUrl(getHelp('timeouts_gettimeout_help'));
     },
@@ -350,10 +363,12 @@ Blockly.Blocks['timeouts_setinterval'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_setinterval_tooltip'));
         this.setHelpUrl(getHelp('timeouts_setinterval_help'));
     },
@@ -386,6 +401,7 @@ Blockly.JavaScript.forBlock['timeouts_setinterval'] = function (block) {
 
 // --- setInterval variable -----------------------------------------------------------
 Blockly.Timeouts.blocks['timeouts_setinterval_variable'] =
+    '<sep gap="5"></sep>' +
     '<block type="timeouts_setinterval_variable">' +
     '  <value name="INTERVAL_MS">' +
     '    <shadow type="math_number">' +
@@ -414,10 +430,12 @@ Blockly.Blocks['timeouts_setinterval_variable'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(true);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_setinterval_tooltip'));
         this.setHelpUrl(getHelp('timeouts_setinterval_help'));
     },
@@ -443,6 +461,7 @@ Blockly.JavaScript.forBlock['timeouts_setinterval_variable'] = function (block) 
 
 // --- clearInterval -----------------------------------------------------------
 Blockly.Timeouts.blocks['timeouts_clearinterval'] =
+    '<sep gap="5"></sep>' +
     '<block type="timeouts_clearinterval">' +
     '  <field name="NAME"></field>' +
     '</block>';
@@ -474,16 +493,18 @@ Blockly.Timeouts.getAllIntervals = function (workspace) {
 
 Blockly.Blocks['timeouts_clearinterval'] = {
     init: function () {
-        this.appendDummyInput("NAME")
+        this.appendDummyInput('NAME')
             .appendField(Blockly.Translate('timeouts_clearinterval'))
             .appendField(new Blockly.FieldDropdown(function () {
                 return window.scripts.blocklyWorkspace ? Blockly.Timeouts.getAllIntervals(window.scripts.blocklyWorkspace) : [];
-            }), "NAME");
+            }), 'NAME');
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(true);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_clearinterval_tooltip'));
         this.setHelpUrl(getHelp('timeouts_clearinterval_help'));
     },
@@ -497,21 +518,24 @@ Blockly.JavaScript.forBlock['timeouts_clearinterval'] = function (block) {
 
 // --- getInterval -----------------------------------------------------------
 Blockly.Timeouts.blocks['timeouts_getinterval'] =
+    '<sep gap="5"></sep>' +
     '<block type="timeouts_getinterval">' +
     '  <field name="NAME"></field>' +
     '</block>';
 
 Blockly.Blocks['timeouts_getinterval'] = {
     init: function () {
-        this.appendDummyInput("NAME")
+        this.appendDummyInput('NAME')
             .appendField(Blockly.Translate('timeouts_getinterval'))
             .appendField(new Blockly.FieldDropdown(function () {
                 return window.scripts.blocklyWorkspace ? Blockly.Timeouts.getAllIntervals(window.scripts.blocklyWorkspace) : [];
-            }), "NAME");
+            }), 'NAME');
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Timeouts.HUE);
+
         this.setTooltip(Blockly.Translate('timeouts_getinterval_tooltip'));
         this.setHelpUrl(getHelp('timeouts_getinterval_help'));
     },

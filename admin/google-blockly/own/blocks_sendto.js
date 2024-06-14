@@ -34,13 +34,15 @@ Blockly.Blocks['sendto_custom_container'] = {
      * @this Blockly.Block
      */
     init: function () {
-        this.setColour(Blockly.Sendto.HUE);
-
         this.appendDummyInput()
             .appendField(Blockly.Translate('sendto_custom_arguments'));
 
         this.appendStatementInput('STACK');
+
+        this.setColour(Blockly.Sendto.HUE);
+
         this.setTooltip(Blockly.Translate('sendto_custom_arg_tooltip'));
+
         this.contextMenu = false;
     },
 };
@@ -51,15 +53,17 @@ Blockly.Blocks['sendto_custom_mutator'] = {
      * @this Blockly.Block
      */
     init: function () {
-        this.setColour(Blockly.Sendto.HUE);
-
         this.appendDummyInput('ATTR')
             .appendField(Blockly.Translate('sendto_custom_argument'))
             .appendField(new Blockly.FieldTextInput('parameter'), 'ATTR');
 
         this.setPreviousStatement(true);
         this.setNextStatement(true);
+
+        this.setColour(Blockly.Sendto.HUE);
+
         this.setTooltip(Blockly.Translate('sendto_custom_arg_tooltip'));
+
         this.contextMenu = false;
     },
 };
@@ -95,8 +99,6 @@ Blockly.Blocks['sendto_custom'] = {
             .appendField(Blockly.Translate('sendto_custom_command'))
             .appendField(new Blockly.FieldTextInput('send'), 'COMMAND');
 
-        this.setColour(Blockly.Sendto.HUE);
-
         this.appendDummyInput('LOG')
             .appendField(Blockly.Translate('loglevel'))
             .appendField(new Blockly.FieldDropdown([
@@ -120,9 +122,12 @@ Blockly.Blocks['sendto_custom'] = {
         this.setMutator(new Blockly.icons.MutatorIcon(['sendto_custom_mutator'], this));
 
         this.updateShape_();
+
         this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+
+        this.setColour(Blockly.Sendto.HUE);
 
         this.setTooltip(Blockly.Translate('sendto_custom_tooltip'));
         this.setHelpUrl(getHelp('sendto_custom_help'));
@@ -371,7 +376,7 @@ Blockly.Blocks['sendto_otherscript'] = {
         }
 
         this.appendDummyInput('NAME')
-            .appendField(Blockly.Translate('sendto_otherscript_name'));
+            .appendField('✉️ ' + Blockly.Translate('sendto_otherscript_name'));
 
         this.appendDummyInput('INSTANCE')
             .appendField(Blockly.Translate('sendto_otherscript_instance'))
@@ -402,6 +407,7 @@ Blockly.Blocks['sendto_otherscript'] = {
         this.setNextStatement(true, null);
 
         this.setColour(Blockly.Sendto.HUE);
+
         this.setTooltip(Blockly.Translate('sendto_otherscript_tooltip'));
         this.setHelpUrl(getHelp('sendto_otherscript_help'));
     },
@@ -526,11 +532,12 @@ Blockly.Blocks['sendto_gethistory'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
 
-        this.setInputsInline(false);
         this.setColour(Blockly.Sendto.HUE);
+
         this.setTooltip(Blockly.Translate('sendto_gethistory_tooltip'));
         this.setHelpUrl(getHelp('sendto_gethistory_help'));
     },

@@ -37,10 +37,12 @@ Blockly.Blocks['global_var'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('global_var_tooltip'));
         this.setHelpUrl(getHelp('global_var'));
-    }
+    },
 };
 Blockly.JavaScript.forBlock['global_var'] = function (block) {
     const variable = block.getFieldValue('VAR');
@@ -73,10 +75,12 @@ Blockly.Blocks['debug'] = {
                 [Blockly.Translate('loglevel_error'), 'error'],
             ]), 'Severity');
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('debug_tooltip'));
         this.setHelpUrl(getHelp('debug_help'));
     },
@@ -97,12 +101,14 @@ Blockly.System.blocks['comment'] =
 Blockly.Blocks['comment'] = {
     init: function () {
         this.appendDummyInput('COMMENT')
-            .appendField(new Blockly.FieldTextInput(Blockly.Translate('comment')), 'COMMENT');
+            .appendField(new Blockly.FieldMultilineInput(Blockly.Translate('comment')), 'COMMENT');
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour('#FFFF00');
+
         this.setTooltip(Blockly.Translate('comment_tooltip'));
     },
 };
@@ -110,7 +116,7 @@ Blockly.Blocks['comment'] = {
 Blockly.JavaScript.forBlock['comment'] = function (block) {
     const comment = block.getFieldValue('COMMENT');
 
-    return `// ${comment}\n`;
+    return Blockly.JavaScript.prefixLines(comment, '// ') + '\n';
 };
 
 // --- control -----------------------------------------------------------
@@ -141,7 +147,9 @@ Blockly.Blocks['control'] = {
         this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('control_tooltip'));
         this.setHelpUrl(getHelp('control_help'));
     },
@@ -226,6 +234,7 @@ Blockly.JavaScript.forBlock['control'] = function (block) {
 
 // --- toggle -----------------------------------------------------------
 Blockly.System.blocks['toggle'] =
+    '<sep gap="5"></sep>' +
     '<block type="toggle">' +
     '  <mutation delay_input="false"></mutation>' +
     '  <field name="WITH_DELAY">FALSE</field>' +
@@ -248,7 +257,9 @@ Blockly.Blocks['toggle'] = {
         this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('toggle_tooltip'));
         this.setHelpUrl(getHelp('toggle_help'));
     },
@@ -355,6 +366,7 @@ Blockly.JavaScript.forBlock['toggle'] = function (block) {
 
 // --- update -----------------------------------------------------------
 Blockly.System.blocks['update'] =
+    '<sep gap="5"></sep>' +
     '<block type="update">' +
     '  <mutation delay_input="false"></mutation>' +
     '  <field name="WITH_DELAY">FALSE</field>' +
@@ -381,7 +393,9 @@ Blockly.Blocks['update'] = {
         this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('update_tooltip'));
         this.setHelpUrl(getHelp('update_help'));
     },
@@ -466,61 +480,9 @@ Blockly.JavaScript.forBlock['update'] = function (block) {
     return code;
 };
 
-// --- direct binding -----------------------------------------------------------
-Blockly.System.blocks['direct'] =
-    '<block type="direct">' +
-    '  <field name="ONLY_CHANGES">TRUE</field>' +
-    '  <value name="OID_SRC">' +
-    '    <shadow type="field_oid">' +
-    '      <field name="oid">Object ID 1</field>' +
-    '    </shadow>' +
-    '  </value>' +
-    '  <value name="OID_DST">' +
-    '    <shadow type="field_oid">' +
-    '      <field name="oid">Object ID 2</field>' +
-    '    </shadow>' +
-    '  </value>' +
-    '</block>';
-
-Blockly.Blocks['direct'] = {
-    init: function () {
-        this.appendDummyInput()
-            .appendField(Blockly.Translate('direct'));
-
-        this.appendValueInput('OID_SRC')
-            .setCheck('String')
-            .appendField(Blockly.Translate('direct_oid_src'));
-
-        this.appendValueInput('OID_DST')
-            .setCheck('String')
-            .appendField(Blockly.Translate('direct_oid_dst'));
-
-        this.appendDummyInput('ONLY_CHANGES')
-            .appendField(Blockly.Translate('direct_only_changes'))
-            .appendField(new Blockly.FieldCheckbox('TRUE'), 'ONLY_CHANGES');
-
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(Blockly.Trigger.HUE);
-        this.setTooltip(Blockly.Translate('direct_tooltip'));
-        this.setHelpUrl(getHelp('direct_help'));
-    }
-};
-
-Blockly.JavaScript.forBlock['direct'] = function (block) {
-    const oidSrc = Blockly.JavaScript.valueToCode(block, 'OID_SRC', Blockly.JavaScript.ORDER_ATOMIC);
-    const oidDest = Blockly.JavaScript.valueToCode(block, 'OID_DST', Blockly.JavaScript.ORDER_ATOMIC);
-
-    let onlyChanges = block.getFieldValue('ONLY_CHANGES');
-    onlyChanges = onlyChanges === true || onlyChanges === 'true' || onlyChanges === 'TRUE';
-
-    return `on({ id: ${oidSrc}, change: '${onlyChanges ? 'ne' : 'any'}' }, (obj) => {\n` +
-        Blockly.JavaScript.prefixLines(`setState(${oidDest}, obj.state.val);`, Blockly.JavaScript.INDENT) + '\n' +
-        '});\n';
-};
-
 // --- control ex -----------------------------------------------------------
 Blockly.System.blocks['control_ex'] =
+    '<sep gap="5"></sep>' +
     '<block type="control_ex">' +
     '  <field name="TYPE">false</field>' +
     '  <field name="CLEAR_RUNNING">FALSE</field>' +
@@ -579,7 +541,9 @@ Blockly.Blocks['control_ex'] = {
         this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('control_tooltip'));
         this.setHelpUrl(getHelp('control_help'));
     },
@@ -637,11 +601,12 @@ Blockly.Blocks['create'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
 
-        this.setInputsInline(false);
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('create_tooltip'));
         this.setHelpUrl(getHelp('create_help'));
     },
@@ -671,6 +636,7 @@ Blockly.JavaScript.forBlock['create'] = function (block) {
 
 // --- create state ex --------------------------------------------------
 Blockly.System.blocks['create_ex'] =
+    '<sep gap="5"></sep>' +
     '<block type="create_ex">' +
     '  <field name="NAME">0_userdata.0.example</field>' +
     '  <field name="TYPE">string</field>' +
@@ -716,11 +682,12 @@ Blockly.Blocks['create_ex'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
 
-        this.setInputsInline(false);
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('create_tooltip'));
         this.setHelpUrl(getHelp('create_help'));
     },
@@ -794,7 +761,9 @@ Blockly.Blocks['get_value'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('get_value_tooltip'));
         this.setHelpUrl(getHelp('get_value_help'));
     },
@@ -828,6 +797,7 @@ Blockly.JavaScript.forBlock['get_value'] = function (block) {
 
 // --- get value var --------------------------------------------------
 Blockly.System.blocks['get_value_var'] =
+    '<sep gap="5"></sep>' +
     '<block type="get_value_var">' +
     '  <field name="ATTR">val</field>' +
     '  <value name="OID">' +
@@ -865,7 +835,9 @@ Blockly.Blocks['get_value_var'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('get_value_tooltip'));
         this.setHelpUrl(getHelp('get_value_help'));
     },
@@ -899,6 +871,7 @@ Blockly.JavaScript.forBlock['get_value_var'] = function (block) {
 
 // --- get value async--------------------------------------------------
 Blockly.System.blocks['get_value_async'] =
+    '<sep gap="5"></sep>' +
     '<block type="get_value_async">' +
     '  <field name="ATTR">val</field>' +
     '</block>';
@@ -933,11 +906,12 @@ Blockly.Blocks['get_value_async'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
 
-        this.setInputsInline(true);
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('get_value_tooltip'));
         this.setHelpUrl(getHelp('get_value_help'));
     },
@@ -977,7 +951,9 @@ Blockly.Blocks['get_object'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Object.HUE);
+
         this.setTooltip(Blockly.Translate('get_object_tooltip'));
         this.setHelpUrl(getHelp('get_object_help'));
     },
@@ -1008,6 +984,7 @@ Blockly.JavaScript.forBlock['get_object'] = function (block) {
 
 // --- get object async--------------------------------------------------
 Blockly.System.blocks['get_object_async'] =
+    '<sep gap="5"></sep>' +
     '<block type="get_object_async">' +
     '</block>';
 
@@ -1024,9 +1001,10 @@ Blockly.Blocks['get_object_async'] = {
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-
         this.setInputsInline(true);
+
         this.setColour(Blockly.Object.HUE);
+
         this.setTooltip(Blockly.Translate('get_object_tooltip'));
         this.setHelpUrl(getHelp('get_object_help'));
     },
@@ -1055,8 +1033,10 @@ Blockly.Blocks['field_oid'] = {
             .appendField(new Blockly.FieldOID(Blockly.Translate('select_id'), 'state'), 'oid');
 
         this.setInputsInline(true);
-        this.setColour("%{BKY_TEXTS_HUE}");
         this.setOutput(true, 'String');
+
+        this.setColour('%{BKY_TEXTS_HUE}');
+
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     },
 };
@@ -1069,6 +1049,7 @@ Blockly.JavaScript.forBlock['field_oid'] = function (block) {
 
 // --- select OID meta--------------------------------------------------
 Blockly.System.blocks['field_oid_meta'] =
+    '<sep gap="5"></sep>' +
     '<block type="field_oid_meta">' +
     '</block>';
 
@@ -1081,8 +1062,10 @@ Blockly.Blocks['field_oid_meta'] = {
             .appendField(new Blockly.FieldOID(Blockly.Translate('select_id'), 'meta'), 'oid');
 
         this.setInputsInline(true);
-        this.setColour("%{BKY_TEXTS_HUE}");
         this.setOutput(true, 'String');
+
+        this.setColour('%{BKY_TEXTS_HUE}');
+
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     },
 };
@@ -1095,6 +1078,7 @@ Blockly.JavaScript.forBlock['field_oid_meta'] = function (block) {
 
 // --- select OID script--------------------------------------------------
 Blockly.System.blocks['field_oid_script'] =
+    '<sep gap="5"></sep>' +
     '<block type="field_oid_script">' +
     '</block>';
 
@@ -1107,8 +1091,10 @@ Blockly.Blocks['field_oid_script'] = {
             .appendField(new Blockly.FieldOID(Blockly.Translate('select_id'), 'script'), 'oid');
 
         this.setInputsInline(true);
-        this.setColour("%{BKY_TEXTS_HUE}");
         this.setOutput(true, 'String');
+
+        this.setColour('%{BKY_TEXTS_HUE}');
+
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     },
 };
@@ -1145,7 +1131,9 @@ Blockly.Blocks['get_attr'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('get_attr_tooltip'));
         this.setHelpUrl(getHelp('get_attr_help'));
     },
@@ -1156,6 +1144,61 @@ Blockly.JavaScript.forBlock['get_attr'] = function (block) {
     const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
 
     return [`getAttr(${obj}, ${path})`, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+// --- direct binding -----------------------------------------------------------
+Blockly.System.blocks['direct'] =
+    '<block type="direct">' +
+    '  <field name="ONLY_CHANGES">TRUE</field>' +
+    '  <value name="OID_SRC">' +
+    '    <shadow type="field_oid">' +
+    '      <field name="oid">Object ID 1</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '  <value name="OID_DST">' +
+    '    <shadow type="field_oid">' +
+    '      <field name="oid">Object ID 2</field>' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
+
+Blockly.Blocks['direct'] = {
+    init: function () {
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('direct'));
+
+        this.appendValueInput('OID_SRC')
+            .setCheck('String')
+            .appendField(Blockly.Translate('direct_oid_src'));
+
+        this.appendValueInput('OID_DST')
+            .setCheck('String')
+            .appendField(Blockly.Translate('direct_oid_dst'));
+
+        this.appendDummyInput('ONLY_CHANGES')
+            .appendField(Blockly.Translate('direct_only_changes'))
+            .appendField(new Blockly.FieldCheckbox('TRUE'), 'ONLY_CHANGES');
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setColour(Blockly.Trigger.HUE);
+
+        this.setTooltip(Blockly.Translate('direct_tooltip'));
+        this.setHelpUrl(getHelp('direct_help'));
+    },
+};
+
+Blockly.JavaScript.forBlock['direct'] = function (block) {
+    const oidSrc = Blockly.JavaScript.valueToCode(block, 'OID_SRC', Blockly.JavaScript.ORDER_ATOMIC);
+    const oidDest = Blockly.JavaScript.valueToCode(block, 'OID_DST', Blockly.JavaScript.ORDER_ATOMIC);
+
+    let onlyChanges = block.getFieldValue('ONLY_CHANGES');
+    onlyChanges = onlyChanges === true || onlyChanges === 'true' || onlyChanges === 'TRUE';
+
+    return `on({ id: ${oidSrc}, change: '${onlyChanges ? 'ne' : 'any'}' }, (obj) => {\n` +
+        Blockly.JavaScript.prefixLines(`setState(${oidDest}, obj.state.val);`, Blockly.JavaScript.INDENT) + '\n' +
+        '});\n';
 };
 
 // --- regex --------------------------------------------------
@@ -1173,8 +1216,10 @@ Blockly.Blocks['regex'] = {
             .appendField(new Blockly.FieldTextInput('(.*)'), 'TEXT');
 
         this.setInputsInline(true);
-        this.setColour(Blockly.System.HUE);
         this.setOutput(true, 'Array');
+
+        this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     },
 };
@@ -1203,8 +1248,10 @@ Blockly.Blocks['selector'] = {
             .appendField(')');
 
         this.setInputsInline(true);
-        this.setColour(Blockly.System.HUE);
         this.setOutput(true, 'Array');
+
+        this.setColour(Blockly.System.HUE);
+
         this.setTooltip(Blockly.Translate('field_oid_tooltip'));
     },
 };

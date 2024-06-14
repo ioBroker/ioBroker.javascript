@@ -37,12 +37,13 @@ Blockly.Blocks['on_ext_oid_container'] = {
      * @this Blockly.Block
      */
     init: function () {
-        this.setColour(Blockly.Trigger.HUE);
-
         this.appendDummyInput()
             .appendField(Blockly.Translate('on_ext_on'));
 
         this.appendStatementInput('STACK');
+
+        this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('on_ext_on_tooltip'));
         this.contextMenu = false;
     },
@@ -54,13 +55,13 @@ Blockly.Blocks['on_ext_oid'] = {
      * @this Blockly.Block
      */
     init: function () {
-        this.setColour(Blockly.Trigger.HUE);
-
         this.appendDummyInput('OID')
             .appendField(Blockly.Translate('on_ext_oid'));
 
         this.setPreviousStatement(true);
         this.setNextStatement(true);
+
+        this.setColour(Blockly.Trigger.HUE);
 
         this.setTooltip(Blockly.Translate('on_ext_oid_tooltip'));
 
@@ -73,10 +74,12 @@ Blockly.Blocks['on_ext'] = {
         this.itemCount_ = 1;
         this.setMutator(new Blockly.icons.MutatorIcon(['on_ext_oid'], this));
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('on_ext_tooltip'));
         this.setHelpUrl(getHelp('on_help'));
     },
@@ -332,6 +335,7 @@ Blockly.JavaScript.forBlock['on_ext'] = function (block) {
 
 // --- ON -----------------------------------------------------------
 Blockly.Trigger.blocks['on'] =
+    '<sep gap="5"></sep>' +
     '<block type="on">' +
     '  <field name="CONDITION">ne</field>' +
     '  <field name="ACK_CONDITION"></field>' +
@@ -368,10 +372,12 @@ Blockly.Blocks['on'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('on_tooltip'));
         this.setHelpUrl(getHelp('on_help'));
     },
@@ -428,6 +434,7 @@ Blockly.JavaScript.forBlock['on'] = function (block) {
 
 // --- get info about event -----------------------------------------------------------
 Blockly.Trigger.blocks['on_source'] =
+    '<sep gap="5"></sep>' +
     '<block type="on_source">' +
     '  <field name="ATTR">state.val</field>' +
     '</block>';
@@ -470,7 +477,9 @@ Blockly.Blocks['on_source'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('on_source_tooltip'));
         this.setHelpUrl(getHelp('on_help'));
     },
@@ -520,6 +529,7 @@ Blockly.JavaScript.forBlock['on_source'] = function (block) {
 
 // --- acknowledge -----------------------------------------------------------
 Blockly.Trigger.blocks['on_ack_value'] =
+    '<sep gap="5"></sep>' +
     '<block type="on_ack_value">' +
     '</block>';
 
@@ -532,10 +542,12 @@ Blockly.Blocks['on_ack_value'] = {
         this.appendDummyInput()
             .appendField('↪ ' + Blockly.Translate('on_ack_value'));
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('on_ack_value_tooltip'));
         this.setHelpUrl(getHelp('on_help'));
     },
@@ -576,6 +588,92 @@ Blockly.JavaScript.forBlock['on_ack_value'] = function (block) {
         `}\n`;
 };
 
+// --- ASTRO -----------------------------------------------------------
+Blockly.Trigger.blocks['astro'] =
+    '<block type="astro">' +
+    '  <field name="TYPE">sunrise</field>' +
+    '  <field name="OFFSET">0</field>' +
+    '</block>';
+
+Blockly.Blocks['astro'] = {
+    init: function () {
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('astro'));
+
+        this.appendDummyInput("TYPE")
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('astro_sunriseText'),       'sunrise'],
+                [Blockly.Translate('astro_sunriseEndText'),    'sunriseEnd'],
+                [Blockly.Translate('astro_goldenHourEndText'), 'goldenHourEnd'],
+                [Blockly.Translate('astro_solarNoonText'),     'solarNoon'],
+                [Blockly.Translate('astro_goldenHourText'),    'goldenHour'],
+                [Blockly.Translate('astro_sunsetStartText'),   'sunsetStart'],
+                [Blockly.Translate('astro_sunsetText'),        'sunset'],
+                [Blockly.Translate('astro_duskText'),          'dusk'],
+                [Blockly.Translate('astro_nauticalDuskText'),  'nauticalDusk'],
+                [Blockly.Translate('astro_nightText'),         'night'],
+                [Blockly.Translate('astro_nightEndText'),      'nightEnd'],
+                [Blockly.Translate('astro_nauticalDawnText'),  'nauticalDawn'],
+                [Blockly.Translate('astro_dawnText'),          'dawn'],
+                [Blockly.Translate('astro_nadirText'),         'nadir'],
+            ]), 'TYPE');
+
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('astro_offset'));
+
+        this.appendDummyInput("OFFSET")
+            .appendField(new Blockly.FieldTextInput('0'), "OFFSET");
+
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('astro_minutes'));
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setColour(Blockly.Trigger.HUE);
+
+        this.setTooltip(Blockly.Translate('astro_tooltip'));
+        this.setHelpUrl(getHelp('astro_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function (e) {
+        let legal = true;
+
+        // Is the block nested in a trigger?
+        let block = this;
+        while (block = block.getSurroundParent()) {
+            if (block && Blockly.Trigger.WARNING_PARENTS.includes(block.type)) {
+                legal = false;
+                break;
+            }
+        }
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
+        }
+    },
+};
+Blockly.JavaScript.forBlock['astro'] = function (block) {
+    const astrotype = block.getFieldValue('TYPE');
+    const offset = parseInt(block.getFieldValue('OFFSET'), 10);
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    return `schedule({ astro: '${astrotype}', shift: ${offset} }, async () => {\n` +
+        statement +
+        '});\n';
+};
+
 // --- SCHEDULE -----------------------------------------------------------
 Blockly.Trigger.blocks['schedule'] =
     '<block type="schedule">' +
@@ -593,10 +691,12 @@ Blockly.Blocks['schedule'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('schedule_tooltip'));
         this.setHelpUrl(getHelp('schedule_help'));
     },
@@ -665,10 +765,12 @@ Blockly.Blocks['schedule_by_id'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('schedule_by_id_tooltip'));
         this.setHelpUrl(getHelp('schedule_by_id_help'));
     },
@@ -679,90 +781,6 @@ Blockly.JavaScript.forBlock['schedule_by_id'] = function (block) {
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
     return `scheduleById('${value_objectid}'${ack_condition ? `, ${ack_condition}` : ''}, async () => {\n` +
-        statement +
-        '});\n';
-};
-
-// --- ASTRO -----------------------------------------------------------
-Blockly.Trigger.blocks['astro'] =
-    '<block type="astro">' +
-    '  <field name="TYPE">sunrise</field>' +
-    '  <field name="OFFSET">0</field>' +
-    '</block>';
-
-Blockly.Blocks['astro'] = {
-    init: function () {
-        this.appendDummyInput()
-            .appendField(Blockly.Translate('astro'));
-
-        this.appendDummyInput("TYPE")
-            .appendField(new Blockly.FieldDropdown([
-                [Blockly.Translate('astro_sunriseText'),       'sunrise'],
-                [Blockly.Translate('astro_sunriseEndText'),    'sunriseEnd'],
-                [Blockly.Translate('astro_goldenHourEndText'), 'goldenHourEnd'],
-                [Blockly.Translate('astro_solarNoonText'),     'solarNoon'],
-                [Blockly.Translate('astro_goldenHourText'),    'goldenHour'],
-                [Blockly.Translate('astro_sunsetStartText'),   'sunsetStart'],
-                [Blockly.Translate('astro_sunsetText'),        'sunset'],
-                [Blockly.Translate('astro_duskText'),          'dusk'],
-                [Blockly.Translate('astro_nauticalDuskText'),  'nauticalDusk'],
-                [Blockly.Translate('astro_nightText'),         'night'],
-                [Blockly.Translate('astro_nightEndText'),      'nightEnd'],
-                [Blockly.Translate('astro_nauticalDawnText'),  'nauticalDawn'],
-                [Blockly.Translate('astro_dawnText'),          'dawn'],
-                [Blockly.Translate('astro_nadirText'),         'nadir'],
-            ]), 'TYPE');
-
-        this.appendDummyInput()
-            .appendField(Blockly.Translate('astro_offset'));
-
-        this.appendDummyInput("OFFSET")
-            .appendField(new Blockly.FieldTextInput('0'), "OFFSET");
-
-        this.appendDummyInput()
-            .appendField(Blockly.Translate('astro_minutes'));
-
-        this.appendStatementInput('STATEMENT')
-            .setCheck(null);
-        this.setInputsInline(true);
-
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(Blockly.Trigger.HUE);
-        this.setTooltip(Blockly.Translate('astro_tooltip'));
-        this.setHelpUrl(getHelp('astro_help'));
-    },
-    /**
-     * Called whenever anything on the workspace changes.
-     * Add warning if this flow block is not nested inside a loop.
-     * @param {!Blockly.Events.Abstract} e Change event.
-     * @this Blockly.Block
-     */
-    onchange: function (e) {
-        let legal = true;
-
-        // Is the block nested in a trigger?
-        let block = this;
-        while (block = block.getSurroundParent()) {
-            if (block && Blockly.Trigger.WARNING_PARENTS.includes(block.type)) {
-                legal = false;
-                break;
-            }
-        }
-
-        if (legal) {
-            this.setWarningText(null, this.id);
-        } else {
-            this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
-        }
-    },
-};
-Blockly.JavaScript.forBlock['astro'] = function (block) {
-    const astrotype = block.getFieldValue('TYPE');
-    const offset = parseInt(block.getFieldValue('OFFSET'), 10);
-    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-
-    return `schedule({ astro: '${astrotype}', shift: ${offset} }, async () => {\n` +
         statement +
         '});\n';
 };
@@ -859,10 +877,12 @@ Blockly.Blocks['schedule_create'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('schedule_create_tooltip'));
         this.setHelpUrl(getHelp('schedule_create_help'));
     },
@@ -913,6 +933,7 @@ Blockly.Trigger.getAllSchedules = function (workspace) {
 };
 
 Blockly.Trigger.blocks['schedule_clear'] =
+    '<sep gap="5"></sep>' +
     '<block type="schedule_clear">' +
     '  <field name="NAME"></field>' +
     '</block>';
@@ -925,10 +946,12 @@ Blockly.Blocks['schedule_clear'] = {
                 return scripts.blocklyWorkspace ? Blockly.Trigger.getAllSchedules(scripts.blocklyWorkspace) : [];
             }), 'NAME');
 
+        this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(true);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('schedule_clear_tooltip'));
         this.setHelpUrl(getHelp('schedule_clear_help'));
     },
@@ -941,6 +964,7 @@ Blockly.JavaScript.forBlock['schedule_clear'] = function (block) {
 
 // --- CRON dialog --------------------------------------------------
 Blockly.Trigger.blocks['field_cron'] =
+    '<sep gap="5"></sep>' +
     '<block type="field_cron">' +
     '  <field name="CRON">* * * * *</field>' +
     '</block>';
@@ -955,8 +979,10 @@ Blockly.Blocks['field_cron'] = {
             .appendField(new Blockly.FieldCRON('* * * * *'), 'CRON');
 
         this.setInputsInline(true);
-        this.setColour(Blockly.Trigger.HUE);
         this.setOutput(true, 'String');
+
+        this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('field_cron_tooltip'));
     },
 };
@@ -969,6 +995,7 @@ Blockly.JavaScript.forBlock['field_cron'] = function (block) {
 
 // --- CRON builder --------------------------------------------------
 Blockly.Trigger.blocks['cron_builder'] =
+    '<sep gap="5"></sep>' +
     '<block type="cron_builder">' +
     '  <mutation seconds="false" as_line="false"></mutation>' +
     '  <field name="LINE">FALSE</field>' +
@@ -1083,9 +1110,12 @@ Blockly.Blocks['cron_builder'] = {
 
         this.seconds_ = false;
         this.as_line_ = false;
+
         this.setInputsInline(this.as_line_);
-        this.setColour(Blockly.Trigger.HUE);
         this.setOutput(true, 'String');
+
+        this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('field_cron_tooltip'));
     },
     /**
@@ -1108,6 +1138,7 @@ Blockly.Blocks['cron_builder'] = {
     domToMutation: function (xmlElement) {
         this.seconds_ = xmlElement.getAttribute('seconds') === 'true';
         this.as_line_ = xmlElement.getAttribute('as_line') === 'true';
+
         this.setInputsInline(this.as_line_);
         this.updateShape_(this.seconds_);
     },
@@ -1168,7 +1199,7 @@ Blockly.Trigger.blocks['onMessage'] =
 Blockly.Blocks['onMessage'] = {
     init: function () {
         this.appendDummyInput('NAME')
-            .appendField(Blockly.Translate('onMessage'));
+            .appendField('✉️ ' + Blockly.Translate('onMessage'));
 
         this.appendDummyInput('MESSAGE')
             .appendField(Blockly.Translate('onMessage_message'))
@@ -1177,10 +1208,12 @@ Blockly.Blocks['onMessage'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('onMessage_tooltip'));
         this.setHelpUrl(getHelp('onMessage_help'));
     },
@@ -1253,10 +1286,12 @@ Blockly.Blocks['onFile'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('onFile_tooltip'));
         this.setHelpUrl(getHelp('onFile_help'));
     },
@@ -1311,6 +1346,7 @@ Blockly.JavaScript.forBlock['onFile'] = function (block) {
 
 // --- onFile_data -----------------------------------------------------------
 Blockly.Trigger.blocks['onFile_data'] =
+    '<sep gap="5"></sep>' +
     '<block type="onFile_data">' +
     '  <field name="ATTR">data</field>' +
     '</block>';
@@ -1336,7 +1372,9 @@ Blockly.Blocks['onFile_data'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('onFile_data_tooltip'));
         //this.setHelpUrl(getHelp('onFile_data'));
     },
@@ -1383,6 +1421,7 @@ Blockly.JavaScript.forBlock['onFile_data'] = function (block) {
 
 // --- onFile -----------------------------------------------------------
 Blockly.Trigger.blocks['offFile'] =
+    '<sep gap="5"></sep>' +
     '<block type="offFile">' +
     '  <value name="OID">' +
     '    <shadow type="field_oid_meta">' +
@@ -1406,12 +1445,15 @@ Blockly.Blocks['offFile'] = {
             .appendField(Blockly.Translate('onFile_file'))
             .setCheck(null);
 
-        this.setPreviousStatement(true, null);
         this.setInputsInline(false);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('offFile_tooltip'));
         this.setHelpUrl(getHelp('offFile_help'));
-    }
+    },
 };
 
 Blockly.JavaScript.forBlock['offFile'] = function (block) {
@@ -1456,10 +1498,12 @@ Blockly.Blocks['onLog'] = {
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
 
+        this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setInputsInline(false);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('onLog_tooltip'));
         this.setHelpUrl(getHelp('onLog_help'));
     },
@@ -1500,6 +1544,7 @@ Blockly.JavaScript.forBlock['onLog'] = function (block) {
 
 // --- onLog_data -----------------------------------------------------------
 Blockly.Trigger.blocks['onLog_data'] =
+    '<sep gap="5"></sep>' +
     '<block type="onLog_data">' +
     '  <field name="ATTR">data.message</field>' +
     '</block>';
@@ -1523,7 +1568,9 @@ Blockly.Blocks['onLog_data'] = {
 
         this.setInputsInline(true);
         this.setOutput(true);
+
         this.setColour(Blockly.Trigger.HUE);
+
         this.setTooltip(Blockly.Translate('onLog_data_tooltip'));
         //this.setHelpUrl(getHelp('onLog_data_help'));
     },

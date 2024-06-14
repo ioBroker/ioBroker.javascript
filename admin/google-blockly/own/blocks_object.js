@@ -262,6 +262,7 @@ Blockly.Blocks['object_set_attr'] = {
         this.setNextStatement(true, null);
 
         this.setColour(Blockly.Object.HUE);
+
         this.setTooltip(Blockly.Translate('object_set_attr_tooltip'));
         //this.setHelpUrl(getHelp('object_set_attr_help'));
     },
@@ -299,6 +300,7 @@ Blockly.Blocks['object_del_attr'] = {
         this.setNextStatement(true, null);
 
         this.setColour(Blockly.Object.HUE);
+
         this.setTooltip(Blockly.Translate('object_del_attr_tooltip'));
         //this.setHelpUrl(getHelp('object_del_attr_help'));
     },
@@ -312,7 +314,7 @@ Blockly.JavaScript.forBlock['object_del_attr'] = function (block) {
         obj = '{}';
     }
 
-    return `((obj) => { if (typeof obj === 'object') { delete obj['${attr}']; } })(${obj});\n`;
+    return `((obj) => { if (typeof obj === 'object') { delete obj['${attr.replaceAll(`'`, `\\'`)}']; } })(${obj});\n`;
 };
 
 // --- has attribute --------------------------------------------------
@@ -339,16 +341,17 @@ Blockly.Blocks['object_has_attr'] = {
         this.setOutput(true, 'Boolean');
 
         this.setColour(Blockly.Object.HUE);
+
         this.setTooltip(Blockly.Translate('object_has_attr_tooltip'));
         //this.setHelpUrl(getHelp('object_has_attr_help'));
-    }
+    },
 };
 
 Blockly.JavaScript.forBlock['object_has_attr'] = function (block) {
     const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
 
-    return [`Object.prototype.hasOwnProperty.call(${obj}, '${attr}')`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`Object.prototype.hasOwnProperty.call(${obj}, '${attr.replaceAll(`'`, `\\'`)}')`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- object keys --------------------------------------------------

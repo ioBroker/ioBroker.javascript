@@ -26,8 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 8.6.0 (2024-06-14)
 
 * (foxriver76) fixed issue with additional node modules which are installed from GitHub (controller v6)
 * (klein0r) Added new Blockly block to save http response into temp file
@@ -57,11 +56,6 @@ Executes Javascript, Typescript Scripts.
 * (klein0r) Added response time to httpGet and httpPost result
 * (klein0r) Added trigger block to ack new values
 * (bluefox) Allowed selecting different ChatGPT models for AI code generator
-
-### 8.4.2 (2024-05-28)
-
-* (klein0r) Fixed createState (removed redundant native attributes)
-* (winnyschuster) Fixed astro custom component
 
 ## License
 The MIT License (MIT)
