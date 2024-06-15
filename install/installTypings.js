@@ -3,13 +3,13 @@
 // The adapter includes typings for the lowest supported NodeJS version.
 // This script updates them to the installed version
 
-const { spawn } = require('child_process');
+const { spawn } = require('node:child_process');
 const semver = require('semver');
 const installedNodeVersion = semver.coerce(process.versions.node).major;
 
 function fail(reason) {
     console.error('Could not install NodeJS typings. This is not critical.');
-    console.error('Reason: \n' + reason);
+    console.error(`Reason: \n${reason}`);
     // This is not critical!
     process.exit(0);
 }

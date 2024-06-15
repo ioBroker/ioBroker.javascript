@@ -6,12 +6,12 @@
  **/
 'use strict';
 
-const gulp = require('gulp');
 const fs = require('node:fs');
 const path = require('node:path');
+const cp = require('node:child_process');
+const gulp = require('gulp');
 const rename = require('gulp-rename');
 const replace = require('gulp-replace');
-const cp = require('node:child_process');
 const JSZip = require('jszip');
 const gulpHelper = require('@iobroker/vis-2-widgets-react-dev/gulpHelper');
 
@@ -49,18 +49,9 @@ gulp.task('admin-1-npm', async () => gulpHelper.npmInstall(`${__dirname}/src-adm
 gulp.task('admin-2-compile', async () => buildAdmin());
 
 gulp.task('admin-3-copy', () => Promise.all([
-    gulp.src(['src-admin/build/static/js/*.js', '!src-admin/build/static/js/vendors*.js']).pipe(gulp.dest('admin/custom/static/js')),
-    gulp.src(['src-admin/build/static/js/*.map', '!src-admin/build/static/js/vendors*.map']).pipe(gulp.dest('admin/custom/static/js')),
-    gulp.src(['src-admin/build/static/js/vendors-node_modules_mui_material_Button_Button_js-node_modules_mui_material_Chip_Chip*.js']).pipe(gulp.dest('admin/custom/static/js')),
-    gulp.src(['src-admin/build/static/js/vendors-node_modules_leaflet_dist_leaflet_css-node_modules_mui*ThemeProvider*.js']).pipe(gulp.dest('admin/custom/static/js')),
-    gulp.src(['src-admin/build/static/js/vendors-node_modules_leaflet_dist_leaflet_css-node_modules_mui*ThemeProvider*.map']).pipe(gulp.dest('admin/custom/static/js')),
-    gulp.src(['src-admin/build/static/js/vendors-node_modules_mui*esm*.js']).pipe(gulp.dest('admin/custom/static/js')),
-    gulp.src(['src-admin/build/static/js/vendors-node_modules_mui*esm*.map']).pipe(gulp.dest('admin/custom/static/js')),
-    gulp.src(['src-admin/build/static/js/vendors-node_modules_mui_material_utils_createSvgIcon*.js']).pipe(gulp.dest('admin/custom/static/js')),
-    gulp.src(['src-admin/build/static/js/vendors-node_modules_mui_x-date-pickers_TimePicker*.js']).pipe(gulp.dest('admin/custom/static/js')),
-    gulp.src(['src-admin/build/static/js/vendors-node_modules_leaflet_dist_leaflet_css-node_modules_mui_x-date-pickers*.js']).pipe(gulp.dest('admin/custom/static/js')),
-    gulp.src(['src-admin/build/static/css/src_Components_jsx-node_modules_leaflet_dist_leaflet*.css']).pipe(gulp.dest('admin/custom/static/css')),
-    gulp.src(['src-admin/build/static/js/vendors-node_modules_react-icons_*.*']).pipe(gulp.dest('admin/custom/static/js')),
+    gulp.src(['src-admin/build/static/css/*.css', '!src-admin/build/static/css/src_bootstrap_*.css']).pipe(gulp.dest('admin/custom/static/css')),
+    gulp.src(['src-admin/build/static/js/*.js']).pipe(gulp.dest('admin/custom/static/js')),
+    gulp.src(['src-admin/build/static/js/*.map', '!src-admin/build/static/js/vendors*.map', '!src-admin/build/static/js/node_modules*.map']).pipe(gulp.dest('admin/custom/static/js')),
     gulp.src(['src-admin/build/customComponents.js']).pipe(gulp.dest('admin/custom')),
     gulp.src(['src-admin/build/customComponents.js.map']).pipe(gulp.dest('admin/custom')),
     gulp.src(['src-admin/src/i18n/*.json']).pipe(gulp.dest('admin/custom/i18n')),
