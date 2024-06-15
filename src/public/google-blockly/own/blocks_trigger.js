@@ -1247,7 +1247,7 @@ Blockly.JavaScript.forBlock['onMessage'] = function (block) {
     const message = block.getFieldValue('MESSAGE');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    return `onMessage('${message}', async (data, callback) => {\n` +
+    return `onMessage(${Blockly.JavaScript.quote_(message)}, async (data, callback) => {\n` +
         statement +
         Blockly.JavaScript.prefixLines(`callback({ result: true });`, Blockly.JavaScript.INDENT) + '\n' +
         '});\n';

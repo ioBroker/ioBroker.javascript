@@ -226,7 +226,7 @@ Blockly.JavaScript.forBlock['object_new'] = function (block) {
     for (let n = 0; n < block.itemCount_; n++) {
         const val = Blockly.JavaScript.valueToCode(block, 'ATTR_' + n, Blockly.JavaScript.ORDER_COMMA);
         if (val) {
-            attributes.push(`'${String(block.attributes_[n]).replaceAll(`'`, `\\'`)}': ${val}`);
+            attributes.push(`${Blockly.JavaScript.quote_(block.attributes_[n])}: ${val}`);
         }
     }
 
@@ -277,7 +277,7 @@ Blockly.JavaScript.forBlock['object_set_attr'] = function (block) {
         obj = '{}';
     }
 
-    return `((obj) => { if (typeof obj === 'object') { obj['${attr}'] = ${value}; } })(${obj});\n`;
+    return `((obj) => { if (typeof obj === 'object') { obj[${Blockly.JavaScript.quote_(attr)}] = ${value}; } })(${obj});\n`;
 };
 
 // --- delete attribute --------------------------------------------------
@@ -314,7 +314,7 @@ Blockly.JavaScript.forBlock['object_del_attr'] = function (block) {
         obj = '{}';
     }
 
-    return `((obj) => { if (typeof obj === 'object') { delete obj['${attr.replaceAll(`'`, `\\'`)}']; } })(${obj});\n`;
+    return `((obj) => { if (typeof obj === 'object') { delete obj[${Blockly.JavaScript.quote_(attr)}]; } })(${obj});\n`;
 };
 
 // --- has attribute --------------------------------------------------
@@ -351,7 +351,7 @@ Blockly.JavaScript.forBlock['object_has_attr'] = function (block) {
     const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
     const attr = block.getFieldValue('ATTR');
 
-    return [`Object.prototype.hasOwnProperty.call(${obj}, '${attr.replaceAll(`'`, `\\'`)}')`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`Object.prototype.hasOwnProperty.call(${obj}, ${Blockly.JavaScript.quote_(attr)})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- object keys --------------------------------------------------

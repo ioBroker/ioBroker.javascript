@@ -26,6 +26,9 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (klein0r) Escape all field inputs correctly when using single quotes
+
 ### 8.6.0 (2024-06-14)
 
 * (foxriver76) fixed issue with additional node modules which are installed from GitHub (controller v6)

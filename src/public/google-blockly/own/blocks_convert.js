@@ -287,9 +287,9 @@ Blockly.JavaScript.convert_from_date = function (block) {
     } else if (option === 'cw') {
         code = `((date) => { const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())); const dayNum = d.getUTCDay() || 7; d.setUTCDate(d.getUTCDate() + 4 - dayNum); const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1)); return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7); })(getDateObject(${value}))`;
     } else if (option === 'custom') {
-        code = `formatDate(getDateObject(${value}), '${format}')`;
+        code = `formatDate(getDateObject(${value}), ${Blockly.JavaScript.quote_(format)})`;
     } else {
-        code = `formatDate(getDateObject(${value}), '${option}')`;
+        code = `formatDate(getDateObject(${value}), ${Blockly.JavaScript.quote_(option)})`;
     }
 
     return [code, Blockly.JavaScript.ORDER_ATOMIC];
@@ -361,7 +361,7 @@ Blockly.JavaScript.convert_time_difference = function (block) {
     const format = block.getFieldValue('FORMAT');
     const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
 
-    return [`formatTimeDiff(${value}, '${option === 'custom' ? format : option}')`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`formatTimeDiff(${value ? value : '0'}, ${Blockly.JavaScript.quote_(option === 'custom' ? format : option)})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- json2object --------------------------------------------------
@@ -383,7 +383,7 @@ Blockly.Blocks.convert_json2object = {
 };
 
 Blockly.JavaScript.convert_json2object = function (a) {
-    return ['(function () { try { return JSON.parse(' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + '); } catch (e) { return {}; }})()', Blockly.JavaScript.ORDER_ATOMIC];
+    return ['(() => { try { return JSON.parse(' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + '); } catch (e) { return {}; }})()', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- object2json --------------------------------------------------

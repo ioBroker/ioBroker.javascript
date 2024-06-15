@@ -150,14 +150,15 @@ Blockly.Blocks['time_compare_ex'] = {
 };
 
 Blockly.JavaScript.forBlock['time_compare_ex'] = function (block) {
-    const option     = block.getFieldValue('OPTION');
-    const start_time = Blockly.JavaScript.valueToCode(block, 'START_TIME', Blockly.JavaScript.ORDER_ATOMIC);
-    let end_time   = Blockly.JavaScript.valueToCode(block, 'END_TIME', Blockly.JavaScript.ORDER_ATOMIC);
-    let time       = Blockly.JavaScript.valueToCode(block, 'CUSTOM_TIME', Blockly.JavaScript.ORDER_ATOMIC);
-    end_time = end_time || null;
+    const option = block.getFieldValue('OPTION');
+    const startTime = Blockly.JavaScript.valueToCode(block, 'START_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+    let endTime = Blockly.JavaScript.valueToCode(block, 'END_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+    endTime = endTime || null;
+
+    let time = Blockly.JavaScript.valueToCode(block, 'CUSTOM_TIME', Blockly.JavaScript.ORDER_ATOMIC);
     time = time || null;
 
-    return [`compareTime(${start_time}, ${end_time}, '${option}', ${time})`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`compareTime(${startTime}, ${endTime}, '${option}', ${time})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // if time greater, less, between
@@ -232,12 +233,11 @@ Blockly.Blocks['time_compare'] = {
 };
 
 Blockly.JavaScript.forBlock['time_compare'] = function (block) {
-    const option     = block.getFieldValue('OPTION');
-    const start_time = block.getFieldValue('START_TIME');
-    let end_time   = block.getFieldValue('END_TIME');
-    end_time = end_time || null;
+    const option = block.getFieldValue('OPTION');
+    const startTime = block.getFieldValue('START_TIME');
+    const endTime = block.getFieldValue('END_TIME');
 
-    return [`compareTime('${start_time}', '${end_time}', '${option}')`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`compareTime(${Blockly.JavaScript.quote_(startTime)}, ${endTime ? Blockly.JavaScript.quote_(endTime) : 'null'}, ${Blockly.JavaScript.quote_(option)})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- get time --------------------------------------------------
@@ -409,9 +409,9 @@ Blockly.JavaScript.forBlock['time_get'] = function (block) {
     } else if (option === 'cw') {
         code = '((date) => { const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())); const dayNum = d.getUTCDay() || 7; d.setUTCDate(d.getUTCDate() + 4 - dayNum); const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1)); return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7); })(new Date())';
     } else if (option === 'custom') {
-        code = `formatDate(new Date(), '${format}')`;
+        code = `formatDate(new Date(), ${Blockly.JavaScript.quote_(format)})`;
     } else {
-        code = `formatDate(new Date(), '${option}')`;
+        code = `formatDate(new Date(), ${Blockly.JavaScript.quote_(option)})`;
     }
 
     return [code, Blockly.JavaScript.ORDER_ATOMIC];

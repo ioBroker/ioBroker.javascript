@@ -629,7 +629,7 @@ Blockly.JavaScript.forBlock['create'] = function (block) {
         paraC = `, ((common) => typeof common !== 'object' ? JSON.parse(common) : common)(${common})`;
     }
 
-    return `createState('${name}'${paraV}${paraC}, async () => {\n` +
+    return `createState(${Blockly.JavaScript.quote_(name)}${paraV}${paraC}, async () => {\n` +
         statement +
         '});\n';
 };
@@ -719,7 +719,7 @@ Blockly.JavaScript.forBlock['create_ex'] = function (block) {
     let writeable = block.getFieldValue('WRITEABLE');
     writeable = writeable === 'TRUE' || writeable === 'true' || writeable === true;
 
-    return `createState('${name}'${paraV}, { type: '${type}', read: ${readable}, write: ${writeable} }, async () => {\n` +
+    return `createState(${Blockly.JavaScript.quote_(name)}${paraV}, { type: '${type}', read: ${readable}, write: ${writeable} }, async () => {\n` +
         statement +
         '});\n';
 };
@@ -1225,9 +1225,9 @@ Blockly.Blocks['regex'] = {
 };
 
 Blockly.JavaScript.forBlock['regex'] = function (block) {
-    const oid = block.getFieldValue('TEXT');
+    const text = block.getFieldValue('TEXT');
 
-    return [`new RegExp('${oid}')`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`new RegExp(${Blockly.JavaScript.quote_(text)})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- selector --------------------------------------------------
@@ -1257,7 +1257,7 @@ Blockly.Blocks['selector'] = {
 };
 
 Blockly.JavaScript.forBlock['selector'] = function (block) {
-    const oid = block.getFieldValue('TEXT');
+    const text = block.getFieldValue('TEXT');
 
-    return [`Array.prototype.slice.apply($('${oid}'))`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`Array.prototype.slice.apply($(${Blockly.JavaScript.quote_(text)}))`, Blockly.JavaScript.ORDER_ATOMIC];
 };

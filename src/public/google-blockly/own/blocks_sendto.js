@@ -313,12 +313,12 @@ Blockly.JavaScript.forBlock['sendto_custom'] = function (block) {
             }
 
             if (statement) {
-                return `sendTo('${instance}', '${command}', ${val}, async (result) => {\n` +
+                return `sendTo('${instance}', ${Blockly.JavaScript.quote_(command)}, ${val}, async (result) => {\n` +
                     statement +
                     `});\n${logText}`;
             }
 
-            return `sendTo('${instance}', '${command}', ${val});\n${logText}`;
+            return `sendTo('${instance}', ${Blockly.JavaScript.quote_(command)}, ${val});\n${logText}`;
         } else {
             args.push({
                 attr: name.replaceAll(`'`, `\\'`),
@@ -334,12 +334,12 @@ Blockly.JavaScript.forBlock['sendto_custom'] = function (block) {
     }
 
     if (statement) {
-        return `sendTo('${instance}', '${command}', {\n${argStr}\n}, async (result) => {\n` +
+        return `sendTo('${instance}', ${Blockly.JavaScript.quote_(command)}, {\n${argStr}\n}, async (result) => {\n` +
             statement +
             `});\n${logText}`;
     }
 
-    return `sendTo('${instance}', '${command}', {\n${argStr}\n});\n${logText}`;
+    return `sendTo('${instance}', ${Blockly.JavaScript.quote_(command)}, {\n${argStr}\n});\n${logText}`;
 };
 
 // --- sendTo JavaScript --------------------------------------------------
@@ -442,7 +442,7 @@ Blockly.JavaScript.forBlock['sendto_otherscript'] = function (block) {
         data = 'true';
     }
 
-    return `messageTo({ instance: ${dropdown_instance}, script: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, message: '${message}' }, ${data}, { timeout: ${timeout} });\n`;
+    return `messageTo({ instance: ${dropdown_instance}, script: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, message: ${Blockly.JavaScript.quote_(message)} }, ${data}, { timeout: ${timeout} });\n`;
 };
 
 // --- sendTo gethistory --------------------------------------------------
@@ -575,18 +575,18 @@ Blockly.JavaScript.forBlock['sendto_gethistory'] = function (block) {
         
     }
 
-    return `getHistory(${dropdown_instance !== 'default' ? `'${dropdown_instance}', ` : ''}{\n` +
-        Blockly.JavaScript.prefixLines(`id: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''},`, Blockly.JavaScript.INDENT) + '\n' +
-        Blockly.JavaScript.prefixLines(`start: ${start},`, Blockly.JavaScript.INDENT) + '\n' +
-        Blockly.JavaScript.prefixLines(`end: ${end},`, Blockly.JavaScript.INDENT) + '\n' +
-        (step > 0 && aggregate !== 'none' ? Blockly.JavaScript.prefixLines(`step: ${step},`, Blockly.JavaScript.INDENT) + '\n' : '') +
-        Blockly.JavaScript.prefixLines(`aggregate: '${aggregate}',`, Blockly.JavaScript.INDENT) + '\n' +
-        Blockly.JavaScript.prefixLines(`removeBorderValues: true`, Blockly.JavaScript.INDENT) + '\n' +
-    `}, async (err, result) => {\n` +
-        Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
-        Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
-        (statement ? Blockly.JavaScript.prefixLines(`} else {`, Blockly.JavaScript.INDENT) + '\n' : '') +
+    return `getHistory(${dropdown_instance !== 'default' ? `${Blockly.JavaScript.quote_(dropdown_instance)}, ` : ''}{\n` +
+        `  id: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''},\n` +
+        `  start: ${start},\n` +
+        `  end: ${end},\n`+
+        (step > 0 && aggregate !== 'none' ? `  step: ${step},\n` : '') +
+        `  aggregate: '${aggregate}',\n` +
+        `  removeBorderValues: true,\n`+
+        `}, async (err, result) => {\n` +
+        `  if (err) {\n` +
+        `    console.error(err);\n`+
+        (statement ? `  } else {\n` : '') +
         (statement ? Blockly.JavaScript.prefixLines(statement, Blockly.JavaScript.INDENT) : '') +
-        Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
+        `  }\n` +
         '});\n'
 };
