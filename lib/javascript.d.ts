@@ -1771,6 +1771,10 @@ declare global {
 
 	function isScriptActive(scriptName: string): boolean;
 
+	function startInstanceAsync(instanceName: string): Promise<boolean>;
+	function restartInstanceAsync(instanceName: string): Promise<boolean>;
+	function stopInstanceAsync(instanceName: string): Promise<boolean>;
+
 	/** Converts a value to an integer */
 	function toInt(val: any): number;
 	/** Converts a value to a floating point number */
