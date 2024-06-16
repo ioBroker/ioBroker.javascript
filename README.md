@@ -29,6 +29,7 @@ Executes Javascript, Typescript Scripts.
 ### **WORK IN PROGRESS**
 * (klein0r) Escape all field inputs correctly when using single quotes
 * (klein0r) Added sandbox functions to start/restart/stop an instance
+* (klein0r) Added Blockly block to start/restart/stop an instance
 
 ### 8.6.0 (2024-06-14)
 

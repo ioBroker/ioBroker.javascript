@@ -1201,6 +1201,59 @@ Blockly.JavaScript.forBlock['direct'] = function (block) {
         '});\n';
 };
 
+// --- control instance -----------------------------------------------------------
+Blockly.System.blocks['control_instance'] =
+    '<block type="control_instance">' +
+    '  <field name="INSTANCE">admin.0</field>' +
+    '  <field name="ACTION">restartInstanceAsync</field>' +
+    '</block>';
+
+Blockly.Blocks['control_instance'] = {
+    init: function () {
+        const options = [];
+        if (typeof main !== 'undefined' && main.instances) {
+            for (let i = 0; i < main.instances.length; i++) {
+                const id = main.instances[i].substring('system.adapter.'.length);
+                options.push([id, id]);
+            }
+            if (!options.length) {
+                options.push([Blockly.Translate('control_instance_no_instances'), '']);
+            }
+
+            this.appendDummyInput('INSTANCE')
+                .appendField(Blockly.Translate('control_instance'))
+                .appendField(new Blockly.FieldDropdown(options), 'INSTANCE');
+        } else {
+            this.appendDummyInput('INSTANCE')
+                .appendField(Blockly.Translate('control_instance'))
+                .appendField(new Blockly.FieldTextInput('adapter.0'), 'INSTANCE');
+        }
+
+        this.appendDummyInput('ACTION')
+            .appendField(Blockly.Translate('control_instance_action'))
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('control_instance_start'), 'startInstanceAsync'],
+                [Blockly.Translate('control_instance_stop'),  'stopInstanceAsync'],
+                [Blockly.Translate('control_instance_restart'),  'restartInstanceAsync'],
+            ]), 'ACTION');
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setColour(Blockly.System.HUE);
+
+        this.setTooltip(Blockly.Translate('control_instance_tooltip'));
+        this.setHelpUrl(getHelp('control_instance_help'));
+    },
+};
+
+Blockly.JavaScript.forBlock['control_instance'] = function (block) {
+    const instance = block.getFieldValue('INSTANCE');
+    const action = block.getFieldValue('ACTION');
+
+    return `await ${action}(${Blockly.JavaScript.quote_(instance)});\n`;
+};
+
 // --- regex --------------------------------------------------
 Blockly.System.blocks['regex'] =
     '<block type="regex">' +
