@@ -349,6 +349,7 @@ Blockly.Blocks['http_response'] = {
                 [Blockly.Translate('http_response_data'), 'response.data'],
                 [Blockly.Translate('http_response_statuscode'), 'response.statusCode'],
                 [Blockly.Translate('http_response_responsetime'), 'response.responseTime'],
+                [Blockly.Translate('http_response_headers'), 'response.headers'],
                 [Blockly.Translate('http_response_error'), 'err'],
             ]), 'ATTR');
 
