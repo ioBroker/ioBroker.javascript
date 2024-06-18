@@ -1873,7 +1873,6 @@ async function installLibraries() {
                     adapter.log.debug(`Installed custom dependency: "${moduleName}@${version}"`);
 
                     const importedModule = await adapter.importNodeModule(moduleName);
-
                     context.mods[moduleName] = importedModule.default ?? importedModule;
                 } else {
                     adapter.log.warn(`Cannot install custom npm package "${moduleName}@${version}"`);
