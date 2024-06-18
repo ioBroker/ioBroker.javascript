@@ -1254,6 +1254,42 @@ Blockly.JavaScript.forBlock['control_instance'] = function (block) {
     return `await ${action}(${Blockly.JavaScript.quote_(instance)});\n`;
 };
 
+// --- control script -----------------------------------------------------------
+Blockly.System.blocks['control_script'] =
+    '<block type="control_script">' +
+    '  <field name="ACTION">startScriptAsync</field>' +
+    '</block>';
+
+Blockly.Blocks['control_script'] = {
+    init: function () {
+        this.appendDummyInput('OID')
+            .appendField(Blockly.Translate('control_script'))
+            .appendField(new Blockly.FieldOID(Blockly.Translate('select_id'), 'script'), 'OID');
+
+        this.appendDummyInput('ACTION')
+            .appendField(Blockly.Translate('control_instance_action'))
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('control_script_start'), 'startScriptAsync'],
+                [Blockly.Translate('control_script_stop'),  'stopScriptAsync'],
+            ]), 'ACTION');
+
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setColour(Blockly.System.HUE);
+
+        this.setTooltip(Blockly.Translate('control_script_tooltip'));
+        this.setHelpUrl(getHelp('control_script_help'));
+    },
+};
+
+Blockly.JavaScript.forBlock['control_script'] = function (block) {
+    const oid = block.getFieldValue('OID');
+    const action = block.getFieldValue('ACTION');
+
+    return `await ${action}(${Blockly.JavaScript.quote_(oid)});\n`;
+};
+
 // --- regex --------------------------------------------------
 Blockly.System.blocks['regex'] =
     '<block type="regex">' +
@@ -1273,7 +1309,7 @@ Blockly.Blocks['regex'] = {
 
         this.setColour(Blockly.System.HUE);
 
-        this.setTooltip(Blockly.Translate('field_oid_tooltip'));
+        // this.setTooltip(Blockly.Translate('regex_tooltip'));
     },
 };
 
@@ -1305,7 +1341,7 @@ Blockly.Blocks['selector'] = {
 
         this.setColour(Blockly.System.HUE);
 
-        this.setTooltip(Blockly.Translate('field_oid_tooltip'));
+        // this.setTooltip(Blockly.Translate('selector_tooltip'));
     },
 };
 
