@@ -399,15 +399,15 @@ Get the list of subscriptions.
 Example of a result:
 ```js
 {
-	"megad.0.dataPointName": [
-		{
-			"name" : "script.js.NameOfScript",
-			"pattern" : {
-				"id" : "megad.0.dataPointName",
-				"change" : "ne"
-			}
-		}
-	]
+    'megad.0.dataPointName': [
+        {
+            name : 'script.js.NameOfScript',
+            pattern : {
+                id : 'megad.0.dataPointName',
+                change : 'ne'
+            }
+        }
+    ]
 }
 ```
 
@@ -417,13 +417,13 @@ Get the list of file subscriptions.
 Example of a result:
 ```js
 {
-	"vis.0$%$main/*": [
-		{
-			"name" : "script.js.NameOfScript",
-			"id" : "vis.0",
-            "fileNamePattern": "main/*"
-		}
-	]
+    'vis.0$%$main/*': [
+        {
+            name : 'script.js.NameOfScript',
+            id : 'vis.0',
+            fileNamePattern: 'main/*'
+        }
+    ]
 }
 ```
 
@@ -792,8 +792,8 @@ getStateDelayed('hm-rpc.0.LQE91119.1.STATE');
 
 // returns an array like
 [
-	{ timerId: 1, left: 1123,   delay: 5000,  val: true,  ack: false },
-	{ timerId: 2, left: 12555,  delay: 15000, val: false, ack: false },
+    { timerId: 1, left: 1123,   delay: 5000,  val: true,  ack: false },
+    { timerId: 2, left: 12555,  delay: 15000, val: false, ack: false },
 ]
 ```
 
@@ -804,13 +804,13 @@ getStateDelayed();
 
 // returns an object like
 {
-	'hm-rpc.0.LQE91119.1.STATE': [
-		{ timerId: 1, left: 1123,   delay: 5000,   val: true,  ack: false },
-		{ timerId: 2, left: 12555,  delay: 15000,  val: false, ack: false },
-	],
-	'hm-rpc.0.LQE91119.2.LEVEL': [
-		{ timerId: 3, left: 5679, delay: 10000,   val: 100,  ack: false }
-	]
+    'hm-rpc.0.LQE91119.1.STATE': [
+        { timerId: 1, left: 1123,   delay: 5000,   val: true,  ack: false },
+        { timerId: 2, left: 12555,  delay: 15000,  val: false, ack: false },
+    ],
+    'hm-rpc.0.LQE91119.2.LEVEL': [
+        { timerId: 3, left: 5679, delay: 10000,   val: 100,  ack: false },
+    ],
 }
 ```
 
