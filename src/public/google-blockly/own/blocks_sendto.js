@@ -110,7 +110,7 @@ Blockly.Blocks['sendto_custom'] = {
             ]), 'LOG');
 
         this.appendDummyInput('WITH_STATEMENT')
-            .appendField(Blockly.Translate('request_statement'))
+            .appendField(Blockly.Translate('sendto_custom_statement'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
                 const withStatement = option === true || option === 'true' || option === 'TRUE';
                 this.sourceBlock_.updateShape_(withStatement);
@@ -349,6 +349,7 @@ Blockly.Sendto.blocks['sendto_otherscript'] =
     '  <field name="TIMEOUT">1000</field>' +
     '  <field name="UNIT">ms</field>' +
     '  <field name="MESSAGE">customMessage</field>' +
+    '  <field name="WITH_STATEMENT">FALSE</field>' +
     '  <value name="OID">' +
     '    <shadow type="field_oid_script">' +
     '      <field name="oid">Script Object ID</field>' +
@@ -402,6 +403,15 @@ Blockly.Blocks['sendto_otherscript'] = {
         this.appendValueInput('DATA')
             .appendField(Blockly.Translate('sendto_otherscript_data'));
 
+        this.appendDummyInput('WITH_STATEMENT')
+            .appendField(Blockly.Translate('sendto_otherscript_statement'))
+            .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
+                const withStatement = option === true || option === 'true' || option === 'TRUE';
+                this.sourceBlock_.updateShape_(withStatement);
+            }), 'WITH_STATEMENT');
+
+        this.updateShape_();
+
         this.setInputsInline(false);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -410,6 +420,52 @@ Blockly.Blocks['sendto_otherscript'] = {
 
         this.setTooltip(Blockly.Translate('sendto_otherscript_tooltip'));
         this.setHelpUrl(getHelp('sendto_otherscript_help'));
+    },
+    /**
+     * Modify this block to have the correct number of inputs.
+     * @private
+     * @this Blockly.Block
+     */
+    updateShape_: function (withStatement) {
+        const workspace = this.workspace;
+
+        // Add new inputs.
+        for (let i = 0; i < this.itemCount_; i++) {
+            let input = this.getInput('ARG' + i);
+
+            if (!input) {
+                input = this.appendValueInput('ARG' + i).setAlign(Blockly.ALIGN_RIGHT);
+                input.appendField(this.attributes_[i]);
+            } else {
+                input.fieldRow[0].setValue(this.attributes_[i]);
+            }
+
+            setTimeout(__input => {
+                if (!__input.connection.isConnected()) {
+                    const _shadow = workspace.newBlock('text');
+                    _shadow.setShadow(true);
+                    _shadow.initSvg();
+                    _shadow.render();
+                    _shadow.outputConnection.connect(__input.connection);
+                }
+            }, 100, input);
+        }
+        // Remove deleted inputs.
+        for (let i = this.itemCount_; this.getInput('ARG' + i); i++) {
+            this.removeInput('ARG' + i);
+        }
+
+        if (withStatement === undefined) {
+            withStatement = this.getFieldValue('WITH_STATEMENT');
+            withStatement = withStatement === true || withStatement === 'true' || withStatement === 'TRUE';
+        }
+
+        this.getInput('STATEMENT') && this.removeInput('STATEMENT');
+
+        // Add or remove a statement Input.
+        if (withStatement) {
+            this.appendStatementInput('STATEMENT');
+        }
     },
 };
 
@@ -427,6 +483,12 @@ Blockly.JavaScript.forBlock['sendto_otherscript'] = function (block) {
         timeout *= 1000;
     }
 
+    const withStatement = block.getFieldValue('WITH_STATEMENT');
+    let statement;
+    if (withStatement === true || withStatement === 'true' || withStatement === 'TRUE') {
+        statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    }
+
     let objectName = '';
     try {
         const objId = eval(value_objectid); // Code to string
@@ -442,7 +504,13 @@ Blockly.JavaScript.forBlock['sendto_otherscript'] = function (block) {
         data = 'true';
     }
 
-    return `messageTo({ instance: ${dropdown_instance}, script: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, message: ${Blockly.JavaScript.quote_(message)} }, ${data}, { timeout: ${timeout} });\n`;
+    if (statement) {
+        return `messageTo({ instance: ${dropdown_instance}, script: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, message: ${Blockly.JavaScript.quote_(message)} }, ${data}, { timeout: ${timeout} }, (result) => {\n` +
+            statement +
+            '})\n';
+    } else {
+        return `messageTo({ instance: ${dropdown_instance}, script: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, message: ${Blockly.JavaScript.quote_(message)} }, ${data}, { timeout: ${timeout} });\n`;
+    }
 };
 
 // --- sendTo gethistory --------------------------------------------------

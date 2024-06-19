@@ -732,12 +732,21 @@ function startAdapter(options) {
                                 // script name could be script.js.xxx or only xxx
                                 if ((!obj.message.script || obj.message.script === name) && context.messageBusHandlers[name][obj.message.message]) {
                                     context.messageBusHandlers[name][obj.message.message].forEach(handler => {
+                                        const sandbox = handler.sandbox;
+
+                                        sandbox.verbose && sandbox.log(`onMessage: ${JSON.stringify(obj.message)}`, 'info');
+
                                         try {
                                             if (obj.callback) {
-                                                handler.cb.call(handler.sandbox, obj.message.data, result =>
-                                                    adapter.sendTo(obj.from, obj.command, result, obj.callback));
+                                                handler.cb.call(sandbox, obj.message.data, result => {
+                                                    sandbox.verbose && sandbox.log(`onMessage result: ${JSON.stringify(result)}`, 'info');
+
+                                                    adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                                                });
                                             } else {
-                                                handler.cb.call(handler.sandbox, obj.message.data, result => {/* nop */ });
+                                                handler.cb.call(sandbox, obj.message.data, result => {
+                                                    sandbox.verbose && sandbox.log(`onMessage result: ${JSON.stringify(result)}`, 'info');
+                                                });
                                             }
                                         } catch (e) {
                                             adapter.setState('scriptProblem.' + name.substring(SCRIPT_CODE_MARKER.length), true, true);

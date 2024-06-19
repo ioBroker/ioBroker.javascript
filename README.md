@@ -31,6 +31,7 @@ Executes Javascript, Typescript Scripts.
 * (klein0r) Added sandbox functions to start/restart/stop an instance
 * (klein0r) Added Blockly block to start/restart/stop an instance
 * (klein0r) Added Blockly block to start/stop a script
+* (klein0r) Added Blockly result blocks for script messages
 * (foxriver76) fixed issue in importing additional node modules for packages which do not provide a default export (e.g. `mathjs`)
 
 ### 8.6.0 (2024-06-14)

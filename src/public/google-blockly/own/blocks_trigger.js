@@ -1249,8 +1249,74 @@ Blockly.JavaScript.forBlock['onMessage'] = function (block) {
 
     return `onMessage(${Blockly.JavaScript.quote_(message)}, async (data, callback) => {\n` +
         statement +
-        Blockly.JavaScript.prefixLines(`callback({ result: true });`, Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines(`typeof callback === 'function' && callback({ result: true }); // default callback`, Blockly.JavaScript.INDENT) + '\n' +
         '});\n';
+};
+
+// --- onMessage_data -----------------------------------------------------------
+Blockly.Trigger.blocks['onMessage_data'] =
+    '<sep gap="5"></sep>' +
+    '<block type="onMessage_data">' +
+    '  <field name="ATTR">data</field>' +
+    '</block>';
+
+Blockly.Blocks['onMessage_data'] = {
+    /**
+     * Block for conditionally returning a value from a procedure.
+     * @this Blockly.Block
+     */
+    init: function () {
+        this.appendDummyInput()
+            .appendField('✉️ ');
+
+        this.appendDummyInput('ATTR')
+            .appendField(new Blockly.FieldDropdown([
+                [Blockly.Translate('onMessage_data_data'), 'data'],
+            ]), 'ATTR');
+
+        this.setInputsInline(true);
+        this.setOutput(true);
+
+        this.setColour(Blockly.Action.HUE);
+
+        this.setTooltip(Blockly.Translate('onMessage_data_tooltip'));
+        this.setHelpUrl(getHelp('onMessage_data_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function (e) {
+        let legal = false;
+        // Is the block nested in a trigger?
+        let block = this;
+        do {
+            if (this.FUNCTION_TYPES.includes(block.type)) {
+                legal = true;
+                break;
+            }
+            block = block.getSurroundParent();
+        } while (block);
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('onMessage_data_warning'), this.id);
+        }
+    },
+    /**
+     * List of block types that are functions and thus do not need warnings.
+     * To add a new function type add this to your code:
+     * Blockly.Blocks['procedures_ifreturn'].FUNCTION_TYPES.push('custom_func');
+     */
+    FUNCTION_TYPES: ['onMessage'],
+};
+Blockly.JavaScript.forBlock['onMessage_data'] = function (block) {
+    const attr = block.getFieldValue('ATTR');
+
+    return [attr, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- onFile -----------------------------------------------------------
