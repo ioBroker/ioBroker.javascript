@@ -1945,10 +1945,26 @@ httpGet('https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/a
 ```
 
 ```js
-onFile('0_userdata.0', 'test.jpg', true, async (id, fileName, size, data, mimeType) => {
+onFile('0_userdata.0', '*.jpg', true, async (id, fileName, size, data, mimeType) => {
     const tempFilePath = createTempFile(fileName, response.data);
 
     // Use the new path in other scripts (e.g. sendTo)
+});
+```
+
+```js
+readFile('0_userdata.0', 'test.jpg', (err, data, mimeType) => {
+    if (err) {
+        console.error(err);
+    } else {
+        const tempFilePath = createTempFile('test.jpg', data);
+
+        // Use the new path in other scripts (e.g. sendTo)
+        sendTo('telegram', 'send', {
+            text: tempFilePath,
+            user: 'yourUsername',
+        });
+    }
 });
 ```
 
