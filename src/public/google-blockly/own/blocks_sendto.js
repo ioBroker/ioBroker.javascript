@@ -110,7 +110,7 @@ Blockly.Blocks['sendto_custom'] = {
             ]), 'LOG');
 
         this.appendDummyInput('WITH_STATEMENT')
-            .appendField(Blockly.Translate('sendto_custom_statement'))
+            .appendField(Blockly.Translate('with_results'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
                 const withStatement = option === true || option === 'true' || option === 'TRUE';
                 this.sourceBlock_.updateShape_(withStatement);
@@ -404,7 +404,7 @@ Blockly.Blocks['sendto_otherscript'] = {
             .appendField(Blockly.Translate('sendto_otherscript_data'));
 
         this.appendDummyInput('WITH_STATEMENT')
-            .appendField(Blockly.Translate('sendto_otherscript_statement'))
+            .appendField(Blockly.Translate('with_results'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
                 const withStatement = option === true || option === 'true' || option === 'TRUE';
                 this.sourceBlock_.updateShape_(withStatement);

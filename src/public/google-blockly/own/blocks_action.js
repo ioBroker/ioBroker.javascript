@@ -36,7 +36,7 @@ Blockly.Blocks['exec'] = {
             .appendField(Blockly.Translate('exec_command'));
 
         this.appendDummyInput('WITH_STATEMENT')
-            .appendField(Blockly.Translate('exec_statement'))
+            .appendField(Blockly.Translate('with_results'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
                 this.sourceBlock_.updateShape_(option === true || option === 'true' || option === 'TRUE');
             }), 'WITH_STATEMENT');
@@ -679,7 +679,7 @@ Blockly.Blocks['request'] = {
             .appendField(Blockly.Translate('request_url'));
 
         this.appendDummyInput('WITH_STATEMENT')
-            .appendField(Blockly.Translate('request_statement'))
+            .appendField(Blockly.Translate('with_results'))
             .appendField(new Blockly.FieldCheckbox('FALSE', function (option) {
                 this.sourceBlock_.updateShape_(option === true || option === 'true' || option === 'TRUE');
             }), 'WITH_STATEMENT');
