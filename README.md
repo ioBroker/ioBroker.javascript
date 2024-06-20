@@ -29,6 +29,7 @@ Executes Javascript, Typescript Scripts.
 ### **WORK IN PROGRESS**
 * (klein0r) Escape all field inputs correctly when using single quotes
 * (klein0r) Added sandbox function to subscribe to all enum members
+* (klein0r) Added Blockly block to subscribe to all enum members
 * (klein0r) Added sandbox functions to start/restart/stop an instance
 * (klein0r) Added Blockly block to start/restart/stop an instance
 * (klein0r) Added Blockly block to start/stop a script

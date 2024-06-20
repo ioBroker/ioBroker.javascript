@@ -1303,7 +1303,7 @@ class Editor extends React.Component {
 
     getSelectIdDialog() {
         if (this.state.showSelectId) {
-            const allObjektTypes = [
+            const allObjectTypes = [
                 'state',
                 'channel',
                 'device',
@@ -1321,6 +1321,21 @@ class Editor extends React.Component {
                 //'schedule',
                 //'design',
             ];
+
+            const expertModeTypes = [
+                'adapter',
+                'instance',
+                'enum',
+                'host',
+                'config',
+                'script',
+                'user',
+                'group',
+                //'chart',
+                //'folder',
+                //'schedule',
+                //'design',
+            ]
 
             let selectedId = this.selectId.callback ? this.selectId.initValue || '' : this.getSelect ? this.getSelect() : '';
             // it could be:
@@ -1351,9 +1366,9 @@ class Editor extends React.Component {
                 themeType={this.state.themeType}
                 socket={this.props.socket}
                 selected={selectedId}
-                expertMode={this.selectId.type === 'script' ? true : undefined}
+                expertMode={expertModeTypes.includes(this.selectId.type) ? true : undefined}
                 // statesOnly={!this.selectId.type || this.selectId.type === 'state'}
-                types={this.selectId?.type === 'all' ? allObjektTypes : [this.selectId.type || 'state']}
+                types={this.selectId?.type === 'all' ? allObjectTypes : [this.selectId.type || 'state']}
                 onClose={() => {
                     this.setState({ showSelectId: false });
                     if (this.selectId.callback) {

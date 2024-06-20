@@ -12,7 +12,7 @@ Blockly.Trigger = {
     HUE: 330,
     blocks: {},
     WARNING_PARENTS: [
-        'on', 'on_ext', 'schedule', 'schedule_by_id', 'schedule_create', 'astro', 'onMessage', 'onFile', 'onLog', // trigger blocks
+        'on', 'on_ext', 'schedule', 'schedule_by_id', 'schedule_create', 'astro', 'onMessage', 'onFile', 'onLog', 'onEnumMembers', // trigger blocks
         'timeouts_setinterval', 'timeouts_setinterval_variable', // timeouts
         'controls_repeat_ext', 'controls_repeat_ext', 'controls_for', 'controls_forEach', // loops
     ],
@@ -404,7 +404,7 @@ Blockly.Blocks['on'] = {
         } else {
             this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
         }
-    }
+    },
 };
 Blockly.JavaScript.forBlock['on'] = function (block) {
     const value_objectid = block.getFieldValue('OID');
@@ -1675,4 +1675,70 @@ Blockly.JavaScript.forBlock['onLog_data'] = function (block) {
     const attr = block.getFieldValue('ATTR');
 
     return [attr, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+// --- onEnumMembers -----------------------------------------------------------
+Blockly.Trigger.blocks['onEnumMembers'] =
+    '<block type="onEnumMembers">' +
+    '</block>';
+
+Blockly.Blocks['onEnumMembers'] = {
+    init: function () {
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('onEnumMembers'));
+
+        this.appendDummyInput('OID')
+            .appendField(new Blockly.FieldOID(Blockly.Translate('select_id'), 'enum'), 'OID');
+
+        this.appendStatementInput('STATEMENT')
+            .setCheck(null);
+
+        this.setInputsInline(false);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+
+        this.setColour(Blockly.Trigger.HUE);
+
+        this.setTooltip(Blockly.Translate('onEnumMembers_tooltip'));
+        this.setHelpUrl(getHelp('onEnumMembers_help'));
+    },
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     * @param {!Blockly.Events.Abstract} e Change event.
+     * @this Blockly.Block
+     */
+    onchange: function (e) {
+        let legal = true;
+
+        // Is the block nested in a trigger?
+        let block = this;
+        while (block = block.getSurroundParent()) {
+            if (block && Blockly.Trigger.WARNING_PARENTS.includes(block.type)) {
+                legal = false;
+                break;
+            }
+        }
+
+        if (legal) {
+            this.setWarningText(null, this.id);
+        } else {
+            this.setWarningText(Blockly.Translate('trigger_in_trigger_warning'), this.id);
+        }
+    },
+};
+Blockly.JavaScript.forBlock['onEnumMembers'] = function (block) {
+    const value_objectid = block.getFieldValue('OID');
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    let objectName = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+    if (typeof objectName === 'object') {
+        objectName = objectName[systemLang] || objectName.en;
+    }
+
+    return `onEnumMembers('${value_objectid}'${objectName ? ` /* ${objectName} */` : ''}, async (obj) => {\n` +
+        Blockly.JavaScript.prefixLines('let value = obj.state.val;', Blockly.JavaScript.INDENT) + '\n' +
+        Blockly.JavaScript.prefixLines('let oldValue = obj.oldState.val;', Blockly.JavaScript.INDENT) + '\n' +
+        statement +
+        '});\n';
 };
