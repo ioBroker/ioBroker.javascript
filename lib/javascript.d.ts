@@ -1360,6 +1360,11 @@ declare global {
 	): any;
 
 	/**
+	 * Subscribe to all members of an enum (even if the enum changes over time)
+	 */
+	function onEnumMembers(id: string, handler: iobJS.StateChangeHandler): void;
+
+	/**
 	 * Subscribe to the changes of the matched files.
 	 * The return value can be used for offFile later
 	 * @param id ID of meta-object, like `vis.0`

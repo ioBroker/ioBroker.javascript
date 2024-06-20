@@ -958,17 +958,42 @@ Get the list of existing enumerations with members, like:
 ```js
 getEnums('rooms');
 
-// returns:
+// returns all rooms - e.g.:
 [
     {
-        "id":"enum.rooms.LivingRoom",
-        "members":["hm-rpc.0.JEQ0024123.1","hm-rpc.0.BidCoS-RF.4"],
-        "name": "Living room"
+        id: 'enum.rooms.LivingRoom',
+        members: [ 'hm-rpc.0.JEQ0024123.1', 'hm-rpc.0.BidCoS-RF.4' ],
+        name: 'Living room'
     },
     {
-        "id":"enum.rooms.Bath",
-        "members":["hm-rpc.0.JEQ0024124.1","hm-rpc.0.BidCoS-RF.5"],
-        "name": "Bath"
+        id: 'enum.rooms.Bath',
+        members: [ 'hm-rpc.0.JEQ0024124.1', 'hm-rpc.0.BidCoS-RF.5' ],
+        name: 'Bath'
+    }
+]
+
+getEnums('functions');
+
+// returns all functions - e.g.:
+[
+    {
+        id: 'enum.functions.light',
+        members: [
+            '0_userdata.0.AnotherOne',
+            '0_userdata.0.MyLigh'
+        ],
+        name: {
+            en: 'Light',
+            ru: 'Свет',
+            de: 'Licht',
+            fr: 'Lumière',
+            it: 'Leggero',
+            nl: 'Licht',
+            pl: 'Lekki',
+            pt: 'Luz',
+            es: 'Luz',
+            'zh-cn': '光'
+        }
     }
 ]
 ```
@@ -1960,8 +1985,9 @@ readFile('0_userdata.0', 'test.jpg', (err, data, mimeType) => {
         const tempFilePath = createTempFile('test.jpg', data);
 
         // Use the new path in other scripts (e.g. sendTo)
-        sendTo('telegram', 'send', {
+        sendTo('telegram.0', 'send', {
             text: tempFilePath,
+            caption: 'Just a test image',
             user: 'yourUsername',
         });
     }
