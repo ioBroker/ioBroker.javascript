@@ -87,10 +87,10 @@ Blockly.Blocks['debug'] = {
 };
 
 Blockly.JavaScript.forBlock['debug'] = function (block) {
-    const value_text = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_ATOMIC);
-    const logLevel = block.getFieldValue('Severity');
+    const vText = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_ATOMIC);
+    const fSeverity = block.getFieldValue('Severity');
 
-    return `console.${logLevel}(${value_text});\n`;
+    return `console.${fSeverity}(${vText});\n`;
 };
 
 // --- comment --------------------------------------------------
@@ -114,9 +114,9 @@ Blockly.Blocks['comment'] = {
 };
 
 Blockly.JavaScript.forBlock['comment'] = function (block) {
-    const comment = block.getFieldValue('COMMENT');
+    const fComment = block.getFieldValue('COMMENT');
 
-    return Blockly.JavaScript.prefixLines(comment, '// ') + '\n';
+    return Blockly.JavaScript.prefixLines(fComment, '// ') + '\n';
 };
 
 // --- control -----------------------------------------------------------
@@ -199,34 +199,34 @@ Blockly.Blocks['control'] = {
 };
 
 Blockly.JavaScript.forBlock['control'] = function (block) {
-    const valueObjectID = block.getFieldValue('OID');
+    const fObjId = block.getFieldValue('OID');
 
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
 
-    let valueDelay = parseInt(block.getFieldValue('DELAY_MS'), 10);
-    const unit = block.getFieldValue('UNIT');
-    if (unit === 'min') {
-        valueDelay *= 60000;
-    } else if (unit === 'sec') {
-        valueDelay *= 1000;
+    let fDelayMs = parseInt(block.getFieldValue('DELAY_MS'), 10);
+    const fUnit = block.getFieldValue('UNIT');
+    if (fUnit === 'min') {
+        fDelayMs *= 60000;
+    } else if (fUnit === 'sec') {
+        fDelayMs *= 1000;
     }
 
-    let clearRunning = block.getFieldValue('CLEAR_RUNNING');
-    clearRunning = clearRunning === 'TRUE' || clearRunning === 'true' || clearRunning === true;
+    let fClearRunning = block.getFieldValue('CLEAR_RUNNING');
+    fClearRunning = fClearRunning === 'TRUE' || fClearRunning === 'true' || fClearRunning === true;
 
-    const valueValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-    const withDelay = this.getFieldValue('WITH_DELAY');
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    const fWithDelay = this.getFieldValue('WITH_DELAY');
 
-    let objectName = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
+    let objectName = main.objects[fObjId] && main.objects[fObjId].common && main.objects[fObjId].common.name ? main.objects[fObjId].common.name : '';
     if (typeof objectName === 'object') {
         objectName = objectName[systemLang] || objectName.en;
     }
 
     let code;
-    if (withDelay === 'true' || withDelay === true || withDelay === 'TRUE') {
-        code = `setStateDelayed('${valueObjectID}'${objectName ? ` /* ${objectName} */` : ''}, ${valueValue}, ${valueDelay}, ${clearRunning});\n`;
+    if (fWithDelay === 'true' || fWithDelay === true || fWithDelay === 'TRUE') {
+        code = `setStateDelayed('${fObjId}'${objectName ? ` /* ${objectName} */` : ''}, ${vValue}, ${fDelayMs}, ${fClearRunning});\n`;
     } else {
-        code = `setState('${valueObjectID}'${objectName ? ` /* ${objectName} */` : ''}, ${valueValue});\n`;
+        code = `setState('${fObjId}'${objectName ? ` /* ${objectName} */` : ''}, ${vValue});\n`;
     }
 
     return code;
@@ -310,53 +310,53 @@ Blockly.Blocks['toggle'] = {
 };
 
 Blockly.JavaScript.forBlock['toggle'] = function (block) {
-    const valueObjectID = block.getFieldValue('OID');
-    const unit  = block.getFieldValue('UNIT');
+    const fObjId = block.getFieldValue('OID');
+    const fUnit = block.getFieldValue('UNIT');
 
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
 
-    let valueDelay   = parseInt(block.getFieldValue('DELAY_MS'), 10);
-    if (unit === 'min') {
-        valueDelay *= 60000;
-    } else if (unit === 'sec') {
-        valueDelay *= 1000;
+    let fDelayMs = parseInt(block.getFieldValue('DELAY_MS'), 10);
+    if (fUnit === 'min') {
+        fDelayMs *= 60000;
+    } else if (fUnit === 'sec') {
+        fDelayMs *= 1000;
     }
 
-    const objectType = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.type ? main.objects[valueObjectID].common.type : 'boolean';
-    let objectName = main.objects[valueObjectID] && main.objects[valueObjectID].common && main.objects[valueObjectID].common.name ? main.objects[valueObjectID].common.name : '';
+    const objectType = main.objects[fObjId] && main.objects[fObjId].common && main.objects[fObjId].common.type ? main.objects[fObjId].common.type : 'boolean';
+    let objectName = main.objects[fObjId] && main.objects[fObjId].common && main.objects[fObjId].common.name ? main.objects[fObjId].common.name : '';
     if (typeof objectName === 'object') {
         objectName = objectName[systemLang] || objectName.en;
     }
 
-    let clearRunning = block.getFieldValue('CLEAR_RUNNING');
-    clearRunning = clearRunning === 'TRUE' || clearRunning === 'true' || clearRunning === true;
+    let fClearRunning = block.getFieldValue('CLEAR_RUNNING');
+    fClearRunning = fClearRunning === 'TRUE' || fClearRunning === 'true' || fClearRunning === true;
 
     let setCommand;
     if (objectType === 'number') {
         let max = 100;
         let min = 0;
 
-        if (main.objects[valueObjectID].common.max !== undefined) {
-            max = parseFloat(main.objects[valueObjectID].common.max);
+        if (main.objects[fObjId].common.max !== undefined) {
+            max = parseFloat(main.objects[fObjId].common.max);
         }
-        if (main.objects[valueObjectID].common.min !== undefined) {
-            min = parseFloat(main.objects[valueObjectID].common.min);
+        if (main.objects[fObjId].common.min !== undefined) {
+            min = parseFloat(main.objects[fObjId].common.min);
         }
 
-        setCommand = `setState('${valueObjectID}'${objectName ? ` /* ${objectName} */` : ''}, state ? (state.val === ${min} ? ${max} : ${min}) : ${max});`;
+        setCommand = `setState('${fObjId}'${objectName ? ` /* ${objectName} */` : ''}, state ? (state.val === ${min} ? ${max} : ${min}) : ${max});`;
     } else {
-        setCommand = `setState('${valueObjectID}'${objectName ? ` /* ${objectName} */` : ''}, state ? !state.val : true);`;
+        setCommand = `setState('${fObjId}'${objectName ? ` /* ${objectName} */` : ''}, state ? !state.val : true);`;
     }
 
-    const withDelay = block.getFieldValue('WITH_DELAY');
+    const fWithDelay = block.getFieldValue('WITH_DELAY');
 
     let code;
-    if (withDelay === 'TRUE' || withDelay === 'true' || withDelay === true) {
-        code = `getState('${valueObjectID}', (err, state) => {\n` +
-            Blockly.JavaScript.prefixLines(`setStateDelayed('${valueObjectID}'${objectName ? ` /* ${objectName} */` : ''}, state ? !state.val : true, ${valueDelay}, ${clearRunning});`, Blockly.JavaScript.INDENT) + '\n' +
+    if (fWithDelay === 'TRUE' || fWithDelay === 'true' || fWithDelay === true) {
+        code = `getState('${fObjId}', (err, state) => {\n` +
+            Blockly.JavaScript.prefixLines(`setStateDelayed('${fObjId}'${objectName ? ` /* ${objectName} */` : ''}, state ? !state.val : true, ${fDelayMs}, ${fClearRunning});`, Blockly.JavaScript.INDENT) + '\n' +
             '});\n';
     } else {
-        code = `getState('${valueObjectID}', (err, state) => {\n` +
+        code = `getState('${fObjId}', (err, state) => {\n` +
             Blockly.JavaScript.prefixLines(setCommand, Blockly.JavaScript.INDENT) + '\n' +
             '});\n';
     }
@@ -446,38 +446,35 @@ Blockly.Blocks['update'] = {
 };
 
 Blockly.JavaScript.forBlock['update'] = function (block) {
-    const value_objectid = block.getFieldValue('OID');
+    const fObjId = block.getFieldValue('OID');
 
     Blockly.Msg.VARIABLES_DEFAULT_NAME = 'value';
 
-    const value_value  = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-    const unit  = block.getFieldValue('UNIT');
+    const vValue  = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    const fUnit  = block.getFieldValue('UNIT');
 
-    let value_delay  = parseInt(block.getFieldValue('DELAY_MS'), 10);
-    if (unit === 'min') {
-        value_delay *= 60000;
-    } else if (unit === 'sec') {
-        value_delay *= 1000;
+    let fDelay = parseInt(block.getFieldValue('DELAY_MS'), 10);
+    if (fUnit === 'min') {
+        fDelay *= 60000;
+    } else if (fUnit === 'sec') {
+        fDelay *= 1000;
     }
 
-    let clearRunning = block.getFieldValue('CLEAR_RUNNING');
-    clearRunning = clearRunning === 'TRUE' || clearRunning === 'true' || clearRunning === true;
+    let fClearRunning = block.getFieldValue('CLEAR_RUNNING');
+    fClearRunning = fClearRunning === 'TRUE' || fClearRunning === 'true' || fClearRunning === true;
 
-    const withDelay = this.getFieldValue('WITH_DELAY');
+    const fWithDelay = this.getFieldValue('WITH_DELAY');
 
-    let objectName = main.objects[value_objectid] && main.objects[value_objectid].common && main.objects[value_objectid].common.name ? main.objects[value_objectid].common.name : '';
+    let objectName = main.objects[fObjId] && main.objects[fObjId].common && main.objects[fObjId].common.name ? main.objects[fObjId].common.name : '';
     if (typeof objectName === 'object') {
         objectName = objectName[systemLang] || objectName.en;
     }
 
-    let code;
-    if (withDelay === true || withDelay === 'true' || withDelay === 'TRUE') {
-        code = `setStateDelayed('${value_objectid}'${objectName ? ` /* ${objectName} */` : ''}, ${value_value}, true, ${value_delay}, ${clearRunning});\n`;
-    } else {
-        code = `setState('${value_objectid}'${objectName ? ` /* ${objectName} */` : ''}, ${value_value}, true);\n`;
+    if (fWithDelay === true || fWithDelay === 'true' || fWithDelay === 'TRUE') {
+        return `setStateDelayed('${fObjId}'${objectName ? ` /* ${objectName} */` : ''}, ${vValue}, true, ${fDelay}, ${fClearRunning});\n`;
     }
 
-    return code;
+    return `setState('${fObjId}'${objectName ? ` /* ${objectName} */` : ''}, ${vValue}, true);\n`;
 };
 
 // --- control ex -----------------------------------------------------------
@@ -550,23 +547,23 @@ Blockly.Blocks['control_ex'] = {
 };
 
 Blockly.JavaScript.forBlock['control_ex'] = function (block) {
-    const valueObjectID = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
-    const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-    const valueDelay = Blockly.JavaScript.valueToCode(block, 'DELAY_MS', Blockly.JavaScript.ORDER_ATOMIC);
-    const valueExpire = Blockly.JavaScript.valueToCode(block, 'EXPIRE', Blockly.JavaScript.ORDER_ATOMIC);
+    const vObjId = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    const vDelayMs = Blockly.JavaScript.valueToCode(block, 'DELAY_MS', Blockly.JavaScript.ORDER_ATOMIC);
+    const vExpire = Blockly.JavaScript.valueToCode(block, 'EXPIRE', Blockly.JavaScript.ORDER_ATOMIC);
 
-    let clearRunning = block.getFieldValue('CLEAR_RUNNING');
-    clearRunning = clearRunning === true || clearRunning === 'true' || clearRunning === 'TRUE';
+    let fClearRunning = block.getFieldValue('CLEAR_RUNNING');
+    fClearRunning = fClearRunning === true || fClearRunning === 'true' || fClearRunning === 'TRUE';
 
-    let type = block.getFieldValue('TYPE');
-    type = type === true || type === 'true' || type === 'TRUE';
+    let fType = block.getFieldValue('TYPE');
+    fType = fType === true || fType === 'true' || fType === 'TRUE';
 
     let expire = '';
-    if (valueExpire > 0) {
-        expire = `, expire: ${valueExpire}`;
+    if (vExpire > 0) {
+        expire = `, expire: ${vExpire}`;
     }
 
-    return `setStateDelayed(${valueObjectID}, { val: ${value}, ack: ${type}${expire} }, parseInt(((${valueDelay}) || '').toString(), 10), ${clearRunning});\n`;
+    return `setStateDelayed(${vObjId}, { val: ${vValue}, ack: ${fType}${expire} }, parseInt(((${vDelayMs}) || '').toString(), 10), ${fClearRunning});\n`;
 };
 
 // --- create state --------------------------------------------------
@@ -613,23 +610,22 @@ Blockly.Blocks['create'] = {
 };
 
 Blockly.JavaScript.forBlock['create'] = function (block) {
-    const name = block.getFieldValue('NAME');
-    const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-    const common = Blockly.JavaScript.valueToCode(block, 'COMMON', Blockly.JavaScript.ORDER_ATOMIC);
-    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    const fName = block.getFieldValue('NAME');
 
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
     let paraV = '';
+    if (vValue !== null && vValue !== '') {
+        paraV = `, ${vValue}`;
+    }
+
+    const vCommon = Blockly.JavaScript.valueToCode(block, 'COMMON', Blockly.JavaScript.ORDER_ATOMIC);
     let paraC = '';
-
-    if (value !== null && value !== '') {
-        paraV = `, ${value}`;
+    if (vCommon !== null && vCommon !== '') {
+        paraC = `, ((common) => typeof common !== 'object' ? JSON.parse(common) : common)(${vCommon})`;
     }
 
-    if (common !== null && common !== '') {
-        paraC = `, ((common) => typeof common !== 'object' ? JSON.parse(common) : common)(${common})`;
-    }
-
-    return `createState(${Blockly.JavaScript.quote_(name)}${paraV}${paraC}, async () => {\n` +
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    return `createState(${Blockly.JavaScript.quote_(fName)}${paraV}${paraC}, async () => {\n` +
         statement +
         '});\n';
 };
@@ -694,32 +690,32 @@ Blockly.Blocks['create_ex'] = {
 };
 
 Blockly.JavaScript.forBlock['create_ex'] = function (block) {
-    const name = block.getFieldValue('NAME');
-    const type = block.getFieldValue('TYPE');
-    const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+    const fName = block.getFieldValue('NAME');
+    const fType = block.getFieldValue('TYPE');
 
     let paraV = '';
-
-    if (value !== null && value !== '') {
-        if (type === 'number') {
-            paraV = `, parseFloat(${value})`;
-        } else if (type === 'boolean') {
-            paraV = `, !!${value}`;
-        } else if (type === 'string') {
-            paraV = `, String(${value})`;
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    if (vValue !== null && vValue !== '') {
+        if (fType === 'number') {
+            paraV = `, parseFloat(${vValue})`;
+        } else if (fType === 'boolean') {
+            paraV = `, !!${vValue}`;
+        } else if (fType === 'string') {
+            paraV = `, String(${vValue})`;
         } else {
-            paraV = `, ${value}`;
+            paraV = `, ${vValue}`;
         }
     }
 
-    let readable = block.getFieldValue('READABLE');
-    readable = readable === 'TRUE' || readable === 'true' || readable === true;
+    let fReadable = block.getFieldValue('READABLE');
+    fReadable = fReadable === 'TRUE' || fReadable === 'true' || fReadable === true;
 
-    let writeable = block.getFieldValue('WRITEABLE');
-    writeable = writeable === 'TRUE' || writeable === 'true' || writeable === true;
+    let fWriteable = block.getFieldValue('WRITEABLE');
+    fWriteable = fWriteable === 'TRUE' || fWriteable === 'true' || fWriteable === true;
 
-    return `createState(${Blockly.JavaScript.quote_(name)}${paraV}, { type: '${type}', read: ${readable}, write: ${writeable} }, async () => {\n` +
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    return `createState(${Blockly.JavaScript.quote_(fName)}${paraV}, { type: '${fType}', read: ${fReadable}, write: ${fWriteable} }, async () => {\n` +
         statement +
         '});\n';
 };
@@ -785,14 +781,14 @@ Blockly.Blocks['get_value'] = {
 };
 
 Blockly.JavaScript.forBlock['get_value'] = function (block) {
-    const oid  = block.getFieldValue('OID');
-    const attr = block.getFieldValue('ATTR');
+    const fOid = block.getFieldValue('OID');
+    const fAttr = block.getFieldValue('ATTR');
 
-    if (attr === 'type' || attr.startsWith('common.')) {
-        return [`(await getObjectAsync('${oid}')).${attr}`, Blockly.JavaScript.ORDER_ATOMIC];
+    if (fAttr === 'type' || fAttr.startsWith('common.')) {
+        return [`(await getObjectAsync('${fOid}')).${fAttr}`, Blockly.JavaScript.ORDER_ATOMIC];
     }
 
-    return [`getState('${oid}').${attr}`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`getState(${Blockly.JavaScript.quote_(fOid)}).${fAttr}`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- get value var --------------------------------------------------
@@ -859,14 +855,14 @@ Blockly.Blocks['get_value_var'] = {
 };
 
 Blockly.JavaScript.forBlock['get_value_var'] = function (block) {
-    const oid  = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
-    const attr = block.getFieldValue('ATTR');
+    const vOid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    const fAttr = block.getFieldValue('ATTR');
 
-    if (attr === 'type' || attr.startsWith('common.')) {
-        return [`(await getObjectAsync(${oid})).${attr}`, Blockly.JavaScript.ORDER_ATOMIC];
+    if (fAttr === 'type' || fAttr.startsWith('common.')) {
+        return [`(await getObjectAsync(${vOid})).${fAttr}`, Blockly.JavaScript.ORDER_ATOMIC];
     }
 
-    return [`getState(${oid}).${attr}`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`getState(${vOid}).${fAttr}`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- get value async--------------------------------------------------
@@ -918,18 +914,18 @@ Blockly.Blocks['get_value_async'] = {
 };
 
 Blockly.JavaScript.forBlock['get_value_async'] = function (block) {
-    const oid  = block.getFieldValue('OID');
-    const attr = block.getFieldValue('ATTR');
+    const fOid = block.getFieldValue('OID');
+    const fAttr = block.getFieldValue('ATTR');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    if (attr === 'type' || attr.startsWith('common.')) {
-        return `getObjectAsync('${oid}', async (err, obj) => {\n` +
-            Blockly.JavaScript.prefixLines(`let value = obj.${attr};`, Blockly.JavaScript.INDENT) + '\n' +
+    if (fAttr === 'type' || fAttr.startsWith('common.')) {
+        return `getObjectAsync(${Blockly.JavaScript.quote_(fOid)}, async (err, obj) => {\n` +
+            Blockly.JavaScript.prefixLines(`let value = obj.${fAttr};`, Blockly.JavaScript.INDENT) + '\n' +
             statement +
             '});\n';
     } else {
-        return `getState('${oid}', async (err, state) => {\n` +
-            Blockly.JavaScript.prefixLines(`let value = state.${attr};`, Blockly.JavaScript.INDENT) + '\n' +
+        return `getState(${Blockly.JavaScript.quote_(fOid)}, async (err, state) => {\n` +
+            Blockly.JavaScript.prefixLines(`let value = state.${fAttr};`, Blockly.JavaScript.INDENT) + '\n' +
             statement +
             '});\n';
     }
@@ -977,9 +973,9 @@ Blockly.Blocks['get_object'] = {
 };
 
 Blockly.JavaScript.forBlock['get_object'] = function (block) {
-    const oid  = block.getFieldValue('OID');
+    const fOid  = block.getFieldValue('OID');
 
-    return [`getObject('${oid}')`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`getObject(${Blockly.JavaScript.quote_(fOid)})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- get object async--------------------------------------------------
@@ -1011,10 +1007,10 @@ Blockly.Blocks['get_object_async'] = {
 };
 
 Blockly.JavaScript.forBlock['get_object_async'] = function (block) {
-    const oid  = block.getFieldValue('OID');
+    const fOid = block.getFieldValue('OID');
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
-    return `getObjectAsync('${oid}').then(async (obj) => {\n` +
+    return `getObjectAsync(${Blockly.JavaScript.quote_(fOid)}).then(async (obj) => {\n` +
         statement +
         '});\n';
 };
@@ -1042,9 +1038,9 @@ Blockly.Blocks['field_oid'] = {
 };
 
 Blockly.JavaScript.forBlock['field_oid'] = function (block) {
-    const oid = block.getFieldValue('oid');
+    const fOid = block.getFieldValue('oid');
 
-    return [`'${oid}'`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [Blockly.JavaScript.quote_(fOid), Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- select OID meta--------------------------------------------------
@@ -1071,9 +1067,9 @@ Blockly.Blocks['field_oid_meta'] = {
 };
 
 Blockly.JavaScript.forBlock['field_oid_meta'] = function (block) {
-    const oid = block.getFieldValue('oid');
+    const fOid = block.getFieldValue('oid');
 
-    return [`'${oid}'`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [Blockly.JavaScript.quote_(fOid), Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- select OID script--------------------------------------------------
@@ -1100,9 +1096,9 @@ Blockly.Blocks['field_oid_script'] = {
 };
 
 Blockly.JavaScript.forBlock['field_oid_script'] = function (block) {
-    const oid = block.getFieldValue('oid');
+    const fOid = block.getFieldValue('oid');
 
-    return [`'${oid}'`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [Blockly.JavaScript.quote_(fOid), Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- get attribute --------------------------------------------------
@@ -1140,10 +1136,10 @@ Blockly.Blocks['get_attr'] = {
 };
 
 Blockly.JavaScript.forBlock['get_attr'] = function (block) {
-    const path = Blockly.JavaScript.valueToCode(block, 'PATH', Blockly.JavaScript.ORDER_ATOMIC);
-    const obj  = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
+    const vObject = Blockly.JavaScript.valueToCode(block, 'OBJECT', Blockly.JavaScript.ORDER_ATOMIC);
+    const vPath = Blockly.JavaScript.valueToCode(block, 'PATH', Blockly.JavaScript.ORDER_ATOMIC);
 
-    return [`getAttr(${obj}, ${path})`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`getAttr(${vObject}, ${vPath})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- direct binding -----------------------------------------------------------
@@ -1190,14 +1186,14 @@ Blockly.Blocks['direct'] = {
 };
 
 Blockly.JavaScript.forBlock['direct'] = function (block) {
-    const oidSrc = Blockly.JavaScript.valueToCode(block, 'OID_SRC', Blockly.JavaScript.ORDER_ATOMIC);
-    const oidDest = Blockly.JavaScript.valueToCode(block, 'OID_DST', Blockly.JavaScript.ORDER_ATOMIC);
+    const vOidSrc = Blockly.JavaScript.valueToCode(block, 'OID_SRC', Blockly.JavaScript.ORDER_ATOMIC);
+    const vOidDst = Blockly.JavaScript.valueToCode(block, 'OID_DST', Blockly.JavaScript.ORDER_ATOMIC);
 
-    let onlyChanges = block.getFieldValue('ONLY_CHANGES');
-    onlyChanges = onlyChanges === true || onlyChanges === 'true' || onlyChanges === 'TRUE';
+    let fOnlyChanges = block.getFieldValue('ONLY_CHANGES');
+    fOnlyChanges = fOnlyChanges === true || fOnlyChanges === 'true' || fOnlyChanges === 'TRUE';
 
-    return `on({ id: ${oidSrc}, change: '${onlyChanges ? 'ne' : 'any'}' }, (obj) => {\n` +
-        Blockly.JavaScript.prefixLines(`setState(${oidDest}, obj.state.val);`, Blockly.JavaScript.INDENT) + '\n' +
+    return `on({ id: ${vOidSrc}, change: '${fOnlyChanges ? 'ne' : 'any'}' }, (obj) => {\n` +
+        Blockly.JavaScript.prefixLines(`setState(${vOidDst}, obj.state.val);`, Blockly.JavaScript.INDENT) + '\n' +
         '});\n';
 };
 
@@ -1248,10 +1244,10 @@ Blockly.Blocks['control_instance'] = {
 };
 
 Blockly.JavaScript.forBlock['control_instance'] = function (block) {
-    const instance = block.getFieldValue('INSTANCE');
-    const action = block.getFieldValue('ACTION');
+    const fInstance = block.getFieldValue('INSTANCE');
+    const fAction = block.getFieldValue('ACTION');
 
-    return `await ${action}(${Blockly.JavaScript.quote_(instance)});\n`;
+    return `await ${fAction}(${Blockly.JavaScript.quote_(fInstance)});\n`;
 };
 
 // --- control script -----------------------------------------------------------
@@ -1284,10 +1280,10 @@ Blockly.Blocks['control_script'] = {
 };
 
 Blockly.JavaScript.forBlock['control_script'] = function (block) {
-    const oid = block.getFieldValue('OID');
-    const action = block.getFieldValue('ACTION');
+    const fOid = block.getFieldValue('OID');
+    const fAction = block.getFieldValue('ACTION');
 
-    return `await ${action}(${Blockly.JavaScript.quote_(oid)});\n`;
+    return `await ${fAction}(${Blockly.JavaScript.quote_(fOid)});\n`;
 };
 
 // --- regex --------------------------------------------------
@@ -1314,9 +1310,9 @@ Blockly.Blocks['regex'] = {
 };
 
 Blockly.JavaScript.forBlock['regex'] = function (block) {
-    const text = block.getFieldValue('TEXT');
+    const fText = block.getFieldValue('TEXT');
 
-    return [`new RegExp(${Blockly.JavaScript.quote_(text)})`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`new RegExp(${Blockly.JavaScript.quote_(fText)})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- selector --------------------------------------------------
@@ -1346,7 +1342,7 @@ Blockly.Blocks['selector'] = {
 };
 
 Blockly.JavaScript.forBlock['selector'] = function (block) {
-    const text = block.getFieldValue('TEXT');
+    const fText = block.getFieldValue('TEXT');
 
-    return [`Array.prototype.slice.apply($(${Blockly.JavaScript.quote_(text)}))`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`Array.prototype.slice.apply($(${Blockly.JavaScript.quote_(fText)}))`, Blockly.JavaScript.ORDER_ATOMIC];
 };

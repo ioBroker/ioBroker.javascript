@@ -54,8 +54,8 @@ Blockly.Blocks['text_contains'] = {
 };
 
 Blockly.JavaScript.forBlock['text_contains'] = function (block) {
-    const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-    const find = Blockly.JavaScript.valueToCode(block, 'FIND', Blockly.JavaScript.ORDER_ATOMIC);
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    const vFind = Blockly.JavaScript.valueToCode(block, 'FIND', Blockly.JavaScript.ORDER_ATOMIC);
 
-    return [`String(${value}).includes(${find})`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`String(${vValue}).includes(${vFind})`, Blockly.JavaScript.ORDER_ATOMIC];
 };

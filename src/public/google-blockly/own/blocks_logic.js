@@ -174,9 +174,9 @@ Blockly.Blocks['logic_multi_and'] = {
 Blockly.JavaScript.forBlock['logic_multi_and'] = function (block) {
     const ands = [];
     for (let n = 0; n < block.itemCount_; n++) {
-        const condition = Blockly.JavaScript.valueToCode(block, 'AND' + n, Blockly.JavaScript.ORDER_ATOMIC);
-        if (condition) {
-            ands.push(condition);
+        const vCondition = Blockly.JavaScript.valueToCode(block, `AND${n}`, Blockly.JavaScript.ORDER_ATOMIC);
+        if (vCondition) {
+            ands.push(vCondition);
         }
     }
 
@@ -353,9 +353,9 @@ Blockly.Blocks['logic_multi_or'] = {
 Blockly.JavaScript.forBlock['logic_multi_or'] = function (block) {
     const ors = [];
     for (let n = 0; n < block.itemCount_; n++) {
-        const condition = Blockly.JavaScript.valueToCode(block, 'OR' + n, Blockly.JavaScript.ORDER_ATOMIC);
-        if (condition) {
-            ors.push(condition);
+        const vCondition = Blockly.JavaScript.valueToCode(block, `OR${n}`, Blockly.JavaScript.ORDER_ATOMIC);
+        if (vCondition) {
+            ors.push(vCondition);
         }
     }
 
@@ -386,13 +386,13 @@ Blockly.Blocks['logic_between'] = {
 };
 
 Blockly.JavaScript.forBlock['logic_between'] = function (block) {
-    const min = Blockly.JavaScript.valueToCode(block, 'MIN', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
-    const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
-    const max = Blockly.JavaScript.valueToCode(block, 'MAX', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
-    const minOperator = block.getFieldValue('MIN_OPERATOR') === 'LT' ? '<' : '<=';
-    const maxOperator = block.getFieldValue('MAX_OPERATOR') === 'LT' ? '<' : '<=';
+    const vMin = Blockly.JavaScript.valueToCode(block, 'MIN', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
+    const vMax = Blockly.JavaScript.valueToCode(block, 'MAX', Blockly.JavaScript.ORDER_RELATIONAL) || 0;
+    const fMinOperator = block.getFieldValue('MIN_OPERATOR') === 'LT' ? '<' : '<=';
+    const fMaxOperator = block.getFieldValue('MAX_OPERATOR') === 'LT' ? '<' : '<=';
 
-    return [`${min} ${minOperator} ${value} && ${value} ${maxOperator} ${max}`, Blockly.JavaScript.ORDER_LOGICAL_AND];
+    return [`${vMin} ${fMinOperator} ${vValue} && ${vValue} ${fMaxOperator} ${vMax}`, Blockly.JavaScript.ORDER_LOGICAL_AND];
 };
 
 // --- logic ifempty --------------------------------------------------
@@ -419,8 +419,8 @@ Blockly.Blocks['logic_ifempty'] = {
 };
 
 Blockly.JavaScript.forBlock['logic_ifempty'] = function (block) {
-    const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
-    const deflt = Blockly.JavaScript.valueToCode(block, 'DEFLT', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
+    const vDeflt = Blockly.JavaScript.valueToCode(block, 'DEFLT', Blockly.JavaScript.ORDER_LOGICAL_OR) || null;
 
-    return [`${value} || ${deflt}`, Blockly.JavaScript.ORDER_LOGICAL_OR];
+    return [`${vValue} || ${vDeflt}`, Blockly.JavaScript.ORDER_LOGICAL_OR];
 };

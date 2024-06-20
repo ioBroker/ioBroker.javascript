@@ -285,61 +285,61 @@ Blockly.Blocks['sendto_custom'] = {
 };
 
 Blockly.JavaScript.forBlock['sendto_custom'] = function (block) {
-    const instance      = block.getFieldValue('INSTANCE');
-    const logLevel      = block.getFieldValue('LOG');
-    const command       = block.getFieldValue('COMMAND');
-    const withStatement = block.getFieldValue('WITH_STATEMENT');
-    const args = [];
+    const fInstance = block.getFieldValue('INSTANCE');
+    const fLog = block.getFieldValue('LOG');
+    const fCommand = block.getFieldValue('COMMAND');
+    const fWithStatement = block.getFieldValue('WITH_STATEMENT');
 
     let logText = '';
 
     let statement;
-    if (withStatement === true || withStatement === 'true' || withStatement === 'TRUE') {
+    if (fWithStatement === true || fWithStatement === 'true' || fWithStatement === 'TRUE') {
         statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     }
 
+    const args = [];
     for (let n = 0; n < block.itemCount_; n++) {
         const name = String(block.attributes_[n]);
-        let val = Blockly.JavaScript.valueToCode(block, 'ARG' + n, Blockly.JavaScript.ORDER_COMMA);
+        let vArgument = Blockly.JavaScript.valueToCode(block, `ARG${n}`, Blockly.JavaScript.ORDER_COMMA);
 
         // if JSON (or object), remove quotes '{ bla: true }' -> { bla: true }
-        if (val && val.startsWith(`'{`) && val.endsWith(`}'`)) {
-            val = val.substring(1, val.length - 1);
+        if (vArgument && vArgument.startsWith(`'{`) && vArgument.endsWith(`}'`)) {
+            vArgument = vArgument.substring(1, vArgument.length - 1);
         }
 
         if (block.itemCount_ === 1 && !name) {
-            if (logLevel) {
-                logText = `console.${logLevel}('sendTo[custom] ${instance}: ' + ${val});\n`;
+            if (fLog) {
+                logText = `console.${fLog}('sendTo[custom] ${fInstance}: ' + ${vArgument});\n`;
             }
 
             if (statement) {
-                return `sendTo('${instance}', ${Blockly.JavaScript.quote_(command)}, ${val}, async (result) => {\n` +
+                return `sendTo('${fInstance}', ${Blockly.JavaScript.quote_(fCommand)}, ${vArgument}, async (result) => {\n` +
                     statement +
                     `});\n${logText}`;
             }
 
-            return `sendTo('${instance}', ${Blockly.JavaScript.quote_(command)}, ${val});\n${logText}`;
+            return `sendTo('${fInstance}', ${Blockly.JavaScript.quote_(fCommand)}, ${vArgument});\n${logText}`;
         } else {
             args.push({
                 attr: name.replaceAll(`'`, `\\'`),
-                val,
+                val: vArgument,
             });
         }
     }
 
     const argStr = (args.length ? args.map(a => Blockly.JavaScript.prefixLines(`'${a.attr}': ${a.val},`, Blockly.JavaScript.INDENT)).join('\n') : '');
 
-    if (logLevel) {
-        logText = `console.${logLevel}('sendTo[custom] ${instance}: ${args.length ? args.map(a => `${a.attr}: ' + ${a.val} + '`).join(', ') : '[no args]'}');\n`;
+    if (fLog) {
+        logText = `console.${fLog}('sendTo[custom] ${fInstance}: ${args.length ? args.map(a => `${a.attr}: ' + ${a.val} + '`).join(', ') : '[no args]'}');\n`;
     }
 
     if (statement) {
-        return `sendTo('${instance}', ${Blockly.JavaScript.quote_(command)}, {\n${argStr}\n}, async (result) => {\n` +
+        return `sendTo('${fInstance}', ${Blockly.JavaScript.quote_(fCommand)}, {\n${argStr}\n}, async (result) => {\n` +
             statement +
             `});\n${logText}`;
     }
 
-    return `sendTo('${instance}', ${Blockly.JavaScript.quote_(command)}, {\n${argStr}\n});\n${logText}`;
+    return `sendTo('${fInstance}', ${Blockly.JavaScript.quote_(fCommand)}, {\n${argStr}\n});\n${logText}`;
 };
 
 // --- sendTo JavaScript --------------------------------------------------
@@ -470,28 +470,27 @@ Blockly.Blocks['sendto_otherscript'] = {
 };
 
 Blockly.JavaScript.forBlock['sendto_otherscript'] = function (block) {
-    const dropdown_instance = block.getFieldValue('INSTANCE');
-    const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
-    const message = block.getFieldValue('MESSAGE');
-    let data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
+    const fInstance = block.getFieldValue('INSTANCE');
+    const vObjId = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    const fMessage = block.getFieldValue('MESSAGE');
 
-    const unit = block.getFieldValue('UNIT');
-    let timeout = block.getFieldValue('TIMEOUT');
-    if (unit === 'min') {
-        timeout *= 60000;
-    } else if (unit === 'sec') {
-        timeout *= 1000;
+    const fUnit = block.getFieldValue('UNIT');
+    let fTimeout = block.getFieldValue('TIMEOUT');
+    if (fUnit === 'min') {
+        fTimeout *= 60000;
+    } else if (fUnit === 'sec') {
+        fTimeout *= 1000;
     }
 
-    const withStatement = block.getFieldValue('WITH_STATEMENT');
+    const fWithStatement = block.getFieldValue('WITH_STATEMENT');
     let statement;
-    if (withStatement === true || withStatement === 'true' || withStatement === 'TRUE') {
+    if (fWithStatement === true || fWithStatement === 'true' || fWithStatement === 'TRUE') {
         statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
     }
 
     let objectName = '';
     try {
-        const objId = eval(value_objectid); // Code to string
+        const objId = eval(vObjId); // Code to string
         objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
         if (typeof objectName === 'object') {
             objectName = objectName[systemLang] || objectName.en;
@@ -500,17 +499,18 @@ Blockly.JavaScript.forBlock['sendto_otherscript'] = function (block) {
         
     }
 
-    if (!data) {
-        data = 'true';
+    let vData = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
+    if (!vData) {
+        vData = 'true';
     }
 
     if (statement) {
-        return `messageTo({ instance: ${dropdown_instance}, script: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, message: ${Blockly.JavaScript.quote_(message)} }, ${data}, { timeout: ${timeout} }, (result) => {\n` +
+        return `messageTo({ instance: ${fInstance}, script: ${vObjId}${objectName ? ` /* ${objectName} */` : ''}, message: ${Blockly.JavaScript.quote_(fMessage)} }, ${vData}, { timeout: ${fTimeout} }, (result) => {\n` +
             statement +
             '})\n';
-    } else {
-        return `messageTo({ instance: ${dropdown_instance}, script: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, message: ${Blockly.JavaScript.quote_(message)} }, ${data}, { timeout: ${timeout} });\n`;
     }
+
+    return `messageTo({ instance: ${fInstance}, script: ${vObjId}${objectName ? ` /* ${objectName} */` : ''}, message: ${Blockly.JavaScript.quote_(fMessage)} }, ${vData}, { timeout: ${fTimeout} });\n`;
 };
 
 // --- sendTo gethistory --------------------------------------------------
@@ -539,7 +539,7 @@ Blockly.Sendto.blocks['sendto_gethistory'] =
 Blockly.Blocks['sendto_gethistory'] = {
     init: function () {
         const options = [
-            ['default', 'default']
+            ['default', 'default'],
         ];
         if (typeof main !== 'undefined' && main.instances) {
             for (let i = 0; i < main.instances.length; i++) {
@@ -612,29 +612,29 @@ Blockly.Blocks['sendto_gethistory'] = {
 };
 
 Blockly.JavaScript.forBlock['sendto_gethistory'] = function (block) {
-    const dropdown_instance = block.getFieldValue('INSTANCE');
-    const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
-    const start = Blockly.JavaScript.valueToCode(block, 'START', Blockly.JavaScript.ORDER_ATOMIC);
-    const end = Blockly.JavaScript.valueToCode(block, 'END', Blockly.JavaScript.ORDER_ATOMIC);
-    const aggregate = block.getFieldValue('AGGREGATE');
-    const unit = block.getFieldValue('UNIT');
+    const fInstance = block.getFieldValue('INSTANCE');
+    const vObjId = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    const vStart = Blockly.JavaScript.valueToCode(block, 'START', Blockly.JavaScript.ORDER_ATOMIC);
+    const vEnd = Blockly.JavaScript.valueToCode(block, 'END', Blockly.JavaScript.ORDER_ATOMIC);
+    const fAggregate = block.getFieldValue('AGGREGATE');
+    const fUnit = block.getFieldValue('UNIT');
 
-    let step = block.getFieldValue('STEP');
-    if (unit === 'day') {
-        step *= 24 * 60 * 60 * 1000;
-    } else if (unit === 'hour') {
-        step *= 60 * 60 * 1000;
-    } else if (unit === 'min') {
-        step *= 60 * 1000;
-    } else if (unit === 'sec') {
-        step *= 1000;
+    let fStep = block.getFieldValue('STEP');
+    if (fUnit === 'day') {
+        fStep *= 24 * 60 * 60 * 1000;
+    } else if (fUnit === 'hour') {
+        fStep *= 60 * 60 * 1000;
+    } else if (fUnit === 'min') {
+        fStep *= 60 * 1000;
+    } else if (fUnit === 'sec') {
+        fStep *= 1000;
     }
 
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
     let objectName = '';
     try {
-        const objId = eval(value_objectid); // Code to string
+        const objId = eval(vObjId); // Code to string
         objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
         if (typeof objectName === 'object') {
             objectName = objectName[systemLang] || objectName.en;
@@ -643,12 +643,12 @@ Blockly.JavaScript.forBlock['sendto_gethistory'] = function (block) {
         
     }
 
-    return `getHistory(${dropdown_instance !== 'default' ? `${Blockly.JavaScript.quote_(dropdown_instance)}, ` : ''}{\n` +
-        `  id: ${value_objectid}${objectName ? ` /* ${objectName} */` : ''},\n` +
-        `  start: ${start},\n` +
-        `  end: ${end},\n`+
-        (step > 0 && aggregate !== 'none' ? `  step: ${step},\n` : '') +
-        `  aggregate: '${aggregate}',\n` +
+    return `getHistory(${fInstance !== 'default' ? `${Blockly.JavaScript.quote_(fInstance)}, ` : ''}{\n` +
+        `  id: ${vObjId}${objectName ? ` /* ${objectName} */` : ''},\n` +
+        `  start: ${vStart},\n` +
+        `  end: ${vEnd},\n`+
+        (fStep > 0 && fAggregate !== 'none' ? `  step: ${fStep},\n` : '') +
+        `  aggregate: '${fAggregate}',\n` +
         `  removeBorderValues: true,\n`+
         `}, async (err, result) => {\n` +
         `  if (err) {\n` +

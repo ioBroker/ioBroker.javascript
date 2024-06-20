@@ -88,25 +88,25 @@ Blockly.Blocks['exec'] = {
 };
 
 Blockly.JavaScript.forBlock['exec'] = function (block) {
-    const value_command = Blockly.JavaScript.valueToCode(block, 'COMMAND', Blockly.JavaScript.ORDER_ATOMIC);
-    const logLevel = block.getFieldValue('LOG');
-    const withStatement = block.getFieldValue('WITH_STATEMENT');
+    const vCommand = Blockly.JavaScript.valueToCode(block, 'COMMAND', Blockly.JavaScript.ORDER_ATOMIC);
+    const fLog = block.getFieldValue('LOG');
+    const fWithStatement = block.getFieldValue('WITH_STATEMENT');
 
     let logText = '';
-    if (logLevel) {
-        logText = `console.${logLevel}('exec: ' + ${value_command});\n`;
+    if (fLog) {
+        logText = `console.${fLog}('exec: ' + ${vCommand});\n`;
     }
 
-    if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
+    if (fWithStatement === 'TRUE' || fWithStatement === 'true' || fWithStatement === true) {
         const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
         if (statement) {
-            return `exec(${value_command}, async (error, result, stderr) => {\n${statement}});\n${logText}`;
+            return `exec(${vCommand}, async (error, result, stderr) => {\n${statement}});\n${logText}`;
         }
 
-        return `exec(${value_command});\n${logText}`;
+        return `exec(${vCommand});\n${logText}`;
     }
 
-    return `exec(${value_command});\n${logText}`;
+    return `exec(${vCommand});\n${logText}`;
 };
 
 // --- exec_result -----------------------------------------------------------
@@ -225,15 +225,15 @@ Blockly.Blocks['http_get'] = {
 };
 
 Blockly.JavaScript.forBlock['http_get'] = function (block) {
-    const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
-    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    const unit = block.getFieldValue('UNIT');
-    let timeout = block.getFieldValue('TIMEOUT');
-    if (Number.isNaN(timeout)) {
-        timeout = 2000;
+    const vUrl = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
+    const fUnit = block.getFieldValue('UNIT');
+
+    let fTimeout = block.getFieldValue('TIMEOUT');
+    if (Number.isNaN(fTimeout)) {
+        fTimeout = 2000;
     }
-    if (unit === 'sec') {
-        timeout *= 1000;
+    if (fUnit === 'sec') {
+        fTimeout *= 1000;
     }
 
     let responseType = block.getFieldValue('TYPE');
@@ -241,7 +241,9 @@ Blockly.JavaScript.forBlock['http_get'] = function (block) {
         responseType = 'text';
     }
 
-    return `httpGet(${URL}, { timeout: ${timeout}, responseType: '${responseType}' }, async (err, response) => {\n` +
+    const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
+
+    return `httpGet(${vUrl}, { timeout: ${fTimeout}, responseType: '${responseType}' }, async (err, response) => {\n` +
         statement +
         '});\n';
 };
@@ -301,29 +303,30 @@ Blockly.Blocks['http_post'] = {
 };
 
 Blockly.JavaScript.forBlock['http_post'] = function (block) {
-    const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
+    const vUrl = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
+    const fUnit = block.getFieldValue('UNIT');
+
+    let fTimeout = block.getFieldValue('TIMEOUT');
+    if (isNaN(fTimeout)) {
+        fTimeout = 2000;
+    }
+    if (fUnit === 'sec') {
+        fTimeout *= 1000;
+    }
+
+    let fType = block.getFieldValue('TYPE');
+    if (!fType) {
+        fType = 'text';
+    }
+
+    let vData = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
+    if (!vData) {
+        vData = 'null';
+    }
+
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
-    const unit = block.getFieldValue('UNIT');
 
-    let timeout = block.getFieldValue('TIMEOUT');
-    if (isNaN(timeout)) {
-        timeout = 2000;
-    }
-    if (unit === 'sec') {
-        timeout *= 1000;
-    }
-
-    let responseType = block.getFieldValue('TYPE');
-    if (!responseType) {
-        responseType = 'text';
-    }
-
-    let data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
-    if (!data) {
-        data = 'null';
-    }
-
-    return `httpPost(${URL}, ${data}, { timeout: ${timeout}, responseType: '${responseType}' }, async (err, response) => {\n` +
+    return `httpPost(${vUrl}, ${vData}, { timeout: ${fTimeout}, responseType: '${fType}' }, async (err, response) => {\n` +
         statement +
         '});\n';
 };
@@ -462,9 +465,9 @@ Blockly.Blocks['http_response_tofile'] = {
     FUNCTION_TYPES: ['http_get', 'http_post'],
 };
 Blockly.JavaScript.forBlock['http_response_tofile'] = function (block) {
-    const fileName = Blockly.JavaScript.valueToCode(block, 'FILENAME', Blockly.JavaScript.ORDER_ATOMIC);
+    const vFileName = Blockly.JavaScript.valueToCode(block, 'FILENAME', Blockly.JavaScript.ORDER_ATOMIC);
 
-    return [`createTempFile(${fileName}, response.data)`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`createTempFile(${vFileName}, response.data)`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- action file_write --------------------------------------------------
@@ -505,13 +508,13 @@ Blockly.Blocks['file_write'] = {
 };
 
 Blockly.JavaScript.forBlock['file_write'] = function (block) {
-    const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
-    const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
-    const data = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
+    const vObjId = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    const vFile = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
+    const vData = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_ATOMIC);
 
     let objectName = '';
     try {
-        const objId = eval(value_objectid); // Code to string
+        const objId = eval(vObjId); // Code to string
         objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
         if (typeof objectName === 'object') {
             objectName = objectName[systemLang] || objectName.en;
@@ -520,7 +523,7 @@ Blockly.JavaScript.forBlock['file_write'] = function (block) {
         
     }
 
-    return `writeFile(${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, String(${file}), ${data ? data : 'null'}, (err) => {\n` +
+    return `writeFile(${vObjId}${objectName ? ` /* ${objectName} */` : ''}, String(${vFile}), ${vData ? vData : 'null'}, (err) => {\n` +
         Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
@@ -567,13 +570,13 @@ Blockly.Blocks['file_read'] = {
 };
 
 Blockly.JavaScript.forBlock['file_read'] = function (block) {
-    const value_objectid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
-    const file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
+    const vObjId = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC);
+    const vFile = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
     const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
 
     let objectName = '';
     try {
-        const objId = eval(value_objectid); // Code to string
+        const objId = eval(vObjId); // Code to string
         objectName = main.objects[objId] && main.objects[objId].common && main.objects[objId].common.name ? main.objects[objId].common.name : '';
         if (typeof objectName === 'object') {
             objectName = objectName[systemLang] || objectName.en;
@@ -582,7 +585,7 @@ Blockly.JavaScript.forBlock['file_read'] = function (block) {
         
     }
 
-    return `readFile(${value_objectid}${objectName ? ` /* ${objectName} */` : ''}, String(${file}), (err, data, mimeType) => {\n` +
+    return `readFile(${vObjId}${objectName ? ` /* ${objectName} */` : ''}, String(${vFile}), (err, data, mimeType) => {\n` +
         Blockly.JavaScript.prefixLines(`if (err) {`, Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`console.error(err);`, Blockly.JavaScript.INDENT + Blockly.JavaScript.INDENT) + '\n' +
         Blockly.JavaScript.prefixLines(`}`, Blockly.JavaScript.INDENT) + '\n' +
@@ -652,9 +655,9 @@ Blockly.Blocks['file_data'] = {
     FUNCTION_TYPES: ['file_read'],
 };
 Blockly.JavaScript.forBlock['file_data'] = function (block) {
-    const attr = block.getFieldValue('ATTR');
+    const vAttr = block.getFieldValue('ATTR');
 
-    return [attr, Blockly.JavaScript.ORDER_ATOMIC];
+    return [vAttr, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- action request --------------------------------------------------
@@ -731,23 +734,22 @@ Blockly.Blocks['request'] = {
 };
 
 Blockly.JavaScript.forBlock['request'] = function (block) {
-    const logLevel = block.getFieldValue('LOG');
-    const URL = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
-    const withStatement = block.getFieldValue('WITH_STATEMENT');
+    const vUrl = Blockly.JavaScript.valueToCode(block, 'URL', Blockly.JavaScript.ORDER_ATOMIC);
+    const fWithStatement = block.getFieldValue('WITH_STATEMENT');
+    const fLog = block.getFieldValue('LOG');
 
     let logText = '';
-    if (logLevel) {
-        logText = `console.${logLevel}('request: ' + ${URL});\n`;
+    if (fLog) {
+        logText = `console.${fLog}('request: ' + ${vUrl});\n`;
     }
 
-    if (withStatement === 'TRUE' || withStatement === 'true' || withStatement === true) {
+    if (fWithStatement === 'TRUE' || fWithStatement === 'true' || fWithStatement === true) {
         const statement = Blockly.JavaScript.statementToCode(block, 'STATEMENT');
         if (statement) {
-            return 'try {\n  require("request")(' + URL + ', async (error, response, result) => {\n  ' + statement + '  }).on("error", (e) => { console.error(e); });\n} catch (e) { console.error(e); }\n' + logText;
-        } else {
-            return 'try {\n  require("request")(' + URL + ').on("error", (e) => { console.error(e); });\n} catch (e) { console.error(e); }\n' + logText;
+            return 'try {\n  require("request")(' + vUrl + ', async (error, response, result) => {\n  ' + statement + '  }).on("error", (e) => { console.error(e); });\n} catch (e) { console.error(e); }\n' + logText;
         }
-    } else {
-        return 'try {\n  require("request")(' + URL + ').on("error", (e) => { console.error(e); });\n} catch (e) { console.error(e); }\n' + logText;
+        return 'try {\n  require("request")(' + vUrl + ').on("error", (e) => { console.error(e); });\n} catch (e) { console.error(e); }\n' + logText;
     }
+
+    return 'try {\n  require("request")(' + vUrl + ').on("error", (e) => { console.error(e); });\n} catch (e) { console.error(e); }\n' + logText;
 };

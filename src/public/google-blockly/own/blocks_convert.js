@@ -56,9 +56,11 @@ Blockly.Blocks.convert_toboolean = {
     },
 };
 
-Blockly.JavaScript.convert_toboolean = function (a) {
+Blockly.JavaScript.forBlock['convert_toboolean'] = function (block) {
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+
     return ['(() => {\n' +
-        `  const val = ${Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC)};\n` +
+        `  const val = ${vValue};\n` +
         `  if (val === 'true' || val === 'TRUE') return true;\n` +
         `  if (val === 'false' || val === 'FALSE') return false;\n` +
         '  return !!val;\n' +
@@ -83,8 +85,10 @@ Blockly.Blocks.convert_tostring = {
     },
 };
 
-Blockly.JavaScript.convert_tostring = function (a) {
-    return ["('' + " + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + ")", Blockly.JavaScript.ORDER_ATOMIC];
+Blockly.JavaScript.forBlock['convert_tostring'] = function (block) {
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+
+    return [`('' + ${vValue})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- get type --------------------------------------------------
@@ -105,8 +109,10 @@ Blockly.Blocks.convert_type = {
     },
 };
 
-Blockly.JavaScript.convert_type = function (a) {
-    return ['typeof ' + Blockly.JavaScript.valueToCode(a, 'ITEM', Blockly.JavaScript.ORDER_ATOMIC), Blockly.JavaScript.ORDER_ATOMIC];
+Blockly.JavaScript.forBlock['convert_type'] = function (block) {
+    const vItem = Blockly.JavaScript.valueToCode(block, 'ITEM', Blockly.JavaScript.ORDER_ATOMIC);
+
+    return [`typeof ${vItem}`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- to Date --------------------------------------------------
@@ -127,8 +133,10 @@ Blockly.Blocks.convert_to_date = {
     },
 };
 
-Blockly.JavaScript.convert_to_date = function (a) {
-    return ['getDateObject(' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + ').getTime()', Blockly.JavaScript.ORDER_ATOMIC];
+Blockly.JavaScript.forBlock['convert_to_date'] = function (block) {
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+
+    return [`getDateObject(${vValue}).getTime()`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- from Date --------------------------------------------------
@@ -244,52 +252,51 @@ Blockly.Blocks.convert_from_date = {
     },
 };
 
-Blockly.JavaScript.convert_from_date = function (block) {
-    const option = block.getFieldValue('OPTION');
-    const format = block.getFieldValue('FORMAT');
-    const lang   = block.getFieldValue('LANGUAGE');
-
-    const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+Blockly.JavaScript.forBlock['convert_from_date'] = function (block) {
+    const fOption = block.getFieldValue('OPTION');
+    const fFormat = block.getFieldValue('FORMAT');
+    const fLang = block.getFieldValue('LANGUAGE');
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
 
     let code;
-    if (option === 'object') {
-        code = `getDateObject(${value}).getTime()`;
-    } else if (option === 'ms') {
-        code = `getDateObject(${value}).getMilliseconds()`;
-    } else if (option === 's') {
-        code = `getDateObject(${value}).getSeconds()`;
-    } else if (option === 'sid') {
-        code = `(() => { const v = getDateObject(${value}); return v.getHours() * 3600 + v.getMinutes() * 60 + v.getSeconds(); })()`;
-    } else if (option === 'm') {
-        code = `getDateObject(${value}).getMinutes()`;
-    } else if (option === 'mid') {
-        code = `(() => { const v = getDateObject(${value}); return v.getHours() * 60 + v.getMinutes(); })()`;
-    } else if (option === 'h') {
-        code = `getDateObject(${value}).getHours()`;
-    } else if (option === 'd') {
-        code = `getDateObject(${value}).getDate()`;
-    } else if (option === 'M') {
-        code = `(getDateObject(${value}).getMonth() + 1)`;
-    } else if (option === 'Mt') {
-        code = `formatDate(getDateObject(${value}), 'OO', '${lang}')`;
-    } else if (option === 'Mts') {
-        code = `formatDate(getDateObject(${value}), 'O', '${lang}')`;
-    } else if (option === 'y') {
-        code = `getDateObject(${value}).getYear()`;
-    } else if (option === 'fy') {
-        code = `getDateObject(${value}).getFullYear()`;
-    } else if (option === 'wdt') {
-        code = `formatDate(getDateObject(${value}), 'WW', '${lang}')`;
-    } else if (option === 'wdts') {
-        code = `formatDate(getDateObject(${value}), 'W', '${lang}')`;
-    } else if (option === 'wd') {
-        code = `(() => { const d = getDateObject(${value}).getDay(); return d === 0 ? 7 : d; })()`;
-    } else if (option === 'cw') {
-        code = `((date) => { const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())); const dayNum = d.getUTCDay() || 7; d.setUTCDate(d.getUTCDate() + 4 - dayNum); const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1)); return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7); })(getDateObject(${value}))`;
-    } else if (option === 'custom') {
-        code = `formatDate(getDateObject(${value}), ${Blockly.JavaScript.quote_(format)})`;
+    if (fOption === 'object') {
+        code = `getDateObject(${vValue}).getTime()`;
+    } else if (fOption === 'ms') {
+        code = `getDateObject(${vValue}).getMilliseconds()`;
+    } else if (fOption === 's') {
+        code = `getDateObject(${vValue}).getSeconds()`;
+    } else if (fOption === 'sid') {
+        code = `(() => { const v = getDateObject(${vValue}); return v.getHours() * 3600 + v.getMinutes() * 60 + v.getSeconds(); })()`;
+    } else if (fOption === 'm') {
+        code = `getDateObject(${vValue}).getMinutes()`;
+    } else if (fOption === 'mid') {
+        code = `(() => { const v = getDateObject(${vValue}); return v.getHours() * 60 + v.getMinutes(); })()`;
+    } else if (fOption === 'h') {
+        code = `getDateObject(${vValue}).getHours()`;
+    } else if (fOption === 'd') {
+        code = `getDateObject(${vValue}).getDate()`;
+    } else if (fOption === 'M') {
+        code = `(getDateObject(${vValue}).getMonth() + 1)`;
+    } else if (fOption === 'Mt') {
+        code = `formatDate(getDateObject(${vValue}), 'OO', '${fLang}')`;
+    } else if (fOption === 'Mts') {
+        code = `formatDate(getDateObject(${vValue}), 'O', '${fLang}')`;
+    } else if (fOption === 'y') {
+        code = `getDateObject(${vValue}).getYear()`;
+    } else if (fOption === 'fy') {
+        code = `getDateObject(${vValue}).getFullYear()`;
+    } else if (fOption === 'wdt') {
+        code = `formatDate(getDateObject(${vValue}), 'WW', '${fLang}')`;
+    } else if (fOption === 'wdts') {
+        code = `formatDate(getDateObject(${vValue}), 'W', '${fLang}')`;
+    } else if (fOption === 'wd') {
+        code = `(() => { const d = getDateObject(${vValue}).getDay(); return d === 0 ? 7 : d; })()`;
+    } else if (fOption === 'cw') {
+        code = `((date) => { const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())); const dayNum = d.getUTCDay() || 7; d.setUTCDate(d.getUTCDate() + 4 - dayNum); const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1)); return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7); })(getDateObject(${vValue}))`;
+    } else if (fOption === 'custom') {
+        code = `formatDate(getDateObject(${vValue}), ${Blockly.JavaScript.quote_(fFormat)})`;
     } else {
-        code = `formatDate(getDateObject(${value}), ${Blockly.JavaScript.quote_(option)})`;
+        code = `formatDate(getDateObject(${vValue}), ${Blockly.JavaScript.quote_(fOption)})`;
     }
 
     return [code, Blockly.JavaScript.ORDER_ATOMIC];
@@ -356,12 +363,12 @@ Blockly.Blocks.convert_time_difference = {
     },
 };
 
-Blockly.JavaScript.convert_time_difference = function (block) {
-    const option = block.getFieldValue('OPTION');
-    const format = block.getFieldValue('FORMAT');
-    const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+Blockly.JavaScript.forBlock['convert_time_difference'] = function (block) {
+    const fOption = block.getFieldValue('OPTION');
+    const fFormat = block.getFieldValue('FORMAT');
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
 
-    return [`formatTimeDiff(${value ? value : '0'}, ${Blockly.JavaScript.quote_(option === 'custom' ? format : option)})`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`formatTimeDiff(${vValue ? vValue : '0'}, ${Blockly.JavaScript.quote_(fOption === 'custom' ? fFormat : fOption)})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- json2object --------------------------------------------------
@@ -382,8 +389,10 @@ Blockly.Blocks.convert_json2object = {
     },
 };
 
-Blockly.JavaScript.convert_json2object = function (a) {
-    return ['(() => { try { return JSON.parse(' + Blockly.JavaScript.valueToCode(a, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + '); } catch (e) { return {}; }})()', Blockly.JavaScript.ORDER_ATOMIC];
+Blockly.JavaScript.forBlock['convert_json2object'] = function (block) {
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+
+    return [`(() => { try { return JSON.parse(${vValue}); } catch (e) { return {}; }})()`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- object2json --------------------------------------------------
@@ -409,12 +418,13 @@ Blockly.Blocks.convert_object2json = {
     },
 };
 
-Blockly.JavaScript.convert_object2json = function (block) {
-    let prettify = block.getFieldValue('PRETTIFY');
+Blockly.JavaScript.forBlock['convert_object2json'] = function (block) {
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
 
-    prettify = prettify === 'TRUE' || prettify === 'true' || prettify === true;
+    let fPrettify = block.getFieldValue('PRETTIFY');
+    fPrettify = fPrettify === 'TRUE' || fPrettify === 'true' || fPrettify === true;
 
-    return ['JSON.stringify(' + Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC) + (prettify ? ', null, 2' : '') + ')', Blockly.JavaScript.ORDER_ATOMIC];
+    return [`JSON.stringify(${vValue}${fPrettify ? ', null, 2' : ''})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- to single value -------------------------------------------
@@ -444,13 +454,13 @@ Blockly.Blocks.convert_jsonata = {
     },
 };
 
-Blockly.JavaScript.convert_jsonata = function (block) {
-    let target = Blockly.JavaScript.valueToCode(block, 'TARGET', Blockly.JavaScript.ORDER_ATOMIC);
-    const expression = Blockly.JavaScript.valueToCode(block, 'EXPRESSION', Blockly.JavaScript.ORDER_ATOMIC);
+Blockly.JavaScript.forBlock['convert_jsonata'] = function (block) {
+    const vExpression = Blockly.JavaScript.valueToCode(block, 'EXPRESSION', Blockly.JavaScript.ORDER_ATOMIC);
 
-    if (!target) {
-        target = '{}';
+    let vTarget = Blockly.JavaScript.valueToCode(block, 'TARGET', Blockly.JavaScript.ORDER_ATOMIC);
+    if (!vTarget) {
+        vTarget = '{}';
     }
 
-    return [`(await jsonataExpression(${target}, ${expression}))`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`(await jsonataExpression(${vTarget}, ${vExpression}))`, Blockly.JavaScript.ORDER_ATOMIC];
 };
