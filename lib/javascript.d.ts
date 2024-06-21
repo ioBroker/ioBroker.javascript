@@ -1226,6 +1226,8 @@ declare global {
 			message: string;
 		}
 
+		type LogSubscribeID = number;
+
 		interface HttpRequestOptions {
 			timeout?: number;
 			responseType?: "text" | "arraybuffer";
@@ -1831,14 +1833,15 @@ declare global {
 	 * @param severity Severity level
 	 * @param callback Callback to send the result to another script
 	 */
-	function onLog(severity: iobJS.LogLevel | "*", callback: SimpleCallback<iobJS.LogMessage>);
+	function onLog(severity: iobJS.LogLevel | "*", callback: SimpleCallback<iobJS.LogMessage>): iobJS.LogSubscribeID;
 
 	/**
 	 * Unsubscribe log handler.
 	 * @param idOrCallbackOrSeverity Message subscription id from onLog or by callback function
 	 * @return true if subscription exists and was deleted.
 	 */
-	function onLogUnregister(idOrCallbackOrSeverity: iobJS.MessageSubscribeID | SimpleCallback<iobJS.LogMessage> | iobJS.LogLevel | "*"): boolean;
+	function onLogUnregister(idOrCallbackOrSeverity: iobJS.LogSubscribeID | SimpleCallback<iobJS.LogMessage> | iobJS.LogLevel | "*"): boolean;
+	// TODO: More signatures for other types than number
 
 	/** `await` this method to pause for the given number of milliseconds */
 	function wait(ms: number): Promise<void>;

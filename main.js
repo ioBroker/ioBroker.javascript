@@ -2021,9 +2021,9 @@ function unsubscribe(id) {
 function updateLogSubscriptions() {
     let found = false;
     // go through all scripts and check if some one script still require logs
-    Object.keys(context.logSubscriptions).forEach(name => {
-        if (!context.logSubscriptions[name] || !context.logSubscriptions[name].length) {
-            delete context.logSubscriptions[name];
+    Object.keys(context.logSubscriptions).forEach(scriptName => {
+        if (!context.logSubscriptions?.[scriptName] || !context.logSubscriptions[scriptName].length) {
+            delete context.logSubscriptions[scriptName];
         } else {
             found = true;
         }
@@ -2032,9 +2032,11 @@ function updateLogSubscriptions() {
     if (found && !logSubscribed) {
         logSubscribed = true;
         adapter.requireLog(logSubscribed);
+        adapter.log.info(`Subscribed to log messages (found logSubscriptions)`);
     } else if (!found && logSubscribed) {
         logSubscribed = false;
         adapter.requireLog(logSubscribed);
+        adapter.log.info(`Unsubscribed from log messages (not found logSubscriptions)`);
     }
 }
 
