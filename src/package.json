@@ -16,7 +16,7 @@
         "@sentry/browser": "^8.10.0",
         "@sentry/integrations": "^7.114.0",
         "craco-module-federation": "^1.1.0",
-        "eslint": "^8.57.0",
+        "eslint": "^9.6.0",
         "eslint-config-airbnb": "^19.0.4",
         "eslint-plugin-eqeqeq-fix": "^1.0.3",
         "eslint-plugin-import": "^2.29.1",
