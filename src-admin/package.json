@@ -12,7 +12,7 @@
         "@emotion/react": "^11.11.4",
         "@emotion/styled": "^11.11.5",
         "@iobroker/adapter-react-v5": "^5.0.8",
-        "@iobroker/json-config": "^7.0.1",
+        "@iobroker/json-config": "^7.0.7",
         "@mui/icons-material": "^5.15.21",
         "@mui/material": "5.15.20",
         "@mui/styles": "5.15.20",
