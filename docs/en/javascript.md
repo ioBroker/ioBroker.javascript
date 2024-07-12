@@ -1844,6 +1844,15 @@ Unsubscribes from these logs.
 
 *Requires version >= 7.9.0*
 
+Usage: 
+```js
+httpGet(url[, config])
+```
+
+The axios library is used in the background.
+For further use and possibilities of the config object, see the following link
+https://axios-http.com/docs/req_config
+
 ```js
 httpGet('http://jsonplaceholder.typicode.com/posts', (err, response) => {
     if (!err) {
@@ -1907,6 +1916,16 @@ httpGet('http://jsonplaceholder.typicode.com/posts', { validateCertificate: fals
 ### httpPost
 
 *Requires version >= 7.9.0*
+
+Usage:
+
+```js
+httpPost(url[, data[, config]])
+```
+
+The axios library is used in the background.
+For further use and possibilities of the config object, see the following link
+https://axios-http.com/docs/req_config
 
 ```js
 httpPost('http://jsonplaceholder.typicode.com/posts', { title: 'foo', body: 'bar', userId: 1 }, (error, response) => {
