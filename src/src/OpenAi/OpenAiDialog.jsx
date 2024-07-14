@@ -118,7 +118,7 @@ const OpenAiDialog = props => {
                     },
                     {
                         role: 'system',
-                        content: `Here is list of devices:\n\n${JSON.stringify(devices, null, 2)}`
+                        content: `Here is list of devices:\n\n${JSON.stringify(devices, null, 2)}`,
                     },
                     {
                         role: 'user',
@@ -255,7 +255,7 @@ Do not import any libraries as all functions are already imported.`,
                     <Button
                         variant="contained"
                         disabled={working || !question}
-                        startIcon={<Question/>}
+                        startIcon={<Question />}
                         onClick={async () => ask()}
                     >
                         {working ? <CircularProgress size={24} /> : I18n.t('Ask')}
@@ -308,7 +308,7 @@ Do not import any libraries as all functions are already imported.`,
                     color="grey"
                     variant="outlined"
                     disabled={!answer}
-                    startIcon={<Copy/>}
+                    startIcon={<Copy />}
                     onClick={() => {
                         Utils.copyToClipboard(answer);
                         window.alert(I18n.t('Copied'));

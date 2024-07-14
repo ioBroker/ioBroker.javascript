@@ -870,8 +870,10 @@ class App extends GenericApp {
             content = <ReactSplit
                 direction={this.state.logHorzLayout ? SplitDirection.Horizontal : SplitDirection.Vertical}
                 initialSizes={this.state.logSizes}
-                minWidths={[100, 0]}
+                minWidths={[500, 100]}
+                minHeights={[150, 50]}
                 onResizeStarted={() => this.setState({ resizing: true })}
+                onResizing
                 onResizeFinished={(_gutterIdx, logSizes) => {
                     this.setState({ logSizes, resizing: false });
                     window.localStorage.setItem('JS.logSizes', JSON.stringify(logSizes));
@@ -935,7 +937,7 @@ class App extends GenericApp {
         }
 
         let context;
-        if (true) {
+        if (this.state.menuOpened) {
             context = <ReactSplit
                 direction={SplitDirection.Horizontal}
                 initialSizes={this.state.splitSizes}

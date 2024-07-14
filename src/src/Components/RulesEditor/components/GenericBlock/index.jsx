@@ -323,7 +323,7 @@ class GenericBlock extends PureComponent {
         const { attr, openCheckbox, checkReadOnly } = input;
         const { settings } = this.state;
         const showSelectId = this.state[`showSelectId${attr}`];
-        const { className, socket } = this.props;
+        const { className, socket, style } = this.props;
         let visibility = true;
         if (openCheckbox) {
             visibility = typeof settings['offset'] === 'boolean' ? settings['offset'] : true;
@@ -350,6 +350,7 @@ class GenericBlock extends PureComponent {
                 {input.title ? <div>{I18n.t(input.title)}</div> : null}
                 <CustomInput
                     className={className}
+                    style={style}
                     autoComplete="off"
                     fullWidth
                     disabled
@@ -361,7 +362,7 @@ class GenericBlock extends PureComponent {
                 <CustomButton
                     icon={this.state[`${this.state.settings[input.attr]}___icon`]}
                     square
-                    style={{ marginLeft: 7 }}
+                    style={{ ...(style || undefined), marginLeft: 7 }}
                     value="..."
                     className={className}
                     onClick={() => {
@@ -373,6 +374,7 @@ class GenericBlock extends PureComponent {
             </div>
             {this.state[this.state.settings[input.attr]] && <div className={Utils.clsx(cls.nameBlock, cls.displayItalic)}>{Utils.getObjectNameFromObj(this.state[settings[attr]], I18n.getLanguage())}</div>}
             {showSelectId ? <DialogSelectID
+                theme={this.props.theme}
                 imagePrefix="../.."
                 dialogName="javascript"
                 themeType={Utils.getThemeName()}
@@ -441,7 +443,7 @@ class GenericBlock extends PureComponent {
     };
 
     renderSelect = (input, value, onChange) => {
-        const { className } = this.props;
+        const { className, style } = this.props;
         const { name, options, frontText, backText, attr, multiple, doNotTranslate, doNotTranslate2, doNotTranslateBack } = input;
         return <div key={attr} className={Utils.clsx(cls.displayFlex, cls.blockMarginTop)} style={{ whiteSpace: 'nowrap' }}>
             {frontText && <div className={cls.frontText}>{I18n.t(frontText)}</div>}
@@ -451,6 +453,7 @@ class GenericBlock extends PureComponent {
                 doNotTranslate2={doNotTranslate2}
                 title={name}
                 className={className}
+                style={style}
                 options={options}
                 value={value}
                 onChange={onChange}

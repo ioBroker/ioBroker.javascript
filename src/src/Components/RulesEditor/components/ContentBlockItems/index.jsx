@@ -60,7 +60,11 @@ const AdditionallyContentBlockItems = ({ size, itemsSwitchesRender, blockValue, 
         backgroundColor = targetId === hoverBlock ? '#fb00002e' : '';
     }
 
-    return <div ref={drop} style={{ backgroundColor }} className={`${Utils.clsx(cls.contentBlockItem,size && cls.addClassHeight)} ${boolean ? animation ? cls.contentHeightOn : null : cls.contentHeightOff}`}>
+    return <div
+        ref={drop}
+        style={{ backgroundColor }}
+        className={`${Utils.clsx(cls.contentBlockItem,size && cls.addClassHeight)} ${boolean ? animation ? cls.contentHeightOn : null : cls.contentHeightOff}`}
+    >
         <div className={cls.wrapperMargin}>{itemsSwitchesRender[blockValue]?.map(el => (
             <DragWrapper
                 typeBlocks={typeBlock}

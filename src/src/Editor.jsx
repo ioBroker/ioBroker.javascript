@@ -800,15 +800,21 @@ class Editor extends React.Component {
     getTabs() {
         if (this.state.editing.length) {
             return [<Tabs
-                component={'div'}
+                component="div"
                 key="tabs1"
                 value={this.props.debugInstance ? this.props.debugInstance.adapter : this.state.selected}
                 onChange={(event, value) => this.onTabChange(event, value)}
                 indicatorColor="primary"
-                style={{ position: 'relative', marginLeft: 10, width: this.state.editing.length > 1 ? 'calc(100% - 50px)' : '100%', display: 'inline-block' }}
+                style={{
+                    position: 'relative',
+                    marginLeft: 10,
+                    width: this.state.editing.length > 1 ? 'calc(100% - 50px)' : '100%',
+                    display: 'inline-block'
+                }}
                 textColor="primary"
                 variant="scrollable"
                 scrollButtons="auto"
+                allowScrollButtonsMobile
             >
                 {this.state.editing.map(id => {
                     if (!this.props.objects[id]) {
@@ -942,7 +948,7 @@ class Editor extends React.Component {
                     this.setState({ showDebugMenu: false, menuDebugAnchorEl: null, debugEnabled: !this.state.debugEnabled }, () => this.onChange({ debug: this.state.debugEnabled }));
                 }}>
                 <Checkbox checked={this.state.debugEnabled} />
-                <IconDebug style={styles.menuIcon} style={{ color: COLOR_DEBUG }} />
+                <IconDebug style={{ ...styles.menuIcon, color: COLOR_DEBUG }} />
                 {I18n.t('debug_label')}
             </MenuItem>
             <MenuItem key="verboseEnabled"
@@ -953,7 +959,7 @@ class Editor extends React.Component {
                     this.setState({ showDebugMenu: false, menuDebugAnchorEl: null, verboseEnabled: !this.state.verboseEnabled }, () => this.onChange({ verbose: this.state.verboseEnabled }));
                 }}>
                 <Checkbox checked={this.state.verboseEnabled} />
-                <IconVerbose style={styles.menuIcon} style={{ color: COLOR_VERBOSE }} />
+                <IconVerbose style={{ ...styles.menuIcon, color: COLOR_VERBOSE }} />
                 {I18n.t('verbose_label')}
             </MenuItem>
         </Menu>;
@@ -961,9 +967,9 @@ class Editor extends React.Component {
 
     getDebugBadge() {
         return [
-            this.state.debugEnabled && this.state.verboseEnabled && <IconDebug key="DebugVerbose" style={styles.menuIcon} style={{ color: COLOR_VERBOSE }} />,
-            this.state.debugEnabled && !this.state.verboseEnabled && <IconDebug key="DebugNoVerbose" style={styles.menuIcon} style={{ color: COLOR_DEBUG }} />,
-            !this.state.debugEnabled && this.state.verboseEnabled && <IconVerbose key="noDebugVerbose" style={styles.menuIcon} style={{ color: COLOR_VERBOSE }} />,
+            this.state.debugEnabled && this.state.verboseEnabled && <IconDebug key="DebugVerbose" style={{ ...styles.menuIcon, color: COLOR_VERBOSE }} />,
+            this.state.debugEnabled && !this.state.verboseEnabled && <IconDebug key="DebugNoVerbose" style={{ ...styles.menuIcon, color: COLOR_DEBUG }} />,
+            !this.state.debugEnabled && this.state.verboseEnabled && <IconVerbose key="noDebugVerbose" style={{ ...styles.menuIcon, color: COLOR_VERBOSE }} />,
         ]
     }
 
@@ -1410,6 +1416,7 @@ class Editor extends React.Component {
             }
 
             return <DialogSelectID
+                theme={this.props.theme}
                 key="dialogSelectID1"
                 imagePrefix="../.."
                 themeName={this.props.themeName}
@@ -1443,6 +1450,7 @@ class Editor extends React.Component {
     getCronDialog() {
         if (this.state.showCron) {
             return <DialogCron
+                theme={this.props.theme}
                 key="dialogCron1"
                 cron={this.cron.callback ? this.cron.initValue || '' : this.getSelect ? this.getSelect() : '* * * * *'}
                 onClose={() => this.setState({ showCron: false })}
@@ -1456,9 +1464,9 @@ class Editor extends React.Component {
                     }
                 }}
             />;
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     getAstroDialog() {
@@ -1658,6 +1666,7 @@ Editor.propTypes = {
     runningInstances: PropTypes.object,
     socket: PropTypes.object,
     searchText: PropTypes.string,
+    theme: PropTypes.object,
     themeName: PropTypes.string,
     themeType: PropTypes.string,
     onDebugModeChange: PropTypes.func,

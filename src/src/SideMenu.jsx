@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useDrag, useDrop, DndProvider as DragDropContext  } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import {
     Drawer,
@@ -14,9 +16,6 @@ import {
     Input,
     ListItemSecondaryAction, Box,
 } from '@mui/material';
-
-import { useDrag, useDrop, DndProvider as DragDropContext  } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import {
     MdMoreVert as IconMore,
@@ -191,8 +190,6 @@ const styles = {
         fontSize: 'smaller',
     },
     childrenCount: {
-        float: 'right',
-        marginRight: 5,
         fontSize: 10,
         opacity: 0.4,
     },
@@ -941,7 +938,7 @@ class SideDrawer extends React.Component {
             marginLeft: depthPx,
             cursor:     item.type === 'folder' && reorder ? 'default' : 'inherit',
             width:      `calc(100% - ${depthPx}px)`,
-        }, item.id === this.state.selected && !reorder ? SELECTED_STYLE : {});
+        }, item.id === this.state.selected && !reorder ? SELECTED_STYLE : undefined);
 
         if (!reorder) {
             style.opacity = item.filteredPartly ? 0.5 : 1;
@@ -979,15 +976,17 @@ class SideDrawer extends React.Component {
             childrenCount = <span style={styles.childrenCount}>{childrenFiltered && childrenFiltered.length !== children.length ? `${childrenFiltered.length}(${children.length})` : children.length}</span>;
         }
 
+        const combinedStyle = {
+            ...(item.type === 'folder' ? styles.folder : styles.script),
+            ...(reorder ? styles.reorder : undefined),
+            ...(reorder && item.type !== 'folder' ? styles.scriptReorder : undefined),
+            ...(reorder && item.type === 'folder' ? styles.folderReorder: undefined),
+            ...style,
+        };
+
         return <ListItem
             key={item.id}
-            style={{
-                ...(item.type === 'folder' ? styles.folder : styles.script),
-                ...(reorder ? styles.reorder : undefined),
-                ...(reorder && item.type !== 'folder' ? styles.scriptReorder : undefined),
-                ...(reorder && item.type === 'folder' ? styles.folderReorder: undefined),
-                style,
-            }}
+            style={combinedStyle}
             className={Utils.clsx(
                 reorder && item.type === 'folder' && 'folder-reorder',
                 reorder && item.type !== 'folder' && 'script-reorder',
@@ -995,7 +994,9 @@ class SideDrawer extends React.Component {
             onClick={e => this.onClick(item, e)}
             onDoubleClick={e => this.onDblClick(item, e)}
         >
-            <ListItemIcon style={styles.listItemIcon}>{
+            <ListItemIcon
+                style={styles.listItemIcon}
+            >{
                 item.type === 'folder' ? (
                         reorder || isExpanded ?
                             <IconFolderOpened style={iconStyle} onClick={e => !reorder && this.onToggle(item.id, e)} /> :
@@ -1011,7 +1012,7 @@ class SideDrawer extends React.Component {
             <ListItemText
                 sx={{ '& .MuiListItemText-primary': item.id === this.state.selected && !reorder ? styles.selected : undefined }}
                 style={this.getTextStyle(item)}
-                primary={<span>{title}{childrenCount}</span>}
+                primary={<span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>{title}{childrenCount}</span>}
             />
             <ListItemSecondaryAction>
                 {this.renderItemButtonsOnEnd(item, children)}
@@ -1607,7 +1608,7 @@ class SideDrawer extends React.Component {
                     }}
                 />
             </Box>,
-            <div style={{ flexGrow: 1 }} />,
+            <div key="padding" style={{ flexGrow: 1 }} />,
             <Box
                 key="expandAll"
                 sx={styles.footerButtons}

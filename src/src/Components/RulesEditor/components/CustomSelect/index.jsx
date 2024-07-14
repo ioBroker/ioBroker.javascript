@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     FormControl, FormHelperText,
-    Input, MenuItem, Selectб
+    Input, MenuItem, Select,
 } from '@mui/material';
 
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
@@ -17,7 +17,7 @@ const CustomSelect = ({ multiple, value, customValue, title, attr, options, styl
     const text = v === '' || v === null || v === undefined ? '_' : v;
 
     return <FormControl
-    variant="standard"
+        variant="standard"
         className={Utils.clsx(cls.root, className)}
         fullWidth
         style={style}
