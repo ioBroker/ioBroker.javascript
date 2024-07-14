@@ -42,7 +42,11 @@ const CustomDragItem = props => {
                     newUserRules[acceptedBy].push({ ...newItem });
                 }
                 setUserRules(newUserRules);
-            }} onDoubl {...props} {...allProperties} />
+            }}
+            onDoubl
+            {...props}
+            {...allProperties}
+        />
     </DragWrapper>;
 }
 

@@ -149,8 +149,8 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
     onTagChange(tagCard) {
         const lang = I18n.getLanguage();
         const languages = Object.keys(sayitEngines).filter(l => l.startsWith(lang));
-        const options = languages.map(lang => ({title: sayitEngines[lang].name, value: lang}));
-        options.unshift({title: 'Default', value: '_'});
+        const options = languages.map(lang => ({ title: sayitEngines[lang].name, value: lang }));
+        options.unshift({ title: 'Default', value: '_' });
 
         this.setState({
             inputs: [

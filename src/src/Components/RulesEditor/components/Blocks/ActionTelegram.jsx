@@ -12,12 +12,11 @@ class ActionTelegram extends GenericBlock {
         if (!text) {
             return `// no text defined
 _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
-        } else {
-            return `// Telegram ${text || ''}
+        }
+        return `// Telegram ${text || ''}
 \t\tconst subActionVar${config._id} = "${(text || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)};
 \t\t_sendToFrontEnd(${config._id}, {text: subActionVar${config._id}});
 \t\tsendTo("${config.instance}", "send", ${config.user && config.user !== '_' ? `{user: "${(config.user || '').replace(/"/g, '\\"')}", text: subActionVar${config._id}}` : `subActionVar${config._id}`});`;
-        }
     }
 
     renderDebug(debugMessage) {

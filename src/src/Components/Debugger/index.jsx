@@ -139,7 +139,7 @@ class Debugger extends React.Component {
         }
 
         const toolSizesStr = window.localStorage.getItem('JS.toolSizes');
-        let toolSizes = [20, 80];
+        let toolSizes = [80, 20];
         if (toolSizesStr) {
             try {
                 toolSizes = JSON.parse(toolSizesStr);
@@ -523,7 +523,7 @@ class Debugger extends React.Component {
                         label = this.state.tabs[id].split('/').pop();
                     }
                     label = [
-                        <div key="text" className={Utils.clsx(this.props.classes.tabText)}>{label}</div>,
+                        <div key="text" style={styles.tabText}>{label}</div>,
                         id !== this.mainScriptId && <span key="icon" style={styles.closeButton}>
                             <IconClose key="close" onClick={e => this.closeTab(id, e)} fontSize="small" /></span>];
 
@@ -809,12 +809,12 @@ class Debugger extends React.Component {
             <ReactSplit
                 direction={SplitDirection.Vertical}
                 initialSizes={this.state.toolSizes}
-                minWidths={[100, 0]}
+                minHeights={[100, 100]}
                 onResizeFinished={(_gutterIdx, toolSizes) => {
                     this.setState({ toolSizes });
                     window.localStorage.setItem('JS.toolSizes', JSON.stringify(toolSizes));
                 }}
-                gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+                gutterClassName={this.props.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
             >
                 <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
                     {this.renderCode()}

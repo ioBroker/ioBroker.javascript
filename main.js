@@ -56,7 +56,7 @@ const forbiddenMirrorLocations = [
     'backitup',
     '../backups',
     '../node_modules',
-    '../log'
+    '../log',
 ];
 
 const utils     = require('@iobroker/adapter-core');
@@ -106,8 +106,9 @@ const isCI = !!process.env.CI;
 /** @type {Record<string, string>} */
 let tsAmbient;
 
-// TypeScript's scripts are only recompiled if their source hash changes. If an adapter update fixes compilation bugs,
-// a user won't notice until he changes and re-saves the script. To avoid that, we also include the
+// TypeScript's scripts are only recompiled if their source hash changes.
+// If an adapter update fixes the compilation bugs, a user won't notice until the changes and re-saves the script.
+// To avoid that, we also include the
 // adapter version and TypeScript version in the hash
 const tsSourceHashBase = `versions:adapter=${packageJson.version},typescript=${packageJson.dependencies.typescript}`;
 
@@ -216,7 +217,7 @@ function loadTypeScriptDeclarations() {
                 packages.push(lib);
             }
         }
-        // Some packages have sub-modules (e.g. rxjs/operators) that are not exposed through the main entry point
+        // Some packages have sub-modules (e.g., rxjs/operators) that are not exposed through the main entry point
         // If typings are requested for them, also add them if the base module is installed
         for (const lib of wantsTypings) {
             // Extract the package name and check if we need to add it
@@ -237,7 +238,7 @@ function loadTypeScriptDeclarations() {
             pkg !== 'node'
         );
         if (!pkgTypings) {
-            // Create empty dummy declarations so users don't get the "not found" error
+            // Create the empty dummy declarations so users don't get the "not found" error
             // for installed packages
             pkgTypings = {
                 [`node_modules/@types/${pkg}/index.d.ts`]: `declare module "${pkg}";`,
@@ -614,7 +615,7 @@ function startAdapter(options) {
                     if (/*oldState && */oldState.val === false && state.val && id.endsWith('.alive')) {
                         if (context.adapterSubs[id]) {
                             const parts = id.split('.');
-                            const a = parts[2] + '.' + parts[3];
+                            const a = `${parts[2]}.${parts[3]}`;
                             for (let t = 0; t < context.adapterSubs[id].length; t++) {
                                 adapter.log.info(`Detected coming adapter "${a}". Send subscribe: ${context.adapterSubs[id][t]}`);
                                 adapter.sendTo(a, 'subscribe', context.adapterSubs[id][t]);
@@ -1310,7 +1311,7 @@ function main() {
                             context.scripts[id].setStatePerMinuteProblemCounter++;
                             adapter.log.debug(`Script ${id} has reached the maximum of ${adapter.config.maxSetStatePerMinute} setState calls per minute in ${context.scripts[id].setStatePerMinuteProblemCounter} consecutive minutes`);
                             // Allow "too high counters" for 1 minute for script starts or such and only
-                            // stop script when lasts longer
+                            // stop the script when lasts longer
                             if (context.scripts[id].setStatePerMinuteProblemCounter > 1) {
                                 adapter.log.error(`Script ${id} is calling setState more than ${adapter.config.maxSetStatePerMinute} times per minute! Stopping Script now! Please check your script!`);
                                 stop(id);
@@ -2216,7 +2217,7 @@ function prepareScript(obj, callback) {
             let sourceFn = name;
             if (webstormDebug) {
                 const fn = name.replace(/^script.js./, '').replace(/\./g, '/');
-                sourceFn = mods.path.join(webstormDebug, fn + '.js');
+                sourceFn = mods.path.join(webstormDebug, `${fn}.js`);
             }
             context.scripts[name] = createVM(globalScript + '\n' + obj.common.source, sourceFn, true);
             if (!context.scripts[name]) {
@@ -2249,7 +2250,7 @@ function prepareScript(obj, callback) {
                 compiled = obj.common.compiled;
                 adapter.log.info(`${name}: source code did not change, using cached compilation result...`);
             } else {
-                // We don't have a hashed source code or the original source changed, compile it
+                // We don't have a hashed source code, or the original source changed, compile it
                 const filename = scriptIdToTSFilename(name);
                 let tsCompiled;
                 try {
@@ -2304,7 +2305,7 @@ function prepareScript(obj, callback) {
                 typeof callback === 'function' && callback(false, _name);
                 return;
             }
-            adapter.setState('scriptEnabled.' + scriptIdName, false, true);
+            adapter.setState(`scriptEnabled.${scriptIdName}`, false, true);
         }
         !obj && adapter.log.error('Invalid script');
         typeof callback === 'function' && callback(false, _name);
@@ -2494,6 +2495,7 @@ function debugDisableScript(id) {
 function debugSendToInspector(message) {
     if (debugState.child) {
         try {
+            adapter.log.info(`send to debugger: ${message}`);
             debugState.child.send(message);
         } catch (e) {
             debugStop()

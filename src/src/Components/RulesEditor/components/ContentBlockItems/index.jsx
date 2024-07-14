@@ -128,7 +128,13 @@ const ContentBlockItems = ({ size, typeBlock, name, nameAdditionally, additional
 
     return <div className={`${Utils.clsx(cls.mainBlockItemRules, size && cls.addClassOverflow)} ${border && !size ? cls.border : null}`}>
         <span id='width' className={cls.nameBlockItems}>
-            <MaterialDynamicIcon iconName={iconName} className={cls.iconThemCard} adapter={adapter} socket={socket} />{name}
+            <MaterialDynamicIcon
+                iconName={iconName}
+                className={cls.iconThemCard}
+                adapter={adapter}
+                socket={socket}
+            />
+            {name}
         </span>
         {typeBlock === 'conditions' ?
             <div style={{ width: '100%' }}>

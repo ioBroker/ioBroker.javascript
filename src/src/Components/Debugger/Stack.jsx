@@ -41,6 +41,7 @@ const styles = {
 
     listRoot: {
         padding: 0,
+        fontSize: 'small',
     },
 
     scopeType: {
@@ -138,7 +139,7 @@ const styles = {
     },
     valueFunc: {
         color: '#ac4343'
-    }
+    },
 };
 
 class Stack extends React.Component {
@@ -146,7 +147,7 @@ class Stack extends React.Component {
         super(props);
 
         const framesSizesStr = window.localStorage.getItem('JS.framesSizes');
-        let framesSizes = [80, 20];
+        let framesSizes = [30, 70];
         if (framesSizesStr) {
             try {
                 framesSizes = JSON.parse(framesSizesStr);
@@ -349,7 +350,7 @@ class Stack extends React.Component {
         const el = this.state.editValue && this.state.editValue.type === type && this.state.editValue.name === item.name ?
             [
                 <div key="name" style={styles.scopeNameName}>{item.name}</div>,
-                <div key="=" style={styles.scopeNameEqual}> = </div>,
+                <Box key="=" sx={styles.scopeNameEqual}> = </Box>,
                 <Input
                     inputRef={this.editRef}
                     margin="dense"
@@ -376,7 +377,7 @@ class Stack extends React.Component {
             :
             [
                 <div key="name" style={styles.scopeNameName} title={I18n.t('Double click to write value')}>{item.name}</div>,
-                <div key="=" style={styles.scopeNameEqual}> = </div>,
+                <Box key="=" sx={styles.scopeNameEqual}> = </Box>,
                 <div key="val" style={styles.scopeNameValue}>{this.formatValue(item.value)} ({item.value.type})</div>
             ];
 
@@ -409,34 +410,33 @@ class Stack extends React.Component {
     renderScopes(frame) {
         if (!frame) {
             return null;
-        } else {
-            // first local
-            let result = this.renderExpressions();
-
-            let items = this.props.scopes?.local?.properties?.result.map(item => this.renderScope(this.props.scopes.id, item, 'local'));
-            items && items.forEach(item => result.push(item));
-
-            items = this.props.scopes?.closure?.properties?.result.map(item => this.renderScope(this.props.scopes.id, item, 'closure'));
-            items && items.forEach(item => result.push(item));
-
-            return <table style={{width: '100%'}}>
-                <tbody>
-                    {result}
-                </tbody>
-            </table>;
         }
+        // first local
+        let result = this.renderExpressions();
+
+        let items = this.props.scopes?.local?.properties?.result.map(item => this.renderScope(this.props.scopes.id, item, 'local'));
+        items && items.forEach(item => result.push(item));
+
+        items = this.props.scopes?.closure?.properties?.result.map(item => this.renderScope(this.props.scopes.id, item, 'closure'));
+        items && items.forEach(item => result.push(item));
+
+        return <table style={{ width: '100%', fontSize: 'small' }}>
+            <tbody>
+                {result}
+            </tbody>
+        </table>;
     }
 
     render() {
         return <ReactSplit
             direction={SplitDirection.Horizontal}
-            initialSizes={this.state.framesSize}
-            minWidths={[100, 0]}
-            onResizeFinished={(_gutterIdx, framesSize) => {
-                this.setState({ framesSize });
-                window.localStorage.setItem('JS.framesSizes', JSON.stringify(framesSize));
+            initialSizes={this.state.framesSizes}
+            minWidths={[100, 200]}
+            onResizeFinished={(_gutterIdx, framesSizes) => {
+                this.setState({ framesSizes });
+                window.localStorage.setItem('JS.framesSizes', JSON.stringify(framesSizes));
             }}
-            gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+            gutterClassName={this.props.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
         >
             <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
                 <List style={styles.listRoot}>

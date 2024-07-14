@@ -3,7 +3,7 @@ import * as Icons from '@mui/icons-material/';
 
 const ICON_CACHE = {};
 
-const MaterialDynamicIcon = ({ iconName, style, adapter, socket, onClick }) => {
+const MaterialDynamicIcon = ({ iconName, style, adapter, socket, onClick, className }) => {
     let [url, setUrl] = useState('');
 
     useEffect(() => {
@@ -15,7 +15,13 @@ const MaterialDynamicIcon = ({ iconName, style, adapter, socket, onClick }) => {
     }, [adapter, socket]);
 
     if (adapter) {
-        return <img onClick={e => onClick && onClick(e)} src={url || ''} style={style} alt="" />;
+        return <img
+            onClick={e => onClick && onClick(e)}
+            src={url || ''}
+            style={style}
+            className={className}
+            alt=""
+        />;
     }
 
     const Element = Icons[iconName || 'Help'];

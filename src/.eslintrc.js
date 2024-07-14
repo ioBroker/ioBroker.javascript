@@ -1,4 +1,8 @@
 module.exports = {
+    root: true,
+    globals: {
+        ioBroker: true,
+    },
     env: {
         browser: true,
         es2021: true,
@@ -7,8 +11,8 @@ module.exports = {
         'eslint:recommended',
         'plugin:react/recommended',
         'airbnb',
-        // 'react-app',
         'plugin:eqeqeq-fix/recommended',
+        'plugin:@typescript-eslint/recommended',
     ],
     parserOptions: {
         ecmaFeatures: {
@@ -22,6 +26,11 @@ module.exports = {
         'only-warn',
         'react-hooks',
     ],
+    settings: {
+        'import/resolver': {
+            typescript: {},
+        },
+    },
     rules: {
         'arrow-parens': [1, 'as-needed'],
         'react/jsx-indent': 'off',
@@ -73,9 +82,19 @@ module.exports = {
         radix: 'off',
         indent: ['error', 4, { SwitchCase: 1 }],
         'no-alert': 'off',
-        'dot-notation': 'off',
-        'object-curly-newline': 'off',
-        'object-shorthand': 'off',
-        'block-scoped-var': 'off',
+        'class-methods-use-this': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/member-delimiter-style': ['error', {
+            multiline: {
+                delimiter: 'semi',
+                requireLast: true,
+            },
+            singleline: {
+                delimiter: 'semi',
+                requireLast: false,
+            },
+        }],
+        '@typescript-eslint/type-annotation-spacing': 'error',
+        '@typescript-eslint/consistent-type-imports': 'error',
     },
 };
