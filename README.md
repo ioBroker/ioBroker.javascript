@@ -36,6 +36,7 @@ Executes Javascript, Typescript Scripts.
 * (klein0r) Added Blockly result blocks for script messages
 * (klein0r) Fixed onLog / onLogUnregister return types
 * (foxriver76) fixed issue in importing additional node modules for packages which do not provide a default export (e.g. `mathjs`)
+* (bluefox) Removed `withStyles` from GUI
 
 ### 8.6.0 (2024-06-14)
 
