@@ -941,7 +941,7 @@ class App extends GenericApp {
             context = <ReactSplit
                 direction={SplitDirection.Horizontal}
                 initialSizes={this.state.splitSizes}
-                minWidths={[240, 240]}
+                minWidths={[270, 400]}
                 onResizeFinished={(_gutterIdx, splitSizes) => {
                     this.setState({ splitSizes });
                     window.localStorage.setItem('JS.splitSizes', JSON.stringify(splitSizes));

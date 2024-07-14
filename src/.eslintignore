@@ -1,4 +1,2 @@
 **/*.js
 **/*.jsx
-!/src/OpenAi/*.jsx
-!/src/OpenAi/*.js
