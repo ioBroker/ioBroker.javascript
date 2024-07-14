@@ -1,11 +1,14 @@
 import React from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import { I18n } from '@iobroker/adapter-react-v5';
 import PropTypes from 'prop-types';
+
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+} from '@mui/material';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 const DialogCondition = ({ onClose, open }) => <Dialog
     open={open}

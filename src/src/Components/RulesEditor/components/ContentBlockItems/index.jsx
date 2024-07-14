@@ -2,10 +2,12 @@ import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDrop } from 'react-dnd';
 
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
-import IconHelp from '@mui/icons-material/HelpOutline';
+import {
+    Select,
+    MenuItem,
+    IconButton,
+} from '@mui/material';
+import { HelpOutline as IconHelp } from '@mui/icons-material';
 
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
 

@@ -1,32 +1,36 @@
 import React from 'react';
-import withStyles from '@mui/styles/withStyles';
 
-import GenericBlock from '../GenericBlock';
-import Compile from '../../helpers/Compile';
-import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import TextField from '@mui/material/TextField';
-import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import {
+    Button,
+    Switch,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    TextField,
+    DialogTitle,
+    Slide,
+    FormControlLabel,
+    Checkbox,
+} from '@mui/material';
 
-import { MdCancel as IconCancel } from 'react-icons/md';
-import { MdCheck as IconCheck } from 'react-icons/md';
+import {
+    MdCancel as IconCancel,
+    MdCheck as IconCheck,
+} from 'react-icons/md';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-const styles = theme => ({
+import GenericBlock from '../GenericBlock';
+import Compile from '../../helpers/Compile';
+
+const styles = {
     valueAck: {
         color: '#b02323',
     },
     valueNotAck: {
         color: '#12ac15',
     },
-});
+};
 
 const Transition = React.forwardRef((props, ref) =>
     <Slide direction="up" ref={ref} {...props} />);
@@ -59,10 +63,9 @@ class TriggerState extends GenericBlock {
 
     renderDebug(debugMessage) {
         if (debugMessage.data.valOld !== undefined) {
-            return <span>{I18n.t('Triggered')} <span className={debugMessage.data.ackOld ? this.props.classes.valueAck : this.props.classes.valueNotAck}>{TriggerState.renderValue(debugMessage.data.valOld)}</span> → <span className={debugMessage.data.ack ? this.props.classes.valueAck : this.props.classes.valueNotAck}>{TriggerState.renderValue(debugMessage.data.val)}</span></span>;
-        } else {
-            return <span>{I18n.t('Triggered')} <span className={debugMessage.data.ack ? this.props.classes.valueAck : this.props.classes.valueNotAck}>{TriggerState.renderValue(debugMessage.data.val)}</span></span>;
+            return <span>{I18n.t('Triggered')} <span style={debugMessage.data.ackOld ? styles.valueAck : styles.valueNotAck}>{TriggerState.renderValue(debugMessage.data.valOld)}</span> → <span style={debugMessage.data.ack ? styles.valueAck : styles.valueNotAck}>{TriggerState.renderValue(debugMessage.data.val)}</span></span>;
         }
+        return <span>{I18n.t('Triggered')} <span style={debugMessage.data.ack ? styles.valueAck : styles.valueNotAck}>{TriggerState.renderValue(debugMessage.data.val)}</span></span>;
     }
 
     onWriteValue() {
@@ -188,4 +191,5 @@ class TriggerState extends GenericBlock {
         return TriggerState.getStaticData();
     }
 }
-export default withStyles(styles)(TriggerState);
+
+export default TriggerState;

@@ -1,18 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
-import SplitterLayout from 'react-splitter-layout';
+import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 
-import 'react-splitter-layout/lib/index.css';
+import {
+    I18n,
+    Utils,
+    AdminConnection,
+    Loader,
+    GenericApp,
+    Message as DialogMessage,
+    Confirm as DialogConfirm,
+} from '@iobroker/adapter-react-v5';
 
-import GenericApp from '@iobroker/adapter-react-v5/GenericApp';
-import DialogMessage from '@iobroker/adapter-react-v5/Dialogs/Message';
-import DialogConfirm from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import { I18n, Utils, AdminConnection, Loader } from '@iobroker/adapter-react-v5';
-
-import { MdMenu as IconMenuClosed } from 'react-icons/md';
-import { MdArrowBack as IconMenuOpened } from 'react-icons/md';
-import { MdVisibility as IconShowLog } from 'react-icons/md';
+import {
+    MdMenu as IconMenuClosed,
+    MdArrowBack as IconMenuOpened,
+    MdVisibility as IconShowLog,
+} from 'react-icons/md';
 
 import SideMenu from './SideMenu';
 import Log from './Log';
@@ -21,8 +26,9 @@ import DialogError from './Dialogs/Error';
 import DialogImportFile from './Dialogs/ImportFile';
 import BlocklyEditor from './Components/BlocklyEditor';
 import { ContextWrapper } from './Components/RulesEditor/components/ContextWrapper';
+import {Box} from '@mui/material';
 
-const styles = theme => ({
+const styles = {
     root: {
         flexGrow: 1,
         display: 'flex',
@@ -32,7 +38,7 @@ const styles = theme => ({
     menuDiv: {
         overflow: 'hidden',
     },
-    splitterDivs: {
+    splitterDivs: theme => ({
         '&>div': {
             overflow: 'hidden',
             width: '100%',
@@ -41,7 +47,7 @@ const styles = theme => ({
         '& .layout-splitter': {
             background: theme.palette.mode === 'dark' ? '#595858' : '#ccc;',
         },
-    },
+    }),
     mainDiv: {
         width: '100%',
         height: '100%',
@@ -57,12 +63,12 @@ const styles = theme => ({
         marginLeft: 0,
     },
     */
-    content: {
+    content: theme => ({
         width: '100%',
         height: '100%',
         backgroundColor: theme.palette.background && theme.palette.background.default,
         position: 'relative',
-    },
+    }),
     splitterDivWithMenu: {
         width: `calc(100% - 300px)`,
         height: '100%',
@@ -78,41 +84,41 @@ const styles = theme => ({
     progress: {
         margin: 100,
     },
-    menuOpenCloseButton: {
+    menuOpenCloseButton: theme => ({
         position: 'absolute',
         left: 0,
         borderRadius: '0 5px 5px 0',
         top: 6,
-        paddingTop: 8,
+        pt: 1,
         cursor: 'pointer',
         zIndex: 1,
         height: 25,
         width: 20,
         background: theme.palette.secondary.main,
         color: theme.palette.primary.main,
-        paddingLeft: 3,
+        pl: '3px',
         '&:hover': {
             color: 'white',
         },
-    },
-    showLogButton: {
+    }),
+    showLogButton: theme => ({
         position: 'absolute',
         right: 3,
         borderRadius: '5px 5px 0 0',
         bottom: 0,
-        paddingTop: 3,
+        pt: '3px',
         cursor: 'pointer',
         zIndex: 10,
         height: 20,
         width: 25,
         background: theme.palette.secondary.main,
         color: theme.palette.primary.main,
-        paddingLeft: 8,
+        pl: 1,
         '&:hover': {
             color: 'white',
         },
-    },
-});
+    }),
+};
 
 class App extends GenericApp {
     constructor(props) {
@@ -139,11 +145,29 @@ class App extends GenericApp {
         });
 
         // this.logIndex = 0;
-        this.logSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.logSize')) || 150 : 150;
-        this.menuSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.menuSize')) || 500 : 500;
+        const logSizesStr = window.localStorage.getItem('JS.logSizes');
+        let logSizes = [80, 20];
+        if (logSizesStr) {
+            try {
+                logSizes = JSON.parse(logSizesStr);
+            } catch (e) {
+                // ignore
+            }
+        }
+
+        const splitSizesStr = window.localStorage.getItem('JS.splitSizes');
+        let splitSizes = [20, 80];
+        if (splitSizesStr) {
+            try {
+                splitSizes = JSON.parse(splitSizesStr);
+            } catch (e) {
+                // ignore
+            }
+        }
         this.hosts = [];
         this.importFile = null;
         this.scripts = {};
+        Object.assign(this.state, { splitSizes, logSizes });
 
         window.alert = message => {
             console.error(message);
@@ -278,7 +302,7 @@ class App extends GenericApp {
                 return this.readAllScripts();
             })
             .then(scripts => {
-                if (window.localStorage && window.localStorage.getItem('App.expertMode') !== 'true' && window.localStorage.getItem('App.expertMode') !== 'false') {
+                if (window.localStorage.getItem('App.expertMode') !== 'true' && window.localStorage.getItem('App.expertMode') !== 'false') {
                     // detect if some global scripts exists
                     if (Object.keys(scripts).find(id => id.startsWith('script.js.global.') && scripts.type === 'script')) {
                         newState.expertMode = true;
@@ -501,7 +525,7 @@ class App extends GenericApp {
 
     onExpertModeChange(expertMode) {
         if (this.state.expertMode !== expertMode) {
-            window.localStorage && window.localStorage.setItem('App.expertMode', expertMode ? 'true' : 'false');
+            window.localStorage.setItem('App.expertMode', expertMode ? 'true' : 'false');
             this.setState({ expertMode });
         }
     }
@@ -758,7 +782,7 @@ class App extends GenericApp {
     }
 
     toggleLogLayout() {
-        window.localStorage && window.localStorage.setItem('App.logHorzLayout', this.state.logHorzLayout ? 'false' : 'true');
+        window.localStorage.setItem('App.logHorzLayout', this.state.logHorzLayout ? 'false' : 'true');
         this.setState({ logHorzLayout: !this.state.logHorzLayout });
     }
 
@@ -811,10 +835,10 @@ class App extends GenericApp {
     }
 
     showLogButton() {
-        return <div
+        return <Box
             key="showLog"
             title={I18n.t('Show logs')}
-            className={this.props.classes.showLogButton}
+            sx={styles.showLogButton}
             onClick={() => {
                 window.localStorage.setItem('App.hideLog', 'false');
                 this.setState({ hideLog: false, resizing: true });
@@ -822,7 +846,7 @@ class App extends GenericApp {
             }}
         >
             <IconShowLog />
-        </div>;
+        </Box>;
     }
 
     renderErrorDialog() {
@@ -836,7 +860,41 @@ class App extends GenericApp {
     }
 
     renderMain() {
-        const { classes } = this.props;
+        let content;
+        if (this.state.debugMode || this.state.hideLog) {
+            content = <>
+                {!this.state.debugMode && this.state.hideLog ? this.showLogButton() : undefined}
+                {this.renderEditor()}
+            </>;
+        } else {
+            content = <ReactSplit
+                direction={this.state.logHorzLayout ? SplitDirection.Horizontal : SplitDirection.Vertical}
+                initialSizes={this.state.logSizes}
+                minWidths={[100, 0]}
+                onResizeStarted={() => this.setState({ resizing: true })}
+                onResizeFinished={(_gutterIdx, logSizes) => {
+                    this.setState({ logSizes, resizing: false });
+                    window.localStorage.setItem('JS.logSizes', JSON.stringify(logSizes));
+                }}
+                gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+            >
+                {this.renderEditor()}
+                <Log
+                    key="log"
+                    verticalLayout={!this.state.logHorzLayout}
+                    onLayoutChange={() => this.toggleLogLayout()}
+                    editing={this.state.editing}
+                    socket={this.socket}
+                    selected={this.state.selected}
+                    onHideLog={() => {
+                        window.localStorage.setItem('App.hideLog', 'true');
+                        this.setState({ hideLog: true, resizing: true });
+                        setTimeout(() => this.setState({ resizing: false }), 300);
+                    }}
+                />
+            </ReactSplit>;
+        }
+
         return [
             this.state.message ? <DialogMessage key="dialogMessage" onClose={() => this.setState({ message: '' })} text={this.state.message} /> : null,
             this.renderErrorDialog(),
@@ -849,114 +907,95 @@ class App extends GenericApp {
                     this.confirmCallback = null;
                 }}
                 text={this.state.confirm} /> : null,
-            <div className={classes.content + ' iobVerticalSplitter'} key="main">
-                <div key="closeMenu" className={classes.menuOpenCloseButton} onClick={() => {
-                    window.localStorage.setItem('App.menuOpened', this.state.menuOpened ? 'false' : 'true');
-                    this.setState({ menuOpened: !this.state.menuOpened, resizing: true });
-                    setTimeout(() => this.setState({ resizing: false }), 300);
-                }}>
-                    {this.state.menuOpened ? <IconMenuOpened /> : <IconMenuClosed />}
-                </div>
-                <SplitterLayout
-                    key="splitterLayout"
-                    vertical={!this.state.logHorzLayout}
-                    primaryMinSize={100}
-                    secondaryInitialSize={this.state.hideLog ? 0 : this.logSize}
-                    // customClassName={classes.menuDiv + ' ' + classes.splitterDivWithoutMenu}
-                    onDragStart={() => this.setState({ resizing: true })}
-                    onSecondaryPaneSizeChange={size => this.state.hideLog ? 0 : this.logSize = parseFloat(size)}
-                    onDragEnd={() => {
-                        this.setState({ resizing: false });
-                        window.localStorage.setItem('App.logSize', this.logSize.toString());
+            <Box sx={styles.content} className="iobVerticalSplitter" key="main">
+                <Box
+                    key="closeMenu"
+                    sx={styles.menuOpenCloseButton}
+                    onClick={() => {
+                        window.localStorage.setItem('App.menuOpened', this.state.menuOpened ? 'false' : 'true');
+                        this.setState({ menuOpened: !this.state.menuOpened, resizing: true });
+                        setTimeout(() => this.setState({ resizing: false }), 300);
                     }}
                 >
-                    <>
-                        {this.renderEditor()}
-                        {!this.state.debugMode && this.state.hideLog && this.showLogButton()}
-                    </>
-                    {!this.state.debugMode && !this.state.hideLog && <Log
-                        key="log"
-                        verticalLayout={!this.state.logHorzLayout}
-                        onLayoutChange={() => this.toggleLogLayout()}
-                        editing={this.state.editing}
-                        socket={this.socket}
-                        selected={this.state.selected}
-                        onHideLog={() => {
-                            window.localStorage.setItem('App.hideLog', 'true');
-                            this.setState({ hideLog: true, resizing: true });
-                            setTimeout(() => this.setState({ resizing: false }), 300);
-                        }}
-                    />}
-                </SplitterLayout>
-            </div>,
+                    {this.state.menuOpened ? <IconMenuOpened /> : <IconMenuClosed />}
+                </Box>
+                {content}
+            </Box>,
         ];
     }
 
     render() {
-        const { classes } = this.props;
-
         if (!this.state.ready) {
-            // return (<CircularProgress className={classes.progress} size={50} />);
-            return <Loader theme={this.state.themeType} />;
+            // return (<CircularProgress style={styles.progress} size={50} />);
+            return <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={this.state.theme}>
+                    <Loader themeType={this.state.themeType} />
+                </ThemeProvider>
+            </StyledEngineProvider>;
         }
 
-        return <div className={classes.root}>
-            <ContextWrapper socket={this.socket}>
-                <SplitterLayout
-                    key="menuSplitter"
-                    vertical={false}
-                    primaryMinSize={300}
-                    primaryIndex={1}
-                    secondaryMinSize={300}
-                    secondaryInitialSize={this.menuSize}
-                    customClassName={`${classes.splitterDivs} ${!this.state.menuOpened ? classes.menuDivWithoutMenu : ''}`}
-                    onDragStart={() => this.setState({ resizing: true })}
-                    onSecondaryPaneSizeChange={size => this.menuSize = parseFloat(size)}
-                    onDragEnd={() => {
-                        this.setState({ resizing: false });
-                        window.localStorage.setItem('App.menuSize', this.menuSize.toString());
-                    }}
-                >
-                    <div className={classes.mainDiv} key="menu">
-                        <SideMenu
-                            debugMode={this.state.debugMode}
-                            onDebugInstance={data => {
-                                this.setState({ debugInstance: data, debugMode: !!data });
-                            }}
-                            key="sidemenu"
-                            scripts={this.scripts}
-                            scriptsHash={this.state.scriptsHash}
-                            instances={this.state.instances}
-                            update={this.state.updateScripts}
-                            onRename={this.onRename.bind(this)}
-                            onSelect={this.onSelect.bind(this)}
-                            socket={this.socket}
-                            selectId={this.state.menuSelectId}
-                            onEdit={this.onEdit.bind(this)}
-                            expertMode={this.state.expertMode}
-                            themeType={this.state.themeType}
-                            themeName={this.state.themeName}
-                            onThemeChange={themeName => {
-                                Utils.setThemeName(themeName);
-                                const themeType = Utils.getThemeType(themeName);
-                                this.setState({ themeName, themeType }, () => this.props.onThemeChange(themeName));
-                            }}
-                            runningInstances={this.state.runningInstances}
-                            onExpertModeChange={this.onExpertModeChange.bind(this)}
-                            onDelete={this.onDelete.bind(this)}
-                            onAddNew={this.onAddNew.bind(this)}
-                            onEnableDisable={this.onEnableDisable.bind(this)}
-                            onExport={this.onExport.bind(this)}
-                            width={this.menuSize}
-                            onImport={() => this.setState({ importFile: true })}
-                            onSearch={searchText => this.setState({ searchText })}
-                            version={this.props.version}
-                        />
-                    </div>
-                    {this.renderMain()}
-                </SplitterLayout>
-            </ContextWrapper>
-        </div>;
+        let context;
+        if (true) {
+            context = <ReactSplit
+                direction={SplitDirection.Horizontal}
+                initialSizes={this.state.splitSizes}
+                minWidths={[240, 240]}
+                onResizeFinished={(_gutterIdx, splitSizes) => {
+                    this.setState({ splitSizes });
+                    window.localStorage.setItem('JS.splitSizes', JSON.stringify(splitSizes));
+                }}
+                gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+            >
+                <div style={styles.mainDiv} key="menu">
+                    <SideMenu
+                        debugMode={this.state.debugMode}
+                        onDebugInstance={data =>
+                            this.setState({ debugInstance: data, debugMode: !!data })}
+                        key="sidemenu"
+                        scripts={this.scripts}
+                        scriptsHash={this.state.scriptsHash}
+                        instances={this.state.instances}
+                        update={this.state.updateScripts}
+                        onRename={this.onRename.bind(this)}
+                        onSelect={this.onSelect.bind(this)}
+                        socket={this.socket}
+                        selectId={this.state.menuSelectId}
+                        onEdit={this.onEdit.bind(this)}
+                        expertMode={this.state.expertMode}
+                        themeType={this.state.themeType}
+                        themeName={this.state.themeName}
+                        onThemeChange={themeName => {
+                            Utils.setThemeName(themeName);
+                            const themeType = Utils.getThemeType(themeName);
+                            this.setState({ themeName, themeType }, () => this.props.onThemeChange(themeName));
+                        }}
+                        runningInstances={this.state.runningInstances}
+                        onExpertModeChange={this.onExpertModeChange.bind(this)}
+                        onDelete={this.onDelete.bind(this)}
+                        onAddNew={this.onAddNew.bind(this)}
+                        onEnableDisable={this.onEnableDisable.bind(this)}
+                        onExport={this.onExport.bind(this)}
+                        width={this.menuSize}
+                        onImport={() => this.setState({ importFile: true })}
+                        onSearch={searchText => this.setState({ searchText })}
+                        version={this.props.version}
+                    />
+                </div>
+                {this.renderMain()}
+            </ReactSplit>;
+        } else {
+            context = this.renderMain();
+        }
+
+        return <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={this.state.theme}>
+                <div style={styles.root}>
+                    <ContextWrapper socket={this.socket}>
+                        {context}
+                    </ContextWrapper>
+                </div>
+            </ThemeProvider>
+        </StyledEngineProvider>;
     }
 }
 
@@ -965,4 +1004,4 @@ App.propTypes = {
     onThemeChange: PropTypes.func,
 };
 
-export default withStyles(styles)(App);
+export default App;

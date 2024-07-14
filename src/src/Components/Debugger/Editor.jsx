@@ -1,57 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import ScriptEditorComponent from '../ScriptEditorVanilaMonaco';
 
-const styles = theme => ({
+const styles = {
     editorDiv: {
         height: '100%',
         width: '100%',
         overflow: 'hidden',
         position: 'relative'
     },
-    editor: {
-        width: '100%',
-        height: '100%',
-        overflow: 'auto',
-    },
-    line: {
-        width: '100%',
-        whiteSpace: 'nowrap',
-    },
-    lineNumber: {
-        width: 40,
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        display: 'inline-block',
-        fontFamily: 'Lucida Console, Courier, monospace',
-        textAlign: 'right',
-        fontSize: 14,
-        marginRight: 1,
-        borderRight: '1px solid #555',
-        cursor: 'pointer'
-    },
-    lineBreakpoint: {
-        background: '#330000',
-        color: 'white',
-    },
-    lineCode: {
-        //whiteSpace: 'nowrap',
-        display: 'inline-block',
-        fontFamily: 'Lucida Console, Courier, monospace',
-        fontSize: 14,
-        margin: 0,
-        whiteSpace: 'pre',
-    },
-    lineCurrentCode: {
-        background: 'red',
-        color: 'white',
-    },
-    lineCurrent: {
-        background: '#880000',
-        color: 'white',
-    },
-});
+};
 
 class Editor extends React.Component {
     constructor(props) {
@@ -69,7 +27,7 @@ class Editor extends React.Component {
     }
 
     render() {
-        return <div className={this.props.classes.editorDiv} key="scriptEditorDiv2">
+        return <div style={styles.editorDiv} key="scriptEditorDiv2">
             <ScriptEditorComponent
                 key="scriptEditor2"
                 name={this.props.scriptName}
@@ -104,4 +62,4 @@ Editor.propTypes = {
     onToggleBreakpoint: PropTypes.func,
 };
 
-export default withStyles(styles)(Editor);
+export default Editor;

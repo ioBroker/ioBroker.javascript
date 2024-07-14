@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { I18n } from '@iobroker/adapter-react-v5';
-import DialogMessage from '@iobroker/adapter-react-v5/Dialogs/Message';
+import { I18n, Message as DialogMessage } from '@iobroker/adapter-react-v5';
 import DialogError from '../Dialogs/Error';
 import DialogExport from '../Dialogs/Export';
 import DialogImport from '../Dialogs/Import';

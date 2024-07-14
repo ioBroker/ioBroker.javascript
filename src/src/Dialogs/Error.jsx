@@ -1,28 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 
-import IconOk from '@mui/icons-material/Check';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+} from '@mui/material';
+
+import { Check as IconOk } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-const styles = theme => ({
-    titleBackground: {
+const styles = {
+    title: theme => ({
         background: theme.palette.error.main,
-    },
-    titleColor: {
         color: theme.palette.error.contrastText,
         '&>h2': {
             color: theme.palette.error.contrastText,
         }
-    },
-});
+    }),
+};
 
 class DialogError extends React.Component {
     constructor(props) {
@@ -42,9 +42,11 @@ class DialogError extends React.Component {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            <DialogTitle className={this.props.classes.titleBackground}
-                         classes={{ root: this.props.classes.titleColor }}
-                         id="alert-dialog-title">{this.props.title || I18n.t('Error')}</DialogTitle>
+            <DialogTitle
+                sx={styles.title}
+                id="alert-dialog-title">
+                {this.props.title || I18n.t('Error')}
+            </DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                     {this.props.text || I18n.t('Unknown error!')}
@@ -64,4 +66,4 @@ DialogError.propTypes = {
     icon: PropTypes.object
 };
 
-export default withStyles(styles)(DialogError);
+export default DialogError;

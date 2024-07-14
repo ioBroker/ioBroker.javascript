@@ -1,13 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 
-import IconButton from '@mui/material/IconButton';
+import {
+    Box,
+    IconButton,
+} from '@mui/material';
 
-import { MdDeleteForever as IconDelete } from 'react-icons/md';
-import { MdVerticalAlignBottom as IconBottom } from 'react-icons/md';
-import { MdContentCopy as IconCopy } from 'react-icons/md';
-import { MdVisibilityOff as IconHide } from 'react-icons/md';
+import {
+    MdDeleteForever as IconDelete,
+    MdVerticalAlignBottom as IconBottom,
+    MdContentCopy as IconCopy,
+    MdVisibilityOff as IconHide,
+} from 'react-icons/md';
 
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
@@ -44,14 +48,14 @@ function getTimeString(d) {
 }
 const TOOLBOX_WIDTH = 34;
 
-const styles = theme => ({
+const styles = {
     logBox: {
         width: '100%',
         height: '100%',
         position: 'relative',
         overflow: 'hidden',
     },
-    logBoxInner: {
+    logBoxInner: theme => ({
         display: 'inline-block',
         color: theme.palette.mode === 'dark' ? 'white' : 'black',
         width: `calc(100% - ${TOOLBOX_WIDTH}px)`,
@@ -60,33 +64,32 @@ const styles = theme => ({
         overflow: 'auto',
         position: 'relative',
         verticalAlign: 'top',
-    },
-    info: {
+    }),
+    info: theme => ({
         background: theme.palette.mode === 'dark' ? 'darkgrey' : 'lightgrey',
         color: theme.palette.mode === 'dark' ?  'black' : 'black',
-    },
-    error: {
+    }),
+    error: theme => ({
         background: '#FF0000',
         color: theme.palette.mode === 'dark' ?  'black' : 'white',
-    },
-    warn: {
+    }),
+    warn: theme => ({
         background: '#FF8000',
         color: theme.palette.mode === 'dark' ?  'black' : 'white',
-    },
-    debug: {
+    }),
+    debug: theme => ({
         background: 'gray',
         opacity: 0.8,
         color: theme.palette.mode === 'dark' ?  'black' : 'white',
-    },
-    silly: {
+    }),
+    silly: theme => ({
         background: 'gray',
         opacity: 0.6,
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
-    },
+    }),
     table: {
         fontFamily: 'monospace',
         width: '100%',
-
     },
     toolbox: {
         width: TOOLBOX_WIDTH,
@@ -111,13 +114,15 @@ const styles = theme => ({
         height: 32,
         padding: 4,
     },
-    layoutIcon: {
-        width: 24,
-        height: 24,
-        background: theme.palette.mode === 'dark' ? '#9d9d9d' : undefined,
-        borderRadius: theme.palette.mode === 'dark' ? 30 : undefined,
-    },
-});
+    layoutIcon: theme => ({
+        '& img': {
+            width: 24,
+            height: 24,
+            background: theme.palette.mode === 'dark' ? '#9d9d9d' : undefined,
+            borderRadius: theme.palette.mode === 'dark' ? '30px' : undefined,
+        },
+    }),
+};
 
 function paddingMs(ms) {
     if (ms < 10) {
@@ -158,12 +163,16 @@ class Log extends React.Component {
             }
         }
 
-        return <tr key={`tr_${row.ts}_${row.message.substr(-10)}`} className={this.props.classes[row.severity]}>
-            <td key="tdFrom" className={this.props.classes.trFrom}>{row.from}</td>
-            <td key="tdTime" className={this.props.classes.trTime}>{getTimeString(new Date(row.ts))}</td>
-            <td key="tdSeverity" className={this.props.classes.trSeverity}>{row.severity}</td>
-            <td key="tdMessage">{message}</td>
-        </tr>;
+        return <Box
+            component="tr"
+            key={`tr_${row.ts}_${row.message.substr(-10)}`}
+            sx={styles[row.severity]}
+        >
+            <td style={styles.trFrom}>{row.from}</td>
+            <td style={styles.trTime}>{getTimeString(new Date(row.ts))}</td>
+            <td style={styles.trSeverity}>{row.severity}</td>
+            <td>{message}</td>
+        </Box>;
     }
 
     scrollToBottom() {
@@ -265,42 +274,55 @@ class Log extends React.Component {
 
     renderLogList(lines) {
         if (this.state.selected && lines && lines.length) {
-            return <div className={this.props.classes.logBoxInner} key="logList">
-                <table key="logTable" className={this.props.classes.table}><tbody>{lines}</tbody></table>
+            return <Box sx={styles.logBoxInner} key="logList">
+                <table key="logTable" style={styles.table}><tbody>{lines}</tbody></table>
                 <div key="logScrollPoint" ref={this.messagesEnd} style={{ float: 'left', clear: 'both' }}/>
-            </div>;
-        } else {
-            return <div key="logList" className={this.props.classes.logBoxInner} style={{ paddingLeft: 10 }}>{I18n.t('Log outputs')}</div>;
+            </Box>;
         }
+
+        return <Box key="logList" sx={styles.logBoxInner} style={{ paddingLeft: 10 }}>{I18n.t('Log outputs')}</Box>;
     }
 
     render() {
         const lines = this.state.selected && this.state.lines[this.state.selected];
-        return <div className={this.props.classes.logBox}>
-            <div className={this.props.classes.toolbox} key="toolbox">
+        return <div style={styles.logBox}>
+            <div style={styles.toolbox} key="toolbox">
                 <IconButton
-                    className={this.props.classes.iconButtons}
+                    style={styles.iconButtons}
                     onClick={() => this.setState({ goBottom: !this.state.goBottom })}
                     color={this.state.goBottom ? 'secondary' : ''}
-                    size="medium"><IconBottom /></IconButton>
+                    size="medium"
+                >
+                    <IconBottom />
+                </IconButton>
                 {lines && lines.length ? <IconButton
-                    className={this.props.classes.iconButtons}
+                    style={styles.iconButtons}
                     onClick={() => this.clearLog()}
-                    size="medium"><IconDelete /></IconButton> : null}
+                    size="medium">
+                    <IconDelete />
+                </IconButton> : null}
                 {lines && lines.length ? <IconButton
-                    className={this.props.classes.iconButtons}
+                    style={styles.iconButtons}
                     onClick={() => this.onCopy()}
-                    size="medium"><IconCopy /></IconButton> : null}
+                    size="medium">
+                    <IconCopy />
+                </IconButton> : null}
                 {this.props.onLayoutChange ? <IconButton
-                    className={this.props.classes.iconButtons}
+                    style={styles.iconButtons}
                     onClick={() => this.props.onLayoutChange()}
                     title={I18n.t('Change layout')}
-                    size="medium"><img className={this.props.classes.layoutIcon} alt="split" src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit} /></IconButton> : null}
+                    size="medium"
+                    sx={styles.layoutIcon}
+                >
+                    <img alt="split" src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit} />
+                </IconButton> : null}
                 <IconButton
-                    className={this.props.classes.iconButtons}
+                    style={styles.iconButtons}
                     onClick={() => this.props.onHideLog()}
                     title={I18n.t('Hide logs')}
-                    size="medium"><IconHide /></IconButton>
+                    size="medium">
+                    <IconHide />
+                </IconButton>
             </div>
             {this.renderLogList(lines)}
         </div>;
@@ -314,4 +336,4 @@ Log.propTypes = {
     verticalLayout: PropTypes.bool,
 };
 
-export default withStyles(styles)(Log);
+export default Log;

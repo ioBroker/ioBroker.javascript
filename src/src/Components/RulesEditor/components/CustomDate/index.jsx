@@ -1,6 +1,7 @@
 import React from 'react';
-import { FormControl, MenuItem, Select } from '@mui/material';
 import PropTypes from 'prop-types';
+
+import { FormControl, MenuItem, Select } from '@mui/material';
 
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
 

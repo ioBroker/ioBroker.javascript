@@ -1,5 +1,9 @@
-import React, {memo, useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import React, {
+    memo, useCallback, useContext,
+    useEffect, useMemo, useState,
+} from 'react';
 import PropTypes from 'prop-types';
+
 import cls from './style.module.scss';
 import { deepCopy } from '../../helpers/deepCopy';
 import { filterElement } from '../../helpers/filterElement';

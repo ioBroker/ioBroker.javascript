@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { TextField } from '@mui/material';
 import PropTypes from 'prop-types';
 
-import InputAdornment from '@mui/material/InputAdornment';
+import {
+    TextField,
+    InputAdornment,
+} from '@mui/material';
 
 import { Utils, Icon as CustomIcon } from '@iobroker/adapter-react-v5';
 

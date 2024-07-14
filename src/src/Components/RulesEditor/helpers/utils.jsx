@@ -5,13 +5,12 @@ const getName = obj => {
     lang = lang || I18n.getLanguage();
     if (typeof obj === 'object') {
         return obj[lang] || obj.en;
-    } else {
-        return obj;
     }
+    return obj;
 };
 
 const utils = {
-    getName
+    getName,
 };
 
 export default utils;

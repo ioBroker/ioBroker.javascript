@@ -1,7 +1,8 @@
-import { FormControlLabel, Switch } from '@mui/material';
-import React, { memo, useState } from 'react';
-// import { I18n } from '@iobroker/adapter-react-v5';
 import PropTypes from 'prop-types';
+import React, { memo, useState } from 'react';
+
+import { FormControlLabel, Switch } from '@mui/material';
+
 import cls from './style.module.scss';
 
 const CustomSwitch = ({ label, size, value, style, onChange, className, customValue }) => {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDragLayer } from 'react-dnd';
+
 import CardMenu from '../CardMenu';
 import CurrentItem from '../CurrentItem';
 
@@ -10,7 +11,7 @@ const layerStyles = {
     left: 0,
     top: 0,
     width: '100%',
-    height: '100%'
+    height: '100%',
 };
 
 const snapToGrid = (x, y) => {

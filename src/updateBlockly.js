@@ -8,13 +8,13 @@ function copyFile(fileName, newName) {
         fileName = fileName.substring(0, fileName.length - 1);
     }
 
-    const srcName = __dirname + '/blockly/' + fileName;
-    const dstName = __dirname + '/public/google-blockly/' + (newName || fileName);
+    const srcName = `${__dirname}/blockly/${fileName}`;
+    const dstName = `${__dirname}/public/google-blockly/${newName || fileName}`;
 
     const stat = fs.lstatSync(srcName);
     if (stat.isDirectory()) {
         const files = fs.readdirSync(srcName);
-        files.forEach(file => copyFile(fileName + '/' + file))
+        files.forEach(file => copyFile(`${fileName}/${file}`))
     } else {
         fs.writeFileSync(dstName, fs.readFileSync(srcName));
     }
@@ -26,7 +26,7 @@ function deleteFolder(path) {
         files = fs.readdirSync(path);
 
         files.forEach(file=> {
-            const curPath = path + '/' + file;
+            const curPath = `${path}/${file}`;
 
             if (fs.lstatSync(curPath).isDirectory()) { // recurse
                 deleteFolder(curPath);

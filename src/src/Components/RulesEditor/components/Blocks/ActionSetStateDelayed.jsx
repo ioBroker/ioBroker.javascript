@@ -1,5 +1,5 @@
-import GenericBlock from '../GenericBlock';
 import { I18n } from '@iobroker/adapter-react-v5';
+import GenericBlock from '../GenericBlock';
 
 class ActionSetStateDelayed extends GenericBlock {
     constructor(props) {

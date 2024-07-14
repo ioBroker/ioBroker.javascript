@@ -1,36 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
-import Button from '@mui/material/Button';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Dialog from '@mui/material/Dialog';
-import Radio from '@mui/material/Radio';
 
-import IconOk from '@mui/icons-material/Check';
-import IconCancel from '@mui/icons-material/Cancel';
+import {
+    Button,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Dialog,
+    Radio,
+} from '@mui/material';
+
+import {
+    Check as IconOk,
+    Cancel as IconCancel,
+} from '@mui/icons-material';
+
+import { I18n } from '@iobroker/adapter-react-v5';
 
 import ComplexCron from '../Components/ComplexCron';
 import SimpleCron from '../Components/simple-cron/SimpleCron';
 import Schedule from '../Components/Schedule';
 
-import { I18n } from '@iobroker/adapter-react-v5';
-
 // Generate cron expression
 
-const styles = theme => ({
-    headerID: {
-        fontWeight: 'bold',
-        fontStyle: 'italic'
-    },
-    radio: {
-        display: 'inline-block'
-    },
+const styles = {
     dialogPaper: {
         height: 'calc(100% - 96px)'
     },
-});
+};
 
 class DialogCron extends React.Component {
     constructor(props) {
@@ -73,7 +70,7 @@ class DialogCron extends React.Component {
             onClose={(event, reason) => false}
             maxWidth="md"
             fullWidth
-            classes={{ paper: this.props.classes.dialogPaper }}
+            sx={{ '& .MuiDialog-paper': styles.dialogPaper }}
             open={!0}
             aria-labelledby="cron-dialog-title"
         >
@@ -127,7 +124,6 @@ class DialogCron extends React.Component {
 }
 
 DialogCron.propTypes = {
-    classes: PropTypes.object,
     onClose: PropTypes.func,
     onOk: PropTypes.func.isRequired,
     title: PropTypes.string,
@@ -139,4 +135,4 @@ DialogCron.propTypes = {
 
 };
 
-export default withStyles(styles)(DialogCron);
+export default DialogCron;

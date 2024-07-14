@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+} from '@mui/material';
 
-import IconOk from '@mui/icons-material/Check';
+import { Check as IconOk } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 

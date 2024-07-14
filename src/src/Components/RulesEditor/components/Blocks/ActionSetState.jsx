@@ -1,15 +1,14 @@
-import GenericBlock from '../GenericBlock';
-import withStyles from '@mui/styles/withStyles';
 import { I18n } from '@iobroker/adapter-react-v5';
+import GenericBlock from '../GenericBlock';
 
-const styles = theme => ({
+const styles = {
     valueAck: {
         color: '#b02323',
     },
     valueNotAck: {
         color: '#12ac15',
     },
-});
+};
 
 class ActionSetState extends GenericBlock {
     constructor(props) {
@@ -66,7 +65,7 @@ class ActionSetState extends GenericBlock {
     }
 
     renderDebug(debugMessage) {
-        return <span>{I18n.t('Set:')} <span className={debugMessage.data.ack ? this.props.classes.valueAck : this.props.classes.valueNotAck}>{ActionSetState.renderValue(debugMessage.data.val)}</span></span>;
+        return <span>{I18n.t('Set:')} <span style={debugMessage.data.ack ? styles.valueAck : styles.valueNotAck}>{ActionSetState.renderValue(debugMessage.data.val)}</span></span>;
     }
 
     _setInputs(useTrigger, toggle) {
@@ -288,4 +287,4 @@ class ActionSetState extends GenericBlock {
     }
 }
 
-export default withStyles(styles)(ActionSetState);
+export default ActionSetState;

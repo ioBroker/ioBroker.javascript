@@ -1,15 +1,19 @@
-import { FormControl, FormHelperText, Input, MenuItem, Select } from '@mui/material';
-import withStyles from '@mui/styles/withStyles';
 import React, { useEffect, useState } from 'react';
-import { I18n } from '@iobroker/adapter-react-v5';
 import PropTypes from 'prop-types';
 
-const SelectMod = withStyles({
-    root: {
-        margin: '10px 0',
+import {
+    FormControl, FormHelperText,
+    Input, MenuItem, Select,
+} from '@mui/material';
+
+import { I18n } from '@iobroker/adapter-react-v5';
+
+const styles = {
+    formControl: {
+        m: '10px 0',
         '& .MuiFormControl-marginNormal': {
-            marginTop: 0,
-            marginBottom: 0,
+            mt: 0,
+            mb: 0,
         },
         '& > *': {
             color: '#2d0440 !important'
@@ -30,7 +34,7 @@ const SelectMod = withStyles({
             borderBottomColor: '#81688c',
         },
     },
-})(FormControl);
+};
 
 const CustomInstance = ({ multiple, value, customValue, socket, title, attr, adapter, style, onChange, className, onInstanceHide }) => {
     const [inputText, setInputText] = useState(value || 'test1');
@@ -49,8 +53,8 @@ const CustomInstance = ({ multiple, value, customValue, socket, title, attr, ada
             });
     }, [socket, adapter, onInstanceHide]);
 
-    return <SelectMod
-        className={className}
+    return <FormControl
+        sx={styles.formControl}
         fullWidth
         style={style}
     >
@@ -70,12 +74,11 @@ const CustomInstance = ({ multiple, value, customValue, socket, title, attr, ada
                 <MenuItem style={{placeContent:'space-between'}} key={'key-' + item.value} value={item.value || '_'}>{I18n.t(item.title)}{item.title2 && <div>{item.title2}</div>}</MenuItem>)}
         </Select>
         <FormHelperText>{I18n.t(title)}</FormHelperText>
-    </SelectMod>;
+    </FormControl>;
 }
 
 CustomInstance.defaultProps = {
     value: '',
-    className: null,
     table: false,
     customValue: false
 };

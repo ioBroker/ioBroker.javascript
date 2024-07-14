@@ -1,5 +1,5 @@
-import GenericBlock from '../GenericBlock';
 import { I18n } from '@iobroker/adapter-react-v5';
+import GenericBlock from '../GenericBlock';
 
 // copied from https://github.com/ioBroker/ioBroker.sayit/blob/master/admin/blockly.js#L37
 const sayitEngines = {

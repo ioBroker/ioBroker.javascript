@@ -1,6 +1,6 @@
-import GenericBlock from '../GenericBlock';
 import SunCalc from 'suncalc2';
 import { I18n } from '@iobroker/adapter-react-v5';
+import GenericBlock from '../GenericBlock';
 
 class ConditionAstronomical extends GenericBlock {
     constructor(props) {

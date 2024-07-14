@@ -1,27 +1,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
-import SplitterLayout from 'react-splitter-layout';
+import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Toolbar from '@mui/material/Toolbar';
-import LinearProgress from '@mui/material/LinearProgress';
-import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Dialog from '@mui/material/Dialog';
-import Badge from '@mui/material/Badge';
+import {
+    Tabs,
+    Tab,
+    Toolbar,
+    LinearProgress,
+    IconButton,
+    List,
+    ListItemButton,
+    ListItemText,
+    DialogTitle,
+    Dialog,
+    Badge, Box,
+} from '@mui/material';
 
-import { MdClose as IconClose, MdPlayArrow as IconRun } from 'react-icons/md';
-import { MdPause as IconPause } from 'react-icons/md';
-import { MdArrowForward as IconNext } from 'react-icons/md';
-import { MdArrowDownward as IconStep } from 'react-icons/md';
-import { MdArrowUpward as IconOut } from 'react-icons/md';
-import { MdRefresh as IconRestart } from 'react-icons/md';
-import { MdWarning as IconException } from 'react-icons/md';
+import {
+    MdClose as IconClose,
+    MdPlayArrow as IconRun,
+    MdPause as IconPause,
+    MdArrowForward as IconNext,
+    MdArrowDownward as IconStep,
+    MdArrowUpward as IconOut,
+    MdRefresh as IconRestart,
+    MdWarning as IconException,
+} from 'react-icons/md';
 
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
@@ -30,13 +34,13 @@ import Editor from './Editor';
 import Console from './Console';
 import Stack from './Stack';
 
-const styles = theme => ({
-    root: {
+const styles = {
+    root: theme => ({
         width: '100%',
         height: `calc(100% - ${theme.toolbar.height + 38/*Theme.toolbar.height */ + 5}px)`,
         overflow: 'hidden',
         position: 'relative'
-    },
+    }),
     toolbar: {
         minHeight: 38,//Theme.toolbar.height,
         boxShadow: '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)'
@@ -66,10 +70,10 @@ const styles = theme => ({
 
     },
 
-    tabFile: {
+    tabFile: theme => ({
         textTransform: 'inherit',
         color: theme.palette.mode === 'dark' ? '#DDD' : 'inherit'
-    },
+    }),
     tabText: {
         maxWidth: 130,
         textOverflow: 'ellipsis',
@@ -87,11 +91,11 @@ const styles = theme => ({
         cursor: 'pointer'
     },
 
-    tabsRoot: {
+    tabsRoot: theme => ({
         minHeight: 24,
         background: theme.palette.mode === 'dark' ? '#333' : '#e6e6e6',
         color: theme.palette.mode === 'dark' ? 'white' : 'inherit'
-    },
+    }),
     tabRoot: {
         minHeight: 24,
     },
@@ -114,19 +118,19 @@ const styles = theme => ({
             height: '100%'
         }
     }
-});
+};
 
 class Debugger extends React.Component {
     constructor(props) {
         super(props);
-        let breakpoints = window.localStorage.getItem('javascript.tools.bp.' + this.props.src);
+        let breakpoints = window.localStorage.getItem(`javascript.tools.bp.${this.props.src}`);
         try {
             breakpoints = breakpoints ? JSON.parse(breakpoints) : [];
         } catch (e) {
             breakpoints = [];
         }
 
-        let expressions = window.localStorage.getItem('javascript.tools.exps.' + this.props.src);
+        let expressions = window.localStorage.getItem(`javascript.tools.exps.${this.props.src}`);
         try {
             expressions = expressions ? JSON.parse(expressions) : [];
             expressions = expressions.map(name => ({name}));
@@ -134,7 +138,15 @@ class Debugger extends React.Component {
             expressions = [];
         }
 
-        this.toolSize = window.localStorage ? parseFloat(window.localStorage.getItem('App.toolSize')) || 150 : 150;
+        const toolSizesStr = window.localStorage.getItem('JS.toolSizes');
+        let toolSizes = [20, 80];
+        if (toolSizesStr) {
+            try {
+                toolSizes = JSON.parse(toolSizesStr);
+            } catch (e) {
+                // ignore
+            }
+        }
 
         this.state = {
             starting: true,
@@ -158,6 +170,7 @@ class Debugger extends React.Component {
             logErrors: 0,
             logWarnings: 0,
             logs: 0,
+            toolSizes,
         };
 
         this.scripts = {};
@@ -429,17 +442,17 @@ class Debugger extends React.Component {
 
     getTextAtLocation(location) {
         let line = this.state.script.split(/\r\n|\n/)[location.lineNumber];
-        let arrow = '';
+        let arrow;
         if (location.columnNumber >= 10) {
             line = line.substring(location.columnNumber - 10, location.columnNumber + 20);
-            arrow = ''.padStart(10, ' ') + '↑';
+            arrow = `${''.padStart(10, ' ')}↑`;
         } else {
             line = line.substring(0, 30 - location.columnNumber);
-            arrow = ''.padStart(location.columnNumber, ' ') + '↑';
+            arrow = `${''.padStart(location.columnNumber, ' ')}↑`;
         }
         return [
-            <div key="line" className={this.props.classes.monospace}>{line}</div>,
-            <div key="arrow" className={Utils.clsx(this.props.classes.monospace, this.props.classes.arrow)}>{arrow}</div>
+            <div key="line" style={styles.monospace}>{line}</div>,
+            <div key="arrow" style={{ ...styles.monospace, ...styles.arrow }}>{arrow}</div>
         ];
     }
 
@@ -448,34 +461,30 @@ class Debugger extends React.Component {
             return <Dialog onClose={() => this.setState({ queryBreakpoints: null })} aria-labelledby="bp-dialog-title" open={!0}>
                 <DialogTitle id="bp-dialog-title">{I18n.t('Select breakpoint')}</DialogTitle>
                 <List>
-                    {this.state.queryBreakpoints.map((bp, i) => (
-                        <ListItemButton
-                            classes={{root: this.props.classes.bpListItem}}
-                            dense
-                            onClick={() => {
-                                this.sendToInstance({breakpoints: [bp], cmd: 'sb'});
-                                this.setState({queryBreakpoints: null})
-                            }}
-                            key={i}>
-                            <ListItemText
-                                classes={{primary: this.props.classes.bpListPrimary, secondary: this.props.classes.bpListSecondary}}
-                                primary={this.getTextAtLocation(bp)}
-                            />
-                        </ListItemButton>
-                    ))}
+                    {this.state.queryBreakpoints.map((bp, i) => <ListItemButton
+                        style={styles.bpListItem}
+                        dense
+                        onClick={() => {
+                            this.sendToInstance({ breakpoints: [bp], cmd: 'sb' });
+                            this.setState({ queryBreakpoints: null });
+                        }}
+                        key={i}>
+                        <ListItemText
+                            primary={this.getTextAtLocation(bp)}
+                        />
+                    </ListItemButton>)}
                 </List>
             </Dialog>;
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     renderError() {
         if (this.state.error) {
             return <DialogError key="dialogError" onClose={() => this.setState({ error: '' })} text={this.state.error} />;
-        } else {
-            return null;
         }
+        return null;
     }
 
     closeTab(id, e) {
@@ -515,105 +524,110 @@ class Debugger extends React.Component {
                     }
                     label = [
                         <div key="text" className={Utils.clsx(this.props.classes.tabText)}>{label}</div>,
-                        id !== this.mainScriptId && <span key="icon" className={this.props.classes.closeButton}>
+                        id !== this.mainScriptId && <span key="icon" style={styles.closeButton}>
                             <IconClose key="close" onClick={e => this.closeTab(id, e)} fontSize="small" /></span>];
 
-                    return <Tab disabled={disabled} classes={{root: this.props.classes.tabFile}} label={label} title={title} key={id} value={id}/>;
+                    return <Tab
+                        disabled={disabled}
+                        sx={styles.tabFile}
+                        label={label}
+                        title={title}
+                        key={id}
+                        value={id}
+                    />;
                 })}
         </Tabs>;
     }
 
     onResume() {
-        this.sendToInstance({cmd: 'cont'});
+        this.sendToInstance({ cmd: 'cont' });
     }
 
     onPause() {
-        this.sendToInstance({cmd: 'pause'});
+        this.sendToInstance({ cmd: 'pause' });
     }
 
     onNext() {
-        this.sendToInstance({cmd: 'next'});
+        this.sendToInstance({ cmd: 'next' });
     }
 
     onStepIn() {
-        this.sendToInstance({cmd: 'step'});
+        this.sendToInstance({ cmd: 'step' });
     }
 
     onStepOut() {
-        this.sendToInstance({cmd: 'out'});
+        this.sendToInstance({ cmd: 'out' });
     }
 
     onRestart() {
-        this.setState({started: false, starting: true}, () =>
+        this.setState({ started: false, starting: true }, () =>
             this.props.socket.sendTo(this.state.instance, 'debug', this.props.debugInstance || {scriptName: this.props.src}));
     }
 
     onToggleException() {
         const stopOnException = !this.state.stopOnException;
         window.localStorage.setItem('javascript.tools.stopOnException', stopOnException ? 'true' : 'false');
-        this.setState({stopOnException}, () =>
-            this.sendToInstance({cmd: 'stopOnException', state: stopOnException}));
+        this.setState({ stopOnException }, () =>
+            this.sendToInstance({ cmd: 'stopOnException', state: stopOnException }));
     }
 
     renderToolbar() {
         const disabled = !this.state.started;
-        return (
-            <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
-                <IconButton
-                    className={this.props.classes.buttonRestart}
-                    disabled={disabled}
-                    onClick={() => this.onRestart()}
-                    title={I18n.t('Restart')}
-                    size="medium"><IconRestart/></IconButton>
-                {
-                    !this.state.finished && this.state.paused ?
-                        <IconButton
-                            className={this.props.classes.buttonRun}
-                            disabled={disabled}
-                            onClick={() => this.onResume()}
-                            title={I18n.t('Resume execution')}
-                            size="medium"><IconRun/></IconButton>
-                        :
-                        !this.state.finished && <IconButton
-                            disabled={disabled}
-                            className={this.props.classes.buttonPause}
-                            onClick={() => this.onPause()}
-                            title={I18n.t('Pause execution')}
-                            size="medium"><IconPause/></IconButton>
-                }
-                {!this.state.finished && <IconButton
-                    className={this.props.classes.buttonNext}
-                    disabled={disabled || !this.state.paused}
-                    onClick={() => this.onNext()}
-                    title={I18n.t('Go to next line')}
-                    size="medium"><IconNext/></IconButton>}
-                {!this.state.finished && <IconButton
-                    className={this.props.classes.buttonStep}
-                    disabled={disabled || !this.state.paused}
-                    onClick={() => this.onStepIn()}
-                    title={I18n.t('Step into function')}
-                    size="medium"><IconStep/></IconButton>}
-                {!this.state.finished && <IconButton
-                    className={this.props.classes.buttonOut}
-                    disabled={disabled || !this.state.paused}
-                    onClick={() => this.onStepOut()}
-                    title={I18n.t('Step out from function')}
-                    size="medium"><IconOut/></IconButton>}
-                {!this.state.finished && <IconButton
-                    className={this.props.classes.buttonException}
-                    color={this.state.stopOnException ? 'primary' : 'default'}
-                    disabled={disabled || !this.state.paused}
-                    onClick={() => this.onToggleException()}
-                    title={I18n.t('Stop on exception')}
-                    size="medium"><IconException/></IconButton>}
-                {this.renderTabs()}
-            </Toolbar>
-        );
+        return <Toolbar variant="dense" style={styles.toolbar} key="toolbar1">
+            <IconButton
+                style={styles.buttonRestart}
+                disabled={disabled}
+                onClick={() => this.onRestart()}
+                title={I18n.t('Restart')}
+                size="medium"><IconRestart/></IconButton>
+            {
+                !this.state.finished && this.state.paused ?
+                    <IconButton
+                        style={styles.buttonRun}
+                        disabled={disabled}
+                        onClick={() => this.onResume()}
+                        title={I18n.t('Resume execution')}
+                        size="medium"><IconRun/></IconButton>
+                    :
+                    !this.state.finished && <IconButton
+                        disabled={disabled}
+                        style={styles.buttonPause}
+                        onClick={() => this.onPause()}
+                        title={I18n.t('Pause execution')}
+                        size="medium"><IconPause/></IconButton>
+            }
+            {!this.state.finished && <IconButton
+                style={styles.buttonNext}
+                disabled={disabled || !this.state.paused}
+                onClick={() => this.onNext()}
+                title={I18n.t('Go to next line')}
+                size="medium"><IconNext/></IconButton>}
+            {!this.state.finished && <IconButton
+                style={styles.buttonStep}
+                disabled={disabled || !this.state.paused}
+                onClick={() => this.onStepIn()}
+                title={I18n.t('Step into function')}
+                size="medium"><IconStep/></IconButton>}
+            {!this.state.finished && <IconButton
+                style={styles.buttonOut}
+                disabled={disabled || !this.state.paused}
+                onClick={() => this.onStepOut()}
+                title={I18n.t('Step out from function')}
+                size="medium"><IconOut/></IconButton>}
+            {!this.state.finished && <IconButton
+                style={styles.buttonException}
+                color={this.state.stopOnException ? 'primary' : 'default'}
+                disabled={disabled || !this.state.paused}
+                onClick={() => this.onToggleException()}
+                title={I18n.t('Stop on exception')}
+                size="medium"><IconException/></IconButton>}
+            {this.renderTabs()}
+        </Toolbar>;
     }
 
     getPossibleBreakpoints(bp) {
         const end = {...bp, columnNumber: 1000};
-        this.sendToInstance({cmd: 'getPossibleBreakpoints', start: bp, end});
+        this.sendToInstance({ cmd: 'getPossibleBreakpoints', start: bp, end });
     }
 
     toggleBreakpoint(lineNumber) {
@@ -621,9 +635,9 @@ class Debugger extends React.Component {
         if (bp) {
             const breakpoints = JSON.parse(JSON.stringify(this.state.breakpoints));
             this.setState({breakpoints}, () =>
-                this.sendToInstance({breakpoints: [bp.id], cmd: 'cb'}));
+                this.sendToInstance({ breakpoints: [bp.id], cmd: 'cb' }));
         } else {
-            bp = {scriptId: this.state.selected, lineNumber, columnNumber: 0};
+            bp = { scriptId: this.state.selected, lineNumber, columnNumber: 0 };
             this.getPossibleBreakpoints(bp);
         }
     }
@@ -662,7 +676,7 @@ class Debugger extends React.Component {
             callFrames={this.state.context?.callFrames}
             currentFrame={this.state.currentFrame}
             onChangeCurrentFrame={i => {
-                this.setState({currentFrame: i, scopes: {}}, () => {
+                this.setState({ currentFrame: i, scopes: {} }, () => {
                     this.readCurrentScope();
                     this.readExpressions();
                 })
@@ -673,19 +687,19 @@ class Debugger extends React.Component {
                     variableName: obj.variableName,
                     scopeNumber: obj.scopeNumber,
                     newValue: obj.newValue,
-                    callFrameId: obj.callFrameId
+                    callFrameId: obj.callFrameId,
                 });
             }}
             onExpressionDelete={i => {
                 const expressions = JSON.parse(JSON.stringify(this.state.expressions));
                 expressions.splice(i, 1);
                 this.setState({expressions});
-                window.localStorage.setItem('javascript.tools.exps.' + this.props.src, JSON.stringify(expressions.map(item => item.name)));
+                window.localStorage.setItem(`javascript.tools.exps.${this.props.src}`, JSON.stringify(expressions.map(item => item.name)));
             }}
             onExpressionAdd={cb => {
                 const expressions = JSON.parse(JSON.stringify(this.state.expressions));
-                expressions.push({name: '', value: {value: ''}});
-                this.setState({expressions}, () => cb && cb(expressions.length - 1, this.state.expressions[expressions.length - 1]));
+                expressions.push({ name: '', value: { value: '' } });
+                this.setState({ expressions }, () => cb && cb(expressions.length - 1, this.state.expressions[expressions.length - 1]));
             }}
             onExpressionNameUpdate={(i, name, cb) => {
                 const expressions = JSON.parse(JSON.stringify(this.state.expressions));
@@ -701,7 +715,7 @@ class Debugger extends React.Component {
                     name && this.readExpressions(i);
                     cb && cb();
                 });
-                window.localStorage.setItem('javascript.tools.exps.' + this.props.src, JSON.stringify(expressions.map(item => item.name)));
+                window.localStorage.setItem(`javascript.tools.exps.${this.props.src}`, JSON.stringify(expressions.map(item => item.name)));
             }}
         />;
     }
@@ -710,7 +724,12 @@ class Debugger extends React.Component {
         return <Console
             theme={this.props.theme}
             console={this.state.console}
-            onClearAllLogs={() => this.setState({console: [], logErrors: 0, logWarning: 0, logs: 0})}
+            onClearAllLogs={() => this.setState({
+                console: [],
+                logErrors: 0,
+                logWarning: 0,
+                logs: 0,
+            })}
         />;
     }
 
@@ -734,15 +753,15 @@ class Debugger extends React.Component {
             _console = I18n.t('Console');
         }
 
-        return <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
+        return <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
             <Tabs
-                classes={{root: this.props.classes.tabsRoot}}
-                component={'div'}
+                sx={styles.tabsRoot}
+                component="div"
                 indicatorColor="primary"
                 style={{ position: 'relative', width: '100%' }}
                 value={this.state.toolsTab}
                 onChange={(event, value) => {
-                    const newState = {toolsTab: value};
+                    const newState = { toolsTab: value };
 
                     // load logs from buffer
                     if (this.console && value === 'console') {
@@ -759,9 +778,14 @@ class Debugger extends React.Component {
                 }}
                 scrollButtons="auto"
             >
-                <Tab classes={{root: this.props.classes.tabRoot}} disabled={disabled} label={I18n.t('Stack')} value="stack"/>
                 <Tab
-                    classes={{root: this.props.classes.tabRoot}}
+                    style={styles.tabRoot}
+                    disabled={disabled}
+                    label={I18n.t('Stack')}
+                    value="stack"
+                />
+                <Tab
+                    style={styles.tabRoot}
                     disabled={disabled}
                     label={_console}
                     value="console"
@@ -775,28 +799,33 @@ class Debugger extends React.Component {
     }
 
     render() {
-        return <div key="debugger" style={this.props.style} className={Utils.clsx(this.props.classes.root, this.props.className)}>
-            {this.state.starting ? <LinearProgress/> : null}
+        return <Box
+            key="debugger"
+            style={this.props.style}
+            sx={styles.root}
+        >
+            {this.state.starting ? <LinearProgress /> : null}
             {this.renderToolbar()}
-            <SplitterLayout
-                customClassName={this.props.classes.splitter}
-                primaryMinSize={100}
-                vertical
-                secondaryInitialSize={this.toolSize}
-                onSecondaryPaneSizeChange={size => this.toolSize = parseFloat(size)}
-                onDragEnd={() => window.localStorage.setItem('App.toolSize', this.toolSize.toString())}
-                //style={{width: '100%', height: 'calc(100% - 73px)', overflow: 'hidden'}}
+            <ReactSplit
+                direction={SplitDirection.Vertical}
+                initialSizes={this.state.toolSizes}
+                minWidths={[100, 0]}
+                onResizeFinished={(_gutterIdx, toolSizes) => {
+                    this.setState({ toolSizes });
+                    window.localStorage.setItem('JS.toolSizes', JSON.stringify(toolSizes));
+                }}
+                gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
             >
-                <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
+                <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
                     {this.renderCode()}
                     {this.renderQueryBreakpoints()}
                 </div>
-                <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
+                <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
                     {this.renderTools()}
                 </div>
-            </SplitterLayout>
+            </ReactSplit>
             {this.renderError()}
-        </div>;
+        </Box>;
     }
 }
 
@@ -805,7 +834,6 @@ Debugger.propTypes = {
     adapterName: PropTypes.string,
     src: PropTypes.string,
     socket: PropTypes.object.isRequired,
-    className: PropTypes.string,
     style: PropTypes.object,
     themeType: PropTypes.string,
     theme: PropTypes.object,
@@ -813,4 +841,4 @@ Debugger.propTypes = {
     debugInstance: PropTypes.object,
 };
 
-export default withStyles(styles)(Debugger);
+export default Debugger;

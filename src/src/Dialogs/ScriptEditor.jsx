@@ -1,21 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 
-import Button from '@mui/material/Button';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Dialog from '@mui/material/Dialog';
+import {
+    Button,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Dialog, Box,
+} from '@mui/material';
 
-import IconSave from '@mui/icons-material/Save';
-import IconCancel from '@mui/icons-material/Cancel';
+import {
+    Save as IconSave,
+    Cancel as IconCancel,
+} from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
 import ScriptEditorComponent from '../Components/ScriptEditorVanilaMonaco';
 
-const styles = theme => ({
+const styles = {
     textArea: {
         width: 'calc(100% - 10px)',
         resize: 'none'
@@ -27,17 +30,17 @@ const styles = theme => ({
         height: '100%',
         overflow: 'hidden'
     },
-    args: {
+    args: theme => ({
         color: theme.palette.mode === 'dark' ? 'white' : 'black',
         height: 30,
         width: '100%',
         fontSize: 16
-    },
-    argsTitle: {
+    }),
+    argsTitle: theme => ({
         color: theme.palette.mode === 'dark' ? 'white' : 'black',
         fontWeight: 'bold'
-    }
-});
+    }),
+};
 
 class DialogScriptEditor extends React.Component {
     constructor(props) {
@@ -78,28 +81,25 @@ class DialogScriptEditor extends React.Component {
     }
 
     render() {
-        const classes = this.props.classes;
-
         return <Dialog
-            onClose={(event, reason) => false}
+            onClose={() => false}
             maxWidth="lg"
-            classes={{ paper: classes.dialog }}
+            sx={{ '& .MuiDialog-paper': styles.dialog }}
             fullWidth
             open={!0}
             aria-labelledby="source-dialog-title"
         >
             <DialogTitle id="source-dialog-title">{I18n.t('Function editor')}</DialogTitle>
-            <DialogContent className={classes.fullHeight}>
-                {this.props.args && (<div key="arguments" className={classes.args}>
-                    <span className={classes.argsTitle}>{I18n.t('function (')}</span>
+            <DialogContent style={styles.fullHeight}>
+                {this.props.args && <Box key="arguments" sx={styles.args}>
+                    <Box component="span" sx={styles.argsTitle}>{I18n.t('function (')}</Box>
                     {this.props.args}
-                    <span className={classes.argsTitle}>)</span>
-                </div>)}
+                    <Box component="span" sx={styles.argsTitle}>)</Box>
+                </Box>}
                 <ScriptEditorComponent
                     adapterName={this.props.adapterName}
                     runningInstances={this.props.runningInstances}
-                    className={classes.textArea}
-                    style={{height: this.props.args ? 'calc(100% - 30px)' : '100%'}}
+                    style={{ ...styles.textArea, height: this.props.args ? 'calc(100% - 30px)' : '100%' }}
                     key="scriptEditor"
                     name={'blockly'}
                     socket={this.props.socket}
@@ -121,7 +121,6 @@ class DialogScriptEditor extends React.Component {
 }
 
 DialogScriptEditor.propTypes = {
-    classes: PropTypes.object.isRequired,
     adapterName: PropTypes.string.isRequired,
     runningInstances: PropTypes.object.isRequired,
     onClose: PropTypes.func,
@@ -132,4 +131,4 @@ DialogScriptEditor.propTypes = {
     socket: PropTypes.object
 };
 
-export default withStyles(styles)(DialogScriptEditor);
+export default DialogScriptEditor;

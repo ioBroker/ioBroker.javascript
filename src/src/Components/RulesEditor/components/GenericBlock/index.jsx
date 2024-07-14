@@ -1,16 +1,20 @@
 import React, { PureComponent, Fragment } from 'react';
 import cls from './style.module.scss';
 
-import { Menu, MenuItem } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import IconHelp from '@mui/icons-material/HelpOutline';
+import {
+    Menu,
+    MenuItem,
+    IconButton,
+} from '@mui/material';
+import { HelpOutline as IconHelp } from '@mui/icons-material';
 
-import DialogSelectID from '@iobroker/adapter-react-v5/Dialogs/SelectID';
-import DialogError from '@iobroker/adapter-react-v5/Dialogs/Error';
-import DialogMessage from '@iobroker/adapter-react-v5/Dialogs/Message';
 import { getSelectIdIcon } from '@iobroker/adapter-react-v5/Components/Icon';
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
-
+import {
+    I18n, Utils,
+    SelectID as DialogSelectID,
+    Error as DialogError,
+    Message as DialogMessage,
+} from '@iobroker/adapter-react-v5';
 
 import CustomButton from '../CustomButton';
 import CustomCheckbox from '../CustomCheckbox';

@@ -1,5 +1,5 @@
-import GenericBlock from '../GenericBlock';
 import { I18n } from '@iobroker/adapter-react-v5';
+import GenericBlock from '../GenericBlock';
 
 class ActionOperateStates extends GenericBlock {
     constructor(props) {

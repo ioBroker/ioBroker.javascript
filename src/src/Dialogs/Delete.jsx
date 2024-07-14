@@ -1,21 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from '@mui/material/Button';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Dialog from '@mui/material/Dialog';
-import {MdDelete as IconDelete} from 'react-icons/md';
 
-import IconOk from '@mui/icons-material/Check';
-import IconCancel from '@mui/icons-material/Cancel';
+import {
+    Button,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Dialog,
+} from '@mui/material';
+
+import {
+    Check as IconOk,
+    Cancel as IconCancel,
+    Delete as IconDelete,
+} from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
-import withStyles from '@mui/styles/withStyles';
-
-const styles = theme => ({
-
-});
 
 class DialogDelete extends React.Component {
     constructor(props) {
@@ -71,4 +71,4 @@ DialogDelete.propTypes = {
     id: PropTypes.string,
 };
 
-export default withStyles(styles)(DialogDelete);
+export default DialogDelete;

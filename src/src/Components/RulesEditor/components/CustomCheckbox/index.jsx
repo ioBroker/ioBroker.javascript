@@ -1,6 +1,7 @@
-import { Checkbox } from '@mui/material';
 import React, { memo, useState } from 'react';
 import PropTypes from 'prop-types';
+
+import { Checkbox } from '@mui/material';
 
 import { Utils } from '@iobroker/adapter-react-v5';
 

@@ -1,26 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
-import Button from '@mui/material/Button';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Dialog from '@mui/material/Dialog';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
+
+import {
+    Button,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Dialog,
+    Card,
+    CardActionArea,
+    CardActions,
+    CardContent,
+    CardMedia,
+} from '@mui/material';
+
+import { Cancel as IconCancel } from '@mui/icons-material';
+
+import { I18n } from '@iobroker/adapter-react-v5';
 
 import ImgJS from '../assets/tileJS.png';
 import ImgTS from '../assets/tileTS.png';
 import ImgBlockly from '../assets/tileBlockly.png';
 import ImgRules from '../assets/tileRules.png';
-import IconCancel from '@mui/icons-material/Cancel';
 
-import { I18n } from '@iobroker/adapter-react-v5';
-
-const styles = theme => ({
+const styles = {
     card: {
         maxWidth: 345,
         minWidth: 250,
@@ -37,9 +40,9 @@ const styles = theme => ({
     complexity: {
         fontWeight: 'bold',
         fontStyle: 'italic',
-        marginBottom: theme.spacing(1),
+        marginBottom: 8,
     },
-});
+};
 
 class DialogAddNew extends React.Component {
     handleCancel = () => {
@@ -53,24 +56,24 @@ class DialogAddNew extends React.Component {
     openHtml(html) {
         const lang = I18n.getLanguage();
         if (!html.includes('javascript.md') && (lang === 'de' || lang === 'ru')) {
-            html = html.replace(/\/en\//, '/' + lang + '/');
+            html = html.replace(/\/en\//, `/${lang}/`);
         }
         const win = window.open(html, '_blank');
         win.focus();
     }
 
     getJSCard() {
-        return <Card className={this.props.classes.card}>
+        return <Card style={styles.card}>
             <CardActionArea onClick={() => this.props.onClose && this.props.onClose('Javascript/js')}>
                 <CardMedia
-                    className={this.props.classes.media}
+                    style={styles.media}
                     image={ImgJS}
                     title="JavaScript"
                 />
                 <CardContent>
                     <h2>JavaScript</h2>
-                    <div className={this.props.classes.complexity}>{I18n.t('for programmers')}</div>
-                    <div className={this.props.classes.text}>{I18n.t('JS description')}</div>
+                    <div style={styles.complexity}>{I18n.t('for programmers')}</div>
+                    <div style={styles.text}>{I18n.t('JS description')}</div>
                 </CardContent>
             </CardActionArea>
             <CardActions>
@@ -81,17 +84,17 @@ class DialogAddNew extends React.Component {
     }
 
     getTSCard() {
-        return <Card className={this.props.classes.card}>
+        return <Card style={styles.card}>
             <CardActionArea onClick={() => this.props.onClose && this.props.onClose('TypeScript/ts')}>
                 <CardMedia
-                    className={this.props.classes.media}
+                    style={styles.media}
                     image={ImgTS}
                     title="TypeScript"
                 />
                 <CardContent>
                     <h2>TypeScript</h2>
-                    <div className={this.props.classes.complexity}>{I18n.t('for professionals')}</div>
-                    <div className={this.props.classes.text}>{I18n.t('TS description')}</div>
+                    <div style={styles.complexity}>{I18n.t('for professionals')}</div>
+                    <div style={styles.text}>{I18n.t('TS description')}</div>
                 </CardContent>
             </CardActionArea>
             <CardActions>
@@ -102,17 +105,17 @@ class DialogAddNew extends React.Component {
     }
 
     getBlocklyCard() {
-        return <Card className={this.props.classes.card}>
+        return <Card style={styles.card}>
             <CardActionArea onClick={() => this.props.onClose && this.props.onClose('Blockly')}>
                 <CardMedia
-                    className={this.props.classes.media}
+                    style={styles.media}
                     image={ImgBlockly}
                     title="Blockly"
                 />
                 <CardContent>
                     <h2>Blockly</h2>
-                    <div className={this.props.classes.complexity}>{I18n.t('normal')}</div>
-                    <div className={this.props.classes.text}>{I18n.t('Blockly description')}</div>
+                    <div style={styles.complexity}>{I18n.t('normal')}</div>
+                    <div style={styles.text}>{I18n.t('Blockly description')}</div>
                 </CardContent>
             </CardActionArea>
             <CardActions>
@@ -123,17 +126,17 @@ class DialogAddNew extends React.Component {
     }
 
     getRulesCard() {
-        return <Card className={this.props.classes.card}>
+        return <Card style={styles.card}>
             <CardActionArea onClick={() => this.props.onClose && this.props.onClose('Rules')}>
                 <CardMedia
-                    className={this.props.classes.media}
+                    style={styles.media}
                     image={ImgRules}
                     title="Rules"
                 />
                 <CardContent>
                     <h2>Rules</h2>
-                    <div className={this.props.classes.complexity}>{I18n.t('easy')}</div>
-                    <div className={this.props.classes.text}>{I18n.t('Rules description')}</div>
+                    <div style={styles.complexity}>{I18n.t('easy')}</div>
+                    <div style={styles.text}>{I18n.t('Rules description')}</div>
                 </CardContent>
             </CardActionArea>
             <CardActions>
@@ -169,4 +172,4 @@ DialogAddNew.propTypes = {
     onClose: PropTypes.func,
 };
 
-export default withStyles(styles)(DialogAddNew);
+export default DialogAddNew;

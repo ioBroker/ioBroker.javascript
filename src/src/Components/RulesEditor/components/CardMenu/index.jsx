@@ -23,7 +23,7 @@ CardMenu.defaultProps = {
     name: '',
     active: false,
     id: '',
-    onDoubleClick: () => { }
+    onDoubleClick: () => { },
 };
 
 CardMenu.propTypes = {

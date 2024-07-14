@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 
-import IconButton from '@mui/material/IconButton';
+import {Box, IconButton} from '@mui/material';
 
 import {
     MdContentCopy as IconCopy,
@@ -14,78 +13,45 @@ import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 const TOOLBOX_WIDTH = 34;
 
-const styles = theme => ({
-    consoleLine: {
-        fontSize: 14,
-        color: theme.palette.mode === 'dark' ? '#EEE' : '#222',
-    },
-    console_log: {
-
-    },
-    console_warn: {
-        backgroundColor: theme.palette.mode === 'dark' ? '#885900' : '#ffa500',
-    },
-    console_error: {
-        backgroundColor: theme.palette.mode === 'dark' ? '#7a0000' : '#FF0000',
-    },
-    console_debug: {
-        opacity: 0.6,
-    },
-    consoleSeverity: {
-        verticalAlign: 'top',
-        width: 50,
-        textTransform: 'uppercase',
-    },
-    consoleTime: {
-        whiteSpace: 'nowrap',
-        verticalAlign: 'top',
-        width: 170,
-    },
-    consoleText: {
-        fontFamily: 'Lucida Console, Courier, monospace',
-        paddingTop: 4,
-        '&>pre': {
-            margin: 0,
-        },
-    },
+const styles = {
     logBox: {
         width: '100%',
         height: '100%',
         position: 'relative',
         overflow: 'hidden',
     },
-    logBoxInner: {
+    logBoxInner: theme => ({
         display: 'inline-block',
         color: theme.palette.mode === 'dark' ? 'white' : 'black',
         width: `calc(100% - ${TOOLBOX_WIDTH}px)`,
         height: '100%',
-        //marginLeft: TOOLBOX_WIDTH,
+        // marginLeft: TOOLBOX_WIDTH,
         overflow: 'auto',
         position: 'relative',
         verticalAlign: 'top',
-    },
-    info: {
+    }),
+    info: theme => ({
         background: theme.palette.mode === 'dark' ? 'darkgrey' : 'lightgrey',
         color: theme.palette.mode === 'dark' ?  'black' : 'black',
-    },
-    error: {
+    }),
+    error: theme => ({
         background: '#FF0000',
         color: theme.palette.mode === 'dark' ?  'black' : 'white',
-    },
-    warn: {
+    }),
+    warn: theme => ({
         background: '#FF8000',
         color: theme.palette.mode === 'dark' ?  'black' : 'white',
-    },
-    debug: {
+    }),
+    debug: theme => ({
         background: 'gray',
         opacity: 0.8,
         color: theme.palette.mode === 'dark' ?  'black' : 'white',
-    },
-    silly: {
+    }),
+    silly: theme => ({
         background: 'gray',
         opacity: 0.6,
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
-    },
+    }),
     table: {
         fontFamily: 'monospace',
         width: '100%',
@@ -114,7 +80,7 @@ const styles = theme => ({
         height: 32,
         padding: 4,
     },
-});
+};
 
 function getTimeString(d) {
     let text;
@@ -131,14 +97,14 @@ function getTimeString(d) {
     text += i + ':';
     i = d.getSeconds();
     if (i < 10) {
-        i = '0' + i.toString();
+        i = `0${i.toString()}`;
     }
     text += i + '.';
     i = d.getMilliseconds();
     if (i < 10) {
-        i = '00' + i.toString();
+        i = `00${i.toString()}`;
     } else if (i < 100) {
-        i = '0' + i.toString();
+        i = `0${i.toString()}`;
     }
     text += i;
     return text;
@@ -154,22 +120,28 @@ class Console extends React.Component {
         this.messagesEnd = React.createRef();
     }
     generateLine(message) {
-        return <tr key={`tr_${message.ts}_${message.text.substr(-10)}`} className={this.props.classes[message.severity]}>
-            <td key="tdTime" className={this.props.classes.trTime}>{getTimeString(new Date(message.ts))}</td>
-            <td key="tdSeverity" className={this.props.classes.trSeverity}>{message.severity}</td>
-            <td key="tdMessage">{message.text}</td>
-        </tr>;
+        return <Box
+            component="tr"
+            key={`tr_${message.ts}_${message.text.substr(-10)}`}
+            sx={styles[message.severity]}
+        >
+            <td style={styles.trTime}>{getTimeString(new Date(message.ts))}</td>
+            <td style={styles.trSeverity}>{message.severity}</td>
+            <td>{message.text}</td>
+        </Box>;
     }
     renderLogList(lines) {
         if (lines && lines.length) {
-            return <div className={this.props.classes.logBoxInner} key="logList">
-                <table key="logTable" className={this.props.classes.table}><tbody>
-                {lines.map((line, i) => this.generateLine(line))}</tbody></table>
-                <div key="logScrollPoint" ref={this.messagesEnd} style={{float: 'left', clear: 'both'}}/>
-            </div>;
-        } else {
-            return <div key="logList" className={this.props.classes.logBoxInner} style={{paddingLeft: 10}}>{I18n.t('Log outputs')}</div>;
+            return <Box sx={styles.logBoxInner} key="logList">
+                <table key="logTable" style={styles.table}>
+                    <tbody>
+                        {lines.map(line => this.generateLine(line))}
+                    </tbody>
+                </table>
+                <div key="logScrollPoint" ref={this.messagesEnd} style={{ float: 'left', clear: 'both' }}/>
+            </Box>;
         }
+        return <Box key="logList" sx={styles.logBoxInner} style={{ paddingLeft: 10 }}>{I18n.t('Log outputs')}</Box>;
     }
 
     onCopy() {
@@ -186,26 +158,30 @@ class Console extends React.Component {
 
     render() {
         const lines = this.props.console;
-        return (
-            <div className={this.props.classes.logBox}>
-                <div className={this.props.classes.toolbox} key="toolbox">
-                    <IconButton
-                        className={this.props.classes.iconButtons}
-                        onClick={() => this.setState({goBottom: !this.state.goBottom})}
-                        color={this.state.goBottom ? 'secondary' : ''}
-                        size="medium"><IconBottom/></IconButton>
-                    {lines && lines.length ? <IconButton
-                        className={this.props.classes.iconButtons}
-                        onClick={() => this.props.onClearAllLogs()}
-                        size="medium"><IconDelete/></IconButton> : null}
-                    {lines && lines.length ? <IconButton
-                        className={this.props.classes.iconButtons}
-                        onClick={() => this.onCopy()}
-                        size="medium"><IconCopy/></IconButton> : null}
-                </div>
-                {this.renderLogList(lines)}
+        return <div style={styles.logBox}>
+            <div style={styles.toolbox} key="toolbox">
+                <IconButton
+                    style={styles.iconButtons}
+                    onClick={() => this.setState({ goBottom: !this.state.goBottom })}
+                    color={this.state.goBottom ? 'secondary' : ''}
+                    size="medium">
+                    <IconBottom />
+                </IconButton>
+                {lines && lines.length ? <IconButton
+                    style={styles.iconButtons}
+                    onClick={() => this.props.onClearAllLogs()}
+                    size="medium">
+                    <IconDelete />
+                </IconButton> : null}
+                {lines && lines.length ? <IconButton
+                    style={styles.iconButtons}
+                    onClick={() => this.onCopy()}
+                    size="medium">
+                    <IconCopy />
+                </IconButton> : null}
             </div>
-        );
+            {this.renderLogList(lines)}
+        </div>;
     }
 }
 
@@ -215,4 +191,4 @@ Console.propTypes = {
     console: PropTypes.array,
 };
 
-export default withStyles(styles)(Console);
+export default Console;

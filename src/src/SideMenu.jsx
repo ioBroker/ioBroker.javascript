@@ -1,52 +1,59 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 
-import Drawer from '@mui/material/Drawer';
-import Divider from '@mui/material/Divider';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Input from '@mui/material/Input';
+import {
+    Drawer,
+    Divider,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    IconButton,
+    Menu,
+    MenuItem,
+    Input,
+    ListItemSecondaryAction, Box,
+} from '@mui/material';
+
 import { useDrag, useDrop, DndProvider as DragDropContext  } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-import { MdMoreVert as IconMore } from 'react-icons/md';
-import { FaFolder as IconFolder } from 'react-icons/fa';
-import { FaFolderOpen as IconFolderOpened } from 'react-icons/fa';
-import { MdContentCopy as IconCopy } from 'react-icons/md';
-import { MdDelete as IconDelete } from 'react-icons/md';
-import { MdInput as IconDoEdit } from 'react-icons/md';
-import { MdClose as IconClear } from 'react-icons/md';
-import { MdFormatClear as IconClose } from 'react-icons/md';
-import { MdPlayArrow as IconPlay } from 'react-icons/md';
-import { MdAdd as IconAdd } from 'react-icons/md';
-import { MdCreateNewFolder as IconAddFolder } from 'react-icons/md';
-import { MdPause as IconPause } from 'react-icons/md';
-import { MdSwapVert as IconReorder } from 'react-icons/md';
-import { MdEdit as IconEdit } from 'react-icons/md';
-import { MdSearch as IconFind } from 'react-icons/md';
-import { MdPersonPin as IconExpert } from 'react-icons/md';
-import { FaFileExport as IconExport } from 'react-icons/fa';
-import { FaFileImport as IconImport } from 'react-icons/fa';
-import { MdPalette as IconDark } from 'react-icons/md';
-import { MdUnfoldMore as IconExpandAll } from 'react-icons/md';
-import { MdUnfoldLess as IconCollapseAll } from 'react-icons/md';
-import { MdBugReport as IconDebug } from 'react-icons/md';
+import {
+    MdMoreVert as IconMore,
+    MdContentCopy as IconCopy,
+    MdDelete as IconDelete,
+    MdInput as IconDoEdit,
+    MdClose as IconClear,
+    MdFormatClear as IconClose,
+    MdPlayArrow as IconPlay,
+    MdAdd as IconAdd,
+    MdCreateNewFolder as IconAddFolder,
+    MdPause as IconPause,
+    MdSwapVert as IconReorder,
+    MdEdit as IconEdit,
+    MdSearch as IconFind,
+    MdPersonPin as IconExpert,
+    MdPalette as IconDark,
+    MdUnfoldMore as IconExpandAll,
+    MdUnfoldLess as IconCollapseAll,
+    MdBugReport as IconDebug,
+} from 'react-icons/md';
+
+import {
+    FaFolder as IconFolder,
+    FaFolderOpen as IconFolderOpened,
+    FaFileExport as IconExport,
+    FaFileImport as IconImport,
+} from 'react-icons/fa';
 
 import { red, green, yellow } from '@mui/material/colors';
+
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
 import ImgRules from './assets/rules.png';
-
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 import DialogRename from './Dialogs/Rename';
 import DialogDelete from './Dialogs/Delete';
@@ -60,8 +67,8 @@ const COLOR_RUN = green[400];
 const COLOR_PROBLEM = yellow[400];
 const COLOR_PAUSE = red[400];
 const ROOT_ID = 'script.js';
-const COMMON_ID = ROOT_ID + '.common';
-const GLOBAL_ID = ROOT_ID + '.global';
+const COMMON_ID = `${ROOT_ID}.common`;
+const GLOBAL_ID = `${ROOT_ID}.global`;
 const NARROW_WIDTH = 350;
 const LEVEL_PADDING = 16;
 
@@ -70,19 +77,19 @@ const SELECTED_STYLE = {
     color: 'white'
 };
 
-const styles = theme => ({
+const styles = {
     drawerPaper: {
         position: 'relative',
         width: '100%', //Theme.menu.width,
         height: '100%',
         overflow: 'hidden',
     },
-    toolbar: {
+    toolbar: theme => ({
         height: theme.toolbar.height,
-    },
-    toolbarButtons: {
+    }),
+    toolbarButtons: theme => ({
         color: theme.palette.mode === 'dark'? 'white !important' : 'black !important',
-    },
+    }),
     iconButtonsDisabled: {
         filter: 'grayscale(100%)',
         opacity: 0.5,
@@ -178,7 +185,7 @@ const styles = theme => ({
         width: 37,
         height: 37,
     },
-    selected:  SELECTED_STYLE,
+    selected: SELECTED_STYLE,
     instances: {
         color: 'gray',
         fontSize: 'smaller',
@@ -191,18 +198,32 @@ const styles = theme => ({
     },
     footer: {
         height: 24,
+        display: 'flex',
     },
-    footerButtons: {
-        '&:hover': {
-            backgroundColor: '#dbdbdb',
+    footerButtons: theme => ({
+        '& img': {
+            color: theme.palette.mode === 'dark' ? '#ffffff' : '#111111',
+            cursor: 'pointer',
+            mt: '1px',
+            mr: '2px',
+            height: 22,
+            width: 22,
+            '&:hover': {
+                backgroundColor: '#dbdbdb',
+            },
         },
-        color: theme.palette.mode === 'dark' ? '#ffffff' : '#111111',
-        cursor: 'pointer',
-        marginTop: 1,
-        marginRight: 2,
-        height: 22,
-        width: 22,
-    },
+        '& svg': {
+            color: theme.palette.mode === 'dark' ? '#ffffff' : '#111111',
+            cursor: 'pointer',
+            mt: '1px',
+            mr: '2px',
+            height: 22,
+            width: 22,
+            '&:hover': {
+                backgroundColor: '#dbdbdb',
+            },
+        }
+    }),
     footerButtonsRight: {
         float: 'right',
     },
@@ -218,7 +239,7 @@ const styles = theme => ({
             opacity: 0.3,
         },
     },
-});
+};
 
 const images = {
     Blockly: ImgBlockly,
@@ -316,7 +337,7 @@ const prepareList = data => {
     let modified;
     do {
         modified = false;
-        // check if all parents exists
+        // check if all parents exist
         // eslint-disable-next-line
         result.forEach(item => {
             if (item.parent) {
@@ -417,7 +438,7 @@ class SideDrawer extends React.Component {
 
         this.state = {
             listItems: prepareList(props.scripts || {}),
-            expanded: expanded,
+            expanded,
             problems: [],
             reorder: false,
             themeName: this.props.themeName,
@@ -620,17 +641,18 @@ class SideDrawer extends React.Component {
             // eslint-disable-next-line
             el = el && el.parent && listItems.find(it => it.id === el.parent);
             if (el) {
-                if (expanded.indexOf(el.id) === -1) {
+                if (!expanded.includes(el.id)) {
                     expanded.push(el.id);
                     changed = true;
                 }
             }
         } while(el);
+
         return changed && expanded;
     }
 
     ensureSelectedIsVisible(selected, expanded) {
-        SideDrawer.ensureSelectedIsVisibleStatic(selected || this.state.selected, expanded || this.state.expanded, this.state.listItems);
+        return SideDrawer.ensureSelectedIsVisibleStatic(selected || this.state.selected, expanded || this.state.expanded, this.state.listItems);
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -752,7 +774,6 @@ class SideDrawer extends React.Component {
 
             return [
                 <IconButton
-                    className={Utils.clsx(this.props.classes.iconButtons, this.props.debugMode && this.props.classes.iconButtonsDisabled)}
                     onClick={e => {
                         e.stopPropagation();
                         this.props.onEnableDisable && this.props.onEnableDisable(item.id, !item.enabled)
@@ -760,14 +781,18 @@ class SideDrawer extends React.Component {
                     title={item.enabled ? I18n.t('Pause script') : I18n.t('Run script')}
                     disabled={this.props.debugMode}
                     key="startStop"
-                    style={{ color }}
+                    style={{
+                        ...styles.iconButtons,
+                        ...(this.props.debugMode ? styles.iconButtonsDisabled : undefined),
+                        color,
+                    }}
                     size="medium"
                 >
                     {item.enabled ? <IconPause /> : <IconPlay />}
                 </IconButton>,
                 this.state.width > NARROW_WIDTH ? <IconButton
                     key="delete"
-                    className={Utils.clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
+                    style={this.props.debugMode ? styles.iconButtonsDisabled : undefined}
                     title={I18n.t('Delete script')}
                     disabled={item.id === GLOBAL_ID || item.id === COMMON_ID || this.props.debugMode}
                     onClick={e => this.onDelete(item, e)}
@@ -776,7 +801,7 @@ class SideDrawer extends React.Component {
                     <IconDelete/>
                 </IconButton> : null,
                 <IconButton
-                    className={Utils.clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
+                    style={this.props.debugMode ? styles.iconButtonsDisabled : undefined}
                     disabled={this.props.debugMode}
                     key="openInEdit"
                     title={I18n.t('Edit script or just double click')}
@@ -788,14 +813,14 @@ class SideDrawer extends React.Component {
         } else if (this.state.width > NARROW_WIDTH) {
             if (item.id !== ROOT_ID && item.id !== COMMON_ID && item.id !== GLOBAL_ID && (!children || !children.length)) {
                 return <IconButton
-                    className={Utils.clsx(this.props.debugMode && this.props.classes.iconButtonsDisabled)}
+                    style={this.props.debugMode ? styles.iconButtonsDisabled : undefined}
                     key="delete"
                     title={I18n.t('Delete folder')}
                     disabled={item.id === GLOBAL_ID || item.id === COMMON_ID || this.props.debugMode}
                     onClick={e => this.onDelete(item, e)}
                     size="medium"
                 >
-                    <IconDelete/>
+                    <IconDelete />
                 </IconButton>;
             } else {
                 return null;
@@ -807,9 +832,9 @@ class SideDrawer extends React.Component {
         e && e.stopPropagation();
         return new Promise(resolve => {
             if (typeof item !== 'object') {
-                this.setState({ deleting: item });
+                this.setState({ deleting: item }, () => resolve());
             } else {
-                this.setState({ deleting: item.id });
+                this.setState({ deleting: item.id }, () => resolve());
             }
         });
     }
@@ -906,7 +931,7 @@ class SideDrawer extends React.Component {
 
         if (!this.state.isAllZeroInstances && item.type !== 'folder') {
             title = [
-                <span key="instance" title={I18n.t('Instance')} className={this.props.classes.instances}>[{item.instance}] </span>,
+                <span key="instance" title={I18n.t('Instance')} style={styles.instances}>[{item.instance}] </span>,
                 <span key="title">{title}</span>,
             ];
         }
@@ -931,51 +956,66 @@ class SideDrawer extends React.Component {
             isExpanded = this.state.expanded.includes(item.id);
         }
 
-        let iconStyle = {};
+        let iconStyle;
+        if (item.type === 'folder') {
+            iconStyle = {
+                ...styles.folderIcon,
+                ...(reorder ? styles.folderIconReorder : styles.folderIconNoReorder),
+            };
+        } else {
+            iconStyle = {
+                ...styles.scriptIcon,
+                // ...(reorder ? styles.scriptIconReorder : styles.scriptIconNoReorder),
+            };
+        }
         if (item.id === GLOBAL_ID) {
             iconStyle.color = '#356956';
         } else if (item.id === COMMON_ID) {
             iconStyle.color = '#4899e1';
         }
-        let iconClass;
-        if (item.type === 'folder') {
-            iconClass = Utils.clsx(this.props.classes.folderIcon, reorder ? this.props.classes.folderIconReorder : this.props.classes.folderIconNoReorder);
-        } else {
-            iconClass = Utils.clsx(this.props.classes.scriptIcon, reorder ? this.props.classes.scriptIconReorder : this.props.classes.scriptIconNoReorder);
-        }
 
         let childrenCount = null;
         if ((childrenFiltered && childrenFiltered.length) || (children && children.length)) {
-            childrenCount = <span className={this.props.classes.childrenCount}>{childrenFiltered && childrenFiltered.length !== children.length ? `${childrenFiltered.length}(${children.length})` : children.length}</span>;
+            childrenCount = <span style={styles.childrenCount}>{childrenFiltered && childrenFiltered.length !== children.length ? `${childrenFiltered.length}(${children.length})` : children.length}</span>;
         }
 
         return <ListItem
             key={item.id}
-            style={style}
+            style={{
+                ...(item.type === 'folder' ? styles.folder : styles.script),
+                ...(reorder ? styles.reorder : undefined),
+                ...(reorder && item.type !== 'folder' ? styles.scriptReorder : undefined),
+                ...(reorder && item.type === 'folder' ? styles.folderReorder: undefined),
+                style,
+            }}
             className={Utils.clsx(
-                item.type === 'folder' ? this.props.classes.folder : this.props.classes.script,
                 reorder && item.type === 'folder' && 'folder-reorder',
                 reorder && item.type !== 'folder' && 'script-reorder',
-                reorder && this.props.classes.reorder,
-                reorder && item.type !== 'folder' &&  this.props.classes.scriptReorder,
-                reorder && item.type === 'folder' && this.props.classes.folderReorder,
-                )}
+            )}
             onClick={e => this.onClick(item, e)}
             onDoubleClick={e => this.onDblClick(item, e)}
         >
-            <ListItemIcon classes={{ root: this.props.classes.listItemIcon }}>{
+            <ListItemIcon style={styles.listItemIcon}>{
                 item.type === 'folder' ? (
                         reorder || isExpanded ?
-                            <IconFolderOpened className={iconClass} style={iconStyle} onClick={e => !reorder && this.onToggle(item.id, e)} /> :
-                            <IconFolder       className={iconClass} style={iconStyle} onClick={e => !reorder && this.onToggle(item.id, e)} />
+                            <IconFolderOpened style={iconStyle} onClick={e => !reorder && this.onToggle(item.id, e)} /> :
+                            <IconFolder       style={iconStyle} onClick={e => !reorder && this.onToggle(item.id, e)} />
                     )
                     :
-                    <img className={iconClass} alt={item.type} src={images[item.type] || images.def} />
+                    <img
+                        style={iconStyle}
+                        alt={item.type}
+                        src={images[item.type] || images.def}
+                    />
             }</ListItemIcon>
             <ListItemText
-                classes={{ primary: item.id === this.state.selected && !reorder ? this.props.classes.selected : undefined }}
-                style={this.getTextStyle(item)} primary={<span>{title}{childrenCount}</span>} />
-            <ListItemSecondaryAction>{this.renderItemButtonsOnEnd(item, children)}</ListItemSecondaryAction>
+                sx={{ '& .MuiListItemText-primary': item.id === this.state.selected && !reorder ? styles.selected : undefined }}
+                style={this.getTextStyle(item)}
+                primary={<span>{title}{childrenCount}</span>}
+            />
+            <ListItemSecondaryAction>
+                {this.renderItemButtonsOnEnd(item, children)}
+            </ListItemSecondaryAction>
         </ListItem>;
     }
 
@@ -1041,7 +1081,7 @@ class SideDrawer extends React.Component {
         return <List
             dense
             disablePadding
-            className={this.props.classes.mainList}
+            sx={styles.mainList}
         >
             {result}
         </List>;
@@ -1134,8 +1174,8 @@ class SideDrawer extends React.Component {
 
     getFilterBadge() {
         return [
-            this.state.statusFilter === true && <IconPlay className={this.props.classes.filterIcon} style={{ color: COLOR_RUN }}/>,
-            this.state.statusFilter === false && <IconPause className={this.props.classes.filterIcon} style={{ color: COLOR_PAUSE }}/>,
+            this.state.statusFilter === true && <IconPlay style={{ ...styles.filterIcon, color: COLOR_RUN }} />,
+            this.state.statusFilter === false && <IconPause style={{ ...styles.filterIcon, color: COLOR_PAUSE }} />,
             this.state.typeFilter === 'Blockly' && 'Bl',
             this.state.typeFilter === 'Javascript/js' && 'JS',
             this.state.typeFilter === 'TypeScript/ts' && 'TS',
@@ -1171,7 +1211,8 @@ class SideDrawer extends React.Component {
                         this.onDelete(this.state.selected).then(() => {}));
                 }}
             >
-                <IconDelete className={this.props.classes.iconDropdownMenu}  style={{ color: 'red' }}/>{I18n.t('Delete')}
+                <IconDelete style={{ ...styles.iconDropdownMenu, color: 'red' }} />
+                {I18n.t('Delete')}
             </MenuItem> : null}
             <MenuItem
                 key="expertMode"
@@ -1183,7 +1224,7 @@ class SideDrawer extends React.Component {
                     this.onCloseMenu(() =>
                         this.props.onExpertModeChange && this.props.onExpertModeChange(!this.state.expertMode));
                 }}>
-                <IconExpert className={this.props.classes.iconDropdownMenu} style={{ color: this.state.expertMode ? 'orange' : 'inherit' }}/>{I18n.t('Expert mode')}
+                <IconExpert style={{ ...styles.iconDropdownMenu, color: this.state.expertMode ? 'orange' : 'inherit' }}/>{I18n.t('Expert mode')}
             </MenuItem>
             {this.props.onExport && <MenuItem
                 key="exportAll"
@@ -1193,7 +1234,7 @@ class SideDrawer extends React.Component {
                     this.onCloseMenu(() => this.props.onExport());
                 }}
             >
-                <IconExport className={this.props.classes.iconDropdownMenu} />{I18n.t('Export all scripts')}
+                <IconExport style={styles.iconDropdownMenu} />{I18n.t('Export all scripts')}
             </MenuItem>}
             {this.props.onImport && <MenuItem
                 disabled={this.props.debugMode}
@@ -1203,7 +1244,7 @@ class SideDrawer extends React.Component {
                     event.preventDefault();
                     this.onCloseMenu(() => this.props.onImport());
                 }}>
-                <IconImport className={this.props.classes.iconDropdownMenu} />{I18n.t('Import scripts')}
+                <IconImport style={styles.iconDropdownMenu} />{I18n.t('Import scripts')}
             </MenuItem>}
             {this.props.onThemeChange && <MenuItem
                 key="dark"
@@ -1216,7 +1257,8 @@ class SideDrawer extends React.Component {
                     this.props.onThemeChange(newThemeName);
                 })}
             >
-                <IconDark className={this.props.classes.iconDropdownMenu} />{I18n.t('Change theme (actual "%s")', this.state.themeName)}
+                <IconDark style={styles.iconDropdownMenu} />
+                {I18n.t('Change theme (actual "%s")', this.state.themeName)}
             </MenuItem>}
             {this.props.onAddNew && <MenuItem
                 key="copy"
@@ -1226,7 +1268,7 @@ class SideDrawer extends React.Component {
                     this.onCloseMenu(() => this.onCopy(event, selected));
                 }}
             >
-                <IconCopy className={this.props.classes.iconDropdownMenu} />
+                <IconCopy style={styles.iconDropdownMenu} />
                 {I18n.t('Copy script')}
             </MenuItem>}
             {this.state.expertMode && <MenuItem
@@ -1239,7 +1281,7 @@ class SideDrawer extends React.Component {
                         this.setState({ showAdapterDebug: true }));
                 }}
             >
-                <IconDebug className={this.props.classes.iconDropdownMenu} />
+                <IconDebug style={styles.iconDropdownMenu} />
                 {I18n.t('Debug instance')}
             </MenuItem>}
         </Menu>;
@@ -1248,13 +1290,12 @@ class SideDrawer extends React.Component {
     // render menu and toolbar
     getToolbarButtons() {
         const result = [];
-        const classes = this.props.classes;
         const reorder = this.state.reorder && !this.props.debugMode;
         if (this.state.searchMode && !this.props.debugMode) {
             result.push(<Input
                 key="searchInput"
                 value={this.state.searchText}
-                className={classes.toolbarSearch}
+                style={styles.toolbarSearch}
                 ref={this.inputRef}
                 autoFocus
                 placeholder={I18n.t('Search...')}
@@ -1271,7 +1312,7 @@ class SideDrawer extends React.Component {
 
             result.push(<IconButton
                 key="disableSearch"
-                className={classes.toolbarButtons}
+                sx={styles.toolbarButtons}
                 style={{ float: 'right' }}
                 title={I18n.t('End search mode')}
                 onClick={e => {
@@ -1284,7 +1325,7 @@ class SideDrawer extends React.Component {
                 key="cleanSearch"
                 mini="true"
                 title={I18n.t('Clear search input')}
-                className={classes.toolbarButtons}
+                sx={styles.toolbarButtons}
                 style={{ marginTop: 7, float: 'right' }}
                 onClick={e => {
                     e.stopPropagation();
@@ -1313,7 +1354,7 @@ class SideDrawer extends React.Component {
                     }}
                     size="medium"
                 >
-                    {/*<Badge className={classes.margin} badgeContent={this.getFilterBadge()}>*/}
+                    {/*<Badge style={styles.margin} badgeContent={this.getFilterBadge()}>*/}
                     <IconMore />
                     {/*</Badge>*/}
                 </IconButton>);
@@ -1332,7 +1373,10 @@ class SideDrawer extends React.Component {
                     disabled={this.props.debugMode}
                     key="new-script"
                     title={I18n.t('Create new script')}
-                    className={Utils.clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
+                    sx={{
+                        ...styles.toolbarButtons,
+                        ...(this.props.debugMode ? styles.iconButtonsDisabled : undefined),
+                    }}
                     style={{ color: reorder ? 'red' : 'inherit' }}
                     onClick={e => this.onAddNew(e)}
                     size="medium"
@@ -1345,7 +1389,10 @@ class SideDrawer extends React.Component {
                     disabled={this.props.debugMode}
                     key="new-folder"
                     title={I18n.t('Create new folder')}
-                    className={Utils.clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
+                    sx={{
+                        ...styles.toolbarButtons,
+                        ...(this.props.debugMode ? styles.iconButtonsDisabled : undefined),
+                    }}
                     style={{ color: reorder ? 'red' : 'inherit' }}
                     onClick={() => this.onAddNewFolder()}
                     size="medium"
@@ -1358,7 +1405,10 @@ class SideDrawer extends React.Component {
             result.push(<IconButton
                 key="search"
                 disabled={reorder || this.props.debugMode}
-                className={Utils.clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
+                sx={{
+                    ...styles.toolbarButtons,
+                    ...(this.props.debugMode ? styles.iconButtonsDisabled : undefined),
+                }}
                 title={I18n.t('Search in scripts')}
                 style={{ float: 'right', opacity: this.props.debugMode ? 0.5 : (reorder ? 0 : 1) }}
                 onClick={e => {
@@ -1375,7 +1425,10 @@ class SideDrawer extends React.Component {
                 disabled={this.props.debugMode}
                 key="reorder"
                 title={I18n.t('Reorder scripts in folders')}
-                className={Utils.clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
+                sx={{
+                    ...styles.toolbarButtons,
+                    ...(this.props.debugMode ? styles.iconButtonsDisabled : undefined),
+                }}
                 style={{ color: reorder ? 'red' : 'inherit', float: 'right' }}
                 onClick={e => {
                     e.stopPropagation();
@@ -1389,7 +1442,10 @@ class SideDrawer extends React.Component {
             if (!reorder && this.state.selected && this.state.selected !== GLOBAL_ID && this.state.selected !== COMMON_ID) {
                 // Rename
                 result.push(<IconButton
-                    className={Utils.clsx(classes.toolbarButtons, this.props.debugMode && classes.iconButtonsDisabled)}
+                    sx={{
+                        ...styles.toolbarButtons,
+                        ...(this.props.debugMode ? styles.iconButtonsDisabled : undefined),
+                    }}
                     disabled={this.props.debugMode}
                     title={I18n.t('Rename')}
                     key="rename"
@@ -1402,7 +1458,7 @@ class SideDrawer extends React.Component {
                 // const selectedItem = this.state.listItems.find(i => i.id === this.state.selected);
                 // if (selectedItem && selectedItem.type !== 'folder') {
                 //     // Restart
-                //     result.push((<IconButton className={classes.toolbarButtons}
+                //     result.push((<IconButton sx={styles.toolbarButtons}
                 //          key="restart"
                 //          onClick={e => {
                 //              e.stopPropagation();
@@ -1446,102 +1502,132 @@ class SideDrawer extends React.Component {
             return null;
         }
         return [
-            <IconPause
+            <Box
                 key="filterByRunning"
-                className={this.props.classes.footerButtons}
-                style={{ color: COLOR_RUN, opacity: this.state.statusFilter === 'running' ? 1 : 0.3, background: this.state.statusFilter === 'running' ? 'gray' : 'inherit' }}
-                title={I18n.t('Show only running scripts')}
-                onClick={event => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    const statusFilter = this.state.statusFilter === 'running' ? '' : 'running';
-                    window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
-                    this.setState({ statusFilter });
-                }}
-            />,
-
-            <IconPlay
+                sx={styles.footerButtons}
+            >
+                <IconPause
+                    style={{ color: COLOR_RUN, opacity: this.state.statusFilter === 'running' ? 1 : 0.3, background: this.state.statusFilter === 'running' ? 'gray' : 'inherit' }}
+                    title={I18n.t('Show only running scripts')}
+                    onClick={event => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        const statusFilter = this.state.statusFilter === 'running' ? '' : 'running';
+                        window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
+                        this.setState({ statusFilter });
+                    }}
+                />
+            </Box>,
+            <Box
                 key="filterByPaused"
-                title={I18n.t('Show only paused scripts')}
-                className={this.props.classes.footerButtons}
-                style={{ color: COLOR_PAUSE, opacity: this.state.statusFilter === 'paused' ? 1 : 0.3, background: this.state.statusFilter === 'paused' ? 'gray' : 'inherit' }}
-                onClick={() => {
-                    const statusFilter = this.state.statusFilter === 'paused' ? '' : 'paused';
-                    window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
-                    this.setState({ statusFilter });
-                }}
-            />,
-            <IconPause
+                sx={styles.footerButtons}
+            >
+                <IconPlay
+                    title={I18n.t('Show only paused scripts')}
+                    style={{ color: COLOR_PAUSE, opacity: this.state.statusFilter === 'paused' ? 1 : 0.3, background: this.state.statusFilter === 'paused' ? 'gray' : 'inherit' }}
+                    onClick={() => {
+                        const statusFilter = this.state.statusFilter === 'paused' ? '' : 'paused';
+                        window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
+                        this.setState({ statusFilter });
+                    }}
+                />
+            </Box>,
+            <Box
+                sx={styles.footerButtons}
+                style={{ marginRight: 16 }}
                 key="filterByProblem"
-                title={I18n.t('Show only scripts with problems')}
-                className={this.props.classes.footerButtons}
-                style={{ color: COLOR_PROBLEM, opacity: this.state.statusFilter === 'problems' ? 1 : 0.3, background: this.state.statusFilter === 'problems' ? 'gray' : 'inherit' }}
-                onClick={() => {
-                    const statusFilter = this.state.statusFilter === 'problems' ? '' : 'problems';
-                    window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
-                    this.setState({ statusFilter });
-                }}
-            />,
-            <img
+            >
+                <IconPause
+                    title={I18n.t('Show only scripts with problems')}
+                    style={{ color: COLOR_PROBLEM, opacity: this.state.statusFilter === 'problems' ? 1 : 0.3, background: this.state.statusFilter === 'problems' ? 'gray' : 'inherit' }}
+                    onClick={() => {
+                        const statusFilter = this.state.statusFilter === 'problems' ? '' : 'problems';
+                        window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
+                        this.setState({ statusFilter });
+                    }}
+                />
+            </Box>,
+            <Box
+                sx={styles.footerButtons}
                 key="filterBlockly"
-                className={this.props.classes.footerButtons}
-                alt="Blockly"
-                style={{ opacity: this.state.typeFilter === 'Blockly' ? 1 : 0.3, background: this.state.typeFilter === 'Blockly' ? 'gray' : 'inherit' }}
-                src={images.Blockly || images.def}
-                onClick={() => {
-                    const typeFilter = this.state.typeFilter === 'Blockly' ? '' : 'Blockly';
-                    window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
-                    this.setState({ typeFilter });
-                }}
-            />,
-            <img
+            >
+                <img
+                    alt="Blockly"
+                    style={{ opacity: this.state.typeFilter === 'Blockly' ? 1 : 0.3, background: this.state.typeFilter === 'Blockly' ? 'gray' : 'inherit' }}
+                    src={images.Blockly || images.def}
+                    onClick={() => {
+                        const typeFilter = this.state.typeFilter === 'Blockly' ? '' : 'Blockly';
+                        window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
+                        this.setState({ typeFilter });
+                    }}
+                />
+            </Box>,
+            <Box
                 key="filterJS"
-                className={this.props.classes.footerButtons}
-                alt="Javascript"
-                style={{ opacity: this.state.typeFilter === 'Javascript/js' ? 1 : 0.3, background: this.state.typeFilter === 'Javascript/js' ? 'gray' : 'inherit' }}
-                src={images['Javascript/js'] || images.def}
-                onClick={() => {
-                    const typeFilter = this.state.typeFilter === 'Javascript/js' ? '' : 'Javascript/js';
-                    window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
-                    this.setState({ typeFilter });
-                }}
-            />,
-            <img
+                sx={styles.footerButtons}
+            >
+                <img
+                    alt="Javascript"
+                    style={{ opacity: this.state.typeFilter === 'Javascript/js' ? 1 : 0.3, background: this.state.typeFilter === 'Javascript/js' ? 'gray' : 'inherit' }}
+                    src={images['Javascript/js'] || images.def}
+                    onClick={() => {
+                        const typeFilter = this.state.typeFilter === 'Javascript/js' ? '' : 'Javascript/js';
+                        window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
+                        this.setState({ typeFilter });
+                    }}
+                />
+            </Box>,
+            <Box
                 key="filterTS"
-                className={this.props.classes.footerButtons}
-                alt="TypeScript"
-                style={{ opacity: this.state.typeFilter === 'TypeScript/ts' ? 1 : 0.3, background: this.state.typeFilter === 'TypeScript/ts' ? 'gray' : 'inherit' }}
-                src={images['TypeScript/ts'] || images.def}
-                onClick={() => {
-                    const typeFilter = this.state.typeFilter === 'TypeScript/ts' ? '' : 'TypeScript/ts';
-                    window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
-                this.setState({ typeFilter });
-                }}
-            />,
-            <img
+                sx={styles.footerButtons}
+            >
+                <img
+                    alt="TypeScript"
+                    style={{ opacity: this.state.typeFilter === 'TypeScript/ts' ? 1 : 0.3, background: this.state.typeFilter === 'TypeScript/ts' ? 'gray' : 'inherit' }}
+                    src={images['TypeScript/ts'] || images.def}
+                    onClick={() => {
+                        const typeFilter = this.state.typeFilter === 'TypeScript/ts' ? '' : 'TypeScript/ts';
+                        window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
+                    this.setState({ typeFilter });
+                    }}
+                />
+            </Box>,
+            <Box
                 key="filterRules"
-                className={this.props.classes.footerButtons}
-                alt="Rules"
-                style={{ opacity: this.state.typeFilter === 'Rules' ? 1 : 0.3, background: this.state.typeFilter === 'Rules' ? 'gray' : 'inherit' }}
-                src={images['Rules'] || images.def}
-                onClick={event => {
-                    const typeFilter = this.state.typeFilter === 'Rules' ? '' : 'Rules';
-                    window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
-                this.setState({ typeFilter });
-                }}
-            />,
-            <IconExpandAll
+                sx={styles.footerButtons}
+            >
+                <img
+                    alt="Rules"
+                    style={{ opacity: this.state.typeFilter === 'Rules' ? 1 : 0.3, background: this.state.typeFilter === 'Rules' ? 'gray' : 'inherit' }}
+                    src={images['Rules'] || images.def}
+                    onClick={() => {
+                        const typeFilter = this.state.typeFilter === 'Rules' ? '' : 'Rules';
+                        window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
+                        this.setState({ typeFilter });
+                    }}
+                />
+            </Box>,
+            <div style={{ flexGrow: 1 }} />,
+            <Box
                 key="expandAll"
-                className={`${this.props.classes.footerButtons} ${this.props.classes.footerButtonsRight}`}
-                title={I18n.t('Expand all')}
-                onClick={() => this.onExpandAll()}
-            />,
-            this.state.expanded.length ? <IconCollapseAll
+                sx={styles.footerButtons}
+            >
+                <IconExpandAll
+                    style={styles.footerButtonsRight}
+                    title={I18n.t('Expand all')}
+                    onClick={() => this.onExpandAll()}
+                />
+            </Box>,
+            this.state.expanded.length ? <Box
                 key="collapseAll"
-                className={`${this.props.classes.footerButtons} ${this.props.classes.footerButtonsRight}`}
-                title={I18n.t('Collapse all')}
-                onClick={() => this.onCollapseAll()}
-            /> : null,
+                sx={styles.footerButtons}
+            >
+                <IconCollapseAll
+                    style={styles.footerButtonsRight}
+                    title={I18n.t('Collapse all')}
+                    onClick={() => this.onCollapseAll()}
+                />
+            </Box> : <div style={{ height: 22, width: 24 }} />,
         ];
     }
 
@@ -1557,8 +1643,6 @@ class SideDrawer extends React.Component {
     }
 
     render() {
-        const {classes} = this.props;
-
         const renamingItem = this.state.renaming && this.state.listItems.find(i => i.id === this.state.renaming);
         const copingItem = this.state.copingScript && this.props.scripts[this.state.copingScript];
 
@@ -1566,26 +1650,26 @@ class SideDrawer extends React.Component {
             <Drawer
                 key="drawer"
                 variant="permanent"
-                className={classes.menu}
-                classes={{ paper: classes.drawerPaper }}
+                style={styles.menu}
+                sx={{ '& .MuiDrawer-paper': styles.drawerPaper }}
                 anchor='left'
                 onClick={() => this.onClick({id: ''})}
             >
-                <div className={classes.toolbar}>
+                <Box sx={styles.toolbar}>
                     {this.getToolbarButtons()}
-                </div>
+                </Box>
 
                 <Divider/>
 
                 <DragDropContext backend={HTML5Backend}>
-                    <div className={classes.innerMenu}>
+                    <div style={styles.innerMenu}>
                         {this.renderAllItems(this.state.listItems)}
                     </div>
                 </DragDropContext>
 
-                <Divider/>
+                <Divider />
 
-                <div className={classes.footer}>{this.getBottomButtons()}</div>
+                <div style={styles.footer}>{this.getBottomButtons()}</div>
             </Drawer>,
 
             renamingItem ? <DialogRename
@@ -1674,7 +1758,6 @@ class SideDrawer extends React.Component {
 }
 
 SideDrawer.propTypes = {
-    classes: PropTypes.object.isRequired,
     instances: PropTypes.array.isRequired,
     scripts: PropTypes.object.isRequired,
     scriptsHash: PropTypes.number,
@@ -1701,4 +1784,4 @@ SideDrawer.propTypes = {
     version: PropTypes.string,
 };
 
-export default withStyles(styles)(SideDrawer);
+export default SideDrawer;

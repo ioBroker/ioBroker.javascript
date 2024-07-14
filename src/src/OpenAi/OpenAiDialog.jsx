@@ -45,6 +45,16 @@ const ChatIcon = () => <svg width="24" height="24" viewBox="0 0 2406 2406">
     />
 </svg>;
 
+const styles = {
+    toolbarButtons: {
+        padding: 4,
+        marginLeft: 4,
+    },
+    fullHeightDialog: {
+        height: 'calc(100% - 100px)',
+    },
+};
+
 const OpenAiDialog = props => {
     const [question, setQuestion] = useState(window.localStorage.getItem('openai-question') || '');
     const [answer, setAnswer] = useState('');
@@ -159,7 +169,7 @@ Do not import any libraries as all functions are already imported.`,
             key="ai"
             aria-label="AI"
             title={I18n.t('AI code generator')}
-            className={props.classes.toolbarButtons}
+            style={styles.toolbarButtons}
             size="medium"
             onClick={() => setOpen(true)}
         >
@@ -206,7 +216,7 @@ Do not import any libraries as all functions are already imported.`,
         </Dialog>}
         {open && <Dialog
             maxWidth="lg"
-            classes={{ paper: props.classes.fullHeightDialog }}
+            sx={{ '& .MuiDialog-paper': styles.fullHeightDialog }}
             open={!0}
             onClose={() => setOpen(false)}
             fullWidth

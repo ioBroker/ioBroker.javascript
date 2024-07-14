@@ -1,10 +1,16 @@
-import React, {useState} from 'react';
-import Button from '@mui/material/Button';
-import { Dialog, DialogActions, DialogContent } from '@mui/material';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+} from '@mui/material';
+import { I18n } from '@iobroker/adapter-react-v5';
+
 import cls from './style.module.scss';
-import i18n from '@iobroker/adapter-react-v5/i18n';
-import CustomInput from "../CustomInput";
+import CustomInput from '../CustomInput';
 
 const CustomModal = ({ open, onClose, children, titleButtonApply, titleButtonClose, onApply, className, textInput, defaultValue}) => {
     let [value, setValue] = useState(defaultValue);
@@ -33,11 +39,11 @@ const CustomModal = ({ open, onClose, children, titleButtonApply, titleButtonClo
             {!textInput && children}
         </DialogContent>
         <DialogActions>
-            <Button onClick={() => onApply(textInput ? value : null)}  variant="contained" color="primary">
-                {i18n.t(titleButtonApply)}
+            <Button onClick={() => onApply(textInput ? value : null)} variant="contained" color="primary">
+                {I18n.t(titleButtonApply)}
             </Button>
             <Button color="grey" onClick={onClose} variant="contained">
-                {i18n.t(titleButtonClose)}
+                {I18n.t(titleButtonClose)}
             </Button>
         </DialogActions>
     </Dialog>;

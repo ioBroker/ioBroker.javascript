@@ -3,24 +3,9 @@
 import React from 'react';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 
-import withStyles from '@mui/styles/withStyles';
-
-import GenericApp from '@iobroker/adapter-react-v5/GenericApp';
-import { I18n, Loader } from '@iobroker/adapter-react-v5';
+import { I18n, Loader, GenericApp } from '@iobroker/adapter-react-v5';
 
 import Astro from './Astro';
-
-const styles = theme => ({
-    app: {
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.text.primary,
-        height: '100%',
-    },
-    item: {
-        padding: 50,
-        width: 400,
-    },
-});
 
 class App extends GenericApp {
     constructor(props) {
@@ -106,4 +91,4 @@ class App extends GenericApp {
     }
 }
 
-export default withStyles(styles)(App);
+export default App;

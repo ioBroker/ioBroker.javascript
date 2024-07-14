@@ -2,52 +2,59 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Tour from 'reactour';
 
-import Toolbar from '@mui/material/Toolbar';
-import withStyles from '@mui/styles/withStyles';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Badge from '@mui/material/Badge';
-import Snackbar from '@mui/material/Snackbar';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Checkbox from '@mui/material/Checkbox';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import LinearProgress from '@mui/material/LinearProgress';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Tooltip from '@mui/material/Tooltip';
-import Paper from '@mui/material/Paper';
+import {
+    Toolbar,
+    Button,
+    IconButton,
+    Tabs,
+    Tab,
+    Badge,
+    Snackbar,
+    Menu,
+    MenuItem,
+    Checkbox,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    LinearProgress,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Tooltip,
+    Paper, Box,
+} from '@mui/material';
 
 import { red, green } from '@mui/material/colors';
 
-import { MdSave as IconSave } from 'react-icons/md';
-import { MdCancel as IconCancel } from 'react-icons/md';
-import { MdClose as IconClose } from 'react-icons/md';
-import { MdRefresh as IconRestart } from 'react-icons/md';
-import { MdInput as IconDoEdit } from 'react-icons/md';
-import { FaClock as IconCron } from 'react-icons/fa';
-import { FaClipboardList as IconSelectId } from 'react-icons/fa';
-import { FaFileExport as IconExport } from 'react-icons/fa';
-import { FaFileImport as IconImport } from 'react-icons/fa';
-import { FaFlagCheckered as IconCheck } from 'react-icons/fa';
-import { MdGpsFixed as IconLocate } from 'react-icons/md';
-import { MdClearAll as IconCloseAll } from 'react-icons/md';
-import { MdBuild as IconDebugMenu } from 'react-icons/md';
-import { MdBugReport as IconDebug } from 'react-icons/md';
-import { MdPlaylistAddCheck as IconVerbose } from 'react-icons/md';
-import { MdBugReport as IconDebugMode } from 'react-icons/md';
-import { MdPlayArrow as IconPlay } from 'react-icons/md';
-import { MdPause as IconPause } from 'react-icons/md';
-import { MdAutoAwesome as IconAstro } from 'react-icons/md';
+import {
+    MdSave as IconSave,
+    MdCancel as IconCancel,
+    MdClose as IconClose,
+    MdRefresh as IconRestart,
+    MdInput as IconDoEdit,
+    MdGpsFixed as IconLocate,
+    MdClearAll as IconCloseAll,
+    MdBuild as IconDebugMenu,
+    MdBugReport as IconDebug,
+    MdPlaylistAddCheck as IconVerbose,
+    MdBugReport as IconDebugMode,
+    MdPlayArrow as IconPlay,
+    MdPause as IconPause,
+    MdAutoAwesome as IconAstro,
+} from 'react-icons/md';
+
+import {
+    FaClock as IconCron,
+    FaClipboardList as IconSelectId,
+    FaFileExport as IconExport,
+    FaFileImport as IconImport,
+    FaFlagCheckered as IconCheck,
+} from 'react-icons/fa';
+
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
 import ImgTypeScript from './assets/typescript.png';
@@ -56,7 +63,9 @@ import ImgRules2Js from './assets/rules2js.svg';
 import ImgRules from './assets/rules.png';
 
 import {
-    I18n, Utils, Cron as DialogCron, Confirm as DialogConfirm, SelectID as DialogSelectID,
+    I18n, Cron as DialogCron,
+    Confirm as DialogConfirm,
+    SelectID as DialogSelectID,
 } from '@iobroker/adapter-react-v5';
 
 import ScriptEditorComponent from './Components/ScriptEditorVanilaMonaco';
@@ -81,8 +90,7 @@ const COLOR_VERBOSE = '#70aae9';
 const COLOR_RUN = green[400];
 const COLOR_PAUSE = red[400];
 
-const styles = theme => ({
-
+const styles = {
     toolbar: {
         minHeight: 38, // Theme.toolbar.height,
         boxShadow: '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)',
@@ -95,12 +103,12 @@ const styles = theme => ({
         filter: 'grayscale(100%)',
         opacity: 0.5,
     },
-    editorDiv: {
+    editorDiv: theme => ({
         height: `calc(100% - ${theme.toolbar.height + 38/*Theme.toolbar.height */ + 10}px)`,
         width: '100%',
         overflow: 'hidden',
         position: 'relative',
-    },
+    }),
     textButton: {
         marginRight: 10,
         minHeight: 24,
@@ -110,7 +118,7 @@ const styles = theme => ({
         background: '#ff9900',
     },
     textIcon: {
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
     },
     tabIcon: {
         width: 24,
@@ -136,9 +144,9 @@ const styles = theme => ({
         top: 0,
         right: 0,
     },
-    tabChanged: {
+    tabChanged: theme => ({
         color: theme.palette.secondary.main,
-    },
+    }),
     tabText: {
         maxWidth: 130,
         textOverflow: 'ellipsis',
@@ -157,8 +165,8 @@ const styles = theme => ({
     },
     notRunning: {
         color: '#ffbc00',
-        marginRight: theme.spacing(1),
-        marginLeft: theme.spacing(1),
+        marginRight: 8,
+        marginLeft: 8,
     },
     tabButton: {
         minHeight: 48,
@@ -172,10 +180,7 @@ const styles = theme => ({
         borderRadius: 2,
         marginRight: 5,
     },
-    fullHeightDialog: {
-        height: 'calc(100% - 100px)',
-    },
-});
+};
 
 class Editor extends React.Component {
     constructor(props) {
@@ -808,18 +813,24 @@ class Editor extends React.Component {
                 {this.state.editing.map(id => {
                     if (!this.props.objects[id]) {
                         const label = [
-                            <div key="text" className={Utils.clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{id.split('.').pop()}</div>,
-                            <IconButton onClick={e => this.onTabClose(id, e)} className={this.props.classes.closeButton} key="icon" size="small" component="span">
+                            <Box
+                                key="text"
+                                sx={this.isScriptChanged(id) ? styles.tabChanged : undefined}
+                                style={styles.tabText}
+                            >
+                                {id.split('.').pop()}
+                            </Box>,
+                            <IconButton onClick={e => this.onTabClose(id, e)} style={styles.closeButton} key="icon" size="small" component="span">
                                 <IconClose />
                             </IconButton>];
                         return <Tab
                             wrapped
                             component={'div'}
-                            href={'#' + id}
+                            href={`#${id}`}
                             key={id}
                             label={label}
                             value={id}
-                            classes={{ wrapper: this.props.classes.tabButtonWrapper }}
+                            sx={{ '& .MuiTab-wrapper': styles.tabButtonWrapper }}
                         />;
                     } else {
                         let text = Editor.getText(this.props.objects[id].common.name) || '';
@@ -829,10 +840,16 @@ class Editor extends React.Component {
                         }
                         const changed = this.props.objects[id].common && this.scripts[id] && this.props.objects[id].common.source !== this.scripts[id].source;
                         const label = [
-                            <div key="text" className={Utils.clsx(this.props.classes.tabText, this.isScriptChanged(id) && this.props.classes.tabChanged)}>{text}</div>,
-                            changed ? <span key="changedSign" className={this.props.classes.tabChangedIcon}>▣</span> : null,
+                            <Box
+                                key="text"
+                                sx={this.isScriptChanged(id) ? styles.tabChanged : undefined}
+                                style={styles.tabText}
+                            >
+                                {text}
+                            </Box>,
+                            changed ? <span key="changedSign" style={styles.tabChangedIcon}>▣</span> : null,
                             (!this.props.debugInstance && (!this.props.debugMode || this.state.selected !== id)) &&
-                            <IconButton onClick={e => this.onTabClose(id, e)} className={this.props.classes.closeButton} key="icon" size="small" component="span">
+                            <IconButton onClick={e => this.onTabClose(id, e)} style={styles.closeButton} key="icon" size="small" component="span">
                                 <IconClose />
                             </IconButton>,
                         ];
@@ -842,14 +859,14 @@ class Editor extends React.Component {
                             wrapped
                             component="div"
                             iconPosition="start"
-                            icon={<img key="icon" alt="" src={images[this.props.objects[id].common.engineType] || images.def} className={this.props.classes.tabIcon} />}
+                            icon={<img key="icon" alt="" src={images[this.props.objects[id].common.engineType] || images.def} style={styles.tabIcon} />}
                             href={`#${id}`}
                             key={id}
                             label={label}
-                            className={this.props.classes.tabButton}
+                            style={styles.tabButton}
                             value={id}
                             title={title}
-                            classes={{ wrapper: this.props.classes.tabButtonWrapper }}
+                            sx={{ '& .MuiTab-wrapper': styles.tabButtonWrapper }}
                         />;
                     }
                 })}
@@ -860,17 +877,17 @@ class Editor extends React.Component {
                     href={`#${this.props.debugInstance.adapter}`}
                     key={this.props.debugInstance.adapter}
                     label={this.props.debugInstance.adapter}
-                    className={this.props.classes.tabButton}
+                    style={styles.tabButton}
                     value={this.props.debugInstance.adapter}
                     title={this.props.debugInstance.adapter}
-                    classes={{ wrapper: this.props.classes.tabButtonWrapper }}
+                    sx={{ '& .MuiTab-wrapper': styles.tabButtonWrapper }}
                 /> : ''}
             </Tabs>,
             this.state.editing.length > 1 ? <IconButton
                 key="menuButton"
                 href="#"
                 aria-label="Close all but current"
-                className={this.props.classes.tabMenuButton}
+                style={styles.tabMenuButton}
                 title={I18n.t('Close all but current')}
                 aria-haspopup="false"
                 onClick={_event => {
@@ -890,10 +907,10 @@ class Editor extends React.Component {
             </IconButton> : null
             ];
         } else {
-            return <div key="tabs2" className={this.props.classes.toolbar}>
-                <Button color="grey" key="select1" disabled className={this.props.classes.hintButton} href="">
+            return <div key="tabs2" style={styles.toolbar}>
+                <Button color="grey" key="select1" disabled style={styles.hintButton} href="">
                     <span key="select2">{I18n.t('Click on this icon')}</span>
-                    <IconDoEdit key="select3" className={this.props.classes.hintIcon} />
+                    <IconDoEdit key="select3" style={styles.hintIcon} />
                     <span key="select4">{I18n.t('for edit or create script')}</span>
                 </Button>
             </div>;
@@ -925,7 +942,7 @@ class Editor extends React.Component {
                     this.setState({ showDebugMenu: false, menuDebugAnchorEl: null, debugEnabled: !this.state.debugEnabled }, () => this.onChange({ debug: this.state.debugEnabled }));
                 }}>
                 <Checkbox checked={this.state.debugEnabled} />
-                <IconDebug className={this.props.classes.menuIcon} style={{ color: COLOR_DEBUG }} />
+                <IconDebug style={styles.menuIcon} style={{ color: COLOR_DEBUG }} />
                 {I18n.t('debug_label')}
             </MenuItem>
             <MenuItem key="verboseEnabled"
@@ -936,7 +953,7 @@ class Editor extends React.Component {
                     this.setState({ showDebugMenu: false, menuDebugAnchorEl: null, verboseEnabled: !this.state.verboseEnabled }, () => this.onChange({ verbose: this.state.verboseEnabled }));
                 }}>
                 <Checkbox checked={this.state.verboseEnabled} />
-                <IconVerbose className={this.props.classes.menuIcon} style={{ color: COLOR_VERBOSE }} />
+                <IconVerbose style={styles.menuIcon} style={{ color: COLOR_VERBOSE }} />
                 {I18n.t('verbose_label')}
             </MenuItem>
         </Menu>;
@@ -944,9 +961,9 @@ class Editor extends React.Component {
 
     getDebugBadge() {
         return [
-            this.state.debugEnabled && this.state.verboseEnabled && <IconDebug key="DebugVerbose" className={this.props.classes.menuIcon} style={{ color: COLOR_VERBOSE }} />,
-            this.state.debugEnabled && !this.state.verboseEnabled && <IconDebug key="DebugNoVerbose" className={this.props.classes.menuIcon} style={{ color: COLOR_DEBUG }} />,
-            !this.state.debugEnabled && this.state.verboseEnabled && <IconVerbose key="noDebugVerbose" className={this.props.classes.menuIcon} style={{ color: COLOR_VERBOSE }} />,
+            this.state.debugEnabled && this.state.verboseEnabled && <IconDebug key="DebugVerbose" style={styles.menuIcon} style={{ color: COLOR_VERBOSE }} />,
+            this.state.debugEnabled && !this.state.verboseEnabled && <IconDebug key="DebugNoVerbose" style={styles.menuIcon} style={{ color: COLOR_DEBUG }} />,
+            !this.state.debugEnabled && this.state.verboseEnabled && <IconVerbose key="noDebugVerbose" style={styles.menuIcon} style={{ color: COLOR_VERBOSE }} />,
         ]
     }
 
@@ -974,9 +991,9 @@ class Editor extends React.Component {
             const changedAll = Object.keys(this.state.changed).filter(id => this.state.changed[id]).length;
             const changed = this.state.changed[this.state.selected];
             return (
-                <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar1">
+                <Toolbar variant="dense" style={styles.toolbar} key="toolbar1">
                     {!this.props.debugInstance && this.state.menuOpened && this.props.onLocate && <IconButton
-                        className={this.props.classes.toolbarButtons}
+                        style={styles.toolbarButtons}
                         key="locate"
                         title={I18n.t('Locate file')}
                         onClick={() => this.props.onLocate(this.state.selected)}
@@ -988,7 +1005,7 @@ class Editor extends React.Component {
                         key="restart"
                         disabled={this.props.debugMode}
                         variant="contained"
-                        className={this.props.classes.toolbarButtons}
+                        style={styles.toolbarButtons}
                         onClick={() => this.onRestart()}
                         title={I18n.t('Restart')}
                         size="medium"
@@ -999,19 +1016,49 @@ class Editor extends React.Component {
                         key="start-stop"
                         disabled={this.props.debugMode}
                         variant="contained"
-                        className={this.props.classes.toolbarButtons}
                         onClick={() => this.onStartStop()}
                         title={isScriptRunning ? I18n.t('Pause script') : I18n.t('Run script')}
                         size="medium"
-                        style={{ color: isScriptRunning ? COLOR_RUN : COLOR_PAUSE }}
+                        style={{
+                            ...styles.toolbarButtons,
+                            color: isScriptRunning ? COLOR_RUN : COLOR_PAUSE,
+                        }}
                     >
                         {isScriptRunning ? <IconPause /> : <IconPlay />}
                     </IconButton>}
-                    {!this.props.debugInstance && !changed && !isScriptRunning && <span className={this.props.classes.notRunning}>{I18n.t('Script is not running')}</span>}
-                    {!changed && isScriptRunning && !isInstanceRunning && <span className={this.props.classes.notRunning}>{I18n.t('Instance is disabled')}</span>}
-                    {changed && <Button color="grey" key="save" variant="contained" className={Utils.clsx(this.props.classes.textButton, this.props.classes.saveButton, 'button-save')} onClick={() => this.onSave()}>{I18n.t('Save')}<IconSave className={this.props.classes.textIcon} /></Button>}
-                    {(changedAll > 1 || (changedAll === 1 && !changed)) && <Button color="grey" key="saveall" variant="contained" className={this.props.classes.textButton} onClick={() => this.onSaveAll()}>{I18n.t('Save all')}<IconSave className={this.props.classes.textIcon} /></Button>}
-                    {changed && <Button color="grey" key="cancel" variant="contained" className={this.props.classes.textButton} onClick={() => this.onCancel()}>{I18n.t('Cancel')}<IconCancel className={this.props.classes.textIcon} /></Button>}
+                    {!this.props.debugInstance && !changed && !isScriptRunning && <span style={styles.notRunning}>{I18n.t('Script is not running')}</span>}
+                    {!changed && isScriptRunning && !isInstanceRunning && <span style={styles.notRunning}>{I18n.t('Instance is disabled')}</span>}
+                    {changed && <Button
+                        color="grey"
+                        key="save"
+                        variant="contained"
+                        style={{ ...styles.textButton, ...styles.saveButton }}
+                        className="button-save"
+                        onClick={() => this.onSave()}
+                        endIcon={<IconSave />}
+                    >
+                        {I18n.t('Save')}
+                    </Button>}
+                    {(changedAll > 1 || (changedAll === 1 && !changed)) && <Button
+                        color="grey"
+                        key="saveall"
+                        variant="contained"
+                        style={styles.textButton}
+                        onClick={() => this.onSaveAll()}
+                        endIcon={<IconSave />}
+                    >
+                        {I18n.t('Save all')}
+                    </Button>}
+                    {changed && <Button
+                        color="grey"
+                        key="cancel"
+                        variant="contained"
+                        style={styles.textButton}
+                        onClick={() => this.onCancel()}
+                        endIcon={<IconCancel />}
+                    >
+                        {I18n.t('Cancel')}
+                    </Button>}
                     <div style={{ flex: 2 }} />
 
                     {this.state.blockly && !this.state.showCompiledCode &&
@@ -1019,7 +1066,7 @@ class Editor extends React.Component {
                             key="export"
                             aria-label="Export Blocks"
                             title={I18n.t('Export blocks')}
-                            className={this.props.classes.toolbarButtons}
+                            style={styles.toolbarButtons}
                             onClick={() => this.sendCommandToBlockly('export')}
                             size="medium"
                         >
@@ -1031,7 +1078,7 @@ class Editor extends React.Component {
                             key="import"
                             aria-label="Import Blocks"
                             title={I18n.t('Import blocks')}
-                            className={this.props.classes.toolbarButtons}
+                            style={styles.toolbarButtons}
                             onClick={() => this.sendCommandToBlockly('import')}
                             size="medium"
                         >
@@ -1043,7 +1090,7 @@ class Editor extends React.Component {
                             key="check"
                             aria-label="Check code"
                             title={I18n.t('Check blocks')}
-                            className={this.props.classes.toolbarButtons}
+                            style={styles.toolbarButtons}
                             onClick={() => this.sendCommandToBlockly('check')}
                             size="medium"
                         >
@@ -1054,7 +1101,7 @@ class Editor extends React.Component {
                         key="select-cron"
                         aria-label="create CRON"
                         title={I18n.t('Create or edit CRON or time wizard')}
-                        className={this.props.classes.toolbarButtons}
+                        style={styles.toolbarButtons}
                         onClick={() => this.setState({ showCron: true })}
                         size="medium"
                     >
@@ -1068,7 +1115,6 @@ class Editor extends React.Component {
                             adapterName={this.props.adapterName}
                             socket={this.props.socket}
                             runningInstances={this.state.runningInstances}
-                            classes={this.props.classes}
                             themeType={this.state.themeType}
                             language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
                             onAddCode={code => this.setState({ insert: code })}
@@ -1077,7 +1123,7 @@ class Editor extends React.Component {
                         key="show-astro"
                         aria-label="Show astronomical events"
                         title={I18n.t('Show astronomical events')}
-                        className={this.props.classes.toolbarButtons}
+                        style={styles.toolbarButtons}
                         disabled={!isInstanceRunning}
                         onClick={() => {
                             this.setState({ showAstro: true, astroEvents: null });
@@ -1094,7 +1140,7 @@ class Editor extends React.Component {
                         key="select-id"
                         aria-label="select ID"
                         title={I18n.t('Insert object ID')}
-                        className={this.props.classes.toolbarButtons}
+                        style={styles.toolbarButtons}
                         onClick={() => this.setState({ showSelectId: true })}
                         size="medium"
                     >
@@ -1110,7 +1156,7 @@ class Editor extends React.Component {
                             key="export"
                             aria-label="Export Blocks"
                             title={I18n.t('Export blocks')}
-                            className={this.props.classes.toolbarButtons}
+                            style={styles.toolbarButtons}
                             onClick={() => this.sendCommandToRules('export')}
                             size="medium"
                         >
@@ -1121,7 +1167,7 @@ class Editor extends React.Component {
                             key="import"
                             aria-label="Import Blocks"
                             title={I18n.t('Import blocks')}
-                            className={this.props.classes.toolbarButtons}
+                            style={styles.toolbarButtons}
                             onClick={() => this.sendCommandToRules('import')}
                             size="medium"
                         >
@@ -1129,7 +1175,7 @@ class Editor extends React.Component {
                         </IconButton>}
 
                     {this.props.expertMode && !changed && (this.props.debugMode || (!this.state.blockly && !this.state.rules) || ((this.state.blockly || this.state.rules) && this.state.showCompiledCode)) && <IconButton
-                        className={this.props.classes.toolbarButtons}
+                        style={styles.toolbarButtons}
                         color={this.props.debugMode ? 'primary' : 'default'}
                         disabled={!this.props.debugMode && !isInstanceRunning}
                         onClick={() => {
@@ -1148,10 +1194,14 @@ class Editor extends React.Component {
                         key="blockly-code"
                         aria-label="blockly"
                         title={I18n.t('Show javascript code')}
-                        className={Utils.clsx(this.props.classes.toolbarButtons, 'button-js-code', this.props.debugMode && this.props.classes.toolbarButtonsDisabled)}
+                        className="button-js-code"
                         color={this.state.showCompiledCode ? 'secondary' : 'inherit'}
                         disabled={this.props.debugMode}
-                        style={{ padding: '0 5px' }}
+                        style={{
+                            ...styles.toolbarButtons,
+                            ...(this.props.debugMode ? styles.toolbarButtonsDisabled : undefined),
+                            padding: '0 5px',
+                        }}
                         onClick={() => {
                             if (this.props.debugMode) {
                                 return;
@@ -1161,18 +1211,18 @@ class Editor extends React.Component {
                             this.state.isTourOpen && this.state.tourStep === STEPS.switchBackToRules && this.setState({ tourStep: STEPS.saveTheScript });
                         }}
                     >
-                        <img alt={this.state.blockly ? "blockly2js" : "rules2js"} src={this.state.blockly ? ImgBlockly2Js : ImgRules2Js} />
+                        <img alt={this.state.blockly ? 'blockly2js' : 'rules2js'} src={this.state.blockly ? ImgBlockly2Js : ImgRules2Js} />
                     </Button>}
                     <IconButton
                         key="debug"
                         disabled={this.props.debugMode}
                         aria-label="Debug menu"
                         title={I18n.t('Debug options')}
-                        className={this.props.classes.toolbarButtons}
+                        style={styles.toolbarButtons}
                         onClick={e => this.setState({ showDebugMenu: true, menuDebugAnchorEl: e.currentTarget })}
                         size="medium"
                     >
-                        <Badge className={this.props.classes.badgeMargin} badgeContent={this.getDebugBadge()}>
+                        <Badge style={styles.badgeMargin} badgeContent={this.getDebugBadge()}>
                             <IconDebugMenu />
                         </Badge>
                     </IconButton>
@@ -1193,7 +1243,7 @@ class Editor extends React.Component {
         ) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
 
-            return <div className={this.props.classes.editorDiv} key="scriptEditorDiv">
+            return <Box sx={styles.editorDiv} key="scriptEditorDiv">
                 <ScriptEditorComponent
                     key="scriptEditor1"
                     name={this.state.selected}
@@ -1212,7 +1262,7 @@ class Editor extends React.Component {
                     onChange={newValue => this.onChange({ script: newValue })}
                     language={this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
                 />
-            </div>;
+            </Box>;
         } else {
             return null;
         }
@@ -1229,7 +1279,7 @@ class Editor extends React.Component {
         ) {
             this.scripts[this.state.selected] = this.scripts[this.state.selected] || JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
 
-            return <div className={this.props.classes.editorDiv} key="blocklyEditorDiv">
+            return <Box sx={styles.editorDiv} key="blocklyEditorDiv">
                 <BlocklyEditor
                     command={this.state.cmdToBlockly}
                     key="BlocklyEditor"
@@ -1240,7 +1290,7 @@ class Editor extends React.Component {
                     scriptId={this.state.selected}
                     onChange={newValue => this.onChange({ script: newValue })}
                 />
-            </div>;
+            </Box>;
         } else {
             return null;
         }
@@ -1259,7 +1309,7 @@ class Editor extends React.Component {
             const isInstanceRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].engine && this.state.runningInstances[this.scripts[this.state.selected].engine];
             const isScriptRunning = this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].enabled;
 
-            return <div className={Utils.clsx(this.props.classes.editorDiv)} key="flowEditorDiv">
+            return <Box sx={styles.editorDiv} key="flowEditorDiv">
                 <RulesEditor
                     scriptId={this.state.selected}
                     setTourStep={this.setTourStep}
@@ -1276,7 +1326,7 @@ class Editor extends React.Component {
                     code={this.scripts[this.state.selected].source || ''}
                     onChange={newValue => this.onChange({ script: newValue })}
                 />
-            </div>;
+            </Box>;
         } else {
             return null;
         }
@@ -1498,7 +1548,7 @@ class Editor extends React.Component {
                     key="close"
                     aria-label="close"
                     color="inherit"
-                    className={this.props.classes.closeToast}
+                    style={styles.closeToast}
                     onClick={() => this.setState({ toast: '' })}
                     size="medium"
                 >
@@ -1616,4 +1666,4 @@ Editor.propTypes = {
     expertMode: PropTypes.bool,
 };
 
-export default withStyles(styles)(Editor);
+export default Editor;

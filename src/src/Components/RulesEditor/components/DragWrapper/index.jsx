@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useRef } from 'react';
-// import { I18n } from '@iobroker/adapter-react-v5';
 import PropTypes from 'prop-types';
 import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
+
 import { deepCopy } from '../../helpers/deepCopy';
 import { filterElement } from '../../helpers/filterElement';
 import { findCard, moveCard } from '../../helpers/cardSort';

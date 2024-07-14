@@ -1,22 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 
-import Button from '@mui/material/Button';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Dialog from '@mui/material/Dialog';
-import Popper from '@mui/material/Popper';
-import Fade from '@mui/material/Fade';
-import Paper from '@mui/material/Paper';
+import {
+    Button,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Dialog,
+    Popper,
+    Fade,
+    Paper,
+} from '@mui/material';
 
-import IconCopy from '@mui/icons-material/FileCopy';
+import {
+    FileCopy as IconCopy,
+    Cancel as IconCancel,
+} from '@mui/icons-material';
 import { FaFileExport as IconExport } from 'react-icons/fa';
-import IconCancel from '@mui/icons-material/Cancel';
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
-const styles = theme => ({
+const styles = {
     textArea: {
         width: '100%',
         height: '100%',
@@ -29,12 +32,12 @@ const styles = theme => ({
         height: '95%',
     },
     typography: {
-        padding: theme.spacing(2),
+        padding: 16,
     },
     overflowY: {
         overflowY: 'hidden',
     },
-});
+};
 
 class DialogExport extends React.Component {
     constructor(props) {
@@ -60,29 +63,32 @@ class DialogExport extends React.Component {
     }
 
     render() {
-        const classes = this.props.classes;
         const file = new Blob([this.props.text], {type: 'application/xml'});
         const fileName = this.props.scriptId.substring('scripts.js'.length) + '.xml';
 
         return <Dialog
             key="export-dialog"
-            onClose={(event, reason) => false}
+            onClose={() => false}
             maxWidth="lg"
-            classes={{ paper: classes.dialog }}
+            sx={{ '& .MuiDialog-paper': styles.dialog }}
             fullWidth
             open={this.props.open}
             aria-labelledby="export-dialog-title"
         >
             <DialogTitle id="export-dialog-title">{I18n.t('Export selected blocks')}</DialogTitle>
-            <DialogContent
-                classes={{ root: classes.overflowY }}>
+            <DialogContent style={styles.overflowY}>
                 <pre
                     id="export-text"
-                    className={`${classes.textArea} ${this.props.themeType === 'dark' ? '' : classes.textAreaLight}`}
-                >{this.props.text}</pre>
+                    style={{
+                        ...styles.textArea,
+                        ...(this.props.themeType === 'dark' ? undefined : styles.textAreaLight),
+                    }}
+                >
+                    {this.props.text}
+            </pre>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" color="secondary" startIcon={<IconExport/>}>
+                <Button variant="contained" color="secondary" startIcon={<IconExport />}>
                     <a download={fileName} target="_blank" rel="noreferrer" href={URL.createObjectURL(file)} style={{
                         textDecoration: "inherit",
                         color: "inherit",
@@ -100,7 +106,7 @@ class DialogExport extends React.Component {
                     {({ TransitionProps }) => (
                         <Fade {...TransitionProps} timeout={350}>
                             <Paper>
-                                <p className={classes.typography}>{this.state.popper}</p>
+                                <p style={styles.typography}>{this.state.popper}</p>
                             </Paper>
                         </Fade>
                     )}
@@ -112,15 +118,14 @@ class DialogExport extends React.Component {
 }
 
 DialogExport.defaultProps = {
-    open: true
+    open: true,
 };
 
 DialogExport.propTypes = {
-    classes: PropTypes.object.isRequired,
     onClose: PropTypes.func,
     text: PropTypes.string,
     scriptId: PropTypes.string,
     themeType: PropTypes.string,
 };
 
-export default withStyles(styles)(DialogExport);
+export default DialogExport;

@@ -1,26 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 
-import Button from '@mui/material/Button';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Dialog from '@mui/material/Dialog';
-import TextField from '@mui/material/TextField';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
+import {
+    Button,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Dialog,
+    TextField,
+    FormControl,
+    Select,
+    InputLabel,
+    MenuItem,
+} from '@mui/material';
 
-import IconOk from '@mui/icons-material/Check';
-import IconCancel from '@mui/icons-material/Cancel';
+import {
+    Check as IconOk,
+    Cancel as IconCancel,
+} from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
-
-const styles = theme => ({
-
-});
 
 class DialogNew extends React.Component {
     constructor(props) {
@@ -173,4 +172,4 @@ DialogNew.propTypes = {
     source: PropTypes.string,
 };
 
-export default withStyles(styles)(DialogNew);
+export default DialogNew;

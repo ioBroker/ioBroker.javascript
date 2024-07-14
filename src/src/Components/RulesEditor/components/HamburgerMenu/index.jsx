@@ -1,8 +1,9 @@
 import React from 'react';
-import cls from './hamburgerMenu.module.scss';
 import PropTypes from 'prop-types';
 
-const HamburgerMenu = ({boolean}) => {
+import cls from './hamburgerMenu.module.scss';
+
+const HamburgerMenu = ({ boolean }) => {
     return <div className={`${cls.hamburgerMenu} ${boolean ? cls.animate : ''}`}/>
 }
 
