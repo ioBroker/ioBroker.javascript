@@ -150,14 +150,15 @@ Blockly.Blocks['time_compare_ex'] = {
 };
 
 Blockly.JavaScript.forBlock['time_compare_ex'] = function (block) {
-    const option     = block.getFieldValue('OPTION');
-    const start_time = Blockly.JavaScript.valueToCode(block, 'START_TIME', Blockly.JavaScript.ORDER_ATOMIC);
-    let end_time   = Blockly.JavaScript.valueToCode(block, 'END_TIME', Blockly.JavaScript.ORDER_ATOMIC);
-    let time       = Blockly.JavaScript.valueToCode(block, 'CUSTOM_TIME', Blockly.JavaScript.ORDER_ATOMIC);
-    end_time = end_time || null;
-    time = time || null;
+    const fOption = block.getFieldValue('OPTION');
+    const vStartTime = Blockly.JavaScript.valueToCode(block, 'START_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+    let vEndTime = Blockly.JavaScript.valueToCode(block, 'END_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+    vEndTime = vEndTime || null;
 
-    return [`compareTime(${start_time}, ${end_time}, '${option}', ${time})`, Blockly.JavaScript.ORDER_ATOMIC];
+    let vCustomTime = Blockly.JavaScript.valueToCode(block, 'CUSTOM_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+    vCustomTime = vCustomTime || null;
+
+    return [`compareTime(${vStartTime}, ${vEndTime}, '${fOption}', ${vCustomTime})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // if time greater, less, between
@@ -232,12 +233,11 @@ Blockly.Blocks['time_compare'] = {
 };
 
 Blockly.JavaScript.forBlock['time_compare'] = function (block) {
-    const option     = block.getFieldValue('OPTION');
-    const start_time = block.getFieldValue('START_TIME');
-    let end_time   = block.getFieldValue('END_TIME');
-    end_time = end_time || null;
+    const fOption = block.getFieldValue('OPTION');
+    const fStartTime = block.getFieldValue('START_TIME');
+    const fEndTime = block.getFieldValue('END_TIME');
 
-    return [`compareTime('${start_time}', '${end_time}', '${option}')`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`compareTime(${Blockly.JavaScript.quote_(fStartTime)}, ${fEndTime ? Blockly.JavaScript.quote_(fEndTime) : 'null'}, ${Blockly.JavaScript.quote_(fOption)})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- get time --------------------------------------------------
@@ -369,49 +369,49 @@ Blockly.Blocks['time_get'] = {
 };
 
 Blockly.JavaScript.forBlock['time_get'] = function (block) {
-    const option = block.getFieldValue('OPTION');
-    const format = block.getFieldValue('FORMAT');
-    const lang   = block.getFieldValue('LANGUAGE');
+    const fOption = block.getFieldValue('OPTION');
+    const fFormat = block.getFieldValue('FORMAT');
+    const fLanguage = block.getFieldValue('LANGUAGE');
 
     let code;
-    if (option === 'object') {
+    if (fOption === 'object') {
         code = '(new Date().getTime())';
-    } else if (option === 'ms') {
+    } else if (fOption === 'ms') {
         code = '(new Date().getMilliseconds())';
-    } else if (option === 's') {
+    } else if (fOption === 's') {
         code = '(new Date().getSeconds())';
-    } else if (option === 'sid') {
+    } else if (fOption === 'sid') {
         code = '(() => { const v = new Date(); return v.getHours() * 3600 + v.getMinutes() * 60 + v.getSeconds(); })()';
-    } else if (option === 'm') {
+    } else if (fOption === 'm') {
         code = '(new Date().getMinutes())';
-    } else if (option === 'mid') {
+    } else if (fOption === 'mid') {
         code = '(() => { const v = new Date(); return v.getHours() * 60 + v.getMinutes(); })()';
-    } else if (option === 'h') {
+    } else if (fOption === 'h') {
         code = '(new Date().getHours())';
-    } else if (option === 'd') {
+    } else if (fOption === 'd') {
         code = '(new Date().getDate())';
-    } else if (option === 'M') {
+    } else if (fOption === 'M') {
         code = '(new Date().getMonth() + 1)';
-    } else if (option === 'Mt') {
-        code = `formatDate(new Date(), 'OO', '${lang}')`;
-    } else if (option === 'Mts') {
-        code = `formatDate(new Date(), 'O', '${lang}')`;
-    } else if (option === 'y') {
+    } else if (fOption === 'Mt') {
+        code = `formatDate(new Date(), 'OO', '${fLanguage}')`;
+    } else if (fOption === 'Mts') {
+        code = `formatDate(new Date(), 'O', '${fLanguage}')`;
+    } else if (fOption === 'y') {
         code = '(new Date().getYear())';
-    } else if (option === 'fy') {
+    } else if (fOption === 'fy') {
         code = '(new Date().getFullYear())';
-    } else if (option === 'wdt') {
-        code = `formatDate(new Date(), 'WW', '${lang}')`;
-    } else if (option === 'wdts') {
-        code = `formatDate(new Date(), 'W', '${lang}')`;
-    } else if (option === 'wd') {
+    } else if (fOption === 'wdt') {
+        code = `formatDate(new Date(), 'WW', '${fLanguage}')`;
+    } else if (fOption === 'wdts') {
+        code = `formatDate(new Date(), 'W', '${fLanguage}')`;
+    } else if (fOption === 'wd') {
         code = '(() => { const d = new Date().getDay(); return d === 0 ? 7 : d; })()';
-    } else if (option === 'cw') {
+    } else if (fOption === 'cw') {
         code = '((date) => { const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())); const dayNum = d.getUTCDay() || 7; d.setUTCDate(d.getUTCDate() + 4 - dayNum); const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1)); return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7); })(new Date())';
-    } else if (option === 'custom') {
-        code = `formatDate(new Date(), '${format}')`;
+    } else if (fOption === 'custom') {
+        code = `formatDate(new Date(), ${Blockly.JavaScript.quote_(fFormat)})`;
     } else {
-        code = `formatDate(new Date(), '${option}')`;
+        code = `formatDate(new Date(), ${Blockly.JavaScript.quote_(fOption)})`;
     }
 
     return [code, Blockly.JavaScript.ORDER_ATOMIC];
@@ -449,20 +449,20 @@ Blockly.Blocks['time_get_special'] = {
 };
 
 Blockly.JavaScript.forBlock['time_get_special'] = function (block) {
-    const type = block.getFieldValue('TYPE');
+    const fType = block.getFieldValue('TYPE');
 
     let code;
-    if (type === 'dayStart') {
+    if (fType === 'dayStart') {
         code = '/* start of day */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); })()';
-    } else if (type === 'dayEnd') {
+    } else if (fType === 'dayEnd') {
         code = '/* end of day */ (() => { const d = new Date(); d.setHours(23, 59, 59, 999); return d.getTime(); })()';
-    } else if (type === 'weekStart') {
+    } else if (fType === 'weekStart') {
         code = '/* start of week */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay() + (d.getDay() == 0 ? -6 : 1)).getTime(); })()';
-    } else if (type === 'weekEnd') {
+    } else if (fType === 'weekEnd') {
         code = '/* end of week */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return new Date(d.getFullYear(), d.getMonth(), d.getDate() + (8 - d.getDay())).getTime() - 1; })()';
-    } else if (type === 'monthStart') {
+    } else if (fType === 'monthStart') {
         code = '/* start of month */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(1); return d.getTime(); })()';
-    } else if (type === 'monthEnd') {
+    } else if (fType === 'monthEnd') {
         code = '/* end of month */ (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime() - 1; })()';
     }
 
@@ -514,10 +514,10 @@ Blockly.Blocks['time_astro'] = {
 };
 
 Blockly.JavaScript.forBlock['time_astro'] = function (block) {
-    const type    = block.getFieldValue('TYPE');
-    const offset  = parseFloat(block.getFieldValue('OFFSET'));
+    const fType = block.getFieldValue('TYPE');
+    const fOffset = parseFloat(block.getFieldValue('OFFSET'));
 
-    return [`getAstroDate('${type}', undefined, ${offset})`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`getAstroDate('${fType}', undefined, ${fOffset})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 // --- time calculation --------------------------------------------------
@@ -576,23 +576,23 @@ Blockly.Blocks['time_calculation'] = {
 };
 
 Blockly.JavaScript.forBlock['time_calculation'] = function (block) {
-    const dateTime = Blockly.JavaScript.valueToCode(block, 'DATE_TIME', Blockly.JavaScript.ORDER_ATOMIC);
-    const operation = block.getFieldValue('OPERATION');
-    const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-    const unit = block.getFieldValue('UNIT');
+    const vDateTime = Blockly.JavaScript.valueToCode(block, 'DATE_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+    const fOperation = block.getFieldValue('OPERATION');
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    const fUnit = block.getFieldValue('UNIT');
 
     let step = 1;
-    if (unit === 'sec') {
+    if (fUnit === 'sec') {
         step = 1000;
-    } else if (unit === 'min') {
+    } else if (fUnit === 'min') {
         step = 60 * 1000;
-    } else if (unit === 'hour') {
+    } else if (fUnit === 'hour') {
         step = 60 * 60 * 1000;
-    } else if (unit === 'day') {
+    } else if (fUnit === 'day') {
         step = 24 * 60 * 60 * 1000;
-    } else if (unit === 'week') {
+    } else if (fUnit === 'week') {
         step = 7 * 24 * 60 * 60 * 1000;
     }
 
-    return [`/* time calculation */ ((dateTime) => { const ts = (typeof dateTime === 'object' ? dateTime.getTime() : dateTime); return ts ${operation} ((${value}) * ${step}); })(${dateTime})`, Blockly.JavaScript.ORDER_ATOMIC];
+    return [`/* time calculation */ ((dateTime) => { const ts = (typeof dateTime === 'object' ? dateTime.getTime() : dateTime); return ts ${fOperation} ((${vValue}) * ${step}); })(${vDateTime})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
