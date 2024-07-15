@@ -528,7 +528,7 @@
       "common": {
         "name": {
           "en": "Is day time",
-          "de": "Ist Tageszeit",
+          "de": "Ist Tag",
           "ru": "Дневное время",
           "pt": "É hora do dia",
           "nl": "Is de dag",
@@ -540,9 +540,9 @@
           "zh-cn": "日 日"
         },
         "type": "boolean",
+        "role": "indicator",
         "read": true,
-        "write": false,
-        "role": "indicator"
+        "write": false
       },
       "native": {}
     },
@@ -564,9 +564,9 @@
           "zh-cn": "导 言"
         },
         "type": "boolean",
+        "role": "indicator",
         "read": true,
-        "write": false,
-        "role": "indicator"
+        "write": false
       },
       "native": {}
     },
@@ -588,9 +588,9 @@
           "zh-cn": "目前时间"
         },
         "type": "string",
+        "role": "state",
         "read": true,
-        "write": false,
-        "role": "state"
+        "write": false
       },
       "native": {
         "format12": false,
@@ -615,9 +615,9 @@
           "zh-cn": "完成的工作"
         },
         "type": "boolean",
+        "role": "state",
         "read": true,
-        "write": false,
-        "role": "state"
+        "write": false
       },
       "native": {}
     },
@@ -659,9 +659,9 @@
           "zh-cn": "黑暗数据"
         },
         "type": "string",
+        "role": "json",
         "read": false,
-        "write": true,
-        "role": "json"
+        "write": true
       },
       "native": {}
     },
@@ -683,9 +683,9 @@
           "zh-cn": "A. 黑暗取的数据"
         },
         "type": "string",
+        "role": "json",
         "read": true,
-        "write": false,
-        "role": "json"
+        "write": false
       },
       "native": {}
     },
@@ -707,9 +707,9 @@
           "zh-cn": "从规则逻辑数据"
         },
         "type": "string",
+        "role": "json",
         "read": true,
-        "write": false,
-        "role": "json"
+        "write": false
       },
       "native": {}
     }
